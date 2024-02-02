@@ -1,0 +1,221 @@
+<div class="surface-section grid grid-nogutter m-3">
+  <div class="col-12 md:col-10 lg:col-10 xl:col-6">
+    <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+      <div class="flex flex-wrap flex-column gap-4 justify-content-between">
+        <div>
+          <span class="p-float-label mb-1" controlErrorAnchor>
+            <input
+              pInputText
+              type="text"
+              id="portal_detail_item_portalName"
+              class="w-full pt-3 pb-2"
+              formControlName="portalName"
+              [pTooltip]="'PORTAL.ITEM.PORTAL_NAME' | translate"
+              tooltipPosition="top"
+              tooltipEvent="focus"
+            />
+            <label class="ocx-required-label" for="portal_detail_item_portalName">
+              {{ 'PORTAL.ITEM.PORTAL_NAME' | translate }}
+            </label>
+          </span>
+        </div>
+
+        <div *ngIf="hasTenantViewPermission">
+          <span class="p-float-label mb-1" controlErrorAnchor>
+            <input
+              pInputText
+              type="text"
+              [readOnly]="!hasTenantEditPermission"
+              id="portal_detail_item_tenantId"
+              class="w-full pt-3 pb-2"
+              formControlName="tenantId"
+              [pTooltip]="'PORTAL.ITEM.TENANT_ID' | translate"
+              tooltipPosition="top"
+              tooltipEvent="focus"
+            />
+            <label for="portal_detail_item_tenantId"> {{ 'PORTAL.ITEM.TENANT_ID' | translate }} </label>
+          </span>
+        </div>
+
+        <div class="p-inputgroup mb-1" controlErrorAnchor>
+          <span class="p-float-label">
+            <p-dropdown
+              #inputThemeName
+              id="portal_detail_item_themeName"
+              formControlName="themeName"
+              styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
+              [options]="(themes$ | async) || []"
+              [pTooltip]="'PORTAL.ITEM.THEME' | translate"
+              tooltipPosition="top"
+              tooltipEvent="focus"
+            >
+            </p-dropdown>
+            <label for="portal_detail_item_themeName"> {{ 'PORTAL.ITEM.THEME' | translate }} </label>
+          </span>
+          <span
+            id="portal_detail_item_themeName_link"
+            class="p-inputgroup-addon bg-primary pseudo-button"
+            [ngClass]="portalDetail.themeId ? 'cursor-pointer' : 'p-disabled'"
+            [title]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
+            (click)="onGotoTheme($event, '../../../theme/' + portalDetail.themeId)"
+          >
+            <span class="pi pi-link"></span>
+          </span>
+        </div>
+
+        <div>
+          <div class="p-inputgroup mb-1" controlErrorAnchor>
+            <span class="p-float-label">
+              <input
+                #inputBaseUrl
+                pInputText
+                type="text"
+                id="portal_detail_item_baseUrl"
+                class="w-full pt-3 pb-2"
+                formControlName="baseUrl"
+                [pTooltip]="'PORTAL.ITEM.BASE_URL' | translate"
+                tooltipPosition="top"
+                tooltipEvent="focus"
+              />
+              <label for="portal_detail_item_baseUrl"> {{ 'PORTAL.ITEM.BASE_URL' | translate }} </label>
+            </span>
+            <span
+              class="p-inputgroup-addon bg-primary pseudo-button"
+              [ngClass]="inputBaseUrl.value ? 'cursor-pointer' : 'p-disabled'"
+              [title]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
+            >
+              <a
+                target="_blank"
+                [href]="inputBaseUrl.value"
+                (click)="$event.stopPropagation()"
+                id="portal_detail_item_baseUrl_link"
+                class="bg-primary"
+              >
+                <span class="pi pi-link"></span>
+              </a>
+            </span>
+          </div>
+          <label *ngIf="editMode" class="ocx-control-hint block">
+            {{ ('VALIDATION.HINTS.FORMAT_URL' | translate) + urlPattern }}
+          </label>
+        </div>
+
+        <div class="p-inputgroup mb-1" controlErrorAnchor>
+          <span class="p-float-label">
+            <p-dropdown
+              #inputHomePage
+              id="portal_detail_item_homePage"
+              formControlName="homePage"
+              styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
+              [options]="mfeRList"
+              [editable]="true"
+              [pTooltip]="'PORTAL.ITEM.HOME_PAGE' | translate"
+              tooltipPosition="top"
+              tooltipEvent="focus"
+            >
+            </p-dropdown>
+            <label for="portal_detail_item_homePage"> {{ 'PORTAL.ITEM.HOME_PAGE' | translate }} </label>
+          </span>
+          <span
+            class="p-inputgroup-addon bg-primary pseudo-button"
+            [ngClass]="inputHomePage.value ? 'cursor-pointer' : 'p-disabled'"
+            [title]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
+          >
+            <a
+              target="_blank"
+              [href]="inputHomePage.value"
+              (click)="$event.stopPropagation()"
+              id="portal_detail_item_homePage_link"
+              class="bg-primary"
+            >
+              <span class="pi pi-link"></span>
+            </a>
+          </span>
+        </div>
+
+        <div class="p-inputgroup mb-1" controlErrorAnchor>
+          <span class="p-float-label">
+            <input
+              #inputRssFeedUrl
+              pInputText
+              type="text"
+              id="portal_detail_item_rssFeedUrl"
+              class="w-full pt-3 pb-2"
+              formControlName="rssFeedUrl"
+              [pTooltip]="'PORTAL.ITEM.RSS_FEED_URL' | translate"
+              tooltipPosition="top"
+              tooltipEvent="focus"
+            />
+            <label for="portal_detail_item_rssFeedUrl"> {{ 'PORTAL.ITEM.RSS_FEED_URL' | translate }} </label>
+          </span>
+          <span
+            id="portal_detail_item_rssFeedUrl_link"
+            class="p-inputgroup-addon bg-primary pseudo-button"
+            [ngClass]="inputRssFeedUrl.value ? 'cursor-pointer' : 'p-disabled'"
+            [title]="'ACTIONS.COPY.CLIPBOARD' | translate"
+            (click)="copyToClipboard(portalDetail.rssFeedUrl)"
+          >
+            <span class="pi pi-copy"></span>
+          </span>
+        </div>
+
+        <div class="flex flex-wrap sm:flex-nowrap align-items-center pb-2 row-gap-2 column-gap-4">
+          <input hidden type="file" accept="image/*" #selectedFileInputLogo (change)="onFileUpload($event, 'logo')" />
+          <wm-image-container
+            [id]="'portal_detail_item_logo_image'"
+            [imageUrl]="fetchingLogoUrl"
+            [small]="true"
+            [title]="'LOGO.TOOLTIPS.' + (fetchingLogoUrl ? 'IMAGE' : 'PLACEHOLDER') | translate"
+          ></wm-image-container>
+          <div class="flex flex-column w-full">
+            <div class="p-inputgroup mb-1" controlErrorAnchor>
+              <span class="p-float-label">
+                <input pInputText type="text" id="portal_detail_item_logo" formControlName="logoUrl" />
+                <label for="portal_detail_item_logo"> {{ 'LOGO.LOGO_URL' | translate }} </label>
+              </span>
+              <span
+                id="portal_detail_item_upload_logo2"
+                class="p-inputgroup-addon bg-primary pseudo-button"
+                [ngClass]="editMode ? 'cursor-pointer' : 'p-disabled'"
+                [title]="'LOGO.TOOLTIPS.UPLOAD' | translate"
+                (click)="editMode ? selectedFileInputLogo.click() : null"
+              >
+                <span class="pi pi-upload"></span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <span class="p-float-label mb-1" controlErrorAnchor>
+          <input
+            pInputText
+            type="text"
+            id="portal_detail_item_footerLabel"
+            class="w-full pt-3 pb-2"
+            formControlName="footerLabel"
+            [pTooltip]="'PORTAL.ITEM.FOOTER_LABEL' | translate"
+            tooltipPosition="top"
+            tooltipEvent="focus"
+          />
+          <label for="portal_detail_item_footerLabel"> {{ 'PORTAL.ITEM.FOOTER_LABEL' | translate }} </label>
+        </span>
+
+        <span class="p-float-label mb-1" controlErrorAnchor>
+          <textarea
+            class="w-full"
+            pInputTextarea
+            autoresize="true"
+            rows="4"
+            id="portal_detail_item_description"
+            maxlength="255"
+            formControlName="description"
+            [pTooltip]="'PORTAL.ITEM.DESCRIPTION' | translate"
+            tooltipPosition="top"
+            tooltipEvent="focus"
+          ></textarea>
+          <label for="portal_detail_item_description"> {{ 'PORTAL.ITEM.DESCRIPTION' | translate }} </label>
+        </span>
+      </div>
+    </form>
+  </div>
+</div>

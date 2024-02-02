@@ -1,0 +1,17 @@
+apiVersion: v2
+name: onecx-workspace-ui
+version: 0.0.0
+description: OneCX Workspace UI
+home: https://github.com/onecx/onecx-workspace-ui
+keywords:
+  - workspace
+sources:
+  - https://github.com/onecx/onecx-workspace-ui
+maintainers:
+  - name: OneCX Developer Team
+    email: tkit_dev@1000kit.org
+dependencies:
+  - name: helm-angular-app
+    version: ^0
+    repository: oci://ghcr.io/onecx/charts
+    alias: app

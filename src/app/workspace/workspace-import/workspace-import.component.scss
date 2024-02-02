@@ -1,0 +1,16 @@
+:host ::ng-deep {
+  .p-steps ul {
+    flex-wrap: wrap;
+    gap: 0.2rem;
+  }
+  .p-fileupload-buttonbar {
+    display: flex;
+    flex-wrap: wrap;
+    row-gap: 0.5rem;
+  }
+  @media only screen and (max-width: 400px) {
+    .p-steps .p-steps-item {
+      margin: 0.3rem 0;
+    }
+  }
+}

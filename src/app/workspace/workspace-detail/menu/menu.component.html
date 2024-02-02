@@ -1,0 +1,650 @@
+<ocx-portal-page permission="MENU#VIEW" helpArticleId="PAGE_MENU_DETAIL" pageName="PAGE_MENU_DETAIL">
+  <ocx-page-header
+    *ngIf="portal"
+    [header]="portal ? portal.portalName + ('MENU.HEADER' | translate) : ''"
+    [subheader]="'MENU.SUBHEADER' | translate"
+    [actions]="actions"
+  >
+  </ocx-page-header>
+
+  <ocx-page-content>
+    <!-- on loading and preparing data -->
+    <div *ngIf="loading" class="flex flex-wrap justify-content-start align-items-center">
+      <p-message
+        severity="info"
+        styleClass="p-2"
+        icon="pi pi-spin pi-spinner"
+        [text]="'ACTIONS.LOADING' | translate"
+      ></p-message>
+    </div>
+    <!-- no menu defined -->
+    <div
+      *ngIf="menuNodes.length === 0 && !loading"
+      class="px-3 flex flex-wrap justify-content-between align-items-center"
+    >
+      <p-message severity="info" styleClass="p-2" [text]="'DETAIL.MENU_NOT_EXIST' | translate"></p-message>
+      <button
+        pButton
+        icon="pi pi-plus"
+        (click)="onGotoMenuMgmt()"
+        label="{{ 'ACTIONS.NAVIGATION.GOTO_MENU' | translate }}"
+      ></button>
+    </div>
+
+    <!-- menu exist -->
+    <div *ngIf="menuNodes.length > 0">
+      <p-treeTable
+        #menuTree
+        styleClass="px-2"
+        id="portal_menu_table"
+        [value]="menuNodes"
+        [globalFilterFields]="['name', 'url']"
+        (onNodeCollapse)="onHierarchyViewChange($event)"
+        (onNodeExpand)="onHierarchyViewChange($event)"
+      >
+        <ng-template pTemplate="caption" class="p-0">
+          <div class="flex flex-wrap justify-content-between align-items-center gap-2">
+            <div *ngIf="menuItems" class="flex flex-wrap gap-2">
+              <p-button
+                styleClass="h-full button-min-height"
+                id="portal_menu_table_header_expand_button"
+                [title]="'ACTIONS.TREE.EXPAND_ALL.TOOLTIP' | translate"
+                (onClick)="onExpandAll()"
+                icon="pi pi-angle-double-down"
+              ></p-button>
+              <p-button
+                styleClass="h-full button-min-height"
+                id="portal_menu_table_header_collapse_button"
+                [title]="'ACTIONS.TREE.COLLAPSE_ALL.TOOLTIP' | translate"
+                (onClick)="onCollapseAll()"
+                icon="pi pi-angle-double-up"
+              ></p-button>
+              <p-button
+                *ocxIfPermission="'MENU#DRAG_DROP'"
+                id="portal_menu_table_header_reorder"
+                [label]="'PORTAL.MENU.ACTION.TREE_MODAL' | translate"
+                [title]="'PORTAL.MENU.ACTION.TREE_MODAL.TOOLTIP' | translate"
+                (onClick)="onDisplayTreeModal()"
+                icon="pi pi-sort"
+              ></p-button>
+            </div>
+            <div class="p-inputgroup w-13rem sm:w-17rem md:w-20rem">
+              <span class="p-inputgroup-addon pi pi-filter"> </span>
+              <span class="p-float-label">
+                <input
+                  #menuTreeFilter
+                  pInputText
+                  type="text"
+                  class="py-0"
+                  id="portal_menu_table_header_filter"
+                  (input)="menuTree.filterGlobal($any($event.target).value, 'contains')"
+                  [title]="'GENERAL.TOOLTIPS.FILTER' | translate"
+                />
+                <label for="portal_menu_table_filter"> {{ 'GENERAL.FILTER_PLACEHOLDER' | translate }} </label>
+              </span>
+              <span
+                id="portal_menu_table_header_filter_clear"
+                class="p-inputgroup-addon bg-primary cursor-pointer pi pi-filter-slash"
+                (click)="onClearFilterMenuTable()"
+                [title]="'GENERAL.TOOLTIPS.FILTER_CLEAR' | translate"
+              >
+              </span>
+            </div>
+            <p-button
+              styleClass="h-full button-min-height"
+              id="portal_menu_table_reload_button"
+              [title]="'GENERAL.TOOLTIPS.ACTION_RELOAD' | translate"
+              (onClick)="onReload()"
+              icon="pi pi-refresh"
+            ></p-button>
+          </div>
+        </ng-template>
+
+        <ng-template pTemplate="header">
+          <tr>
+            <th></th>
+            <th class="text-center hidden-xs">{{ 'ACTIONS.LABEL' | translate }}</th>
+            <th class="text-center hidden-md" [title]="'PORTAL.MENU.POSITION.TOOLTIP' | translate">Pos</th>
+            <th class="text-center hidden-md" [title]="'PORTAL.MENU.I18N.TOOLTIP' | translate">
+              {{ 'PORTAL.MENU.I18N' | translate }}
+            </th>
+            <th class="text-center hidden-md" [title]="'PORTAL.MENU.MFE.TOOLTIP' | translate">PM</th>
+            <th class="hidden-sm" [title]="'PORTAL.MENU.URL.TOOLTIP' | translate">URL</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
+          <tr [id]="'portal_menu_table_row_' + rowData.key">
+            <td class="white-space-nowrap">
+              <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
+              <span *ngIf="rowData.badge" class="pi pi-{{ rowData.badge }} pr-2"></span>
+              <span *ngIf="!rowData.badge" class="pi pi-folder pr-2 invisible"></span>
+              <span [id]="'portal_menu_table_row_' + rowData.key + '_name'">{{ rowData.name }}</span>
+            </td>
+            <td class="white-space-nowrap hidden-xs">
+              <div class="flex gap-1">
+                <button
+                  pbutton
+                  type="button"
+                  [id]="'portal_menu_table_row_' + rowData.key + '_disabled'"
+                  (click)="onToggleDisable($event, rowData)"
+                  [title]="'PORTAL.MENU.ACTION.DISABLED' | translate"
+                  class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
+                >
+                  <span
+                    class="text-red-500 font-medium p-button-icon pi pi-check-circle"
+                    [class.pi-check-circle]="!rowData['disabled']"
+                    [class.pi-minus-circle]="rowData['disabled']"
+                    [class.text-red-500]="rowData['disabled']"
+                    [class.text-green-500]="!rowData['disabled']"
+                    aria-hidden="true"
+                  ></span>
+                </button>
+                <button
+                  pbutton
+                  type="button"
+                  [id]="'portal_menu_table_row_' + rowData.key + '_goto_details'"
+                  (click)="onGotoDetails($event, rowData)"
+                  [title]="'PORTAL.MENU.ACTION.DETAILS' | translate"
+                  class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
+                >
+                  <span class="text-primary font-medium p-button-icon pi pi-eye" aria-hidden="true"></span>
+                </button>
+                <button
+                  *ocxIfPermission="'MENU#EDIT'"
+                  pbutton
+                  type="button"
+                  [id]="'portal_menu_table_row_' + rowData.key + '_goto_new'"
+                  (click)="onCreateMenu($event, rowData)"
+                  [title]="'PORTAL.MENU.ACTION.NEW' | translate"
+                  class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
+                >
+                  <span class="text-primary font-medium p-button-icon pi pi-plus-circle" aria-hidden="true"></span>
+                </button>
+                <button
+                  *ocxIfPermission="'MENU#DELETE'"
+                  pbutton
+                  type="button"
+                  [id]="'portal_menu_table_row_' + rowData.key + '_delete'"
+                  (click)="onDeleteMenuItem($event, rowData)"
+                  [title]="('PORTAL.MENU.ACTION.DELETE' | translate).replace('{{TYPE}}', 'Menu')"
+                  class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
+                >
+                  <span class="danger-action-text font-medium p-button-icon pi pi-trash" aria-hidden="true"></span>
+                </button>
+              </div>
+            </td>
+            <td [id]="'portal_menu_table_row_' + rowData.key + '_position'" class="hidden-md">
+              {{ rowData.positionPath }}
+            </td>
+            <td class="text-center hidden-md">
+              <span
+                *ngIf="isObjectEmpty(rowData.i18n)"
+                [id]="'portal_menu_table_row_' + rowData.key + '_i18n'"
+                class="pi pi-check"
+                [title]="'PORTAL.MENU.I18N.ROW.TOOLTIP' | translate"
+              ></span>
+            </td>
+            <td class="text-center hidden-md">
+              <span
+                *ngIf="rowData.regMfeAligned"
+                [id]="'portal_menu_table_row_' + rowData.key + '_url'"
+                class="pi pi-check"
+              ></span>
+            </td>
+            <td class="hidden-sm">
+              <a
+                [id]="'portal_menu_table_row_' + rowData.key + '_url'"
+                [href]="rowData.url"
+                (click)="$event.stopPropagation()"
+                target="_blank"
+                class="text-primary font-italic cursor-pointer"
+                [title]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
+              >
+                {{ limitText(rowData.url, 100) }}
+              </a>
+            </td>
+          </tr>
+        </ng-template>
+      </p-treeTable>
+    </div>
+  </ocx-page-content>
+</ocx-portal-page>
+
+<!--
+  DETAIL
+-->
+<p-dialog
+  [header]="'PORTAL.MENU.HEADER.' + changeMode | translate"
+  [(visible)]="displayMenuDetail"
+  (onShow)="onShowDetailDialog()"
+  [breakpoints]="{ '1330px': '60vw', '1130px': '70vw', '930px': '80vw', '830px': '100vw' }"
+  styleClass="overflow-auto"
+  [style]="{ width: '50vw' }"
+  [modal]="true"
+  [draggable]="true"
+  [resizable]="true"
+  [contentStyle]="{ overflow: 'visible' }"
+>
+  <p-tabView #panelDetail [(activeIndex)]="tabIndex" (onChange)="onTabPanelChange($event)">
+    <p-tabPanel header="{{ 'DETAIL.MENU_ITEM_DETAILS' | translate }}">
+      <form [formGroup]="formGroup" errorTailor>
+        <div class="grid">
+          <div
+            class="col-12 md:col-6 mb-1"
+            style="min-width: 20rem"
+            [title]="'PORTAL.MENU.DETAIL.TOOLTIP.PORTAL_NAME' | translate"
+          >
+            <span class="p-float-label mb-1">
+              <input
+                pInputText
+                type="text"
+                id="portal_menu_detail_field_portal_name"
+                class="w-full pt-3 pb-2"
+                [value]="portal?.portalName"
+                [disabled]="true"
+                [pTooltip]="'PORTAL.MENU.DETAIL.TOOLTIP.PORTAL_NAME' | translate"
+                tooltipPosition="top"
+                tooltipEvent="focus"
+              />
+              <label for="portal_menu_detail_field_portal_name">
+                {{ 'PORTAL.MENU.DETAIL.PORTAL_NAME' | translate }}
+              </label>
+            </span>
+          </div>
+
+          <div
+            class="col-12 md:col-6 my-1"
+            style="min-width: 20rem"
+            [title]="'PORTAL.MENU.DETAIL.TOOLTIP.PARENT_ID' | translate"
+          >
+            <span class="p-float-label mb-1">
+              <p-dropdown
+                id="portal_menu_detail_field_parent_id"
+                styleClass="w-full input-field-correction"
+                formControlName="parentItemId"
+                [options]="parentItems"
+              >
+              </p-dropdown>
+              <label for="portal_menu_detail_field_parent_id"> {{ 'PORTAL.MENU.DETAIL.PARENT_ID' | translate }} </label>
+            </span>
+          </div>
+
+          <div
+            class="col-12 md:col-6 my-1"
+            style="min-width: 20rem"
+            [title]="'PORTAL.MENU.DETAIL.TOOLTIP.MENU_NAME' | translate"
+          >
+            <span class="p-float-label mb-1" controlErrorAnchor>
+              <input
+                pInputText
+                type="text"
+                id="portal_menu_detail_field_menu_name"
+                class="w-full pt-3 pb-2"
+                formControlName="name"
+              />
+              <label class="ocx-required-label" for="portal_menu_detail_field_menu_name">
+                {{ 'PORTAL.MENU.DETAIL.MENU_NAME' | translate }}
+              </label>
+            </span>
+          </div>
+          <div
+            class="col-12 md:col-6 my-1"
+            style="min-width: 20rem"
+            [title]="'PORTAL.MENU.DETAIL.TOOLTIP.MENU_ID' | translate"
+          >
+            <span class="p-float-label mb-1" controlErrorAnchor>
+              <input
+                pInputText
+                type="text"
+                id="portal_menu_detail_field_menu_id"
+                class="w-full pt-3 pb-2"
+                formControlName="key"
+              />
+              <label class="ocx-required-label" for="portal_menu_detail_field_menu_id">
+                {{ 'PORTAL.MENU.DETAIL.MENU_ID' | translate }}
+              </label>
+            </span>
+          </div>
+
+          <div class="col-12 md:col-9 my-1" [title]="'PORTAL.MENU.DETAIL.TOOLTIP.URL' | translate">
+            <span class="p-float-label mb-1" controlErrorAnchor>
+              <p-dropdown
+                #formFieldUrl
+                id="portal_menu_detail_field_url"
+                formControlName="url"
+                styleClass="w-full"
+                [editable]="true"
+                [options]="mfeRUrlOptions"
+                (onFocus)="onFocusFieldUrl(formFieldUrl)"
+                [pTooltip]="'PORTAL.MENU.DETAIL.URL' | translate"
+                tooltipPosition="top"
+                tooltipEvent="focus"
+                appendTo="body"
+              >
+              </p-dropdown>
+              <label for="portal_menu_detail_field_url"> {{ 'PORTAL.MENU.DETAIL.URL' | translate }} </label>
+            </span>
+          </div>
+          <div
+            class="col-12 md:col-3 my-1 pl-6 flex justify-content-start"
+            [title]="'PORTAL.MENU.DETAIL.TOOLTIP.PORTAL_EXIT' | translate"
+          >
+            <p-checkbox
+              id="portal_menu_detail_field_portal_exit"
+              class="checkbox-label"
+              formControlName="portalExit"
+              [label]="'PORTAL.MENU.DETAIL.PORTAL_EXIT' | translate"
+              [binary]="true"
+            >
+            </p-checkbox>
+          </div>
+
+          <div class="col-12 md:col-2 my-1" [title]="'Position'">
+            <span class="p-float-label mb-1" controlErrorAnchor>
+              <input
+                pInputText
+                type="text"
+                id="portal_menu_detail_field_position"
+                class="w-full pt-3 pb-2"
+                formControlName="position"
+              />
+              <label for="portal_menu_detail_field_position">Position</label>
+            </span>
+          </div>
+          <div
+            class="col-12 md:col-4 my-1"
+            style="min-width: 10rem"
+            [title]="'PORTAL.MENU.DETAIL.TOOLTIP.BADGE' | translate"
+          >
+            <span class="p-float-label mb-1" controlErrorAnchor>
+              <p-dropdown
+                id="portal_menu_detail_field_badge"
+                styleClass="w-full min-w-min input-field-correction"
+                formControlName="badge"
+                [options]="iconItems"
+              >
+                <ng-template let-ico pTemplate="selectedItem">
+                  <div class="flex">
+                    <span class="pi pi-{{ ico.value }} mr-3"> </span>
+                    <span>{{ ico.label || 'dummy-for-renderer' }}</span>
+                  </div>
+                </ng-template>
+                <ng-template let-ico pTemplate="item">
+                  <div class="flex">
+                    <span class="pi pi-{{ ico.value }} mr-3"> </span>
+                    <span>{{ ico.label }}</span>
+                  </div>
+                </ng-template>
+              </p-dropdown>
+              <label for="portal_menu_detail_field_badge"> {{ 'PORTAL.MENU.DETAIL.BADGE' | translate }} </label>
+            </span>
+          </div>
+          <div
+            class="col-12 md:col-3 my-1"
+            style="min-width: 10rem"
+            [title]="'PORTAL.MENU.DETAIL.TOOLTIP.SCOPE' | translate"
+          >
+            <span class="p-float-label mb-1" controlErrorAnchor>
+              <p-dropdown
+                id="portal_menu_detail_field_scope"
+                styleClass="w-full min-w-min input-field-correction"
+                formControlName="scope"
+                [options]="scopeItems"
+              >
+              </p-dropdown>
+              <label for="portal_menu_detail_field_scope"> {{ 'PORTAL.MENU.DETAIL.SCOPE' | translate }} </label>
+            </span>
+          </div>
+
+          <div
+            class="col-12 md:col-3 my-1 pl-6 flex justify-content-start"
+            [title]="'PORTAL.MENU.DETAIL.TOOLTIP.DISABLED' | translate"
+          >
+            <p-checkbox
+              id="portal_menu_detail_field_disabled"
+              class="checkbox-label"
+              formControlName="disabled"
+              [label]="'PORTAL.MENU.DETAIL.DISABLED' | translate"
+              [binary]="true"
+            >
+            </p-checkbox>
+          </div>
+
+          <div class="col-12 my-1" [title]="'PORTAL.MENU.DETAIL.TOOLTIP.DESCRIPTION' | translate">
+            <span class="p-float-label mb-1" controlErrorAnchor>
+              <input
+                pInputText
+                type="text"
+                id="portal_menu_detail_field_description"
+                class="w-full pt-3 pb-2"
+                formControlName="description"
+              />
+              <label for="portal_menu_detail_field_description">
+                {{ 'PORTAL.MENU.DETAIL.DESCRIPTION' | translate }}
+              </label>
+            </span>
+          </div>
+
+          <div
+            *ngIf="changeMode === 'EDIT'"
+            class="col-12 md:col-6 my-1"
+            style="min-width: 15rem"
+            [title]="'DETAIL.TOOLTIPS.CREATION_DATE' | translate"
+          >
+            <span class="p-float-label mb-1" controlErrorAnchor>
+              <input
+                pInputText
+                type="text"
+                id="portal_menu_detail_field_creation_date"
+                class="w-full pt-3 pb-2"
+                [value]="menuItem?.creationDate | date : dateFormat"
+                [disabled]="true"
+              />
+              <label for="portal_menu_detail_field_creation_date"> {{ 'DETAIL.CREATION_DATE' | translate }} </label>
+            </span>
+          </div>
+
+          <div
+            *ngIf="changeMode === 'EDIT'"
+            class="col-12 md:col-6 my-1"
+            style="min-width: 15rem"
+            [title]="'DETAIL.TOOLTIPS.MODIFICATION_DATE' | translate"
+          >
+            <span class="p-float-label mb-1" controlErrorAnchor>
+              <input
+                pInputText
+                type="text"
+                id="portal_menu_detail_field_modification_date"
+                class="w-full pt-3 pb-2"
+                [value]="menuItem?.modificationDate | date : dateFormat"
+                [disabled]="true"
+              />
+              <label for="portal_menu_detail_field_modification_date">
+                {{ 'DETAIL.MODIFICATION_DATE' | translate }}
+              </label>
+            </span>
+          </div>
+        </div>
+      </form>
+    </p-tabPanel>
+    <p-tabPanel header="{{ 'DETAIL.I18N' | translate }}">
+      <div class="flex flex-column gap-4">
+        <span
+          class="p-float-label p-input-icon-right w-30rem mb-1"
+          *ngFor="let language of languagesDisplayed; index as i"
+        >
+          <i
+            class="pi pi-times"
+            (click)="onRemoveLanguage(language.value)"
+            [title]="'PORTAL.MENU.DETAIL.I18N.REMOVE_LANGUAGE' | translate"
+          ></i>
+          <input
+            pInputText
+            type="text"
+            id="{{ 'i18n_' + language.value }}"
+            class="w-30rem pt-3 pb-2"
+            [(ngModel)]="language.data"
+          />
+          <label for="{{ 'i18n_' + language.value }}"> {{ getLanguageLabel(language.value) }} </label>
+        </span>
+      </div>
+      <div class="flex align-items-center column-gap-4 row-gap-2 mt-4" *ngIf="languagesAvailable.length > 0">
+        <div class="data-view-control opacity-90 text-sm w-4rem">
+          {{ 'PORTAL.MENU.DETAIL.I18N.ADD_LANGUAGE' | translate }}
+        </div>
+        <p-selectButton
+          inputid="i18n_language_selector"
+          styleClass="data-view-control opacity-90"
+          [options]="languagesAvailable"
+          (onOptionClick)="onAddLanguage($event.option.value)"
+          [title]="'PORTAL.MENU.DETAIL.I18N.ADD_LANGUAGE' | translate"
+        >
+        </p-selectButton>
+      </div>
+    </p-tabPanel>
+  </p-tabView>
+  <ng-template pTemplate="footer">
+    <div class="flex flex-wrap gap-2 justify-content-end">
+      <p-button
+        icon="pi pi-times"
+        styleClass="m-0"
+        (click)="onCloseDetailDialog()"
+        [label]="'ACTIONS.CANCEL' | translate"
+        [title]="'ACTIONS.TOOLTIPS.CANCEL_WITHOUT_SAVE' | translate"
+      ></p-button>
+      <p-button
+        icon="pi pi-save"
+        styleClass="m-0"
+        (onClick)="onMenuSave()"
+        [disabled]="!formGroup.valid"
+        [label]="'ACTIONS.SAVE' | translate"
+        [title]="'ACTIONS.TOOLTIPS.SAVE' | translate"
+      ></p-button>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- DELETE MENU ITEM -->
+<p-dialog
+  [(visible)]="displayDeleteConfirmation"
+  [header]="'ACTIONS.DELETE.MENU_ITEM' | translate"
+  [modal]="true"
+  [closable]="true"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [style]="{ 'max-width': '425px' }"
+>
+  <div class="flex column-gap-3 row-gap-1 justify-content-start align-items-center">
+    <div class="pi pi-question-circle text-3xl text-primary"></div>
+    <div>
+      <div>{{ ('ACTIONS.DELETE.MESSAGE' | translate).replace('{{ITEM}}', menuItem?.name) }}</div>
+      <div class="mt-2">{{ 'ACTIONS.DELETE.MESSAGE_INFO' | translate }}</div>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
+      <button
+        pButton
+        autofocus
+        type="button"
+        class="m-0"
+        icon="pi pi-times"
+        iconPos="left"
+        [label]="'ACTIONS.CONFIRMATION.NO' | translate"
+        (click)="displayDeleteConfirmation = false"
+      ></button>
+      <button
+        pButton
+        type="button"
+        class="m-0"
+        icon="pi pi-check"
+        iconPos="left"
+        [label]="'ACTIONS.CONFIRMATION.YES' | translate"
+        (click)="onMenuDelete()"
+      ></button>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- IMPORT MENU -->
+<p-dialog
+  header="{{ 'ACTIONS.IMPORT.MENU' | translate }}"
+  [(visible)]="displayMenuImport"
+  [draggable]="true"
+  [closable]="true"
+  [modal]="true"
+  (onHide)="onImportMenuHide()"
+>
+  <p-fileUpload
+    mode="advanced"
+    name="file"
+    accept=".json"
+    [maxFileSize]="1000000"
+    [headers]="httpHeaders"
+    [customUpload]="true"
+    (onClear)="onImportMenuClear()"
+    (onRemove)="onImportMenuClear()"
+    (onSelect)="onImportMenuSelect($event)"
+    (uploadHandler)="onMenuImport()"
+    [showUploadButton]="!menuImportError"
+    [uploadLabel]="'ACTIONS.UPLOAD' | translate"
+    [cancelLabel]="'ACTIONS.CANCEL' | translate"
+    [chooseLabel]="'ACTIONS.CHOOSE' | translate"
+  ></p-fileUpload>
+
+  <p-message
+    *ngIf="menuImportError"
+    severity="error"
+    styleClass="mt-3"
+    text="{{ 'VALIDATION.ERRORS.PARSE_ERROR' | translate }}"
+  ></p-message>
+
+  <div class="flex justify-content-end gap-3 my-3">
+    <button
+      pButton
+      type="button"
+      icon="pi pi-times"
+      id="portal_import_button_close"
+      [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+      [title]="'ACTIONS.NAVIGATION.CLOSE_WITHOUT_SAVE' | translate"
+      (click)="onImportMenuHide()"
+    ></button>
+  </div>
+</p-dialog>
+
+<!-- TREE REORDER DIALOG -->
+<p-dialog
+  header="{{ 'PORTAL.MENU.HEADER.TREE_MODAL' | translate }}"
+  [(visible)]="displayTreeModal"
+  [draggable]="true"
+  [closable]="true"
+  [modal]="true"
+  (onHide)="onHideTreeModal()"
+  (onResizeInit)="onStartResizeTree($event)"
+  (onResizeEnd)="onEndResizeTree($event)"
+>
+  <ul class="my-2">
+    <li>{{ 'PORTAL.MENU.ACTION.REORDER.TOOLTIP' | translate }}</li>
+    <li>{{ 'PORTAL.MENU.ACTION.PREVIEW.TOOLTIP' | translate }}</li>
+    <li class="danger-action-text">{{ 'PORTAL.MENU.ACTION.PREVIEW2.TOOLTIP' | translate }}</li>
+  </ul>
+  <wm-menu-tree
+    *ngIf="menuItems"
+    [selectedPortalId]="portalId"
+    [portalMenuItems]="menuItems"
+    [updateTree]="displayTreeModal"
+    [languagesPreview]="languagesPreview"
+    (updateMenuStructureEmitter)="updateMenuItems($event)"
+  >
+  </wm-menu-tree>
+  <div class="flex justify-content-end my-3">
+    <button
+      pButton
+      type="button"
+      icon="pi pi-times"
+      id="portal_import_button_close"
+      [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+      (click)="onHideTreeModal()"
+    ></button>
+  </div>
+</p-dialog>

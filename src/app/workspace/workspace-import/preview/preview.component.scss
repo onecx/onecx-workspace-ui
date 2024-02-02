@@ -1,0 +1,13 @@
+:host ::ng-deep {
+  .p-tree {
+    border: unset;
+    .p-tree-container .p-treenode .p-treenode-content {
+      padding: 0 0 !important;
+      .p-tree-toggler {
+        width: unset;
+        height: unset;
+        margin-right: 0.2rem;
+      }
+    }
+  }
+}

@@ -1,0 +1,35 @@
+app:
+  name: ui
+  image:
+    repository: 'onecx/onecx-help-ui'
+  routing:
+    enabled: true
+  operator:
+    apm:
+      enabled: false
+    keycloak:
+      enabled: true
+      client: |-
+        {
+          "clientId": "onecx-help-ui",
+          "enabled": true,
+          "description": "Keycloak client for onecx-help-ui",
+          "redirectUris": ["*"],
+          "webOrigins": ["*"],
+          "publicClient": true,
+          "protocol": "openid-connect"
+        }
+      roles: |-
+        [
+           {
+             "name": "onecx-help-admin",
+             "description": "OneCX Help admin"
+           },
+           {
+             "name": "onecx-help-user",
+             "description": "OneCX Help user"
+           }
+         ]
+
+# PIPE Config
+

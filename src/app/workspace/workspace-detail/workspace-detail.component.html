@@ -1,0 +1,140 @@
+<ocx-portal-page permission="WORKSPACE#VIEW" helpArticleId="PAGE_WORKSPACE_DETAIL" pageName="PAGE_PORTAL_DETAIL">
+  <ocx-page-header
+    *ngIf="portalDetail"
+    [header]="portalDetail ? portalDetail.portalName : ''"
+    [subheader]="'PORTAL.HEADER.DETAIL' | translate"
+    [actions]="actions"
+    [objectDetails]="objectDetails"
+    [figureImage]="headerImageUrl"
+    [figureBackground]="portalDetail ? portalDetail.logoUrl === undefined : false"
+  >
+  </ocx-page-header>
+
+  <ocx-page-content *ngIf="portalDetail">
+    <p-tabView (onChange)="onChange($event)" [activeIndex]="selectedIndex">
+      <p-tabPanel [header]="'PORTAL.TABS.DETAILS' | translate">
+        <div *ocxIfPermission="'WORKSPACE_PROPS#VIEW'">
+          <wm-workspace-props
+            [portalDetail]="portalDetail"
+            [editMode]="editMode"
+            (portalUpdated)="onPortalData($event)"
+          ></wm-workspace-props>
+        </div>
+      </p-tabPanel>
+
+      <p-tabPanel [header]="'PORTAL.TABS.CONTACT' | translate">
+        <div *ocxIfPermission="'WORKSPACE_CONTACT#VIEW'">
+          <wm-workspace-contact [portalDetail]="portalDetail" [editMode]="editMode"></wm-workspace-contact>
+        </div>
+      </p-tabPanel>
+
+      <p-tabPanel [header]="'PORTAL.TABS.INTERN' | translate">
+        <div *ocxIfPermission="'WORKSPACE_INTERNAL#VIEW'">
+          <wm-workspace-intern [portalDetail]="portalDetail" [dateFormat]="dateFormat"></wm-workspace-intern>
+        </div>
+      </p-tabPanel>
+
+      <p-tabPanel [header]="'PORTAL.TABS.MFES' | translate">
+        <div *ocxIfPermission="'WORKSPACE_PRODUCTS#VIEW'">
+          <wm-mfe-registrations [portalDetail]="portalDetail" [editMode]="editMode"></wm-mfe-registrations>
+        </div>
+      </p-tabPanel>
+
+      <p-tabPanel [header]="'PORTAL.TABS.ROLES' | translate">
+        <div *ocxIfPermission="'WORKSPACE_ROLES#VIEW'">
+          <wm-workspace-roles [portalDetail]="portalDetail" [editMode]="editMode"></wm-workspace-roles>
+        </div>
+      </p-tabPanel>
+
+      <p-tabPanel [header]="'PORTAL.TABS.IMAGES' | translate">
+        <div *ocxIfPermission="'WORKSPACE_IMAGES#VIEW'">
+          <wm-workspace-images [portalDetail]="portalDetail" [editMode]="editMode"></wm-workspace-images>
+        </div>
+      </p-tabPanel>
+    </p-tabView>
+  </ocx-page-content>
+
+  <p-dialog
+    #portalDownload
+    [(visible)]="portalDownloadVisible"
+    [header]="'PORTAL.HEADER.EXPORT' | translate"
+    [modal]="true"
+    [resizable]="false"
+    [dismissableMask]="true"
+    [style]="{ 'max-width': '460px' }"
+  >
+    <div>{{ 'ACTIONS.EXPORT.PORTAL' | translate }}</div>
+    <div class="field-checkbox mt-3 mb-0">
+      <p-checkbox
+        [(ngModel)]="importThemeCheckbox"
+        [binary]="true"
+        id="theme"
+        [label]="'ACTIONS.EXPORT.THEME_INCLUDE' | translate"
+      ></p-checkbox>
+    </div>
+    <ng-template pTemplate="footer">
+      <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
+        <button
+          pButton
+          autofocus
+          type="button"
+          class="m-0"
+          icon="pi pi-times"
+          iconPos="left"
+          [label]="'ACTIONS.CANCEL' | translate"
+          (click)="portalDownloadVisible = false"
+        ></button>
+        <button
+          pButton
+          type="button"
+          class="m-0"
+          icon="pi pi-download"
+          iconPos="left"
+          [label]="'ACTIONS.EXPORT.LABEL' | translate"
+          (click)="onExportWorkspace()"
+        ></button>
+      </div>
+    </ng-template>
+  </p-dialog>
+
+  <p-dialog
+    #portalDelete
+    [(visible)]="portalDeleteVisible"
+    [header]="'PORTAL.HEADER.DELETE' | translate"
+    [modal]="true"
+    [resizable]="false"
+    [dismissableMask]="true"
+    [style]="{ 'max-width': '425px' }"
+  >
+    <div class="flex column-gap-3 row-gap-1 justify-content-start align-items-center">
+      <div class="pi pi-question-circle text-3xl danger-action-text"></div>
+      <div>
+        <div>{{ this.portalDeleteMessage }}</div>
+        <div class="mt-2">{{ 'ACTIONS.DELETE.MESSAGE_INFO' | translate }}</div>
+      </div>
+    </div>
+    <ng-template pTemplate="footer">
+      <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
+        <button
+          pButton
+          autofocus
+          type="button"
+          class="m-0"
+          icon="pi pi-times"
+          iconPos="left"
+          [label]="'ACTIONS.CONFIRMATION.NO' | translate"
+          (click)="portalDeleteVisible = false"
+        ></button>
+        <button
+          pButton
+          type="button"
+          class="m-0"
+          icon="pi pi-check"
+          iconPos="left"
+          [label]="'ACTIONS.CONFIRMATION.YES' | translate"
+          (click)="confirmDeletePortal()"
+        ></button>
+      </div>
+    </ng-template>
+  </p-dialog>
+</ocx-portal-page>
