@@ -14,7 +14,7 @@ import {
 } from '@onecx/portal-integration-angular'
 import { HttpLoaderFactory } from 'src/app/shared/shared.module'
 import { WorkspacePropsComponent } from './workspace-props.component'
-import { PortalInternalAPIService, ThemesAPIService } from '../../../generated'
+import { PortalInternalAPIService, ThemesAPIService } from '../../../shared/generated'
 
 const portalDetail = {
   portalName: 'name',

@@ -1,7 +1,7 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core'
 import { HttpHeaders } from '@angular/common/http'
 import { TranslateService } from '@ngx-translate/core'
-import { ImportRequestDTOv1, MenuItemStructureDTO } from '../../../generated'
+import { ImportRequestDTOv1, MenuItemStructureDTO } from '../../../shared/generated'
 
 @Component({
   selector: 'wm-import-choose-file',

@@ -7,12 +7,12 @@ import { AUTH_SERVICE, IAuthService, PortalMessageService } from '@onecx/portal-
 
 import { PreviewComponent } from './preview/preview.component'
 import { ConfirmComponent } from './confirm/confirm.component'
-import { PortalImportRequestV1APIService } from '../../generated/api/api'
+import { PortalImportRequestV1APIService } from '../../shared/generated/api/api'
 import {
   MenuItemStructureDTOv1,
   ImportRequestDTOv1,
   MicrofrontendRegistrationDTOv1
-} from '../../generated/model/models'
+} from '../../shared/generated/model/models'
 
 @Component({
   selector: 'wm-workspace-import',

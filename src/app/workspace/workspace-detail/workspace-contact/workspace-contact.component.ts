@@ -1,8 +1,8 @@
 import { Component, Input, OnChanges } from '@angular/core'
 import { FormControl, FormGroup } from '@angular/forms'
 
-import { PortalDTO } from '../../../generated/model/portalDTO'
-import { PortalInternalAPIService } from '../../../generated'
+import { PortalDTO } from '../../../shared/generated/model/portalDTO'
+import { PortalInternalAPIService } from '../../../shared/generated'
 import { clonePortalWithMicrofrontendsArray } from '../../../shared/utils'
 import { PortalMessageService } from '@onecx/portal-integration-angular'
 

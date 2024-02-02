@@ -39,7 +39,7 @@
           "error",
           {
             "type": "attribute",
-            "prefix": "wm",
+            "prefix": "app",
             "style": "camelCase"
           }
         ],
@@ -47,7 +47,7 @@
           "warn",
           {
             "type": "element",
-            "prefix": "wm",
+            "prefix": "app",
             "style": "kebab-case"
           }
         ],

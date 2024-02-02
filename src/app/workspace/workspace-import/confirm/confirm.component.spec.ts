@@ -7,7 +7,7 @@ import { of } from 'rxjs'
 
 import { HttpLoaderFactory } from 'src/app/shared/shared.module'
 import { ConfirmComponent } from './confirm.component'
-import { PortalInternalAPIService, ThemesAPIService } from '../../../generated'
+import { PortalInternalAPIService, ThemesAPIService } from '../../../shared/generated'
 
 const portal = {
   portalName: 'name',

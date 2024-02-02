@@ -28,7 +28,7 @@ import {
   PortalDTO,
   PortalInternalAPIService,
   PortalMenuItemDTO
-} from '../../../generated'
+} from '../../../shared/generated'
 import { limitText, dropDownSortItemsByLabel } from '../../../shared/utils'
 import { MenuStringConst } from '../../..//model/menu-string-const'
 import { MenuStateService } from '../../../services/menu-state.service'

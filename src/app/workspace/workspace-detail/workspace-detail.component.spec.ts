@@ -23,7 +23,7 @@ import {
   MenuItemsInternalAPIService,
   ThemesAPIService,
   ThemeDTO
-} from '../../generated'
+} from '../../shared/generated'
 
 class MockRouter {
   navigate = jasmine.createSpy('navigate')

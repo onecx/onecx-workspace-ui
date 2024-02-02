@@ -8,7 +8,7 @@ import {
   MenuItemStructureDTO,
   MicrofrontendRegistrationDTO,
   ThemesAPIService
-} from '../../../generated'
+} from '../../../shared/generated'
 import { forceFormValidation, sortThemeByName } from '../../../shared/utils'
 
 @Component({

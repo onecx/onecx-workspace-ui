@@ -1,8 +1,8 @@
 import { Component, Input, Output, SimpleChanges, EventEmitter, OnChanges } from '@angular/core'
-import { PortalDTO } from '../../../generated/model/portalDTO'
+import { PortalDTO } from '../../../shared/generated/model/portalDTO'
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms'
 
-import { PortalInternalAPIService, SubjectLinkDTOv1 } from '../../../generated'
+import { PortalInternalAPIService, SubjectLinkDTOv1 } from '../../../shared/generated'
 import { clonePortalWithMicrofrontendsArray } from '../../../shared/utils'
 import { PortalMessageService } from '@onecx/portal-integration-angular'
 

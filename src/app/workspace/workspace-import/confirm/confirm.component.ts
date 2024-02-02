@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core'
-import { PortalDTO, ThemeDTO, ThemesAPIService, PortalInternalAPIService } from './../../../generated/'
+import { PortalDTO, ThemeDTO, ThemesAPIService, PortalInternalAPIService } from '../../../shared/generated'
 
 @Component({
   selector: 'wm-import-confirm',

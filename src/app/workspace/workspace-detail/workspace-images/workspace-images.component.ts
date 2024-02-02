@@ -3,7 +3,7 @@ import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms'
 import { TranslateService } from '@ngx-translate/core'
 import { MessageService } from 'primeng/api'
 
-import { ImageV1APIService, PortalInternalAPIService, PortalDTO } from '../../../generated'
+import { ImageV1APIService, PortalInternalAPIService, PortalDTO } from '../../../shared/generated'
 import { clonePortalWithMicrofrontendsArray } from '../../../shared/utils'
 import { LogoState } from '../../workspace-create/logo-state'
 

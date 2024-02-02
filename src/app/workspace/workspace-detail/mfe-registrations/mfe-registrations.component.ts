@@ -10,7 +10,7 @@ import {
   MicrofrontendRegistrationDTO,
   MicrofrontendRegistrationInternalAPIService,
   PortalDTO
-} from '../../../generated'
+} from '../../../shared/generated'
 import { DropDownChangeEvent } from '../../../shared/utils'
 import { PortalMessageService } from '@onecx/portal-integration-angular'
 

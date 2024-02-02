@@ -7,7 +7,7 @@ import { of } from 'rxjs'
 
 import { HttpLoaderFactory } from 'src/app/shared/shared.module'
 import { PreviewComponent } from './preview.component'
-import { ThemesAPIService } from '../../../generated'
+import { ThemesAPIService } from '../../../shared/generated'
 
 describe('PreviewComponent', () => {
   let component: PreviewComponent

@@ -12,7 +12,7 @@ import { AUTH_SERVICE, IAuthService } from '@onecx/portal-integration-angular'
 import { LogoState } from './logo-state'
 import { setFetchUrls, sortThemeByName } from '../../shared/utils'
 import { environment } from '../../../environments/environment'
-import { ImageV1APIService, PortalDTO, PortalInternalAPIService, ThemesAPIService } from '../../generated'
+import { ImageV1APIService, PortalDTO, PortalInternalAPIService, ThemesAPIService } from '../../shared/generated'
 
 @Component({
   selector: 'wm-workspace-create',

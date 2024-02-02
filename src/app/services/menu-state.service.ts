@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { PortalMenuItemDTO } from '../generated'
+import { PortalMenuItemDTO } from '../shared/generated'
 
 export interface MenuState {
   selectedPortal?: string

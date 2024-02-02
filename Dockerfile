@@ -3,7 +3,7 @@ FROM harbor.1000kit.org/1000kit/spa-base:v1
 # Copy locations config
 COPY nginx/locations.conf $DIR_LOCATION/locations.conf
 # Copy application build
-COPY dist/workspace-mgmt-ui/ $DIR_HTML
+COPY dist/onecx-workspace-ui/ $DIR_HTML
 
 #Optional extend list of application environments
 #ENV CONFIG_ENV_LIST BFF_URL,APP_BASE_HREF

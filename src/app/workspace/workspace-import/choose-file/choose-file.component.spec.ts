@@ -8,7 +8,7 @@ import { of, throwError } from 'rxjs'
 import { PortalMessageService } from '@onecx/portal-integration-angular'
 import { HttpLoaderFactory } from 'src/app/shared/shared.module'
 import { ChooseFileComponent } from './choose-file.component'
-import { PortalInternalAPIService } from '../../../generated'
+import { PortalInternalAPIService } from '../../../shared/generated'
 
 describe('ChooseFileComponent', () => {
   let component: ChooseFileComponent

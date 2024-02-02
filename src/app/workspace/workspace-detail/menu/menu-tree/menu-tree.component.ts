@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core'
 import { SelectItem, TreeNode } from 'primeng/api'
 
-import { MenuItemDetailsDTO, PortalMenuItemDTO } from '../../../../generated'
+import { MenuItemDetailsDTO, PortalMenuItemDTO } from '../../../../shared/generated'
 import { MenuTreeService } from '../../../../services/menu-tree.service'
 import { MenuStateService } from '../../../../services/menu-state.service'
 

@@ -11,7 +11,7 @@ import { AUTH_SERVICE, PortalMessageService } from '@onecx/portal-integration-an
 import { HttpLoaderFactory } from 'src/app/shared/shared.module'
 import { WorkspaceImportComponent } from './workspace-import.component'
 import { ConfirmComponent } from './confirm/confirm.component'
-import { PortalInternalAPIService, MenuItemStructureDTOv1, ImportRequestDTOv1 } from '../../generated'
+import { PortalInternalAPIService, MenuItemStructureDTOv1, ImportRequestDTOv1 } from '../../shared/generated'
 import { PreviewComponent } from './preview/preview.component'
 
 class MockRouter {

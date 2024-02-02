@@ -12,8 +12,8 @@ import {
   PortalMessageService
 } from '@onecx/portal-integration-angular'
 
-import { ImageV1APIService, PortalInternalAPIService, ThemeDTO, ThemesAPIService } from '../../../generated'
-import { PortalDTO } from '../../../generated/model/portalDTO'
+import { ImageV1APIService, PortalInternalAPIService, ThemeDTO, ThemesAPIService } from '../../../shared/generated'
+import { PortalDTO } from '../../../shared/generated/model/portalDTO'
 import { environment } from '../../../../environments/environment'
 import { LogoState } from '../../workspace-create/logo-state'
 import {

@@ -2,7 +2,7 @@ const { ModifyEntryPlugin } = require('@angular-architects/module-federation/src
 const { share, withModuleFederationPlugin } = require('@angular-architects/module-federation/webpack')
 
 const config = withModuleFederationPlugin({
-  name: 'workspace-mgmt-ui',
+  name: 'onecx-workspace-ui',
   filename: 'remoteEntry.js',
   exposes: {
     './WorkspaceMgmtModule': 'src/app/workspace-mgmt-remote.module.ts'

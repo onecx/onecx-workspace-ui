@@ -45,7 +45,7 @@ import {
 } from '@onecx/portal-integration-angular'
 
 import { environment } from '../../environments/environment'
-import { BASE_PATH } from '../generated'
+import { BASE_PATH } from './generated'
 import { CanActivateGuard } from './can-active-guard.service'
 import { LabelResolver } from './label.resolver'
 import { ImageContainerComponent } from './image-container/image-container.component'

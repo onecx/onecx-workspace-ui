@@ -1,7 +1,7 @@
 import { MicrofrontendDTO } from '@onecx/portal-integration-angular'
 import { AbstractControl, FormArray, FormGroup } from '@angular/forms'
 import { SelectItem } from 'primeng/api'
-import { PortalDTO, ThemeDTO } from '../generated'
+import { PortalDTO, ThemeDTO } from './generated'
 
 export function limitText(text: string, limit: number): string {
   if (text) {

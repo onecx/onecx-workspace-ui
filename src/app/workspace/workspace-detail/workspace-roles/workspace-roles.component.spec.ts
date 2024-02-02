@@ -9,7 +9,7 @@ import { of, throwError } from 'rxjs'
 import { PortalMessageService } from '@onecx/portal-integration-angular'
 import { HttpLoaderFactory } from 'src/app/shared/shared.module'
 import { WorkspaceRolesComponent } from './workspace-roles.component'
-import { PortalDTO, PortalInternalAPIService } from '../../../generated'
+import { PortalDTO, PortalInternalAPIService } from '../../../shared/generated'
 
 const portal: PortalDTO = {
   portalName: 'name',

@@ -9,7 +9,7 @@ import {
   PortalMessageService
 } from '@onecx/portal-integration-angular'
 import { limitText } from '../../shared/utils'
-import { PortalDTO, PortalInternalAPIService } from '../../generated'
+import { PortalDTO, PortalInternalAPIService } from '../../shared/generated'
 
 @Component({
   selector: 'wm-workspace-search',

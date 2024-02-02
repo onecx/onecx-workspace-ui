@@ -22,7 +22,7 @@ import {
   PortalMenuItemDTO,
   ThemeDTO,
   ThemesAPIService
-} from '../../generated'
+} from '../../shared/generated'
 import { environment } from '../../../environments/environment'
 
 import { WorkspacePropsComponent } from './workspace-props/workspace-props.component'

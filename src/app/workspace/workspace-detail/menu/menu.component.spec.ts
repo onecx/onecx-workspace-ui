@@ -21,7 +21,7 @@ import {
   ThemesAPIService,
   MenuItemDetailsDTO,
   Scope
-} from '../../../generated'
+} from '../../../shared/generated'
 import FileSaver from 'file-saver'
 
 const portal: PortalDTO = {

@@ -24,7 +24,7 @@ function initializer(translate: TranslateService): () => Observable<any> {
 @NgModule({
   bootstrap: [AppComponent],
   declarations: [AppComponent],
-  imports: [BrowserModule, KeycloakAuthModule, BrowserAnimationsModule, PortalCoreModule.forRoot('workspace-mgmt-ui')],
+  imports: [BrowserModule, KeycloakAuthModule, BrowserAnimationsModule, PortalCoreModule.forRoot('onecx-workspace-ui')],
   providers: [
     DialogService,
     { provide: APP_CONFIG, useValue: environment },

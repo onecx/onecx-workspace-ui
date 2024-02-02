@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core'
 import { TranslateService } from '@ngx-translate/core'
 
-import { PortalDTO } from '../../../generated/model/portalDTO'
+import { PortalDTO } from '../../../shared/generated/model/portalDTO'
 
 @Component({
   selector: 'wm-workspace-intern',
