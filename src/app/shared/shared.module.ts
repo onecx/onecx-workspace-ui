@@ -46,7 +46,6 @@ import {
 
 import { environment } from '../../environments/environment'
 import { BASE_PATH } from './generated'
-import { CanActivateGuard } from './can-active-guard.service'
 import { LabelResolver } from './label.resolver'
 import { ImageContainerComponent } from './image-container/image-container.component'
 import { ThemeColorBoxComponent } from './theme-color-box/theme-color-box.component'
@@ -164,7 +163,6 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
   ],
   //this is not elegant, for some reason the injection token from primeng does not work across federated module
   providers: [
-    CanActivateGuard,
     ConfirmationService,
     LabelResolver,
     { provide: MessageService, useExisting: PortalMessageService },

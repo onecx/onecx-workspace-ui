@@ -23,13 +23,13 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateWorkspaceRequest'
       responses:
-        "201":
+        '201':
           description: Created
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreateWorkspaceResponse'
-        "400":
+        '400':
           description: Bad request
           content:
             application/json:
@@ -48,13 +48,13 @@ paths:
             schema:
               $ref: '#/components/schemas/SearchWorkspacesRequest'
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/SearchWorkspacesResponse'
-        "400":
+        '400':
           description: Bad request
           content:
             application/json:
@@ -69,13 +69,13 @@ paths:
       parameters:
         - $ref: '#/components/parameters/id'
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetWorkspaceResponse'
-        "400":
+        '400':
           description: Bad request
           content:
             application/json:
@@ -94,15 +94,15 @@ paths:
             schema:
               $ref: '#/components/schemas/UpdateWorkspaceRequest'
       responses:
-        "204":
+        '204':
           description: Updated
-        "400":
+        '400':
           description: Bad request
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetailResponse'
-        "404":
+        '404':
           description: Not found
     delete:
       tags:
@@ -112,9 +112,9 @@ paths:
       parameters:
         - $ref: '#/components/parameters/id'
       responses:
-        "204":
+        '204':
           description: No Content
-        "400":
+        '400':
           description: Bad Request
           content:
             application/json:
@@ -129,13 +129,13 @@ paths:
       parameters:
         - $ref: '#/components/parameters/name'
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetWorkspaceResponse'
-        "400":
+        '400':
           description: Bad request
           content:
             application/json:
@@ -150,13 +150,13 @@ paths:
       parameters:
         - $ref: '#/components/parameters/id'
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetMenuItemsResponse'
-        "404":
+        '404':
           description: Not found
     patch:
       tags:
@@ -175,7 +175,7 @@ paths:
               items:
                 $ref: '#/components/schemas/PatchMenuItemsRequest'
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
@@ -183,13 +183,13 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/PatchMenuItemsResponse'
-        "400":
+        '400':
           description: Bad request
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetailResponse'
-        "404":
+        '404':
           description: Menu items not found
     post:
       tags:
@@ -205,7 +205,7 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateMenuItemRequest'
       responses:
-        "201":
+        '201':
           description: OK
           headers:
             Location:
@@ -217,7 +217,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreateMenuItemResponse'
-        "400":
+        '400':
           description: Bad request
           content:
             application/json:
@@ -232,13 +232,13 @@ paths:
       parameters:
         - $ref: '#/components/parameters/id'
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetWorkspaceMenuItemStructureResponse'
-        "404":
+        '404':
           description: Not found
   /workspaces/{id}/menuItems/tree/upload:
     post:
@@ -255,9 +255,9 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateWorkspaceMenuItemStructrueRequest'
       responses:
-        "201":
+        '201':
           description: New Menu structure created
-        "400":
+        '400':
           description: Bad request
           content:
             application/json:
@@ -273,13 +273,13 @@ paths:
         - $ref: '#/components/parameters/id'
         - $ref: '#/components/parameters/menuItemId'
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetMenuItemResponse'
-        "404":
+        '404':
           description: Not found
     delete:
       tags:
@@ -290,9 +290,9 @@ paths:
         - $ref: '#/components/parameters/id'
         - $ref: '#/components/parameters/menuItemId'
       responses:
-        "204":
+        '204':
           description: OK
-        "400":
+        '400':
           description: Internal Server Error
           content:
             application/json:
@@ -314,7 +314,7 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateProductRequest'
       responses:
-        "201":
+        '201':
           description: Product added
           headers:
             Location:
@@ -326,7 +326,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreateUpdateProductResponse'
-        "400":
+        '400':
           description: Bad request
           content:
             application/json:
@@ -340,13 +340,13 @@ paths:
       parameters:
         - $ref: '#/components/parameters/id'
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetProductsResponse'
-        "404":
+        '404':
           description: Not found
   /workspaces/{id}/products/{productId}:
     delete:
@@ -358,9 +358,9 @@ paths:
         - $ref: '#/components/parameters/id'
         - $ref: '#/components/parameters/productId'
       responses:
-        "204":
+        '204':
           description: OK
-        "400":
+        '400':
           description: Bad Request
           content:
             application/json:
@@ -381,19 +381,19 @@ paths:
             schema:
               $ref: '#/components/schemas/UpdateProductRequest'
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreateUpdateProductResponse'
-        "400":
+        '400':
           description: Bad request
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetailResponse'
-        "404":
+        '404':
           description: Product not found
   /workspaces/export:
     post:
@@ -408,13 +408,13 @@ paths:
             schema:
               $ref: '#/components/schemas/ExportWorkspacesRequest'
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkspaceSnapshot'
-        "404":
+        '404':
           description: No themes founds
   /workspaces/import:
     post:
@@ -429,13 +429,13 @@ paths:
             schema:
               $ref: '#/components/schemas/WorkspaceSnapshot'
       responses:
-        "200":
+        '200':
           description: Import result
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ImportWorkspaceResponse'
-        "400":
+        '400':
           description: Bad request
           content:
             application/json:
@@ -454,13 +454,13 @@ paths:
           schema:
             type: string
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/MenuSnapshot'
-        "404":
+        '404':
           description: No themes founds
 
   /workspaces/{name}/menu/import:
@@ -482,13 +482,13 @@ paths:
             schema:
               $ref: '#/components/schemas/MenuSnapshot'
       responses:
-        "200":
+        '200':
           description: Import result
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ImportMenuResponse'
-        "400":
+        '400':
           description: Bad request
           content:
             application/json:
