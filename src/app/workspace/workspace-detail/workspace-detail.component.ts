@@ -34,7 +34,7 @@ import { WorkspaceContactComponent } from './workspace-contact/workspace-contact
 import { filterObject, filterObjectTree } from '../../shared/utils'
 
 @Component({
-  selector: 'wm-workspace-detail',
+  selector: 'app-workspace-detail',
   templateUrl: './workspace-detail.component.html',
   styleUrls: ['./workspace-detail.component.scss']
 })

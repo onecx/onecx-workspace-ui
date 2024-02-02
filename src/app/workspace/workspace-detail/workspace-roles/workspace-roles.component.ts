@@ -7,7 +7,7 @@ import { clonePortalWithMicrofrontendsArray } from '../../../shared/utils'
 import { PortalMessageService } from '@onecx/portal-integration-angular'
 
 @Component({
-  selector: 'wm-workspace-roles',
+  selector: 'app-workspace-roles',
   templateUrl: './workspace-roles.component.html',
   styleUrls: ['./workspace-roles.component.scss']
 })

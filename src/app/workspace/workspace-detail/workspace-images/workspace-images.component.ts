@@ -12,7 +12,7 @@ export interface PortalImageForm {
 }
 
 @Component({
-  selector: 'wm-workspace-images',
+  selector: 'app-workspace-images',
   templateUrl: './workspace-images.component.html',
   styleUrls: ['./workspace-images.component.scss']
 })

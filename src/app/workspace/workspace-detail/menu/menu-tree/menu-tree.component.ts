@@ -6,7 +6,7 @@ import { MenuTreeService } from '../../../../services/menu-tree.service'
 import { MenuStateService } from '../../../../services/menu-state.service'
 
 @Component({
-  selector: 'wm-menu-tree',
+  selector: 'app-menu-tree',
   templateUrl: './menu-tree.component.html',
   styleUrls: ['./menu-tree.component.scss']
 })

@@ -12,7 +12,7 @@ import {
 import { forceFormValidation, sortThemeByName } from '../../../shared/utils'
 
 @Component({
-  selector: 'wm-import-preview',
+  selector: 'app-import-preview',
   templateUrl: './preview.component.html',
   styleUrls: ['./preview.component.scss']
 })

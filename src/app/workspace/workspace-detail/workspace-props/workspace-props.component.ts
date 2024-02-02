@@ -24,7 +24,7 @@ import {
 } from '../../../shared/utils'
 
 @Component({
-  selector: 'wm-workspace-props',
+  selector: 'app-workspace-props',
   templateUrl: './workspace-props.component.html',
   styleUrls: ['./workspace-props.component.scss']
 })

@@ -628,7 +628,7 @@
     <li>{{ 'PORTAL.MENU.ACTION.PREVIEW.TOOLTIP' | translate }}</li>
     <li class="danger-action-text">{{ 'PORTAL.MENU.ACTION.PREVIEW2.TOOLTIP' | translate }}</li>
   </ul>
-  <wm-menu-tree
+  <app-menu-tree
     *ngIf="menuItems"
     [selectedPortalId]="portalId"
     [portalMenuItems]="menuItems"
@@ -636,7 +636,7 @@
     [languagesPreview]="languagesPreview"
     (updateMenuStructureEmitter)="updateMenuItems($event)"
   >
-  </wm-menu-tree>
+  </app-menu-tree>
   <div class="flex justify-content-end my-3">
     <button
       pButton

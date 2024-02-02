@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core'
 
 @Component({
-  selector: 'wm-theme-color-box',
+  selector: 'app-theme-color-box',
   styleUrls: ['./theme-color-box.component.scss'],
   templateUrl: './theme-color-box.component.html'
 })

@@ -15,7 +15,7 @@ import { environment } from '../../../environments/environment'
 import { ImageV1APIService, PortalDTO, PortalInternalAPIService, ThemesAPIService } from '../../shared/generated'
 
 @Component({
-  selector: 'wm-workspace-create',
+  selector: 'app-workspace-create',
   templateUrl: './workspace-create.component.html'
 })
 export class WorkspaceCreateComponent {

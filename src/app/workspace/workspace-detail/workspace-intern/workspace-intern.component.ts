@@ -4,7 +4,7 @@ import { TranslateService } from '@ngx-translate/core'
 import { PortalDTO } from '../../../shared/generated/model/portalDTO'
 
 @Component({
-  selector: 'wm-workspace-intern',
+  selector: 'app-workspace-intern',
   templateUrl: './workspace-intern.component.html'
 })
 export class WorkspaceInternComponent {

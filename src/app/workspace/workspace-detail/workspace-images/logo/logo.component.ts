@@ -2,7 +2,7 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core'
 import { environment } from '../../../../../environments/environment'
 
 @Component({
-  selector: 'wm-logo',
+  selector: 'app-logo',
   templateUrl: './logo.component.html',
   styleUrls: ['./logo.component.scss']
 })

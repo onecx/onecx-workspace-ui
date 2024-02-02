@@ -14,41 +14,41 @@
     <p-tabView (onChange)="onChange($event)" [activeIndex]="selectedIndex">
       <p-tabPanel [header]="'PORTAL.TABS.DETAILS' | translate">
         <div *ocxIfPermission="'WORKSPACE_PROPS#VIEW'">
-          <wm-workspace-props
+          <app-workspace-props
             [portalDetail]="portalDetail"
             [editMode]="editMode"
             (portalUpdated)="onPortalData($event)"
-          ></wm-workspace-props>
+          ></app-workspace-props>
         </div>
       </p-tabPanel>
 
       <p-tabPanel [header]="'PORTAL.TABS.CONTACT' | translate">
         <div *ocxIfPermission="'WORKSPACE_CONTACT#VIEW'">
-          <wm-workspace-contact [portalDetail]="portalDetail" [editMode]="editMode"></wm-workspace-contact>
+          <app-workspace-contact [portalDetail]="portalDetail" [editMode]="editMode"></app-workspace-contact>
         </div>
       </p-tabPanel>
 
       <p-tabPanel [header]="'PORTAL.TABS.INTERN' | translate">
         <div *ocxIfPermission="'WORKSPACE_INTERNAL#VIEW'">
-          <wm-workspace-intern [portalDetail]="portalDetail" [dateFormat]="dateFormat"></wm-workspace-intern>
+          <app-workspace-intern [portalDetail]="portalDetail" [dateFormat]="dateFormat"></app-workspace-intern>
         </div>
       </p-tabPanel>
 
       <p-tabPanel [header]="'PORTAL.TABS.MFES' | translate">
         <div *ocxIfPermission="'WORKSPACE_PRODUCTS#VIEW'">
-          <wm-mfe-registrations [portalDetail]="portalDetail" [editMode]="editMode"></wm-mfe-registrations>
+          <app-mfe-registrations [portalDetail]="portalDetail" [editMode]="editMode"></app-mfe-registrations>
         </div>
       </p-tabPanel>
 
       <p-tabPanel [header]="'PORTAL.TABS.ROLES' | translate">
         <div *ocxIfPermission="'WORKSPACE_ROLES#VIEW'">
-          <wm-workspace-roles [portalDetail]="portalDetail" [editMode]="editMode"></wm-workspace-roles>
+          <app-workspace-roles [portalDetail]="portalDetail" [editMode]="editMode"></app-workspace-roles>
         </div>
       </p-tabPanel>
 
       <p-tabPanel [header]="'PORTAL.TABS.IMAGES' | translate">
         <div *ocxIfPermission="'WORKSPACE_IMAGES#VIEW'">
-          <wm-workspace-images [portalDetail]="portalDetail" [editMode]="editMode"></wm-workspace-images>
+          <app-workspace-images [portalDetail]="portalDetail" [editMode]="editMode"></app-workspace-images>
         </div>
       </p-tabPanel>
     </p-tabView>

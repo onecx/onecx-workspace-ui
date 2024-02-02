@@ -23,7 +23,7 @@ export type MfeRegistered = MicrofrontendRegistrationDTO & {
 }
 
 @Component({
-  selector: 'wm-mfe-registrations',
+  selector: 'app-mfe-registrations',
   templateUrl: './mfe-registrations.component.html',
   styleUrls: ['./mfe-registrations.component.scss']
 })

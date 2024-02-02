@@ -50,7 +50,7 @@
             [routerLink]="['./' + portalItems.id]"
           >
             <div class="col-12 sm:col-2 md:col-2 lg:col-2 xl:col-2 px-2 text-center mt-1">
-              <wm-image-container [imageUrl]="portalItems.logoUrl" [small]="true"></wm-image-container>
+              <app-image-container [imageUrl]="portalItems.logoUrl" [small]="true"></app-image-container>
             </div>
             <div
               class="col-12 sm:col-3 md:col-3 lg:col-3 xl:col-2 px-2 font-bold text-center sm:text-left"
@@ -94,20 +94,20 @@
             >
               <span
                 *ngIf="portalItems.portalName !== 'ADMIN'"
-                [id]="'wm_portal_search_data_row_' + row + '_goto_portal'"
+                [id]="'app_portal_search_data_row_' + row + '_goto_portal'"
                 class="card-badge-right badge-1 p-2 pi pi-external-link pseudo-button-link"
                 [title]="'PORTAL.QUICK_LINKS.GOTO_WORKSPACE' | translate"
                 (click)="onGotoPortal($event, portalItems)"
               ></span>
               <span
                 *ocxIfPermission="'MENU#VIEW'"
-                [id]="'wm_portal_search_data_row_' + row + '_goto_menu'"
+                [id]="'app_portal_search_data_row_' + row + '_goto_menu'"
                 class="card-badge-right badge-2 p-2 pi pi-sitemap pseudo-button-link"
                 [title]="'PORTAL.QUICK_LINKS.GOTO_MENU' | translate"
                 (click)="onGotoMenu($event, portalItems)"
               ></span>
               <div class="h-3rem md:h-5rem mt-1 flex flex-column justify-content-center align-items-center text-center">
-                <wm-image-container [imageUrl]="portalItems.logoUrl" [small]="false"></wm-image-container>
+                <app-image-container [imageUrl]="portalItems.logoUrl" [small]="false"></app-image-container>
               </div>
               <div class="h-4rem lg:h-5rem mb-1 flex flex-column justify-content-between px-2 text-center gap-1">
                 <div
@@ -136,7 +136,7 @@
     [modal]="true"
     [style]="{ width: '700px' }"
   >
-    <wm-workspace-create (toggleCreationDialogEvent)="toggleShowCreateDialog()"></wm-workspace-create>
+    <app-workspace-create (toggleCreationDialogEvent)="toggleShowCreateDialog()"></app-workspace-create>
   </p-dialog>
   <p-dialog
     [header]="'PORTAL_IMPORT.IMPORT_PORTAL' | translate"
@@ -147,9 +147,9 @@
     [modal]="true"
     [style]="{ width: '985px' }"
   >
-    <wm-workspace-import
+    <app-workspace-import
       [resetDialog]="showImportDialog"
       (toggleImportDialogEvent)="toggleShowImportDialog()"
-    ></wm-workspace-import>
+    ></app-workspace-import>
   </p-dialog>
 </ocx-portal-page>

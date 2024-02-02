@@ -56,7 +56,7 @@ DefaultValueAccessor.prototype.registerOnChange = function (fn) {
 }
 
 @Component({
-  selector: 'wm-menu',
+  selector: 'app-menu',
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.scss']
 })

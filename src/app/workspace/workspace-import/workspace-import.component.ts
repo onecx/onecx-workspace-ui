@@ -15,7 +15,7 @@ import {
 } from '../../shared/generated/model/models'
 
 @Component({
-  selector: 'wm-workspace-import',
+  selector: 'app-workspace-import',
   templateUrl: './workspace-import.component.html',
   styleUrls: ['./workspace-import.component.scss']
 })

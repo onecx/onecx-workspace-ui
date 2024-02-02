@@ -2,7 +2,7 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core'
 import { environment } from '../../../environments/environment'
 
 @Component({
-  selector: 'wm-image-container',
+  selector: 'app-image-container',
   styleUrls: ['./image-container.component.scss'],
   templateUrl: './image-container.component.html'
 })

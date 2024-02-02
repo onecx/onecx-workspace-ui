@@ -12,7 +12,7 @@ import { limitText } from '../../shared/utils'
 import { PortalDTO, PortalInternalAPIService } from '../../shared/generated'
 
 @Component({
-  selector: 'wm-workspace-search',
+  selector: 'app-workspace-search',
   templateUrl: './workspace-search.component.html',
   styleUrls: ['./workspace-search.component.scss']
 })

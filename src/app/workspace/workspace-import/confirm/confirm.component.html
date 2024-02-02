@@ -19,7 +19,7 @@
       />
       <label for="portal_import_confirm_theme_name">{{ 'THEME.THEME_NAME' | translate }}</label>
     </span>
-    <wm-theme-color-box
+    <app-theme-color-box
       *ngIf="importThemeCheckbox && themeProperties"
       id="portal_import_confirm_theme_color_box"
       [properties]="themeProperties"

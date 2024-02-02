@@ -21,15 +21,15 @@
   </div>
 
   <div [ngSwitch]="activeIndex" class="p-0 mx-0 mb-2">
-    <wm-import-choose-file *ngSwitchCase="0" (importFileSelected)="next($event)"></wm-import-choose-file>
-    <wm-import-preview
+    <app-import-choose-file *ngSwitchCase="0" (importFileSelected)="next($event)"></app-import-choose-file>
+    <app-import-preview
       *ngSwitchCase="1"
       [importThemeCheckbox]="importThemeCheckbox"
       [importRequestDTO]="importRequestDTO!"
       [hasPermission]="hasPermission"
       (isFormValide)="handleFormValidation($event)"
-    ></wm-import-preview>
-    <wm-import-confirm
+    ></app-import-preview>
+    <app-import-confirm
       *ngSwitchCase="2"
       [importThemeCheckbox]="hasPermission"
       [hasPermission]="hasPermission"
@@ -39,7 +39,7 @@
       [themeName]="themeName"
       [themeProperties]="importRequestDTO!.themeImportData?.properties"
       (isLoading)="handleIsLoading($event)"
-    ></wm-import-confirm>
+    ></app-import-confirm>
   </div>
 
   <div class="flex flex-wrap justify-content-end gap-2 my-2 px-1">

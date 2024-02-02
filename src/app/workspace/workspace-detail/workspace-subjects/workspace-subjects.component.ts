@@ -11,7 +11,7 @@ export interface PortalSubjectForm {
   url: FormControl<string | null>
 }
 @Component({
-  selector: 'wm-workspace-subjects',
+  selector: 'app-workspace-subjects',
   templateUrl: './workspace-subjects.component.html',
   styleUrls: ['./workspace-subjects.component.scss']
 })

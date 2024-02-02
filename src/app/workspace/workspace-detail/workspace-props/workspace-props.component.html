@@ -161,12 +161,12 @@
 
         <div class="flex flex-wrap sm:flex-nowrap align-items-center pb-2 row-gap-2 column-gap-4">
           <input hidden type="file" accept="image/*" #selectedFileInputLogo (change)="onFileUpload($event, 'logo')" />
-          <wm-image-container
+          <app-image-container
             [id]="'portal_detail_item_logo_image'"
             [imageUrl]="fetchingLogoUrl"
             [small]="true"
             [title]="'LOGO.TOOLTIPS.' + (fetchingLogoUrl ? 'IMAGE' : 'PLACEHOLDER') | translate"
-          ></wm-image-container>
+          ></app-image-container>
           <div class="flex flex-column w-full">
             <div class="p-inputgroup mb-1" controlErrorAnchor>
               <span class="p-float-label">

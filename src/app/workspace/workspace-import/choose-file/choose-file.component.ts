@@ -4,7 +4,7 @@ import { TranslateService } from '@ngx-translate/core'
 import { ImportRequestDTOv1, MenuItemStructureDTO } from '../../../shared/generated'
 
 @Component({
-  selector: 'wm-import-choose-file',
+  selector: 'app-import-choose-file',
   templateUrl: './choose-file.component.html',
   styleUrls: ['./choose-file.component.scss']
 })
