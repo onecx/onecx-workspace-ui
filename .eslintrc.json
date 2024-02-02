@@ -9,7 +9,7 @@
     "dist/**",
     "helm/**",
     "node_modules/**",
-    "src/app/generated/**",
+    "src/app/shared/generated/**",
     "src/app/api/*",
     "src/app/model/*",
     "src/**/*.ico",

@@ -9,5 +9,5 @@ export const environment = {
   KEYCLOAK_CLIENT_ID: 'tkit-angular-example',
   TKIT_PORTAL_ID: 'ADMIN',
   skipRemoteConfigLoad: true,
-  apiPrefix: 'portal-api'
+  apiPrefix: 'bff'
 }
