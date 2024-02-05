@@ -41,7 +41,7 @@
                 name="fileUpload"
                 accept="image/*"
                 [customUpload]="true"
-                (uploadHandler)="onFileUpload($event)"
+                (uploadHandler)="onFileUpload()"
                 [uploadLabel]="'ACTIONS.UPLOAD' | translate"
                 [cancelLabel]="'ACTIONS.CANCEL' | translate"
                 [chooseLabel]="'IMAGE.SELECT_IMAGE' | translate"
@@ -54,7 +54,7 @@
                 [label]="'ACTIONS.UPLOAD' | translate"
                 class="full-width"
                 styleClass="p-button-inlined"
-                (onClick)="onFileUpload($event)"
+                (onClick)="onFileUpload()"
               ></p-button>
             </ng-container>
           </ng-container>

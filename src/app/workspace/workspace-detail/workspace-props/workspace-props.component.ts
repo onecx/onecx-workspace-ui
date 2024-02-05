@@ -1,26 +1,29 @@
 import { Component, Input, Inject, OnChanges, Output, EventEmitter } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { SelectItem } from 'primeng/api'
-import { map, Observable, of } from 'rxjs'
+import { /* map,  */ Observable, of } from 'rxjs'
 
 import {
   AUTH_SERVICE,
   ConfigurationService,
   IAuthService,
-  Theme,
+  // Theme,
   ThemeService,
   PortalMessageService
 } from '@onecx/portal-integration-angular'
 
-import { ImageV1APIService, PortalInternalAPIService, ThemeDTO, ThemesAPIService } from '../../../shared/generated'
+import {
+  ImageV1APIService,
+  PortalInternalAPIService /* , ThemeDTO, ThemesAPIService */
+} from '../../../shared/generated'
 import { PortalDTO } from '../../../shared/generated/model/portalDTO'
 import { environment } from '../../../../environments/environment'
 import { LogoState } from '../../workspace-create/logo-state'
 import {
   clonePortalWithMicrofrontendsArray,
   setFetchUrls,
-  copyToClipboard,
-  sortThemeByName
+  copyToClipboard
+  // sortThemeByName
 } from '../../../shared/utils'
 
 @Component({
@@ -55,7 +58,7 @@ export class WorkspacePropsComponent implements OnChanges {
 
   constructor(
     private portalApi: PortalInternalAPIService,
-    private themeApi: ThemesAPIService,
+    // private themeApi: ThemesAPIService,
     private imageApi: ImageV1APIService,
     private themeService: ThemeService,
     private config: ConfigurationService,
@@ -79,13 +82,13 @@ export class WorkspacePropsComponent implements OnChanges {
       this.formGroup.addControl('tenantId', new FormControl(null))
     }
 
-    this.themes$ = this.themeApi
+    /* this.themes$ = this.themeApi
       .getThemes()
       .pipe(
         map((val) =>
           val.sort(sortThemeByName).map((theme) => ({ label: theme.name, value: theme.name || '', id: theme.id }))
         )
-      )
+      ) */
   }
 
   public ngOnChanges(): void {
@@ -95,7 +98,7 @@ export class WorkspacePropsComponent implements OnChanges {
 
   public setFormData(): void {
     // prepare list of registered MFEs to be used as homepage dropdown
-    this.mfeRList = Array.from(this.portalDetail.microfrontendRegistrations ?? []).map((mfe) => ({
+    this.mfeRList = Array.from(this.portalDetail.microfrontendRegistrations ?? []).map((mfe: any) => ({
       label: mfe.baseUrl,
       value: mfe.baseUrl || ''
     }))
@@ -117,21 +120,21 @@ export class WorkspacePropsComponent implements OnChanges {
           updatePortalDTO: clonePortalWithMicrofrontendsArray(this.portalDetail)
         })
         .subscribe({
-          next: (data) => {
+          next: (data: any) => {
             this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_OK' })
             //If the Portal we update, is the current-global-portal, then we also update the global theme.
             if (this.portalDetail.id === this.config.getPortal().id && this.portalDetail.themeId) {
               // get theme and apply the variables in current portal
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              this.themeApi.getThemeById({ id: this.portalDetail.themeId! }).subscribe({
+              /* this.themeApi.getThemeById({ id: this.portalDetail.themeId! }).subscribe({
                 next: (theme: ThemeDTO) => {
                   this.themeService.apply(theme as Theme)
                 }
-              })
+              }) */
             }
             this.portalUpdated.emit(data)
           },
-          error: (err) => {
+          error: () => {
             this.msgService.error({
               summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_NOK' /* , detailKey: err.error.message */
             })
@@ -159,7 +162,7 @@ export class WorkspacePropsComponent implements OnChanges {
     return changes
   }
 
-  onFileUpload(ev: Event, fieldType: 'logo') {
+  /* onFileUpload(ev: Event, fieldType: 'logo') {
     if (ev.target && (ev.target as HTMLInputElement).files) {
       const files = (ev.target as HTMLInputElement).files
       if (files) {
@@ -173,6 +176,7 @@ export class WorkspacePropsComponent implements OnChanges {
       }
     }
   }
+  // REMEMBER HTML TOO!
   public onGotoTheme(ev: MouseEvent, uri: string) {
     ev.stopPropagation()
     const url = window.document.location.href + uri
@@ -181,5 +185,5 @@ export class WorkspacePropsComponent implements OnChanges {
     } else {
       window.document.location.href = url
     }
-  }
+  } */
 }

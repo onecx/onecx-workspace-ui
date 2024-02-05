@@ -57,8 +57,9 @@
             class="p-inputgroup-addon bg-primary pseudo-button"
             [ngClass]="portalDetail.themeId ? 'cursor-pointer' : 'p-disabled'"
             [title]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
-            (click)="onGotoTheme($event, '../../../theme/' + portalDetail.themeId)"
+            (click)=""
           >
+            <!-- (click)="onGotoTheme($event, '../../../theme/' + portalDetail.themeId)" -->
             <span class="pi pi-link"></span>
           </span>
         </div>
@@ -160,7 +161,7 @@
         </div>
 
         <div class="flex flex-wrap sm:flex-nowrap align-items-center pb-2 row-gap-2 column-gap-4">
-          <input hidden type="file" accept="image/*" #selectedFileInputLogo (change)="onFileUpload($event, 'logo')" />
+          <!-- <input hidden type="file" accept="image/*" #selectedFileInputLogo (change)="onFileUpload($event, 'logo')" /> -->
           <app-image-container
             [id]="'portal_detail_item_logo_image'"
             [imageUrl]="fetchingLogoUrl"

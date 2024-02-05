@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core'
-import { PortalDTO, ThemeDTO, ThemesAPIService, PortalInternalAPIService } from '../../../shared/generated'
+import { PortalDTO, /* ThemeDTO, ThemesAPIService, */ PortalInternalAPIService } from '../../../shared/generated'
 
 @Component({
   selector: 'app-import-confirm',
@@ -17,14 +17,16 @@ export class ConfirmComponent implements OnInit {
   @Output() public isLoading = new EventEmitter<boolean>(true)
 
   private portals!: PortalDTO[]
-  private themes!: ThemeDTO[]
+  // private themes!: ThemeDTO[]
   public portalNameExists = false
   public themeNameExists = false
   public baseUrlExists = false
   public baseUrlIsMissing = false
   public portalTenantExists = false
 
-  constructor(private readonly portalApi: PortalInternalAPIService, private readonly themeAPI: ThemesAPIService) {}
+  constructor(
+    private readonly portalApi: PortalInternalAPIService /* , private readonly themeAPI: ThemesAPIService */
+  ) {}
 
   public ngOnInit(): void {
     this.baseUrlIsMissing = this.baseUrl === undefined || this.baseUrl.length === 0
@@ -32,15 +34,15 @@ export class ConfirmComponent implements OnInit {
   }
 
   private fetchPortalsAndThemes(): void {
-    this.portalApi.getAllPortals().subscribe((portals) => {
+    this.portalApi.getAllPortals().subscribe((portals: PortalDTO[]) => {
       this.portals = portals
       this.checkPortalUniqueness()
       if (this.themeName) {
-        this.themeAPI.getThemes().subscribe((themes) => {
+        /* this.themeAPI.getThemes().subscribe((themes: any) => {
           this.themes = themes
           this.checkThemeNames()
           this.isLoading.emit(false)
-        })
+        }) */
       } else this.isLoading.emit(false)
     })
   }
@@ -63,12 +65,12 @@ export class ConfirmComponent implements OnInit {
   }
 
   public checkThemeNames(): void {
-    this.themeNameExists = false
+    /* this.themeNameExists = false
     for (const { name } of this.themes) {
       if (name === this.themeName) {
         this.themeNameExists = true
         break
       }
-    }
+    } */
   }
 }

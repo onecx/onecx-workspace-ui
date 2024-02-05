@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { TreeNode } from 'primeng/api'
-import { MenuItemDetailsDTO, MenuItemStructureDTO } from '../shared/generated'
+import { MenuItem, CreateWorkspaceMenuItemStructrueRequest } from '../shared/generated'
 
 export interface NewPosition {
   id: string | undefined
@@ -70,9 +70,9 @@ export class MenuTreeService {
     return null
   }
 
-  public parseItemsFromStructure(structure: MenuItemStructureDTO[], list: MenuItemDetailsDTO[]) {
+  public parseItemsFromStructure(structure: CreateWorkspaceMenuItemStructrueRequest[], list: MenuItem[]) {
     structure.forEach((structureItem) => {
-      const menuItem: MenuItemDetailsDTO = {}
+      const menuItem: MenuItem = {}
       Object.keys(structureItem).forEach((key) => {
         if (key !== 'children') {
           ;(menuItem as any)[key] = (structureItem as any)[key]
@@ -86,7 +86,7 @@ export class MenuTreeService {
     return list
   }
 
-  public mapToTreeNodes(items: MenuItemStructureDTO[]): TreeNode[] {
+  public mapToTreeNodes(items: CreateWorkspaceMenuItemStructrueRequest[]): TreeNode[] {
     if (!items || items.length === 0) {
       return []
     }
@@ -103,7 +103,7 @@ export class MenuTreeService {
     return results
   }
 
-  private createTreeNode(item: MenuItemStructureDTO): TreeNode {
+  private createTreeNode(item: CreateWorkspaceMenuItemStructrueRequest): TreeNode {
     return {
       styleClass: 'leaf',
       label: item.name,

@@ -1,6 +1,6 @@
 import { Component, Input, Output, SimpleChanges, EventEmitter, OnChanges } from '@angular/core'
 import { PortalDTO } from '../../../shared/generated/model/portalDTO'
-import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms'
+import { FormArray, FormBuilder, FormControl, FormControlState, FormGroup } from '@angular/forms'
 
 import { PortalInternalAPIService, SubjectLinkDTOv1 } from '../../../shared/generated'
 import { clonePortalWithMicrofrontendsArray } from '../../../shared/utils'
@@ -36,13 +36,18 @@ export class WorkspaceSubjectComponent implements OnChanges {
 
   public setFormData(): void {
     if (this.portalDetail && this.portalDetail.subjectLinks) {
-      this.portalDetail.subjectLinks?.forEach((element) => {
-        const group = new FormGroup<PortalSubjectForm>({
-          label: new FormControl<string | null>(element.label === undefined ? null : element.label),
-          url: new FormControl<string | null>(element.url === undefined ? null : element.url)
-        })
-        this.formArray.push(group)
-      })
+      this.portalDetail.subjectLinks?.forEach(
+        (element: {
+          label: string | FormControlState<string | null> | null | undefined
+          url: string | FormControlState<string | null> | null | undefined
+        }) => {
+          const group = new FormGroup<PortalSubjectForm>({
+            label: new FormControl<string | null>(element.label === undefined ? null : element.label),
+            url: new FormControl<string | null>(element.url === undefined ? null : element.url)
+          })
+          this.formArray.push(group)
+        }
+      )
     }
   }
 

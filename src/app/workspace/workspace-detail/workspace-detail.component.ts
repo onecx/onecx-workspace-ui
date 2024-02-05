@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core'
 import { DatePipe, Location } from '@angular/common'
 import { ActivatedRoute, Router } from '@angular/router'
-import { concatMap, Observable } from 'rxjs'
+import { /* concatMap, */ Observable } from 'rxjs'
 import { TranslateService } from '@ngx-translate/core'
 import FileSaver from 'file-saver'
 
@@ -15,13 +15,13 @@ import {
 } from '@onecx/portal-integration-angular'
 import {
   ImportRequestDTOv1,
-  ImportRequestDTOv1ThemeImportData,
+  // ImportRequestDTOv1ThemeImportData,
   MenuItemsInternalAPIService,
   PortalDTO,
   PortalInternalAPIService,
-  PortalMenuItemDTO,
-  ThemeDTO,
-  ThemesAPIService
+  PortalMenuItemDTO
+  // ThemeDTO,
+  // ThemesAPIService
 } from '../../shared/generated'
 import { environment } from '../../../environments/environment'
 
@@ -76,7 +76,7 @@ export class WorkspaceDetailComponent implements OnInit {
     private location: Location,
     private config: ConfigurationService,
     private menuApi: MenuItemsInternalAPIService,
-    private themeApi: ThemesAPIService,
+    // private themeApi: ThemesAPIService,
     private portalApi: PortalInternalAPIService,
     private translate: TranslateService,
     private msgService: PortalMessageService,
@@ -130,7 +130,7 @@ export class WorkspaceDetailComponent implements OnInit {
       .getPortalByPortalId({ portalId: this.portalId })
       .pipe()
       .subscribe({
-        next: (portal) => {
+        next: (portal: { microfrontendRegistrations: Set<unknown> }) => {
           // Convert microfrontends to Set to avoid typeerrors
           portal.microfrontendRegistrations = new Set(Array.from(portal.microfrontendRegistrations ?? []))
           this.onPortalData(portal)
@@ -180,7 +180,7 @@ export class WorkspaceDetailComponent implements OnInit {
         this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MESSAGE_OK' })
         this.close()
       },
-      (err) => {
+      () => {
         this.msgService.error({ summaryKey: 'ACTIONS.DELETE.MESSAGE_NOK' /* , detailKey: err.error.message */ })
       }
     )
@@ -240,7 +240,7 @@ export class WorkspaceDetailComponent implements OnInit {
 
     if (this.importThemeCheckbox) {
       if (this.portalDetail.themeId) {
-        const theme$ = this.themeApi.getThemeById({ id: this.portalDetail.themeId })
+        /* const theme$ = this.themeApi.getThemeById({ id: this.portalDetail.themeId })
         finalMenuStructure$$ = theme$.pipe(
           concatMap((theme) => {
             const themeImportData = filterObject(theme, [
@@ -257,7 +257,7 @@ export class WorkspaceDetailComponent implements OnInit {
             this.saveThemeToFile(themeImportData)
             return menuStructure$
           })
-        )
+        ) */
       } else {
         this.themeNotSpecifiedError()
         return

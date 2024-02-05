@@ -1,15 +1,15 @@
 import { Component, Input, OnInit, Output, EventEmitter, OnChanges } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { TreeNode, SelectItem } from 'primeng/api'
-import { first, map, Observable, of } from 'rxjs'
+import { first, /* map, */ Observable, of } from 'rxjs'
 
 import {
   ImportRequestDTOv1,
   MenuItemStructureDTO,
-  MicrofrontendRegistrationDTO,
-  ThemesAPIService
+  MicrofrontendRegistrationDTO
+  // ThemesAPIService
 } from '../../../shared/generated'
-import { forceFormValidation, sortThemeByName } from '../../../shared/utils'
+import { forceFormValidation /* , sortThemeByName */ } from '../../../shared/utils'
 
 @Component({
   selector: 'app-import-preview',
@@ -33,7 +33,7 @@ export class PreviewComponent implements OnInit, OnChanges {
   public portalMfes = new Array<MicrofrontendRegistrationDTO>()
   public portalRoles = new Array<string>()
 
-  constructor(private themeApi: ThemesAPIService) {
+  constructor(/* private themeApi: ThemesAPIService */) {
     this.formGroup = new FormGroup({
       portalName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
       themeName: new FormControl(
@@ -44,9 +44,9 @@ export class PreviewComponent implements OnInit, OnChanges {
       tenantId: new FormControl(undefined)
     })
 
-    this.themes$ = this.themeApi
+    /* this.themes$ = this.themeApi
       .getThemes()
-      .pipe(map((val) => val.sort(sortThemeByName).map((theme) => ({ label: theme.name, value: theme.name || '' }))))
+      .pipe(map((val) => val.sort(sortThemeByName).map((theme) => ({ label: theme.name, value: theme.name || '' })))) */
   }
 
   public ngOnInit(): void {

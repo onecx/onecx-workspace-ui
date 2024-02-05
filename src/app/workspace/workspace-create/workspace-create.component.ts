@@ -2,7 +2,7 @@ import { Component, Output, EventEmitter, Inject } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
-import { map, Observable, of } from 'rxjs'
+import { /*  map, */ Observable, of } from 'rxjs'
 import { MessageService } from 'primeng/api'
 import { SelectItem } from 'primeng/api/selectitem'
 import { FileUpload } from 'primeng/fileupload'
@@ -10,9 +10,12 @@ import { FileUpload } from 'primeng/fileupload'
 import { AUTH_SERVICE, IAuthService } from '@onecx/portal-integration-angular'
 
 import { LogoState } from './logo-state'
-import { setFetchUrls, sortThemeByName } from '../../shared/utils'
+// import { setFetchUrls , sortThemeByName } from '../../shared/utils'
 import { environment } from '../../../environments/environment'
-import { ImageV1APIService, PortalDTO, PortalInternalAPIService, ThemesAPIService } from '../../shared/generated'
+import {
+  /* ImageV1APIService, */ PortalDTO,
+  PortalInternalAPIService /* , ThemesAPIService */
+} from '../../shared/generated'
 
 @Component({
   selector: 'app-workspace-create',
@@ -41,8 +44,8 @@ export class WorkspaceCreateComponent {
     private router: Router,
     private route: ActivatedRoute,
     private portalApi: PortalInternalAPIService,
-    private themeApi: ThemesAPIService,
-    private imageApi: ImageV1APIService,
+    // private themeApi: ThemesAPIService,
+    // private imageApi: ImageV1APIService,
     private message: MessageService,
     private translate: TranslateService,
     @Inject(AUTH_SERVICE) readonly auth: IAuthService
@@ -58,13 +61,13 @@ export class WorkspaceCreateComponent {
       footerLabel: new FormControl(null, [Validators.maxLength(255)]),
       description: new FormControl(null, [Validators.maxLength(255)])
     })
-    this.themes$ = this.themeApi
+    /* this.themes$ = this.themeApi
       .getThemes()
       .pipe(
         map((val) =>
           val.sort(sortThemeByName).map((theme) => ({ label: theme.name, value: theme.name || '', id: theme.id }))
         )
-      )
+      ) */
 
     if (this.hasPermission) {
       this.formGroup.addControl('tenantId', new FormControl(null))
@@ -86,7 +89,7 @@ export class WorkspaceCreateComponent {
       })
       .pipe()
       .subscribe({
-        next: (fetchedPortal) => {
+        next: (fetchedPortal: { id: string }) => {
           this.message.add({
             severity: 'success',
             summary: this.translate.instant('ACTIONS.CREATE.MESSAGE.CREATE_OK').replace('{{TYPE}}', 'Workspace')
@@ -95,7 +98,7 @@ export class WorkspaceCreateComponent {
           this.closeDialog()
           this.router.navigate(['./' + fetchedPortal.id], { relativeTo: this.route })
         },
-        error: (err) => {
+        error: (err: { error: { message: any } }) => {
           this.message.add({
             severity: 'error',
             summary: this.translate.instant('ACTIONS.CREATE.MESSAGE.CREATE_NOK').replace('{{TYPE}}', 'Workspace'),
@@ -143,7 +146,7 @@ export class WorkspaceCreateComponent {
     reader.readAsDataURL(file)
   }
 
-  onFileUpload(ev: Event, fieldType: 'logo') {
+  /* onFileUpload(ev: Event, fieldType: 'logo') {
     if (ev.target && (ev.target as HTMLInputElement).files) {
       const files = (ev.target as HTMLInputElement).files
       if (files) {
@@ -156,5 +159,5 @@ export class WorkspaceCreateComponent {
         })
       }
     }
-  }
+  } */
 }

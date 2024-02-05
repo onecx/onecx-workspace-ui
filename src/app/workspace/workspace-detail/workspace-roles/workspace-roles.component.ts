@@ -27,7 +27,7 @@ export class WorkspaceRolesComponent implements OnChanges {
   }
 
   setFormData(): void {
-    this.portalDetail.portalRoles?.forEach((element) => {
+    this.portalDetail.portalRoles?.forEach((element: any) => {
       const control = new FormControl(element)
       this.formArray.push(control as never)
     })
@@ -69,7 +69,7 @@ export class WorkspaceRolesComponent implements OnChanges {
             // add in UI
             this.portalDetail.portalRoles = this.formArray.value
           },
-          error: (err) => {
+          error: () => {
             // console.error('ERR', err)
             // const duplicate = err.error.message.indexOf('contains duplicated roles') > 0
             this.msgService.error({

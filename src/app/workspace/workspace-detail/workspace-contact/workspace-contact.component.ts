@@ -57,7 +57,7 @@ export class WorkspaceContactComponent implements OnChanges {
           next: () => {
             this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_OK' })
           },
-          error: (err) => {
+          error: () => {
             this.msgService.error({
               summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_NOK' /* , detailKey: err.error.message */
             })

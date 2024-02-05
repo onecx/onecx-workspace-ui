@@ -1,9 +1,9 @@
 import { Component, Input, Output, EventEmitter, SimpleChanges, OnChanges } from '@angular/core'
-import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms'
+import { FormArray, FormBuilder, FormControl, FormControlState, FormGroup } from '@angular/forms'
 import { TranslateService } from '@ngx-translate/core'
 import { MessageService } from 'primeng/api'
 
-import { ImageV1APIService, PortalInternalAPIService, PortalDTO } from '../../../shared/generated'
+import { /* ImageV1APIService,  */ PortalInternalAPIService, PortalDTO } from '../../../shared/generated'
 import { clonePortalWithMicrofrontendsArray } from '../../../shared/utils'
 import { LogoState } from '../../workspace-create/logo-state'
 
@@ -30,8 +30,7 @@ export class WorkspaceImagesComponent implements OnChanges {
     private messageService: MessageService,
     private translate: TranslateService,
     private api: PortalInternalAPIService,
-    private fb: FormBuilder,
-    private imageApi: ImageV1APIService
+    private fb: FormBuilder /* // private imageApi: ImageV1APIService */
   ) {
     this.formArray = this.fb.array([] as FormGroup<PortalImageForm>[])
   }
@@ -56,7 +55,7 @@ export class WorkspaceImagesComponent implements OnChanges {
 
   public setFormData(): void {
     if (this.portalDetail && this.portalDetail.subjectLinks) {
-      this.portalDetail.imageUrls?.forEach((url) => {
+      this.portalDetail.imageUrls?.forEach((url: string | FormControlState<string | null> | null | undefined) => {
         const group = new FormGroup<PortalImageForm>({
           url: new FormControl<string | null>(url === undefined ? null : url)
         })
@@ -92,7 +91,7 @@ export class WorkspaceImagesComponent implements OnChanges {
             this.messageService.add({ severity: 'success', summary: 'Portal updated' })
           },
 
-          error: (err) => {
+          error: (err: { error: any }) => {
             this.messageService.add({ severity: 'danger', summary: 'Failed to update portal', detail: err.error })
           }
         })
@@ -105,9 +104,11 @@ export class WorkspaceImagesComponent implements OnChanges {
     }
   }
 
-  onFileUpload(event: { files: File[] }) {
-    for (const file of event.files) {
-      this.imageApi.uploadImage({ image: file }).subscribe((data) => {
+  // REMEMBER TO CHANGE BACK IN HTML TOO!
+  onFileUpload() {
+    // onFileUpload(event: { files: File[] }) {
+    /* for (const file of event.files) {
+      this.imageApi.uploadImage({ image: file }).subscribe((data: { imageUrl: any }) => {
         this.logoState = LogoState.INITIAL
 
         this.formArray.at(this.lengthFormGroup() - 1).patchValue({ url: data.imageUrl })
@@ -130,7 +131,7 @@ export class WorkspaceImagesComponent implements OnChanges {
                 })
                 this.addImageEntry()
               },
-              error: (err) => {
+              error: (err: { error: any }) => {
                 this.messageService.add({
                   severity: 'danger',
                   summary: this.translate.instant('LOGO.UPLOAD_FAIL'),
@@ -140,7 +141,7 @@ export class WorkspaceImagesComponent implements OnChanges {
             })
         }
       })
-    }
+    } */
   }
 
   public selectPhoto(): void {

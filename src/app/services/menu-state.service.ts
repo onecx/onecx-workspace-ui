@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { PortalMenuItemDTO } from '../shared/generated'
+import { MenuItem } from '../shared/generated'
 
 export interface MenuState {
   selectedPortal?: string
@@ -9,7 +9,7 @@ export interface MenuState {
   treeExpansionState: Map<string, boolean>
   menuTableFilters?: Map<string, string>
   pageSize: number
-  portalMenuItems?: PortalMenuItemDTO[]
+  portalMenuItems?: MenuItem[]
   sortColumn?: { sortField: string; sortOrder: number }
 }
 
