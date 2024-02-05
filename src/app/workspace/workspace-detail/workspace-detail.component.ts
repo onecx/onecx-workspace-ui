@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core'
 import { DatePipe, Location } from '@angular/common'
-import { ActivatedRoute, Router } from '@angular/router'
-import { /* concatMap, */ Observable } from 'rxjs'
+import { ActivatedRoute /* , ExtraOptions */, Router } from '@angular/router'
+// import { /* concatMap, */ Observable } from 'rxjs'
 import { TranslateService } from '@ngx-translate/core'
 import FileSaver from 'file-saver'
 
@@ -14,12 +14,12 @@ import {
   PortalMessageService
 } from '@onecx/portal-integration-angular'
 import {
-  ImportRequestDTOv1,
+  WorkspaceSnapshot,
   // ImportRequestDTOv1ThemeImportData,
-  MenuItemsInternalAPIService,
-  PortalDTO,
-  PortalInternalAPIService,
-  PortalMenuItemDTO
+  MenuItemAPIService,
+  Workspace,
+  WorkspaceAPIService
+
   // ThemeDTO,
   // ThemesAPIService
 } from '../../shared/generated'
@@ -31,7 +31,7 @@ import { WorkspaceInternComponent } from './workspace-intern/workspace-intern.co
 import { WorkspaceImagesComponent } from './workspace-images/workspace-images.component'
 import { WorkspaceContactComponent } from './workspace-contact/workspace-contact.component'
 
-import { filterObject, filterObjectTree } from '../../shared/utils'
+// import { filterObject, filterObjectTree } from '../../shared/utils'
 
 @Component({
   selector: 'app-workspace-detail',
@@ -63,7 +63,7 @@ export class WorkspaceDetailComponent implements OnInit {
   objectDetails: ObjectDetailItem[] = []
   portalDeleteMessage = ''
   portalDeleteVisible = false
-  portalDetail?: PortalDTO
+  portalDetail?: Workspace
   portalDownloadVisible = false
   portalId = this.route.snapshot.params['id']
   portalName = this.route.snapshot.params['name']
@@ -75,9 +75,9 @@ export class WorkspaceDetailComponent implements OnInit {
     private router: Router,
     private location: Location,
     private config: ConfigurationService,
-    private menuApi: MenuItemsInternalAPIService,
+    private menuApi: MenuItemAPIService,
     // private themeApi: ThemesAPIService,
-    private portalApi: PortalInternalAPIService,
+    private workspaceApi: WorkspaceAPIService,
     private translate: TranslateService,
     private msgService: PortalMessageService,
     @Inject(AUTH_SERVICE) readonly auth: IAuthService
@@ -93,7 +93,7 @@ export class WorkspaceDetailComponent implements OnInit {
     this.selectedIndex = $event.index
   }
 
-  public onPortalData(portal: PortalDTO) {
+  public onPortalData(portal: Workspace) {
     this.portalDetail = portal
     this.preparePageHeaderImage()
     this.translate
@@ -125,15 +125,17 @@ export class WorkspaceDetailComponent implements OnInit {
   }
 
   private async getPortalData() {
-    this.portalApi
+    this.workspaceApi
       // .getPortalByPortalName({ portalName: this.portalName })
-      .getPortalByPortalId({ portalId: this.portalId })
+      .getWorkspaceById({ id: this.portalId })
       .pipe()
       .subscribe({
-        next: (portal: { microfrontendRegistrations: Set<unknown> }) => {
+        next: (portal) => {
           // Convert microfrontends to Set to avoid typeerrors
-          portal.microfrontendRegistrations = new Set(Array.from(portal.microfrontendRegistrations ?? []))
-          this.onPortalData(portal)
+          // portal.microfrontendRegistrations = new Set(Array.from(portal.microfrontendRegistrations ?? []))
+          if (portal.resource) {
+            this.onPortalData(portal.resource)
+          }
         },
         error: () => {
           this.msgService.error({ summaryKey: 'SEARCH.ERROR', detailKey: 'PORTAL.NOT_EXIST_MESSAGE' })
@@ -175,7 +177,7 @@ export class WorkspaceDetailComponent implements OnInit {
   }
 
   private deletePortal() {
-    this.portalApi.deletePortal({ portalId: this.portalId }).subscribe(
+    this.workspaceApi.deleteWorkspace({ id: this.portalId }).subscribe(
       () => {
         this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MESSAGE_OK' })
         this.close()
@@ -221,25 +223,36 @@ export class WorkspaceDetailComponent implements OnInit {
       this.portalNotFoundError()
       return
     }
-    // get workspace object with filtered properties
-    const portalExport: ImportRequestDTOv1 = {
-      portal: filterObject(this.portalDetail, [
-        'creationDate',
-        'creationUser',
-        'modificationDate',
-        'modificationUser',
-        'id',
-        'themeId',
-        'tenantId',
-        'parentItemId'
-      ]) as PortalDTO
-    }
 
-    const menuStructure$ = this.menuApi.getMenuStructureForPortalId({ portalId: this.portalId })
-    let finalMenuStructure$$ = menuStructure$
+    this.workspaceApi
+      .exportWorkspaces({
+        exportWorkspacesRequest: { includeMenus: true, names: [this.portalDetail.name] }
+      })
+      .subscribe({
+        next: (snapshot) => {
+          this.savePortalToFile(snapshot)
+        },
+        error: () => {}
+      })
+    // get workspace object with filtered properties
+    // const portalExport: WorkspaceSnapshot = {
+    //   portal: filterObject(this.portalDetail, [
+    //     'creationDate',
+    //     'creationUser',
+    //     'modificationDate',
+    //     'modificationUser',
+    //     'id',
+    //     'themeId',
+    //     'tenantId',
+    //     'parentItemId'
+    //   ]) as Workspace
+    // }
+
+    // const menuStructure$ = this.menuApi.getMenuStructureForWorkspaceId({ id: this.portalId })
+    // let finalMenuStructure$$ = menuStructure$
 
     if (this.importThemeCheckbox) {
-      if (this.portalDetail.themeId) {
+      if (this.portalDetail.theme) {
         /* const theme$ = this.themeApi.getThemeById({ id: this.portalDetail.themeId })
         finalMenuStructure$$ = theme$.pipe(
           concatMap((theme) => {
@@ -263,15 +276,16 @@ export class WorkspaceDetailComponent implements OnInit {
         return
       }
     }
-    this.exportWorkspace(finalMenuStructure$$, portalExport)
+    // this.exportWorkspace(finalMenuStructure$$, portalExport)
+    // this.savePortalToFile(portalExport)
     this.portalDownloadVisible = false
   }
 
-  private exportWorkspace(
-    finalMenuStructure$$: Observable<Array<PortalMenuItemDTO>>,
-    portalExport: ImportRequestDTOv1
-  ) {
-    finalMenuStructure$$.subscribe({
+  // private exportWorkspace(
+  //   finalMenuStructure$$: Observable<Array<EximWorkspaceMenuItem>>,
+  //   portalExport: WorkspaceSnapshot
+  // ) {
+  /* finalMenuStructure$$.subscribe({
       next: (structure) => {
         // get menu structure object with filtered properties
         const items = structure.map((item) =>
@@ -290,27 +304,26 @@ export class WorkspaceDetailComponent implements OnInit {
             ],
             'children'
           )
-        ) as PortalMenuItemDTO[]
+        ) as EximWorkspaceMenuItem[]
         // sort explicitly because filtering destroys the order on first level
-        portalExport.menuItems = items.sort((a, b) => (a.position || 0) - (b.position || 0))
-        portalExport.synchronizePermissions = false
-        this.savePortalToFile(portalExport)
+        if (portalExport.workspaces && portalExport.workspaces[0].menu?.menu?.menuItems) {
+          portalExport.workspaces[0].menu?.menu?.menuItems = items.sort((a, b) => (a.position || 0) - (b.position || 0))
+        }
+        portalExport[0].synchronizePermissions = false
+        
       },
-      error: () => this.themeNotSpecifiedError()
-    })
-  }
+      error: () => this.themeNotSpecifiedError() */
+  //   })
+  // }
 
-  private saveThemeToFile(theme: ThemeDTO) {
-    const themeJSON = JSON.stringify(theme, null, 2)
-    FileSaver.saveAs(new Blob([themeJSON], { type: 'text/json' }), `${this.portalDetail?.themeName + '_Theme'}.json`)
-  }
+  // private saveThemeToFile(theme: ThemeDTO) {
+  //   const themeJSON = JSON.stringify(theme, null, 2)
+  //   FileSaver.saveAs(new Blob([themeJSON], { type: 'text/json' }), `${this.portalDetail?.themeName + '_Theme'}.json`)
+  // }
 
-  private savePortalToFile(portalExport: ImportRequestDTOv1) {
+  private savePortalToFile(portalExport: WorkspaceSnapshot) {
     const portalJson = JSON.stringify(portalExport, null, 2)
-    FileSaver.saveAs(
-      new Blob([portalJson], { type: 'text/json' }),
-      `${this.portalDetail?.portalName || 'Workspace'}.json`
-    )
+    FileSaver.saveAs(new Blob([portalJson], { type: 'text/json' }), `${this.portalDetail?.name || 'Workspace'}.json`)
   }
 
   private portalNotFoundError() {
@@ -333,7 +346,7 @@ export class WorkspaceDetailComponent implements OnInit {
       },
       {
         label: data['PORTAL.ITEM.THEME'],
-        value: this.portalDetail?.themeName
+        value: this.portalDetail?.theme
       },
       {
         label: data['DETAIL.CREATION_DATE'],
@@ -418,7 +431,7 @@ export class WorkspaceDetailComponent implements OnInit {
         title: data['ACTIONS.DELETE.TOOLTIP'].replace('{{TYPE}}', 'Workspace'),
         actionCallback: () => {
           this.portalDeleteVisible = true
-          this.portalDeleteMessage = data['ACTIONS.DELETE.MESSAGE'].replace('{{ITEM}}', this.portalDetail?.portalName)
+          this.portalDeleteMessage = data['ACTIONS.DELETE.MESSAGE'].replace('{{ITEM}}', this.portalDetail?.name)
         },
         icon: 'pi pi-trash',
         show: 'asOverflow',

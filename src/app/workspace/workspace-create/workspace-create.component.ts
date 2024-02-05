@@ -13,8 +13,8 @@ import { LogoState } from './logo-state'
 // import { setFetchUrls , sortThemeByName } from '../../shared/utils'
 import { environment } from '../../../environments/environment'
 import {
-  /* ImageV1APIService, */ PortalDTO,
-  PortalInternalAPIService /* , ThemesAPIService */
+  /* ImageV1APIService, */ CreateWorkspaceRequest,
+  WorkspaceAPIService /* , ThemesAPIService */
 } from '../../shared/generated'
 
 @Component({
@@ -26,7 +26,7 @@ export class WorkspaceCreateComponent {
 
   themes$: Observable<SelectItem<string>[]> = of([])
   public formGroup: FormGroup
-  private portalDto: PortalDTO | undefined
+  private portalDto!: CreateWorkspaceRequest
   public hasPermission = false
   public selectedLogoFile: File | undefined
   public preview = false
@@ -43,7 +43,7 @@ export class WorkspaceCreateComponent {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private portalApi: PortalInternalAPIService,
+    private portalApi: WorkspaceAPIService,
     // private themeApi: ThemesAPIService,
     // private imageApi: ImageV1APIService,
     private message: MessageService,
@@ -84,19 +84,19 @@ export class WorkspaceCreateComponent {
   savePortal() {
     this.createPortalDto()
     this.portalApi
-      .createNewPortal({
-        createPortalDTO: this.portalDto
+      .createWorkspace({
+        createWorkspaceRequest: this.portalDto
       })
       .pipe()
       .subscribe({
-        next: (fetchedPortal: { id: string }) => {
+        next: (fetchedPortal) => {
           this.message.add({
             severity: 'success',
             summary: this.translate.instant('ACTIONS.CREATE.MESSAGE.CREATE_OK').replace('{{TYPE}}', 'Workspace')
           })
           this.portalCreationValiationMsg = false
           this.closeDialog()
-          this.router.navigate(['./' + fetchedPortal.id], { relativeTo: this.route })
+          this.router.navigate(['./' + fetchedPortal.resource?.id], { relativeTo: this.route })
         },
         error: (err: { error: { message: any } }) => {
           this.message.add({
