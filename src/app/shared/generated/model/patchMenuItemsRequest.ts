@@ -9,11 +9,10 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { MenuItem } from './menuItem';
 
 
-export enum Scope {
-    Workspace = 'WORKSPACE',
-    App = 'APP',
-    Page = 'PAGE'
+export interface PatchMenuItemsRequest { 
+    resource?: MenuItem;
 }
 

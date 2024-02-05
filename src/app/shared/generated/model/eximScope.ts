@@ -11,7 +11,7 @@
  */
 
 
-export enum Scope {
+export enum EximScope {
     Workspace = 'WORKSPACE',
     App = 'APP',
     Page = 'PAGE'

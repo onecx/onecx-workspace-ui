@@ -11,9 +11,8 @@
  */
 
 
-export enum Scope {
-    Workspace = 'WORKSPACE',
-    App = 'APP',
-    Page = 'PAGE'
+export interface ValidationConstraint { 
+    name?: string;
+    message?: string;
 }
 

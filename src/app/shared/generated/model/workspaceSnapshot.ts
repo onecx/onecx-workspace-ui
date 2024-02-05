@@ -9,11 +9,15 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { EximWorkspace } from './eximWorkspace';
 
 
-export enum Scope {
-    Workspace = 'WORKSPACE',
-    App = 'APP',
-    Page = 'PAGE'
+export interface WorkspaceSnapshot { 
+    /**
+     * ID of the request
+     */
+    id?: string;
+    created?: string;
+    workspaces?: { [key: string]: EximWorkspace; };
 }
 

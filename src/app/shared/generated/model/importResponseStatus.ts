@@ -11,9 +11,10 @@
  */
 
 
-export enum Scope {
-    Workspace = 'WORKSPACE',
-    App = 'APP',
-    Page = 'PAGE'
+export enum ImportResponseStatus {
+    Updated = 'UPDATED',
+    Created = 'CREATED',
+    Skipped = 'SKIPPED',
+    Error = 'ERROR'
 }
 

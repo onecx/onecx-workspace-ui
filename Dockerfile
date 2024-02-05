@@ -10,7 +10,7 @@ COPY dist/onecx-workspace-ui/ $DIR_HTML
 
 # Application environments default values
 ENV BFF_URL http://onecx-workspace-management-bff:8080/
-ENV APP_BASE_HREF /workspace-mgmt/
+ENV APP_BASE_HREF /
 
 RUN chmod 775 -R $DIR_HTML/assets
 USER 1001

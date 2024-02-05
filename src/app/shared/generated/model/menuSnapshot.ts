@@ -9,11 +9,15 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { EximMenuStructure } from './eximMenuStructure';
 
 
-export enum Scope {
-    Workspace = 'WORKSPACE',
-    App = 'APP',
-    Page = 'PAGE'
+export interface MenuSnapshot { 
+    /**
+     * ID of the request
+     */
+    id?: string;
+    created?: string;
+    menu?: EximMenuStructure;
 }
 

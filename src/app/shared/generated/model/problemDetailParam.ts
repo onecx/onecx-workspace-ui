@@ -11,9 +11,8 @@
  */
 
 
-export enum Scope {
-    Workspace = 'WORKSPACE',
-    App = 'APP',
-    Page = 'PAGE'
+export interface ProblemDetailParam { 
+    key?: string;
+    value?: string;
 }
 

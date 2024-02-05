@@ -9,11 +9,12 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { CreateUpdateMicrofrontend } from './createUpdateMicrofrontend';
 
 
-export enum Scope {
-    Workspace = 'WORKSPACE',
-    App = 'APP',
-    Page = 'PAGE'
+export interface CreateProductRequest { 
+    productName: string;
+    baseUrl: string;
+    microfrontends?: Array<CreateUpdateMicrofrontend>;
 }
 

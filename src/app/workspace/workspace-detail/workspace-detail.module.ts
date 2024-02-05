@@ -10,7 +10,6 @@ import { MFE_INFO, MfeInfo, PortalCoreModule } from '@onecx/portal-integration-a
 
 import { SharedModule, HttpLoaderFactory } from '../../shared/shared.module'
 import { LabelResolver } from '../../shared/label.resolver'
-import { CanActivateGuard } from '../../shared/can-active-guard.service'
 import { WorkspaceDetailComponent } from './workspace-detail.component'
 import { WorkspacePropsComponent } from './workspace-props/workspace-props.component'
 import { WorkspaceRolesComponent } from './workspace-roles/workspace-roles.component'
@@ -24,12 +23,10 @@ import { MfeRegistrationsComponent } from './mfe-registrations/mfe-registrations
 const routes: Routes = [
   {
     path: '',
-    canActivate: [CanActivateGuard],
     component: WorkspaceDetailComponent
   },
   {
     path: 'menu',
-    canActivate: [CanActivateGuard],
     loadChildren: () => import('./menu/menu.module').then((m) => m.MenuModule),
     data: {
       breadcrumb: 'BREADCRUMBS.MENU',

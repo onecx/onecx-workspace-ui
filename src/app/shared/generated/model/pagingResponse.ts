@@ -11,9 +11,10 @@
  */
 
 
-export enum Scope {
-    Workspace = 'WORKSPACE',
-    App = 'APP',
-    Page = 'PAGE'
+export interface PagingResponse { 
+    totalElements?: number;
+    number?: number;
+    size?: number;
+    totalPages?: number;
 }
 

@@ -9,11 +9,16 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { ImportResponseStatus } from './importResponseStatus';
 
 
-export enum Scope {
-    Workspace = 'WORKSPACE',
-    App = 'APP',
-    Page = 'PAGE'
+export interface ImportMenuResponse { 
+    /**
+     * ID of the request
+     */
+    id?: string;
+    status?: ImportResponseStatus;
 }
+
+
 

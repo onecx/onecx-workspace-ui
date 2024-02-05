@@ -12,7 +12,6 @@ import { TranslateModule, TranslateLoader } from '@ngx-translate/core'
 import { MFE_INFO, MfeInfo, PortalCoreModule } from '@onecx/portal-integration-angular'
 
 import { SharedModule, HttpLoaderFactory } from '../../../shared/shared.module'
-import { CanActivateGuard } from '../../../shared/can-active-guard.service'
 import { MenuTreeService } from '../../../services/menu-tree.service'
 import { MenuTreeComponent } from './menu-tree/menu-tree.component'
 import { MenuComponent } from './menu.component'
@@ -20,7 +19,6 @@ import { MenuComponent } from './menu.component'
 const routes: Routes = [
   {
     path: '',
-    canActivate: [CanActivateGuard],
     component: MenuComponent
   }
 ]

@@ -11,9 +11,11 @@
  */
 
 
-export enum Scope {
-    Workspace = 'WORKSPACE',
-    App = 'APP',
-    Page = 'PAGE'
+export interface EximWorkspaceAddress { 
+    street?: string;
+    streetNo?: string;
+    city?: string;
+    country?: string;
+    postalCode?: string;
 }
 

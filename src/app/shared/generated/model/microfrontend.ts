@@ -11,9 +11,9 @@
  */
 
 
-export enum Scope {
-    Workspace = 'WORKSPACE',
-    App = 'APP',
-    Page = 'PAGE'
+export interface Microfrontend { 
+    id?: string;
+    mfeId?: string;
+    basePath?: string;
 }
 

@@ -11,9 +11,11 @@
  */
 
 
-export enum Scope {
-    Workspace = 'WORKSPACE',
-    App = 'APP',
-    Page = 'PAGE'
+export interface WorkspaceAbstract { 
+    name: string;
+    description?: string;
+    theme?: string;
+    baseUrl?: string;
+    logoUrl?: string;
 }
 
