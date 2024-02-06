@@ -1,7 +1,7 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core'
 import { HttpHeaders } from '@angular/common/http'
 import { TranslateService } from '@ngx-translate/core'
-import { ImportRequestDTOv1, MenuItemStructureDTO } from '../../../shared/generated'
+import { EximWorkspace, EximWorkspaceMenuItem } from '../../../shared/generated'
 
 @Component({
   selector: 'app-import-choose-file',
@@ -9,9 +9,9 @@ import { ImportRequestDTOv1, MenuItemStructureDTO } from '../../../shared/genera
   styleUrls: ['./choose-file.component.scss']
 })
 export class ChooseFileComponent implements OnInit {
-  @Output() public importFileSelected = new EventEmitter<ImportRequestDTOv1>()
+  @Output() public importFileSelected = new EventEmitter<EximWorkspace>()
 
-  importRequestDTO: ImportRequestDTOv1 | null = null
+  importWorkspace: EximWorkspace | null = null
 
   public httpHeaders!: HttpHeaders
   public reader = new FileReader()
@@ -29,12 +29,12 @@ export class ChooseFileComponent implements OnInit {
   }
 
   public uploadHandler(): void {
-    if (this.importRequestDTO) this.importFileSelected.emit(this.importRequestDTO)
+    if (this.importWorkspace) this.importFileSelected.emit(this.importWorkspace)
   }
 
   public onSelect(event: { files: FileList }): void {
     event.files[0].text().then((text) => {
-      this.importRequestDTO = null
+      this.importWorkspace = null
       this.importError = false
       this.validationErrorCause = ''
 
@@ -55,9 +55,9 @@ export class ChooseFileComponent implements OnInit {
         ])
         .subscribe((data) => {
           try {
-            const importRequestDTO = JSON.parse(text)
-            if (this.isPortalImportRequestDTO(importRequestDTO, data)) {
-              this.importRequestDTO = importRequestDTO
+            const importWorkspace = JSON.parse(text)
+            if (this.isPortalImportWorkspace(importWorkspace, data)) {
+              this.importWorkspace = importWorkspace
             }
           } catch (err) {
             console.error('Import Error' /* , err */)
@@ -70,29 +70,29 @@ export class ChooseFileComponent implements OnInit {
   }
 
   public onClear(): void {
-    this.importRequestDTO = null
+    this.importWorkspace = null
     this.importError = false
     this.validationErrorCause = ''
   }
 
   public isFileValid(): boolean {
-    return !this.importError && !!this.importRequestDTO
+    return !this.importError && !!this.importWorkspace
   }
 
-  private isPortalImportRequestDTO(obj: unknown, data: any): obj is ImportRequestDTOv1 {
-    const dto = obj as ImportRequestDTOv1
+  private isPortalImportWorkspace(obj: unknown, data: any): obj is EximWorkspace {
+    const dto = obj as EximWorkspace
     const themeCondition = dto.themeImportData ? dto.themeImportData.name : true
 
-    if (!dto.portal) {
+    if (!dto) {
       this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_PORTAL_MISSING']
-    } else if (!dto.portal.portalName) {
+    } else if (!dto.name) {
       this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_PORTAL_NAME_MISSING']
-    } else if (!dto.portal.portalRoles) {
+    } else if (!dto.workspaceRoles) {
       this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_PORTAL_ROLES_MISSING']
     } else if (!themeCondition) {
       this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_THEME_NAME_MISSING']
-    } else if (dto.menuItems) {
-      for (const el of dto.menuItems) {
+    } else if (dto.menu?.menu?.menuItems) {
+      for (const el of dto.menu.menu.menuItems) {
         if (!el.key) {
           this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_MENU_ITEM_KEY_MISSING']
           break
@@ -105,7 +105,7 @@ export class ChooseFileComponent implements OnInit {
         } else if (!(typeof el.disabled === 'boolean')) {
           this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_MENU_ITEM_WRONG_DISABLED']
           break
-        } else if (!(typeof el.portalExit === 'boolean')) {
+        } else if (!(typeof el.workspaceExit === 'boolean')) {
           this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_MENU_ITEM_WRONG_PORTALEXIT']
           break
         }
@@ -121,22 +121,21 @@ export class ChooseFileComponent implements OnInit {
     return !!(
       typeof dto === 'object' &&
       dto &&
-      dto.portal &&
-      dto.portal.portalName &&
-      dto.portal.portalRoles &&
-      dto.menuItems?.every?.(this.isMenuItem) &&
+      dto.name &&
+      dto.workspaceRoles &&
+      dto.menu?.menu?.menuItems?.every?.(this.isMenuItem) &&
       themeCondition
     )
   }
 
-  private isMenuItem(obj: unknown): obj is MenuItemStructureDTO {
-    const dto = obj as MenuItemStructureDTO
+  private isMenuItem(obj: unknown): obj is EximWorkspaceMenuItem {
+    const dto = obj as EximWorkspaceMenuItem
     return !!(
       dto.key &&
       dto.name &&
       typeof dto.position === 'number' &&
       typeof dto.disabled === 'boolean' &&
-      typeof dto.portalExit === 'boolean'
+      typeof dto.workspaceExit === 'boolean'
     )
   }
 }

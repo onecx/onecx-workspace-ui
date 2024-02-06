@@ -7,11 +7,10 @@ import { AUTH_SERVICE, IAuthService, PortalMessageService } from '@onecx/portal-
 
 import { PreviewComponent } from './preview/preview.component'
 import { ConfirmComponent } from './confirm/confirm.component'
-import { PortalImportRequestV1APIService } from '../../shared/generated/api/api'
+import { WorkspaceAPIService, ImportWorkspacesRequestParams } from 'src/app/shared/generated'
 import {
   MenuItemStructureDTOv1,
-  ImportRequestDTOv1,
-  MicrofrontendRegistrationDTOv1
+  Microfrontend
 } from '../../shared/generated/model/models'
 
 @Component({
@@ -37,7 +36,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
   public tenantId: string | undefined = undefined
   public baseUrl = ''
   public baseUrlOrg: string | undefined = undefined // the original
-  public importRequestDTO?: ImportRequestDTOv1
+  public importRequestDTO?: ImportWorkspacesRequestParams
   public activeThemeCheckboxInFirstStep = true
   public hasPermission = false
 
@@ -45,7 +44,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
     private readonly router: Router,
     private readonly route: ActivatedRoute,
     private readonly translate: TranslateService,
-    private readonly portalImportApi: PortalImportRequestV1APIService,
+    private readonly workspaceApi: WorkspaceAPIService,
     private msgService: PortalMessageService,
     @Inject(AUTH_SERVICE) readonly auth: IAuthService
   ) {
@@ -100,13 +99,15 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
     this.isLoading = true
 
     // Basic properties
-    this.importRequestDTO.portal.portalName = this.portalName
-    this.importRequestDTO.portal.themeName = this.themeName
-    if (this.hasPermission) {
-      this.importRequestDTO.portal.tenantId = this.tenantId
+    if (this.importRequestDTO.workspaceSnapshot.workspaces) {
+      this.importRequestDTO.workspaceSnapshot.workspaces[0].name = this.portalName
+      this.importRequestDTO.workspaceSnapshot.workspaces[0].theme = this.themeName
+      /* if (this.hasPermission) {
+        this.importRequestDTO.portal.tenantId = this.tenantId
+      } */
+      // this.importRequestDTO.synchronizePermissions = this.syncPermCheckbox
+      this.importRequestDTO.workspaceSnapshot.workspaces[0].baseUrl = this.baseUrl
     }
-    this.importRequestDTO.synchronizePermissions = this.syncPermCheckbox
-    this.importRequestDTO.portal.baseUrl = this.baseUrl
 
     // Theme
     if (!this.importThemeCheckbox) {
@@ -120,14 +121,14 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
 
     // Microfontends: convert Set to Array what the backend expects
     // the default is {} which is not a Set !
-    const mfeArray = new Array<MicrofrontendRegistrationDTOv1>()
-    if (
-      this.importRequestDTO.portal.microfrontendRegistrations &&
-      this.importRequestDTO.portal.microfrontendRegistrations?.values !== undefined
-    ) {
-      this.importRequestDTO.portal.microfrontendRegistrations.forEach((mfe) => mfeArray.push(mfe))
-    }
-    this.importRequestDTO.portal.microfrontendRegistrations = mfeArray as any
+    // const mfeArray = new Array<MicrofrontendRegistrationDTOv1>()
+    // if (
+    //   this.importRequestDTO.portal.microfrontendRegistrations &&
+    //   this.importRequestDTO.portal.microfrontendRegistrations?.values !== undefined
+    // ) {
+    //   this.importRequestDTO.portal.microfrontendRegistrations.forEach((mfe) => mfeArray.push(mfe))
+    // }
+    // this.importRequestDTO.portal.microfrontendRegistrations = mfeArray as any
 
     // If the baseUrl was changed then change the correspondig URLs in menu and mfes:
     if (this.baseUrlOrg && this.baseUrlOrg !== this.baseUrl) {
@@ -141,9 +142,9 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
       // Menu items ... hierarchical
       if (this.importRequestDTO.menuItems) this.alignMenuItemsBaseUrl(this.importRequestDTO.menuItems)
     }
-    this.portalImportApi
-      .portalImportRequest({
-        importRequestDTOv1: this.importRequestDTO
+    this.workspaceApi
+      .importWorkspaces({
+        requestParameters: this.importRequestDTO
       })
       .subscribe({
         next: (res) => {

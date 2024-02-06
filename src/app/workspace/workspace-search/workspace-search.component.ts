@@ -9,7 +9,7 @@ import {
   PortalMessageService
 } from '@onecx/portal-integration-angular'
 import { limitText } from '../../shared/utils'
-import { PortalDTO, PortalInternalAPIService } from '../../shared/generated'
+import { SearchWorkspacesResponse, Workspace, WorkspaceAPIService, WorkspaceAbstract } from '../../shared/generated'
 
 @Component({
   selector: 'app-workspace-search',
@@ -17,14 +17,14 @@ import { PortalDTO, PortalInternalAPIService } from '../../shared/generated'
   styleUrls: ['./workspace-search.component.scss']
 })
 export class WorkspaceSearchComponent implements OnInit {
-  portals$!: Observable<PortalDTO[]>
+  portals$!: Observable<Workspace[]>
   public searchInProgress = false
   public actions: Action[] = []
   public showCreateDialog = false
   public showImportDialog = false
   public limitText = limitText
 
-  public portalItems: PortalDTO[] = []
+  public portalItems: WorkspaceAbstract[] | undefined = []
   public viewMode = 'grid'
   public filter: string | undefined
   public sortField = ''
@@ -37,7 +37,7 @@ export class WorkspaceSearchComponent implements OnInit {
   @ViewChild('table', { static: false }) table!: DataView | any
 
   constructor(
-    private portalApi: PortalInternalAPIService,
+    private workspaceApi: WorkspaceAPIService,
     private route: ActivatedRoute,
     private router: Router,
     // private config: ConfigurationService,
@@ -126,13 +126,13 @@ export class WorkspaceSearchComponent implements OnInit {
 
   public search(): void {
     this.searchInProgress = true
-    this.portalApi
-      .getAllPortals()
+    this.workspaceApi
+      .searchWorkspaces({ searchWorkspacesRequest: {} })
       .pipe(finalize(() => (this.searchInProgress = false)))
       .subscribe({
-        next: (portals) => {
-          this.portalItems = portals
-          if (portals.length === 0) {
+        next: (value: SearchWorkspacesResponse) => {
+          this.portalItems = value.stream
+          if (value.number === 0) {
             this.msgService.info({ summaryKey: 'SEARCH.MSG_NO_RESULTS' })
           }
           this.sortField = this.defaultSortField
@@ -157,11 +157,11 @@ export class WorkspaceSearchComponent implements OnInit {
   onSortDirChange(asc: boolean) {
     this.sortOrder = asc ? -1 : 1
   }
-  public onGotoPortal(ev: any, portal: PortalDTO) {
+  public onGotoPortal(ev: any, portal: Workspace) {
     ev.stopPropagation()
     window.open(window.document.location.href + '../../../..' + portal.baseUrl, '_blank')
   }
-  public onGotoMenu(ev: any, portal: PortalDTO) {
+  public onGotoMenu(ev: any, portal: Workspace) {
     ev.stopPropagation()
     this.router.navigate(['./', portal.id, 'menu'], { relativeTo: this.route })
   }

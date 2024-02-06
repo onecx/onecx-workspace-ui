@@ -3,7 +3,7 @@ import { FormArray, FormBuilder, FormControl, FormControlState, FormGroup } from
 import { TranslateService } from '@ngx-translate/core'
 import { MessageService } from 'primeng/api'
 
-import { /* ImageV1APIService,  */ PortalInternalAPIService, PortalDTO } from '../../../shared/generated'
+import { /* ImageV1APIService,  */ WorkspaceAPIService, Workspace } from '../../../shared/generated'
 import { clonePortalWithMicrofrontendsArray } from '../../../shared/utils'
 import { LogoState } from '../../workspace-create/logo-state'
 
@@ -17,7 +17,7 @@ export interface PortalImageForm {
   styleUrls: ['./workspace-images.component.scss']
 })
 export class WorkspaceImagesComponent implements OnChanges {
-  @Input() portalDetail!: PortalDTO
+  @Input() portalDetail!: Workspace
   @Input() editMode = false
   @Output() changeEditMode = new EventEmitter<any>()
   @Output() switchToEditMode = new EventEmitter<any>()
@@ -29,7 +29,7 @@ export class WorkspaceImagesComponent implements OnChanges {
   constructor(
     private messageService: MessageService,
     private translate: TranslateService,
-    private api: PortalInternalAPIService,
+    private api: WorkspaceAPIService,
     private fb: FormBuilder /* // private imageApi: ImageV1APIService */
   ) {
     this.formArray = this.fb.array([] as FormGroup<PortalImageForm>[])
@@ -79,12 +79,12 @@ export class WorkspaceImagesComponent implements OnChanges {
     if (this.formArray.valid) {
       //clear formArray of all empty entries
       this.removeEmptyRows()
-      this.portalDetail.imageUrls = this.formArray.value.map((el) => el.url) as unknown as Set<string>
+      this.portalDetail.imageUrls = this.formArray.value.map((el) => el.url) as unknown as Array<string>
       this.api
-        .updatePortal({
+        .updateWorkspace({
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          portalId: this.portalDetail.id!,
-          updatePortalDTO: clonePortalWithMicrofrontendsArray(this.portalDetail)
+          id: this.portalDetail.id!,
+          updateWorkspaceRequest: clonePortalWithMicrofrontendsArray(this.portalDetail)
         })
         .subscribe({
           next: () => {

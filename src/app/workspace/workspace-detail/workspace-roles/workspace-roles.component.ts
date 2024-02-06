@@ -1,8 +1,8 @@
 import { Component, Input, SimpleChanges, OnChanges } from '@angular/core'
 import { FormArray, FormControl } from '@angular/forms'
 
-import { PortalInternalAPIService } from '../../../shared/generated'
-import { PortalDTO } from '../../../shared/generated/model/portalDTO'
+import { WorkspaceAPIService } from '../../../shared/generated'
+import { Workspace } from '../../../shared/generated'
 import { clonePortalWithMicrofrontendsArray } from '../../../shared/utils'
 import { PortalMessageService } from '@onecx/portal-integration-angular'
 
@@ -12,13 +12,13 @@ import { PortalMessageService } from '@onecx/portal-integration-angular'
   styleUrls: ['./workspace-roles.component.scss']
 })
 export class WorkspaceRolesComponent implements OnChanges {
-  @Input() portalDetail!: PortalDTO
+  @Input() portalDetail!: Workspace
   @Input() editMode = false
   addDisplay = false
   formArray = new FormArray([])
   newPortalRole = ''
 
-  constructor(private portalApi: PortalInternalAPIService, private msgService: PortalMessageService) {}
+  constructor(private workspaceApi: WorkspaceAPIService, private msgService: PortalMessageService) {}
 
   public ngOnChanges(changes: SimpleChanges): void {
     if (this.portalDetail && changes['portalDetail']) {
@@ -27,7 +27,7 @@ export class WorkspaceRolesComponent implements OnChanges {
   }
 
   setFormData(): void {
-    this.portalDetail.portalRoles?.forEach((element: any) => {
+    this.portalDetail.workspaceRoles?.forEach((element: any) => {
       const control = new FormControl(element)
       this.formArray.push(control as never)
     })
@@ -56,18 +56,18 @@ export class WorkspaceRolesComponent implements OnChanges {
       // clone form array and use the clone
       const array: string[] = []
       this.formArray.value.forEach((role) => array.push(role))
-      portal.portalRoles = array
-      this.portalApi
-        .updatePortal({
+      portal.workspaceRoles = array
+      this.workspaceApi
+        .updateWorkspace({
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          portalId: this.portalDetail.id!,
-          updatePortalDTO: portal
+          id: this.portalDetail.id!,
+          updateWorkspaceRequest: portal
         })
         .subscribe({
           next: () => {
             this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_OK' })
             // add in UI
-            this.portalDetail.portalRoles = this.formArray.value
+            this.portalDetail.workspaceRoles = this.formArray.value
           },
           error: () => {
             // console.error('ERR', err)

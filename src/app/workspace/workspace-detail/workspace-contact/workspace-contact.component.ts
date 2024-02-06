@@ -1,8 +1,7 @@
 import { Component, Input, OnChanges } from '@angular/core'
 import { FormControl, FormGroup } from '@angular/forms'
 
-import { PortalDTO } from '../../../shared/generated/model/portalDTO'
-import { PortalInternalAPIService } from '../../../shared/generated'
+import { Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
 import { clonePortalWithMicrofrontendsArray } from '../../../shared/utils'
 import { PortalMessageService } from '@onecx/portal-integration-angular'
 
@@ -12,12 +11,12 @@ import { PortalMessageService } from '@onecx/portal-integration-angular'
   styleUrls: ['./workspace-contact.component.scss']
 })
 export class WorkspaceContactComponent implements OnChanges {
-  @Input() portalDetail!: PortalDTO
+  @Input() portalDetail!: Workspace
   @Input() editMode = false
 
   public formGroup: FormGroup
 
-  constructor(private api: PortalInternalAPIService, private msgService: PortalMessageService) {
+  constructor(private api: WorkspaceAPIService, private msgService: PortalMessageService) {
     this.formGroup = new FormGroup({
       companyName: new FormControl(null),
       phoneNumber: new FormControl(null),
@@ -48,10 +47,10 @@ export class WorkspaceContactComponent implements OnChanges {
     if (this.formGroup.valid) {
       Object.assign(this.portalDetail, this.getPortalChangesFromForm())
       this.api
-        .updatePortal({
+        .updateWorkspace({
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          portalId: this.portalDetail.id!,
-          updatePortalDTO: clonePortalWithMicrofrontendsArray(this.portalDetail)
+          id: this.portalDetail.id!,
+          updateWorkspaceRequest: clonePortalWithMicrofrontendsArray(this.portalDetail)
         })
         .subscribe({
           next: () => {

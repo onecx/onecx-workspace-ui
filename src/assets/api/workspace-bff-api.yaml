@@ -1,4 +1,4 @@
-openapi: '3.0.3'
+openapi: 3.0.3
 info:
   title: onecx-workspace-bff
   description: OneCx workspace Bff
@@ -141,6 +141,28 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetailResponse'
+  /workspaces/themes:
+    get:
+      tags:
+        - workspace
+      description: get all theme names
+      operationId: getAllThemes
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailResponse'
+
   /workspaces/{id}/menuItems:
     get:
       tags:
@@ -538,6 +560,11 @@ components:
           type: string
         logoUrl:
           type: string
+        workspaceRoles:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
         address:
           $ref: '#/components/schemas/WorkspaceAddress'
         subjectLinks:
@@ -917,6 +944,8 @@ components:
           type: string
         address:
           $ref: '#/components/schemas/EximWorkspaceAddress'
+        workspaceRoles:
+          type: string
         subjectLinks:
           uniqueItems: true
           maxItems: 3

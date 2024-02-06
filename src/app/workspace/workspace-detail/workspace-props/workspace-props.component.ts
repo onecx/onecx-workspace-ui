@@ -13,10 +13,10 @@ import {
 } from '@onecx/portal-integration-angular'
 
 import {
-  ImageV1APIService,
-  PortalInternalAPIService /* , ThemeDTO, ThemesAPIService */
+  // ImageV1APIService,
+  WorkspaceAPIService /* , ThemeDTO, ThemesAPIService */
 } from '../../../shared/generated'
-import { PortalDTO } from '../../../shared/generated/model/portalDTO'
+import { Workspace } from '../../../shared/generated'
 import { environment } from '../../../../environments/environment'
 import { LogoState } from '../../workspace-create/logo-state'
 import {
@@ -32,9 +32,9 @@ import {
   styleUrls: ['./workspace-props.component.scss']
 })
 export class WorkspacePropsComponent implements OnChanges {
-  @Input() portalDetail!: PortalDTO
+  @Input() portalDetail!: Workspace
   @Input() editMode = false
-  @Output() portalUpdated = new EventEmitter<PortalDTO>()
+  @Output() portalUpdated = new EventEmitter<Workspace>()
 
   public formGroup: FormGroup
 
@@ -57,9 +57,9 @@ export class WorkspacePropsComponent implements OnChanges {
   private apiPrefix = environment.apiPrefix
 
   constructor(
-    private portalApi: PortalInternalAPIService,
+    private workspaceApi: WorkspaceAPIService,
     // private themeApi: ThemesAPIService,
-    private imageApi: ImageV1APIService,
+    // private imageApi: ImageV1APIService,
     private themeService: ThemeService,
     private config: ConfigurationService,
     private msgService: PortalMessageService,
@@ -98,14 +98,14 @@ export class WorkspacePropsComponent implements OnChanges {
 
   public setFormData(): void {
     // prepare list of registered MFEs to be used as homepage dropdown
-    this.mfeRList = Array.from(this.portalDetail.microfrontendRegistrations ?? []).map((mfe: any) => ({
-      label: mfe.baseUrl,
-      value: mfe.baseUrl || ''
-    }))
+    // this.mfeRList = Array.from(this.portalDetail.microfrontendRegistrations ?? []).map((mfe: any) => ({
+    //   label: mfe.baseUrl,
+    //   value: mfe.baseUrl || ''
+    // }))
     // fill form
     Object.keys(this.formGroup.controls).forEach((element) => {
       this.formGroup.controls[element].setValue((this.portalDetail as any)[element])
-      this.formGroup.controls['themeName'].setValue(this.portalDetail.themeName)
+      this.formGroup.controls['themeName'].setValue(this.portalDetail.theme)
     })
     this.fetchingLogoUrl = setFetchUrls(this.apiPrefix, this.formGroup.value.logoUrl)
   }
@@ -113,17 +113,17 @@ export class WorkspacePropsComponent implements OnChanges {
   public onSubmit() {
     if (this.formGroup.valid) {
       Object.assign(this.portalDetail, this.getPortalChangesFromForm())
-      this.portalApi
-        .updatePortal({
+      this.workspaceApi
+        .updateWorkspace({
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          portalId: this.portalDetail.id!,
-          updatePortalDTO: clonePortalWithMicrofrontendsArray(this.portalDetail)
+          id: this.portalDetail.id!,
+          updateWorkspaceRequest: clonePortalWithMicrofrontendsArray(this.portalDetail)
         })
         .subscribe({
           next: (data: any) => {
             this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_OK' })
             //If the Portal we update, is the current-global-portal, then we also update the global theme.
-            if (this.portalDetail.id === this.config.getPortal().id && this.portalDetail.themeId) {
+            if (this.portalDetail.id === this.config.getPortal().id && this.portalDetail.theme) {
               // get theme and apply the variables in current portal
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
               /* this.themeApi.getThemeById({ id: this.portalDetail.themeId! }).subscribe({
