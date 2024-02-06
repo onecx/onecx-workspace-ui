@@ -7,11 +7,12 @@ import { AUTH_SERVICE, IAuthService, PortalMessageService } from '@onecx/portal-
 
 import { PreviewComponent } from './preview/preview.component'
 import { ConfirmComponent } from './confirm/confirm.component'
-import { WorkspaceAPIService, ImportWorkspacesRequestParams } from 'src/app/shared/generated'
 import {
-  MenuItemStructureDTOv1,
-  Microfrontend
-} from '../../shared/generated/model/models'
+  WorkspaceAPIService,
+  ImportWorkspacesRequestParams,
+  EximWorkspaceMenuItem,
+  WorkspaceSnapshot
+} from 'src/app/shared/generated'
 
 @Component({
   selector: 'app-workspace-import',
@@ -110,14 +111,14 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
     }
 
     // Theme
-    if (!this.importThemeCheckbox) {
+    /*  if (!this.importThemeCheckbox) {
       this.importRequestDTO.themeImportData = undefined
     } else {
       this.importRequestDTO.portal.themeName = this.themeName
       if (this.importRequestDTO.themeImportData) {
         this.importRequestDTO.themeImportData.name = this.themeName
       }
-    }
+    } */
 
     // Microfontends: convert Set to Array what the backend expects
     // the default is {} which is not a Set !
@@ -133,18 +134,23 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
     // If the baseUrl was changed then change the correspondig URLs in menu and mfes:
     if (this.baseUrlOrg && this.baseUrlOrg !== this.baseUrl) {
       // Microfrontends
-      this.importRequestDTO.portal.microfrontendRegistrations?.forEach((mfe) => {
-        if (this.baseUrlOrg) {
-          if (mfe.baseUrl?.startsWith(this.baseUrlOrg))
-            mfe.baseUrl = this.baseUrl + mfe.baseUrl?.substring(this.baseUrlOrg.length)
-        }
-      })
+      // this.importRequestDTO.portal.microfrontendRegistrations?.forEach((mfe) => {
+      //   if (this.baseUrlOrg) {
+      //     if (mfe.baseUrl?.startsWith(this.baseUrlOrg))
+      //       mfe.baseUrl = this.baseUrl + mfe.baseUrl?.substring(this.baseUrlOrg.length)
+      //   }
+      // })
       // Menu items ... hierarchical
-      if (this.importRequestDTO.menuItems) this.alignMenuItemsBaseUrl(this.importRequestDTO.menuItems)
+      if (this.importRequestDTO.workspaceSnapshot.workspaces) {
+        if (this.importRequestDTO.workspaceSnapshot.workspaces[0].menu?.menu?.menuItems) {
+          this.alignMenuItemsBaseUrl(this.importRequestDTO.workspaceSnapshot.workspaces[0].menu?.menu.menuItems)
+        }
+      }
     }
     this.workspaceApi
       .importWorkspaces({
-        requestParameters: this.importRequestDTO
+        workspaceSnapshot: this.importRequestDTO as WorkspaceSnapshot
+        // requestParameters: this.importRequestDTO
       })
       .subscribe({
         next: (res) => {
@@ -164,7 +170,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
   }
 
   // step recursively through menu tree and align base URL
-  public alignMenuItemsBaseUrl(menuItems: Array<MenuItemStructureDTOv1>): void {
+  public alignMenuItemsBaseUrl(menuItems: Array<EximWorkspaceMenuItem>): void {
     menuItems?.forEach((item) => {
       if (this.baseUrlOrg) {
         if (item.url?.startsWith(this.baseUrlOrg)) item.url = this.baseUrl + item.url?.substring(this.baseUrlOrg.length)
@@ -174,17 +180,17 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
   }
 
   // NAVIGATE import step : NEXT
-  public next(importRequestDTO?: ImportRequestDTOv1): void {
-    if (this.activeIndex == 0 && importRequestDTO) {
+  public next(importRequestDTO?: ImportWorkspacesRequestParams): void {
+    if (this.activeIndex == 0 && importRequestDTO?.workspaceSnapshot.workspaces) {
       this.importRequestDTO = importRequestDTO
-      this.themeName = importRequestDTO.portal.themeName || ''
-      this.baseUrlOrg = importRequestDTO.portal.baseUrl
-      if (this.importRequestDTO.themeImportData) {
-        this.themeCheckboxEnabled = true
-      } else {
-        this.themeCheckboxEnabled = false
-        this.importThemeCheckbox = false
-      }
+      // this.themeName = importRequestDTO.portal.themeName || ''
+      this.baseUrlOrg = importRequestDTO.workspaceSnapshot.workspaces[0].baseUrl
+      // if (this.importRequestDTO.themeImportData) {
+      //   this.themeCheckboxEnabled = true
+      // } else {
+      //   this.themeCheckboxEnabled = false
+      //   this.importThemeCheckbox = false
+      // }
     } else if (this.activeIndex == 1) {
       this.portalName = this.previewComponent?.portalName || ''
       this.themeName = this.previewComponent?.themeName || ''
@@ -197,12 +203,12 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
   // NAVIGATE import step : BACK
   public back(): void {
     if (this.activeIndex == 2) {
-      if (this.importRequestDTO && this.importRequestDTO.themeImportData) {
-        this.importRequestDTO.portal.portalName = this.confirmComponent?.portalName || ''
-        this.importRequestDTO.portal.tenantId = this.confirmComponent?.tenantId || ''
-        this.importRequestDTO.portal.baseUrl = this.confirmComponent?.baseUrl || ''
-        this.importRequestDTO.themeImportData.name = this.confirmComponent?.themeName || ''
-        if (this.hasPermission) this.importRequestDTO.portal.tenantId = this.confirmComponent?.tenantId || undefined
+      if (this.importRequestDTO?.workspaceSnapshot.workspaces /* && this.importRequestDTO.themeImportData */) {
+        this.importRequestDTO.workspaceSnapshot.workspaces[0].name = this.confirmComponent?.portalName || ''
+        // this.importRequestDTO.workspaceSnapshot.workspaces[0].tenantId = this.confirmComponent?.tenantId || ''
+        this.importRequestDTO.workspaceSnapshot.workspaces[0].baseUrl = this.confirmComponent?.baseUrl || ''
+        // this.importRequestDTO.themeImportData.name = this.confirmComponent?.themeName || ''
+        // if (this.hasPermission) this.importRequestDTO.portal.tenantId = this.confirmComponent?.tenantId || undefined
       }
     }
     this.activeIndex--

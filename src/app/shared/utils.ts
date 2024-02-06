@@ -1,7 +1,7 @@
-import { MicrofrontendDTO } from '@onecx/portal-integration-angular'
+// import { MicrofrontendDTO } from '@onecx/portal-integration-angular'
 import { AbstractControl, FormArray, FormGroup } from '@angular/forms'
 import { SelectItem } from 'primeng/api'
-import { PortalDTO, ThemeDTO } from './generated'
+import { Workspace /* , ThemeDTO */ } from './generated'
 
 export function limitText(text: string, limit: number): string {
   if (text) {
@@ -15,14 +15,14 @@ export function limitText(text: string, limit: number): string {
  * Clones a given portal and converts its microfrontends Set to an array.
  *
  * Used to avoid serialization issues caused by Sets when sending a portal to the backend.
- * @param portal PortalDTO that should be cloned
+ * @param portal Workspace that should be cloned
  * @returns Clone of the portal which contains the portal microfrontends as an array.
  */
-export function clonePortalWithMicrofrontendsArray(portal: PortalDTO): PortalDTO {
-  const updatedPortal: PortalDTO = { ...portal }
-  updatedPortal.microfrontendRegistrations = Array.from(
-    portal.microfrontendRegistrations ?? []
-  ) as unknown as Set<MicrofrontendDTO>
+export function clonePortalWithMicrofrontendsArray(portal: Workspace): Workspace {
+  const updatedPortal: Workspace = { ...portal }
+  // updatedPortal.microfrontendRegistrations = Array.from(
+  //   portal.microfrontendRegistrations ?? []
+  // ) as unknown as Set<MicrofrontendDTO>
   return updatedPortal
 }
 
@@ -74,9 +74,9 @@ export function sortByLocale(a: any, b: any): number {
   return a.toUpperCase().localeCompare(b.toUpperCase())
 }
 
-export function sortThemeByName(a: ThemeDTO, b: ThemeDTO): number {
-  return (a.name ? (a.name as string).toUpperCase() : '').localeCompare(b.name ? (b.name as string).toUpperCase() : '')
-}
+// export function sortThemeByName(a: ThemeDTO, b: ThemeDTO): number {
+//   return (a.name ? (a.name as string).toUpperCase() : '').localeCompare(b.name ? (b.name as string).toUpperCase() : '')
+// }
 
 /**
  *  TREE

@@ -12,7 +12,7 @@
 import { Scope } from './scope';
 
 
-export interface CreateUpdateMenuItem { 
+export interface  CreateUpdateMenuItem { 
     key?: string;
     name?: string;
     description?: string;

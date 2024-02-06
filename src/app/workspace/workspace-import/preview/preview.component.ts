@@ -1,12 +1,12 @@
 import { Component, Input, OnInit, Output, EventEmitter, OnChanges } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { TreeNode, SelectItem } from 'primeng/api'
-import { first, /* map, */ Observable, of } from 'rxjs'
+import { /* first,  map, */ Observable, of } from 'rxjs'
 
 import {
-  ImportRequestDTOv1,
-  MenuItemStructureDTO,
-  MicrofrontendRegistrationDTO
+  ImportWorkspacesRequestParams,
+  EximWorkspaceMenuItem
+  // MicrofrontendRegistrationDTO
   // ThemesAPIService
 } from '../../../shared/generated'
 import { forceFormValidation /* , sortThemeByName */ } from '../../../shared/utils'
@@ -17,7 +17,7 @@ import { forceFormValidation /* , sortThemeByName */ } from '../../../shared/uti
   styleUrls: ['./preview.component.scss']
 })
 export class PreviewComponent implements OnInit, OnChanges {
-  @Input() public importRequestDTO!: ImportRequestDTOv1
+  @Input() public importRequestDTO!: ImportWorkspacesRequestParams
   @Input() public importThemeCheckbox = false
   @Input() public hasPermission = false
   @Output() public isFormValide = new EventEmitter<boolean>()
@@ -30,18 +30,18 @@ export class PreviewComponent implements OnInit, OnChanges {
   public tenantId: string | undefined = undefined
   public themeProperties: any = null
   public menuItems: TreeNode[] = []
-  public portalMfes = new Array<MicrofrontendRegistrationDTO>()
+  // public portalMfes = new Array<MicrofrontendRegistrationDTO>()
   public portalRoles = new Array<string>()
 
   constructor(/* private themeApi: ThemesAPIService */) {
     this.formGroup = new FormGroup({
       portalName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
-      themeName: new FormControl(
-        null,
-        !this.importThemeCheckbox ? [Validators.required, Validators.minLength(2), Validators.maxLength(50)] : []
-      ),
-      baseUrl: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(100)]),
-      tenantId: new FormControl(undefined)
+      // themeName: new FormControl(
+      //   null,
+      //   !this.importThemeCheckbox ? [Validators.required, Validators.minLength(2), Validators.maxLength(50)] : []
+      // ),
+      baseUrl: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(100)])
+      // tenantId: new FormControl(undefined)
     })
 
     /* this.themes$ = this.themeApi
@@ -50,23 +50,25 @@ export class PreviewComponent implements OnInit, OnChanges {
   }
 
   public ngOnInit(): void {
-    this.portalName = this.importRequestDTO?.portal.portalName || ''
-    this.themeName = this.importRequestDTO?.themeImportData?.name
-      ? this.importRequestDTO?.themeImportData?.name
-      : this.formGroup.controls['themeName'].value || ''
-    this.baseUrl = this.importRequestDTO?.portal?.baseUrl || ''
-    this.tenantId = this.importRequestDTO?.portal.tenantId || undefined
-    this.menuItems = this.mapToTreeNodes(this.importRequestDTO?.menuItems)
-    this.themeProperties = this.importRequestDTO?.themeImportData?.properties
-    // check mfe existence
-    if (this.importRequestDTO.portal.microfrontendRegistrations) {
-      this.portalMfes = Array.from(this.importRequestDTO.portal.microfrontendRegistrations)
-    }
-    if (this.importRequestDTO.portal.portalRoles) {
-      this.portalRoles = Array.from(this.importRequestDTO.portal.portalRoles)
+    if (this.importRequestDTO.workspaceSnapshot.workspaces) {
+      this.portalName = this.importRequestDTO?.workspaceSnapshot.workspaces[0].name || ''
+      // this.themeName = this.importRequestDTO?.themeImportData?.name
+      // ? this.importRequestDTO?.themeImportData?.name
+      // : this.formGroup.controls['themeName'].value || ''
+      this.baseUrl = this.importRequestDTO?.workspaceSnapshot.workspaces[0].baseUrl || ''
+      // this.tenantId = this.importRequestDTO?.workspaceSnapshot.workspaces[0].tenantId || undefined
+      this.menuItems = this.mapToTreeNodes(this.importRequestDTO?.workspaceSnapshot.workspaces[0].menu?.menu?.menuItems)
+      // this.themeProperties = this.importRequestDTO?.themeImportData?.properties
+      // check mfe existence
+      // if (this.importRequestDTO.portal.microfrontendRegistrations) {
+      //   this.portalMfes = Array.from(this.importRequestDTO.portal.microfrontendRegistrations)
+      // }
+      if (this.importRequestDTO?.workspaceSnapshot.workspaces[0].workspaceRoles) {
+        this.portalRoles = Array.from(this.importRequestDTO?.workspaceSnapshot.workspaces[0].workspaceRoles)
+      }
     }
     // error handling if no theme name or no match with existing themes
-    this.themes$.pipe(first()).subscribe((themes) => {
+    /* this.themes$.pipe(first()).subscribe((themes) => {
       if (themes.length > 0) {
         const matchingTheme = themes.find((theme) => theme.value === this.themeName)
         if (!this.themeName || !matchingTheme) {
@@ -76,7 +78,7 @@ export class PreviewComponent implements OnInit, OnChanges {
         this.formGroup.controls['themeName'].setValue(this.themeName)
         this.onModelChange()
       }
-    })
+    }) */
   }
 
   public ngOnChanges(): void {
@@ -96,23 +98,27 @@ export class PreviewComponent implements OnInit, OnChanges {
   }
 
   public fillForm(): void {
-    this.formGroup.controls['portalName'].setValue(this.importRequestDTO?.portal?.portalName)
-    this.formGroup.controls['themeName'].setValue(this.importRequestDTO?.portal?.themeName)
-    this.formGroup.controls['baseUrl'].setValue(this.importRequestDTO?.portal?.baseUrl)
-    if (this.hasPermission && this.importRequestDTO?.portal?.tenantId != undefined)
-      this.formGroup.controls['tenantId'].setValue(this.importRequestDTO?.portal?.tenantId)
+    if (this.importRequestDTO.workspaceSnapshot.workspaces) {
+      this.formGroup.controls['portalName'].setValue(this.importRequestDTO?.workspaceSnapshot.workspaces[0].name)
+      // this.formGroup.controls['themeName'].setValue(this.importRequestDTO?.workspaceSnapshot.workspaces[0].themeName)
+      this.formGroup.controls['baseUrl'].setValue(this.importRequestDTO?.workspaceSnapshot.workspaces[0].baseUrl)
+      // if (this.hasPermission && this.importRequestDTO?.portal?.tenantId != undefined)
+      //   this.formGroup.controls['tenantId'].setValue(this.importRequestDTO?.portal?.tenantId)
+    }
   }
 
   public onModelChange(): void {
     this.portalName = this.formGroup.controls['portalName'].value
-    this.themeName = this.formGroup.controls['themeName'].value
+    // this.themeName = this.formGroup.controls['themeName'].value
     this.baseUrl = this.formGroup.controls['baseUrl'].value
-    if (this.hasPermission && this.formGroup.controls['tenantId'].value !== undefined)
-      this.tenantId = this.formGroup.controls['tenantId'].value
-    this.importRequestDTO.portal.portalName = this.portalName
-    this.importRequestDTO.portal.themeName = this.themeName
-    this.importRequestDTO.portal.baseUrl = this.baseUrl
-    if (this.hasPermission) this.importRequestDTO.portal.tenantId = this.tenantId
+    // if (this.hasPermission && this.formGroup.controls['tenantId'].value !== undefined)
+    //   this.tenantId = this.formGroup.controls['tenantId'].value
+    if (this.importRequestDTO.workspaceSnapshot.workspaces) {
+      this.importRequestDTO.workspaceSnapshot.workspaces[0].name = this.portalName
+      // this.importRequestDTO.portal.themeName = this.themeName
+      this.importRequestDTO.workspaceSnapshot.workspaces[0].baseUrl = this.baseUrl
+      // if (this.hasPermission) this.importRequestDTO.portal.tenantId = this.tenantId
+    }
     this.isFormValide.emit(this.formGroup.valid)
   }
 
@@ -121,7 +127,7 @@ export class PreviewComponent implements OnInit, OnChanges {
     this.onModelChange()
   }
 
-  private mapToTreeNodes(items?: MenuItemStructureDTO[]): TreeNode[] {
+  private mapToTreeNodes(items?: EximWorkspaceMenuItem[]): TreeNode[] {
     if (!items || items.length === 0) {
       return []
     }
@@ -138,7 +144,7 @@ export class PreviewComponent implements OnInit, OnChanges {
     return results
   }
 
-  private createTreeNode(item: MenuItemStructureDTO): TreeNode {
+  private createTreeNode(item: EximWorkspaceMenuItem): TreeNode {
     return {
       label: item.name,
       expanded: false,

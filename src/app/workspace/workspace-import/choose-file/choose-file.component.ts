@@ -81,7 +81,7 @@ export class ChooseFileComponent implements OnInit {
 
   private isPortalImportWorkspace(obj: unknown, data: any): obj is EximWorkspace {
     const dto = obj as EximWorkspace
-    const themeCondition = dto.themeImportData ? dto.themeImportData.name : true
+    // const themeCondition = dto.themeImportData ? dto.themeImportData.name : true
 
     if (!dto) {
       this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_PORTAL_MISSING']
@@ -89,9 +89,9 @@ export class ChooseFileComponent implements OnInit {
       this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_PORTAL_NAME_MISSING']
     } else if (!dto.workspaceRoles) {
       this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_PORTAL_ROLES_MISSING']
-    } else if (!themeCondition) {
+    } /* else if (!themeCondition) {
       this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_THEME_NAME_MISSING']
-    } else if (dto.menu?.menu?.menuItems) {
+    } */ else if (dto.menu?.menu?.menuItems) {
       for (const el of dto.menu.menu.menuItems) {
         if (!el.key) {
           this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_MENU_ITEM_KEY_MISSING']
@@ -123,9 +123,9 @@ export class ChooseFileComponent implements OnInit {
       dto &&
       dto.name &&
       dto.workspaceRoles &&
-      dto.menu?.menu?.menuItems?.every?.(this.isMenuItem) &&
-      themeCondition
-    )
+      dto.menu?.menu?.menuItems?.every?.(this.isMenuItem)
+    ) /* &&
+      themeCondition */
   }
 
   private isMenuItem(obj: unknown): obj is EximWorkspaceMenuItem {

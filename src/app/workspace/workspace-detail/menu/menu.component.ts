@@ -22,12 +22,12 @@ import {
 } from '@onecx/portal-integration-angular'
 import {
   DeleteMenuItemByIdRequestParams,
-  MenuItemDetailsDTO,
-  MenuItemStructureDTO,
-  MenuItemsInternalAPIService,
-  PortalDTO,
-  PortalInternalAPIService,
-  PortalMenuItemDTO
+  MenuItemAPIService,
+  MenuItem,
+  // MenuItemsInternalAPIService,
+  Workspace,
+  WorkspaceAPIService,
+  CreateMenuItemRequest
 } from '../../../shared/generated'
 import { limitText, dropDownSortItemsByLabel } from '../../../shared/utils'
 import { MenuStringConst } from '../../..//model/menu-string-const'
@@ -35,14 +35,14 @@ import { MenuStateService } from '../../../services/menu-state.service'
 import { IconService } from './iconservice'
 import { filterObjectTree } from '../../../shared/utils'
 
-type MenuItem = MenuItemDetailsDTO & {
+/* type MenuItem = MenuItem & {
   positionPath: string
   regMfeAligned: boolean
   parentItemName: string
   first: boolean
   last: boolean
   prevId: string | undefined
-}
+} */
 type LanguageItem = SelectItem & { data: string }
 type I18N = { [key: string]: string }
 
@@ -77,18 +77,18 @@ export class MenuComponent implements OnInit, OnDestroy {
   private panelHeight = 0
   private treeHeight = 0
   // portal
-  public portal?: PortalDTO
-  private portal$: Observable<PortalDTO> = new Observable<PortalDTO>()
+  public portal?: Workspace
+  private portal$: Observable<Workspace> = new Observable<Workspace>()
   public portalId = this.route.snapshot.params['id']
   private mfeRUrls: Array<string> = []
   public mfeRUrlOptions: SelectItem[] = []
   // menu
-  private menu$: Observable<Array<PortalMenuItemDTO>> = new Observable<Array<PortalMenuItemDTO>>()
+  private menu$: Observable<Array<MenuItem>> = new Observable<Array<MenuItem>>()
   public menuNodes: TreeNode[] = []
-  private menuItem$: Observable<MenuItemDetailsDTO> = new Observable<MenuItemDetailsDTO>()
-  public menuItems: PortalMenuItemDTO[] | undefined
+  private menuItem$: Observable<MenuItem> = new Observable<MenuItem>()
+  public menuItems: MenuItem[] | undefined
   public menuItem: MenuItem | undefined
-  private menuItemStructureDTOArray: Array<MenuItemStructureDTO> | undefined
+  private menuItemStructureDTOArray: Array<MenuItem> | undefined
   public menuImportError = false
   public httpHeaders!: HttpHeaders
   // detail
@@ -128,8 +128,8 @@ export class MenuComponent implements OnInit, OnDestroy {
     private renderer: Renderer2,
     private route: ActivatedRoute,
     private location: Location,
-    private menuApi: MenuItemsInternalAPIService,
-    private portalApi: PortalInternalAPIService,
+    private menuApi: MenuItemAPIService,
+    private portalApi: WorkspaceAPIService,
     private stateService: MenuStateService,
     private config: ConfigurationService,
     private icon: IconService,
@@ -273,7 +273,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   public onGotoMenuMgmt(): void {
-    this.log('gotoMenu for portal ' + this.portal?.portalName)
+    this.log('gotoMenu for portal ' + this.portal?.name)
   }
   public onCloseDetailDialog(): void {
     this.resetDetailDialog()
@@ -356,12 +356,8 @@ export class MenuComponent implements OnInit, OnDestroy {
    */
   public loadData(): void {
     this.exceptionKey = ''
-    this.portal$ = this.portalApi
-      .getPortalByPortalId({ portalId: this.portalId })
-      .pipe(catchError((error) => of(error)))
-    this.menu$ = this.menuApi
-      .getMenuStructureForPortalId({ portalId: this.portalId })
-      .pipe(catchError((error) => of(error)))
+    this.portal$ = this.portalApi.getWorkspaceById({ id: this.portalId }).pipe(catchError((error) => of(error)))
+    this.menu$ = this.menuApi.getMenuItemsForWorkspaceById({ id: this.portalId }).pipe(catchError((error) => of(error)))
 
     this.portal$.subscribe((portal) => {
       this.loading = true
@@ -370,14 +366,14 @@ export class MenuComponent implements OnInit, OnDestroy {
         console.error('getPortalByPortalId():', portal)
       } else if (portal instanceof Object) {
         this.portal = portal
-        this.portal.microfrontendRegistrations = new Set(Array.from(portal.microfrontendRegistrations ?? []))
-        this.mfeRUrls = Array.from(this.portal.microfrontendRegistrations || []).map((mfe) => mfe.baseUrl || '')
-        this.mfeRUrlOptions = Array.from(this.portal.microfrontendRegistrations ?? [])
-          .map((mfe) => ({
-            label: mfe.baseUrl,
-            value: mfe.baseUrl || ''
-          }))
-          .sort(dropDownSortItemsByLabel)
+        // this.portal.microfrontendRegistrations = new Set(Array.from(portal.microfrontendRegistrations ?? []))
+        // this.mfeRUrls = Array.from(this.portal.microfrontendRegistrations || []).map((mfe) => mfe.baseUrl || '')
+        // this.mfeRUrlOptions = Array.from(this.portal.microfrontendRegistrations ?? [])
+        //   .map((mfe) => ({
+        //     label: mfe.baseUrl,
+        //     value: mfe.baseUrl || ''
+        //   }))
+        //   .sort(dropDownSortItemsByLabel)
         this.log('getPortalByPortalId():', portal)
         this.loadMenu(false)
       } else {
@@ -444,7 +440,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.displayDeleteConfirmation = false
     this.menuApi
       .deleteMenuItemById({
-        portalId: this.portalId,
+        id: this.portalId,
         menuItemId: this.menuItem?.id
       } as DeleteMenuItemByIdRequestParams)
       .subscribe({
@@ -455,7 +451,7 @@ export class MenuComponent implements OnInit, OnDestroy {
           this.menuItem = undefined
           this.preparePreviewLanguages()
         },
-        error: (err) => {
+        error: (err: { error: any }) => {
           this.msgService.error({ summaryKey: 'ACTIONS.DELETE.MENU_DELETE_NOK' })
           console.error(err.error)
         }
@@ -487,7 +483,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.changeMode = 'EDIT'
     // get data
     this.menuItem$ = this.menuApi
-      .getMenuItemById({ portalId: this.portalId as string, menuItemId: item.id })
+      .getMenuItemById({ id: this.portalId as string, menuItemId: item.id })
       .pipe(catchError((error) => of(error)))
     this.menuItem$.subscribe({
       next: (m) => {
@@ -523,7 +519,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       scope: m.scope,
       badge: m.badge,
       disabled: m.disabled,
-      portalExit: m.portalExit
+      portalExit: m.workspaceExit
     })
   }
 
@@ -556,7 +552,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.menuItem.scope = this.formGroup.controls['scope'].value
         this.menuItem.position = this.formGroup.controls['position'].value
         this.menuItem.disabled = this.formGroup.controls['disabled'].value
-        this.menuItem.portalExit = this.formGroup.controls['portalExit'].value
+        this.menuItem.workspaceExit = this.formGroup.controls['portalExit'].value
         this.menuItem.description = this.formGroup.controls['description'].value
         const i18n: I18N = {}
         for (const l of this.languagesDisplayed) {
@@ -569,9 +565,9 @@ export class MenuComponent implements OnInit, OnDestroy {
       }
       if (this.changeMode === 'CREATE') {
         this.menuApi
-          .addMenuItemForPortal({
-            portalId: this.portalId,
-            menuItemDetailsDTO: this.menuItem
+          .createMenuItemForWorkspace({
+            id: this.portalId,
+            createMenuItemRequest: this.menuItem as CreateMenuItemRequest
           })
           .subscribe({
             next: () => {
@@ -579,20 +575,19 @@ export class MenuComponent implements OnInit, OnDestroy {
               this.onCloseDetailDialog()
               this.onReloadMenu()
             },
-            error: (err) => {
+            error: (err: { error: any }) => {
               this.msgService.error({ summaryKey: 'ACTIONS.CREATE.MESSAGE.MENU_CREATE_NOK' })
               console.error(err.error)
             }
           })
       } else if (this.changeMode === 'EDIT' && this.menuItem && this.menuItem.id) {
         this.menuApi
-          .patchMenuItem({
-            menuItemId: this.menuItem.id,
-            portalId: this.portalId,
-            menuItemDetailsDTO: this.menuItem
+          .patchMenuItems({
+            id: this.portalId,
+            patchMenuItemsRequest: [{ resource: this.menuItem }]
           })
           .subscribe({
-            next: (data) => {
+            next: (data: { key: string; name: string | undefined; i18n: any }) => {
               this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' })
               // update tree node with received data without reload all
               if (this.displayMenuDetail) {
@@ -614,7 +609,7 @@ export class MenuComponent implements OnInit, OnDestroy {
               }
               this.preparePreviewLanguages()
             },
-            error: (err) => {
+            error: (err: { error: any }) => {
               this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
               console.error(err.error)
             }
@@ -626,7 +621,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   /****************************************************************************
    *  TREE - prepare recursively the tree nodes from menu structure
    */
-  private mapToTreeNodes(items?: MenuItemStructureDTO[], parent?: MenuItem): TreeNode[] {
+  private mapToTreeNodes(items?: MenuItem[], parent?: MenuItem): TreeNode[] {
     if (!items || items.length === 0) {
       return []
     }
@@ -642,9 +637,9 @@ export class MenuComponent implements OnInit, OnDestroy {
         prevId: prevId,
         // parent info ?
         // concat the positions
-        positionPath: parent ? parent.positionPath + '.' + item.position : item.position,
+        positionPath: parent ? parent.position + '.' + item.position : item.position,
         // true if path is a mfe base path
-        regMfeAligned: item.url && !item.url.startsWith('http') && !item.portalExit ? this.urlMatch(item.url) : false
+        regMfeAligned: item.url && !item.url.startsWith('http') && !item.workspaceExit ? this.urlMatch(item.url) : false
       } as MenuItem
       const newNode: TreeNode = this.createTreeNode(extendedItem)
       if (item.children && item.children.length > 0 && item.children != null && item.children.toLocaleString() != '') {
@@ -693,7 +688,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     }
     return undefined
   }
-  private getItemByKey(key: string, items: PortalMenuItemDTO[]): PortalMenuItemDTO | undefined {
+  private getItemByKey(key: string, items: MenuItem[]): MenuItem | undefined {
     for (const item of items) {
       if (item.key === key) {
         return item
@@ -734,8 +729,8 @@ export class MenuComponent implements OnInit, OnDestroy {
    */
   public onExportMenu(): void {
     if (this.portalId) {
-      this.menuApi.getMenuStructureForPortalId({ portalId: this.portalId }).subscribe((fetchedStructure) => {
-        const filteredStructure = fetchedStructure.map((item) =>
+      this.menuApi.getMenuStructureForWorkspaceId({ id: this.portalId }).subscribe(( fetchedStructure: any[]) => {
+        const filteredStructure = fetchedStructure.map((item: any) =>
           filterObjectTree(
             item,
             [
@@ -749,13 +744,10 @@ export class MenuComponent implements OnInit, OnDestroy {
             ],
             'children'
           )
-        ) as PortalMenuItemDTO[]
+        ) as MenuItem[]
         filteredStructure.sort((a, b) => (a.position || 0) - (b.position || 0))
         const jsonBody = JSON.stringify(filteredStructure, null, 2)
-        FileSaver.saveAs(
-          new Blob([jsonBody], { type: 'text/json' }),
-          'workspace_' + this.portal?.portalName + '_menu.json'
-        )
+        FileSaver.saveAs(new Blob([jsonBody], { type: 'text/json' }), 'workspace_' + this.portal?.name + '_menu.json')
       })
     }
   }
@@ -775,7 +767,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       this.menuItemStructureDTOArray = undefined
       this.menuImportError = false
       try {
-        const menuItemStructureDTOArray: Array<MenuItemStructureDTO> = JSON.parse(text) as Array<MenuItemStructureDTO>
+        const menuItemStructureDTOArray: Array<MenuItem> = JSON.parse(text) as Array<MenuItem>
         if (this.isMenuImportRequestDTO2(menuItemStructureDTOArray)) {
           this.menuItemStructureDTOArray = menuItemStructureDTOArray
         } else {
@@ -789,24 +781,24 @@ export class MenuComponent implements OnInit, OnDestroy {
       }
     })
   }
-  private isMenuImportRequestDTO2(obj: unknown): obj is Array<MenuItemStructureDTO> {
-    const dto = obj as Array<MenuItemStructureDTO>
+  private isMenuImportRequestDTO2(obj: unknown): obj is Array<MenuItem> {
+    const dto = obj as Array<MenuItem>
     return !!(typeof dto === 'object' && dto && dto.length)
   }
 
   public onMenuImport(): void {
     if (this.portalId) {
       this.menuApi
-        .uploadMenuStructure({
-          portalId: this.portalId,
-          menuStructureListDTO: { menuItemStructureDTOS: this.menuItemStructureDTOArray }
+        .exportMenuByWorkspaceName({
+          name: this.portalId
+          // menuStructureListDTO: { menuItemStructureDTOS: this.menuItemStructureDTOArray }
         })
         .subscribe({
           next: () => {
             this.msgService.success({ summaryKey: 'TREE.STRUCTURE_UPLOAD_SUCCESS' })
             this.ngOnInit()
           },
-          error: (err) => {
+          error: (err: any) => {
             this.msgService.error({ summaryKey: 'TREE.STRUCTURE_UPLOAD_ERROR' })
             console.error(err)
           }
@@ -825,18 +817,19 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   // triggered by changes of tree structure in tree popup
-  public updateMenuItems(updatedMenuItems: MenuItemDetailsDTO[]): void {
+  public updateMenuItems(updatedMenuItems: MenuItem[]): void {
     this.menuApi
-      .bulkPatchMenuItems({
+      .patchMenuItems({
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        portalId: this.portalId,
-        menuItemDetailsDTO: updatedMenuItems
+        id: this.portalId,
+        patchMenuItemsRequest: [{ resource: updatedMenuItems[0] }] // WARNING: SHOULD BE WHOLE ARRAY???
+        // menuItemDetailsDTO: updatedMenuItems
       })
       .subscribe({
         next: () => {
           this.msgService.success({ summaryKey: 'TREE.EDIT_SUCCESS' })
         },
-        error: (err) => {
+        error: (err: any) => {
           this.msgService.error({ summaryKey: 'TREE.EDIT_ERROR' })
           console.error(err)
         },

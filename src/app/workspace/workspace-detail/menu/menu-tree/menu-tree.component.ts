@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core'
 import { SelectItem, TreeNode } from 'primeng/api'
 
-import { MenuItemDetailsDTO, PortalMenuItemDTO } from '../../../../shared/generated'
+import { MenuItem } from '../../../../shared/generated'
 import { MenuTreeService } from '../../../../services/menu-tree.service'
 import { MenuStateService } from '../../../../services/menu-state.service'
 
@@ -12,12 +12,12 @@ import { MenuStateService } from '../../../../services/menu-state.service'
 })
 export class MenuTreeComponent implements OnChanges {
   @Input() public selectedPortalId?: string
-  @Input() public portalMenuItems!: PortalMenuItemDTO[]
+  @Input() public portalMenuItems!: MenuItem[]
   @Input() public languagesPreview!: SelectItem[]
   @Input() public updateTree = false
-  @Output() public updateMenuStructureEmitter = new EventEmitter<MenuItemDetailsDTO[]>()
+  @Output() public updateMenuStructureEmitter = new EventEmitter<MenuItem[]>()
 
-  public menuTreeNodes!: TreeNode<PortalMenuItemDTO>[]
+  public menuTreeNodes!: TreeNode<MenuItem>[]
   public treeExpanded = false
   public languagesPreviewValue = 'en'
 
@@ -51,7 +51,7 @@ export class MenuTreeComponent implements OnChanges {
     }
   }
 
-  private mapToTree(items: PortalMenuItemDTO[], lang: string): TreeNode<PortalMenuItemDTO>[] {
+  private mapToTree(items: MenuItem[], lang: string): TreeNode<MenuItem>[] {
     items.sort((a, b) => (a.position || 0) - (b.position || 0))
     return items.map((mi) => {
       const langExists = mi.i18n && Object.keys(mi.i18n).length > 0 && mi.i18n[lang]
@@ -74,12 +74,12 @@ export class MenuTreeComponent implements OnChanges {
     })
   }
 
-  private flatten(mi: PortalMenuItemDTO): PortalMenuItemDTO[] {
-    const res = mi.children && mi.children.length > 0 ? mi.children.flatMap((pi) => this.flatten(pi)).concat(mi) : [mi]
+  private flatten(mi: MenuItem): MenuItem[] {
+    const res = mi.children && mi.children.length > 0 ? mi.children.flatMap((pi: MenuItem) => this.flatten(pi)).concat(mi) : [mi]
     return res
   }
 
-  public onDrop(event: { dragNode: TreeNode<PortalMenuItemDTO>; dropNode: TreeNode<PortalMenuItemDTO> }): void {
+  public onDrop(event: { dragNode: TreeNode<MenuItem>; dropNode: TreeNode<MenuItem> }): void {
     const draggedNodeId = event.dragNode.key
     const oldParentNodeId = event.dragNode.parent ? event.dragNode.parent.key : undefined
 
@@ -101,9 +101,9 @@ export class MenuTreeComponent implements OnChanges {
     const flatMenuItem = this.portalMenuItems.flatMap((pi) => this.flatten(pi))
 
     // prepare menu items to update
-    const updatedMenuItems: MenuItemDetailsDTO[] = []
+    const updatedMenuItems: MenuItem[] = []
     for (const updatedNode of newNodesPositions) {
-      const updateMenuItem = flatMenuItem.find((item: PortalMenuItemDTO) => item.id === updatedNode.id)
+      const updateMenuItem = flatMenuItem.find((item: MenuItem) => item.id === updatedNode.id)
       if (!updateMenuItem) {
         return
       }
@@ -115,7 +115,7 @@ export class MenuTreeComponent implements OnChanges {
           i18n: updateMenuItem.i18n,
           position: updatedNode.position,
           disabled: updateMenuItem.disabled,
-          portalExit: updateMenuItem.portalExit
+          workspaceExit: updateMenuItem.workspaceExit
         })
       } else {
         updatedMenuItems.push({
@@ -125,7 +125,7 @@ export class MenuTreeComponent implements OnChanges {
           i18n: updateMenuItem.i18n,
           position: updatedNode.position,
           disabled: updateMenuItem.disabled,
-          portalExit: updateMenuItem.portalExit
+          workspaceExit: updateMenuItem.workspaceExit
         })
       }
     }

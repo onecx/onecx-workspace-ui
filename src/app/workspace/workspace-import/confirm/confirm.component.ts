@@ -53,12 +53,12 @@ export class ConfirmComponent implements OnInit {
     this.portalNameExists = false
     this.baseUrlExists = false
     if (this.portals) {
-      for (const { name, tenantId, baseUrl } of this.portals) {
+      for (const { name, /* tenantId, */ baseUrl } of this.portals) {
         if (this.hasPermission) {
-          if ((tenantId ?? undefined) === this.tenantId && name === this.portalName) {
+          /* if ((tenantId ?? undefined) === this.tenantId && name === this.portalName) {
             this.portalTenantExists = true
-          }
-        } else if (this.portalName === this.portalName) {
+          } */
+        } else if (this.portalName === name) {
           this.portalNameExists = true
         }
         if (!this.baseUrlIsMissing && baseUrl === this.baseUrl) {
