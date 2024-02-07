@@ -61,7 +61,7 @@ export class WorkspaceRolesComponent implements OnChanges {
         .updateWorkspace({
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           id: this.portalDetail.id!,
-          updateWorkspaceRequest: portal
+          updateWorkspaceRequest: { resource: portal }
         })
         .subscribe({
           next: () => {

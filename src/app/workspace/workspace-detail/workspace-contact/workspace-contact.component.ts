@@ -50,7 +50,7 @@ export class WorkspaceContactComponent implements OnChanges {
         .updateWorkspace({
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           id: this.portalDetail.id!,
-          updateWorkspaceRequest: clonePortalWithMicrofrontendsArray(this.portalDetail)
+          updateWorkspaceRequest: { resource: clonePortalWithMicrofrontendsArray(this.portalDetail) }
         })
         .subscribe({
           next: () => {

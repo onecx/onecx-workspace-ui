@@ -4,8 +4,8 @@ import { TreeNode, SelectItem } from 'primeng/api'
 import { /* first,  map, */ Observable, of } from 'rxjs'
 
 import {
-  ImportWorkspacesRequestParams,
-  EximWorkspaceMenuItem
+  EximWorkspaceMenuItem,
+  EximWorkspace
   // MicrofrontendRegistrationDTO
   // ThemesAPIService
 } from '../../../shared/generated'
@@ -17,7 +17,7 @@ import { forceFormValidation /* , sortThemeByName */ } from '../../../shared/uti
   styleUrls: ['./preview.component.scss']
 })
 export class PreviewComponent implements OnInit, OnChanges {
-  @Input() public importRequestDTO!: ImportWorkspacesRequestParams
+  @Input() public importRequestDTO!: EximWorkspace
   @Input() public importThemeCheckbox = false
   @Input() public hasPermission = false
   @Output() public isFormValide = new EventEmitter<boolean>()
@@ -50,21 +50,21 @@ export class PreviewComponent implements OnInit, OnChanges {
   }
 
   public ngOnInit(): void {
-    if (this.importRequestDTO.workspaceSnapshot.workspaces) {
-      this.portalName = this.importRequestDTO?.workspaceSnapshot.workspaces[0].name || ''
+    if (this.importRequestDTO) {
+      this.portalName = this.importRequestDTO?.name || ''
       // this.themeName = this.importRequestDTO?.themeImportData?.name
       // ? this.importRequestDTO?.themeImportData?.name
       // : this.formGroup.controls['themeName'].value || ''
-      this.baseUrl = this.importRequestDTO?.workspaceSnapshot.workspaces[0].baseUrl || ''
-      // this.tenantId = this.importRequestDTO?.workspaceSnapshot.workspaces[0].tenantId || undefined
-      this.menuItems = this.mapToTreeNodes(this.importRequestDTO?.workspaceSnapshot.workspaces[0].menu?.menu?.menuItems)
+      this.baseUrl = this.importRequestDTO?.baseUrl || ''
+      // this.tenantId = this.importRequestDTO?.tenantId || undefined
+      this.menuItems = this.mapToTreeNodes(this.importRequestDTO?.menu?.menu?.menuItems)
       // this.themeProperties = this.importRequestDTO?.themeImportData?.properties
       // check mfe existence
       // if (this.importRequestDTO.portal.microfrontendRegistrations) {
       //   this.portalMfes = Array.from(this.importRequestDTO.portal.microfrontendRegistrations)
       // }
-      if (this.importRequestDTO?.workspaceSnapshot.workspaces[0].workspaceRoles) {
-        this.portalRoles = Array.from(this.importRequestDTO?.workspaceSnapshot.workspaces[0].workspaceRoles)
+      if (this.importRequestDTO?.workspaceRoles) {
+        this.portalRoles = Array.from(this.importRequestDTO?.workspaceRoles)
       }
     }
     // error handling if no theme name or no match with existing themes
@@ -98,10 +98,10 @@ export class PreviewComponent implements OnInit, OnChanges {
   }
 
   public fillForm(): void {
-    if (this.importRequestDTO.workspaceSnapshot.workspaces) {
-      this.formGroup.controls['portalName'].setValue(this.importRequestDTO?.workspaceSnapshot.workspaces[0].name)
-      // this.formGroup.controls['themeName'].setValue(this.importRequestDTO?.workspaceSnapshot.workspaces[0].themeName)
-      this.formGroup.controls['baseUrl'].setValue(this.importRequestDTO?.workspaceSnapshot.workspaces[0].baseUrl)
+    if (this.importRequestDTO) {
+      this.formGroup.controls['portalName'].setValue(this.importRequestDTO?.name)
+      // this.formGroup.controls['themeName'].setValue(this.importRequestDTO?.themeName)
+      this.formGroup.controls['baseUrl'].setValue(this.importRequestDTO?.baseUrl)
       // if (this.hasPermission && this.importRequestDTO?.portal?.tenantId != undefined)
       //   this.formGroup.controls['tenantId'].setValue(this.importRequestDTO?.portal?.tenantId)
     }
@@ -113,10 +113,10 @@ export class PreviewComponent implements OnInit, OnChanges {
     this.baseUrl = this.formGroup.controls['baseUrl'].value
     // if (this.hasPermission && this.formGroup.controls['tenantId'].value !== undefined)
     //   this.tenantId = this.formGroup.controls['tenantId'].value
-    if (this.importRequestDTO.workspaceSnapshot.workspaces) {
-      this.importRequestDTO.workspaceSnapshot.workspaces[0].name = this.portalName
+    if (this.importRequestDTO) {
+      this.importRequestDTO.name = this.portalName
       // this.importRequestDTO.portal.themeName = this.themeName
-      this.importRequestDTO.workspaceSnapshot.workspaces[0].baseUrl = this.baseUrl
+      this.importRequestDTO.baseUrl = this.baseUrl
       // if (this.hasPermission) this.importRequestDTO.portal.tenantId = this.tenantId
     }
     this.isFormValide.emit(this.formGroup.valid)

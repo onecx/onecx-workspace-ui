@@ -1,7 +1,7 @@
 <ocx-portal-page permission="WORKSPACE#VIEW" helpArticleId="PAGE_WORKSPACE_DETAIL" pageName="PAGE_PORTAL_DETAIL">
   <ocx-page-header
     *ngIf="portalDetail"
-    [header]="portalDetail ? portalDetail.portalName : ''"
+    [header]="portalDetail ? portalDetail.name : ''"
     [subheader]="'PORTAL.HEADER.DETAIL' | translate"
     [actions]="actions"
     [objectDetails]="objectDetails"
@@ -34,11 +34,11 @@
         </div>
       </p-tabPanel>
 
-      <p-tabPanel [header]="'PORTAL.TABS.MFES' | translate">
+      <!-- <p-tabPanel [header]="'PORTAL.TABS.MFES' | translate">
         <div *ocxIfPermission="'WORKSPACE_PRODUCTS#VIEW'">
           <app-mfe-registrations [portalDetail]="portalDetail" [editMode]="editMode"></app-mfe-registrations>
         </div>
-      </p-tabPanel>
+      </p-tabPanel> -->
 
       <p-tabPanel [header]="'PORTAL.TABS.ROLES' | translate">
         <div *ocxIfPermission="'WORKSPACE_ROLES#VIEW'">

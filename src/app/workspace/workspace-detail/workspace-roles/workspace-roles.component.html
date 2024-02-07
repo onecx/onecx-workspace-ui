@@ -1,5 +1,5 @@
 <div class="role-section">
-  <div *ngIf="!portalDetail.portalRoles" class="px-3 flex flex-wrap justify-content-between align-items-center">
+  <div *ngIf="!portalDetail.workspaceRoles" class="px-3 flex flex-wrap justify-content-between align-items-center">
     <p-message severity="info" styleClass="p-2" [text]="'DETAIL.ROLES_NOT_EXIST' | translate"></p-message>
     <button
       *ocxIfPermission="'WORKSPACE_ROLE#EDIT'"
@@ -9,7 +9,7 @@
       label="{{ 'DETAIL.ADD_ROLE' | translate }}"
     ></button>
   </div>
-  <div *ngIf="portalDetail.portalRoles" class="p-grid p-nogutter grid">
+  <div *ngIf="portalDetail.workspaceRoles" class="p-grid p-nogutter grid">
     <ng-container *ngIf="editMode; else elseBlock">
       <div *ngFor="let role of formArray.controls; index as i" class="col-12 md:col-6">
         <ng-container [formGroup]="role">
@@ -33,12 +33,12 @@
       </div>
     </ng-container>
     <ng-template #elseBlock>
-      <div *ngFor="let role of portalDetail.portalRoles; index as i" class="col-12 md:col-6">
+      <div *ngFor="let role of portalDetail.workspaceRoles; index as i" class="col-12 md:col-6">
         <p-card class="view-role-card">{{ role }}</p-card>
       </div>
     </ng-template>
   </div>
-  <div *ngIf="portalDetail.portalRoles">
+  <div *ngIf="portalDetail.workspaceRoles">
     <button
       *ocxIfPermission="'WORKSPACE_ROLE#EDIT'"
       pButton

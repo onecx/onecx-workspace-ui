@@ -33,7 +33,7 @@ import { limitText, dropDownSortItemsByLabel } from '../../../shared/utils'
 import { MenuStringConst } from '../../..//model/menu-string-const'
 import { MenuStateService } from '../../../services/menu-state.service'
 import { IconService } from './iconservice'
-import { filterObjectTree } from '../../../shared/utils'
+// import { filterObjectTree } from '../../../shared/utils'
 
 /* type MenuItem = MenuItem & {
   positionPath: string
@@ -587,22 +587,22 @@ export class MenuComponent implements OnInit, OnDestroy {
             patchMenuItemsRequest: [{ resource: this.menuItem }]
           })
           .subscribe({
-            next: (data: { key: string; name: string | undefined; i18n: any }) => {
+            next: (data) => {
               this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' })
               // update tree node with received data without reload all
               if (this.displayMenuDetail) {
                 this.onCloseDetailDialog()
-                if (data && data.key) {
-                  const node = this.getNodeByKey(data.key, this.menuNodes)
+                if (data && data[0].resource?.key) {
+                  const node = this.getNodeByKey(data[0].resource?.key, this.menuNodes)
                   if (node) {
                     node.data = data
-                    node.label = data.name
+                    node.label = data[0].resource?.name
                   }
                   if (this.menuItems) {
-                    const item = this.getItemByKey(data.key, this.menuItems)
+                    const item = this.getItemByKey(data[0].resource?.key, this.menuItems)
                     if (item) {
-                      item.i18n = data.i18n
-                      item.name = data.name
+                      item.i18n = data[0].resource?.i18n
+                      item.name = data[0].resource?.name
                     }
                   }
                 }
@@ -729,8 +729,8 @@ export class MenuComponent implements OnInit, OnDestroy {
    */
   public onExportMenu(): void {
     if (this.portalId) {
-      this.menuApi.getMenuStructureForWorkspaceId({ id: this.portalId }).subscribe(( fetchedStructure: any[]) => {
-        const filteredStructure = fetchedStructure.map((item: any) =>
+      this.menuApi.getMenuStructureForWorkspaceId({ id: this.portalId }).subscribe((data) => {
+        /* const filteredStructure = fetchedStructure.map((item: any) =>
           filterObjectTree(
             item,
             [
@@ -745,8 +745,8 @@ export class MenuComponent implements OnInit, OnDestroy {
             'children'
           )
         ) as MenuItem[]
-        filteredStructure.sort((a, b) => (a.position || 0) - (b.position || 0))
-        const jsonBody = JSON.stringify(filteredStructure, null, 2)
+        filteredStructure.sort((a, b) => (a.position || 0) - (b.position || 0)) */
+        const jsonBody = JSON.stringify(data, null, 2)
         FileSaver.saveAs(new Blob([jsonBody], { type: 'text/json' }), 'workspace_' + this.portal?.name + '_menu.json')
       })
     }

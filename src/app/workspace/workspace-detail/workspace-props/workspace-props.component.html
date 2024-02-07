@@ -37,7 +37,7 @@
           </span>
         </div>
 
-        <div class="p-inputgroup mb-1" controlErrorAnchor>
+        <!-- <div class="p-inputgroup mb-1" controlErrorAnchor>
           <span class="p-float-label">
             <p-dropdown
               #inputThemeName
@@ -57,12 +57,11 @@
             class="p-inputgroup-addon bg-primary pseudo-button"
             [ngClass]="portalDetail.themeId ? 'cursor-pointer' : 'p-disabled'"
             [title]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
-            (click)=""
+            (click)="onGotoTheme($event, '../../../theme/' + portalDetail.themeId)"
           >
-            <!-- (click)="onGotoTheme($event, '../../../theme/' + portalDetail.themeId)" -->
             <span class="pi pi-link"></span>
           </span>
-        </div>
+        </div> -->
 
         <div>
           <div class="p-inputgroup mb-1" controlErrorAnchor>
@@ -101,7 +100,7 @@
           </label>
         </div>
 
-        <div class="p-inputgroup mb-1" controlErrorAnchor>
+        <!-- <div class="p-inputgroup mb-1" controlErrorAnchor>
           <span class="p-float-label">
             <p-dropdown
               #inputHomePage
@@ -132,7 +131,7 @@
               <span class="pi pi-link"></span>
             </a>
           </span>
-        </div>
+        </div> -->
 
         <div class="p-inputgroup mb-1" controlErrorAnchor>
           <span class="p-float-label">
@@ -160,8 +159,8 @@
           </span>
         </div>
 
-        <div class="flex flex-wrap sm:flex-nowrap align-items-center pb-2 row-gap-2 column-gap-4">
-          <!-- <input hidden type="file" accept="image/*" #selectedFileInputLogo (change)="onFileUpload($event, 'logo')" /> -->
+        <!-- <div class="flex flex-wrap sm:flex-nowrap align-items-center pb-2 row-gap-2 column-gap-4">
+          <input hidden type="file" accept="image/*" #selectedFileInputLogo (change)="onFileUpload($event, 'logo')" />
           <app-image-container
             [id]="'portal_detail_item_logo_image'"
             [imageUrl]="fetchingLogoUrl"
@@ -185,7 +184,7 @@
               </span>
             </div>
           </div>
-        </div>
+        </div> -->
 
         <span class="p-float-label mb-1" controlErrorAnchor>
           <input

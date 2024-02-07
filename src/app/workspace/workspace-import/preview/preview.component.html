@@ -98,7 +98,7 @@
           <div *ngIf="portalRoles.length > 0">{{ portalRoles.join(', ') }}</div>
         </div>
       </p-tabPanel>
-      <p-tabPanel [header]="'PORTAL.TABS.MFES' | translate">
+      <!-- <p-tabPanel [header]="'PORTAL.TABS.MFES' | translate">
         <div *ngIf="portalMfes.length === 0" class="mt-1 mb-2 mx-3">{{ 'DETAIL.MFES_NOT_EXIST' | translate }}</div>
         <table *ngIf="portalMfes.length > 0">
           <tr *ngFor="let mfe of portalMfes">
@@ -106,7 +106,7 @@
             <td class="pb-1 px-4">{{ mfe.baseUrl }}</td>
           </tr>
         </table>
-      </p-tabPanel>
+      </p-tabPanel> -->
     </p-tabView>
   </div>
 </form>

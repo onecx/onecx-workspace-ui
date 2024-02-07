@@ -7,12 +7,7 @@ import { AUTH_SERVICE, IAuthService, PortalMessageService } from '@onecx/portal-
 
 import { PreviewComponent } from './preview/preview.component'
 import { ConfirmComponent } from './confirm/confirm.component'
-import {
-  WorkspaceAPIService,
-  ImportWorkspacesRequestParams,
-  EximWorkspaceMenuItem,
-  WorkspaceSnapshot
-} from 'src/app/shared/generated'
+import { WorkspaceAPIService, EximWorkspaceMenuItem, WorkspaceSnapshot, EximWorkspace } from 'src/app/shared/generated'
 
 @Component({
   selector: 'app-workspace-import',
@@ -37,7 +32,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
   public tenantId: string | undefined = undefined
   public baseUrl = ''
   public baseUrlOrg: string | undefined = undefined // the original
-  public importRequestDTO?: ImportWorkspacesRequestParams
+  public importRequestDTO?: EximWorkspace
   public activeThemeCheckboxInFirstStep = true
   public hasPermission = false
 
@@ -100,14 +95,14 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
     this.isLoading = true
 
     // Basic properties
-    if (this.importRequestDTO.workspaceSnapshot.workspaces) {
-      this.importRequestDTO.workspaceSnapshot.workspaces[0].name = this.portalName
-      this.importRequestDTO.workspaceSnapshot.workspaces[0].theme = this.themeName
+    if (this.importRequestDTO) {
+      this.importRequestDTO.name = this.portalName
+      this.importRequestDTO.theme = this.themeName
       /* if (this.hasPermission) {
         this.importRequestDTO.portal.tenantId = this.tenantId
       } */
       // this.importRequestDTO.synchronizePermissions = this.syncPermCheckbox
-      this.importRequestDTO.workspaceSnapshot.workspaces[0].baseUrl = this.baseUrl
+      this.importRequestDTO.baseUrl = this.baseUrl
     }
 
     // Theme
@@ -141,9 +136,9 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
       //   }
       // })
       // Menu items ... hierarchical
-      if (this.importRequestDTO.workspaceSnapshot.workspaces) {
-        if (this.importRequestDTO.workspaceSnapshot.workspaces[0].menu?.menu?.menuItems) {
-          this.alignMenuItemsBaseUrl(this.importRequestDTO.workspaceSnapshot.workspaces[0].menu?.menu.menuItems)
+      if (this.importRequestDTO) {
+        if (this.importRequestDTO.menu?.menu?.menuItems) {
+          this.alignMenuItemsBaseUrl(this.importRequestDTO.menu?.menu.menuItems)
         }
       }
     }
@@ -180,11 +175,11 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
   }
 
   // NAVIGATE import step : NEXT
-  public next(importRequestDTO?: ImportWorkspacesRequestParams): void {
-    if (this.activeIndex == 0 && importRequestDTO?.workspaceSnapshot.workspaces) {
+  public next(importRequestDTO?: EximWorkspace): void {
+    if (this.activeIndex == 0 && importRequestDTO) {
       this.importRequestDTO = importRequestDTO
       // this.themeName = importRequestDTO.portal.themeName || ''
-      this.baseUrlOrg = importRequestDTO.workspaceSnapshot.workspaces[0].baseUrl
+      this.baseUrlOrg = importRequestDTO.baseUrl
       // if (this.importRequestDTO.themeImportData) {
       //   this.themeCheckboxEnabled = true
       // } else {
@@ -203,10 +198,10 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
   // NAVIGATE import step : BACK
   public back(): void {
     if (this.activeIndex == 2) {
-      if (this.importRequestDTO?.workspaceSnapshot.workspaces /* && this.importRequestDTO.themeImportData */) {
-        this.importRequestDTO.workspaceSnapshot.workspaces[0].name = this.confirmComponent?.portalName || ''
-        // this.importRequestDTO.workspaceSnapshot.workspaces[0].tenantId = this.confirmComponent?.tenantId || ''
-        this.importRequestDTO.workspaceSnapshot.workspaces[0].baseUrl = this.confirmComponent?.baseUrl || ''
+      if (this.importRequestDTO /* && this.importRequestDTO.themeImportData */) {
+        this.importRequestDTO.name = this.confirmComponent?.portalName || ''
+        // this.importRequestDTO.tenantId = this.confirmComponent?.tenantId || ''
+        this.importRequestDTO.baseUrl = this.confirmComponent?.baseUrl || ''
         // this.importRequestDTO.themeImportData.name = this.confirmComponent?.themeName || ''
         // if (this.hasPermission) this.importRequestDTO.portal.tenantId = this.confirmComponent?.tenantId || undefined
       }
