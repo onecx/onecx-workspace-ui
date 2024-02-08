@@ -15,7 +15,7 @@ import { SubjectLink } from './subjectLink';
 
 export interface Workspace { 
     readonly id?: string;
-    readonly version?: number;
+    modificationCount?: number;
     creationDate?: string;
     readonly creationUser?: string;
     modificationDate?: string;

@@ -13,6 +13,7 @@ import { CreateUpdateMicrofrontend } from './createUpdateMicrofrontend';
 
 
 export interface UpdateProductRequest { 
+    modificationCount: number;
     baseUrl: string;
     microfrontends?: Array<CreateUpdateMicrofrontend>;
 }

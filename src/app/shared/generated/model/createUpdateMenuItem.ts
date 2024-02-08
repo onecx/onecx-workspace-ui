@@ -12,7 +12,8 @@
 import { Scope } from './scope';
 
 
-export interface  CreateUpdateMenuItem { 
+export interface CreateUpdateMenuItem { 
+    modificationCount?: number;
     key?: string;
     name?: string;
     description?: string;

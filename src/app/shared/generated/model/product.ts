@@ -13,7 +13,7 @@ import { Microfrontend } from './microfrontend';
 
 
 export interface Product { 
-    version?: number;
+    modificationCount?: number;
     creationDate?: string;
     creationUser?: string;
     modificationDate?: string;

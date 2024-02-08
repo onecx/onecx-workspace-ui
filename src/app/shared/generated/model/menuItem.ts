@@ -13,7 +13,7 @@ import { Scope } from './scope';
 
 
 export interface MenuItem { 
-    version?: number;
+    modificationCount?: number;
     creationDate?: string;
     creationUser?: string;
     modificationDate?: string;
@@ -32,6 +32,7 @@ export interface MenuItem {
     scope?: Scope;
     workspaceExit?: boolean;
     parentItemId?: string;
+    children?: Array<MenuItem>;
     i18n?: { [key: string]: string; };
 }
 

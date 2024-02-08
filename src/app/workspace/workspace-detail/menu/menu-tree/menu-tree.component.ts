@@ -75,7 +75,8 @@ export class MenuTreeComponent implements OnChanges {
   }
 
   private flatten(mi: MenuItem): MenuItem[] {
-    const res = mi.children && mi.children.length > 0 ? mi.children.flatMap((pi: MenuItem) => this.flatten(pi)).concat(mi) : [mi]
+    const res =
+      mi.children && mi.children.length > 0 ? mi.children.flatMap((pi: MenuItem) => this.flatten(pi)).concat(mi) : [mi]
     return res
   }
 

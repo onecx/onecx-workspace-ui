@@ -54,7 +54,7 @@ export class WorkspaceCreateComponent {
 
     this.formGroup = new FormGroup({
       portalName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
-      themeName: new FormControl(null, [Validators.required]),
+      // themeName: new FormControl(null, [Validators.required]),
       homePage: new FormControl(null, [Validators.maxLength(255)]),
       logoUrl: new FormControl('', [Validators.maxLength(255)]),
       baseUrl: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.pattern('^/.*')]),
