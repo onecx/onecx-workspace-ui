@@ -13,8 +13,9 @@ import { LogoState } from './logo-state'
 // import { setFetchUrls , sortThemeByName } from '../../shared/utils'
 import { environment } from '../../../environments/environment'
 import {
-  /* ImageV1APIService, */ CreateWorkspaceRequest,
-  WorkspaceAPIService /* , ThemesAPIService */
+  /* ImageV1APIService, */
+  WorkspaceAPIService /* , ThemesAPIService */,
+  Workspace
 } from '../../shared/generated'
 
 @Component({
@@ -26,7 +27,7 @@ export class WorkspaceCreateComponent {
 
   themes$: Observable<SelectItem<string>[]> = of([])
   public formGroup: FormGroup
-  private portalDto!: CreateWorkspaceRequest
+  private portalDto!: Workspace
   public hasPermission = false
   public selectedLogoFile: File | undefined
   public preview = false
@@ -53,7 +54,7 @@ export class WorkspaceCreateComponent {
     this.hasPermission = this.auth.hasPermission('WORKSPACE#EDIT_TENANT')
 
     this.formGroup = new FormGroup({
-      portalName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
+      name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
       // themeName: new FormControl(null, [Validators.required]),
       homePage: new FormControl(null, [Validators.maxLength(255)]),
       logoUrl: new FormControl('', [Validators.maxLength(255)]),
@@ -85,7 +86,7 @@ export class WorkspaceCreateComponent {
     this.createPortalDto()
     this.portalApi
       .createWorkspace({
-        createWorkspaceRequest: this.portalDto
+        createWorkspaceRequest: { resource: this.portalDto }
       })
       .pipe()
       .subscribe({

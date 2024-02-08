@@ -1,6 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA, Inject, NgModule } from '@angular/core'
 import { CommonModule } from '@angular/common'
-import { HttpClient } from '@angular/common/http'
+// import { HttpClient } from '@angular/common/http'
 import { FormsModule } from '@angular/forms'
 import { RouterModule, Routes } from '@angular/router'
 import { ConfirmationService } from 'primeng/api'
@@ -11,11 +11,11 @@ import { CardModule } from 'primeng/card'
 import { ConfirmDialogModule } from 'primeng/confirmdialog'
 import { FileUploadModule } from 'primeng/fileupload'
 import { TreeTableModule } from 'primeng/treetable'
-import { TranslateModule, TranslateLoader } from '@ngx-translate/core'
+// import { TranslateModule, TranslateLoader } from '@ngx-translate/core'
 
 import { MFE_INFO, MfeInfo, PortalCoreModule } from '@onecx/portal-integration-angular'
 
-import { SharedModule, HttpLoaderFactory } from '../shared/shared.module'
+import { SharedModule /* , HttpLoaderFactory */ } from '../shared/shared.module'
 import { LabelResolver } from '../shared/label.resolver'
 import { WorkspaceSearchComponent } from './workspace-search/workspace-search.component'
 import { WorkspaceCreateComponent } from './workspace-create/workspace-create.component'
@@ -69,15 +69,15 @@ const routes: Routes = [
     RippleModule,
     ImageModule,
     ConfirmDialogModule,
-    TreeTableModule,
-    TranslateModule.forChild({
-      isolate: true,
-      loader: {
-        provide: TranslateLoader,
-        useFactory: HttpLoaderFactory,
-        deps: [HttpClient, MFE_INFO]
-      }
-    })
+    TreeTableModule
+    // TranslateModule.forChild({
+    //   isolate: true,
+    //   loader: {
+    //     provide: TranslateLoader,
+    //     useFactory: HttpLoaderFactory,
+    //     deps: [HttpClient, MFE_INFO]
+    //   }
+    // })
   ],
   providers: [ConfirmationService],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

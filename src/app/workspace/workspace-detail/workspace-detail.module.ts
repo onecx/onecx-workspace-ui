@@ -1,14 +1,14 @@
 import { CUSTOM_ELEMENTS_SCHEMA, Inject, NgModule } from '@angular/core'
 import { CommonModule } from '@angular/common'
-import { HttpClient } from '@angular/common/http'
+// import { HttpClient } from '@angular/common/http'
 import { FormsModule } from '@angular/forms'
 import { RouterModule, Routes } from '@angular/router'
 import { ConfirmationService } from 'primeng/api'
-import { TranslateModule, TranslateLoader } from '@ngx-translate/core'
+// import { TranslateModule, TranslateLoader } from '@ngx-translate/core'
 
 import { MFE_INFO, MfeInfo, PortalCoreModule } from '@onecx/portal-integration-angular'
 
-import { SharedModule, HttpLoaderFactory } from '../../shared/shared.module'
+import { SharedModule /* , HttpLoaderFactory */ } from '../../shared/shared.module'
 import { LabelResolver } from '../../shared/label.resolver'
 import { WorkspaceDetailComponent } from './workspace-detail.component'
 import { WorkspacePropsComponent } from './workspace-props/workspace-props.component'
@@ -55,15 +55,15 @@ const routes: Routes = [
     SharedModule,
     [RouterModule.forChild(routes)],
     PortalCoreModule.forMicroFrontend(),
-    FormsModule,
-    TranslateModule.forChild({
-      isolate: true,
-      loader: {
-        provide: TranslateLoader,
-        useFactory: HttpLoaderFactory,
-        deps: [HttpClient, MFE_INFO]
-      }
-    })
+    FormsModule
+    // TranslateModule.forChild({
+    //   isolate: true,
+    //   loader: {
+    //     provide: TranslateLoader,
+    //     useFactory: HttpLoaderFactory,
+    //     deps: [HttpClient, MFE_INFO]
+    //   }
+    // })
   ],
   providers: [ConfirmationService],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

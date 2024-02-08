@@ -1,15 +1,15 @@
 import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, NgModule } from '@angular/core'
 import { CommonModule } from '@angular/common'
-import { HttpClient } from '@angular/common/http'
+// import { HttpClient } from '@angular/common/http'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import {
-  MissingTranslationHandler,
-  MissingTranslationHandlerParams,
-  TranslateLoader,
+  // MissingTranslationHandler,
+  // MissingTranslationHandlerParams,
+  // TranslateLoader,
   TranslateModule,
   TranslateService
 } from '@ngx-translate/core'
-import { TranslateHttpLoader } from '@ngx-translate/http-loader'
+// import { TranslateHttpLoader } from '@ngx-translate/http-loader'
 import { ErrorTailorModule } from '@ngneat/error-tailor'
 
 import { AutoCompleteModule } from 'primeng/autocomplete'
@@ -40,8 +40,8 @@ import {
   MfeInfo,
   MFE_INFO,
   PortalDialogService,
-  PortalMessageService,
-  TranslateCombinedLoader
+  PortalMessageService
+  // TranslateCombinedLoader
 } from '@onecx/portal-integration-angular'
 
 import { environment } from '../../environments/environment'
@@ -57,22 +57,22 @@ export const basePathProvider = (mfeInfo: MfeInfo) => {
   return (mfeInfo ? mfeInfo.remoteBaseUrl : '') + environment.apiPrefix
 }
 
-export function HttpLoaderFactory(http: HttpClient, mfeInfo: MfeInfo) {
-  // console.log(`Configuring translation loader ${mfeInfo?.remoteBaseUrl}`)
-  // if running standalone then load the app assets directly from remote base URL
-  const appAssetPrefix = mfeInfo?.remoteBaseUrl ? mfeInfo.remoteBaseUrl : './'
-  return new TranslateCombinedLoader(
-    new TranslateHttpLoader(http, appAssetPrefix + 'assets/i18n/', '.json'),
-    new TranslateHttpLoader(http, appAssetPrefix + 'onecx-portal-lib/assets/i18n/', '.json')
-  )
-}
+// export function HttpLoaderFactory(http: HttpClient, mfeInfo: MfeInfo) {
+//   // console.log(`Configuring translation loader ${mfeInfo?.remoteBaseUrl}`)
+//   // if running standalone then load the app assets directly from remote base URL
+//   const appAssetPrefix = mfeInfo?.remoteBaseUrl ? mfeInfo.remoteBaseUrl : './'
+//   return new TranslateCombinedLoader(
+//     new TranslateHttpLoader(http, appAssetPrefix + 'assets/i18n/', '.json'),
+//     new TranslateHttpLoader(http, appAssetPrefix + 'onecx-portal-lib/assets/i18n/', '.json')
+//   )
+// }
 
-export class MyMissingTranslationHandler implements MissingTranslationHandler {
-  handle(params: MissingTranslationHandlerParams) {
-    console.log(`Missing translation for ${params.key}`)
-    return params.key
-  }
-}
+// export class MyMissingTranslationHandler implements MissingTranslationHandler {
+//   handle(params: MissingTranslationHandlerParams) {
+//     console.log(`Missing translation for ${params.key}`)
+//     return params.key
+//   }
+// }
 
 @NgModule({
   declarations: [ImageContainerComponent, ThemeColorBoxComponent],
@@ -102,11 +102,11 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     TableModule,
     ToastModule,
     TreeModule,
-    TranslateModule.forRoot({
+    TranslateModule /* .forRoot({
       isolate: true,
       loader: { provide: TranslateLoader, useFactory: HttpLoaderFactory, deps: [HttpClient, MFE_INFO] },
       missingTranslationHandler: { provide: MissingTranslationHandler, useClass: MyMissingTranslationHandler }
-    }),
+    }) */,
     ErrorTailorModule.forRoot({
       controlErrorsOn: { async: true, blur: true, change: true },
       errors: {
