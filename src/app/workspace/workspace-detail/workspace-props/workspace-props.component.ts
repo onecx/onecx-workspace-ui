@@ -2,6 +2,8 @@ import { Component, Input, Inject, OnChanges, Output, EventEmitter } from '@angu
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { SelectItem } from 'primeng/api'
 import { /* map,  */ Observable, of } from 'rxjs'
+import { ActivatedRoute, Router } from '@angular/router'
+
 
 import {
   AUTH_SERVICE,
@@ -63,14 +65,16 @@ export class WorkspacePropsComponent implements OnChanges {
     private themeService: ThemeService,
     private config: ConfigurationService,
     private msgService: PortalMessageService,
+    public route: ActivatedRoute,
+    private router: Router,
     @Inject(AUTH_SERVICE) readonly auth: IAuthService
   ) {
     this.hasTenantViewPermission = this.auth.hasPermission('WORKSPACE_TENANT#VIEW')
     this.hasTenantEditPermission = this.auth.hasPermission('WORKSPACE_TENANT#EDIT')
 
     this.formGroup = new FormGroup({
-      portalName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
-      themeName: new FormControl(null, [Validators.required]),
+      name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
+      themeName: new FormControl(null /* [Validators.required] */),
       baseUrl: new FormControl(null, [Validators.required, Validators.minLength(1), Validators.pattern('^/.*')]),
       homePage: new FormControl(null, [Validators.maxLength(255)]),
       logoUrl: new FormControl('', [Validators.maxLength(255)]),
@@ -123,7 +127,7 @@ export class WorkspacePropsComponent implements OnChanges {
           next: (data: any) => {
             this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_OK' })
             //If the Portal we update, is the current-global-portal, then we also update the global theme.
-            if (this.portalDetail.id === this.config.getPortal().id && this.portalDetail.theme) {
+            if (this.portalDetail.id === this.config.getPortal().id /* && this.portalDetail.theme */) {
               // get theme and apply the variables in current portal
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
               /* this.themeApi.getThemeById({ id: this.portalDetail.themeId! }).subscribe({
@@ -133,6 +137,7 @@ export class WorkspacePropsComponent implements OnChanges {
               }) */
             }
             this.portalUpdated.emit(data)
+            this.router.navigate(['./' + data.resource.name], { relativeTo: this.route })
           },
           error: () => {
             this.msgService.error({

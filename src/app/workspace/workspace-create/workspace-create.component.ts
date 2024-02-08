@@ -97,7 +97,7 @@ export class WorkspaceCreateComponent {
           })
           this.portalCreationValiationMsg = false
           this.closeDialog()
-          this.router.navigate(['./' + fetchedPortal.resource?.id], { relativeTo: this.route })
+          this.router.navigate(['./' + fetchedPortal.resource?.name], { relativeTo: this.route })
         },
         error: (err: { error: { message: any } }) => {
           this.message.add({

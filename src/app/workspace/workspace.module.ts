@@ -36,7 +36,7 @@ const routes: Routes = [
     component: WorkspaceCreateComponent
   },
   {
-    path: ':id',
+    path: ':name',
     loadChildren: () => import('./workspace-detail/workspace-detail.module').then((m) => m.WorkspaceDetailModule),
     data: {
       breadcrumb: 'BREADCRUMBS.DETAIL',

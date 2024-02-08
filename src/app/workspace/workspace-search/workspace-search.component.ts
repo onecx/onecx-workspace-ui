@@ -166,6 +166,9 @@ export class WorkspaceSearchComponent implements OnInit {
     this.router.navigate(['./', portal.id, 'menu'], { relativeTo: this.route })
   }
 
+  public test(name: string) {
+    console.log('NAME', name)
+  }
   getDescriptionString(text: string): string {
     if (text) {
       const chars = window.innerWidth < 1200 ? 200 : 120

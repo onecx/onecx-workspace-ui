@@ -65,7 +65,7 @@ export class WorkspaceDetailComponent implements OnInit {
   portalDeleteVisible = false
   portalDetail?: Workspace
   portalDownloadVisible = false
-  portalId = this.route.snapshot.params['id']
+  portalId: string = ''
   portalName = this.route.snapshot.params['name']
   selectedIndex = 0
   dateFormat = 'medium'
@@ -83,6 +83,7 @@ export class WorkspaceDetailComponent implements OnInit {
     @Inject(AUTH_SERVICE) readonly auth: IAuthService
   ) {
     this.dateFormat = this.config.lang === 'de' ? 'dd.MM.yyyy HH:mm:ss' : 'medium'
+    console.log('SNAP', this.route.snapshot.toString())
   }
 
   ngOnInit() {
@@ -94,6 +95,7 @@ export class WorkspaceDetailComponent implements OnInit {
   }
 
   public onPortalData(portal: Workspace) {
+    console.log('PORTAL', portal, this.portalDetail)
     this.portalDetail = portal
     this.preparePageHeaderImage()
     this.translate
@@ -126,14 +128,14 @@ export class WorkspaceDetailComponent implements OnInit {
 
   private async getPortalData() {
     this.workspaceApi
-      // .getPortalByPortalName({ portalName: this.portalName })
-      .getWorkspaceById({ id: this.portalId })
+      .getWorkspaceByName({ name: this.portalName })
       .pipe()
       .subscribe({
         next: (portal) => {
           // Convert microfrontends to Set to avoid typeerrors
           // portal.microfrontendRegistrations = new Set(Array.from(portal.microfrontendRegistrations ?? []))
           if (portal.resource) {
+            this.portalId = portal.resource.id || ''
             this.onPortalData(portal.resource)
           }
         },
