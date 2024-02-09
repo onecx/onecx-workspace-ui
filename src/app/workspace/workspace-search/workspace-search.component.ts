@@ -163,6 +163,9 @@ export class WorkspaceSearchComponent implements OnInit {
   }
   public onGotoMenu(ev: any, portal: Workspace) {
     ev.stopPropagation()
+    console.log('PORTAL ID', portal)
+    // getByName und in menu component schauen
+    // this.workspaceApi.getWorkspaceByName({ name: portal.name })
     this.router.navigate(['./', portal.id, 'menu'], { relativeTo: this.route })
   }
 

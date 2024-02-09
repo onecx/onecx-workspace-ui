@@ -123,7 +123,7 @@ export class WorkspacePropsComponent implements OnChanges {
           updateWorkspaceRequest: { resource: clonePortalWithMicrofrontendsArray(this.portalDetail) }
         })
         .subscribe({
-          next: (data: any) => {
+          next: () => {
             this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_OK' })
             //If the Portal we update, is the current-global-portal, then we also update the global theme.
             // if (this.portalDetail.id === this.config.getPortal().id && this.portalDetail.theme) {
@@ -144,6 +144,7 @@ export class WorkspacePropsComponent implements OnChanges {
           }
         })
       this.editMode = false
+      // check if name changed, then route to getByName - if other property changed, dont route
     } else {
       this.msgService.error({ summaryKey: 'GENERAL.FORM_VALIDATION' })
     }

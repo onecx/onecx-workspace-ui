@@ -1,7 +1,8 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core'
 import { HttpHeaders } from '@angular/common/http'
 import { TranslateService } from '@ngx-translate/core'
-import { EximWorkspace, EximWorkspaceMenuItem } from '../../../shared/generated'
+import { WorkspaceSnapshot, EximWorkspaceMenuItem } from '../../../shared/generated'
+// import { ColumnGroupSelectionComponent } from '@onecx/portal-integration-angular'
 
 @Component({
   selector: 'app-import-choose-file',
@@ -9,9 +10,9 @@ import { EximWorkspace, EximWorkspaceMenuItem } from '../../../shared/generated'
   styleUrls: ['./choose-file.component.scss']
 })
 export class ChooseFileComponent implements OnInit {
-  @Output() public importFileSelected = new EventEmitter<EximWorkspace>()
+  @Output() public importFileSelected = new EventEmitter<WorkspaceSnapshot>()
 
-  importWorkspace: EximWorkspace | null = null
+  importWorkspace: WorkspaceSnapshot | null = null
 
   public httpHeaders!: HttpHeaders
   public reader = new FileReader()
@@ -79,39 +80,50 @@ export class ChooseFileComponent implements OnInit {
     return !this.importError && !!this.importWorkspace
   }
 
-  private isPortalImportWorkspace(obj: unknown, data: any): obj is EximWorkspace {
-    const dto = obj as EximWorkspace
-    // const themeCondition = dto.themeImportData ? dto.themeImportData.name : true
+  private isPortalImportWorkspace(obj: unknown, data: any): obj is WorkspaceSnapshot {
+    console.log('OBJ', obj)
+    const dto = obj as WorkspaceSnapshot
+    console.log('DTO', dto)
+    // CHANGE WHEN IMPORT OF MORE WORKSPACES IS POSSIBLE
+    let key: string[] = []
+    if (dto.workspaces) {
+      console.log('WORKSPACE', dto.workspaces)
+      key = Object.keys(dto.workspaces)
+    }
+    // console.log('NAME', dto.workspaces.keys[0])
+    // const themeCondition = dto.workspaces.keys[0].themeImportData ? dto.workspaces.keys[0].themeImportData.name : true
 
-    if (!dto) {
-      this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_PORTAL_MISSING']
-    } else if (!dto.name) {
-      this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_PORTAL_NAME_MISSING']
-    } else if (!dto.workspaceRoles) {
-      this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_PORTAL_ROLES_MISSING']
-    } /* else if (!themeCondition) {
-      this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_THEME_NAME_MISSING']
-    } */ else if (dto.menu?.menu?.menuItems) {
-      for (const el of dto.menu.menu.menuItems) {
-        if (!el.key) {
-          this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_MENU_ITEM_KEY_MISSING']
-          break
-        } else if (!el.name) {
-          this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_MENU_ITEM_NAME_MISSING']
-          break
-        } else if (!(typeof el.position === 'number')) {
-          this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_MENU_ITEM_WRONG_POSITION']
-          break
-        } else if (!(typeof el.disabled === 'boolean')) {
-          this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_MENU_ITEM_WRONG_DISABLED']
-          break
-        } else if (!(typeof el.workspaceExit === 'boolean')) {
-          this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_MENU_ITEM_WRONG_PORTALEXIT']
-          break
+    if (dto.workspaces) {
+      if (!dto || !dto.workspaces[key[0]]) {
+        this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_PORTAL_MISSING']
+      } else if (!dto.workspaces[key[0]].name) {
+        this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_PORTAL_NAME_MISSING']
+        /* } else if (!dto.workspaces[key[0]].workspaceRoles) {
+        this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_PORTAL_ROLES_MISSING'] */
+      } /* else if (!themeCondition) {
+        this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_THEME_NAME_MISSING']
+      } */ else if (dto.workspaces[key[0]].menu?.menu?.menuItems) {
+        for (const el of dto.workspaces[key[0]].menu?.menu?.menuItems!) {
+          if (!el.key) {
+            this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_MENU_ITEM_KEY_MISSING']
+            break
+          } else if (!el.name) {
+            this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_MENU_ITEM_NAME_MISSING']
+            break
+          } else if (!(typeof el.position === 'number')) {
+            this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_MENU_ITEM_WRONG_POSITION']
+            break
+          } else if (!(typeof el.disabled === 'boolean')) {
+            this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_MENU_ITEM_WRONG_DISABLED']
+            break
+          } else if (!(typeof el.workspaceExit === 'boolean')) {
+            this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_MENU_ITEM_WRONG_PORTALEXIT']
+            break
+          }
         }
+      } else {
+        this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_MENU_NOT_EXIST']
       }
-    } else {
-      this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_MENU_NOT_EXIST']
     }
     if (this.validationErrorCause !== '') {
       this.importError = true
@@ -121,9 +133,10 @@ export class ChooseFileComponent implements OnInit {
     return !!(
       typeof dto === 'object' &&
       dto &&
-      dto.name &&
-      dto.workspaceRoles &&
-      dto.menu?.menu?.menuItems?.every?.(this.isMenuItem)
+      dto.workspaces &&
+      dto.workspaces[key[0]].name &&
+      dto.workspaces[key[0]].workspaceRoles &&
+      dto.workspaces[key[0]].menu?.menu?.menuItems?.every?.(this.isMenuItem)
     ) /* &&
       themeCondition */
   }
