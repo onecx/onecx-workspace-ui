@@ -47,16 +47,16 @@
         <ng-template let-portalItems pTemplate="listItem">
           <div
             class="col-12 grid grid-nogutter row-gap-1 align-items-center listview-row p-1 hover:bg-gray-200 cursor-pointer line-height-2"
-            [routerLink]="['./' + portalItems.portalName]"
+            [routerLink]="['./' + portalItems.name]"
           >
             <div class="col-12 sm:col-2 md:col-2 lg:col-2 xl:col-2 px-2 text-center mt-1">
               <app-image-container [imageUrl]="portalItems.logoUrl" [small]="true"></app-image-container>
             </div>
             <div
               class="col-12 sm:col-3 md:col-3 lg:col-3 xl:col-2 px-2 font-bold text-center sm:text-left"
-              [title]="('PORTAL.ITEM.PORTAL' | translate) + ': ' + portalItems.portalName"
+              [title]="('PORTAL.ITEM.PORTAL' | translate) + ': ' + portalItems.name"
             >
-              {{ limitText(portalItems.portalName, 40) }}
+              {{ limitText(portalItems.name, 40) }}
             </div>
             <div class="col-12 sm:col-4 md:col-4 lg:col-4 xl:col-2 px-2 text-center sm:text-left">
               <a
@@ -93,7 +93,7 @@
               class="card relative p-2 flex flex-column justify-content-center row-gap-1 md:row-gap-2 hover:bg-gray-200 cursor-pointer"
             >
               <span
-                *ngIf="portalItems.portalName !== 'ADMIN'"
+                *ngIf="portalItems.name !== 'ADMIN'"
                 [id]="'app_portal_search_data_row_' + row + '_goto_portal'"
                 class="card-badge-right badge-1 p-2 pi pi-external-link pseudo-button-link"
                 [title]="'PORTAL.QUICK_LINKS.GOTO_WORKSPACE' | translate"
@@ -112,7 +112,7 @@
               <div class="h-4rem lg:h-5rem mb-1 flex flex-column justify-content-between px-2 text-center gap-1">
                 <div
                   class="font-bold text-xl lg:text-2xl"
-                  [title]="('PORTAL.ITEM.PORTAL' | translate) + ': ' + portalItems.portalName"
+                  [title]="('PORTAL.ITEM.PORTAL' | translate) + ': ' + portalItems.name"
                 >
                   {{ limitText(portalItems.name, 15) }}
                 </div>

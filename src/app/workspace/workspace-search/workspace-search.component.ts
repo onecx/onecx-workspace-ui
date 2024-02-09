@@ -132,7 +132,7 @@ export class WorkspaceSearchComponent implements OnInit {
       .subscribe({
         next: (value: SearchWorkspacesResponse) => {
           this.portalItems = value.stream
-          if (value.number === 0) {
+          if (value.totalElements === 0) {
             this.msgService.info({ summaryKey: 'SEARCH.MSG_NO_RESULTS' })
           }
           this.sortField = this.defaultSortField
@@ -166,9 +166,6 @@ export class WorkspaceSearchComponent implements OnInit {
     this.router.navigate(['./', portal.id, 'menu'], { relativeTo: this.route })
   }
 
-  public test(name: string) {
-    console.log('NAME', name)
-  }
   getDescriptionString(text: string): string {
     if (text) {
       const chars = window.innerWidth < 1200 ? 200 : 120

@@ -4,7 +4,6 @@ import { SelectItem } from 'primeng/api'
 import { /* map,  */ Observable, of } from 'rxjs'
 import { ActivatedRoute, Router } from '@angular/router'
 
-
 import {
   AUTH_SERVICE,
   ConfigurationService,
@@ -127,17 +126,16 @@ export class WorkspacePropsComponent implements OnChanges {
           next: (data: any) => {
             this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_OK' })
             //If the Portal we update, is the current-global-portal, then we also update the global theme.
-            if (this.portalDetail.id === this.config.getPortal().id /* && this.portalDetail.theme */) {
-              // get theme and apply the variables in current portal
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              /* this.themeApi.getThemeById({ id: this.portalDetail.themeId! }).subscribe({
+            // if (this.portalDetail.id === this.config.getPortal().id && this.portalDetail.theme) {
+            // get theme and apply the variables in current portal
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            /* this.themeApi.getThemeById({ id: this.portalDetail.themeId! }).subscribe({
                 next: (theme: ThemeDTO) => {
                   this.themeService.apply(theme as Theme)
                 }
               }) */
-            }
-            this.portalUpdated.emit(data)
-            this.router.navigate(['./' + data.resource.name], { relativeTo: this.route })
+            // }
+            this.portalUpdated.emit(this.portalDetail)
           },
           error: () => {
             this.msgService.error({

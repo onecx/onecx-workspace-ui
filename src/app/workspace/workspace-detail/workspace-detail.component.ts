@@ -95,7 +95,6 @@ export class WorkspaceDetailComponent implements OnInit {
   }
 
   public onPortalData(portal: Workspace) {
-    console.log('PORTAL', portal, this.portalDetail)
     this.portalDetail = portal
     this.preparePageHeaderImage()
     this.translate
