@@ -10,7 +10,7 @@ import { Overlay } from 'primeng/overlay'
 import { SelectItem, TreeNode } from 'primeng/api'
 
 import { TranslateService } from '@ngx-translate/core'
-import { Observable, Subject, catchError, of, withLatestFrom } from 'rxjs'
+import { Observable, Subject, catchError, of } from 'rxjs'
 import FileSaver from 'file-saver'
 
 import {
@@ -356,23 +356,19 @@ export class MenuComponent implements OnInit, OnDestroy {
    */
   public loadData(): void {
     this.exceptionKey = ''
-    console.log('PORTAL ID', this.workspaceName)
     this.portal$ = this.workspaceApi
       .getWorkspaceByName({ name: this.workspaceName })
       .pipe(catchError((error) => of(error)))
-    // this.menu$ = this.menuApi
-    //   .getMenuItemsForWorkspaceById({ id: withLatestFrom(this.portal) })
-    //   .pipe(catchError((error) => of(error)))
 
     this.portal$.subscribe((portal) => {
       this.loading = true
       if (portal instanceof HttpErrorResponse) {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + portal.status + '.PORTALS'
-        // console.error('getPortalByPortalId():', portal)
       } else if (portal instanceof Object) {
         this.portal = portal
-        console.log('_PORTAL', portal)
-        console.log('_PORTAL IDDDDD', (portal as unknown as any).resource.id)
+        this.menu$ = this.menuApi
+          .getMenuItemsForWorkspaceById({ id: (portal as unknown as any).resource.id })
+          .pipe(catchError((error) => of(error)))
         // this.portal.microfrontendRegistrations = new Set(Array.from(portal.microfrontendRegistrations ?? []))
         // this.mfeRUrls = Array.from(this.portal.microfrontendRegistrations || []).map((mfe) => mfe.baseUrl || '')
         // this.mfeRUrlOptions = Array.from(this.portal.microfrontendRegistrations ?? [])
@@ -381,10 +377,6 @@ export class MenuComponent implements OnInit, OnDestroy {
         //     value: mfe.baseUrl || ''
         //   }))
         //   .sort(dropDownSortItemsByLabel)
-        // this.log('getPortalByPortalId():', portal)
-        this.menu$ = this.menuApi
-          .getMenuItemsForWorkspaceById({ id: portal.id || '' })
-          .pipe(catchError((error) => of(error)))
         this.loadMenu(false)
       } else {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_0.PORTALS'
