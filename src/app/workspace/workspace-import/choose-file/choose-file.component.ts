@@ -59,6 +59,7 @@ export class ChooseFileComponent implements OnInit {
             const importWorkspace = JSON.parse(text)
             if (this.isPortalImportWorkspace(importWorkspace, data)) {
               this.importWorkspace = importWorkspace
+              console.log('IMPORT', this.importWorkspace)
             }
           } catch (err) {
             console.error('Import Error' /* , err */)
@@ -81,13 +82,11 @@ export class ChooseFileComponent implements OnInit {
   }
 
   private isPortalImportWorkspace(obj: unknown, data: any): obj is WorkspaceSnapshot {
-    console.log('OBJ', obj)
     const dto = obj as WorkspaceSnapshot
     console.log('DTO', dto)
     // CHANGE WHEN IMPORT OF MORE WORKSPACES IS POSSIBLE
     let key: string[] = []
     if (dto.workspaces) {
-      console.log('WORKSPACE', dto.workspaces)
       key = Object.keys(dto.workspaces)
     }
     // console.log('NAME', dto.workspaces.keys[0])
@@ -121,9 +120,9 @@ export class ChooseFileComponent implements OnInit {
             break
           }
         }
-      } else {
+      } /* else {
         this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_MENU_NOT_EXIST']
-      }
+      } */
     }
     if (this.validationErrorCause !== '') {
       this.importError = true
@@ -135,9 +134,10 @@ export class ChooseFileComponent implements OnInit {
       dto &&
       dto.workspaces &&
       dto.workspaces[key[0]].name &&
-      dto.workspaces[key[0]].workspaceRoles &&
-      dto.workspaces[key[0]].menu?.menu?.menuItems?.every?.(this.isMenuItem)
+      dto.workspaces[key[0]].workspaceRoles
     ) /* &&
+      dto.workspaces[key[0]].menu?.menu?.menuItems?.every?.(this.isMenuItem) */
+    /* &&
       themeCondition */
   }
 

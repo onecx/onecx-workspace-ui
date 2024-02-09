@@ -10,7 +10,7 @@ import { Overlay } from 'primeng/overlay'
 import { SelectItem, TreeNode } from 'primeng/api'
 
 import { TranslateService } from '@ngx-translate/core'
-import { Observable, Subject, catchError, of } from 'rxjs'
+import { Observable, Subject, catchError, of, withLatestFrom } from 'rxjs'
 import FileSaver from 'file-saver'
 
 import {
@@ -79,7 +79,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   // portal
   public portal?: Workspace
   private portal$: Observable<Workspace> = new Observable<Workspace>()
-  public portalId = this.route.snapshot.params['id']
+  public workspaceName = this.route.snapshot.params['name']
   private mfeRUrls: Array<string> = []
   public mfeRUrlOptions: SelectItem[] = []
   // menu
@@ -129,7 +129,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private location: Location,
     private menuApi: MenuItemAPIService,
-    private portalApi: WorkspaceAPIService,
+    private workspaceApi: WorkspaceAPIService,
     private stateService: MenuStateService,
     private config: ConfigurationService,
     private icon: IconService,
@@ -356,16 +356,23 @@ export class MenuComponent implements OnInit, OnDestroy {
    */
   public loadData(): void {
     this.exceptionKey = ''
-    this.portal$ = this.portalApi.getWorkspaceById({ id: this.portalId }).pipe(catchError((error) => of(error)))
-    this.menu$ = this.menuApi.getMenuItemsForWorkspaceById({ id: this.portalId }).pipe(catchError((error) => of(error)))
+    console.log('PORTAL ID', this.workspaceName)
+    this.portal$ = this.workspaceApi
+      .getWorkspaceByName({ name: this.workspaceName })
+      .pipe(catchError((error) => of(error)))
+    // this.menu$ = this.menuApi
+    //   .getMenuItemsForWorkspaceById({ id: withLatestFrom(this.portal) })
+    //   .pipe(catchError((error) => of(error)))
 
     this.portal$.subscribe((portal) => {
       this.loading = true
       if (portal instanceof HttpErrorResponse) {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + portal.status + '.PORTALS'
-        console.error('getPortalByPortalId():', portal)
+        // console.error('getPortalByPortalId():', portal)
       } else if (portal instanceof Object) {
         this.portal = portal
+        console.log('_PORTAL', portal)
+        console.log('_PORTAL IDDDDD', (portal as unknown as any).resource.id)
         // this.portal.microfrontendRegistrations = new Set(Array.from(portal.microfrontendRegistrations ?? []))
         // this.mfeRUrls = Array.from(this.portal.microfrontendRegistrations || []).map((mfe) => mfe.baseUrl || '')
         // this.mfeRUrlOptions = Array.from(this.portal.microfrontendRegistrations ?? [])
@@ -374,7 +381,10 @@ export class MenuComponent implements OnInit, OnDestroy {
         //     value: mfe.baseUrl || ''
         //   }))
         //   .sort(dropDownSortItemsByLabel)
-        this.log('getPortalByPortalId():', portal)
+        // this.log('getPortalByPortalId():', portal)
+        this.menu$ = this.menuApi
+          .getMenuItemsForWorkspaceById({ id: portal.id || '' })
+          .pipe(catchError((error) => of(error)))
         this.loadMenu(false)
       } else {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_0.PORTALS'
@@ -440,7 +450,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.displayDeleteConfirmation = false
     this.menuApi
       .deleteMenuItemById({
-        id: this.portalId,
+        id: this.workspaceName,
         menuItemId: this.menuItem?.id
       } as DeleteMenuItemByIdRequestParams)
       .subscribe({
@@ -483,7 +493,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.changeMode = 'EDIT'
     // get data
     this.menuItem$ = this.menuApi
-      .getMenuItemById({ id: this.portalId as string, menuItemId: item.id })
+      .getMenuItemById({ id: this.workspaceName as string, menuItemId: item.id })
       .pipe(catchError((error) => of(error)))
     this.menuItem$.subscribe({
       next: (m) => {
@@ -566,7 +576,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       if (this.changeMode === 'CREATE') {
         this.menuApi
           .createMenuItemForWorkspace({
-            id: this.portalId,
+            id: this.workspaceName,
             createMenuItemRequest: this.menuItem as CreateMenuItemRequest
           })
           .subscribe({
@@ -583,7 +593,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       } else if (this.changeMode === 'EDIT' && this.menuItem && this.menuItem.id) {
         this.menuApi
           .patchMenuItems({
-            id: this.portalId,
+            id: this.workspaceName,
             patchMenuItemsRequest: [{ resource: this.menuItem }]
           })
           .subscribe({
@@ -728,8 +738,8 @@ export class MenuComponent implements OnInit, OnDestroy {
    *  EXPORT / IMPORT
    */
   public onExportMenu(): void {
-    if (this.portalId) {
-      this.menuApi.getMenuStructureForWorkspaceId({ id: this.portalId }).subscribe((data) => {
+    if (this.workspaceName) {
+      this.menuApi.getMenuStructureForWorkspaceId({ id: this.workspaceName }).subscribe((data) => {
         /* const filteredStructure = fetchedStructure.map((item: any) =>
           filterObjectTree(
             item,
@@ -787,10 +797,10 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   public onMenuImport(): void {
-    if (this.portalId) {
+    if (this.workspaceName) {
       this.menuApi
         .exportMenuByWorkspaceName({
-          name: this.portalId
+          name: this.workspaceName
           // menuStructureListDTO: { menuItemStructureDTOS: this.menuItemStructureDTOArray }
         })
         .subscribe({
@@ -821,7 +831,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.menuApi
       .patchMenuItems({
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        id: this.portalId,
+        id: this.workspaceName,
         patchMenuItemsRequest: [{ resource: updatedMenuItems[0] }] // WARNING: SHOULD BE WHOLE ARRAY???
         // menuItemDetailsDTO: updatedMenuItems
       })
