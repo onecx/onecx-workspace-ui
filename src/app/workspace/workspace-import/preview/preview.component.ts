@@ -87,15 +87,15 @@ export class PreviewComponent implements OnInit, OnChanges {
 
   public ngOnChanges(): void {
     this.fillForm()
-    if (this.importThemeCheckbox) {
-      this.formGroup.controls['themeName'].addValidators([
-        Validators.required,
-        Validators.minLength(2),
-        Validators.maxLength(50)
-      ])
-    } else {
-      this.formGroup.controls['themeName'].clearValidators()
-    }
+    // if (this.importThemeCheckbox) {
+    //   this.formGroup.controls['themeName'].addValidators([
+    //     Validators.required,
+    //     Validators.minLength(2),
+    //     Validators.maxLength(50)
+    //   ])
+    // } else {
+    //   this.formGroup.controls['themeName'].clearValidators()
+    // }
     // trigger validation to be up-to-date
     forceFormValidation(this.formGroup)
     this.onModelChange()

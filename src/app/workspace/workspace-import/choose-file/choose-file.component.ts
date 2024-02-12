@@ -59,7 +59,6 @@ export class ChooseFileComponent implements OnInit {
             const importWorkspace = JSON.parse(text)
             if (this.isPortalImportWorkspace(importWorkspace, data)) {
               this.importWorkspace = importWorkspace
-              console.log('IMPORT', this.importWorkspace)
             }
           } catch (err) {
             console.error('Import Error' /* , err */)
@@ -83,7 +82,6 @@ export class ChooseFileComponent implements OnInit {
 
   private isPortalImportWorkspace(obj: unknown, data: any): obj is WorkspaceSnapshot {
     const dto = obj as WorkspaceSnapshot
-    console.log('DTO', dto)
     // CHANGE WHEN IMPORT OF MORE WORKSPACES IS POSSIBLE
     let key: string[] = []
     if (dto.workspaces) {

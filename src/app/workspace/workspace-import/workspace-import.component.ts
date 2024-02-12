@@ -148,8 +148,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
     }
     this.workspaceApi
       .importWorkspaces({
-        workspaceSnapshot: this.importRequestDTO as WorkspaceSnapshot
-        // requestParameters: this.importRequestDTO
+        workspaceSnapshot: this.importRequestDTO
       })
       .subscribe({
         next: (res) => {
@@ -180,14 +179,14 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
 
   // NAVIGATE import step : NEXT
   public next(importRequestDTO?: WorkspaceSnapshot): void {
-    let key: string[] = []
-    if (this.importRequestDTO?.workspaces) {
-      key = Object.keys(this.importRequestDTO.workspaces)
-    }
     if (this.activeIndex == 0 && importRequestDTO && importRequestDTO.workspaces) {
       this.importRequestDTO = importRequestDTO
+      let keys: string[] = []
+      if (this.importRequestDTO?.workspaces) {
+        keys = Object.keys(this.importRequestDTO.workspaces)
+      }
       // this.themeName = importRequestDTO.portal.themeName || ''
-      this.baseUrlOrg = importRequestDTO.workspaces[key[0]].baseUrl
+      this.baseUrlOrg = importRequestDTO.workspaces[keys[0]].baseUrl
       // if (this.importRequestDTO.themeImportData) {
       //   this.themeCheckboxEnabled = true
       // } else {

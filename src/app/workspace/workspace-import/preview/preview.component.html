@@ -15,7 +15,7 @@
           </label>
         </span>
       </div>
-      <span *ngIf="hasPermission" class="p-float-label">
+      <!-- <span *ngIf="hasPermission" class="p-float-label">
         <input
           pInputText
           type="text"
@@ -24,8 +24,8 @@
           formControlName="tenantId"
         />
         <label for="portal_import_preview_tenant_id">{{ 'PORTAL.ITEM.TENANT_ID' | translate }}</label>
-      </span>
-      <div>
+      </span> -->
+      <!-- <div>
         <span *ngIf="importThemeCheckbox" class="p-float-label" controlErrorAnchor>
           <input
             pInputText
@@ -60,7 +60,7 @@
         id="portal_import_preview_theme_color_box"
         [properties]="themeProperties"
         styleClass="h-inputtext w-15rem"
-      />
+      /> -->
       <p-message
         *ngIf="importThemeCheckbox && !themeProperties"
         id="portal_import_preview_message_theme_not_exists"

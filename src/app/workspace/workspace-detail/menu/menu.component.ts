@@ -10,7 +10,7 @@ import { Overlay } from 'primeng/overlay'
 import { SelectItem, TreeNode } from 'primeng/api'
 
 import { TranslateService } from '@ngx-translate/core'
-import { Observable, Subject, catchError, of } from 'rxjs'
+import { Observable, Subject, catchError, of, tap, switchMap } from 'rxjs'
 import FileSaver from 'file-saver'
 
 import {
@@ -27,7 +27,8 @@ import {
   // MenuItemsInternalAPIService,
   Workspace,
   WorkspaceAPIService,
-  CreateMenuItemRequest
+  CreateMenuItemRequest,
+  GetMenuItemsResponse
 } from '../../../shared/generated'
 import { limitText, dropDownSortItemsByLabel } from '../../../shared/utils'
 import { MenuStringConst } from '../../..//model/menu-string-const'
@@ -85,7 +86,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   // menu
   private menu$: Observable<Array<MenuItem>> = new Observable<Array<MenuItem>>()
   public menuNodes: TreeNode[] = []
-  private menuItem$: Observable<MenuItem> = new Observable<MenuItem>()
+  private menuItem$: Observable<GetMenuItemsResponse | null> = new Observable<GetMenuItemsResponse | null>()
   public menuItems: MenuItem[] | undefined
   public menuItem: MenuItem | undefined
   private menuItemStructureDTOArray: Array<MenuItem> | undefined
@@ -356,34 +357,47 @@ export class MenuComponent implements OnInit, OnDestroy {
    */
   public loadData(): void {
     this.exceptionKey = ''
-    this.portal$ = this.workspaceApi
-      .getWorkspaceByName({ name: this.workspaceName })
-      .pipe(catchError((error) => of(error)))
+    this.loading = true
 
-    this.portal$.subscribe((portal) => {
-      this.loading = true
-      if (portal instanceof HttpErrorResponse) {
-        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + portal.status + '.PORTALS'
-      } else if (portal instanceof Object) {
-        this.portal = portal
-        this.menu$ = this.menuApi
-          .getMenuItemsForWorkspaceById({ id: (portal as unknown as any).resource.id })
-          .pipe(catchError((error) => of(error)))
-        // this.portal.microfrontendRegistrations = new Set(Array.from(portal.microfrontendRegistrations ?? []))
-        // this.mfeRUrls = Array.from(this.portal.microfrontendRegistrations || []).map((mfe) => mfe.baseUrl || '')
-        // this.mfeRUrlOptions = Array.from(this.portal.microfrontendRegistrations ?? [])
-        //   .map((mfe) => ({
-        //     label: mfe.baseUrl,
-        //     value: mfe.baseUrl || ''
-        //   }))
-        //   .sort(dropDownSortItemsByLabel)
+    this.menuItem$ = this.workspaceApi.getWorkspaceByName({ name: this.workspaceName }).pipe(
+      switchMap((portal) => {
+        console.log('PORTAL', portal)
+        this.portal = portal as Workspace
+        return this.menuApi.getMenuItemsForWorkspaceById({ id: portal?.resource?.id! }).pipe(
+          catchError((error) => {
+            console.error('Error fetching data:', error)
+            return of(null)
+          })
+        )
+      }),
+      catchError(() => {
+        return of(null)
+      }),
+      tap((menu) => {
+        this.menu$ = of(menu) as Observable<MenuItem[]>
+      })
+    )
+    this.menuItem$.subscribe({
+      complete: () => {
         this.loadMenu(false)
-      } else {
-        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_0.PORTALS'
-        console.error('getAllPortals() => unknown response:', portal)
+        this.loading = false
       }
-      this.loading = false
     })
+    //     // this.portal.microfrontendRegistrations = new Set(Array.from(portal.microfrontendRegistrations ?? []))
+    //     // this.mfeRUrls = Array.from(this.portal.microfrontendRegistrations || []).map((mfe) => mfe.baseUrl || '')
+    //     // this.mfeRUrlOptions = Array.from(this.portal.microfrontendRegistrations ?? [])
+    //     //   .map((mfe) => ({
+    //     //     label: mfe.baseUrl,
+    //     //     value: mfe.baseUrl || ''
+    //     //   }))
+    //     //   .sort(dropDownSortItemsByLabel)
+    //     this.loadMenu(false)
+    //   } else {
+    //     this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_0.PORTALS'
+    //     console.error('getAllPortals() => unknown response:', portal)
+    //   }
+    //   this.loading = false
+    // })
   }
 
   public onReloadMenu(): void {
@@ -391,6 +405,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
   public loadMenu(restore: boolean): void {
     this.menu$.subscribe((menu) => {
+      console.log('MENU', menu)
       this.loading = true
       if (menu instanceof HttpErrorResponse) {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + menu.status + '.MENUS'
