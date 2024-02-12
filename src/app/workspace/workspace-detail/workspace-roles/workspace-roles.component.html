@@ -1,0 +1,74 @@
+<div class="role-section">
+  <div *ngIf="!portalDetail.workspaceRoles" class="px-3 flex flex-wrap justify-content-between align-items-center">
+    <p-message severity="info" styleClass="p-2" [text]="'DETAIL.ROLES_NOT_EXIST' | translate"></p-message>
+    <button
+      *ocxIfPermission="'WORKSPACE_ROLE#EDIT'"
+      pButton
+      icon="pi pi-plus"
+      (click)="toggleAddDialog()"
+      label="{{ 'DETAIL.ADD_ROLE' | translate }}"
+    ></button>
+  </div>
+  <div *ngIf="portalDetail.workspaceRoles" class="p-grid p-nogutter grid">
+    <ng-container *ngIf="editMode; else elseBlock">
+      <div *ngFor="let role of formArray.controls; index as i" class="col-12 md:col-6">
+        <ng-container [formGroup]="role">
+          <p-card>
+            <ng-template pTemplate="content">
+              <div class="flex justify-content-between align-items-center">
+                <div>{{ role['value'] }}</div>
+                <button
+                  *ocxIfPermission="'WORKSPACE_ROLE#DELETE'"
+                  pButton
+                  id="deleteTranslationBtn"
+                  class="p-button-danger"
+                  icon="pi pi-trash"
+                  title="{{ 'DETAIL.ROLES_DELETE_ROLE' | translate }}"
+                  (click)="deleteRole(i)"
+                ></button>
+              </div>
+            </ng-template>
+          </p-card>
+        </ng-container>
+      </div>
+    </ng-container>
+    <ng-template #elseBlock>
+      <div *ngFor="let role of portalDetail.workspaceRoles; index as i" class="col-12 md:col-6">
+        <p-card class="view-role-card">{{ role }}</p-card>
+      </div>
+    </ng-template>
+  </div>
+  <div *ngIf="portalDetail.workspaceRoles">
+    <button
+      *ocxIfPermission="'WORKSPACE_ROLE#EDIT'"
+      pButton
+      icon="pi pi-plus"
+      class="mt-3"
+      type="add"
+      (click)="toggleAddDialog()"
+      label="{{ 'DETAIL.ADD_ROLE' | translate }}"
+    ></button>
+  </div>
+  <p-dialog
+    header="{{ 'DETAIL.ROLES_ADD_ROLE' | translate }}"
+    [(visible)]="addDisplay"
+    [modal]="true"
+    contentStyleClass="pt-1"
+  >
+    <span class="p-float-label">
+      <input
+        pInputText
+        type="text"
+        class="min-w-full"
+        id="portal_role_mgmt_role_name_input"
+        maxlength="100"
+        [(ngModel)]="newPortalRole"
+      />
+      <label for="portal_role_mgmt_role_name_input">{{ 'DETAIL.ROLE_NAME' | translate }}</label>
+    </span>
+    <div class="flex flex-wrap justify-content-end gap-2 pt-3 mt-2">
+      <button pButton icon="pi pi-times" (click)="toggleAddDialog()" [label]="'ACTIONS.CANCEL' | translate"></button>
+      <button pButton icon="pi pi-save" (click)="addPortalRole()" [label]="'ACTIONS.SAVE' | translate"></button>
+    </div>
+  </p-dialog>
+</div>

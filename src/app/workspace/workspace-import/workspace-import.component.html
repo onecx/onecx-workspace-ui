@@ -1,0 +1,94 @@
+<div class="border-solid border-1 border-black-alpha-20 border-round-sm bg-gray-50 px-3">
+  <p-steps [model]="steps" [activeIndex]="activeIndex"></p-steps>
+
+  <div class="flex flex-wrap justify-content-start column-gap-8 row-gap-2 mt-3 mb-5 mx-2">
+    <p-checkbox
+      class="p-element mr-2"
+      [disabled]="!themeCheckboxEnabled"
+      [(ngModel)]="importThemeCheckbox"
+      [label]="'PORTAL_IMPORT.IMPORT_THEME' | translate"
+      [binary]="true"
+      inputId="portal_import_import_theme"
+    ></p-checkbox>
+    <p-checkbox
+      class="p-element mr-2"
+      [disabled]="activeIndex !== 2"
+      [(ngModel)]="syncPermCheckbox"
+      [label]="'PORTAL_IMPORT.SYNCHRONIZE_PERMISSIONS' | translate"
+      [binary]="true"
+      inputId="portal_import_sync_perm"
+    ></p-checkbox>
+  </div>
+
+  <div [ngSwitch]="activeIndex" class="p-0 mx-0 mb-2">
+    <app-import-choose-file *ngSwitchCase="0" (importFileSelected)="next($event)"></app-import-choose-file>
+    <app-import-preview
+      *ngSwitchCase="1"
+      [importThemeCheckbox]="importThemeCheckbox"
+      [importRequestDTO]="importRequestDTO!"
+      [hasPermission]="hasPermission"
+      (isFormValide)="handleFormValidation($event)"
+    ></app-import-preview>
+    <app-import-confirm
+      *ngSwitchCase="2"
+      [importThemeCheckbox]="hasPermission"
+      [hasPermission]="hasPermission"
+      [portalName]="portalName"
+      [tenantId]="tenantId"
+      [baseUrl]="baseUrl"
+      [themeName]="themeName"
+      [themeProperties]="importRequestDTO!"
+      (isLoading)="handleIsLoading($event)"
+    ></app-import-confirm>
+  </div>
+
+  <div class="flex flex-wrap justify-content-end gap-2 my-2 px-1">
+    <p-button
+      *ngIf="activeIndex > 0"
+      id="portal_import_button_restart"
+      [label]="'PORTAL_IMPORT.IMPORT_RESTART' | translate"
+      [title]="'PORTAL_IMPORT.IMPORT_RESTART_TOOLTIP' | translate"
+      (onClick)="reset()"
+      icon="pi pi-upload"
+    ></p-button>
+    <p-button
+      *ngIf="activeIndex > 0"
+      id="portal_import_button_back"
+      [label]="'ACTIONS.NAVIGATION.BACK' | translate"
+      [title]="'ACTIONS.NAVIGATION.BACK.TOOLTIP' | translate"
+      (onClick)="back()"
+      icon="pi pi-arrow-left"
+    ></p-button>
+    <p-button
+      *ngIf="activeIndex === 1"
+      id="portal_import_button_next"
+      [label]="'ACTIONS.NAVIGATION.NEXT' | translate"
+      [title]="'ACTIONS.NAVIGATION.NEXT.TOOLTIP' | translate"
+      (onClick)="next()"
+      icon="pi pi-arrow-right"
+      [disabled]="!isFormValid"
+    >
+    </p-button>
+    <p-button
+      *ngIf="activeIndex === 2"
+      id="portal_import_button_import"
+      [label]="'PORTAL_IMPORT.IMPORT' | translate"
+      [title]="'PORTAL_IMPORT.START_IMPORT' | translate"
+      (onClick)="importPortal()"
+      [icon]="isLoading ? 'pi pi-spin pi-spinner' : 'pi pi-check'"
+      [disabled]="isLoading || !isFormValid"
+    ></p-button>
+  </div>
+</div>
+
+<div class="flex justify-content-end gap-3 pt-3">
+  <button
+    pButton
+    type="button"
+    icon="pi pi-times"
+    id="portal_import_button_close"
+    [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+    [title]="'ACTIONS.NAVIGATION.CLOSE_WITHOUT_SAVE' | translate"
+    (click)="onClose()"
+  ></button>
+</div>

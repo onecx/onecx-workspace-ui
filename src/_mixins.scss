@@ -1,0 +1,21 @@
+/* Portal Mgmt global styles
+   => uses in component.scss:
+      @import "path-to-this/_portal-mgmt.scss";
+      @include <mixin-you-want-to-use>;
+*/
+
+// disable preset opacity: not readable
+@mixin make-disabled-form-readable-input {
+  :host {
+    .p-inputtext.p-component:disabled {
+      opacity: unset;
+    }
+  }
+}
+@mixin make-disabled-form-readable-dropdown {
+  :host ::ng-deep {
+    .p-dropdown.p-component.p-disabled {
+      opacity: unset;
+    }
+  }
+}

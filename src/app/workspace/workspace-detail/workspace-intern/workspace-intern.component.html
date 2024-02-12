@@ -1,0 +1,65 @@
+<div class="surface-section grid grid-nogutter m-3">
+  <div class="col-12 md:col-6">
+    <div class="flex flex-wrap flex-column gap-4 justify-content-between">
+      <span class="p-float-label mb-1">
+        <input
+          pInputText
+          type="text"
+          readonly
+          id="portal_detail_item_creationDate"
+          class="w-full pt-3 pb-2"
+          [value]="portalDetail.creationDate | date : dateFormat"
+          [pTooltip]="'DETAIL.TOOLTIPS.CREATION_DATE' | translate"
+          tooltipPosition="top"
+          tooltipEvent="focus"
+        />
+        <label for="portal_detail_item_creationDate">{{ 'DETAIL.CREATION_DATE' | translate }}</label>
+      </span>
+
+      <span class="p-float-label mb-1">
+        <input
+          pInputText
+          type="text"
+          readonly
+          id="portal_detail_item_creationUser"
+          class="w-full pt-3 pb-2"
+          [value]="portalDetail.creationUser"
+          [pTooltip]="'DETAIL.TOOLTIPS.CREATION_USER' | translate"
+          tooltipPosition="top"
+          tooltipEvent="focus"
+        />
+        <label for="portal_detail_item_creationUser">{{ 'DETAIL.CREATION_USER' | translate }}</label>
+      </span>
+
+      <span class="p-float-label mb-1">
+        <input
+          pInputText
+          type="text"
+          readonly
+          id="portal_detail_item_modificationDate"
+          class="w-full pt-3 pb-2"
+          [value]="portalDetail.modificationDate | date : dateFormat"
+          [pTooltip]="'DETAIL.TOOLTIPS.MODIFICATION_DATE' | translate"
+          tooltipPosition="top"
+          tooltipEvent="focus"
+        />
+        <label for="portal_detail_item_modificationDate">{{ 'DETAIL.MODIFICATION_DATE' | translate }}</label>
+      </span>
+
+      <span class="p-float-label mb-1">
+        <input
+          pInputText
+          type="text"
+          readonly
+          id="portal_detail_item_modificationUser"
+          class="w-full pt-3 pb-2"
+          [value]="portalDetail.modificationUser"
+          [pTooltip]="'DETAIL.TOOLTIPS.MODIFICATION_USER' | translate"
+          tooltipPosition="top"
+          tooltipEvent="focus"
+        />
+        <label for="portal_detail_item_modificationUser">{{ 'DETAIL.MODIFICATION_USER' | translate }}</label>
+      </span>
+    </div>
+  </div>
+</div>

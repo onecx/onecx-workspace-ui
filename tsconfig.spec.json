@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "composite": false,
+    "declaration": false,
+    "outDir": "./dist/test",
+    "module": "commonjs",
+    "types": ["jasmine", "node"],
+    "target": "ES2022",
+    "useDefineForClassFields": false
+  },
+  "files": ["src/test.ts", "src/polyfills.ts"],
+  "exclude": ["src/app/shared/generated/**/*", "node_modules"],
+  "include": ["**/*.spec.ts", "**/*.d.ts"]
+}

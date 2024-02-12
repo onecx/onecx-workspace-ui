@@ -1,0 +1,20 @@
+:host ::ng-deep {
+  // reduced card layout for single line role name
+  .role-section {
+    padding: var(--data-view-content-padding);
+  }
+  .view-role-card {
+    line-height: 2.43rem;
+  }
+  .p-card.p-component {
+    margin: 0.3rem;
+  }
+  .p-card .p-card-content {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .no-items-to-display {
+    margin-top: 0.5rem;
+  }
+}

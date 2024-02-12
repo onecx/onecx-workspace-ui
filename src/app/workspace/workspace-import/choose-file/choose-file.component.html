@@ -1,0 +1,27 @@
+<div class="px-1">
+  <p-fileUpload
+    #fileUploader
+    id="portal_import_file_upload"
+    mode="advanced"
+    name="file"
+    accept=".json"
+    [maxFileSize]="1000000"
+    [headers]="httpHeaders"
+    [customUpload]="true"
+    (uploadHandler)="uploadHandler()"
+    (onClear)="onClear()"
+    (onRemove)="onClear()"
+    (onSelect)="onSelect($event)"
+    [showUploadButton]="isFileValid()"
+    [uploadLabel]="'ACTIONS.UPLOAD' | translate"
+    [cancelLabel]="'ACTIONS.CANCEL' | translate"
+    [chooseLabel]="'ACTIONS.CHOOSE' | translate"
+  />
+  <p-message
+    *ngIf="importError"
+    styleClass="mt-2"
+    id="portal_import_file_upload_error"
+    severity="error"
+    [text]="validationErrorCause"
+  ></p-message>
+</div>

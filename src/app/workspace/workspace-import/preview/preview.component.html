@@ -1,0 +1,112 @@
+<form [formGroup]="formGroup" errorTailor>
+  <div class="px-1">
+    <div class="flex flex-wrap align-items-center gap-3">
+      <div>
+        <span class="p-float-label" controlErrorAnchor>
+          <input
+            pInputText
+            type="text"
+            id="portal_import_preview_portal_name"
+            (keyup)="onModelChange()"
+            formControlName="portalName"
+          />
+          <label class="ocx-required-label" for="portal_import_preview_portal_name">
+            {{ 'PORTAL.ITEM.PORTAL_NAME' | translate }}
+          </label>
+        </span>
+      </div>
+      <!-- <span *ngIf="hasPermission" class="p-float-label">
+        <input
+          pInputText
+          type="text"
+          id="portal_import_preview_tenant_id"
+          (keyup)="onModelChange()"
+          formControlName="tenantId"
+        />
+        <label for="portal_import_preview_tenant_id">{{ 'PORTAL.ITEM.TENANT_ID' | translate }}</label>
+      </span> -->
+      <!-- <div>
+        <span *ngIf="importThemeCheckbox" class="p-float-label" controlErrorAnchor>
+          <input
+            pInputText
+            type="text"
+            id="portal_import_preview_theme_name"
+            [title]="'THEME.TOOLTIPS.NAME' | translate"
+            (keyup)="onModelChange()"
+            formControlName="themeName"
+          />
+          <label class="ocx-required-label" for="portal_import_preview_theme_name">
+            {{ 'THEME.THEME_NAME' | translate }}
+          </label>
+        </span>
+        <span *ngIf="!importThemeCheckbox" class="p-float-label w-16rem" controlErrorAnchor>
+          <p-dropdown
+            #inputThemeName
+            id="portal_import_preview_themeName"
+            formControlName="themeName"
+            styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
+            [options]="(themes$ | async) || []"
+            (onChange)="onThemeChange($event)"
+          >
+            [pTooltip]="'PORTAL.ITEM.THEME' | translate" tooltipPosition="top" tooltipEvent="focus" >
+          </p-dropdown>
+          <label class="ocx-required-label" for="portal_import_preview_themeName">
+            {{ 'THEME.THEME_NAME' | translate }}
+          </label>
+        </span>
+      </div>
+      <app-theme-color-box
+        *ngIf="importThemeCheckbox && themeProperties"
+        id="portal_import_preview_theme_color_box"
+        [properties]="themeProperties"
+        styleClass="h-inputtext w-15rem"
+      /> -->
+      <p-message
+        *ngIf="importThemeCheckbox && !themeProperties"
+        id="portal_import_preview_message_theme_not_exists"
+        severity="info"
+        [text]="'PORTAL_IMPORT.VALIDATION_THEME_NOT_EXIST' | translate"
+      ></p-message>
+    </div>
+
+    <div class="mt-4">
+      <span class="p-float-label" controlErrorAnchor>
+        <input
+          pInputText
+          type="text"
+          id="portal_import_preview_base_url"
+          (keyup)="onModelChange()"
+          formControlName="baseUrl"
+        />
+        <label class="ocx-required-label" for="portal_import_preview_base_url">
+          {{ 'PORTAL.ITEM.BASE_URL' | translate }}
+        </label>
+      </span>
+    </div>
+
+    <p-tabView styleClass="mt-3 mb-2">
+      <p-tabPanel [header]="'PORTAL_IMPORT.PREVIEW_MENU' | translate">
+        <p-tree
+          styleClass="py-1 px-0 max-h-25rem overflow-y-auto"
+          id="portal_import_preview_menu"
+          [value]="menuItems"
+        ></p-tree>
+      </p-tabPanel>
+      <p-tabPanel [header]="'PORTAL.TABS.ROLES' | translate">
+        <div class="mt-1 mb-2 mx-3">
+          <div *ngIf="portalRoles.length === 0">{{ 'DETAIL.ROLES_NOT_EXIST' | translate }}</div>
+          <div *ngIf="portalRoles.length > 0">{{ portalRoles.join(', ') }}</div>
+        </div>
+      </p-tabPanel>
+      <!-- <p-tabPanel [header]="'PORTAL.TABS.MFES' | translate">
+        <div *ngIf="portalMfes.length === 0" class="mt-1 mb-2 mx-3">{{ 'DETAIL.MFES_NOT_EXIST' | translate }}</div>
+        <table *ngIf="portalMfes.length > 0">
+          <tr *ngFor="let mfe of portalMfes">
+            <td class="pb-1 px-4">{{ mfe.mfeId }}</td>
+            <td class="pb-1 px-4">{{ mfe.baseUrl }}</td>
+          </tr>
+        </table>
+      </p-tabPanel> -->
+    </p-tabView>
+  </div>
+</form>

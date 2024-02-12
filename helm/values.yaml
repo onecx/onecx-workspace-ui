@@ -1,0 +1,94 @@
+app:
+  name: ui
+  image:
+    repository: 'onecx/onecx-workspace-ui'
+  routing:
+    enabled: true
+    path: /mfe/workspace/
+  
+  operator:
+    # Microfrontend
+    microfrontend:
+      enabled: true
+      spec:
+        exposedModule: "./WorkspaceMgmtModule"
+        description: "OneCX Workspace Mgmt"
+        note: "OneCX Workspace Mgmt module auto import via MF operator"
+    # Permission
+    permission:
+      enabled: true
+      spec:
+        permissions:
+          WORKSPACE:
+            CREATE: Create workspace
+            EDIT: Edit workspace
+            DELETE: Delete workspace
+            SAVE: Update and save workspace
+            IMPORT: Import workspace
+            EXPORT: Export workspace
+            VIEW: View mode for workspace
+            SEARCH: Search workspace
+          WORKSPACE_TENANT:
+            VIEW: View workspace tenant
+            EDIT: View workspace tenant
+          WORKSPACE_PROPS:
+            VIEW: View workspace props
+          WORKSPACE_CONTACT:
+            VIEW: View workspace contact
+          WORKSPACE_INTERNAL:
+            VIEW: View workspace internal
+          WORKSPACE_ROLES:
+            VIEW: View workspace roles
+          WORKSPACE_PRODUCTS:
+            VIEW: View workspace products
+          WORKSPACE_IMAGES:
+            VIEW: View workspace images
+          WORKSPACE_MFE:
+            REGISTER: Register app module
+            DEREGISTER: Deregister app module
+          WORKSPACE_IMAGE:
+            EDIT: Edit workspace images
+            DELETE: Delete workspace images
+          WORKSPACE_ROLE:
+            EDIT: Edit workspace images
+            DELETE: Delete workspace images
+          MENU:
+            CREATE: Create menu
+            EDIT: Edit menu
+            VIEW: View menu
+            SAVE: Save menu
+            COPY: Copy menu
+            DELETE: Delete menu
+            IMPORT: Import menu
+            EXPORT: Export menu
+            SEARCH: Search menu page
+            DRAG_DROP: Drag & drop menu tree
+          MENU_TENANT:
+            VIEW: View menu tenant
+
+    # Keycloak
+    keycloak:
+      enabled: true
+      client: |-
+        {
+          "clientId": "onecx-workspace-ui",
+          "enabled": true,
+          "description": "Keycloak client for onecx-workspace-ui",
+          "redirectUris": ["*"],
+          "webOrigins": ["*"],
+          "publicClient": true,
+          "protocol": "openid-connect"
+        }
+      roles: |-
+        [
+           {
+             "name": "onecx-workspace-admin",
+             "description": "OneCX Workspace admin"
+           },
+           {
+             "name": "onecx-workspace-user",
+             "description": "OneCX Workspace user"
+           }
+         ]
+
+# PIPE Config

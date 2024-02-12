@@ -1,0 +1,164 @@
+<form [formGroup]="formGroup">
+  <div class="flex flex-wrap flex-column gap-4 justify-content-between">
+    <div>
+      <span class="p-float-label mt-1" controlErrorAnchor>
+        <input
+          pInputText
+          type="text"
+          id="portal_create_item_name"
+          class="w-full pt-3 pb-2"
+          formControlName="name"
+          [pTooltip]="'PORTAL.ITEM.PORTAL_NAME' | translate"
+          tooltipPosition="top"
+          tooltipEvent="focus"
+        />
+        <label class="ocx-required-label" for="portal_create_item_name">
+          {{ 'PORTAL.ITEM.PORTAL_NAME' | translate }}
+        </label>
+      </span>
+    </div>
+
+    <div *ocxIfPermission="'WORKSPACE#EDIT_TENANT'">
+      <span class="p-float-label" controlErrorAnchor>
+        <input
+          pInputText
+          type="text"
+          id="portal_create_item_tenantId"
+          class="w-full pt-3 pb-2"
+          formControlName="tenantId"
+          [pTooltip]="'PORTAL.ITEM.TENANT_ID' | translate"
+          tooltipPosition="top"
+          tooltipEvent="focus"
+        />
+        <label for="portal_create_item_tenantId"> {{ 'PORTAL.ITEM.TENANT_ID' | translate }} </label>
+      </span>
+    </div>
+
+    <!-- <div>
+      <span class="p-float-label">
+        <p-dropdown
+          id="portal_create_item_themeName"
+          formControlName="themeName"
+          styleClass="w-full"
+          [options]="(themes$ | async) || []"
+          [pTooltip]="'PORTAL.ITEM.THEME' | translate"
+          tooltipPosition="top"
+          tooltipEvent="focus"
+        >
+        </p-dropdown>
+        <label class="ocx-required-label" for="portal_create_item_themeName">
+          {{ 'PORTAL.ITEM.THEME' | translate }}
+        </label>
+      </span>
+    </div> -->
+
+    <div>
+      <span class="p-float-label" controlErrorAnchor>
+        <input
+          pInputText
+          type="text"
+          id="portal_create_item_homePage"
+          class="w-full pt-3 pb-2"
+          formControlName="homePage"
+          [pTooltip]="'PORTAL.ITEM.HOME_PAGE' | translate"
+          tooltipPosition="top"
+          tooltipEvent="focus"
+        />
+        <label for="portal_create_item_homePage"> {{ 'PORTAL.ITEM.HOME_PAGE' | translate }} </label>
+      </span>
+    </div>
+
+    <div>
+      <span class="p-float-label" controlErrorAnchor>
+        <input
+          pInputText
+          type="text"
+          id="portal_create_item_baseUrl"
+          class="w-full pt-3 pb-2"
+          formControlName="baseUrl"
+          [pTooltip]="'PORTAL.ITEM.BASE_URL' | translate"
+          tooltipPosition="top"
+          tooltipEvent="focus"
+        />
+        <label class="ocx-required-label" for="portal_create_item_baseUrl">
+          {{ 'PORTAL.ITEM.BASE_URL' | translate }}</label
+        >
+      </span>
+      <label class="ocx-control-hint block mt-1">
+        {{ ('VALIDATION.HINTS.FORMAT_URL' | translate) + urlPattern }}
+      </label>
+    </div>
+
+    <!-- <div class="flex flex-wrap sm:flex-nowrap align-items-center row-gap-2 column-gap-4">
+      <input hidden type="file" accept=".png,.svg" #selectedFileInputLogo (change)="onFileUpload($event, 'logo')" />
+      <app-image-container
+        [id]="'portal_create_item_logo_image'"
+        [imageUrl]="fetchingLogoUrl"
+        [small]="true"
+        [title]="'LOGO.TOOLTIPS.' + (fetchingLogoUrl ? 'IMAGE' : 'PLACEHOLDER') | translate"
+      ></app-image-container>
+      <div class="p-inputgroup" controlErrorAnchor>
+        <span class="p-float-label">
+          <input pInputText type="text" id="portal_create_item_logo" formControlName="logoUrl" />
+          <label for="portal_create_item_logo"> {{ 'LOGO.LOGO_URL' | translate }} </label>
+        </span>
+        <span
+          id="portal_create_item_logo_upload"
+          class="p-inputgroup-addon bg-primary"
+          [title]="'LOGO.TOOLTIPS.UPLOAD' | translate"
+          (click)="selectedFileInputLogo.click()"
+        >
+          <i class="pi pi-upload"></i>
+        </span>
+      </div>
+    </div> -->
+
+    <div>
+      <span class="p-float-label" controlErrorAnchor>
+        <input
+          pInputText
+          type="text"
+          id="portal_create_item_footerLabel"
+          class="w-full pt-3 pb-2"
+          formControlName="footerLabel"
+          [pTooltip]="'PORTAL.ITEM.FOOTER_LABEL' | translate"
+          tooltipPosition="top"
+          tooltipEvent="focus"
+        />
+        <label for="portal_create_item_footerLabel"> {{ 'PORTAL.ITEM.FOOTER_LABEL' | translate }} </label>
+      </span>
+    </div>
+
+    <div>
+      <span class="p-float-label" controlErrorAnchor>
+        <textarea
+          class="w-full"
+          pInputTextarea
+          autoresize="true"
+          rows="4"
+          id="portal_create_item_description"
+          formControlName="description"
+        ></textarea>
+        <label for="portal_create_item_description"> {{ 'PORTAL.ITEM.DESCRIPTION' | translate }} </label>
+      </span>
+    </div>
+  </div>
+</form>
+
+<div class="flex flex-wrap justify-content-end gap-2 pt-3">
+  <button
+    pButton
+    type="button"
+    icon="pi pi-times"
+    [label]="'ACTIONS.CANCEL' | translate"
+    (click)="closeDialog()"
+  ></button>
+  <button
+    pButton
+    type="button"
+    icon="pi pi-plus"
+    [disabled]="!formGroup.valid"
+    [label]="'ACTIONS.CREATE.LABEL' | translate"
+    (click)="savePortal()"
+  ></button>
+</div>

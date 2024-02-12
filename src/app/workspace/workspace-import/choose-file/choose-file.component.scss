@@ -1,0 +1,17 @@
+:host ::ng-deep {
+  .p-fileupload .p-fileupload-content {
+    padding: 0.5rem;
+  }
+  .p-fileupload-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0;
+    > div {
+      width: unset;
+      &:first-child {
+        display: none;
+      }
+    }
+  }
+}

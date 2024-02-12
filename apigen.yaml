@@ -1,0 +1,4 @@
+serviceSuffix: APIService
+stringEnums: true
+useSingleRequestParameter: true
+providedIn: 'any'

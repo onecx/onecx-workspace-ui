@@ -1,0 +1,19 @@
+::ng-deep {
+  .theme-color-box {
+    .theme-color {
+      width: 20%;
+      &:first-of-type {
+        border-top-left-radius: 3px;
+        border-bottom-left-radius: 3px;
+      }
+      &:last-of-type {
+        border-top-right-radius: 3px;
+        border-bottom-right-radius: 3px;
+      }
+    }
+  }
+  // height of a normal text input control
+  .h-inputtext {
+    height: 2.786rem;
+  }
+}
