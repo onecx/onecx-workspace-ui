@@ -1,15 +1,12 @@
-import { CUSTOM_ELEMENTS_SCHEMA, Inject, NgModule } from '@angular/core'
+import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, NgModule } from '@angular/core'
 import { CommonModule } from '@angular/common'
-// import { HttpClient } from '@angular/common/http'
 import { FormsModule } from '@angular/forms'
 import { RouterModule, Routes } from '@angular/router'
-import { ConfirmationService } from 'primeng/api'
-// import { TranslateModule, TranslateLoader } from '@ngx-translate/core'
 
-import { MFE_INFO, MfeInfo, PortalCoreModule } from '@onecx/portal-integration-angular'
-
-import { SharedModule /* , HttpLoaderFactory */ } from '../../shared/shared.module'
+import { addInitializeModuleGuard, InitializeModuleGuard, PortalCoreModule } from '@onecx/portal-integration-angular'
+import { SharedModule } from '../../shared/shared.module'
 import { LabelResolver } from '../../shared/label.resolver'
+
 import { WorkspaceDetailComponent } from './workspace-detail.component'
 import { WorkspacePropsComponent } from './workspace-props/workspace-props.component'
 import { WorkspaceRolesComponent } from './workspace-roles/workspace-roles.component'
@@ -37,7 +34,6 @@ const routes: Routes = [
     }
   }
 ]
-
 @NgModule({
   declarations: [
     WorkspaceDetailComponent,
@@ -52,24 +48,16 @@ const routes: Routes = [
   ],
   imports: [
     CommonModule,
-    SharedModule,
-    [RouterModule.forChild(routes)],
+    FormsModule,
     PortalCoreModule.forMicroFrontend(),
-    FormsModule
-    // TranslateModule.forChild({
-    //   isolate: true,
-    //   loader: {
-    //     provide: TranslateLoader,
-    //     useFactory: HttpLoaderFactory,
-    //     deps: [HttpClient, MFE_INFO]
-    //   }
-    // })
+    [RouterModule.forChild(addInitializeModuleGuard(routes))],
+    SharedModule
   ],
-  providers: [ConfirmationService],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  providers: [InitializeModuleGuard],
+  schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA]
 })
 export class WorkspaceDetailModule {
-  constructor(@Inject(MFE_INFO) mfeInfo: MfeInfo) {
-    console.log(`Workspace Detail Module constructor ${JSON.stringify(mfeInfo)}`)
+  constructor() {
+    console.info('Workspace Detail Module constructor')
   }
 }

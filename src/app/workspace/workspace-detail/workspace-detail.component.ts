@@ -1,18 +1,11 @@
-import { Component, Inject, OnInit, ViewChild } from '@angular/core'
+import { Component, OnInit, ViewChild } from '@angular/core'
 import { DatePipe, Location } from '@angular/common'
 import { ActivatedRoute /* , ExtraOptions */, Router } from '@angular/router'
 // import { /* concatMap, */ Observable } from 'rxjs'
 import { TranslateService } from '@ngx-translate/core'
 import FileSaver from 'file-saver'
 
-import {
-  Action,
-  AUTH_SERVICE,
-  ConfigurationService,
-  IAuthService,
-  ObjectDetailItem,
-  PortalMessageService
-} from '@onecx/portal-integration-angular'
+import { Action, ObjectDetailItem, PortalMessageService, UserService } from '@onecx/portal-integration-angular'
 import {
   WorkspaceSnapshot,
   // ImportRequestDTOv1ThemeImportData,
@@ -71,18 +64,17 @@ export class WorkspaceDetailComponent implements OnInit {
   dateFormat = 'medium'
 
   constructor(
+    private user: UserService,
     public route: ActivatedRoute,
     private router: Router,
     private location: Location,
-    private config: ConfigurationService,
     private menuApi: MenuItemAPIService,
     // private themeApi: ThemesAPIService,
     private workspaceApi: WorkspaceAPIService,
     private translate: TranslateService,
-    private msgService: PortalMessageService,
-    @Inject(AUTH_SERVICE) readonly auth: IAuthService
+    private msgService: PortalMessageService
   ) {
-    this.dateFormat = this.config.lang === 'de' ? 'dd.MM.yyyy HH:mm:ss' : 'medium'
+    this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm:ss' : 'medium'
     console.log('SNAP', this.route.snapshot.toString())
   }
 

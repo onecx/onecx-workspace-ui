@@ -5,7 +5,7 @@ const config = withModuleFederationPlugin({
   name: 'onecx-workspace-ui',
   filename: 'remoteEntry.js',
   exposes: {
-    './WorkspaceMgmtModule': 'src/app/onecx-workspace-remote.module.ts'
+    './OneCXWorkspaceModule': 'src/app/onecx-workspace-remote.module.ts'
   },
   shared: share({
     '@angular/core': { singleton: true, strictVersion: true, requiredVersion: 'auto' },

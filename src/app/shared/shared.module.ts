@@ -1,22 +1,17 @@
 import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, NgModule } from '@angular/core'
 import { CommonModule } from '@angular/common'
-// import { HttpClient } from '@angular/common/http'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
-import {
-  // MissingTranslationHandler,
-  // MissingTranslationHandlerParams,
-  // TranslateLoader,
-  TranslateModule,
-  TranslateService
-} from '@ngx-translate/core'
-// import { TranslateHttpLoader } from '@ngx-translate/http-loader'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
+import { ColorSketchModule } from 'ngx-color/sketch'
 import { ErrorTailorModule } from '@ngneat/error-tailor'
 
 import { AutoCompleteModule } from 'primeng/autocomplete'
 import { BadgeModule } from 'primeng/badge'
 import { CheckboxModule } from 'primeng/checkbox'
+import { CalendarModule } from 'primeng/calendar'
+import { ConfirmDialogModule } from 'primeng/confirmdialog'
 import { ConfirmPopupModule } from 'primeng/confirmpopup'
-import { ConfirmationService, MessageService } from 'primeng/api'
+import { ConfirmationService } from 'primeng/api'
 import { DataViewModule } from 'primeng/dataview'
 import { DialogModule } from 'primeng/dialog'
 import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog'
@@ -35,44 +30,25 @@ import { TabViewModule } from 'primeng/tabview'
 import { TableModule } from 'primeng/table'
 import { ToastModule } from 'primeng/toast'
 import { TreeModule } from 'primeng/tree'
+import { TreeTableModule } from 'primeng/treetable'
 
 import {
-  MfeInfo,
-  MFE_INFO,
+  AppStateService,
+  ConfigurationService,
   PortalDialogService,
-  PortalMessageService
-  // TranslateCombinedLoader
+  PortalApiConfiguration
 } from '@onecx/portal-integration-angular'
 
-import { environment } from '../../environments/environment'
-import { BASE_PATH } from './generated'
+import { Configuration } from 'src/app/shared/generated'
+import { environment } from 'src/environments/environment'
 import { LabelResolver } from './label.resolver'
+
 import { ImageContainerComponent } from './image-container/image-container.component'
 import { ThemeColorBoxComponent } from './theme-color-box/theme-color-box.component'
 
-export const basePathProvider = (mfeInfo: MfeInfo) => {
-  /* console.log(
-    'Base path provider: ' + (mfeInfo ? mfeInfo.remoteBaseUrl + '' + environment.apiPrefix : '' + environment.apiPrefix)
-  ) */
-  return (mfeInfo ? mfeInfo.remoteBaseUrl : '') + environment.apiPrefix
+export function apiConfigProvider(configService: ConfigurationService, appStateService: AppStateService) {
+  return new PortalApiConfiguration(Configuration, environment.apiPrefix, configService, appStateService)
 }
-
-// export function HttpLoaderFactory(http: HttpClient, mfeInfo: MfeInfo) {
-//   // console.log(`Configuring translation loader ${mfeInfo?.remoteBaseUrl}`)
-//   // if running standalone then load the app assets directly from remote base URL
-//   const appAssetPrefix = mfeInfo?.remoteBaseUrl ? mfeInfo.remoteBaseUrl : './'
-//   return new TranslateCombinedLoader(
-//     new TranslateHttpLoader(http, appAssetPrefix + 'assets/i18n/', '.json'),
-//     new TranslateHttpLoader(http, appAssetPrefix + 'onecx-portal-lib/assets/i18n/', '.json')
-//   )
-// }
-
-// export class MyMissingTranslationHandler implements MissingTranslationHandler {
-//   handle(params: MissingTranslationHandlerParams) {
-//     console.log(`Missing translation for ${params.key}`)
-//     return params.key
-//   }
-// }
 
 @NgModule({
   declarations: [ImageContainerComponent, ThemeColorBoxComponent],
@@ -80,7 +56,10 @@ export const basePathProvider = (mfeInfo: MfeInfo) => {
     AutoCompleteModule,
     BadgeModule,
     CheckboxModule,
+    CalendarModule,
+    ColorSketchModule,
     CommonModule,
+    ConfirmDialogModule,
     ConfirmPopupModule,
     DataViewModule,
     DialogModule,
@@ -102,11 +81,8 @@ export const basePathProvider = (mfeInfo: MfeInfo) => {
     TableModule,
     ToastModule,
     TreeModule,
-    TranslateModule /* .forRoot({
-      isolate: true,
-      loader: { provide: TranslateLoader, useFactory: HttpLoaderFactory, deps: [HttpClient, MFE_INFO] },
-      missingTranslationHandler: { provide: MissingTranslationHandler, useClass: MyMissingTranslationHandler }
-    }) */,
+    TreeTableModule,
+    TranslateModule,
     ErrorTailorModule.forRoot({
       controlErrorsOn: { async: true, blur: true, change: true },
       errors: {
@@ -134,16 +110,17 @@ export const basePathProvider = (mfeInfo: MfeInfo) => {
     AutoCompleteModule,
     BadgeModule,
     CheckboxModule,
+    CalendarModule,
+    ColorSketchModule,
     CommonModule,
+    ConfirmDialogModule,
     ConfirmPopupModule,
     DataViewModule,
     DialogModule,
     DropdownModule,
     DynamicDialogModule,
-    ErrorTailorModule,
     FileUploadModule,
     FormsModule,
-    ImageContainerComponent,
     InputTextModule,
     InputTextareaModule,
     KeyFilterModule,
@@ -156,22 +133,20 @@ export const basePathProvider = (mfeInfo: MfeInfo) => {
     StepsModule,
     TabViewModule,
     TableModule,
-    ThemeColorBoxComponent,
     ToastModule,
+    TreeModule,
+    TreeTableModule,
     TranslateModule,
-    TreeModule
+    ErrorTailorModule,
+    ThemeColorBoxComponent,
+    ImageContainerComponent
   ],
   //this is not elegant, for some reason the injection token from primeng does not work across federated module
   providers: [
     ConfirmationService,
     LabelResolver,
-    { provide: MessageService, useExisting: PortalMessageService },
     { provide: DialogService, useClass: PortalDialogService },
-    {
-      provide: BASE_PATH,
-      useFactory: basePathProvider,
-      deps: [MFE_INFO]
-    }
+    { provide: Configuration, useFactory: apiConfigProvider, deps: [ConfigurationService, AppStateService] }
   ],
   schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA]
 })

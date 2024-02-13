@@ -7,7 +7,7 @@ import { MessageService } from 'primeng/api'
 import { SelectItem } from 'primeng/api/selectitem'
 import { FileUpload } from 'primeng/fileupload'
 
-import { AUTH_SERVICE, IAuthService } from '@onecx/portal-integration-angular'
+import { AUTH_SERVICE, IAuthService, UserService } from '@onecx/portal-integration-angular'
 
 import { LogoState } from './logo-state'
 // import { setFetchUrls , sortThemeByName } from '../../shared/utils'
@@ -44,14 +44,15 @@ export class WorkspaceCreateComponent {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private portalApi: WorkspaceAPIService,
+    private user: UserService,
+    private workspaceApi: WorkspaceAPIService,
     // private themeApi: ThemesAPIService,
     // private imageApi: ImageV1APIService,
     private message: MessageService,
     private translate: TranslateService,
     @Inject(AUTH_SERVICE) readonly auth: IAuthService
   ) {
-    this.hasPermission = this.auth.hasPermission('WORKSPACE#EDIT_TENANT')
+    this.hasPermission = this.user.hasPermission('WORKSPACE#EDIT_TENANT')
 
     this.formGroup = new FormGroup({
       name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
@@ -84,7 +85,7 @@ export class WorkspaceCreateComponent {
 
   savePortal() {
     this.createPortalDto()
-    this.portalApi
+    this.workspaceApi
       .createWorkspace({
         createWorkspaceRequest: { resource: this.portalDto }
       })

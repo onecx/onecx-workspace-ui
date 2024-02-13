@@ -1,9 +1,9 @@
-import { Component, OnInit, Inject, ViewChild, Input, Output, EventEmitter, OnChanges } from '@angular/core'
+import { Component, OnInit, ViewChild, Input, Output, EventEmitter, OnChanges } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { MenuItem } from 'primeng/api'
 import { TranslateService } from '@ngx-translate/core'
 
-import { AUTH_SERVICE, IAuthService, PortalMessageService } from '@onecx/portal-integration-angular'
+import { PortalMessageService, UserService } from '@onecx/portal-integration-angular'
 
 import { PreviewComponent } from './preview/preview.component'
 import { ConfirmComponent } from './confirm/confirm.component'
@@ -37,14 +37,14 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
   public hasPermission = false
 
   constructor(
+    private readonly user: UserService,
     private readonly router: Router,
     private readonly route: ActivatedRoute,
     private readonly translate: TranslateService,
     private readonly workspaceApi: WorkspaceAPIService,
-    private msgService: PortalMessageService,
-    @Inject(AUTH_SERVICE) readonly auth: IAuthService
+    private msgService: PortalMessageService
   ) {
-    this.hasPermission = this.auth.hasPermission('WORKSPACE#IMPORT')
+    this.hasPermission = this.user.hasPermission('WORKSPACE#IMPORT')
 
     this.steps = [
       { label: this.translate.instant('PORTAL_IMPORT.CHOOSE_FILE') },

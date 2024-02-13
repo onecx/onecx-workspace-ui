@@ -1,35 +1,66 @@
 import { APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, NgModule } from '@angular/core'
+import { CommonModule } from '@angular/common'
+import { HttpClient, HttpClientModule } from '@angular/common/http'
+import { RouterModule, Routes } from '@angular/router'
 import { BrowserModule } from '@angular/platform-browser'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
-import { TranslateService } from '@ngx-translate/core'
-import { DialogService } from 'primeng/dynamicdialog'
-import { Observable } from 'rxjs'
+import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
 
-import { APP_CONFIG, PortalCoreModule } from '@onecx/portal-integration-angular'
+import {
+  APP_CONFIG,
+  AppStateService,
+  createTranslateLoader,
+  translateServiceInitializer,
+  PortalCoreModule,
+  UserService
+} from '@onecx/portal-integration-angular'
 import { KeycloakAuthModule } from '@onecx/keycloak-auth'
 
 import { AppComponent } from './app.component'
-import { environment } from '../environments/environment'
+import { environment } from 'src/environments/environment'
 
-// standalone app: ensure translations are loaded during app init
-function initializer(translate: TranslateService): () => Observable<any> {
-  console.log('App module initializer')
-  return () => {
-    translate.addLangs(['en', 'de'])
-    const browserLang = translate.getBrowserLang()
-    return translate.use(browserLang?.match(/en|de/) ? browserLang : 'en')
+const routes: Routes = [
+  {
+    path: '',
+    loadChildren: () => import('./workspace/workspace.module').then((m) => m.WorkspaceModule)
   }
-}
-
+]
 @NgModule({
   bootstrap: [AppComponent],
   declarations: [AppComponent],
-  imports: [BrowserModule, KeycloakAuthModule, BrowserAnimationsModule, PortalCoreModule.forRoot('onecx-workspace-ui')],
+  imports: [
+    CommonModule,
+    BrowserModule,
+    HttpClientModule,
+    KeycloakAuthModule,
+    BrowserAnimationsModule,
+    RouterModule.forRoot(routes, {
+      initialNavigation: 'enabledBlocking',
+      enableTracing: true
+    }),
+    PortalCoreModule.forRoot('onecx-workspace-ui'),
+    TranslateModule.forRoot({
+      isolate: true,
+      loader: {
+        provide: TranslateLoader,
+        useFactory: createTranslateLoader,
+        deps: [HttpClient, AppStateService]
+      }
+    })
+  ],
   providers: [
-    DialogService,
     { provide: APP_CONFIG, useValue: environment },
-    { provide: APP_INITIALIZER, useFactory: initializer, multi: true, deps: [TranslateService] }
+    {
+      provide: APP_INITIALIZER,
+      useFactory: translateServiceInitializer,
+      multi: true,
+      deps: [UserService, TranslateService]
+    }
   ],
   schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA]
 })
-export class AppModule {}
+export class AppModule {
+  constructor() {
+    console.info('App Module constructor')
+  }
+}
