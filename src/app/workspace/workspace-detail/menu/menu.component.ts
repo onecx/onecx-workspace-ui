@@ -21,14 +21,13 @@ import {
   PortalMessageService
 } from '@onecx/portal-integration-angular'
 import {
-  DeleteMenuItemByIdRequestParams,
   MenuItemAPIService,
   MenuItem,
   Workspace,
   WorkspaceAPIService,
-  GetMenuItemsResponse,
-  CreateUpdateMenuItem,
-  GetWorkspaceMenuItemStructureResponse
+  GetMenuItemResponse,
+  GetWorkspaceMenuItemStructureResponse,
+  CreateUpdateMenuItem
 } from '../../../shared/generated'
 import { limitText, dropDownSortItemsByLabel } from '../../../shared/utils'
 import { MenuStringConst } from '../../..//model/menu-string-const'
@@ -86,7 +85,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   private menu$: Observable<GetWorkspaceMenuItemStructureResponse> =
     new Observable<GetWorkspaceMenuItemStructureResponse>()
   public menuNodes: TreeNode[] = []
-  private menuItem$: Observable<GetMenuItemsResponse | null> = new Observable<GetMenuItemsResponse | null>()
+  private menuItem$: Observable<GetMenuItemResponse | null> = new Observable<GetMenuItemResponse | null>()
   public menuItems: MenuItem[] | undefined
   public menuItem: MenuItem | undefined
   private menuItemStructureDTOArray: Array<MenuItem> | undefined
@@ -446,9 +445,9 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.displayDeleteConfirmation = false
     this.menuApi
       .deleteMenuItemById({
-        id: this.workspaceName,
-        menuItemId: this.menuItem?.id
-      } as unknown as DeleteMenuItemByIdRequestParams)
+        workspaceName: this.workspaceName,
+        menuItemId: this.menuItem?.id!
+      })
       .subscribe({
         next: () => {
           this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MENU_DELETE_OK' })
@@ -493,8 +492,10 @@ export class MenuComponent implements OnInit, OnDestroy {
       .pipe(catchError((error) => of(error)))
     this.menuItem$.subscribe({
       next: (m) => {
-        this.menuItem = m as MenuItem
-        this.fillForm(this.menuItem)
+        this.menuItem = m?.resource
+        if (this.menuItem) {
+          this.fillForm(this.menuItem)
+        }
         this.displayMenuDetail = true
       },
       error: (err) => {
@@ -573,7 +574,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.menuApi
           .createMenuItemForWorkspace({
             workspaceName: this.workspaceName,
-            createMenuItemRequest: { resource: this.menuItem as CreateUpdateMenuItem }
+            createMenuItemRequest: { resource: this.menuItem! as CreateUpdateMenuItem }
           })
           .subscribe({
             next: () => {
