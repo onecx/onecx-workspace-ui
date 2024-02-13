@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, SimpleChanges, OnChanges } from '@angular/core'
 import { FormArray, FormBuilder, FormControl, FormControlState, FormGroup } from '@angular/forms'
 import { TranslateService } from '@ngx-translate/core'
-import { MessageService } from 'primeng/api'
+import { PortalMessageService } from '@onecx/portal-integration-angular'
 
 import { /* ImageV1APIService,  */ WorkspaceAPIService, Workspace } from '../../../shared/generated'
 import { clonePortalWithMicrofrontendsArray } from '../../../shared/utils'
@@ -27,7 +27,7 @@ export class WorkspaceImagesComponent implements OnChanges {
   public logoState = LogoState.INITIAL
 
   constructor(
-    private messageService: MessageService,
+    private messageService: PortalMessageService,
     private translate: TranslateService,
     private api: WorkspaceAPIService,
     private fb: FormBuilder /* // private imageApi: ImageV1APIService */
@@ -88,19 +88,14 @@ export class WorkspaceImagesComponent implements OnChanges {
         })
         .subscribe({
           next: () => {
-            this.messageService.add({ severity: 'success', summary: 'Portal updated' })
+            this.messageService.success({ summaryKey: 'ACTIONS.EDIT.WORKSPACE.OK' })
           },
-
           error: (err: { error: any }) => {
-            this.messageService.add({ severity: 'danger', summary: 'Failed to update portal', detail: err.error })
+            this.messageService.error({ summaryKey: 'ACTIONS.EDIT.WORKSPACE.NOK' })
           }
         })
     } else {
-      this.messageService.add({
-        severity: 'error',
-        summary: this.translate.instant('GENERAL.FORM_VALIDATION')
-      })
-      console.log('INVALID FORM')
+      this.messageService.error({ summaryKey: 'GENERAL.FORM_VALIDATION' })
     }
   }
 

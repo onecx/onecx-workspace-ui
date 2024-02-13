@@ -36,8 +36,8 @@ const routes: Routes = [
   providers: [ConfigurationService],
   schemas: []
 })
-export class OneCXAnnouncementModule {
+export class OneCXWorkspaceModule {
   constructor() {
-    console.info('OneCX Announcement Module constructor')
+    console.info('OneCX Workspace Module constructor')
   }
 }
