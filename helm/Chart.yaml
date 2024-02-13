@@ -5,6 +5,7 @@ description: OneCX Workspace UI
 home: https://github.com/onecx/onecx-workspace-ui
 keywords:
   - workspace
+  - menu
 sources:
   - https://github.com/onecx/onecx-workspace-ui
 maintainers:

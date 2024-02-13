@@ -11,9 +11,9 @@ app:
     microfrontend:
       enabled: true
       spec:
-        exposedModule: "./WorkspaceMgmtModule"
-        description: "OneCX Workspace Mgmt"
-        note: "OneCX Workspace Mgmt module auto import via MF operator"
+        exposedModule: "./OneCXWorkspaceModule"
+        description: "OneCX Workspace UI"
+        note: "OneCX Workspace UI module auto import via MF operator"
     # Permission
     permission:
       enabled: true

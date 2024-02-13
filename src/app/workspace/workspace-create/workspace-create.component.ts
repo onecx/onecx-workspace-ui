@@ -1,17 +1,15 @@
-import { Component, Output, EventEmitter, Inject } from '@angular/core'
+import { Component, Output, EventEmitter } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 import { /*  map, */ Observable, of } from 'rxjs'
-import { MessageService } from 'primeng/api'
 import { SelectItem } from 'primeng/api/selectitem'
 import { FileUpload } from 'primeng/fileupload'
 
-import { AUTH_SERVICE, IAuthService } from '@onecx/portal-integration-angular'
+import { PortalMessageService, UserService } from '@onecx/portal-integration-angular'
 
 import { LogoState } from './logo-state'
 // import { setFetchUrls , sortThemeByName } from '../../shared/utils'
-import { environment } from '../../../environments/environment'
 import {
   /* ImageV1APIService, */
   WorkspaceAPIService /* , ThemesAPIService */,
@@ -38,20 +36,19 @@ export class WorkspaceCreateComponent {
   public logoState = LogoState.INITIAL
   public portalCreationValiationMsg = false
   public fetchingLogoUrl?: string
-  private apiPrefix = environment.apiPrefix
   public urlPattern = '/base-path-to-workspace'
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private portalApi: WorkspaceAPIService,
+    private user: UserService,
+    private workspaceApi: WorkspaceAPIService,
     // private themeApi: ThemesAPIService,
     // private imageApi: ImageV1APIService,
-    private message: MessageService,
-    private translate: TranslateService,
-    @Inject(AUTH_SERVICE) readonly auth: IAuthService
+    private message: PortalMessageService,
+    private translate: TranslateService
   ) {
-    this.hasPermission = this.auth.hasPermission('WORKSPACE#EDIT_TENANT')
+    this.hasPermission = this.user.hasPermission('WORKSPACE#EDIT_TENANT')
 
     this.formGroup = new FormGroup({
       name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
@@ -84,27 +81,20 @@ export class WorkspaceCreateComponent {
 
   savePortal() {
     this.createPortalDto()
-    this.portalApi
+    this.workspaceApi
       .createWorkspace({
         createWorkspaceRequest: { resource: this.portalDto }
       })
       .pipe()
       .subscribe({
         next: (fetchedPortal) => {
-          this.message.add({
-            severity: 'success',
-            summary: this.translate.instant('ACTIONS.CREATE.MESSAGE.CREATE_OK').replace('{{TYPE}}', 'Workspace')
-          })
+          this.message.success({ summaryKey: 'ACTIONS.CREATE.MESSAGE.CREATE_OK' })
           this.portalCreationValiationMsg = false
           this.closeDialog()
           this.router.navigate(['./' + fetchedPortal.resource?.name], { relativeTo: this.route })
         },
         error: (err: { error: { message: any } }) => {
-          this.message.add({
-            severity: 'error',
-            summary: this.translate.instant('ACTIONS.CREATE.MESSAGE.CREATE_NOK').replace('{{TYPE}}', 'Workspace'),
-            detail: err.error.message
-          })
+          this.message.error({ summaryKey: 'ACTIONS.CREATE.MESSAGE.CREATE_NOK' })
         }
       })
   }
