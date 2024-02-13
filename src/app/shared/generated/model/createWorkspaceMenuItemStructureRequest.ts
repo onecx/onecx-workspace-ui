@@ -12,7 +12,7 @@
 import { MenuItem } from './menuItem';
 
 
-export interface CreateWorkspaceMenuItemStructrueRequest { 
+export interface CreateWorkspaceMenuItemStructureRequest { 
     menuItems?: Array<MenuItem>;
 }
 

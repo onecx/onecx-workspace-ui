@@ -26,7 +26,7 @@ export interface EximWorkspace {
     footerLabel?: string;
     logoUrl?: string;
     address?: EximWorkspaceAddress;
-    workspaceRoles?: string;
+    workspaceRoles?: Array<string>;
     subjectLinks?: Array<EximSubjectLink>;
     imageUrls?: Array<string>;
     menu?: MenuSnapshot;

@@ -4,7 +4,7 @@ export * from './createProductRequest';
 export * from './createUpdateMenuItem';
 export * from './createUpdateMicrofrontend';
 export * from './createUpdateProductResponse';
-export * from './createWorkspaceMenuItemStructrueRequest';
+export * from './createWorkspaceMenuItemStructureRequest';
 export * from './createWorkspaceRequest';
 export * from './createWorkspaceResponse';
 export * from './eximMenuStructure';

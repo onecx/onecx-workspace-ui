@@ -10,7 +10,7 @@ import { Overlay } from 'primeng/overlay'
 import { SelectItem, TreeNode } from 'primeng/api'
 
 import { TranslateService } from '@ngx-translate/core'
-import { Observable, Subject, catchError, of, tap, switchMap } from 'rxjs'
+import { Observable, Subject, catchError, of } from 'rxjs'
 import FileSaver from 'file-saver'
 
 import {
@@ -27,8 +27,8 @@ import {
   // MenuItemsInternalAPIService,
   Workspace,
   WorkspaceAPIService,
-  CreateMenuItemRequest,
-  GetMenuItemsResponse
+  GetMenuItemsResponse,
+  CreateUpdateMenuItem
 } from '../../../shared/generated'
 import { limitText, dropDownSortItemsByLabel } from '../../../shared/utils'
 import { MenuStringConst } from '../../..//model/menu-string-const'
@@ -359,45 +359,35 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.exceptionKey = ''
     this.loading = true
 
-    this.menuItem$ = this.workspaceApi.getWorkspaceByName({ name: this.workspaceName }).pipe(
-      switchMap((portal) => {
-        console.log('PORTAL', portal)
-        this.portal = portal as Workspace
-        return this.menuApi.getMenuItemsForWorkspaceById({ id: portal?.resource?.id! }).pipe(
-          catchError((error) => {
-            console.error('Error fetching data:', error)
-            return of(null)
-          })
-        )
-      }),
-      catchError(() => {
-        return of(null)
-      }),
-      tap((menu) => {
-        this.menu$ = of(menu) as Observable<MenuItem[]>
-      })
-    )
-    this.menuItem$.subscribe({
-      complete: () => {
+    this.portal$ = this.workspaceApi
+      .getWorkspaceByName({ workspaceName: this.workspaceName })
+      .pipe(catchError((error) => of(error)))
+    this.menu$ = this.menuApi
+      .getMenuItemsForWorkspaceByName({ workspaceName: this.workspaceName })
+      .pipe(catchError((error) => of(error)))
+
+    this.portal$.subscribe((portal) => {
+      this.loading = true
+      if (portal instanceof HttpErrorResponse) {
+        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + portal.status + '.PORTALS'
+        console.error('getPortalByPortalId():', portal)
+      } else if (portal instanceof Object) {
+        this.portal = portal
+        // this.portal.microfrontendRegistrations = new Set(Array.from(portal.microfrontendRegistrations ?? []))
+        // this.mfeRUrls = Array.from(this.portal.microfrontendRegistrations || []).map((mfe) => mfe.baseUrl || '')
+        // this.mfeRUrlOptions = Array.from(this.portal.microfrontendRegistrations ?? [])
+        //   .map((mfe) => ({
+        //     label: mfe.baseUrl,
+        //     value: mfe.baseUrl || '',
+        //   }))
+        //   .sort(dropDownSortItemsByLabel)
         this.loadMenu(false)
-        this.loading = false
+      } else {
+        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_0.PORTALS'
+        // console.error('getAllPortals() => unknown response:', portal)
       }
+      this.loading = false
     })
-    //     // this.portal.microfrontendRegistrations = new Set(Array.from(portal.microfrontendRegistrations ?? []))
-    //     // this.mfeRUrls = Array.from(this.portal.microfrontendRegistrations || []).map((mfe) => mfe.baseUrl || '')
-    //     // this.mfeRUrlOptions = Array.from(this.portal.microfrontendRegistrations ?? [])
-    //     //   .map((mfe) => ({
-    //     //     label: mfe.baseUrl,
-    //     //     value: mfe.baseUrl || ''
-    //     //   }))
-    //     //   .sort(dropDownSortItemsByLabel)
-    //     this.loadMenu(false)
-    //   } else {
-    //     this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_0.PORTALS'
-    //     console.error('getAllPortals() => unknown response:', portal)
-    //   }
-    //   this.loading = false
-    // })
   }
 
   public onReloadMenu(): void {
@@ -459,7 +449,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       .deleteMenuItemById({
         id: this.workspaceName,
         menuItemId: this.menuItem?.id
-      } as DeleteMenuItemByIdRequestParams)
+      } as unknown as DeleteMenuItemByIdRequestParams)
       .subscribe({
         next: () => {
           this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MENU_DELETE_OK' })
@@ -500,7 +490,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.changeMode = 'EDIT'
     // get data
     this.menuItem$ = this.menuApi
-      .getMenuItemById({ id: this.workspaceName as string, menuItemId: item.id })
+      .getMenuItemById({ workspaceName: this.workspaceName, menuItemId: item.id })
       .pipe(catchError((error) => of(error)))
     this.menuItem$.subscribe({
       next: (m) => {
@@ -577,14 +567,14 @@ export class MenuComponent implements OnInit, OnDestroy {
         }
         this.menuItem.i18n = i18n
         if (this.changeMode === 'CREATE') {
-          this.menuItem.id = undefined
+          this.menuItem.id = ''
         }
       }
       if (this.changeMode === 'CREATE') {
         this.menuApi
           .createMenuItemForWorkspace({
-            id: this.workspaceName,
-            createMenuItemRequest: this.menuItem as CreateMenuItemRequest
+            workspaceName: this.workspaceName,
+            createMenuItemRequest: { resource: this.menuItem as CreateUpdateMenuItem }
           })
           .subscribe({
             next: () => {
@@ -600,7 +590,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       } else if (this.changeMode === 'EDIT' && this.menuItem && this.menuItem.id) {
         this.menuApi
           .patchMenuItems({
-            id: this.workspaceName,
+            workspaceName: this.workspaceName,
             patchMenuItemsRequest: [{ resource: this.menuItem }]
           })
           .subscribe({
@@ -746,7 +736,7 @@ export class MenuComponent implements OnInit, OnDestroy {
    */
   public onExportMenu(): void {
     if (this.workspaceName) {
-      this.menuApi.getMenuStructureForWorkspaceId({ id: this.workspaceName }).subscribe((data) => {
+      this.menuApi.getMenuStructureForWorkspaceName({ workspaceName: this.workspaceName }).subscribe((data) => {
         /* const filteredStructure = fetchedStructure.map((item: any) =>
           filterObjectTree(
             item,
@@ -807,7 +797,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     if (this.workspaceName) {
       this.menuApi
         .exportMenuByWorkspaceName({
-          name: this.workspaceName
+          workspaceName: this.workspaceName
           // menuStructureListDTO: { menuItemStructureDTOS: this.menuItemStructureDTOArray }
         })
         .subscribe({
@@ -838,7 +828,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.menuApi
       .patchMenuItems({
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        id: this.workspaceName,
+        workspaceName: this.workspaceName,
         patchMenuItemsRequest: [{ resource: updatedMenuItems[0] }] // WARNING: SHOULD BE WHOLE ARRAY???
         // menuItemDetailsDTO: updatedMenuItems
       })

@@ -72,13 +72,13 @@ export class MenuTreeService {
 
   public parseItemsFromStructure(structure: MenuItem[], list: MenuItem[]) {
     structure.forEach((structureItem) => {
-      const menuItem: MenuItem = {}
+      const menuItem = {}
       Object.keys(structureItem).forEach((key) => {
         if (key !== 'children') {
           ;(menuItem as any)[key] = (structureItem as any)[key]
         }
       })
-      list.push(menuItem)
+      list.push(menuItem as MenuItem)
       if (structureItem.children && structureItem?.children.length > 0) {
         this.parseItemsFromStructure(structureItem.children, list)
       }

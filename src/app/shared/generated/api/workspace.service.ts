@@ -61,7 +61,7 @@ export interface GetWorkspaceByIdRequestParams {
 }
 
 export interface GetWorkspaceByNameRequestParams {
-    name: string;
+    workspaceName: string;
 }
 
 export interface ImportWorkspacesRequestParams {
@@ -462,9 +462,9 @@ export class WorkspaceAPIService {
     public getWorkspaceByName(requestParameters: GetWorkspaceByNameRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<GetWorkspaceResponse>>;
     public getWorkspaceByName(requestParameters: GetWorkspaceByNameRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<GetWorkspaceResponse>>;
     public getWorkspaceByName(requestParameters: GetWorkspaceByNameRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
-        const name = requestParameters.name;
-        if (name === null || name === undefined) {
-            throw new Error('Required parameter name was null or undefined when calling getWorkspaceByName.');
+        const workspaceName = requestParameters.workspaceName;
+        if (workspaceName === null || workspaceName === undefined) {
+            throw new Error('Required parameter workspaceName was null or undefined when calling getWorkspaceByName.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -498,7 +498,7 @@ export class WorkspaceAPIService {
             }
         }
 
-        let localVarPath = `/workspaces/name/${this.configuration.encodeParam({name: "name", value: name, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        let localVarPath = `/workspaces/name/${this.configuration.encodeParam({name: "workspaceName", value: workspaceName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
         return this.httpClient.request<GetWorkspaceResponse>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,

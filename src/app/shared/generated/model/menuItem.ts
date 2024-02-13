@@ -18,7 +18,7 @@ export interface MenuItem {
     creationUser?: string;
     modificationDate?: string;
     modificationUser?: string;
-    id?: string;
+    id: string;
     key?: string;
     name?: string;
     description?: string;

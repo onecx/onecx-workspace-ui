@@ -164,7 +164,7 @@ export class WorkspaceSearchComponent implements OnInit {
   public onGotoMenu(ev: any, portal: Workspace) {
     ev.stopPropagation()
     this.workspaceApi
-      .getWorkspaceByName({ name: portal.name })
+      .getWorkspaceByName({ workspaceName: portal.name })
       .pipe()
       .subscribe({
         next: (portal) => {

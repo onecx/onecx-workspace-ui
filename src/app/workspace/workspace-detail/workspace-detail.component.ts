@@ -127,7 +127,7 @@ export class WorkspaceDetailComponent implements OnInit {
 
   private async getPortalData() {
     this.workspaceApi
-      .getWorkspaceByName({ name: this.portalName })
+      .getWorkspaceByName({ workspaceName: this.portalName })
       .pipe()
       .subscribe({
         next: (portal) => {
