@@ -152,13 +152,16 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
       })
       .subscribe({
         next: (res) => {
+          console.log('RES', res)
           if (this.confirmComponent?.portalNameExists) {
             this.msgService.success({ summaryKey: 'PORTAL_IMPORT.PORTAL_IMPORT_UPDATE_SUCCESS' })
           } else {
             this.msgService.success({ summaryKey: 'PORTAL_IMPORT.PORTAL_IMPORT_CREATE_SUCCESS' })
           }
           this.isLoading = false
-          this.router.navigate([`${res.id}`], { relativeTo: this.route })
+          if (this.importRequestDTO?.workspaces) {
+            this.router.navigate(['./', this.importRequestDTO.workspaces[key[0]].name], { relativeTo: this.route })
+          }
         },
         error: () => {
           this.isLoading = false
@@ -198,6 +201,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
       this.themeName = this.previewComponent?.themeName || ''
       this.baseUrl = this.previewComponent?.baseUrl || ''
       if (this.hasPermission) this.tenantId = this.previewComponent?.tenantId || undefined
+      console.log('WORKSPACES', this.importRequestDTO?.workspaces)
     }
     this.activeIndex++
   }
