@@ -24,17 +24,16 @@ import {
   DeleteMenuItemByIdRequestParams,
   MenuItemAPIService,
   MenuItem,
-  // MenuItemsInternalAPIService,
   Workspace,
   WorkspaceAPIService,
   GetMenuItemsResponse,
-  CreateUpdateMenuItem
+  CreateUpdateMenuItem,
+  GetWorkspaceMenuItemStructureResponse
 } from '../../../shared/generated'
 import { limitText, dropDownSortItemsByLabel } from '../../../shared/utils'
 import { MenuStringConst } from '../../..//model/menu-string-const'
 import { MenuStateService } from '../../../services/menu-state.service'
 import { IconService } from './iconservice'
-// import { filterObjectTree } from '../../../shared/utils'
 
 /* type MenuItem = MenuItem & {
   positionPath: string
@@ -84,7 +83,8 @@ export class MenuComponent implements OnInit, OnDestroy {
   private mfeRUrls: Array<string> = []
   public mfeRUrlOptions: SelectItem[] = []
   // menu
-  private menu$: Observable<Array<MenuItem>> = new Observable<Array<MenuItem>>()
+  private menu$: Observable<GetWorkspaceMenuItemStructureResponse> =
+    new Observable<GetWorkspaceMenuItemStructureResponse>()
   public menuNodes: TreeNode[] = []
   private menuItem$: Observable<GetMenuItemsResponse | null> = new Observable<GetMenuItemsResponse | null>()
   public menuItems: MenuItem[] | undefined
@@ -363,14 +363,14 @@ export class MenuComponent implements OnInit, OnDestroy {
       .getWorkspaceByName({ workspaceName: this.workspaceName })
       .pipe(catchError((error) => of(error)))
     this.menu$ = this.menuApi
-      .getMenuItemsForWorkspaceByName({ workspaceName: this.workspaceName })
+      .getMenuStructureForWorkspaceName({ workspaceName: this.workspaceName })
       .pipe(catchError((error) => of(error)))
 
     this.portal$.subscribe((portal) => {
       this.loading = true
       if (portal instanceof HttpErrorResponse) {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + portal.status + '.PORTALS'
-        console.error('getPortalByPortalId():', portal)
+        // console.error('getPortalByPortalId():', portal)
       } else if (portal instanceof Object) {
         this.portal = portal
         // this.portal.microfrontendRegistrations = new Set(Array.from(portal.microfrontendRegistrations ?? []))
@@ -395,15 +395,14 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
   public loadMenu(restore: boolean): void {
     this.menu$.subscribe((menu) => {
-      console.log('MENU', menu)
       this.loading = true
       if (menu instanceof HttpErrorResponse) {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + menu.status + '.MENUS'
-        console.error('getMenuStructureForPortalId():', menu)
-      } else if (menu instanceof Array) {
-        this.menuNodes = this.mapToTreeNodes(menu, undefined)
-        this.log('getMenuStructureForPortalId:', menu)
-        this.menuItems = menu
+        // console.error('getMenuStructureForPortalId():', menu)
+      } else if (menu.menuItems instanceof Array) {
+        this.menuNodes = this.mapToTreeNodes(menu.menuItems, undefined)
+        // this.log('getMenuStructureForPortalId:', menu)
+        this.menuItems = menu.menuItems
         this.menuItem = undefined
         this.preparePreviewLanguages()
         this.prepareParentNodes(this.menuNodes)
@@ -414,7 +413,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         }
       } else {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_0.MENUS'
-        console.error('getMenuStructureForPortalId() => unknown response:', menu)
+        // console.error('getMenuStructureForPortalId() => unknown response:', menu)
       }
       this.loading = false
     })
