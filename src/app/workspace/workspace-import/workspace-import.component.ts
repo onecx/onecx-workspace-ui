@@ -158,7 +158,9 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
             this.msgService.success({ summaryKey: 'PORTAL_IMPORT.PORTAL_IMPORT_CREATE_SUCCESS' })
           }
           this.isLoading = false
-          this.router.navigate([`${res.id}`], { relativeTo: this.route })
+          if (this.importRequestDTO?.workspaces) {
+            this.router.navigate(['./', this.importRequestDTO.workspaces[key[0]].name], { relativeTo: this.route })
+          }
         },
         error: () => {
           this.isLoading = false
