@@ -20,21 +20,14 @@ import {
   WorkspaceAPIService,
   GetMenuItemResponse,
   GetWorkspaceMenuItemStructureResponse,
-  CreateUpdateMenuItem
+  CreateUpdateMenuItem,
+  EximMenuStructure
 } from '../../../shared/generated'
 import { limitText, dropDownSortItemsByLabel } from '../../../shared/utils'
 import { MenuStringConst } from '../../..//model/menu-string-const'
 import { MenuStateService } from '../../../services/menu-state.service'
 import { IconService } from './iconservice'
 
-/* type MenuItem = MenuItem & {
-  positionPath: string
-  regMfeAligned: boolean
-  parentItemName: string
-  first: boolean
-  last: boolean
-  prevId: string | undefined
-} */
 type LanguageItem = SelectItem & { data: string }
 type I18N = { [key: string]: string }
 
@@ -81,7 +74,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   private menuItem$: Observable<GetMenuItemResponse | null> = new Observable<GetMenuItemResponse | null>()
   public menuItems: MenuItem[] | undefined
   public menuItem: MenuItem | undefined
-  private menuItemStructureDTOArray: Array<MenuItem> | undefined
+  private menuItemStructure: EximMenuStructure | undefined
   public menuImportError = false
   public httpHeaders!: HttpHeaders
   // detail
@@ -563,10 +556,17 @@ export class MenuComponent implements OnInit, OnDestroy {
         }
       }
       if (this.changeMode === 'CREATE') {
+        console.log('ITEM', this.menuItem)
+        const item: CreateUpdateMenuItem = {
+          // applicationId: this.menuItem?.applicationId,
+          name: this.menuItem?.name,
+          key: this.menuItem?.key
+        }
+        console.log('ITEM2', item)
         this.menuApi
           .createMenuItemForWorkspace({
             workspaceName: this.workspaceName,
-            createMenuItemRequest: { resource: this.menuItem! as CreateUpdateMenuItem }
+            createMenuItemRequest: { resource: item }
           })
           .subscribe({
             next: () => {
@@ -729,24 +729,8 @@ export class MenuComponent implements OnInit, OnDestroy {
   public onExportMenu(): void {
     if (this.workspaceName) {
       this.menuApi.getMenuStructureForWorkspaceName({ workspaceName: this.workspaceName }).subscribe((data) => {
-        /* const filteredStructure = fetchedStructure.map((item: any) =>
-          filterObjectTree(
-            item,
-            [
-              'creationDate',
-              'creationUser',
-              'modificationDate',
-              'modificationUser',
-              'id',
-              'parentItemId',
-              'portalName'
-            ],
-            'children'
-          )
-        ) as MenuItem[]
-        filteredStructure.sort((a, b) => (a.position || 0) - (b.position || 0)) */
         const jsonBody = JSON.stringify(data, null, 2)
-        FileSaver.saveAs(new Blob([jsonBody], { type: 'text/json' }), 'workspace_' + this.portal?.name + '_menu.json')
+        FileSaver.saveAs(new Blob([jsonBody], { type: 'text/json' }), 'workspace_' + this.workspaceName + '_menu.json')
       })
     }
   }
@@ -758,20 +742,20 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.displayMenuImport = false
   }
   public onImportMenuClear(): void {
-    this.menuItemStructureDTOArray = undefined
+    this.menuItemStructure = undefined
     this.menuImportError = false
   }
   public onImportMenuSelect(event: { files: FileList }): void {
     event.files[0].text().then((text) => {
-      this.menuItemStructureDTOArray = undefined
+      this.menuItemStructure = undefined
       this.menuImportError = false
       try {
-        const menuItemStructureDTOArray: Array<MenuItem> = JSON.parse(text) as Array<MenuItem>
-        if (this.isMenuImportRequestDTO2(menuItemStructureDTOArray)) {
-          this.menuItemStructureDTOArray = menuItemStructureDTOArray
+        const menuItemStructure: EximMenuStructure = JSON.parse(text) as EximMenuStructure
+        if (this.isMenuImportRequestDTO2(menuItemStructure)) {
+          this.menuItemStructure = menuItemStructure
         } else {
-          console.error('Menu Import Error: Data not valid', menuItemStructureDTOArray)
-          this.menuItemStructureDTOArray = undefined
+          console.error('Menu Import Error: Data not valid', menuItemStructure)
+          this.menuItemStructure = undefined
           this.menuImportError = true
         }
       } catch (err) {
@@ -780,17 +764,17 @@ export class MenuComponent implements OnInit, OnDestroy {
       }
     })
   }
-  private isMenuImportRequestDTO2(obj: unknown): obj is Array<MenuItem> {
-    const dto = obj as Array<MenuItem>
-    return !!(typeof dto === 'object' && dto && dto.length)
+  private isMenuImportRequestDTO2(obj: unknown): obj is EximMenuStructure {
+    const dto = obj as EximMenuStructure
+    return !!(typeof dto === 'object' && dto && dto.menuItems?.length)
   }
 
   public onMenuImport(): void {
     if (this.workspaceName) {
       this.menuApi
-        .exportMenuByWorkspaceName({
-          workspaceName: this.workspaceName
-          // menuStructureListDTO: { menuItemStructureDTOS: this.menuItemStructureDTOArray }
+        .uploadMenuStructureForWorkspaceName({
+          workspaceName: this.workspaceName,
+          createWorkspaceMenuItemStructureRequest: { menuItems: this.menuItems }
         })
         .subscribe({
           next: () => {
