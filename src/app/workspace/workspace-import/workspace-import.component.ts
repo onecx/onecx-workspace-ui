@@ -1,9 +1,9 @@
-import { Component, OnInit, Inject, ViewChild, Input, Output, EventEmitter, OnChanges } from '@angular/core'
+import { Component, OnInit, ViewChild, Input, Output, EventEmitter, OnChanges } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { MenuItem } from 'primeng/api'
 import { TranslateService } from '@ngx-translate/core'
 
-import { AUTH_SERVICE, IAuthService, PortalMessageService } from '@onecx/portal-integration-angular'
+import { PortalMessageService, UserService } from '@onecx/portal-integration-angular'
 
 import { PreviewComponent } from './preview/preview.component'
 import { ConfirmComponent } from './confirm/confirm.component'
@@ -37,14 +37,14 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
   public hasPermission = false
 
   constructor(
+    private readonly user: UserService,
     private readonly router: Router,
     private readonly route: ActivatedRoute,
     private readonly translate: TranslateService,
     private readonly workspaceApi: WorkspaceAPIService,
-    private msgService: PortalMessageService,
-    @Inject(AUTH_SERVICE) readonly auth: IAuthService
+    private msgService: PortalMessageService
   ) {
-    this.hasPermission = this.auth.hasPermission('WORKSPACE#IMPORT')
+    this.hasPermission = this.user.hasPermission('WORKSPACE#IMPORT')
 
     this.steps = [
       { label: this.translate.instant('PORTAL_IMPORT.CHOOSE_FILE') },
@@ -152,7 +152,6 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
       })
       .subscribe({
         next: (res) => {
-          console.log('RES', res)
           if (this.confirmComponent?.portalNameExists) {
             this.msgService.success({ summaryKey: 'PORTAL_IMPORT.PORTAL_IMPORT_UPDATE_SUCCESS' })
           } else {
@@ -201,7 +200,6 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
       this.themeName = this.previewComponent?.themeName || ''
       this.baseUrl = this.previewComponent?.baseUrl || ''
       if (this.hasPermission) this.tenantId = this.previewComponent?.tenantId || undefined
-      console.log('WORKSPACES', this.importRequestDTO?.workspaces)
     }
     this.activeIndex++
   }

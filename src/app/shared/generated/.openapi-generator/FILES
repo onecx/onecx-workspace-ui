@@ -16,7 +16,7 @@ model/createProductRequest.ts
 model/createUpdateMenuItem.ts
 model/createUpdateMicrofrontend.ts
 model/createUpdateProductResponse.ts
-model/createWorkspaceMenuItemStructureRequest.ts
+model/createWorkspaceMenuItemStructrueRequest.ts
 model/createWorkspaceRequest.ts
 model/createWorkspaceResponse.ts
 model/eximMenuStructure.ts

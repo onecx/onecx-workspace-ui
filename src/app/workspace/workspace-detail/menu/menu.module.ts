@@ -1,17 +1,12 @@
-import { CUSTOM_ELEMENTS_SCHEMA, Inject, NgModule } from '@angular/core'
+import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, NgModule } from '@angular/core'
 import { CommonModule } from '@angular/common'
-// import { HttpClient } from '@angular/common/http'
 import { FormsModule } from '@angular/forms'
 import { RouterModule, Routes } from '@angular/router'
-import { ConfirmationService, TreeDragDropService } from 'primeng/api'
-import { ConfirmDialogModule } from 'primeng/confirmdialog'
-import { FileUploadModule } from 'primeng/fileupload'
-import { TreeTableModule } from 'primeng/treetable'
-// import { TranslateModule, TranslateLoader } from '@ngx-translate/core'
+import { TreeDragDropService } from 'primeng/api'
 
-import { MFE_INFO, MfeInfo, PortalCoreModule } from '@onecx/portal-integration-angular'
+import { addInitializeModuleGuard, InitializeModuleGuard, PortalCoreModule } from '@onecx/portal-integration-angular'
+import { SharedModule } from '../../../shared/shared.module'
 
-import { SharedModule /* , HttpLoaderFactory */ } from '../../../shared/shared.module'
 import { MenuTreeService } from '../../../services/menu-tree.service'
 import { MenuTreeComponent } from './menu-tree/menu-tree.component'
 import { MenuComponent } from './menu.component'
@@ -22,32 +17,20 @@ const routes: Routes = [
     component: MenuComponent
   }
 ]
-
 @NgModule({
   declarations: [MenuComponent, MenuTreeComponent],
   imports: [
     CommonModule,
-    SharedModule,
-    [RouterModule.forChild(routes)],
-    PortalCoreModule.forMicroFrontend(),
     FormsModule,
-    FileUploadModule,
-    ConfirmDialogModule,
-    TreeTableModule
-    // TranslateModule.forChild({
-    //   isolate: true,
-    //   loader: {
-    //     provide: TranslateLoader,
-    //     useFactory: HttpLoaderFactory,
-    //     deps: [HttpClient, MFE_INFO]
-    //   }
-    // })
+    PortalCoreModule.forMicroFrontend(),
+    [RouterModule.forChild(addInitializeModuleGuard(routes))],
+    SharedModule
   ],
-  providers: [ConfirmationService, PortalCoreModule, MenuTreeService, TreeDragDropService],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  providers: [InitializeModuleGuard, MenuTreeService, TreeDragDropService],
+  schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA]
 })
 export class MenuModule {
-  constructor(@Inject(MFE_INFO) mfeInfo: MfeInfo) {
-    console.log(`Portal Detail Menu Module constructor ${JSON.stringify(mfeInfo)}`)
+  constructor() {
+    console.info('Menu Module constructor')
   }
 }

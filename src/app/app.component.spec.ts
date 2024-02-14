@@ -18,9 +18,9 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy()
   })
 
-  it(`should have as title 'workspace-mgmt'`, () => {
+  it(`should have as title 'onecx-workspace-ui'`, () => {
     const fixture = TestBed.createComponent(AppComponent)
     const app = fixture.componentInstance
-    expect(app.title).toEqual('workspace-mgmt')
+    expect(app.title).toEqual('onecx-workspace-ui')
   })
 })

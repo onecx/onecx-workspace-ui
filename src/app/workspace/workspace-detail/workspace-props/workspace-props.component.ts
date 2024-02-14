@@ -1,16 +1,15 @@
-import { Component, Input, Inject, OnChanges, Output, EventEmitter } from '@angular/core'
+import { Component, Input, OnChanges, Output, EventEmitter } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { SelectItem } from 'primeng/api'
 import { /* map,  */ Observable, of } from 'rxjs'
 import { ActivatedRoute, Router } from '@angular/router'
 
 import {
-  AUTH_SERVICE,
   ConfigurationService,
-  IAuthService,
   // Theme,
   ThemeService,
-  PortalMessageService
+  PortalMessageService,
+  UserService
 } from '@onecx/portal-integration-angular'
 
 import {
@@ -58,6 +57,7 @@ export class WorkspacePropsComponent implements OnChanges {
   private apiPrefix = environment.apiPrefix
 
   constructor(
+    private user: UserService,
     private workspaceApi: WorkspaceAPIService,
     // private themeApi: ThemesAPIService,
     // private imageApi: ImageV1APIService,
@@ -65,11 +65,10 @@ export class WorkspacePropsComponent implements OnChanges {
     private config: ConfigurationService,
     private msgService: PortalMessageService,
     public route: ActivatedRoute,
-    private router: Router,
-    @Inject(AUTH_SERVICE) readonly auth: IAuthService
+    private router: Router
   ) {
-    this.hasTenantViewPermission = this.auth.hasPermission('WORKSPACE_TENANT#VIEW')
-    this.hasTenantEditPermission = this.auth.hasPermission('WORKSPACE_TENANT#EDIT')
+    this.hasTenantViewPermission = this.user.hasPermission('WORKSPACE_TENANT#VIEW')
+    this.hasTenantEditPermission = this.user.hasPermission('WORKSPACE_TENANT#EDIT')
 
     this.formGroup = new FormGroup({
       name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),

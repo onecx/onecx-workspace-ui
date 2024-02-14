@@ -1,4 +1,4 @@
-import { Component, ElementRef, Inject, OnInit, ViewChild, Renderer2, OnDestroy } from '@angular/core'
+import { Component, ElementRef, OnInit, ViewChild, Renderer2, OnDestroy } from '@angular/core'
 import { HttpErrorResponse, HttpHeaders } from '@angular/common/http'
 import { Location } from '@angular/common'
 import { ActivatedRoute } from '@angular/router'
@@ -12,14 +12,7 @@ import { SelectItem, TreeNode } from 'primeng/api'
 import { TranslateService } from '@ngx-translate/core'
 import { Observable, Subject, catchError, of } from 'rxjs'
 import FileSaver from 'file-saver'
-
-import {
-  Action,
-  AUTH_SERVICE,
-  IAuthService,
-  ConfigurationService,
-  PortalMessageService
-} from '@onecx/portal-integration-angular'
+import { Action, UserService, PortalMessageService } from '@onecx/portal-integration-angular'
 import {
   MenuItemAPIService,
   MenuItem,
@@ -124,19 +117,18 @@ export class MenuComponent implements OnInit, OnDestroy {
   limitText = limitText
 
   constructor(
-    @Inject(AUTH_SERVICE) readonly auth: IAuthService,
+    private user: UserService,
     private renderer: Renderer2,
     private route: ActivatedRoute,
     private location: Location,
     private menuApi: MenuItemAPIService,
     private workspaceApi: WorkspaceAPIService,
     private stateService: MenuStateService,
-    private config: ConfigurationService,
     private icon: IconService,
     private translate: TranslateService,
     private msgService: PortalMessageService
   ) {
-    this.dateFormat = this.config.lang === 'de' ? 'dd.MM.yyyy HH:mm' : 'short'
+    this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm' : 'short'
     this.iconItems.push(...this.icon.icons.map((i) => ({ label: i, value: i })))
     this.iconItems.sort(dropDownSortItemsByLabel)
     this.scopeItems = [
