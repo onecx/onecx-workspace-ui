@@ -37,7 +37,7 @@
           </span>
         </div>
 
-        <!-- <div class="p-inputgroup mb-1" controlErrorAnchor>
+        <div class="p-inputgroup mb-1" controlErrorAnchor>
           <span class="p-float-label">
             <p-dropdown
               #inputThemeName
@@ -55,13 +55,13 @@
           <span
             id="portal_detail_item_themeName_link"
             class="p-inputgroup-addon bg-primary pseudo-button"
-            [ngClass]="portalDetail.themeId ? 'cursor-pointer' : 'p-disabled'"
+            [ngClass]="portalDetail.theme ? 'cursor-pointer' : 'p-disabled'"
             [title]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
-            (click)="onGotoTheme($event, '../../../theme/' + portalDetail.themeId)"
+            (click)="onGotoTheme($event, '../../../theme/' + portalDetail.theme)"
           >
             <span class="pi pi-link"></span>
           </span>
-        </div> -->
+        </div>
 
         <div>
           <div class="p-inputgroup mb-1" controlErrorAnchor>

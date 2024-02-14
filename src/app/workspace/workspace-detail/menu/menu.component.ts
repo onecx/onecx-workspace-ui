@@ -774,7 +774,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       this.menuApi
         .uploadMenuStructureForWorkspaceName({
           workspaceName: this.workspaceName,
-          createWorkspaceMenuItemStructureRequest: { menuItems: this.menuItems }
+          createWorkspaceMenuItemStructureRequest: { menuItems: this.menuItemStructure?.menuItems as MenuItem[] }
         })
         .subscribe({
           next: () => {

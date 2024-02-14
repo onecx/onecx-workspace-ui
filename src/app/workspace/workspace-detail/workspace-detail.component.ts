@@ -75,7 +75,6 @@ export class WorkspaceDetailComponent implements OnInit {
     private msgService: PortalMessageService
   ) {
     this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm:ss' : 'medium'
-    console.log('SNAP', this.route.snapshot.toString())
   }
 
   ngOnInit() {
@@ -227,22 +226,6 @@ export class WorkspaceDetailComponent implements OnInit {
         },
         error: () => {}
       })
-    // get workspace object with filtered properties
-    // const portalExport: WorkspaceSnapshot = {
-    //   portal: filterObject(this.portalDetail, [
-    //     'creationDate',
-    //     'creationUser',
-    //     'modificationDate',
-    //     'modificationUser',
-    //     'id',
-    //     'themeId',
-    //     'tenantId',
-    //     'parentItemId'
-    //   ]) as Workspace
-    // }
-
-    // const menuStructure$ = this.menuApi.getMenuStructureForWorkspaceId({ id: this.portalId })
-    // let finalMenuStructure$$ = menuStructure$
 
     if (this.importThemeCheckbox) {
       if (this.portalDetail.theme) {
