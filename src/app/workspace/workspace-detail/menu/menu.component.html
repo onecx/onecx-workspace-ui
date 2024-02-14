@@ -1,7 +1,7 @@
 <ocx-portal-page permission="MENU#VIEW" helpArticleId="PAGE_MENU_DETAIL" pageName="PAGE_MENU_DETAIL">
   <ocx-page-header
     *ngIf="portal"
-    [header]="portal ? portal.name + ('MENU.HEADER' | translate) : ''"
+    [header]="workspaceName ? workspaceName + ('MENU.HEADER' | translate) : ''"
     [subheader]="'MENU.SUBHEADER' | translate"
     [actions]="actions"
   >

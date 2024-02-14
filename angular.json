@@ -111,7 +111,6 @@
             "scripts": [],
             "codeCoverageExclude": [
               "**/*.module.ts",
-              "src/app/test/**",
               "src/app/environments/**",
               "src/app/shared/generated/**"
             ]
