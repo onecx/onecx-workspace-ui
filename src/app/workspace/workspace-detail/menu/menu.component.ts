@@ -21,7 +21,8 @@ import {
   GetMenuItemResponse,
   GetWorkspaceMenuItemStructureResponse,
   CreateUpdateMenuItem,
-  MenuSnapshot
+  MenuSnapshot,
+  PatchMenuItemsRequest
 } from '../../../shared/generated'
 import { limitText, dropDownSortItemsByLabel } from '../../../shared/utils'
 import { MenuStringConst } from '../../..//model/menu-string-const'
@@ -796,12 +797,15 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   // triggered by changes of tree structure in tree popup
   public updateMenuItems(updatedMenuItems: MenuItem[]): void {
+    const patchRequestItems: PatchMenuItemsRequest[] = []
+    updatedMenuItems.forEach((item) => {
+      const patchMenuItem = { resource: item }
+      patchRequestItems.push(patchMenuItem)
+    })
     this.menuApi
       .patchMenuItems({
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         workspaceName: this.workspaceName,
-        patchMenuItemsRequest: [{ resource: updatedMenuItems[0] }] // WARNING: SHOULD BE WHOLE ARRAY???
-        // menuItemDetailsDTO: updatedMenuItems
+        patchMenuItemsRequest: patchRequestItems
       })
       .subscribe({
         next: () => {

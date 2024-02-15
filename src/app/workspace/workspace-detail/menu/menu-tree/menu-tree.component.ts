@@ -110,6 +110,7 @@ export class MenuTreeComponent implements OnChanges {
       }
       if (updatedNode.id !== draggedNodeId) {
         updatedMenuItems.push({
+          modificationCount: updateMenuItem.modificationCount,
           key: updateMenuItem.key,
           id: updateMenuItem.id,
           parentItemId: updateMenuItem.parentItemId,
@@ -121,6 +122,7 @@ export class MenuTreeComponent implements OnChanges {
       } else {
         updatedMenuItems.push({
           key: updateMenuItem.key,
+          modificationCount: updateMenuItem.modificationCount,
           id: updateMenuItem.id,
           parentItemId: newParentNodeId,
           i18n: updateMenuItem.i18n,
