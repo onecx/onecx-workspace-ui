@@ -55,6 +55,7 @@ export class WorkspacePropsComponent implements OnChanges {
   public logoState = LogoState.INITIAL
   public fetchingLogoUrl?: string
   private apiPrefix = environment.apiPrefix
+  private oldWorkspaceName: string = ''
 
   constructor(
     private user: UserService,
@@ -86,16 +87,12 @@ export class WorkspacePropsComponent implements OnChanges {
     }
 
     this.themes$ = this.workspaceApi.getAllThemes()
-    // .pipe(
-    //   map((val) =>
-    //     val.sort(sortThemeByName).map((theme) => ({ label: theme.name, value: theme.name || '', id: theme.id }))
-    //   )
-    // )
   }
 
   public ngOnChanges(): void {
     this.setFormData()
     this.editMode ? this.formGroup.enable() : this.formGroup.disable()
+    this.oldWorkspaceName = this.portalDetail.name
   }
 
   public setFormData(): void {
@@ -143,7 +140,9 @@ export class WorkspacePropsComponent implements OnChanges {
           }
         })
       this.editMode = false
-      this.location.back()
+      if (this.oldWorkspaceName !== this.portalDetail.name) {
+        this.location.back()
+      }
     } else {
       this.msgService.error({ summaryKey: 'GENERAL.FORM_VALIDATION' })
     }
@@ -179,7 +178,7 @@ export class WorkspacePropsComponent implements OnChanges {
   //     }
   //   }
   // }
-  // REMEMBER HTML TOO!
+
   public onGotoTheme(ev: MouseEvent, uri: string) {
     ev.stopPropagation()
     const url = window.document.location.href + uri

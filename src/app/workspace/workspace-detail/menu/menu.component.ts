@@ -521,7 +521,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   public onCreateMenu($event: MouseEvent, parent: MenuItem): void {
     $event.stopPropagation()
     this.changeMode = 'CREATE'
-    this.menuItem = parent
+    this.menuItem = {} as unknown as MenuItem
     this.formGroup.reset()
     this.formGroup.patchValue({
       parentItemId: parent.id,
@@ -530,6 +530,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       disabled: false
     })
     this.displayMenuDetail = true
+    console.log('FORM', this.formGroup.value)
   }
 
   public onMenuSave(): void {
@@ -556,17 +557,17 @@ export class MenuComponent implements OnInit, OnDestroy {
         }
       }
       if (this.changeMode === 'CREATE') {
-        console.log('ITEM', this.menuItem)
-        const item: CreateUpdateMenuItem = {
-          // applicationId: this.menuItem?.applicationId,
-          name: this.menuItem?.name,
-          key: this.menuItem?.key
-        }
-        console.log('ITEM2', item)
+        // console.log('ITEM', this.menuItem)
+        // const item: CreateUpdateMenuItem = {
+        //   parentItemId: this.menuItem?.parentItemId,
+        //   name: this.menuItem?.name,
+        //   key: this.menuItem?.key
+        // }
+        // console.log('ITEM2', item)
         this.menuApi
           .createMenuItemForWorkspace({
             workspaceName: this.workspaceName,
-            createMenuItemRequest: { resource: item }
+            createMenuItemRequest: { resource: this.formGroup.value as CreateUpdateMenuItem }
           })
           .subscribe({
             next: () => {

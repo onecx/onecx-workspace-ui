@@ -1,13 +1,13 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { HttpClient } from '@angular/common/http'
+// import { HttpClient } from '@angular/common/http'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
+// import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { of } from 'rxjs'
 
-import { HttpLoaderFactory } from 'src/app/shared/shared.module'
+// import { HttpLoaderFactory } from 'src/app/shared/shared.module'
 import { ConfirmComponent } from './confirm.component'
-import { PortalInternalAPIService, ThemesAPIService } from '../../../shared/generated'
+import { WorkspaceAPIService } from '../../../shared/generated'
 
 const portal = {
   portalName: 'name',
@@ -36,19 +36,19 @@ describe('ConfirmComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ConfirmComponent],
       imports: [
-        HttpClientTestingModule,
-        TranslateModule.forRoot({
-          loader: {
-            provide: TranslateLoader,
-            useFactory: HttpLoaderFactory,
-            deps: [HttpClient]
-          }
-        })
+        HttpClientTestingModule
+        // TranslateModule.forRoot({
+        //   loader: {
+        //     provide: TranslateLoader,
+        //     useFactory: HttpLoaderFactory,
+        //     deps: [HttpClient]
+        //   }
+        // })
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
-        { provide: PortalInternalAPIService, useValue: apiServiceSpy },
-        { provide: ThemesAPIService, useValue: themeServiceSpy }
+        { provide: WorkspaceAPIService, useValue: apiServiceSpy }
+        // { provide: ThemesAPIService, useValue: themeServiceSpy }
       ]
     }).compileComponents()
 

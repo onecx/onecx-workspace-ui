@@ -1,10 +1,10 @@
 import { NO_ERRORS_SCHEMA, SimpleChanges, SimpleChange } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { HttpClient } from '@angular/common/http'
+// import { HttpClient } from '@angular/common/http'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
+// import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 
-import { HttpLoaderFactory } from 'src/app/shared/shared.module'
+// import { HttpLoaderFactory } from 'src/app/shared/shared.module'
 import { MenuTreeComponent } from './menu-tree.component'
 import { MenuTreeService } from 'src/app/services/menu-tree.service'
 import { MenuStateService, MenuState } from 'src/app/services/menu-state.service'
@@ -17,6 +17,11 @@ const state: MenuState = {
   treeExpansionState: new Map()
 }
 
+const items = [
+  { key: 'key', id: 'id', i18n: { ['lang']: 'en' }, children: [{ key: 'key', id: 'id' }], disabled: true },
+  { key: 'key2', badge: 'angle-double-down', id: 'id' }
+]
+
 describe('MenuTreeComponent', () => {
   let component: MenuTreeComponent
   let fixture: ComponentFixture<MenuTreeComponent>
@@ -28,14 +33,14 @@ describe('MenuTreeComponent', () => {
     TestBed.configureTestingModule({
       declarations: [MenuTreeComponent],
       imports: [
-        HttpClientTestingModule,
-        TranslateModule.forRoot({
+        HttpClientTestingModule
+        /* TranslateModule.forRoot({
           loader: {
             provide: TranslateLoader,
             useFactory: HttpLoaderFactory,
             deps: [HttpClient]
           }
-        })
+        }) */
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
@@ -62,10 +67,7 @@ describe('MenuTreeComponent', () => {
     const changes: SimpleChanges = {
       updateTree: new SimpleChange(null, component.updateTree, true)
     }
-    component.portalMenuItems = [
-      { key: 'key', i18n: { ['lang']: 'en' }, children: [{ key: 'key' }], disabled: true },
-      { key: 'key2', badge: 'angle-double-down' }
-    ]
+    component.portalMenuItems = items
 
     component.ngOnChanges(changes)
 
@@ -116,10 +118,7 @@ describe('MenuTreeComponent', () => {
       dropNode: { key: 'newParentNodeId', children: [{ key: 'draggedNodeId' }], parent: { key: 'parent key' } }
     }
     treeServiceSpy.calculateNewNodesPositions.and.returnValue([{ id: 'id', position: 1 }])
-    component.portalMenuItems = [
-      { key: 'key', i18n: { ['lang']: 'en' }, children: [{ key: 'key' }], disabled: true },
-      { key: 'key2', badge: 'angle-double-down' }
-    ]
+    component.portalMenuItems = items
 
     component.onDrop(event)
 
@@ -137,10 +136,7 @@ describe('MenuTreeComponent', () => {
     }
     treeServiceSpy.calculateNewNodesPositions.and.returnValue([{ id: 'id', position: 1 }])
     spyOn(component.updateMenuStructureEmitter, 'emit')
-    component.portalMenuItems = [
-      { key: 'key', id: 'id', position: 1, i18n: { ['lang']: 'en' }, children: [{ key: 'key' }], disabled: true },
-      { key: 'key2', badge: 'angle-double-down' }
-    ]
+    component.portalMenuItems = items
     const expectedItems = [
       {
         key: 'key',
@@ -177,10 +173,7 @@ describe('MenuTreeComponent', () => {
 
   it('should set languagePreviewValue and mapToTree onLanguagePreviewChange', () => {
     const lang = 'de'
-    component.portalMenuItems = [
-      { key: 'key', id: 'id', position: 1, i18n: { ['lang']: 'en' }, children: [{ key: 'key' }], disabled: true },
-      { key: 'key2', badge: 'angle-double-down' }
-    ]
+    component.portalMenuItems = items
     const mockExpansionState: Map<string, boolean> = new Map<string, boolean>()
     stateServiceSpy.getState.and.returnValue({
       treeExpansionState: mockExpansionState,
