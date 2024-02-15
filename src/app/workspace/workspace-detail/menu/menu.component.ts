@@ -21,7 +21,7 @@ import {
   GetMenuItemResponse,
   GetWorkspaceMenuItemStructureResponse,
   CreateUpdateMenuItem,
-  EximMenuStructure
+  MenuSnapshot
 } from '../../../shared/generated'
 import { limitText, dropDownSortItemsByLabel } from '../../../shared/utils'
 import { MenuStringConst } from '../../..//model/menu-string-const'
@@ -74,7 +74,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   private menuItem$: Observable<GetMenuItemResponse | null> = new Observable<GetMenuItemResponse | null>()
   public menuItems: MenuItem[] | undefined
   public menuItem: MenuItem | undefined
-  private menuItemStructure: EximMenuStructure | undefined
+  private menuItemStructure: MenuSnapshot | undefined
   public menuImportError = false
   public httpHeaders!: HttpHeaders
   // detail
@@ -530,7 +530,6 @@ export class MenuComponent implements OnInit, OnDestroy {
       disabled: false
     })
     this.displayMenuDetail = true
-    console.log('FORM', this.formGroup.value)
   }
 
   public onMenuSave(): void {
@@ -557,13 +556,6 @@ export class MenuComponent implements OnInit, OnDestroy {
         }
       }
       if (this.changeMode === 'CREATE') {
-        // console.log('ITEM', this.menuItem)
-        // const item: CreateUpdateMenuItem = {
-        //   parentItemId: this.menuItem?.parentItemId,
-        //   name: this.menuItem?.name,
-        //   key: this.menuItem?.key
-        // }
-        // console.log('ITEM2', item)
         this.menuApi
           .createMenuItemForWorkspace({
             workspaceName: this.workspaceName,
@@ -608,6 +600,7 @@ export class MenuComponent implements OnInit, OnDestroy {
                 }
               }
               this.preparePreviewLanguages()
+              this.onReloadMenu()
             },
             error: (err: { error: any }) => {
               this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
@@ -729,7 +722,7 @@ export class MenuComponent implements OnInit, OnDestroy {
    */
   public onExportMenu(): void {
     if (this.workspaceName) {
-      this.menuApi.getMenuStructureForWorkspaceName({ workspaceName: this.workspaceName }).subscribe((data) => {
+      this.menuApi.exportMenuByWorkspaceName({ workspaceName: this.workspaceName }).subscribe((data) => {
         const jsonBody = JSON.stringify(data, null, 2)
         FileSaver.saveAs(new Blob([jsonBody], { type: 'text/json' }), 'workspace_' + this.workspaceName + '_menu.json')
       })
@@ -751,9 +744,10 @@ export class MenuComponent implements OnInit, OnDestroy {
       this.menuItemStructure = undefined
       this.menuImportError = false
       try {
-        const menuItemStructure: EximMenuStructure = JSON.parse(text) as EximMenuStructure
+        const menuItemStructure: MenuSnapshot = JSON.parse(text) as MenuSnapshot
         if (this.isMenuImportRequestDTO2(menuItemStructure)) {
           this.menuItemStructure = menuItemStructure
+          console.log('STRUCT', this.menuItemStructure)
         } else {
           console.error('Menu Import Error: Data not valid', menuItemStructure)
           this.menuItemStructure = undefined
@@ -765,17 +759,17 @@ export class MenuComponent implements OnInit, OnDestroy {
       }
     })
   }
-  private isMenuImportRequestDTO2(obj: unknown): obj is EximMenuStructure {
-    const dto = obj as EximMenuStructure
-    return !!(typeof dto === 'object' && dto && dto.menuItems?.length)
+  private isMenuImportRequestDTO2(obj: unknown): obj is MenuSnapshot {
+    const dto = obj as MenuSnapshot
+    return !!(typeof dto === 'object' && dto && dto.menu?.menuItems?.length)
   }
 
   public onMenuImport(): void {
     if (this.workspaceName) {
       this.menuApi
-        .uploadMenuStructureForWorkspaceName({
+        .importMenuByWorkspaceName({
           workspaceName: this.workspaceName,
-          createWorkspaceMenuItemStructureRequest: { menuItems: this.menuItemStructure?.menuItems as MenuItem[] }
+          menuSnapshot: this.menuItemStructure!
         })
         .subscribe({
           next: () => {
