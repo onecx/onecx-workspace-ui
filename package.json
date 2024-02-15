@@ -46,7 +46,7 @@
     "@angular/platform-browser-dynamic": "15.2.7",
     "@angular/router": "15.2.7",
     "@ngneat/error-tailor": "^2.2.0",
-    "@ngneat/falso": "^6.4.0",
+    "@ngneat/falso": "^7.1.1",
     "@ngx-translate/core": "^14.0.0",
     "@ngx-translate/http-loader": "^7.0.0",
     "@onecx/accelerator": "^4.3.0",
