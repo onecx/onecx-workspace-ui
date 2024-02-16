@@ -45,12 +45,6 @@
           <app-workspace-roles [portalDetail]="portalDetail" [editMode]="editMode"></app-workspace-roles>
         </div>
       </p-tabPanel>
-
-      <p-tabPanel [header]="'PORTAL.TABS.IMAGES' | translate">
-        <div *ocxIfPermission="'WORKSPACE_IMAGES#VIEW'">
-          <app-workspace-images [portalDetail]="portalDetail" [editMode]="editMode"></app-workspace-images>
-        </div>
-      </p-tabPanel>
     </p-tabView>
   </ocx-page-content>
 

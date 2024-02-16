@@ -358,7 +358,7 @@ export class WorkspaceDetailComponent implements OnInit {
         actionCallback: () => this.manageMenu(),
         icon: 'pi pi-sitemap',
         show: 'always',
-        permission: 'WORKSPACE_MENU#VIEW',
+        permission: 'MENU#VIEW',
         conditional: true,
         showCondition: this.portalDetail != null && !this.editMode
       },
