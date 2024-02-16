@@ -1,48 +1,48 @@
 <ocx-portal-page permission="WORKSPACE#VIEW" helpArticleId="PAGE_WORKSPACE_DETAIL" pageName="PAGE_PORTAL_DETAIL">
   <ocx-page-header
-    *ngIf="portalDetail"
-    [header]="portalDetail ? portalDetail.name : ''"
+    *ngIf="workspaceDetail"
+    [header]="workspaceDetail ? workspaceDetail.name : ''"
     [subheader]="'PORTAL.HEADER.DETAIL' | translate"
     [actions]="actions"
     [objectDetails]="objectDetails"
     [figureImage]="headerImageUrl"
-    [figureBackground]="portalDetail ? portalDetail.logoUrl === undefined : false"
+    [figureBackground]="workspaceDetail ? workspaceDetail.logoUrl === undefined : false"
   >
   </ocx-page-header>
 
-  <ocx-page-content *ngIf="portalDetail">
+  <ocx-page-content *ngIf="workspaceDetail">
     <p-tabView (onChange)="onChange($event)" [activeIndex]="selectedIndex">
       <p-tabPanel [header]="'PORTAL.TABS.DETAILS' | translate">
         <div *ocxIfPermission="'WORKSPACE_PROPS#VIEW'">
           <app-workspace-props
-            [portalDetail]="portalDetail"
+            [portalDetail]="workspaceDetail"
             [editMode]="editMode"
-            (portalUpdated)="onPortalData($event)"
+            (portalUpdated)="onWorkspaceData($event)"
           ></app-workspace-props>
         </div>
       </p-tabPanel>
 
       <p-tabPanel [header]="'PORTAL.TABS.CONTACT' | translate">
         <div *ocxIfPermission="'WORKSPACE_CONTACT#VIEW'">
-          <app-workspace-contact [portalDetail]="portalDetail" [editMode]="editMode"></app-workspace-contact>
+          <app-workspace-contact [portalDetail]="workspaceDetail" [editMode]="editMode"></app-workspace-contact>
         </div>
       </p-tabPanel>
 
       <p-tabPanel [header]="'PORTAL.TABS.INTERN' | translate">
         <div *ocxIfPermission="'WORKSPACE_INTERNAL#VIEW'">
-          <app-workspace-intern [portalDetail]="portalDetail" [dateFormat]="dateFormat"></app-workspace-intern>
+          <app-workspace-intern [portalDetail]="workspaceDetail" [dateFormat]="dateFormat"></app-workspace-intern>
         </div>
       </p-tabPanel>
 
       <!-- <p-tabPanel [header]="'PORTAL.TABS.MFES' | translate">
         <div *ocxIfPermission="'WORKSPACE_PRODUCTS#VIEW'">
-          <app-mfe-registrations [portalDetail]="portalDetail" [editMode]="editMode"></app-mfe-registrations>
+          <app-mfe-registrations [portalDetail]="workspaceDetail" [editMode]="editMode"></app-mfe-registrations>
         </div>
       </p-tabPanel> -->
 
       <p-tabPanel [header]="'PORTAL.TABS.ROLES' | translate">
         <div *ocxIfPermission="'WORKSPACE_ROLES#VIEW'">
-          <app-workspace-roles [portalDetail]="portalDetail" [editMode]="editMode"></app-workspace-roles>
+          <app-workspace-roles [portalDetail]="workspaceDetail" [editMode]="editMode"></app-workspace-roles>
         </div>
       </p-tabPanel>
     </p-tabView>
@@ -50,7 +50,7 @@
 
   <p-dialog
     #portalDownload
-    [(visible)]="portalDownloadVisible"
+    [(visible)]="workspaceDownloadVisible"
     [header]="'PORTAL.HEADER.EXPORT' | translate"
     [modal]="true"
     [resizable]="false"
@@ -76,7 +76,7 @@
           icon="pi pi-times"
           iconPos="left"
           [label]="'ACTIONS.CANCEL' | translate"
-          (click)="portalDownloadVisible = false"
+          (click)="workspaceDownloadVisible = false"
         ></button>
         <button
           pButton
@@ -92,8 +92,8 @@
   </p-dialog>
 
   <p-dialog
-    #portalDelete
-    [(visible)]="portalDeleteVisible"
+    #workspaceDelete
+    [(visible)]="workspaceDeleteVisible"
     [header]="'PORTAL.HEADER.DELETE' | translate"
     [modal]="true"
     [resizable]="false"
@@ -103,7 +103,7 @@
     <div class="flex column-gap-3 row-gap-1 justify-content-start align-items-center">
       <div class="pi pi-question-circle text-3xl danger-action-text"></div>
       <div>
-        <div>{{ this.portalDeleteMessage }}</div>
+        <div>{{ this.workspaceDeleteMessage }}</div>
         <div class="mt-2">{{ 'ACTIONS.DELETE.MESSAGE_INFO' | translate }}</div>
       </div>
     </div>
@@ -117,7 +117,7 @@
           icon="pi pi-times"
           iconPos="left"
           [label]="'ACTIONS.CONFIRMATION.NO' | translate"
-          (click)="portalDeleteVisible = false"
+          (click)="workspaceDeleteVisible = false"
         ></button>
         <button
           pButton
@@ -126,7 +126,7 @@
           icon="pi pi-check"
           iconPos="left"
           [label]="'ACTIONS.CONFIRMATION.YES' | translate"
-          (click)="confirmDeletePortal()"
+          (click)="confirmDeleteWorkspace()"
         ></button>
       </div>
     </ng-template>
