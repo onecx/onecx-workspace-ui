@@ -62,9 +62,9 @@ export class MenuComponent implements OnInit, OnDestroy {
   public tabIndex = 0
   private panelHeight = 0
   private treeHeight = 0
-  // portal
-  public portal?: Workspace
-  private portal$: Observable<Workspace> = new Observable<Workspace>()
+  // workspace
+  public workspace?: Workspace
+  private workspace$: Observable<Workspace> = new Observable<Workspace>()
   public workspaceName = this.route.snapshot.params['name']
   private mfeRUrls: Array<string> = []
   public mfeRUrlOptions: SelectItem[] = []
@@ -141,7 +141,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         Validators.pattern(this.posPattern)
       ]),
       disabled: new FormControl<boolean>(false),
-      portalExit: new FormControl<boolean>(false),
+      workspaceExit: new FormControl<boolean>(false),
       url: new FormControl(null, [
         Validators.minLength(2),
         Validators.maxLength(255)
@@ -259,7 +259,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   public onGotoMenuMgmt(): void {
-    this.log('gotoMenu for portal ' + this.portal?.name)
+    this.log('gotoMenu for workspace ' + this.workspace?.name)
   }
   public onCloseDetailDialog(): void {
     this.resetDetailDialog()
@@ -344,23 +344,23 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.exceptionKey = ''
     this.loading = true
 
-    this.portal$ = this.workspaceApi
+    this.workspace$ = this.workspaceApi
       .getWorkspaceByName({ workspaceName: this.workspaceName })
       .pipe(catchError((error) => of(error)))
     this.menu$ = this.menuApi
       .getMenuStructureForWorkspaceName({ workspaceName: this.workspaceName })
       .pipe(catchError((error) => of(error)))
 
-    this.portal$.subscribe((portal) => {
+    this.workspace$.subscribe((workspace) => {
       this.loading = true
-      if (portal instanceof HttpErrorResponse) {
-        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + portal.status + '.PORTALS'
-        // console.error('getPortalByPortalId():', portal)
-      } else if (portal instanceof Object) {
-        this.portal = portal
-        // this.portal.microfrontendRegistrations = new Set(Array.from(portal.microfrontendRegistrations ?? []))
-        // this.mfeRUrls = Array.from(this.portal.microfrontendRegistrations || []).map((mfe) => mfe.baseUrl || '')
-        // this.mfeRUrlOptions = Array.from(this.portal.microfrontendRegistrations ?? [])
+      if (workspace instanceof HttpErrorResponse) {
+        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + workspace.status + '.PORTALS'
+        // console.error('getPortalByPortalId():', workspace)
+      } else if (workspace instanceof Object) {
+        this.workspace = workspace
+        // this.workspace?.microfrontendRegistrations = new Set(Array.from(workspace.microfrontendRegistrations ?? []))
+        // this.mfeRUrls = Array.from(this.workspace?.microfrontendRegistrations || []).map((mfe) => mfe.baseUrl || '')
+        // this.mfeRUrlOptions = Array.from(this.workspace?.microfrontendRegistrations ?? [])
         //   .map((mfe) => ({
         //     label: mfe.baseUrl,
         //     value: mfe.baseUrl || '',
@@ -369,7 +369,6 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.loadMenu(false)
       } else {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_0.PORTALS'
-        // console.error('getAllPortals() => unknown response:', portal)
       }
       this.loading = false
     })
@@ -512,7 +511,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       scope: m.scope,
       badge: m.badge,
       disabled: m.disabled,
-      portalExit: m.workspaceExit
+      workspaceExit: m.workspaceExit
     })
   }
 
@@ -527,7 +526,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.formGroup.patchValue({
       parentItemId: parent.id,
       position: 0,
-      portalExit: false,
+      workspaceExit: false,
       disabled: false
     })
     this.displayMenuDetail = true
@@ -545,7 +544,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.menuItem.scope = this.formGroup.controls['scope'].value
         this.menuItem.position = this.formGroup.controls['position'].value
         this.menuItem.disabled = this.formGroup.controls['disabled'].value
-        this.menuItem.workspaceExit = this.formGroup.controls['portalExit'].value
+        this.menuItem.workspaceExit = this.formGroup.controls['workspaceExit'].value
         this.menuItem.description = this.formGroup.controls['description'].value
         const i18n: I18N = {}
         for (const l of this.languagesDisplayed) {

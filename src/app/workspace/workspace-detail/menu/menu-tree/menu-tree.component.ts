@@ -11,8 +11,8 @@ import { MenuStateService } from '../../../../services/menu-state.service'
   styleUrls: ['./menu-tree.component.scss']
 })
 export class MenuTreeComponent implements OnChanges {
-  @Input() public selectedPortalId?: string
-  @Input() public portalMenuItems!: MenuItem[]
+  @Input() public selectedWorkspaceId?: string
+  @Input() public workspaceMenuItems!: MenuItem[]
   @Input() public languagesPreview!: SelectItem[]
   @Input() public updateTree = false
   @Output() public updateMenuStructureEmitter = new EventEmitter<MenuItem[]>()
@@ -25,7 +25,7 @@ export class MenuTreeComponent implements OnChanges {
 
   public ngOnChanges(changes: SimpleChanges): void {
     if (changes['portalMenuItems'] || changes['updateTree']) {
-      this.menuTreeNodes = this.mapToTree(this.portalMenuItems, this.languagesPreviewValue)
+      this.menuTreeNodes = this.mapToTree(this.workspaceMenuItems, this.languagesPreviewValue)
       this.treeExpanded = true
     }
   }
@@ -99,7 +99,7 @@ export class MenuTreeComponent implements OnChanges {
       newParentNodeId,
       this.menuTreeNodes
     )
-    const flatMenuItem = this.portalMenuItems.flatMap((pi) => this.flatten(pi))
+    const flatMenuItem = this.workspaceMenuItems.flatMap((pi) => this.flatten(pi))
 
     // prepare menu items to update
     const updatedMenuItems: MenuItem[] = []
@@ -142,6 +142,6 @@ export class MenuTreeComponent implements OnChanges {
 
   public onLanguagesPreviewChange(lang: string) {
     this.languagesPreviewValue = lang
-    this.menuTreeNodes = this.mapToTree(this.portalMenuItems, this.languagesPreviewValue)
+    this.menuTreeNodes = this.mapToTree(this.workspaceMenuItems, this.languagesPreviewValue)
   }
 }
