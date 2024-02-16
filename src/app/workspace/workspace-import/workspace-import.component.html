@@ -8,7 +8,7 @@
       [(ngModel)]="importThemeCheckbox"
       [label]="'PORTAL_IMPORT.IMPORT_THEME' | translate"
       [binary]="true"
-      inputId="portal_import_import_theme"
+      inputId="workspace_import_import_theme"
     ></p-checkbox>
     <p-checkbox
       class="p-element mr-2"
@@ -16,7 +16,7 @@
       [(ngModel)]="syncPermCheckbox"
       [label]="'PORTAL_IMPORT.SYNCHRONIZE_PERMISSIONS' | translate"
       [binary]="true"
-      inputId="portal_import_sync_perm"
+      inputId="workspace_import_sync_perm"
     ></p-checkbox>
   </div>
 
@@ -33,7 +33,7 @@
       *ngSwitchCase="2"
       [importThemeCheckbox]="hasPermission"
       [hasPermission]="hasPermission"
-      [portalName]="portalName"
+      [workspaceName]="workspaceName"
       [tenantId]="tenantId"
       [baseUrl]="baseUrl"
       [themeName]="themeName"
@@ -45,7 +45,7 @@
   <div class="flex flex-wrap justify-content-end gap-2 my-2 px-1">
     <p-button
       *ngIf="activeIndex > 0"
-      id="portal_import_button_restart"
+      id="workspace_import_button_restart"
       [label]="'PORTAL_IMPORT.IMPORT_RESTART' | translate"
       [title]="'PORTAL_IMPORT.IMPORT_RESTART_TOOLTIP' | translate"
       (onClick)="reset()"
@@ -53,7 +53,7 @@
     ></p-button>
     <p-button
       *ngIf="activeIndex > 0"
-      id="portal_import_button_back"
+      id="workspace_import_button_back"
       [label]="'ACTIONS.NAVIGATION.BACK' | translate"
       [title]="'ACTIONS.NAVIGATION.BACK.TOOLTIP' | translate"
       (onClick)="back()"
@@ -61,7 +61,7 @@
     ></p-button>
     <p-button
       *ngIf="activeIndex === 1"
-      id="portal_import_button_next"
+      id="workspace_import_button_next"
       [label]="'ACTIONS.NAVIGATION.NEXT' | translate"
       [title]="'ACTIONS.NAVIGATION.NEXT.TOOLTIP' | translate"
       (onClick)="next()"
@@ -71,7 +71,7 @@
     </p-button>
     <p-button
       *ngIf="activeIndex === 2"
-      id="portal_import_button_import"
+      id="workspace_import_button_import"
       [label]="'PORTAL_IMPORT.IMPORT' | translate"
       [title]="'PORTAL_IMPORT.START_IMPORT' | translate"
       (onClick)="importPortal()"
@@ -86,7 +86,7 @@
     pButton
     type="button"
     icon="pi pi-times"
-    id="portal_import_button_close"
+    id="workspace_import_button_close"
     [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
     [title]="'ACTIONS.NAVIGATION.CLOSE_WITHOUT_SAVE' | translate"
     (click)="onClose()"

@@ -2,7 +2,6 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core'
 import { HttpHeaders } from '@angular/common/http'
 import { TranslateService } from '@ngx-translate/core'
 import { WorkspaceSnapshot, EximWorkspaceMenuItem } from '../../../shared/generated'
-// import { ColumnGroupSelectionComponent } from '@onecx/portal-integration-angular'
 
 @Component({
   selector: 'app-import-choose-file',

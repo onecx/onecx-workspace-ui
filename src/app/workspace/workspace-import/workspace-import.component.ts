@@ -27,7 +27,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
   public steps: MenuItem[] = []
   public activeIndex = 0
   public isLoading = false
-  public portalName = ''
+  public workspaceName = ''
   public themeName = ''
   public tenantId: string | undefined = undefined
   public baseUrl = ''
@@ -65,7 +65,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
   }
 
   public reset(): void {
-    this.portalName = ''
+    this.workspaceName = ''
     this.tenantId = ''
     this.themeName = ''
     this.baseUrl = ''
@@ -100,7 +100,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
     }
     // Basic properties
     if (this.importRequestDTO.workspaces) {
-      this.importRequestDTO.workspaces[key[0]].name = this.portalName
+      this.importRequestDTO.workspaces[key[0]].name = this.workspaceName
       this.importRequestDTO.workspaces[key[0]].theme = this.themeName
       /* if (this.hasPermission) {
         this.importRequestDTO.portal.tenantId = this.tenantId
@@ -152,7 +152,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
       })
       .subscribe({
         next: (res) => {
-          if (this.confirmComponent?.portalNameExists) {
+          if (this.confirmComponent?.workspaceNameExists) {
             this.msgService.success({ summaryKey: 'PORTAL_IMPORT.PORTAL_IMPORT_UPDATE_SUCCESS' })
           } else {
             this.msgService.success({ summaryKey: 'PORTAL_IMPORT.PORTAL_IMPORT_CREATE_SUCCESS' })
@@ -196,7 +196,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
       //   this.importThemeCheckbox = false
       // }
     } else if (this.activeIndex == 1) {
-      this.portalName = this.previewComponent?.portalName || ''
+      this.workspaceName = this.previewComponent?.workspaceName || ''
       this.themeName = this.previewComponent?.themeName || ''
       this.baseUrl = this.previewComponent?.baseUrl || ''
       if (this.hasPermission) this.tenantId = this.previewComponent?.tenantId || undefined
@@ -216,7 +216,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
         this.importRequestDTO &&
         this.importRequestDTO.workspaces /* && this.importRequestDTO.themeImportData */
       ) {
-        this.importRequestDTO.workspaces[key[0]].name = this.confirmComponent?.portalName || ''
+        this.importRequestDTO.workspaces[key[0]].name = this.confirmComponent?.workspaceName || ''
         // this.importRequestDTO.tenantId = this.confirmComponent?.tenantId || ''
         this.importRequestDTO.workspaces[key[0]].baseUrl = this.confirmComponent?.baseUrl || ''
         // this.importRequestDTO.themeImportData.name = this.confirmComponent?.themeName || ''

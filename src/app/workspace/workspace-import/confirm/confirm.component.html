@@ -1,53 +1,53 @@
 <div class="px-1">
   <div class="flex flex-wrap align-items-center gap-3 mb-2">
     <span class="p-float-label">
-      <input pInputText type="text" readonly id="portal_import_confirm_portal_name" [(ngModel)]="portalName" />
-      <label for="portal_import_confirm_portal_name">{{ 'PORTAL.ITEM.PORTAL_NAME' | translate }}</label>
+      <input pInputText type="text" readonly id="workspace_import_confirm_workspace_name" [(ngModel)]="workspaceName" />
+      <label for="workspace_import_confirm_workspace_name">{{ 'PORTAL.ITEM.PORTAL_NAME' | translate }}</label>
     </span>
     <span *ngIf="hasPermission" class="p-float-label">
-      <input pInputText type="text" readonly id="portal_import_confirm_tenant_id" [(ngModel)]="tenantId" />
-      <label for="portal_import_confirm_tenant_id">{{ 'PORTAL.ITEM.TENANT_ID' | translate }}</label>
+      <input pInputText type="text" readonly id="workspace_import_confirm_tenant_id" [(ngModel)]="tenantId" />
+      <label for="workspace_import_confirm_tenant_id">{{ 'PORTAL.ITEM.TENANT_ID' | translate }}</label>
     </span>
     <span class="p-float-label">
       <input
         pInputText
         type="text"
         readonly
-        id="portal_import_confirm_theme_name"
+        id="workspace_import_confirm_theme_name"
         [title]="'THEME.TOOLTIPS.NAME' | translate"
         [(ngModel)]="themeName"
       />
-      <label for="portal_import_confirm_theme_name">{{ 'THEME.THEME_NAME' | translate }}</label>
+      <label for="workspace_import_confirm_theme_name">{{ 'THEME.THEME_NAME' | translate }}</label>
     </span>
     <app-theme-color-box
       *ngIf="importThemeCheckbox && themeProperties"
-      id="portal_import_confirm_theme_color_box"
+      id="workspace_import_confirm_theme_color_box"
       [properties]="themeProperties"
       styleClass="h-inputtext w-15rem"
     />
   </div>
   <div class="flex flex-wrap align-items-center row-gap-1 mb-4">
     <p-message
-      *ngIf="!(portalNameExists || portalTenantExists || (themeNameExists && importThemeCheckbox))"
-      id="portal_import_confirm_message_import_ok"
+      *ngIf="!(workspaceNameExists || workspaceTenantExists || (themeNameExists && importThemeCheckbox))"
+      id="workspace_import_confirm_message_import_ok"
       severity="info"
       [text]="'PORTAL_IMPORT.PORTAL_IMPORT_OK' | translate"
     ></p-message>
     <p-message
-      *ngIf="portalNameExists && !hasPermission"
-      id="portal_import_confirm_message_portal_exists"
+      *ngIf="workspaceNameExists && !hasPermission"
+      id="workspace_import_confirm_message_workspace_exists"
       severity="warn"
       [text]="'PORTAL_IMPORT.PORTAL_EXISTS_MESSAGE' | translate"
     ></p-message>
     <p-message
-      *ngIf="portalTenantExists && hasPermission"
-      id="portal_import_confirm_message_tenant_exists"
+      *ngIf="workspaceTenantExists && hasPermission"
+      id="workspace_import_confirm_message_tenant_exists"
       severity="warn"
       [text]="'PORTAL_IMPORT.TENANT_EXISTS_MESSAGE' | translate"
     ></p-message>
     <p-message
       *ngIf="themeNameExists && importThemeCheckbox"
-      id="portal_import_confirm_message_theme_exists"
+      id="workspace_import_confirm_message_theme_exists"
       severity="warn"
       [text]="'PORTAL_IMPORT.THEME_EXISTS_MESSAGE' | translate"
     ></p-message>
@@ -55,20 +55,20 @@
 
   <div class="flex flex-wrap align-items-center gap-3 mb-2">
     <span class="p-float-label">
-      <input pInputText type="text" readonly id="portal_import_confirm_base_url" [(ngModel)]="baseUrl" />
-      <label for="portal_import_confirm_base_url">{{ 'PORTAL.ITEM.BASE_URL' | translate }}</label>
+      <input pInputText type="text" readonly id="workspace_import_confirm_base_url" [(ngModel)]="baseUrl" />
+      <label for="workspace_import_confirm_base_url">{{ 'PORTAL.ITEM.BASE_URL' | translate }}</label>
     </span>
   </div>
   <div class="flex flex-wrap align-items-center row-gap-1">
     <p-message
       *ngIf="baseUrlExists"
-      id="portal_import_confirm_message_base_url_exists"
+      id="workspace_import_confirm_message_base_url_exists"
       severity="warn"
       [text]="'PORTAL_IMPORT.BASE_URL_EXISTS_MESSAGE' | translate"
     ></p-message>
     <p-message
       *ngIf="baseUrlIsMissing"
-      id="portal_import_confirm_message_base_url_missing"
+      id="workspace_import_confirm_message_base_url_missing"
       severity="error"
       [text]="'PORTAL_IMPORT.BASE_URL_MISSING' | translate"
     ></p-message>

@@ -6,12 +6,12 @@
           <input
             pInputText
             type="text"
-            id="portal_import_preview_portal_name"
+            id="workspace_import_preview_workspace_name"
             (keyup)="onModelChange()"
-            formControlName="portalName"
+            formControlName="workspaceName"
             readonly
           />
-          <label class="ocx-required-label" for="portal_import_preview_portal_name">
+          <label class="ocx-required-label" for="workspace_import_preview_workspace_name">
             {{ 'PORTAL.ITEM.PORTAL_NAME' | translate }}
           </label>
         </span>
@@ -20,30 +20,30 @@
         <input
           pInputText
           type="text"
-          id="portal_import_preview_tenant_id"
+          id="workspace_import_preview_tenant_id"
           (keyup)="onModelChange()"
           formControlName="tenantId"
         />
-        <label for="portal_import_preview_tenant_id">{{ 'PORTAL.ITEM.TENANT_ID' | translate }}</label>
+        <label for="workspace_import_preview_tenant_id">{{ 'PORTAL.ITEM.TENANT_ID' | translate }}</label>
       </span> -->
       <!-- <div>
         <span *ngIf="importThemeCheckbox" class="p-float-label" controlErrorAnchor>
           <input
             pInputText
             type="text"
-            id="portal_import_preview_theme_name"
+            id="workspace_import_preview_theme_name"
             [title]="'THEME.TOOLTIPS.NAME' | translate"
             (keyup)="onModelChange()"
             formControlName="themeName"
           />
-          <label class="ocx-required-label" for="portal_import_preview_theme_name">
+          <label class="ocx-required-label" for="workspace_import_preview_theme_name">
             {{ 'THEME.THEME_NAME' | translate }}
           </label>
         </span>
         <span *ngIf="!importThemeCheckbox" class="p-float-label w-16rem" controlErrorAnchor>
           <p-dropdown
             #inputThemeName
-            id="portal_import_preview_themeName"
+            id="workspace_import_preview_themeName"
             formControlName="themeName"
             styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
             [options]="(themes$ | async) || []"
@@ -51,20 +51,20 @@
           >
             [pTooltip]="'PORTAL.ITEM.THEME' | translate" tooltipPosition="top" tooltipEvent="focus" >
           </p-dropdown>
-          <label class="ocx-required-label" for="portal_import_preview_themeName">
+          <label class="ocx-required-label" for="workspace_import_preview_themeName">
             {{ 'THEME.THEME_NAME' | translate }}
           </label>
         </span>
       </div>
       <app-theme-color-box
         *ngIf="importThemeCheckbox && themeProperties"
-        id="portal_import_preview_theme_color_box"
+        id="workspace_import_preview_theme_color_box"
         [properties]="themeProperties"
         styleClass="h-inputtext w-15rem"
       /> -->
       <p-message
         *ngIf="importThemeCheckbox && !themeProperties"
-        id="portal_import_preview_message_theme_not_exists"
+        id="workspace_import_preview_message_theme_not_exists"
         severity="info"
         [text]="'PORTAL_IMPORT.VALIDATION_THEME_NOT_EXIST' | translate"
       ></p-message>
@@ -75,11 +75,11 @@
         <input
           pInputText
           type="text"
-          id="portal_import_preview_base_url"
+          id="workspace_import_preview_base_url"
           (keyup)="onModelChange()"
           formControlName="baseUrl"
         />
-        <label class="ocx-required-label" for="portal_import_preview_base_url">
+        <label class="ocx-required-label" for="workspace_import_preview_base_url">
           {{ 'PORTAL.ITEM.BASE_URL' | translate }}
         </label>
       </span>
@@ -89,14 +89,14 @@
       <p-tabPanel [header]="'PORTAL_IMPORT.PREVIEW_MENU' | translate">
         <p-tree
           styleClass="py-1 px-0 max-h-25rem overflow-y-auto"
-          id="portal_import_preview_menu"
+          id="workspace_import_preview_menu"
           [value]="menuItems"
         ></p-tree>
       </p-tabPanel>
       <p-tabPanel [header]="'PORTAL.TABS.ROLES' | translate">
         <div class="mt-1 mb-2 mx-3">
-          <div *ngIf="portalRoles.length === 0">{{ 'DETAIL.ROLES_NOT_EXIST' | translate }}</div>
-          <div *ngIf="portalRoles.length > 0">{{ portalRoles.join(', ') }}</div>
+          <div *ngIf="workspaceRoles.length === 0">{{ 'DETAIL.ROLES_NOT_EXIST' | translate }}</div>
+          <div *ngIf="workspaceRoles.length > 0">{{ workspaceRoles.join(', ') }}</div>
         </div>
       </p-tabPanel>
       <!-- <p-tabPanel [header]="'PORTAL.TABS.MFES' | translate">
