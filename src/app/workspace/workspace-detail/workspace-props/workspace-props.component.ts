@@ -20,7 +20,7 @@ import { Workspace } from '../../../shared/generated'
 import { environment } from '../../../../environments/environment'
 import { LogoState } from '../../workspace-create/logo-state'
 import {
-  clonePortalWithMicrofrontendsArray,
+  cloneWorkspaceWithMicrofrontendsArray,
   setFetchUrls,
   copyToClipboard
   // sortThemeByName
@@ -116,7 +116,7 @@ export class WorkspacePropsComponent implements OnChanges {
         .updateWorkspace({
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           id: this.portalDetail.id!,
-          updateWorkspaceRequest: { resource: clonePortalWithMicrofrontendsArray(this.portalDetail) }
+          updateWorkspaceRequest: { resource: cloneWorkspaceWithMicrofrontendsArray(this.portalDetail) }
         })
         .subscribe({
           next: () => {

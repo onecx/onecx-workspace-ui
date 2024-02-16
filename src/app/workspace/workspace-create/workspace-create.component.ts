@@ -25,7 +25,7 @@ export class WorkspaceCreateComponent {
 
   themes$: Observable<SelectItem<string>[]> = of([])
   public formGroup: FormGroup
-  private portalDto!: Workspace
+  private workspace!: Workspace
   public hasPermission = false
   public selectedLogoFile: File | undefined
   public preview = false
@@ -34,7 +34,7 @@ export class WorkspaceCreateComponent {
   public minimumImageHeight = 150
   public LogoState = LogoState
   public logoState = LogoState.INITIAL
-  public portalCreationValiationMsg = false
+  public workspaceCreationValidationMsg = false
   public fetchingLogoUrl?: string
   public urlPattern = '/base-path-to-workspace'
 
@@ -83,13 +83,13 @@ export class WorkspaceCreateComponent {
     this.createPortalDto()
     this.workspaceApi
       .createWorkspace({
-        createWorkspaceRequest: { resource: this.portalDto }
+        createWorkspaceRequest: { resource: this.workspace }
       })
       .pipe()
       .subscribe({
         next: (fetchedPortal) => {
           this.message.success({ summaryKey: 'ACTIONS.CREATE.MESSAGE.CREATE_OK' })
-          this.portalCreationValiationMsg = false
+          this.workspaceCreationValidationMsg = false
           this.closeDialog()
           this.router.navigate(['./' + fetchedPortal.resource?.name], { relativeTo: this.route })
         },
@@ -100,7 +100,7 @@ export class WorkspaceCreateComponent {
   }
 
   private createPortalDto(): void {
-    this.portalDto = { ...this.formGroup.value }
+    this.workspace = { ...this.formGroup.value }
   }
 
   // former used to check the size of the image

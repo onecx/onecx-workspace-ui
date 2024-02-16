@@ -5,14 +5,14 @@
         <input
           pInputText
           type="text"
-          id="portal_create_item_name"
+          id="workspace_create_item_name"
           class="w-full pt-3 pb-2"
           formControlName="name"
           [pTooltip]="'PORTAL.ITEM.PORTAL_NAME' | translate"
           tooltipPosition="top"
           tooltipEvent="focus"
         />
-        <label class="ocx-required-label" for="portal_create_item_name">
+        <label class="ocx-required-label" for="workspace_create_item_name">
           {{ 'PORTAL.ITEM.PORTAL_NAME' | translate }}
         </label>
       </span>
@@ -23,21 +23,21 @@
         <input
           pInputText
           type="text"
-          id="portal_create_item_tenantId"
+          id="workspace_create_item_tenantId"
           class="w-full pt-3 pb-2"
           formControlName="tenantId"
           [pTooltip]="'PORTAL.ITEM.TENANT_ID' | translate"
           tooltipPosition="top"
           tooltipEvent="focus"
         />
-        <label for="portal_create_item_tenantId"> {{ 'PORTAL.ITEM.TENANT_ID' | translate }} </label>
+        <label for="workspace_create_item_tenantId"> {{ 'PORTAL.ITEM.TENANT_ID' | translate }} </label>
       </span>
     </div>
 
     <!-- <div>
       <span class="p-float-label">
         <p-dropdown
-          id="portal_create_item_themeName"
+          id="workspace_create_item_themeName"
           formControlName="themeName"
           styleClass="w-full"
           [options]="(themes$ | async) || []"
@@ -46,7 +46,7 @@
           tooltipEvent="focus"
         >
         </p-dropdown>
-        <label class="ocx-required-label" for="portal_create_item_themeName">
+        <label class="ocx-required-label" for="workspace_create_item_themeName">
           {{ 'PORTAL.ITEM.THEME' | translate }}
         </label>
       </span>
@@ -57,14 +57,14 @@
         <input
           pInputText
           type="text"
-          id="portal_create_item_homePage"
+          id="workspace_create_item_homePage"
           class="w-full pt-3 pb-2"
           formControlName="homePage"
           [pTooltip]="'PORTAL.ITEM.HOME_PAGE' | translate"
           tooltipPosition="top"
           tooltipEvent="focus"
         />
-        <label for="portal_create_item_homePage"> {{ 'PORTAL.ITEM.HOME_PAGE' | translate }} </label>
+        <label for="workspace_create_item_homePage"> {{ 'PORTAL.ITEM.HOME_PAGE' | translate }} </label>
       </span>
     </div>
 
@@ -73,14 +73,14 @@
         <input
           pInputText
           type="text"
-          id="portal_create_item_baseUrl"
+          id="workspace_create_item_baseUrl"
           class="w-full pt-3 pb-2"
           formControlName="baseUrl"
           [pTooltip]="'PORTAL.ITEM.BASE_URL' | translate"
           tooltipPosition="top"
           tooltipEvent="focus"
         />
-        <label class="ocx-required-label" for="portal_create_item_baseUrl">
+        <label class="ocx-required-label" for="workspace_create_item_baseUrl">
           {{ 'PORTAL.ITEM.BASE_URL' | translate }}</label
         >
       </span>
@@ -92,18 +92,18 @@
     <!-- <div class="flex flex-wrap sm:flex-nowrap align-items-center row-gap-2 column-gap-4">
       <input hidden type="file" accept=".png,.svg" #selectedFileInputLogo (change)="onFileUpload($event, 'logo')" />
       <app-image-container
-        [id]="'portal_create_item_logo_image'"
+        [id]="'workspace_create_item_logo_image'"
         [imageUrl]="fetchingLogoUrl"
         [small]="true"
         [title]="'LOGO.TOOLTIPS.' + (fetchingLogoUrl ? 'IMAGE' : 'PLACEHOLDER') | translate"
       ></app-image-container>
       <div class="p-inputgroup" controlErrorAnchor>
         <span class="p-float-label">
-          <input pInputText type="text" id="portal_create_item_logo" formControlName="logoUrl" />
-          <label for="portal_create_item_logo"> {{ 'LOGO.LOGO_URL' | translate }} </label>
+          <input pInputText type="text" id="workspace_create_item_logo" formControlName="logoUrl" />
+          <label for="workspace_create_item_logo"> {{ 'LOGO.LOGO_URL' | translate }} </label>
         </span>
         <span
-          id="portal_create_item_logo_upload"
+          id="workspace_create_item_logo_upload"
           class="p-inputgroup-addon bg-primary"
           [title]="'LOGO.TOOLTIPS.UPLOAD' | translate"
           (click)="selectedFileInputLogo.click()"
@@ -118,14 +118,14 @@
         <input
           pInputText
           type="text"
-          id="portal_create_item_footerLabel"
+          id="workspace_create_item_footerLabel"
           class="w-full pt-3 pb-2"
           formControlName="footerLabel"
           [pTooltip]="'PORTAL.ITEM.FOOTER_LABEL' | translate"
           tooltipPosition="top"
           tooltipEvent="focus"
         />
-        <label for="portal_create_item_footerLabel"> {{ 'PORTAL.ITEM.FOOTER_LABEL' | translate }} </label>
+        <label for="workspace_create_item_footerLabel"> {{ 'PORTAL.ITEM.FOOTER_LABEL' | translate }} </label>
       </span>
     </div>
 
@@ -136,10 +136,10 @@
           pInputTextarea
           autoresize="true"
           rows="4"
-          id="portal_create_item_description"
+          id="workspace_create_item_description"
           formControlName="description"
         ></textarea>
-        <label for="portal_create_item_description"> {{ 'PORTAL.ITEM.DESCRIPTION' | translate }} </label>
+        <label for="workspace_create_item_description"> {{ 'PORTAL.ITEM.DESCRIPTION' | translate }} </label>
       </span>
     </div>
   </div>

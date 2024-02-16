@@ -152,7 +152,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       description: new FormControl(null, [Validators.maxLength(255)])
     })
     const state = this.stateService.getState()
-    this.menuItems = state.portalMenuItems
+    this.menuItems = state.workspaceMenuItems
   }
 
   public ngOnInit(): void {
@@ -175,7 +175,7 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.stateService.updateState({
-      portalMenuItems: this.menuItems
+      workspaceMenuItems: this.menuItems
     })
   }
 

@@ -9,7 +9,7 @@ export interface MenuState {
   treeExpansionState: Map<string, boolean>
   menuTableFilters?: Map<string, string>
   pageSize: number
-  portalMenuItems?: MenuItem[]
+  workspaceMenuItems?: MenuItem[]
   sortColumn?: { sortField: string; sortOrder: number }
 }
 

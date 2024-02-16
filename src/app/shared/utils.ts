@@ -12,16 +12,16 @@ export function limitText(text: string, limit: number): string {
 }
 
 /**
- * Clones a given portal and converts its microfrontends Set to an array.
+ * Clones a given workspace and converts its microfrontends Set to an array.
  *
- * Used to avoid serialization issues caused by Sets when sending a portal to the backend.
- * @param portal Workspace that should be cloned
- * @returns Clone of the portal which contains the portal microfrontends as an array.
+ * Used to avoid serialization issues caused by Sets when sending a workspace to the backend.
+ * @param workspace Workspace that should be cloned
+ * @returns Clone of the workspace which contains the workspace microfrontends as an array.
  */
-export function clonePortalWithMicrofrontendsArray(portal: Workspace): Workspace {
-  const updatedPortal: Workspace = { ...portal }
+export function cloneWorkspaceWithMicrofrontendsArray(workspace: Workspace): Workspace {
+  const updatedPortal: Workspace = { ...workspace }
   // updatedPortal.microfrontendRegistrations = Array.from(
-  //   portal.microfrontendRegistrations ?? []
+  //   workspace.microfrontendRegistrations ?? []
   // ) as unknown as Set<MicrofrontendDTO>
   return updatedPortal
 }
