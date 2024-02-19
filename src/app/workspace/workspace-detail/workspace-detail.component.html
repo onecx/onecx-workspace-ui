@@ -36,7 +36,7 @@
 
       <p-tabPanel [header]="'PORTAL.TABS.PRODUCTS' | translate" [disabled]="editMode">
         <div *ocxIfPermission="'WORKSPACE_PRODUCTS#VIEW'">
-          <app-mfe-registrations [workspace]="workspaceDetail"></app-mfe-registrations>
+          <app-products [workspace]="workspaceDetail"></app-products>
         </div>
       </p-tabPanel>
 

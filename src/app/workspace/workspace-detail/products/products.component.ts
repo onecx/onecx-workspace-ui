@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core'
+import { Component, Input, OnDestroy, OnInit, OnChanges, ViewChild } from '@angular/core'
 //import { HttpErrorResponse } from '@angular/common/http'
 //import { FormControl, Validators } from '@angular/forms'
 import { TranslateService } from '@ngx-translate/core'
-import { Observable, Subject, catchError, map, of, takeUntil } from 'rxjs'
+import { Observable, Subject, catchError, finalize, map, of, takeUntil } from 'rxjs'
 //import { SelectItem } from 'primeng/api'
 import { DataView } from 'primeng/dataview'
 
@@ -16,7 +16,7 @@ import { limitText } from 'src/app/shared/utils'
   templateUrl: './products.component.html',
   styleUrls: ['./products.component.scss']
 })
-export class ProductComponent implements OnInit, OnDestroy {
+export class ProductComponent implements OnInit, OnChanges, OnDestroy {
   @Input() workspace!: Workspace
 
   private readonly destroy$ = new Subject()
@@ -49,7 +49,11 @@ export class ProductComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     // this.prepareTranslations()
+    this.log('onInit')
     this.loadData()
+  }
+  public ngOnChanges(): void {
+    this.log('OnChanges')
   }
   public ngOnDestroy(): void {
     this.destroy$.next(undefined)
@@ -70,6 +74,7 @@ export class ProductComponent implements OnInit, OnDestroy {
     // prepare requests and catching errors
     this.products$ = this.productApi
       .getProductsForWorkspaceId({ id: this.workspace.id ?? '' })
+      .pipe(finalize(() => (this.loading = false)))
       .pipe(catchError((error) => of(error)))
       .pipe(takeUntil(this.destroy$))
     /*
