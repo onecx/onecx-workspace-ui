@@ -20,21 +20,15 @@ import {
   WorkspaceAPIService,
   GetMenuItemResponse,
   GetWorkspaceMenuItemStructureResponse,
-  CreateUpdateMenuItem
+  CreateUpdateMenuItem,
+  MenuSnapshot,
+  PatchMenuItemsRequest
 } from '../../../shared/generated'
 import { limitText, dropDownSortItemsByLabel } from '../../../shared/utils'
 import { MenuStringConst } from '../../..//model/menu-string-const'
 import { MenuStateService } from '../../../services/menu-state.service'
 import { IconService } from './iconservice'
 
-/* type MenuItem = MenuItem & {
-  positionPath: string
-  regMfeAligned: boolean
-  parentItemName: string
-  first: boolean
-  last: boolean
-  prevId: string | undefined
-} */
 type LanguageItem = SelectItem & { data: string }
 type I18N = { [key: string]: string }
 
@@ -68,9 +62,9 @@ export class MenuComponent implements OnInit, OnDestroy {
   public tabIndex = 0
   private panelHeight = 0
   private treeHeight = 0
-  // portal
-  public portal?: Workspace
-  private portal$: Observable<Workspace> = new Observable<Workspace>()
+  // workspace
+  public workspace?: Workspace
+  private workspace$: Observable<Workspace> = new Observable<Workspace>()
   public workspaceName = this.route.snapshot.params['name']
   private mfeRUrls: Array<string> = []
   public mfeRUrlOptions: SelectItem[] = []
@@ -81,7 +75,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   private menuItem$: Observable<GetMenuItemResponse | null> = new Observable<GetMenuItemResponse | null>()
   public menuItems: MenuItem[] | undefined
   public menuItem: MenuItem | undefined
-  private menuItemStructureDTOArray: Array<MenuItem> | undefined
+  private menuItemStructure: MenuSnapshot | undefined
   public menuImportError = false
   public httpHeaders!: HttpHeaders
   // detail
@@ -147,7 +141,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         Validators.pattern(this.posPattern)
       ]),
       disabled: new FormControl<boolean>(false),
-      portalExit: new FormControl<boolean>(false),
+      workspaceExit: new FormControl<boolean>(false),
       url: new FormControl(null, [
         Validators.minLength(2),
         Validators.maxLength(255)
@@ -158,7 +152,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       description: new FormControl(null, [Validators.maxLength(255)])
     })
     const state = this.stateService.getState()
-    this.menuItems = state.portalMenuItems
+    this.menuItems = state.workspaceMenuItems
   }
 
   public ngOnInit(): void {
@@ -181,7 +175,7 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.stateService.updateState({
-      portalMenuItems: this.menuItems
+      workspaceMenuItems: this.menuItems
     })
   }
 
@@ -265,7 +259,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   public onGotoMenuMgmt(): void {
-    this.log('gotoMenu for portal ' + this.portal?.name)
+    this.log('gotoMenu for workspace ' + this.workspace?.name)
   }
   public onCloseDetailDialog(): void {
     this.resetDetailDialog()
@@ -350,23 +344,23 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.exceptionKey = ''
     this.loading = true
 
-    this.portal$ = this.workspaceApi
+    this.workspace$ = this.workspaceApi
       .getWorkspaceByName({ workspaceName: this.workspaceName })
       .pipe(catchError((error) => of(error)))
     this.menu$ = this.menuApi
       .getMenuStructureForWorkspaceName({ workspaceName: this.workspaceName })
       .pipe(catchError((error) => of(error)))
 
-    this.portal$.subscribe((portal) => {
+    this.workspace$.subscribe((workspace) => {
       this.loading = true
-      if (portal instanceof HttpErrorResponse) {
-        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + portal.status + '.PORTALS'
-        // console.error('getPortalByPortalId():', portal)
-      } else if (portal instanceof Object) {
-        this.portal = portal
-        // this.portal.microfrontendRegistrations = new Set(Array.from(portal.microfrontendRegistrations ?? []))
-        // this.mfeRUrls = Array.from(this.portal.microfrontendRegistrations || []).map((mfe) => mfe.baseUrl || '')
-        // this.mfeRUrlOptions = Array.from(this.portal.microfrontendRegistrations ?? [])
+      if (workspace instanceof HttpErrorResponse) {
+        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + workspace.status + '.PORTALS'
+        // console.error('getPortalByPortalId():', workspace)
+      } else if (workspace instanceof Object) {
+        this.workspace = workspace
+        // this.workspace?.microfrontendRegistrations = new Set(Array.from(workspace.microfrontendRegistrations ?? []))
+        // this.mfeRUrls = Array.from(this.workspace?.microfrontendRegistrations || []).map((mfe) => mfe.baseUrl || '')
+        // this.mfeRUrlOptions = Array.from(this.workspace?.microfrontendRegistrations ?? [])
         //   .map((mfe) => ({
         //     label: mfe.baseUrl,
         //     value: mfe.baseUrl || '',
@@ -375,7 +369,6 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.loadMenu(false)
       } else {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_0.PORTALS'
-        // console.error('getAllPortals() => unknown response:', portal)
       }
       this.loading = false
     })
@@ -518,7 +511,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       scope: m.scope,
       badge: m.badge,
       disabled: m.disabled,
-      portalExit: m.workspaceExit
+      workspaceExit: m.workspaceExit
     })
   }
 
@@ -528,12 +521,12 @@ export class MenuComponent implements OnInit, OnDestroy {
   public onCreateMenu($event: MouseEvent, parent: MenuItem): void {
     $event.stopPropagation()
     this.changeMode = 'CREATE'
-    this.menuItem = parent
+    this.menuItem = {} as unknown as MenuItem
     this.formGroup.reset()
     this.formGroup.patchValue({
       parentItemId: parent.id,
       position: 0,
-      portalExit: false,
+      workspaceExit: false,
       disabled: false
     })
     this.displayMenuDetail = true
@@ -551,7 +544,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.menuItem.scope = this.formGroup.controls['scope'].value
         this.menuItem.position = this.formGroup.controls['position'].value
         this.menuItem.disabled = this.formGroup.controls['disabled'].value
-        this.menuItem.workspaceExit = this.formGroup.controls['portalExit'].value
+        this.menuItem.workspaceExit = this.formGroup.controls['workspaceExit'].value
         this.menuItem.description = this.formGroup.controls['description'].value
         const i18n: I18N = {}
         for (const l of this.languagesDisplayed) {
@@ -566,7 +559,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.menuApi
           .createMenuItemForWorkspace({
             workspaceName: this.workspaceName,
-            createMenuItemRequest: { resource: this.menuItem! as CreateUpdateMenuItem }
+            createMenuItemRequest: { resource: this.formGroup.value as CreateUpdateMenuItem }
           })
           .subscribe({
             next: () => {
@@ -607,6 +600,7 @@ export class MenuComponent implements OnInit, OnDestroy {
                 }
               }
               this.preparePreviewLanguages()
+              this.onReloadMenu()
             },
             error: (err: { error: any }) => {
               this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
@@ -728,25 +722,9 @@ export class MenuComponent implements OnInit, OnDestroy {
    */
   public onExportMenu(): void {
     if (this.workspaceName) {
-      this.menuApi.getMenuStructureForWorkspaceName({ workspaceName: this.workspaceName }).subscribe((data) => {
-        /* const filteredStructure = fetchedStructure.map((item: any) =>
-          filterObjectTree(
-            item,
-            [
-              'creationDate',
-              'creationUser',
-              'modificationDate',
-              'modificationUser',
-              'id',
-              'parentItemId',
-              'portalName'
-            ],
-            'children'
-          )
-        ) as MenuItem[]
-        filteredStructure.sort((a, b) => (a.position || 0) - (b.position || 0)) */
+      this.menuApi.exportMenuByWorkspaceName({ workspaceName: this.workspaceName }).subscribe((data) => {
         const jsonBody = JSON.stringify(data, null, 2)
-        FileSaver.saveAs(new Blob([jsonBody], { type: 'text/json' }), 'workspace_' + this.portal?.name + '_menu.json')
+        FileSaver.saveAs(new Blob([jsonBody], { type: 'text/json' }), 'workspace_' + this.workspaceName + '_menu.json')
       })
     }
   }
@@ -758,20 +736,21 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.displayMenuImport = false
   }
   public onImportMenuClear(): void {
-    this.menuItemStructureDTOArray = undefined
+    this.menuItemStructure = undefined
     this.menuImportError = false
   }
   public onImportMenuSelect(event: { files: FileList }): void {
     event.files[0].text().then((text) => {
-      this.menuItemStructureDTOArray = undefined
+      this.menuItemStructure = undefined
       this.menuImportError = false
       try {
-        const menuItemStructureDTOArray: Array<MenuItem> = JSON.parse(text) as Array<MenuItem>
-        if (this.isMenuImportRequestDTO2(menuItemStructureDTOArray)) {
-          this.menuItemStructureDTOArray = menuItemStructureDTOArray
+        const menuItemStructure: MenuSnapshot = JSON.parse(text) as MenuSnapshot
+        if (this.isMenuImportRequestDTO2(menuItemStructure)) {
+          this.menuItemStructure = menuItemStructure
+          console.log('STRUCT', this.menuItemStructure)
         } else {
-          console.error('Menu Import Error: Data not valid', menuItemStructureDTOArray)
-          this.menuItemStructureDTOArray = undefined
+          console.error('Menu Import Error: Data not valid', menuItemStructure)
+          this.menuItemStructure = undefined
           this.menuImportError = true
         }
       } catch (err) {
@@ -780,17 +759,17 @@ export class MenuComponent implements OnInit, OnDestroy {
       }
     })
   }
-  private isMenuImportRequestDTO2(obj: unknown): obj is Array<MenuItem> {
-    const dto = obj as Array<MenuItem>
-    return !!(typeof dto === 'object' && dto && dto.length)
+  private isMenuImportRequestDTO2(obj: unknown): obj is MenuSnapshot {
+    const dto = obj as MenuSnapshot
+    return !!(typeof dto === 'object' && dto && dto.menu?.menuItems?.length)
   }
 
   public onMenuImport(): void {
     if (this.workspaceName) {
       this.menuApi
-        .exportMenuByWorkspaceName({
-          workspaceName: this.workspaceName
-          // menuStructureListDTO: { menuItemStructureDTOS: this.menuItemStructureDTOArray }
+        .importMenuByWorkspaceName({
+          workspaceName: this.workspaceName,
+          menuSnapshot: this.menuItemStructure!
         })
         .subscribe({
           next: () => {
@@ -817,12 +796,15 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   // triggered by changes of tree structure in tree popup
   public updateMenuItems(updatedMenuItems: MenuItem[]): void {
+    const patchRequestItems: PatchMenuItemsRequest[] = []
+    updatedMenuItems.forEach((item) => {
+      const patchMenuItem = { resource: item }
+      patchRequestItems.push(patchMenuItem)
+    })
     this.menuApi
       .patchMenuItems({
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         workspaceName: this.workspaceName,
-        patchMenuItemsRequest: [{ resource: updatedMenuItems[0] }] // WARNING: SHOULD BE WHOLE ARRAY???
-        // menuItemDetailsDTO: updatedMenuItems
+        patchMenuItemsRequest: patchRequestItems
       })
       .subscribe({
         next: () => {

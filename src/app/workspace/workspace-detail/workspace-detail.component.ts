@@ -1,30 +1,17 @@
 import { Component, OnInit, ViewChild } from '@angular/core'
 import { DatePipe, Location } from '@angular/common'
-import { ActivatedRoute /* , ExtraOptions */, Router } from '@angular/router'
-// import { /* concatMap, */ Observable } from 'rxjs'
+import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 import FileSaver from 'file-saver'
 
 import { Action, ObjectDetailItem, PortalMessageService, UserService } from '@onecx/portal-integration-angular'
-import {
-  WorkspaceSnapshot,
-  // ImportRequestDTOv1ThemeImportData,
-  MenuItemAPIService,
-  Workspace,
-  WorkspaceAPIService
-
-  // ThemeDTO,
-  // ThemesAPIService
-} from '../../shared/generated'
+import { WorkspaceSnapshot, Workspace, WorkspaceAPIService } from '../../shared/generated'
 import { environment } from '../../../environments/environment'
 
 import { WorkspacePropsComponent } from './workspace-props/workspace-props.component'
 import { WorkspaceRolesComponent } from './workspace-roles/workspace-roles.component'
 import { WorkspaceInternComponent } from './workspace-intern/workspace-intern.component'
-import { WorkspaceImagesComponent } from './workspace-images/workspace-images.component'
 import { WorkspaceContactComponent } from './workspace-contact/workspace-contact.component'
-
-// import { filterObject, filterObjectTree } from '../../shared/utils'
 
 @Component({
   selector: 'app-workspace-detail',
@@ -33,19 +20,16 @@ import { WorkspaceContactComponent } from './workspace-contact/workspace-contact
 })
 export class WorkspaceDetailComponent implements OnInit {
   @ViewChild(WorkspacePropsComponent, { static: false })
-  portalPropsComponent!: WorkspacePropsComponent
+  workspacePropsComponent!: WorkspacePropsComponent
 
   @ViewChild(WorkspaceContactComponent, { static: false })
-  portalContactComponent!: WorkspaceContactComponent
+  workspaceContactComponent!: WorkspaceContactComponent
 
   @ViewChild(WorkspaceRolesComponent, { static: false })
-  portalRolesComponent!: WorkspaceRolesComponent
+  workspaceRolesComponent!: WorkspaceRolesComponent
 
   @ViewChild(WorkspaceInternComponent, { static: false })
-  portalInternComponent!: WorkspaceInternComponent
-
-  @ViewChild(WorkspaceImagesComponent, { static: false })
-  portalImagesComponent!: WorkspaceImagesComponent
+  workspaceInternComponent!: WorkspaceInternComponent
 
   private apiPrefix = environment.apiPrefix
   actions: Action[] = []
@@ -54,12 +38,12 @@ export class WorkspaceDetailComponent implements OnInit {
   importThemeCheckbox = false
   isLoading = false
   objectDetails: ObjectDetailItem[] = []
-  portalDeleteMessage = ''
-  portalDeleteVisible = false
-  portalDetail?: Workspace
-  portalDownloadVisible = false
-  portalId: string = ''
-  portalName = this.route.snapshot.params['name']
+  workspaceDeleteMessage = ''
+  workspaceDeleteVisible = false
+  workspaceDetail?: Workspace
+  workspaceDownloadVisible = false
+  workspaceId: string = ''
+  workspaceName = this.route.snapshot.params['name']
   selectedIndex = 0
   dateFormat = 'medium'
 
@@ -68,26 +52,23 @@ export class WorkspaceDetailComponent implements OnInit {
     public route: ActivatedRoute,
     private router: Router,
     private location: Location,
-    private menuApi: MenuItemAPIService,
-    // private themeApi: ThemesAPIService,
     private workspaceApi: WorkspaceAPIService,
     private translate: TranslateService,
     private msgService: PortalMessageService
   ) {
     this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm:ss' : 'medium'
-    console.log('SNAP', this.route.snapshot.toString())
   }
 
   ngOnInit() {
-    this.getPortalData()
+    this.getWorkspaceData()
   }
 
   public onChange($event: any) {
     this.selectedIndex = $event.index
   }
 
-  public onPortalData(portal: Workspace) {
-    this.portalDetail = portal
+  public onWorkspaceData(workspace: Workspace) {
+    this.workspaceDetail = workspace
     this.preparePageHeaderImage()
     this.translate
       .get([
@@ -117,43 +98,39 @@ export class WorkspaceDetailComponent implements OnInit {
       })
   }
 
-  private async getPortalData() {
+  private async getWorkspaceData() {
     this.workspaceApi
-      .getWorkspaceByName({ workspaceName: this.portalName })
+      .getWorkspaceByName({ workspaceName: this.workspaceName })
       .pipe()
       .subscribe({
-        next: (portal) => {
+        next: (workspace) => {
           // Convert microfrontends to Set to avoid typeerrors
-          // portal.microfrontendRegistrations = new Set(Array.from(portal.microfrontendRegistrations ?? []))
-          if (portal.resource) {
-            this.portalId = portal.resource.id || ''
-            this.onPortalData(portal.resource)
+          // workspace.microfrontendRegistrations = new Set(Array.from(workspace.microfrontendRegistrations ?? []))
+          if (workspace.resource) {
+            this.workspaceId = workspace.resource.id || ''
+            this.onWorkspaceData(workspace.resource)
           }
         },
         error: () => {
           this.msgService.error({ summaryKey: 'SEARCH.ERROR', detailKey: 'PORTAL.NOT_EXIST_MESSAGE' })
-          close() // if portal not found then go back
+          close() // if workspace not found then go back
         }
       })
   }
 
-  private updatePortal() {
+  private updateWorkspace() {
     // Trigger update on the form of the currently selected tab
     switch (this.selectedIndex) {
       case 0: {
-        this.portalPropsComponent.onSubmit()
+        this.workspacePropsComponent.onSubmit()
         break
       }
       case 1: {
-        this.portalContactComponent.onSubmit()
+        this.workspaceContactComponent.onSubmit()
         break
       }
       case 4: {
-        this.portalRolesComponent.onSubmit()
-        break
-      }
-      case 5: {
-        this.portalImagesComponent.onSubmit()
+        this.workspaceRolesComponent.onSubmit()
         break
       }
       default: {
@@ -164,13 +141,13 @@ export class WorkspaceDetailComponent implements OnInit {
     this.toggleEditMode('view')
   }
 
-  confirmDeletePortal() {
-    this.deletePortal()
-    this.portalDownloadVisible = false
+  confirmDeleteWorkspace() {
+    this.deleteWorkspace()
+    this.workspaceDownloadVisible = false
   }
 
-  private deletePortal() {
-    this.workspaceApi.deleteWorkspace({ id: this.portalId }).subscribe(
+  private deleteWorkspace() {
+    this.workspaceApi.deleteWorkspace({ id: this.workspaceId }).subscribe(
       () => {
         this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MESSAGE_OK' })
         this.close()
@@ -212,41 +189,25 @@ export class WorkspaceDetailComponent implements OnInit {
   }
 
   public onExportWorkspace() {
-    if (!this.portalDetail) {
-      this.portalNotFoundError()
+    if (!this.workspaceDetail) {
+      this.workspaceNotFoundError()
       return
     }
 
     this.workspaceApi
       .exportWorkspaces({
-        exportWorkspacesRequest: { includeMenus: true, names: [this.portalDetail.name] }
+        exportWorkspacesRequest: { includeMenus: true, names: [this.workspaceDetail.name] }
       })
       .subscribe({
         next: (snapshot) => {
-          this.savePortalToFile(snapshot)
+          this.saveWorkspaceToFile(snapshot)
         },
         error: () => {}
       })
-    // get workspace object with filtered properties
-    // const portalExport: WorkspaceSnapshot = {
-    //   portal: filterObject(this.portalDetail, [
-    //     'creationDate',
-    //     'creationUser',
-    //     'modificationDate',
-    //     'modificationUser',
-    //     'id',
-    //     'themeId',
-    //     'tenantId',
-    //     'parentItemId'
-    //   ]) as Workspace
-    // }
-
-    // const menuStructure$ = this.menuApi.getMenuStructureForWorkspaceId({ id: this.portalId })
-    // let finalMenuStructure$$ = menuStructure$
 
     if (this.importThemeCheckbox) {
-      if (this.portalDetail.theme) {
-        /* const theme$ = this.themeApi.getThemeById({ id: this.portalDetail.themeId })
+      if (this.workspaceDetail.theme) {
+        /* const theme$ = this.themeApi.getThemeById({ id: this.workspaceDetail.themeId })
         finalMenuStructure$$ = theme$.pipe(
           concatMap((theme) => {
             const themeImportData = filterObject(theme, [
@@ -255,7 +216,7 @@ export class WorkspaceDetailComponent implements OnInit {
               'modificationDate',
               'modificationUser',
               'id',
-              'portalId',
+              'workspaceId',
               'tenantId',
               'portals'
             ]) as ImportRequestDTOv1ThemeImportData
@@ -270,8 +231,8 @@ export class WorkspaceDetailComponent implements OnInit {
       }
     }
     // this.exportWorkspace(finalMenuStructure$$, portalExport)
-    // this.savePortalToFile(portalExport)
-    this.portalDownloadVisible = false
+    // this.saveWorkspaceToFile(portalExport)
+    this.workspaceDownloadVisible = false
   }
 
   // private exportWorkspace(
@@ -292,7 +253,7 @@ export class WorkspaceDetailComponent implements OnInit {
               'id',
               'themeId',
               'parentItemId',
-              'portalId',
+              'workspaceId',
               'tenantId'
             ],
             'children'
@@ -311,15 +272,18 @@ export class WorkspaceDetailComponent implements OnInit {
 
   // private saveThemeToFile(theme: ThemeDTO) {
   //   const themeJSON = JSON.stringify(theme, null, 2)
-  //   FileSaver.saveAs(new Blob([themeJSON], { type: 'text/json' }), `${this.portalDetail?.themeName + '_Theme'}.json`)
+  //   FileSaver.saveAs(new Blob([themeJSON], { type: 'text/json' }), `${this.workspaceDetail?.themeName + '_Theme'}.json`)
   // }
 
-  private savePortalToFile(portalExport: WorkspaceSnapshot) {
-    const portalJson = JSON.stringify(portalExport, null, 2)
-    FileSaver.saveAs(new Blob([portalJson], { type: 'text/json' }), `${this.portalDetail?.name || 'Workspace'}.json`)
+  private saveWorkspaceToFile(workspaceExport: WorkspaceSnapshot) {
+    const workspaceJson = JSON.stringify(workspaceExport, null, 2)
+    FileSaver.saveAs(
+      new Blob([workspaceJson], { type: 'text/json' }),
+      `${this.workspaceDetail?.name || 'Workspace'}.json`
+    )
   }
 
-  private portalNotFoundError() {
+  private workspaceNotFoundError() {
     this.msgService.error({ summaryKey: 'DETAIL.PORTAL_NOT_FOUND' })
   }
 
@@ -331,19 +295,19 @@ export class WorkspaceDetailComponent implements OnInit {
     this.objectDetails = [
       {
         label: data['PORTAL.ITEM.HOME_PAGE'],
-        value: this.portalDetail?.homePage
+        value: this.workspaceDetail?.homePage
       },
       {
         label: data['PORTAL.ITEM.BASE_URL'],
-        value: this.portalDetail?.baseUrl
+        value: this.workspaceDetail?.baseUrl
       },
       {
         label: data['PORTAL.ITEM.THEME'],
-        value: this.portalDetail?.theme
+        value: this.workspaceDetail?.theme
       },
       {
         label: data['DETAIL.CREATION_DATE'],
-        value: this.portalDetail?.creationDate,
+        value: this.workspaceDetail?.creationDate,
         valuePipe: DatePipe,
         valuePipeArgs: this.dateFormat
       }
@@ -351,10 +315,10 @@ export class WorkspaceDetailComponent implements OnInit {
   }
 
   private preparePageHeaderImage() {
-    if (this.portalDetail?.logoUrl && !this.portalDetail.logoUrl.match(/^(http|https)/g)) {
-      this.headerImageUrl = this.apiPrefix + this.portalDetail.logoUrl
+    if (this.workspaceDetail?.logoUrl && !this.workspaceDetail.logoUrl.match(/^(http|https)/g)) {
+      this.headerImageUrl = this.apiPrefix + this.workspaceDetail.logoUrl
     } else {
-      this.headerImageUrl = this.portalDetail?.logoUrl
+      this.headerImageUrl = this.workspaceDetail?.logoUrl
     }
   }
 
@@ -375,9 +339,9 @@ export class WorkspaceDetailComponent implements OnInit {
         actionCallback: () => this.manageMenu(),
         icon: 'pi pi-sitemap',
         show: 'always',
-        permission: 'WORKSPACE_MENU#VIEW',
+        permission: 'MENU#VIEW',
         conditional: true,
-        showCondition: this.portalDetail != null && !this.editMode
+        showCondition: this.workspaceDetail != null && !this.editMode
       },
       {
         label: data['ACTIONS.CANCEL'],
@@ -392,7 +356,7 @@ export class WorkspaceDetailComponent implements OnInit {
       {
         label: data['ACTIONS.SAVE'],
         title: data['ACTIONS.TOOLTIPS.SAVE'],
-        actionCallback: () => this.updatePortal(),
+        actionCallback: () => this.updateWorkspace(),
         icon: 'pi pi-save',
         show: 'always',
         permission: 'WORKSPACE#SAVE',
@@ -402,12 +366,12 @@ export class WorkspaceDetailComponent implements OnInit {
       {
         label: data['ACTIONS.EXPORT.LABEL'],
         title: data['ACTIONS.EXPORT.PORTAL'],
-        actionCallback: () => (this.portalDownloadVisible = true),
+        actionCallback: () => (this.workspaceDownloadVisible = true),
         icon: 'pi pi-download',
         show: 'always',
         permission: 'WORKSPACE#EXPORT',
         conditional: true,
-        showCondition: this.portalDetail != null && !this.editMode
+        showCondition: this.workspaceDetail != null && !this.editMode
       },
       {
         label: data['ACTIONS.EDIT.LABEL'],
@@ -417,20 +381,20 @@ export class WorkspaceDetailComponent implements OnInit {
         show: 'always',
         permission: 'WORKSPACE#EDIT',
         conditional: true,
-        showCondition: this.portalDetail != null && !this.editMode
+        showCondition: this.workspaceDetail != null && !this.editMode
       },
       {
         label: data['ACTIONS.DELETE.LABEL'],
         title: data['ACTIONS.DELETE.TOOLTIP'].replace('{{TYPE}}', 'Workspace'),
         actionCallback: () => {
-          this.portalDeleteVisible = true
-          this.portalDeleteMessage = data['ACTIONS.DELETE.MESSAGE'].replace('{{ITEM}}', this.portalDetail?.name)
+          this.workspaceDeleteVisible = true
+          this.workspaceDeleteMessage = data['ACTIONS.DELETE.MESSAGE'].replace('{{ITEM}}', this.workspaceDetail?.name)
         },
         icon: 'pi pi-trash',
         show: 'asOverflow',
         permission: 'WORKSPACE#DELETE',
         conditional: true,
-        showCondition: this.portalDetail != null && !this.editMode
+        showCondition: this.workspaceDetail != null && !this.editMode
       }
     )
   }

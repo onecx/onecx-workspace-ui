@@ -4,7 +4,7 @@ import { TranslateService } from '@ngx-translate/core'
 import { PortalMessageService } from '@onecx/portal-integration-angular'
 
 import { /* ImageV1APIService,  */ WorkspaceAPIService, Workspace } from '../../../shared/generated'
-import { clonePortalWithMicrofrontendsArray } from '../../../shared/utils'
+import { cloneWorkspaceWithMicrofrontendsArray } from '../../../shared/utils'
 import { LogoState } from '../../workspace-create/logo-state'
 
 export interface PortalImageForm {
@@ -84,7 +84,7 @@ export class WorkspaceImagesComponent implements OnChanges {
         .updateWorkspace({
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           id: this.portalDetail.id!,
-          updateWorkspaceRequest: { resource: clonePortalWithMicrofrontendsArray(this.portalDetail) }
+          updateWorkspaceRequest: { resource: cloneWorkspaceWithMicrofrontendsArray(this.portalDetail) }
         })
         .subscribe({
           next: () => {
@@ -116,7 +116,7 @@ export class WorkspaceImagesComponent implements OnChanges {
           this.api
             .updatePortal({
               portalId: this.portalDetail.id,
-              updatePortalDTO: clonePortalWithMicrofrontendsArray(this.portalDetail)
+              updatePortalDTO: cloneWorkspaceWithMicrofrontendsArray(this.portalDetail)
             })
             .subscribe({
               next: () => {

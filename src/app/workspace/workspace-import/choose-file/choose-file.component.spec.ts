@@ -1,14 +1,27 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, tick, waitForAsync, fakeAsync } from '@angular/core/testing'
-import { HttpClient } from '@angular/common/http'
+// import { HttpClient } from '@angular/common/http'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
+// import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { of, throwError } from 'rxjs'
 
 import { PortalMessageService } from '@onecx/portal-integration-angular'
-import { HttpLoaderFactory } from 'src/app/shared/shared.module'
+// import { HttpLoaderFactory } from 'src/app/shared/shared.module'
 import { ChooseFileComponent } from './choose-file.component'
-import { PortalInternalAPIService } from '../../../shared/generated'
+import { WorkspaceAPIService, WorkspaceSnapshot } from '../../../shared/generated'
+
+const snapshot: WorkspaceSnapshot = {
+  workspaces: {
+    workspace: {
+      name: 'name'
+    }
+  }
+}
+
+// let keys: string[] = []
+// if (snapshot.workspaces) {
+//   keys= Object.keys(snapshot.workspaces)
+// }
 
 describe('ChooseFileComponent', () => {
   let component: ChooseFileComponent
@@ -24,19 +37,19 @@ describe('ChooseFileComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ChooseFileComponent],
       imports: [
-        HttpClientTestingModule,
-        TranslateModule.forRoot({
-          loader: {
-            provide: TranslateLoader,
-            useFactory: HttpLoaderFactory,
-            deps: [HttpClient]
-          }
-        })
+        HttpClientTestingModule
+        // TranslateModule.forRoot({
+        //   loader: {
+        //     provide: TranslateLoader,
+        //     useFactory: HttpLoaderFactory,
+        //     deps: [HttpClient]
+        //   }
+        // })
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
         { provide: PortalMessageService, useValue: msgServiceSpy },
-        { provide: PortalInternalAPIService, useValue: apiServiceSpy }
+        { provide: WorkspaceAPIService, useValue: apiServiceSpy }
       ]
     }).compileComponents()
     msgServiceSpy.success.calls.reset()
@@ -57,18 +70,18 @@ describe('ChooseFileComponent', () => {
 
   it('should call toggleImportDialogEvent onClose', () => {
     spyOn(component.importFileSelected, 'emit')
-    const portal = {
-      portal: {
-        portalName: 'name',
-        tenantId: '',
-        microfrontendRegistrations: new Set([{ version: 1 }])
-      }
-    }
-    component.importRequestDTO = portal
+    // const portal = {
+    //   portal: {
+    //     portalName: 'name',
+    //     tenantId: '',
+    //     microfrontendRegistrations: new Set([{ version: 1 }])
+    //   }
+    // }
+    component.importWorkspace = snapshot
 
     component.uploadHandler()
 
-    expect(component.importFileSelected.emit).toHaveBeenCalledOnceWith(component.importRequestDTO)
+    expect(component.importFileSelected.emit).toHaveBeenCalledOnceWith(component.importWorkspace)
   })
 
   it('should select a file onSelect, get translations and set importDTO', (done) => {
@@ -87,16 +100,16 @@ describe('ChooseFileComponent', () => {
       )
     )
     const event = { files: fileList }
-    const portal = {
-      portal: {
-        portalName: 'name',
-        portalRoles: ['role'],
-        tenantId: 'id',
-        microfrontendRegistrations: new Set([{ version: 1 }])
-      },
-      menuItems: [{ name: 'menu', key: 'key', position: 1, disabled: true, portalExit: true }]
-    }
-    component.importRequestDTO = portal
+    // const portal = {
+    //   portal: {
+    //     portalName: 'name',
+    //     portalRoles: ['role'],
+    //     tenantId: 'id',
+    //     microfrontendRegistrations: new Set([{ version: 1 }])
+    //   },
+    //   menuItems: [{ name: 'menu', key: 'key', position: 1, disabled: true, portalExit: true }]
+    // }
+    component.importWorkspace = snapshot
 
     component.onSelect(event)
 
@@ -104,7 +117,7 @@ describe('ChooseFileComponent', () => {
       expect(file.text).toHaveBeenCalled()
       done()
     })
-    expect(component.importRequestDTO).toEqual(portal)
+    expect(component.importWorkspace).toEqual(snapshot)
   })
 
   it('should catch an import error', fakeAsync(() => {
@@ -129,7 +142,7 @@ describe('ChooseFileComponent', () => {
   it('should behave correctly onClear', () => {
     component.onClear()
 
-    expect(component.importRequestDTO).toBeNull()
+    expect(component.importWorkspace).toBeNull()
     expect(component.importError).toBeFalse()
     expect(component.validationErrorCause).toEqual('')
   })

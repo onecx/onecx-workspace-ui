@@ -1,7 +1,7 @@
 <div class="px-1">
   <p-fileUpload
     #fileUploader
-    id="portal_import_file_upload"
+    id="workspace_import_file_upload"
     mode="advanced"
     name="file"
     accept=".json"
@@ -20,7 +20,7 @@
   <p-message
     *ngIf="importError"
     styleClass="mt-2"
-    id="portal_import_file_upload_error"
+    id="workspace_import_file_upload_error"
     severity="error"
     [text]="validationErrorCause"
   ></p-message>

@@ -3,7 +3,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { TreeNode } from 'primeng/api'
 
 import { MenuTreeService } from './menu-tree.service'
-import { MenuItemDetailsDTO, MenuItemStructureDTO } from '../shared/generated'
+import { /* MenuItemDetailsDTO, MenuItemStructureDTO, */ MenuItem } from '../shared/generated'
 
 describe('MenuTreeService', () => {
   let service: MenuTreeService
@@ -71,52 +71,60 @@ describe('MenuTreeService', () => {
   })
 
   it('should parse items from structure correctly', () => {
-    const structure: MenuItemStructureDTO[] = [
+    const structure: MenuItem[] = [
       {
         name: '1',
         url: '/1',
+        id: 'id',
         children: [
           {
             name: 'Sub 1.1',
-            url: '/1/sub1'
+            url: '/1/sub1',
+            id: 'id'
           },
           {
             name: 'Sub 1.2',
-            url: '/1/sub2'
+            url: '/1/sub2',
+            id: 'id'
           }
         ]
       },
       {
         name: '2',
-        url: '/2'
+        url: '/2',
+        id: 'id'
       }
     ]
-    const list: MenuItemDetailsDTO[] = []
+    const list: MenuItem[] = []
 
     const result = service.parseItemsFromStructure(structure, list)
 
     expect(result).toEqual([
       {
         name: '1',
-        url: '/1'
+        url: '/1',
+        id: 'id'
       },
       {
         name: 'Sub 1.1',
-        url: '/1/sub1'
+        url: '/1/sub1',
+        id: 'id'
       },
       {
         name: 'Sub 1.2',
-        url: '/1/sub2'
+        url: '/1/sub2',
+        id: 'id'
       },
       {
         name: '2',
-        url: '/2'
+        url: '/2',
+        id: 'id'
       }
     ])
   })
 
   it('should map items to TreeNodes correctly', () => {
-    const items: MenuItemStructureDTO[] = [
+    const items: MenuItem[] = [
       {
         id: 'item1',
         name: 'Item 1',

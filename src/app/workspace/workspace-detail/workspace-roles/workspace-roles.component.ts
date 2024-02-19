@@ -3,7 +3,7 @@ import { FormArray, FormControl } from '@angular/forms'
 
 import { WorkspaceAPIService } from '../../../shared/generated'
 import { Workspace } from '../../../shared/generated'
-import { clonePortalWithMicrofrontendsArray } from '../../../shared/utils'
+import { cloneWorkspaceWithMicrofrontendsArray } from '../../../shared/utils'
 import { PortalMessageService } from '@onecx/portal-integration-angular'
 
 @Component({
@@ -52,7 +52,7 @@ export class WorkspaceRolesComponent implements OnChanges {
 
   public onSubmit() {
     if (this.formArray.valid) {
-      const portal = clonePortalWithMicrofrontendsArray(this.portalDetail)
+      const portal = cloneWorkspaceWithMicrofrontendsArray(this.portalDetail)
       // clone form array and use the clone
       const array: string[] = []
       this.formArray.value.forEach((role) => array.push(role))

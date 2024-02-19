@@ -1,20 +1,19 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, fakeAsync, waitForAsync } from '@angular/core/testing'
-import { HttpClient } from '@angular/common/http'
+// import { HttpClient } from '@angular/common/http'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
+// import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { FormControl, FormGroup } from '@angular/forms'
 import { of, throwError } from 'rxjs'
 
 import { PortalMessageService } from '@onecx/portal-integration-angular'
-import { HttpLoaderFactory } from 'src/app/shared/shared.module'
+// import { HttpLoaderFactory } from 'src/app/shared/shared.module'
 import { WorkspaceContactComponent } from './workspace-contact.component'
-import { PortalDTO, PortalInternalAPIService } from '../../../shared/generated'
+import { Workspace, WorkspaceAPIService } from '../../../shared/generated'
 
-const portal: PortalDTO = {
-  portalName: 'name',
-  themeName: 'theme',
-  themeId: 'id',
+const portal: Workspace = {
+  name: 'name',
+  theme: 'theme',
   baseUrl: '/some/base/url',
   id: 'id'
 }
@@ -40,19 +39,19 @@ describe('WorkspaceContactComponent', () => {
     TestBed.configureTestingModule({
       declarations: [WorkspaceContactComponent],
       imports: [
-        HttpClientTestingModule,
-        TranslateModule.forRoot({
-          loader: {
-            provide: TranslateLoader,
-            useFactory: HttpLoaderFactory,
-            deps: [HttpClient]
-          }
-        })
+        HttpClientTestingModule
+        // TranslateModule.forRoot({
+        //   loader: {
+        //     provide: TranslateLoader,
+        //     useFactory: HttpLoaderFactory,
+        //     deps: [HttpClient]
+        //   }
+        // })
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
         { provide: PortalMessageService, useValue: msgServiceSpy },
-        { provide: PortalInternalAPIService, useValue: apiServiceSpy }
+        { provide: WorkspaceAPIService, useValue: apiServiceSpy }
       ]
     }).compileComponents()
     msgServiceSpy.success.calls.reset()
@@ -177,10 +176,9 @@ describe('WorkspaceContactComponent', () => {
 
   it('should update portal onSubmit: no address', () => {
     apiServiceSpy.updatePortal.and.returnValue(of({}))
-    const newPortal: PortalDTO = {
-      portalName: 'name',
-      themeName: 'theme',
-      themeId: 'id',
+    const newPortal: Workspace = {
+      name: 'name',
+      theme: 'theme',
       baseUrl: '/some/base/url',
       id: 'id'
     }

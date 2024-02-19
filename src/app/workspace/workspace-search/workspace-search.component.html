@@ -7,12 +7,12 @@
   >
   </ocx-page-header>
   <ocx-page-content>
-    <!-- ng-container *ngIf="portals$ | async as portalItems" -->
-    <ng-container *ngIf="portalItems as portalItems">
+    <!-- ng-container *ngIf="portals$ | async as workspaceItems" -->
+    <ng-container *ngIf="workspaceItems as workspaceItems">
       <p-dataView
         #table
         id="portal_search_dataview"
-        [value]="portalItems"
+        [value]="workspaceItems"
         [paginator]="true"
         [alwaysShowPaginator]="false"
         [rowsPerPageOptions]="[10, 20, 50]"
@@ -29,14 +29,14 @@
             [supportedViews]="['grid', 'list']"
             [initialViewMode]="viewMode"
             [sortingOptions]="[
-              { label: fieldLabelPortalName, value: 'portalName' },
+              { label: fieldLabelWorkspaceName, value: 'portalName' },
               { label: fieldLabelThemeName, value: 'themeName' }
             ]"
             [defaultSortOption]="defaultSortField"
             [defaultSortDirection]="sortOrder === -1"
             (dataViewChange)="onLayoutChange($event)"
             (filterChange)="onFilterChange($event)"
-            [filterColumns]="[fieldLabelPortalName, fieldLabelThemeName]"
+            [filterColumns]="[fieldLabelWorkspaceName, fieldLabelThemeName]"
             (sortChange)="onSortChange($event)"
             (sortDirectionChange)="onSortDirChange($event)"
             [translations]="dataViewControlsTranslations"
@@ -44,23 +44,23 @@
           </ocx-data-view-controls>
         </ng-template>
         <!-- List - view -->
-        <ng-template let-portalItems pTemplate="listItem">
+        <ng-template let-workspaceItems pTemplate="listItem">
           <div
             class="col-12 grid grid-nogutter row-gap-1 align-items-center listview-row p-1 hover:bg-gray-200 cursor-pointer line-height-2"
-            [routerLink]="['./' + portalItems.name]"
+            [routerLink]="['./' + workspaceItems.name]"
           >
             <div class="col-12 sm:col-2 md:col-2 lg:col-2 xl:col-2 px-2 text-center mt-1">
-              <app-image-container [imageUrl]="portalItems.logoUrl" [small]="true"></app-image-container>
+              <app-image-container [imageUrl]="workspaceItems.logoUrl" [small]="true"></app-image-container>
             </div>
             <div
               class="col-12 sm:col-3 md:col-3 lg:col-3 xl:col-2 px-2 font-bold text-center sm:text-left"
-              [title]="('PORTAL.ITEM.PORTAL' | translate) + ': ' + portalItems.name"
+              [title]="('PORTAL.ITEM.PORTAL' | translate) + ': ' + workspaceItems.name"
             >
-              {{ limitText(portalItems.name, 40) }}
+              {{ limitText(workspaceItems.name, 40) }}
             </div>
             <div class="col-12 sm:col-4 md:col-4 lg:col-4 xl:col-2 px-2 text-center sm:text-left">
               <a
-                [routerLink]="portalItems.baseUrl"
+                [routerLink]="workspaceItems.baseUrl"
                 (click)="$event.stopPropagation()"
                 target="_blank"
                 class="text-primary"
@@ -68,58 +68,61 @@
                   ('PORTAL.ITEM.BASE_URL' | translate) + ' - ' + ('ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate)
                 "
               >
-                {{ limitText(portalItems.baseUrl, 50) }}
+                {{ limitText(workspaceItems.baseUrl, 50) }}
               </a>
             </div>
             <div
               class="col-12 sm:col-3 md:col-3 lg:col-3 xl:col-2 px-2 text-center sm:text-left"
               [title]="'PORTAL.ITEM.THEME' | translate"
             >
-              {{ limitText(portalItems.themeName, 40) }}
+              {{ limitText(workspaceItems.themeName, 40) }}
             </div>
             <div
               class="col-12 sm:col-12 md:col-12 lg:col-12 xl:col-4 px-2 text-center sm:text-left"
               [title]="'PORTAL.ITEM.DESCRIPTION' | translate"
             >
-              {{ this.getDescriptionString(portalItems.description) }}
+              {{ this.getDescriptionString(workspaceItems.description) }}
             </div>
           </div>
         </ng-template>
 
         <!-- Grid - view -->
-        <ng-template let-portalItems let-row="rowIndex" pTemplate="gridItem">
-          <div class="col-12 sm:col-6 md:col-4 lg:col-4 xl:col-3 p-3" [routerLink]="['./', portalItems.name]">
+        <ng-template let-workspaceItems let-row="rowIndex" pTemplate="gridItem">
+          <div class="col-12 sm:col-6 md:col-4 lg:col-4 xl:col-3 p-3" [routerLink]="['./', workspaceItems.name]">
             <div
               class="card relative p-2 flex flex-column justify-content-center row-gap-1 md:row-gap-2 hover:bg-gray-200 cursor-pointer"
             >
               <span
-                *ngIf="portalItems.name !== 'ADMIN'"
-                [id]="'app_portal_search_data_row_' + row + '_goto_portal'"
+                *ngIf="workspaceItems.name !== 'ADMIN'"
+                [id]="'app_workspace_search_data_row_' + row + '_goto_workspace'"
                 class="card-badge-right badge-1 p-2 pi pi-external-link pseudo-button-link"
                 [title]="'PORTAL.QUICK_LINKS.GOTO_WORKSPACE' | translate"
-                (click)="onGotoPortal($event, portalItems)"
+                (click)="onGotoWorkspace($event, workspaceItems)"
               ></span>
               <span
                 *ocxIfPermission="'MENU#VIEW'"
-                [id]="'app_portal_search_data_row_' + row + '_goto_menu'"
+                [id]="'app_workspace_search_data_row_' + row + '_goto_menu'"
                 class="card-badge-right badge-2 p-2 pi pi-sitemap pseudo-button-link"
                 [title]="'PORTAL.QUICK_LINKS.GOTO_MENU' | translate"
-                (click)="onGotoMenu($event, portalItems)"
+                (click)="onGotoMenu($event, workspaceItems)"
               ></span>
               <div class="h-3rem md:h-5rem mt-1 flex flex-column justify-content-center align-items-center text-center">
-                <app-image-container [imageUrl]="portalItems.logoUrl" [small]="false"></app-image-container>
+                <app-image-container [imageUrl]="workspaceItems.logoUrl" [small]="false"></app-image-container>
               </div>
               <div class="h-4rem lg:h-5rem mb-1 flex flex-column justify-content-between px-2 text-center gap-1">
                 <div
                   class="font-bold text-xl lg:text-2xl"
-                  [title]="('PORTAL.ITEM.PORTAL' | translate) + ': ' + portalItems.name"
+                  [title]="('PORTAL.ITEM.PORTAL' | translate) + ': ' + workspaceItems.name"
                 >
-                  {{ limitText(portalItems.name, 15) }}
+                  {{ limitText(workspaceItems.name, 15) }}
                 </div>
-                <div class="h-1rem" [title]="portalItems.description ? limitText(portalItems.description, 100) : ''">
-                  {{ limitText(portalItems.description, 26) }}
+                <div
+                  class="h-1rem"
+                  [title]="workspaceItems.description ? limitText(workspaceItems.description, 100) : ''"
+                >
+                  {{ limitText(workspaceItems.description, 26) }}
                 </div>
-                <!-- <div title="Theme">{{ limitText(portalItems.themeName, 25) }}</div> -->
+                <!-- <div title="Theme">{{ limitText(workspaceItems.themeName, 25) }}</div> -->
               </div>
             </div>
           </div>

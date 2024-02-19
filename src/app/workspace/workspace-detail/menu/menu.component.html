@@ -1,6 +1,6 @@
 <ocx-portal-page permission="MENU#VIEW" helpArticleId="PAGE_MENU_DETAIL" pageName="PAGE_MENU_DETAIL">
   <ocx-page-header
-    *ngIf="portal"
+    *ngIf="workspace"
     [header]="workspaceName ? workspaceName + ('MENU.HEADER' | translate) : ''"
     [subheader]="'MENU.SUBHEADER' | translate"
     [actions]="actions"
@@ -36,7 +36,7 @@
       <p-treeTable
         #menuTree
         styleClass="px-2"
-        id="portal_menu_table"
+        id="workspace_menu_table"
         [value]="menuNodes"
         [globalFilterFields]="['name', 'url']"
         (onNodeCollapse)="onHierarchyViewChange($event)"
@@ -47,21 +47,21 @@
             <div *ngIf="menuItems" class="flex flex-wrap gap-2">
               <p-button
                 styleClass="h-full button-min-height"
-                id="portal_menu_table_header_expand_button"
+                id="workspace_menu_table_header_expand_button"
                 [title]="'ACTIONS.TREE.EXPAND_ALL.TOOLTIP' | translate"
                 (onClick)="onExpandAll()"
                 icon="pi pi-angle-double-down"
               ></p-button>
               <p-button
                 styleClass="h-full button-min-height"
-                id="portal_menu_table_header_collapse_button"
+                id="workspace_menu_table_header_collapse_button"
                 [title]="'ACTIONS.TREE.COLLAPSE_ALL.TOOLTIP' | translate"
                 (onClick)="onCollapseAll()"
                 icon="pi pi-angle-double-up"
               ></p-button>
               <p-button
                 *ocxIfPermission="'MENU#DRAG_DROP'"
-                id="portal_menu_table_header_reorder"
+                id="workspace_menu_table_header_reorder"
                 [label]="'PORTAL.MENU.ACTION.TREE_MODAL' | translate"
                 [title]="'PORTAL.MENU.ACTION.TREE_MODAL.TOOLTIP' | translate"
                 (onClick)="onDisplayTreeModal()"
@@ -76,14 +76,14 @@
                   pInputText
                   type="text"
                   class="py-0"
-                  id="portal_menu_table_header_filter"
+                  id="workspace_menu_table_header_filter"
                   (input)="menuTree.filterGlobal($any($event.target).value, 'contains')"
                   [title]="'GENERAL.TOOLTIPS.FILTER' | translate"
                 />
-                <label for="portal_menu_table_filter"> {{ 'GENERAL.FILTER_PLACEHOLDER' | translate }} </label>
+                <label for="workspace_menu_table_filter"> {{ 'GENERAL.FILTER_PLACEHOLDER' | translate }} </label>
               </span>
               <span
-                id="portal_menu_table_header_filter_clear"
+                id="workspace_menu_table_header_filter_clear"
                 class="p-inputgroup-addon bg-primary cursor-pointer pi pi-filter-slash"
                 (click)="onClearFilterMenuTable()"
                 [title]="'GENERAL.TOOLTIPS.FILTER_CLEAR' | translate"
@@ -92,7 +92,7 @@
             </div>
             <p-button
               styleClass="h-full button-min-height"
-              id="portal_menu_table_reload_button"
+              id="workspace_menu_table_reload_button"
               [title]="'GENERAL.TOOLTIPS.ACTION_RELOAD' | translate"
               (onClick)="onReload()"
               icon="pi pi-refresh"
@@ -113,19 +113,19 @@
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
-          <tr [id]="'portal_menu_table_row_' + rowData.key">
+          <tr [id]="'workspace_menu_table_row_' + rowData.key">
             <td class="white-space-nowrap">
               <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
               <span *ngIf="rowData.badge" class="pi pi-{{ rowData.badge }} pr-2"></span>
               <span *ngIf="!rowData.badge" class="pi pi-folder pr-2 invisible"></span>
-              <span [id]="'portal_menu_table_row_' + rowData.key + '_name'">{{ rowData.name }}</span>
+              <span [id]="'workspace_menu_table_row_' + rowData.key + '_name'">{{ rowData.name }}</span>
             </td>
             <td class="white-space-nowrap hidden-xs">
               <div class="flex gap-1">
                 <button
                   pbutton
                   type="button"
-                  [id]="'portal_menu_table_row_' + rowData.key + '_disabled'"
+                  [id]="'workspace_menu_table_row_' + rowData.key + '_disabled'"
                   (click)="onToggleDisable($event, rowData)"
                   [title]="'PORTAL.MENU.ACTION.DISABLED' | translate"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
@@ -142,7 +142,7 @@
                 <button
                   pbutton
                   type="button"
-                  [id]="'portal_menu_table_row_' + rowData.key + '_goto_details'"
+                  [id]="'workspace_menu_table_row_' + rowData.key + '_goto_details'"
                   (click)="onGotoDetails($event, rowData)"
                   [title]="'PORTAL.MENU.ACTION.DETAILS' | translate"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
@@ -153,7 +153,7 @@
                   *ocxIfPermission="'MENU#EDIT'"
                   pbutton
                   type="button"
-                  [id]="'portal_menu_table_row_' + rowData.key + '_goto_new'"
+                  [id]="'workspace_menu_table_row_' + rowData.key + '_goto_new'"
                   (click)="onCreateMenu($event, rowData)"
                   [title]="'PORTAL.MENU.ACTION.NEW' | translate"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
@@ -164,7 +164,7 @@
                   *ocxIfPermission="'MENU#DELETE'"
                   pbutton
                   type="button"
-                  [id]="'portal_menu_table_row_' + rowData.key + '_delete'"
+                  [id]="'workspace_menu_table_row_' + rowData.key + '_delete'"
                   (click)="onDeleteMenuItem($event, rowData)"
                   [title]="('PORTAL.MENU.ACTION.DELETE' | translate).replace('{{TYPE}}', 'Menu')"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
@@ -173,13 +173,13 @@
                 </button>
               </div>
             </td>
-            <td [id]="'portal_menu_table_row_' + rowData.key + '_position'" class="hidden-md">
+            <td [id]="'workspace_menu_table_row_' + rowData.key + '_position'" class="hidden-md">
               {{ rowData.positionPath }}
             </td>
             <td class="text-center hidden-md">
               <span
                 *ngIf="isObjectEmpty(rowData.i18n)"
-                [id]="'portal_menu_table_row_' + rowData.key + '_i18n'"
+                [id]="'workspace_menu_table_row_' + rowData.key + '_i18n'"
                 class="pi pi-check"
                 [title]="'PORTAL.MENU.I18N.ROW.TOOLTIP' | translate"
               ></span>
@@ -187,13 +187,13 @@
             <td class="text-center hidden-md">
               <span
                 *ngIf="rowData.regMfeAligned"
-                [id]="'portal_menu_table_row_' + rowData.key + '_url'"
+                [id]="'workspace_menu_table_row_' + rowData.key + '_url'"
                 class="pi pi-check"
               ></span>
             </td>
             <td class="hidden-sm">
               <a
-                [id]="'portal_menu_table_row_' + rowData.key + '_url'"
+                [id]="'workspace_menu_table_row_' + rowData.key + '_url'"
                 [href]="rowData.url"
                 (click)="$event.stopPropagation()"
                 target="_blank"
@@ -238,15 +238,15 @@
               <input
                 pInputText
                 type="text"
-                id="portal_menu_detail_field_portal_name"
+                id="workspace_menu_detail_field_workspace_name"
                 class="w-full pt-3 pb-2"
-                [value]="portal?.name"
+                [value]="workspaceName"
                 [disabled]="true"
                 [pTooltip]="'PORTAL.MENU.DETAIL.TOOLTIP.PORTAL_NAME' | translate"
                 tooltipPosition="top"
                 tooltipEvent="focus"
               />
-              <label for="portal_menu_detail_field_portal_name">
+              <label for="workspace_menu_detail_field_workspace_name">
                 {{ 'PORTAL.MENU.DETAIL.PORTAL_NAME' | translate }}
               </label>
             </span>
@@ -259,13 +259,15 @@
           >
             <span class="p-float-label mb-1">
               <p-dropdown
-                id="portal_menu_detail_field_parent_id"
+                id="workspace_menu_detail_field_parent_id"
                 styleClass="w-full input-field-correction"
                 formControlName="parentItemId"
                 [options]="parentItems"
               >
               </p-dropdown>
-              <label for="portal_menu_detail_field_parent_id"> {{ 'PORTAL.MENU.DETAIL.PARENT_ID' | translate }} </label>
+              <label for="workspace_menu_detail_field_parent_id">
+                {{ 'PORTAL.MENU.DETAIL.PARENT_ID' | translate }}
+              </label>
             </span>
           </div>
 
@@ -278,11 +280,11 @@
               <input
                 pInputText
                 type="text"
-                id="portal_menu_detail_field_menu_name"
+                id="workspace_menu_detail_field_menu_name"
                 class="w-full pt-3 pb-2"
                 formControlName="name"
               />
-              <label class="ocx-required-label" for="portal_menu_detail_field_menu_name">
+              <label class="ocx-required-label" for="workspace_menu_detail_field_menu_name">
                 {{ 'PORTAL.MENU.DETAIL.MENU_NAME' | translate }}
               </label>
             </span>
@@ -296,11 +298,11 @@
               <input
                 pInputText
                 type="text"
-                id="portal_menu_detail_field_menu_id"
+                id="workspace_menu_detail_field_menu_id"
                 class="w-full pt-3 pb-2"
                 formControlName="key"
               />
-              <label class="ocx-required-label" for="portal_menu_detail_field_menu_id">
+              <label class="ocx-required-label" for="workspace_menu_detail_field_menu_id">
                 {{ 'PORTAL.MENU.DETAIL.MENU_ID' | translate }}
               </label>
             </span>
@@ -310,7 +312,7 @@
             <span class="p-float-label mb-1" controlErrorAnchor>
               <p-dropdown
                 #formFieldUrl
-                id="portal_menu_detail_field_url"
+                id="workspace_menu_detail_field_url"
                 formControlName="url"
                 styleClass="w-full"
                 [editable]="true"
@@ -322,7 +324,7 @@
                 appendTo="body"
               >
               </p-dropdown>
-              <label for="portal_menu_detail_field_url"> {{ 'PORTAL.MENU.DETAIL.URL' | translate }} </label>
+              <label for="workspace_menu_detail_field_url"> {{ 'PORTAL.MENU.DETAIL.URL' | translate }} </label>
             </span>
           </div>
           <div
@@ -330,9 +332,9 @@
             [title]="'PORTAL.MENU.DETAIL.TOOLTIP.PORTAL_EXIT' | translate"
           >
             <p-checkbox
-              id="portal_menu_detail_field_portal_exit"
+              id="workspace_menu_detail_field_workspace_exit"
               class="checkbox-label"
-              formControlName="portalExit"
+              formControlName="workspaceExit"
               [label]="'PORTAL.MENU.DETAIL.PORTAL_EXIT' | translate"
               [binary]="true"
             >
@@ -344,11 +346,11 @@
               <input
                 pInputText
                 type="text"
-                id="portal_menu_detail_field_position"
+                id="workspace_menu_detail_field_position"
                 class="w-full pt-3 pb-2"
                 formControlName="position"
               />
-              <label for="portal_menu_detail_field_position">Position</label>
+              <label for="workspace_menu_detail_field_position">Position</label>
             </span>
           </div>
           <div
@@ -358,7 +360,7 @@
           >
             <span class="p-float-label mb-1" controlErrorAnchor>
               <p-dropdown
-                id="portal_menu_detail_field_badge"
+                id="workspace_menu_detail_field_badge"
                 styleClass="w-full min-w-min input-field-correction"
                 formControlName="badge"
                 [options]="iconItems"
@@ -376,7 +378,7 @@
                   </div>
                 </ng-template>
               </p-dropdown>
-              <label for="portal_menu_detail_field_badge"> {{ 'PORTAL.MENU.DETAIL.BADGE' | translate }} </label>
+              <label for="workspace_menu_detail_field_badge"> {{ 'PORTAL.MENU.DETAIL.BADGE' | translate }} </label>
             </span>
           </div>
           <div
@@ -386,13 +388,13 @@
           >
             <span class="p-float-label mb-1" controlErrorAnchor>
               <p-dropdown
-                id="portal_menu_detail_field_scope"
+                id="workspace_menu_detail_field_scope"
                 styleClass="w-full min-w-min input-field-correction"
                 formControlName="scope"
                 [options]="scopeItems"
               >
               </p-dropdown>
-              <label for="portal_menu_detail_field_scope"> {{ 'PORTAL.MENU.DETAIL.SCOPE' | translate }} </label>
+              <label for="workspace_menu_detail_field_scope"> {{ 'PORTAL.MENU.DETAIL.SCOPE' | translate }} </label>
             </span>
           </div>
 
@@ -401,7 +403,7 @@
             [title]="'PORTAL.MENU.DETAIL.TOOLTIP.DISABLED' | translate"
           >
             <p-checkbox
-              id="portal_menu_detail_field_disabled"
+              id="workspace_menu_detail_field_disabled"
               class="checkbox-label"
               formControlName="disabled"
               [label]="'PORTAL.MENU.DETAIL.DISABLED' | translate"
@@ -415,11 +417,11 @@
               <input
                 pInputText
                 type="text"
-                id="portal_menu_detail_field_description"
+                id="workspace_menu_detail_field_description"
                 class="w-full pt-3 pb-2"
                 formControlName="description"
               />
-              <label for="portal_menu_detail_field_description">
+              <label for="workspace_menu_detail_field_description">
                 {{ 'PORTAL.MENU.DETAIL.DESCRIPTION' | translate }}
               </label>
             </span>
@@ -435,12 +437,12 @@
               <input
                 pInputText
                 type="text"
-                id="portal_menu_detail_field_creation_date"
+                id="workspace_menu_detail_field_creation_date"
                 class="w-full pt-3 pb-2"
                 [value]="menuItem?.creationDate | date : dateFormat"
                 [disabled]="true"
               />
-              <label for="portal_menu_detail_field_creation_date"> {{ 'DETAIL.CREATION_DATE' | translate }} </label>
+              <label for="workspace_menu_detail_field_creation_date"> {{ 'DETAIL.CREATION_DATE' | translate }} </label>
             </span>
           </div>
 
@@ -454,12 +456,12 @@
               <input
                 pInputText
                 type="text"
-                id="portal_menu_detail_field_modification_date"
+                id="workspace_menu_detail_field_modification_date"
                 class="w-full pt-3 pb-2"
                 [value]="menuItem?.modificationDate | date : dateFormat"
                 [disabled]="true"
               />
-              <label for="portal_menu_detail_field_modification_date">
+              <label for="workspace_menu_detail_field_modification_date">
                 {{ 'DETAIL.MODIFICATION_DATE' | translate }}
               </label>
             </span>
@@ -604,7 +606,7 @@
       pButton
       type="button"
       icon="pi pi-times"
-      id="portal_import_button_close"
+      id="workspace_import_button_close"
       [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
       [title]="'ACTIONS.NAVIGATION.CLOSE_WITHOUT_SAVE' | translate"
       (click)="onImportMenuHide()"
@@ -630,8 +632,8 @@
   </ul>
   <app-menu-tree
     *ngIf="menuItems"
-    [selectedPortalId]="workspaceName"
-    [portalMenuItems]="menuItems"
+    [selectedWorkspaceId]="workspaceName"
+    [workspaceMenuItems]="menuItems"
     [updateTree]="displayTreeModal"
     [languagesPreview]="languagesPreview"
     (updateMenuStructureEmitter)="updateMenuItems($event)"
@@ -642,7 +644,7 @@
       pButton
       type="button"
       icon="pi pi-times"
-      id="portal_import_button_close"
+      id="workspace_import_button_close"
       [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
       (click)="onHideTreeModal()"
     ></button>

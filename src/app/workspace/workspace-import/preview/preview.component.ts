@@ -24,18 +24,18 @@ export class PreviewComponent implements OnInit, OnChanges {
 
   public formGroup!: FormGroup
   public themes$: Observable<SelectItem<string>[]> = of([])
-  public portalName = ''
+  public workspaceName = ''
   public themeName!: string
   public baseUrl = ''
   public tenantId: string | undefined = undefined
   public themeProperties: any = null
   public menuItems: TreeNode[] = []
   // public portalMfes = new Array<MicrofrontendRegistrationDTO>()
-  public portalRoles = new Array<string>()
+  public workspaceRoles = new Array<string>()
 
   constructor(/* private themeApi: ThemesAPIService */) {
     this.formGroup = new FormGroup({
-      portalName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
+      workspaceName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
       // themeName: new FormControl(
       //   null,
       //   !this.importThemeCheckbox ? [Validators.required, Validators.minLength(2), Validators.maxLength(50)] : []
@@ -55,7 +55,7 @@ export class PreviewComponent implements OnInit, OnChanges {
       key = Object.keys(this.importRequestDTO.workspaces)
     }
     if (this.importRequestDTO.workspaces) {
-      this.portalName = this.importRequestDTO.workspaces[key[0]].name || ''
+      this.workspaceName = this.importRequestDTO.workspaces[key[0]].name || ''
       // this.themeName = this.importRequestDTO?.themeImportData?.name
       // ? this.importRequestDTO?.themeImportData?.name
       // : this.formGroup.controls['themeName'].value || ''
@@ -68,7 +68,7 @@ export class PreviewComponent implements OnInit, OnChanges {
       //   this.portalMfes = Array.from(this.importRequestDTO.portal.microfrontendRegistrations)
       // }
       if (this.importRequestDTO.workspaces[key[0]].workspaceRoles) {
-        this.portalRoles = Array.from(this.importRequestDTO.workspaces[key[0]].workspaceRoles!)
+        this.workspaceRoles = Array.from(this.importRequestDTO.workspaces[key[0]].workspaceRoles!)
       }
     }
     // error handling if no theme name or no match with existing themes
@@ -107,7 +107,7 @@ export class PreviewComponent implements OnInit, OnChanges {
       key = Object.keys(this.importRequestDTO.workspaces)
     }
     if (this.importRequestDTO.workspaces) {
-      this.formGroup.controls['portalName'].setValue(this.importRequestDTO?.workspaces[key[0]].name)
+      this.formGroup.controls['workspaceName'].setValue(this.importRequestDTO?.workspaces[key[0]].name)
       // this.formGroup.controls['themeName'].setValue(this.importRequestDTO?.themeName)
       this.formGroup.controls['baseUrl'].setValue(this.importRequestDTO?.workspaces[key[0]].baseUrl)
       // if (this.hasPermission && this.importRequestDTO?.portal?.tenantId != undefined)
@@ -120,13 +120,13 @@ export class PreviewComponent implements OnInit, OnChanges {
     if (this.importRequestDTO.workspaces) {
       key = Object.keys(this.importRequestDTO.workspaces)
     }
-    this.portalName = this.formGroup.controls['portalName'].value
+    this.workspaceName = this.formGroup.controls['workspaceName'].value
     // this.themeName = this.formGroup.controls['themeName'].value
     this.baseUrl = this.formGroup.controls['baseUrl'].value
     // if (this.hasPermission && this.formGroup.controls['tenantId'].value !== undefined)
     //   this.tenantId = this.formGroup.controls['tenantId'].value
     if (this.importRequestDTO.workspaces) {
-      this.importRequestDTO.workspaces[key[0]].name = this.portalName
+      this.importRequestDTO.workspaces[key[0]].name = this.workspaceName
       // this.importRequestDTO.portal.themeName = this.themeName
       this.importRequestDTO.workspaces[key[0]].baseUrl = this.baseUrl
       // if (this.hasPermission) this.importRequestDTO.portal.tenantId = this.tenantId

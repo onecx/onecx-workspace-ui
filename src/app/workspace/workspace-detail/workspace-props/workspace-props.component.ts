@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, Output, EventEmitter } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
-import { SelectItem } from 'primeng/api'
-import { /* map,  */ Observable, of } from 'rxjs'
+import { Location } from '@angular/common'
+import { Observable, of } from 'rxjs'
 import { ActivatedRoute, Router } from '@angular/router'
 
 import {
@@ -20,7 +20,7 @@ import { Workspace } from '../../../shared/generated'
 import { environment } from '../../../../environments/environment'
 import { LogoState } from '../../workspace-create/logo-state'
 import {
-  clonePortalWithMicrofrontendsArray,
+  cloneWorkspaceWithMicrofrontendsArray,
   setFetchUrls,
   copyToClipboard
   // sortThemeByName
@@ -39,7 +39,7 @@ export class WorkspacePropsComponent implements OnChanges {
   public formGroup: FormGroup
 
   public mfeRList: { label: string | undefined; value: string }[] = []
-  public themes$: Observable<SelectItem<string>[]> = of([])
+  public themes$: Observable<string[]> = of([])
   public hasTenantViewPermission = false
   public hasTenantEditPermission = false
   public urlPattern = '/base-path-to-portal'
@@ -55,6 +55,7 @@ export class WorkspacePropsComponent implements OnChanges {
   public logoState = LogoState.INITIAL
   public fetchingLogoUrl?: string
   private apiPrefix = environment.apiPrefix
+  private oldWorkspaceName: string = ''
 
   constructor(
     private user: UserService,
@@ -65,7 +66,8 @@ export class WorkspacePropsComponent implements OnChanges {
     private config: ConfigurationService,
     private msgService: PortalMessageService,
     public route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private location: Location
   ) {
     this.hasTenantViewPermission = this.user.hasPermission('WORKSPACE_TENANT#VIEW')
     this.hasTenantEditPermission = this.user.hasPermission('WORKSPACE_TENANT#EDIT')
@@ -84,18 +86,13 @@ export class WorkspacePropsComponent implements OnChanges {
       this.formGroup.addControl('tenantId', new FormControl(null))
     }
 
-    /* this.themes$ = this.themeApi
-      .getThemes()
-      .pipe(
-        map((val) =>
-          val.sort(sortThemeByName).map((theme) => ({ label: theme.name, value: theme.name || '', id: theme.id }))
-        )
-      ) */
+    this.themes$ = this.workspaceApi.getAllThemes()
   }
 
   public ngOnChanges(): void {
     this.setFormData()
     this.editMode ? this.formGroup.enable() : this.formGroup.disable()
+    this.oldWorkspaceName = this.portalDetail.name
   }
 
   public setFormData(): void {
@@ -119,7 +116,7 @@ export class WorkspacePropsComponent implements OnChanges {
         .updateWorkspace({
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           id: this.portalDetail.id!,
-          updateWorkspaceRequest: { resource: clonePortalWithMicrofrontendsArray(this.portalDetail) }
+          updateWorkspaceRequest: { resource: cloneWorkspaceWithMicrofrontendsArray(this.portalDetail) }
         })
         .subscribe({
           next: () => {
@@ -143,7 +140,9 @@ export class WorkspacePropsComponent implements OnChanges {
           }
         })
       this.editMode = false
-      // check if name changed, then route to getByName - if other property changed, dont route
+      if (this.oldWorkspaceName !== this.portalDetail.name) {
+        this.location.back()
+      }
     } else {
       this.msgService.error({ summaryKey: 'GENERAL.FORM_VALIDATION' })
     }
@@ -165,21 +164,21 @@ export class WorkspacePropsComponent implements OnChanges {
     return changes
   }
 
-  /* onFileUpload(ev: Event, fieldType: 'logo') {
-    if (ev.target && (ev.target as HTMLInputElement).files) {
-      const files = (ev.target as HTMLInputElement).files
-      if (files) {
-        Array.from(files).forEach((file) => {
-          this.imageApi.uploadImage({ image: file }).subscribe((data) => {
-            this.formGroup.controls[fieldType + 'Url'].setValue(data.imageUrl)
-            this.fetchingLogoUrl = setFetchUrls(this.apiPrefix, this.formGroup.controls[fieldType + 'Url'].value)
-            this.msgService.info({ summaryKey: 'IMAGE.UPLOADED', detailKey: 'IMAGE.LOGO' })
-          })
-        })
-      }
-    }
-  }
-  // REMEMBER HTML TOO!
+  // onFileUpload(ev: Event, fieldType: 'logo') {
+  //   if (ev.target && (ev.target as HTMLInputElement).files) {
+  //     const files = (ev.target as HTMLInputElement).files
+  //     if (files) {
+  //       Array.from(files).forEach((file) => {
+  //         this.imageApi.uploadImage({ image: file }).subscribe((data) => {
+  //           this.formGroup.controls[fieldType + 'Url'].setValue(data.imageUrl)
+  //           this.fetchingLogoUrl = setFetchUrls(this.apiPrefix, this.formGroup.controls[fieldType + 'Url'].value)
+  //           this.msgService.info({ summaryKey: 'IMAGE.UPLOADED', detailKey: 'IMAGE.LOGO' })
+  //         })
+  //       })
+  //     }
+  //   }
+  // }
+
   public onGotoTheme(ev: MouseEvent, uri: string) {
     ev.stopPropagation()
     const url = window.document.location.href + uri
@@ -188,5 +187,5 @@ export class WorkspacePropsComponent implements OnChanges {
     } else {
       window.document.location.href = url
     }
-  } */
+  }
 }

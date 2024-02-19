@@ -2,7 +2,7 @@ import { Component, Input, OnChanges } from '@angular/core'
 import { FormControl, FormGroup } from '@angular/forms'
 
 import { Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
-import { clonePortalWithMicrofrontendsArray } from '../../../shared/utils'
+import { cloneWorkspaceWithMicrofrontendsArray } from '../../../shared/utils'
 import { PortalMessageService } from '@onecx/portal-integration-angular'
 
 @Component({
@@ -50,7 +50,7 @@ export class WorkspaceContactComponent implements OnChanges {
         .updateWorkspace({
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           id: this.portalDetail.id!,
-          updateWorkspaceRequest: { resource: clonePortalWithMicrofrontendsArray(this.portalDetail) }
+          updateWorkspaceRequest: { resource: cloneWorkspaceWithMicrofrontendsArray(this.portalDetail) }
         })
         .subscribe({
           next: () => {

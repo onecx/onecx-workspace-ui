@@ -9,7 +9,7 @@
     },
     "COPY": {
       "LABEL": "Kopieren",
-      "DATA": "Mit den Daten ein neues {{TYPE}} anlegen",
+      "DATA": "Mit den Daten einen neuen Workspace anlegen",
       "CLIPBOARD": "In die Zwischenablage kopieren"
     },
     "CREATE": {
@@ -17,21 +17,21 @@
       "PORTAL": "Workspace erstellen",
       "THEME": "Theme erstellen",
       "MENU": "Menüeintrag erstellen",
-      "PORTAL.TOOLTIP": "Ein neuen Workspace erstellen",
+      "PORTAL.TOOLTIP": "Einen neuen Workspace erstellen",
       "THEME.TOOLTIP": "Ein neues Theme erstellen",
       "MENU.TOOLTIP": "Ein neuen Menüeintrag erstellen",
       "MESSAGE": {
         "THEME_ALREADY_EXIST": "Ein Theme mit diesem Namen existert schon",
         "MENU_ALREADY_EXIST": "Ein Menüeintrag mit diesem Namen/ID existert schon",
-        "CREATE_OK": "Das {{TYPE}} wurde erfolgreich erstellt",
-        "CREATE_NOK": "Ein Fehler ist aufgetreten. Das {{TYPE}} wurde nicht erstellt.",
+        "CREATE_OK": "Der Workspace wurde erfolgreich erstellt",
+        "CREATE_NOK": "Ein Fehler ist aufgetreten. Der Workspace wurde nicht erstellt.",
         "MENU_CREATE_OK": "Der Menüeintrag wurde erfolgreich erstellt",
         "MENU_CREATE_NOK": "Ein Fehler ist aufgetreten. Der Menüeintrag wurde nicht erstellt."
       }
     },
     "DELETE": {
       "LABEL": "Löschen",
-      "TOOLTIP": "{{TYPE}} löschen",
+      "TOOLTIP": "Workspace löschen",
       "MENU_ITEM": "Menüeintrag löschen",
       "MESSAGE": "Möchten Sie \"{{ITEM}}\" löschen?",
       "MESSAGE_INFO": "Diese Aktion kann nicht rückgängig gemacht werden!",
@@ -312,7 +312,7 @@
     "VALIDATION_MENU_ITEM_NAME_MISSING": "In einem Menüeintrag fehlt der Name",
     "VALIDATION_MENU_ITEM_WRONG_POSITION": "In einem Menüeintrag ist der Wert für 'position' keine Zahl",
     "VALIDATION_MENU_ITEM_WRONG_DISABLED": "In einem Menüeintrag ist der Wert für 'disabled' kein Boolean",
-    "VALIDATION_MENU_ITEM_WRONG_PORTALEXIT": "In einem Menüeintrag ist der Wert für 'portalExit' kein Boolean",
+    "VALIDATION_MENU_ITEM_WRONG_PORTALEXIT": "In einem Menüeintrag ist der Wert für 'workspaceExit' kein Boolean",
     "VALIDATION_RESULT": "Verarbeitung nicht möglich: "
   },
   "PORTAL": {

@@ -1,13 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
-import { finalize, Observable } from 'rxjs'
+import { finalize } from 'rxjs'
 import { TranslateService } from '@ngx-translate/core'
-import {
-  Action,
-  // ConfigurationService,
-  DataViewControlTranslations,
-  PortalMessageService
-} from '@onecx/portal-integration-angular'
+import { Action, DataViewControlTranslations, PortalMessageService } from '@onecx/portal-integration-angular'
 import { limitText } from '../../shared/utils'
 import { SearchWorkspacesResponse, Workspace, WorkspaceAPIService, WorkspaceAbstract } from '../../shared/generated'
 
@@ -17,20 +12,19 @@ import { SearchWorkspacesResponse, Workspace, WorkspaceAPIService, WorkspaceAbst
   styleUrls: ['./workspace-search.component.scss']
 })
 export class WorkspaceSearchComponent implements OnInit {
-  portals$!: Observable<Workspace[]>
   public searchInProgress = false
   public actions: Action[] = []
   public showCreateDialog = false
   public showImportDialog = false
   public limitText = limitText
 
-  public portalItems: WorkspaceAbstract[] | undefined = []
+  public workspaceItems: WorkspaceAbstract[] | undefined = []
   public viewMode = 'grid'
   public filter: string | undefined
   public sortField = ''
   public sortOrder = 1
-  public defaultSortField = 'portalName'
-  public fieldLabelPortalName = ''
+  public defaultSortField = 'name'
+  public fieldLabelWorkspaceName = ''
   public fieldLabelThemeName = ''
   public dataViewControlsTranslations: DataViewControlTranslations = {}
 
@@ -40,7 +34,6 @@ export class WorkspaceSearchComponent implements OnInit {
     private workspaceApi: WorkspaceAPIService,
     private route: ActivatedRoute,
     private router: Router,
-    // private config: ConfigurationService,
     private translate: TranslateService,
     private msgService: PortalMessageService
   ) {}
@@ -67,17 +60,16 @@ export class WorkspaceSearchComponent implements OnInit {
       .subscribe((data) => {
         this.prepareActionButtons(data)
       })
-    // this.config.getMFEInfo()
     this.search()
   }
 
   private prepareTranslations(data: any) {
-    this.fieldLabelPortalName = data['PORTAL.ITEM.PORTAL_NAME']
+    this.fieldLabelWorkspaceName = data['PORTAL.ITEM.PORTAL_NAME']
     this.fieldLabelThemeName = data['PORTAL.ITEM.THEME']
     this.dataViewControlsTranslations = {
       sortDropdownPlaceholder: data['SEARCH.SORT_BY'],
       filterInputPlaceholder: data['SEARCH.FILTER'],
-      filterInputTooltip: data['SEARCH.FILTER_OF'] + this.fieldLabelPortalName + ', ' + this.fieldLabelThemeName,
+      filterInputTooltip: data['SEARCH.FILTER_OF'] + this.fieldLabelWorkspaceName + ', ' + this.fieldLabelThemeName,
       viewModeToggleTooltips: {
         grid: data['GENERAL.TOOLTIP.VIEW_MODE_GRID'],
         list: data['GENERAL.TOOLTIP.VIEW_MODE_LIST'],
@@ -112,10 +104,6 @@ export class WorkspaceSearchComponent implements OnInit {
     )
   }
 
-  /* public loadPortals() {
-    this.portals$ = this.portalApi.getAllPortals()
-  } */
-
   toggleShowCreateDialog = (): void => {
     this.showCreateDialog = !this.showCreateDialog
   }
@@ -131,7 +119,7 @@ export class WorkspaceSearchComponent implements OnInit {
       .pipe(finalize(() => (this.searchInProgress = false)))
       .subscribe({
         next: (value: SearchWorkspacesResponse) => {
-          this.portalItems = value.stream
+          this.workspaceItems = value.stream
           if (value.totalElements === 0) {
             this.msgService.info({ summaryKey: 'SEARCH.MSG_NO_RESULTS' })
           }
@@ -157,19 +145,19 @@ export class WorkspaceSearchComponent implements OnInit {
   onSortDirChange(asc: boolean) {
     this.sortOrder = asc ? -1 : 1
   }
-  public onGotoPortal(ev: any, portal: Workspace) {
+  public onGotoWorkspace(ev: any, workspace: Workspace) {
     ev.stopPropagation()
-    window.open(window.document.location.href + '../../../..' + portal.baseUrl, '_blank')
+    window.open(window.document.location.href + '../../../..' + workspace.baseUrl, '_blank')
   }
-  public onGotoMenu(ev: any, portal: Workspace) {
+  public onGotoMenu(ev: any, workspace: Workspace) {
     ev.stopPropagation()
     this.workspaceApi
-      .getWorkspaceByName({ workspaceName: portal.name })
+      .getWorkspaceByName({ workspaceName: workspace.name })
       .pipe()
       .subscribe({
-        next: (portal) => {
-          if (portal.resource) {
-            this.router.navigate(['./', portal.resource.name, 'menu'], { relativeTo: this.route })
+        next: (workspace) => {
+          if (workspace.resource) {
+            this.router.navigate(['./', workspace.resource.name, 'menu'], { relativeTo: this.route })
           }
         },
         error: () => {}
