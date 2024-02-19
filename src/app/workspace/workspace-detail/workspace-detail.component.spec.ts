@@ -7,9 +7,11 @@ import { Router } from '@angular/router'
 import { RouterTestingModule } from '@angular/router/testing'
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router'
 // import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
+// import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { of, throwError } from 'rxjs'
 
 import { PortalMessageService, ConfigurationService, AUTH_SERVICE } from '@onecx/portal-integration-angular'
+// import { HttpLoaderFactory } from 'src/app/shared/shared.module'
 // import { HttpLoaderFactory } from 'src/app/shared/shared.module'
 import { WorkspaceDetailComponent } from './workspace-detail.component'
 import { WorkspacePropsComponent } from './workspace-props/workspace-props.component'
@@ -41,6 +43,13 @@ const mockMenuItems: MenuItem[] = [
     name: 'menu2 name',
     id: 'id',
     key: 'key',
+    i18n: { ['en']: 'en' },
+    children: [{ name: 'child name', key: 'key', id: 'id' }]
+  },
+  {
+    name: 'menu2 name',
+    id: 'id',
+    key: 'key',
     i18n: { ['en']: 'en' }
   }
 ]
@@ -56,6 +65,16 @@ const menuHttpResponse: HttpResponse<MenuItem[]> = {
   clone: () => menuHttpResponse
 }
 
+// const themeHttpResponse: HttpResponse<ThemeDTO> = {
+//   body: { name: 'theme' },
+//   status: 200,
+//   statusText: 'OK',
+//   headers: new HttpHeaders(),
+//   url: 'mock-url',
+//   ok: true,
+//   type: HttpEventType.Response,
+//   clone: () => themeHttpResponse
+// }
 // const themeHttpResponse: HttpResponse<ThemeDTO> = {
 //   body: { name: 'theme' },
 //   status: 200,
@@ -102,6 +121,7 @@ describe('WorkspaceDetailComponent', () => {
     getMenuStructureForPortalId: jasmine.createSpy('getMenuStructureForPortalId').and.returnValue(of(mockMenuItems))
   }
   // const themeApiServiceSpy = jasmine.createSpyObj<ThemesAPIService>('ThemesAPIService', ['getThemeById'])
+  // const themeApiServiceSpy = jasmine.createSpyObj<ThemesAPIService>('ThemesAPIService', ['getThemeById'])
   const configServiceSpy = {
     getProperty: jasmine.createSpy('getProperty').and.returnValue('123'),
     getPortal: jasmine.createSpy('getPortal').and.returnValue({
@@ -136,6 +156,13 @@ describe('WorkspaceDetailComponent', () => {
         //     deps: [HttpClient]
         //   }
         // }),
+        // TranslateModule.forRoot({
+        //   loader: {
+        //     provide: TranslateLoader,
+        //     useFactory: HttpLoaderFactory,
+        //     deps: [HttpClient]
+        //   }
+        // }),
         RouterTestingModule.withRoutes([{ path: 'menu', component: MockMenuComponent }])
       ],
       schemas: [NO_ERRORS_SCHEMA],
@@ -144,7 +171,10 @@ describe('WorkspaceDetailComponent', () => {
         { provide: Router, useValue: mockRouter },
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: WorkspaceAPIService, useValue: apiServiceSpy },
+        { provide: WorkspaceAPIService, useValue: apiServiceSpy },
         { provide: ConfigurationService, useValue: configServiceSpy },
+        { provide: MenuItemAPIService, useValue: menuApiServiceSpy },
+        // { provide: ThemesAPIService, useValue: themeApiServiceSpy },
         { provide: MenuItemAPIService, useValue: menuApiServiceSpy },
         // { provide: ThemesAPIService, useValue: themeApiServiceSpy },
         { provide: AUTH_SERVICE, useValue: mockAuthService },
@@ -156,6 +186,7 @@ describe('WorkspaceDetailComponent', () => {
     apiServiceSpy.getWorkspaceByName.calls.reset()
     apiServiceSpy.deletePortal.calls.reset()
     menuApiServiceSpy.getMenuStructureForPortalId.calls.reset()
+    // themeApiServiceSpy.getThemeById.calls.reset()
     // themeApiServiceSpy.getThemeById.calls.reset()
     translateServiceSpy.get.calls.reset()
     locationSpy.back.calls.reset()
@@ -240,6 +271,7 @@ describe('WorkspaceDetailComponent', () => {
     component.importThemeCheckbox = true
     menuApiServiceSpy.getMenuStructureForPortalId.and.returnValue(of(mockMenuItems))
     // themeApiServiceSpy.getThemeById.and.returnValue(of(themeHttpResponse))
+    // themeApiServiceSpy.getThemeById.and.returnValue(of(themeHttpResponse))
 
     component.onExportWorkspace()
 
@@ -253,6 +285,7 @@ describe('WorkspaceDetailComponent', () => {
     }
     component.importThemeCheckbox = true
     menuApiServiceSpy.getMenuStructureForPortalId.and.returnValue(of(mockMenuItems))
+    // themeApiServiceSpy.getThemeById.and.returnValue(throwError(() => new Error()))
     // themeApiServiceSpy.getThemeById.and.returnValue(throwError(() => new Error()))
 
     component.onExportWorkspace()

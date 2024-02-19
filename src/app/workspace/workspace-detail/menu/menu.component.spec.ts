@@ -6,9 +6,11 @@ import { Location } from '@angular/common'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router'
 // import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
+// import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { of, throwError } from 'rxjs'
 
 import { PortalMessageService, ConfigurationService, AUTH_SERVICE } from '@onecx/portal-integration-angular'
+// import { HttpLoaderFactory } from 'src/app/shared/shared.module'
 // import { HttpLoaderFactory } from 'src/app/shared/shared.module'
 import { MenuComponent } from './menu.component'
 import { MenuStateService, MenuState } from 'src/app/services/menu-state.service'
@@ -27,12 +29,14 @@ const mockMenuItems: MenuItem[] = [
   {
     name: 'menu name',
     id: 'id',
+    id: 'id',
     key: 'key',
     i18n: { ['en']: 'en' },
     children: [{ name: 'child name', key: 'key', id: 'id' }]
   },
   {
     name: 'menu2 name',
+    id: 'id',
     id: 'id',
     key: 'key',
     i18n: { ['en']: 'en' }
@@ -55,6 +59,7 @@ const mockItem = {
   workspaceExit: true,
   url: 'url',
   badge: 'badge',
+  scope: Scope.Workspace,
   scope: Scope.Workspace,
   description: 'description'
 }
@@ -129,6 +134,8 @@ describe('MenuComponent', () => {
       imports: [
         HttpClientTestingModule
         /* TranslateModule.forRoot({
+        HttpClientTestingModule
+        /* TranslateModule.forRoot({
           loader: {
             provide: TranslateLoader,
             useFactory: HttpLoaderFactory,
@@ -141,7 +148,9 @@ describe('MenuComponent', () => {
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: WorkspaceAPIService, useValue: apiServiceSpy },
+        { provide: WorkspaceAPIService, useValue: apiServiceSpy },
         { provide: ConfigurationService, useValue: configServiceSpy },
+        { provide: MenuItemAPIService, useValue: menuApiServiceSpy },
         { provide: MenuItemAPIService, useValue: menuApiServiceSpy },
         { provide: AUTH_SERVICE, useValue: mockAuthService },
         { provide: MenuStateService, useValue: stateServiceSpy },
@@ -410,6 +419,7 @@ describe('MenuComponent', () => {
       url: 'url',
       badge: 'badge',
       scope: Scope.Workspace,
+      scope: Scope.Workspace,
       description: 'description'
     }
     component.formGroup = form
@@ -437,6 +447,7 @@ describe('MenuComponent', () => {
       portalExit: true,
       url: 'url',
       badge: 'badge',
+      scope: Scope.Workspace,
       scope: Scope.Workspace,
       description: 'description'
     }
@@ -736,6 +747,7 @@ describe('MenuComponent', () => {
 
   it('should handle menu import', () => {
     component.workspaceName = 'name'
+    component.workspaceName = 'name'
     spyOn(component, 'ngOnInit')
     menuApiServiceSpy.uploadMenuStructure.and.returnValue(of({}))
 
@@ -746,6 +758,7 @@ describe('MenuComponent', () => {
   })
 
   it('should handle menu import error', () => {
+    component.workspaceName = 'name'
     component.workspaceName = 'name'
     menuApiServiceSpy.uploadMenuStructure.and.returnValue(throwError(() => new Error()))
 
