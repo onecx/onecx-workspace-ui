@@ -182,7 +182,7 @@ describe('WorkspaceDetailComponent', () => {
 
     initializeComponent()
 
-    expect(component.dateFormat).toEqual('dd.MM.yyyy HH:mm:ss')
+    expect(component.dateFormat).toEqual('dd.MM.yyyy HH:mm')
   })
 
   it('should set selectedIndex onChange', () => {

@@ -13,9 +13,8 @@ import { WorkspaceRolesComponent } from './workspace-roles/workspace-roles.compo
 import { WorkspaceInternComponent } from './workspace-intern/workspace-intern.component'
 import { WorkspaceImagesComponent } from './workspace-images/workspace-images.component'
 import { WorkspaceContactComponent } from './workspace-contact/workspace-contact.component'
-// import { WorkspaceSubjectComponent } from './workspace-subjects/workspace-subjects.component'
+import { ProductComponent } from './products/products.component'
 import { LogoComponent } from './workspace-images/logo/logo.component'
-// import { MfeRegistrationsComponent } from './mfe-registrations/mfe-registrations.component'
 
 const routes: Routes = [
   {
@@ -42,8 +41,7 @@ const routes: Routes = [
     WorkspaceInternComponent,
     WorkspaceRolesComponent,
     WorkspaceImagesComponent,
-    // WorkspaceSubjectComponent,
-    // MfeRegistrationsComponent,
+    ProductComponent,
     LogoComponent
   ],
   imports: [
