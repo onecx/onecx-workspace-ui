@@ -9,7 +9,7 @@
     },
     "COPY": {
       "LABEL": "Copy",
-      "DATA": "Create a new {{TYPE}} with the data",
+      "DATA": "Create a new workspace with the data",
       "CLIPBOARD": "Copy to clipboard"
     },
     "CREATE": {
@@ -23,8 +23,8 @@
       "MESSAGE": {
         "THEME_ALREADY_EXIST": "A Theme with that name already exists",
         "MENU_ALREADY_EXIST": "A Menu Item with that name/id already exists",
-        "CREATE_OK": "The {{TYPE}} was created successfully",
-        "CREATE_NOK": "An error has occurred. The {{TYPE}} was not created.",
+        "CREATE_OK": "The workspace was created successfully",
+        "CREATE_NOK": "An error has occurred. The workspace was not created.",
         "MENU_CREATE_OK": "The Menu Item was created successfully",
         "MENU_CREATE_NOK": "An error has occurred. The Menu Item was not created."
       }
@@ -312,7 +312,7 @@
     "VALIDATION_MENU_ITEM_NAME_MISSING": "The name is missing in a menu item",
     "VALIDATION_MENU_ITEM_WRONG_POSITION": "In a menu item, the value for 'position' is not a number",
     "VALIDATION_MENU_ITEM_WRONG_DISABLED": "In a menu item, the value for 'disabled' is not a boolean",
-    "VALIDATION_MENU_ITEM_WRONG_PORTALEXIT": "In a menu item, the value for 'portalExit' is not a boolean",
+    "VALIDATION_MENU_ITEM_WRONG_PORTALEXIT": "In a menu item, the value for 'workspaceExit' is not a boolean",
     "VALIDATION_RESULT": "Processing not possible: "
   },
   "PORTAL": {
