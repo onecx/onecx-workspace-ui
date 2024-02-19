@@ -16,7 +16,7 @@ import { MenuStateService, MenuState } from 'src/app/services/menu-state.service
 import { Workspace, MenuItem, WorkspaceAPIService, Scope, MenuItemAPIService } from '../../../shared/generated'
 import FileSaver from 'file-saver'
 
-const portal: Workspace = {
+const workspace: Workspace = {
   name: 'name',
   theme: 'theme',
   baseUrl: '/some/base/url',
@@ -52,7 +52,7 @@ const mockItem = {
   parentItemId: 'some parent id',
   name: 'name',
   position: 1,
-  portalExit: true,
+  workspaceExit: true,
   url: 'url',
   badge: 'badge',
   scope: Scope.Workspace,
@@ -65,7 +65,7 @@ const state: MenuState = {
   rootFilter: true,
   treeMode: true,
   treeExpansionState: new Map(),
-  portalMenuItems: []
+  workspaceMenuItems: []
 }
 
 const form = new FormGroup({
@@ -74,7 +74,7 @@ const form = new FormGroup({
   name: new FormControl('name'),
   position: new FormControl('1'),
   disabled: new FormControl<boolean>(false),
-  portalExit: new FormControl<boolean>(false),
+  workspaceExit: new FormControl<boolean>(false),
   url: new FormControl('url'),
   badge: new FormControl('badge'),
   scope: new FormControl('scope'),
@@ -167,7 +167,7 @@ describe('MenuComponent', () => {
 
     fixture = TestBed.createComponent(MenuComponent)
     component = fixture.componentInstance
-    // component.menuItems = state.portalMenuItems
+    // component.menuItems = state.workspaceMenuItems
     fixture.detectChanges()
   })
 
@@ -272,11 +272,11 @@ describe('MenuComponent', () => {
   })
 
   it('should loadData', () => {
-    apiServiceSpy.getPortalByPortalId.and.returnValue(of(portal))
+    apiServiceSpy.getPortalByPortalId.and.returnValue(of(workspace))
 
     component.loadData()
 
-    expect(component.portal).toBe(portal)
+    expect(component.workspace).toBe(workspace)
   })
 
   it('it should handle error response on loadData', () => {
@@ -658,14 +658,14 @@ describe('MenuComponent', () => {
   it('should export a menu', () => {
     menuApiServiceSpy.getMenuStructureForPortalId.and.returnValue(of(mockMenuItems))
     component.workspaceName = 'name'
-    component.portal = portal
+    component.workspace = workspace
     spyOn(FileSaver, 'saveAs')
 
     component.onExportMenu()
 
     expect(FileSaver.saveAs).toHaveBeenCalledWith(
       new Blob([], { type: 'text/json' }),
-      'workspace_' + component.portal?.name + '_menu.json'
+      'workspace_' + component.workspace?.name + '_menu.json'
     )
   })
 

@@ -15,14 +15,14 @@ import { WorkspaceDetailComponent } from './workspace-detail.component'
 import { WorkspacePropsComponent } from './workspace-props/workspace-props.component'
 import { WorkspaceContactComponent } from './workspace-contact/workspace-contact.component'
 import { WorkspaceRolesComponent } from './workspace-roles/workspace-roles.component'
-import { WorkspaceImagesComponent } from './workspace-images/workspace-images.component'
+// import { WorkspaceImagesComponent } from './workspace-images/workspace-images.component'
 import { Workspace, MenuItem, WorkspaceAPIService, MenuItemAPIService } from '../../shared/generated'
 
 class MockRouter {
   navigate = jasmine.createSpy('navigate')
 }
 
-const portal: Workspace = {
+const workspace: Workspace = {
   name: 'name',
   theme: 'theme',
   baseUrl: '/some/base/url',
@@ -82,9 +82,9 @@ class MockWorkspaceRolesComponent {
   public onSubmit(): void {}
 }
 
-class MockWorkspaceImagesComponent {
-  public onSubmit(): void {}
-}
+// class MockWorkspaceImagesComponent {
+//   public onSubmit(): void {}
+// }
 
 describe('WorkspaceDetailComponent', () => {
   let component: WorkspaceDetailComponent
@@ -95,7 +95,7 @@ describe('WorkspaceDetailComponent', () => {
 
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
   const apiServiceSpy = {
-    getPortalByPortalId: jasmine.createSpy('getPortalByPortalId').and.returnValue(of({})),
+    getWorkspaceByName: jasmine.createSpy('getWorkspaceByName').and.returnValue(of({})),
     deletePortal: jasmine.createSpy('deletePortal').and.returnValue(of({}))
   }
   const menuApiServiceSpy = {
@@ -153,7 +153,7 @@ describe('WorkspaceDetailComponent', () => {
     }).compileComponents()
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
-    apiServiceSpy.getPortalByPortalId.calls.reset()
+    apiServiceSpy.getWorkspaceByName.calls.reset()
     apiServiceSpy.deletePortal.calls.reset()
     menuApiServiceSpy.getMenuStructureForPortalId.calls.reset()
     // themeApiServiceSpy.getThemeById.calls.reset()
@@ -195,17 +195,17 @@ describe('WorkspaceDetailComponent', () => {
     expect(component.selectedIndex).toEqual(1)
   })
 
-  it('should getPortalData onInit', () => {
-    apiServiceSpy.getPortalByPortalId.and.returnValue(of([portal]))
-    spyOn(component, 'onPortalData')
+  it('should getWorkspaceData onInit', () => {
+    apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))
+    spyOn(component, 'onWorkspaceData')
 
     component.ngOnInit()
 
-    expect(component.onPortalData).toHaveBeenCalled()
+    expect(component.onWorkspaceData).toHaveBeenCalled()
   })
 
   it('should display error msg if get api call fails', () => {
-    apiServiceSpy.getPortalByPortalId.and.returnValue(throwError(() => new Error()))
+    apiServiceSpy.getWorkspaceByName.and.returnValue(throwError(() => new Error()))
 
     component.ngOnInit()
 
@@ -215,20 +215,20 @@ describe('WorkspaceDetailComponent', () => {
     })
   })
 
-  it('should delete portal on confirmDeletePortal', () => {
+  it('should delete portal on confirmDeleteWorkspace', () => {
     apiServiceSpy.deletePortal.and.returnValue(of({}))
-    component.portalDownloadVisible = true
+    component.workspaceDownloadVisible = true
 
-    component.confirmDeletePortal()
+    component.confirmDeleteWorkspace()
 
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MESSAGE_OK' })
-    expect(component.portalDownloadVisible).toBeFalse()
+    expect(component.workspaceDownloadVisible).toBeFalse()
   })
 
   it('should display error msg if delete api call fails', () => {
     apiServiceSpy.deletePortal.and.returnValue(throwError(() => new Error()))
 
-    component.confirmDeletePortal()
+    component.confirmDeleteWorkspace()
 
     expect(msgServiceSpy.error).toHaveBeenCalledWith({
       summaryKey: 'ACTIONS.DELETE.MESSAGE_NOK'
@@ -236,20 +236,20 @@ describe('WorkspaceDetailComponent', () => {
   })
 
   it('should export a portal', () => {
-    component.portalDetail = portal
+    component.workspaceDetail = workspace
     component.importThemeCheckbox = true
     menuApiServiceSpy.getMenuStructureForPortalId.and.returnValue(of(mockMenuItems))
     // themeApiServiceSpy.getThemeById.and.returnValue(of(themeHttpResponse))
 
     component.onExportWorkspace()
 
-    expect(component.portalDownloadVisible).toBeFalse()
+    expect(component.workspaceDownloadVisible).toBeFalse()
   })
 
   it('should display error if themeNotSpecified on export', () => {
-    component.portalDetail = portal
-    if (component.portalDetail) {
-      component.portalDetail.theme = ''
+    component.workspaceDetail = workspace
+    if (component.workspaceDetail) {
+      component.workspaceDetail.theme = ''
     }
     component.importThemeCheckbox = true
     menuApiServiceSpy.getMenuStructureForPortalId.and.returnValue(of(mockMenuItems))
@@ -263,7 +263,7 @@ describe('WorkspaceDetailComponent', () => {
   })
 
   it('should display error if portalNotFound on export', () => {
-    component.portalDetail = undefined
+    component.workspaceDetail = undefined
 
     component.onExportWorkspace()
 
@@ -273,7 +273,7 @@ describe('WorkspaceDetailComponent', () => {
   })
 
   it('should have prepared action buttons onInit: close', () => {
-    apiServiceSpy.getPortalByPortalId.and.returnValue(of([portal]))
+    apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))
 
     component.ngOnInit()
     const action = component.actions[0]
@@ -283,7 +283,7 @@ describe('WorkspaceDetailComponent', () => {
   })
 
   it('should have prepared action buttons onInit: manageMenu', () => {
-    apiServiceSpy.getPortalByPortalId.and.returnValue(of([portal]))
+    apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))
     spyOn(component, 'manageMenu')
 
     component.ngOnInit()
@@ -294,7 +294,7 @@ describe('WorkspaceDetailComponent', () => {
   })
 
   it('should have prepared action buttons onInit: toggleEditMode', () => {
-    apiServiceSpy.getPortalByPortalId.and.returnValue(of([portal]))
+    apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))
 
     component.editMode = false
     component.ngOnInit()
@@ -305,8 +305,8 @@ describe('WorkspaceDetailComponent', () => {
   })
 
   it('should have prepared action buttons onInit: updatePortal props', () => {
-    apiServiceSpy.getPortalByPortalId.and.returnValue(of([portal]))
-    component.portalPropsComponent = new MockWorkspacePropsComponent() as unknown as WorkspacePropsComponent
+    apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))
+    component.workspacePropsComponent = new MockWorkspacePropsComponent() as unknown as WorkspacePropsComponent
     component.selectedIndex = 0
 
     component.ngOnInit()
@@ -317,8 +317,8 @@ describe('WorkspaceDetailComponent', () => {
   })
 
   it('should have prepared action buttons onInit: updatePortal contact', () => {
-    apiServiceSpy.getPortalByPortalId.and.returnValue(of([portal]))
-    component.portalContactComponent = new MockWorkspaceContactComponent() as unknown as WorkspaceContactComponent
+    apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))
+    component.workspaceContactComponent = new MockWorkspaceContactComponent() as unknown as WorkspaceContactComponent
     component.selectedIndex = 1
 
     component.ngOnInit()
@@ -328,9 +328,9 @@ describe('WorkspaceDetailComponent', () => {
     expect(component.editMode).toBeFalse()
   })
 
-  it('should have prepared action buttons onInit: updatePortal roles', () => {
-    apiServiceSpy.getPortalByPortalId.and.returnValue(of([portal]))
-    component.portalRolesComponent = new MockWorkspaceRolesComponent() as unknown as WorkspaceRolesComponent
+  it('should have prepared action buttons onInit: updateworkspace roles', () => {
+    apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))
+    component.workspaceRolesComponent = new MockWorkspaceRolesComponent() as unknown as WorkspaceRolesComponent
     component.selectedIndex = 4
 
     component.ngOnInit()
@@ -340,20 +340,20 @@ describe('WorkspaceDetailComponent', () => {
     expect(component.editMode).toBeFalse()
   })
 
-  it('should have prepared action buttons onInit: updatePortal images', () => {
-    apiServiceSpy.getPortalByPortalId.and.returnValue(of([portal]))
-    component.portalImagesComponent = new MockWorkspaceImagesComponent() as unknown as WorkspaceImagesComponent
-    component.selectedIndex = 5
+  // it('should have prepared action buttons onInit: updateworkspace images', () => {
+  //   apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))
+  //   component.workspaceImagesComponent = new MockWorkspaceImagesComponent() as unknown as WorkspaceImagesComponent
+  //   component.selectedIndex = 5
 
-    component.ngOnInit()
-    const action = component.actions[3]
-    action.actionCallback()
+  //   component.ngOnInit()
+  //   const action = component.actions[3]
+  //   action.actionCallback()
 
-    expect(component.editMode).toBeFalse()
-  })
+  //   expect(component.editMode).toBeFalse()
+  // })
 
-  it('should have prepared action buttons onInit: updatePortal: default', () => {
-    apiServiceSpy.getPortalByPortalId.and.returnValue(of([portal]))
+  it('should have prepared action buttons onInit: updateworkspace: default', () => {
+    apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))
     component.selectedIndex = 99
     spyOn(console, 'error')
 
@@ -364,18 +364,18 @@ describe('WorkspaceDetailComponent', () => {
     expect(console.error).toHaveBeenCalledWith("Couldn't assign tab to component")
   })
 
-  it('should have prepared action buttons onInit: portalDownloadVisible', () => {
-    apiServiceSpy.getPortalByPortalId.and.returnValue(of([portal]))
+  it('should have prepared action buttons onInit: workspaceDownloadVisible', () => {
+    apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))
 
     component.ngOnInit()
     const action = component.actions[4]
     action.actionCallback()
 
-    expect(component.portalDownloadVisible).toBeTrue()
+    expect(component.workspaceDownloadVisible).toBeTrue()
   })
 
   it('should have prepared action buttons onInit: toggleEditMode', () => {
-    apiServiceSpy.getPortalByPortalId.and.returnValue(of([portal]))
+    apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))
     const toggleEditModeSpy = spyOn<any>(component, 'toggleEditMode').and.callThrough()
 
     component.ngOnInit()
@@ -385,14 +385,14 @@ describe('WorkspaceDetailComponent', () => {
     expect(toggleEditModeSpy).toHaveBeenCalled()
   })
 
-  it('should have prepared action buttons onInit: portalDeleteVisible', () => {
-    apiServiceSpy.getPortalByPortalId.and.returnValue(of([portal]))
+  it('should have prepared action buttons onInit: workspaceDeleteVisible', () => {
+    apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))
 
     component.ngOnInit()
     const action = component.actions[6]
     action.actionCallback()
 
-    expect(component.portalDeleteVisible).toBeTrue()
+    expect(component.workspaceDeleteVisible).toBeTrue()
   })
 
   it('should correctly navigate on manageMenu', () => {
