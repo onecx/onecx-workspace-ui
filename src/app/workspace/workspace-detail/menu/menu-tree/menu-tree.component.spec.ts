@@ -62,12 +62,12 @@ describe('MenuTreeComponent', () => {
     expect(component).toBeTruthy()
   })
 
-  it('should set menuTreeNodes onChanges if portalDetail & changes correct: langExists false', () => {
+  it('should set menuTreeNodes onChanges if workspaceDetail & changes correct: langExists false', () => {
     stateServiceSpy.getState.and.returnValue(state)
     const changes: SimpleChanges = {
       updateTree: new SimpleChange(null, component.updateTree, true)
     }
-    component.portalMenuItems = items
+    component.workspaceMenuItems = items
 
     component.ngOnChanges(changes)
 
@@ -118,7 +118,7 @@ describe('MenuTreeComponent', () => {
       dropNode: { key: 'newParentNodeId', children: [{ key: 'draggedNodeId' }], parent: { key: 'parent key' } }
     }
     treeServiceSpy.calculateNewNodesPositions.and.returnValue([{ id: 'id', position: 1 }])
-    component.portalMenuItems = items
+    component.workspaceMenuItems = items
 
     component.onDrop(event)
 
@@ -136,7 +136,7 @@ describe('MenuTreeComponent', () => {
     }
     treeServiceSpy.calculateNewNodesPositions.and.returnValue([{ id: 'id', position: 1 }])
     spyOn(component.updateMenuStructureEmitter, 'emit')
-    component.portalMenuItems = items
+    component.workspaceMenuItems = items
     const expectedItems = [
       {
         key: 'key',
@@ -173,7 +173,7 @@ describe('MenuTreeComponent', () => {
 
   it('should set languagePreviewValue and mapToTree onLanguagePreviewChange', () => {
     const lang = 'de'
-    component.portalMenuItems = items
+    component.workspaceMenuItems = items
     const mockExpansionState: Map<string, boolean> = new Map<string, boolean>()
     stateServiceSpy.getState.and.returnValue({
       treeExpansionState: mockExpansionState,

@@ -6,9 +6,11 @@ import { Location } from '@angular/common'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router'
 // import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
+// import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { of, throwError } from 'rxjs'
 
 import { PortalMessageService, ConfigurationService, AUTH_SERVICE } from '@onecx/portal-integration-angular'
+// import { HttpLoaderFactory } from 'src/app/shared/shared.module'
 // import { HttpLoaderFactory } from 'src/app/shared/shared.module'
 import { MenuComponent } from './menu.component'
 import { MenuStateService, MenuState } from 'src/app/services/menu-state.service'
@@ -16,7 +18,7 @@ import { MenuStateService, MenuState } from 'src/app/services/menu-state.service
 import { Workspace, MenuItem, WorkspaceAPIService, Scope, MenuItemAPIService } from '../../../shared/generated'
 import FileSaver from 'file-saver'
 
-const portal: Workspace = {
+const workspace: Workspace = {
   name: 'name',
   theme: 'theme',
   baseUrl: '/some/base/url',
@@ -27,12 +29,14 @@ const mockMenuItems: MenuItem[] = [
   {
     name: 'menu name',
     id: 'id',
+    id: 'id',
     key: 'key',
     i18n: { ['en']: 'en' },
     children: [{ name: 'child name', key: 'key', id: 'id' }]
   },
   {
     name: 'menu2 name',
+    id: 'id',
     id: 'id',
     key: 'key',
     i18n: { ['en']: 'en' }
@@ -52,9 +56,10 @@ const mockItem = {
   parentItemId: 'some parent id',
   name: 'name',
   position: 1,
-  portalExit: true,
+  workspaceExit: true,
   url: 'url',
   badge: 'badge',
+  scope: Scope.Workspace,
   scope: Scope.Workspace,
   description: 'description'
 }
@@ -65,7 +70,7 @@ const state: MenuState = {
   rootFilter: true,
   treeMode: true,
   treeExpansionState: new Map(),
-  portalMenuItems: []
+  workspaceMenuItems: []
 }
 
 const form = new FormGroup({
@@ -74,7 +79,7 @@ const form = new FormGroup({
   name: new FormControl('name'),
   position: new FormControl('1'),
   disabled: new FormControl<boolean>(false),
-  portalExit: new FormControl<boolean>(false),
+  workspaceExit: new FormControl<boolean>(false),
   url: new FormControl('url'),
   badge: new FormControl('badge'),
   scope: new FormControl('scope'),
@@ -129,6 +134,8 @@ describe('MenuComponent', () => {
       imports: [
         HttpClientTestingModule
         /* TranslateModule.forRoot({
+        HttpClientTestingModule
+        /* TranslateModule.forRoot({
           loader: {
             provide: TranslateLoader,
             useFactory: HttpLoaderFactory,
@@ -141,7 +148,9 @@ describe('MenuComponent', () => {
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: WorkspaceAPIService, useValue: apiServiceSpy },
+        { provide: WorkspaceAPIService, useValue: apiServiceSpy },
         { provide: ConfigurationService, useValue: configServiceSpy },
+        { provide: MenuItemAPIService, useValue: menuApiServiceSpy },
         { provide: MenuItemAPIService, useValue: menuApiServiceSpy },
         { provide: AUTH_SERVICE, useValue: mockAuthService },
         { provide: MenuStateService, useValue: stateServiceSpy },
@@ -167,7 +176,7 @@ describe('MenuComponent', () => {
 
     fixture = TestBed.createComponent(MenuComponent)
     component = fixture.componentInstance
-    // component.menuItems = state.portalMenuItems
+    // component.menuItems = state.workspaceMenuItems
     fixture.detectChanges()
   })
 
@@ -272,11 +281,11 @@ describe('MenuComponent', () => {
   })
 
   it('should loadData', () => {
-    apiServiceSpy.getPortalByPortalId.and.returnValue(of(portal))
+    apiServiceSpy.getPortalByPortalId.and.returnValue(of(workspace))
 
     component.loadData()
 
-    expect(component.portal).toBe(portal)
+    expect(component.workspace).toBe(workspace)
   })
 
   it('it should handle error response on loadData', () => {
@@ -410,6 +419,7 @@ describe('MenuComponent', () => {
       url: 'url',
       badge: 'badge',
       scope: Scope.Workspace,
+      scope: Scope.Workspace,
       description: 'description'
     }
     component.formGroup = form
@@ -437,6 +447,7 @@ describe('MenuComponent', () => {
       portalExit: true,
       url: 'url',
       badge: 'badge',
+      scope: Scope.Workspace,
       scope: Scope.Workspace,
       description: 'description'
     }
@@ -658,14 +669,14 @@ describe('MenuComponent', () => {
   it('should export a menu', () => {
     menuApiServiceSpy.getMenuStructureForPortalId.and.returnValue(of(mockMenuItems))
     component.workspaceName = 'name'
-    component.portal = portal
+    component.workspace = workspace
     spyOn(FileSaver, 'saveAs')
 
     component.onExportMenu()
 
     expect(FileSaver.saveAs).toHaveBeenCalledWith(
       new Blob([], { type: 'text/json' }),
-      'workspace_' + component.portal?.name + '_menu.json'
+      'workspace_' + component.workspace?.name + '_menu.json'
     )
   })
 
@@ -736,6 +747,7 @@ describe('MenuComponent', () => {
 
   it('should handle menu import', () => {
     component.workspaceName = 'name'
+    component.workspaceName = 'name'
     spyOn(component, 'ngOnInit')
     menuApiServiceSpy.uploadMenuStructure.and.returnValue(of({}))
 
@@ -746,6 +758,7 @@ describe('MenuComponent', () => {
   })
 
   it('should handle menu import error', () => {
+    component.workspaceName = 'name'
     component.workspaceName = 'name'
     menuApiServiceSpy.uploadMenuStructure.and.returnValue(throwError(() => new Error()))
 

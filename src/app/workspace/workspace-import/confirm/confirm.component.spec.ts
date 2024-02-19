@@ -9,9 +9,9 @@ import { of } from 'rxjs'
 import { ConfirmComponent } from './confirm.component'
 import { WorkspaceAPIService } from '../../../shared/generated'
 
-const portal = {
-  portalName: 'name',
-  portalRoles: ['role'],
+const workspace = {
+  workspaceName: 'name',
+  workspaceRoles: ['role'],
   themeName: 'theme',
   baseUrl: 'url',
   tenantId: 'id'
@@ -22,7 +22,7 @@ describe('ConfirmComponent', () => {
   let fixture: ComponentFixture<ConfirmComponent>
 
   const apiServiceSpy = {
-    getAllPortals: jasmine.createSpy('getAllPortals').and.returnValue(of({}))
+    searchWorkspaces: jasmine.createSpy('searchWorkspaces').and.returnValue(of({}))
   }
   const themeServiceSpy = jasmine.createSpyObj('ThemeService', ['getThemes'])
   themeServiceSpy.getThemes.and.returnValue(
@@ -52,7 +52,7 @@ describe('ConfirmComponent', () => {
       ]
     }).compileComponents()
 
-    apiServiceSpy.getAllPortals.calls.reset()
+    apiServiceSpy.searchWorkspaces.calls.reset()
   }))
 
   beforeEach(() => {
@@ -66,18 +66,18 @@ describe('ConfirmComponent', () => {
   })
 
   it('should reflect missing baseUrl and fetch portals OnInit', () => {
-    apiServiceSpy.getAllPortals.and.returnValue(of([]))
+    apiServiceSpy.searchWorkspaces.and.returnValue(of([]))
     component.baseUrl = ''
-    spyOn(component, 'checkPortalUniqueness')
+    spyOn(component, 'checkWorkspaceUniqueness')
 
     component.ngOnInit()
 
-    expect(component.checkPortalUniqueness).toHaveBeenCalled()
+    expect(component.checkWorkspaceUniqueness).toHaveBeenCalled()
     expect(component.baseUrlIsMissing).toBeTrue()
   })
 
   it('should also fetch themes OnInit if themeName exists', () => {
-    apiServiceSpy.getAllPortals.and.returnValue(of([]))
+    apiServiceSpy.searchWorkspaces.and.returnValue(of([]))
     themeServiceSpy.getThemes.and.returnValue(of([]))
     spyOn(component, 'checkThemeNames')
     component.themeName = 'name'
@@ -87,29 +87,29 @@ describe('ConfirmComponent', () => {
     expect(component.checkThemeNames).toHaveBeenCalled()
   })
 
-  it('should set portalTenantExists to true in checkPortalUniqueness onInit if permission', () => {
-    apiServiceSpy.getAllPortals.and.returnValue(of([portal]))
+  it('should set workspaceTenantExists to true in checkWorkspaceUniqueness onInit if permission', () => {
+    apiServiceSpy.searchWorkspaces.and.returnValue(of([workspace]))
     component.hasPermission = true
-    component.portalName = 'name'
+    component.workspaceName = 'name'
     component.tenantId = 'id'
 
     component.ngOnInit()
 
-    expect(component.portalTenantExists).toBeTrue()
+    expect(component.workspaceTenantExists).toBeTrue()
   })
 
-  it('should set portalNameExists to true in checkPortalUniqueness onInit if no permission', () => {
-    apiServiceSpy.getAllPortals.and.returnValue(of([portal]))
+  it('should set workspaceNameExists to true in checkWorkspaceUniqueness onInit if no permission', () => {
+    apiServiceSpy.searchWorkspaces.and.returnValue(of([workspace]))
     component.hasPermission = false
-    component.portalName = 'name'
+    component.workspaceName = 'name'
 
     component.ngOnInit()
 
-    expect(component.portalNameExists).toBeTrue()
+    expect(component.workspaceNameExists).toBeTrue()
   })
 
-  it('should set baseUrlExists to true in checkPortalUniqueness onInit', () => {
-    apiServiceSpy.getAllPortals.and.returnValue(of([portal]))
+  it('should set baseUrlExists to true in checkWorkspaceUniqueness onInit', () => {
+    apiServiceSpy.searchWorkspaces.and.returnValue(of([workspace]))
     component.baseUrl = 'url'
     component.baseUrlIsMissing = false
 
@@ -118,8 +118,8 @@ describe('ConfirmComponent', () => {
     expect(component.baseUrlExists).toBeTrue()
   })
 
-  it('should set themeNameExists to true in checkPortalUniqueness onInit', () => {
-    apiServiceSpy.getAllPortals.and.returnValue(of([portal]))
+  it('should set themeNameExists to true in checkWorkspaceUniqueness onInit', () => {
+    apiServiceSpy.searchWorkspaces.and.returnValue(of([workspace]))
     themeServiceSpy.getThemes.and.returnValue(of([{ name: 'theme' }]))
     component.hasPermission = false
     component.themeName = 'theme'

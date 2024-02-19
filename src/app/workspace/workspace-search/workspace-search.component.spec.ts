@@ -1,16 +1,16 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { HttpClient } from '@angular/common/http'
-import { HttpClientTestingModule } from '@angular/common/http/testing'
+// import { HttpClient } from '@angular/common/http'
+// import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { Router } from '@angular/router'
 import { ActivatedRoute } from '@angular/router'
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
+// import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { of, throwError } from 'rxjs'
 
 import { PortalMessageService } from '@onecx/portal-integration-angular'
-import { HttpLoaderFactory } from 'src/app/shared/shared.module'
+// import { HttpLoaderFactory } from 'src/app/shared/shared.module'
 import { WorkspaceSearchComponent } from './workspace-search.component'
-import { PortalDTO, PortalInternalAPIService } from '../../shared/generated'
+import { Workspace, WorkspaceAPIService } from '../../shared/generated'
 
 class MockRouter {
   navigate = jasmine.createSpy('navigate')
@@ -32,22 +32,22 @@ describe('WorkspaceSearchComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [WorkspaceSearchComponent],
-      imports: [
-        HttpClientTestingModule,
-        TranslateModule.forRoot({
-          loader: {
-            provide: TranslateLoader,
-            useFactory: HttpLoaderFactory,
-            deps: [HttpClient]
-          }
-        })
-      ],
+      // imports: [
+      //   HttpClientTestingModule,
+      //   TranslateModule.forRoot({
+      //     loader: {
+      //       provide: TranslateLoader,
+      //       useFactory: HttpLoaderFactory,
+      //       deps: [HttpClient]
+      //     }
+      //   })
+      // ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: Router, useValue: mockRouter },
         { provide: PortalMessageService, useValue: msgServiceSpy },
-        { provide: PortalInternalAPIService, useValue: apiServiceSpy }
+        { provide: WorkspaceAPIService, useValue: apiServiceSpy }
       ]
     }).compileComponents()
     msgServiceSpy.info.calls.reset()
@@ -102,20 +102,19 @@ describe('WorkspaceSearchComponent', () => {
   })
 
   it('should correctly assign results if API call returns some data', () => {
-    const portal: PortalDTO = {
-      portalName: 'name',
-      themeName: 'theme',
-      themeId: 'id',
+    const portal: Workspace = {
+      name: 'name',
+      theme: 'theme',
       baseUrl: 'url',
       id: 'id'
     }
     apiServiceSpy.getAllPortals.and.returnValue(of([portal]))
-    component.portalItems = []
+    component.workspaceItems = []
 
     component.search()
 
-    expect(component.portalItems[0]).toEqual(portal)
-    expect(component.sortField).toEqual('portalName')
+    expect(component.workspaceItems[0]).toEqual(portal)
+    expect(component.sortField).toEqual('name')
   })
 
   it('should display info if no portals available', () => {
@@ -165,14 +164,13 @@ describe('WorkspaceSearchComponent', () => {
     const mockEvent = {
       stopPropagation: jasmine.createSpy()
     }
-    const portal: PortalDTO = {
-      portalName: 'name',
-      themeName: 'theme',
-      themeId: 'id',
+    const portal: Workspace = {
+      name: 'name',
+      theme: 'theme',
       baseUrl: '/some/base/url'
     }
 
-    component.onGotoPortal(mockEvent, portal)
+    component.onGotoWorkspace(mockEvent, portal)
 
     expect(mockEvent.stopPropagation).toHaveBeenCalled()
     expect(window.open).toHaveBeenCalledWith(window.document.location.href + '../../../..' + portal.baseUrl, '_blank')
@@ -182,10 +180,9 @@ describe('WorkspaceSearchComponent', () => {
     const mockEvent = {
       stopPropagation: jasmine.createSpy()
     }
-    const portal: PortalDTO = {
-      portalName: 'name',
-      themeName: 'theme',
-      themeId: 'id',
+    const portal: Workspace = {
+      name: 'name',
+      theme: 'theme',
       baseUrl: '/some/base/url',
       id: 'id'
     }
