@@ -107,7 +107,12 @@ export class ProductComponent implements OnInit, OnDestroy {
   /**
    * UI Events
    */
+  public onDeregister(ev: any, product: Product) {
+    ev.stopPropagation()
+    console.log('onDeregister')
+  }
   public onProductClick(ev: any, product: Product): void {
+    ev.stopPropagation()
     console.log('onProductClick')
   }
   public onFilterChange(filter: string): void {

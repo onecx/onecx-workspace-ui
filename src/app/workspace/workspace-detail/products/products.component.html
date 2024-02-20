@@ -53,6 +53,12 @@
           class="card relative p-2 cursor-pointer hover:bg-gray-200 hover:text-color"
           (click)="onProductClick($event, product)"
         >
+          <span
+            [id]="'workspace_detail_product_data_item_' + item + '_deregister'"
+            class="card-badge-right badge-1 p-2 pi pi-trash pseudo-button-link"
+            [title]="'PRODUCT.ACTIONS.DEREGISTER.TOOLTIP' | translate"
+            (click)="onDeregister($event, product)"
+          ></span>
           <div
             class="h-4rem lg:h-4rem flex flex-column justify-content-between gap-1 lg:gap-2 my-1 lg:my-2 text-center"
           >
