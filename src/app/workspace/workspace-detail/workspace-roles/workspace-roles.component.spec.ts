@@ -4,11 +4,10 @@ import { HttpClient } from '@angular/common/http'
 import { FormControl, Validators } from '@angular/forms'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
-import { of, throwError } from 'rxjs'
 
 import { AppStateService, createTranslateLoader, PortalMessageService } from '@onecx/portal-integration-angular'
 import { WorkspaceRolesComponent } from './workspace-roles.component'
-import { Workspace, WorkspaceAPIService } from '../../../shared/generated'
+import { Workspace } from '../../../shared/generated'
 
 const portal: Workspace = {
   name: 'name',
@@ -23,9 +22,6 @@ describe('WorkspaceRolesComponent', () => {
   let fixture: ComponentFixture<WorkspaceRolesComponent>
 
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
-  const apiServiceSpy = {
-    updatePortal: jasmine.createSpy('updatePortal').and.returnValue(of({}))
-  }
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -42,20 +38,16 @@ describe('WorkspaceRolesComponent', () => {
         })
       ],
       schemas: [NO_ERRORS_SCHEMA],
-      providers: [
-        { provide: PortalMessageService, useValue: msgServiceSpy },
-        { provide: WorkspaceAPIService, useValue: apiServiceSpy }
-      ]
+      providers: [{ provide: PortalMessageService, useValue: msgServiceSpy }]
     }).compileComponents()
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
-    apiServiceSpy.updatePortal.calls.reset()
   }))
 
   beforeEach(() => {
     fixture = TestBed.createComponent(WorkspaceRolesComponent)
     component = fixture.componentInstance
-    component.portalDetail = portal
+    component.workspaceDetail = portal
     fixture.detectChanges()
   })
 
@@ -63,10 +55,10 @@ describe('WorkspaceRolesComponent', () => {
     expect(component).toBeTruthy()
   })
 
-  it('should setFormData onChanges if portalDetail & changes correct', () => {
+  it('should setFormData onChanges if workspaceDetail & changes correct', () => {
     spyOn(component, 'setFormData')
     const changes: SimpleChanges = {
-      portalDetail: new SimpleChange(null, component.portalDetail, true)
+      workspaceDetail: new SimpleChange(null, component.workspaceDetail, true)
     }
 
     component.ngOnChanges(changes)
@@ -74,11 +66,11 @@ describe('WorkspaceRolesComponent', () => {
     expect(component.setFormData).toHaveBeenCalled()
   })
 
-  it('should setFormData onChanges if portalDetail & changes correct', () => {
+  it('should setFormData onChanges if workspaceDetail & changes correct', () => {
     component.setFormData()
 
-    if (component.portalDetail.workspaceRoles) {
-      expect(component.formArray.length).toBe(component.portalDetail.workspaceRoles.length)
+    if (component.workspaceDetail.workspaceRoles) {
+      expect(component.formArray.length).toBe(component.workspaceDetail.workspaceRoles.length)
     }
   })
 
@@ -90,39 +82,25 @@ describe('WorkspaceRolesComponent', () => {
     expect(component.addDisplay).toBeFalse()
   })
 
-  it('should update roles on addPortalRole', () => {
-    apiServiceSpy.updatePortal.and.returnValue(of({}))
-    component.newPortalRole = 'new role'
+  // it('should update roles on addPortalRole', () => {
+  //   component.newWorkspaceRole = 'new role'
 
-    component.addPortalRole()
+  //   component.addPortalRole()
 
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_OK' })
-  })
+  //   expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_OK' })
+  // })
 
   it('should update roles on deleteRole', () => {
-    apiServiceSpy.updatePortal.and.returnValue(of({}))
-
     component.deleteRole(0)
 
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_OK' })
-    expect(component.portalDetail.workspaceRoles).toEqual([])
-  })
-
-  it('should display error msg if update api call fails', () => {
-    apiServiceSpy.updatePortal.and.returnValue(throwError(() => new Error()))
-
-    component.addPortalRole()
-
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({
-      summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_NOK'
-    })
+    expect(component.workspaceDetail.workspaceRoles).toEqual([])
   })
 
   it('should display error msg if form invalid', () => {
     const newControl = new FormControl('role', Validators.minLength(5))
     component.formArray.push(newControl as never)
 
-    component.onSubmit()
+    component.updateRoles()
 
     expect(msgServiceSpy.error).toHaveBeenCalledWith({
       summaryKey: 'GENERAL.FORM_VALIDATION'

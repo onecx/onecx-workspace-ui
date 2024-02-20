@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges } from '@angular/core'
 import { FormControl, FormGroup } from '@angular/forms'
 
-import { Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
+import { Workspace } from 'src/app/shared/generated'
 import { PortalMessageService } from '@onecx/portal-integration-angular'
 
 @Component({
@@ -15,7 +15,7 @@ export class WorkspaceContactComponent implements OnChanges {
 
   public formGroup: FormGroup
 
-  constructor(private api: WorkspaceAPIService, private msgService: PortalMessageService) {
+  constructor(private msgService: PortalMessageService) {
     this.formGroup = new FormGroup({
       companyName: new FormControl(null),
       phoneNumber: new FormControl(null),
