@@ -3,7 +3,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { TreeNode } from 'primeng/api'
 
 import { MenuTreeService } from './menu-tree.service'
-import { /* MenuItemDetailsDTO, MenuItemStructureDTO, */ MenuItem } from '../shared/generated'
+import { MenuItem } from '../shared/generated'
 
 describe('MenuTreeService', () => {
   let service: MenuTreeService

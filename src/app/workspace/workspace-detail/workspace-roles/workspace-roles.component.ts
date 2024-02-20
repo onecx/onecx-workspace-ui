@@ -57,6 +57,7 @@ export class WorkspaceRolesComponent implements OnChanges {
       const array: string[] = []
       this.formArray.value.forEach((role) => array.push(role))
       portal.workspaceRoles = array
+      // button save, send event to detail
       this.workspaceApi
         .updateWorkspace({
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

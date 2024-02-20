@@ -220,6 +220,10 @@ export class WorkspaceDetailComponent implements OnInit {
       }
     }
     this.toggleEditMode('view')
+    // look at form from children, then update only here
+    /* this.workspaceApi.updateWorkspace
+    // success
+      this.getWorkspaceData() */
   }
 
   confirmDeleteWorkspace() {
