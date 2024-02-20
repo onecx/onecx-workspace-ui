@@ -204,6 +204,7 @@ export class WorkspaceDetailComponent implements OnInit {
     switch (this.selectedTabIndex) {
       case 0: {
         this.workspacePropsComponent.onSubmit()
+        this.workspaceDetail = this.workspacePropsComponent.workspaceDetail
         break
       }
       case 1: {
@@ -238,9 +239,6 @@ export class WorkspaceDetailComponent implements OnInit {
           })
         }
       })
-    /* this.workspaceApi.updateWorkspace
-    // success
-      this.getWorkspaceData() */
   }
 
   public onRoleSave(roles: string[]) {

@@ -14,11 +14,7 @@
     <p-tabView (onChange)="onTabChange($event)" [activeIndex]="selectedTabIndex">
       <p-tabPanel [header]="'PORTAL.TABS.DETAILS' | translate">
         <div *ocxIfPermission="'WORKSPACE_PROPS#VIEW'">
-          <app-workspace-props
-            [portalDetail]="workspaceDetail"
-            [editMode]="editMode"
-            (portalUpdated)="onWorkspaceData($event)"
-          ></app-workspace-props>
+          <app-workspace-props [workspaceDetail]="workspaceDetail" [editMode]="editMode"></app-workspace-props>
         </div>
       </p-tabPanel>
 
@@ -30,7 +26,7 @@
 
       <p-tabPanel [header]="'PORTAL.TABS.INTERN' | translate" [disabled]="editMode">
         <div *ocxIfPermission="'WORKSPACE_INTERNAL#VIEW'">
-          <app-workspace-intern [portalDetail]="workspaceDetail" [dateFormat]="dateFormat"></app-workspace-intern>
+          <app-workspace-intern [workspaceDetail]="workspaceDetail" [dateFormat]="dateFormat"></app-workspace-intern>
         </div>
       </p-tabPanel>
 
