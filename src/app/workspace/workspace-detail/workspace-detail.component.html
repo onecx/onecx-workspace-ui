@@ -42,7 +42,11 @@
 
       <p-tabPanel [header]="'PORTAL.TABS.ROLES' | translate" [disabled]="editMode">
         <div *ocxIfPermission="'WORKSPACE_ROLES#VIEW'">
-          <app-workspace-roles [portalDetail]="workspaceDetail" [editMode]="editMode"></app-workspace-roles>
+          <app-workspace-roles
+            [workspaceDetail]="workspaceDetail"
+            [editMode]="editMode"
+            (saveRoleEvent)="onRoleSave($event)"
+          ></app-workspace-roles>
         </div>
       </p-tabPanel>
     </p-tabView>

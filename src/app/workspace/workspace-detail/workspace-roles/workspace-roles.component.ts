@@ -1,9 +1,8 @@
-import { Component, Input, SimpleChanges, OnChanges } from '@angular/core'
+import { Component, Input, Output, SimpleChanges, OnChanges, EventEmitter } from '@angular/core'
 import { FormArray, FormControl } from '@angular/forms'
 
 import { WorkspaceAPIService } from '../../../shared/generated'
 import { Workspace } from '../../../shared/generated'
-import { cloneWorkspaceWithMicrofrontendsArray } from '../../../shared/utils'
 import { PortalMessageService } from '@onecx/portal-integration-angular'
 
 @Component({
@@ -12,22 +11,23 @@ import { PortalMessageService } from '@onecx/portal-integration-angular'
   styleUrls: ['./workspace-roles.component.scss']
 })
 export class WorkspaceRolesComponent implements OnChanges {
-  @Input() portalDetail!: Workspace
+  @Input() workspaceDetail!: Workspace
   @Input() editMode = false
+  @Output() saveRoleEvent = new EventEmitter()
   addDisplay = false
   formArray = new FormArray([])
-  newPortalRole = ''
+  newWorkspaceRole = ''
 
   constructor(private workspaceApi: WorkspaceAPIService, private msgService: PortalMessageService) {}
 
   public ngOnChanges(changes: SimpleChanges): void {
-    if (this.portalDetail && changes['portalDetail']) {
+    if (this.workspaceDetail && changes['workspaceDetail']) {
       this.setFormData()
     }
   }
 
   setFormData(): void {
-    this.portalDetail.workspaceRoles?.forEach((element: any) => {
+    this.workspaceDetail.workspaceRoles?.forEach((element: any) => {
       const control = new FormControl(element)
       this.formArray.push(control as never)
     })
@@ -38,49 +38,28 @@ export class WorkspaceRolesComponent implements OnChanges {
   }
 
   addPortalRole(): void {
-    const newControl = new FormControl(this.newPortalRole)
+    const newControl = new FormControl(this.newWorkspaceRole)
     this.formArray.push(newControl as never)
-    this.newPortalRole = ''
+    this.newWorkspaceRole = ''
     this.addDisplay = false
-    this.onSubmit()
+    this.updateRoles()
   }
 
   deleteRole(roleIndex: number): void {
     this.formArray.removeAt(roleIndex)
-    this.onSubmit()
+    this.updateRoles()
   }
 
-  public onSubmit() {
+  public updateRoles() {
     if (this.formArray.valid) {
-      const portal = cloneWorkspaceWithMicrofrontendsArray(this.portalDetail)
+      // const portal = cloneWorkspaceWithMicrofrontendsArray(this.workspaceDetail)
       // clone form array and use the clone
       const array: string[] = []
       this.formArray.value.forEach((role) => array.push(role))
-      portal.workspaceRoles = array
+      // portal.workspaceRoles = array
       // button save, send event to detail
-      this.workspaceApi
-        .updateWorkspace({
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          id: this.portalDetail.id!,
-          updateWorkspaceRequest: { resource: portal }
-        })
-        .subscribe({
-          next: () => {
-            this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_OK' })
-            // add in UI
-            this.portalDetail.workspaceRoles = this.formArray.value
-          },
-          error: () => {
-            // console.error('ERR', err)
-            // const duplicate = err.error.message.indexOf('contains duplicated roles') > 0
-            this.msgService.error({
-              summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_NOK'
-              // detailKey: duplicate ? 'DETAIL.NEW_ROLE_DUPLICATED' : err.error.message
-            })
-            // cleanup the form
-            this.formArray.removeAt(this.formArray.length - 1)
-          }
-        })
+      console.log('ROLES', this.formArray.value)
+      this.saveRoleEvent.emit(this.formArray.value)
     } else {
       this.msgService.error({ summaryKey: 'GENERAL.FORM_VALIDATION' })
     }

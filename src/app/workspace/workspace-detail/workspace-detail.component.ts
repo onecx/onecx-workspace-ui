@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core'
 import { DatePipe, Location } from '@angular/common'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
-import FileSaver from 'file-saver'
+import { FileSaver } from 'file-saver'
 import { Observable, map } from 'rxjs'
 
 import { Action, ObjectDetailItem, PortalMessageService, UserService } from '@onecx/portal-integration-angular'
@@ -210,10 +210,10 @@ export class WorkspaceDetailComponent implements OnInit {
         this.workspaceContactComponent.onSubmit()
         break
       }
-      case 4: {
-        this.workspaceRolesComponent.onSubmit()
-        break
-      }
+      // case 4: {
+      //   this.workspaceRolesComponent.onSubmit()
+      //   break
+      // }
       default: {
         console.error("Couldn't assign tab to component")
         break
@@ -221,9 +221,40 @@ export class WorkspaceDetailComponent implements OnInit {
     }
     this.toggleEditMode('view')
     // look at form from children, then update only here
+    this.workspaceApi
+      .updateWorkspace({
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        id: this.workspaceDetail?.id!,
+        updateWorkspaceRequest: { resource: this.workspaceDetail! }
+      })
+      .subscribe({
+        next: (workspace) => {
+          console.log('WORKSPACE', workspace)
+          this.workspaceId = workspace.id || ''
+          this.onWorkspaceData(workspace)
+          this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_OK' })
+        },
+        error: () => {
+          // console.error('ERR', err)
+          // const duplicate = err.error.message.indexOf('contains duplicated roles') > 0
+          this.msgService.error({
+            summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_NOK'
+            // detailKey: duplicate ? 'DETAIL.NEW_ROLE_DUPLICATED' : err.error.message
+          })
+          // cleanup the form
+          // this.formArray.removeAt(this.formArray.length - 1)
+        }
+      })
     /* this.workspaceApi.updateWorkspace
     // success
       this.getWorkspaceData() */
+  }
+
+  public onRoleSave(roles: string[]) {
+    if (this.workspaceDetail) {
+      this.workspaceDetail.workspaceRoles = roles
+    }
+    this.updateWorkspace()
   }
 
   confirmDeleteWorkspace() {
