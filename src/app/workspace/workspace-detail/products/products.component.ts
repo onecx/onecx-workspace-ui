@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { Component, Input, OnDestroy, OnInit, OnChanges, ViewChild } from '@angular/core'
+import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core'
 //import { HttpErrorResponse } from '@angular/common/http'
 //import { FormControl, Validators } from '@angular/forms'
 import { TranslateService } from '@ngx-translate/core'
@@ -16,7 +16,7 @@ import { limitText } from 'src/app/shared/utils'
   templateUrl: './products.component.html',
   styleUrls: ['./products.component.scss']
 })
-export class ProductComponent implements OnInit, OnChanges, OnDestroy {
+export class ProductComponent implements OnInit, OnDestroy {
   @Input() workspace!: Workspace
 
   private readonly destroy$ = new Subject()
@@ -48,12 +48,9 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy {
   ) {}
 
   ngOnInit() {
-    // this.prepareTranslations()
+    this.prepareTranslations()
     this.log('onInit')
     this.loadData()
-  }
-  public ngOnChanges(): void {
-    this.log('OnChanges')
   }
   public ngOnDestroy(): void {
     this.destroy$.next(undefined)
@@ -77,18 +74,6 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy {
       .pipe(finalize(() => (this.loading = false)))
       .pipe(catchError((error) => of(error)))
       .pipe(takeUntil(this.destroy$))
-    /*
-      .subscribe((products) => {
-        // workspaces
-        if (products instanceof HttpErrorResponse) {
-          this.dataAccessIssue = true
-          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + products.status + '.WORKSPACES'
-          console.error('getProductsForWorkspaceId():', products)
-        } else if (products instanceof Array) {
-          return products
-        } else console.error('getAllWorkspaceNames() => unknown response:', products)
-        this.loading = false
-      })*/
   }
 
   /**
@@ -97,11 +82,10 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy {
   private prepareTranslations(): void {
     this.translate
       .get([
-        'APP.NAME',
-        'APP.TYPE',
+        'PRODUCT.NAME',
         'ACTIONS.SEARCH.SORT_BY',
-        'ACTIONS.SEARCH.FILTER.LABEL',
-        'ACTIONS.SEARCH.FILTER.OF',
+        'ACTIONS.SEARCH.FILTER',
+        'ACTIONS.SEARCH.FILTER_OF',
         'ACTIONS.SEARCH.SORT_DIRECTION_ASC',
         'ACTIONS.SEARCH.SORT_DIRECTION_DESC'
       ])
@@ -109,8 +93,8 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy {
         map((data) => {
           this.dataViewControlsTranslations = {
             sortDropdownPlaceholder: data['ACTIONS.SEARCH.SORT_BY'],
-            filterInputPlaceholder: data['ACTIONS.SEARCH.FILTER.LABEL'],
-            filterInputTooltip: data['ACTIONS.SEARCH.FILTER.OF'] + data['APP.NAME'] + ', ' + data['APP.TYPE'],
+            filterInputPlaceholder: data['ACTIONS.SEARCH.FILTER'],
+            filterInputTooltip: data['ACTIONS.SEARCH.FILTER.OF'] + data['PRODUCT.NAME'],
             sortOrderTooltips: {
               ascending: data['ACTIONS.SEARCH.SORT_DIRECTION_ASC'],
               descending: data['ACTIONS.SEARCH.SORT_DIRECTION_DESC']
@@ -129,7 +113,7 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy {
   public onFilterChange(filter: string): void {
     this.log('onFilterChange')
     if (filter === '') {
-      this.filterBy = 'id,type'
+      this.filterBy = 'productName'
     }
     this.dv?.filter(filter, 'contains')
   }

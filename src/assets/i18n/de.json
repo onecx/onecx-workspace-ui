@@ -359,48 +359,6 @@
       "TENANT_ID": "Tenant ID",
       "THEME": "Theme"
     },
-    "MFE": {
-      "ACTIONS": "Aktionen",
-      "DISPLAY_NAME": "Angezeigename",
-      "MODULE_TYPE": "Modultyp",
-      "REMOTE_NAME": "Remote Name",
-      "REMOTE_BASE_URL": "Remote Base URL",
-      "BASE_URL": "Base URL",
-      "APP_ID": "Produkt ID",
-      "DEREGISTER": "Abmelden",
-      "DEREGISTER.HEADER": "Produkt-Modul abmelden",
-      "DEREGISTER.MESSAGE": "Möchten Sie das Produkt-Modul \"{{ITEM}}\" in diesem Workspace nicht mehr verwenden?",
-      "TOOLTIPS": {
-        "ACTIONS": "Detail-Aktionen",
-        "BASE_URL": "URL über die aus dem Workspace auf das Produkt-Modul zugegriffen wird. \nMuss mit einem '/' (Schrägstrich) beginnen.",
-        "REMOTE_BASE_URL": "Basis URL für dieses Produkt-Modul",
-        "DISPLAY_NAME": "Angezeigter Name des Produkt-Moduls",
-        "APP_ID": "Eindeutige ID des Produkts für die Verwendung im Berechtigungs Management. Alle Module des Produkts müssen hier die gleiche Produkt ID besitzen.",
-        "DEREGISTER": "Dieses Produkt-Modul in diesem Workspace nicht mehr verwenden"
-      }
-    },
-    "MFES": {
-      "REGISTER": "Produkt-Modul registrieren",
-      "REGISTER.HEADER": "Produkt-Modul registrieren",
-      "REGISTER.TOOLTIP": "Ein Produkt-Modul für diesen Workspace verfügbar machen",
-      "AVAILABLE_MFES": "Produkt-Modul",
-      "AVAILABLE_MFES.TOOLTIP": "Liste der verfügbaren Produkt-Module",
-      "MFE_REGISTER": "Registrieren",
-      "MFE_MODULE_PATH": "Produkt-Modulpfad",
-      "MFE_FORWARD": "Alle URLs, die mit diesem Wert beginnen, werden zum Produkt-Modul mit der zugehörigen Base URL weitergeleitet - e.g. die Produkt-Modul Base URL ",
-      "MFE_FORWARD_1": " würde von folgenden URLs getroffen: ",
-      "MFE_FORWARD_2": " und ",
-      "MESSAGES": {
-        "NOTHING_REGISTERED": "Noch kein Produkt-Modul registriert",
-        "MFE_DOES_NOT_EXIST": "Das verknüpfte Produkt-Modul existiert nicht",
-        "MFE_LOAD_ERROR": "Das Laden der Produkt-Liste ist fehlgeschlagen",
-        "MFE_REGISTRATION_OK": "Das Produkt-Modul wurde erfolgreich registriert",
-        "MFE_REGISTRATION_NOK": "Bei der Registrierung des Produkt-Moduls ist ein Fehler aufgetreten",
-        "MFE_ALREADY_EXISTS": "Der Pfad wird bereits verwendet",
-        "MFE_DEREGISTRATION_OK": "Das Produkt-Modul wurde erfolgreich abgemeldet",
-        "MFE_DEREGISTRATION_NOK": "Bei der Abmeldung des Produkt-Moduls ist ein Fehler aufgetreten"
-      }
-    },
     "MENU": {
       "HEADER": {
         "EDIT": "Menüeintrag Details",
@@ -447,20 +405,63 @@
           "PORTAL_EXIT": "Wenn gesetzt, dann wird mit dem Menüpunkt der Workspace-Kontext verlassen",
           "POSITION": "Eine ganzzahlige Nummer welche die Position des Menüpunkts in der Menüstruktur festlegt",
           "SCOPE": "Aktionsradius",
-          "URL": "Die durch den Menüpunkt aufgerufene URL. Kann intern (via registriertes Produkt-Modul) oder extern (Verlassen des Workspaces) sein"
+          "URL": "Die durch den Menüpunkt aufgerufene URL. Kann intern (via registriertes Produkt) oder extern (Verlassen des Workspaces) sein"
         }
       },
       "I18N": "I18n",
       "EXTERN": "Extern",
       "POSITION.TOOLTIP": "Der Position-Pfad des Menü-Eintrags im Format [Eltern-Position.]Position",
       "URL.TOOLTIP": "Die URL die beim Aktivieren aufgerufen wird",
-      "MFE.TOOLTIP": "Indikator ob die Menü-URL durch ein registriertes Produkt-Modul angeboten wird",
+      "MFE.TOOLTIP": "Indikator ob die Menü-URL durch ein registriertes Produkt angeboten wird",
       "I18N.TOOLTIP": "Übersetzungen vorhanden?",
       "I18N.ROW.TOOLTIP": "Mindestens eine Übersetzung ist vorhanden",
       "EXTERN.TOOLTIP": "Wenn diese Option aktiviert ist, wird der Workspace verlassen",
       "PREVIEW_LANG": "Sprache",
       "PREVIEW_LANG.EMPTY": "Keine Übersetzung vorhanden",
       "PREVIEW_LANG.TOOLTIP": "Liste der verwendeten Sprachen"
+    }
+  },
+  "PRODUCT": {
+    "NAME": "Produktname",
+    "DESCRIPTION": "Beschreibung",
+    "BASE_URL": "Base URL",
+    "MODULE_TYPE": "Modultyp",
+    "REMOTE_NAME": "Remote Name",
+    "REMOTE_BASE_URL": "Remote Base URL",
+    "APP_ID": "Produkt ID",
+    "TOOLTIPS": {
+      "NAME": "Angezeigter Name des Produkts",
+      "BASE_URL": "URL über die aus dem Workspace auf das Produkt zugegriffen wird. \nMuss mit einem '/' (Schrägstrich) beginnen.",
+      "REMOTE_BASE_URL": "Basis URL für dieses Produkt",
+      "APP_ID": "Eindeutige ID des Produkts für die Verwendung im Berechtigungs Management. Alle Module des Produkts müssen hier die gleiche Produkt ID besitzen."
+    },
+    "ACTIONS": {
+      "LABEL": "Aktionen",
+      "TOOLTIP": "Detail-Aktionen",
+      "REGISTER": "Registrieren",
+      "REGISTER.HEADER": "Produkt registrieren",
+      "REGISTER.TOOLTIP": "Ein Produkt für diesen Workspace verfügbar machen",
+      "DEREGISTER": "Abmelden",
+      "DEREGISTER.HEADER": "Produkt abmelden",
+      "DEREGISTER.MESSAGE": "Möchten Sie das Produkt \"{{ITEM}}\" in diesem Workspace nicht mehr verwenden?",
+      "DEREGISTER.TOOLTIP": "Dieses Produkt in diesem Workspace nicht mehr verwenden"
+    }
+  },
+  "PRODUCTS": {
+    "AVAILABLE_PRODUCTS": "Produkte",
+    "AVAILABLE_PRODUCTS.TOOLTIP": "Liste der verfügbaren Produkte",
+    "FORWARD": "Alle URLs, die mit diesem Wert beginnen, werden zum Produkt mit der zugehörigen Base URL weitergeleitet - e.g. die Produkt Base URL ",
+    "FORWARD_1": " würde von folgenden URLs getroffen: ",
+    "FORWARD_2": " und ",
+    "MESSAGES": {
+      "NOTHING_REGISTERED": "Noch kein Produkt registriert",
+      "LOAD_ERROR": "Das Laden der Produkt-Liste ist fehlgeschlagen",
+      "DOES_NOT_EXIST": "Das verknüpfte Produkt existiert nicht",
+      "ALREADY_EXISTS": "Der Pfad wird bereits verwendet",
+      "REGISTRATION_OK": "Das Produkt wurde erfolgreich registriert",
+      "REGISTRATION_NOK": "Bei der Registrierung des Produkts ist ein Fehler aufgetreten",
+      "DEREGISTRATION_OK": "Das Produkt wurde erfolgreich abgemeldet",
+      "DEREGISTRATION_NOK": "Bei der Abmeldung des Produkts ist ein Fehler aufgetreten"
     }
   },
   "IMAGE": {

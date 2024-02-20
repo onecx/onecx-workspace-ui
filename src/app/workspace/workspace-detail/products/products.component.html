@@ -36,7 +36,7 @@
           (filterChange)="onFilterChange($event)"
           [filterColumns]="['PRODUCT.NAME' | translate]"
           [enableSorting]="true"
-          [sortingOptions]="[{ label: 'PRODUCT.NAME' | translate, value: 'name' }]"
+          [sortingOptions]="[{ label: 'PRODUCT.NAME' | translate, value: 'productName' }]"
           [defaultSortOption]="sortField"
           [defaultSortDirection]="sortOrder === 1"
           (sortChange)="onSortChange($event)"
@@ -54,10 +54,13 @@
           (click)="onProductClick($event, product)"
         >
           <div
-            class="h-3rem lg:h-3rem flex flex-column justify-content-between gap-1 lg:gap-2 my-1 lg:my-2 text-center"
+            class="h-4rem lg:h-4rem flex flex-column justify-content-between gap-1 lg:gap-2 my-1 lg:my-2 text-center"
           >
-            <div class="font-bold text-lg lg:text-xl">{{ limitText(product.name, 17) }}</div>
-            <div>{{ limitText(product.description, 25) }}</div>
+            <div class="font-bold text-lg lg:text-xl" [title]="'Name: ' + product.productName">
+              {{ limitText(product.productName, 17) }}
+            </div>
+            <div class="text-sm" [title]="product.description">{{ limitText(product.description, 25) }}</div>
+            <div class="text-sm" [title]="'Base URL: ' + product.baseUrl">{{ limitText(product.baseUrl, 25) }}</div>
           </div>
         </div>
       </div>

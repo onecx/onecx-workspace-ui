@@ -1,5 +1,9 @@
 :host ::ng-deep {
-  .p-dialog.portal-mfe-registration .p-dialog-content {
+  .p-dataview .p-dataview-header,
+  .p-datatable .p-datatable-header {
+    padding: 0.2rem 0.2rem 0.9rem 0.75rem;
+  }
+  .p-dialog .p-dialog-content {
     padding-top: 1rem;
     padding-bottom: 0;
     .p-inputgroup .p-float-label:first-child {
