@@ -24,7 +24,7 @@
 
       <p-tabPanel [header]="'PORTAL.TABS.CONTACT' | translate">
         <div *ocxIfPermission="'WORKSPACE_CONTACT#VIEW'">
-          <app-workspace-contact [portalDetail]="workspaceDetail" [editMode]="editMode"></app-workspace-contact>
+          <app-workspace-contact [workspaceDetail]="workspaceDetail" [editMode]="editMode"></app-workspace-contact>
         </div>
       </p-tabPanel>
 

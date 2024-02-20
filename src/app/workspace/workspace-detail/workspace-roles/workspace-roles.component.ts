@@ -52,14 +52,11 @@ export class WorkspaceRolesComponent implements OnChanges {
 
   public updateRoles() {
     if (this.formArray.valid) {
-      // const portal = cloneWorkspaceWithMicrofrontendsArray(this.workspaceDetail)
-      // clone form array and use the clone
       const array: string[] = []
       this.formArray.value.forEach((role) => array.push(role))
-      // portal.workspaceRoles = array
-      // button save, send event to detail
-      console.log('ROLES', this.formArray.value)
       this.saveRoleEvent.emit(this.formArray.value)
+      // clean up the form
+      this.formArray.removeAt(this.formArray.length - 1)
     } else {
       this.msgService.error({ summaryKey: 'GENERAL.FORM_VALIDATION' })
     }

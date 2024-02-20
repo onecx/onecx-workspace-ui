@@ -208,19 +208,15 @@ export class WorkspaceDetailComponent implements OnInit {
       }
       case 1: {
         this.workspaceContactComponent.onSubmit()
+        this.workspaceDetail = this.workspaceContactComponent.workspaceDetail
         break
       }
-      // case 4: {
-      //   this.workspaceRolesComponent.onSubmit()
-      //   break
-      // }
       default: {
         console.error("Couldn't assign tab to component")
         break
       }
     }
     this.toggleEditMode('view')
-    // look at form from children, then update only here
     this.workspaceApi
       .updateWorkspace({
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -229,7 +225,6 @@ export class WorkspaceDetailComponent implements OnInit {
       })
       .subscribe({
         next: (workspace) => {
-          console.log('WORKSPACE', workspace)
           this.workspaceId = workspace.id || ''
           this.onWorkspaceData(workspace)
           this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_OK' })
@@ -241,8 +236,6 @@ export class WorkspaceDetailComponent implements OnInit {
             summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_NOK'
             // detailKey: duplicate ? 'DETAIL.NEW_ROLE_DUPLICATED' : err.error.message
           })
-          // cleanup the form
-          // this.formArray.removeAt(this.formArray.length - 1)
         }
       })
     /* this.workspaceApi.updateWorkspace
