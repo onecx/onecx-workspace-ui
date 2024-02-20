@@ -2,7 +2,7 @@
   .p-dataview .p-dataview-header,
   .p-datatable .p-datatable-header {
     padding: 0.2rem 0.2rem 0.9rem 0.75rem;
-    .data-view-control-border {
+    .data-view-control-border.p-dropdown {
       border-top-left-radius: var(--border-radius);
       border-bottom-left-radius: var(--border-radius);
     }
