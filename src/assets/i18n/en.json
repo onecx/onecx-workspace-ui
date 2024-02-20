@@ -330,7 +330,7 @@
       "DETAILS": "Properties",
       "CONTACT": "Contact",
       "INTERN": "Internal",
-      "MFES": "Registered Products",
+      "PRODUCTS": "Registered Products",
       "MENU": "Menu",
       "ROLES": "Roles",
       "IMAGES": "Images",
@@ -358,48 +358,6 @@
       "STREET_NO": "Street No",
       "TENANT_ID": "Tenant ID",
       "THEME": "Theme"
-    },
-    "MFE": {
-      "ACTIONS": "Actions",
-      "DISPLAY_NAME": "Display Name",
-      "MODULE_TYPE": "Modul Type",
-      "REMOTE_NAME": "Remote Name",
-      "REMOTE_BASE_URL": "Remote Base URL",
-      "BASE_URL": "Base URL",
-      "APP_ID": "Product",
-      "DEREGISTER": "Deregister",
-      "DEREGISTER.HEADER": "Deregister Product Module",
-      "DEREGISTER.MESSAGE": "Do you no longer want to use the Product Module \"{{ITEM}}\" in this Workspace?",
-      "TOOLTIPS": {
-        "ACTIONS": "Detail actions",
-        "BASE_URL": "URL used to access the Product Module from the Workspace. \nMust start with a '/' (slash)",
-        "REMOTE_BASE_URL": "Base URL for this Product Module",
-        "DISPLAY_NAME": "Displayed name of the Product Module",
-        "APP_ID": "Unique ID of the Product for use in permission management. All modules of the Product must have the same Product ID.",
-        "DEREGISTER": "Do not use these Product Module in this Workspace anymore"
-      }
-    },
-    "MFES": {
-      "REGISTER": "Register Product Module",
-      "REGISTER.HEADER": "Register Product Module",
-      "REGISTER.TOOLTIP": "Make an Product Module available for this Workspace",
-      "AVAILABLE_MFES": "Product Module",
-      "AVAILABLE_MFES.TOOLTIP": "List of available Product Modules",
-      "MFE_REGISTER": "Register",
-      "MFE_MODULE_PATH": "Product Module Path",
-      "MFE_FORWARD": "All menu URLs starting with this value will be forwarded to the corresponding Product Module - e.g. the Product Module Base URL ",
-      "MFE_FORWARD_1": "would catch both of the following URLs: ",
-      "MFE_FORWARD_2": " and ",
-      "MESSAGES": {
-        "NOTHING_REGISTERED": "No Product Module registered yet",
-        "MFE_DOES_NOT_EXIST": "The assigned Product Module does not exist",
-        "MFE_LOAD_ERROR": "Failed to load Product Module list",
-        "MFE_REGISTRATION_OK": "The Product Module was successfully registered",
-        "MFE_REGISTRATION_NOK": "An error has occurred during Product Module registration",
-        "MFE_ALREADY_EXISTS": "The path is already in use",
-        "MFE_DEREGISTRATION_OK": "The Product Module was successfully deregistered",
-        "MFE_DEREGISTRATION_NOK": "An error has occurred during Product Module deregistration"
-      }
     },
     "MENU": {
       "HEADER": {
@@ -447,20 +405,63 @@
           "PORTAL_EXIT": "If set, the menu item exits the Workspace context",
           "POSITION": "An integer number that determines the position of the menu item in the menu structure",
           "SCOPE": "Scope",
-          "URL": "The URL accessed by the menu item. Can be internal (via registered Product Module) or external (leaving the Workspace)."
+          "URL": "The URL accessed by the menu item. Can be internal (via registered Product ) or external (leaving the Workspace)."
         }
       },
       "I18N": "I18n",
       "EXTERN": "Extern",
       "POSITION.TOOLTIP": "Position path of the menu item in format [parent item.]item ",
       "URL.TOOLTIP": "The URL to be called upon activation",
-      "MFE.TOOLTIP": "Indicator whether the menu URL is offered by a registered Product Module",
+      "MFE.TOOLTIP": "Indicator whether the menu URL is offered by a registered Product ",
       "I18N.TOOLTIP": "Translations available?",
       "I18N.ROW.TOOLTIP": "At least one translation is available",
       "EXTERN.TOOLTIP": "If checked then the Workspace is exit",
       "PREVIEW_LANG": "Language",
       "PREVIEW_LANG.EMPTY": "No translations available",
       "PREVIEW_LANG.TOOLTIP": "List of configured languages"
+    }
+  },
+  "PRODUCT": {
+    "NAME": "Product Name",
+    "DESCRIPTION": "Description",
+    "BASE_URL": "Base URL",
+    "MODULE_TYPE": "Modul Type",
+    "REMOTE_NAME": "Remote Name",
+    "REMOTE_BASE_URL": "Remote Base URL",
+    "APP_ID": "Product",
+    "TOOLTIPS": {
+      "NAME": "Displayed name of the Product",
+      "BASE_URL": "URL used to access the Product from the Workspace.",
+      "REMOTE_BASE_URL": "Base URL for this Product",
+      "APP_ID": "Unique ID of the Product for use in permission management. All modules of the Product must have the same Product ID."
+    },
+    "ACTIONS": {
+      "LABEL": "Actions",
+      "TOOLTIP": "Detail actions",
+      "REGISTER": "Register",
+      "REGISTER.HEADER": "Register Product",
+      "REGISTER.TOOLTIP": "Make a Product available for this Workspace",
+      "DEREGISTER": "Deregister",
+      "DEREGISTER.HEADER": "Deregister Product",
+      "DEREGISTER.MESSAGE": "Do you no longer want to use the Product \"{{ITEM}}\" in this Workspace?",
+      "DEREGISTER.TOOLTIP": "Do not use these Product in this Workspace anymore"
+    }
+  },
+  "PRODUCTS": {
+    "AVAILABLE_PRODUCTS": "Products",
+    "AVAILABLE_PRODUCTS.TOOLTIP": "List of available Products in Product Store",
+    "FORWARD": "All menu URLs starting with this value will be forwarded to the corresponding Product  - e.g. the Product  Base URL ",
+    "FORWARD_1": "would catch both of the following URLs: ",
+    "FORWARD_2": " and ",
+    "MESSAGES": {
+      "NOTHING_REGISTERED": "No Product registered yet",
+      "LOAD_ERROR": "Failed to load Product list",
+      "DOES_NOT_EXIST": "The assigned Product does not exist",
+      "ALREADY_EXISTS": "The path is already in use",
+      "REGISTRATION_OK": "The Product was successfully registered",
+      "REGISTRATION_NOK": "An error has occurred during Product registration",
+      "DEREGISTRATION_OK": "The Product was successfully deregistered",
+      "DEREGISTRATION_NOK": "An error has occurred during Product deregistration"
     }
   },
   "IMAGE": {

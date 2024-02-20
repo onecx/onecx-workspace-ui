@@ -1,0 +1,75 @@
+<div *ngIf="dataAccessIssue" class="m-3 flex flex-wrap justify-content-between align-items-center">
+  <p-message
+    id="workspace_detail_product_data_access_issue"
+    severity="error"
+    [text]="exceptionKey | translate"
+  ></p-message>
+  <p-button
+    id="workspace_detail_product_reload_button"
+    [title]="'ACTIONS.SEARCH.RELOAD' | translate"
+    (onClick)="loadData()"
+    icon="pi pi-refresh"
+  ></p-button>
+</div>
+
+<ng-container *ngIf="!dataAccessIssue">
+  <p-dataView
+    id="workspace_detail_product_dataview"
+    [value]="(products$ | async) ?? []"
+    [paginator]="true"
+    [alwaysShowPaginator]="true"
+    [rowsPerPageOptions]="[12, 24, 48]"
+    [rows]="12"
+    [layout]="viewMode"
+    [filterBy]="filterBy"
+    [sortField]="sortField"
+    [sortOrder]="sortOrder"
+  >
+    <ng-template pTemplate="header">
+      <div class="flex flex-wrap align-items-center mx-1">
+        <ocx-data-view-controls
+          class="flex-grow-1"
+          [supportedViews]="['grid']"
+          [initialViewMode]="viewMode"
+          [filterValue]="filterValue"
+          [enableFiltering]="true"
+          (filterChange)="onFilterChange($event)"
+          [filterColumns]="['PRODUCT.NAME' | translate]"
+          [enableSorting]="true"
+          [sortingOptions]="[{ label: 'PRODUCT.NAME' | translate, value: 'productName' }]"
+          [defaultSortOption]="sortField"
+          [defaultSortDirection]="sortOrder === 1"
+          (sortChange)="onSortChange($event)"
+          (sortDirectionChange)="onSortDirChange($event)"
+          [translations]="dataViewControlsTranslations"
+        >
+        </ocx-data-view-controls>
+      </div>
+    </ng-template>
+    <ng-template let-product let-item="rowIndex" pTemplate="gridItem">
+      <div class="col-12 sm:col-6 md:col-4 lg:col-4 xl:col-3 p-3">
+        <div
+          [id]="'workspace_detail_product_data_item_' + item"
+          class="card relative p-2 cursor-pointer hover:bg-gray-200 hover:text-color"
+          (click)="onProductClick($event, product)"
+        >
+          <span
+            [id]="'workspace_detail_product_data_item_' + item + '_deregister'"
+            class="card-badge-right badge-1 p-2 pi pi-trash pseudo-button-link"
+            [title]="'PRODUCT.ACTIONS.DEREGISTER.TOOLTIP' | translate"
+            (click)="onDeregister($event, product)"
+          ></span>
+          <div
+            class="h-4rem lg:h-4rem flex flex-column justify-content-between gap-1 lg:gap-2 my-1 lg:my-2 text-center"
+          >
+            <div class="font-bold text-lg lg:text-xl" [title]="'Name: ' + product.productName">
+              {{ limitText(product.productName, 17) }}
+            </div>
+            <div class="text-sm" [title]="product.description">{{ limitText(product.description, 25) }}</div>
+            <div class="text-sm" [title]="'Base URL: ' + product.baseUrl">{{ limitText(product.baseUrl, 25) }}</div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </p-dataView>
+</ng-container>

@@ -3,6 +3,7 @@ import { DatePipe, Location } from '@angular/common'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 import FileSaver from 'file-saver'
+import { Observable, map } from 'rxjs'
 
 import { Action, ObjectDetailItem, PortalMessageService, UserService } from '@onecx/portal-integration-angular'
 import { WorkspaceSnapshot, Workspace, WorkspaceAPIService } from '../../shared/generated'
@@ -32,7 +33,7 @@ export class WorkspaceDetailComponent implements OnInit {
   workspaceInternComponent!: WorkspaceInternComponent
 
   private apiPrefix = environment.apiPrefix
-  actions: Action[] = []
+  public actions$: Observable<Action[]> | undefined
   editMode = false
   headerImageUrl?: string
   importThemeCheckbox = false
@@ -44,7 +45,7 @@ export class WorkspaceDetailComponent implements OnInit {
   workspaceDownloadVisible = false
   workspaceId: string = ''
   workspaceName = this.route.snapshot.params['name']
-  selectedIndex = 0
+  selectedTabIndex = 0
   dateFormat = 'medium'
 
   constructor(
@@ -56,21 +57,31 @@ export class WorkspaceDetailComponent implements OnInit {
     private translate: TranslateService,
     private msgService: PortalMessageService
   ) {
-    this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm:ss' : 'medium'
+    this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm' : 'medium'
   }
 
   ngOnInit() {
     this.getWorkspaceData()
   }
 
-  public onChange($event: any) {
-    this.selectedIndex = $event.index
+  public onTabChange($event: any) {
+    this.selectedTabIndex = $event.index
+    this.prepareActionButtons()
   }
 
   public onWorkspaceData(workspace: Workspace) {
     this.workspaceDetail = workspace
     this.preparePageHeaderImage()
+    this.prepareActionButtons()
     this.translate
+      .get(['PORTAL.ITEM.HOME_PAGE', 'PORTAL.ITEM.BASE_URL', 'PORTAL.ITEM.THEME', 'DETAIL.CREATION_DATE'])
+      .subscribe((data) => {
+        this.preparePageObjectDetails(data)
+      })
+  }
+
+  private prepareActionButtons(): void {
+    this.actions$ = this.translate
       .get([
         'ACTIONS.NAVIGATION.BACK',
         'ACTIONS.NAVIGATION.BACK.TOOLTIP',
@@ -88,14 +99,86 @@ export class WorkspaceDetailComponent implements OnInit {
         'ACTIONS.DELETE.TOOLTIP',
         'ACTIONS.DELETE.MESSAGE'
       ])
-      .subscribe((data) => {
-        this.preparePageHeaderActions(data)
-      })
-    this.translate
-      .get(['PORTAL.ITEM.HOME_PAGE', 'PORTAL.ITEM.BASE_URL', 'PORTAL.ITEM.THEME', 'DETAIL.CREATION_DATE'])
-      .subscribe((data) => {
-        this.preparePageObjectDetails(data)
-      })
+      .pipe(
+        map((data) => {
+          return [
+            {
+              label: data['ACTIONS.NAVIGATION.BACK'],
+              title: data['ACTIONS.NAVIGATION.BACK.TOOLTIP'],
+              actionCallback: () => this.close(),
+              icon: 'pi pi-arrow-left',
+              show: 'always',
+              permission: 'WORKSPACE#SEARCH'
+            },
+            {
+              label: data['MENU.HEADER'],
+              title: data['MENU.SUBHEADER'],
+              actionCallback: () => this.manageMenu(),
+              icon: 'pi pi-sitemap',
+              show: 'always',
+              permission: 'MENU#VIEW',
+              conditional: true,
+              showCondition: this.workspaceDetail != null && !this.editMode
+            },
+            {
+              label: data['ACTIONS.CANCEL'],
+              title: data['ACTIONS.TOOLTIPS.CANCEL'],
+              actionCallback: () => this.toggleEditMode(),
+              icon: 'pi pi-times',
+              show: 'always',
+              permission: 'WORKSPACE#VIEW',
+              conditional: true,
+              showCondition: this.editMode
+            },
+            {
+              label: data['ACTIONS.SAVE'],
+              title: data['ACTIONS.TOOLTIPS.SAVE'],
+              actionCallback: () => this.updateWorkspace(),
+              icon: 'pi pi-save',
+              show: 'always',
+              permission: 'WORKSPACE#SAVE',
+              conditional: true,
+              showCondition: this.editMode
+            },
+            {
+              label: data['ACTIONS.EXPORT.LABEL'],
+              title: data['ACTIONS.EXPORT.PORTAL'],
+              actionCallback: () => (this.workspaceDownloadVisible = true),
+              icon: 'pi pi-download',
+              show: 'always',
+              permission: 'WORKSPACE#EXPORT',
+              conditional: true,
+              showCondition: this.workspaceDetail != null && !this.editMode
+            },
+            {
+              label: data['ACTIONS.EDIT.LABEL'],
+              title: data['ACTIONS.EDIT.TOOLTIP'],
+              actionCallback: () => this.toggleEditMode(),
+              icon: 'pi pi-pencil',
+              show: 'always',
+              permission: 'WORKSPACE#EDIT',
+              conditional: true,
+              showCondition: this.workspaceDetail != null && !this.editMode && this.selectedTabIndex < 2
+            },
+            {
+              label: data['ACTIONS.DELETE.LABEL'],
+              title: data['ACTIONS.DELETE.TOOLTIP'].replace('{{TYPE}}', 'Workspace'),
+              actionCallback: () => {
+                this.workspaceDeleteVisible = true
+                this.workspaceDeleteMessage = data['ACTIONS.DELETE.MESSAGE'].replace(
+                  '{{ITEM}}',
+                  this.workspaceDetail?.name
+                )
+              },
+              icon: 'pi pi-trash',
+              show: 'asOverflow',
+              permission: 'WORKSPACE#DELETE',
+              conditional: true,
+              showCondition: this.workspaceDetail != null && !this.editMode
+            }
+          ]
+        })
+      )
   }
 
   private async getWorkspaceData() {
@@ -104,8 +187,6 @@ export class WorkspaceDetailComponent implements OnInit {
       .pipe()
       .subscribe({
         next: (workspace) => {
-          // Convert microfrontends to Set to avoid typeerrors
-          // workspace.microfrontendRegistrations = new Set(Array.from(workspace.microfrontendRegistrations ?? []))
           if (workspace.resource) {
             this.workspaceId = workspace.resource.id || ''
             this.onWorkspaceData(workspace.resource)
@@ -120,7 +201,7 @@ export class WorkspaceDetailComponent implements OnInit {
 
   private updateWorkspace() {
     // Trigger update on the form of the currently selected tab
-    switch (this.selectedIndex) {
+    switch (this.selectedTabIndex) {
       case 0: {
         this.workspacePropsComponent.onSubmit()
         break
@@ -165,27 +246,7 @@ export class WorkspaceDetailComponent implements OnInit {
   private toggleEditMode(forcedMode?: 'edit' | 'view'): void {
     if (forcedMode) this.editMode = forcedMode === 'edit' ? true : false
     else this.editMode = !this.editMode
-    this.translate
-      .get([
-        'ACTIONS.NAVIGATION.BACK',
-        'ACTIONS.NAVIGATION.BACK.TOOLTIP',
-        'MENU.HEADER',
-        'MENU.SUBHEADER',
-        'ACTIONS.CANCEL',
-        'ACTIONS.TOOLTIPS.CANCEL',
-        'ACTIONS.SAVE',
-        'ACTIONS.TOOLTIPS.SAVE',
-        'ACTIONS.EXPORT.LABEL',
-        'ACTIONS.EXPORT.PORTAL',
-        'ACTIONS.EDIT.LABEL',
-        'ACTIONS.EDIT.TOOLTIP',
-        'ACTIONS.DELETE.LABEL',
-        'ACTIONS.DELETE.TOOLTIP',
-        'ACTIONS.DELETE.MESSAGE'
-      ])
-      .subscribe((data) => {
-        this.preparePageHeaderActions(data)
-      })
+    this.prepareActionButtons()
   }
 
   public onExportWorkspace() {
@@ -320,83 +381,6 @@ export class WorkspaceDetailComponent implements OnInit {
     } else {
       this.headerImageUrl = this.workspaceDetail?.logoUrl
     }
-  }
-
-  private preparePageHeaderActions(data: any) {
-    this.actions = []
-    this.actions.push(
-      {
-        label: data['ACTIONS.NAVIGATION.BACK'],
-        title: data['ACTIONS.NAVIGATION.BACK.TOOLTIP'],
-        actionCallback: () => this.close(),
-        icon: 'pi pi-arrow-left',
-        show: 'always',
-        permission: 'WORKSPACE#SEARCH'
-      },
-      {
-        label: data['MENU.HEADER'],
-        title: data['MENU.SUBHEADER'],
-        actionCallback: () => this.manageMenu(),
-        icon: 'pi pi-sitemap',
-        show: 'always',
-        permission: 'MENU#VIEW',
-        conditional: true,
-        showCondition: this.workspaceDetail != null && !this.editMode
-      },
-      {
-        label: data['ACTIONS.CANCEL'],
-        title: data['ACTIONS.TOOLTIPS.CANCEL'],
-        actionCallback: () => this.toggleEditMode(),
-        icon: 'pi pi-times',
-        show: 'always',
-        permission: 'WORKSPACE#VIEW',
-        conditional: true,
-        showCondition: this.editMode
-      },
-      {
-        label: data['ACTIONS.SAVE'],
-        title: data['ACTIONS.TOOLTIPS.SAVE'],
-        actionCallback: () => this.updateWorkspace(),
-        icon: 'pi pi-save',
-        show: 'always',
-        permission: 'WORKSPACE#SAVE',
-        conditional: true,
-        showCondition: this.editMode
-      },
-      {
-        label: data['ACTIONS.EXPORT.LABEL'],
-        title: data['ACTIONS.EXPORT.PORTAL'],
-        actionCallback: () => (this.workspaceDownloadVisible = true),
-        icon: 'pi pi-download',
-        show: 'always',
-        permission: 'WORKSPACE#EXPORT',
-        conditional: true,
-        showCondition: this.workspaceDetail != null && !this.editMode
-      },
-      {
-        label: data['ACTIONS.EDIT.LABEL'],
-        title: data['ACTIONS.EDIT.TOOLTIP'],
-        actionCallback: () => this.toggleEditMode(),
-        icon: 'pi pi-pencil',
-        show: 'always',
-        permission: 'WORKSPACE#EDIT',
-        conditional: true,
-        showCondition: this.workspaceDetail != null && !this.editMode
-      },
-      {
-        label: data['ACTIONS.DELETE.LABEL'],
-        title: data['ACTIONS.DELETE.TOOLTIP'].replace('{{TYPE}}', 'Workspace'),
-        actionCallback: () => {
-          this.workspaceDeleteVisible = true
-          this.workspaceDeleteMessage = data['ACTIONS.DELETE.MESSAGE'].replace('{{ITEM}}', this.workspaceDetail?.name)
-        },
-        icon: 'pi pi-trash',
-        show: 'asOverflow',
-        permission: 'WORKSPACE#DELETE',
-        conditional: true,
-        showCondition: this.workspaceDetail != null && !this.editMode
-      }
-    )
   }
 
   public manageMenu(): void {
