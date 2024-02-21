@@ -6,13 +6,13 @@ import { FileSaver } from 'file-saver'
 import { Observable, map } from 'rxjs'
 
 import { Action, ObjectDetailItem, PortalMessageService, UserService } from '@onecx/portal-integration-angular'
-import { WorkspaceSnapshot, Workspace, WorkspaceAPIService } from '../../shared/generated'
-import { environment } from '../../../environments/environment'
+import { WorkspaceSnapshot, Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
+import { environment } from 'src/environments/environment'
 
-import { WorkspacePropsComponent } from './workspace-props/workspace-props.component'
-import { WorkspaceRolesComponent } from './workspace-roles/workspace-roles.component'
-import { WorkspaceInternComponent } from './workspace-intern/workspace-intern.component'
-import { WorkspaceContactComponent } from './workspace-contact/workspace-contact.component'
+import { WorkspacePropsComponent } from 'src/app/workspace/workspace-detail/workspace-props/workspace-props.component'
+import { WorkspaceRolesComponent } from 'src/app/workspace/workspace-detail/workspace-roles/workspace-roles.component'
+import { WorkspaceInternComponent } from 'src/app/workspace/workspace-detail/workspace-intern/workspace-intern.component'
+import { WorkspaceContactComponent } from 'src/app/workspace/workspace-detail/workspace-contact/workspace-contact.component'
 
 @Component({
   selector: 'app-workspace-detail',

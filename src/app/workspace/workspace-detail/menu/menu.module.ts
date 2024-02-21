@@ -5,11 +5,11 @@ import { RouterModule, Routes } from '@angular/router'
 import { TreeDragDropService } from 'primeng/api'
 
 import { addInitializeModuleGuard, InitializeModuleGuard, PortalCoreModule } from '@onecx/portal-integration-angular'
-import { SharedModule } from '../../../shared/shared.module'
+import { SharedModule } from 'src/app/shared/shared.module'
 
-import { MenuTreeService } from '../../../services/menu-tree.service'
-import { MenuTreeComponent } from './menu-tree/menu-tree.component'
-import { MenuComponent } from './menu.component'
+import { MenuTreeService } from 'src/app/services/menu-tree.service'
+import { MenuTreeComponent } from 'src/app/workspace/workspace-detail/menu/menu-tree/menu-tree.component'
+import { MenuComponent } from 'src/app/workspace/workspace-detail/menu/menu.component'
 
 const routes: Routes = [
   {

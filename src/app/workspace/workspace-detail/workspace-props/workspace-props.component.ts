@@ -15,15 +15,15 @@ import {
 import {
   // ImageV1APIService,
   WorkspaceAPIService /* , ThemeDTO, ThemesAPIService */
-} from '../../../shared/generated'
-import { Workspace } from '../../../shared/generated'
-import { environment } from '../../../../environments/environment'
-import { LogoState } from '../../workspace-create/logo-state'
+} from 'src/app/shared/generated'
+import { Workspace } from 'src/app/shared/generated'
+import { environment } from 'src/environments/environment'
+import { LogoState } from 'src/app/workspace/workspace-create/logo-state'
 import {
   setFetchUrls,
   copyToClipboard
   // sortThemeByName
-} from '../../../shared/utils'
+} from 'src/app/shared/utils'
 
 @Component({
   selector: 'app-workspace-props',

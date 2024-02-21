@@ -1,8 +1,7 @@
 import { Component, Input, Output, SimpleChanges, OnChanges, EventEmitter } from '@angular/core'
 import { FormArray, FormControl } from '@angular/forms'
 
-import { WorkspaceAPIService } from '../../../shared/generated'
-import { Workspace } from '../../../shared/generated'
+import { Workspace, WorkspaceAPIService } from '../../../shared/generated'
 import { PortalMessageService } from '@onecx/portal-integration-angular'
 
 @Component({

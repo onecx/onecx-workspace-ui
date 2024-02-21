@@ -1,5 +1,5 @@
 import { Observable, of } from 'rxjs'
-import { LabelResolver } from './label.resolver'
+import { LabelResolver } from 'src/app/shared/label.resolver'
 
 let labelResolver: LabelResolver
 

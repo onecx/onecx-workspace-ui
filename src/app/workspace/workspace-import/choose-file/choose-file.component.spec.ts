@@ -8,7 +8,7 @@ import { of, throwError } from 'rxjs'
 import { PortalMessageService } from '@onecx/portal-integration-angular'
 // import { HttpLoaderFactory } from 'src/app/shared/shared.module'
 import { ChooseFileComponent } from './choose-file.component'
-import { WorkspaceAPIService, WorkspaceSnapshot } from '../../../shared/generated'
+import { WorkspaceAPIService, WorkspaceSnapshot } from 'src/app/shared/generated'
 
 const snapshot: WorkspaceSnapshot = {
   workspaces: {

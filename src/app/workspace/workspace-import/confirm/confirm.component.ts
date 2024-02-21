@@ -3,7 +3,7 @@ import {
   /* ThemeDTO, ThemesAPIService, */ WorkspaceAPIService,
   SearchWorkspacesResponse,
   WorkspaceAbstract
-} from '../../../shared/generated'
+} from 'src/app/shared/generated'
 
 @Component({
   selector: 'app-import-confirm',

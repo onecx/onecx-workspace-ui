@@ -8,7 +8,7 @@ import { FileUpload } from 'primeng/fileupload'
 
 import { PortalMessageService, UserService } from '@onecx/portal-integration-angular'
 
-import { LogoState } from './logo-state'
+import { LogoState } from 'src/app/workspace/workspace-create/logo-state'
 // import { setFetchUrls , sortThemeByName } from '../../shared/utils'
 import {
   /* ImageV1APIService, */

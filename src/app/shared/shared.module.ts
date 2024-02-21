@@ -41,7 +41,7 @@ import {
 
 import { Configuration } from 'src/app/shared/generated'
 import { environment } from 'src/environments/environment'
-import { LabelResolver } from './label.resolver'
+import { LabelResolver } from 'src/app/shared/label.resolver'
 
 import { ImageContainerComponent } from './image-container/image-container.component'
 import { ThemeColorBoxComponent } from './theme-color-box/theme-color-box.component'
