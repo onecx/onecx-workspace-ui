@@ -6,8 +6,8 @@ import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { FormControl, FormGroup } from '@angular/forms'
 
 import { AppStateService, createTranslateLoader, PortalMessageService } from '@onecx/portal-integration-angular'
-import { WorkspaceContactComponent } from './workspace-contact.component'
-import { Workspace } from '../../../shared/generated'
+import { WorkspaceContactComponent } from 'src/app/workspace/workspace-detail/workspace-contact/workspace-contact.component'
+import { Workspace } from 'src/app/shared/generated'
 
 const portal: Workspace = {
   name: 'name',

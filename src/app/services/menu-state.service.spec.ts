@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
 
-import { MenuStateService } from './menu-state.service'
+import { MenuStateService } from 'src/app/services/menu-state.service'
 
 describe('MenuStateService', () => {
   let service: MenuStateService

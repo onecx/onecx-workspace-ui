@@ -10,9 +10,9 @@ import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ConfirmationService, MessageService } from 'primeng/api'
 import { DropdownModule } from 'primeng/dropdown'
 
-import { environment } from '../../../environments/environment'
+import { environment } from 'src/environments/environment'
 import { APP_CONFIG, AppStateService, createTranslateLoader } from '@onecx/portal-integration-angular'
-// import { PortalInternalAPIService } from '../../generated'
+// import { PortalInternalAPIService } from 'src/app/generated'
 
 describe('WorkspaceCreateComponent', () => {
   let component: WorkspaceCreateComponent

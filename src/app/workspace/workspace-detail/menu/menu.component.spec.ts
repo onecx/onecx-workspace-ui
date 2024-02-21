@@ -6,16 +6,14 @@ import { Location } from '@angular/common'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router'
 // import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
-// import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { of, throwError } from 'rxjs'
 
 import { PortalMessageService, ConfigurationService, AUTH_SERVICE } from '@onecx/portal-integration-angular'
-// import { HttpLoaderFactory } from 'src/app/shared/shared.module'
-// import { HttpLoaderFactory } from 'src/app/shared/shared.module'
-import { MenuComponent } from './menu.component'
+
+import { MenuComponent } from 'src/app/workspace/workspace-detail/menu/menu.component'
 import { MenuStateService, MenuState } from 'src/app/services/menu-state.service'
 
-import { Workspace, MenuItem, WorkspaceAPIService, Scope, MenuItemAPIService } from '../../../shared/generated'
+import { Workspace, MenuItem, WorkspaceAPIService, Scope, MenuItemAPIService } from 'src/app/shared/generated'
 import FileSaver from 'file-saver'
 
 const workspace: Workspace = {

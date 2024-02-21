@@ -1,11 +1,11 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-// import { HttpClient } from '@angular/common/http'
+import { HttpClient } from '@angular/common/http'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
-// import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 
-// import { HttpLoaderFactory } from 'src/app/shared/shared.module'
-import { WorkspaceInternComponent } from './workspace-intern.component'
+import { AppStateService, createTranslateLoader } from '@onecx/portal-integration-angular'
+import { WorkspaceInternComponent } from 'src/app/workspace/workspace-detail/workspace-intern/workspace-intern.component'
 
 describe('WorkspaceInternComponent', () => {
   let component: WorkspaceInternComponent
@@ -15,14 +15,15 @@ describe('WorkspaceInternComponent', () => {
     TestBed.configureTestingModule({
       declarations: [WorkspaceInternComponent],
       imports: [
-        HttpClientTestingModule
-        // TranslateModule.forRoot({
-        //   loader: {
-        //     provide: TranslateLoader,
-        //     useFactory: HttpLoaderFactory,
-        //     deps: [HttpClient]
-        //   }
-        // })
+        HttpClientTestingModule,
+        TranslateModule.forRoot({
+          isolate: true,
+          loader: {
+            provide: TranslateLoader,
+            useFactory: createTranslateLoader,
+            deps: [HttpClient, AppStateService]
+          }
+        })
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents()
@@ -41,7 +42,7 @@ describe('WorkspaceInternComponent', () => {
     fixture.detectChanges()
   })
 
-  it('should create', () => {
+  fit('should create', () => {
     expect(component).toBeTruthy()
   })
 })

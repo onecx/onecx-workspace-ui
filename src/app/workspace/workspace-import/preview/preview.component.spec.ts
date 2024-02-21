@@ -6,8 +6,8 @@ import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { of } from 'rxjs'
 
 // import { HttpLoaderFactory } from 'src/app/shared/shared.module'
-import { PreviewComponent } from './preview.component'
-import { WorkspaceSnapshot } from '../../../shared/generated'
+import { PreviewComponent } from 'src/app/workspace/workspace-import/preview/preview.component'
+import { WorkspaceSnapshot } from 'src/app/shared/generated'
 
 const snapshot: WorkspaceSnapshot = {
   workspaces: {

@@ -13,8 +13,8 @@ import {
   ThemeService
 } from '@onecx/portal-integration-angular'
 // import { HttpLoaderFactory } from 'src/app/shared/shared.module'
-import { WorkspacePropsComponent } from './workspace-props.component'
-import { WorkspaceAPIService } from '../../../shared/generated'
+import { WorkspacePropsComponent } from 'src/app/workspace/workspace-detail/workspace-props/workspace-props.component'
+import { WorkspaceAPIService } from 'src/app/shared/generated'
 
 const workspaceDetail = {
   name: 'name',

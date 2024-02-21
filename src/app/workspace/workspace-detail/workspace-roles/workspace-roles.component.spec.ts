@@ -6,8 +6,8 @@ import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 
 import { AppStateService, createTranslateLoader, PortalMessageService } from '@onecx/portal-integration-angular'
-import { WorkspaceRolesComponent } from './workspace-roles.component'
-import { Workspace } from '../../../shared/generated'
+import { WorkspaceRolesComponent } from 'src/app/workspace/workspace-detail/workspace-roles/workspace-roles.component'
+import { Workspace } from 'src/app/shared/generated'
 
 const portal: Workspace = {
   name: 'name',

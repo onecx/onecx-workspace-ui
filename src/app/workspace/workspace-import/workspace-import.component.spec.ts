@@ -9,10 +9,10 @@ import { of, throwError } from 'rxjs'
 
 import { AUTH_SERVICE, PortalMessageService } from '@onecx/portal-integration-angular'
 // import { HttpLoaderFactory } from 'src/app/shared/shared.module'
-import { WorkspaceImportComponent } from './workspace-import.component'
-import { ConfirmComponent } from './confirm/confirm.component'
-import { WorkspaceAPIService, EximWorkspaceMenuItem, WorkspaceSnapshot } from '../../shared/generated'
-import { PreviewComponent } from './preview/preview.component'
+import { WorkspaceImportComponent } from 'src/app/workspace/workspace-import/workspace-import.component'
+import { ConfirmComponent } from 'src/app/workspace/workspace-import/confirm/confirm.component'
+import { WorkspaceAPIService, EximWorkspaceMenuItem, WorkspaceSnapshot } from 'src/app/shared/generated'
+import { PreviewComponent } from 'src/app/workspace/workspace-import/preview/preview.component'
 
 class MockRouter {
   navigate = jasmine.createSpy('navigate')
