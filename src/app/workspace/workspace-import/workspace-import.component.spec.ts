@@ -152,15 +152,7 @@ describe('WorkspaceImportComponent', () => {
 
     component.importPortal()
 
-    // const req = httpTestingController.expectOne(`http://localhost/v1/importWorkspaces`)
-    // expect(req.request.method).toEqual('POST')
-    // req.flush({})
-
     expect(component.isLoading).toBeFalse()
-    // expect(component.importRequestDTO.portal.microfrontendRegistrations).toEqual(jasmine.any(Array))
-    // portal.portal.microfrontendRegistrations.forEach((mfe) => {
-    //   expect(component.importRequestDTO?.portal.microfrontendRegistrations).toContain(mfe)
-    // })
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'PORTAL_IMPORT.PORTAL_IMPORT_CREATE_SUCCESS' })
   })
 
@@ -357,28 +349,3 @@ describe('WorkspaceImportComponent', () => {
     }
   })
 })
-
-//         tenantId: 'id'
-//       },
-//       themeImportData: {
-//         name: 'themeName'
-//       }
-//     }
-//     component.importRequestDTO = importRequestDTO
-
-//     component.back()
-
-//     if (component.confirmComponent.portalName) {
-//       expect(component.importRequestDTO.portal.portalName).toEqual(component.confirmComponent.portalName)
-//     }
-//     if (component.confirmComponent.themeName) {
-//       expect(component.importRequestDTO.themeImportData?.name).toEqual(component.confirmComponent.themeName)
-//     }
-//     if (component.confirmComponent.baseUrl) {
-//       expect(component.importRequestDTO.portal.baseUrl).toEqual(component.confirmComponent.baseUrl)
-//     }
-//     if (component.confirmComponent.tenantId) {
-//       expect(component.importRequestDTO.portal.tenantId).toEqual(component.confirmComponent.tenantId)
-//     }
-//   })
-// })
