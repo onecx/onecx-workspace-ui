@@ -3,19 +3,9 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { HttpClient } from '@angular/common/http'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
-import { Observable } from 'rxjs'
 
-import { MfeInfo } from '@onecx/integration-interface'
 import { AppStateService, createTranslateLoader } from '@onecx/portal-integration-angular'
 import { WorkspaceInternComponent } from 'src/app/workspace/workspace-detail/workspace-intern/workspace-intern.component'
-
-let currentMfe$: Observable<Partial<MfeInfo>>
-let globalLoading$: Observable<boolean>
-
-const appStateServiceMock = {
-  currentMfe$: { asObservable: () => currentMfe$ },
-  globalLoading$: { asObservable: () => globalLoading$ }
-}
 
 describe('WorkspaceInternComponent', () => {
   let component: WorkspaceInternComponent
@@ -34,7 +24,6 @@ describe('WorkspaceInternComponent', () => {
           }
         })
       ],
-      providers: [{ provide: AppStateService, useValue: appStateServiceMock }],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents()
   }))

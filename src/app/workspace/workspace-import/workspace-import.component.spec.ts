@@ -1,14 +1,18 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-// import { HttpClient } from '@angular/common/http'
+import { HttpClient } from '@angular/common/http'
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing'
 import { Router } from '@angular/router'
 import { ActivatedRoute } from '@angular/router'
-// import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { of, throwError } from 'rxjs'
 
-import { AUTH_SERVICE, PortalMessageService } from '@onecx/portal-integration-angular'
-// import { HttpLoaderFactory } from 'src/app/shared/shared.module'
+import {
+  AUTH_SERVICE,
+  AppStateService,
+  createTranslateLoader,
+  PortalMessageService
+} from '@onecx/portal-integration-angular'
 import { WorkspaceImportComponent } from 'src/app/workspace/workspace-import/workspace-import.component'
 import { ConfirmComponent } from 'src/app/workspace/workspace-import/confirm/confirm.component'
 import { WorkspaceAPIService, EximWorkspaceMenuItem, WorkspaceSnapshot } from 'src/app/shared/generated'
@@ -51,21 +55,21 @@ describe('WorkspaceImportComponent', () => {
 
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
   const apiServiceSpy = {
-    portalImportRequest: jasmine.createSpy('portalImportRequest').and.returnValue(of({}))
+    importWorkspaces: jasmine.createSpy('importWorkspaces').and.returnValue(of({}))
   }
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [WorkspaceImportComponent],
       imports: [
-        HttpClientTestingModule
-        // TranslateModule.forRoot({
-        //   loader: {
-        //     provide: TranslateLoader,
-        //     useFactory: HttpLoaderFactory,
-        //     deps: [HttpClient]
-        //   }
-        // })
+        HttpClientTestingModule,
+        TranslateModule.forRoot({
+          loader: {
+            provide: TranslateLoader,
+            useFactory: createTranslateLoader,
+            deps: [HttpClient, AppStateService]
+          }
+        })
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
@@ -78,7 +82,7 @@ describe('WorkspaceImportComponent', () => {
     }).compileComponents()
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
-    apiServiceSpy.portalImportRequest.calls.reset()
+    apiServiceSpy.importWorkspaces.calls.reset()
   }))
 
   beforeEach(() => {
@@ -129,7 +133,7 @@ describe('WorkspaceImportComponent', () => {
   })
 
   it('should import a portal', () => {
-    apiServiceSpy.portalImportRequest.and.returnValue(of({}))
+    apiServiceSpy.importWorkspaces.and.returnValue(of({}))
     const workspaceSnap = {
       workspaces: {
         workspace: {
@@ -148,9 +152,9 @@ describe('WorkspaceImportComponent', () => {
 
     component.importPortal()
 
-    const req = httpTestingController.expectOne(`http://localhost/v1/portalImportRequest`)
-    expect(req.request.method).toEqual('POST')
-    req.flush({})
+    // const req = httpTestingController.expectOne(`http://localhost/v1/importWorkspaces`)
+    // expect(req.request.method).toEqual('POST')
+    // req.flush({})
 
     expect(component.isLoading).toBeFalse()
     // expect(component.importRequestDTO.portal.microfrontendRegistrations).toEqual(jasmine.any(Array))
@@ -161,7 +165,7 @@ describe('WorkspaceImportComponent', () => {
   })
 
   xit('should import a portal with theme if checkbox enabled', () => {
-    apiServiceSpy.portalImportRequest.and.returnValue(of({}))
+    apiServiceSpy.importWorkspaces.and.returnValue(of({}))
     const workspaceSnap = {
       workspaces: {
         workspace: {
@@ -181,7 +185,7 @@ describe('WorkspaceImportComponent', () => {
 
     component.importPortal()
 
-    const req = httpTestingController.expectOne(`http://localhost/v1/portalImportRequest`)
+    const req = httpTestingController.expectOne(`http://localhost/v1/importWorkspaces`)
     expect(req.request.method).toEqual('POST')
     req.flush({})
 
@@ -189,55 +193,8 @@ describe('WorkspaceImportComponent', () => {
     // expect(component.importRequestDTO.themeImportData?.name).toEqual('new name')
   })
 
-  xit('should import a portal and set mfe & menu items base url correctly', () => {
-    apiServiceSpy.portalImportRequest.and.returnValue(of({}))
-    spyOn(component, 'alignMenuItemsBaseUrl')
-    // const microfrontendRegistrations = new Set([
-    //   { version: 1, baseUrl: 'http://old-url.com/path1' },
-    //   { version: 1, baseUrl: 'http://old-url.com/path2' },
-    //   { version: 1, baseUrl: 'http://another-url.com/path3' },
-    //   { version: 1, baseUrl: 'http://old-url.com/path4' },
-    //   { version: 1, baseUrl: 'http://different-url.com/path5' }
-    // ])
-    const workspaceSnap = {
-      workspaces: {
-        workspace: {
-          name: 'name',
-          menu: {
-            menu: {
-              menuItems: [
-                {
-                  name: 'menuName'
-                }
-              ]
-            }
-          }
-        }
-      }
-    }
-    component.importRequestDTO = workspaceSnap
-    component.hasPermission = true
-    component.tenantId = 'id'
-    component.importThemeCheckbox = true
-    component.baseUrlOrg = 'http://old-url.com'
-    component.baseUrl = 'http://new-url.com'
-
-    component.importPortal()
-
-    // microfrontendRegistrations.forEach((mfe) => {
-    //   if (mfe.baseUrl.startsWith('http://old-url.com')) {
-    //     expect(mfe.baseUrl).toBe(component.baseUrl + '/path' + mfe.baseUrl.charAt(mfe.baseUrl.length - 1))
-    //   }
-    // })
-    if (component.importRequestDTO.workspaces?.['workspace'].menu?.menu?.menuItems) {
-      expect(component.alignMenuItemsBaseUrl).toHaveBeenCalledWith(
-        component.importRequestDTO.workspaces?.['workspace'].menu?.menu.menuItems
-      )
-    }
-  })
-
   it('should update a portal', () => {
-    apiServiceSpy.portalImportRequest.and.returnValue(of({}))
+    apiServiceSpy.importWorkspaces.and.returnValue(of({}))
     const workspaceSnap = {
       workspaces: {
         workspace: {
@@ -256,9 +213,40 @@ describe('WorkspaceImportComponent', () => {
 
     component.importPortal()
 
-    const req = httpTestingController.expectOne(`http://localhost/v1/portalImportRequest`)
-    expect(req.request.method).toEqual('POST')
-    req.flush({})
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'PORTAL_IMPORT.PORTAL_IMPORT_UPDATE_SUCCESS' })
+  })
+
+  it('should update a portal with new base url', () => {
+    apiServiceSpy.importWorkspaces.and.returnValue(of({}))
+    const workspaceSnap = {
+      workspaces: {
+        workspace: {
+          name: 'name',
+          menu: {
+            menu: {
+              menuItems: [
+                {
+                  name: 'menu'
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+    component.importRequestDTO = workspaceSnap
+    component.hasPermission = true
+    component.tenantId = 'id'
+    component.importThemeCheckbox = false
+    component.confirmComponent = new MockConfirmComponent() as unknown as ConfirmComponent
+    if (component.confirmComponent) {
+      component.confirmComponent.workspaceNameExists = true
+    }
+    component.baseUrlOrg = 'http://baseurl'
+    component.baseUrl = 'http://newbaseurl'
+
+    component.next()
+    component.importPortal()
 
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'PORTAL_IMPORT.PORTAL_IMPORT_UPDATE_SUCCESS' })
   })
@@ -272,16 +260,12 @@ describe('WorkspaceImportComponent', () => {
       }
     }
     component.importRequestDTO = workspaceSnap
-    apiServiceSpy.portalImportRequest.and.returnValue(throwError(() => new Error()))
+    apiServiceSpy.importWorkspaces.and.returnValue(throwError(() => new Error()))
     component.hasPermission = true
     component.tenantId = 'id'
     component.importThemeCheckbox = false
 
     component.importPortal()
-
-    const req = httpTestingController.expectOne(`http://localhost/v1/portalImportRequest`)
-    expect(req.request.method).toEqual('POST')
-    req.flush('Error loading data', { status: 500, statusText: 'Server Error' })
 
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'PORTAL_IMPORT.PORTAL_IMPORT_ERROR' })
   })
@@ -306,43 +290,21 @@ describe('WorkspaceImportComponent', () => {
     expect(menuItems[2].url).toEqual('http://otherurl/path3')
   })
 
-  // it('should set importRequestDTO on next when activeIndex is 0 (upload), and themeImportData empty', () => {
-  //   const importRequestDTO: WorkspaceSnapshot = {
-  //     portal: {
-  //       portalName: 'name',
-  //       themeName: 'testTheme',
-  //       baseUrl: 'http://testbaseurl'
-  //     },
-  //     themeImportData: undefined
-  //   }
-  //   component.activeIndex = 0
-
-  //   component.next(importRequestDTO)
-
-  //   expect(component.importRequestDTO).toEqual(importRequestDTO)
-  //   if (importRequestDTO.portal.themeName) {
-  //     expect(component.themeName).toEqual(importRequestDTO.portal.themeName)
-  //   }
-  //   expect(component.baseUrlOrg).toEqual(importRequestDTO.portal.baseUrl)
-  //   expect(component.themeCheckboxEnabled).toEqual(!!importRequestDTO.themeImportData)
-  //   expect(component.activeIndex).toBe(1)
-  // })
-
   it('should set importRequestDTO on next when activeIndex is 0 (upload), and themeImportData valid', () => {
     const workspaceSnap: WorkspaceSnapshot = {
       workspaces: {
         workspace: {
-          name: 'name'
+          name: 'name',
+          baseUrl: 'url'
         }
       }
     }
     component.importRequestDTO = workspaceSnap
-
     component.activeIndex = 0
 
     component.next(workspaceSnap)
 
-    expect(component.themeCheckboxEnabled).toBeTrue()
+    expect(component.baseUrlOrg).toEqual('url')
   })
 
   it('should set values from preview component on next when activeIndex is 1 (preview)', () => {
