@@ -95,7 +95,7 @@
     "@types/node": "18.16.3",
     "@typescript-eslint/eslint-plugin": "5.48.2",
     "@typescript-eslint/parser": "5.48.2",
-    "autoprefixer": "10.4.14",
+    "autoprefixer": "10.4.17",
     "chromatic": "^6.17.4",
     "css-loader": "^6.10.0",
     "cypress": "^12.11.0",
