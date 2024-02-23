@@ -3,9 +3,9 @@ import { FormArray, FormBuilder, FormControl, FormControlState, FormGroup } from
 import { TranslateService } from '@ngx-translate/core'
 import { PortalMessageService } from '@onecx/portal-integration-angular'
 
-import { /* ImageV1APIService,  */ WorkspaceAPIService, Workspace } from '../../../shared/generated'
-import { cloneWorkspaceWithMicrofrontendsArray } from '../../../shared/utils'
-import { LogoState } from '../../workspace-create/logo-state'
+import { /* ImageV1APIService,  */ WorkspaceAPIService, Workspace } from 'src/app/shared/generated'
+import { cloneWorkspaceWithMicrofrontendsArray } from 'src/app/shared/utils'
+import { LogoState } from 'src/app/workspace/workspace-create/logo-state'
 
 export interface PortalImageForm {
   url: FormControl<string | null>

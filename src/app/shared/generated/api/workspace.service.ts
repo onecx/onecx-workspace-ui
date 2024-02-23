@@ -37,6 +37,8 @@ import { SearchWorkspacesResponse } from '../model/searchWorkspacesResponse';
 // @ts-ignore
 import { UpdateWorkspaceRequest } from '../model/updateWorkspaceRequest';
 // @ts-ignore
+import { Workspace } from '../model/workspace';
+// @ts-ignore
 import { WorkspaceSnapshot } from '../model/workspaceSnapshot';
 
 // @ts-ignore
@@ -655,9 +657,9 @@ export class WorkspaceAPIService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public updateWorkspace(requestParameters: UpdateWorkspaceRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any>;
-    public updateWorkspace(requestParameters: UpdateWorkspaceRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<any>>;
-    public updateWorkspace(requestParameters: UpdateWorkspaceRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<any>>;
+    public updateWorkspace(requestParameters: UpdateWorkspaceRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<Workspace>;
+    public updateWorkspace(requestParameters: UpdateWorkspaceRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<Workspace>>;
+    public updateWorkspace(requestParameters: UpdateWorkspaceRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<Workspace>>;
     public updateWorkspace(requestParameters: UpdateWorkspaceRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
         const id = requestParameters.id;
         if (id === null || id === undefined) {
@@ -706,7 +708,7 @@ export class WorkspaceAPIService {
         }
 
         let localVarPath = `/workspaces/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
-        return this.httpClient.request<any>('put', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<Workspace>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: updateWorkspaceRequest,

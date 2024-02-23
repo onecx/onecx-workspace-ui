@@ -5,8 +5,8 @@ import { TranslateService } from '@ngx-translate/core'
 
 import { PortalMessageService, UserService } from '@onecx/portal-integration-angular'
 
-import { PreviewComponent } from './preview/preview.component'
-import { ConfirmComponent } from './confirm/confirm.component'
+import { PreviewComponent } from 'src/app/workspace/workspace-import/preview/preview.component'
+import { ConfirmComponent } from 'src/app/workspace/workspace-import/confirm/confirm.component'
 import { WorkspaceAPIService, EximWorkspaceMenuItem, WorkspaceSnapshot } from 'src/app/shared/generated'
 
 @Component({

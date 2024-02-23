@@ -8,8 +8,8 @@ import {
   WorkspaceSnapshot
   // MicrofrontendRegistrationDTO
   // ThemesAPIService
-} from '../../../shared/generated'
-import { forceFormValidation /* , sortThemeByName */ } from '../../../shared/utils'
+} from 'src/app/shared/generated'
+import { forceFormValidation /* , sortThemeByName */ } from 'src/app/shared/utils'
 
 @Component({
   selector: 'app-import-preview',

@@ -1,5 +1,5 @@
 <div class="role-section">
-  <div *ngIf="!portalDetail.workspaceRoles" class="px-3 flex flex-wrap justify-content-between align-items-center">
+  <div *ngIf="!workspaceDetail.workspaceRoles" class="px-3 flex flex-wrap justify-content-between align-items-center">
     <p-message severity="info" styleClass="p-2" [text]="'DETAIL.ROLES_NOT_EXIST' | translate"></p-message>
     <button
       *ocxIfPermission="'WORKSPACE_ROLE#EDIT'"
@@ -9,7 +9,7 @@
       label="{{ 'DETAIL.ADD_ROLE' | translate }}"
     ></button>
   </div>
-  <div *ngIf="portalDetail.workspaceRoles" class="p-grid p-nogutter grid">
+  <div *ngIf="workspaceDetail.workspaceRoles" class="p-grid p-nogutter grid">
     <ng-container *ngIf="editMode; else elseBlock">
       <div *ngFor="let role of formArray.controls; index as i" class="col-12 md:col-6">
         <ng-container [formGroup]="role">
@@ -33,12 +33,12 @@
       </div>
     </ng-container>
     <ng-template #elseBlock>
-      <div *ngFor="let role of portalDetail.workspaceRoles; index as i" class="col-12 md:col-6">
+      <div *ngFor="let role of workspaceDetail.workspaceRoles; index as i" class="col-12 md:col-6">
         <p-card class="view-role-card">{{ role }}</p-card>
       </div>
     </ng-template>
   </div>
-  <div *ngIf="portalDetail.workspaceRoles">
+  <div *ngIf="workspaceDetail.workspaceRoles">
     <button
       *ocxIfPermission="'WORKSPACE_ROLE#EDIT'"
       pButton
@@ -60,11 +60,11 @@
         pInputText
         type="text"
         class="min-w-full"
-        id="portal_role_mgmt_role_name_input"
+        id="workspace_role_mgmt_role_name_input"
         maxlength="100"
-        [(ngModel)]="newPortalRole"
+        [(ngModel)]="newWorkspaceRole"
       />
-      <label for="portal_role_mgmt_role_name_input">{{ 'DETAIL.ROLE_NAME' | translate }}</label>
+      <label for="workspace_role_mgmt_role_name_input">{{ 'DETAIL.ROLE_NAME' | translate }}</label>
     </span>
     <div class="flex flex-wrap justify-content-end gap-2 pt-3 mt-2">
       <button pButton icon="pi pi-times" (click)="toggleAddDialog()" [label]="'ACTIONS.CANCEL' | translate"></button>

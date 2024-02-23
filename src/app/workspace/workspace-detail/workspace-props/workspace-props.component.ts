@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, Output, EventEmitter } from '@angular/core'
+import { Component, Input, OnChanges } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { Location } from '@angular/common'
 import { Observable, of } from 'rxjs'
@@ -15,16 +15,15 @@ import {
 import {
   // ImageV1APIService,
   WorkspaceAPIService /* , ThemeDTO, ThemesAPIService */
-} from '../../../shared/generated'
-import { Workspace } from '../../../shared/generated'
-import { environment } from '../../../../environments/environment'
-import { LogoState } from '../../workspace-create/logo-state'
+} from 'src/app/shared/generated'
+import { Workspace } from 'src/app/shared/generated'
+import { environment } from 'src/environments/environment'
+import { LogoState } from 'src/app/workspace/workspace-create/logo-state'
 import {
-  cloneWorkspaceWithMicrofrontendsArray,
   setFetchUrls,
   copyToClipboard
   // sortThemeByName
-} from '../../../shared/utils'
+} from 'src/app/shared/utils'
 
 @Component({
   selector: 'app-workspace-props',
@@ -32,9 +31,8 @@ import {
   styleUrls: ['./workspace-props.component.scss']
 })
 export class WorkspacePropsComponent implements OnChanges {
-  @Input() portalDetail!: Workspace
+  @Input() workspaceDetail!: Workspace
   @Input() editMode = false
-  @Output() portalUpdated = new EventEmitter<Workspace>()
 
   public formGroup: FormGroup
 
@@ -92,55 +90,28 @@ export class WorkspacePropsComponent implements OnChanges {
   public ngOnChanges(): void {
     this.setFormData()
     this.editMode ? this.formGroup.enable() : this.formGroup.disable()
-    this.oldWorkspaceName = this.portalDetail.name
+    this.oldWorkspaceName = this.workspaceDetail.name
   }
 
   public setFormData(): void {
     // prepare list of registered MFEs to be used as homepage dropdown
-    // this.mfeRList = Array.from(this.portalDetail.microfrontendRegistrations ?? []).map((mfe: any) => ({
+    // this.mfeRList = Array.from(this.workspaceDetail.microfrontendRegistrations ?? []).map((mfe: any) => ({
     //   label: mfe.baseUrl,
     //   value: mfe.baseUrl || ''
     // }))
     // fill form
     Object.keys(this.formGroup.controls).forEach((element) => {
-      this.formGroup.controls[element].setValue((this.portalDetail as any)[element])
-      this.formGroup.controls['themeName'].setValue(this.portalDetail.theme)
+      this.formGroup.controls[element].setValue((this.workspaceDetail as any)[element])
+      this.formGroup.controls['themeName'].setValue(this.workspaceDetail.theme)
     })
     this.fetchingLogoUrl = setFetchUrls(this.apiPrefix, this.formGroup.value.logoUrl)
   }
 
   public onSubmit() {
     if (this.formGroup.valid) {
-      Object.assign(this.portalDetail, this.getPortalChangesFromForm())
-      this.workspaceApi
-        .updateWorkspace({
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          id: this.portalDetail.id!,
-          updateWorkspaceRequest: { resource: cloneWorkspaceWithMicrofrontendsArray(this.portalDetail) }
-        })
-        .subscribe({
-          next: () => {
-            this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_OK' })
-            //If the Portal we update, is the current-global-portal, then we also update the global theme.
-            // if (this.portalDetail.id === this.config.getPortal().id && this.portalDetail.theme) {
-            // get theme and apply the variables in current portal
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            /* this.themeApi.getThemeById({ id: this.portalDetail.themeId! }).subscribe({
-                next: (theme: ThemeDTO) => {
-                  this.themeService.apply(theme as Theme)
-                }
-              }) */
-            // }
-            this.portalUpdated.emit(this.portalDetail)
-          },
-          error: () => {
-            this.msgService.error({
-              summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_NOK' /* , detailKey: err.error.message */
-            })
-          }
-        })
+      Object.assign(this.workspaceDetail, this.getWorkspaceChangesFromForm())
       this.editMode = false
-      if (this.oldWorkspaceName !== this.portalDetail.name) {
+      if (this.oldWorkspaceName !== this.workspaceDetail.name) {
         this.location.back()
       }
     } else {
@@ -149,14 +120,14 @@ export class WorkspacePropsComponent implements OnChanges {
   }
 
   //return the values that are different in form than in PortalDTO
-  private getPortalChangesFromForm(): any {
+  private getWorkspaceChangesFromForm(): any {
     if (this.formGroup.value['tenantId'] !== undefined && this.formGroup.value['tenantId'] === '') {
       this.formGroup.controls['tenantId'].setValue(null)
     }
     const changes: any = {}
     Object.keys(this.formGroup.controls).forEach((key) => {
       if (this.formGroup.value[key] !== undefined) {
-        if (this.formGroup.value[key] !== (this.portalDetail as any)[key]) {
+        if (this.formGroup.value[key] !== (this.workspaceDetail as any)[key]) {
           changes[key] = this.formGroup.value[key]
         }
       }

@@ -4,17 +4,17 @@ import { FormsModule } from '@angular/forms'
 import { RouterModule, Routes } from '@angular/router'
 
 import { addInitializeModuleGuard, InitializeModuleGuard, PortalCoreModule } from '@onecx/portal-integration-angular'
-import { SharedModule } from '../../shared/shared.module'
-import { LabelResolver } from '../../shared/label.resolver'
+import { SharedModule } from 'src/app/shared/shared.module'
+import { LabelResolver } from 'src/app/shared/label.resolver'
 
-import { WorkspaceDetailComponent } from './workspace-detail.component'
-import { WorkspacePropsComponent } from './workspace-props/workspace-props.component'
-import { WorkspaceRolesComponent } from './workspace-roles/workspace-roles.component'
-import { WorkspaceInternComponent } from './workspace-intern/workspace-intern.component'
-import { WorkspaceImagesComponent } from './workspace-images/workspace-images.component'
-import { WorkspaceContactComponent } from './workspace-contact/workspace-contact.component'
-import { ProductComponent } from './products/products.component'
-import { LogoComponent } from './workspace-images/logo/logo.component'
+import { WorkspaceDetailComponent } from 'src/app/workspace/workspace-detail/workspace-detail.component'
+import { WorkspacePropsComponent } from 'src/app/workspace/workspace-detail/workspace-props/workspace-props.component'
+import { WorkspaceRolesComponent } from 'src/app/workspace/workspace-detail/workspace-roles/workspace-roles.component'
+import { WorkspaceInternComponent } from 'src/app/workspace/workspace-detail/workspace-intern/workspace-intern.component'
+import { WorkspaceImagesComponent } from 'src/app/workspace/workspace-detail/workspace-images/workspace-images.component'
+import { WorkspaceContactComponent } from 'src/app/workspace/workspace-detail/workspace-contact/workspace-contact.component'
+import { ProductComponent } from 'src/app/workspace/workspace-detail/products/products.component'
+import { LogoComponent } from 'src/app/workspace/workspace-detail/workspace-images/logo/logo.component'
 
 const routes: Routes = [
   {

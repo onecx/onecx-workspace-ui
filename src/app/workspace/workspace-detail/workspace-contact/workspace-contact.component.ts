@@ -1,8 +1,7 @@
 import { Component, Input, OnChanges } from '@angular/core'
 import { FormControl, FormGroup } from '@angular/forms'
 
-import { Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
-import { cloneWorkspaceWithMicrofrontendsArray } from '../../../shared/utils'
+import { Workspace } from 'src/app/shared/generated'
 import { PortalMessageService } from '@onecx/portal-integration-angular'
 
 @Component({
@@ -11,12 +10,12 @@ import { PortalMessageService } from '@onecx/portal-integration-angular'
   styleUrls: ['./workspace-contact.component.scss']
 })
 export class WorkspaceContactComponent implements OnChanges {
-  @Input() portalDetail!: Workspace
+  @Input() workspaceDetail!: Workspace
   @Input() editMode = false
 
   public formGroup: FormGroup
 
-  constructor(private api: WorkspaceAPIService, private msgService: PortalMessageService) {
+  constructor(private msgService: PortalMessageService) {
     this.formGroup = new FormGroup({
       companyName: new FormControl(null),
       phoneNumber: new FormControl(null),
@@ -35,33 +34,17 @@ export class WorkspaceContactComponent implements OnChanges {
 
   setFormData(): void {
     Object.keys(this.formGroup.controls).forEach((element) => {
-      if (['street', 'streetNo', 'city', 'postalCode', 'country'].includes(element) && this.portalDetail.address) {
-        this.formGroup.controls[element].setValue((this.portalDetail.address as any)[element])
+      if (['street', 'streetNo', 'city', 'postalCode', 'country'].includes(element) && this.workspaceDetail.address) {
+        this.formGroup.controls[element].setValue((this.workspaceDetail.address as any)[element])
       } else {
-        this.formGroup.controls[element].setValue((this.portalDetail as any)[element])
+        this.formGroup.controls[element].setValue((this.workspaceDetail as any)[element])
       }
     })
   }
 
   onSubmit(): void {
     if (this.formGroup.valid) {
-      Object.assign(this.portalDetail, this.getPortalChangesFromForm())
-      this.api
-        .updateWorkspace({
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          id: this.portalDetail.id!,
-          updateWorkspaceRequest: { resource: cloneWorkspaceWithMicrofrontendsArray(this.portalDetail) }
-        })
-        .subscribe({
-          next: () => {
-            this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_OK' })
-          },
-          error: () => {
-            this.msgService.error({
-              summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_NOK' /* , detailKey: err.error.message */
-            })
-          }
-        })
+      Object.assign(this.workspaceDetail, this.getPortalChangesFromForm())
       this.editMode = false
     } else {
       this.msgService.error({ summaryKey: 'GENERAL.FORM_VALIDATION' })
@@ -69,7 +52,7 @@ export class WorkspaceContactComponent implements OnChanges {
     }
   }
 
-  //return the values that are different in form than in PortalDTO
+  //return the values that are different in form than in Workspace
   private getPortalChangesFromForm(): any[] {
     const changes: any = {
       address: {}
@@ -77,8 +60,8 @@ export class WorkspaceContactComponent implements OnChanges {
 
     Object.keys(this.formGroup.controls).forEach((key) => {
       if (['street', 'streetNo', 'city', 'postalCode', 'country'].includes(key)) {
-        if (!this.portalDetail.address) {
-          this.portalDetail.address = {}
+        if (!this.workspaceDetail.address) {
+          this.workspaceDetail.address = {}
         }
         if (this.formGroup.value[key] !== undefined) {
           changes['address'][key] = this.formGroup.value[key]

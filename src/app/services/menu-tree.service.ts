@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { TreeNode } from 'primeng/api'
-import { MenuItem } from '../shared/generated'
+import { MenuItem } from 'src/app/shared/generated'
 
 export interface NewPosition {
   id: string | undefined

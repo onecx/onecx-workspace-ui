@@ -2,17 +2,17 @@ import { Component, OnInit, ViewChild } from '@angular/core'
 import { DatePipe, Location } from '@angular/common'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
-import FileSaver from 'file-saver'
+import { FileSaver } from 'file-saver'
 import { Observable, map } from 'rxjs'
 
 import { Action, ObjectDetailItem, PortalMessageService, UserService } from '@onecx/portal-integration-angular'
-import { WorkspaceSnapshot, Workspace, WorkspaceAPIService } from '../../shared/generated'
-import { environment } from '../../../environments/environment'
+import { WorkspaceSnapshot, Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
+import { environment } from 'src/environments/environment'
 
-import { WorkspacePropsComponent } from './workspace-props/workspace-props.component'
-import { WorkspaceRolesComponent } from './workspace-roles/workspace-roles.component'
-import { WorkspaceInternComponent } from './workspace-intern/workspace-intern.component'
-import { WorkspaceContactComponent } from './workspace-contact/workspace-contact.component'
+import { WorkspacePropsComponent } from 'src/app/workspace/workspace-detail/workspace-props/workspace-props.component'
+import { WorkspaceRolesComponent } from 'src/app/workspace/workspace-detail/workspace-roles/workspace-roles.component'
+import { WorkspaceInternComponent } from 'src/app/workspace/workspace-detail/workspace-intern/workspace-intern.component'
+import { WorkspaceContactComponent } from 'src/app/workspace/workspace-detail/workspace-contact/workspace-contact.component'
 
 @Component({
   selector: 'app-workspace-detail',
@@ -204,14 +204,12 @@ export class WorkspaceDetailComponent implements OnInit {
     switch (this.selectedTabIndex) {
       case 0: {
         this.workspacePropsComponent.onSubmit()
+        this.workspaceDetail = this.workspacePropsComponent.workspaceDetail
         break
       }
       case 1: {
         this.workspaceContactComponent.onSubmit()
-        break
-      }
-      case 4: {
-        this.workspaceRolesComponent.onSubmit()
+        this.workspaceDetail = this.workspaceContactComponent.workspaceDetail
         break
       }
       default: {
@@ -220,6 +218,34 @@ export class WorkspaceDetailComponent implements OnInit {
       }
     }
     this.toggleEditMode('view')
+    this.workspaceApi
+      .updateWorkspace({
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        id: this.workspaceDetail?.id!,
+        updateWorkspaceRequest: { resource: this.workspaceDetail! }
+      })
+      .subscribe({
+        next: (workspace) => {
+          this.workspaceId = workspace.id || ''
+          this.onWorkspaceData(workspace)
+          this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_OK' })
+        },
+        error: () => {
+          // console.error('ERR', err)
+          // const duplicate = err.error.message.indexOf('contains duplicated roles') > 0
+          this.msgService.error({
+            summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_NOK'
+            // detailKey: duplicate ? 'DETAIL.NEW_ROLE_DUPLICATED' : err.error.message
+          })
+        }
+      })
+  }
+
+  public onRoleSave(roles: string[]) {
+    if (this.workspaceDetail) {
+      this.workspaceDetail.workspaceRoles = roles
+    }
+    this.updateWorkspace()
   }
 
   confirmDeleteWorkspace() {

@@ -4,15 +4,15 @@ import { FormsModule } from '@angular/forms'
 import { RouterModule, Routes } from '@angular/router'
 
 import { addInitializeModuleGuard, InitializeModuleGuard, PortalCoreModule } from '@onecx/portal-integration-angular'
-import { SharedModule } from '../shared/shared.module'
-import { LabelResolver } from '../shared/label.resolver'
+import { SharedModule } from 'src/app/shared/shared.module'
+import { LabelResolver } from 'src/app/shared/label.resolver'
 
-import { WorkspaceSearchComponent } from './workspace-search/workspace-search.component'
-import { WorkspaceCreateComponent } from './workspace-create/workspace-create.component'
-import { WorkspaceImportComponent } from './workspace-import/workspace-import.component'
-import { ChooseFileComponent } from './workspace-import/choose-file/choose-file.component'
-import { PreviewComponent } from './workspace-import/preview/preview.component'
-import { ConfirmComponent } from './workspace-import/confirm/confirm.component'
+import { WorkspaceSearchComponent } from 'src/app/workspace/workspace-search/workspace-search.component'
+import { WorkspaceCreateComponent } from 'src/app/workspace/workspace-create/workspace-create.component'
+import { WorkspaceImportComponent } from 'src/app/workspace/workspace-import/workspace-import.component'
+import { ChooseFileComponent } from 'src/app/workspace/workspace-import/choose-file/choose-file.component'
+import { PreviewComponent } from 'src/app/workspace/workspace-import/preview/preview.component'
+import { ConfirmComponent } from 'src/app/workspace/workspace-import/confirm/confirm.component'
 
 const routes: Routes = [
   {

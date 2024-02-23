@@ -2,9 +2,10 @@ import { Component, OnInit, ViewChild } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { finalize } from 'rxjs'
 import { TranslateService } from '@ngx-translate/core'
+
 import { Action, DataViewControlTranslations, PortalMessageService } from '@onecx/portal-integration-angular'
-import { limitText } from '../../shared/utils'
-import { SearchWorkspacesResponse, Workspace, WorkspaceAPIService, WorkspaceAbstract } from '../../shared/generated'
+import { limitText } from 'src/app/shared/utils'
+import { SearchWorkspacesResponse, Workspace, WorkspaceAPIService, WorkspaceAbstract } from 'src/app/shared/generated'
 
 @Component({
   selector: 'app-workspace-search',

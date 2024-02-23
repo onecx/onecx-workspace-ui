@@ -7,14 +7,14 @@
             <input
               pInputText
               type="text"
-              id="portal_detail_item_portalName"
+              id="workspace_detail_item_portalName"
               class="w-full pt-3 pb-2"
               formControlName="name"
               [pTooltip]="'PORTAL.ITEM.PORTAL_NAME' | translate"
               tooltipPosition="top"
               tooltipEvent="focus"
             />
-            <label class="ocx-required-label" for="portal_detail_item_portalName">
+            <label class="ocx-required-label" for="workspace_detail_item_portalName">
               {{ 'PORTAL.ITEM.PORTAL_NAME' | translate }}
             </label>
           </span>
@@ -26,14 +26,14 @@
               pInputText
               type="text"
               [readOnly]="!hasTenantEditPermission"
-              id="portal_detail_item_tenantId"
+              id="workspace_detail_item_tenantId"
               class="w-full pt-3 pb-2"
               formControlName="tenantId"
               [pTooltip]="'PORTAL.ITEM.TENANT_ID' | translate"
               tooltipPosition="top"
               tooltipEvent="focus"
             />
-            <label for="portal_detail_item_tenantId"> {{ 'PORTAL.ITEM.TENANT_ID' | translate }} </label>
+            <label for="workspace_detail_item_tenantId"> {{ 'PORTAL.ITEM.TENANT_ID' | translate }} </label>
           </span>
         </div>
 
@@ -41,7 +41,7 @@
           <span class="p-float-label">
             <p-dropdown
               #inputThemeName
-              id="portal_detail_item_themeName"
+              id="workspace_detail_item_themeName"
               formControlName="themeName"
               styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
               [options]="(themes$ | async) || []"
@@ -50,14 +50,14 @@
               tooltipEvent="focus"
             >
             </p-dropdown>
-            <label for="portal_detail_item_themeName"> {{ 'PORTAL.ITEM.THEME' | translate }} </label>
+            <label for="workspace_detail_item_themeName"> {{ 'PORTAL.ITEM.THEME' | translate }} </label>
           </span>
           <span
-            id="portal_detail_item_themeName_link"
+            id="workspace_detail_item_themeName_link"
             class="p-inputgroup-addon bg-primary pseudo-button"
-            [ngClass]="portalDetail.theme ? 'cursor-pointer' : 'p-disabled'"
+            [ngClass]="workspaceDetail.theme ? 'cursor-pointer' : 'p-disabled'"
             [title]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
-            (click)="onGotoTheme($event, '../../../theme/' + portalDetail.theme)"
+            (click)="onGotoTheme($event, '../../../theme/' + workspaceDetail.theme)"
           >
             <span class="pi pi-link"></span>
           </span>
@@ -70,14 +70,14 @@
                 #inputBaseUrl
                 pInputText
                 type="text"
-                id="portal_detail_item_baseUrl"
+                id="workspace_detail_item_baseUrl"
                 class="w-full pt-3 pb-2"
                 formControlName="baseUrl"
                 [pTooltip]="'PORTAL.ITEM.BASE_URL' | translate"
                 tooltipPosition="top"
                 tooltipEvent="focus"
               />
-              <label for="portal_detail_item_baseUrl"> {{ 'PORTAL.ITEM.BASE_URL' | translate }} </label>
+              <label for="workspace_detail_item_baseUrl"> {{ 'PORTAL.ITEM.BASE_URL' | translate }} </label>
             </span>
             <span
               class="p-inputgroup-addon bg-primary pseudo-button"
@@ -88,7 +88,7 @@
                 target="_blank"
                 [href]="inputBaseUrl.value"
                 (click)="$event.stopPropagation()"
-                id="portal_detail_item_baseUrl_link"
+                id="workspace_detail_item_baseUrl_link"
                 class="bg-primary"
               >
                 <span class="pi pi-link"></span>
@@ -104,7 +104,7 @@
           <span class="p-float-label">
             <p-dropdown
               #inputHomePage
-              id="portal_detail_item_homePage"
+              id="workspace_detail_item_homePage"
               formControlName="homePage"
               styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
               [options]="mfeRList"
@@ -114,7 +114,7 @@
               tooltipEvent="focus"
             >
             </p-dropdown>
-            <label for="portal_detail_item_homePage"> {{ 'PORTAL.ITEM.HOME_PAGE' | translate }} </label>
+            <label for="workspace_detail_item_homePage"> {{ 'PORTAL.ITEM.HOME_PAGE' | translate }} </label>
           </span>
           <span
             class="p-inputgroup-addon bg-primary pseudo-button"
@@ -125,7 +125,7 @@
               target="_blank"
               [href]="inputHomePage.value"
               (click)="$event.stopPropagation()"
-              id="portal_detail_item_homePage_link"
+              id="workspace_detail_item_homePage_link"
               class="bg-primary"
             >
               <span class="pi pi-link"></span>
@@ -139,21 +139,21 @@
               #inputRssFeedUrl
               pInputText
               type="text"
-              id="portal_detail_item_rssFeedUrl"
+              id="workspace_detail_item_rssFeedUrl"
               class="w-full pt-3 pb-2"
               formControlName="rssFeedUrl"
               [pTooltip]="'PORTAL.ITEM.RSS_FEED_URL' | translate"
               tooltipPosition="top"
               tooltipEvent="focus"
             />
-            <label for="portal_detail_item_rssFeedUrl"> {{ 'PORTAL.ITEM.RSS_FEED_URL' | translate }} </label>
+            <label for="workspace_detail_item_rssFeedUrl"> {{ 'PORTAL.ITEM.RSS_FEED_URL' | translate }} </label>
           </span>
           <span
-            id="portal_detail_item_rssFeedUrl_link"
+            id="workspace_detail_item_rssFeedUrl_link"
             class="p-inputgroup-addon bg-primary pseudo-button"
             [ngClass]="inputRssFeedUrl.value ? 'cursor-pointer' : 'p-disabled'"
             [title]="'ACTIONS.COPY.CLIPBOARD' | translate"
-            (click)="copyToClipboard(portalDetail.rssFeedUrl)"
+            (click)="copyToClipboard(workspaceDetail.rssFeedUrl)"
           >
             <span class="pi pi-copy"></span>
           </span>
@@ -162,7 +162,7 @@
         <!-- <div class="flex flex-wrap sm:flex-nowrap align-items-center pb-2 row-gap-2 column-gap-4">
           <input hidden type="file" accept="image/*" #selectedFileInputLogo (change)="onFileUpload($event, 'logo')" />
           <app-image-container
-            [id]="'portal_detail_item_logo_image'"
+            [id]="'workspace_detail_item_logo_image'"
             [imageUrl]="fetchingLogoUrl"
             [small]="true"
             [title]="'LOGO.TOOLTIPS.' + (fetchingLogoUrl ? 'IMAGE' : 'PLACEHOLDER') | translate"
@@ -170,11 +170,11 @@
           <div class="flex flex-column w-full">
             <div class="p-inputgroup mb-1" controlErrorAnchor>
               <span class="p-float-label">
-                <input pInputText type="text" id="portal_detail_item_logo" formControlName="logoUrl" />
-                <label for="portal_detail_item_logo"> {{ 'LOGO.LOGO_URL' | translate }} </label>
+                <input pInputText type="text" id="workspace_detail_item_logo" formControlName="logoUrl" />
+                <label for="workspace_detail_item_logo"> {{ 'LOGO.LOGO_URL' | translate }} </label>
               </span>
               <span
-                id="portal_detail_item_upload_logo2"
+                id="workspace_detail_item_upload_logo2"
                 class="p-inputgroup-addon bg-primary pseudo-button"
                 [ngClass]="editMode ? 'cursor-pointer' : 'p-disabled'"
                 [title]="'LOGO.TOOLTIPS.UPLOAD' | translate"
@@ -190,14 +190,14 @@
           <input
             pInputText
             type="text"
-            id="portal_detail_item_footerLabel"
+            id="workspace_detail_item_footerLabel"
             class="w-full pt-3 pb-2"
             formControlName="footerLabel"
             [pTooltip]="'PORTAL.ITEM.FOOTER_LABEL' | translate"
             tooltipPosition="top"
             tooltipEvent="focus"
           />
-          <label for="portal_detail_item_footerLabel"> {{ 'PORTAL.ITEM.FOOTER_LABEL' | translate }} </label>
+          <label for="workspace_detail_item_footerLabel"> {{ 'PORTAL.ITEM.FOOTER_LABEL' | translate }} </label>
         </span>
 
         <span class="p-float-label mb-1" controlErrorAnchor>
@@ -206,14 +206,14 @@
             pInputTextarea
             autoresize="true"
             rows="4"
-            id="portal_detail_item_description"
+            id="workspace_detail_item_description"
             maxlength="255"
             formControlName="description"
             [pTooltip]="'PORTAL.ITEM.DESCRIPTION' | translate"
             tooltipPosition="top"
             tooltipEvent="focus"
           ></textarea>
-          <label for="portal_detail_item_description"> {{ 'PORTAL.ITEM.DESCRIPTION' | translate }} </label>
+          <label for="workspace_detail_item_description"> {{ 'PORTAL.ITEM.DESCRIPTION' | translate }} </label>
         </span>
       </div>
     </form>
