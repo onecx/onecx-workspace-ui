@@ -13,7 +13,11 @@ import { LogoState } from 'src/app/workspace/workspace-create/logo-state'
 import {
   /* ImageV1APIService, */
   WorkspaceAPIService /* , ThemesAPIService */,
-  Workspace
+  Workspace,
+  ImagesInternalAPIService,
+  RefType,
+  GetImageRequestParams,
+  UploadImageRequestParams
 } from '../../shared/generated'
 
 @Component({
@@ -37,6 +41,7 @@ export class WorkspaceCreateComponent {
   public workspaceCreationValidationMsg = false
   public fetchingLogoUrl?: string
   public urlPattern = '/base-path-to-workspace'
+  public logoImageWasUploaded: boolean | undefined
 
   constructor(
     private router: Router,
@@ -44,7 +49,7 @@ export class WorkspaceCreateComponent {
     private user: UserService,
     private workspaceApi: WorkspaceAPIService,
     // private themeApi: ThemesAPIService,
-    // private imageApi: ImageV1APIService,
+    private imageApi: ImagesInternalAPIService,
     private message: PortalMessageService,
     private translate: TranslateService
   ) {
@@ -137,18 +142,70 @@ export class WorkspaceCreateComponent {
     reader.readAsDataURL(file)
   }
 
-  /* onFileUpload(ev: Event, fieldType: 'logo') {
+  onFileUpload(ev: Event, fieldType: 'logo') {
+    let workspaceName = this.formGroup.controls['name'].value
+
     if (ev.target && (ev.target as HTMLInputElement).files) {
       const files = (ev.target as HTMLInputElement).files
       if (files) {
-        Array.from(files).forEach((file) => {
-          this.imageApi.uploadImage({ image: file }).subscribe((data) => {
-            this.formGroup.controls[fieldType + 'Url'].setValue(data.imageUrl)
-            this.fetchingLogoUrl = setFetchUrls(this.apiPrefix, this.formGroup.controls[fieldType + 'Url'].value)
-            this.message.add({ severity: 'info', summary: 'File Uploaded', detail: fieldType + ' image' })
-          })
-        })
+        if (workspaceName == undefined || workspaceName == '' || workspaceName == null) {
+          this.message.error({ summaryKey: 'LOGO.UPLOAD_FAILED_NAME' })
+        } else if (files[0].size > 110000) {
+          this.message.error({ summaryKey: 'LOGO.UPLOAD_FAILED_SIZE' })
+        } else {
+          let requestParametersGet: GetImageRequestParams
+          requestParametersGet = {
+            refId: workspaceName,
+            refType: RefType.Logo
+          }
+
+          let requestParameters: UploadImageRequestParams
+          const blob = new Blob([files[0]], { type: files[0].type })
+          let imageType: RefType = RefType.Logo
+
+          requestParameters = {
+            contentLength: files.length,
+            refId: this.formGroup.controls['name'].value!,
+            refType: imageType,
+            body: blob
+          }
+
+          this.fetchingLogoUrl = undefined
+
+          this.imageApi.getImage(requestParametersGet).subscribe(
+            (res) => {
+              if (RegExp(/^.*.(jpg|jpeg|png)$/).exec(files[0].name)) {
+                this.imageApi.updateImage(requestParameters).subscribe(() => {
+                  this.fetchingLogoUrl =
+                    this.imageApi.configuration.basePath + '/images/' + workspaceName + '/' + fieldType
+                  this.message.info({ summaryKey: 'LOGO.UPLOADED' })
+                  this.formGroup.controls['imageUrl'].setValue('')
+                  this.logoImageWasUploaded = true
+                })
+              }
+            },
+            (err) => {
+              if (RegExp(/^.*.(jpg|jpeg|png)$/).exec(files[0].name)) {
+                this.imageApi.uploadImage(requestParameters).subscribe(() => {
+                  this.fetchingLogoUrl =
+                    this.imageApi.configuration.basePath + '/images/' + workspaceName + '/' + fieldType
+                  this.message.info({ summaryKey: 'LOGO.UPLOADED' })
+                  this.formGroup.controls['imageUrl'].setValue('')
+                  this.logoImageWasUploaded = true
+                })
+              }
+            }
+          )
+        }
       }
     }
-  } */
+  }
+
+  inputChange(event: Event) {
+    this.fetchingLogoUrl = (event.target as HTMLInputElement).value
+    if ((event.target as HTMLInputElement).value == undefined || (event.target as HTMLInputElement).value == '') {
+      this.fetchingLogoUrl =
+        this.imageApi.configuration.basePath + '/images/' + this.formGroup.controls['name'].value + '/logo'
+    }
+  }
 }

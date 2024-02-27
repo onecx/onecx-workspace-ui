@@ -89,7 +89,7 @@
       </label>
     </div>
 
-    <!-- <div class="flex flex-wrap sm:flex-nowrap align-items-center row-gap-2 column-gap-4">
+    <div class="flex flex-wrap sm:flex-nowrap align-items-center row-gap-2 column-gap-4">
       <input hidden type="file" accept=".png,.svg" #selectedFileInputLogo (change)="onFileUpload($event, 'logo')" />
       <app-image-container
         [id]="'workspace_create_item_logo_image'"
@@ -99,7 +99,13 @@
       ></app-image-container>
       <div class="p-inputgroup" controlErrorAnchor>
         <span class="p-float-label">
-          <input pInputText type="text" id="workspace_create_item_logo" formControlName="logoUrl" />
+          <input
+            pInputText
+            type="text"
+            id="workspace_create_item_logo"
+            formControlName="logoUrl"
+            (blur)="inputChange($event)"
+          />
           <label for="workspace_create_item_logo"> {{ 'LOGO.LOGO_URL' | translate }} </label>
         </span>
         <span
@@ -107,11 +113,16 @@
           class="p-inputgroup-addon bg-primary"
           [title]="'LOGO.TOOLTIPS.UPLOAD' | translate"
           (click)="selectedFileInputLogo.click()"
+          [ngClass]="
+            this.formGroup.controls['name'].value === '' || this.formGroup.controls['name'].value === null
+              ? 'p-disabled'
+              : 'p-inputgroup-addon bg-primary'
+          "
         >
           <i class="pi pi-upload"></i>
         </span>
       </div>
-    </div> -->
+    </div>
 
     <div>
       <span class="p-float-label" controlErrorAnchor>

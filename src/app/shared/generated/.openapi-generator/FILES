@@ -3,6 +3,7 @@
 README.md
 api.module.ts
 api/api.ts
+api/imagesInternal.service.ts
 api/menuItem.service.ts
 api/product.service.ts
 api/workspace.service.ts
@@ -30,6 +31,7 @@ model/getMenuItemResponse.ts
 model/getMenuItemsResponse.ts
 model/getWorkspaceMenuItemStructureResponse.ts
 model/getWorkspaceResponse.ts
+model/imageInfo.ts
 model/importMenuResponse.ts
 model/importResponseStatus.ts
 model/importWorkspaceResponse.ts
@@ -44,6 +46,7 @@ model/problemDetailInvalidParam.ts
 model/problemDetailParam.ts
 model/problemDetailResponse.ts
 model/product.ts
+model/refType.ts
 model/scope.ts
 model/searchWorkspacesRequest.ts
 model/searchWorkspacesResponse.ts

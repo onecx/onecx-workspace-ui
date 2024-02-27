@@ -5,7 +5,13 @@ import { TranslateService } from '@ngx-translate/core'
 
 import { Action, DataViewControlTranslations, PortalMessageService } from '@onecx/portal-integration-angular'
 import { limitText } from 'src/app/shared/utils'
-import { SearchWorkspacesResponse, Workspace, WorkspaceAPIService, WorkspaceAbstract } from 'src/app/shared/generated'
+import {
+  ImagesInternalAPIService,
+  SearchWorkspacesResponse,
+  Workspace,
+  WorkspaceAPIService,
+  WorkspaceAbstract
+} from 'src/app/shared/generated'
 
 @Component({
   selector: 'app-workspace-search',
@@ -36,7 +42,8 @@ export class WorkspaceSearchComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private translate: TranslateService,
-    private msgService: PortalMessageService
+    private msgService: PortalMessageService,
+    private imageApi: ImagesInternalAPIService
   ) {}
 
   ngOnInit() {
@@ -171,6 +178,14 @@ export class WorkspaceSearchComponent implements OnInit {
       return text.length < chars ? text : text.substring(0, chars) + '...'
     } else {
       return ''
+    }
+  }
+
+  getImageUrl(workspace: any) {
+    if (workspace.logoUrl) {
+      return workspace.logoUrl
+    } else {
+      return this.imageApi.configuration.basePath + '/images/' + workspace.name + '/logo'
     }
   }
 }

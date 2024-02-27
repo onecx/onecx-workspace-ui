@@ -471,6 +471,8 @@
     "IMAGE_NOT_FOUND": "Image not found",
     "SELECT_IMAGE": "Select Image",
     "UPLOADED": "File uploaded",
+    "UPLOAD_FAILED_SIZE": "File upload failed. Please provide a workspace name",
+    "UPLOAD_FAILED_FILE": "File upload failed. Image is too large",
     "LOGO": "Logo image"
   },
   "LOGO": {

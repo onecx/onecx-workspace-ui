@@ -6,7 +6,7 @@ import { FileSaver } from 'file-saver'
 import { Observable, map } from 'rxjs'
 
 import { Action, ObjectDetailItem, PortalMessageService, UserService } from '@onecx/portal-integration-angular'
-import { WorkspaceSnapshot, Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
+import { WorkspaceSnapshot, Workspace, WorkspaceAPIService, ImagesInternalAPIService } from 'src/app/shared/generated'
 import { environment } from 'src/environments/environment'
 
 import { WorkspacePropsComponent } from 'src/app/workspace/workspace-detail/workspace-props/workspace-props.component'
@@ -55,7 +55,8 @@ export class WorkspaceDetailComponent implements OnInit {
     private location: Location,
     private workspaceApi: WorkspaceAPIService,
     private translate: TranslateService,
-    private msgService: PortalMessageService
+    private msgService: PortalMessageService,
+    private imageApi: ImagesInternalAPIService
   ) {
     this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm' : 'medium'
   }
@@ -402,8 +403,8 @@ export class WorkspaceDetailComponent implements OnInit {
   }
 
   private preparePageHeaderImage() {
-    if (this.workspaceDetail?.logoUrl && !this.workspaceDetail.logoUrl.match(/^(http|https)/g)) {
-      this.headerImageUrl = this.apiPrefix + this.workspaceDetail.logoUrl
+    if (this.workspaceDetail?.logoUrl == null || this.workspaceDetail?.logoUrl == '') {
+      this.headerImageUrl = this.imageApi.configuration.basePath + '/images/' + this.workspaceDetail?.name + '/logo'
     } else {
       this.headerImageUrl = this.workspaceDetail?.logoUrl
     }
