@@ -159,7 +159,7 @@
           </span>
         </div>
 
-        <!-- <div class="flex flex-wrap sm:flex-nowrap align-items-center pb-2 row-gap-2 column-gap-4">
+        <div class="flex flex-wrap sm:flex-nowrap align-items-center pb-2 row-gap-2 column-gap-4">
           <input hidden type="file" accept="image/*" #selectedFileInputLogo (change)="onFileUpload($event, 'logo')" />
           <app-image-container
             [id]="'workspace_detail_item_logo_image'"
@@ -170,13 +170,25 @@
           <div class="flex flex-column w-full">
             <div class="p-inputgroup mb-1" controlErrorAnchor>
               <span class="p-float-label">
-                <input pInputText type="text" id="workspace_detail_item_logo" formControlName="logoUrl" />
+                <input
+                  pInputText
+                  type="text"
+                  id="workspace_detail_item_logo"
+                  formControlName="logoUrl"
+                  (blur)="inputChange($event)"
+                />
                 <label for="workspace_detail_item_logo"> {{ 'LOGO.LOGO_URL' | translate }} </label>
               </span>
               <span
                 id="workspace_detail_item_upload_logo2"
                 class="p-inputgroup-addon bg-primary pseudo-button"
-                [ngClass]="editMode ? 'cursor-pointer' : 'p-disabled'"
+                [ngClass]="
+                  !editMode ||
+                  this.formGroup.controls['name'].value === '' ||
+                  this.formGroup.controls['name'].value === null
+                    ? 'p-disabled'
+                    : 'cursor-pointer'
+                "
                 [title]="'LOGO.TOOLTIPS.UPLOAD' | translate"
                 (click)="editMode ? selectedFileInputLogo.click() : null"
               >
@@ -184,7 +196,7 @@
               </span>
             </div>
           </div>
-        </div> -->
+        </div>
 
         <span class="p-float-label mb-1" controlErrorAnchor>
           <input

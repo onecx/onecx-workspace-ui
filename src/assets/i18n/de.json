@@ -471,6 +471,8 @@
     "IMAGE_NOT_FOUND": "Bild nicht gefunden",
     "SELECT_IMAGE": "Bild auswählen",
     "UPLOADED": "Datei hochgeladen",
+    "UPLOAD_FAILED_SIZE": "Upload fehlgeschlagen. Bitte einen Workspace Namen füllen",
+    "UPLOAD_FAILED _FILE": "Upload fehlgeschlagen. Das Bild ist zu groß",
     "LOGO": "Logo-Bild"
   },
   "LOGO": {

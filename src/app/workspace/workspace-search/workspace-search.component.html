@@ -50,7 +50,7 @@
             [routerLink]="['./' + workspaceItems.name]"
           >
             <div class="col-12 sm:col-2 md:col-2 lg:col-2 xl:col-2 px-2 text-center mt-1">
-              <app-image-container [imageUrl]="workspaceItems.logoUrl" [small]="true"></app-image-container>
+              <app-image-container [imageUrl]="getImageUrl(workspaceItems)" [small]="true"></app-image-container>
             </div>
             <div
               class="col-12 sm:col-3 md:col-3 lg:col-3 xl:col-2 px-2 font-bold text-center sm:text-left"
@@ -107,7 +107,7 @@
                 (click)="onGotoMenu($event, workspaceItems)"
               ></span>
               <div class="h-3rem md:h-5rem mt-1 flex flex-column justify-content-center align-items-center text-center">
-                <app-image-container [imageUrl]="workspaceItems.logoUrl" [small]="false"></app-image-container>
+                <app-image-container [imageUrl]="getImageUrl(workspaceItems)" [small]="false"></app-image-container>
               </div>
               <div class="h-4rem lg:h-5rem mb-1 flex flex-column justify-content-between px-2 text-center gap-1">
                 <div
