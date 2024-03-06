@@ -13,7 +13,7 @@ app:
       spec:
         exposedModule: "./OneCXWorkspaceModule"
         description: "OneCX Workspace UI"
-        note: "OneCX Workspace UI module auto import via MF operator"
+        note: "OneCX Workspace UI auto import via MF operator"
     # Permission
     permission:
       enabled: true
@@ -21,13 +21,13 @@ app:
         permissions:
           WORKSPACE:
             CREATE: Create workspace
-            EDIT: Edit workspace
             DELETE: Delete workspace
+            EDIT: Edit workspace
             SAVE: Update and save workspace
-            IMPORT: Import workspace
-            EXPORT: Export workspace
-            VIEW: View mode for workspace
             SEARCH: Search workspace
+            VIEW: View mode for workspace
+            EXPORT: Export workspace
+            IMPORT: Import workspace
           WORKSPACE_TENANT:
             VIEW: View workspace tenant
             EDIT: View workspace tenant
@@ -38,57 +38,32 @@ app:
           WORKSPACE_INTERNAL:
             VIEW: View workspace internal
           WORKSPACE_ROLES:
+            CREATE: Create role
+            DELETE: Delete role
             VIEW: View workspace roles
           WORKSPACE_PRODUCTS:
             VIEW: View workspace products
-          WORKSPACE_IMAGES:
-            VIEW: View workspace images
-          WORKSPACE_MFE:
             REGISTER: Register app module
             DEREGISTER: Deregister app module
-          WORKSPACE_IMAGE:
-            EDIT: Edit workspace images
-            DELETE: Delete workspace images
-          WORKSPACE_ROLE:
-            EDIT: Edit workspace images
-            DELETE: Delete workspace images
           MENU:
             CREATE: Create menu
-            EDIT: Edit menu
-            VIEW: View menu
-            SAVE: Save menu
-            COPY: Copy menu
             DELETE: Delete menu
-            IMPORT: Import menu
-            EXPORT: Export menu
-            SEARCH: Search menu page
+            EDIT: Edit menu
+            SAVE: Save menu
+            VIEW: View menu
             DRAG_DROP: Drag & drop menu tree
+            GRANT_ROLES: Assign roles to menu item
+            EXPORT: Export menu
+            IMPORT: Import menu
           MENU_TENANT:
             VIEW: View menu tenant
 
     # Keycloak
     keycloak:
-      enabled: true
-      client: |-
-        {
-          "clientId": "onecx-workspace-ui",
-          "enabled": true,
-          "description": "Keycloak client for onecx-workspace-ui",
-          "redirectUris": ["*"],
-          "webOrigins": ["*"],
-          "publicClient": true,
-          "protocol": "openid-connect"
-        }
-      roles: |-
-        [
-           {
-             "name": "onecx-workspace-admin",
-             "description": "OneCX Workspace admin"
-           },
-           {
-             "name": "onecx-workspace-user",
-             "description": "OneCX Workspace user"
-           }
-         ]
+      client:
+        enabled: true
+        spec:
+          kcConfig:
+            clientId: "onecx-workspace-ui"
 
 # PIPE Config
