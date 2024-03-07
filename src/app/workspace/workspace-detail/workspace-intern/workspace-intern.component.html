@@ -8,12 +8,12 @@
           readonly
           id="workspace_detail_item_creationDate"
           class="w-full pt-3 pb-2"
-          [value]="workspaceDetail.creationDate | date : dateFormat"
-          [pTooltip]="'DETAIL.TOOLTIPS.CREATION_DATE' | translate"
+          [value]="workspace.creationDate | date : dateFormat"
+          [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_DATE' | translate"
           tooltipPosition="top"
           tooltipEvent="focus"
         />
-        <label for="workspace_detail_item_creationDate">{{ 'DETAIL.CREATION_DATE' | translate }}</label>
+        <label for="workspace_detail_item_creationDate">{{ 'INTERNAL.CREATION_DATE' | translate }}</label>
       </span>
 
       <span class="p-float-label mb-1">
@@ -23,12 +23,12 @@
           readonly
           id="workspace_detail_item_creationUser"
           class="w-full pt-3 pb-2"
-          [value]="workspaceDetail.creationUser"
-          [pTooltip]="'DETAIL.TOOLTIPS.CREATION_USER' | translate"
+          [value]="workspace.creationUser"
+          [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_USER' | translate"
           tooltipPosition="top"
           tooltipEvent="focus"
         />
-        <label for="workspace_detail_item_creationUser">{{ 'DETAIL.CREATION_USER' | translate }}</label>
+        <label for="workspace_detail_item_creationUser">{{ 'INTERNAL.CREATION_USER' | translate }}</label>
       </span>
 
       <span class="p-float-label mb-1">
@@ -38,12 +38,12 @@
           readonly
           id="workspace_detail_item_modificationDate"
           class="w-full pt-3 pb-2"
-          [value]="workspaceDetail.modificationDate | date : dateFormat"
-          [pTooltip]="'DETAIL.TOOLTIPS.MODIFICATION_DATE' | translate"
+          [value]="workspace.modificationDate | date : dateFormat"
+          [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_DATE' | translate"
           tooltipPosition="top"
           tooltipEvent="focus"
         />
-        <label for="workspace_detail_item_modificationDate">{{ 'DETAIL.MODIFICATION_DATE' | translate }}</label>
+        <label for="workspace_detail_item_modificationDate">{{ 'INTERNAL.MODIFICATION_DATE' | translate }}</label>
       </span>
 
       <span class="p-float-label mb-1">
@@ -53,12 +53,12 @@
           readonly
           id="workspace_detail_item_modificationUser"
           class="w-full pt-3 pb-2"
-          [value]="workspaceDetail.modificationUser"
-          [pTooltip]="'DETAIL.TOOLTIPS.MODIFICATION_USER' | translate"
+          [value]="workspace.modificationUser"
+          [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_USER' | translate"
           tooltipPosition="top"
           tooltipEvent="focus"
         />
-        <label for="workspace_detail_item_modificationUser">{{ 'DETAIL.MODIFICATION_USER' | translate }}</label>
+        <label for="workspace_detail_item_modificationUser">{{ 'INTERNAL.MODIFICATION_USER' | translate }}</label>
       </span>
     </div>
   </div>

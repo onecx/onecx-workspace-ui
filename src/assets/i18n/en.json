@@ -125,14 +125,25 @@
     "ENABLE_DRAG_DROP": "Enable drag&drop",
     "SAVE_TREE_STRUCTURE": "Save tree structure"
   },
-  "CREATE": {
-    "MENU_CREATE_ERROR": "An error occurred, the menu item was not created",
-    "MENU_CREATE_SUCCESS": "Menu item successfully created",
-    "MENU_CREATION": "Menu Item Creation",
-    "MENU_CREATION_INFO": "Would you like to continue and create a menu item?",
-    "MENU_ICON": "Create new Menu Item"
+  "TABS": {
+    "WORKSPACE": {
+      "DETAILS": "Properties",
+      "CONTACT": "Contact",
+      "INTERN": "Internal",
+      "ROLES": "Roles",
+      "PRODUCTS": "Products",
+      "SUBJECTS": "Subjects",
+      "TOOLTIPS": {
+        "DETAILS": "Base properties",
+        "CONTACT": "Contact information",
+        "INTERN": "Internal properties",
+        "ROLES": "Roles valid for use the Workspace (an excerpt of tenant roles)",
+        "PRODUCTS": "Products registered for this Workspace - usable in menu items etc."
+      }
+    },
+    "MENU": {}
   },
-  "DETAIL": {
+  "INTERNAL": {
     "CREATION_DATE": "Created on",
     "CREATION_USER": "Created by",
     "MODIFICATION_DATE": "Changed on",
@@ -142,14 +153,50 @@
       "CREATION_USER": "Name of the user of the creation",
       "MODIFICATION_DATE": "Timestamp of the last change",
       "MODIFICATION_USER": "Name of the user of the last change"
-    },
-    "MENU_NOT_EXIST": "No menu defined",
-    "MFES_NOT_EXIST": "No Product Moduls defined",
+    }
+  },
+  "ROLE": {
     "ROLES_NOT_EXIST": "No roles defined",
     "ADD": "Add",
     "ADD_ROLE": "Add role",
     "DELETE_ROLE_INFO": "Role was successfully removed",
     "DELETE_ROLE_MESSAGE": "If you remove the role, it will be also removed from any menu item where it is used. Are you sure that you want to proceed?",
+    "ROLE_NAME": "Role Name",
+    "ROLES": "Roles",
+    "ROLES_ADD_ROLE": "Add role",
+    "ROLES_DELETE_ROLE": "Delete role",
+    "ROLES_EDIT_ERROR": "Error occurred, roles weren't updated",
+    "ROLES_EDIT_SUCCESS": "Roles edited successfully",
+    "NEW_ROLE": "New role",
+    "NEW_ROLE_DUPLICATED": "Role already exists in this Workspace",
+    "NEW_ROLE_ERROR": "New role should has minimum one character and cannot contains ',' symbol or only white spaces"
+  },
+  "WORKSPACE": {
+    "BASE_URL": "Base URL",
+    "CITY": "City",
+    "COMPANY_NAME": "Company Name",
+    "COUNTRY": "Country",
+    "DESCRIPTION": "Description",
+    "FOOTER_LABEL": "Footer Label",
+    "HOME_PAGE": "Homepage",
+    "ID": "ID",
+    "IMAGE_URL": "Image URL",
+    "LOGO": "Logo",
+    "LOGO_URL": "Logo URL",
+    "PHONE_NUMBER": "Phone Number",
+    "PORTAL": "Workspace",
+    "PORTAL_ID": "Workspace ID",
+    "PORTAL_NAME": "Workspace Name",
+    "POSTAL_CODE": "Postal Code",
+    "RSS_FEED_URL": "RSS-Feed URL",
+    "STREET": "Street",
+    "STREET_NO": "Street No",
+    "TENANT_ID": "Tenant ID",
+    "THEME": "Theme"
+  },
+  "DIALOG": {
+    "MENU_NOT_EXIST": "No menu defined",
+    "MFES_NOT_EXIST": "No Product Moduls defined",
     "DETAILS": "Details",
     "EMPTY_TRANSLATION": "There is already an empty translation.",
     "ERROR_FIND_MENU": "Cannot find menuItem with ID: ",
@@ -169,17 +216,8 @@
     "MENU_ITEM_HEADER": "Header",
     "MENU_REMOVE_ERROR": "Error deleting menu item",
     "MENU_REMOVE_SUCCESS": "Menu item successfully deleted",
-    "NEW_ROLE": "New role",
-    "NEW_ROLE_DUPLICATED": "Role already exists in this Workspace",
-    "NEW_ROLE_ERROR": "New role should has minimum one character and cannot contains ',' symbol or only white spaces",
     "PORTAL_PERMISSION_SYNC_ERROR": "Error occurred, permissions were not synchronized",
     "PORTAL_PERMISSION_SYNC_SUCCESS": "Permissions were sucessfully synchronized",
-    "ROLES": "Roles",
-    "ROLES_ADD_ROLE": "Add role",
-    "ROLES_DELETE_ROLE": "Delete role",
-    "ROLES_EDIT_ERROR": "Error occurred, roles weren't updated",
-    "ROLES_EDIT_SUCCESS": "Roles edited successfully",
-    "ROLE_NAME": "Role Name",
     "SELECT_ICON": "Please select badge icon",
     "THEME_CHECKBOX_HEADER": "Export Workspace Definition",
     "THEME_CHECKBOX_MESSAGE": "Download the current Workspace definition as JSON file. You can also integrate the Theme definition.",
@@ -190,10 +228,6 @@
     "URL": "URL"
   },
   "GENERAL": {
-    "CREATION_DATE": "Created on",
-    "CREATION_USER": "Created from",
-    "MODIFICATION_DATE": "Changed on",
-    "MODIFICATION_USER": "Changed from",
     "BOOLEAN": {
       "TRUE": "Yes",
       "FALSE": "No"
@@ -237,16 +271,12 @@
     "APPLICATION_ID": "Application Id",
     "BADGE": "Badge",
     "CREATE_CHILD_ITEM": "New Child Item",
-    "CREATION_DATE": "Creation Date",
-    "CREATION_USER": "Creation User",
     "DESCRIPTION": "Description",
     "DISABLED": "Disabled",
     "EMPTY": "Empty",
     "ID": "Id",
     "MENU_ID": "Menu Id",
     "MENU_NAME": "Menu Name",
-    "MODIFICATION_DATE": "Modification Date",
-    "MODIFICATION_USER": "Modification User",
     "NO": "No",
     "PAGE": "PAGE",
     "PARENT_ITEM": "Parent Item",
@@ -326,39 +356,7 @@
       "GOTO_WORKSPACE": "Open Workspace in a new TAB",
       "GOTO_MENU": "Display Menu Management"
     },
-    "TABS": {
-      "DETAILS": "Properties",
-      "CONTACT": "Contact",
-      "INTERN": "Internal",
-      "PRODUCTS": "Registered Products",
-      "MENU": "Menu",
-      "ROLES": "Roles",
-      "IMAGES": "Images",
-      "SUBJECTS": "Subjects"
-    },
-    "ITEM": {
-      "BASE_URL": "Base URL",
-      "CITY": "City",
-      "COMPANY_NAME": "Company Name",
-      "COUNTRY": "Country",
-      "DESCRIPTION": "Description",
-      "FOOTER_LABEL": "Footer Label",
-      "HOME_PAGE": "Homepage",
-      "ID": "ID",
-      "IMAGE_URL": "Image URL",
-      "LOGO": "Logo",
-      "LOGO_URL": "Logo URL",
-      "PHONE_NUMBER": "Phone Number",
-      "PORTAL": "Workspace",
-      "PORTAL_ID": "Workspace ID",
-      "PORTAL_NAME": "Workspace Name",
-      "POSTAL_CODE": "Postal Code",
-      "RSS_FEED_URL": "RSS-Feed URL",
-      "STREET": "Street",
-      "STREET_NO": "Street No",
-      "TENANT_ID": "Tenant ID",
-      "THEME": "Theme"
-    },
+    "ITEM": {},
     "MENU": {
       "HEADER": {
         "EDIT": "Menu Item Details",
@@ -515,58 +513,6 @@
     "SORT_BY": "Sort By",
     "SORT_DIRECTION_ASC": "ascending",
     "SORT_DIRECTION_DESC": "descending"
-  },
-  "THEME": {
-    "SEARCH.HEADER": "Theme Management",
-    "SEARCH.SUBHEADER": "Creation and editing of themes",
-    "DESIGNER.EDIT.SUBHEADER": "Change Theme Details",
-    "DESIGNER.NEW.SUBHEADER": "Create a new Theme",
-    "DETAIL.SUBHEADER": "Theme Details",
-    "DETAIL.AUTO_APPLY": "Auto apply changes",
-    "DETAIL.AUTO_APPLY.TOOLTIP": "If this option is switched on, then all changes (font, colors) are automatically applied to the current page.",
-    "DETAIL.AUTO_APPLY_CURRENT_THEME": "Changes are applied immediately when saving because it is the theme currently in use",
-    "DETAIL.THEME_SELECTOR": "Select Theme as Template",
-    "LOAD_ERROR": "Failed to load Theme",
-    "NOT_FOUND": "Theme was not found",
-    "NO_PROPERTIES": "No properties specified",
-    "TABS": {
-      "PROPERTIES": "Properties",
-      "VARIABLES": "Theme Variables"
-    },
-    "TEMPLATE": {
-      "SELECTOR": "Select Theme template",
-      "SELECTOR.TOOLTIP": "Choose an existing theme and use it as a template",
-      "CONFIRMATION.HEADER": "Use a Theme as Template",
-      "CONFIRMATION.MESSAGE.NEW": "Should all values be replaced by the values of \"{{ITEM}}\"?",
-      "CONFIRMATION.MESSAGE.EDIT": "Should all existing color values be replaced by the values of \"{{ITEM}}\"?"
-    },
-    "GROUPS": {
-      "BASE": "Basis",
-      "FONT": "Font"
-    },
-    "ID": "ID",
-    "NAME": "Name",
-    "THEME_NAME": "Theme Name",
-    "VERSION": "Version",
-    "DESCRIPTION": "Description",
-    "CSS_FILE": "CSS File",
-    "CREATION_DATE": "Created on",
-    "CREATION_USER": "Created by",
-    "MODIFICATION_DATE": "Changed on",
-    "MODIFICATION_USER": "Changed by",
-    "PORTALS": "Used in Workspaces",
-    "TOOLTIPS": {
-      "ID": "Unique technical ID of the Theme",
-      "NAME": "Unique Name of the Theme",
-      "VERSION": "Version of the Theme",
-      "DESCRIPTION": "Description of the Theme",
-      "PORTALS": "Workspaces using the Theme",
-      "CSS_FILE": "CSS file name",
-      "CREATION_DATE": "Timestamp the Theme was created",
-      "CREATION_USER": "Name of the user which created the Theme",
-      "MODIFICATION_DATE": "Timestamp the Theme was latest modified",
-      "MODIFICATION_USER": "Name of the user which changed the Theme last time"
-    }
   },
   "TREE": {
     "CLEAR_CACHE_INFO": "Cache cleared",

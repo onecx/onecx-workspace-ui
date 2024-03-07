@@ -64,8 +64,8 @@ describe('WorkspaceContactComponent', () => {
   it('should disable formGroup if editMode false', () => {
     component.editMode = false
     component.formGroup = formGroup
-    component.workspaceDetail = portal
-    component.workspaceDetail.address = {
+    component.workspace = portal
+    component.workspace.address = {
       country: 'detail country',
       city: 'detail city',
       postalCode: 'detail postalCode',
@@ -81,8 +81,8 @@ describe('WorkspaceContactComponent', () => {
   it('should setFormData onChanges: no address', () => {
     component.editMode = true
     component.formGroup = formGroup
-    component.workspaceDetail = portal
-    component.workspaceDetail.address = undefined
+    component.workspace = portal
+    component.workspace.address = undefined
 
     component.ngOnChanges()
 
@@ -91,8 +91,8 @@ describe('WorkspaceContactComponent', () => {
 
   it('should setFormData onChanges: address', () => {
     component.formGroup = formGroup
-    component.workspaceDetail = portal
-    component.workspaceDetail.address = {
+    component.workspace = portal
+    component.workspace.address = {
       country: 'detail country',
       city: 'detail city',
       postalCode: 'detail postalCode',
@@ -114,8 +114,8 @@ describe('WorkspaceContactComponent', () => {
       street: new FormControl('Some street'),
       streetNo: new FormControl('123')
     })
-    component.workspaceDetail = portal
-    component.workspaceDetail.address = {
+    component.workspace = portal
+    component.workspace.address = {
       country: 'detail country',
       city: 'detail city',
       postalCode: 'detail postalCode',
@@ -137,8 +137,8 @@ describe('WorkspaceContactComponent', () => {
       street: new FormControl('Some street'),
       streetNo: new FormControl('123')
     })
-    component.workspaceDetail = portal
-    component.workspaceDetail.address = {
+    component.workspace = portal
+    component.workspace.address = {
       country: 'detail country',
       city: 'detail city',
       postalCode: 'detail postalCode',
@@ -155,7 +155,7 @@ describe('WorkspaceContactComponent', () => {
 
   xit('should display error msg if formGroup invalid', () => {
     const address = {}
-    component.workspaceDetail = { ...portal, address: address }
+    component.workspace = { ...portal, address: address }
 
     component.onSubmit()
 
@@ -171,10 +171,10 @@ describe('WorkspaceContactComponent', () => {
       baseUrl: '/some/base/url',
       id: 'id'
     }
-    component.workspaceDetail = { ...newPortal, address: undefined }
+    component.workspace = { ...newPortal, address: undefined }
 
     component.onSubmit()
 
-    expect(component.workspaceDetail.address).toBeDefined()
+    expect(component.workspace.address).toBeDefined()
   })
 })

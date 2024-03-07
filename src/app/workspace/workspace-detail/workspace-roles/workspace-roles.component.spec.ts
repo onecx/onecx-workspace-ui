@@ -47,7 +47,7 @@ describe('WorkspaceRolesComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(WorkspaceRolesComponent)
     component = fixture.componentInstance
-    component.workspaceDetail = portal
+    component.workspace = portal
     fixture.detectChanges()
   })
 
@@ -55,10 +55,10 @@ describe('WorkspaceRolesComponent', () => {
     expect(component).toBeTruthy()
   })
 
-  it('should setFormData onChanges if workspaceDetail & changes correct', () => {
+  it('should setFormData onChanges if workspace & changes correct', () => {
     spyOn(component, 'setFormData')
     const changes: SimpleChanges = {
-      workspaceDetail: new SimpleChange(null, component.workspaceDetail, true)
+      workspace: new SimpleChange(null, component.workspace, true)
     }
 
     component.ngOnChanges(changes)
@@ -66,11 +66,11 @@ describe('WorkspaceRolesComponent', () => {
     expect(component.setFormData).toHaveBeenCalled()
   })
 
-  it('should setFormData onChanges if workspaceDetail & changes correct', () => {
+  it('should setFormData onChanges if workspace & changes correct', () => {
     component.setFormData()
 
-    if (component.workspaceDetail.workspaceRoles) {
-      expect(component.formArray.length).toBe(component.workspaceDetail.workspaceRoles.length)
+    if (component.workspace.workspaceRoles) {
+      expect(component.formArray.length).toBe(component.workspace.workspaceRoles.length)
     }
   })
 
@@ -93,7 +93,7 @@ describe('WorkspaceRolesComponent', () => {
   it('should update roles on deleteRole', () => {
     component.deleteRole(0)
 
-    expect(component.workspaceDetail.workspaceRoles).toEqual([])
+    expect(component.workspace.workspaceRoles).toEqual([])
   })
 
   it('should display error msg if form invalid', () => {

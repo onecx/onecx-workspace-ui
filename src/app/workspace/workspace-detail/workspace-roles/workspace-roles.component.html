@@ -1,15 +1,15 @@
 <div class="role-section">
-  <div *ngIf="!workspaceDetail.workspaceRoles" class="px-3 flex flex-wrap justify-content-between align-items-center">
-    <p-message severity="info" styleClass="p-2" [text]="'DETAIL.ROLES_NOT_EXIST' | translate"></p-message>
+  <div *ngIf="!workspace.workspaceRoles" class="px-3 flex flex-wrap justify-content-between align-items-center">
+    <p-message severity="info" styleClass="p-2" [text]="'ROLE.ROLES_NOT_EXIST' | translate"></p-message>
     <button
       *ocxIfPermission="'WORKSPACE_ROLE#EDIT'"
       pButton
       icon="pi pi-plus"
       (click)="toggleAddDialog()"
-      label="{{ 'DETAIL.ADD_ROLE' | translate }}"
+      label="{{ 'ROLE.ADD_ROLE' | translate }}"
     ></button>
   </div>
-  <div *ngIf="workspaceDetail.workspaceRoles" class="p-grid p-nogutter grid">
+  <div *ngIf="workspace.workspaceRoles" class="p-grid p-nogutter grid">
     <ng-container *ngIf="editMode; else elseBlock">
       <div *ngFor="let role of formArray.controls; index as i" class="col-12 md:col-6">
         <ng-container [formGroup]="role">
@@ -23,7 +23,7 @@
                   id="deleteTranslationBtn"
                   class="p-button-danger"
                   icon="pi pi-trash"
-                  title="{{ 'DETAIL.ROLES_DELETE_ROLE' | translate }}"
+                  title="{{ 'ROLE.ROLES_DELETE_ROLE' | translate }}"
                   (click)="deleteRole(i)"
                 ></button>
               </div>
@@ -33,12 +33,12 @@
       </div>
     </ng-container>
     <ng-template #elseBlock>
-      <div *ngFor="let role of workspaceDetail.workspaceRoles; index as i" class="col-12 md:col-6">
+      <div *ngFor="let role of workspace.workspaceRoles; index as i" class="col-12 md:col-6">
         <p-card class="view-role-card">{{ role }}</p-card>
       </div>
     </ng-template>
   </div>
-  <div *ngIf="workspaceDetail.workspaceRoles">
+  <div *ngIf="workspace.workspaceRoles">
     <button
       *ocxIfPermission="'WORKSPACE_ROLE#EDIT'"
       pButton
@@ -46,11 +46,11 @@
       class="mt-3"
       type="add"
       (click)="toggleAddDialog()"
-      label="{{ 'DETAIL.ADD_ROLE' | translate }}"
+      label="{{ 'ROLE.ADD_ROLE' | translate }}"
     ></button>
   </div>
   <p-dialog
-    header="{{ 'DETAIL.ROLES_ADD_ROLE' | translate }}"
+    header="{{ 'ROLE.ROLES_ADD_ROLE' | translate }}"
     [(visible)]="addDisplay"
     [modal]="true"
     contentStyleClass="pt-1"
@@ -64,7 +64,7 @@
         maxlength="100"
         [(ngModel)]="newWorkspaceRole"
       />
-      <label for="workspace_role_mgmt_role_name_input">{{ 'DETAIL.ROLE_NAME' | translate }}</label>
+      <label for="workspace_role_mgmt_role_name_input">{{ 'ROLE.ROLE_NAME' | translate }}</label>
     </span>
     <div class="flex flex-wrap justify-content-end gap-2 pt-3 mt-2">
       <button pButton icon="pi pi-times" (click)="toggleAddDialog()" [label]="'ACTIONS.CANCEL' | translate"></button>

@@ -21,8 +21,8 @@ import {
   GetMenuItemResponse,
   GetWorkspaceMenuItemStructureResponse,
   CreateUpdateMenuItem,
-  MenuSnapshot,
-  PatchMenuItemsRequest
+  MenuSnapshot
+  //  UpdateMenuItemRequest
 } from 'src/app/shared/generated'
 import { limitText, dropDownSortItemsByLabel } from 'src/app/shared/utils'
 import { MenuStringConst } from 'src/app//model/menu-string-const'
@@ -574,9 +574,9 @@ export class MenuComponent implements OnInit, OnDestroy {
           })
       } else if (this.changeMode === 'EDIT' && this.menuItem && this.menuItem.id) {
         this.menuApi
-          .patchMenuItems({
+          .updateMenuItem({
             workspaceName: this.workspaceName,
-            patchMenuItemsRequest: [{ resource: this.menuItem }]
+            updateMenuItemRequest: { resource: this.menuItem }
           })
           .subscribe({
             next: (data) => {
@@ -584,17 +584,17 @@ export class MenuComponent implements OnInit, OnDestroy {
               // update tree node with received data without reload all
               if (this.displayMenuDetail) {
                 this.onCloseDetailDialog()
-                if (data && data[0].resource?.key) {
-                  const node = this.getNodeByKey(data[0].resource?.key, this.menuNodes)
+                if (data && data[0].key) {
+                  const node = this.getNodeByKey(data[0].key, this.menuNodes)
                   if (node) {
                     node.data = data
-                    node.label = data[0].resource?.name
+                    node.label = data[0].name
                   }
                   if (this.menuItems) {
-                    const item = this.getItemByKey(data[0].resource?.key, this.menuItems)
+                    const item = this.getItemByKey(data[0].key, this.menuItems)
                     if (item) {
-                      item.i18n = data[0].resource?.i18n
-                      item.name = data[0].resource?.name
+                      item.i18n = data[0].i18n
+                      item.name = data[0].name
                     }
                   }
                 }
@@ -796,13 +796,15 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   // triggered by changes of tree structure in tree popup
   public updateMenuItems(updatedMenuItems: MenuItem[]): void {
-    const patchRequestItems: PatchMenuItemsRequest[] = []
+    console.log('updateMenuItems')
+    /*
+    const patchRequestItems: UpdateMenuItemRequest[] = []
     updatedMenuItems.forEach((item) => {
       const patchMenuItem = { resource: item }
       patchRequestItems.push(patchMenuItem)
     })
     this.menuApi
-      .patchMenuItems({
+      .updateMenuItem({
         workspaceName: this.workspaceName,
         patchMenuItemsRequest: patchRequestItems
       })
@@ -818,6 +820,7 @@ export class MenuComponent implements OnInit, OnDestroy {
           this.onReloadMenu()
         }
       })
+    */
   }
 
   public onStartResizeTree(ev: MouseEvent) {

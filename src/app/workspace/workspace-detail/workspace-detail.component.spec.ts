@@ -21,7 +21,6 @@ import { WorkspaceDetailComponent } from 'src/app/workspace/workspace-detail/wor
 import { WorkspaceContactComponent } from 'src/app/workspace/workspace-detail/workspace-contact/workspace-contact.component'
 import { WorkspacePropsComponent } from 'src/app/workspace/workspace-detail/workspace-props/workspace-props.component'
 import { WorkspaceRolesComponent } from 'src/app/workspace/workspace-detail/workspace-roles/workspace-roles.component'
-// import { WorkspaceImagesComponent } from './workspace-images/workspace-images.component'
 import { Workspace, MenuItem, WorkspaceAPIService, MenuItemAPIService } from 'src/app/shared/generated'
 
 class MockRouter {
@@ -94,10 +93,6 @@ class MockWorkspaceContactComponent {
 class MockWorkspaceRolesComponent {
   public onSubmit(): void {}
 }
-
-// class MockWorkspaceImagesComponent {
-//   public onSubmit(): void {}
-// }
 
 describe('WorkspaceDetailComponent', () => {
   let component: WorkspaceDetailComponent
@@ -251,7 +246,7 @@ describe('WorkspaceDetailComponent', () => {
   })
 
   it('should export a portal', () => {
-    component.workspaceDetail = workspace
+    component.workspace = workspace
     component.importThemeCheckbox = true
     menuApiServiceSpy.getMenuStructureForPortalId.and.returnValue(of(mockMenuItems))
     // themeApiServiceSpy.getThemeById.and.returnValue(of(themeHttpResponse))
@@ -262,9 +257,9 @@ describe('WorkspaceDetailComponent', () => {
   })
 
   it('should display error if themeNotSpecified on export', () => {
-    component.workspaceDetail = workspace
-    if (component.workspaceDetail) {
-      component.workspaceDetail.theme = ''
+    component.workspace = workspace
+    if (component.workspace) {
+      component.workspace.theme = ''
     }
     component.importThemeCheckbox = true
     menuApiServiceSpy.getMenuStructureForPortalId.and.returnValue(of(mockMenuItems))
@@ -278,7 +273,7 @@ describe('WorkspaceDetailComponent', () => {
   })
 
   it('should display error if portalNotFound on export', () => {
-    component.workspaceDetail = undefined
+    component.workspace = undefined
 
     component.onExportWorkspace()
 
@@ -360,18 +355,6 @@ describe('WorkspaceDetailComponent', () => {
 
     expect(component.editMode).toBeFalse()
   })
-
-  // it('should have prepared action buttons onInit: updateworkspace images', () => {
-  //   apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))
-  //   component.workspaceImagesComponent = new MockWorkspaceImagesComponent() as unknown as WorkspaceImagesComponent
-  //   component.selectedTabIndex = 5
-
-  //   component.ngOnInit()
-  //   const action = component.actions[3]
-  //   action.actionCallback()
-
-  //   expect(component.editMode).toBeFalse()
-  // })
 
   it('should have prepared action buttons onInit: updateworkspace: default', () => {
     apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))

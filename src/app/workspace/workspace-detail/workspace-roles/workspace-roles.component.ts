@@ -10,7 +10,7 @@ import { PortalMessageService } from '@onecx/portal-integration-angular'
   styleUrls: ['./workspace-roles.component.scss']
 })
 export class WorkspaceRolesComponent implements OnChanges {
-  @Input() workspaceDetail!: Workspace
+  @Input() workspace!: Workspace
   @Input() editMode = false
   @Output() saveRoleEvent = new EventEmitter()
   addDisplay = false
@@ -20,13 +20,13 @@ export class WorkspaceRolesComponent implements OnChanges {
   constructor(private workspaceApi: WorkspaceAPIService, private msgService: PortalMessageService) {}
 
   public ngOnChanges(changes: SimpleChanges): void {
-    if (this.workspaceDetail && changes['workspaceDetail']) {
+    if (this.workspace && changes['workspace']) {
       this.setFormData()
     }
   }
 
   setFormData(): void {
-    this.workspaceDetail.workspaceRoles?.forEach((element: any) => {
+    this.workspace.workspaceRoles?.forEach((element: any) => {
       const control = new FormControl(element)
       this.formArray.push(control as never)
     })

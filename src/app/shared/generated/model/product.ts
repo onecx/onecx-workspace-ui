@@ -20,6 +20,7 @@ export interface Product {
     modificationUser?: string;
     id?: string;
     productName?: string;
+    displayName?: string;
     baseUrl?: string;
     microfrontends?: Array<Microfrontend>;
 }

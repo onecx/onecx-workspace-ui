@@ -2,12 +2,9 @@ import { Component, Input, OnChanges, OnInit } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { Location } from '@angular/common'
 import { Observable, of } from 'rxjs'
-import { ActivatedRoute, Router } from '@angular/router'
 
 import {
-  ConfigurationService,
   // Theme,
-  ThemeService,
   PortalMessageService,
   UserService
 } from '@onecx/portal-integration-angular'
@@ -17,12 +14,9 @@ import {
   ImagesInternalAPIService,
   RefType,
   UploadImageRequestParams,
-  // ImageV1APIService,
   WorkspaceAPIService /* , ThemeDTO, ThemesAPIService */
 } from 'src/app/shared/generated'
 import { Workspace } from 'src/app/shared/generated'
-import { environment } from 'src/environments/environment'
-import { LogoState } from 'src/app/workspace/workspace-create/logo-state'
 import {
   copyToClipboard
   // sortThemeByName
@@ -34,7 +28,7 @@ import {
   styleUrls: ['./workspace-props.component.scss']
 })
 export class WorkspacePropsComponent implements OnChanges, OnInit {
-  @Input() workspaceDetail!: Workspace
+  @Input() workspace!: Workspace
   @Input() editMode = false
 
   public formGroup: FormGroup
@@ -52,10 +46,7 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
   public selectedFile: File | undefined
   public minimumImageWidth = 150
   public minimumImageHeight = 150
-  public LogoState = LogoState
-  public logoState = LogoState.INITIAL
   public fetchingLogoUrl?: string
-  private apiPrefix = environment.apiPrefix
   private oldWorkspaceName: string = ''
   public logoImageWasUploaded: boolean | undefined
 
@@ -63,11 +54,7 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
     private user: UserService,
     private workspaceApi: WorkspaceAPIService,
     // private themeApi: ThemesAPIService,
-    private themeService: ThemeService,
-    private config: ConfigurationService,
     private msgService: PortalMessageService,
-    public route: ActivatedRoute,
-    private router: Router,
     private location: Location,
     private imageApi: ImagesInternalAPIService
   ) {
@@ -94,7 +81,7 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
   public ngOnChanges(): void {
     this.setFormData()
     this.editMode ? this.formGroup.enable() : this.formGroup.disable()
-    this.oldWorkspaceName = this.workspaceDetail.name
+    this.oldWorkspaceName = this.workspace.name
   }
 
   ngOnInit(): void {
@@ -114,24 +101,17 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
   }
 
   public setFormData(): void {
-    // prepare list of registered MFEs to be used as homepage dropdown
-    // this.mfeRList = Array.from(this.workspaceDetail.microfrontendRegistrations ?? []).map((mfe: any) => ({
-    //   label: mfe.baseUrl,
-    //   value: mfe.baseUrl || ''
-    // }))
-    // fill form
     Object.keys(this.formGroup.controls).forEach((element) => {
-      this.formGroup.controls[element].setValue((this.workspaceDetail as any)[element])
-      this.formGroup.controls['themeName'].setValue(this.workspaceDetail.theme)
+      this.formGroup.controls[element].setValue((this.workspace as any)[element])
+      this.formGroup.controls['themeName'].setValue(this.workspace.theme)
     })
-    // this.fetchingLogoUrl = setFetchUrls(this.apiPrefix, this.formGroup.value.logoUrl)
   }
 
   public onSubmit() {
     if (this.formGroup.valid) {
-      Object.assign(this.workspaceDetail, this.getWorkspaceChangesFromForm())
+      Object.assign(this.workspace, this.getWorkspaceChangesFromForm())
       this.editMode = false
-      if (this.oldWorkspaceName !== this.workspaceDetail.name) {
+      if (this.oldWorkspaceName !== this.workspace.name) {
         this.location.back()
       }
     } else {
@@ -147,7 +127,7 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
     const changes: any = {}
     Object.keys(this.formGroup.controls).forEach((key) => {
       if (this.formGroup.value[key] !== undefined) {
-        if (this.formGroup.value[key] !== (this.workspaceDetail as any)[key]) {
+        if (this.formGroup.value[key] !== (this.workspace as any)[key]) {
           changes[key] = this.formGroup.value[key]
         }
       }

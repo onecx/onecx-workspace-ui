@@ -9,10 +9,17 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { MenuItem } from './menuItem';
 
 
-export interface PatchMenuItemsRequest { 
-    resource?: MenuItem;
+export interface IAMRoleSearchCriteria { 
+    name?: string;
+    /**
+     * The number of page.
+     */
+    pageNumber?: number;
+    /**
+     * The size of page
+     */
+    pageSize?: number;
 }
 

@@ -7,12 +7,10 @@ import { Observable, map } from 'rxjs'
 
 import { Action, ObjectDetailItem, PortalMessageService, UserService } from '@onecx/portal-integration-angular'
 import { WorkspaceSnapshot, Workspace, WorkspaceAPIService, ImagesInternalAPIService } from 'src/app/shared/generated'
-import { environment } from 'src/environments/environment'
 
 import { WorkspacePropsComponent } from 'src/app/workspace/workspace-detail/workspace-props/workspace-props.component'
-import { WorkspaceRolesComponent } from 'src/app/workspace/workspace-detail/workspace-roles/workspace-roles.component'
-import { WorkspaceInternComponent } from 'src/app/workspace/workspace-detail/workspace-intern/workspace-intern.component'
 import { WorkspaceContactComponent } from 'src/app/workspace/workspace-detail/workspace-contact/workspace-contact.component'
+import { WorkspaceRolesComponent } from 'src/app/workspace/workspace-detail/workspace-roles/workspace-roles.component'
 
 @Component({
   selector: 'app-workspace-detail',
@@ -20,19 +18,10 @@ import { WorkspaceContactComponent } from 'src/app/workspace/workspace-detail/wo
   styleUrls: ['./workspace-detail.component.scss']
 })
 export class WorkspaceDetailComponent implements OnInit {
-  @ViewChild(WorkspacePropsComponent, { static: false })
-  workspacePropsComponent!: WorkspacePropsComponent
+  @ViewChild(WorkspacePropsComponent, { static: false }) workspacePropsComponent!: WorkspacePropsComponent
+  @ViewChild(WorkspaceContactComponent, { static: false }) workspaceContactComponent!: WorkspaceContactComponent
+  @ViewChild(WorkspaceRolesComponent, { static: false }) workspaceRolesComponent!: WorkspaceRolesComponent
 
-  @ViewChild(WorkspaceContactComponent, { static: false })
-  workspaceContactComponent!: WorkspaceContactComponent
-
-  @ViewChild(WorkspaceRolesComponent, { static: false })
-  workspaceRolesComponent!: WorkspaceRolesComponent
-
-  @ViewChild(WorkspaceInternComponent, { static: false })
-  workspaceInternComponent!: WorkspaceInternComponent
-
-  private apiPrefix = environment.apiPrefix
   public actions$: Observable<Action[]> | undefined
   editMode = false
   headerImageUrl?: string
@@ -41,9 +30,8 @@ export class WorkspaceDetailComponent implements OnInit {
   objectDetails: ObjectDetailItem[] = []
   workspaceDeleteMessage = ''
   workspaceDeleteVisible = false
-  workspaceDetail?: Workspace
   workspaceDownloadVisible = false
-  workspaceId: string = ''
+  workspace: Workspace | undefined
   workspaceName = this.route.snapshot.params['name']
   selectedTabIndex = 0
   dateFormat = 'medium'
@@ -62,23 +50,12 @@ export class WorkspaceDetailComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.getWorkspaceData()
+    this.getWorkspace()
   }
 
   public onTabChange($event: any) {
     this.selectedTabIndex = $event.index
     this.prepareActionButtons()
-  }
-
-  public onWorkspaceData(workspace: Workspace) {
-    this.workspaceDetail = workspace
-    this.preparePageHeaderImage()
-    this.prepareActionButtons()
-    this.translate
-      .get(['PORTAL.ITEM.HOME_PAGE', 'PORTAL.ITEM.BASE_URL', 'PORTAL.ITEM.THEME', 'DETAIL.CREATION_DATE'])
-      .subscribe((data) => {
-        this.preparePageObjectDetails(data)
-      })
   }
 
   private prepareActionButtons(): void {
@@ -119,7 +96,7 @@ export class WorkspaceDetailComponent implements OnInit {
               show: 'always',
               permission: 'MENU#VIEW',
               conditional: true,
-              showCondition: this.workspaceDetail != null && !this.editMode
+              showCondition: this.workspace != null && !this.editMode
             },
             {
               label: data['ACTIONS.CANCEL'],
@@ -149,7 +126,7 @@ export class WorkspaceDetailComponent implements OnInit {
               show: 'always',
               permission: 'WORKSPACE#EXPORT',
               conditional: true,
-              showCondition: this.workspaceDetail != null && !this.editMode
+              showCondition: this.workspace != null && !this.editMode
             },
             {
               label: data['ACTIONS.EDIT.LABEL'],
@@ -159,38 +136,35 @@ export class WorkspaceDetailComponent implements OnInit {
               show: 'always',
               permission: 'WORKSPACE#EDIT',
               conditional: true,
-              showCondition: this.workspaceDetail != null && !this.editMode && this.selectedTabIndex < 2
+              showCondition: this.workspace != null && !this.editMode && this.selectedTabIndex < 2
             },
             {
               label: data['ACTIONS.DELETE.LABEL'],
               title: data['ACTIONS.DELETE.TOOLTIP'].replace('{{TYPE}}', 'Workspace'),
               actionCallback: () => {
                 this.workspaceDeleteVisible = true
-                this.workspaceDeleteMessage = data['ACTIONS.DELETE.MESSAGE'].replace(
-                  '{{ITEM}}',
-                  this.workspaceDetail?.name
-                )
+                this.workspaceDeleteMessage = data['ACTIONS.DELETE.MESSAGE'].replace('{{ITEM}}', this.workspace?.name)
               },
               icon: 'pi pi-trash',
               show: 'asOverflow',
               permission: 'WORKSPACE#DELETE',
               conditional: true,
-              showCondition: this.workspaceDetail != null && !this.editMode
+              showCondition: this.workspace != null && !this.editMode
             }
           ]
         })
       )
   }
 
-  private async getWorkspaceData() {
+  private async getWorkspace() {
     this.workspaceApi
       .getWorkspaceByName({ workspaceName: this.workspaceName })
       .pipe()
       .subscribe({
-        next: (workspace) => {
-          if (workspace.resource) {
-            this.workspaceId = workspace.resource.id || ''
-            this.onWorkspaceData(workspace.resource)
+        next: (data) => {
+          if (data.resource) {
+            this.workspace = data.resource
+            this.onWorkspaceData()
           }
         },
         error: () => {
@@ -200,19 +174,44 @@ export class WorkspaceDetailComponent implements OnInit {
       })
   }
 
+  public onWorkspaceData() {
+    this.preparePageHeaderImage()
+    this.prepareActionButtons()
+    this.translate
+      .get(['WORKSPACE.HOME_PAGE', 'WORKSPACE.BASE_URL', 'WORKSPACE.THEME', 'INTERNAL.CREATION_DATE'])
+      .subscribe((data) => {
+        this.objectDetails = [
+          { label: data['WORKSPACE.HOME_PAGE'], value: this.workspace?.homePage },
+          { label: data['WORKSPACE.BASE_URL'], value: this.workspace?.baseUrl },
+          { label: data['WORKSPACE.THEME'], value: this.workspace?.theme },
+          {
+            label: data['INTERNAL.CREATION_DATE'],
+            value: this.workspace?.creationDate,
+            valuePipe: DatePipe,
+            valuePipeArgs: this.dateFormat
+          }
+        ]
+      })
+  }
+
   private updateWorkspace() {
     // Trigger update on the form of the currently selected tab
     switch (this.selectedTabIndex) {
       case 0: {
         this.workspacePropsComponent.onSubmit()
-        this.workspaceDetail = this.workspacePropsComponent.workspaceDetail
+        this.workspace = this.workspacePropsComponent.workspace
         break
       }
       case 1: {
         this.workspaceContactComponent.onSubmit()
-        this.workspaceDetail = this.workspaceContactComponent.workspaceDetail
+        this.workspace = this.workspaceContactComponent.workspace
         break
       }
+      /* case 2: {
+        this.workspaceRolesComponent.onSubmit()
+        this.workspace = this.workspaceRolesComponent.workspaceDetail
+        break
+      }*/
       default: {
         console.error("Couldn't assign tab to component")
         break
@@ -221,14 +220,12 @@ export class WorkspaceDetailComponent implements OnInit {
     this.toggleEditMode('view')
     this.workspaceApi
       .updateWorkspace({
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        id: this.workspaceDetail?.id!,
-        updateWorkspaceRequest: { resource: this.workspaceDetail! }
+        id: this.workspace?.id ?? '',
+        updateWorkspaceRequest: { resource: this.workspace! }
       })
       .subscribe({
-        next: (workspace) => {
-          this.workspaceId = workspace.id || ''
-          this.onWorkspaceData(workspace)
+        next: (data) => {
+          this.workspace = data
           this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_OK' })
         },
         error: () => {
@@ -243,8 +240,8 @@ export class WorkspaceDetailComponent implements OnInit {
   }
 
   public onRoleSave(roles: string[]) {
-    if (this.workspaceDetail) {
-      this.workspaceDetail.workspaceRoles = roles
+    if (this.workspace) {
+      this.workspace.workspaceRoles = roles
     }
     this.updateWorkspace()
   }
@@ -255,7 +252,7 @@ export class WorkspaceDetailComponent implements OnInit {
   }
 
   private deleteWorkspace() {
-    this.workspaceApi.deleteWorkspace({ id: this.workspaceId }).subscribe(
+    this.workspaceApi.deleteWorkspace({ id: this.workspace?.id ?? '' }).subscribe(
       () => {
         this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MESSAGE_OK' })
         this.close()
@@ -277,14 +274,14 @@ export class WorkspaceDetailComponent implements OnInit {
   }
 
   public onExportWorkspace() {
-    if (!this.workspaceDetail) {
+    if (!this.workspace) {
       this.workspaceNotFoundError()
       return
     }
 
     this.workspaceApi
       .exportWorkspaces({
-        exportWorkspacesRequest: { includeMenus: true, names: [this.workspaceDetail.name] }
+        exportWorkspacesRequest: { includeMenus: true, names: [this.workspace.name] }
       })
       .subscribe({
         next: (snapshot) => {
@@ -294,8 +291,8 @@ export class WorkspaceDetailComponent implements OnInit {
       })
 
     if (this.importThemeCheckbox) {
-      if (this.workspaceDetail.theme) {
-        /* const theme$ = this.themeApi.getThemeById({ id: this.workspaceDetail.themeId })
+      if (this.workspace.theme) {
+        /* const theme$ = this.themeApi.getThemeById({ id: this.workspace.themeId })
         finalMenuStructure$$ = theme$.pipe(
           concatMap((theme) => {
             const themeImportData = filterObject(theme, [
@@ -360,15 +357,12 @@ export class WorkspaceDetailComponent implements OnInit {
 
   // private saveThemeToFile(theme: ThemeDTO) {
   //   const themeJSON = JSON.stringify(theme, null, 2)
-  //   FileSaver.saveAs(new Blob([themeJSON], { type: 'text/json' }), `${this.workspaceDetail?.themeName + '_Theme'}.json`)
+  //   FileSaver.saveAs(new Blob([themeJSON], { type: 'text/json' }), `${this.workspace?.themeName + '_Theme'}.json`)
   // }
 
   private saveWorkspaceToFile(workspaceExport: WorkspaceSnapshot) {
     const workspaceJson = JSON.stringify(workspaceExport, null, 2)
-    FileSaver.saveAs(
-      new Blob([workspaceJson], { type: 'text/json' }),
-      `${this.workspaceDetail?.name || 'Workspace'}.json`
-    )
+    FileSaver.saveAs(new Blob([workspaceJson], { type: 'text/json' }), `${this.workspace?.name || 'Workspace'}.json`)
   }
 
   private workspaceNotFoundError() {
@@ -379,34 +373,11 @@ export class WorkspaceDetailComponent implements OnInit {
     this.msgService.error({ summaryKey: 'DETAIL.THEME_NOT_SPECIFIED_MESSAGE' })
   }
 
-  private preparePageObjectDetails(data: any) {
-    this.objectDetails = [
-      {
-        label: data['PORTAL.ITEM.HOME_PAGE'],
-        value: this.workspaceDetail?.homePage
-      },
-      {
-        label: data['PORTAL.ITEM.BASE_URL'],
-        value: this.workspaceDetail?.baseUrl
-      },
-      {
-        label: data['PORTAL.ITEM.THEME'],
-        value: this.workspaceDetail?.theme
-      },
-      {
-        label: data['DETAIL.CREATION_DATE'],
-        value: this.workspaceDetail?.creationDate,
-        valuePipe: DatePipe,
-        valuePipeArgs: this.dateFormat
-      }
-    ]
-  }
-
   private preparePageHeaderImage() {
-    if (this.workspaceDetail?.logoUrl == null || this.workspaceDetail?.logoUrl == '') {
-      this.headerImageUrl = this.imageApi.configuration.basePath + '/images/' + this.workspaceDetail?.name + '/logo'
+    if (this.workspace?.logoUrl == null || this.workspace?.logoUrl == '') {
+      this.headerImageUrl = this.imageApi.configuration.basePath + '/images/' + this.workspace?.name + '/logo'
     } else {
-      this.headerImageUrl = this.workspaceDetail?.logoUrl
+      this.headerImageUrl = this.workspace?.logoUrl
     }
   }
 
