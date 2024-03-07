@@ -10,7 +10,7 @@
     ></button>
   </div>
   <div *ngIf="workspace.workspaceRoles" class="p-grid p-nogutter grid">
-    <ng-container *ngIf="editMode; else elseBlock">
+    <ng-container *ngIf="false; else elseBlock">
       <div *ngFor="let role of formArray.controls; index as i" class="col-12 md:col-6">
         <ng-container [formGroup]="role">
           <p-card>

@@ -1,4 +1,4 @@
-import { Component, Input, Output, SimpleChanges, OnChanges, EventEmitter } from '@angular/core'
+import { Component, Input, SimpleChanges, OnChanges } from '@angular/core'
 import { FormArray, FormControl } from '@angular/forms'
 
 import { Workspace, WorkspaceAPIService } from '../../../shared/generated'
@@ -11,8 +11,6 @@ import { PortalMessageService } from '@onecx/portal-integration-angular'
 })
 export class WorkspaceRolesComponent implements OnChanges {
   @Input() workspace!: Workspace
-  @Input() editMode = false
-  @Output() saveRoleEvent = new EventEmitter()
   addDisplay = false
   formArray = new FormArray([])
   newWorkspaceRole = ''
@@ -53,7 +51,6 @@ export class WorkspaceRolesComponent implements OnChanges {
     if (this.formArray.valid) {
       const array: string[] = []
       this.formArray.value.forEach((role) => array.push(role))
-      this.saveRoleEvent.emit(this.formArray.value)
       // clean up the form
       this.formArray.removeAt(this.formArray.length - 1)
     } else {

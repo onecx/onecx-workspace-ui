@@ -7,18 +7,18 @@
   >
   </ocx-page-header>
   <ocx-page-content>
-    <!-- ng-container *ngIf="portals$ | async as workspaceItems" -->
-    <ng-container *ngIf="workspaceItems as workspaceItems">
+    <!-- ng-container *ngIf="portals$ | async as workspaces" -->
+    <ng-container *ngIf="workspaces">
       <p-dataView
         #table
         id="portal_search_dataview"
-        [value]="workspaceItems"
+        [value]="workspaces"
         [paginator]="true"
         [alwaysShowPaginator]="false"
         [rowsPerPageOptions]="[10, 20, 50]"
         [rows]="viewMode === 'grid' ? 12 : 10"
         [layout]="viewMode"
-        filterBy="portalName,themeName"
+        filterBy="NO,theme"
         [sortField]="sortField"
         [sortOrder]="sortOrder"
       >
@@ -29,8 +29,8 @@
             [supportedViews]="['grid', 'list']"
             [initialViewMode]="viewMode"
             [sortingOptions]="[
-              { label: fieldLabelWorkspaceName, value: 'portalName' },
-              { label: fieldLabelThemeName, value: 'themeName' }
+              { label: fieldLabelWorkspaceName, value: 'name' },
+              { label: fieldLabelThemeName, value: 'theme' }
             ]"
             [defaultSortOption]="defaultSortField"
             [defaultSortDirection]="sortOrder === -1"
@@ -44,85 +44,82 @@
           </ocx-data-view-controls>
         </ng-template>
         <!-- List - view -->
-        <ng-template let-workspaceItems pTemplate="listItem">
+        <ng-template let-workspace pTemplate="listItem">
           <div
             class="col-12 grid grid-nogutter row-gap-1 align-items-center listview-row p-1 hover:bg-gray-200 cursor-pointer line-height-2"
-            [routerLink]="['./' + workspaceItems.name]"
+            [routerLink]="['./' + workspace.name]"
           >
             <div class="col-12 sm:col-2 md:col-2 lg:col-2 xl:col-2 px-2 text-center mt-1">
-              <app-image-container [imageUrl]="getImageUrl(workspaceItems)" [small]="true"></app-image-container>
+              <app-image-container [imageUrl]="getImageUrl(workspace)" [small]="true"></app-image-container>
             </div>
             <div
               class="col-12 sm:col-3 md:col-3 lg:col-3 xl:col-2 px-2 font-bold text-center sm:text-left"
-              [title]="('PORTAL.ITEM.PORTAL' | translate) + ': ' + workspaceItems.name"
+              [title]="('WORKSPACE.NAME' | translate) + ': ' + workspace.name"
             >
-              {{ limitText(workspaceItems.name, 40) }}
+              {{ limitText(workspace.name, 40) }}
             </div>
             <div class="col-12 sm:col-4 md:col-4 lg:col-4 xl:col-2 px-2 text-center sm:text-left">
               <a
-                [routerLink]="workspaceItems.baseUrl"
+                [routerLink]="workspace.baseUrl"
                 (click)="$event.stopPropagation()"
                 target="_blank"
                 class="text-primary"
                 [title]="
-                  ('PORTAL.ITEM.BASE_URL' | translate) + ' - ' + ('ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate)
+                  ('WORKSPACE.BASE_URL' | translate) + ' - ' + ('ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate)
                 "
               >
-                {{ limitText(workspaceItems.baseUrl, 50) }}
+                {{ limitText(workspace.baseUrl, 50) }}
               </a>
             </div>
             <div
               class="col-12 sm:col-3 md:col-3 lg:col-3 xl:col-2 px-2 text-center sm:text-left"
-              [title]="'PORTAL.ITEM.THEME' | translate"
+              [title]="'WORKSPACE.THEME' | translate"
             >
-              {{ limitText(workspaceItems.themeName, 40) }}
+              {{ limitText(workspace.themeName, 40) }}
             </div>
             <div
               class="col-12 sm:col-12 md:col-12 lg:col-12 xl:col-4 px-2 text-center sm:text-left"
-              [title]="'PORTAL.ITEM.DESCRIPTION' | translate"
+              [title]="'WORKSPACE.DESCRIPTION' | translate"
             >
-              {{ this.getDescriptionString(workspaceItems.description) }}
+              {{ this.getDescriptionString(workspace.description) }}
             </div>
           </div>
         </ng-template>
 
         <!-- Grid - view -->
-        <ng-template let-workspaceItems let-row="rowIndex" pTemplate="gridItem">
-          <div class="col-12 sm:col-6 md:col-4 lg:col-4 xl:col-3 p-3" [routerLink]="['./', workspaceItems.name]">
+        <ng-template let-workspace let-row="rowIndex" pTemplate="gridItem">
+          <div class="col-12 sm:col-6 md:col-4 lg:col-4 xl:col-3 p-3" [routerLink]="['./', workspace.name]">
             <div
               class="card relative p-2 flex flex-column justify-content-center row-gap-1 md:row-gap-2 hover:bg-gray-200 cursor-pointer"
             >
               <span
-                *ngIf="workspaceItems.name !== 'ADMIN'"
+                *ngIf="workspace.name !== 'ADMIN'"
                 [id]="'app_workspace_search_data_row_' + row + '_goto_workspace'"
                 class="card-badge-right badge-1 p-2 pi pi-external-link pseudo-button-link"
                 [title]="'PORTAL.QUICK_LINKS.GOTO_WORKSPACE' | translate"
-                (click)="onGotoWorkspace($event, workspaceItems)"
+                (click)="onGotoWorkspace($event, workspace)"
               ></span>
               <span
                 *ocxIfPermission="'MENU#VIEW'"
                 [id]="'app_workspace_search_data_row_' + row + '_goto_menu'"
                 class="card-badge-right badge-2 p-2 pi pi-sitemap pseudo-button-link"
                 [title]="'PORTAL.QUICK_LINKS.GOTO_MENU' | translate"
-                (click)="onGotoMenu($event, workspaceItems)"
+                (click)="onGotoMenu($event, workspace)"
               ></span>
               <div class="h-3rem md:h-5rem mt-1 flex flex-column justify-content-center align-items-center text-center">
-                <app-image-container [imageUrl]="getImageUrl(workspaceItems)" [small]="false"></app-image-container>
+                <app-image-container [imageUrl]="getImageUrl(workspace)" [small]="false"></app-image-container>
               </div>
               <div class="h-4rem lg:h-5rem mb-1 flex flex-column justify-content-between px-2 text-center gap-1">
                 <div
                   class="font-bold text-xl lg:text-2xl"
-                  [title]="('PORTAL.ITEM.PORTAL' | translate) + ': ' + workspaceItems.name"
+                  [title]="('WORKSPACE.NAME' | translate) + ': ' + workspace.name"
                 >
-                  {{ limitText(workspaceItems.name, 15) }}
+                  {{ limitText(workspace.name, 15) }}
                 </div>
-                <div
-                  class="h-1rem"
-                  [title]="workspaceItems.description ? limitText(workspaceItems.description, 100) : ''"
-                >
-                  {{ limitText(workspaceItems.description, 26) }}
+                <div class="h-1rem" [title]="workspace.description ? limitText(workspace.description, 100) : ''">
+                  {{ limitText(workspace.description, 26) }}
                 </div>
-                <!-- <div title="Theme">{{ limitText(workspaceItems.themeName, 25) }}</div> -->
+                <!-- <div title="Theme">{{ limitText(workspace.themeName, 25) }}</div> -->
               </div>
             </div>
           </div>
@@ -130,29 +127,31 @@
       </p-dataView>
     </ng-container>
   </ocx-page-content>
-  <p-dialog
-    [header]="'ACTIONS.CREATE.PORTAL' | translate"
-    [(visible)]="showCreateDialog"
-    [baseZIndex]="10000"
-    [draggable]="true"
-    [resizable]="true"
-    [modal]="true"
-    [style]="{ width: '700px' }"
-  >
-    <app-workspace-create (toggleCreationDialogEvent)="toggleShowCreateDialog()"></app-workspace-create>
-  </p-dialog>
-  <p-dialog
-    [header]="'PORTAL_IMPORT.IMPORT_PORTAL' | translate"
-    [(visible)]="showImportDialog"
-    [baseZIndex]="1000"
-    [draggable]="true"
-    [resizable]="true"
-    [modal]="true"
-    [style]="{ width: '985px' }"
-  >
-    <app-workspace-import
-      [resetDialog]="showImportDialog"
-      (toggleImportDialogEvent)="toggleShowImportDialog()"
-    ></app-workspace-import>
-  </p-dialog>
 </ocx-portal-page>
+
+<p-dialog
+  [header]="'ACTIONS.CREATE.PORTAL' | translate"
+  [(visible)]="showCreateDialog"
+  [baseZIndex]="10000"
+  [draggable]="true"
+  [resizable]="true"
+  [modal]="true"
+  [style]="{ width: '700px' }"
+>
+  <app-workspace-create (toggleCreationDialogEvent)="toggleShowCreateDialog()"></app-workspace-create>
+</p-dialog>
+
+<p-dialog
+  [header]="'PORTAL_IMPORT.IMPORT_PORTAL' | translate"
+  [(visible)]="showImportDialog"
+  [baseZIndex]="1000"
+  [draggable]="true"
+  [resizable]="true"
+  [modal]="true"
+  [style]="{ width: '985px' }"
+>
+  <app-workspace-import
+    [resetDialog]="showImportDialog"
+    (toggleImportDialogEvent)="toggleShowImportDialog()"
+  ></app-workspace-import>
+</p-dialog>

@@ -1,15 +1,15 @@
 <ocx-portal-page permission="MENU#VIEW" helpArticleId="PAGE_MENU_DETAIL" pageName="PAGE_MENU_DETAIL">
   <ocx-page-header
     *ngIf="workspace"
-    [header]="workspaceName ? workspaceName + ('MENU.HEADER' | translate) : ''"
-    [subheader]="'MENU.SUBHEADER' | translate"
+    [header]="workspaceName ? workspaceName + ('DIALOG.MENU.LABEL' | translate) : ''"
+    [subheader]="'DIALOG.MENU.SUBHEADER' | translate"
     [actions]="actions"
   >
   </ocx-page-header>
 
   <ocx-page-content>
     <!-- on loading and preparing data -->
-    <div *ngIf="loading" class="flex flex-wrap justify-content-start align-items-center">
+    <div *ngIf="loading" class="card flex flex-wrap justify-content-start align-items-center">
       <p-message
         severity="info"
         styleClass="p-2"
@@ -20,14 +20,14 @@
     <!-- no menu defined -->
     <div
       *ngIf="menuNodes.length === 0 && !loading"
-      class="px-3 flex flex-wrap justify-content-between align-items-center"
+      class="px-3 card flex flex-wrap justify-content-between align-items-center"
     >
-      <p-message severity="info" styleClass="p-2" [text]="'DETAIL.MENU_NOT_EXIST' | translate"></p-message>
+      <p-message severity="info" styleClass="p-2" [text]="'DIALOG.MENU.MENU_NOT_EXIST' | translate"></p-message>
       <button
         pButton
         icon="pi pi-plus"
-        (click)="onGotoMenuMgmt()"
-        label="{{ 'ACTIONS.NAVIGATION.GOTO_MENU' | translate }}"
+        (click)="onCreateMenu($event)"
+        label="{{ 'ACTIONS.CREATE.MENU' | translate }}"
       ></button>
     </div>
 
@@ -62,8 +62,8 @@
               <p-button
                 *ocxIfPermission="'MENU#DRAG_DROP'"
                 id="workspace_menu_table_header_reorder"
-                [label]="'PORTAL.MENU.ACTION.TREE_MODAL' | translate"
-                [title]="'PORTAL.MENU.ACTION.TREE_MODAL.TOOLTIP' | translate"
+                [label]="'DIALOG.MENU.HEADER.TREE_MODAL' | translate"
+                [title]="'DIALOG.MENU.HEADER.TREE_MODAL.TOOLTIP' | translate"
                 (onClick)="onDisplayTreeModal()"
                 icon="pi pi-sort"
               ></p-button>
@@ -104,9 +104,9 @@
           <tr>
             <th></th>
             <th class="text-center hidden-xs">{{ 'ACTIONS.LABEL' | translate }}</th>
-            <th class="text-center hidden-md" [title]="'PORTAL.MENU.POSITION.TOOLTIP' | translate">Pos</th>
-            <th class="text-center hidden-md" [title]="'PORTAL.MENU.I18N.TOOLTIP' | translate">
-              {{ 'PORTAL.MENU.I18N' | translate }}
+            <th class="text-center hidden-md" [title]="'DIALOG.MENU.POSITION.TOOLTIP' | translate">Pos</th>
+            <th class="text-center hidden-md" [title]="'DIALOG.MENU.I18N.TOOLTIP' | translate">
+              {{ 'DIALOG.MENU.I18N.LABEL' | translate }}
             </th>
             <th class="text-center hidden-md" [title]="'PORTAL.MENU.MFE.TOOLTIP' | translate">PM</th>
             <th class="hidden-sm" [title]="'PORTAL.MENU.URL.TOOLTIP' | translate">URL</th>
@@ -127,7 +127,7 @@
                   type="button"
                   [id]="'workspace_menu_table_row_' + rowData.key + '_disabled'"
                   (click)="onToggleDisable($event, rowData)"
-                  [title]="'PORTAL.MENU.ACTION.DISABLED' | translate"
+                  [title]="'DIALOG.MENU.ACTION.DISABLED' | translate"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                 >
                   <span
@@ -144,7 +144,7 @@
                   type="button"
                   [id]="'workspace_menu_table_row_' + rowData.key + '_goto_details'"
                   (click)="onGotoDetails($event, rowData)"
-                  [title]="'PORTAL.MENU.ACTION.DETAILS' | translate"
+                  [title]="'DIALOG.MENU.ACTION.DETAILS' | translate"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                 >
                   <span class="text-primary font-medium p-button-icon pi pi-eye" aria-hidden="true"></span>
@@ -155,7 +155,7 @@
                   type="button"
                   [id]="'workspace_menu_table_row_' + rowData.key + '_goto_new'"
                   (click)="onCreateMenu($event, rowData)"
-                  [title]="'PORTAL.MENU.ACTION.NEW' | translate"
+                  [title]="'DIALOG.MENU.ACTION.NEW' | translate"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                 >
                   <span class="text-primary font-medium p-button-icon pi pi-plus-circle" aria-hidden="true"></span>
@@ -166,7 +166,7 @@
                   type="button"
                   [id]="'workspace_menu_table_row_' + rowData.key + '_delete'"
                   (click)="onDeleteMenuItem($event, rowData)"
-                  [title]="('PORTAL.MENU.ACTION.DELETE' | translate).replace('{{TYPE}}', 'Menu')"
+                  [title]="('DIALOG.MENU.ACTION.DELETE' | translate).replace('{{TYPE}}', 'Menu')"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                 >
                   <span class="danger-action-text font-medium p-button-icon pi pi-trash" aria-hidden="true"></span>
@@ -181,7 +181,7 @@
                 *ngIf="isObjectEmpty(rowData.i18n)"
                 [id]="'workspace_menu_table_row_' + rowData.key + '_i18n'"
                 class="pi pi-check"
-                [title]="'PORTAL.MENU.I18N.ROW.TOOLTIP' | translate"
+                [title]="'DIALOG.MENU.I18N.ROW.TOOLTIP' | translate"
               ></span>
             </td>
             <td class="text-center hidden-md">
@@ -214,7 +214,7 @@
   DETAIL
 -->
 <p-dialog
-  [header]="'PORTAL.MENU.HEADER.' + changeMode | translate"
+  [header]="'DIALOG.MENU.HEADER.' + changeMode | translate"
   [(visible)]="displayMenuDetail"
   (onShow)="onShowDetailDialog()"
   [breakpoints]="{ '1330px': '60vw', '1130px': '70vw', '930px': '80vw', '830px': '100vw' }"
@@ -226,15 +226,15 @@
   [contentStyle]="{ overflow: 'visible' }"
 >
   <p-tabView #panelDetail [(activeIndex)]="tabIndex" (onChange)="onTabPanelChange($event)">
-    <p-tabPanel header="{{ 'DETAIL.MENU_ITEM_DETAILS' | translate }}">
+    <p-tabPanel header="{{ 'DIALOG.MENU.MENU_ITEM_DETAILS' | translate }}">
       <form [formGroup]="formGroup" errorTailor>
         <div class="grid">
           <div
-            class="col-12 md:col-6 mb-1"
+            class="col-12 md:col-6 my-1"
             style="min-width: 20rem"
-            [title]="'PORTAL.MENU.DETAIL.TOOLTIP.PORTAL_NAME' | translate"
+            [title]="'MENU_ITEM.TOOLTIP.WORKSPACE' | translate"
           >
-            <span class="p-float-label mb-1">
+            <span class="p-float-label">
               <input
                 pInputText
                 type="text"
@@ -242,22 +242,20 @@
                 class="w-full pt-3 pb-2"
                 [value]="workspaceName"
                 [disabled]="true"
-                [pTooltip]="'PORTAL.MENU.DETAIL.TOOLTIP.PORTAL_NAME' | translate"
+                [pTooltip]="'MENU_ITEM.TOOLTIP.WORKSPACE' | translate"
                 tooltipPosition="top"
                 tooltipEvent="focus"
               />
-              <label for="workspace_menu_detail_field_workspace_name">
-                {{ 'PORTAL.MENU.DETAIL.PORTAL_NAME' | translate }}
-              </label>
+              <label for="workspace_menu_detail_field_workspace_name"> {{ 'MENU_ITEM.WORKSPACE' | translate }} </label>
             </span>
           </div>
 
           <div
             class="col-12 md:col-6 my-1"
             style="min-width: 20rem"
-            [title]="'PORTAL.MENU.DETAIL.TOOLTIP.PARENT_ID' | translate"
+            [title]="'MENU_ITEM.TOOLTIP.PARENT_ID' | translate"
           >
-            <span class="p-float-label mb-1">
+            <span class="p-float-label">
               <p-dropdown
                 id="workspace_menu_detail_field_parent_id"
                 styleClass="w-full input-field-correction"
@@ -265,18 +263,16 @@
                 [options]="parentItems"
               >
               </p-dropdown>
-              <label for="workspace_menu_detail_field_parent_id">
-                {{ 'PORTAL.MENU.DETAIL.PARENT_ID' | translate }}
-              </label>
+              <label for="workspace_menu_detail_field_parent_id"> {{ 'MENU_ITEM.PARENT_ID' | translate }} </label>
             </span>
           </div>
 
           <div
             class="col-12 md:col-6 my-1"
             style="min-width: 20rem"
-            [title]="'PORTAL.MENU.DETAIL.TOOLTIP.MENU_NAME' | translate"
+            [title]="'MENU_ITEM.TOOLTIP.MENU_NAME' | translate"
           >
-            <span class="p-float-label mb-1" controlErrorAnchor>
+            <span class="p-float-label" controlErrorAnchor>
               <input
                 pInputText
                 type="text"
@@ -285,16 +281,12 @@
                 formControlName="name"
               />
               <label class="ocx-required-label" for="workspace_menu_detail_field_menu_name">
-                {{ 'PORTAL.MENU.DETAIL.MENU_NAME' | translate }}
+                {{ 'MENU_ITEM.MENU_NAME' | translate }}
               </label>
             </span>
           </div>
-          <div
-            class="col-12 md:col-6 my-1"
-            style="min-width: 20rem"
-            [title]="'PORTAL.MENU.DETAIL.TOOLTIP.MENU_ID' | translate"
-          >
-            <span class="p-float-label mb-1" controlErrorAnchor>
+          <div class="col-12 md:col-6 my-1" style="min-width: 20rem" [title]="'MENU_ITEM.TOOLTIP.MENU_ID' | translate">
+            <span class="p-float-label" controlErrorAnchor>
               <input
                 pInputText
                 type="text"
@@ -303,12 +295,12 @@
                 formControlName="key"
               />
               <label class="ocx-required-label" for="workspace_menu_detail_field_menu_id">
-                {{ 'PORTAL.MENU.DETAIL.MENU_ID' | translate }}
+                {{ 'MENU_ITEM.MENU_ID' | translate }}
               </label>
             </span>
           </div>
 
-          <div class="col-12 md:col-9 my-1" [title]="'PORTAL.MENU.DETAIL.TOOLTIP.URL' | translate">
+          <div class="col-12 md:col-9 my-1" [title]="'MENU_ITEM.TOOLTIP.URL' | translate">
             <span class="p-float-label mb-1" controlErrorAnchor>
               <p-dropdown
                 #formFieldUrl
@@ -318,24 +310,24 @@
                 [editable]="true"
                 [options]="mfeRUrlOptions"
                 (onFocus)="onFocusFieldUrl(formFieldUrl)"
-                [pTooltip]="'PORTAL.MENU.DETAIL.URL' | translate"
+                [pTooltip]="'MENU_ITEM.URL' | translate"
                 tooltipPosition="top"
                 tooltipEvent="focus"
                 appendTo="body"
               >
               </p-dropdown>
-              <label for="workspace_menu_detail_field_url"> {{ 'PORTAL.MENU.DETAIL.URL' | translate }} </label>
+              <label for="workspace_menu_detail_field_url"> {{ 'MENU_ITEM.URL' | translate }} </label>
             </span>
           </div>
           <div
             class="col-12 md:col-3 my-1 pl-6 flex justify-content-start"
-            [title]="'PORTAL.MENU.DETAIL.TOOLTIP.PORTAL_EXIT' | translate"
+            [title]="'MENU_ITEM.TOOLTIP.EXTERN' | translate"
           >
             <p-checkbox
               id="workspace_menu_detail_field_workspace_exit"
               class="checkbox-label"
               formControlName="workspaceExit"
-              [label]="'PORTAL.MENU.DETAIL.PORTAL_EXIT' | translate"
+              [label]="'MENU_ITEM.EXTERN' | translate"
               [binary]="true"
             >
             </p-checkbox>
@@ -353,11 +345,7 @@
               <label for="workspace_menu_detail_field_position">Position</label>
             </span>
           </div>
-          <div
-            class="col-12 md:col-4 my-1"
-            style="min-width: 10rem"
-            [title]="'PORTAL.MENU.DETAIL.TOOLTIP.BADGE' | translate"
-          >
+          <div class="col-12 md:col-4 my-1" style="min-width: 10rem" [title]="'MENU_ITEM.TOOLTIP.BADGE' | translate">
             <span class="p-float-label mb-1" controlErrorAnchor>
               <p-dropdown
                 id="workspace_menu_detail_field_badge"
@@ -378,14 +366,10 @@
                   </div>
                 </ng-template>
               </p-dropdown>
-              <label for="workspace_menu_detail_field_badge"> {{ 'PORTAL.MENU.DETAIL.BADGE' | translate }} </label>
+              <label for="workspace_menu_detail_field_badge"> {{ 'MENU_ITEM.BADGE' | translate }} </label>
             </span>
           </div>
-          <div
-            class="col-12 md:col-3 my-1"
-            style="min-width: 10rem"
-            [title]="'PORTAL.MENU.DETAIL.TOOLTIP.SCOPE' | translate"
-          >
+          <div class="col-12 md:col-3 my-1" style="min-width: 10rem" [title]="'MENU_ITEM.TOOLTIP.SCOPE' | translate">
             <span class="p-float-label mb-1" controlErrorAnchor>
               <p-dropdown
                 id="workspace_menu_detail_field_scope"
@@ -394,25 +378,25 @@
                 [options]="scopeItems"
               >
               </p-dropdown>
-              <label for="workspace_menu_detail_field_scope"> {{ 'PORTAL.MENU.DETAIL.SCOPE' | translate }} </label>
+              <label for="workspace_menu_detail_field_scope"> {{ 'MENU_ITEM.SCOPE' | translate }} </label>
             </span>
           </div>
 
           <div
             class="col-12 md:col-3 my-1 pl-6 flex justify-content-start"
-            [title]="'PORTAL.MENU.DETAIL.TOOLTIP.DISABLED' | translate"
+            [title]="'MENU_ITEM.TOOLTIP.DISABLED' | translate"
           >
             <p-checkbox
               id="workspace_menu_detail_field_disabled"
               class="checkbox-label"
               formControlName="disabled"
-              [label]="'PORTAL.MENU.DETAIL.DISABLED' | translate"
+              [label]="'MENU_ITEM.DISABLED' | translate"
               [binary]="true"
             >
             </p-checkbox>
           </div>
 
-          <div class="col-12 my-1" [title]="'PORTAL.MENU.DETAIL.TOOLTIP.DESCRIPTION' | translate">
+          <div class="col-12 my-1" [title]="'MENU_ITEM.TOOLTIP.DESCRIPTION' | translate">
             <span class="p-float-label mb-1" controlErrorAnchor>
               <input
                 pInputText
@@ -421,9 +405,7 @@
                 class="w-full pt-3 pb-2"
                 formControlName="description"
               />
-              <label for="workspace_menu_detail_field_description">
-                {{ 'PORTAL.MENU.DETAIL.DESCRIPTION' | translate }}
-              </label>
+              <label for="workspace_menu_detail_field_description"> {{ 'MENU_ITEM.DESCRIPTION' | translate }} </label>
             </span>
           </div>
 
@@ -469,7 +451,7 @@
         </div>
       </form>
     </p-tabPanel>
-    <p-tabPanel header="{{ 'DETAIL.I18N' | translate }}">
+    <p-tabPanel [header]="'DIALOG.MENU.I18N.LABEL' | translate" [tooltip]="'DIALOG.MENU.I18N.TOOLTIP' | translate">
       <div class="flex flex-column gap-4">
         <span
           class="p-float-label p-input-icon-right w-30rem mb-1"
@@ -478,28 +460,26 @@
           <i
             class="pi pi-times"
             (click)="onRemoveLanguage(language.value)"
-            [title]="'PORTAL.MENU.DETAIL.I18N.REMOVE_LANGUAGE' | translate"
+            [title]="'DIALOG.MENU.I18N.REMOVE_LANGUAGE' | translate"
           ></i>
           <input
             pInputText
             type="text"
-            id="{{ 'i18n_' + language.value }}"
+            [id]="'i18n_' + language.value"
             class="w-30rem pt-3 pb-2"
             [(ngModel)]="language.data"
           />
-          <label for="{{ 'i18n_' + language.value }}"> {{ getLanguageLabel(language.value) }} </label>
+          <label [for]="'i18n_' + language.value"> {{ getLanguageLabel(language.value) }} </label>
         </span>
       </div>
       <div class="flex align-items-center column-gap-4 row-gap-2 mt-4" *ngIf="languagesAvailable.length > 0">
-        <div class="data-view-control opacity-90 text-sm w-4rem">
-          {{ 'PORTAL.MENU.DETAIL.I18N.ADD_LANGUAGE' | translate }}
-        </div>
+        <div class="data-view-control opacity-90 text-sm w-4rem">{{ 'DIALOG.MENU.I18N.ADD_LANGUAGE' | translate }}</div>
         <p-selectButton
           inputid="i18n_language_selector"
           styleClass="data-view-control opacity-90"
           [options]="languagesAvailable"
           (onOptionClick)="onAddLanguage($event.option.value)"
-          [title]="'PORTAL.MENU.DETAIL.I18N.ADD_LANGUAGE' | translate"
+          [title]="'DIALOG.MENU.I18N.ADD_LANGUAGE' | translate"
         >
         </p-selectButton>
       </div>

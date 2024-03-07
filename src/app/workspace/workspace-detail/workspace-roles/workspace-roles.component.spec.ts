@@ -9,7 +9,7 @@ import { AppStateService, createTranslateLoader, PortalMessageService } from '@o
 import { WorkspaceRolesComponent } from 'src/app/workspace/workspace-detail/workspace-roles/workspace-roles.component'
 import { Workspace } from 'src/app/shared/generated'
 
-const portal: Workspace = {
+const workspace: Workspace = {
   name: 'name',
   theme: 'theme',
   baseUrl: '/some/base/url',
@@ -47,7 +47,7 @@ describe('WorkspaceRolesComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(WorkspaceRolesComponent)
     component = fixture.componentInstance
-    component.workspace = portal
+    component.workspace = workspace
     fixture.detectChanges()
   })
 

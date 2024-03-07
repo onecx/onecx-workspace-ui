@@ -9,19 +9,17 @@
     },
     "COPY": {
       "LABEL": "Copy",
+      "OF": "Copy of ",
       "DATA": "Create a new workspace with the data",
       "CLIPBOARD": "Copy to clipboard"
     },
     "CREATE": {
       "LABEL": "Create",
-      "PORTAL": "Create Workspace",
-      "THEME": "Create Theme",
+      "WORKSPACE": "Create Workspace",
+      "WORKSPACE.TOOLTIP": "Create a new Workspace",
       "MENU": "Create Menu Item",
-      "PORTAL.TOOLTIP": "Create a new Workspace",
-      "THEME.TOOLTIP": "Create a new Theme",
       "MENU.TOOLTIP": "Create a new Menu Item",
       "MESSAGE": {
-        "THEME_ALREADY_EXIST": "A Theme with that name already exists",
         "MENU_ALREADY_EXIST": "A Menu Item with that name/id already exists",
         "CREATE_OK": "The workspace was created successfully",
         "CREATE_NOK": "An error has occurred. The workspace was not created.",
@@ -31,8 +29,8 @@
     },
     "DELETE": {
       "LABEL": "Delete",
-      "TOOLTIP": "Delete the Menu item",
       "MENU_ITEM": "Delete Menu item",
+      "WORKSPACE": "Delete Workspace",
       "MESSAGE": "Do you want to delete \"{{ITEM}}\"?",
       "MESSAGE_INFO": "This action cannot be undone!",
       "MESSAGE_NOK": "Workspace could not be deleted",
@@ -53,9 +51,8 @@
     "EXPORT": {
       "LABEL": "Export",
       "TOOLTIP": "Export definition in JSON format",
-      "THEME": "Export Theme",
       "MENU": "Export Menu structure",
-      "PORTAL": "Download the current Workspace definition in JSON format.",
+      "WORKSPACE": "Download the current Workspace definition in JSON format.",
       "THEME_INCLUDE": "Include the Theme definition in the export"
     },
     "IMPORT": {
@@ -77,7 +74,6 @@
       "NEW.TOOLTIP": "Create new entry",
       "GOTO_MENU": "Go to Menu Management",
       "GOTO_MENU_ITEM": "Go to detail view (in menu management)",
-      "GOTO_THEME": "Go to Theme",
       "OPEN_IN_NEW_TAB": "Open in a new TAB",
       "MOVE_UP": "Move up",
       "MOVE_DOWN": "Move down"
@@ -124,6 +120,12 @@
     "EDIT": "Edit",
     "ENABLE_DRAG_DROP": "Enable drag&drop",
     "SAVE_TREE_STRUCTURE": "Save tree structure"
+  },
+  "GENERAL": {
+    "BOOLEAN": {
+      "TRUE": "Yes",
+      "FALSE": "No"
+    }
   },
   "TABS": {
     "WORKSPACE": {
@@ -172,50 +174,131 @@
     "NEW_ROLE_ERROR": "New role should has minimum one character and cannot contains ',' symbol or only white spaces"
   },
   "WORKSPACE": {
+    "ID": "ID",
+    "NAME": "Name",
     "BASE_URL": "Base URL",
-    "CITY": "City",
-    "COMPANY_NAME": "Company Name",
-    "COUNTRY": "Country",
     "DESCRIPTION": "Description",
     "FOOTER_LABEL": "Footer Label",
     "HOME_PAGE": "Homepage",
-    "ID": "ID",
-    "IMAGE_URL": "Image URL",
     "LOGO": "Logo",
     "LOGO_URL": "Logo URL",
-    "PHONE_NUMBER": "Phone Number",
-    "PORTAL": "Workspace",
-    "PORTAL_ID": "Workspace ID",
-    "PORTAL_NAME": "Workspace Name",
-    "POSTAL_CODE": "Postal Code",
+    "IMAGE_URL": "Image URL",
     "RSS_FEED_URL": "RSS-Feed URL",
-    "STREET": "Street",
-    "STREET_NO": "Street No",
     "TENANT_ID": "Tenant ID",
-    "THEME": "Theme"
+    "THEME": "Theme",
+    "COMPANY_NAME": "Company Name",
+    "COUNTRY": "Country",
+    "CITY": "City",
+    "PHONE_NUMBER": "Phone Number",
+    "POSTAL_CODE": "Postal Code",
+    "STREET": "Street",
+    "STREET_NO": "Street No"
+  },
+  "MENU_ITEM": {
+    "BADGE": "Icon",
+    "DESCRIPTION": "Description",
+    "DISABLED": "Deactivated",
+    "EXTERN": "External Link",
+    "MENU_ID": "Menu ID",
+    "MENU_NAME": "Menu Name",
+    "PARENT_ID": "Parent Menu ID",
+    "PARENT_NAME": "Parent Menu Name",
+    "WORKSPACE": "Workspace Name",
+    "POSITION": "Position",
+    "SCOPE": "Scope",
+    "URL": "URL",
+    "TOOLTIP": {
+      "BADGE": "Icon from the PrimeNG library which should be displayed next to the menu name",
+      "DESCRIPTION": "Additional informationen",
+      "DISABLED": "If set, the menu item is displayed inactive",
+      "EXTERN": "If set, the menu item exits the Workspace context",
+      "MENU_ID": "A unique identifier of the menu item",
+      "MENU_NAME": "Displayed Name",
+      "PARENT_ID": "The identifier of the parent menu item",
+      "PARENT_NAME": "The name of the parent menu item",
+      "WORKSPACE": "Name of the Workspace",
+      "POSITION": "An integer number that determines the position of the menu item in the menu structure",
+      "SCOPE": "Scope",
+      "URL": "The URL accessed by the menu item. Can be internal (via registered Product ) or external (leaving the Workspace)."
+    }
   },
   "DIALOG": {
-    "MENU_NOT_EXIST": "No menu defined",
-    "MFES_NOT_EXIST": "No Product Moduls defined",
+    "WORKSPACE": {
+      "NOT_EXIST_MESSAGE": "The Workspace was not found.",
+      "HEADER": {
+        "DETAIL": "Display and editing of the Workspace properties",
+        "DELETE": "Delete Workspace",
+        "EXPORT": "Export Workspace"
+      },
+      "QUICK_LINKS": {
+        "GOTO_WORKSPACE": "Open Workspace in a new TAB",
+        "GOTO_MENU": "Display Menu Management"
+      }
+    },
+    "MENU": {
+      "LABEL": " - Menu",
+      "HEADER": {
+        "EDIT": "Menu Item Details",
+        "CREATE": "Create Menu Item",
+        "TREE_MODAL": "Reorder & Preview",
+        "TREE_MODAL.TOOLTIP": "Reorder of Menu Items via Drag & Drop and Preview in configured languages",
+        "PREVIEW.TOOLTIP": "Preview in configured languages",
+        "PREVIEW2.TOOLTIP": "No translation available",
+        "REORDER.TOOLTIP": "Reorder of Menu Items via Drag & Drop"
+      },
+      "SUBHEADER": "Manage the Menu",
+      "ACTION": {
+        "DELETE": "Delete Menu Item",
+        "DETAILS": "Display details",
+        "DISABLED": "Green = Item is available in Menu - Changeable by click",
+        "NEW": "Create new Menu Item"
+      },
+      "I18N": {
+        "LABEL": "I18n",
+        "TOOLTIP": "Translations available?",
+        "ROW.TOOLTIP": "At least one translation is available",
+        "ADD_LANGUAGE": "Add Language",
+        "REMOVE_LANGUAGE": "Remove Language"
+      },
+      "POSITION": "Position",
+      "POSITION.TOOLTIP": "Position path of the menu item in format [parent item.]item ",
+      "URL.TOOLTIP": "The URL to be called upon activation",
+      "MFE.TOOLTIP": "Indicator whether the menu URL is offered by a registered Product ",
+      "EXTERN.TOOLTIP": "If checked then the Workspace is exit",
+      "PREVIEW_LANG": "Language",
+      "PREVIEW_LANG.EMPTY": "No translations available",
+      "PREVIEW_LANG.TOOLTIP": "List of configured languages",
+      "MENU_JSON_DOWNLOAD": "Download Menu Structure as JSON file",
+      "MENU_JSON_UPLOAD": "Upload Menu Structure as JSON file",
+      "MENU_NOT_EXIST": "No menu defined",
+      "MENU_EDIT_ERROR": "Menu item edition error",
+      "MENU_EDIT_SUCCESS": "Menu item edited successfully",
+      "MENU_ITEM_DETAILS": "Details",
+      "MENU_ITEM_HEADER": "Header",
+      "MENU_REMOVE_ERROR": "Error deleting menu item",
+      "MENU_REMOVE_SUCCESS": "Menu item successfully deleted"
+    },
+    "DATAVIEW": {
+      "FILTER_PLACEHOLDER": "Filter",
+      "FILTER": "Filter fields: ",
+      "FILTER_CLEAR": "Clear Filter",
+      "VIEW_MODE_GRID": "Tile view",
+      "VIEW_MODE_LIST": "List view",
+      "VIEW_MODE_TABLE": "Table view",
+      "VIEW_MODE_TREE": "Tree view"
+    },
     "DETAILS": "Details",
     "EMPTY_TRANSLATION": "There is already an empty translation.",
     "ERROR_FIND_MENU": "Cannot find menuItem with ID: ",
-    "ERROR_FIND_PORTAL": "Cannot find Workspace with PORTAL ID: ",
+    "ERROR_FIND_PORTAL": "Cannot find Workspace with ID: ",
     "HOME_PAGE": "To Workspace homepage",
     "HOME_PAGE_NOT_DEFINIED": "Workspace's homepage is not definied",
-    "I18N": "Internationalization",
     "I18N_EDIT_ERROR": "Error occurred, translations weren't updated",
     "I18N_EDIT_SUCCESS": "Translations edited successfully",
     "ID_CHANGE_MESSAGE": "The changing of Workspace Id will result in changing Id for following menu items: ",
     "ID_CONFIRMATION_MESSAGE": "Are you sure, that you want to continue? ",
     "LABEL": "Label",
     "LANGUAGE": "Language",
-    "MENU_EDIT_ERROR": "Menu item edition error",
-    "MENU_EDIT_SUCCESS": "Menu item edited successfully",
-    "MENU_ITEM_DETAILS": "Details",
-    "MENU_ITEM_HEADER": "Header",
-    "MENU_REMOVE_ERROR": "Error deleting menu item",
-    "MENU_REMOVE_SUCCESS": "Menu item successfully deleted",
     "PORTAL_PERMISSION_SYNC_ERROR": "Error occurred, permissions were not synchronized",
     "PORTAL_PERMISSION_SYNC_SUCCESS": "Permissions were sucessfully synchronized",
     "SELECT_ICON": "Please select badge icon",
@@ -224,73 +307,14 @@
     "THEME_LOADING": "...is loading",
     "THEME_NOT_AVALIABLE": "no available themes",
     "THEME_NOT_SPECIFIED_MESSAGE": "Theme cannot be exported because it was not specified in Workspace",
-    "TRANSLATION": "Translation",
-    "URL": "URL"
-  },
-  "GENERAL": {
-    "BOOLEAN": {
-      "TRUE": "Yes",
-      "FALSE": "No"
-    },
-    "CLEAR_CACHE": "Clear cache",
-    "COPY": "Copy",
-    "COPY_OF": "Copy of ",
     "ERROR": "Error: ",
-    "FILTER_PLACEHOLDER": "Filter",
     "FORM_PATTERN_INVALID": " may consist only of letters, numbers, underscores and dashes.",
     "FORM_VALIDATION": "Data cannot be empty or invalid",
     "FORM_VALIDATION_EMPTY": " can't be empty",
     "FORM_VALIDATION_INVALID": " can't be invalid",
     "NO_PERM": "No permission granted to view this page. Lacking permission:",
     "SELECT_ITEM": "Select item",
-    "SWITCH_TO_EDIT": "Edit",
-    "SYNC_PERMISSIONS": "Synchronise permissions",
-    "PAGE_REPORT_TEMPLATE_0": "No rows",
-    "PAGE_REPORT_TEMPLATE_1_1": "{totalRecords} row",
-    "PAGE_REPORT_TEMPLATE_n_1": "{totalRecords} rows",
-    "PAGE_REPORT_TEMPLATE_n_n": "{totalRecords} rows / {totalPages} pages",
-    "TOOLTIP": {
-      "FILTER": "Filter fields: ",
-      "FILTER_CLEAR": "Clear Filter",
-      "VIEW_MODE_GRID": "Tile view",
-      "VIEW_MODE_LIST": "List view",
-      "VIEW_MODE_TABLE": "Table view",
-      "VIEW_MODE_TREE": "Tree view"
-    }
-  },
-  "MENU": {
-    "HEADER": " Menu",
-    "SUBHEADER": "Manage the Menu Structure",
-    "MENU_JSON_DOWNLOAD": "Download Menu Structure as JSON file",
-    "MENU_JSON_UPLOAD": "Upload Menu Structure as JSON file"
-  },
-  "MENU_ITEM": {
-    "ANY_VALUE": "",
-    "APP": "APP",
-    "APPLICATION": "Application",
-    "APPLICATION_ID": "Application Id",
-    "BADGE": "Badge",
-    "CREATE_CHILD_ITEM": "New Child Item",
-    "DESCRIPTION": "Description",
-    "DISABLED": "Disabled",
-    "EMPTY": "Empty",
-    "ID": "Id",
-    "MENU_ID": "Menu Id",
-    "MENU_NAME": "Menu Name",
-    "NO": "No",
-    "PAGE": "PAGE",
-    "PARENT_ITEM": "Parent Item",
-    "PARENT_ITEM_ID": "Parent Item ID",
-    "PARENT_NAME": "Parent Name",
-    "PORTAL": "PORTAL",
-    "PORTAL_EXIT": "External Link",
-    "PORTAL_ID": "Workspace ID",
-    "PORTAL_NAME": "Workspace Name",
-    "POSITION": "Position",
-    "SCOPE": "Scope",
-    "URL": "URL",
-    "WITHOUT_PARENT": "Without a parent",
-    "YES": "Yes"
+    "SWITCH_TO_EDIT": "Edit"
   },
   "PORTAL_IMPORT": {
     "IMPORT_PORTAL": "Import Workspace",
@@ -344,80 +368,6 @@
     "VALIDATION_MENU_ITEM_WRONG_DISABLED": "In a menu item, the value for 'disabled' is not a boolean",
     "VALIDATION_MENU_ITEM_WRONG_PORTALEXIT": "In a menu item, the value for 'workspaceExit' is not a boolean",
     "VALIDATION_RESULT": "Processing not possible: "
-  },
-  "PORTAL": {
-    "NOT_EXIST_MESSAGE": "The Workspace was not found.",
-    "HEADER": {
-      "DETAIL": "Display and editing of the Workspace properties",
-      "DELETE": "Delete Workspace",
-      "EXPORT": "Export Workspace"
-    },
-    "QUICK_LINKS": {
-      "GOTO_WORKSPACE": "Open Workspace in a new TAB",
-      "GOTO_MENU": "Display Menu Management"
-    },
-    "ITEM": {},
-    "MENU": {
-      "HEADER": {
-        "EDIT": "Menu Item Details",
-        "CREATE": "Create Menu Item",
-        "TREE_MODAL": "Reorder & Preview"
-      },
-      "ACTION": {
-        "DELETE": "Delete Menu Item",
-        "DETAILS": "Display details",
-        "DISABLED": "Green = Item is available in Menu - Changeable by click",
-        "NEW": "Create new Menu Item",
-        "TREE_MODAL": "Reorder & Preview",
-        "TREE_MODAL.TOOLTIP": "Reorder of Menu Items via Drag & Drop and Preview in configured languages",
-        "PREVIEW.TOOLTIP": "Preview in configured languages",
-        "PREVIEW2.TOOLTIP": "No translation available",
-        "REORDER.TOOLTIP": "Reorder of Menu Items via Drag & Drop"
-      },
-      "DETAIL": {
-        "BADGE": "Icon",
-        "DESCRIPTION": "Description",
-        "DISABLED": "Deactivated",
-        "MENU_ID": "Menu ID",
-        "MENU_NAME": "Menu Name",
-        "PARENT_ID": "Parent Menu ID",
-        "PARENT_NAME": "Parent Menu Name",
-        "PORTAL_NAME": "Workspace Name",
-        "PORTAL_EXIT": "External Link",
-        "POSITION": "Position",
-        "SCOPE": "Scope",
-        "URL": "URL",
-        "I18N": {
-          "ADD_LANGUAGE": "Add Language",
-          "REMOVE_LANGUAGE": "Remove Language"
-        },
-        "TOOLTIP": {
-          "BADGE": "Icon from the PrimeNG library which should be displayed next to the menu name",
-          "DESCRIPTION": "Additional informationen",
-          "DISABLED": "If set, the menu item is displayed inactive",
-          "MENU_ID": "A unique identifier of the menu item",
-          "MENU_NAME": "Displayed Name",
-          "PARENT_ID": "The identifier of the parent menu item",
-          "PARENT_NAME": "The name of the parent menu item",
-          "PORTAL_NAME": "Name of the Workspace",
-          "PORTAL_EXIT": "If set, the menu item exits the Workspace context",
-          "POSITION": "An integer number that determines the position of the menu item in the menu structure",
-          "SCOPE": "Scope",
-          "URL": "The URL accessed by the menu item. Can be internal (via registered Product ) or external (leaving the Workspace)."
-        }
-      },
-      "I18N": "I18n",
-      "EXTERN": "Extern",
-      "POSITION.TOOLTIP": "Position path of the menu item in format [parent item.]item ",
-      "URL.TOOLTIP": "The URL to be called upon activation",
-      "MFE.TOOLTIP": "Indicator whether the menu URL is offered by a registered Product ",
-      "I18N.TOOLTIP": "Translations available?",
-      "I18N.ROW.TOOLTIP": "At least one translation is available",
-      "EXTERN.TOOLTIP": "If checked then the Workspace is exit",
-      "PREVIEW_LANG": "Language",
-      "PREVIEW_LANG.EMPTY": "No translations available",
-      "PREVIEW_LANG.TOOLTIP": "List of configured languages"
-    }
   },
   "PRODUCT": {
     "NAME": "Product Name",

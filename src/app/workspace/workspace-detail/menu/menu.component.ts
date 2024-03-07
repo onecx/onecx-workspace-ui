@@ -158,6 +158,18 @@ export class MenuComponent implements OnInit, OnDestroy {
   public ngOnInit(): void {
     this.httpHeaders = new HttpHeaders()
     this.httpHeaders.set('Content-Type', 'application/json')
+    this.prepareActionButtons()
+    this.loadData()
+  }
+
+  public ngOnDestroy(): void {
+    this.stateService.updateState({
+      workspaceMenuItems: this.menuItems
+    })
+  }
+
+  public prepareActionButtons() {
+    this.actions = [] // provoke change event
     this.translate
       .get([
         'ACTIONS.NAVIGATION.BACK',
@@ -168,44 +180,32 @@ export class MenuComponent implements OnInit, OnDestroy {
         'ACTIONS.IMPORT.MENU'
       ])
       .subscribe((data) => {
-        this.prepareActionButtons(data)
+        this.actions.push(
+          {
+            label: data['ACTIONS.NAVIGATION.BACK'],
+            title: data['ACTIONS.NAVIGATION.BACK.TOOLTIP'],
+            actionCallback: () => this.onClose(),
+            icon: 'pi pi-arrow-left',
+            show: 'always'
+          },
+          {
+            label: data['ACTIONS.EXPORT.LABEL'],
+            title: data['ACTIONS.EXPORT.MENU'],
+            actionCallback: () => this.onExportMenu(),
+            icon: 'pi pi-download',
+            show: 'always',
+            permission: 'MENU#EXPORT'
+          },
+          {
+            label: data['ACTIONS.IMPORT.LABEL'],
+            title: data['ACTIONS.IMPORT.MENU'],
+            actionCallback: () => this.onImportMenu(),
+            icon: 'pi pi-upload',
+            show: 'always',
+            permission: 'MENU#IMPORT'
+          }
+        )
       })
-    this.loadData()
-  }
-
-  public ngOnDestroy(): void {
-    this.stateService.updateState({
-      workspaceMenuItems: this.menuItems
-    })
-  }
-
-  public prepareActionButtons(data: any) {
-    this.actions = [] // provoke change event
-    this.actions.push(
-      {
-        label: data['ACTIONS.NAVIGATION.BACK'],
-        title: data['ACTIONS.NAVIGATION.BACK.TOOLTIP'],
-        actionCallback: () => this.onClose(),
-        icon: 'pi pi-arrow-left',
-        show: 'always'
-      },
-      {
-        label: data['ACTIONS.EXPORT.LABEL'],
-        title: data['ACTIONS.EXPORT.MENU'],
-        actionCallback: () => this.onExportMenu(),
-        icon: 'pi pi-download',
-        show: 'always',
-        permission: 'MENU#EXPORT'
-      },
-      {
-        label: data['ACTIONS.IMPORT.LABEL'],
-        title: data['ACTIONS.IMPORT.MENU'],
-        actionCallback: () => this.onImportMenu(),
-        icon: 'pi pi-upload',
-        show: 'always',
-        permission: 'MENU#IMPORT'
-      }
-    )
   }
 
   /**
@@ -518,13 +518,13 @@ export class MenuComponent implements OnInit, OnDestroy {
   /**
    * CREATE
    */
-  public onCreateMenu($event: MouseEvent, parent: MenuItem): void {
+  public onCreateMenu($event: MouseEvent, parent?: MenuItem): void {
     $event.stopPropagation()
     this.changeMode = 'CREATE'
     this.menuItem = {} as unknown as MenuItem
     this.formGroup.reset()
     this.formGroup.patchValue({
-      parentItemId: parent.id,
+      parentItemId: parent?.id,
       position: 0,
       workspaceExit: false,
       disabled: false

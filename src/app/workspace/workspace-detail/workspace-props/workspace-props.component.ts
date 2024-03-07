@@ -63,7 +63,7 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
 
     this.formGroup = new FormGroup({
       name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
-      themeName: new FormControl(null /* [Validators.required] */),
+      theme: new FormControl(null /* [Validators.required] */),
       baseUrl: new FormControl(null, [Validators.required, Validators.minLength(1), Validators.pattern('^/.*')]),
       homePage: new FormControl(null, [Validators.maxLength(255)]),
       logoUrl: new FormControl('', [Validators.maxLength(255)]),
@@ -103,7 +103,6 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
   public setFormData(): void {
     Object.keys(this.formGroup.controls).forEach((element) => {
       this.formGroup.controls[element].setValue((this.workspace as any)[element])
-      this.formGroup.controls['themeName'].setValue(this.workspace.theme)
     })
   }
 

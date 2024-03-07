@@ -2,7 +2,7 @@
   <ocx-page-header
     *ngIf="workspace"
     [header]="workspace.name"
-    [subheader]="'PORTAL.HEADER.DETAIL' | translate"
+    [subheader]="'DIALOG.WORKSPACE.HEADER.DETAIL' | translate"
     [actions]="(actions$ | async) ?? []"
     [objectDetails]="objectDetails"
     [figureImage]="headerImageUrl"
@@ -46,11 +46,7 @@
         [tooltip]="'TABS.WORKSPACE.TOOLTIPS.ROLES' | translate"
       >
         <div *ocxIfPermission="'WORKSPACE_ROLES#VIEW'">
-          <app-workspace-roles
-            [editMode]="editMode"
-            [workspace]="workspace"
-            (saveRoleEvent)="onRoleSave($event)"
-          ></app-workspace-roles>
+          <app-workspace-roles [workspace]="workspace"></app-workspace-roles>
         </div>
       </p-tabPanel>
 
@@ -65,88 +61,88 @@
       </p-tabPanel>
     </p-tabView>
   </ocx-page-content>
-
-  <p-dialog
-    #portalDownload
-    [(visible)]="workspaceDownloadVisible"
-    [header]="'PORTAL.HEADER.EXPORT' | translate"
-    [modal]="true"
-    [resizable]="false"
-    [dismissableMask]="true"
-    [style]="{ 'max-width': '460px' }"
-  >
-    <div>{{ 'ACTIONS.EXPORT.PORTAL' | translate }}</div>
-    <div class="field-checkbox mt-3 mb-0">
-      <p-checkbox
-        [(ngModel)]="importThemeCheckbox"
-        [binary]="true"
-        id="theme"
-        [label]="'ACTIONS.EXPORT.THEME_INCLUDE' | translate"
-      ></p-checkbox>
-    </div>
-    <ng-template pTemplate="footer">
-      <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
-        <button
-          pButton
-          autofocus
-          type="button"
-          class="m-0"
-          icon="pi pi-times"
-          iconPos="left"
-          [label]="'ACTIONS.CANCEL' | translate"
-          (click)="workspaceDownloadVisible = false"
-        ></button>
-        <button
-          pButton
-          type="button"
-          class="m-0"
-          icon="pi pi-download"
-          iconPos="left"
-          [label]="'ACTIONS.EXPORT.LABEL' | translate"
-          (click)="onExportWorkspace()"
-        ></button>
-      </div>
-    </ng-template>
-  </p-dialog>
-
-  <p-dialog
-    #workspaceDelete
-    [(visible)]="workspaceDeleteVisible"
-    [header]="'PORTAL.HEADER.DELETE' | translate"
-    [modal]="true"
-    [resizable]="false"
-    [dismissableMask]="true"
-    [style]="{ 'max-width': '425px' }"
-  >
-    <div class="flex column-gap-3 row-gap-1 justify-content-start align-items-center">
-      <div class="pi pi-question-circle text-3xl danger-action-text"></div>
-      <div>
-        <div>{{ this.workspaceDeleteMessage }}</div>
-        <div class="mt-2">{{ 'ACTIONS.DELETE.MESSAGE_INFO' | translate }}</div>
-      </div>
-    </div>
-    <ng-template pTemplate="footer">
-      <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
-        <button
-          pButton
-          autofocus
-          type="button"
-          class="m-0"
-          icon="pi pi-times"
-          iconPos="left"
-          [label]="'ACTIONS.CONFIRMATION.NO' | translate"
-          (click)="workspaceDeleteVisible = false"
-        ></button>
-        <button
-          pButton
-          type="button"
-          class="m-0"
-          icon="pi pi-check"
-          iconPos="left"
-          [label]="'ACTIONS.CONFIRMATION.YES' | translate"
-          (click)="confirmDeleteWorkspace()"
-        ></button>
-      </div>
-    </ng-template>
-  </p-dialog>
 </ocx-portal-page>
+
+<p-dialog
+  #portalDownload
+  [(visible)]="workspaceDownloadVisible"
+  [header]="'DIALOG.WORKSPACE.HEADER.EXPORT' | translate"
+  [modal]="true"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [style]="{ 'max-width': '460px' }"
+>
+  <div>{{ 'ACTIONS.EXPORT.WORKSPACE' | translate }}</div>
+  <div class="field-checkbox mt-3 mb-0">
+    <p-checkbox
+      [(ngModel)]="importThemeCheckbox"
+      [binary]="true"
+      id="theme"
+      [label]="'ACTIONS.EXPORT.THEME_INCLUDE' | translate"
+    ></p-checkbox>
+  </div>
+  <ng-template pTemplate="footer">
+    <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
+      <button
+        pButton
+        autofocus
+        type="button"
+        class="m-0"
+        icon="pi pi-times"
+        iconPos="left"
+        [label]="'ACTIONS.CANCEL' | translate"
+        (click)="workspaceDownloadVisible = false"
+      ></button>
+      <button
+        pButton
+        type="button"
+        class="m-0"
+        icon="pi pi-download"
+        iconPos="left"
+        [label]="'ACTIONS.EXPORT.LABEL' | translate"
+        (click)="onExportWorkspace()"
+      ></button>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<p-dialog
+  #workspaceDelete
+  [(visible)]="workspaceDeleteVisible"
+  [header]="'PORTAL.HEADER.DELETE' | translate"
+  [modal]="true"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [style]="{ 'max-width': '425px' }"
+>
+  <div class="flex column-gap-3 row-gap-1 justify-content-start align-items-center">
+    <div class="pi pi-question-circle text-3xl danger-action-text"></div>
+    <div>
+      <div>{{ this.workspaceDeleteMessage }}</div>
+      <div class="mt-2">{{ 'ACTIONS.DELETE.MESSAGE_INFO' | translate }}</div>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
+      <button
+        pButton
+        autofocus
+        type="button"
+        class="m-0"
+        icon="pi pi-times"
+        iconPos="left"
+        [label]="'ACTIONS.CONFIRMATION.NO' | translate"
+        (click)="workspaceDeleteVisible = false"
+      ></button>
+      <button
+        pButton
+        type="button"
+        class="m-0"
+        icon="pi pi-check"
+        iconPos="left"
+        [label]="'ACTIONS.CONFIRMATION.YES' | translate"
+        (click)="onConfirmDeleteWorkspace()"
+      ></button>
+    </div>
+  </ng-template>
+</p-dialog>

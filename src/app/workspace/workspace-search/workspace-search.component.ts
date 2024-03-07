@@ -25,7 +25,7 @@ export class WorkspaceSearchComponent implements OnInit {
   public showImportDialog = false
   public limitText = limitText
 
-  public workspaceItems: WorkspaceAbstract[] | undefined = []
+  public workspaces: WorkspaceAbstract[] | undefined = []
   public viewMode = 'grid'
   public filter: string | undefined
   public sortField = ''
@@ -49,8 +49,8 @@ export class WorkspaceSearchComponent implements OnInit {
   ngOnInit() {
     this.translate
       .get([
-        'PORTAL.ITEM.PORTAL_NAME',
-        'PORTAL.ITEM.THEME',
+        'WORKSPACE.NAME',
+        'WORKSPACE.THEME',
         'SEARCH.SORT_BY',
         'SEARCH.FILTER',
         'SEARCH.FILTER_OF',
@@ -72,16 +72,16 @@ export class WorkspaceSearchComponent implements OnInit {
   }
 
   private prepareTranslations(data: any) {
-    this.fieldLabelWorkspaceName = data['PORTAL.ITEM.PORTAL_NAME']
-    this.fieldLabelThemeName = data['PORTAL.ITEM.THEME']
+    this.fieldLabelWorkspaceName = data['WORKSPACE.NAME']
+    this.fieldLabelThemeName = data['WORKSPACE.THEME']
     this.dataViewControlsTranslations = {
       sortDropdownPlaceholder: data['SEARCH.SORT_BY'],
       filterInputPlaceholder: data['SEARCH.FILTER'],
       filterInputTooltip: data['SEARCH.FILTER_OF'] + this.fieldLabelWorkspaceName + ', ' + this.fieldLabelThemeName,
       viewModeToggleTooltips: {
-        grid: data['GENERAL.TOOLTIP.VIEW_MODE_GRID'],
-        list: data['GENERAL.TOOLTIP.VIEW_MODE_LIST'],
-        table: data['GENERAL.TOOLTIP.VIEW_MODE_TABLE']
+        grid: data['DIALOG.DATAVIEW.VIEW_MODE_GRID'],
+        list: data['DIALOG.DATAVIEW.VIEW_MODE_LIST'],
+        table: data['DIALOG.DATAVIEW.VIEW_MODE_TABLE']
       },
       sortOrderTooltips: {
         ascending: data['SEARCH.SORT_DIRECTION_ASC'],
@@ -127,7 +127,7 @@ export class WorkspaceSearchComponent implements OnInit {
       .pipe(finalize(() => (this.searchInProgress = false)))
       .subscribe({
         next: (value: SearchWorkspacesResponse) => {
-          this.workspaceItems = value.stream
+          this.workspaces = value.stream
           if (value.totalElements === 0) {
             this.msgService.info({ summaryKey: 'SEARCH.MSG_NO_RESULTS' })
           }

@@ -10,7 +10,6 @@ import { WorkspaceSnapshot, Workspace, WorkspaceAPIService, ImagesInternalAPISer
 
 import { WorkspacePropsComponent } from 'src/app/workspace/workspace-detail/workspace-props/workspace-props.component'
 import { WorkspaceContactComponent } from 'src/app/workspace/workspace-detail/workspace-contact/workspace-contact.component'
-import { WorkspaceRolesComponent } from 'src/app/workspace/workspace-detail/workspace-roles/workspace-roles.component'
 
 @Component({
   selector: 'app-workspace-detail',
@@ -20,7 +19,6 @@ import { WorkspaceRolesComponent } from 'src/app/workspace/workspace-detail/work
 export class WorkspaceDetailComponent implements OnInit {
   @ViewChild(WorkspacePropsComponent, { static: false }) workspacePropsComponent!: WorkspacePropsComponent
   @ViewChild(WorkspaceContactComponent, { static: false }) workspaceContactComponent!: WorkspaceContactComponent
-  @ViewChild(WorkspaceRolesComponent, { static: false }) workspaceRolesComponent!: WorkspaceRolesComponent
 
   public actions$: Observable<Action[]> | undefined
   editMode = false
@@ -63,18 +61,18 @@ export class WorkspaceDetailComponent implements OnInit {
       .get([
         'ACTIONS.NAVIGATION.BACK',
         'ACTIONS.NAVIGATION.BACK.TOOLTIP',
-        'MENU.HEADER',
-        'MENU.SUBHEADER',
+        'DIALOG.MENU.LABEL',
+        'DIALOG.MENU.SUBHEADER',
         'ACTIONS.CANCEL',
         'ACTIONS.TOOLTIPS.CANCEL',
         'ACTIONS.SAVE',
         'ACTIONS.TOOLTIPS.SAVE',
         'ACTIONS.EXPORT.LABEL',
-        'ACTIONS.EXPORT.PORTAL',
+        'ACTIONS.EXPORT.WORKSPACE',
         'ACTIONS.EDIT.LABEL',
         'ACTIONS.EDIT.TOOLTIP',
         'ACTIONS.DELETE.LABEL',
-        'ACTIONS.DELETE.TOOLTIP',
+        'ACTIONS.DELETE.WORKSPACE',
         'ACTIONS.DELETE.MESSAGE'
       ])
       .pipe(
@@ -83,15 +81,15 @@ export class WorkspaceDetailComponent implements OnInit {
             {
               label: data['ACTIONS.NAVIGATION.BACK'],
               title: data['ACTIONS.NAVIGATION.BACK.TOOLTIP'],
-              actionCallback: () => this.close(),
+              actionCallback: () => this.onClose(),
               icon: 'pi pi-arrow-left',
               show: 'always',
               permission: 'WORKSPACE#SEARCH'
             },
             {
-              label: data['MENU.HEADER'],
-              title: data['MENU.SUBHEADER'],
-              actionCallback: () => this.manageMenu(),
+              label: data['DIALOG.MENU.LABEL'],
+              title: data['DIALOG.MENU.SUBHEADER'],
+              actionCallback: () => this.onGoToMenu(),
               icon: 'pi pi-sitemap',
               show: 'always',
               permission: 'MENU#VIEW',
@@ -140,7 +138,7 @@ export class WorkspaceDetailComponent implements OnInit {
             },
             {
               label: data['ACTIONS.DELETE.LABEL'],
-              title: data['ACTIONS.DELETE.TOOLTIP'].replace('{{TYPE}}', 'Workspace'),
+              title: data['ACTIONS.DELETE.WORKSPACE'],
               actionCallback: () => {
                 this.workspaceDeleteVisible = true
                 this.workspaceDeleteMessage = data['ACTIONS.DELETE.MESSAGE'].replace('{{ITEM}}', this.workspace?.name)
@@ -169,7 +167,7 @@ export class WorkspaceDetailComponent implements OnInit {
         },
         error: () => {
           this.msgService.error({ summaryKey: 'SEARCH.ERROR', detailKey: 'PORTAL.NOT_EXIST_MESSAGE' })
-          close() // if workspace not found then go back
+          this.onClose() // if workspace not found then go back
         }
       })
   }
@@ -207,11 +205,6 @@ export class WorkspaceDetailComponent implements OnInit {
         this.workspace = this.workspaceContactComponent.workspace
         break
       }
-      /* case 2: {
-        this.workspaceRolesComponent.onSubmit()
-        this.workspace = this.workspaceRolesComponent.workspaceDetail
-        break
-      }*/
       default: {
         console.error("Couldn't assign tab to component")
         break
@@ -227,26 +220,16 @@ export class WorkspaceDetailComponent implements OnInit {
         next: (data) => {
           this.workspace = data
           this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_OK' })
+          this.onWorkspaceData()
         },
-        error: () => {
-          // console.error('ERR', err)
-          // const duplicate = err.error.message.indexOf('contains duplicated roles') > 0
-          this.msgService.error({
-            summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_NOK'
-            // detailKey: duplicate ? 'DETAIL.NEW_ROLE_DUPLICATED' : err.error.message
-          })
+        error: (err) => {
+          console.error('updateWorkspace: ', err)
+          this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_NOK' })
         }
       })
   }
 
-  public onRoleSave(roles: string[]) {
-    if (this.workspace) {
-      this.workspace.workspaceRoles = roles
-    }
-    this.updateWorkspace()
-  }
-
-  confirmDeleteWorkspace() {
+  public onConfirmDeleteWorkspace(): void {
     this.deleteWorkspace()
     this.workspaceDownloadVisible = false
   }
@@ -255,7 +238,7 @@ export class WorkspaceDetailComponent implements OnInit {
     this.workspaceApi.deleteWorkspace({ id: this.workspace?.id ?? '' }).subscribe(
       () => {
         this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MESSAGE_OK' })
-        this.close()
+        this.onClose()
       },
       () => {
         this.msgService.error({ summaryKey: 'ACTIONS.DELETE.MESSAGE_NOK' /* , detailKey: err.error.message */ })
@@ -263,7 +246,7 @@ export class WorkspaceDetailComponent implements OnInit {
     )
   }
 
-  private close(): void {
+  public onClose(): void {
     this.location.back()
   }
 
@@ -292,73 +275,13 @@ export class WorkspaceDetailComponent implements OnInit {
 
     if (this.importThemeCheckbox) {
       if (this.workspace.theme) {
-        /* const theme$ = this.themeApi.getThemeById({ id: this.workspace.themeId })
-        finalMenuStructure$$ = theme$.pipe(
-          concatMap((theme) => {
-            const themeImportData = filterObject(theme, [
-              'creationDate',
-              'creationUser',
-              'modificationDate',
-              'modificationUser',
-              'id',
-              'workspaceId',
-              'tenantId',
-              'portals'
-            ]) as ImportRequestDTOv1ThemeImportData
-            portalExport.themeImportData = themeImportData
-            this.saveThemeToFile(themeImportData)
-            return menuStructure$
-          })
-        ) */
       } else {
         this.themeNotSpecifiedError()
         return
       }
     }
-    // this.exportWorkspace(finalMenuStructure$$, portalExport)
-    // this.saveWorkspaceToFile(portalExport)
     this.workspaceDownloadVisible = false
   }
-
-  // private exportWorkspace(
-  //   finalMenuStructure$$: Observable<Array<EximWorkspaceMenuItem>>,
-  //   portalExport: WorkspaceSnapshot
-  // ) {
-  /* finalMenuStructure$$.subscribe({
-      next: (structure) => {
-        // get menu structure object with filtered properties
-        const items = structure.map((item) =>
-          filterObjectTree(
-            item,
-            [
-              'creationDate',
-              'creationUser',
-              'modificationDate',
-              'modificationUser',
-              'id',
-              'themeId',
-              'parentItemId',
-              'workspaceId',
-              'tenantId'
-            ],
-            'children'
-          )
-        ) as EximWorkspaceMenuItem[]
-        // sort explicitly because filtering destroys the order on first level
-        if (portalExport.workspaces && portalExport.workspaces[0].menu?.menu?.menuItems) {
-          portalExport.workspaces[0].menu?.menu?.menuItems = items.sort((a, b) => (a.position || 0) - (b.position || 0))
-        }
-        portalExport[0].synchronizePermissions = false
-        
-      },
-      error: () => this.themeNotSpecifiedError() */
-  //   })
-  // }
-
-  // private saveThemeToFile(theme: ThemeDTO) {
-  //   const themeJSON = JSON.stringify(theme, null, 2)
-  //   FileSaver.saveAs(new Blob([themeJSON], { type: 'text/json' }), `${this.workspace?.themeName + '_Theme'}.json`)
-  // }
 
   private saveWorkspaceToFile(workspaceExport: WorkspaceSnapshot) {
     const workspaceJson = JSON.stringify(workspaceExport, null, 2)
@@ -381,7 +304,7 @@ export class WorkspaceDetailComponent implements OnInit {
     }
   }
 
-  public manageMenu(): void {
+  public onGoToMenu(): void {
     this.router.navigate(['./menu'], { relativeTo: this.route })
   }
 }
