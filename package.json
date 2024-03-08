@@ -121,7 +121,7 @@
     "ng-packagr": "15.2.2",
     "ngx-build-plus": "^14.0.0",
     "ngx-translate-testing": "^6.1.0",
-    "postcss": "8.4.23",
+    "postcss": "8.4.35",
     "postcss-import": "~16.0.0",
     "postcss-preset-env": "~9.3.0",
     "postcss-url": "~10.1.3",
