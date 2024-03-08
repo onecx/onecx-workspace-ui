@@ -3,24 +3,17 @@ import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { Location } from '@angular/common'
 import { Observable, of } from 'rxjs'
 
-import {
-  // Theme,
-  PortalMessageService,
-  UserService
-} from '@onecx/portal-integration-angular'
+import { PortalMessageService, UserService } from '@onecx/portal-integration-angular'
 
 import {
   GetImageRequestParams,
   ImagesInternalAPIService,
   RefType,
   UploadImageRequestParams,
-  WorkspaceAPIService /* , ThemeDTO, ThemesAPIService */
+  WorkspaceAPIService
 } from 'src/app/shared/generated'
 import { Workspace } from 'src/app/shared/generated'
-import {
-  copyToClipboard
-  // sortThemeByName
-} from 'src/app/shared/utils'
+import { copyToClipboard, sortByLocale } from 'src/app/shared/utils'
 
 @Component({
   selector: 'app-workspace-props',
@@ -39,6 +32,7 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
   public hasTenantEditPermission = false
   public urlPattern = '/base-path-to-portal'
   public copyToClipboard = copyToClipboard // make available from utils
+  public sortByLocale = sortByLocale
 
   //Logo
   public preview = false
@@ -53,7 +47,6 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
   constructor(
     private user: UserService,
     private workspaceApi: WorkspaceAPIService,
-    // private themeApi: ThemesAPIService,
     private msgService: PortalMessageService,
     private location: Location,
     private imageApi: ImagesInternalAPIService
@@ -74,7 +67,6 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
     if (this.hasTenantViewPermission) {
       this.formGroup.addControl('tenantId', new FormControl(null))
     }
-
     this.themes$ = this.workspaceApi.getAllThemes()
   }
 

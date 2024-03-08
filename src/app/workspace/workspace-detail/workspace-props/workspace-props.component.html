@@ -44,7 +44,7 @@
               id="workspace_detail_form_theme"
               formControlName="theme"
               styleClass="w-full input-field-correction"
-              [options]="(themes$ | async) || []"
+              [options]="((themes$ | async) || [workspace.theme]).sort(sortByLocale)"
               [pTooltip]="'WORKSPACE.THEME' | translate"
               tooltipPosition="top"
               tooltipEvent="focus"
