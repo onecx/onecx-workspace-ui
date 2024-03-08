@@ -11,7 +11,6 @@ import { WorkspaceDetailComponent } from 'src/app/workspace/workspace-detail/wor
 import { WorkspacePropsComponent } from 'src/app/workspace/workspace-detail/workspace-props/workspace-props.component'
 import { WorkspaceRolesComponent } from 'src/app/workspace/workspace-detail/workspace-roles/workspace-roles.component'
 import { WorkspaceInternComponent } from 'src/app/workspace/workspace-detail/workspace-intern/workspace-intern.component'
-import { WorkspaceImagesComponent } from 'src/app/workspace/workspace-detail/workspace-images/workspace-images.component'
 import { WorkspaceContactComponent } from 'src/app/workspace/workspace-detail/workspace-contact/workspace-contact.component'
 import { ProductComponent } from 'src/app/workspace/workspace-detail/products/products.component'
 
@@ -39,7 +38,6 @@ const routes: Routes = [
     WorkspaceContactComponent,
     WorkspaceInternComponent,
     WorkspaceRolesComponent,
-    WorkspaceImagesComponent,
     ProductComponent
   ],
   imports: [
