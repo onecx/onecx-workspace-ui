@@ -103,17 +103,17 @@ describe('WorkspaceSearchComponent', () => {
 
   it('should correctly assign results if API call returns some data', () => {
     const portal: Workspace = {
+      id: 'id',
       name: 'name',
       theme: 'theme',
-      baseUrl: 'url',
-      id: 'id'
+      baseUrl: 'url'
     }
     apiServiceSpy.getAllPortals.and.returnValue(of([portal]))
-    component.workspaceItems = []
+    component.workspaces = []
 
     component.search()
 
-    expect(component.workspaceItems[0]).toEqual(portal)
+    expect(component.workspaces[0]).toEqual(portal)
     expect(component.sortField).toEqual('name')
   })
 
