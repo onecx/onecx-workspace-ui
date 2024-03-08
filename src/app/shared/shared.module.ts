@@ -44,14 +44,13 @@ import { environment } from 'src/environments/environment'
 import { LabelResolver } from 'src/app/shared/label.resolver'
 
 import { ImageContainerComponent } from './image-container/image-container.component'
-import { ThemeColorBoxComponent } from './theme-color-box/theme-color-box.component'
 
 export function apiConfigProvider(configService: ConfigurationService, appStateService: AppStateService) {
   return new PortalApiConfiguration(Configuration, environment.apiPrefix, configService, appStateService)
 }
 
 @NgModule({
-  declarations: [ImageContainerComponent, ThemeColorBoxComponent],
+  declarations: [ImageContainerComponent],
   imports: [
     AutoCompleteModule,
     BadgeModule,
@@ -138,7 +137,6 @@ export function apiConfigProvider(configService: ConfigurationService, appStateS
     TreeTableModule,
     TranslateModule,
     ErrorTailorModule,
-    ThemeColorBoxComponent,
     ImageContainerComponent
   ],
   //this is not elegant, for some reason the injection token from primeng does not work across federated module

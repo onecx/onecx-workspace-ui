@@ -25,9 +25,9 @@ import {
   //  UpdateMenuItemRequest
 } from 'src/app/shared/generated'
 import { limitText, dropDownSortItemsByLabel } from 'src/app/shared/utils'
-import { MenuStringConst } from 'src/app//model/menu-string-const'
-import { MenuStateService } from 'src/app/services/menu-state.service'
-import { IconService } from 'src/app/workspace/workspace-detail/menu/iconservice'
+import { MenuStringConst } from './menu-string-const'
+import { MenuStateService } from './services/menu-state.service'
+import { IconService } from './iconservice'
 
 type LanguageItem = SelectItem & { data: string }
 type I18N = { [key: string]: string }

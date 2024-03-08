@@ -2,8 +2,8 @@ import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from
 import { SelectItem, TreeNode } from 'primeng/api'
 
 import { MenuItem } from 'src/app/shared/generated'
-import { MenuTreeService } from 'src/app/services/menu-tree.service'
-import { MenuStateService } from 'src/app/services/menu-state.service'
+import { MenuTreeService } from '../services/menu-tree.service'
+import { MenuStateService } from '../services/menu-state.service'
 
 @Component({
   selector: 'app-menu-tree',

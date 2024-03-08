@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { TreeNode } from 'primeng/api'
 
-import { MenuTreeService } from 'src/app/services/menu-tree.service'
+import { MenuTreeService } from './menu-tree.service'
 import { MenuItem } from 'src/app/shared/generated'
 
 describe('MenuTreeService', () => {

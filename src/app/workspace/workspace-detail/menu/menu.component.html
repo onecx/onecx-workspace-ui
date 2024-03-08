@@ -102,14 +102,34 @@
 
         <ng-template pTemplate="header">
           <tr>
-            <th></th>
-            <th class="text-center hidden-xs">{{ 'ACTIONS.LABEL' | translate }}</th>
-            <th class="text-center hidden-md" [title]="'DIALOG.MENU.POSITION.TOOLTIP' | translate">Pos</th>
-            <th class="text-center hidden-md" [title]="'DIALOG.MENU.I18N.TOOLTIP' | translate">
+            <th id="workspace_menu_table_header_dummy"></th>
+            <th id="workspace_menu_table_header_actions" class="text-center hidden-xs">
+              {{ 'ACTIONS.LABEL' | translate }}
+            </th>
+            <th
+              id="workspace_menu_table_header_position"
+              class="text-center hidden-md"
+              [title]="'DIALOG.MENU.POSITION.TOOLTIP' | translate"
+            >
+              Pos
+            </th>
+            <th
+              id="workspace_menu_table_header_i18n"
+              class="text-center hidden-md"
+              [title]="'DIALOG.MENU.I18N.TOOLTIP' | translate"
+            >
               {{ 'DIALOG.MENU.I18N.LABEL' | translate }}
             </th>
-            <th class="text-center hidden-md" [title]="'PORTAL.MENU.MFE.TOOLTIP' | translate">PM</th>
-            <th class="hidden-sm" [title]="'PORTAL.MENU.URL.TOOLTIP' | translate">URL</th>
+            <th
+              id="workspace_menu_table_header_app"
+              class="text-center hidden-md"
+              [title]="'PORTAL.MENU.MFE.TOOLTIP' | translate"
+            >
+              PM
+            </th>
+            <th id="workspace_menu_table_header_url" class="hidden-sm" [title]="'PORTAL.MENU.URL.TOOLTIP' | translate">
+              URL
+            </th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-rowNode let-rowData="rowData">

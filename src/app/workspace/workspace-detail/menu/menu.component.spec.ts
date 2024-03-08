@@ -5,22 +5,21 @@ import { FormsModule, FormControl, FormGroup } from '@angular/forms'
 import { Location } from '@angular/common'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router'
-// import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { of, throwError } from 'rxjs'
 
 import { PortalMessageService, ConfigurationService, AUTH_SERVICE } from '@onecx/portal-integration-angular'
 
 import { MenuComponent } from 'src/app/workspace/workspace-detail/menu/menu.component'
-import { MenuStateService, MenuState } from 'src/app/services/menu-state.service'
+import { MenuStateService, MenuState } from './services/menu-state.service'
 
 import { Workspace, MenuItem, WorkspaceAPIService, Scope, MenuItemAPIService } from 'src/app/shared/generated'
 import FileSaver from 'file-saver'
 
 const workspace: Workspace = {
+  id: 'id',
   name: 'name',
   theme: 'theme',
-  baseUrl: '/some/base/url',
-  id: 'id'
+  baseUrl: '/some/base/url'
 }
 
 const mockMenuItems: MenuItem[] = [

@@ -14,7 +14,6 @@ import { WorkspaceInternComponent } from 'src/app/workspace/workspace-detail/wor
 import { WorkspaceImagesComponent } from 'src/app/workspace/workspace-detail/workspace-images/workspace-images.component'
 import { WorkspaceContactComponent } from 'src/app/workspace/workspace-detail/workspace-contact/workspace-contact.component'
 import { ProductComponent } from 'src/app/workspace/workspace-detail/products/products.component'
-import { LogoComponent } from 'src/app/workspace/workspace-detail/workspace-images/logo/logo.component'
 
 const routes: Routes = [
   {
@@ -41,8 +40,7 @@ const routes: Routes = [
     WorkspaceInternComponent,
     WorkspaceRolesComponent,
     WorkspaceImagesComponent,
-    ProductComponent,
-    LogoComponent
+    ProductComponent
   ],
   imports: [
     CommonModule,
