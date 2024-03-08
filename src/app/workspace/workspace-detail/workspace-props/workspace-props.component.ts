@@ -46,10 +46,10 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
 
   constructor(
     private user: UserService,
-    private workspaceApi: WorkspaceAPIService,
-    private msgService: PortalMessageService,
     private location: Location,
-    private imageApi: ImagesInternalAPIService
+    private msgService: PortalMessageService,
+    private imageApi: ImagesInternalAPIService,
+    private workspaceApi: WorkspaceAPIService
   ) {
     this.hasTenantViewPermission = this.user.hasPermission('WORKSPACE_TENANT#VIEW')
     this.hasTenantEditPermission = this.user.hasPermission('WORKSPACE_TENANT#EDIT')
