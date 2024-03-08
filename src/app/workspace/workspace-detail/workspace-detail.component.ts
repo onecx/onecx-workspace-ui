@@ -21,27 +21,27 @@ export class WorkspaceDetailComponent implements OnInit {
   @ViewChild(WorkspaceContactComponent, { static: false }) workspaceContactComponent!: WorkspaceContactComponent
 
   public actions$: Observable<Action[]> | undefined
-  editMode = false
-  headerImageUrl?: string
-  importThemeCheckbox = false
-  isLoading = false
-  objectDetails: ObjectDetailItem[] = []
-  workspaceDeleteMessage = ''
-  workspaceDeleteVisible = false
-  workspaceDownloadVisible = false
-  workspace: Workspace | undefined
-  workspaceName = this.route.snapshot.params['name']
-  selectedTabIndex = 0
-  dateFormat = 'medium'
+  public editMode = false
+  public headerImageUrl?: string
+  public importThemeCheckbox = false
+  public isLoading = false
+  public selectedTabIndex = 0
+  public dateFormat = 'medium'
+  public objectDetails: ObjectDetailItem[] = []
+  public workspace: Workspace | undefined
+  public workspaceName = this.route.snapshot.params['name']
+  public workspaceDeleteMessage = ''
+  public workspaceDeleteVisible = false
+  public workspaceDownloadVisible = false
 
   constructor(
     private user: UserService,
     public route: ActivatedRoute,
     private router: Router,
     private location: Location,
-    private workspaceApi: WorkspaceAPIService,
     private translate: TranslateService,
     private msgService: PortalMessageService,
+    private workspaceApi: WorkspaceAPIService,
     private imageApi: ImagesInternalAPIService
   ) {
     this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm' : 'medium'
@@ -59,10 +59,10 @@ export class WorkspaceDetailComponent implements OnInit {
   private prepareActionButtons(): void {
     this.actions$ = this.translate
       .get([
-        'ACTIONS.NAVIGATION.BACK',
-        'ACTIONS.NAVIGATION.BACK.TOOLTIP',
         'DIALOG.MENU.LABEL',
         'DIALOG.MENU.SUBHEADER',
+        'ACTIONS.NAVIGATION.BACK',
+        'ACTIONS.NAVIGATION.BACK.TOOLTIP',
         'ACTIONS.CANCEL',
         'ACTIONS.TOOLTIPS.CANCEL',
         'ACTIONS.SAVE',
@@ -162,17 +162,18 @@ export class WorkspaceDetailComponent implements OnInit {
         next: (data) => {
           if (data.resource) {
             this.workspace = data.resource
-            this.onWorkspaceData()
+            this.prepareDialog()
           }
         },
         error: () => {
-          this.msgService.error({ summaryKey: 'SEARCH.ERROR', detailKey: 'PORTAL.NOT_EXIST_MESSAGE' })
-          this.onClose() // if workspace not found then go back
+          // TODO: stay on the page and display an error message
+          this.msgService.error({ summaryKey: 'SEARCH.ERROR', detailKey: 'DIALOG.WORKSPACE.NOT_FOUND' })
+          this.onClose() // if workspace was not found then go back
         }
       })
   }
 
-  public onWorkspaceData() {
+  public prepareDialog() {
     this.preparePageHeaderImage()
     this.prepareActionButtons()
     this.translate
@@ -220,28 +221,25 @@ export class WorkspaceDetailComponent implements OnInit {
         next: (data) => {
           this.workspace = data
           this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_OK' })
-          this.onWorkspaceData()
+          this.prepareDialog()
         },
         error: (err) => {
-          console.error('updateWorkspace: ', err)
+          console.error('update workspace', err)
           this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_NOK' })
         }
       })
   }
 
   public onConfirmDeleteWorkspace(): void {
-    this.deleteWorkspace()
     this.workspaceDownloadVisible = false
-  }
-
-  private deleteWorkspace() {
     this.workspaceApi.deleteWorkspace({ id: this.workspace?.id ?? '' }).subscribe(
       () => {
         this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MESSAGE_OK' })
         this.onClose()
       },
-      () => {
-        this.msgService.error({ summaryKey: 'ACTIONS.DELETE.MESSAGE_NOK' /* , detailKey: err.error.message */ })
+      (err) => {
+        console.error('delete workspace', err)
+        this.msgService.error({ summaryKey: 'ACTIONS.DELETE.MESSAGE_NOK' })
       }
     )
   }
@@ -250,18 +248,11 @@ export class WorkspaceDetailComponent implements OnInit {
     this.location.back()
   }
 
-  private toggleEditMode(forcedMode?: 'edit' | 'view'): void {
-    if (forcedMode) this.editMode = forcedMode === 'edit' ? true : false
-    else this.editMode = !this.editMode
-    this.prepareActionButtons()
-  }
-
   public onExportWorkspace() {
     if (!this.workspace) {
       this.workspaceNotFoundError()
       return
     }
-
     this.workspaceApi
       .exportWorkspaces({
         exportWorkspacesRequest: { includeMenus: true, names: [this.workspace.name] }
@@ -274,8 +265,7 @@ export class WorkspaceDetailComponent implements OnInit {
       })
 
     if (this.importThemeCheckbox) {
-      if (this.workspace.theme) {
-      } else {
+      if (!this.workspace.theme) {
         this.themeNotSpecifiedError()
         return
       }
@@ -289,11 +279,11 @@ export class WorkspaceDetailComponent implements OnInit {
   }
 
   private workspaceNotFoundError() {
-    this.msgService.error({ summaryKey: 'DETAIL.PORTAL_NOT_FOUND' })
+    this.msgService.error({ summaryKey: 'DIALOG.WORKSPACE.NOT_FOUND' })
   }
 
   private themeNotSpecifiedError() {
-    this.msgService.error({ summaryKey: 'DETAIL.THEME_NOT_SPECIFIED_MESSAGE' })
+    this.msgService.error({ summaryKey: 'WORKSPACE_EXPORT.THEME_NOT_SPECIFIED_MESSAGE' })
   }
 
   private preparePageHeaderImage() {
@@ -302,6 +292,12 @@ export class WorkspaceDetailComponent implements OnInit {
     } else {
       this.headerImageUrl = this.workspace?.logoUrl
     }
+  }
+
+  private toggleEditMode(forcedMode?: 'edit' | 'view'): void {
+    if (forcedMode) this.editMode = forcedMode === 'edit' ? true : false
+    else this.editMode = !this.editMode
+    this.prepareActionButtons()
   }
 
   public onGoToMenu(): void {

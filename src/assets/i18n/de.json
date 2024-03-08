@@ -20,9 +20,9 @@
       "MENU": "Menüeintrag erstellen",
       "MENU.TOOLTIP": "Ein neuen Menüeintrag erstellen",
       "MESSAGE": {
-        "MENU_ALREADY_EXIST": "Ein Menüeintrag mit diesem Namen/ID existert schon",
         "CREATE_OK": "Der Workspace wurde erfolgreich erstellt",
         "CREATE_NOK": "Ein Fehler ist aufgetreten. Der Workspace wurde nicht erstellt.",
+        "MENU_ALREADY_EXIST": "Ein Menüeintrag mit diesem Namen/ID existert schon",
         "MENU_CREATE_OK": "Der Menüeintrag wurde erfolgreich erstellt",
         "MENU_CREATE_NOK": "Ein Fehler ist aufgetreten. Der Menüeintrag wurde nicht erstellt."
       }
@@ -51,16 +51,15 @@
     "EXPORT": {
       "LABEL": "Export",
       "TOOLTIP": "Definition als JSON herunterladen",
-      "MENU": "Menüstruktur exportieren",
+      "MENU": "Menü exportieren",
       "WORKSPACE": "Die Workspace-Definition im JSON Format herunterladen.",
       "THEME_INCLUDE": "Die Theme-Definition in den Export einschließen"
     },
     "IMPORT": {
       "LABEL": "Import",
       "TOOLTIP": "Definition als JSON hochladen",
-      "THEME": "Theme importieren",
-      "MENU": "Menüstruktur importieren",
-      "PORTAL": "Die Workspace-Definition im JSON Format importieren."
+      "MENU": "Menü importieren",
+      "WORKSPACE": "Die Workspace-Definition im JSON Format importieren."
     },
     "NAVIGATION": {
       "CLOSE": "Schließen",
@@ -72,8 +71,7 @@
       "BACK.TOOLTIP": "Vorherige Seite",
       "DETAILS.TOOLTIP": "Anzeige Details",
       "NEW.TOOLTIP": "Erstelle neuen Eintrag",
-      "GOTO_MENU": "Zum Menü Management wechseln",
-      "GOTO_MENU_ITEM": "Zur Detailansicht wechseln (im Menü Management)",
+      "GOTO_MENU": "Zur Menüverwaltung wechseln",
       "OPEN_IN_NEW_TAB": "In neuem TAB öffnen",
       "MOVE_UP": "Nach oben verschieben",
       "MOVE_DOWN": "Nach unten verschieben"
@@ -224,8 +222,10 @@
   },
   "DIALOG": {
     "WORKSPACE": {
-      "NOT_EXIST_MESSAGE": "Der Workspace wurde nicht gefunden.",
+      "NOT_FOUND": "Der Workspace wurde nicht gefunden.",
       "HEADER": {
+        "SEARCH": "Workspace Verwaltung",
+        "SEARCH.SUBHEADER": "Erstellung und Bearbeitung von Workspaces",
         "DETAIL": "Anzeige und Bearbeitung der Workspace-Eigenschaften",
         "DELETE": "Workspace löschen",
         "EXPORT": "Workspace exportieren"
@@ -260,6 +260,7 @@
         "ADD_LANGUAGE": "Sprache hinzufügen",
         "REMOVE_LANGUAGE": "Sprache entfernen"
       },
+      "POSITION": "Position",
       "POSITION.TOOLTIP": "Der Position-Pfad des Menü-Eintrags im Format [Eltern-Position.]Position",
       "URL.TOOLTIP": "Die URL die beim Aktivieren aufgerufen wird",
       "MFE.TOOLTIP": "Indikator ob die Menü-URL durch ein registriertes Produkt angeboten wird",
@@ -275,7 +276,8 @@
       "MENU_ITEM_DETAILS": "Details",
       "MENU_ITEM_HEADER": "Header",
       "MENU_REMOVE_ERROR": "Fehler beim Löschen eines Menüeintrags",
-      "MENU_REMOVE_SUCCESS": "Menüeintrag erfolgreich gelöscht"
+      "MENU_REMOVE_SUCCESS": "Menüeintrag erfolgreich gelöscht",
+      "ERROR_FIND_MENU": "Menüeintrag mit ID wurde nicht gefunden:"
     },
     "DATAVIEW": {
       "FILTER_PLACEHOLDER": "Filter",
@@ -285,35 +287,14 @@
       "VIEW_MODE_LIST": "Listenansicht",
       "VIEW_MODE_TABLE": "Tabellenansicht",
       "VIEW_MODE_TREE": "Baumansicht"
-    },
-    "DETAILS": "Details",
-    "EMPTY_TRANSLATION": "Es gibt bereits eine leere Übersetzung.",
-    "ERROR_FIND_MENU": "Menüeintrag mit ID wurde nicht gefunden:",
-    "ERROR_FIND_PORTAL": "Workspace mit Workspace-ID wurde nicht gefunden: ",
-    "HOME_PAGE": "zur Workspace-Homepage",
-    "HOME_PAGE_NOT_DEFINIED": "Homepage des Workspaces ist nicht definiert",
-    "I18N_EDIT_ERROR": "Fehler, die Übersetzungen wurden nicht aktualisiert",
-    "I18N_EDIT_SUCCESS": "Übersetzungen erfolgreich bearbeitet",
-    "ID_CHANGE_MESSAGE": "Die Änderung der Workspace-ID wird zu einer Änderung der Workspace-ID für folgende Menüeinträge führen: ",
-    "ID_CONFIRMATION_MESSAGE": "Sind Sie sicher, dass Sie weitermachen wollen?",
-    "LABEL": "Beschriftung",
-    "LANGUAGE": "Sprache",
-    "PORTAL_PERMISSION_SYNC_ERROR": "Fehler beim Synchronisierung von Berechtigungen",
-    "PORTAL_PERMISSION_SYNC_SUCCESS": "Berechtigungen wurden erfolgreich synchronisiert",
-    "SELECT_ICON": "Badge-Icon auswählen",
+    }
+  },
+  "WORKSPACE_EXPORT": {
     "THEME_CHECKBOX_HEADER": "Export Workspace Definition",
     "THEME_CHECKBOX_MESSAGE": "Die aktuelle Workspace Definition im JSON Format herunterladen. Sie können auch die Theme-Definition in den Download integrieren.",
     "THEME_LOADING": "...lädt",
     "THEME_NOT_AVALIABLE": "keine verfügbaren Themes ",
-    "THEME_NOT_SPECIFIED_MESSAGE": "Theme kann nicht heruntergeladen werden, weil es im Workspace nicht angegeben wurde",
-    "ERROR": "Fehler: ",
-    "FORM_PATTERN_INVALID": " darf nur aus Buchstaben, Zahlen, Unterstrichen und Balken bestehen.",
-    "FORM_VALIDATION": "Daten können nicht leer oder ungültig sein",
-    "FORM_VALIDATION_EMPTY": " können nicht leer sein",
-    "FORM_VALIDATION_INVALID": " können nicht ungültig sein",
-    "NO_PERM": "Es wurde keine Berechtigungen erteilt, um diese Seite anschauen zu können. Fehlende Berechtigungen:",
-    "SELECT_ITEM": "Wählen Sie den Eintrag",
-    "SWITCH_TO_EDIT": "In den Bearbeitungsmodus schalten"
+    "THEME_NOT_SPECIFIED_MESSAGE": "Theme kann nicht heruntergeladen werden, weil es im Workspace nicht angegeben wurde"
   },
   "PORTAL_IMPORT": {
     "IMPORT_PORTAL": "Workspace Import",
@@ -432,36 +413,6 @@
       "PLACEHOLDER": "Bild Platzhalter",
       "UPLOAD": "Bild auswählen und hochladen"
     }
-  },
-  "SEARCH": {
-    "ACTION": "Aktion",
-    "ANY_VALUE": "",
-    "DROPDOWN_PLACEHOLDER": "Irgendein",
-    "EMPTY": "leer",
-    "ERROR": "Daten nicht abrufbar",
-    "FILTER": "Filter",
-    "FILTER_OF": "Filter für ",
-    "MENU_MANAGEMENT": "Menü Verwaltung",
-    "MENU_MANAGEMENT_DETAILS": "Erstellung und Bearbeitung von Menüeinträgen zu einem Workspace",
-    "MSG_NO_RESULTS": "Die Suche ergab keine Treffer",
-    "NO_DATA": "Keine Ergebnisse",
-    "NO_PORTALS": "Es sind keine Workspaces verfügbar",
-    "PORTAL": "Workspace",
-    "PORTALS_LIST": "Liste von Workspaces",
-    "PORTAL_MANAGEMENT": "Workspace Verwaltung",
-    "PORTAL_MANAGEMENT_DETAILS": "Erstellung und Bearbeitung von Workspaces",
-    "PORTAL_SEARCH": "Workspace Verwaltung",
-    "RESET": "Zurücksetzen",
-    "RESET_TOOLTIP": "Kriterien zurücksetzen",
-    "ROOT_FILTER": "Top-Level-Einträge anzeigen",
-    "SEARCH": "Suchen",
-    "SEARCH_TOOLTIP": "Suchen mit vorgegebenen Kriterien",
-    "SHOW_DETAILS": "Details anzeigen",
-    "SHOW_LIST": "Als Liste darstellen",
-    "SHOW_TREE": "Als Baum darstellen",
-    "SORT_BY": "Sortiert nach",
-    "SORT_DIRECTION_ASC": "aufsteigend",
-    "SORT_DIRECTION_DESC": "absteigend"
   },
   "TREE": {
     "CLEAR_CACHE_INFO": "Cache wurde entfernt",

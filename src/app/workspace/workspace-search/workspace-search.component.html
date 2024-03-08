@@ -1,7 +1,7 @@
 <ocx-portal-page permission="WORKSPACE#SEARCH" helpArticleId="PAGE_WORKSPACE_SEARCH">
   <ocx-page-header
-    [header]="'SEARCH.PORTAL_MANAGEMENT' | translate"
-    [subheader]="'SEARCH.PORTAL_MANAGEMENT_DETAILS' | translate"
+    [header]="'DIALOG.WORKSPACE.HEADER.SEARCH' | translate"
+    [subheader]="'DIALOG.WORKSPACE.HEADER.SEARCH.SUBHEADER' | translate"
     [actions]="actions"
     [manualBreadcrumbs]="false"
   >
@@ -96,14 +96,14 @@
                 *ngIf="workspace.name !== 'ADMIN'"
                 [id]="'app_workspace_search_data_row_' + row + '_goto_workspace'"
                 class="card-badge-right badge-1 p-2 pi pi-external-link pseudo-button-link"
-                [title]="'PORTAL.QUICK_LINKS.GOTO_WORKSPACE' | translate"
+                [title]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_WORKSPACE' | translate"
                 (click)="onGotoWorkspace($event, workspace)"
               ></span>
               <span
                 *ocxIfPermission="'MENU#VIEW'"
                 [id]="'app_workspace_search_data_row_' + row + '_goto_menu'"
                 class="card-badge-right badge-2 p-2 pi pi-sitemap pseudo-button-link"
-                [title]="'PORTAL.QUICK_LINKS.GOTO_MENU' | translate"
+                [title]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_MENU' | translate"
                 (click)="onGotoMenu($event, workspace)"
               ></span>
               <div class="h-3rem md:h-5rem mt-1 flex flex-column justify-content-center align-items-center text-center">
@@ -130,7 +130,7 @@
 </ocx-portal-page>
 
 <p-dialog
-  [header]="'ACTIONS.CREATE.PORTAL' | translate"
+  [header]="'ACTIONS.CREATE.WORKSPACE' | translate"
   [(visible)]="showCreateDialog"
   [baseZIndex]="10000"
   [draggable]="true"

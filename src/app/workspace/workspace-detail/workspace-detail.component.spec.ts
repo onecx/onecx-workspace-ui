@@ -157,11 +157,11 @@ describe('WorkspaceDetailComponent', () => {
 
   it('should getWorkspaceData onInit', () => {
     apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))
-    spyOn(component, 'onWorkspaceData')
+    spyOn(component, 'prepareDialog')
 
     component.ngOnInit()
 
-    expect(component.onWorkspaceData).toHaveBeenCalled()
+    expect(component.prepareDialog).toHaveBeenCalled()
   })
 
   it('should display error msg if get api call fails', () => {
@@ -171,7 +171,7 @@ describe('WorkspaceDetailComponent', () => {
 
     expect(msgServiceSpy.error).toHaveBeenCalledWith({
       summaryKey: 'SEARCH.ERROR',
-      detailKey: 'PORTAL.NOT_EXIST_MESSAGE'
+      detailKey: 'DIALOG.WORKSPACE.NOT_FOUND'
     })
   })
 

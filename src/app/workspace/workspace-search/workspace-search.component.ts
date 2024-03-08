@@ -47,69 +47,75 @@ export class WorkspaceSearchComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.prepareTranslations()
+    this.prepareActionButtons()
+    this.search()
+  }
+
+  private prepareTranslations() {
     this.translate
       .get([
         'WORKSPACE.NAME',
         'WORKSPACE.THEME',
-        'SEARCH.SORT_BY',
-        'SEARCH.FILTER',
-        'SEARCH.FILTER_OF',
-        'GENERAL.TOOLTIP.VIEW_MODE_GRID',
-        'GENERAL.TOOLTIP.VIEW_MODE_LIST',
-        'GENERAL.TOOLTIP.VIEW_MODE_TABLE',
-        'SEARCH.SORT_DIRECTION_ASC',
-        'SEARCH.SORT_DIRECTION_DESC'
+        'ACTIONS.SEARCH.SORT_BY',
+        'ACTIONS.SEARCH.FILTER',
+        'ACTIONS.SEARCH.FILTER_OF',
+        'ACTIONS.SEARCH.SORT_DIRECTION_ASC',
+        'ACTIONS.SEARCH.SORT_DIRECTION_DESC',
+        'DIALOG.DATAVIEW.VIEW_MODE_GRID',
+        'DIALOG.DATAVIEW.VIEW_MODE_LIST',
+        'DIALOG.DATAVIEW.VIEW_MODE_TABLE'
       ])
       .subscribe((data) => {
-        this.prepareTranslations(data)
+        this.fieldLabelWorkspaceName = data['WORKSPACE.NAME']
+        this.fieldLabelThemeName = data['WORKSPACE.THEME']
+        this.dataViewControlsTranslations = {
+          sortDropdownPlaceholder: data['ACTIONS.SEARCH.SORT_BY'],
+          filterInputPlaceholder: data['ACTIONS.SEARCH.FILTER'],
+          filterInputTooltip:
+            data['ACTIONS.SEARCH.FILTER_OF'] + this.fieldLabelWorkspaceName + ', ' + this.fieldLabelThemeName,
+          viewModeToggleTooltips: {
+            grid: data['DIALOG.DATAVIEW.VIEW_MODE_GRID'],
+            list: data['DIALOG.DATAVIEW.VIEW_MODE_LIST'],
+            table: data['DIALOG.DATAVIEW.VIEW_MODE_TABLE']
+          },
+          sortOrderTooltips: {
+            ascending: data['ACTIONS.SEARCH.SORT_DIRECTION_ASC'],
+            descending: data['ACTIONS.SEARCH.SORT_DIRECTION_DESC']
+          },
+          sortDropdownTooltip: data['ACTIONS.SEARCH.SORT_BY']
+        }
       })
+  }
+
+  private prepareActionButtons() {
     this.translate
-      .get(['ACTIONS.CREATE.PORTAL', 'ACTIONS.CREATE.PORTAL.TOOLTIP', 'ACTIONS.IMPORT.LABEL', 'ACTIONS.IMPORT.PORTAL'])
+      .get([
+        'ACTIONS.CREATE.WORKSPACE',
+        'ACTIONS.CREATE.WORKSPACE.TOOLTIP',
+        'ACTIONS.IMPORT.LABEL',
+        'ACTIONS.IMPORT.WORKSPACE'
+      ])
       .subscribe((data) => {
-        this.prepareActionButtons(data)
+        this.actions.push(
+          {
+            label: data['ACTIONS.CREATE.WORKSPACE'],
+            title: data['ACTIONS.CREATE.WORKSPACE.TOOLTIP'],
+            actionCallback: () => this.toggleShowCreateDialog(),
+            icon: 'pi pi-plus',
+            show: 'always',
+            permission: 'WORKSPACE#CREATE'
+          },
+          {
+            label: data['ACTIONS.IMPORT.LABEL'],
+            title: data['ACTIONS.IMPORT.WORKSPACE'],
+            actionCallback: () => this.toggleShowImportDialog(),
+            icon: 'pi pi-upload',
+            show: 'always',
+            permission: 'WORKSPACE#IMPORT'
+          }
+        )
       })
-    this.search()
-  }
-
-  private prepareTranslations(data: any) {
-    this.fieldLabelWorkspaceName = data['WORKSPACE.NAME']
-    this.fieldLabelThemeName = data['WORKSPACE.THEME']
-    this.dataViewControlsTranslations = {
-      sortDropdownPlaceholder: data['SEARCH.SORT_BY'],
-      filterInputPlaceholder: data['SEARCH.FILTER'],
-      filterInputTooltip: data['SEARCH.FILTER_OF'] + this.fieldLabelWorkspaceName + ', ' + this.fieldLabelThemeName,
-      viewModeToggleTooltips: {
-        grid: data['DIALOG.DATAVIEW.VIEW_MODE_GRID'],
-        list: data['DIALOG.DATAVIEW.VIEW_MODE_LIST'],
-        table: data['DIALOG.DATAVIEW.VIEW_MODE_TABLE']
-      },
-      sortOrderTooltips: {
-        ascending: data['SEARCH.SORT_DIRECTION_ASC'],
-        descending: data['SEARCH.SORT_DIRECTION_DESC']
-      },
-      sortDropdownTooltip: data['SEARCH.SORT_BY']
-    }
-  }
-
-  private prepareActionButtons(data: any) {
-    this.actions.push(
-      {
-        label: data['ACTIONS.CREATE.PORTAL'],
-        title: data['ACTIONS.CREATE.PORTAL.TOOLTIP'],
-        actionCallback: () => this.toggleShowCreateDialog(),
-        icon: 'pi pi-plus',
-        show: 'always',
-        permission: 'WORKSPACE#CREATE'
-      },
-      {
-        label: data['ACTIONS.IMPORT.LABEL'],
-        title: data['ACTIONS.IMPORT.PORTAL'],
-        actionCallback: () => this.toggleShowImportDialog(),
-        icon: 'pi pi-upload',
-        show: 'always',
-        permission: 'WORKSPACE#IMPORT'
-      }
-    )
   }
 
   toggleShowCreateDialog = (): void => {

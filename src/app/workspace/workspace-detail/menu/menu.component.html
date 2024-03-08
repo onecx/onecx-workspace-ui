@@ -596,7 +596,7 @@
 
 <!-- TREE REORDER DIALOG -->
 <p-dialog
-  header="{{ 'PORTAL.MENU.HEADER.TREE_MODAL' | translate }}"
+  header="{{ 'DIALOG.MENU.HEADER.TREE_MODAL' | translate }}"
   [(visible)]="displayTreeModal"
   [draggable]="true"
   [closable]="true"
@@ -606,9 +606,9 @@
   (onResizeEnd)="onEndResizeTree($event)"
 >
   <ul class="my-2">
-    <li>{{ 'PORTAL.MENU.ACTION.REORDER.TOOLTIP' | translate }}</li>
-    <li>{{ 'PORTAL.MENU.ACTION.PREVIEW.TOOLTIP' | translate }}</li>
-    <li class="danger-action-text">{{ 'PORTAL.MENU.ACTION.PREVIEW2.TOOLTIP' | translate }}</li>
+    <li>{{ 'DIALOG.MENU.HEADER.REORDER.TOOLTIP' | translate }}</li>
+    <li>{{ 'DIALOG.MENU.HEADER.PREVIEW.TOOLTIP' | translate }}</li>
+    <li class="danger-action-text">{{ 'DIALOG.MENU.HEADER.PREVIEW2.TOOLTIP' | translate }}</li>
   </ul>
   <app-menu-tree
     *ngIf="menuItems"
