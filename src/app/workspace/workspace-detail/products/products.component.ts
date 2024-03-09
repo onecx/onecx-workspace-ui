@@ -107,6 +107,7 @@ export class ProductComponent implements OnInit, OnDestroy {
         })
       )
   }
+
   /**
    * UI Events
    */

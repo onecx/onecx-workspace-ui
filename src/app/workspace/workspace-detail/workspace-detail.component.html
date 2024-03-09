@@ -40,13 +40,9 @@
         </div>
       </p-tabPanel>
 
-      <p-tabPanel
-        [disabled]="editMode"
-        [header]="'TABS.WORKSPACE.ROLES' | translate"
-        [tooltip]="'TABS.WORKSPACE.TOOLTIPS.ROLES' | translate"
-      >
+      <p-tabPanel [header]="'TABS.WORKSPACE.ROLES' | translate" [tooltip]="'TABS.WORKSPACE.TOOLTIPS.ROLES' | translate">
         <div *ocxIfPermission="'WORKSPACE_ROLES#VIEW'">
-          <app-workspace-roles [workspace]="workspace"></app-workspace-roles>
+          <app-workspace-roles [workspace]="workspaceForRoles" [editMode]="editMode"></app-workspace-roles>
         </div>
       </p-tabPanel>
 
@@ -109,7 +105,7 @@
 <p-dialog
   #workspaceDelete
   [(visible)]="workspaceDeleteVisible"
-  [header]="'PORTAL.HEADER.DELETE' | translate"
+  [header]="'DIALOG.WORKSPACE.HEADER.DELETE' | translate"
   [modal]="true"
   [resizable]="false"
   [dismissableMask]="true"

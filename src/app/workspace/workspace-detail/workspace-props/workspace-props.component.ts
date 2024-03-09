@@ -98,7 +98,7 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
     })
   }
 
-  public onSubmit() {
+  public onSubmit(): void {
     if (this.formGroup.valid) {
       Object.assign(this.workspace, this.getWorkspaceChangesFromForm())
       this.editMode = false
@@ -126,7 +126,7 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
     return changes
   }
 
-  onFileUpload(ev: Event, fieldType: 'logo') {
+  public onFileUpload(ev: Event, fieldType: 'logo'): void {
     let workspaceName = this.formGroup.controls['name'].value
 
     if (ev.target && (ev.target as HTMLInputElement).files) {
@@ -185,7 +185,7 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
     }
   }
 
-  public onGotoTheme(ev: MouseEvent, uri: string) {
+  public onGotoTheme(ev: MouseEvent, uri: string): void {
     ev.stopPropagation()
     const url = window.document.location.href + uri
     if (ev.ctrlKey) {
@@ -195,7 +195,7 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
     }
   }
 
-  getImageUrl(): string {
+  private getImageUrl(): string {
     let imgUrl = this.formGroup.controls['logoUrl'].value
     if (imgUrl == '' || imgUrl == null) {
       return this.imageApi.configuration.basePath + '/images/' + this.formGroup.controls['name'].value + '/logo'
@@ -204,7 +204,7 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
     }
   }
 
-  inputChange(event: Event) {
+  public onInputChange(event: Event): void {
     this.fetchingLogoUrl = (event.target as HTMLInputElement).value
     if ((event.target as HTMLInputElement).value == undefined || (event.target as HTMLInputElement).value == '') {
       this.fetchingLogoUrl =

@@ -156,6 +156,8 @@
     }
   },
   "ROLE": {
+    "NAME": "Name",
+    "TYPE": "Type",
     "ROLES_NOT_EXIST": "No roles defined",
     "ADD": "Add",
     "ADD_ROLE": "Add role",

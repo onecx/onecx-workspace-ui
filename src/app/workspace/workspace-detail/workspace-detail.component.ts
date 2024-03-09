@@ -8,8 +8,9 @@ import { Observable, map } from 'rxjs'
 import { Action, ObjectDetailItem, PortalMessageService, UserService } from '@onecx/portal-integration-angular'
 import { WorkspaceSnapshot, Workspace, WorkspaceAPIService, ImagesInternalAPIService } from 'src/app/shared/generated'
 
-import { WorkspacePropsComponent } from 'src/app/workspace/workspace-detail/workspace-props/workspace-props.component'
-import { WorkspaceContactComponent } from 'src/app/workspace/workspace-detail/workspace-contact/workspace-contact.component'
+import { WorkspacePropsComponent } from './workspace-props/workspace-props.component'
+import { WorkspaceContactComponent } from './workspace-contact/workspace-contact.component'
+import { WorkspaceRolesComponent } from './workspace-roles/workspace-roles.component'
 
 @Component({
   selector: 'app-workspace-detail',
@@ -19,6 +20,7 @@ import { WorkspaceContactComponent } from 'src/app/workspace/workspace-detail/wo
 export class WorkspaceDetailComponent implements OnInit {
   @ViewChild(WorkspacePropsComponent, { static: false }) workspacePropsComponent!: WorkspacePropsComponent
   @ViewChild(WorkspaceContactComponent, { static: false }) workspaceContactComponent!: WorkspaceContactComponent
+  @ViewChild(WorkspaceRolesComponent, { static: false }) workspaceRolesComponent!: WorkspaceRolesComponent
 
   public actions$: Observable<Action[]> | undefined
   public editMode = false
@@ -29,6 +31,7 @@ export class WorkspaceDetailComponent implements OnInit {
   public dateFormat = 'medium'
   public objectDetails: ObjectDetailItem[] = []
   public workspace: Workspace | undefined
+  public workspaceForRoles: Workspace | undefined
   public workspaceName = this.route.snapshot.params['name']
   public workspaceDeleteMessage = ''
   public workspaceDeleteVisible = false
@@ -53,105 +56,12 @@ export class WorkspaceDetailComponent implements OnInit {
 
   public onTabChange($event: any) {
     this.selectedTabIndex = $event.index
+    switch (this.selectedTabIndex) {
+      case 3:
+        this.workspaceForRoles = this.workspace
+        break
+    }
     this.prepareActionButtons()
-  }
-
-  private prepareActionButtons(): void {
-    this.actions$ = this.translate
-      .get([
-        'DIALOG.MENU.LABEL',
-        'DIALOG.MENU.SUBHEADER',
-        'ACTIONS.NAVIGATION.BACK',
-        'ACTIONS.NAVIGATION.BACK.TOOLTIP',
-        'ACTIONS.CANCEL',
-        'ACTIONS.TOOLTIPS.CANCEL',
-        'ACTIONS.SAVE',
-        'ACTIONS.TOOLTIPS.SAVE',
-        'ACTIONS.EXPORT.LABEL',
-        'ACTIONS.EXPORT.WORKSPACE',
-        'ACTIONS.EDIT.LABEL',
-        'ACTIONS.EDIT.TOOLTIP',
-        'ACTIONS.DELETE.LABEL',
-        'ACTIONS.DELETE.WORKSPACE',
-        'ACTIONS.DELETE.MESSAGE'
-      ])
-      .pipe(
-        map((data) => {
-          return [
-            {
-              label: data['ACTIONS.NAVIGATION.BACK'],
-              title: data['ACTIONS.NAVIGATION.BACK.TOOLTIP'],
-              actionCallback: () => this.onClose(),
-              icon: 'pi pi-arrow-left',
-              show: 'always',
-              permission: 'WORKSPACE#SEARCH'
-            },
-            {
-              label: data['DIALOG.MENU.LABEL'],
-              title: data['DIALOG.MENU.SUBHEADER'],
-              actionCallback: () => this.onGoToMenu(),
-              icon: 'pi pi-sitemap',
-              show: 'always',
-              permission: 'MENU#VIEW',
-              conditional: true,
-              showCondition: this.workspace != null && !this.editMode
-            },
-            {
-              label: data['ACTIONS.CANCEL'],
-              title: data['ACTIONS.TOOLTIPS.CANCEL'],
-              actionCallback: () => this.toggleEditMode(),
-              icon: 'pi pi-times',
-              show: 'always',
-              permission: 'WORKSPACE#VIEW',
-              conditional: true,
-              showCondition: this.editMode
-            },
-            {
-              label: data['ACTIONS.SAVE'],
-              title: data['ACTIONS.TOOLTIPS.SAVE'],
-              actionCallback: () => this.updateWorkspace(),
-              icon: 'pi pi-save',
-              show: 'always',
-              permission: 'WORKSPACE#SAVE',
-              conditional: true,
-              showCondition: this.editMode
-            },
-            {
-              label: data['ACTIONS.EXPORT.LABEL'],
-              title: data['ACTIONS.EXPORT.PORTAL'],
-              actionCallback: () => (this.workspaceDownloadVisible = true),
-              icon: 'pi pi-download',
-              show: 'always',
-              permission: 'WORKSPACE#EXPORT',
-              conditional: true,
-              showCondition: this.workspace != null && !this.editMode
-            },
-            {
-              label: data['ACTIONS.EDIT.LABEL'],
-              title: data['ACTIONS.EDIT.TOOLTIP'],
-              actionCallback: () => this.toggleEditMode(),
-              icon: 'pi pi-pencil',
-              show: 'always',
-              permission: 'WORKSPACE#EDIT',
-              conditional: true,
-              showCondition: this.workspace != null && !this.editMode && this.selectedTabIndex < 2
-            },
-            {
-              label: data['ACTIONS.DELETE.LABEL'],
-              title: data['ACTIONS.DELETE.WORKSPACE'],
-              actionCallback: () => {
-                this.workspaceDeleteVisible = true
-                this.workspaceDeleteMessage = data['ACTIONS.DELETE.MESSAGE'].replace('{{ITEM}}', this.workspace?.name)
-              },
-              icon: 'pi pi-trash',
-              show: 'asOverflow',
-              permission: 'WORKSPACE#DELETE',
-              conditional: true,
-              showCondition: !this.editMode && this.workspace && this.workspace?.name != 'ADMIN'
-            }
-          ]
-        })
-      )
   }
 
   private async getWorkspace() {
@@ -162,6 +72,7 @@ export class WorkspaceDetailComponent implements OnInit {
         next: (data) => {
           if (data.resource) {
             this.workspace = data.resource
+            this.workspace.workspaceRoles = ['role1', 'role2']
             this.prepareDialog()
           }
         },
@@ -204,6 +115,11 @@ export class WorkspaceDetailComponent implements OnInit {
       case 1: {
         this.workspaceContactComponent.onSubmit()
         this.workspace = this.workspaceContactComponent.workspace
+        break
+      }
+      case 3: {
+        this.workspaceRolesComponent.onSubmit()
+        this.workspace = this.workspaceRolesComponent.workspace
         break
       }
       default: {
@@ -302,5 +218,103 @@ export class WorkspaceDetailComponent implements OnInit {
 
   public onGoToMenu(): void {
     this.router.navigate(['./menu'], { relativeTo: this.route })
+  }
+
+  private prepareActionButtons(): void {
+    this.actions$ = this.translate
+      .get([
+        'DIALOG.MENU.LABEL',
+        'DIALOG.MENU.SUBHEADER',
+        'ACTIONS.NAVIGATION.BACK',
+        'ACTIONS.NAVIGATION.BACK.TOOLTIP',
+        'ACTIONS.CANCEL',
+        'ACTIONS.TOOLTIPS.CANCEL',
+        'ACTIONS.SAVE',
+        'ACTIONS.TOOLTIPS.SAVE',
+        'ACTIONS.EXPORT.LABEL',
+        'ACTIONS.EXPORT.WORKSPACE',
+        'ACTIONS.EDIT.LABEL',
+        'ACTIONS.EDIT.TOOLTIP',
+        'ACTIONS.DELETE.LABEL',
+        'ACTIONS.DELETE.WORKSPACE',
+        'ACTIONS.DELETE.MESSAGE'
+      ])
+      .pipe(
+        map((data) => {
+          return [
+            {
+              label: data['ACTIONS.NAVIGATION.BACK'],
+              title: data['ACTIONS.NAVIGATION.BACK.TOOLTIP'],
+              actionCallback: () => this.onClose(),
+              icon: 'pi pi-arrow-left',
+              show: 'always',
+              permission: 'WORKSPACE#SEARCH'
+            },
+            {
+              label: data['DIALOG.MENU.LABEL'],
+              title: data['DIALOG.MENU.SUBHEADER'],
+              actionCallback: () => this.onGoToMenu(),
+              icon: 'pi pi-sitemap',
+              show: 'always',
+              permission: 'MENU#VIEW',
+              conditional: true,
+              showCondition: this.workspace != null && !this.editMode
+            },
+            {
+              label: data['ACTIONS.CANCEL'],
+              title: data['ACTIONS.TOOLTIPS.CANCEL'],
+              actionCallback: () => this.toggleEditMode(),
+              icon: 'pi pi-times',
+              show: 'always',
+              permission: 'WORKSPACE#VIEW',
+              conditional: true,
+              showCondition: this.editMode
+            },
+            {
+              label: data['ACTIONS.SAVE'],
+              title: data['ACTIONS.TOOLTIPS.SAVE'],
+              actionCallback: () => this.updateWorkspace(),
+              icon: 'pi pi-save',
+              show: 'always',
+              permission: 'WORKSPACE#SAVE',
+              conditional: true,
+              showCondition: this.editMode
+            },
+            {
+              label: data['ACTIONS.EXPORT.LABEL'],
+              title: data['ACTIONS.EXPORT.PORTAL'],
+              actionCallback: () => (this.workspaceDownloadVisible = true),
+              icon: 'pi pi-download',
+              show: 'always',
+              permission: 'WORKSPACE#EXPORT',
+              conditional: true,
+              showCondition: this.workspace != null && !this.editMode
+            },
+            {
+              label: data['ACTIONS.EDIT.LABEL'],
+              title: data['ACTIONS.EDIT.TOOLTIP'],
+              actionCallback: () => this.toggleEditMode(),
+              icon: 'pi pi-pencil',
+              show: 'always',
+              permission: 'WORKSPACE#EDIT',
+              conditional: true,
+              showCondition: this.workspace != null && !this.editMode && [0, 1, 3].includes(this.selectedTabIndex)
+            },
+            {
+              label: data['ACTIONS.DELETE.LABEL'],
+              title: data['ACTIONS.DELETE.WORKSPACE'],
+              actionCallback: () => {
+                this.workspaceDeleteVisible = true
+                this.workspaceDeleteMessage = data['ACTIONS.DELETE.MESSAGE'].replace('{{ITEM}}', this.workspace?.name)
+              },
+              icon: 'pi pi-trash',
+              show: 'asOverflow',
+              permission: 'WORKSPACE#DELETE',
+              conditional: true,
+              showCondition: !this.editMode && this.workspace && this.workspace?.name != 'ADMIN'
+            }
+          ]
+        })
+      )
   }
 }

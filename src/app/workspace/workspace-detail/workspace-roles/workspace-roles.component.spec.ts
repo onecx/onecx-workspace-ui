@@ -10,11 +10,10 @@ import { WorkspaceRolesComponent } from 'src/app/workspace/workspace-detail/work
 import { Workspace } from 'src/app/shared/generated'
 
 const workspace: Workspace = {
+  id: 'id',
   name: 'name',
   theme: 'theme',
-  baseUrl: '/some/base/url',
-  id: 'id',
-  workspaceRoles: ['role']
+  baseUrl: '/some/base/url'
 }
 
 describe('WorkspaceRolesComponent', () => {

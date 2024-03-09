@@ -156,6 +156,8 @@
     }
   },
   "ROLE": {
+    "NAME": "Name",
+    "TYPE": "Typ",
     "ROLES_NOT_EXIST": "Keine Rollen definiert",
     "ADD": "Hinzufügen",
     "ADD_ROLE": "Rolle hinzufügen",
