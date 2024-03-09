@@ -15,6 +15,25 @@
 >
   <ng-template pTemplate="header">
     <div class="flex flex-wrap align-items-center mx-1">
+      <div class="flex flex-wrap align-items-center ml-1 gap-2">
+        <div
+          class="p-selectbutton-title data-view-control opacity-90 text-sm w-3rem text-right"
+          [title]="'ROLE.QUICK_FILTER.TOOLTIP' | translate"
+        >
+          {{ 'ROLE.QUICK_FILTER.LABEL' | translate }}
+        </div>
+        <div class="slim-selectbutton filter-selectbutton">
+          <p-selectButton
+            inputid="app_search_quick_filter"
+            styleClass="data-view-control opacity-90a"
+            [options]="quickFilterItems"
+            [(ngModel)]="quickFilterValue"
+            (onChange)="onQuickFilterChange($event)"
+          >
+            <ng-template let-item>{{ item.label | translate }}</ng-template>
+          </p-selectButton>
+        </div>
+      </div>
       <ocx-data-view-controls
         class="flex-grow-1"
         [supportedViews]="['grid']"
@@ -44,8 +63,8 @@
         class="card relative p-2"
         [class.bg-primary]="role.isWorkspaceRole"
         [class.cursor-pointer]="editMode"
-        [class.hover:bg-gray-200]="editMode"
-        [class.hover:text-color]="editMode"
+        [class.hover:bg-gray-200]="editMode && role.isIamRole && !role.isWorkspaceRole"
+        [class.hover:text-color]="editMode && role.isIamRole && !role.isWorkspaceRole"
         (click)="onToggleRole(role)"
       >
         <span

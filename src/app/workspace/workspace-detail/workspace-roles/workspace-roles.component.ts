@@ -1,6 +1,7 @@
 import { Component, Input, SimpleChanges, OnChanges, OnInit, ViewChild } from '@angular/core'
 import { TranslateService } from '@ngx-translate/core'
 import { Observable, combineLatest, catchError, finalize, map, of } from 'rxjs'
+import { SelectItem } from 'primeng/api'
 import { DataView } from 'primeng/dataview'
 
 import { PortalMessageService, DataViewControlTranslations } from '@onecx/portal-integration-angular'
@@ -9,7 +10,7 @@ import { Workspace, RoleAPIService, IAMRole, IAMRolePageResult } from 'src/app/s
 import { limitText, sortByLocale } from 'src/app/shared/utils'
 
 export type RoleType = 'WORKSPACE' | 'IAM'
-export type RoleTypeFilter = 'ALL' | RoleType
+export type RoleFilterType = 'ALL' | RoleType
 export type Role = IAMRole & { isIamRole: boolean; isWorkspaceRole: boolean; deleted: boolean; type: RoleType }
 
 @Component({
@@ -32,12 +33,15 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   @ViewChild(DataView) dv: DataView | undefined
   public dataViewControlsTranslations: DataViewControlTranslations = {}
   public filterValue: string | undefined
-  public filterBy = 'name'
+  public filterValueDefault = 'name,type'
+  public filterBy = this.filterValueDefault
   public sortField = 'name'
   public sortOrder = 1
   public loading = false
   public exceptionKey: string | undefined
-  public quickFilterRoleType: RoleTypeFilter = 'ALL'
+  public quickFilterRoleType: RoleFilterType = 'ALL'
+  public quickFilterValue: RoleFilterType = 'ALL'
+  public quickFilterItems: SelectItem[]
 
   addDisplay = false
   newWorkspaceRole = ''
@@ -46,7 +50,14 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
     private roleApi: RoleAPIService,
     private translate: TranslateService,
     private msgService: PortalMessageService
-  ) {}
+  ) {
+    // quick filter
+    this.quickFilterItems = [
+      { label: 'ROLE.QUICK_FILTER.ALL', value: 'ALL' },
+      { label: 'ROLE.QUICK_FILTER.IAM', value: 'IAM' },
+      { label: 'ROLE.QUICK_FILTER.WORKSPACE', value: 'WORKSPACE' }
+    ]
+  }
 
   ngOnInit() {
     this.prepareTranslations()
@@ -80,7 +91,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   private searchWorkspaceRoles(): Observable<Role[]> {
     this.workspaceRoles = []
     this.workspace?.workspaceRoles?.forEach((r: any) => {
-      this.workspaceRoles.push({ name: r, isWorkspaceRole: true, isIamRole: false, deleted: false, type: 'IAM' })
+      this.workspaceRoles.push({ name: r, isWorkspaceRole: true, isIamRole: false, deleted: false, type: 'WORKSPACE' })
     })
     return of(this.workspaceRoles)
   }
@@ -90,7 +101,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
       map((result) => {
         return result.stream
           ? result.stream?.map((role) => {
-              return { ...role, isIamRole: true, isWorkspaceRole: false } as Role
+              return { ...role, isIamRole: true, isWorkspaceRole: false, type: 'IAM' } as Role
             })
           : []
       })
@@ -175,6 +186,19 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   /**
    * UI Events
    */
+  public onQuickFilterChange(ev: any): void {
+    if (ev.value === 'ALL') {
+      this.filterBy = this.filterValueDefault
+      this.filterValue = ''
+      this.dv?.filter(this.filterValue, 'contains')
+    } else {
+      this.filterBy = 'type'
+      if (ev.value) {
+        this.filterValue = ev.value
+        this.dv?.filter(ev.value, 'equals')
+      }
+    }
+  }
   public onFilterChange(filter: string): void {
     console.log('onFilterChange')
     if (filter === '') {

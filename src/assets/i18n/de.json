@@ -158,6 +158,13 @@
   "ROLE": {
     "NAME": "Name",
     "TYPE": "Typ",
+    "QUICK_FILTER": {
+      "LABEL": "Rollen Typ",
+      "TOOLTIP": "Quickfilter für Rolle",
+      "ALL": "Alle",
+      "IAM": "IAM",
+      "WORKSPACE": "Workspace"
+    },
     "ROLES_NOT_EXIST": "Keine Rollen definiert",
     "ADD": "Hinzufügen",
     "ADD_ROLE": "Rolle hinzufügen",
