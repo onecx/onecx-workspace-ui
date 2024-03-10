@@ -9,11 +9,17 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { IAMRole } from './iAMRole';
 
 
-export interface Microfrontend { 
-    id?: string;
-    appId?: string;
-    basePath?: string;
+export interface IAMRolePageResult { 
+    /**
+     * The total elements in the resource.
+     */
+    totalElements?: number;
+    number?: number;
+    size?: number;
+    totalPages?: number;
+    stream?: Array<IAMRole>;
 }
 

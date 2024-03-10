@@ -33,13 +33,13 @@ import { GetWorkspaceMenuItemStructureResponse } from '../model/getWorkspaceMenu
 // @ts-ignore
 import { ImportMenuResponse } from '../model/importMenuResponse';
 // @ts-ignore
+import { MenuItem } from '../model/menuItem';
+// @ts-ignore
 import { MenuSnapshot } from '../model/menuSnapshot';
 // @ts-ignore
-import { PatchMenuItemsRequest } from '../model/patchMenuItemsRequest';
-// @ts-ignore
-import { PatchMenuItemsResponse } from '../model/patchMenuItemsResponse';
-// @ts-ignore
 import { ProblemDetailResponse } from '../model/problemDetailResponse';
+// @ts-ignore
+import { UpdateMenuItemRequest } from '../model/updateMenuItemRequest';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
@@ -78,9 +78,9 @@ export interface ImportMenuByWorkspaceNameRequestParams {
     menuSnapshot: MenuSnapshot;
 }
 
-export interface PatchMenuItemsRequestParams {
+export interface UpdateMenuItemRequestParams {
     workspaceName: string;
-    patchMenuItemsRequest: Array<PatchMenuItemsRequest>;
+    updateMenuItemRequest: UpdateMenuItemRequest;
 }
 
 export interface UploadMenuStructureForWorkspaceNameRequestParams {
@@ -603,22 +603,22 @@ export class MenuItemAPIService {
     }
 
     /**
-     * Bulk update menu Items
+     * Update menu Items
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public patchMenuItems(requestParameters: PatchMenuItemsRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<Array<PatchMenuItemsResponse>>;
-    public patchMenuItems(requestParameters: PatchMenuItemsRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<Array<PatchMenuItemsResponse>>>;
-    public patchMenuItems(requestParameters: PatchMenuItemsRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<Array<PatchMenuItemsResponse>>>;
-    public patchMenuItems(requestParameters: PatchMenuItemsRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+    public updateMenuItem(requestParameters: UpdateMenuItemRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<Array<MenuItem>>;
+    public updateMenuItem(requestParameters: UpdateMenuItemRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<Array<MenuItem>>>;
+    public updateMenuItem(requestParameters: UpdateMenuItemRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<Array<MenuItem>>>;
+    public updateMenuItem(requestParameters: UpdateMenuItemRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
         const workspaceName = requestParameters.workspaceName;
         if (workspaceName === null || workspaceName === undefined) {
-            throw new Error('Required parameter workspaceName was null or undefined when calling patchMenuItems.');
+            throw new Error('Required parameter workspaceName was null or undefined when calling updateMenuItem.');
         }
-        const patchMenuItemsRequest = requestParameters.patchMenuItemsRequest;
-        if (patchMenuItemsRequest === null || patchMenuItemsRequest === undefined) {
-            throw new Error('Required parameter patchMenuItemsRequest was null or undefined when calling patchMenuItems.');
+        const updateMenuItemRequest = requestParameters.updateMenuItemRequest;
+        if (updateMenuItemRequest === null || updateMenuItemRequest === undefined) {
+            throw new Error('Required parameter updateMenuItemRequest was null or undefined when calling updateMenuItem.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -662,10 +662,10 @@ export class MenuItemAPIService {
         }
 
         let localVarPath = `/workspaces/menu/${this.configuration.encodeParam({name: "workspaceName", value: workspaceName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/menuItems`;
-        return this.httpClient.request<Array<PatchMenuItemsResponse>>('patch', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<Array<MenuItem>>('patch', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: patchMenuItemsRequest,
+                body: updateMenuItemRequest,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

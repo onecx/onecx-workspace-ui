@@ -19,3 +19,54 @@
     }
   }
 }
+
+@mixin danger-action {
+  :host ::ng-deep {
+    .danger-action-text {
+      color: var(--danger-button-bg);
+    }
+  }
+}
+
+@mixin card-badges {
+  :host ::ng-deep {
+    .card-badge-right {
+      display: inline-block;
+      position: absolute;
+      right: 3px;
+      &.badge-1 {
+        top: 3px;
+      }
+      &.badge-2 {
+        top: 35px;
+      }
+    }
+    .card-badge-left {
+      display: inline-block;
+      position: absolute;
+      left: 3px;
+      &.badge-1 {
+        top: 3px;
+      }
+      &.badge-2 {
+        top: 35px;
+      }
+      &.badge-2-text {
+        top: 29px;
+      }
+    }
+    .card-badge-left-text {
+      left: 4px;
+      font-size: 0.7rem !important;
+    }
+    .pseudo-button-link {
+      border-radius: var(--border-radius);
+      &:hover {
+        color: var(--primary-color-text);
+        background: var(--button-hover-bg);
+        cursor: pointer;
+        padding: 5px !important;
+      }
+    }
+  }
+}

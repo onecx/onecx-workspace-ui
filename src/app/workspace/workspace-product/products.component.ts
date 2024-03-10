@@ -1,10 +1,6 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core'
-//import { HttpErrorResponse } from '@angular/common/http'
-//import { FormControl, Validators } from '@angular/forms'
 import { TranslateService } from '@ngx-translate/core'
 import { Observable, Subject, catchError, finalize, map, of, takeUntil } from 'rxjs'
-//import { SelectItem } from 'primeng/api'
 import { DataView } from 'primeng/dataview'
 
 import { DataViewControlTranslations, PortalMessageService } from '@onecx/portal-integration-angular'
@@ -21,9 +17,13 @@ export class ProductComponent implements OnInit, OnDestroy {
 
   private readonly destroy$ = new Subject()
   private readonly debug = true // to be removed after finalization
+
   // dialog
-  public dataViewControlsTranslations: DataViewControlTranslations = {}
   @ViewChild(DataView) dv: DataView | undefined
+  public dataViewControlsTranslations: DataViewControlTranslations = {}
+
+  public loading = true
+  public exceptionKey: string | undefined
   public displayRegisterDialog = false
   public displayDeregisterDialog = false
   public viewMode = 'grid'
@@ -35,9 +35,6 @@ export class ProductComponent implements OnInit, OnDestroy {
 
   // data
   public products$!: Observable<Product[]>
-  public loading = true
-  public dataAccessIssue = false
-  public exceptionKey = ''
   public selectedProduct: Product | undefined
   private urlPathPattern = '([^:]*)'
 
@@ -62,18 +59,24 @@ export class ProductComponent implements OnInit, OnDestroy {
       else console.log('products: ' + text)
     }
   }
-
-  public loadData() {
-    console.log('loadData')
+  public loadData(): void {
     this.loading = true
-    this.dataAccessIssue = false
-    this.exceptionKey = ''
-    // prepare requests and catching errors
     this.products$ = this.productApi
       .getProductsForWorkspaceId({ id: this.workspace.id ?? '' })
-      .pipe(finalize(() => (this.loading = false)))
-      .pipe(catchError((error) => of(error)))
+      .pipe(
+        catchError((err) => {
+          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.PRODUCTS'
+          console.error('searchProducts():', err)
+          return of([] as Product[])
+        }),
+        finalize(() => (this.loading = false))
+      )
       .pipe(takeUntil(this.destroy$))
+  }
+  public sortProductsByDisplayName(a: Product, b: Product): number {
+    return (a.displayName ? a.displayName.toUpperCase() : '').localeCompare(
+      b.displayName ? b.displayName.toUpperCase() : ''
+    )
   }
 
   /**
@@ -104,6 +107,7 @@ export class ProductComponent implements OnInit, OnDestroy {
         })
       )
   }
+
   /**
    * UI Events
    */

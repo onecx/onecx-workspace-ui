@@ -12,7 +12,7 @@
 
 
 export interface CreateUpdateMicrofrontend { 
-    mfeId: string;
+    appId: string;
     basePath: string;
 }
 

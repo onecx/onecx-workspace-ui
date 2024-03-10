@@ -1,13 +1,10 @@
 import { NO_ERRORS_SCHEMA, SimpleChanges, SimpleChange } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-// import { HttpClient } from '@angular/common/http'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
-// import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 
-// import { HttpLoaderFactory } from 'src/app/shared/shared.module'
-import { MenuTreeComponent } from 'src/app/workspace/workspace-detail/menu/menu-tree/menu-tree.component'
-import { MenuTreeService } from 'src/app/services/menu-tree.service'
-import { MenuStateService, MenuState } from 'src/app/services/menu-state.service'
+import { MenuTreeComponent } from './menu-tree.component'
+import { MenuTreeService } from '../services/menu-tree.service'
+import { MenuStateService, MenuState } from '../services/menu-state.service'
 
 const state: MenuState = {
   pageSize: 0,

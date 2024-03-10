@@ -7,8 +7,6 @@ import { SelectItem } from 'primeng/api/selectitem'
 import { FileUpload } from 'primeng/fileupload'
 
 import { PortalMessageService, UserService } from '@onecx/portal-integration-angular'
-
-import { LogoState } from 'src/app/workspace/workspace-create/logo-state'
 // import { setFetchUrls , sortThemeByName } from '../../shared/utils'
 import {
   /* ImageV1APIService, */
@@ -36,8 +34,6 @@ export class WorkspaceCreateComponent {
   public previewSrc: string | undefined
   public minimumImageWidth = 150
   public minimumImageHeight = 150
-  public LogoState = LogoState
-  public logoState = LogoState.INITIAL
   public workspaceCreationValidationMsg = false
   public fetchingLogoUrl?: string
   public urlPattern = '/base-path-to-workspace'

@@ -11,10 +11,8 @@ import { WorkspaceDetailComponent } from 'src/app/workspace/workspace-detail/wor
 import { WorkspacePropsComponent } from 'src/app/workspace/workspace-detail/workspace-props/workspace-props.component'
 import { WorkspaceRolesComponent } from 'src/app/workspace/workspace-detail/workspace-roles/workspace-roles.component'
 import { WorkspaceInternComponent } from 'src/app/workspace/workspace-detail/workspace-intern/workspace-intern.component'
-import { WorkspaceImagesComponent } from 'src/app/workspace/workspace-detail/workspace-images/workspace-images.component'
 import { WorkspaceContactComponent } from 'src/app/workspace/workspace-detail/workspace-contact/workspace-contact.component'
-import { ProductComponent } from 'src/app/workspace/workspace-detail/products/products.component'
-import { LogoComponent } from 'src/app/workspace/workspace-detail/workspace-images/logo/logo.component'
+import { ProductComponent } from 'src/app/workspace/workspace-product/products.component'
 
 const routes: Routes = [
   {
@@ -23,7 +21,7 @@ const routes: Routes = [
   },
   {
     path: 'menu',
-    loadChildren: () => import('./menu/menu.module').then((m) => m.MenuModule),
+    loadChildren: () => import('../workspace-menu/menu.module').then((m) => m.MenuModule),
     data: {
       breadcrumb: 'BREADCRUMBS.MENU',
       breadcrumbFn: (data: any) => `${data.labeli18n}`
@@ -40,9 +38,7 @@ const routes: Routes = [
     WorkspaceContactComponent,
     WorkspaceInternComponent,
     WorkspaceRolesComponent,
-    WorkspaceImagesComponent,
-    ProductComponent,
-    LogoComponent
+    ProductComponent
   ],
   imports: [
     CommonModule,

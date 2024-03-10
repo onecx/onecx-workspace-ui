@@ -7,12 +7,10 @@ import { Observable, map } from 'rxjs'
 
 import { Action, ObjectDetailItem, PortalMessageService, UserService } from '@onecx/portal-integration-angular'
 import { WorkspaceSnapshot, Workspace, WorkspaceAPIService, ImagesInternalAPIService } from 'src/app/shared/generated'
-import { environment } from 'src/environments/environment'
 
-import { WorkspacePropsComponent } from 'src/app/workspace/workspace-detail/workspace-props/workspace-props.component'
-import { WorkspaceRolesComponent } from 'src/app/workspace/workspace-detail/workspace-roles/workspace-roles.component'
-import { WorkspaceInternComponent } from 'src/app/workspace/workspace-detail/workspace-intern/workspace-intern.component'
-import { WorkspaceContactComponent } from 'src/app/workspace/workspace-detail/workspace-contact/workspace-contact.component'
+import { WorkspacePropsComponent } from './workspace-props/workspace-props.component'
+import { WorkspaceContactComponent } from './workspace-contact/workspace-contact.component'
+import { WorkspaceRolesComponent } from './workspace-roles/workspace-roles.component'
 
 @Component({
   selector: 'app-workspace-detail',
@@ -20,84 +18,221 @@ import { WorkspaceContactComponent } from 'src/app/workspace/workspace-detail/wo
   styleUrls: ['./workspace-detail.component.scss']
 })
 export class WorkspaceDetailComponent implements OnInit {
-  @ViewChild(WorkspacePropsComponent, { static: false })
-  workspacePropsComponent!: WorkspacePropsComponent
+  @ViewChild(WorkspacePropsComponent, { static: false }) workspacePropsComponent!: WorkspacePropsComponent
+  @ViewChild(WorkspaceContactComponent, { static: false }) workspaceContactComponent!: WorkspaceContactComponent
+  @ViewChild(WorkspaceRolesComponent, { static: false }) workspaceRolesComponent!: WorkspaceRolesComponent
 
-  @ViewChild(WorkspaceContactComponent, { static: false })
-  workspaceContactComponent!: WorkspaceContactComponent
-
-  @ViewChild(WorkspaceRolesComponent, { static: false })
-  workspaceRolesComponent!: WorkspaceRolesComponent
-
-  @ViewChild(WorkspaceInternComponent, { static: false })
-  workspaceInternComponent!: WorkspaceInternComponent
-
-  private apiPrefix = environment.apiPrefix
   public actions$: Observable<Action[]> | undefined
-  editMode = false
-  headerImageUrl?: string
-  importThemeCheckbox = false
-  isLoading = false
-  objectDetails: ObjectDetailItem[] = []
-  workspaceDeleteMessage = ''
-  workspaceDeleteVisible = false
-  workspaceDetail?: Workspace
-  workspaceDownloadVisible = false
-  workspaceId: string = ''
-  workspaceName = this.route.snapshot.params['name']
-  selectedTabIndex = 0
-  dateFormat = 'medium'
+  public editMode = false
+  public headerImageUrl?: string
+  public importThemeCheckbox = false
+  public isLoading = false
+  public selectedTabIndex = 0
+  public dateFormat = 'medium'
+  public objectDetails: ObjectDetailItem[] = []
+  public workspace: Workspace | undefined
+  public workspaceForRoles: Workspace | undefined
+  public workspaceName = this.route.snapshot.params['name']
+  public workspaceDeleteMessage = ''
+  public workspaceDeleteVisible = false
+  public workspaceDownloadVisible = false
 
   constructor(
     private user: UserService,
     public route: ActivatedRoute,
     private router: Router,
     private location: Location,
-    private workspaceApi: WorkspaceAPIService,
     private translate: TranslateService,
     private msgService: PortalMessageService,
+    private workspaceApi: WorkspaceAPIService,
     private imageApi: ImagesInternalAPIService
   ) {
     this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm' : 'medium'
   }
 
   ngOnInit() {
-    this.getWorkspaceData()
+    this.getWorkspace()
   }
 
   public onTabChange($event: any) {
     this.selectedTabIndex = $event.index
+    if (this.selectedTabIndex === 3) this.workspaceForRoles = this.workspace
     this.prepareActionButtons()
   }
 
-  public onWorkspaceData(workspace: Workspace) {
-    this.workspaceDetail = workspace
+  private async getWorkspace() {
+    this.workspaceApi
+      .getWorkspaceByName({ workspaceName: this.workspaceName })
+      .pipe()
+      .subscribe({
+        next: (data) => {
+          if (data.resource) {
+            this.workspace = data.resource
+            this.workspace.workspaceRoles = ['role1', 'event-customer']
+            this.prepareDialog()
+          }
+        },
+        error: () => {
+          // TODO: stay on the page and display an error message
+          this.msgService.error({ summaryKey: 'SEARCH.ERROR', detailKey: 'DIALOG.WORKSPACE.NOT_FOUND' })
+          this.onClose() // if workspace was not found then go back
+        }
+      })
+  }
+
+  public prepareDialog() {
     this.preparePageHeaderImage()
     this.prepareActionButtons()
     this.translate
-      .get(['PORTAL.ITEM.HOME_PAGE', 'PORTAL.ITEM.BASE_URL', 'PORTAL.ITEM.THEME', 'DETAIL.CREATION_DATE'])
+      .get(['WORKSPACE.HOME_PAGE', 'WORKSPACE.BASE_URL', 'WORKSPACE.THEME', 'INTERNAL.CREATION_DATE'])
       .subscribe((data) => {
-        this.preparePageObjectDetails(data)
+        this.objectDetails = [
+          { label: data['WORKSPACE.HOME_PAGE'], value: this.workspace?.homePage },
+          { label: data['WORKSPACE.BASE_URL'], value: this.workspace?.baseUrl },
+          { label: data['WORKSPACE.THEME'], value: this.workspace?.theme },
+          {
+            label: data['INTERNAL.CREATION_DATE'],
+            value: this.workspace?.creationDate,
+            valuePipe: DatePipe,
+            valuePipeArgs: this.dateFormat
+          }
+        ]
       })
+  }
+
+  private updateWorkspace() {
+    // Trigger update on the form of the currently selected tab
+    switch (this.selectedTabIndex) {
+      case 0: {
+        this.workspacePropsComponent.onSubmit()
+        this.workspace = this.workspacePropsComponent.workspace
+        break
+      }
+      case 1: {
+        this.workspaceContactComponent.onSubmit()
+        this.workspace = this.workspaceContactComponent.workspace
+        break
+      }
+      case 3: {
+        this.workspaceRolesComponent.onSubmit()
+        this.workspace = this.workspaceRolesComponent.workspace
+        break
+      }
+      default: {
+        console.error("Couldn't assign tab to component")
+        break
+      }
+    }
+    this.toggleEditMode('view')
+    this.workspaceApi
+      .updateWorkspace({
+        id: this.workspace?.id ?? '',
+        updateWorkspaceRequest: { resource: this.workspace! }
+      })
+      .subscribe({
+        next: (data) => {
+          this.workspace = data
+          this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_OK' })
+          this.prepareDialog()
+        },
+        error: (err) => {
+          console.error('update workspace', err)
+          this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_NOK' })
+        }
+      })
+  }
+
+  public onConfirmDeleteWorkspace(): void {
+    this.workspaceDownloadVisible = false
+    this.workspaceApi.deleteWorkspace({ id: this.workspace?.id ?? '' }).subscribe(
+      () => {
+        this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MESSAGE_OK' })
+        this.onClose()
+      },
+      (err) => {
+        console.error('delete workspace', err)
+        this.msgService.error({ summaryKey: 'ACTIONS.DELETE.MESSAGE_NOK' })
+      }
+    )
+  }
+
+  public onClose(): void {
+    this.location.back()
+  }
+
+  public onExportWorkspace() {
+    if (!this.workspace) {
+      this.workspaceNotFoundError()
+      return
+    }
+    this.workspaceApi
+      .exportWorkspaces({
+        exportWorkspacesRequest: { includeMenus: true, names: [this.workspace.name] }
+      })
+      .subscribe({
+        next: (snapshot) => {
+          this.saveWorkspaceToFile(snapshot)
+        },
+        error: () => {}
+      })
+
+    if (this.importThemeCheckbox) {
+      if (!this.workspace.theme) {
+        this.themeNotSpecifiedError()
+        return
+      }
+    }
+    this.workspaceDownloadVisible = false
+  }
+
+  private saveWorkspaceToFile(workspaceExport: WorkspaceSnapshot) {
+    const workspaceJson = JSON.stringify(workspaceExport, null, 2)
+    FileSaver.saveAs(new Blob([workspaceJson], { type: 'text/json' }), `${this.workspace?.name ?? 'Workspace'}.json`)
+  }
+
+  private workspaceNotFoundError() {
+    this.msgService.error({ summaryKey: 'DIALOG.WORKSPACE.NOT_FOUND' })
+  }
+
+  private themeNotSpecifiedError() {
+    this.msgService.error({ summaryKey: 'WORKSPACE_EXPORT.THEME_NOT_SPECIFIED_MESSAGE' })
+  }
+
+  private preparePageHeaderImage() {
+    if (this.workspace?.logoUrl == null || this.workspace?.logoUrl == '') {
+      this.headerImageUrl = this.imageApi.configuration.basePath + '/images/' + this.workspace?.name + '/logo'
+    } else {
+      this.headerImageUrl = this.workspace?.logoUrl
+    }
+  }
+
+  private toggleEditMode(forcedMode?: 'edit' | 'view'): void {
+    if (forcedMode) this.editMode = forcedMode === 'edit' ? true : false
+    else this.editMode = !this.editMode
+    this.prepareActionButtons()
+  }
+
+  public onGoToMenu(): void {
+    this.router.navigate(['./menu'], { relativeTo: this.route })
   }
 
   private prepareActionButtons(): void {
     this.actions$ = this.translate
       .get([
+        'DIALOG.MENU.LABEL',
+        'DIALOG.MENU.SUBHEADER',
         'ACTIONS.NAVIGATION.BACK',
         'ACTIONS.NAVIGATION.BACK.TOOLTIP',
-        'MENU.HEADER',
-        'MENU.SUBHEADER',
         'ACTIONS.CANCEL',
         'ACTIONS.TOOLTIPS.CANCEL',
         'ACTIONS.SAVE',
         'ACTIONS.TOOLTIPS.SAVE',
         'ACTIONS.EXPORT.LABEL',
-        'ACTIONS.EXPORT.PORTAL',
+        'ACTIONS.EXPORT.WORKSPACE',
         'ACTIONS.EDIT.LABEL',
         'ACTIONS.EDIT.TOOLTIP',
         'ACTIONS.DELETE.LABEL',
-        'ACTIONS.DELETE.TOOLTIP',
+        'ACTIONS.DELETE.WORKSPACE',
         'ACTIONS.DELETE.MESSAGE'
       ])
       .pipe(
@@ -106,20 +241,20 @@ export class WorkspaceDetailComponent implements OnInit {
             {
               label: data['ACTIONS.NAVIGATION.BACK'],
               title: data['ACTIONS.NAVIGATION.BACK.TOOLTIP'],
-              actionCallback: () => this.close(),
+              actionCallback: () => this.onClose(),
               icon: 'pi pi-arrow-left',
               show: 'always',
               permission: 'WORKSPACE#SEARCH'
             },
             {
-              label: data['MENU.HEADER'],
-              title: data['MENU.SUBHEADER'],
-              actionCallback: () => this.manageMenu(),
+              label: data['DIALOG.MENU.LABEL'],
+              title: data['DIALOG.MENU.SUBHEADER'],
+              actionCallback: () => this.onGoToMenu(),
               icon: 'pi pi-sitemap',
               show: 'always',
               permission: 'MENU#VIEW',
               conditional: true,
-              showCondition: this.workspaceDetail != null && !this.editMode
+              showCondition: this.workspace != null && !this.editMode
             },
             {
               label: data['ACTIONS.CANCEL'],
@@ -149,7 +284,7 @@ export class WorkspaceDetailComponent implements OnInit {
               show: 'always',
               permission: 'WORKSPACE#EXPORT',
               conditional: true,
-              showCondition: this.workspaceDetail != null && !this.editMode
+              showCondition: this.workspace != null && !this.editMode
             },
             {
               label: data['ACTIONS.EDIT.LABEL'],
@@ -159,258 +294,23 @@ export class WorkspaceDetailComponent implements OnInit {
               show: 'always',
               permission: 'WORKSPACE#EDIT',
               conditional: true,
-              showCondition: this.workspaceDetail != null && !this.editMode && this.selectedTabIndex < 2
+              showCondition: this.workspace != null && !this.editMode && [0, 1, 3].includes(this.selectedTabIndex)
             },
             {
               label: data['ACTIONS.DELETE.LABEL'],
-              title: data['ACTIONS.DELETE.TOOLTIP'].replace('{{TYPE}}', 'Workspace'),
+              title: data['ACTIONS.DELETE.WORKSPACE'],
               actionCallback: () => {
                 this.workspaceDeleteVisible = true
-                this.workspaceDeleteMessage = data['ACTIONS.DELETE.MESSAGE'].replace(
-                  '{{ITEM}}',
-                  this.workspaceDetail?.name
-                )
+                this.workspaceDeleteMessage = data['ACTIONS.DELETE.MESSAGE'].replace('{{ITEM}}', this.workspace?.name)
               },
               icon: 'pi pi-trash',
               show: 'asOverflow',
               permission: 'WORKSPACE#DELETE',
               conditional: true,
-              showCondition: this.workspaceDetail != null && !this.editMode
+              showCondition: !this.editMode && this.workspace && this.workspace?.name != 'ADMIN'
             }
           ]
         })
       )
-  }
-
-  private async getWorkspaceData() {
-    this.workspaceApi
-      .getWorkspaceByName({ workspaceName: this.workspaceName })
-      .pipe()
-      .subscribe({
-        next: (workspace) => {
-          if (workspace.resource) {
-            this.workspaceId = workspace.resource.id || ''
-            this.onWorkspaceData(workspace.resource)
-          }
-        },
-        error: () => {
-          this.msgService.error({ summaryKey: 'SEARCH.ERROR', detailKey: 'PORTAL.NOT_EXIST_MESSAGE' })
-          close() // if workspace not found then go back
-        }
-      })
-  }
-
-  private updateWorkspace() {
-    // Trigger update on the form of the currently selected tab
-    switch (this.selectedTabIndex) {
-      case 0: {
-        this.workspacePropsComponent.onSubmit()
-        this.workspaceDetail = this.workspacePropsComponent.workspaceDetail
-        break
-      }
-      case 1: {
-        this.workspaceContactComponent.onSubmit()
-        this.workspaceDetail = this.workspaceContactComponent.workspaceDetail
-        break
-      }
-      default: {
-        console.error("Couldn't assign tab to component")
-        break
-      }
-    }
-    this.toggleEditMode('view')
-    this.workspaceApi
-      .updateWorkspace({
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        id: this.workspaceDetail?.id!,
-        updateWorkspaceRequest: { resource: this.workspaceDetail! }
-      })
-      .subscribe({
-        next: (workspace) => {
-          this.workspaceId = workspace.id || ''
-          this.onWorkspaceData(workspace)
-          this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_OK' })
-        },
-        error: () => {
-          // console.error('ERR', err)
-          // const duplicate = err.error.message.indexOf('contains duplicated roles') > 0
-          this.msgService.error({
-            summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_NOK'
-            // detailKey: duplicate ? 'DETAIL.NEW_ROLE_DUPLICATED' : err.error.message
-          })
-        }
-      })
-  }
-
-  public onRoleSave(roles: string[]) {
-    if (this.workspaceDetail) {
-      this.workspaceDetail.workspaceRoles = roles
-    }
-    this.updateWorkspace()
-  }
-
-  confirmDeleteWorkspace() {
-    this.deleteWorkspace()
-    this.workspaceDownloadVisible = false
-  }
-
-  private deleteWorkspace() {
-    this.workspaceApi.deleteWorkspace({ id: this.workspaceId }).subscribe(
-      () => {
-        this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MESSAGE_OK' })
-        this.close()
-      },
-      () => {
-        this.msgService.error({ summaryKey: 'ACTIONS.DELETE.MESSAGE_NOK' /* , detailKey: err.error.message */ })
-      }
-    )
-  }
-
-  private close(): void {
-    this.location.back()
-  }
-
-  private toggleEditMode(forcedMode?: 'edit' | 'view'): void {
-    if (forcedMode) this.editMode = forcedMode === 'edit' ? true : false
-    else this.editMode = !this.editMode
-    this.prepareActionButtons()
-  }
-
-  public onExportWorkspace() {
-    if (!this.workspaceDetail) {
-      this.workspaceNotFoundError()
-      return
-    }
-
-    this.workspaceApi
-      .exportWorkspaces({
-        exportWorkspacesRequest: { includeMenus: true, names: [this.workspaceDetail.name] }
-      })
-      .subscribe({
-        next: (snapshot) => {
-          this.saveWorkspaceToFile(snapshot)
-        },
-        error: () => {}
-      })
-
-    if (this.importThemeCheckbox) {
-      if (this.workspaceDetail.theme) {
-        /* const theme$ = this.themeApi.getThemeById({ id: this.workspaceDetail.themeId })
-        finalMenuStructure$$ = theme$.pipe(
-          concatMap((theme) => {
-            const themeImportData = filterObject(theme, [
-              'creationDate',
-              'creationUser',
-              'modificationDate',
-              'modificationUser',
-              'id',
-              'workspaceId',
-              'tenantId',
-              'portals'
-            ]) as ImportRequestDTOv1ThemeImportData
-            portalExport.themeImportData = themeImportData
-            this.saveThemeToFile(themeImportData)
-            return menuStructure$
-          })
-        ) */
-      } else {
-        this.themeNotSpecifiedError()
-        return
-      }
-    }
-    // this.exportWorkspace(finalMenuStructure$$, portalExport)
-    // this.saveWorkspaceToFile(portalExport)
-    this.workspaceDownloadVisible = false
-  }
-
-  // private exportWorkspace(
-  //   finalMenuStructure$$: Observable<Array<EximWorkspaceMenuItem>>,
-  //   portalExport: WorkspaceSnapshot
-  // ) {
-  /* finalMenuStructure$$.subscribe({
-      next: (structure) => {
-        // get menu structure object with filtered properties
-        const items = structure.map((item) =>
-          filterObjectTree(
-            item,
-            [
-              'creationDate',
-              'creationUser',
-              'modificationDate',
-              'modificationUser',
-              'id',
-              'themeId',
-              'parentItemId',
-              'workspaceId',
-              'tenantId'
-            ],
-            'children'
-          )
-        ) as EximWorkspaceMenuItem[]
-        // sort explicitly because filtering destroys the order on first level
-        if (portalExport.workspaces && portalExport.workspaces[0].menu?.menu?.menuItems) {
-          portalExport.workspaces[0].menu?.menu?.menuItems = items.sort((a, b) => (a.position || 0) - (b.position || 0))
-        }
-        portalExport[0].synchronizePermissions = false
-        
-      },
-      error: () => this.themeNotSpecifiedError() */
-  //   })
-  // }
-
-  // private saveThemeToFile(theme: ThemeDTO) {
-  //   const themeJSON = JSON.stringify(theme, null, 2)
-  //   FileSaver.saveAs(new Blob([themeJSON], { type: 'text/json' }), `${this.workspaceDetail?.themeName + '_Theme'}.json`)
-  // }
-
-  private saveWorkspaceToFile(workspaceExport: WorkspaceSnapshot) {
-    const workspaceJson = JSON.stringify(workspaceExport, null, 2)
-    FileSaver.saveAs(
-      new Blob([workspaceJson], { type: 'text/json' }),
-      `${this.workspaceDetail?.name || 'Workspace'}.json`
-    )
-  }
-
-  private workspaceNotFoundError() {
-    this.msgService.error({ summaryKey: 'DETAIL.PORTAL_NOT_FOUND' })
-  }
-
-  private themeNotSpecifiedError() {
-    this.msgService.error({ summaryKey: 'DETAIL.THEME_NOT_SPECIFIED_MESSAGE' })
-  }
-
-  private preparePageObjectDetails(data: any) {
-    this.objectDetails = [
-      {
-        label: data['PORTAL.ITEM.HOME_PAGE'],
-        value: this.workspaceDetail?.homePage
-      },
-      {
-        label: data['PORTAL.ITEM.BASE_URL'],
-        value: this.workspaceDetail?.baseUrl
-      },
-      {
-        label: data['PORTAL.ITEM.THEME'],
-        value: this.workspaceDetail?.theme
-      },
-      {
-        label: data['DETAIL.CREATION_DATE'],
-        value: this.workspaceDetail?.creationDate,
-        valuePipe: DatePipe,
-        valuePipeArgs: this.dateFormat
-      }
-    ]
-  }
-
-  private preparePageHeaderImage() {
-    if (this.workspaceDetail?.logoUrl == null || this.workspaceDetail?.logoUrl == '') {
-      this.headerImageUrl = this.imageApi.configuration.basePath + '/images/' + this.workspaceDetail?.name + '/logo'
-    } else {
-      this.headerImageUrl = this.workspaceDetail?.logoUrl
-    }
-  }
-
-  public manageMenu(): void {
-    this.router.navigate(['./menu'], { relativeTo: this.route })
   }
 }

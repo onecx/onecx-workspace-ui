@@ -11,9 +11,14 @@
  */
 
 
-export interface Microfrontend { 
-    id?: string;
-    appId?: string;
-    basePath?: string;
+export interface ProductStoreSearchCriteria { 
+    /**
+     * The number of page.
+     */
+    pageNumber?: number;
+    /**
+     * The size of page
+     */
+    pageSize?: number;
 }
 

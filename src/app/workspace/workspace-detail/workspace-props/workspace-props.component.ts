@@ -2,31 +2,18 @@ import { Component, Input, OnChanges, OnInit } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { Location } from '@angular/common'
 import { Observable, of } from 'rxjs'
-import { ActivatedRoute, Router } from '@angular/router'
 
-import {
-  ConfigurationService,
-  // Theme,
-  ThemeService,
-  PortalMessageService,
-  UserService
-} from '@onecx/portal-integration-angular'
+import { PortalMessageService, UserService } from '@onecx/portal-integration-angular'
 
 import {
   GetImageRequestParams,
   ImagesInternalAPIService,
   RefType,
   UploadImageRequestParams,
-  // ImageV1APIService,
-  WorkspaceAPIService /* , ThemeDTO, ThemesAPIService */
+  WorkspaceAPIService
 } from 'src/app/shared/generated'
 import { Workspace } from 'src/app/shared/generated'
-import { environment } from 'src/environments/environment'
-import { LogoState } from 'src/app/workspace/workspace-create/logo-state'
-import {
-  copyToClipboard
-  // sortThemeByName
-} from 'src/app/shared/utils'
+import { copyToClipboard, sortByLocale } from 'src/app/shared/utils'
 
 @Component({
   selector: 'app-workspace-props',
@@ -34,7 +21,7 @@ import {
   styleUrls: ['./workspace-props.component.scss']
 })
 export class WorkspacePropsComponent implements OnChanges, OnInit {
-  @Input() workspaceDetail!: Workspace
+  @Input() workspace!: Workspace
   @Input() editMode = false
 
   public formGroup: FormGroup
@@ -45,6 +32,7 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
   public hasTenantEditPermission = false
   public urlPattern = '/base-path-to-portal'
   public copyToClipboard = copyToClipboard // make available from utils
+  public sortByLocale = sortByLocale
 
   //Logo
   public preview = false
@@ -52,31 +40,23 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
   public selectedFile: File | undefined
   public minimumImageWidth = 150
   public minimumImageHeight = 150
-  public LogoState = LogoState
-  public logoState = LogoState.INITIAL
   public fetchingLogoUrl?: string
-  private apiPrefix = environment.apiPrefix
   private oldWorkspaceName: string = ''
   public logoImageWasUploaded: boolean | undefined
 
   constructor(
     private user: UserService,
-    private workspaceApi: WorkspaceAPIService,
-    // private themeApi: ThemesAPIService,
-    private themeService: ThemeService,
-    private config: ConfigurationService,
-    private msgService: PortalMessageService,
-    public route: ActivatedRoute,
-    private router: Router,
     private location: Location,
-    private imageApi: ImagesInternalAPIService
+    private msgService: PortalMessageService,
+    private imageApi: ImagesInternalAPIService,
+    private workspaceApi: WorkspaceAPIService
   ) {
     this.hasTenantViewPermission = this.user.hasPermission('WORKSPACE_TENANT#VIEW')
     this.hasTenantEditPermission = this.user.hasPermission('WORKSPACE_TENANT#EDIT')
 
     this.formGroup = new FormGroup({
       name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
-      themeName: new FormControl(null /* [Validators.required] */),
+      theme: new FormControl(null /* [Validators.required] */),
       baseUrl: new FormControl(null, [Validators.required, Validators.minLength(1), Validators.pattern('^/.*')]),
       homePage: new FormControl(null, [Validators.maxLength(255)]),
       logoUrl: new FormControl('', [Validators.maxLength(255)]),
@@ -87,14 +67,13 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
     if (this.hasTenantViewPermission) {
       this.formGroup.addControl('tenantId', new FormControl(null))
     }
-
     this.themes$ = this.workspaceApi.getAllThemes()
   }
 
   public ngOnChanges(): void {
     this.setFormData()
     this.editMode ? this.formGroup.enable() : this.formGroup.disable()
-    this.oldWorkspaceName = this.workspaceDetail.name
+    this.oldWorkspaceName = this.workspace.name
   }
 
   ngOnInit(): void {
@@ -114,24 +93,16 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
   }
 
   public setFormData(): void {
-    // prepare list of registered MFEs to be used as homepage dropdown
-    // this.mfeRList = Array.from(this.workspaceDetail.microfrontendRegistrations ?? []).map((mfe: any) => ({
-    //   label: mfe.baseUrl,
-    //   value: mfe.baseUrl || ''
-    // }))
-    // fill form
     Object.keys(this.formGroup.controls).forEach((element) => {
-      this.formGroup.controls[element].setValue((this.workspaceDetail as any)[element])
-      this.formGroup.controls['themeName'].setValue(this.workspaceDetail.theme)
+      this.formGroup.controls[element].setValue((this.workspace as any)[element])
     })
-    // this.fetchingLogoUrl = setFetchUrls(this.apiPrefix, this.formGroup.value.logoUrl)
   }
 
-  public onSubmit() {
+  public onSubmit(): void {
     if (this.formGroup.valid) {
-      Object.assign(this.workspaceDetail, this.getWorkspaceChangesFromForm())
+      Object.assign(this.workspace, this.getWorkspaceChangesFromForm())
       this.editMode = false
-      if (this.oldWorkspaceName !== this.workspaceDetail.name) {
+      if (this.oldWorkspaceName !== this.workspace.name) {
         this.location.back()
       }
     } else {
@@ -147,7 +118,7 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
     const changes: any = {}
     Object.keys(this.formGroup.controls).forEach((key) => {
       if (this.formGroup.value[key] !== undefined) {
-        if (this.formGroup.value[key] !== (this.workspaceDetail as any)[key]) {
+        if (this.formGroup.value[key] !== (this.workspace as any)[key]) {
           changes[key] = this.formGroup.value[key]
         }
       }
@@ -155,7 +126,7 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
     return changes
   }
 
-  onFileUpload(ev: Event, fieldType: 'logo') {
+  public onFileUpload(ev: Event, fieldType: 'logo'): void {
     let workspaceName = this.formGroup.controls['name'].value
 
     if (ev.target && (ev.target as HTMLInputElement).files) {
@@ -214,7 +185,7 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
     }
   }
 
-  public onGotoTheme(ev: MouseEvent, uri: string) {
+  public onGotoTheme(ev: MouseEvent, uri: string): void {
     ev.stopPropagation()
     const url = window.document.location.href + uri
     if (ev.ctrlKey) {
@@ -224,7 +195,7 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
     }
   }
 
-  getImageUrl(): string {
+  private getImageUrl(): string {
     let imgUrl = this.formGroup.controls['logoUrl'].value
     if (imgUrl == '' || imgUrl == null) {
       return this.imageApi.configuration.basePath + '/images/' + this.formGroup.controls['name'].value + '/logo'
@@ -233,7 +204,7 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
     }
   }
 
-  inputChange(event: Event) {
+  public onInputChange(event: Event): void {
     this.fetchingLogoUrl = (event.target as HTMLInputElement).value
     if ((event.target as HTMLInputElement).value == undefined || (event.target as HTMLInputElement).value == '') {
       this.fetchingLogoUrl =

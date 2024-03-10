@@ -8,13 +8,11 @@
           id="workspace_create_item_name"
           class="w-full pt-3 pb-2"
           formControlName="name"
-          [pTooltip]="'PORTAL.ITEM.PORTAL_NAME' | translate"
+          [pTooltip]="'WORKSPACE.NAME' | translate"
           tooltipPosition="top"
           tooltipEvent="focus"
         />
-        <label class="ocx-required-label" for="workspace_create_item_name">
-          {{ 'PORTAL.ITEM.PORTAL_NAME' | translate }}
-        </label>
+        <label class="ocx-required-label" for="workspace_create_item_name"> {{ 'WORKSPACE.NAME' | translate }} </label>
       </span>
     </div>
 
@@ -26,11 +24,11 @@
           id="workspace_create_item_tenantId"
           class="w-full pt-3 pb-2"
           formControlName="tenantId"
-          [pTooltip]="'PORTAL.ITEM.TENANT_ID' | translate"
+          [pTooltip]="'WORKSPACE.TENANT_ID' | translate"
           tooltipPosition="top"
           tooltipEvent="focus"
         />
-        <label for="workspace_create_item_tenantId"> {{ 'PORTAL.ITEM.TENANT_ID' | translate }} </label>
+        <label for="workspace_create_item_tenantId"> {{ 'WORKSPACE.TENANT_ID' | translate }} </label>
       </span>
     </div>
 
@@ -41,13 +39,13 @@
           formControlName="themeName"
           styleClass="w-full"
           [options]="(themes$ | async) || []"
-          [pTooltip]="'PORTAL.ITEM.THEME' | translate"
+          [pTooltip]="'WORKSPACE.THEME' | translate"
           tooltipPosition="top"
           tooltipEvent="focus"
         >
         </p-dropdown>
         <label class="ocx-required-label" for="workspace_create_item_themeName">
-          {{ 'PORTAL.ITEM.THEME' | translate }}
+          {{ 'WORKSPACE.THEME' | translate }}
         </label>
       </span>
     </div> -->
@@ -60,11 +58,11 @@
           id="workspace_create_item_homePage"
           class="w-full pt-3 pb-2"
           formControlName="homePage"
-          [pTooltip]="'PORTAL.ITEM.HOME_PAGE' | translate"
+          [pTooltip]="'WORKSPACE.HOME_PAGE' | translate"
           tooltipPosition="top"
           tooltipEvent="focus"
         />
-        <label for="workspace_create_item_homePage"> {{ 'PORTAL.ITEM.HOME_PAGE' | translate }} </label>
+        <label for="workspace_create_item_homePage"> {{ 'WORKSPACE.HOME_PAGE' | translate }} </label>
       </span>
     </div>
 
@@ -76,12 +74,12 @@
           id="workspace_create_item_baseUrl"
           class="w-full pt-3 pb-2"
           formControlName="baseUrl"
-          [pTooltip]="'PORTAL.ITEM.BASE_URL' | translate"
+          [pTooltip]="'WORKSPACE.BASE_URL' | translate"
           tooltipPosition="top"
           tooltipEvent="focus"
         />
         <label class="ocx-required-label" for="workspace_create_item_baseUrl">
-          {{ 'PORTAL.ITEM.BASE_URL' | translate }}</label
+          {{ 'WORKSPACE.BASE_URL' | translate }}</label
         >
       </span>
       <label class="ocx-control-hint block mt-1">
@@ -132,11 +130,11 @@
           id="workspace_create_item_footerLabel"
           class="w-full pt-3 pb-2"
           formControlName="footerLabel"
-          [pTooltip]="'PORTAL.ITEM.FOOTER_LABEL' | translate"
+          [pTooltip]="'WORKSPACE.FOOTER_LABEL' | translate"
           tooltipPosition="top"
           tooltipEvent="focus"
         />
-        <label for="workspace_create_item_footerLabel"> {{ 'PORTAL.ITEM.FOOTER_LABEL' | translate }} </label>
+        <label for="workspace_create_item_footerLabel"> {{ 'WORKSPACE.FOOTER_LABEL' | translate }} </label>
       </span>
     </div>
 
@@ -150,7 +148,7 @@
           id="workspace_create_item_description"
           formControlName="description"
         ></textarea>
-        <label for="workspace_create_item_description"> {{ 'PORTAL.ITEM.DESCRIPTION' | translate }} </label>
+        <label for="workspace_create_item_description"> {{ 'WORKSPACE.DESCRIPTION' | translate }} </label>
       </span>
     </div>
   </div>

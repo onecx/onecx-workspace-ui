@@ -32,7 +32,7 @@ describe('WorkspaceInternComponent', () => {
     fixture = TestBed.createComponent(WorkspaceInternComponent)
     component = fixture.componentInstance
 
-    component.workspaceDetail = {
+    component.workspace = {
       name: 'name',
       theme: 'theme',
       baseUrl: '/some/base/url',

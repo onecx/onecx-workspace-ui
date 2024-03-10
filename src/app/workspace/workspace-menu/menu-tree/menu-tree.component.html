@@ -22,13 +22,13 @@
       styleClass="reduced-field-size"
       id="portal_menu_tree_preview_language_list"
       [appendTo]="'body'"
-      [title]="'PORTAL.MENU.PREVIEW_LANG.TOOLTIP' | translate"
-      [emptyMessage]="'PORTAL.MENU.PREVIEW_LANG.EMPTY' | translate"
+      [title]="'DIALOG.MENU.PREVIEW_LANG.TOOLTIP' | translate"
+      [emptyMessage]="'DIALOG.MENU.PREVIEW_LANG.EMPTY' | translate"
       [options]="languagesPreview"
       [(ngModel)]="languagesPreviewValue"
       (onChange)="onLanguagesPreviewChange($event.value)"
     ></p-dropdown>
-    <label for="portal_menu_tree_preview_language_list">{{ 'PORTAL.MENU.PREVIEW_LANG' | translate }}</label>
+    <label for="portal_menu_tree_preview_language_list">{{ 'DIALOG.MENU.PREVIEW_LANG' | translate }}</label>
   </span>
 </div>
 <p-tree

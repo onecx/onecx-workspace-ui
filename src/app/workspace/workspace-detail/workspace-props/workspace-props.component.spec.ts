@@ -1,9 +1,7 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-// import { HttpClient } from '@angular/common/http'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
-// import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { of, throwError } from 'rxjs'
 
 import {
@@ -12,11 +10,10 @@ import {
   PortalMessageService,
   ThemeService
 } from '@onecx/portal-integration-angular'
-// import { HttpLoaderFactory } from 'src/app/shared/shared.module'
 import { WorkspacePropsComponent } from 'src/app/workspace/workspace-detail/workspace-props/workspace-props.component'
 import { WorkspaceAPIService } from 'src/app/shared/generated'
 
-const workspaceDetail = {
+const workspace = {
   name: 'name',
   theme: 'theme',
   baseUrl: '/some/base/url',
@@ -34,25 +31,17 @@ describe('WorkspacePropsComponent', () => {
   let component: WorkspacePropsComponent
   let fixture: ComponentFixture<WorkspacePropsComponent>
   const mockAuthService = jasmine.createSpyObj('IAuthService', ['hasPermission'])
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
   const apiServiceSpy = {
-    updatePortal: jasmine.createSpy('updatePortal').and.returnValue(of([]))
+    updateWorkspace: jasmine.createSpy('updateWorkspace').and.returnValue(of([]))
   }
   const themeAPIServiceSpy = {
     getThemes: jasmine.createSpy('getThemes').and.returnValue(of({})),
     getThemeById: jasmine.createSpy('getThemeById').and.returnValue(of({}))
   }
   const configServiceSpy = {
-    getProperty: jasmine.createSpy('getProperty').and.returnValue('123'),
-    getPortal: jasmine.createSpy('getPortal').and.returnValue({
-      themeId: '1234',
-      portalName: 'test',
-      id: 'id',
-      baseUrl: '/',
-      microfrontendRegistrations: []
-    })
+    getProperty: jasmine.createSpy('getProperty').and.returnValue('123')
   }
   const themeService = jasmine.createSpyObj<ThemeService>('ThemeService', ['apply'])
 
@@ -80,7 +69,7 @@ describe('WorkspacePropsComponent', () => {
     }).compileComponents()
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
-    apiServiceSpy.updatePortal.calls.reset()
+    apiServiceSpy.updateWorkspace.calls.reset()
     themeAPIServiceSpy.getThemes.calls.reset()
     themeAPIServiceSpy.getThemeById.calls.reset()
     themeService.apply.calls.reset()
@@ -89,7 +78,7 @@ describe('WorkspacePropsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(WorkspacePropsComponent)
     component = fixture.componentInstance
-    component.workspaceDetail = workspaceDetail
+    component.workspace = workspace
     // component.formGroup = formGroup
     fixture.detectChanges()
   })
@@ -97,7 +86,7 @@ describe('WorkspacePropsComponent', () => {
   function initializeComponent(): void {
     fixture = TestBed.createComponent(WorkspacePropsComponent)
     component = fixture.componentInstance
-    component.workspaceDetail = workspaceDetail
+    component.workspace = workspace
     fixture.detectChanges()
   }
 
@@ -126,7 +115,7 @@ describe('WorkspacePropsComponent', () => {
   })
 
   it('should update portal onSubmit', () => {
-    apiServiceSpy.updatePortal.and.returnValue(of({}))
+    apiServiceSpy.updateWorkspace.and.returnValue(of({}))
     themeAPIServiceSpy.getThemeById.and.returnValue(of({}))
     themeService.apply
     component.formGroup = formGroup
@@ -137,7 +126,7 @@ describe('WorkspacePropsComponent', () => {
   })
 
   it('should set tenantId to null if empty onSubmit', () => {
-    apiServiceSpy.updatePortal.and.returnValue(of({}))
+    apiServiceSpy.updateWorkspace.and.returnValue(of({}))
     themeAPIServiceSpy.getThemeById.and.returnValue(of({}))
     component.formGroup = formGroup
     themeService.apply
@@ -148,7 +137,7 @@ describe('WorkspacePropsComponent', () => {
   })
 
   it('should display error msg if update api call fails', () => {
-    apiServiceSpy.updatePortal.and.returnValue(throwError(() => new Error()))
+    apiServiceSpy.updateWorkspace.and.returnValue(throwError(() => new Error()))
     component.formGroup = formGroup
 
     component.onSubmit()

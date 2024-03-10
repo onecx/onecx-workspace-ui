@@ -10,7 +10,7 @@ import { PortalMessageService } from '@onecx/portal-integration-angular'
   styleUrls: ['./workspace-contact.component.scss']
 })
 export class WorkspaceContactComponent implements OnChanges {
-  @Input() workspaceDetail!: Workspace
+  @Input() workspace!: Workspace
   @Input() editMode = false
 
   public formGroup: FormGroup
@@ -34,17 +34,17 @@ export class WorkspaceContactComponent implements OnChanges {
 
   setFormData(): void {
     Object.keys(this.formGroup.controls).forEach((element) => {
-      if (['street', 'streetNo', 'city', 'postalCode', 'country'].includes(element) && this.workspaceDetail.address) {
-        this.formGroup.controls[element].setValue((this.workspaceDetail.address as any)[element])
+      if (['street', 'streetNo', 'city', 'postalCode', 'country'].includes(element) && this.workspace.address) {
+        this.formGroup.controls[element].setValue((this.workspace.address as any)[element])
       } else {
-        this.formGroup.controls[element].setValue((this.workspaceDetail as any)[element])
+        this.formGroup.controls[element].setValue((this.workspace as any)[element])
       }
     })
   }
 
   onSubmit(): void {
     if (this.formGroup.valid) {
-      Object.assign(this.workspaceDetail, this.getPortalChangesFromForm())
+      Object.assign(this.workspace, this.getPortalChangesFromForm())
       this.editMode = false
     } else {
       this.msgService.error({ summaryKey: 'GENERAL.FORM_VALIDATION' })
@@ -60,8 +60,8 @@ export class WorkspaceContactComponent implements OnChanges {
 
     Object.keys(this.formGroup.controls).forEach((key) => {
       if (['street', 'streetNo', 'city', 'postalCode', 'country'].includes(key)) {
-        if (!this.workspaceDetail.address) {
-          this.workspaceDetail.address = {}
+        if (!this.workspace.address) {
+          this.workspace.address = {}
         }
         if (this.formGroup.value[key] !== undefined) {
           changes['address'][key] = this.formGroup.value[key]

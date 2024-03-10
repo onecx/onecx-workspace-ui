@@ -11,9 +11,8 @@
  */
 
 
-export interface Microfrontend { 
-    id?: string;
-    appId?: string;
-    basePath?: string;
+export interface IAMRole { 
+    name?: string;
+    description?: string;
 }
 

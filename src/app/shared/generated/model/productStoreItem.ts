@@ -9,10 +9,14 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { MenuItem } from './menuItem';
 
 
-export interface PatchMenuItemsResponse { 
-    resource?: MenuItem;
+export interface ProductStoreItem { 
+    name?: string;
+    displayName?: string;
+    description?: string;
+    imageUrl?: string;
+    basePath?: string;
+    classifications?: string;
 }
 

@@ -12,6 +12,7 @@ import { SelectItem, TreeNode } from 'primeng/api'
 import { TranslateService } from '@ngx-translate/core'
 import { Observable, Subject, catchError, of } from 'rxjs'
 import FileSaver from 'file-saver'
+
 import { Action, UserService, PortalMessageService } from '@onecx/portal-integration-angular'
 import {
   MenuItemAPIService,
@@ -21,13 +22,12 @@ import {
   GetMenuItemResponse,
   GetWorkspaceMenuItemStructureResponse,
   CreateUpdateMenuItem,
-  MenuSnapshot,
-  PatchMenuItemsRequest
+  MenuSnapshot
+  //  UpdateMenuItemRequest
 } from 'src/app/shared/generated'
 import { limitText, dropDownSortItemsByLabel } from 'src/app/shared/utils'
-import { MenuStringConst } from 'src/app//model/menu-string-const'
-import { MenuStateService } from 'src/app/services/menu-state.service'
-import { IconService } from 'src/app/workspace/workspace-detail/menu/iconservice'
+import { MenuStateService } from './services/menu-state.service'
+import { IconService } from './iconservice'
 
 type LanguageItem = SelectItem & { data: string }
 type I18N = { [key: string]: string }
@@ -127,9 +127,9 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.iconItems.sort(dropDownSortItemsByLabel)
     this.scopeItems = [
       { label: '', value: null },
-      { label: MenuStringConst.SCOPE_APP, value: MenuStringConst.SCOPE_APP },
-      { label: MenuStringConst.SCOPE_PAGE, value: MenuStringConst.SCOPE_PAGE },
-      { label: MenuStringConst.SCOPE_PORTAL, value: MenuStringConst.SCOPE_PORTAL }
+      { label: 'APP', value: 'APP' },
+      { label: 'PAGE', value: 'PAGE' },
+      { label: 'WORKSPACE', value: 'WORKSPACE' }
     ]
     this.formGroup = new FormGroup({
       parentItemId: new FormControl(null),
@@ -158,6 +158,18 @@ export class MenuComponent implements OnInit, OnDestroy {
   public ngOnInit(): void {
     this.httpHeaders = new HttpHeaders()
     this.httpHeaders.set('Content-Type', 'application/json')
+    this.prepareActionButtons()
+    this.loadData()
+  }
+
+  public ngOnDestroy(): void {
+    this.stateService.updateState({
+      workspaceMenuItems: this.menuItems
+    })
+  }
+
+  public prepareActionButtons() {
+    this.actions = [] // provoke change event
     this.translate
       .get([
         'ACTIONS.NAVIGATION.BACK',
@@ -168,44 +180,32 @@ export class MenuComponent implements OnInit, OnDestroy {
         'ACTIONS.IMPORT.MENU'
       ])
       .subscribe((data) => {
-        this.prepareActionButtons(data)
+        this.actions.push(
+          {
+            label: data['ACTIONS.NAVIGATION.BACK'],
+            title: data['ACTIONS.NAVIGATION.BACK.TOOLTIP'],
+            actionCallback: () => this.onClose(),
+            icon: 'pi pi-arrow-left',
+            show: 'always'
+          },
+          {
+            label: data['ACTIONS.EXPORT.LABEL'],
+            title: data['ACTIONS.EXPORT.MENU'],
+            actionCallback: () => this.onExportMenu(),
+            icon: 'pi pi-download',
+            show: 'always',
+            permission: 'MENU#EXPORT'
+          },
+          {
+            label: data['ACTIONS.IMPORT.LABEL'],
+            title: data['ACTIONS.IMPORT.MENU'],
+            actionCallback: () => this.onImportMenu(),
+            icon: 'pi pi-upload',
+            show: 'always',
+            permission: 'MENU#IMPORT'
+          }
+        )
       })
-    this.loadData()
-  }
-
-  public ngOnDestroy(): void {
-    this.stateService.updateState({
-      workspaceMenuItems: this.menuItems
-    })
-  }
-
-  public prepareActionButtons(data: any) {
-    this.actions = [] // provoke change event
-    this.actions.push(
-      {
-        label: data['ACTIONS.NAVIGATION.BACK'],
-        title: data['ACTIONS.NAVIGATION.BACK.TOOLTIP'],
-        actionCallback: () => this.onClose(),
-        icon: 'pi pi-arrow-left',
-        show: 'always'
-      },
-      {
-        label: data['ACTIONS.EXPORT.LABEL'],
-        title: data['ACTIONS.EXPORT.MENU'],
-        actionCallback: () => this.onExportMenu(),
-        icon: 'pi pi-download',
-        show: 'always',
-        permission: 'MENU#EXPORT'
-      },
-      {
-        label: data['ACTIONS.IMPORT.LABEL'],
-        title: data['ACTIONS.IMPORT.MENU'],
-        actionCallback: () => this.onImportMenu(),
-        icon: 'pi pi-upload',
-        show: 'always',
-        permission: 'MENU#IMPORT'
-      }
-    )
   }
 
   /**
@@ -518,13 +518,13 @@ export class MenuComponent implements OnInit, OnDestroy {
   /**
    * CREATE
    */
-  public onCreateMenu($event: MouseEvent, parent: MenuItem): void {
+  public onCreateMenu($event: MouseEvent, parent?: MenuItem): void {
     $event.stopPropagation()
     this.changeMode = 'CREATE'
     this.menuItem = {} as unknown as MenuItem
     this.formGroup.reset()
     this.formGroup.patchValue({
-      parentItemId: parent.id,
+      parentItemId: parent?.id,
       position: 0,
       workspaceExit: false,
       disabled: false
@@ -574,9 +574,9 @@ export class MenuComponent implements OnInit, OnDestroy {
           })
       } else if (this.changeMode === 'EDIT' && this.menuItem && this.menuItem.id) {
         this.menuApi
-          .patchMenuItems({
+          .updateMenuItem({
             workspaceName: this.workspaceName,
-            patchMenuItemsRequest: [{ resource: this.menuItem }]
+            updateMenuItemRequest: { resource: this.menuItem }
           })
           .subscribe({
             next: (data) => {
@@ -584,17 +584,17 @@ export class MenuComponent implements OnInit, OnDestroy {
               // update tree node with received data without reload all
               if (this.displayMenuDetail) {
                 this.onCloseDetailDialog()
-                if (data && data[0].resource?.key) {
-                  const node = this.getNodeByKey(data[0].resource?.key, this.menuNodes)
+                if (data && data[0].key) {
+                  const node = this.getNodeByKey(data[0].key, this.menuNodes)
                   if (node) {
                     node.data = data
-                    node.label = data[0].resource?.name
+                    node.label = data[0].name
                   }
                   if (this.menuItems) {
-                    const item = this.getItemByKey(data[0].resource?.key, this.menuItems)
+                    const item = this.getItemByKey(data[0].key, this.menuItems)
                     if (item) {
-                      item.i18n = data[0].resource?.i18n
-                      item.name = data[0].resource?.name
+                      item.i18n = data[0].i18n
+                      item.name = data[0].name
                     }
                   }
                 }
@@ -796,13 +796,15 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   // triggered by changes of tree structure in tree popup
   public updateMenuItems(updatedMenuItems: MenuItem[]): void {
-    const patchRequestItems: PatchMenuItemsRequest[] = []
+    console.log('updateMenuItems')
+    /*
+    const patchRequestItems: UpdateMenuItemRequest[] = []
     updatedMenuItems.forEach((item) => {
       const patchMenuItem = { resource: item }
       patchRequestItems.push(patchMenuItem)
     })
     this.menuApi
-      .patchMenuItems({
+      .updateMenuItem({
         workspaceName: this.workspaceName,
         patchMenuItemsRequest: patchRequestItems
       })
@@ -818,6 +820,7 @@ export class MenuComponent implements OnInit, OnDestroy {
           this.onReloadMenu()
         }
       })
+    */
   }
 
   public onStartResizeTree(ev: MouseEvent) {

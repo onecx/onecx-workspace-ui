@@ -9,11 +9,10 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { MenuItem } from './menuItem';
 
 
-export interface Microfrontend { 
-    id?: string;
-    appId?: string;
-    basePath?: string;
+export interface UpdateMenuItemRequest { 
+    resource: MenuItem;
 }
 
