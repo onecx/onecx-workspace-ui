@@ -56,11 +56,7 @@ export class WorkspaceDetailComponent implements OnInit {
 
   public onTabChange($event: any) {
     this.selectedTabIndex = $event.index
-    switch (this.selectedTabIndex) {
-      case 3:
-        this.workspaceForRoles = this.workspace
-        break
-    }
+    if (this.selectedTabIndex === 3) this.workspaceForRoles = this.workspace
     this.prepareActionButtons()
   }
 
@@ -191,7 +187,7 @@ export class WorkspaceDetailComponent implements OnInit {
 
   private saveWorkspaceToFile(workspaceExport: WorkspaceSnapshot) {
     const workspaceJson = JSON.stringify(workspaceExport, null, 2)
-    FileSaver.saveAs(new Blob([workspaceJson], { type: 'text/json' }), `${this.workspace?.name || 'Workspace'}.json`)
+    FileSaver.saveAs(new Blob([workspaceJson], { type: 'text/json' }), `${this.workspace?.name ?? 'Workspace'}.json`)
   }
 
   private workspaceNotFoundError() {

@@ -65,13 +65,8 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
 
   public ngOnChanges(changes: SimpleChanges): void {
     if (this.workspace) {
-      if (changes['workspace']) {
+      if (changes['workspace'] || (changes['editMode'] && !this.editMode && changes['editMode'].previousValue))
         this.searchRoles()
-      }
-      // restore data if edit mode was cancelled
-      else if (changes['editMode'] && !this.editMode && changes['editMode'].previousValue) {
-        this.searchRoles()
-      }
     }
   }
 
@@ -164,9 +159,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   public onToggleRole(role: any): void {
     if (this.editMode) {
       if (role.isIamRole) role.isWorkspaceRole = !role.isWorkspaceRole
-      else {
-        if (this.workspace?.workspaceRoles?.includes(role.name)) role.deleted = !role.deleted
-      }
+      else if (this.workspace?.workspaceRoles?.includes(role.name)) role.deleted = !role.deleted
     }
   }
 

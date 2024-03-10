@@ -12,6 +12,7 @@ import { SelectItem, TreeNode } from 'primeng/api'
 import { TranslateService } from '@ngx-translate/core'
 import { Observable, Subject, catchError, of } from 'rxjs'
 import FileSaver from 'file-saver'
+
 import { Action, UserService, PortalMessageService } from '@onecx/portal-integration-angular'
 import {
   MenuItemAPIService,
@@ -25,7 +26,6 @@ import {
   //  UpdateMenuItemRequest
 } from 'src/app/shared/generated'
 import { limitText, dropDownSortItemsByLabel } from 'src/app/shared/utils'
-import { MenuStringConst } from './menu-string-const'
 import { MenuStateService } from './services/menu-state.service'
 import { IconService } from './iconservice'
 
@@ -127,9 +127,9 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.iconItems.sort(dropDownSortItemsByLabel)
     this.scopeItems = [
       { label: '', value: null },
-      { label: MenuStringConst.SCOPE_APP, value: MenuStringConst.SCOPE_APP },
-      { label: MenuStringConst.SCOPE_PAGE, value: MenuStringConst.SCOPE_PAGE },
-      { label: MenuStringConst.SCOPE_PORTAL, value: MenuStringConst.SCOPE_PORTAL }
+      { label: 'APP', value: 'APP' },
+      { label: 'PAGE', value: 'PAGE' },
+      { label: 'WORKSPACE', value: 'WORKSPACE' }
     ]
     this.formGroup = new FormGroup({
       parentItemId: new FormControl(null),

@@ -6,14 +6,14 @@ import { Location } from '@angular/common'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router'
 import { of, throwError } from 'rxjs'
+import FileSaver from 'file-saver'
 
 import { PortalMessageService, ConfigurationService, AUTH_SERVICE } from '@onecx/portal-integration-angular'
 
-import { MenuComponent } from 'src/app/workspace/workspace-detail/menu/menu.component'
 import { MenuStateService, MenuState } from './services/menu-state.service'
+import { MenuComponent } from './menu.component'
 
 import { Workspace, MenuItem, WorkspaceAPIService, Scope, MenuItemAPIService } from 'src/app/shared/generated'
-import FileSaver from 'file-saver'
 
 const workspace: Workspace = {
   id: 'id',
@@ -24,23 +24,23 @@ const workspace: Workspace = {
 
 const mockMenuItems: MenuItem[] = [
   {
-    name: 'menu name',
     id: 'id',
     key: 'key',
+    name: 'menu name',
     i18n: { ['en']: 'en' },
     children: [{ name: 'child name', key: 'key', id: 'id' }]
   },
   {
-    name: 'menu2 name',
     id: 'id',
     key: 'key',
+    name: 'menu2 name',
     i18n: { ['en']: 'en' }
   }
 ]
 
 const mockItem = {
-  key: '1-1',
   id: 'id1',
+  key: '1-1',
   positionPath: '1-1',
   regMfeAligned: true,
   parentItemName: '1',

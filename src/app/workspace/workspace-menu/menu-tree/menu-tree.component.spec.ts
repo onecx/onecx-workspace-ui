@@ -2,7 +2,7 @@ import { NO_ERRORS_SCHEMA, SimpleChanges, SimpleChange } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
 
-import { MenuTreeComponent } from 'src/app/workspace/workspace-detail/menu/menu-tree/menu-tree.component'
+import { MenuTreeComponent } from './menu-tree.component'
 import { MenuTreeService } from '../services/menu-tree.service'
 import { MenuStateService, MenuState } from '../services/menu-state.service'
 
