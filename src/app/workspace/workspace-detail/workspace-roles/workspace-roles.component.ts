@@ -1,6 +1,6 @@
 import { Component, Input, SimpleChanges, OnChanges, OnInit, ViewChild } from '@angular/core'
 import { TranslateService } from '@ngx-translate/core'
-import { Observable, combineLatest, catchError, finalize, map, of } from 'rxjs'
+import { Observable, catchError, finalize, map, of } from 'rxjs'
 import { SelectItem } from 'primeng/api'
 import { DataView } from 'primeng/dataview'
 
@@ -24,7 +24,6 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
 
   public iam$!: Observable<IAMRolePageResult>
   public roles$!: Observable<Role[]>
-  public workspaceRoles!: Role[]
   public roles!: Role[]
   public limitText = limitText
   private sortByLocale = sortByLocale
@@ -35,12 +34,13 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   public filterValue: string | undefined
   public filterValueDefault = 'name,type'
   public filterBy = this.filterValueDefault
-  public sortField = 'name'
-  public sortOrder = 1
+  public sortField = 'type'
+  public sortOrder = -1
   public loading = false
+  public iamRolesLoaded = false
+  public workspaceRolesLoaded = false
   public exceptionKey: string | undefined
-  public quickFilterRoleType: RoleFilterType = 'ALL'
-  public quickFilterValue: RoleFilterType = 'ALL'
+  public quickFilterValue: RoleFilterType = 'WORKSPACE'
   public quickFilterItems: SelectItem[]
 
   addDisplay = false
@@ -89,11 +89,11 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
     )
   }
   private searchWorkspaceRoles(): Observable<Role[]> {
-    this.workspaceRoles = []
+    const workspaceRoles: Role[] = []
     this.workspace?.workspaceRoles?.forEach((r: any) => {
-      this.workspaceRoles.push({ name: r, isWorkspaceRole: true, isIamRole: false, deleted: false, type: 'WORKSPACE' })
+      workspaceRoles.push({ name: r, isWorkspaceRole: true, isIamRole: false, deleted: false, type: 'WORKSPACE' })
     })
-    return of(this.workspaceRoles)
+    return of(workspaceRoles)
   }
   private searchIamRoles(): Observable<Role[]> {
     this.declareIamObservable()
@@ -109,25 +109,41 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   }
 
   private searchRoles(): void {
-    this.loading = true
-    this.exceptionKey = undefined
-    switch (this.quickFilterRoleType) {
-      case 'ALL':
-        this.roles$ = combineLatest([this.searchWorkspaceRoles(), this.searchIamRoles()]).pipe(
-          map(([w, iam]) => w.concat(iam))
-        )
-        break
-      case 'WORKSPACE':
-        this.roles$ = this.searchWorkspaceRoles()
-        break
-      case 'IAM':
-        this.roles$ = this.searchIamRoles()
-        break
+    if (['WORKSPACE', 'ALL'].includes(this.quickFilterValue) && !this.workspaceRolesLoaded) {
+      const result: Role[] = []
+      this.searchWorkspaceRoles().subscribe({
+        next: (data) => data.forEach((r) => result.push(r)),
+        error: () => {},
+        complete: () => {
+          this.workspaceRolesLoaded = true
+          this.roles = [...result]
+        }
+      })
     }
-    this.roles = []
-    this.roles$.subscribe({
-      next: (data) => (this.roles = data)
-    })
+    if (['IAM', 'ALL'].includes(this.quickFilterValue) && !this.iamRolesLoaded) {
+      this.loading = true
+      this.exceptionKey = undefined
+      const result: Role[] = []
+      this.searchIamRoles().subscribe({
+        next: (data) => data.forEach((r) => result.push(r)),
+        error: () => {},
+        complete: () => {
+          this.iamRolesLoaded = true
+          result.forEach((iam) => {
+            if (iam.name && !this.workspace?.workspaceRoles?.includes(iam.name)) this.roles.push(iam)
+            else {
+              const role = this.roles.filter((r) => r.name === iam.name)
+              role[0].isIamRole = true
+            }
+          })
+          this.roles = [...this.roles]
+        }
+      })
+    }
+    /*
+    this.roles$ = combineLatest([this.searchWorkspaceRoles(), this.searchIamRoles()]).pipe(
+      map(([w, iam]) => w.concat(iam))
+    )*/
   }
 
   /**
@@ -200,11 +216,11 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
     }
   }
   public onFilterChange(filter: string): void {
-    console.log('onFilterChange')
     if (filter === '') {
       this.filterBy = 'name,type'
     }
     this.dv?.filter(filter, 'contains')
+    this.searchRoles()
   }
   public onSortChange(field: string): void {
     this.sortField = field

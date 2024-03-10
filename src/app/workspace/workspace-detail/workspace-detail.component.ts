@@ -72,7 +72,7 @@ export class WorkspaceDetailComponent implements OnInit {
         next: (data) => {
           if (data.resource) {
             this.workspace = data.resource
-            this.workspace.workspaceRoles = ['role1', 'role2']
+            this.workspace.workspaceRoles = ['role1', 'event-customer']
             this.prepareDialog()
           }
         },
