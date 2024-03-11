@@ -10,7 +10,6 @@ import { WorkspaceSnapshot, Workspace, WorkspaceAPIService, ImagesInternalAPISer
 
 import { WorkspacePropsComponent } from './workspace-props/workspace-props.component'
 import { WorkspaceContactComponent } from './workspace-contact/workspace-contact.component'
-import { WorkspaceRolesComponent } from './workspace-roles/workspace-roles.component'
 
 @Component({
   selector: 'app-workspace-detail',
@@ -20,7 +19,6 @@ import { WorkspaceRolesComponent } from './workspace-roles/workspace-roles.compo
 export class WorkspaceDetailComponent implements OnInit {
   @ViewChild(WorkspacePropsComponent, { static: false }) workspacePropsComponent!: WorkspacePropsComponent
   @ViewChild(WorkspaceContactComponent, { static: false }) workspaceContactComponent!: WorkspaceContactComponent
-  @ViewChild(WorkspaceRolesComponent, { static: false }) workspaceRolesComponent!: WorkspaceRolesComponent
 
   public actions$: Observable<Action[]> | undefined
   public editMode = false
@@ -68,7 +66,6 @@ export class WorkspaceDetailComponent implements OnInit {
         next: (data) => {
           if (data.resource) {
             this.workspace = data.resource
-            this.workspace.workspaceRoles = ['role1', 'event-customer']
             this.prepareDialog()
           }
         },
@@ -111,11 +108,6 @@ export class WorkspaceDetailComponent implements OnInit {
       case 1: {
         this.workspaceContactComponent.onSubmit()
         this.workspace = this.workspaceContactComponent.workspace
-        break
-      }
-      case 3: {
-        this.workspaceRolesComponent.onSubmit()
-        this.workspace = this.workspaceRolesComponent.workspace
         break
       }
       default: {
@@ -294,7 +286,7 @@ export class WorkspaceDetailComponent implements OnInit {
               show: 'always',
               permission: 'WORKSPACE#EDIT',
               conditional: true,
-              showCondition: this.workspace != null && !this.editMode && [0, 1, 3].includes(this.selectedTabIndex)
+              showCondition: this.workspace != null && !this.editMode && [0, 1].includes(this.selectedTabIndex)
             },
             {
               label: data['ACTIONS.DELETE.LABEL'],

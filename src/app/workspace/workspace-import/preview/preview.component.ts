@@ -67,9 +67,10 @@ export class PreviewComponent implements OnInit, OnChanges {
       // if (this.importRequestDTO.portal.microfrontendRegistrations) {
       //   this.portalMfes = Array.from(this.importRequestDTO.portal.microfrontendRegistrations)
       // }
+      /*
       if (this.importRequestDTO.workspaces[key[0]].workspaceRoles) {
         this.workspaceRoles = Array.from(this.importRequestDTO.workspaces[key[0]].workspaceRoles!)
-      }
+      }*/
     }
     // error handling if no theme name or no match with existing themes
     /* this.themes$.pipe(first()).subscribe((themes) => {

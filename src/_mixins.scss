@@ -67,6 +67,15 @@
   }
 }
 
+@mixin correct-data-view-header-for-tabpanel {
+  :host ::ng-deep {
+    .p-dataview .p-dataview-header,
+    .p-datatable .p-datatable-header {
+      padding: 0.2rem 0.2rem 0.9rem 0.2rem;
+    }
+  }
+}
+
 @mixin correct-data-view-control {
   :host ::ng-deep {
     .data-view-control,

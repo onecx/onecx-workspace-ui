@@ -12,47 +12,53 @@
   <ocx-page-content *ngIf="workspace">
     <p-tabView (onChange)="onTabChange($event)" [activeIndex]="selectedTabIndex">
       <p-tabPanel
+        *ocxIfPermission="'WORKSPACE#VIEW'"
+        id="workspace_detail_details"
         [header]="'TABS.WORKSPACE.DETAILS' | translate"
         [tooltip]="'TABS.WORKSPACE.TOOLTIPS.DETAILS' | translate"
       >
-        <div *ocxIfPermission="'WORKSPACE_PROPS#VIEW'">
-          <app-workspace-props [workspace]="workspace" [editMode]="editMode"></app-workspace-props>
-        </div>
+        <app-workspace-props [workspace]="workspace" [editMode]="editMode"></app-workspace-props>
       </p-tabPanel>
 
       <p-tabPanel
+        *ocxIfPermission="'WORKSPACE_CONTACT#VIEW'"
+        id="workspace_detail_contact"
         [header]="'TABS.WORKSPACE.CONTACT' | translate"
         [tooltip]="'TABS.WORKSPACE.TOOLTIPS.CONTACT' | translate"
       >
-        <div *ocxIfPermission="'WORKSPACE_CONTACT#VIEW'">
-          <app-workspace-contact [workspace]="workspace" [editMode]="editMode"></app-workspace-contact>
-        </div>
+        <app-workspace-contact [workspace]="workspace" [editMode]="editMode"></app-workspace-contact>
       </p-tabPanel>
 
       <p-tabPanel
+        *ocxIfPermission="'WORKSPACE_INTERNAL#VIEW'"
+        id="workspace_detail_intern"
         [disabled]="editMode"
         [header]="'TABS.WORKSPACE.INTERN' | translate"
         [tooltip]="'TABS.WORKSPACE.TOOLTIPS.INTERN' | translate"
       >
-        <div *ocxIfPermission="'WORKSPACE_INTERNAL#VIEW'">
-          <app-workspace-intern [workspace]="workspace" [dateFormat]="dateFormat"></app-workspace-intern>
-        </div>
-      </p-tabPanel>
-
-      <p-tabPanel [header]="'TABS.WORKSPACE.ROLES' | translate" [tooltip]="'TABS.WORKSPACE.TOOLTIPS.ROLES' | translate">
-        <div *ocxIfPermission="'WORKSPACE_ROLES#VIEW'">
-          <app-workspace-roles [workspace]="workspaceForRoles" [editMode]="editMode"></app-workspace-roles>
-        </div>
+        <app-workspace-intern [workspace]="workspace" [dateFormat]="dateFormat"></app-workspace-intern>
       </p-tabPanel>
 
       <p-tabPanel
+        *ocxIfPermission="'WORKSPACE_ROLES#VIEW'"
+        id="workspace_detail_roles"
+        [disabled]="editMode"
+        class="p-0"
+        [header]="'TABS.WORKSPACE.ROLES' | translate"
+        [tooltip]="'TABS.WORKSPACE.TOOLTIPS.ROLES' | translate"
+      >
+        <app-workspace-roles [workspace]="workspaceForRoles"></app-workspace-roles>
+      </p-tabPanel>
+
+      <p-tabPanel
+        *ocxIfPermission="'WORKSPACE_PRODUCTS#VIEW'"
+        id="workspace_detail_products"
+        class="p-0"
         [disabled]="editMode"
         [header]="'TABS.WORKSPACE.PRODUCTS' | translate"
         [tooltip]="'TABS.WORKSPACE.TOOLTIPS.PRODUCTS' | translate"
       >
-        <div *ocxIfPermission="'WORKSPACE_PRODUCTS#VIEW'">
-          <app-products [workspace]="workspace"></app-products>
-        </div>
+        <app-products [workspace]="workspace"></app-products>
       </p-tabPanel>
     </p-tabView>
   </ocx-page-content>

@@ -63,18 +63,6 @@ export class WorkspaceSearchComponent implements OnInit {
           }
         })
       )
-
-    /*      .subscribe((data) => {
-        this.fieldLabelWorkspaceName = data['WORKSPACE.NAME']
-        this.fieldLabelThemeName = data['WORKSPACE.THEME']
-        this.dataViewControlsTranslations = {
-          sortDropdownTooltip: data['ACTIONS.SEARCH.SORT_BY'],
-          sortDropdownPlaceholder: data['ACTIONS.SEARCH.SORT_BY'],
-          filterInputTooltip:
-            data['ACTIONS.SEARCH.FILTER_OF'] + this.fieldLabelWorkspaceName + ', ' + this.fieldLabelThemeName
-        }
-      })
-*/
   }
 
   private prepareActionButtons() {

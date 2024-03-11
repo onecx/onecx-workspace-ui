@@ -6,7 +6,13 @@ import { DataView } from 'primeng/dataview'
 
 import { PortalMessageService, DataViewControlTranslations } from '@onecx/portal-integration-angular'
 
-import { Workspace, RoleAPIService, IAMRole, IAMRolePageResult } from 'src/app/shared/generated'
+import {
+  Workspace,
+  WorkspaceRolesAPIService,
+  RoleAPIService,
+  IAMRole,
+  IAMRolePageResult
+} from 'src/app/shared/generated'
 import { limitText, sortByLocale } from 'src/app/shared/utils'
 
 export type RoleType = 'WORKSPACE' | 'IAM'
@@ -20,11 +26,12 @@ export type Role = IAMRole & { isIamRole: boolean; isWorkspaceRole: boolean; del
 })
 export class WorkspaceRolesComponent implements OnInit, OnChanges {
   @Input() workspace!: Workspace | undefined
-  @Input() editMode: boolean = false
 
-  public iam$!: Observable<IAMRolePageResult>
+  public wRoles$!: Observable<IAMRolePageResult>
+  public iamRoles$!: Observable<IAMRolePageResult>
   public roles$!: Observable<Role[]>
   public roles!: Role[]
+  public workspaceRoles!: string[]
   public limitText = limitText
   private sortByLocale = sortByLocale
 
@@ -47,15 +54,16 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   newWorkspaceRole = ''
 
   constructor(
-    private roleApi: RoleAPIService,
+    private iamRoleApi: RoleAPIService,
+    private wRoleApi: WorkspaceRolesAPIService,
     private translate: TranslateService,
     private msgService: PortalMessageService
   ) {
     // quick filter
     this.quickFilterItems = [
-      { label: 'ROLE.QUICK_FILTER.ALL', value: 'ALL' },
-      { label: 'ROLE.QUICK_FILTER.IAM', value: 'IAM' },
-      { label: 'ROLE.QUICK_FILTER.WORKSPACE', value: 'WORKSPACE' }
+      { label: 'DIALOG.ROLE.QUICK_FILTER.ALL', value: 'ALL' },
+      { label: 'DIALOG.ROLE.QUICK_FILTER.IAM', value: 'IAM' },
+      { label: 'DIALOG.ROLE.QUICK_FILTER.WORKSPACE', value: 'WORKSPACE' }
     ]
   }
 
@@ -64,17 +72,14 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
-    if (this.workspace) {
-      if (changes['workspace'] || (changes['editMode'] && !this.editMode && changes['editMode'].previousValue))
-        this.searchRoles()
-    }
+    if (this.workspace && changes['workspace']) this.searchRoles()
   }
 
   /**
    * SEARCH
    */
-  private declareIamObservable(): void {
-    this.iam$ = this.roleApi.searchAvailableRoles({ iAMRoleSearchCriteria: {} }).pipe(
+  private declareWorkspaceRolesObservable(): void {
+    this.wRoles$ = this.wRoleApi.searchWorkspaceRoles({ workspaceRoleSearchCriteria: {} }).pipe(
       catchError((err) => {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.ROLES'
         console.error('searchAvailableRoles():', err)
@@ -84,15 +89,32 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
     )
   }
   private searchWorkspaceRoles(): Observable<Role[]> {
-    const workspaceRoles: Role[] = []
-    this.workspace?.workspaceRoles?.forEach((r: any) => {
-      workspaceRoles.push({ name: r, isWorkspaceRole: true, isIamRole: false, deleted: false, type: 'WORKSPACE' })
-    })
-    return of(workspaceRoles)
+    console.log('searchWorkspaceRoles')
+    this.declareWorkspaceRolesObservable()
+    return this.wRoles$.pipe(
+      map((result) => {
+        return result.stream
+          ? result.stream?.map((role) => {
+              return { ...role, isIamRole: false, isWorkspaceRole: true, type: 'WORKSPACE' } as Role
+            })
+          : []
+      })
+    )
+  }
+  private declareIamObservable(): void {
+    this.iamRoles$ = this.iamRoleApi.searchAvailableRoles({ iAMRoleSearchCriteria: {} }).pipe(
+      catchError((err) => {
+        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.ROLES'
+        console.error('searchAvailableRoles():', err)
+        return of({} as IAMRolePageResult)
+      }),
+      finalize(() => (this.loading = false))
+    )
   }
   private searchIamRoles(): Observable<Role[]> {
+    console.log('searchIamRoles')
     this.declareIamObservable()
-    return this.iam$.pipe(
+    return this.iamRoles$.pipe(
       map((result) => {
         return result.stream
           ? result.stream?.map((role) => {
@@ -112,6 +134,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
         complete: () => {
           this.workspaceRolesLoaded = true
           this.roles = [...result]
+          this.workspaceRoles = this.roles.map((r) => r.name ?? '')
         }
       })
     }
@@ -124,8 +147,9 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
         error: () => {},
         complete: () => {
           this.iamRolesLoaded = true
+          // combine role results and prevent duplicates
           result.forEach((iam) => {
-            if (iam.name && !this.workspace?.workspaceRoles?.includes(iam.name)) this.roles.push(iam)
+            if (iam.name && !this.workspaceRoles.includes(iam.name)) this.roles.push(iam)
             else {
               const role = this.roles.filter((r) => r.name === iam.name)
               role[0].isIamRole = true
@@ -135,10 +159,13 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
         }
       })
     }
-    /*
-    this.roles$ = combineLatest([this.searchWorkspaceRoles(), this.searchIamRoles()]).pipe(
-      map(([w, iam]) => w.concat(iam))
-    )*/
+  }
+
+  public onReload() {
+    this.roles = []
+    this.workspaceRolesLoaded = false
+    this.iamRolesLoaded = false
+    this.searchRoles()
   }
 
   /**
@@ -152,15 +179,17 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
       roles.forEach((r) => {
         if (r.name) wroles.push(r.name)
       })
-      if (this.workspace?.workspaceRoles) this.workspace.workspaceRoles = wroles
+      //if (this.workspace?.workspaceRoles) this.workspace.workspaceRoles = wroles
     }
   }
 
   public onToggleRole(role: any): void {
-    if (this.editMode) {
-      if (role.isIamRole) role.isWorkspaceRole = !role.isWorkspaceRole
-      else if (this.workspace?.workspaceRoles?.includes(role.name)) role.deleted = !role.deleted
-    }
+    if (role.isIamRole) role.isWorkspaceRole = !role.isWorkspaceRole
+    else if (this.workspaceRoles?.includes(role.name)) role.deleted = !role.deleted
+  }
+
+  public onSave() {
+    console.log('onSave()')
   }
 
   /**

@@ -15,9 +15,9 @@
       <div class="flex flex-wrap align-items-center ml-1 gap-2">
         <div
           class="p-selectbutton-title data-view-control opacity-90 text-sm w-3rem text-right"
-          [title]="'ROLE.QUICK_FILTER.TOOLTIP' | translate"
+          [title]="'DIALOG.ROLE.QUICK_FILTER.TOOLTIP' | translate"
         >
-          {{ 'ROLE.QUICK_FILTER.LABEL' | translate }}
+          {{ 'DIALOG.ROLE.QUICK_FILTER.LABEL' | translate }}
         </div>
         <div class="slim-selectbutton filter-selectbutton">
           <p-selectButton
@@ -51,17 +51,38 @@
         [translations]="dataViewControlsTranslations"
       >
       </ocx-data-view-controls>
+      <div class="ml-3 flex column-gap-2">
+        <p-button
+          *ocxIfPermission="'WORKSPACE_ROLES#VIEW'"
+          type="button"
+          id="workspace_roles_header_reload"
+          styleClass="h-full"
+          [title]="'ACTIONS.SEARCH.RELOAD' | translate"
+          (onClick)="onReload()"
+          icon="pi pi-refresh"
+        >
+        </p-button>
+        <p-button
+          *ocxIfPermission="'WORKSPACE_ROLES#SAVE'"
+          type="button"
+          id="workspace_roles_header_save"
+          styleClass="h-full"
+          [title]="'ACTIONS.TOOLTIPS.SAVE' | translate"
+          (onClick)="onSave()"
+          icon="pi pi-save"
+        >
+        </p-button>
+      </div>
     </div>
   </ng-template>
   <ng-template let-role let-item="rowIndex" pTemplate="gridItem">
     <div class="col-12 sm:col-6 md:col-4 lg:col-4 xl:col-3 p-3">
       <div
         [id]="'workspace_detail_roles_data_item_' + item"
-        class="card relative p-2"
+        class="card relative p-2 cursor-pointer"
         [class.bg-primary]="role.isWorkspaceRole"
-        [class.cursor-pointer]="editMode"
-        [class.hover:bg-gray-200]="editMode && role.isIamRole && !role.isWorkspaceRole"
-        [class.hover:text-color]="editMode && role.isIamRole && !role.isWorkspaceRole"
+        [class.hover:bg-gray-200]="role.isIamRole && !role.isWorkspaceRole"
+        [class.hover:text-color]="role.isIamRole && !role.isWorkspaceRole"
         (click)="onToggleRole(role)"
       >
         <span

@@ -158,13 +158,6 @@
   "ROLE": {
     "NAME": "Name",
     "TYPE": "Typ",
-    "QUICK_FILTER": {
-      "LABEL": "Rollen Typ",
-      "TOOLTIP": "Quickfilter für Rolle",
-      "ALL": "Alle",
-      "IAM": "IAM",
-      "WORKSPACE": "Workspace"
-    },
     "ROLES_NOT_EXIST": "Keine Rollen definiert",
     "ADD": "Hinzufügen",
     "ADD_ROLE": "Rolle hinzufügen",
@@ -244,8 +237,18 @@
         "GOTO_MENU": "Menüverwaltung anzeigen"
       }
     },
+    "ROLE": {
+      "EDIT.TOOLTIP": "Role Typ",
+      "QUICK_FILTER": {
+        "LABEL": "Rollen Typ",
+        "TOOLTIP": "Quickfilter für Rolle",
+        "ALL": "Alle",
+        "IAM": "IAM",
+        "WORKSPACE": "Workspace"
+      }
+    },
     "MENU": {
-      "LABEL": " - Menü",
+      "LABEL": "Menü",
       "HEADER": {
         "EDIT": "Menüeintrag Details",
         "CREATE": "Menüeintrag erstellen",
@@ -400,17 +403,6 @@
       "DEREGISTRATION_OK": "Das Produkt wurde erfolgreich abgemeldet",
       "DEREGISTRATION_NOK": "Bei der Abmeldung des Produkts ist ein Fehler aufgetreten"
     }
-  },
-  "IMAGE": {
-    "ADDING_IMAGE": "Bild hinzufügen",
-    "ADDING_IMAGE_COMPUTER": "Bild vom Computer hinzufügen",
-    "DELETE_IMAGE": "Bild löschen",
-    "IMAGE_NOT_FOUND": "Bild nicht gefunden",
-    "SELECT_IMAGE": "Bild auswählen",
-    "UPLOADED": "Datei hochgeladen",
-    "UPLOAD_FAILED_SIZE": "Upload fehlgeschlagen. Bitte einen Workspace Namen füllen",
-    "UPLOAD_FAILED _FILE": "Upload fehlgeschlagen. Das Bild ist zu groß",
-    "LOGO": "Logo-Bild"
   },
   "LOGO": {
     "LOGO_URL": "Logo URL",

@@ -13,7 +13,6 @@ const snapshot: WorkspaceSnapshot = {
   workspaces: {
     workspace: {
       name: 'name',
-      workspaceRoles: ['role'],
       menu: {
         menu: {
           menuItems: [

@@ -31,15 +31,12 @@ app:
           WORKSPACE_TENANT:
             VIEW: View workspace tenant
             EDIT: View workspace tenant
-          WORKSPACE_PROPS:
-            VIEW: View workspace props
           WORKSPACE_CONTACT:
             VIEW: View workspace contact
           WORKSPACE_INTERNAL:
             VIEW: View workspace internal
           WORKSPACE_ROLES:
-            CREATE: Create role
-            DELETE: Delete role
+            SAVE: Save changes on workspace roles, includes create and delete
             VIEW: View workspace roles
           WORKSPACE_PRODUCTS:
             VIEW: View workspace products

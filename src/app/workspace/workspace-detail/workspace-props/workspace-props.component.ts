@@ -74,6 +74,8 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
     this.setFormData()
     this.editMode ? this.formGroup.enable() : this.formGroup.disable()
     this.oldWorkspaceName = this.workspace.name
+    if (this.workspace.name === 'ADMIN') this.formGroup.controls['name'].disable()
+    if (this.hasTenantViewPermission && !this.hasTenantEditPermission) this.formGroup.controls['tenantId'].disable()
   }
 
   ngOnInit(): void {

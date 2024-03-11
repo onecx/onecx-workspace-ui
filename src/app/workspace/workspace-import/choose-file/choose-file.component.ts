@@ -127,11 +127,8 @@ export class ChooseFileComponent implements OnInit {
     }
 
     return !!(
-      typeof dto === 'object' &&
-      dto &&
-      dto.workspaces &&
-      dto.workspaces[key[0]].name &&
-      dto.workspaces[key[0]].workspaceRoles
+      (typeof dto === 'object' && dto && dto.workspaces && dto.workspaces[key[0]].name)
+      //dto.workspaces[key[0]].workspaceRoles
     ) /* &&
       dto.workspaces[key[0]].menu?.menu?.menuItems?.every?.(this.isMenuItem) */
     /* &&

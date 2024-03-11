@@ -158,13 +158,6 @@
   "ROLE": {
     "NAME": "Name",
     "TYPE": "Type",
-    "QUICK_FILTER": {
-      "LABEL": "Role Typ",
-      "TOOLTIP": "Quickfilter for Roles",
-      "ALL": "All",
-      "IAM": "IAM",
-      "WORKSPACE": "Workspace"
-    },
     "ROLES_NOT_EXIST": "No roles defined",
     "ADD": "Add",
     "ADD_ROLE": "Add role",
@@ -244,8 +237,18 @@
         "GOTO_MENU": "Go To Menu Management"
       }
     },
+    "ROLE": {
+      "EDIT.TOOLTIP": "Role Typ",
+      "QUICK_FILTER": {
+        "LABEL": "Role Typ",
+        "TOOLTIP": "Quickfilter for Roles",
+        "ALL": "All",
+        "IAM": "IAM",
+        "WORKSPACE": "Workspace"
+      }
+    },
     "MENU": {
-      "LABEL": " - Menu",
+      "LABEL": "Menu",
       "HEADER": {
         "EDIT": "Menu Item Details",
         "CREATE": "Create Menu Item",
@@ -400,17 +403,6 @@
       "DEREGISTRATION_OK": "The Product was successfully deregistered",
       "DEREGISTRATION_NOK": "An error has occurred during Product deregistration"
     }
-  },
-  "IMAGE": {
-    "ADDING_IMAGE": "Add Image",
-    "ADDING_IMAGE_COMPUTER": "Add image from computer",
-    "DELETE_IMAGE": "Delete Image",
-    "IMAGE_NOT_FOUND": "Image not found",
-    "SELECT_IMAGE": "Select Image",
-    "UPLOADED": "File uploaded",
-    "UPLOAD_FAILED_SIZE": "File upload failed. Please provide a workspace name",
-    "UPLOAD_FAILED_FILE": "File upload failed. Image is too large",
-    "LOGO": "Logo image"
   },
   "LOGO": {
     "LOGO_URL": "Logo URL",

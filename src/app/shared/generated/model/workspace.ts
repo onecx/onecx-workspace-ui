@@ -30,7 +30,6 @@ export interface Workspace {
     rssFeedUrl?: string;
     footerLabel?: string;
     logoUrl?: string;
-    workspaceRoles?: Array<string>;
     address?: WorkspaceAddress;
     subjectLinks?: Array<SubjectLink>;
     imageUrls?: Array<string>;

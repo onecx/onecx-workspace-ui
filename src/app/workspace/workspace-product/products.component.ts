@@ -4,7 +4,7 @@ import { Observable, Subject, catchError, finalize, map, of, takeUntil } from 'r
 import { DataView } from 'primeng/dataview'
 
 import { DataViewControlTranslations, PortalMessageService } from '@onecx/portal-integration-angular'
-import { Product, Workspace, ProductAPIService } from 'src/app/shared/generated'
+import { Product, ProductsAPIService, Workspace, WorkspaceProductAPIService } from 'src/app/shared/generated'
 import { limitText } from 'src/app/shared/utils'
 
 @Component({
@@ -39,7 +39,8 @@ export class ProductComponent implements OnInit, OnDestroy {
   private urlPathPattern = '([^:]*)'
 
   constructor(
-    private productApi: ProductAPIService,
+    private productApi: WorkspaceProductAPIService,
+    private productStoreApi: ProductsAPIService,
     private translate: TranslateService,
     private msgService: PortalMessageService
   ) {}
