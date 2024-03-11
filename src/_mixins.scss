@@ -1,9 +1,3 @@
-/* Portal Mgmt global styles
-   => uses in component.scss:
-      @import "path-to-this/_portal-mgmt.scss";
-      @include <mixin-you-want-to-use>;
-*/
-
 // disable preset opacity: not readable
 @mixin make-disabled-form-readable-input {
   :host {
@@ -34,6 +28,7 @@
       display: inline-block;
       position: absolute;
       right: 3px;
+      opacity: 0.7;
       &.badge-1 {
         top: 3px;
       }
@@ -45,6 +40,7 @@
       display: inline-block;
       position: absolute;
       left: 3px;
+      opacity: 0.7;
       &.badge-1 {
         top: 3px;
       }
@@ -67,6 +63,47 @@
         cursor: pointer;
         padding: 5px !important;
       }
+    }
+  }
+}
+
+@mixin correct-data-view-control {
+  :host ::ng-deep {
+    .data-view-control,
+    .data-view-control * {
+      color: var(--emphasis-medium);
+    }
+    .data-view-control-border.p-dropdown {
+      .p-inputtext {
+        color: var(--emphasis-medium);
+        opacity: 0.9;
+      }
+      &:last-of-type {
+        border-top-left-radius: var(--border-radius);
+        border-bottom-left-radius: var(--border-radius);
+      }
+    }
+  }
+}
+
+@mixin dataview-zebra-rows {
+  :host ::ng-deep {
+    .p-dataview-content .p-grid > div {
+      min-height: 60px;
+      &.listview-row {
+        &:nth-child(odd) {
+          background-color: #f8f9fa;
+        }
+      }
+    }
+  }
+}
+
+@mixin correct-modal-dialog {
+  :host ::ng-deep {
+    .p-dialog .p-dialog-content {
+      border-bottom-left-radius: var(--border-radius);
+      border-bottom-right-radius: var(--border-radius);
     }
   }
 }

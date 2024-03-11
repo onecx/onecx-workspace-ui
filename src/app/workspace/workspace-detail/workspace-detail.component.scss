@@ -1,11 +1,12 @@
+@import 'src/_mixins.scss';
+
+@include danger-action;
+
 :host ::ng-deep {
   @media (max-width: 991px) {
     .p-dialog.p-dialog {
       max-height: unset !important;
       height: unset !important;
     }
-  }
-  .danger-action-text {
-    color: var(--danger-button-bg);
   }
 }

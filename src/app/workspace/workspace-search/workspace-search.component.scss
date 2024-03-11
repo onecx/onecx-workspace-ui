@@ -1,38 +1,7 @@
-:host ::ng-deep {
-  .card-badge-right {
-    display: inline-block;
-    position: absolute;
-    opacity: 0.7;
-    right: 4px;
-    &.badge-1 {
-      top: 5px;
-    }
-    &.badge-2 {
-      top: 35px;
-    }
-    &:hover {
-      opacity: 1;
-    }
-  }
-  .pseudo-button-link {
-    border-radius: var(--border-radius);
-    &:hover {
-      color: var(--primary-color-text);
-      background: var(--button-hover-bg);
-      cursor: pointer;
-    }
-  }
+@import 'src/_mixins.scss';
 
-  .p-dataview-content .p-grid > div {
-    min-height: 60px;
-    &.listview-row {
-      &:nth-child(odd) {
-        background-color: #f8f9fa;
-      }
-    }
-  }
-  .p-dialog .p-dialog-content {
-    border-bottom-left-radius: var(--border-radius);
-    border-bottom-right-radius: var(--border-radius);
-  }
-}
+@include card-badges;
+@include danger-action;
+@include dataview-zebra-rows;
+@include correct-data-view-control;
+@include correct-modal-dialog;
