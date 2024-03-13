@@ -7,12 +7,13 @@ import { addInitializeModuleGuard, InitializeModuleGuard, PortalCoreModule } fro
 import { SharedModule } from 'src/app/shared/shared.module'
 import { LabelResolver } from 'src/app/shared/label.resolver'
 
-import { WorkspaceDetailComponent } from 'src/app/workspace/workspace-detail/workspace-detail.component'
-import { WorkspacePropsComponent } from 'src/app/workspace/workspace-detail/workspace-props/workspace-props.component'
-import { WorkspaceRolesComponent } from 'src/app/workspace/workspace-detail/workspace-roles/workspace-roles.component'
-import { WorkspaceInternComponent } from 'src/app/workspace/workspace-detail/workspace-intern/workspace-intern.component'
-import { WorkspaceContactComponent } from 'src/app/workspace/workspace-detail/workspace-contact/workspace-contact.component'
-import { ProductComponent } from 'src/app/workspace/workspace-product/products.component'
+import { WorkspaceDetailComponent } from './workspace-detail.component'
+import { WorkspacePropsComponent } from './workspace-props/workspace-props.component'
+import { WorkspaceRolesComponent } from './workspace-roles/workspace-roles.component'
+import { WorkspaceRoleDetailComponent } from '../workspace-role-detail/workspace-role-detail.component'
+import { WorkspaceInternComponent } from './workspace-intern/workspace-intern.component'
+import { WorkspaceContactComponent } from './workspace-contact/workspace-contact.component'
+import { ProductComponent } from '../workspace-product/products.component'
 
 const routes: Routes = [
   {
@@ -38,6 +39,7 @@ const routes: Routes = [
     WorkspaceContactComponent,
     WorkspaceInternComponent,
     WorkspaceRolesComponent,
+    WorkspaceRoleDetailComponent,
     ProductComponent
   ],
   imports: [

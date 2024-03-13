@@ -36,7 +36,8 @@ app:
           WORKSPACE_INTERNAL:
             VIEW: View workspace internal
           WORKSPACE_ROLES:
-            SAVE: Save changes on workspace roles, includes create and delete
+            CREATE: Create manually a workspace role
+            CHANGE: Change role assignment to workspace
             VIEW: View workspace roles
           WORKSPACE_PRODUCTS:
             VIEW: View workspace products

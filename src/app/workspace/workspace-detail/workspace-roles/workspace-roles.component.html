@@ -63,13 +63,13 @@
         >
         </p-button>
         <p-button
-          *ocxIfPermission="'WORKSPACE_ROLES#SAVE'"
+          *ocxIfPermission="'WORKSPACE_ROLES#CREATE'"
           type="button"
-          id="workspace_roles_header_save"
+          id="workspace_roles_header_create"
           styleClass="h-full"
-          [title]="'ACTIONS.TOOLTIPS.SAVE' | translate"
-          (onClick)="onSave()"
-          icon="pi pi-save"
+          [title]="'ACTIONS.CREATE.ROLE' | translate"
+          (onClick)="onCreateRole($event)"
+          icon="pi pi-plus"
         >
         </p-button>
       </div>
@@ -83,7 +83,8 @@
         [class.bg-primary]="role.isWorkspaceRole"
         [class.hover:bg-gray-200]="role.isIamRole && !role.isWorkspaceRole"
         [class.hover:text-color]="role.isIamRole && !role.isWorkspaceRole"
-        (click)="onToggleRole(role)"
+        [title]="role.description"
+        (click)="onEditRole($event, role)"
       >
         <span
           *ngIf="role.isWorkspaceRole"
@@ -102,6 +103,21 @@
           class="card-badge-left card-badge-left-text badge-1"
           >IAM</span
         >
+        <span
+          *ngIf="role.isWorkspaceRole"
+          [id]="'workspace_detail_roles_data_item_' + item + '_delete'"
+          [title]="'ACTIONS.DELETE.ROLE' | translate"
+          class="card-badge-right badge-1 p-1 pi pi-trash pseudo-button-link bg-primary"
+          (click)="onDeleteRole($event, role)"
+        ></span>
+        <span
+          *ngIf="!role.isWorkspaceRole && role.isIamRole"
+          [id]="'workspace_detail_roles_data_item_' + item + '_create'"
+          [title]="'ACTIONS.CREATE.WORKSPACE.ROLE' | translate"
+          class="card-badge-right badge-1 p-1 pi pi-plus hover:text-white pseudo-button-link text-color"
+          (click)="onAddRole($event, role)"
+          [class.bg-white]="role.isWorkspaceRole"
+        ></span>
         <div class="h-2rem flex flex-column justify-content-center text-center">
           <div class="font-bold" [title]="'Name: ' + role.name">{{ limitText(role.name, 30) }}</div>
         </div>
@@ -110,27 +126,12 @@
   </ng-template>
 </p-dataView>
 
-<!--
-<p-dialog
-  header="{{ 'ROLE.ROLES_ADD_ROLE' | translate }}"
-  [(visible)]="addDisplay"
-  [modal]="true"
-  contentStyleClass="pt-1"
->
-  <span class="p-float-label">
-    <input
-      pInputText
-      type="text"
-      class="min-w-full"
-      id="workspace_role_mgmt_role_name_input"
-      maxlength="100"
-      [(ngModel)]="newWorkspaceRole"
-    />
-    <label for="workspace_role_mgmt_role_name_input">{{ 'ROLE.ROLE_NAME' | translate }}</label>
-  </span>
-  <div class="flex flex-wrap justify-content-end gap-2 pt-3 mt-2">
-    <button pButton icon="pi pi-times" (click)="toggleAddDialog()" [label]="'ACTIONS.CANCEL' | translate"></button>
-    <button pButton icon="pi pi-save" (click)="addPortalRole()" [label]="'ACTIONS.SAVE' | translate"></button>
-  </div>
-</p-dialog>
--->
+<app-workspace-role-detail
+  [workspace]="workspace"
+  [roles]="roles"
+  [role]="role"
+  [changeMode]="changeMode"
+  [displayDetailDialog]="showRoleDetailDialog"
+  [displayDeleteDialog]="showRoleDeleteDialog"
+  (dataChanged)="onRoleChanged($event)"
+></app-workspace-role-detail>

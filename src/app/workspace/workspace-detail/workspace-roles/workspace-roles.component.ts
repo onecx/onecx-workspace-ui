@@ -4,20 +4,22 @@ import { Observable, catchError, finalize, map, of } from 'rxjs'
 import { SelectItem } from 'primeng/api'
 import { DataView } from 'primeng/dataview'
 
-import { PortalMessageService, DataViewControlTranslations } from '@onecx/portal-integration-angular'
+import { PortalMessageService, DataViewControlTranslations, UserService } from '@onecx/portal-integration-angular'
 
 import {
   Workspace,
+  WorkspaceRole,
   WorkspaceRolesAPIService,
   RoleAPIService,
-  IAMRole,
+  CreateWorkspaceRoleRequest,
   IAMRolePageResult
 } from 'src/app/shared/generated'
-import { limitText, sortByLocale } from 'src/app/shared/utils'
+import { limitText } from 'src/app/shared/utils'
 
 export type RoleType = 'WORKSPACE' | 'IAM'
 export type RoleFilterType = 'ALL' | RoleType
-export type Role = IAMRole & { isIamRole: boolean; isWorkspaceRole: boolean; deleted: boolean; type: RoleType }
+export type Role = WorkspaceRole & { isIamRole: boolean; isWorkspaceRole: boolean; type: RoleType }
+export type ChangeMode = 'VIEW' | 'CREATE' | 'EDIT' | 'COPY' | 'DELETE'
 
 @Component({
   selector: 'app-workspace-roles',
@@ -31,9 +33,9 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   public iamRoles$!: Observable<IAMRolePageResult>
   public roles$!: Observable<Role[]>
   public roles!: Role[]
+  public role!: Role | undefined
   public workspaceRoles!: string[]
   public limitText = limitText
-  private sortByLocale = sortByLocale
 
   // dialog
   @ViewChild(DataView) dv: DataView | undefined
@@ -49,16 +51,19 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   public exceptionKey: string | undefined
   public quickFilterValue: RoleFilterType = 'WORKSPACE'
   public quickFilterItems: SelectItem[]
-
-  addDisplay = false
-  newWorkspaceRole = ''
+  public changeMode: ChangeMode = 'VIEW'
+  public hasChangePermission = false
+  public showRoleDetailDialog = false
+  public showRoleDeleteDialog = false
 
   constructor(
+    private user: UserService,
     private iamRoleApi: RoleAPIService,
     private wRoleApi: WorkspaceRolesAPIService,
     private translate: TranslateService,
     private msgService: PortalMessageService
   ) {
+    this.hasChangePermission = this.user.hasPermission('WORKSPACE_ROLES#CHANGE')
     // quick filter
     this.quickFilterItems = [
       { label: 'DIALOG.ROLE.QUICK_FILTER.ALL', value: 'ALL' },
@@ -89,7 +94,6 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
     )
   }
   private searchWorkspaceRoles(): Observable<Role[]> {
-    console.log('searchWorkspaceRoles')
     this.declareWorkspaceRolesObservable()
     return this.wRoles$.pipe(
       map((result) => {
@@ -112,7 +116,6 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
     )
   }
   private searchIamRoles(): Observable<Role[]> {
-    console.log('searchIamRoles')
     this.declareIamObservable()
     return this.iamRoles$.pipe(
       map((result) => {
@@ -125,8 +128,8 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
     )
   }
 
-  private searchRoles(): void {
-    if (['WORKSPACE', 'ALL'].includes(this.quickFilterValue) && !this.workspaceRolesLoaded) {
+  private searchRoles(force: boolean = false): void {
+    if (['WORKSPACE', 'ALL'].includes(this.quickFilterValue) && (force || !this.workspaceRolesLoaded)) {
       const result: Role[] = []
       this.searchWorkspaceRoles().subscribe({
         next: (data) => data.forEach((r) => result.push(r)),
@@ -138,7 +141,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
         }
       })
     }
-    if (['IAM', 'ALL'].includes(this.quickFilterValue) && !this.iamRolesLoaded) {
+    if (['IAM', 'ALL'].includes(this.quickFilterValue) && (force || !this.iamRolesLoaded)) {
       this.loading = true
       this.exceptionKey = undefined
       const result: Role[] = []
@@ -169,27 +172,95 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   }
 
   /**
-   * Triggered by detail component
-   *   => extract list of role names to be assigned to the workspace
+   * Create/Delete Roles direct on click
    */
-  public onSubmit(): void {
-    let roles: Role[] = this.roles.filter((r) => r.isWorkspaceRole === true && !r.deleted)
-    if (roles.length > 0) {
-      const wroles: string[] = []
-      roles.forEach((r) => {
-        if (r.name) wroles.push(r.name)
+  public onToggleRole(role: any): void {
+    if (!this.hasChangePermission) return
+    if (!role.isWorkspaceRole) {
+      this.wRoleApi
+        .createWorkspaceRole({
+          createWorkspaceRoleRequest: {
+            workspaceId: this.workspace?.id ?? '',
+            name: role.name,
+            description: role.description
+          } as CreateWorkspaceRoleRequest
+        })
+        .subscribe({
+          next: (data) => {
+            this.msgService.success({ summaryKey: 'ACTIONS.CREATE.ROLE_OK' })
+            role.id = data.id
+            role.isWorkspaceRole = true
+          },
+          error: () => {
+            this.msgService.success({ summaryKey: 'ACTIONS.CREATE.ROLE_NOK' })
+          }
+        })
+    }
+    if (role.isWorkspaceRole) {
+      this.wRoleApi.deleteWorkspaceRole({ id: role.id }).subscribe({
+        next: () => {
+          this.msgService.success({ summaryKey: 'ACTIONS.DELETE.ROLE_OK' })
+          role.id = undefined
+          role.isWorkspaceRole = false
+        },
+        error: () => {
+          this.msgService.success({ summaryKey: 'ACTIONS.DELETE.ROLE_NOK' })
+        }
       })
-      //if (this.workspace?.workspaceRoles) this.workspace.workspaceRoles = wroles
     }
   }
 
-  public onToggleRole(role: any): void {
-    if (role.isIamRole) role.isWorkspaceRole = !role.isWorkspaceRole
-    else if (this.workspaceRoles?.includes(role.name)) role.deleted = !role.deleted
+  public onAddRole(ev: MouseEvent, role: Role): void {
+    ev.stopPropagation()
+    this.wRoleApi
+      .createWorkspaceRole({
+        createWorkspaceRoleRequest: {
+          workspaceId: this.workspace?.id ?? '',
+          name: role.name,
+          description: role.description
+        } as CreateWorkspaceRoleRequest
+      })
+      .subscribe({
+        next: (data) => {
+          this.msgService.success({ summaryKey: 'ACTIONS.CREATE.ROLE_OK' })
+          role.id = data.id
+          role.isWorkspaceRole = true
+        },
+        error: () => {
+          this.msgService.success({ summaryKey: 'ACTIONS.CREATE.ROLE_NOK' })
+        }
+      })
   }
-
-  public onSave() {
-    console.log('onSave()')
+  public onCreateRole(ev: MouseEvent): void {
+    ev.stopPropagation()
+    this.role = undefined
+    this.changeMode = 'CREATE'
+    this.showRoleDetailDialog = true
+  }
+  public onEditRole(ev: Event, role: Role): void {
+    ev.stopPropagation()
+    this.role = role
+    if (role.isIamRole) {
+      this.changeMode = 'VIEW'
+    } else {
+      if (!this.hasChangePermission) return
+      this.changeMode = 'EDIT'
+    }
+    this.showRoleDetailDialog = true
+  }
+  public onDeleteRole(ev: Event, role: Role): void {
+    ev.stopPropagation()
+    if (!this.hasChangePermission) return
+    this.role = role
+    this.changeMode = 'DELETE'
+    this.showRoleDeleteDialog = true
+  }
+  public onRoleChanged(changed: boolean) {
+    this.role = undefined
+    this.changeMode = 'VIEW'
+    this.showRoleDetailDialog = false
+    this.showRoleDeleteDialog = false
+    if (changed) this.searchRoles(true)
   }
 
   /**

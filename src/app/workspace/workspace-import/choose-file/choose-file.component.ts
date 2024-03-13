@@ -126,13 +126,10 @@ export class ChooseFileComponent implements OnInit {
       this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_RESULT'] + this.validationErrorCause
     }
 
-    return !!(
-      (typeof dto === 'object' && dto && dto.workspaces && dto.workspaces[key[0]].name)
-      //dto.workspaces[key[0]].workspaceRoles
-    ) /* &&
-      dto.workspaces[key[0]].menu?.menu?.menuItems?.every?.(this.isMenuItem) */
-    /* &&
-      themeCondition */
+    return false
+    // return !!typeof dto === 'object' && dto && dto.workspaces && dto.workspaces[key[0]].name
+    // && dto.workspaces[key[0]].menu?.menu?.menuItems?.every?.(this.isMenuItem)
+    // && themeCondition
   }
 
   private isMenuItem(obj: unknown): obj is EximWorkspaceMenuItem {
