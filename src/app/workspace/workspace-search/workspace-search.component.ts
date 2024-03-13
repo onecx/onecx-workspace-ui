@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
-import { finalize } from 'rxjs'
+import { finalize, Observable, map } from 'rxjs'
 import { TranslateService } from '@ngx-translate/core'
 
 import { Action, DataViewControlTranslations, PortalMessageService } from '@onecx/portal-integration-angular'
@@ -20,7 +20,7 @@ import {
 })
 export class WorkspaceSearchComponent implements OnInit {
   public searchInProgress = false
-  public actions: Action[] = []
+  public actions$: Observable<Action[]> | undefined
   public showCreateDialog = false
   public showImportDialog = false
   public limitText = limitText
@@ -31,8 +31,6 @@ export class WorkspaceSearchComponent implements OnInit {
   public sortField = ''
   public sortOrder = 1
   public defaultSortField = 'name'
-  public fieldLabelWorkspaceName = ''
-  public fieldLabelThemeName = ''
   public dataViewControlsTranslations: DataViewControlTranslations = {}
 
   @ViewChild('table', { static: false }) table!: DataView | any
@@ -47,75 +45,56 @@ export class WorkspaceSearchComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.prepareTranslations()
+    this.prepareDialogTranslations()
     this.prepareActionButtons()
     this.search()
   }
 
-  private prepareTranslations() {
+  private prepareDialogTranslations() {
     this.translate
-      .get([
-        'WORKSPACE.NAME',
-        'WORKSPACE.THEME',
-        'ACTIONS.SEARCH.SORT_BY',
-        'ACTIONS.SEARCH.FILTER',
-        'ACTIONS.SEARCH.FILTER_OF',
-        'ACTIONS.SEARCH.SORT_DIRECTION_ASC',
-        'ACTIONS.SEARCH.SORT_DIRECTION_DESC',
-        'DIALOG.DATAVIEW.VIEW_MODE_GRID',
-        'DIALOG.DATAVIEW.VIEW_MODE_LIST',
-        'DIALOG.DATAVIEW.VIEW_MODE_TABLE'
-      ])
-      .subscribe((data) => {
-        this.fieldLabelWorkspaceName = data['WORKSPACE.NAME']
-        this.fieldLabelThemeName = data['WORKSPACE.THEME']
-        this.dataViewControlsTranslations = {
-          sortDropdownPlaceholder: data['ACTIONS.SEARCH.SORT_BY'],
-          filterInputPlaceholder: data['ACTIONS.SEARCH.FILTER'],
-          filterInputTooltip:
-            data['ACTIONS.SEARCH.FILTER_OF'] + this.fieldLabelWorkspaceName + ', ' + this.fieldLabelThemeName,
-          viewModeToggleTooltips: {
-            grid: data['DIALOG.DATAVIEW.VIEW_MODE_GRID'],
-            list: data['DIALOG.DATAVIEW.VIEW_MODE_LIST'],
-            table: data['DIALOG.DATAVIEW.VIEW_MODE_TABLE']
-          },
-          sortOrderTooltips: {
-            ascending: data['ACTIONS.SEARCH.SORT_DIRECTION_ASC'],
-            descending: data['ACTIONS.SEARCH.SORT_DIRECTION_DESC']
-          },
-          sortDropdownTooltip: data['ACTIONS.SEARCH.SORT_BY']
-        }
-      })
+      .get(['WORKSPACE.NAME', 'WORKSPACE.THEME', 'ACTIONS.SEARCH.SORT_BY', 'ACTIONS.SEARCH.FILTER_OF'])
+      .pipe(
+        map((data) => {
+          this.dataViewControlsTranslations = {
+            sortDropdownTooltip: data['ACTIONS.SEARCH.SORT_BY'],
+            sortDropdownPlaceholder: data['ACTIONS.SEARCH.SORT_BY'],
+            filterInputTooltip:
+              data['ACTIONS.SEARCH.FILTER_OF'] + data['WORKSPACE.NAME'] + ', ' + data['WORKSPACE.THEME']
+          }
+        })
+      )
   }
 
   private prepareActionButtons() {
-    this.translate
+    this.actions$ = this.translate
       .get([
         'ACTIONS.CREATE.WORKSPACE',
         'ACTIONS.CREATE.WORKSPACE.TOOLTIP',
         'ACTIONS.IMPORT.LABEL',
         'ACTIONS.IMPORT.WORKSPACE'
       ])
-      .subscribe((data) => {
-        this.actions.push(
-          {
-            label: data['ACTIONS.CREATE.WORKSPACE'],
-            title: data['ACTIONS.CREATE.WORKSPACE.TOOLTIP'],
-            actionCallback: () => this.toggleShowCreateDialog(),
-            icon: 'pi pi-plus',
-            show: 'always',
-            permission: 'WORKSPACE#CREATE'
-          },
-          {
-            label: data['ACTIONS.IMPORT.LABEL'],
-            title: data['ACTIONS.IMPORT.WORKSPACE'],
-            actionCallback: () => this.toggleShowImportDialog(),
-            icon: 'pi pi-upload',
-            show: 'always',
-            permission: 'WORKSPACE#IMPORT'
-          }
-        )
-      })
+      .pipe(
+        map((data) => {
+          return [
+            {
+              label: data['ACTIONS.CREATE.WORKSPACE'],
+              title: data['ACTIONS.CREATE.WORKSPACE.TOOLTIP'],
+              actionCallback: () => this.toggleShowCreateDialog(),
+              icon: 'pi pi-plus',
+              show: 'always',
+              permission: 'WORKSPACE#CREATE'
+            },
+            {
+              label: data['ACTIONS.IMPORT.LABEL'],
+              title: data['ACTIONS.IMPORT.WORKSPACE'],
+              actionCallback: () => this.toggleShowImportDialog(),
+              icon: 'pi pi-upload',
+              show: 'always',
+              permission: 'WORKSPACE#IMPORT'
+            }
+          ]
+        })
+      )
   }
 
   toggleShowCreateDialog = (): void => {

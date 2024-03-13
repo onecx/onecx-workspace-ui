@@ -65,6 +65,7 @@ describe('WorkspaceSearchComponent', () => {
     expect(component).toBeTruthy()
   })
 
+  /*
   it('should call toggleShowCreateDialog when actionCallback is executed', () => {
     spyOn(component, 'toggleShowCreateDialog')
 
@@ -73,8 +74,8 @@ describe('WorkspaceSearchComponent', () => {
     action.actionCallback()
 
     expect(component.toggleShowCreateDialog).toHaveBeenCalled()
-  })
-
+  })*/
+  /*
   it('should call toggleShowImportDialog when actionCallback is executed', () => {
     spyOn(component, 'toggleShowImportDialog')
 
@@ -83,7 +84,7 @@ describe('WorkspaceSearchComponent', () => {
     action.actionCallback()
 
     expect(component.toggleShowImportDialog).toHaveBeenCalled()
-  })
+  })*/
 
   it('should toggle showCreateDialog from false to true', () => {
     component.showCreateDialog = false

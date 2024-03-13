@@ -17,6 +17,10 @@
       "LABEL": "Create",
       "WORKSPACE": "Create Workspace",
       "WORKSPACE.TOOLTIP": "Create a new Workspace",
+      "WORKSPACE.ROLE": "Create Workspace Role",
+      "ROLE": "Create a new Role",
+      "ROLE_OK": "The Role was created successfully",
+      "ROLE_NOK": "An error has occurred. The Role was not created.",
       "MENU": "Create Menu Item",
       "MENU.TOOLTIP": "Create a new Menu Item",
       "MESSAGE": {
@@ -29,6 +33,7 @@
     },
     "DELETE": {
       "LABEL": "Delete",
+      "ROLE": "Delete Role",
       "MENU_ITEM": "Delete Menu item",
       "WORKSPACE": "Delete Workspace",
       "MESSAGE": "Do you want to delete \"{{ITEM}}\"?",
@@ -36,11 +41,16 @@
       "MESSAGE_NOK": "Workspace could not be deleted",
       "MESSAGE_OK": "Workspace deleted successfully",
       "MENU_DELETE_OK": "The Menu Item was deleted successfully",
-      "MENU_DELETE_NOK": "An error has occurred. The Menu Item could not be deleted."
+      "MENU_DELETE_NOK": "An error has occurred. The Menu Item could not be deleted.",
+      "ROLE_MESSAGE": "This deletes the role and its assignments for the workspace. Does not changed anycthing in Permission Management.",
+      "ROLE_OK": "The Role was deleted successfully",
+      "ROLE_NOK": "An error has occurred. The Role was not deleted."
     },
     "EDIT": {
       "LABEL": "Edit",
       "TOOLTIP": "Edit properties",
+      "ROLE_OK": "The Role was changed successfully",
+      "ROLE_NOK": "An error has occurred. The Role was not changed.",
       "MESSAGE": {
         "CHANGE_OK": "The Workspace was changed successfully",
         "CHANGE_NOK": "An error has occurred. The Workspace was not changed.",
@@ -158,27 +168,8 @@
   "ROLE": {
     "NAME": "Name",
     "TYPE": "Type",
-    "QUICK_FILTER": {
-      "LABEL": "Role Typ",
-      "TOOLTIP": "Quickfilter for Roles",
-      "ALL": "All",
-      "IAM": "IAM",
-      "WORKSPACE": "Workspace"
-    },
-    "ROLES_NOT_EXIST": "No roles defined",
-    "ADD": "Add",
-    "ADD_ROLE": "Add role",
-    "DELETE_ROLE_INFO": "Role was successfully removed",
-    "DELETE_ROLE_MESSAGE": "If you remove the role, it will be also removed from any menu item where it is used. Are you sure that you want to proceed?",
-    "ROLE_NAME": "Role Name",
-    "ROLES": "Roles",
-    "ROLES_ADD_ROLE": "Add role",
-    "ROLES_DELETE_ROLE": "Delete role",
-    "ROLES_EDIT_ERROR": "Error occurred, roles weren't updated",
-    "ROLES_EDIT_SUCCESS": "Roles edited successfully",
-    "NEW_ROLE": "New role",
-    "NEW_ROLE_DUPLICATED": "Role already exists in this Workspace",
-    "NEW_ROLE_ERROR": "New role should has minimum one character and cannot contains ',' symbol or only white spaces"
+    "DESCRIPTION": "Description",
+    "ROLES_NOT_EXIST": "No roles defined"
   },
   "WORKSPACE": {
     "ID": "ID",
@@ -244,8 +235,24 @@
         "GOTO_MENU": "Go To Menu Management"
       }
     },
+    "ROLE": {
+      "HEADER": {
+        "CREATE": "Create Role",
+        "DELETE": "Delete Role",
+        "EDIT": "Edit Role",
+        "VIEW": "View Role"
+      },
+      "EDIT.TOOLTIP": "Role Typ",
+      "QUICK_FILTER": {
+        "LABEL": "Role Typ",
+        "TOOLTIP": "Quickfilter for Roles",
+        "ALL": "All",
+        "IAM": "IAM",
+        "WORKSPACE": "Workspace"
+      }
+    },
     "MENU": {
-      "LABEL": " - Menu",
+      "LABEL": "Menu",
       "HEADER": {
         "EDIT": "Menu Item Details",
         "CREATE": "Create Menu Item",
@@ -400,17 +407,6 @@
       "DEREGISTRATION_OK": "The Product was successfully deregistered",
       "DEREGISTRATION_NOK": "An error has occurred during Product deregistration"
     }
-  },
-  "IMAGE": {
-    "ADDING_IMAGE": "Add Image",
-    "ADDING_IMAGE_COMPUTER": "Add image from computer",
-    "DELETE_IMAGE": "Delete Image",
-    "IMAGE_NOT_FOUND": "Image not found",
-    "SELECT_IMAGE": "Select Image",
-    "UPLOADED": "File uploaded",
-    "UPLOAD_FAILED_SIZE": "File upload failed. Please provide a workspace name",
-    "UPLOAD_FAILED_FILE": "File upload failed. Image is too large",
-    "LOGO": "Logo image"
   },
   "LOGO": {
     "LOGO_URL": "Logo URL",

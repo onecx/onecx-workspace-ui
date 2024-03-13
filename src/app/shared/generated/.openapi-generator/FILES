@@ -5,9 +5,11 @@ api.module.ts
 api/api.ts
 api/imagesInternal.service.ts
 api/menuItem.service.ts
-api/product.service.ts
+api/products.service.ts
 api/role.service.ts
 api/workspace.service.ts
+api/workspaceProduct.service.ts
+api/workspaceRoles.service.ts
 configuration.ts
 encoder.ts
 git_push.sh
@@ -21,6 +23,7 @@ model/createUpdateProductResponse.ts
 model/createWorkspaceMenuItemStructureRequest.ts
 model/createWorkspaceRequest.ts
 model/createWorkspaceResponse.ts
+model/createWorkspaceRoleRequest.ts
 model/eximMenuStructure.ts
 model/eximScope.ts
 model/eximSubjectLink.ts
@@ -59,10 +62,14 @@ model/subjectLink.ts
 model/updateMenuItemRequest.ts
 model/updateProductRequest.ts
 model/updateWorkspaceRequest.ts
+model/updateWorkspaceRoleRequest.ts
 model/validationConstraint.ts
 model/workspace.ts
 model/workspaceAbstract.ts
 model/workspaceAddress.ts
+model/workspaceRole.ts
+model/workspaceRolePageResult.ts
+model/workspaceRoleSearchCriteria.ts
 model/workspaceSnapshot.ts
 param.ts
 variables.ts
