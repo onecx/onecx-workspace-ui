@@ -34,7 +34,6 @@
     "DELETE": {
       "LABEL": "Löschen",
       "ROLE": "Rolle löschen",
-      "MENU_ITEM": "Menüeintrag löschen",
       "WORKSPACE": "Workspace löschen",
       "MESSAGE": "Möchten Sie \"{{ITEM}}\" löschen?",
       "MESSAGE_INFO": "Diese Aktion kann nicht rückgängig gemacht werden!",
@@ -61,8 +60,8 @@
     "EXPORT": {
       "LABEL": "Export",
       "TOOLTIP": "Definition als JSON herunterladen",
-      "MENU": "Menü exportieren",
-      "WORKSPACE": "Die Workspace-Definition im JSON Format herunterladen.",
+      "MENU": "Die Menü-Definition im JSON Format herunterladen",
+      "WORKSPACE": "Die Workspace-Definition im JSON Format herunterladen",
       "THEME_INCLUDE": "Die Theme-Definition in den Export einschließen"
     },
     "IMPORT": {
@@ -256,6 +255,8 @@
       "HEADER": {
         "EDIT": "Menüeintrag Details",
         "CREATE": "Menüeintrag erstellen",
+        "DELETE": "Menüeintrag löschen",
+        "IMPORT": "Menü importieren",
         "TREE_MODAL": "Umordnen & Voransicht",
         "TREE_MODAL.TOOLTIP": "Menüeinträge per Drag & Drop umordnen und Ansicht in den konfigurierten Sprachen",
         "PREVIEW.TOOLTIP": "Ansicht in den konfigurierten Sprachen",
@@ -269,6 +270,7 @@
         "DISABLED": "Grün = Eintrag ist im Menü verfügbar - durch Klick veränderbar",
         "NEW": "Neuen Menüeintrag erstellen"
       },
+      "DETAILS": "Details",
       "I18N": {
         "LABEL": "I18n",
         "TOOLTIP": "Übersetzungen vorhanden?",
@@ -279,21 +281,21 @@
       "POSITION": "Position",
       "POSITION.TOOLTIP": "Der Position-Pfad des Menü-Eintrags im Format [Eltern-Position.]Position",
       "URL.TOOLTIP": "Die URL die beim Aktivieren aufgerufen wird",
-      "MFE.TOOLTIP": "Indikator ob die Menü-URL durch ein registriertes Produkt angeboten wird",
+      "PRODUCT.TOOLTIP": "Indikator ob die Menü-URL durch ein registriertes Produkt angeboten wird",
       "EXTERN.TOOLTIP": "Wenn diese Option aktiviert ist, wird der Workspace verlassen",
-      "PREVIEW_LANG": "Sprache",
-      "PREVIEW_LANG.EMPTY": "Keine Übersetzung vorhanden",
-      "PREVIEW_LANG.TOOLTIP": "Liste der verwendeten Sprachen",
-      "MENU_JSON_DOWNLOAD": "Menüstruktur im JSON Format herunterladen",
-      "MENU_JSON_UPLOAD": "Menüstruktur im JSON Format hochladen",
+      "PREVIEW": {
+        "LANG": "Sprache",
+        "LANG.EMPTY": "Keine Übersetzung vorhanden",
+        "LANG.TOOLTIP": "Liste der verwendeten Sprachen"
+      },
       "MENU_NOT_EXIST": "Kein Menü definiert",
-      "MENU_EDIT_ERROR": "Fehler bei der Bearbeitung eines Menüeintrags",
-      "MENU_EDIT_SUCCESS": "Menüeintrag wurde erfolgreich bearbeitet",
-      "MENU_ITEM_DETAILS": "Details",
-      "MENU_ITEM_HEADER": "Header",
-      "MENU_REMOVE_ERROR": "Fehler beim Löschen eines Menüeintrags",
-      "MENU_REMOVE_SUCCESS": "Menüeintrag erfolgreich gelöscht",
-      "ERROR_FIND_MENU": "Menüeintrag mit ID wurde nicht gefunden:"
+      "ERROR_FIND_MENU": "Menüeintrag mit ID wurde nicht gefunden:",
+      "TREE_VIEW": "Menüstruktur - Baum",
+      "IMPORT": {
+        "UPLOAD_INFO": "Bitte laden Sie die JSON-Datei von Ihrem Gerät hoch. Bitte beachten Sie, dass nach dem Upload die gesamte Menüstruktur überschrieben wird.",
+        "UPLOAD_OK": "Menüstruktur wurde erfolgreich überschrieben",
+        "UPLOAD_NOK": "Fehler ist aufgetreten, Menüstruktur wurde nicht überschrieben"
+      }
     },
     "DATAVIEW": {
       "FILTER_PLACEHOLDER": "Filter",
@@ -418,20 +420,6 @@
       "PLACEHOLDER": "Bild Platzhalter",
       "UPLOAD": "Bild auswählen und hochladen"
     }
-  },
-  "TREE": {
-    "CLEAR_CACHE_INFO": "Cache wurde entfernt",
-    "CONFIRM_HEADER": "Aktualisierungsdialog",
-    "EDIT_ERROR": "Fehler bei der Bearbeitung der Menüstruktur",
-    "EDIT_SUCCESS": "Menüstruktur erfolgreich bearbeitet",
-    "FETCH_ERROR": "Fehler beim Abrufen von Menüeinträgen",
-    "NO_MENU_ITEMS": "Es sind keine Menüeinträge verfügbar",
-    "PORTAL_CREATION_INFO": "Möchten Sie fortsetzen und die Workspace-Menüstruktur aktualisieren?",
-    "STRUCTURE_UPLOAD_ERROR": "Fehler ist aufgetreten, Menüstruktur wurde nicht überschrieben",
-    "STRUCTURE_UPLOAD_HEADER": "Baumstruktur hochladen",
-    "STRUCTURE_UPLOAD_INFO": "Bitte laden Sie die JSON-Datei von Ihrem Gerät hoch. Bitte beachten Sie, dass nach dem Upload die gesamte Menüstruktur überschrieben wird.",
-    "STRUCTURE_UPLOAD_SUCCESS": "Menüstruktur wurde erfolgreich überschrieben",
-    "TREE_VIEW": "Menüstruktur - Baum"
   },
   "VALIDATION": {
     "HINTS": {

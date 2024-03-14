@@ -212,7 +212,7 @@ export class MenuItemAPIService {
             }
         }
 
-        let localVarPath = `/workspaces/menu/${this.configuration.encodeParam({name: "workspaceName", value: workspaceName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/menuItems`;
+        let localVarPath = `/menu/${this.configuration.encodeParam({name: "workspaceName", value: workspaceName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/menuItems`;
         return this.httpClient.request<CreateMenuItemResponse>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -276,7 +276,7 @@ export class MenuItemAPIService {
             }
         }
 
-        let localVarPath = `/workspaces/menu/${this.configuration.encodeParam({name: "workspaceName", value: workspaceName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/menuItems/${this.configuration.encodeParam({name: "menuItemId", value: menuItemId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        let localVarPath = `/menu/${this.configuration.encodeParam({name: "workspaceName", value: workspaceName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/menuItems/${this.configuration.encodeParam({name: "menuItemId", value: menuItemId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
         return this.httpClient.request<any>('delete', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -290,7 +290,7 @@ export class MenuItemAPIService {
     }
 
     /**
-     * Export workspaces
+     * Export menu
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -335,7 +335,7 @@ export class MenuItemAPIService {
             }
         }
 
-        let localVarPath = `/workspaces/menu/${this.configuration.encodeParam({name: "workspaceName", value: workspaceName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/export`;
+        let localVarPath = `/menu/${this.configuration.encodeParam({name: "workspaceName", value: workspaceName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/export`;
         return this.httpClient.request<MenuSnapshot>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -398,7 +398,7 @@ export class MenuItemAPIService {
             }
         }
 
-        let localVarPath = `/workspaces/menu/${this.configuration.encodeParam({name: "workspaceName", value: workspaceName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/menuItems/${this.configuration.encodeParam({name: "menuItemId", value: menuItemId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        let localVarPath = `/menu/${this.configuration.encodeParam({name: "workspaceName", value: workspaceName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/menuItems/${this.configuration.encodeParam({name: "menuItemId", value: menuItemId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
         return this.httpClient.request<GetMenuItemResponse>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -457,7 +457,7 @@ export class MenuItemAPIService {
             }
         }
 
-        let localVarPath = `/workspaces/menu/${this.configuration.encodeParam({name: "workspaceName", value: workspaceName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/menuItems`;
+        let localVarPath = `/menu/${this.configuration.encodeParam({name: "workspaceName", value: workspaceName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/menuItems`;
         return this.httpClient.request<GetMenuItemsResponse>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -516,7 +516,7 @@ export class MenuItemAPIService {
             }
         }
 
-        let localVarPath = `/workspaces/menu/${this.configuration.encodeParam({name: "workspaceName", value: workspaceName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/menuItems/tree`;
+        let localVarPath = `/menu/${this.configuration.encodeParam({name: "workspaceName", value: workspaceName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/menuItems/tree`;
         return this.httpClient.request<GetWorkspaceMenuItemStructureResponse>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -530,7 +530,7 @@ export class MenuItemAPIService {
     }
 
     /**
-     * Import workspaces
+     * Import menu
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -588,7 +588,7 @@ export class MenuItemAPIService {
             }
         }
 
-        let localVarPath = `/workspaces/menu/${this.configuration.encodeParam({name: "workspaceName", value: workspaceName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/import`;
+        let localVarPath = `/menu/${this.configuration.encodeParam({name: "workspaceName", value: workspaceName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/import`;
         return this.httpClient.request<ImportMenuResponse>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -661,7 +661,7 @@ export class MenuItemAPIService {
             }
         }
 
-        let localVarPath = `/workspaces/menu/${this.configuration.encodeParam({name: "workspaceName", value: workspaceName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/menuItems`;
+        let localVarPath = `/menu/${this.configuration.encodeParam({name: "workspaceName", value: workspaceName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/menuItems`;
         return this.httpClient.request<Array<MenuItem>>('patch', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -734,7 +734,7 @@ export class MenuItemAPIService {
             }
         }
 
-        let localVarPath = `/workspaces/menu/${this.configuration.encodeParam({name: "workspaceName", value: workspaceName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/menuItems/tree/upload`;
+        let localVarPath = `/menu/${this.configuration.encodeParam({name: "workspaceName", value: workspaceName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/menuItems/tree/upload`;
         return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,

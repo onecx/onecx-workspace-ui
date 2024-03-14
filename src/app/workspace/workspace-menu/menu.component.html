@@ -123,11 +123,11 @@
             <th
               id="workspace_menu_table_header_app"
               class="text-center hidden-md"
-              [title]="'PORTAL.MENU.MFE.TOOLTIP' | translate"
+              [title]="'DIALOG.MENU.PRODUCT.TOOLTIP' | translate"
             >
               PM
             </th>
-            <th id="workspace_menu_table_header_url" class="hidden-sm" [title]="'PORTAL.MENU.URL.TOOLTIP' | translate">
+            <th id="workspace_menu_table_header_url" class="hidden-sm" [title]="'DIALOG.MENU.URL.TOOLTIP' | translate">
               URL
             </th>
           </tr>
@@ -142,7 +142,7 @@
             </td>
             <td class="white-space-nowrap hidden-xs">
               <div class="flex gap-1">
-                <button
+                <!--button
                   pbutton
                   type="button"
                   [id]="'workspace_menu_table_row_' + rowData.key + '_disabled'"
@@ -158,7 +158,7 @@
                     [class.text-green-500]="!rowData['disabled']"
                     aria-hidden="true"
                   ></span>
-                </button>
+                </button -->
                 <button
                   pbutton
                   type="button"
@@ -185,7 +185,7 @@
                   pbutton
                   type="button"
                   [id]="'workspace_menu_table_row_' + rowData.key + '_delete'"
-                  (click)="onDeleteMenuItem($event, rowData)"
+                  (click)="onDeleteMenu($event, rowData)"
                   [title]="('DIALOG.MENU.ACTION.DELETE' | translate).replace('{{TYPE}}', 'Menu')"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                 >
@@ -231,346 +231,22 @@
 </ocx-portal-page>
 
 <!--
-  DETAIL
+  DETAIL + DELETE
 -->
-<p-dialog
-  [header]="'DIALOG.MENU.HEADER.' + changeMode | translate"
-  [(visible)]="displayMenuDetail"
-  (onShow)="onShowDetailDialog()"
-  [breakpoints]="{ '1330px': '60vw', '1130px': '70vw', '930px': '80vw', '830px': '100vw' }"
-  styleClass="overflow-auto"
-  [style]="{ width: '50vw' }"
-  [modal]="true"
-  [draggable]="true"
-  [resizable]="true"
-  [contentStyle]="{ overflow: 'visible' }"
->
-  <p-tabView #panelDetail [(activeIndex)]="tabIndex" (onChange)="onTabPanelChange($event)">
-    <p-tabPanel header="{{ 'DIALOG.MENU.MENU_ITEM_DETAILS' | translate }}">
-      <form [formGroup]="formGroup" errorTailor>
-        <div class="grid">
-          <div
-            class="col-12 md:col-6 my-1"
-            style="min-width: 20rem"
-            [title]="'MENU_ITEM.TOOLTIP.WORKSPACE' | translate"
-          >
-            <span class="p-float-label">
-              <input
-                pInputText
-                type="text"
-                id="workspace_menu_detail_field_workspace_name"
-                class="w-full pt-3 pb-2"
-                [value]="workspaceName"
-                [disabled]="true"
-                [pTooltip]="'MENU_ITEM.TOOLTIP.WORKSPACE' | translate"
-                tooltipPosition="top"
-                tooltipEvent="focus"
-              />
-              <label for="workspace_menu_detail_field_workspace_name"> {{ 'MENU_ITEM.WORKSPACE' | translate }} </label>
-            </span>
-          </div>
-
-          <div
-            class="col-12 md:col-6 my-1"
-            style="min-width: 20rem"
-            [title]="'MENU_ITEM.TOOLTIP.PARENT_ID' | translate"
-          >
-            <span class="p-float-label">
-              <p-dropdown
-                id="workspace_menu_detail_field_parent_id"
-                styleClass="w-full input-field-correction"
-                formControlName="parentItemId"
-                [options]="parentItems"
-              >
-              </p-dropdown>
-              <label for="workspace_menu_detail_field_parent_id"> {{ 'MENU_ITEM.PARENT_ID' | translate }} </label>
-            </span>
-          </div>
-
-          <div
-            class="col-12 md:col-6 my-1"
-            style="min-width: 20rem"
-            [title]="'MENU_ITEM.TOOLTIP.MENU_NAME' | translate"
-          >
-            <span class="p-float-label" controlErrorAnchor>
-              <input
-                pInputText
-                type="text"
-                id="workspace_menu_detail_field_menu_name"
-                class="w-full pt-3 pb-2"
-                formControlName="name"
-              />
-              <label class="ocx-required-label" for="workspace_menu_detail_field_menu_name">
-                {{ 'MENU_ITEM.MENU_NAME' | translate }}
-              </label>
-            </span>
-          </div>
-          <div class="col-12 md:col-6 my-1" style="min-width: 20rem" [title]="'MENU_ITEM.TOOLTIP.MENU_ID' | translate">
-            <span class="p-float-label" controlErrorAnchor>
-              <input
-                pInputText
-                type="text"
-                id="workspace_menu_detail_field_menu_id"
-                class="w-full pt-3 pb-2"
-                formControlName="key"
-              />
-              <label class="ocx-required-label" for="workspace_menu_detail_field_menu_id">
-                {{ 'MENU_ITEM.MENU_ID' | translate }}
-              </label>
-            </span>
-          </div>
-
-          <div class="col-12 md:col-9 my-1" [title]="'MENU_ITEM.TOOLTIP.URL' | translate">
-            <span class="p-float-label mb-1" controlErrorAnchor>
-              <p-dropdown
-                #formFieldUrl
-                id="workspace_menu_detail_field_url"
-                formControlName="url"
-                styleClass="w-full"
-                [editable]="true"
-                [options]="mfeRUrlOptions"
-                (onFocus)="onFocusFieldUrl(formFieldUrl)"
-                [pTooltip]="'MENU_ITEM.URL' | translate"
-                tooltipPosition="top"
-                tooltipEvent="focus"
-                appendTo="body"
-              >
-              </p-dropdown>
-              <label for="workspace_menu_detail_field_url"> {{ 'MENU_ITEM.URL' | translate }} </label>
-            </span>
-          </div>
-          <div
-            class="col-12 md:col-3 my-1 pl-6 flex justify-content-start"
-            [title]="'MENU_ITEM.TOOLTIP.EXTERN' | translate"
-          >
-            <p-checkbox
-              id="workspace_menu_detail_field_workspace_exit"
-              class="checkbox-label"
-              formControlName="workspaceExit"
-              [label]="'MENU_ITEM.EXTERN' | translate"
-              [binary]="true"
-            >
-            </p-checkbox>
-          </div>
-
-          <div class="col-12 md:col-2 my-1" [title]="'Position'">
-            <span class="p-float-label mb-1" controlErrorAnchor>
-              <input
-                pInputText
-                type="text"
-                id="workspace_menu_detail_field_position"
-                class="w-full pt-3 pb-2"
-                formControlName="position"
-              />
-              <label for="workspace_menu_detail_field_position">Position</label>
-            </span>
-          </div>
-          <div class="col-12 md:col-4 my-1" style="min-width: 10rem" [title]="'MENU_ITEM.TOOLTIP.BADGE' | translate">
-            <span class="p-float-label mb-1" controlErrorAnchor>
-              <p-dropdown
-                id="workspace_menu_detail_field_badge"
-                styleClass="w-full min-w-min input-field-correction"
-                formControlName="badge"
-                [options]="iconItems"
-              >
-                <ng-template let-ico pTemplate="selectedItem">
-                  <div class="flex">
-                    <span class="pi pi-{{ ico.value }} mr-3"> </span>
-                    <span>{{ ico.label || 'dummy-for-renderer' }}</span>
-                  </div>
-                </ng-template>
-                <ng-template let-ico pTemplate="item">
-                  <div class="flex">
-                    <span class="pi pi-{{ ico.value }} mr-3"> </span>
-                    <span>{{ ico.label }}</span>
-                  </div>
-                </ng-template>
-              </p-dropdown>
-              <label for="workspace_menu_detail_field_badge"> {{ 'MENU_ITEM.BADGE' | translate }} </label>
-            </span>
-          </div>
-          <div class="col-12 md:col-3 my-1" style="min-width: 10rem" [title]="'MENU_ITEM.TOOLTIP.SCOPE' | translate">
-            <span class="p-float-label mb-1" controlErrorAnchor>
-              <p-dropdown
-                id="workspace_menu_detail_field_scope"
-                styleClass="w-full min-w-min input-field-correction"
-                formControlName="scope"
-                [options]="scopeItems"
-              >
-              </p-dropdown>
-              <label for="workspace_menu_detail_field_scope"> {{ 'MENU_ITEM.SCOPE' | translate }} </label>
-            </span>
-          </div>
-
-          <div
-            class="col-12 md:col-3 my-1 pl-6 flex justify-content-start"
-            [title]="'MENU_ITEM.TOOLTIP.DISABLED' | translate"
-          >
-            <p-checkbox
-              id="workspace_menu_detail_field_disabled"
-              class="checkbox-label"
-              formControlName="disabled"
-              [label]="'MENU_ITEM.DISABLED' | translate"
-              [binary]="true"
-            >
-            </p-checkbox>
-          </div>
-
-          <div class="col-12 my-1" [title]="'MENU_ITEM.TOOLTIP.DESCRIPTION' | translate">
-            <span class="p-float-label mb-1" controlErrorAnchor>
-              <input
-                pInputText
-                type="text"
-                id="workspace_menu_detail_field_description"
-                class="w-full pt-3 pb-2"
-                formControlName="description"
-              />
-              <label for="workspace_menu_detail_field_description"> {{ 'MENU_ITEM.DESCRIPTION' | translate }} </label>
-            </span>
-          </div>
-
-          <div
-            *ngIf="changeMode === 'EDIT'"
-            class="col-12 md:col-6 my-1"
-            style="min-width: 15rem"
-            [title]="'DETAIL.TOOLTIPS.CREATION_DATE' | translate"
-          >
-            <span class="p-float-label mb-1" controlErrorAnchor>
-              <input
-                pInputText
-                type="text"
-                id="workspace_menu_detail_field_creation_date"
-                class="w-full pt-3 pb-2"
-                [value]="menuItem?.creationDate | date : dateFormat"
-                [disabled]="true"
-              />
-              <label for="workspace_menu_detail_field_creation_date"> {{ 'DETAIL.CREATION_DATE' | translate }} </label>
-            </span>
-          </div>
-
-          <div
-            *ngIf="changeMode === 'EDIT'"
-            class="col-12 md:col-6 my-1"
-            style="min-width: 15rem"
-            [title]="'DETAIL.TOOLTIPS.MODIFICATION_DATE' | translate"
-          >
-            <span class="p-float-label mb-1" controlErrorAnchor>
-              <input
-                pInputText
-                type="text"
-                id="workspace_menu_detail_field_modification_date"
-                class="w-full pt-3 pb-2"
-                [value]="menuItem?.modificationDate | date : dateFormat"
-                [disabled]="true"
-              />
-              <label for="workspace_menu_detail_field_modification_date">
-                {{ 'DETAIL.MODIFICATION_DATE' | translate }}
-              </label>
-            </span>
-          </div>
-        </div>
-      </form>
-    </p-tabPanel>
-    <p-tabPanel [header]="'DIALOG.MENU.I18N.LABEL' | translate" [tooltip]="'DIALOG.MENU.I18N.TOOLTIP' | translate">
-      <div class="flex flex-column gap-4">
-        <span
-          class="p-float-label p-input-icon-right w-30rem mb-1"
-          *ngFor="let language of languagesDisplayed; index as i"
-        >
-          <i
-            class="pi pi-times"
-            (click)="onRemoveLanguage(language.value)"
-            [title]="'DIALOG.MENU.I18N.REMOVE_LANGUAGE' | translate"
-          ></i>
-          <input
-            pInputText
-            type="text"
-            [id]="'i18n_' + language.value"
-            class="w-30rem pt-3 pb-2"
-            [(ngModel)]="language.data"
-          />
-          <label [for]="'i18n_' + language.value"> {{ getLanguageLabel(language.value) }} </label>
-        </span>
-      </div>
-      <div class="flex align-items-center column-gap-4 row-gap-2 mt-4" *ngIf="languagesAvailable.length > 0">
-        <div class="data-view-control opacity-90 text-sm w-4rem">{{ 'DIALOG.MENU.I18N.ADD_LANGUAGE' | translate }}</div>
-        <p-selectButton
-          inputid="i18n_language_selector"
-          styleClass="data-view-control opacity-90"
-          [options]="languagesAvailable"
-          (onOptionClick)="onAddLanguage($event.option.value)"
-          [title]="'DIALOG.MENU.I18N.ADD_LANGUAGE' | translate"
-        >
-        </p-selectButton>
-      </div>
-    </p-tabPanel>
-  </p-tabView>
-  <ng-template pTemplate="footer">
-    <div class="flex flex-wrap gap-2 justify-content-end">
-      <p-button
-        icon="pi pi-times"
-        styleClass="m-0"
-        (click)="onCloseDetailDialog()"
-        [label]="'ACTIONS.CANCEL' | translate"
-        [title]="'ACTIONS.TOOLTIPS.CANCEL_WITHOUT_SAVE' | translate"
-      ></p-button>
-      <p-button
-        icon="pi pi-save"
-        styleClass="m-0"
-        (onClick)="onMenuSave()"
-        [disabled]="!formGroup.valid"
-        [label]="'ACTIONS.SAVE' | translate"
-        [title]="'ACTIONS.TOOLTIPS.SAVE' | translate"
-      ></p-button>
-    </div>
-  </ng-template>
-</p-dialog>
-
-<!-- DELETE MENU ITEM -->
-<p-dialog
-  [(visible)]="displayDeleteConfirmation"
-  [header]="'ACTIONS.DELETE.MENU_ITEM' | translate"
-  [modal]="true"
-  [closable]="true"
-  [resizable]="false"
-  [dismissableMask]="true"
-  [style]="{ 'max-width': '425px' }"
->
-  <div class="flex column-gap-3 row-gap-1 justify-content-start align-items-center">
-    <div class="pi pi-question-circle text-3xl text-primary"></div>
-    <div>
-      <div>{{ ('ACTIONS.DELETE.MESSAGE' | translate).replace('{{ITEM}}', menuItem?.name) }}</div>
-      <div class="mt-2">{{ 'ACTIONS.DELETE.MESSAGE_INFO' | translate }}</div>
-    </div>
-  </div>
-  <ng-template pTemplate="footer">
-    <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
-      <button
-        pButton
-        autofocus
-        type="button"
-        class="m-0"
-        icon="pi pi-times"
-        iconPos="left"
-        [label]="'ACTIONS.CONFIRMATION.NO' | translate"
-        (click)="displayDeleteConfirmation = false"
-      ></button>
-      <button
-        pButton
-        type="button"
-        class="m-0"
-        icon="pi pi-check"
-        iconPos="left"
-        [label]="'ACTIONS.CONFIRMATION.YES' | translate"
-        (click)="onMenuDelete()"
-      ></button>
-    </div>
-  </ng-template>
-</p-dialog>
+<app-menu-detail
+  [workspaceName]="workspaceName"
+  [menuItems]="menuItems"
+  [menuItem]="menuItem"
+  [parentItems]="parentItems"
+  [changeMode]="changeMode"
+  [displayDetailDialog]="displayMenuDetail"
+  [displayDeleteDialog]="displayMenuDelete"
+  (dataChanged)="onMenuItemChanged($event)"
+></app-menu-detail>
 
 <!-- IMPORT MENU -->
 <p-dialog
-  header="{{ 'ACTIONS.IMPORT.MENU' | translate }}"
+  header="{{ 'DIALOG.MENU.HEADER.IMPORT' | translate }}"
   [(visible)]="displayMenuImport"
   [draggable]="true"
   [closable]="true"
@@ -587,11 +263,12 @@
     (onClear)="onImportMenuClear()"
     (onRemove)="onImportMenuClear()"
     (onSelect)="onImportMenuSelect($event)"
-    (uploadHandler)="onMenuImport()"
+    (uploadHandler)="onImportMenuConfirmation()"
     [showUploadButton]="!menuImportError"
     [uploadLabel]="'ACTIONS.UPLOAD' | translate"
     [cancelLabel]="'ACTIONS.CANCEL' | translate"
     [chooseLabel]="'ACTIONS.CHOOSE' | translate"
+    [uploadTitle]="'ACTIONS.UPLOAD' | translate"
   ></p-fileUpload>
 
   <p-message

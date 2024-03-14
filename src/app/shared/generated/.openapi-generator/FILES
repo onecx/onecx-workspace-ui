@@ -3,6 +3,7 @@
 README.md
 api.module.ts
 api/api.ts
+api/assignment.service.ts
 api/imagesInternal.service.ts
 api/menuItem.service.ts
 api/products.service.ts
@@ -14,6 +15,10 @@ configuration.ts
 encoder.ts
 git_push.sh
 index.ts
+model/assignment.ts
+model/assignmentPageResult.ts
+model/assignmentSearchCriteria.ts
+model/createAssignmentRequest.ts
 model/createMenuItemRequest.ts
 model/createMenuItemResponse.ts
 model/createProductRequest.ts

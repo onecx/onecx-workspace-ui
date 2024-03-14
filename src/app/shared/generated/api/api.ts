@@ -1,3 +1,5 @@
+export * from './assignment.service';
+import { AssignmentAPIService } from './assignment.service';
 export * from './imagesInternal.service';
 import { ImagesInternalAPIService } from './imagesInternal.service';
 export * from './menuItem.service';
@@ -12,4 +14,4 @@ export * from './workspaceProduct.service';
 import { WorkspaceProductAPIService } from './workspaceProduct.service';
 export * from './workspaceRoles.service';
 import { WorkspaceRolesAPIService } from './workspaceRoles.service';
-export const APIS = [ImagesInternalAPIService, MenuItemAPIService, ProductsAPIService, RoleAPIService, WorkspaceAPIService, WorkspaceProductAPIService, WorkspaceRolesAPIService];
+export const APIS = [AssignmentAPIService, ImagesInternalAPIService, MenuItemAPIService, ProductsAPIService, RoleAPIService, WorkspaceAPIService, WorkspaceProductAPIService, WorkspaceRolesAPIService];

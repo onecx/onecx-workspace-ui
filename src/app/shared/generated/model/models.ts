@@ -1,3 +1,7 @@
+export * from './assignment';
+export * from './assignmentPageResult';
+export * from './assignmentSearchCriteria';
+export * from './createAssignmentRequest';
 export * from './createMenuItemRequest';
 export * from './createMenuItemResponse';
 export * from './createProductRequest';
