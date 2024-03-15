@@ -11,7 +11,10 @@
   [contentStyle]="{ overflow: 'visible' }"
 >
   <p-tabView #panelDetail [(activeIndex)]="tabIndex" (onChange)="onTabPanelChange($event)">
-    <p-tabPanel header="{{ 'DIALOG.MENU.DETAILS' | translate }}">
+    <p-tabPanel
+      [header]="'DIALOG.MENU.TABS.DETAILS' | translate"
+      [tooltip]="'DIALOG.MENU.TABS.DETAILS.TOOLTIP' | translate"
+    >
       <form [formGroup]="formGroup" errorTailor>
         <div class="grid p-1">
           <div
@@ -83,7 +86,7 @@
             </span>
           </div>
           <div
-            class="col-12 md:col-3 my-1 pl-6 flex justify-content-start"
+            class="col-12 md:col-3 my-1 pl-4 flex justify-content-start"
             [title]="'MENU_ITEM.TOOLTIP.EXTERN' | translate"
           >
             <p-checkbox
@@ -146,7 +149,7 @@
           </div>
 
           <div
-            class="col-12 md:col-3 my-1 pl-6 flex justify-content-start"
+            class="col-12 md:col-3 my-1 pl-4 flex justify-content-start"
             [title]="'MENU_ITEM.TOOLTIP.DISABLED' | translate"
           >
             <p-checkbox
@@ -216,7 +219,11 @@
         </div>
       </form>
     </p-tabPanel>
-    <p-tabPanel [header]="'DIALOG.MENU.I18N.LABEL' | translate" [tooltip]="'DIALOG.MENU.I18N.TOOLTIP' | translate">
+
+    <p-tabPanel
+      [header]="'DIALOG.MENU.TABS.I18N.LABEL' | translate"
+      [tooltip]="'DIALOG.MENU.TABS.I18N.TOOLTIP' | translate"
+    >
       <div class="flex flex-column gap-4">
         <span
           class="p-float-label p-input-icon-right w-30rem mb-1"
@@ -225,7 +232,7 @@
           <i
             class="pi pi-times"
             (click)="onRemoveLanguage(language.value)"
-            [title]="'DIALOG.MENU.I18N.REMOVE_LANGUAGE' | translate"
+            [title]="'DIALOG.MENU.TABS.I18N.REMOVE_LANGUAGE' | translate"
           ></i>
           <input
             pInputText
@@ -238,16 +245,24 @@
         </span>
       </div>
       <div class="flex align-items-center column-gap-4 row-gap-2 mt-4" *ngIf="languagesAvailable.length > 0">
-        <div class="data-view-control opacity-90 text-sm w-4rem">{{ 'DIALOG.MENU.I18N.ADD_LANGUAGE' | translate }}</div>
+        <div class="data-view-control opacity-90 text-sm w-4rem">
+          {{ 'DIALOG.MENU.TABS.I18N.ADD_LANGUAGE' | translate }}
+        </div>
         <p-selectButton
           inputid="i18n_language_selector"
           styleClass="data-view-control opacity-90"
           [options]="languagesAvailable"
           (onOptionClick)="onAddLanguage($event.option.value)"
-          [title]="'DIALOG.MENU.I18N.ADD_LANGUAGE' | translate"
+          [title]="'DIALOG.MENU.TABS.I18N.ADD_LANGUAGE' | translate"
         >
         </p-selectButton>
       </div>
+    </p-tabPanel>
+
+    <p-tabPanel
+      [header]="'DIALOG.MENU.TABS.INTERN' | translate"
+      [tooltip]="'DIALOG.MENU.TABS.INTERN.TOOLTIP' | translate"
+    >
     </p-tabPanel>
   </p-tabView>
   <ng-template pTemplate="footer">

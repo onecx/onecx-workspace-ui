@@ -1,3 +1,8 @@
+@import 'src/_mixins.scss';
+
+@include danger-action;
+@include correct-data-view-control;
+
 :host ::ng-deep {
   .p-dialog .p-dialog-content {
     padding-bottom: 0;
@@ -81,9 +86,6 @@
     height: auto !important;
   }
 
-  .danger-action-text {
-    color: var(--danger-button-bg);
-  }
   .checkbox-label {
     color: var(--emphasis-medium);
     transition-duration: var(--transition-duration);
@@ -114,11 +116,6 @@
   .p-tabview-panel {
     margin-top: 0.7rem;
   }
-  .data-view-control,
-  .data-view-control * {
-    color: var(--emphasis-medium);
-  }
-
   .invisible {
     visibility: hidden;
   }

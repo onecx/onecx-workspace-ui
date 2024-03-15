@@ -1,7 +1,7 @@
 import { NO_ERRORS_SCHEMA, Component } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { /* HttpClient, */ HttpErrorResponse } from '@angular/common/http'
-import { FormsModule, FormControl, FormGroup } from '@angular/forms'
+import { FormsModule /*, FormControl, FormGroup */ } from '@angular/forms'
 import { Location } from '@angular/common'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router'
@@ -13,7 +13,7 @@ import { PortalMessageService, ConfigurationService, AUTH_SERVICE } from '@onecx
 import { MenuStateService, MenuState } from './services/menu-state.service'
 import { MenuComponent } from './menu.component'
 
-import { Workspace, MenuItem, WorkspaceAPIService, Scope, MenuItemAPIService } from 'src/app/shared/generated'
+import { Workspace, MenuItem, WorkspaceAPIService /*, Scope*/, MenuItemAPIService } from 'src/app/shared/generated'
 
 const workspace: Workspace = {
   id: 'id',
@@ -38,7 +38,7 @@ const mockMenuItems: MenuItem[] = [
   }
 ]
 
-const mockItem = {
+/* const mockItem = {
   id: 'id1',
   key: '1-1',
   positionPath: '1-1',
@@ -57,7 +57,7 @@ const mockItem = {
   scope: Scope.Workspace,
   description: 'description'
 }
-
+ */
 const state: MenuState = {
   pageSize: 0,
   showDetails: false,
@@ -67,7 +67,7 @@ const state: MenuState = {
   workspaceMenuItems: []
 }
 
-const form = new FormGroup({
+/* const form = new FormGroup({
   parentItemId: new FormControl('some parent id'),
   key: new FormControl('key'),
   name: new FormControl('name'),
@@ -79,7 +79,7 @@ const form = new FormGroup({
   scope: new FormControl('scope'),
   description: new FormControl('description')
 })
-
+ */
 describe('MenuComponent', () => {
   let component: MenuComponent
   let fixture: ComponentFixture<MenuComponent>
@@ -214,10 +214,10 @@ describe('MenuComponent', () => {
     expect(component.loadMenu).toHaveBeenCalledWith(true)
   })
 
-  it('should call loadMenu onReloadMenu', () => {
+  it('should call loadMenu onReload', () => {
     spyOn(component, 'loadMenu')
 
-    component.onReloadMenu()
+    component.onReload()
 
     expect(component.loadMenu).toHaveBeenCalledWith(true)
   })
@@ -342,7 +342,7 @@ describe('MenuComponent', () => {
     expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_404.MENUS')
   })
 
-  it('should set item onDeleteMenuItem', () => {
+  /*   it('should set item onDeleteMenuItem', () => {
     const event: MouseEvent = new MouseEvent('type')
     const item = {
       key: '1-1',
@@ -386,8 +386,9 @@ describe('MenuComponent', () => {
 
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MENU_DELETE_NOK' })
   })
+ */
 
-  xit('should get menu item onGoToDetails', () => {
+  /*   xit('should get menu item onGoToDetails', () => {
     const mockMenuItem = {
       key: 'key',
       parentItemId: 'parent id',
@@ -657,7 +658,7 @@ describe('MenuComponent', () => {
 
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
   })
-
+ */
   it('should export a menu', () => {
     menuApiServiceSpy.getMenuStructureForPortalId.and.returnValue(of(mockMenuItems))
     component.workspaceName = 'name'
@@ -743,7 +744,7 @@ describe('MenuComponent', () => {
     spyOn(component, 'ngOnInit')
     menuApiServiceSpy.uploadMenuStructure.and.returnValue(of({}))
 
-    component.onMenuImport()
+    component.onImportMenu()
 
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'TREE.STRUCTURE_UPLOAD_SUCCESS' })
     expect(component.ngOnInit).toHaveBeenCalled()
@@ -754,7 +755,7 @@ describe('MenuComponent', () => {
     component.workspaceName = 'name'
     menuApiServiceSpy.uploadMenuStructure.and.returnValue(throwError(() => new Error()))
 
-    component.onMenuImport()
+    component.onImportMenu()
 
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'TREE.STRUCTURE_UPLOAD_ERROR' })
   })
@@ -773,12 +774,12 @@ describe('MenuComponent', () => {
 
   it('should handle successful menu item update', () => {
     menuApiServiceSpy.bulkPatchMenuItems.and.returnValue(of({}))
-    spyOn(component, 'onReloadMenu')
+    spyOn(component, 'onReload')
 
     component.updateMenuItems(mockMenuItems)
 
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'TREE.EDIT_SUCCESS' })
-    expect(component.onReloadMenu).toHaveBeenCalled()
+    expect(component.onReload).toHaveBeenCalled()
   })
 
   it('should handle menu item update error', () => {

@@ -141,7 +141,6 @@
       "INTERN": "Intern",
       "ROLES": "Rollen",
       "PRODUCTS": "Produkte",
-      "SUBJECTS": "Subjects",
       "TOOLTIPS": {
         "DETAILS": "Basiseigenschaften",
         "CONTACT": "Kontaktinformationen",
@@ -202,7 +201,7 @@
     "PARENT_NAME": "Eltern-Menü Name",
     "WORKSPACE": "Workspace Name",
     "POSITION": "Position",
-    "SCOPE": "Aktionsradius",
+    "SCOPE": "Scope",
     "URL": "URL",
     "TOOLTIP": {
       "BADGE": "Icon aus der PrimeNG Bibliothek welches neben dem Menünamen angezeigt werden soll",
@@ -259,6 +258,8 @@
         "IMPORT": "Menü importieren",
         "TREE_MODAL": "Umordnen & Voransicht",
         "TREE_MODAL.TOOLTIP": "Menüeinträge per Drag & Drop umordnen und Ansicht in den konfigurierten Sprachen",
+        "ROLES": "Berechtigungen",
+        "ROLES.TOOLTIP": "Verwalten von Berechtigungen",
         "PREVIEW.TOOLTIP": "Ansicht in den konfigurierten Sprachen",
         "PREVIEW2.TOOLTIP": "Keine Übersetzung vorhanden",
         "REORDER.TOOLTIP": "Menüeinträge per Drag & Drop umordnen"
@@ -270,19 +271,32 @@
         "DISABLED": "Grün = Eintrag ist im Menü verfügbar - durch Klick veränderbar",
         "NEW": "Neuen Menüeintrag erstellen"
       },
-      "DETAILS": "Details",
-      "I18N": {
-        "LABEL": "I18n",
-        "TOOLTIP": "Übersetzungen vorhanden?",
-        "ROW.TOOLTIP": "Mindestens eine Übersetzung ist vorhanden",
-        "ADD_LANGUAGE": "Sprache hinzufügen",
-        "REMOVE_LANGUAGE": "Sprache entfernen"
+      "TABS": {
+        "DETAILS": "Details",
+        "DETAILS.TOOLTIP": "Eigenschaften verwalten",
+        "I18N": {
+          "LABEL": "Übersetzungen",
+          "TOOLTIP": "Übersetzungen verwalten",
+          "ADD_LANGUAGE": "Sprache hinzufügen",
+          "REMOVE_LANGUAGE": "Sprache entfernen"
+        },
+        "INTERN": "Intern",
+        "INTERN.TOOLTIP": "Interne Eigenschaften"
       },
-      "POSITION": "Position",
-      "POSITION.TOOLTIP": "Der Position-Pfad des Menü-Eintrags im Format [Eltern-Position.]Position",
-      "URL.TOOLTIP": "Die URL die beim Aktivieren aufgerufen wird",
-      "PRODUCT.TOOLTIP": "Indikator ob die Menü-URL durch ein registriertes Produkt angeboten wird",
-      "EXTERN.TOOLTIP": "Wenn diese Option aktiviert ist, wird der Workspace verlassen",
+      "TREE": {
+        "POSITION": "Position",
+        "POSITION.TOOLTIP": "Der Position-Pfad des Menü-Eintrags im Format [Eltern-Position.]Position",
+        "I18N": "I18n",
+        "I18N.TOOLTIP": "Indikator ob Übersetzungen vorhanden sind",
+        "I18N.ROW.TOOLTIP": "Mindestens eine Übersetzung ist vorhanden",
+        "URL.TOOLTIP": "Die URL die beim Aktivieren aufgerufen wird",
+        "PRODUCT.TOOLTIP": "Indikator ob die Menü-URL durch ein registriertes Produkt angeboten wird",
+        "EXTERN.TOOLTIP": "Wenn diese Option aktiviert ist, wird der Workspace verlassen"
+      },
+      "ASSIGNMENT": {
+        "OK": "Menü Item zugeordnet",
+        "NOK": "Menü Item nicht zugeordnet"
+      },
       "PREVIEW": {
         "LANG": "Sprache",
         "LANG.EMPTY": "Keine Übersetzung vorhanden",

@@ -3,7 +3,7 @@ import { HttpErrorResponse, HttpHeaders } from '@angular/common/http'
 import { Location } from '@angular/common'
 import { ActivatedRoute } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
-import { Observable, Subject, catchError, of } from 'rxjs'
+import { catchError, finalize, map, Observable, Subject, of } from 'rxjs'
 
 import { TreeTable } from 'primeng/treetable'
 import { Overlay } from 'primeng/overlay'
@@ -11,15 +11,18 @@ import { SelectItem, TreeNode } from 'primeng/api'
 
 import FileSaver from 'file-saver'
 
-import { Action, PortalMessageService } from '@onecx/portal-integration-angular'
+import { Action, PortalMessageService, UserService } from '@onecx/portal-integration-angular'
 import {
   MenuItemAPIService,
   MenuItem,
   Workspace,
+  WorkspaceRole,
   WorkspaceAPIService,
+  WorkspaceRolesAPIService,
+  IAMRolePageResult,
+  GetWorkspaceResponse,
   GetWorkspaceMenuItemStructureResponse,
   MenuSnapshot
-  //  UpdateMenuItemRequest
 } from 'src/app/shared/generated'
 import { limitText, dropDownSortItemsByLabel } from 'src/app/shared/utils'
 import { MenuStateService } from './services/menu-state.service'
@@ -41,13 +44,16 @@ export class MenuComponent implements OnInit, OnDestroy {
   private readonly debug = false // to be removed after finalization
   // dialog control
   public actions: Action[] = []
+  public actions$: Observable<Action[]> | undefined
   public loading = true
   public exceptionKey = ''
+  public myPermissions = new Array<string>() // permissions of the user
   // workspace
   public workspace?: Workspace
-  private workspace$: Observable<Workspace> = new Observable<Workspace>()
+  private workspace$!: Observable<GetWorkspaceResponse>
   public workspaceName = this.route.snapshot.params['name']
   private mfeRUrls: Array<string> = []
+  public wRoles$!: Observable<IAMRolePageResult>
   // menu
   private menu$: Observable<GetWorkspaceMenuItemStructureResponse> =
     new Observable<GetWorkspaceMenuItemStructureResponse>()
@@ -64,6 +70,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   public displayMenuImport = false
   public displayMenuDelete = false
   public displayTreeModal = false
+  public displayRoles = false
   private treeHeight = 0
   public languagesPreview: SelectItem[] = []
   public languagesUsed!: string[]
@@ -85,12 +92,19 @@ export class MenuComponent implements OnInit, OnDestroy {
     private location: Location,
     private menuApi: MenuItemAPIService,
     private workspaceApi: WorkspaceAPIService,
+    private wRoleApi: WorkspaceRolesAPIService,
     private stateService: MenuStateService,
     private translate: TranslateService,
-    private msgService: PortalMessageService
+    private msgService: PortalMessageService,
+    private userService: UserService
   ) {
     const state = this.stateService.getState()
     this.menuItems = state.workspaceMenuItems
+    // simplify permission checks
+    if (userService.hasPermission('MENU#EDIT')) this.myPermissions.push('MENU#EDIT')
+    if (userService.hasPermission('ROLE#EDIT')) this.myPermissions.push('ROLE#EDIT')
+    if (userService.hasPermission('ROLE#DELETE')) this.myPermissions.push('ROLE#DELETE')
+    if (userService.hasPermission('PERMISSION#GRANT')) this.myPermissions.push('PERMISSION#GRANT')
   }
 
   public ngOnInit(): void {
@@ -106,9 +120,8 @@ export class MenuComponent implements OnInit, OnDestroy {
     })
   }
 
-  public prepareActionButtons() {
-    this.actions = [] // provoke change event
-    this.translate
+  public prepareActionButtons(): void {
+    this.actions$ = this.translate
       .get([
         'ACTIONS.NAVIGATION.BACK',
         'ACTIONS.NAVIGATION.BACK.TOOLTIP',
@@ -117,33 +130,35 @@ export class MenuComponent implements OnInit, OnDestroy {
         'ACTIONS.IMPORT.LABEL',
         'ACTIONS.IMPORT.MENU'
       ])
-      .subscribe((data) => {
-        this.actions.push(
-          {
-            label: data['ACTIONS.NAVIGATION.BACK'],
-            title: data['ACTIONS.NAVIGATION.BACK.TOOLTIP'],
-            actionCallback: () => this.onClose(),
-            icon: 'pi pi-arrow-left',
-            show: 'always'
-          },
-          {
-            label: data['ACTIONS.EXPORT.LABEL'],
-            title: data['ACTIONS.EXPORT.MENU'],
-            actionCallback: () => this.onExportMenu(),
-            icon: 'pi pi-download',
-            show: 'always',
-            permission: 'MENU#EXPORT'
-          },
-          {
-            label: data['ACTIONS.IMPORT.LABEL'],
-            title: data['ACTIONS.IMPORT.MENU'],
-            actionCallback: () => this.onImportMenu(),
-            icon: 'pi pi-upload',
-            show: 'always',
-            permission: 'MENU#IMPORT'
-          }
-        )
-      })
+      .pipe(
+        map((data) => {
+          return [
+            {
+              label: data['ACTIONS.NAVIGATION.BACK'],
+              title: data['ACTIONS.NAVIGATION.BACK.TOOLTIP'],
+              actionCallback: () => this.onClose(),
+              icon: 'pi pi-arrow-left',
+              show: 'always'
+            },
+            {
+              label: data['ACTIONS.EXPORT.LABEL'],
+              title: data['ACTIONS.EXPORT.MENU'],
+              actionCallback: () => this.onExportMenu(),
+              icon: 'pi pi-download',
+              show: 'always',
+              permission: 'MENU#EXPORT'
+            },
+            {
+              label: data['ACTIONS.IMPORT.LABEL'],
+              title: data['ACTIONS.IMPORT.MENU'],
+              actionCallback: () => this.onImportMenu(),
+              icon: 'pi pi-upload',
+              show: 'always',
+              permission: 'MENU#IMPORT'
+            }
+          ]
+        })
+      )
   }
 
   /**
@@ -167,7 +182,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     console.log('onGotoDetails', item)
     $event.stopPropagation()
     if (item.id === undefined) return
-    this.changeMode = 'EDIT'
+    this.changeMode = this.myPermissions.includes('MENU#EDIT') ? 'EDIT' : 'VIEW'
     this.menuItem = item
     this.displayMenuDetail = true
   }
@@ -258,13 +273,14 @@ export class MenuComponent implements OnInit, OnDestroy {
       .getMenuStructureForWorkspaceName({ workspaceName: this.workspaceName })
       .pipe(catchError((error) => of(error)))
 
-    this.workspace$.subscribe((workspace) => {
+    this.workspace$.subscribe((result) => {
       this.loading = true
-      if (workspace instanceof HttpErrorResponse) {
-        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + workspace.status + '.PORTALS'
-        // console.error('getPortalByPortalId():', workspace)
-      } else if (workspace instanceof Object) {
-        this.workspace = workspace
+      if (result instanceof HttpErrorResponse) {
+        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + result.status + '.PORTALS'
+        console.error('getWorkspaceByName():', result)
+      } else if (result instanceof Object) {
+        this.workspace = result.resource
+
         // this.workspace?.microfrontendRegistrations = new Set(Array.from(workspace.microfrontendRegistrations ?? []))
         // this.mfeRUrls = Array.from(this.workspace?.microfrontendRegistrations || []).map((mfe) => mfe.baseUrl || '')
         // this.mfeRUrlOptions = Array.from(this.workspace?.microfrontendRegistrations ?? [])
@@ -294,6 +310,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.preparePreviewLanguages()
         this.prepareParentNodes(this.menuNodes)
         this.parentItems.sort(dropDownSortItemsByLabel)
+        this.searchWorkspaceRoles()
         if (restore) {
           this.restoreTree()
           this.msgService.success({ summaryKey: 'ACTIONS.SEARCH.RELOAD.OK' })
@@ -304,6 +321,31 @@ export class MenuComponent implements OnInit, OnDestroy {
       }
       this.loading = false
     })
+  }
+
+  /** Workspace Role
+   */
+  private declareWorkspaceRolesObservable(): void {
+    this.wRoles$ = this.wRoleApi.searchWorkspaceRoles({ workspaceRoleSearchCriteria: {} }).pipe(
+      catchError((err) => {
+        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.ROLES'
+        console.error('searchAvailableRoles():', err)
+        return of({} as IAMRolePageResult)
+      }),
+      finalize(() => (this.loading = false))
+    )
+  }
+  private searchWorkspaceRoles(): Observable<WorkspaceRole[]> {
+    this.declareWorkspaceRolesObservable()
+    return this.wRoles$.pipe(
+      map((result) => {
+        return result.stream
+          ? result.stream?.map((role) => {
+              return { ...role, isIamRole: false, isWorkspaceRole: true, type: 'WORKSPACE' } as WorkspaceRole
+            })
+          : []
+      })
+    )
   }
 
   /** remove node and sub nodes (recursively) in the tree
@@ -443,12 +485,13 @@ export class MenuComponent implements OnInit, OnDestroy {
         first: pos === 1,
         last: pos === items.length,
         prevId: prevId,
+        gotoUrl: this.prepareItemUrl(item.url),
         // parent info ?
         // concat the positions
         positionPath: parent ? parent.position + '.' + item.position : item.position,
         // true if path is a mfe base path
         regMfeAligned: item.url && !item.url.startsWith('http') && !item.workspaceExit ? this.urlMatch(item.url) : false
-      } as MenuItem
+      }
       const newNode: TreeNode = this.createTreeNode(extendedItem)
       if (item.children && item.children.length > 0 && item.children != null && item.children.toLocaleString() != '') {
         newNode.leaf = false
@@ -462,15 +505,14 @@ export class MenuComponent implements OnInit, OnDestroy {
     return nodes
   }
   private createTreeNode(item: MenuItem): TreeNode {
-    return {
-      data: item,
-      label: item.name,
-      expanded: false,
-      key: item.key,
-      leaf: true,
-      children: []
-    }
+    return { data: item, label: item.name, expanded: false, key: item.key, leaf: true, children: [] }
   }
+  private prepareItemUrl(url: string | undefined): string | undefined {
+    if (!(url && this.workspace && this.workspace?.baseUrl)) return undefined
+    let url_parts = window.location.href.split('/')
+    return url_parts[0] + '//' + url_parts[2] + Location.joinWithSlash(this.workspace?.baseUrl, url)
+  }
+
   private prepareParentNodes(nodes: TreeNode[]): void {
     nodes.forEach((m) => {
       this.parentItems.push({ label: m.key, value: m.data.id } as SelectItem)
@@ -486,6 +528,10 @@ export class MenuComponent implements OnInit, OnDestroy {
       }
       if (node.children && node.children?.length > 0) this.prepareUsedLanguage(node.children)
     }
+  }
+
+  public onDisplayRoles() {
+    this.displayRoles = !this.displayRoles
   }
   public onDisplayTreeModal() {
     this.displayTreeModal = true

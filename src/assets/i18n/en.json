@@ -141,7 +141,6 @@
       "INTERN": "Internal",
       "ROLES": "Roles",
       "PRODUCTS": "Products",
-      "SUBJECTS": "Subjects",
       "TOOLTIPS": {
         "DETAILS": "Base properties",
         "CONTACT": "Contact information",
@@ -259,6 +258,8 @@
         "IMPORT": "Import Menu",
         "TREE_MODAL": "Reorder & Preview",
         "TREE_MODAL.TOOLTIP": "Reorder of Menu Items via Drag & Drop and Preview in configured languages",
+        "ROLES": "Permissions",
+        "ROLES.TOOLTIP": "Manage Permissions",
         "PREVIEW.TOOLTIP": "Preview in configured languages",
         "PREVIEW2.TOOLTIP": "No translation available",
         "REORDER.TOOLTIP": "Reorder of Menu Items via Drag & Drop"
@@ -270,19 +271,32 @@
         "DISABLED": "Green = Item is available in Menu - Changeable by click",
         "NEW": "Create new Menu Item"
       },
-      "DETAILS": "Details",
-      "I18N": {
-        "LABEL": "I18n",
-        "TOOLTIP": "Translations available?",
-        "ROW.TOOLTIP": "At least one translation is available",
-        "ADD_LANGUAGE": "Add Language",
-        "REMOVE_LANGUAGE": "Remove Language"
+      "TABS": {
+        "DETAILS": "Details",
+        "DETAILS.TOOLTIP": "Manage Properties",
+        "I18N": {
+          "LABEL": "Translations",
+          "TOOLTIP": "Manage Translations",
+          "ADD_LANGUAGE": "Add Language",
+          "REMOVE_LANGUAGE": "Remove Language"
+        },
+        "INTERN": "Internal",
+        "INTERN.TOOLTIP": "Interne Eigenschaften"
       },
-      "POSITION": "Position",
-      "POSITION.TOOLTIP": "Position path of the menu item in format [parent item.]item ",
-      "URL.TOOLTIP": "The URL to be called upon activation",
-      "PRODUCT.TOOLTIP": "Indicator whether the menu URL is offered by a registered Product ",
-      "EXTERN.TOOLTIP": "If checked then the Workspace is exit",
+      "TREE": {
+        "POSITION": "Position",
+        "POSITION.TOOLTIP": "Position path of the menu item in format [parent item.]item ",
+        "I18N": "I18n",
+        "I18N.TOOLTIP": "Indicator whether translations exist",
+        "I18N.ROW.TOOLTIP": "At least one translation is available",
+        "URL.TOOLTIP": "The URL to be called upon activation",
+        "PRODUCT.TOOLTIP": "Indicator whether the menu URL is offered by a registered Product ",
+        "EXTERN.TOOLTIP": "If checked then the Workspace is exit"
+      },
+      "ASSIGNMENT": {
+        "OK": "Menu Item assigned",
+        "NOK": "Menu Item not assigned"
+      },
       "PREVIEW": {
         "LANG": "Language",
         "LANG.EMPTY": "No translations available",
