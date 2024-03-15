@@ -114,17 +114,18 @@ export class MenuDetailComponent implements OnChanges {
 
   public ngOnChanges(): void {
     this.formGroup.reset()
+    console.log('ngOnChanges ' + this.changeMode + '  ' + this.menuItemId)
     if (this.menuItemId) {
       if (this.changeMode === 'CREATE') {
         this.formGroup.reset()
-        this.formGroup.patchValue({
+        this.menuItem = {
           parentItemId: this.menuItemId,
           position: 0,
           external: false,
           disabled: false
-        })
-        // this.menuItem = {} as unknown as MenuItem
-      } else if (this.changeMode !== 'DELETE') this.getMenu()
+        } as MenuItem
+        this.formGroup.patchValue(this.menuItem)
+      } else this.getMenu()
     }
   }
 
@@ -143,10 +144,10 @@ export class MenuDetailComponent implements OnChanges {
     this.menuItem$.subscribe({
       next: (m) => {
         this.menuItem = m ?? undefined
-        if (this.menuItem) this.fillForm(this.menuItem)
+        if (this.menuItem && this.displayDetailDialog) this.fillForm(this.menuItem)
       },
       error: (err) => {
-        this.msgService.error({ summaryKey: 'DETAIL.ERROR_FIND_MENU' })
+        this.msgService.error({ summaryKey: 'DIALOG.MENU.MENU_ITEM_NOT_FOUND' })
         console.error(err.error)
       }
     })
@@ -190,15 +191,12 @@ export class MenuDetailComponent implements OnChanges {
           if (l.data !== '') i18n[l.value] = l.data
         }
         this.menuItem.i18n = i18n
-        if (this.changeMode === 'CREATE') {
-          this.menuItem.id = ''
-        }
-        console.log('onMenuSave', this.menuItem)
       }
+      console.log('onMenuSave', this.menuItem)
       if (this.changeMode === 'CREATE') {
         this.menuApi
           .createMenuItemForWorkspace({
-            createMenuItem: { ...this.menuItem, workspaceId: this.workspaceId } as CreateMenuItem
+            createMenuItem: { ...this.menuItem, id: undefined, workspaceId: this.workspaceId } as CreateMenuItem
           })
           .subscribe({
             next: () => {

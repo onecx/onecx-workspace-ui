@@ -303,7 +303,7 @@
         "LANG.TOOLTIP": "Liste der verwendeten Sprachen"
       },
       "MENU_NOT_EXIST": "Kein Menü definiert",
-      "ERROR_FIND_MENU": "Menüeintrag mit ID wurde nicht gefunden:",
+      "MENU_ITEM_NOT_FOUND": "Menüeintrag mit ID wurde nicht gefunden:",
       "TREE_VIEW": "Menüstruktur - Baum",
       "IMPORT": {
         "UPLOAD_INFO": "Bitte laden Sie die JSON-Datei von Ihrem Gerät hoch. Bitte beachten Sie, dass nach dem Upload die gesamte Menüstruktur überschrieben wird.",
