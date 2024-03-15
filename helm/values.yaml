@@ -50,7 +50,7 @@ app:
             SAVE: Save menu
             VIEW: View menu
             DRAG_DROP: Drag & drop menu tree
-            GRANT_ROLES: Assign roles to menu item
+            GRANT: Assign roles to menu item
             EXPORT: Export menu
             IMPORT: Import menu
           MENU_TENANT:

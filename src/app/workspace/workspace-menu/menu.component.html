@@ -121,12 +121,15 @@
         <tr>
           <th id="workspace_menu_table_header_dummy" class="text-right border-transparent border-bottom-2"></th>
           <ng-container *ngIf="!displayRoles">
-            <th id="workspace_menu_table_header_actions" class="text-center hidden-xs border-primary border-bottom-2">
+            <th
+              id="workspace_menu_table_header_actions"
+              class="text-center px-4 hidden-xs border-primary border-bottom-2"
+            >
               {{ 'ACTIONS.LABEL' | translate }}
             </th>
             <th
               id="workspace_menu_table_header_position"
-              class="text-center hidden-md border-primary border-bottom-2"
+              class="pl-0 text-center hidden-md border-primary border-bottom-2"
               [title]="'DIALOG.MENU.TREE.POSITION.TOOLTIP' | translate"
             >
               Pos

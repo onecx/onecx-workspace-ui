@@ -82,9 +82,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     pl: 'Polski',
     sk: 'Slovak'
   }
-
-  // utils declarations
-  limitText = limitText
+  limitText = limitText // utils declarations
 
   constructor(
     private route: ActivatedRoute,
@@ -178,7 +176,6 @@ export class MenuComponent implements OnInit, OnDestroy {
    * CREATE + EDIT + DELETE
    */
   public onGotoDetails($event: MouseEvent, item: WorkspaceMenuItem): void {
-    console.log('onGotoDetails', item)
     $event.stopPropagation()
     if (item.id === undefined) return
     this.changeMode = this.myPermissions.includes('MENU#EDIT') ? 'EDIT' : 'VIEW'
@@ -192,14 +189,12 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.displayMenuDetail = true
   }
   public onMenuItemChanged(changed: boolean): void {
-    console.log('onMenuItemChanged')
     if (changed) {
       if (this.displayMenuDelete) {
         this.removeNodeFromTree(this.menuNodes, this.menuItem?.key)
         this.menuNodes = [...this.menuNodes] // refresh UI
       }
       if (this.displayMenuDetail) {
-        this.preparePreviewLanguages()
         this.loadMenu(true)
       }
     }
@@ -294,6 +289,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   public loadMenu(restore: boolean): void {
+    this.menuItem = undefined
     this.menu$ = this.menuApi
       .getMenuStructure({ menuStructureSearchCriteria: { workspaceId: this.workspace?.id ?? '' } })
       .pipe(catchError((error) => of(error)))
@@ -303,12 +299,10 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + result.status + '.MENUS'
         console.error('getMenuStructure():', result)
       } else if (result.menuItems instanceof Array) {
-        this.menuNodes = this.mapToTreeNodes(result.menuItems, undefined)
         this.menuItems = result.menuItems
-        this.menuItem = undefined
+        this.menuNodes = this.mapToTreeNodes(this.menuItems, undefined)
         this.preparePreviewLanguages()
         this.prepareParentNodes(this.menuNodes)
-        this.parentItems.sort(dropDownSortItemsByLabel)
         this.searchWorkspaceRoles()
         if (restore) {
           this.restoreTree()
@@ -316,7 +310,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         }
       } else {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_0.MENUS'
-        // console.error('getMenuStructureForPortalId() => unknown response:', menu)
+        console.error('getMenuStructure() => unknown response:', result)
       }
       this.loading = false
     })
@@ -392,11 +386,9 @@ export class MenuComponent implements OnInit, OnDestroy {
   private preparePreviewLanguages(): void {
     this.languagesUsed = []
     this.prepareUsedLanguage(this.menuNodes)
-    console.log('languagesUsed:', this.languagesUsed)
     this.languagesPreview = []
     this.languagesUsed.forEach((l) => this.languagesPreview.push({ label: this.languageNames[l], value: l }))
     this.languagesPreview.sort(dropDownSortItemsByLabel)
-    console.log('languagesPreview:', this.languagesPreview)
   }
 
   /****************************************************************************
@@ -520,6 +512,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       this.parentItems.push({ label: m.key, value: m.data.id } as SelectItem)
       if (m.children && m.children.length > 0) this.prepareParentNodes(m.children)
     })
+    this.parentItems.sort(dropDownSortItemsByLabel)
   }
   private prepareUsedLanguage(nodes: TreeNode[]) {
     for (const node of nodes) {

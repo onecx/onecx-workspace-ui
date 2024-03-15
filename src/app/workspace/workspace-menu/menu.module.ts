@@ -10,6 +10,7 @@ import { SharedModule } from 'src/app/shared/shared.module'
 import { MenuTreeService } from './services/menu-tree.service'
 import { MenuTreeComponent } from './menu-tree/menu-tree.component'
 import { MenuDetailComponent } from './menu-detail/menu-detail.component'
+import { MenuInternComponent } from './menu-intern/menu-intern.component'
 import { MenuComponent } from './menu.component'
 
 const routes: Routes = [
@@ -19,7 +20,7 @@ const routes: Routes = [
   }
 ]
 @NgModule({
-  declarations: [MenuComponent, MenuDetailComponent, MenuTreeComponent],
+  declarations: [MenuComponent, MenuDetailComponent, MenuInternComponent, MenuTreeComponent],
   imports: [
     CommonModule,
     FormsModule,

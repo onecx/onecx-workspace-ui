@@ -16,7 +16,7 @@
       [tooltip]="'DIALOG.MENU.TABS.DETAILS.TOOLTIP' | translate"
     >
       <form [formGroup]="formGroup" errorTailor>
-        <div class="grid p-1">
+        <div class="grid">
           <div
             class="col-12 md:col-12 my-1"
             style="min-width: 15rem"
@@ -35,6 +35,7 @@
               </label>
             </span>
           </div>
+
           <div class="col-12 md:col-6 my-1" style="min-width: 15rem" [title]="'MENU_ITEM.TOOLTIP.MENU_ID' | translate">
             <span class="p-float-label" controlErrorAnchor>
               <input
@@ -174,48 +175,6 @@
               <label for="workspace_menu_detail_field_description"> {{ 'MENU_ITEM.DESCRIPTION' | translate }} </label>
             </span>
           </div>
-
-          <div
-            *ngIf="changeMode === 'EDIT'"
-            class="col-12 md:col-6 my-1"
-            style="min-width: 15rem"
-            [title]="'INTERNAL.TOOLTIPS.CREATION_DATE' | translate"
-          >
-            <span class="p-float-label mb-1" controlErrorAnchor>
-              <input
-                pInputText
-                type="text"
-                id="workspace_menu_detail_field_creation_date"
-                class="w-full pt-3 pb-2"
-                [value]="menuItem?.creationDate | date : dateFormat"
-                [disabled]="true"
-              />
-              <label for="workspace_menu_detail_field_creation_date">
-                {{ 'INTERNAL.CREATION_DATE' | translate }}
-              </label>
-            </span>
-          </div>
-
-          <div
-            *ngIf="changeMode === 'EDIT'"
-            class="col-12 md:col-6 my-1"
-            style="min-width: 15rem"
-            [title]="'INTERNAL.TOOLTIPS.MODIFICATION_DATE' | translate"
-          >
-            <span class="p-float-label mb-1" controlErrorAnchor>
-              <input
-                pInputText
-                type="text"
-                id="workspace_menu_detail_field_modification_date"
-                class="w-full pt-3 pb-2"
-                [value]="menuItem?.modificationDate | date : dateFormat"
-                [disabled]="true"
-              />
-              <label for="workspace_menu_detail_field_modification_date">
-                {{ 'INTERNAL.MODIFICATION_DATE' | translate }}
-              </label>
-            </span>
-          </div>
         </div>
       </form>
     </p-tabPanel>
@@ -224,9 +183,9 @@
       [header]="'DIALOG.MENU.TABS.I18N.LABEL' | translate"
       [tooltip]="'DIALOG.MENU.TABS.I18N.TOOLTIP' | translate"
     >
-      <div class="flex flex-column gap-4">
+      <div class="my-1 flex flex-column gap-4">
         <span
-          class="p-float-label p-input-icon-right w-30rem mb-1"
+          class="p-float-label p-input-icon-right w-30rem my-1"
           *ngFor="let language of languagesDisplayed; index as i"
         >
           <i
@@ -260,9 +219,11 @@
     </p-tabPanel>
 
     <p-tabPanel
+      [disabled]="changeMode === 'CREATE'"
       [header]="'DIALOG.MENU.TABS.INTERN' | translate"
       [tooltip]="'DIALOG.MENU.TABS.INTERN.TOOLTIP' | translate"
     >
+      <app-menu-intern [menuItem]="menuItem" [dateFormat]="dateFormat"></app-menu-intern>
     </p-tabPanel>
   </p-tabView>
   <ng-template pTemplate="footer">

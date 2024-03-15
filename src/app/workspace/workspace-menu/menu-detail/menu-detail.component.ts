@@ -15,7 +15,7 @@ import {
   UpdateMenuItemRequest
 } from 'src/app/shared/generated'
 import { ChangeMode, I18N } from '../menu.component'
-import { IconService } from '../iconservice'
+import { IconService } from '../services/iconservice'
 
 type LanguageItem = SelectItem & { data: string }
 
@@ -52,7 +52,6 @@ export class MenuDetailComponent implements OnChanges {
   private menuItem$: Observable<MenuItem | null> = new Observable<MenuItem | null>()
   public iconItems: SelectItem[] = [{ label: '', value: null }] // default value is empty
   public scopeItems: SelectItem[]
-  // public booleanItems: SelectItem[]
   private urlPattern =
     '(https://www.|http://www.|https://|http://)?[a-zA-Z]{2,}(.[a-zA-Z]{2,})(.[a-zA-Z]{2,})?/[a-zA-Z0-9]{2,}|((https://www.|http://www.|https://|http://)?[a-zA-Z]{2,}(.[a-zA-Z]{2,})(.[a-zA-Z]{2,})?)|(https://www.|http://www.|https://|http://)?[a-zA-Z0-9]{2,}.[a-zA-Z0-9]{2,}.[a-zA-Z0-9]{2,}(.[a-zA-Z0-9]{2,})?'
   private posPattern = '[0-9]{1,9}'
@@ -114,7 +113,7 @@ export class MenuDetailComponent implements OnChanges {
 
   public ngOnChanges(): void {
     this.formGroup.reset()
-    console.log('ngOnChanges ' + this.changeMode + '  ' + this.menuItemId)
+    this.tabIndex = 0
     if (this.menuItemId) {
       if (this.changeMode === 'CREATE') {
         this.formGroup.reset()
@@ -130,7 +129,6 @@ export class MenuDetailComponent implements OnChanges {
   }
 
   public onCloseDetailDialog(): void {
-    console.log('onCloseDetailDialog')
     this.dataChanged.emit(false)
   }
   public onCloseDeleteDialog(): void {
@@ -153,7 +151,6 @@ export class MenuDetailComponent implements OnChanges {
     })
   }
   private fillForm(m: MenuItem) {
-    console.log('fillForm', m)
     this.formGroup.reset()
     this.formGroup.setValue({
       parentItemId: m.parentItemId,
@@ -192,7 +189,6 @@ export class MenuDetailComponent implements OnChanges {
         }
         this.menuItem.i18n = i18n
       }
-      console.log('onMenuSave', this.menuItem)
       if (this.changeMode === 'CREATE') {
         this.menuApi
           .createMenuItemForWorkspace({
@@ -217,27 +213,7 @@ export class MenuDetailComponent implements OnChanges {
           .subscribe({
             next: (data) => {
               this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' })
-              // update tree node with received data without reload all
               this.dataChanged.emit(true)
-              /*
-              if (this.displayMenuDetail) {
-                this.onCloseDetailDialog()
-
-                if (data && data[0].key) {
-                  const node = this.getNodeByKey(data[0].key, this.menuNodes)
-                  if (node) {
-                    node.data = data
-                    node.label = data[0].name
-                  }
-                  if (this.menuItems) {
-                    const item = this.getItemByKey(data[0].key, this.menuItems)
-                    if (item) {
-                      item.i18n = data[0].i18n
-                      item.name = data[0].name
-                    }
-                  }
-                }
-              }*/
             },
             error: (err: { error: any }) => {
               this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
@@ -250,13 +226,13 @@ export class MenuDetailComponent implements OnChanges {
 
   public onTabPanelChange(e: any): void {
     this.tabIndex = e.index
+    if (this.tabIndex) this.prepareLanguagePanel()
   }
   public onFocusFieldUrl(field: any): void {
     field.overlayVisible = true
   }
 
-  public onShowDetailDialog(): void {
-    this.tabIndex = 0
+  public prepareLanguagePanel(): void {
     this.languagesDisplayed = []
     // same height on all TABs
     if (this.panelHeight === 0) this.panelHeight = this.panelDetail?.el.nativeElement.offsetHeight
@@ -323,34 +299,4 @@ export class MenuDetailComponent implements OnChanges {
       }
     })
   }
-  /*
-  private getNodeByKey(key: string, nodes: TreeNode[]): TreeNode | undefined {
-    for (const node of nodes) {
-      if (node.key === key) {
-        return node
-      }
-      if (node.children) {
-        const match = this.getNodeByKey(key, node.children)
-        if (match) {
-          return match
-        }
-      }
-    }
-    return undefined
-  }
-  private getItemByKey(key: string, items: MenuItem[]): MenuItem | undefined {
-    for (const item of items) {
-      if (item.key === key) {
-        return item
-      }
-      if (item.children) {
-        const match = this.getItemByKey(key, item.children)
-        if (match) {
-          return match
-        }
-      }
-    }
-    return undefined
-  }
-  */
 }
