@@ -9,23 +9,22 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { EximScope } from './eximScope';
+import { Scope } from './scope';
 
 
-export interface EximWorkspaceMenuItem { 
+export interface CreateMenuItem { 
+    workspaceId: string;
     key?: string;
     name?: string;
     description?: string;
     url?: string;
-    applicationId?: string;
     disabled?: boolean;
     position?: number;
     badge?: string;
-    scope?: EximScope;
+    scope?: Scope;
     external?: boolean;
-    roles?: Array<string>;
+    parentItemId?: string;
     i18n?: { [key: string]: string; };
-    children?: Array<EximWorkspaceMenuItem>;
 }
 
 

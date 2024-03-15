@@ -3,7 +3,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { TreeNode } from 'primeng/api'
 
 import { MenuTreeService } from './menu-tree.service'
-import { MenuItem } from 'src/app/shared/generated'
+import { WorkspaceMenuItem } from 'src/app/shared/generated'
 
 describe('MenuTreeService', () => {
   let service: MenuTreeService
@@ -71,7 +71,7 @@ describe('MenuTreeService', () => {
   })
 
   it('should parse items from structure correctly', () => {
-    const structure: MenuItem[] = [
+    const structure: WorkspaceMenuItem[] = [
       {
         name: '1',
         url: '/1',
@@ -95,7 +95,7 @@ describe('MenuTreeService', () => {
         id: 'id'
       }
     ]
-    const list: MenuItem[] = []
+    const list: WorkspaceMenuItem[] = []
 
     const result = service.parseItemsFromStructure(structure, list)
 
@@ -124,7 +124,7 @@ describe('MenuTreeService', () => {
   })
 
   it('should map items to TreeNodes correctly', () => {
-    const items: MenuItem[] = [
+    const items: WorkspaceMenuItem[] = [
       {
         id: 'item1',
         name: 'Item 1',

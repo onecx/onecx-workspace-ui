@@ -9,10 +9,24 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { MenuItem } from './menuItem';
+import { Scope } from './scope';
 
 
 export interface UpdateMenuItemRequest { 
-    resource: MenuItem;
+    modificationCount: number;
+    key?: string;
+    name?: string;
+    description?: string;
+    url?: string;
+    applicationId?: string;
+    disabled?: boolean;
+    position: number;
+    badge?: string;
+    scope?: Scope;
+    external?: boolean;
+    parentItemId?: string;
+    i18n?: { [key: string]: string; };
 }
+
+
 

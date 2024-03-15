@@ -14,14 +14,14 @@ import FileSaver from 'file-saver'
 import { Action, PortalMessageService, UserService } from '@onecx/portal-integration-angular'
 import {
   MenuItemAPIService,
-  MenuItem,
+  MenuItemStructure,
   Workspace,
+  WorkspaceMenuItem,
   WorkspaceRole,
   WorkspaceAPIService,
   WorkspaceRolesAPIService,
   IAMRolePageResult,
   GetWorkspaceResponse,
-  GetWorkspaceMenuItemStructureResponse,
   MenuSnapshot
 } from 'src/app/shared/generated'
 import { limitText, dropDownSortItemsByLabel } from 'src/app/shared/utils'
@@ -55,11 +55,10 @@ export class MenuComponent implements OnInit, OnDestroy {
   private mfeRUrls: Array<string> = []
   public wRoles$!: Observable<IAMRolePageResult>
   // menu
-  private menu$: Observable<GetWorkspaceMenuItemStructureResponse> =
-    new Observable<GetWorkspaceMenuItemStructureResponse>()
+  private menu$!: Observable<MenuItemStructure>
   public menuNodes: TreeNode[] = []
-  public menuItems: MenuItem[] | undefined
-  public menuItem: MenuItem | undefined
+  public menuItems: WorkspaceMenuItem[] | undefined
+  public menuItem: WorkspaceMenuItem | undefined
   private menuItemStructure: MenuSnapshot | undefined
   public menuImportError = false
   public httpHeaders!: HttpHeaders
@@ -178,7 +177,7 @@ export class MenuComponent implements OnInit, OnDestroy {
    ****************************************************************************
    * CREATE + EDIT + DELETE
    */
-  public onGotoDetails($event: MouseEvent, item: MenuItem): void {
+  public onGotoDetails($event: MouseEvent, item: WorkspaceMenuItem): void {
     console.log('onGotoDetails', item)
     $event.stopPropagation()
     if (item.id === undefined) return
@@ -186,7 +185,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.menuItem = item
     this.displayMenuDetail = true
   }
-  public onCreateMenu($event: MouseEvent, parent?: MenuItem): void {
+  public onCreateMenu($event: MouseEvent, parent?: WorkspaceMenuItem): void {
     $event.stopPropagation()
     this.changeMode = 'CREATE'
     this.menuItem = parent
@@ -208,7 +207,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.displayMenuDelete = false
     this.menuItem = undefined
   }
-  public onDeleteMenu($event: MouseEvent, item: MenuItem): void {
+  public onDeleteMenu($event: MouseEvent, item: WorkspaceMenuItem): void {
     $event.stopPropagation()
     this.changeMode = 'DELETE'
     this.menuItem = item
@@ -269,10 +268,6 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.workspace$ = this.workspaceApi
       .getWorkspaceByName({ workspaceName: this.workspaceName })
       .pipe(catchError((error) => of(error)))
-    this.menu$ = this.menuApi
-      .getMenuStructureForWorkspaceName({ workspaceName: this.workspaceName })
-      .pipe(catchError((error) => of(error)))
-
     this.workspace$.subscribe((result) => {
       this.loading = true
       if (result instanceof HttpErrorResponse) {
@@ -280,15 +275,16 @@ export class MenuComponent implements OnInit, OnDestroy {
         console.error('getWorkspaceByName():', result)
       } else if (result instanceof Object) {
         this.workspace = result.resource
-
-        // this.workspace?.microfrontendRegistrations = new Set(Array.from(workspace.microfrontendRegistrations ?? []))
-        // this.mfeRUrls = Array.from(this.workspace?.microfrontendRegistrations || []).map((mfe) => mfe.baseUrl || '')
-        // this.mfeRUrlOptions = Array.from(this.workspace?.microfrontendRegistrations ?? [])
-        //   .map((mfe) => ({
-        //     label: mfe.baseUrl,
-        //     value: mfe.baseUrl || '',
-        //   }))
-        //   .sort(dropDownSortItemsByLabel)
+        /*
+        this.workspace?.microfrontendRegistrations = new Set(Array.from(workspace.microfrontendRegistrations ?? []))
+        this.mfeRUrls = Array.from(this.workspace?.microfrontendRegistrations || []).map((mfe) => mfe.baseUrl || '')
+        this.mfeRUrlOptions = Array.from(this.workspace?.microfrontendRegistrations ?? [])
+          .map((mfe) => ({
+            label: mfe.baseUrl,
+            value: mfe.baseUrl || '',
+          }))
+          .sort(dropDownSortItemsByLabel)
+        */
         this.loadMenu(false)
       } else {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_0.PORTALS'
@@ -298,14 +294,17 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   public loadMenu(restore: boolean): void {
-    this.menu$.subscribe((menu) => {
+    this.menu$ = this.menuApi
+      .getMenuStructure({ menuStructureSearchCriteria: { workspaceId: this.workspace?.id ?? '' } })
+      .pipe(catchError((error) => of(error)))
+    this.menu$.subscribe((result) => {
       this.loading = true
-      if (menu instanceof HttpErrorResponse) {
-        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + menu.status + '.MENUS'
-        // console.error('getMenuStructureForPortalId():', menu)
-      } else if (menu.menuItems instanceof Array) {
-        this.menuNodes = this.mapToTreeNodes(menu.menuItems, undefined)
-        this.menuItems = menu.menuItems
+      if (result instanceof HttpErrorResponse) {
+        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + result.status + '.MENUS'
+        console.error('getMenuStructure():', result)
+      } else if (result.menuItems instanceof Array) {
+        this.menuNodes = this.mapToTreeNodes(result.menuItems, undefined)
+        this.menuItems = result.menuItems
         this.menuItem = undefined
         this.preparePreviewLanguages()
         this.prepareParentNodes(this.menuNodes)
@@ -332,7 +331,10 @@ export class MenuComponent implements OnInit, OnDestroy {
         console.error('searchAvailableRoles():', err)
         return of({} as IAMRolePageResult)
       }),
-      finalize(() => (this.loading = false))
+      finalize(() => {
+        this.loading = false
+        console.log('roles loaded')
+      })
     )
   }
   private searchWorkspaceRoles(): Observable<WorkspaceRole[]> {
@@ -367,7 +369,7 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   // TODO: no save here anymore
   // direct change node on click in tree
-  public onToggleDisable(ev: any, node: MenuItem): void {
+  public onToggleDisable(ev: any, node: WorkspaceMenuItem): void {
     this.changeMode = 'EDIT'
     this.menuItem = node
     this.menuItem.disabled = !node.disabled
@@ -471,7 +473,7 @@ export class MenuComponent implements OnInit, OnDestroy {
    */
 
   // prepare recursively the tree nodes from menu structure
-  private mapToTreeNodes(items?: MenuItem[], parent?: MenuItem): TreeNode[] {
+  private mapToTreeNodes(items?: WorkspaceMenuItem[], parent?: WorkspaceMenuItem): TreeNode[] {
     if (!items || items.length === 0) {
       return []
     }
@@ -490,7 +492,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         // concat the positions
         positionPath: parent ? parent.position + '.' + item.position : item.position,
         // true if path is a mfe base path
-        regMfeAligned: item.url && !item.url.startsWith('http') && !item.workspaceExit ? this.urlMatch(item.url) : false
+        regMfeAligned: item.url && !item.url.startsWith('http') && !item.external ? this.urlMatch(item.url) : false
       }
       const newNode: TreeNode = this.createTreeNode(extendedItem)
       if (item.children && item.children.length > 0 && item.children != null && item.children.toLocaleString() != '') {
@@ -504,7 +506,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     }
     return nodes
   }
-  private createTreeNode(item: MenuItem): TreeNode {
+  private createTreeNode(item: WorkspaceMenuItem): TreeNode {
     return { data: item, label: item.name, expanded: false, key: item.key, leaf: true, children: [] }
   }
   private prepareItemUrl(url: string | undefined): string | undefined {
@@ -548,7 +550,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   // triggered by changes of tree structure in tree popup
-  public updateMenuItems(updatedMenuItems: MenuItem[]): void {
+  public updateMenuItems(updatedMenuItems: WorkspaceMenuItem[]): void {
     console.log('updateMenuItems')
     /*
     const patchRequestItems: UpdateMenuItemRequest[] = []

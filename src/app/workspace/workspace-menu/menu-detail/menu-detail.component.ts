@@ -3,11 +3,17 @@ import { TranslateService } from '@ngx-translate/core'
 import { DefaultValueAccessor, FormControl, FormGroup, Validators } from '@angular/forms'
 import { Observable, Subject, catchError, of } from 'rxjs'
 import { TabView } from 'primeng/tabview'
-import { SelectItem, TreeNode } from 'primeng/api'
+import { SelectItem } from 'primeng/api'
 
 import { PortalMessageService, UserService } from '@onecx/portal-integration-angular'
 import { dropDownSortItemsByLabel } from 'src/app/shared/utils'
-import { CreateUpdateMenuItem, GetMenuItemResponse, MenuItem, MenuItemAPIService } from 'src/app/shared/generated'
+import {
+  CreateMenuItem,
+  MenuItem,
+  WorkspaceMenuItem,
+  MenuItemAPIService,
+  UpdateMenuItemRequest
+} from 'src/app/shared/generated'
 import { ChangeMode, I18N } from '../menu.component'
 import { IconService } from '../iconservice'
 
@@ -28,9 +34,9 @@ DefaultValueAccessor.prototype.registerOnChange = function (fn) {
   styleUrls: ['./menu-detail.component.scss']
 })
 export class MenuDetailComponent implements OnChanges {
-  @Input() public workspaceName!: string
-  @Input() public menuItems: MenuItem[] | undefined
-  @Input() public menuItem: MenuItem | undefined
+  @Input() public workspaceId!: string | undefined
+  @Input() public menuItems: WorkspaceMenuItem[] | undefined
+  @Input() public menuItemId: string | undefined
   @Input() public parentItems!: SelectItem[]
   @Input() changeMode: ChangeMode = 'VIEW'
   @Input() displayDetailDialog = false
@@ -42,7 +48,8 @@ export class MenuDetailComponent implements OnChanges {
   public formGroup: FormGroup
   public dateFormat = 'short'
   public tabIndex = 0
-  private menuItem$: Observable<GetMenuItemResponse | null> = new Observable<GetMenuItemResponse | null>()
+  public menuItem: MenuItem | undefined
+  private menuItem$: Observable<MenuItem | null> = new Observable<MenuItem | null>()
   public iconItems: SelectItem[] = [{ label: '', value: null }] // default value is empty
   public scopeItems: SelectItem[]
   // public booleanItems: SelectItem[]
@@ -93,7 +100,7 @@ export class MenuDetailComponent implements OnChanges {
         Validators.pattern(this.posPattern)
       ]),
       disabled: new FormControl<boolean>(false),
-      workspaceExit: new FormControl<boolean>(false),
+      external: new FormControl<boolean>(false),
       url: new FormControl(null, [
         Validators.minLength(2),
         Validators.maxLength(255)
@@ -107,14 +114,13 @@ export class MenuDetailComponent implements OnChanges {
 
   public ngOnChanges(): void {
     this.formGroup.reset()
-    if (this.menuItem) {
-      this.menuItem.workspaceName = this.workspaceName
+    if (this.menuItemId) {
       if (this.changeMode === 'CREATE') {
         this.formGroup.reset()
         this.formGroup.patchValue({
-          parentItemId: this.menuItem?.id,
+          parentItemId: this.menuItemId,
           position: 0,
-          workspaceExit: false,
+          external: false,
           disabled: false
         })
         // this.menuItem = {} as unknown as MenuItem
@@ -132,11 +138,11 @@ export class MenuDetailComponent implements OnChanges {
 
   private getMenu() {
     this.menuItem$ = this.menuApi
-      .getMenuItemById({ workspaceName: this.workspaceName, menuItemId: this.menuItem?.id! })
+      .getMenuItemById({ menuItemId: this.menuItemId! })
       .pipe(catchError((error) => of(error)))
     this.menuItem$.subscribe({
       next: (m) => {
-        this.menuItem = m?.resource
+        this.menuItem = m ?? undefined
         if (this.menuItem) this.fillForm(this.menuItem)
       },
       error: (err) => {
@@ -158,7 +164,7 @@ export class MenuDetailComponent implements OnChanges {
       scope: m.scope,
       badge: m.badge,
       disabled: m.disabled,
-      workspaceExit: m.workspaceExit
+      external: m.external
     })
   }
 
@@ -168,7 +174,6 @@ export class MenuDetailComponent implements OnChanges {
   public onMenuSave(): void {
     if (this.formGroup.valid) {
       if (this.menuItem) {
-        this.menuItem.workspaceName = this.workspaceName
         this.menuItem.parentItemId = this.formGroup.controls['parentItemId'].value
         this.menuItem.key = this.formGroup.controls['key'].value
         this.menuItem.url = this.formGroup.controls['url'].value
@@ -178,7 +183,7 @@ export class MenuDetailComponent implements OnChanges {
         this.menuItem.scope = this.formGroup.controls['scope'].value
         this.menuItem.position = this.formGroup.controls['position'].value
         this.menuItem.disabled = this.formGroup.controls['disabled'].value
-        this.menuItem.workspaceExit = this.formGroup.controls['workspaceExit'].value
+        this.menuItem.external = this.formGroup.controls['external'].value
         this.menuItem.description = this.formGroup.controls['description'].value
         const i18n: I18N = {}
         for (const l of this.languagesDisplayed) {
@@ -193,8 +198,7 @@ export class MenuDetailComponent implements OnChanges {
       if (this.changeMode === 'CREATE') {
         this.menuApi
           .createMenuItemForWorkspace({
-            workspaceName: this.workspaceName,
-            createMenuItemRequest: { resource: this.formGroup.value as CreateUpdateMenuItem }
+            createMenuItem: { ...this.menuItem, workspaceId: this.workspaceId } as CreateMenuItem
           })
           .subscribe({
             next: () => {
@@ -209,8 +213,8 @@ export class MenuDetailComponent implements OnChanges {
       } else if (this.changeMode === 'EDIT' && this.menuItem && this.menuItem.id) {
         this.menuApi
           .updateMenuItem({
-            workspaceName: this.workspaceName,
-            updateMenuItemRequest: { resource: this.menuItem }
+            menuItemId: this.menuItem.id,
+            updateMenuItemRequest: this.menuItem as UpdateMenuItemRequest
           })
           .subscribe({
             next: (data) => {
@@ -310,23 +314,18 @@ export class MenuDetailComponent implements OnChanges {
 
   public onMenuDelete(): void {
     this.displayDeleteDialog = false
-    this.menuApi
-      .deleteMenuItemById({
-        workspaceName: this.workspaceName,
-        menuItemId: this.menuItem?.id!
-      })
-      .subscribe({
-        next: () => {
-          this.dataChanged.emit(true)
-          this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MENU_DELETE_OK' })
-        },
-        error: (err: { error: any }) => {
-          this.msgService.error({ summaryKey: 'ACTIONS.DELETE.MENU_DELETE_NOK' })
-          console.error(err.error)
-        }
-      })
+    this.menuApi.deleteMenuItemById({ menuItemId: this.menuItem?.id! }).subscribe({
+      next: () => {
+        this.dataChanged.emit(true)
+        this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MENU_DELETE_OK' })
+      },
+      error: (err: { error: any }) => {
+        this.msgService.error({ summaryKey: 'ACTIONS.DELETE.MENU_DELETE_NOK' })
+        console.error(err.error)
+      }
+    })
   }
-
+  /*
   private getNodeByKey(key: string, nodes: TreeNode[]): TreeNode | undefined {
     for (const node of nodes) {
       if (node.key === key) {
@@ -355,4 +354,5 @@ export class MenuDetailComponent implements OnChanges {
     }
     return undefined
   }
+  */
 }

@@ -301,9 +301,9 @@
   DETAIL + DELETE
 -->
 <app-menu-detail
-  [workspaceName]="workspaceName"
+  [workspaceId]="workspace?.id"
   [menuItems]="menuItems"
-  [menuItem]="menuItem"
+  [menuItemId]="changeMode === 'CREATE' ? menuItem?.parentItemId : menuItem?.id"
   [parentItems]="parentItems"
   [changeMode]="changeMode"
   [displayDetailDialog]="displayMenuDetail"

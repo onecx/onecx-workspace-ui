@@ -19,25 +19,25 @@ import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
 // @ts-ignore
-import { CreateMenuItemRequest } from '../model/createMenuItemRequest';
-// @ts-ignore
-import { CreateMenuItemResponse } from '../model/createMenuItemResponse';
-// @ts-ignore
-import { CreateWorkspaceMenuItemStructureRequest } from '../model/createWorkspaceMenuItemStructureRequest';
-// @ts-ignore
-import { GetMenuItemResponse } from '../model/getMenuItemResponse';
-// @ts-ignore
-import { GetMenuItemsResponse } from '../model/getMenuItemsResponse';
-// @ts-ignore
-import { GetWorkspaceMenuItemStructureResponse } from '../model/getWorkspaceMenuItemStructureResponse';
+import { CreateMenuItem } from '../model/createMenuItem';
 // @ts-ignore
 import { ImportMenuResponse } from '../model/importMenuResponse';
 // @ts-ignore
 import { MenuItem } from '../model/menuItem';
 // @ts-ignore
+import { MenuItemPageResult } from '../model/menuItemPageResult';
+// @ts-ignore
+import { MenuItemSearchCriteria } from '../model/menuItemSearchCriteria';
+// @ts-ignore
+import { MenuItemStructure } from '../model/menuItemStructure';
+// @ts-ignore
 import { MenuSnapshot } from '../model/menuSnapshot';
 // @ts-ignore
+import { MenuStructureSearchCriteria } from '../model/menuStructureSearchCriteria';
+// @ts-ignore
 import { ProblemDetailResponse } from '../model/problemDetailResponse';
+// @ts-ignore
+import { UpdateMenuItemParentRequest } from '../model/updateMenuItemParentRequest';
 // @ts-ignore
 import { UpdateMenuItemRequest } from '../model/updateMenuItemRequest';
 
@@ -47,12 +47,14 @@ import { Configuration }                                     from '../configurat
 
 
 export interface CreateMenuItemForWorkspaceRequestParams {
-    workspaceName: string;
-    createMenuItemRequest: CreateMenuItemRequest;
+    createMenuItem: CreateMenuItem;
+}
+
+export interface DeleteAllMenuItemsForWorkspaceRequestParams {
+    id: string;
 }
 
 export interface DeleteMenuItemByIdRequestParams {
-    workspaceName: string;
     menuItemId: string;
 }
 
@@ -61,16 +63,11 @@ export interface ExportMenuByWorkspaceNameRequestParams {
 }
 
 export interface GetMenuItemByIdRequestParams {
-    workspaceName: string;
     menuItemId: string;
 }
 
-export interface GetMenuItemsForWorkspaceByNameRequestParams {
-    workspaceName: string;
-}
-
-export interface GetMenuStructureForWorkspaceNameRequestParams {
-    workspaceName: string;
+export interface GetMenuStructureRequestParams {
+    menuStructureSearchCriteria: MenuStructureSearchCriteria;
 }
 
 export interface ImportMenuByWorkspaceNameRequestParams {
@@ -78,14 +75,18 @@ export interface ImportMenuByWorkspaceNameRequestParams {
     menuSnapshot: MenuSnapshot;
 }
 
+export interface SearchMenuItemsByCriteriaRequestParams {
+    menuItemSearchCriteria: MenuItemSearchCriteria;
+}
+
 export interface UpdateMenuItemRequestParams {
-    workspaceName: string;
+    menuItemId: string;
     updateMenuItemRequest: UpdateMenuItemRequest;
 }
 
-export interface UploadMenuStructureForWorkspaceNameRequestParams {
-    workspaceName: string;
-    createWorkspaceMenuItemStructureRequest: CreateWorkspaceMenuItemStructureRequest;
+export interface UpdateMenuItemParentRequestParams {
+    menuItemId: string;
+    updateMenuItemParentRequest: UpdateMenuItemParentRequest;
 }
 
 
@@ -159,17 +160,13 @@ export class MenuItemAPIService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public createMenuItemForWorkspace(requestParameters: CreateMenuItemForWorkspaceRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<CreateMenuItemResponse>;
-    public createMenuItemForWorkspace(requestParameters: CreateMenuItemForWorkspaceRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<CreateMenuItemResponse>>;
-    public createMenuItemForWorkspace(requestParameters: CreateMenuItemForWorkspaceRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<CreateMenuItemResponse>>;
+    public createMenuItemForWorkspace(requestParameters: CreateMenuItemForWorkspaceRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<MenuItem>;
+    public createMenuItemForWorkspace(requestParameters: CreateMenuItemForWorkspaceRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<MenuItem>>;
+    public createMenuItemForWorkspace(requestParameters: CreateMenuItemForWorkspaceRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<MenuItem>>;
     public createMenuItemForWorkspace(requestParameters: CreateMenuItemForWorkspaceRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
-        const workspaceName = requestParameters.workspaceName;
-        if (workspaceName === null || workspaceName === undefined) {
-            throw new Error('Required parameter workspaceName was null or undefined when calling createMenuItemForWorkspace.');
-        }
-        const createMenuItemRequest = requestParameters.createMenuItemRequest;
-        if (createMenuItemRequest === null || createMenuItemRequest === undefined) {
-            throw new Error('Required parameter createMenuItemRequest was null or undefined when calling createMenuItemForWorkspace.');
+        const createMenuItem = requestParameters.createMenuItem;
+        if (createMenuItem === null || createMenuItem === undefined) {
+            throw new Error('Required parameter createMenuItem was null or undefined when calling createMenuItemForWorkspace.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -212,11 +209,70 @@ export class MenuItemAPIService {
             }
         }
 
-        let localVarPath = `/menu/${this.configuration.encodeParam({name: "workspaceName", value: workspaceName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/menuItems`;
-        return this.httpClient.request<CreateMenuItemResponse>('post', `${this.configuration.basePath}${localVarPath}`,
+        let localVarPath = `/menu`;
+        return this.httpClient.request<MenuItem>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: createMenuItemRequest,
+                body: createMenuItem,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Delete all menu items in workspace
+     * @param requestParameters
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public deleteAllMenuItemsForWorkspace(requestParameters: DeleteAllMenuItemsForWorkspaceRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any>;
+    public deleteAllMenuItemsForWorkspace(requestParameters: DeleteAllMenuItemsForWorkspaceRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<any>>;
+    public deleteAllMenuItemsForWorkspace(requestParameters: DeleteAllMenuItemsForWorkspaceRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<any>>;
+    public deleteAllMenuItemsForWorkspace(requestParameters: DeleteAllMenuItemsForWorkspaceRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+        const id = requestParameters.id;
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling deleteAllMenuItemsForWorkspace.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/menu/workspace/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        return this.httpClient.request<any>('delete', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -236,10 +292,6 @@ export class MenuItemAPIService {
     public deleteMenuItemById(requestParameters: DeleteMenuItemByIdRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<any>>;
     public deleteMenuItemById(requestParameters: DeleteMenuItemByIdRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<any>>;
     public deleteMenuItemById(requestParameters: DeleteMenuItemByIdRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
-        const workspaceName = requestParameters.workspaceName;
-        if (workspaceName === null || workspaceName === undefined) {
-            throw new Error('Required parameter workspaceName was null or undefined when calling deleteMenuItemById.');
-        }
         const menuItemId = requestParameters.menuItemId;
         if (menuItemId === null || menuItemId === undefined) {
             throw new Error('Required parameter menuItemId was null or undefined when calling deleteMenuItemById.');
@@ -276,7 +328,7 @@ export class MenuItemAPIService {
             }
         }
 
-        let localVarPath = `/menu/${this.configuration.encodeParam({name: "workspaceName", value: workspaceName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/menuItems/${this.configuration.encodeParam({name: "menuItemId", value: menuItemId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        let localVarPath = `/menu/${this.configuration.encodeParam({name: "menuItemId", value: menuItemId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
         return this.httpClient.request<any>('delete', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -354,14 +406,10 @@ export class MenuItemAPIService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getMenuItemById(requestParameters: GetMenuItemByIdRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<GetMenuItemResponse>;
-    public getMenuItemById(requestParameters: GetMenuItemByIdRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<GetMenuItemResponse>>;
-    public getMenuItemById(requestParameters: GetMenuItemByIdRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<GetMenuItemResponse>>;
+    public getMenuItemById(requestParameters: GetMenuItemByIdRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<MenuItem>;
+    public getMenuItemById(requestParameters: GetMenuItemByIdRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<MenuItem>>;
+    public getMenuItemById(requestParameters: GetMenuItemByIdRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<MenuItem>>;
     public getMenuItemById(requestParameters: GetMenuItemByIdRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
-        const workspaceName = requestParameters.workspaceName;
-        if (workspaceName === null || workspaceName === undefined) {
-            throw new Error('Required parameter workspaceName was null or undefined when calling getMenuItemById.');
-        }
         const menuItemId = requestParameters.menuItemId;
         if (menuItemId === null || menuItemId === undefined) {
             throw new Error('Required parameter menuItemId was null or undefined when calling getMenuItemById.');
@@ -398,67 +446,8 @@ export class MenuItemAPIService {
             }
         }
 
-        let localVarPath = `/menu/${this.configuration.encodeParam({name: "workspaceName", value: workspaceName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/menuItems/${this.configuration.encodeParam({name: "menuItemId", value: menuItemId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
-        return this.httpClient.request<GetMenuItemResponse>('get', `${this.configuration.basePath}${localVarPath}`,
-            {
-                context: localVarHttpContext,
-                responseType: <any>responseType_,
-                withCredentials: this.configuration.withCredentials,
-                headers: localVarHeaders,
-                observe: observe,
-                reportProgress: reportProgress
-            }
-        );
-    }
-
-    /**
-     * Find all menu items belonging to a workspace
-     * @param requestParameters
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     */
-    public getMenuItemsForWorkspaceByName(requestParameters: GetMenuItemsForWorkspaceByNameRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<GetMenuItemsResponse>;
-    public getMenuItemsForWorkspaceByName(requestParameters: GetMenuItemsForWorkspaceByNameRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<GetMenuItemsResponse>>;
-    public getMenuItemsForWorkspaceByName(requestParameters: GetMenuItemsForWorkspaceByNameRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<GetMenuItemsResponse>>;
-    public getMenuItemsForWorkspaceByName(requestParameters: GetMenuItemsForWorkspaceByNameRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
-        const workspaceName = requestParameters.workspaceName;
-        if (workspaceName === null || workspaceName === undefined) {
-            throw new Error('Required parameter workspaceName was null or undefined when calling getMenuItemsForWorkspaceByName.');
-        }
-
-        let localVarHeaders = this.defaultHeaders;
-
-        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-        if (localVarHttpHeaderAcceptSelected === undefined) {
-            // to determine the Accept header
-            const httpHeaderAccepts: string[] = [
-                'application/json'
-            ];
-            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        }
-        if (localVarHttpHeaderAcceptSelected !== undefined) {
-            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-        }
-
-        let localVarHttpContext: HttpContext | undefined = options && options.context;
-        if (localVarHttpContext === undefined) {
-            localVarHttpContext = new HttpContext();
-        }
-
-
-        let responseType_: 'text' | 'json' | 'blob' = 'json';
-        if (localVarHttpHeaderAcceptSelected) {
-            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-                responseType_ = 'text';
-            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-                responseType_ = 'json';
-            } else {
-                responseType_ = 'blob';
-            }
-        }
-
-        let localVarPath = `/menu/${this.configuration.encodeParam({name: "workspaceName", value: workspaceName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/menuItems`;
-        return this.httpClient.request<GetMenuItemsResponse>('get', `${this.configuration.basePath}${localVarPath}`,
+        let localVarPath = `/menu/${this.configuration.encodeParam({name: "menuItemId", value: menuItemId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        return this.httpClient.request<MenuItem>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
@@ -476,13 +465,13 @@ export class MenuItemAPIService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getMenuStructureForWorkspaceName(requestParameters: GetMenuStructureForWorkspaceNameRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<GetWorkspaceMenuItemStructureResponse>;
-    public getMenuStructureForWorkspaceName(requestParameters: GetMenuStructureForWorkspaceNameRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<GetWorkspaceMenuItemStructureResponse>>;
-    public getMenuStructureForWorkspaceName(requestParameters: GetMenuStructureForWorkspaceNameRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<GetWorkspaceMenuItemStructureResponse>>;
-    public getMenuStructureForWorkspaceName(requestParameters: GetMenuStructureForWorkspaceNameRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
-        const workspaceName = requestParameters.workspaceName;
-        if (workspaceName === null || workspaceName === undefined) {
-            throw new Error('Required parameter workspaceName was null or undefined when calling getMenuStructureForWorkspaceName.');
+    public getMenuStructure(requestParameters: GetMenuStructureRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<MenuItemStructure>;
+    public getMenuStructure(requestParameters: GetMenuStructureRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<MenuItemStructure>>;
+    public getMenuStructure(requestParameters: GetMenuStructureRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<MenuItemStructure>>;
+    public getMenuStructure(requestParameters: GetMenuStructureRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+        const menuStructureSearchCriteria = requestParameters.menuStructureSearchCriteria;
+        if (menuStructureSearchCriteria === null || menuStructureSearchCriteria === undefined) {
+            throw new Error('Required parameter menuStructureSearchCriteria was null or undefined when calling getMenuStructure.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -505,6 +494,15 @@ export class MenuItemAPIService {
         }
 
 
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
         let responseType_: 'text' | 'json' | 'blob' = 'json';
         if (localVarHttpHeaderAcceptSelected) {
             if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
@@ -516,10 +514,11 @@ export class MenuItemAPIService {
             }
         }
 
-        let localVarPath = `/menu/${this.configuration.encodeParam({name: "workspaceName", value: workspaceName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/menuItems/tree`;
-        return this.httpClient.request<GetWorkspaceMenuItemStructureResponse>('get', `${this.configuration.basePath}${localVarPath}`,
+        let localVarPath = `/menu/menuItems/tree`;
+        return this.httpClient.request<MenuItemStructure>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
+                body: menuStructureSearchCriteria,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -603,7 +602,76 @@ export class MenuItemAPIService {
     }
 
     /**
-     * Update menu Items
+     * Search for menu items by search criteria
+     * @param requestParameters
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public searchMenuItemsByCriteria(requestParameters: SearchMenuItemsByCriteriaRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<MenuItemPageResult>;
+    public searchMenuItemsByCriteria(requestParameters: SearchMenuItemsByCriteriaRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<MenuItemPageResult>>;
+    public searchMenuItemsByCriteria(requestParameters: SearchMenuItemsByCriteriaRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<MenuItemPageResult>>;
+    public searchMenuItemsByCriteria(requestParameters: SearchMenuItemsByCriteriaRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+        const menuItemSearchCriteria = requestParameters.menuItemSearchCriteria;
+        if (menuItemSearchCriteria === null || menuItemSearchCriteria === undefined) {
+            throw new Error('Required parameter menuItemSearchCriteria was null or undefined when calling searchMenuItemsByCriteria.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/menu/search`;
+        return this.httpClient.request<MenuItemPageResult>('post', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                body: menuItemSearchCriteria,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Update menu Item
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -612,9 +680,9 @@ export class MenuItemAPIService {
     public updateMenuItem(requestParameters: UpdateMenuItemRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<Array<MenuItem>>>;
     public updateMenuItem(requestParameters: UpdateMenuItemRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<Array<MenuItem>>>;
     public updateMenuItem(requestParameters: UpdateMenuItemRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
-        const workspaceName = requestParameters.workspaceName;
-        if (workspaceName === null || workspaceName === undefined) {
-            throw new Error('Required parameter workspaceName was null or undefined when calling updateMenuItem.');
+        const menuItemId = requestParameters.menuItemId;
+        if (menuItemId === null || menuItemId === undefined) {
+            throw new Error('Required parameter menuItemId was null or undefined when calling updateMenuItem.');
         }
         const updateMenuItemRequest = requestParameters.updateMenuItemRequest;
         if (updateMenuItemRequest === null || updateMenuItemRequest === undefined) {
@@ -661,8 +729,8 @@ export class MenuItemAPIService {
             }
         }
 
-        let localVarPath = `/menu/${this.configuration.encodeParam({name: "workspaceName", value: workspaceName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/menuItems`;
-        return this.httpClient.request<Array<MenuItem>>('patch', `${this.configuration.basePath}${localVarPath}`,
+        let localVarPath = `/menu/${this.configuration.encodeParam({name: "menuItemId", value: menuItemId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        return this.httpClient.request<Array<MenuItem>>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: updateMenuItemRequest,
@@ -676,22 +744,22 @@ export class MenuItemAPIService {
     }
 
     /**
-     * Upload the menu structure for workspace
+     * Update an existing menu item parent
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public uploadMenuStructureForWorkspaceName(requestParameters: UploadMenuStructureForWorkspaceNameRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any>;
-    public uploadMenuStructureForWorkspaceName(requestParameters: UploadMenuStructureForWorkspaceNameRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<any>>;
-    public uploadMenuStructureForWorkspaceName(requestParameters: UploadMenuStructureForWorkspaceNameRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<any>>;
-    public uploadMenuStructureForWorkspaceName(requestParameters: UploadMenuStructureForWorkspaceNameRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
-        const workspaceName = requestParameters.workspaceName;
-        if (workspaceName === null || workspaceName === undefined) {
-            throw new Error('Required parameter workspaceName was null or undefined when calling uploadMenuStructureForWorkspaceName.');
+    public updateMenuItemParent(requestParameters: UpdateMenuItemParentRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<MenuItem>;
+    public updateMenuItemParent(requestParameters: UpdateMenuItemParentRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<MenuItem>>;
+    public updateMenuItemParent(requestParameters: UpdateMenuItemParentRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<MenuItem>>;
+    public updateMenuItemParent(requestParameters: UpdateMenuItemParentRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+        const menuItemId = requestParameters.menuItemId;
+        if (menuItemId === null || menuItemId === undefined) {
+            throw new Error('Required parameter menuItemId was null or undefined when calling updateMenuItemParent.');
         }
-        const createWorkspaceMenuItemStructureRequest = requestParameters.createWorkspaceMenuItemStructureRequest;
-        if (createWorkspaceMenuItemStructureRequest === null || createWorkspaceMenuItemStructureRequest === undefined) {
-            throw new Error('Required parameter createWorkspaceMenuItemStructureRequest was null or undefined when calling uploadMenuStructureForWorkspaceName.');
+        const updateMenuItemParentRequest = requestParameters.updateMenuItemParentRequest;
+        if (updateMenuItemParentRequest === null || updateMenuItemParentRequest === undefined) {
+            throw new Error('Required parameter updateMenuItemParentRequest was null or undefined when calling updateMenuItemParent.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -734,11 +802,11 @@ export class MenuItemAPIService {
             }
         }
 
-        let localVarPath = `/menu/${this.configuration.encodeParam({name: "workspaceName", value: workspaceName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/menuItems/tree/upload`;
-        return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
+        let localVarPath = `/menu/${this.configuration.encodeParam({name: "menuItemId", value: menuItemId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/parentItemId`;
+        return this.httpClient.request<MenuItem>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: createWorkspaceMenuItemStructureRequest,
+                body: updateMenuItemParentRequest,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

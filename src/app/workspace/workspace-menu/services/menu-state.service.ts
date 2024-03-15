@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { MenuItem } from 'src/app/shared/generated'
+import { WorkspaceMenuItem } from 'src/app/shared/generated'
 
 export interface MenuState {
   selectedPortal?: string
@@ -9,7 +9,7 @@ export interface MenuState {
   treeExpansionState: Map<string, boolean>
   menuTableFilters?: Map<string, string>
   pageSize: number
-  workspaceMenuItems?: MenuItem[]
+  workspaceMenuItems?: WorkspaceMenuItem[]
   sortColumn?: { sortField: string; sortOrder: number }
 }
 

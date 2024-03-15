@@ -13,7 +13,12 @@ import { PortalMessageService, ConfigurationService, AUTH_SERVICE } from '@onecx
 import { MenuStateService, MenuState } from './services/menu-state.service'
 import { MenuComponent } from './menu.component'
 
-import { Workspace, MenuItem, WorkspaceAPIService /*, Scope*/, MenuItemAPIService } from 'src/app/shared/generated'
+import {
+  Workspace,
+  WorkspaceMenuItem,
+  WorkspaceAPIService /*, Scope*/,
+  MenuItemAPIService
+} from 'src/app/shared/generated'
 
 const workspace: Workspace = {
   id: 'id',
@@ -22,7 +27,7 @@ const workspace: Workspace = {
   baseUrl: '/some/base/url'
 }
 
-const mockMenuItems: MenuItem[] = [
+const mockMenuItems: WorkspaceMenuItem[] = [
   {
     id: 'id',
     key: 'key',
@@ -51,7 +56,7 @@ const mockMenuItems: MenuItem[] = [
   parentItemId: 'some parent id',
   name: 'name',
   position: 1,
-  workspaceExit: true,
+  external: true,
   url: 'url',
   badge: 'badge',
   scope: Scope.Workspace,
@@ -73,7 +78,7 @@ const state: MenuState = {
   name: new FormControl('name'),
   position: new FormControl('1'),
   disabled: new FormControl<boolean>(false),
-  workspaceExit: new FormControl<boolean>(false),
+  external: new FormControl<boolean>(false),
   url: new FormControl('url'),
   badge: new FormControl('badge'),
   scope: new FormControl('scope'),

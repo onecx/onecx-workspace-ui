@@ -201,8 +201,8 @@ describe('PreviewComponent', () => {
         key: 'key',
         position: 1,
         disabled: true,
-        workspaceExit: true,
-        children: [{ name: 'menu', key: 'key', position: 2, disabled: true, workspaceExit: true }]
+        external: true,
+        children: [{ name: 'menu', key: 'key', position: 2, disabled: true, external: true }]
       }
     ]
 

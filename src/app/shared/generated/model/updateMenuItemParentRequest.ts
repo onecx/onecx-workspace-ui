@@ -9,10 +9,11 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { MenuItem } from './menuItem';
 
 
-export interface CreateWorkspaceMenuItemStructureRequest { 
-    menuItems?: Array<MenuItem>;
+export interface UpdateMenuItemParentRequest { 
+    modificationCount: number;
+    position: number;
+    parentItemId?: string;
 }
 

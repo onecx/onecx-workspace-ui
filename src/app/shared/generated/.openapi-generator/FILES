@@ -19,13 +19,10 @@ model/assignment.ts
 model/assignmentPageResult.ts
 model/assignmentSearchCriteria.ts
 model/createAssignmentRequest.ts
-model/createMenuItemRequest.ts
-model/createMenuItemResponse.ts
+model/createMenuItem.ts
 model/createProductRequest.ts
-model/createUpdateMenuItem.ts
 model/createUpdateMicrofrontend.ts
 model/createUpdateProductResponse.ts
-model/createWorkspaceMenuItemStructureRequest.ts
 model/createWorkspaceRequest.ts
 model/createWorkspaceResponse.ts
 model/createWorkspaceRoleRequest.ts
@@ -36,9 +33,6 @@ model/eximWorkspace.ts
 model/eximWorkspaceAddress.ts
 model/eximWorkspaceMenuItem.ts
 model/exportWorkspacesRequest.ts
-model/getMenuItemResponse.ts
-model/getMenuItemsResponse.ts
-model/getWorkspaceMenuItemStructureResponse.ts
 model/getWorkspaceResponse.ts
 model/iAMRole.ts
 model/iAMRolePageResult.ts
@@ -48,7 +42,12 @@ model/importMenuResponse.ts
 model/importResponseStatus.ts
 model/importWorkspaceResponse.ts
 model/menuItem.ts
+model/menuItemPageResult.ts
+model/menuItemResult.ts
+model/menuItemSearchCriteria.ts
+model/menuItemStructure.ts
 model/menuSnapshot.ts
+model/menuStructureSearchCriteria.ts
 model/microfrontend.ts
 model/models.ts
 model/pagingResponse.ts
@@ -64,6 +63,7 @@ model/scope.ts
 model/searchWorkspacesRequest.ts
 model/searchWorkspacesResponse.ts
 model/subjectLink.ts
+model/updateMenuItemParentRequest.ts
 model/updateMenuItemRequest.ts
 model/updateProductRequest.ts
 model/updateWorkspaceRequest.ts
@@ -72,6 +72,7 @@ model/validationConstraint.ts
 model/workspace.ts
 model/workspaceAbstract.ts
 model/workspaceAddress.ts
+model/workspaceMenuItem.ts
 model/workspaceRole.ts
 model/workspaceRolePageResult.ts
 model/workspaceRoleSearchCriteria.ts
