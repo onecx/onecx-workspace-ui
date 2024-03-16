@@ -98,9 +98,9 @@
       "SORT_DIRECTION_DESC": "absteigend"
     },
     "TREE": {
-      "COLLAPSE_ALL": "Alles zuklappen",
+      "COLLAPSE_ALL": "Alles zu",
       "COLLAPSE_ALL.TOOLTIP": "Alle Ebenen zuklappen",
-      "EXPAND_ALL": "Alles aufklappen",
+      "EXPAND_ALL": "Alles auf",
       "EXPAND_ALL.TOOLTIP": "Alle Ebenen aufklappen"
     },
     "CANCEL": "Abbrechen",
@@ -258,8 +258,10 @@
         "IMPORT": "Menü importieren",
         "TREE_MODAL": "Umordnen & Voransicht",
         "TREE_MODAL.TOOLTIP": "Menüeinträge per Drag & Drop umordnen und Ansicht in den konfigurierten Sprachen",
-        "ROLES": "Berechtigungen",
-        "ROLES.TOOLTIP": "Verwalten von Berechtigungen",
+        "DETAILS": "Details",
+        "DETAILS.TOOLTIP": "Verwalten von Details",
+        "ROLES": "Rollen",
+        "ROLES.TOOLTIP": "Anzeige von Rollen und Berechtigungen",
         "PREVIEW.TOOLTIP": "Ansicht in den konfigurierten Sprachen",
         "PREVIEW2.TOOLTIP": "Keine Übersetzung vorhanden",
         "REORDER.TOOLTIP": "Menüeinträge per Drag & Drop umordnen"

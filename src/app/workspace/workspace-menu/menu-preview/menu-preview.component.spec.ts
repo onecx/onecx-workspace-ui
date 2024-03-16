@@ -2,7 +2,7 @@ import { NO_ERRORS_SCHEMA, SimpleChanges, SimpleChange } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
 
-import { MenuTreeComponent } from './menu-tree.component'
+import { MenuPreviewComponent } from './menu-preview.component'
 import { MenuTreeService } from '../services/menu-tree.service'
 import { MenuStateService, MenuState } from '../services/menu-state.service'
 
@@ -19,16 +19,16 @@ const items = [
   { key: 'key2', badge: 'angle-double-down', id: 'id' }
 ]
 
-describe('MenuTreeComponent', () => {
-  let component: MenuTreeComponent
-  let fixture: ComponentFixture<MenuTreeComponent>
+describe('MenuPreviewComponent', () => {
+  let component: MenuPreviewComponent
+  let fixture: ComponentFixture<MenuPreviewComponent>
 
   const treeServiceSpy = jasmine.createSpyObj<MenuTreeService>('MenuTreeService', ['calculateNewNodesPositions'])
   const stateServiceSpy = jasmine.createSpyObj<MenuStateService>('MenuStateService', ['getState'])
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [MenuTreeComponent],
+      declarations: [MenuPreviewComponent],
       imports: [
         HttpClientTestingModule
         /* TranslateModule.forRoot({
@@ -50,7 +50,7 @@ describe('MenuTreeComponent', () => {
   }))
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(MenuTreeComponent)
+    fixture = TestBed.createComponent(MenuPreviewComponent)
     component = fixture.componentInstance
     fixture.detectChanges()
   })

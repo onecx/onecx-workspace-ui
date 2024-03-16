@@ -47,42 +47,12 @@
         <div class="flex flex-wrap justify-content-between align-items-center gap-2">
           <div *ngIf="menuItems" class="flex flex-wrap gap-2">
             <p-button
-              styleClass="h-full button-min-height"
-              id="workspace_menu_table_header_expand_button"
-              [title]="'ACTIONS.TREE.EXPAND_ALL.TOOLTIP' | translate"
-              (onClick)="onExpandAll()"
-              icon="pi pi-angle-double-down"
-            ></p-button>
-            <p-button
-              styleClass="h-full button-min-height"
-              id="workspace_menu_table_header_collapse_button"
-              [title]="'ACTIONS.TREE.COLLAPSE_ALL.TOOLTIP' | translate"
-              (onClick)="onCollapseAll()"
-              icon="pi pi-angle-double-up"
-            ></p-button>
-            <p-button
               *ocxIfPermission="'MENU#DRAG_DROP'"
               id="workspace_menu_table_header_reorder"
               [label]="'DIALOG.MENU.HEADER.TREE_MODAL' | translate"
               [title]="'DIALOG.MENU.HEADER.TREE_MODAL.TOOLTIP' | translate"
               (onClick)="onDisplayTreeModal()"
               icon="pi pi-sort"
-            ></p-button>
-            <p-button
-              *ngIf="!displayRoles"
-              id="workspace_menu_table_header_roles"
-              [label]="'DIALOG.MENU.HEADER.ROLES' | translate"
-              [title]="'DIALOG.MENU.HEADER.ROLES.TOOLTIP' | translate"
-              (onClick)="onDisplayRoles()"
-              icon="pi pi-check-circle"
-            ></p-button>
-            <p-button
-              *ngIf="displayRoles"
-              id="workspace_menu_table_header_details"
-              [label]="'DIALOG.MENU.TABS.DETAILS' | translate"
-              [title]="'DIALOG.MENU.TABS.DETAILS.TOOLTIP' | translate"
-              (onClick)="onDisplayRoles()"
-              icon="pi pi-cog"
             ></p-button>
           </div>
           <div class="p-inputgroup w-13rem sm:w-17rem md:w-20rem">
@@ -119,19 +89,64 @@
 
       <ng-template pTemplate="header" let-columns>
         <tr>
-          <th id="workspace_menu_table_header_dummy" class="p-0 text-right border-transparent border-bottom-2">
-            <!--button
-              pButton
-              pRipple
-              type="button"
-              icon="pi pi-angle-double-down"
-              class="p-2 p-button-text"
-              id="workspace_menu_table_header_expand_button"
-              (click)="onExpandAll()"
-              [label]="'ACTIONS.TREE.EXPAND_ALL' | translate"
-              [title]="'ACTIONS.TREE.EXPAND_ALL.TOOLTIP' | translate"
-            ></button-->
+          <th id="workspace_menu_table_header_dummy1" class="p-0 text-left border-transparent border-bottom-2">
+            <div class="flex flex-row justify-content-between">
+              <div class="flex flex-row gap-2 justify-content-start">
+                <button
+                  pButton
+                  pRipple
+                  type="button"
+                  icon="pi pi-angle-double-down"
+                  class="p-1 p-button-text"
+                  id="workspace_menu_table_header_expand_button"
+                  (click)="onExpandAll()"
+                  [label]="'ACTIONS.TREE.EXPAND_ALL' | translate"
+                  [title]="'ACTIONS.TREE.EXPAND_ALL.TOOLTIP' | translate"
+                ></button>
+                <button
+                  pButton
+                  pRipple
+                  type="button"
+                  icon="pi pi-angle-double-up"
+                  class="p-1 p-button-text"
+                  id="workspace_menu_table_header_expand_button"
+                  (click)="onCollapseAll()"
+                  [label]="'ACTIONS.TREE.COLLAPSE_ALL' | translate"
+                  [title]="'ACTIONS.TREE.COLLAPSE_ALL.TOOLTIP' | translate"
+                ></button>
+              </div>
+              <button
+                *ngIf="!displayRoles"
+                pButton
+                pRipple
+                type="button"
+                icon="pi pi-check-circle"
+                class="p-1 p-button-text"
+                id="workspace_menu_table_header_roles_button"
+                (click)="onDisplayRoles()"
+                [label]="'DIALOG.MENU.HEADER.ROLES' | translate"
+                [title]="'DIALOG.MENU.HEADER.ROLES.TOOLTIP' | translate"
+              ></button>
+              <button
+                *ngIf="displayRoles"
+                pButton
+                pRipple
+                type="button"
+                icon="pi pi-cog"
+                class="p-1 p-button-text"
+                id="workspace_menu_table_header_details_button"
+                (click)="onDisplayRoles()"
+                [label]="'DIALOG.MENU.HEADER.DETAILS' | translate"
+                [title]="'DIALOG.MENU.HEADER.DETAILS.TOOLTIP' | translate"
+              ></button>
+            </div>
           </th>
+          <th id="workspace_menu_table_header_purpose" [attr.colspan]="5" class="text-center">
+            {{ (displayRoles ? 'DIALOG.MENU.HEADER.ROLES' : 'DIALOG.MENU.HEADER.DETAILS') | translate }}
+          </th>
+        </tr>
+        <tr>
+          <th id="workspace_menu_table_header_dummy2"></th>
           <ng-container *ngIf="!displayRoles">
             <th
               id="workspace_menu_table_header_actions"
@@ -373,7 +388,7 @@
   </div>
 </p-dialog>
 
-<!-- TREE REORDER DIALOG -->
+<!-- PREVIEW & REORDER -->
 <p-dialog
   header="{{ 'DIALOG.MENU.HEADER.TREE_MODAL' | translate }}"
   [(visible)]="displayTreeModal"
@@ -389,13 +404,13 @@
     <li>{{ 'DIALOG.MENU.HEADER.PREVIEW.TOOLTIP' | translate }}</li>
     <li class="danger-action-text">{{ 'DIALOG.MENU.HEADER.PREVIEW2.TOOLTIP' | translate }}</li>
   </ul>
-  <app-menu-tree
+  <app-menu-preview
     *ngIf="menuItems"
     [menuItems]="menuItems"
     [updateTree]="displayTreeModal"
     (updateMenuStructureEmitter)="updateMenuItems($event)"
   >
-  </app-menu-tree>
+  </app-menu-preview>
   <div class="flex justify-content-end my-3">
     <button
       pButton

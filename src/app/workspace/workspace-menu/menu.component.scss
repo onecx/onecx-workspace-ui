@@ -32,6 +32,15 @@
         > th:first-of-type {
           background-color: var(--table-body-row-bg);
           border-color: transparent;
+          .p-button-text {
+            width: unset !important;
+            .p-button-icon {
+              font-size: inherit;
+              &.p-button-icon-left {
+                margin-right: 0.3rem;
+              }
+            }
+          }
         }
       }
       .p-treetable-tbody > tr {

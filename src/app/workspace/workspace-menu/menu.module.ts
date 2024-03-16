@@ -8,10 +8,10 @@ import { addInitializeModuleGuard, InitializeModuleGuard, PortalCoreModule } fro
 import { SharedModule } from 'src/app/shared/shared.module'
 
 import { MenuTreeService } from './services/menu-tree.service'
-import { MenuTreeComponent } from './menu-tree/menu-tree.component'
+import { MenuComponent } from './menu.component'
 import { MenuDetailComponent } from './menu-detail/menu-detail.component'
 import { MenuInternComponent } from './menu-intern/menu-intern.component'
-import { MenuComponent } from './menu.component'
+import { MenuPreviewComponent } from './menu-preview/menu-preview.component'
 
 const routes: Routes = [
   {
@@ -20,7 +20,7 @@ const routes: Routes = [
   }
 ]
 @NgModule({
-  declarations: [MenuComponent, MenuDetailComponent, MenuInternComponent, MenuTreeComponent],
+  declarations: [MenuComponent, MenuDetailComponent, MenuInternComponent, MenuPreviewComponent],
   imports: [
     CommonModule,
     FormsModule,

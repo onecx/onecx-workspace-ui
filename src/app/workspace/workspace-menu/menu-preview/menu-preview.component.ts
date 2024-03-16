@@ -10,11 +10,11 @@ import { MenuStateService } from '../services/menu-state.service'
 export type I18N = { [key: string]: string }
 
 @Component({
-  selector: 'app-menu-tree',
-  templateUrl: './menu-tree.component.html',
-  styleUrls: ['./menu-tree.component.scss']
+  selector: 'app-menu-preview',
+  templateUrl: './menu-preview.component.html',
+  styleUrls: ['./menu-preview.component.scss']
 })
-export class MenuTreeComponent implements OnChanges {
+export class MenuPreviewComponent implements OnChanges {
   @Input() public menuItems!: WorkspaceMenuItem[]
   @Input() public languagesPreview_old!: SelectItem[]
   @Input() public updateTree = false
