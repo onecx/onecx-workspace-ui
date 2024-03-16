@@ -16,7 +16,6 @@ export type I18N = { [key: string]: string }
 })
 export class MenuPreviewComponent implements OnChanges {
   @Input() public menuItems!: WorkspaceMenuItem[]
-  @Input() public languagesPreview_old!: SelectItem[]
   @Input() public updateTree = false
   @Output() public updateMenuStructureEmitter = new EventEmitter<WorkspaceMenuItem[]>()
 
@@ -44,7 +43,7 @@ export class MenuPreviewComponent implements OnChanges {
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
-    if (changes['portalMenuItems'] || changes['updateTree']) {
+    if (changes['menuItems'] || changes['updateTree']) {
       this.menuNodes = this.mapToTree(this.menuItems, this.languagesPreviewValue)
       this.treeExpanded = true
       this.preparePreviewLanguages()
