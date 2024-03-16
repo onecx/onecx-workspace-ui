@@ -16,11 +16,13 @@ export type I18N = { [key: string]: string }
 })
 export class MenuPreviewComponent implements OnChanges {
   @Input() public menuItems!: WorkspaceMenuItem[]
-  @Input() public updateTree = false
+  @Input() public displayDialog = false
+  @Output() public hideDialog = new EventEmitter()
   @Output() public updateMenuStructureEmitter = new EventEmitter<WorkspaceMenuItem[]>()
 
   public menuNodes!: TreeNode<WorkspaceMenuItem>[]
   public treeExpanded = false
+  private treeHeight = 0
   public languagesPreviewValue: string
   public languagesPreview: SelectItem[] = []
   public languagesUsed!: string[]
@@ -43,7 +45,7 @@ export class MenuPreviewComponent implements OnChanges {
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
-    if (changes['menuItems'] || changes['updateTree']) {
+    if (changes['menuItems'] || this.displayDialog) {
       this.menuNodes = this.mapToTree(this.menuItems, this.languagesPreviewValue)
       this.treeExpanded = true
       this.preparePreviewLanguages()
@@ -179,7 +181,6 @@ export class MenuPreviewComponent implements OnChanges {
         })
       }
     }
-
     this.updateMenuStructureEmitter.emit(updatedMenuItems)
   }
 
@@ -190,5 +191,16 @@ export class MenuPreviewComponent implements OnChanges {
   public onLanguagesPreviewChange(lang: string) {
     this.languagesPreviewValue = lang
     this.menuNodes = this.mapToTree(this.menuItems, this.languagesPreviewValue)
+  }
+
+  public onClose() {
+    this.hideDialog.emit()
+  }
+  public onStartResizeTree(ev: MouseEvent) {
+    // console.log('start:', ev)
+  }
+  public onEndResizeTree(ev: MouseEvent) {
+    // console.log('end:', ev)
+    this.treeHeight = ev.clientY
   }
 }

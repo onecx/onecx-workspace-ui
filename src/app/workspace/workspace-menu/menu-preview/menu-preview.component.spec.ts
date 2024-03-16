@@ -1,4 +1,4 @@
-import { NO_ERRORS_SCHEMA, SimpleChanges, SimpleChange } from '@angular/core'
+import { NO_ERRORS_SCHEMA /*SimpleChanges, SimpleChange */ } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
 
@@ -61,12 +61,10 @@ describe('MenuPreviewComponent', () => {
 
   it('should set menuNodes onChanges if workspaceDetail & changes correct: langExists false', () => {
     stateServiceSpy.getState.and.returnValue(state)
-    const changes: SimpleChanges = {
-      updateTree: new SimpleChange(null, component.updateTree, true)
-    }
+    component.displayDialog = true
     component.menuItems = items
 
-    component.ngOnChanges(changes)
+    component.ngOnChanges({})
 
     expect(component.treeExpanded).toBeTrue()
   })
@@ -183,5 +181,20 @@ describe('MenuPreviewComponent', () => {
     component.onLanguagesPreviewChange(lang)
 
     expect(component.languagesPreviewValue).toEqual(lang)
+  })
+
+  it('should call onStartResizeTree without errors', () => {
+    const mockEvent = new MouseEvent('click')
+
+    expect(() => component.onStartResizeTree(mockEvent)).not.toThrow()
+  })
+
+  it('should set treeHeight on onEndResizeTree call', () => {
+    const mockClientY = 300
+    const mockEvent = { clientY: mockClientY } as MouseEvent
+
+    component.onEndResizeTree(mockEvent)
+
+    expect(component['treeHeight']).toEqual(mockClientY)
   })
 })

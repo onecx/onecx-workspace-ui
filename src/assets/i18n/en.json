@@ -261,10 +261,10 @@
         "DETAILS": "Details",
         "DETAILS.TOOLTIP": "Manage Details",
         "ROLES": "Roles",
-        "ROLES.TOOLTIP": "Dispaly Roles and Permissions",
+        "ROLES.TOOLTIP": "Display Roles and Permissions",
         "PREVIEW.TOOLTIP": "Preview in configured languages",
-        "PREVIEW2.TOOLTIP": "No translation available",
-        "REORDER.TOOLTIP": "Reorder of Menu Items via Drag & Drop"
+        "PREVIEW2.TOOLTIP": "No translation",
+        "REORDER.TOOLTIP": "Reorder via Drag & Drop"
       },
       "SUBHEADER": "Manage the Menu",
       "ACTION": {
@@ -306,11 +306,10 @@
       },
       "MENU_NOT_EXIST": "No menu defined",
       "MENU_ITEM_NOT_FOUND": "Cannot find Menu Item with ID: ",
-      "TREE_VIEW": "Menu structure - tree",
       "IMPORT": {
         "UPLOAD_INFO": "Please, upload JSON file from your device. Keep in mind, that after upload whole menu structure will be overwritten.",
         "UPLOAD_OK": "Menu Structure was successfully imported",
-        "UPLOAD_NOK": "Error has occurred, menu structure wasn't overwritten"
+        "UPLOAD_NOK": "An error has occurred. The menu structure wasn't overwritten"
       }
     },
     "DATAVIEW": {

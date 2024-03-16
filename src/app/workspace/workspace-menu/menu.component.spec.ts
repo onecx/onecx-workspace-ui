@@ -765,23 +765,23 @@ describe('MenuComponent', () => {
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'TREE.STRUCTURE_UPLOAD_ERROR' })
   })
 
-  it('should set displayTreeModal to true onDisplayTreeModal', () => {
-    component.onDisplayTreeModal()
+  it('should set displayMenuPreview to true onDisplayMenuPreview', () => {
+    component.onDisplayMenuPreview()
 
-    expect(component.displayTreeModal).toBeTrue()
+    expect(component.displayMenuPreview).toBeTrue()
   })
 
-  it('should set displayTreeModal to false onHideTreeModal', () => {
-    component.onHideTreeModal()
+  it('should set displayMenuPreview to false onHideMenuPreview', () => {
+    component.onHideMenuPreview()
 
-    expect(component.displayTreeModal).toBeFalse()
+    expect(component.displayMenuPreview).toBeFalse()
   })
 
   it('should handle successful menu item update', () => {
     menuApiServiceSpy.bulkPatchMenuItems.and.returnValue(of({}))
     spyOn(component, 'onReload')
 
-    component.updateMenuItems(mockMenuItems)
+    component.onUpdateMenuStructure(mockMenuItems)
 
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'TREE.EDIT_SUCCESS' })
     expect(component.onReload).toHaveBeenCalled()
@@ -790,24 +790,9 @@ describe('MenuComponent', () => {
   it('should handle menu item update error', () => {
     menuApiServiceSpy.bulkPatchMenuItems.and.returnValue(throwError(() => new Error()))
 
-    component.updateMenuItems(mockMenuItems)
+    component.onUpdateMenuStructure(mockMenuItems)
 
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'TREE.EDIT_ERROR' })
-  })
-
-  it('should call onStartResizeTree without errors', () => {
-    const mockEvent = new MouseEvent('click')
-
-    expect(() => component.onStartResizeTree(mockEvent)).not.toThrow()
-  })
-
-  it('should set treeHeight on onEndResizeTree call', () => {
-    const mockClientY = 300
-    const mockEvent = { clientY: mockClientY } as MouseEvent
-
-    component.onEndResizeTree(mockEvent)
-
-    expect(component['treeHeight']).toEqual(mockClientY)
   })
 })
 

@@ -263,8 +263,8 @@
         "ROLES": "Rollen",
         "ROLES.TOOLTIP": "Anzeige von Rollen und Berechtigungen",
         "PREVIEW.TOOLTIP": "Ansicht in den konfigurierten Sprachen",
-        "PREVIEW2.TOOLTIP": "Keine Übersetzung vorhanden",
-        "REORDER.TOOLTIP": "Menüeinträge per Drag & Drop umordnen"
+        "PREVIEW2.TOOLTIP": "Keine Übersetzungen",
+        "REORDER.TOOLTIP": "Umordnen mit Drag & Drop"
       },
       "SUBHEADER": "Menü verwalten",
       "ACTION": {
@@ -306,11 +306,10 @@
       },
       "MENU_NOT_EXIST": "Kein Menü definiert",
       "MENU_ITEM_NOT_FOUND": "Menüeintrag mit ID wurde nicht gefunden:",
-      "TREE_VIEW": "Menüstruktur - Baum",
       "IMPORT": {
         "UPLOAD_INFO": "Bitte laden Sie die JSON-Datei von Ihrem Gerät hoch. Bitte beachten Sie, dass nach dem Upload die gesamte Menüstruktur überschrieben wird.",
         "UPLOAD_OK": "Menüstruktur wurde erfolgreich überschrieben",
-        "UPLOAD_NOK": "Fehler ist aufgetreten, Menüstruktur wurde nicht überschrieben"
+        "UPLOAD_NOK": "Ein Fehler ist aufgetreten. Die Menüstruktur wurde nicht überschrieben"
       }
     },
     "DATAVIEW": {

@@ -67,9 +67,8 @@ export class MenuComponent implements OnInit, OnDestroy {
   public displayMenuDetail = false
   public displayMenuImport = false
   public displayMenuDelete = false
-  public displayTreeModal = false
+  public displayMenuPreview = false
   public displayRoles = false
-  private treeHeight = 0
   limitText = limitText // utils declarations
 
   constructor(
@@ -498,23 +497,16 @@ export class MenuComponent implements OnInit, OnDestroy {
   public onDisplayRoles() {
     this.displayRoles = !this.displayRoles
   }
-  public onDisplayTreeModal() {
-    this.displayTreeModal = true
+  public onDisplayMenuPreview() {
+    this.displayMenuPreview = true
   }
-  public onHideTreeModal() {
-    this.displayTreeModal = false
-  }
-  public onStartResizeTree(ev: MouseEvent) {
-    // console.log('start:', ev)
-  }
-  public onEndResizeTree(ev: MouseEvent) {
-    // console.log('end:', ev)
-    this.treeHeight = ev.clientY
+  public onHideMenuPreview() {
+    this.displayMenuPreview = false
   }
 
   // triggered by changes of tree structure in tree popup
-  public updateMenuItems(updatedMenuItems: WorkspaceMenuItem[]): void {
-    console.log('updateMenuItems')
+  public onUpdateMenuStructure(changed: WorkspaceMenuItem[]): void {
+    console.log('onUpdateMenuStructure')
     /*
     const patchRequestItems: UpdateMenuItemRequest[] = []
     updatedMenuItems.forEach((item) => {
