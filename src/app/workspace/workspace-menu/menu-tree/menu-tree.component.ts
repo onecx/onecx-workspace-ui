@@ -1,9 +1,13 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core'
 import { SelectItem, TreeNode } from 'primeng/api'
 
+import { UserService } from '@onecx/portal-integration-angular'
+import { dropDownSortItemsByLabel } from 'src/app/shared/utils'
 import { WorkspaceMenuItem } from 'src/app/shared/generated'
 import { MenuTreeService } from '../services/menu-tree.service'
 import { MenuStateService } from '../services/menu-state.service'
+
+export type I18N = { [key: string]: string }
 
 @Component({
   selector: 'app-menu-tree',
@@ -11,32 +15,74 @@ import { MenuStateService } from '../services/menu-state.service'
   styleUrls: ['./menu-tree.component.scss']
 })
 export class MenuTreeComponent implements OnChanges {
-  @Input() public selectedWorkspaceId?: string
-  @Input() public workspaceMenuItems!: WorkspaceMenuItem[]
-  @Input() public languagesPreview!: SelectItem[]
+  @Input() public menuItems!: WorkspaceMenuItem[]
+  @Input() public languagesPreview_old!: SelectItem[]
   @Input() public updateTree = false
   @Output() public updateMenuStructureEmitter = new EventEmitter<WorkspaceMenuItem[]>()
 
-  public menuTreeNodes!: TreeNode<WorkspaceMenuItem>[]
+  public menuNodes!: TreeNode<WorkspaceMenuItem>[]
   public treeExpanded = false
-  public languagesPreviewValue = 'en'
+  public languagesPreviewValue: string
+  public languagesPreview: SelectItem[] = []
+  public languagesUsed!: string[]
+  public languageNames: I18N = {
+    de: 'Deutsch',
+    en: 'English',
+    es: 'Español',
+    fr: 'Français',
+    it: 'Italiano',
+    pl: 'Polski',
+    sk: 'Slovak'
+  }
 
-  constructor(private stateService: MenuStateService, private treeService: MenuTreeService) {}
+  constructor(
+    private stateService: MenuStateService,
+    private treeService: MenuTreeService,
+    private userService: UserService
+  ) {
+    this.languagesPreviewValue = this.userService.lang$.getValue()
+  }
 
   public ngOnChanges(changes: SimpleChanges): void {
     if (changes['portalMenuItems'] || changes['updateTree']) {
-      this.menuTreeNodes = this.mapToTree(this.workspaceMenuItems, this.languagesPreviewValue)
+      this.menuNodes = this.mapToTree(this.menuItems, this.languagesPreviewValue)
       this.treeExpanded = true
+      this.preparePreviewLanguages()
     }
   }
+
+  /**
+   * LANGUAGE
+   */
+  private preparePreviewLanguages(): void {
+    this.languagesUsed = []
+    this.prepareUsedLanguage(this.menuNodes)
+    this.languagesPreview = []
+    this.languagesUsed.forEach((l) => this.languagesPreview.push({ label: this.languageNames[l], value: l }))
+    this.languagesPreview.sort(dropDownSortItemsByLabel)
+  }
+  private prepareUsedLanguage(nodes: TreeNode[]) {
+    for (const node of nodes) {
+      if (node.data.i18n && Object.keys(node.data.i18n).length > 0) {
+        for (const k in node.data.i18n) {
+          if (!this.languagesUsed.includes(k)) this.languagesUsed.push(k)
+        }
+      }
+      if (node.children && node.children?.length > 0) this.prepareUsedLanguage(node.children)
+    }
+  }
+
+  /**
+   * TREE
+   */
   expandAll() {
-    this.menuTreeNodes.forEach((node) => {
+    this.menuNodes.forEach((node) => {
       this.expandRecursive(node, true)
     })
   }
 
   collapseAll() {
-    this.menuTreeNodes.forEach((node) => {
+    this.menuNodes.forEach((node) => {
       this.expandRecursive(node, false)
     })
   }
@@ -99,9 +145,9 @@ export class MenuTreeComponent implements OnChanges {
     const newNodesPositions = this.treeService.calculateNewNodesPositions(
       oldParentNodeId,
       newParentNodeId,
-      this.menuTreeNodes
+      this.menuNodes
     )
-    const flatMenuItem = this.workspaceMenuItems.flatMap((pi) => this.flatten(pi))
+    const flatMenuItem = this.menuItems.flatMap((pi) => this.flatten(pi))
 
     // prepare menu items to update
     const updatedMenuItems: WorkspaceMenuItem[] = []
@@ -144,6 +190,6 @@ export class MenuTreeComponent implements OnChanges {
 
   public onLanguagesPreviewChange(lang: string) {
     this.languagesPreviewValue = lang
-    this.menuTreeNodes = this.mapToTree(this.workspaceMenuItems, this.languagesPreviewValue)
+    this.menuNodes = this.mapToTree(this.menuItems, this.languagesPreviewValue)
   }
 }

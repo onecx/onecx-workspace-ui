@@ -119,7 +119,19 @@
 
       <ng-template pTemplate="header" let-columns>
         <tr>
-          <th id="workspace_menu_table_header_dummy" class="text-right border-transparent border-bottom-2"></th>
+          <th id="workspace_menu_table_header_dummy" class="p-0 text-right border-transparent border-bottom-2">
+            <!--button
+              pButton
+              pRipple
+              type="button"
+              icon="pi pi-angle-double-down"
+              class="p-2 p-button-text"
+              id="workspace_menu_table_header_expand_button"
+              (click)="onExpandAll()"
+              [label]="'ACTIONS.TREE.EXPAND_ALL' | translate"
+              [title]="'ACTIONS.TREE.EXPAND_ALL.TOOLTIP' | translate"
+            ></button-->
+          </th>
           <ng-container *ngIf="!displayRoles">
             <th
               id="workspace_menu_table_header_actions"
@@ -379,10 +391,8 @@
   </ul>
   <app-menu-tree
     *ngIf="menuItems"
-    [selectedWorkspaceId]="workspaceName"
-    [workspaceMenuItems]="menuItems"
+    [menuItems]="menuItems"
     [updateTree]="displayTreeModal"
-    [languagesPreview]="languagesPreview"
     (updateMenuStructureEmitter)="updateMenuItems($event)"
   >
   </app-menu-tree>

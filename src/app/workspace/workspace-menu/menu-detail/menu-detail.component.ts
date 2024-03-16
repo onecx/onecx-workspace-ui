@@ -14,9 +14,10 @@ import {
   MenuItemAPIService,
   UpdateMenuItemRequest
 } from 'src/app/shared/generated'
-import { ChangeMode, I18N } from '../menu.component'
+import { ChangeMode } from '../menu.component'
 import { IconService } from '../services/iconservice'
 
+type I18N = { [key: string]: string }
 type LanguageItem = SelectItem & { data: string }
 
 // trim the value (string!) of a form control before passes to the control

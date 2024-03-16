@@ -28,7 +28,6 @@ import { limitText, dropDownSortItemsByLabel } from 'src/app/shared/utils'
 import { MenuStateService } from './services/menu-state.service'
 
 export type ChangeMode = 'VIEW' | 'CREATE' | 'EDIT' | 'COPY' | 'DELETE'
-export type I18N = { [key: string]: string }
 
 @Component({
   selector: 'app-menu',
@@ -71,17 +70,6 @@ export class MenuComponent implements OnInit, OnDestroy {
   public displayTreeModal = false
   public displayRoles = false
   private treeHeight = 0
-  public languagesPreview: SelectItem[] = []
-  public languagesUsed!: string[]
-  public languageNames: I18N = {
-    de: 'Deutsch',
-    en: 'English',
-    es: 'Español',
-    fr: 'Français',
-    it: 'Italiano',
-    pl: 'Polski',
-    sk: 'Slovak'
-  }
   limitText = limitText // utils declarations
 
   constructor(
@@ -301,7 +289,6 @@ export class MenuComponent implements OnInit, OnDestroy {
       } else if (result.menuItems instanceof Array) {
         this.menuItems = result.menuItems
         this.menuNodes = this.mapToTreeNodes(this.menuItems, undefined)
-        this.preparePreviewLanguages()
         this.prepareParentNodes(this.menuNodes)
         this.searchWorkspaceRoles()
         if (restore) {
@@ -382,13 +369,6 @@ export class MenuComponent implements OnInit, OnDestroy {
       }
     }
     return match
-  }
-  private preparePreviewLanguages(): void {
-    this.languagesUsed = []
-    this.prepareUsedLanguage(this.menuNodes)
-    this.languagesPreview = []
-    this.languagesUsed.forEach((l) => this.languagesPreview.push({ label: this.languageNames[l], value: l }))
-    this.languagesPreview.sort(dropDownSortItemsByLabel)
   }
 
   /****************************************************************************
@@ -513,16 +493,6 @@ export class MenuComponent implements OnInit, OnDestroy {
       if (m.children && m.children.length > 0) this.prepareParentNodes(m.children)
     })
     this.parentItems.sort(dropDownSortItemsByLabel)
-  }
-  private prepareUsedLanguage(nodes: TreeNode[]) {
-    for (const node of nodes) {
-      if (node.data.i18n && Object.keys(node.data.i18n).length > 0) {
-        for (const k in node.data.i18n) {
-          if (!this.languagesUsed.includes(k)) this.languagesUsed.push(k)
-        }
-      }
-      if (node.children && node.children?.length > 0) this.prepareUsedLanguage(node.children)
-    }
   }
 
   public onDisplayRoles() {
