@@ -1,3 +1,7 @@
+@import 'src/_mixins.scss';
+
+@include correct-modal-dialog;
+
 :host ::ng-deep {
   .p-tree {
     border: unset;

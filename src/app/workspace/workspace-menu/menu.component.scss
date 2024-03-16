@@ -9,12 +9,6 @@
     overflow-y: hidden;
   }
 
-  .p-tree .p-tree-container .p-treenode .p-treenode-content {
-    padding: 0 0 !important;
-    .p-tree-toggler {
-      margin-right: 0.1rem;
-    }
-  }
   .p-treetable {
     .p-treetable-header {
       padding: 1rem; // var(--table-header-padding);
@@ -34,12 +28,6 @@
           border-color: transparent;
           .p-button-text {
             width: unset !important;
-            .p-button-icon {
-              font-size: inherit;
-              &.p-button-icon-left {
-                margin-right: 0.3rem;
-              }
-            }
           }
         }
       }
@@ -79,13 +67,6 @@
       height: unset;
     }
   }
-  .input-field-correction .p-inputtext {
-    padding-top: 1rem !important;
-    padding-bottom: 0.5rem !important;
-    &.p-dropdown-label {
-      white-space: nowrap;
-    }
-  }
   .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
@@ -94,33 +75,6 @@
 
   .p-dialog.p-dialog {
     height: auto !important;
-  }
-
-  .checkbox-label {
-    color: var(--emphasis-medium);
-    transition-duration: var(--transition-duration);
-  }
-
-  .p-fileupload {
-    .p-fileupload-buttonbar,
-    .p-fileupload-content {
-      background-color: var(--surface-100) !important;
-    }
-    .p-fileupload-content {
-      padding: 0.5rem;
-      .p-fileupload-row {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        gap: 0;
-        > div {
-          width: unset;
-          &:first-child {
-            display: none;
-          }
-        }
-      }
-    }
   }
 
   .p-tabview-panel {

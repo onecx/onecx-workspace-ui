@@ -18,7 +18,7 @@ export class MenuPreviewComponent implements OnChanges {
   @Input() public menuItems!: WorkspaceMenuItem[]
   @Input() public displayDialog = false
   @Output() public hideDialog = new EventEmitter()
-  @Output() public updateMenuStructureEmitter = new EventEmitter<WorkspaceMenuItem[]>()
+  @Output() public reorderEmitter = new EventEmitter<WorkspaceMenuItem[]>()
 
   public menuNodes!: TreeNode<WorkspaceMenuItem>[]
   public treeExpanded = false
@@ -181,7 +181,7 @@ export class MenuPreviewComponent implements OnChanges {
         })
       }
     }
-    this.updateMenuStructureEmitter.emit(updatedMenuItems)
+    this.reorderEmitter.emit(updatedMenuItems)
   }
 
   public onHierarchyViewChange(event: { node: { key: string; expanded: boolean } }): void {

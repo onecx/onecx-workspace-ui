@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild, OnDestroy } from '@angular/core'
-import { HttpErrorResponse, HttpHeaders } from '@angular/common/http'
+import { HttpErrorResponse } from '@angular/common/http'
 import { Location } from '@angular/common'
 import { ActivatedRoute } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
@@ -21,8 +21,7 @@ import {
   WorkspaceAPIService,
   WorkspaceRolesAPIService,
   IAMRolePageResult,
-  GetWorkspaceResponse,
-  MenuSnapshot
+  GetWorkspaceResponse
 } from 'src/app/shared/generated'
 import { limitText, dropDownSortItemsByLabel } from 'src/app/shared/utils'
 import { MenuStateService } from './services/menu-state.service'
@@ -50,7 +49,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   // workspace
   public workspace?: Workspace
   private workspace$!: Observable<GetWorkspaceResponse>
-  public workspaceName = this.route.snapshot.params['name']
+  public workspaceName: string = this.route.snapshot.params['name']
   private mfeRUrls: Array<string> = []
   public wRoles$!: Observable<IAMRolePageResult>
   // menu
@@ -58,9 +57,6 @@ export class MenuComponent implements OnInit, OnDestroy {
   public menuNodes: TreeNode[] = []
   public menuItems: WorkspaceMenuItem[] | undefined
   public menuItem: WorkspaceMenuItem | undefined
-  private menuItemStructure: MenuSnapshot | undefined
-  public menuImportError = false
-  public httpHeaders!: HttpHeaders
   public parentItems: SelectItem[] = [{ label: '', value: null }] // default value is empty
   // detail
   public changeMode: ChangeMode = 'EDIT'
@@ -92,8 +88,6 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    this.httpHeaders = new HttpHeaders()
-    this.httpHeaders.set('Content-Type', 'application/json')
     this.prepareActionButtons()
     this.loadData()
   }
@@ -196,6 +190,19 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.displayMenuDelete = true
   }
 
+  // TODO: no save here anymore
+  // direct change node on click in tree
+  public onToggleDisable(ev: any, node: WorkspaceMenuItem): void {
+    this.changeMode = 'EDIT'
+    this.menuItem = node
+    this.menuItem.disabled = !node.disabled
+    //this.onMenuSave()
+  }
+
+  /****************************************************************************
+   ****************************************************************************
+   * TREE + DIALOG
+   */
   public onClearFilterMenuTable(): void {
     if (this.menuTreeFilter) this.menuTreeFilter.nativeElement.value = ''
     if (this.menuTree) this.menuTree.filterGlobal('', 'contains')
@@ -347,15 +354,6 @@ export class MenuComponent implements OnInit, OnDestroy {
     return stop
   }
 
-  // TODO: no save here anymore
-  // direct change node on click in tree
-  public onToggleDisable(ev: any, node: WorkspaceMenuItem): void {
-    this.changeMode = 'EDIT'
-    this.menuItem = node
-    this.menuItem.disabled = !node.disabled
-    //this.onMenuSave()
-  }
-
   // is a menu item (url) supported by reg. MFE ?
   private urlMatch(url: string): boolean {
     const url2 = url.match(/^.*\/$/) ? url.substring(0, url.length - 1) : url
@@ -372,77 +370,8 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   /****************************************************************************
    ****************************************************************************
-   *  EXPORT / IMPORT
-   */
-  public onExportMenu(): void {
-    if (this.workspaceName) {
-      this.menuApi.exportMenuByWorkspaceName({ workspaceName: this.workspaceName }).subscribe((data) => {
-        const jsonBody = JSON.stringify(data, null, 2)
-        FileSaver.saveAs(new Blob([jsonBody], { type: 'text/json' }), 'workspace_' + this.workspaceName + '_menu.json')
-      })
-    }
-  }
-  public onImportMenu(): void {
-    this.displayMenuImport = true
-    this.menuImportError = false
-  }
-  public onImportMenuHide(): void {
-    this.displayMenuImport = false
-  }
-  public onImportMenuClear(): void {
-    this.menuItemStructure = undefined
-    this.menuImportError = false
-  }
-  public onImportMenuSelect(event: { files: FileList }): void {
-    event.files[0].text().then((text) => {
-      this.menuItemStructure = undefined
-      this.menuImportError = false
-      try {
-        const menuItemStructure: MenuSnapshot = JSON.parse(text) as MenuSnapshot
-        if (this.isMenuImportRequestDTO2(menuItemStructure)) {
-          this.menuItemStructure = menuItemStructure
-          console.log('STRUCT', this.menuItemStructure)
-        } else {
-          console.error('Menu Import Parse Error in', menuItemStructure)
-          this.menuItemStructure = undefined
-          this.menuImportError = true
-        }
-      } catch (err) {
-        console.error('Menu Import Parse Error', err)
-        this.menuImportError = true
-      }
-    })
-  }
-  private isMenuImportRequestDTO2(obj: unknown): obj is MenuSnapshot {
-    const dto = obj as MenuSnapshot
-    return !!(typeof dto === 'object' && dto && dto.menu?.menuItems?.length)
-  }
-  public onImportMenuConfirmation(): void {
-    if (this.workspaceName && this.menuItemStructure) {
-      this.menuApi
-        .importMenuByWorkspaceName({
-          workspaceName: this.workspaceName,
-          menuSnapshot: this.menuItemStructure
-        })
-        .subscribe({
-          next: () => {
-            this.msgService.success({ summaryKey: 'DIALOG.MENU.IMPORT.UPLOAD_OK' })
-            this.displayMenuImport = false
-            this.loadData()
-          },
-          error: (err: any) => {
-            this.msgService.error({ summaryKey: 'DIALOG.MENU.IMPORT.UPLOAD_NOK' })
-            console.error(err)
-          }
-        })
-    }
-  }
-
-  /****************************************************************************
-   ****************************************************************************
    *  MENU TREE POPUP - outsourced for reordering and preview
    */
-
   // prepare recursively the tree nodes from menu structure
   private mapToTreeNodes(items?: WorkspaceMenuItem[], parent?: WorkspaceMenuItem): TreeNode[] {
     if (!items || items.length === 0) {
@@ -494,6 +423,24 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.parentItems.sort(dropDownSortItemsByLabel)
   }
 
+  /****************************************************************************
+   ****************************************************************************
+   *  EXPORT / IMPORT
+   */
+  public onExportMenu(): void {
+    if (this.workspaceName) {
+      this.menuApi.exportMenuByWorkspaceName({ workspaceName: this.workspaceName }).subscribe((data) => {
+        const jsonBody = JSON.stringify(data, null, 2)
+        FileSaver.saveAs(new Blob([jsonBody], { type: 'text/json' }), 'workspace_' + this.workspaceName + '_menu.json')
+      })
+    }
+  }
+  public onImportMenu(): void {
+    this.displayMenuImport = true
+  }
+  public onHideMenuImport() {
+    this.displayMenuImport = false
+  }
   public onDisplayRoles() {
     this.displayRoles = !this.displayRoles
   }

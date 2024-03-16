@@ -12,6 +12,7 @@ import { MenuComponent } from './menu.component'
 import { MenuDetailComponent } from './menu-detail/menu-detail.component'
 import { MenuInternComponent } from './menu-intern/menu-intern.component'
 import { MenuPreviewComponent } from './menu-preview/menu-preview.component'
+import { MenuImportComponent } from './menu-import/menu-import.component'
 
 const routes: Routes = [
   {
@@ -20,7 +21,7 @@ const routes: Routes = [
   }
 ]
 @NgModule({
-  declarations: [MenuComponent, MenuDetailComponent, MenuInternComponent, MenuPreviewComponent],
+  declarations: [MenuComponent, MenuDetailComponent, MenuInternComponent, MenuImportComponent, MenuPreviewComponent],
   imports: [
     CommonModule,
     FormsModule,

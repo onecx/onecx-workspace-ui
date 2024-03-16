@@ -1,0 +1,45 @@
+<p-dialog
+  header="{{ 'DIALOG.MENU.HEADER.IMPORT' | translate }}"
+  [(visible)]="displayDialog"
+  [draggable]="true"
+  [closable]="true"
+  [modal]="true"
+  (onHide)="onClose()"
+>
+  <p-fileUpload
+    mode="advanced"
+    name="file"
+    accept=".json"
+    [maxFileSize]="1000000"
+    [headers]="httpHeaders"
+    [customUpload]="true"
+    (onClear)="onImportMenuClear()"
+    (onRemove)="onImportMenuClear()"
+    (onSelect)="onImportMenuSelect($event)"
+    (uploadHandler)="onImportMenuConfirmation()"
+    [showUploadButton]="!menuImportError"
+    [uploadLabel]="'ACTIONS.UPLOAD' | translate"
+    [cancelLabel]="'ACTIONS.CANCEL' | translate"
+    [chooseLabel]="'ACTIONS.CHOOSE' | translate"
+    [uploadTitle]="'ACTIONS.UPLOAD' | translate"
+  ></p-fileUpload>
+
+  <p-message
+    *ngIf="menuImportError"
+    severity="error"
+    styleClass="mt-3"
+    text="{{ 'VALIDATION.ERRORS.PARSE_ERROR' | translate }}"
+  ></p-message>
+
+  <div class="flex justify-content-end gap-3 my-3">
+    <button
+      pButton
+      type="button"
+      icon="pi pi-times"
+      id="menu_import_button_close"
+      [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+      [title]="'ACTIONS.NAVIGATION.CLOSE_WITHOUT_SAVE' | translate"
+      (click)="onClose()"
+    ></button>
+  </div>
+</p-dialog>

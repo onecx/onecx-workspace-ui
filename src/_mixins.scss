@@ -13,6 +13,13 @@
     }
   }
 }
+@mixin invisible {
+  :host ::ng-deep {
+    .invisible {
+      visibility: hidden;
+    }
+  }
+}
 
 @mixin danger-action {
   :host ::ng-deep {

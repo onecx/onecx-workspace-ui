@@ -347,53 +347,15 @@
   [menuItems]="menuItems"
   [displayDialog]="displayMenuPreview"
   (hideDialog)="onHideMenuPreview()"
-  (updateMenuStructureEmitter)="onUpdateMenuStructure($event)"
+  (reorderEmitter)="onUpdateMenuStructure($event)"
 >
 </app-menu-preview>
 
-<!-- IMPORT MENU -->
-<p-dialog
-  header="{{ 'DIALOG.MENU.HEADER.IMPORT' | translate }}"
-  [(visible)]="displayMenuImport"
-  [draggable]="true"
-  [closable]="true"
-  [modal]="true"
-  (onHide)="onImportMenuHide()"
+<!-- IMPORT -->
+<app-menu-import
+  [workspaceName]="workspaceName"
+  [displayDialog]="displayMenuImport"
+  (hideDialog)="onHideMenuImport()"
+  (importEmitter)="onReload()"
 >
-  <p-fileUpload
-    mode="advanced"
-    name="file"
-    accept=".json"
-    [maxFileSize]="1000000"
-    [headers]="httpHeaders"
-    [customUpload]="true"
-    (onClear)="onImportMenuClear()"
-    (onRemove)="onImportMenuClear()"
-    (onSelect)="onImportMenuSelect($event)"
-    (uploadHandler)="onImportMenuConfirmation()"
-    [showUploadButton]="!menuImportError"
-    [uploadLabel]="'ACTIONS.UPLOAD' | translate"
-    [cancelLabel]="'ACTIONS.CANCEL' | translate"
-    [chooseLabel]="'ACTIONS.CHOOSE' | translate"
-    [uploadTitle]="'ACTIONS.UPLOAD' | translate"
-  ></p-fileUpload>
-
-  <p-message
-    *ngIf="menuImportError"
-    severity="error"
-    styleClass="mt-3"
-    text="{{ 'VALIDATION.ERRORS.PARSE_ERROR' | translate }}"
-  ></p-message>
-
-  <div class="flex justify-content-end gap-3 my-3">
-    <button
-      pButton
-      type="button"
-      icon="pi pi-times"
-      id="workspace_import_button_close"
-      [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
-      [title]="'ACTIONS.NAVIGATION.CLOSE_WITHOUT_SAVE' | translate"
-      (click)="onImportMenuHide()"
-    ></button>
-  </div>
-</p-dialog>
+</app-menu-import>

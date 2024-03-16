@@ -130,7 +130,7 @@ describe('MenuPreviewComponent', () => {
       dropNode: { key: 'newParentNodeId', children: [{ key: 'otherdraggedNodeId' }], parent: { key: 'parent key' } }
     }
     treeServiceSpy.calculateNewNodesPositions.and.returnValue([{ id: 'id', position: 1 }])
-    spyOn(component.updateMenuStructureEmitter, 'emit')
+    spyOn(component.reorderEmitter, 'emit')
     component.menuItems = items
     const expectedItems = [
       {
@@ -146,7 +146,7 @@ describe('MenuPreviewComponent', () => {
 
     component.onDrop(event)
 
-    expect(component.updateMenuStructureEmitter.emit).toHaveBeenCalledWith(expectedItems)
+    expect(component.reorderEmitter.emit).toHaveBeenCalledWith(expectedItems)
   })
 
   it('should set treeExpansionState onHierarchyViewChange', () => {

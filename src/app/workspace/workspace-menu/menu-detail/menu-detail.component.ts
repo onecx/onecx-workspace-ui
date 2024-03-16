@@ -31,8 +31,7 @@ DefaultValueAccessor.prototype.registerOnChange = function (fn) {
 
 @Component({
   selector: 'app-menu-detail',
-  templateUrl: './menu-detail.component.html',
-  styleUrls: ['./menu-detail.component.scss']
+  templateUrl: './menu-detail.component.html'
 })
 export class MenuDetailComponent implements OnChanges {
   @Input() public workspaceId!: string | undefined
