@@ -59,12 +59,12 @@ describe('MenuPreviewComponent', () => {
     expect(component).toBeTruthy()
   })
 
-  it('should set menuTreeNodes onChanges if workspaceDetail & changes correct: langExists false', () => {
+  it('should set menuNodes onChanges if workspaceDetail & changes correct: langExists false', () => {
     stateServiceSpy.getState.and.returnValue(state)
     const changes: SimpleChanges = {
       updateTree: new SimpleChange(null, component.updateTree, true)
     }
-    component.workspaceMenuItems = items
+    component.menuItems = items
 
     component.ngOnChanges(changes)
 
@@ -80,7 +80,7 @@ describe('MenuPreviewComponent', () => {
       rootFilter: true,
       treeMode: true
     })
-    component.menuTreeNodes = [
+    component.menuNodes = [
       { key: '1', expanded: false, children: [{ key: '1-1', children: [{ key: '1-1-1' }] }] },
       { key: '2' }
     ]
@@ -99,7 +99,7 @@ describe('MenuPreviewComponent', () => {
       rootFilter: true,
       treeMode: true
     })
-    component.menuTreeNodes = [
+    component.menuNodes = [
       { key: '1', expanded: true, children: [{ key: '1-1', children: [{ key: '1-1-1' }] }] },
       { key: '2' }
     ]
@@ -115,14 +115,14 @@ describe('MenuPreviewComponent', () => {
       dropNode: { key: 'newParentNodeId', children: [{ key: 'draggedNodeId' }], parent: { key: 'parent key' } }
     }
     treeServiceSpy.calculateNewNodesPositions.and.returnValue([{ id: 'id', position: 1 }])
-    component.workspaceMenuItems = items
+    component.menuItems = items
 
     component.onDrop(event)
 
     expect(treeServiceSpy.calculateNewNodesPositions).toHaveBeenCalledWith(
       'oldParentNodeId',
       'newParentNodeId',
-      component.menuTreeNodes
+      component.menuNodes
     )
   })
 
@@ -133,7 +133,7 @@ describe('MenuPreviewComponent', () => {
     }
     treeServiceSpy.calculateNewNodesPositions.and.returnValue([{ id: 'id', position: 1 }])
     spyOn(component.updateMenuStructureEmitter, 'emit')
-    component.workspaceMenuItems = items
+    component.menuItems = items
     const expectedItems = [
       {
         key: 'key',
@@ -170,7 +170,7 @@ describe('MenuPreviewComponent', () => {
 
   it('should set languagePreviewValue and mapToTree onLanguagePreviewChange', () => {
     const lang = 'de'
-    component.workspaceMenuItems = items
+    component.menuItems = items
     const mockExpansionState: Map<string, boolean> = new Map<string, boolean>()
     stateServiceSpy.getState.and.returnValue({
       treeExpansionState: mockExpansionState,
