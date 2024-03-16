@@ -22,7 +22,7 @@ import {
 
 const workspace: Workspace = {
   id: 'id',
-  name: 'name',
+  name: 'workspace-name',
   theme: 'theme',
   baseUrl: '/some/base/url'
 }
@@ -93,16 +93,17 @@ describe('MenuComponent', () => {
 
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
   const apiServiceSpy = {
-    getPortalByPortalId: jasmine.createSpy('getPortalByPortalId').and.returnValue(of({}))
+    getWorkspaceByName: jasmine.createSpy('getWorkspaceByName').and.returnValue(of({}))
   }
+  // TODO: check api and use the correct names
   const menuApiServiceSpy = {
-    getMenuStructureForPortalId: jasmine.createSpy('getMenuStructureForPortalId').and.returnValue(of(mockMenuItems)),
+    getMenuStructure: jasmine.createSpy('getMenuStructure').and.returnValue(of(mockMenuItems)),
     getMenuItemById: jasmine.createSpy('getMenuItemById').and.returnValue(of(mockMenuItems)),
     patchMenuItem: jasmine.createSpy('patchMenuItem').and.returnValue(of(mockMenuItems)),
     bulkPatchMenuItems: jasmine.createSpy('bulkPatchMenuItems').and.returnValue(of(mockMenuItems)),
     addMenuItemForPortal: jasmine.createSpy('addMenuItemForPortal').and.returnValue(of(mockMenuItems)),
     deleteMenuItemById: jasmine.createSpy('deleteMenuItemById').and.returnValue(of({})),
-    uploadMenuStructure: jasmine.createSpy('uploadMenuStructure').and.returnValue(of({}))
+    importMenuByWorkspaceName: jasmine.createSpy('importMenuByWorkspaceName').and.returnValue(of({}))
   }
   const configServiceSpy = {
     getProperty: jasmine.createSpy('getProperty').and.returnValue('123'),
@@ -158,14 +159,14 @@ describe('MenuComponent', () => {
     }).compileComponents()
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
-    apiServiceSpy.getPortalByPortalId.calls.reset()
+    apiServiceSpy.getWorkspaceByName.calls.reset()
     menuApiServiceSpy.getMenuItemById.calls.reset()
-    menuApiServiceSpy.getMenuStructureForPortalId.calls.reset()
+    menuApiServiceSpy.getMenuStructure.calls.reset()
     menuApiServiceSpy.patchMenuItem.calls.reset()
     menuApiServiceSpy.bulkPatchMenuItems.calls.reset()
     menuApiServiceSpy.addMenuItemForPortal.calls.reset()
     menuApiServiceSpy.deleteMenuItemById.calls.reset()
-    menuApiServiceSpy.uploadMenuStructure.calls.reset()
+    menuApiServiceSpy.importMenuByWorkspaceName.calls.reset()
     translateServiceSpy.get.calls.reset()
     stateServiceSpy.getState.calls.reset()
   }))
@@ -280,7 +281,8 @@ describe('MenuComponent', () => {
   })
 
   it('should loadData', () => {
-    apiServiceSpy.getPortalByPortalId.and.returnValue(of(workspace))
+    apiServiceSpy.getWorkspaceByName.and.returnValue(of(workspace))
+    component.workspaceName = 'workspace-name'
 
     component.loadData()
 
@@ -293,7 +295,7 @@ describe('MenuComponent', () => {
       status: 404,
       statusText: 'Not Found'
     })
-    apiServiceSpy.getPortalByPortalId.and.returnValue(throwError(() => errorResponse))
+    apiServiceSpy.getWorkspaceByName.and.returnValue(throwError(() => errorResponse))
 
     component.loadData()
 
@@ -301,7 +303,7 @@ describe('MenuComponent', () => {
   })
 
   it('it should handle exception on loadData', () => {
-    apiServiceSpy.getPortalByPortalId.and.returnValue(of(null))
+    apiServiceSpy.getWorkspaceByName.and.returnValue(of(null))
 
     component.loadData()
 
@@ -309,7 +311,7 @@ describe('MenuComponent', () => {
   })
 
   it('should loadMenu', () => {
-    menuApiServiceSpy.getMenuStructureForPortalId.and.returnValue(of(mockMenuItems))
+    menuApiServiceSpy.getMenuStructure.and.returnValue(of(mockMenuItems))
 
     component.loadMenu(true)
 
@@ -317,7 +319,7 @@ describe('MenuComponent', () => {
   })
 
   xit('should call prepareParentNodes with a node array containing children', () => {
-    menuApiServiceSpy.getMenuStructureForPortalId.and.returnValue(
+    menuApiServiceSpy.getMenuStructure.and.returnValue(
       of([{ key: '1', data: { id: 'id1' }, children: [{ key: '1-1', data: { id: 'id1-1' } }] }])
     )
 
@@ -332,7 +334,7 @@ describe('MenuComponent', () => {
       status: 404,
       statusText: 'Not Found'
     })
-    menuApiServiceSpy.getMenuStructureForPortalId.and.returnValue(throwError(() => errorResponse))
+    menuApiServiceSpy.getMenuStructure.and.returnValue(throwError(() => errorResponse))
 
     component.loadMenu(true)
 
@@ -340,7 +342,7 @@ describe('MenuComponent', () => {
   })
 
   it('should handle exception on loadMenu', () => {
-    menuApiServiceSpy.getMenuStructureForPortalId.and.returnValue(of(null))
+    menuApiServiceSpy.getMenuStructure.and.returnValue(of(null))
 
     component.loadMenu(true)
 
@@ -665,7 +667,7 @@ describe('MenuComponent', () => {
   })
  */
   it('should export a menu', () => {
-    menuApiServiceSpy.getMenuStructureForPortalId.and.returnValue(of(mockMenuItems))
+    menuApiServiceSpy.getMenuStructure.and.returnValue(of(mockMenuItems))
     component.workspaceName = 'name'
     component.workspace = workspace
     spyOn(FileSaver, 'saveAs')
@@ -745,24 +747,22 @@ describe('MenuComponent', () => {
 
   it('should handle menu import', () => {
     component.workspaceName = 'name'
-    component.workspaceName = 'name'
     spyOn(component, 'ngOnInit')
-    menuApiServiceSpy.uploadMenuStructure.and.returnValue(of({}))
+    menuApiServiceSpy.importMenuByWorkspaceName.and.returnValue(of({}))
 
     component.onImportMenu()
 
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'TREE.STRUCTURE_UPLOAD_SUCCESS' })
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.MENU.IMPORT.UPLOAD_OK' })
     expect(component.ngOnInit).toHaveBeenCalled()
   })
 
   it('should handle menu import error', () => {
     component.workspaceName = 'name'
-    component.workspaceName = 'name'
-    menuApiServiceSpy.uploadMenuStructure.and.returnValue(throwError(() => new Error()))
+    menuApiServiceSpy.importMenuByWorkspaceName.and.returnValue(throwError(() => new Error()))
 
     component.onImportMenu()
 
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'TREE.STRUCTURE_UPLOAD_ERROR' })
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.MENU.IMPORT.UPLOAD_NOK' })
   })
 
   it('should set displayMenuPreview to true onDisplayMenuPreview', () => {
