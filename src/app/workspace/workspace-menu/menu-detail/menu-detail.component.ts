@@ -31,7 +31,8 @@ DefaultValueAccessor.prototype.registerOnChange = function (fn) {
 
 @Component({
   selector: 'app-menu-detail',
-  templateUrl: './menu-detail.component.html'
+  templateUrl: './menu-detail.component.html',
+  styleUrls: ['./menu-detail.component.scss']
 })
 export class MenuDetailComponent implements OnChanges {
   @Input() public workspaceId!: string | undefined
@@ -167,7 +168,7 @@ export class MenuDetailComponent implements OnChanges {
   }
 
   /**
-   * SAVE
+   * SAVE => CREATE + UPDATE
    */
   public onMenuSave(): void {
     if (this.formGroup.valid) {
@@ -224,6 +225,23 @@ export class MenuDetailComponent implements OnChanges {
     } else console.error('non valid form', this.formGroup)
   }
 
+  /**
+   * DELETE
+   */
+  public onMenuDelete(): void {
+    this.displayDeleteDialog = false
+    this.menuApi.deleteMenuItemById({ menuItemId: this.menuItem?.id! }).subscribe({
+      next: () => {
+        this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MENU_OK' })
+        this.dataChanged.emit(true)
+      },
+      error: (err: { error: any }) => {
+        this.msgService.error({ summaryKey: 'ACTIONS.DELETE.MENU_NOK' })
+        console.error(err.error)
+      }
+    })
+  }
+
   public onTabPanelChange(e: any): void {
     this.tabIndex = e.index
     if (this.tabIndex) this.prepareLanguagePanel()
@@ -232,6 +250,9 @@ export class MenuDetailComponent implements OnChanges {
     field.overlayVisible = true
   }
 
+  /**
+   * LANGUAGE
+   */
   public prepareLanguagePanel(): void {
     this.languagesDisplayed = []
     // same height on all TABs
@@ -284,19 +305,5 @@ export class MenuDetailComponent implements OnChanges {
   }
   public displayLanguageField(lang: string) {
     return !this.languagesDisplayed.some((l) => l.value === lang)
-  }
-
-  public onMenuDelete(): void {
-    this.displayDeleteDialog = false
-    this.menuApi.deleteMenuItemById({ menuItemId: this.menuItem?.id! }).subscribe({
-      next: () => {
-        this.dataChanged.emit(true)
-        this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MENU_DELETE_OK' })
-      },
-      error: (err: { error: any }) => {
-        this.msgService.error({ summaryKey: 'ACTIONS.DELETE.MENU_DELETE_NOK' })
-        console.error(err.error)
-      }
-    })
   }
 }

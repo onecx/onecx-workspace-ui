@@ -213,23 +213,6 @@
           <ng-container *ngIf="!displayRoles">
             <td class="white-space-nowrap hidden-xs">
               <div class="flex gap-1">
-                <!--button
-                  pbutton
-                  type="button"
-                  [id]="'workspace_menu_table_row_' + rowData.key + '_disabled'"
-                  (click)="onToggleDisable($event, rowData)"
-                  [title]="'DIALOG.MENU.ACTION.DISABLED' | translate"
-                  class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
-                >
-                  <span
-                    class="text-red-500 font-medium p-button-icon pi pi-check-circle"
-                    [class.pi-check-circle]="!rowData['disabled']"
-                    [class.pi-minus-circle]="rowData['disabled']"
-                    [class.text-red-500]="rowData['disabled']"
-                    [class.text-green-500]="!rowData['disabled']"
-                    aria-hidden="true"
-                  ></span>
-                </button -->
                 <button
                   pbutton
                   type="button"
@@ -251,7 +234,7 @@
                   type="button"
                   [id]="'workspace_menu_table_row_' + rowData.key + '_goto_new'"
                   (click)="onCreateMenu($event, rowData)"
-                  [title]="'DIALOG.MENU.ACTION.NEW' | translate"
+                  [title]="'ACTIONS.CREATE.MENU.TOOLTIP' | translate"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                 >
                   <span class="text-primary font-medium p-button-icon pi pi-plus-circle" aria-hidden="true"></span>
@@ -262,7 +245,7 @@
                   type="button"
                   [id]="'workspace_menu_table_row_' + rowData.key + '_delete'"
                   (click)="onDeleteMenu($event, rowData)"
-                  [title]="('DIALOG.MENU.ACTION.DELETE' | translate).replace('{{TYPE}}', 'Menu')"
+                  [title]="'ACTIONS.DELETE.MENU' | translate"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                 >
                   <span class="danger-action-text font-medium p-button-icon pi pi-trash" aria-hidden="true"></span>

@@ -190,15 +190,6 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.displayMenuDelete = true
   }
 
-  // TODO: no save here anymore
-  // direct change node on click in tree
-  public onToggleDisable(ev: any, node: WorkspaceMenuItem): void {
-    this.changeMode = 'EDIT'
-    this.menuItem = node
-    this.menuItem.disabled = !node.disabled
-    //this.onMenuSave()
-  }
-
   /****************************************************************************
    ****************************************************************************
    * TREE + DIALOG

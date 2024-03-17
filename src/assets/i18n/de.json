@@ -21,27 +21,29 @@
       "ROLE": "Eine neue Rolle erstellen",
       "ROLE_OK": "Die Rolle wurde erfolgreich erstellt",
       "ROLE_NOK": "Ein Fehler ist aufgetreten. Die Rolle wurde nicht erstellt.",
-      "MENU": "Menüeintrag erstellen",
-      "MENU.TOOLTIP": "Ein neuen Menüeintrag erstellen",
+      "MENU": "Menüpunkt erstellen",
+      "MENU.TOOLTIP": "Ein neuen Menüpunkt unterhalb erstellen",
       "MESSAGE": {
         "CREATE_OK": "Der Workspace wurde erfolgreich erstellt",
         "CREATE_NOK": "Ein Fehler ist aufgetreten. Der Workspace wurde nicht erstellt.",
-        "MENU_ALREADY_EXIST": "Ein Menüeintrag mit diesem Namen/ID existert schon",
-        "MENU_CREATE_OK": "Der Menüeintrag wurde erfolgreich erstellt",
-        "MENU_CREATE_NOK": "Ein Fehler ist aufgetreten. Der Menüeintrag wurde nicht erstellt."
+        "MENU_ALREADY_EXIST": "Ein Menüpunkt mit diesem Namen/ID existert schon",
+        "MENU_CREATE_OK": "Der Menüpunkt wurde erfolgreich erstellt",
+        "MENU_CREATE_NOK": "Ein Fehler ist aufgetreten. Der Menüpunkt wurde nicht erstellt."
       }
     },
     "DELETE": {
       "LABEL": "Löschen",
       "ROLE": "Rolle löschen",
       "WORKSPACE": "Workspace löschen",
+      "MENU": "Menüpunkt löschen",
       "MESSAGE": "Möchten Sie \"{{ITEM}}\" löschen?",
       "MESSAGE_INFO": "Diese Aktion kann nicht rückgängig gemacht werden!",
       "MESSAGE_NOK": "Workspace konnte nicht gelöscht werden",
       "MESSAGE_OK": "Workspace erfolgreich gelöscht",
-      "MENU_DELETE_OK": "Der Menüeintrag wurde erfolgreich gelöscht",
-      "MENU_DELETE_NOK": "Ein Fehler ist aufgetreten. Der Menüeintrag wurde nicht gelöscht.",
-      "ROLE_MESSAGE": "Damit wird die Rolle und deren Zuweisungen (zu Menüitems) für den Workspace gelöscht. Ändert nichts im Permission Management.",
+      "MENU_MESSAGE": "Damit werden auch alle Menupunkte unterhalb gelöscht.",
+      "MENU_OK": "Der Menüpunkt wurde erfolgreich gelöscht",
+      "MENU_NOK": "Ein Fehler ist aufgetreten. Der Menüpunkt wurde nicht gelöscht.",
+      "ROLE_MESSAGE": "Damit wird die Rolle und deren Zuweisungen (zu Menüpunkten) für den Workspace gelöscht. Ändert nichts im Permission Management.",
       "ROLE_OK": "Die Rolle wurde erfolgreich gelöscht",
       "ROLE_NOK": "Ein Fehler ist aufgetreten. Die Rolle wurde nicht gelöscht."
     },
@@ -53,8 +55,8 @@
       "MESSAGE": {
         "CHANGE_OK": "Der Workspace wurde erfolgreich geändert",
         "CHANGE_NOK": "Ein Fehler ist aufgetreten. Der Workspace wurde nicht geändert.",
-        "MENU_CHANGE_OK": "Der Menüeintrag wurde erfolgreich geändert",
-        "MENU_CHANGE_NOK": "Ein Fehler ist aufgetreten. Der Menüeintrag wurde nicht geändert."
+        "MENU_CHANGE_OK": "Der Menüpunkt wurde erfolgreich geändert",
+        "MENU_CHANGE_NOK": "Ein Fehler ist aufgetreten. Der Menüpunkt wurde nicht geändert."
       }
     },
     "EXPORT": {
@@ -146,7 +148,7 @@
         "CONTACT": "Kontaktinformationen",
         "INTERN": "Interne Eigenschaften",
         "ROLES": "Rollen, die für die Benutzung des Workspaces von Bedeutung sind (als Teil aller Rollen für den Mandant))",
-        "PRODUCTS": "Für den Workspace registrierte Produkte - benutzbar z.B. in Menüeintragen"
+        "PRODUCTS": "Für den Workspace registrierte Produkte - benutzbar z.B. in Menüpunkten"
       }
     },
     "MENU": {}
@@ -207,7 +209,7 @@
       "BADGE": "Icon aus der PrimeNG Bibliothek welches neben dem Menünamen angezeigt werden soll",
       "DESCRIPTION": "Zusatzinformationen",
       "DISABLED": "Wenn gesetzt, dann wird der Menüpunkt inaktiv angezeigt",
-      "EXTERN": "Wenn gesetzt, dann wird mit dem Menüpunkt der Workspace-Kontext verlassen",
+      "EXTERN": "Wenn gesetzt, dann wird bei der Benutzung des Menüpunkst der Workspace-Kontext verlassen",
       "MENU_ID": "Ein eindeutiger Identifikator des Menüpunkts",
       "MENU_NAME": "Angezeigter Name",
       "PARENT_ID": "Der Identifier des übergeordneten Menüpunkts",
@@ -252,9 +254,9 @@
     "MENU": {
       "LABEL": "Menü",
       "HEADER": {
-        "EDIT": "Menüeintrag Details",
-        "CREATE": "Menüeintrag erstellen",
-        "DELETE": "Menüeintrag löschen",
+        "EDIT": "Menüpunkt Details",
+        "CREATE": "Menüpunkt erstellen",
+        "DELETE": "Menüpunkt löschen",
         "IMPORT": "Menü importieren",
         "TREE_MODAL": "Umordnen & Voransicht",
         "TREE_MODAL.TOOLTIP": "Menüeinträge per Drag & Drop umordnen und Ansicht in den konfigurierten Sprachen",
@@ -268,10 +270,7 @@
       },
       "SUBHEADER": "Menü verwalten",
       "ACTION": {
-        "DELETE": "Menüeintrag löschen",
-        "DETAILS": "Anzeige Details",
-        "DISABLED": "Grün = Eintrag ist im Menü verfügbar - durch Klick veränderbar",
-        "NEW": "Neuen Menüeintrag erstellen"
+        "DETAILS": "Anzeige Details"
       },
       "TABS": {
         "DETAILS": "Details",
@@ -305,7 +304,7 @@
         "LANG.TOOLTIP": "Liste der verwendeten Sprachen"
       },
       "MENU_NOT_EXIST": "Kein Menü definiert",
-      "MENU_ITEM_NOT_FOUND": "Menüeintrag mit ID wurde nicht gefunden:",
+      "MENU_ITEM_NOT_FOUND": "Menüpunkt mit ID wurde nicht gefunden:",
       "IMPORT": {
         "UPLOAD_INFO": "Bitte laden Sie die JSON-Datei von Ihrem Gerät hoch. Bitte beachten Sie, dass nach dem Upload die gesamte Menüstruktur überschrieben wird.",
         "UPLOAD_OK": "Menüstruktur wurde erfolgreich überschrieben",
@@ -375,11 +374,11 @@
     "VALIDATION_THEME_NAME_MISSING": "Kein Theme-Name in der Theme-Definition enthalten/gefunden",
     "VALIDATION_THEME_NOT_EXIST": "Keine Theme-Definition enthalten",
     "VALIDATION_MENU_NOT_EXIST": "Keine Menü-Definition enthalten",
-    "VALIDATION_MENU_ITEM_KEY_MISSING": "In einem Menüeintrag fehlt der Key",
-    "VALIDATION_MENU_ITEM_NAME_MISSING": "In einem Menüeintrag fehlt der Name",
-    "VALIDATION_MENU_ITEM_WRONG_POSITION": "In einem Menüeintrag ist der Wert für 'position' keine Zahl",
-    "VALIDATION_MENU_ITEM_WRONG_DISABLED": "In einem Menüeintrag ist der Wert für 'disabled' kein Boolean",
-    "VALIDATION_MENU_ITEM_WRONG_PORTALEXIT": "In einem Menüeintrag ist der Wert für 'workspaceExit' kein Boolean",
+    "VALIDATION_MENU_ITEM_KEY_MISSING": "In einem Menüpunkt fehlt der Key",
+    "VALIDATION_MENU_ITEM_NAME_MISSING": "In einem Menüpunkt fehlt der Name",
+    "VALIDATION_MENU_ITEM_WRONG_POSITION": "In einem Menüpunkt ist der Wert für 'position' keine Zahl",
+    "VALIDATION_MENU_ITEM_WRONG_DISABLED": "In einem Menüpunkt ist der Wert für 'disabled' kein Boolean",
+    "VALIDATION_MENU_ITEM_WRONG_PORTALEXIT": "In einem Menüpunkt ist der Wert für 'workspaceExit' kein Boolean",
     "VALIDATION_RESULT": "Verarbeitung nicht möglich: "
   },
   "PRODUCT": {

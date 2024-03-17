@@ -22,7 +22,7 @@
       "ROLE_OK": "The Role was created successfully",
       "ROLE_NOK": "An error has occurred. The Role was not created.",
       "MENU": "Create Menu Item",
-      "MENU.TOOLTIP": "Create a new Menu Item",
+      "MENU.TOOLTIP": "Create a new Menu Item below",
       "MESSAGE": {
         "CREATE_OK": "The workspace was created successfully",
         "CREATE_NOK": "An error has occurred. The workspace was not created.",
@@ -35,12 +35,14 @@
       "LABEL": "Delete",
       "ROLE": "Delete Role",
       "WORKSPACE": "Delete Workspace",
+      "MENU": "Delete Menu Item",
       "MESSAGE": "Do you want to delete \"{{ITEM}}\"?",
       "MESSAGE_INFO": "This action cannot be undone!",
       "MESSAGE_NOK": "Workspace could not be deleted",
       "MESSAGE_OK": "Workspace deleted successfully",
-      "MENU_DELETE_OK": "The Menu Item was deleted successfully",
-      "MENU_DELETE_NOK": "An error has occurred. The Menu Item could not be deleted.",
+      "MENU_MESSAGE": "This will also delete all menu items below.",
+      "MENU_OK": "The Menu Item was deleted successfully",
+      "MENU_NOK": "An error has occurred. The Menu Item could not be deleted.",
       "ROLE_MESSAGE": "This deletes the role and its assignments for the workspace. Does not changed anycthing in Permission Management.",
       "ROLE_OK": "The Role was deleted successfully",
       "ROLE_NOK": "An error has occurred. The Role was not deleted."
@@ -268,10 +270,7 @@
       },
       "SUBHEADER": "Manage the Menu",
       "ACTION": {
-        "DELETE": "Delete Menu Item",
-        "DETAILS": "Display details",
-        "DISABLED": "Green = Item is available in Menu - Changeable by click",
-        "NEW": "Create new Menu Item"
+        "DETAILS": "Display details"
       },
       "TABS": {
         "DETAILS": "Details",
