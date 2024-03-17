@@ -3,7 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http'
 import { Location } from '@angular/common'
 import { ActivatedRoute } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
-import { catchError, finalize, map, Observable, Subject, of } from 'rxjs'
+import { catchError, combineLatest, map, Observable, Subject, of, tap } from 'rxjs'
 
 import { TreeTable } from 'primeng/treetable'
 import { Overlay } from 'primeng/overlay'
@@ -13,6 +13,9 @@ import FileSaver from 'file-saver'
 
 import { Action, PortalMessageService, UserService } from '@onecx/portal-integration-angular'
 import {
+  AssignmentAPIService,
+  AssignmentPageResult,
+  Assignment,
   MenuItemAPIService,
   MenuItemStructure,
   Workspace,
@@ -52,6 +55,9 @@ export class MenuComponent implements OnInit, OnDestroy {
   public workspaceName: string = this.route.snapshot.params['name']
   private mfeRUrls: Array<string> = []
   public wRoles$!: Observable<IAMRolePageResult>
+  public wRoles: WorkspaceRole[] = []
+  public wAssignments$!: Observable<AssignmentPageResult>
+  public wAssignments: Assignment[] = []
   // menu
   private menu$!: Observable<MenuItemStructure>
   public menuNodes: TreeNode[] = []
@@ -70,6 +76,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private location: Location,
+    private assApi: AssignmentAPIService,
     private menuApi: MenuItemAPIService,
     private workspaceApi: WorkspaceAPIService,
     private wRoleApi: WorkspaceRolesAPIService,
@@ -287,7 +294,6 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.menuItems = result.menuItems
         this.menuNodes = this.mapToTreeNodes(this.menuItems, undefined)
         this.prepareParentNodes(this.menuNodes)
-        this.searchWorkspaceRoles()
         if (restore) {
           this.restoreTree()
           this.msgService.success({ summaryKey: 'ACTIONS.SEARCH.RELOAD.OK' })
@@ -300,32 +306,81 @@ export class MenuComponent implements OnInit, OnDestroy {
     })
   }
 
-  /** Workspace Role
+  /****************************************************************************
+   * ROLES + ASSIGNMENTS
    */
   private declareWorkspaceRolesObservable(): void {
-    this.wRoles$ = this.wRoleApi.searchWorkspaceRoles({ workspaceRoleSearchCriteria: {} }).pipe(
-      catchError((err) => {
-        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.ROLES'
-        console.error('searchAvailableRoles():', err)
-        return of({} as IAMRolePageResult)
-      }),
-      finalize(() => {
-        this.loading = false
-        console.log('roles loaded')
-      })
-    )
+    this.wRoles$ = this.wRoleApi
+      .searchWorkspaceRoles({ workspaceRoleSearchCriteria: { workspaceId: this.workspace?.id } })
+      .pipe(
+        catchError((err) => {
+          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.ROLES'
+          console.error('searchWorkspaceRoles():', err)
+          return of({} as IAMRolePageResult)
+        }),
+        tap((data) => console.log('role data', data))
+      )
+  }
+  private declareWorkspaceAssignmentsObservable(): void {
+    this.wAssignments$ = this.assApi
+      .searchAssignments({ assignmentSearchCriteria: { workspaceId: this.workspace?.id } })
+      .pipe(
+        catchError((err) => {
+          console.error('searchAssignments():', err)
+          return of({} as AssignmentPageResult)
+        }),
+        tap((data) => console.log('ass data', data))
+      )
   }
   private searchWorkspaceRoles(): Observable<WorkspaceRole[]> {
-    this.declareWorkspaceRolesObservable()
     return this.wRoles$.pipe(
       map((result) => {
         return result.stream
           ? result.stream?.map((role) => {
-              return { ...role, isIamRole: false, isWorkspaceRole: true, type: 'WORKSPACE' } as WorkspaceRole
+              this.wRoles.push({
+                ...role,
+                isIamRole: false,
+                isWorkspaceRole: true,
+                type: 'WORKSPACE'
+              } as WorkspaceRole)
+              return this.wRoles[this.wRoles.length - 1]
             })
           : []
       })
     )
+  }
+  private searchAssignments(): Observable<Assignment[]> {
+    return this.wAssignments$.pipe(
+      map((result) => {
+        return result.stream
+          ? result.stream?.map((ass) => {
+              this.wAssignments.push(ass)
+              return this.wAssignments[this.wAssignments.length - 1]
+            })
+          : []
+      })
+    )
+  }
+  private loadWorkspaceRolesAndAssignments() {
+    this.loading = true
+    this.declareWorkspaceRolesObservable()
+    this.declareWorkspaceAssignmentsObservable()
+    this.wRoles = []
+    this.wAssignments = []
+    combineLatest([this.searchWorkspaceRoles(), this.searchAssignments()]).subscribe(
+      () => {}, // next
+      () => {}, // error
+      () => {
+        this.loading = false
+        console.log('loadWorkspaceRolesAndAssignments completed')
+        this.wRoles.sort(this.sortRoleByName)
+        console.log('roles', this.wRoles)
+        console.log('assignments', this.wAssignments)
+      }
+    )
+  }
+  public sortRoleByName(a: WorkspaceRole, b: WorkspaceRole): number {
+    return (a.name ? a.name.toUpperCase() : '').localeCompare(b.name ? b.name.toUpperCase() : '')
   }
 
   /** remove node and sub nodes (recursively) in the tree
@@ -433,6 +488,9 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.displayMenuImport = false
   }
   public onDisplayRoles() {
+    if (!this.displayRoles && this.wRoles.length === 0) {
+      this.loadWorkspaceRolesAndAssignments()
+    }
     this.displayRoles = !this.displayRoles
   }
   public onDisplayMenuPreview() {

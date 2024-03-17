@@ -37,7 +37,7 @@
       #menuTree
       styleClass="px-2"
       id="workspace_menu_table"
-      [columns]="(wRoles$ | async)?.stream ?? []"
+      [columns]="(wRoles$ | async)?.stream?.sort(sortRoleByName) ?? []"
       [value]="menuNodes"
       [globalFilterFields]="['name', 'url']"
       (onNodeCollapse)="onHierarchyViewChange($event)"
