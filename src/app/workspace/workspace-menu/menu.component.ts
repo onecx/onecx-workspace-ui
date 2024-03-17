@@ -23,7 +23,7 @@ import {
   WorkspaceRole,
   WorkspaceAPIService,
   WorkspaceRolesAPIService,
-  IAMRolePageResult,
+  WorkspaceRolePageResult,
   GetWorkspaceResponse
 } from 'src/app/shared/generated'
 import { limitText, dropDownSortItemsByLabel } from 'src/app/shared/utils'
@@ -54,7 +54,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   private workspace$!: Observable<GetWorkspaceResponse>
   public workspaceName: string = this.route.snapshot.params['name']
   private mfeRUrls: Array<string> = []
-  public wRoles$!: Observable<IAMRolePageResult>
+  public wRoles$!: Observable<WorkspaceRolePageResult>
   public wRoles: WorkspaceRole[] = []
   public wAssignments$!: Observable<AssignmentPageResult>
   public wAssignments: Assignment[] = []
@@ -309,48 +309,28 @@ export class MenuComponent implements OnInit, OnDestroy {
   /****************************************************************************
    * ROLES + ASSIGNMENTS
    */
-  private declareWorkspaceRolesObservable(): void {
-    this.wRoles$ = this.wRoleApi
+  private searchRoles(): Observable<WorkspaceRole[]> {
+    return this.wRoleApi
       .searchWorkspaceRoles({ workspaceRoleSearchCriteria: { workspaceId: this.workspace?.id } })
       .pipe(
+        map((result) => {
+          return result.stream
+            ? result.stream?.map((role) => {
+                this.wRoles.push(role)
+                return this.wRoles[this.wRoles.length - 1]
+              })
+            : []
+        }),
         catchError((err) => {
           this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.ROLES'
-          console.error('searchWorkspaceRoles():', err)
-          return of({} as IAMRolePageResult)
+          console.error('searchRoles():', err)
+          return of([])
         }),
         tap((data) => console.log('role data', data))
       )
   }
-  private declareWorkspaceAssignmentsObservable(): void {
-    this.wAssignments$ = this.assApi
-      .searchAssignments({ assignmentSearchCriteria: { workspaceId: this.workspace?.id } })
-      .pipe(
-        catchError((err) => {
-          console.error('searchAssignments():', err)
-          return of({} as AssignmentPageResult)
-        }),
-        tap((data) => console.log('ass data', data))
-      )
-  }
-  private searchWorkspaceRoles(): Observable<WorkspaceRole[]> {
-    return this.wRoles$.pipe(
-      map((result) => {
-        return result.stream
-          ? result.stream?.map((role) => {
-              this.wRoles.push({
-                ...role,
-                isIamRole: false,
-                isWorkspaceRole: true,
-                type: 'WORKSPACE'
-              } as WorkspaceRole)
-              return this.wRoles[this.wRoles.length - 1]
-            })
-          : []
-      })
-    )
-  }
   private searchAssignments(): Observable<Assignment[]> {
-    return this.wAssignments$.pipe(
+    return this.assApi.searchAssignments({ assignmentSearchCriteria: { workspaceId: this.workspace?.id } }).pipe(
       map((result) => {
         return result.stream
           ? result.stream?.map((ass) => {
@@ -358,21 +338,24 @@ export class MenuComponent implements OnInit, OnDestroy {
               return this.wAssignments[this.wAssignments.length - 1]
             })
           : []
-      })
+      }),
+      catchError((err) => {
+        console.error('searchAssignments():', err)
+        return of([])
+      }),
+      tap((data) => console.log('ass data', data))
     )
   }
-  private loadWorkspaceRolesAndAssignments() {
+  private loadRolesAndAssignments() {
     this.loading = true
-    this.declareWorkspaceRolesObservable()
-    this.declareWorkspaceAssignmentsObservable()
     this.wRoles = []
     this.wAssignments = []
-    combineLatest([this.searchWorkspaceRoles(), this.searchAssignments()]).subscribe(
+    combineLatest([this.searchRoles(), this.searchAssignments()]).subscribe(
       () => {}, // next
       () => {}, // error
       () => {
         this.loading = false
-        console.log('loadWorkspaceRolesAndAssignments completed')
+        console.log('loadRolesAndAssignments completed')
         this.wRoles.sort(this.sortRoleByName)
         console.log('roles', this.wRoles)
         console.log('assignments', this.wAssignments)
@@ -489,7 +472,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
   public onDisplayRoles() {
     if (!this.displayRoles && this.wRoles.length === 0) {
-      this.loadWorkspaceRolesAndAssignments()
+      this.loadRolesAndAssignments()
     }
     this.displayRoles = !this.displayRoles
   }
