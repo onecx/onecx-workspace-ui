@@ -55,7 +55,7 @@
     "@onecx/portal-integration-angular": "^4.10.2",
     "@onecx/portal-layout-styles": "^4.10.2",
     "file-saver": "^2.0.5",
-    "i18n-iso-countries": "^7.6.0",
+    "i18n-iso-countries": "^7.10.1",
     "ngx-color": "^8.0.3",
     "primeflex": "^3.3.1",
     "primeicons": "^6.0.1",
