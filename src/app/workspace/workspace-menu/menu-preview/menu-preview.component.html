@@ -8,11 +8,11 @@
   (onResizeInit)="onStartResizeTree($event)"
   (onResizeEnd)="onEndResizeTree($event)"
 >
-  <ul class="my-2">
+  <ul class="mt-1">
     <li>{{ 'DIALOG.MENU.HEADER.REORDER.TOOLTIP' | translate }}</li>
     <li class="danger-action-text">{{ 'DIALOG.MENU.HEADER.PREVIEW2.TOOLTIP' | translate }}</li>
   </ul>
-  <div class="h-3rem flex flex-wrap justify-content-between align-items-end gap-2">
+  <div class="mt-4 flex flex-wrap justify-content-between align-items-end gap-2">
     <div class="h-2rem flex flex-wrap gap-2">
       <button
         pButton
@@ -47,7 +47,7 @@
   </div>
 
   <p-tree
-    styleClass="my-2 py-0 pr-0 max-h-25rem"
+    styleClass="my-2 pl-2 pt-1 p-0 max-h-25rem"
     scrollHeight="flex"
     [value]="menuNodes"
     [draggableNodes]="true"
