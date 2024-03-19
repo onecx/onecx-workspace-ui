@@ -81,7 +81,7 @@
     "@commitlint/config-conventional": "^17.6.3",
     "@docusaurus/module-type-aliases": "~2.4.0",
     "@jscutlery/semver": "^2.30.1",
-    "@openapitools/openapi-generator-cli": "^2.9.0",
+    "@openapitools/openapi-generator-cli": "^2.13.1",
     "@schematics/angular": "15.2.6",
     "@storybook/addon-essentials": "7.6.16",
     "@storybook/angular": "7.6.16",
