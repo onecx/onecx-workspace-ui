@@ -2,6 +2,7 @@
 
 @include danger-action;
 @include correct-data-view-control;
+@include table-inline-buttons;
 
 :host ::ng-deep {
   .p-dialog .p-dialog-content {
@@ -37,17 +38,6 @@
           align-items: center !important;
           .p-treetable-toggler {
             margin-right: unset;
-          }
-          button.p-button {
-            &.p-button-icon-only {
-              width: unset !important;
-            }
-            &.p-button-rounded {
-              height: unset !important;
-            }
-            &[disabled] {
-              opacity: 0.6;
-            }
           }
         }
         > td:first-of-type {

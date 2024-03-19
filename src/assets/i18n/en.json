@@ -264,6 +264,8 @@
         "DETAILS.TOOLTIP": "Manage Details",
         "ROLES": "Roles",
         "ROLES.TOOLTIP": "Display Roles and Permissions",
+        "ROLES.MANAGE": "Manage Roles",
+        "ROLES.NOT_EXIST": "No Workspace Roles",
         "PREVIEW.TOOLTIP": "Preview in configured languages",
         "PREVIEW2.TOOLTIP": "No translation",
         "REORDER.TOOLTIP": "Reorder via Drag & Drop"
@@ -296,7 +298,13 @@
       },
       "ASSIGNMENT": {
         "OK": "Menu Item assigned",
-        "NOK": "Menu Item not assigned"
+        "NOK": "Menu Item not assigned",
+        "OK_INHERITED": "Menu Item assigned by inheritance",
+        "CHANGEABLE": "Change by click",
+        "GRANT_OK": "Permission granted",
+        "GRANT_NOK": "Permission could not be granted",
+        "REVOKE_OK": "Permission revoked",
+        "REVOKE_NOK": "Permission could not be revoked"
       },
       "PREVIEW": {
         "LANG": "Language",

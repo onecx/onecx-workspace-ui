@@ -37,7 +37,7 @@
       #menuTree
       styleClass="px-2"
       id="workspace_menu_table"
-      [columns]="this.wRoles.sort(sortRoleByName)"
+      [columns]="wRoles"
       [value]="menuNodes"
       [globalFilterFields]="['name', 'url']"
       (onNodeCollapse)="onHierarchyViewChange($event)"
@@ -89,7 +89,7 @@
 
       <ng-template pTemplate="header" let-columns>
         <tr>
-          <th id="workspace_menu_table_header_dummy1" class="p-0 text-left border-transparent border-bottom-2">
+          <th id="workspace_menu_table_header_dummy1" class="p-1 text-left border-transparent">
             <div class="flex flex-row justify-content-between">
               <div class="flex flex-row gap-2 justify-content-start">
                 <button
@@ -132,7 +132,7 @@
                 pButton
                 pRipple
                 type="button"
-                icon="pi pi-cog"
+                icon="pi pi-info-circle"
                 class="p-1 p-button-text"
                 id="workspace_menu_table_header_details_button"
                 (click)="onDisplayRoles()"
@@ -141,8 +141,28 @@
               ></button>
             </div>
           </th>
-          <th id="workspace_menu_table_header_purpose" [attr.colspan]="5" class="text-center">
-            {{ (displayRoles ? 'DIALOG.MENU.HEADER.ROLES' : 'DIALOG.MENU.HEADER.DETAILS') | translate }}
+          <th *ngIf="!displayRoles" id="workspace_menu_table_header_details" [attr.colspan]="5" class="p-1 text-center">
+            {{ 'DIALOG.MENU.HEADER.DETAILS' | translate }}
+          </th>
+          <th
+            *ngIf="displayRoles"
+            id="workspace_menu_table_header_roles"
+            [attr.colspan]="1 + wRoles.length"
+            class="p-1 text-center"
+          >
+            <div class="flex align-items-center justify-content-center">
+              <div>{{ 'DIALOG.MENU.HEADER.ROLES' | translate }}</div>
+              <button
+                pButton
+                pRipple
+                type="button"
+                icon="pi pi-cog"
+                class="p-1 p-button-text"
+                id="workspace_menu_table_header_button_roles_edit"
+                (click)="onDisplayRoles()"
+                [title]="'DIALOG.MENU.HEADER.ROLES.MANAGE' | translate"
+              ></button>
+            </div>
           </th>
         </tr>
         <tr>
@@ -187,14 +207,19 @@
           <!-- ROLES (actually managed by IDM) -->
           <ng-container *ngIf="displayRoles">
             <th
+              *ngIf="wRoles.length === 0"
+              id="workspace_menu_table_header_roles_dummy"
+              class="px-8 text-center font-italic border-primary border-bottom-2"
+            >
+              {{ 'DIALOG.MENU.HEADER.ROLES.NOT_EXIST' | translate }}
+            </th>
+            <th
               *ngFor="let role of columns"
               id="workspace_menu_table_header_roles"
               class="px-2 text-center border-primary border-bottom-2"
             >
               <div class="flex flex-column justify-content-between">
-                <div [title]="role.description ? role.description : ''">
-                  {{ role.name + (role.isWorkspaceRole ? ' (w)' : '') }}
-                </div>
+                <div [title]="role.description ? role.description : ''">{{ role.name }}</div>
               </div>
             </th>
           </ng-container>
@@ -291,18 +316,52 @@
               class="text-center"
               [id]="'menu_detail_tree_table_data_' + role.name + '_' + rowData.key"
             >
+              <!-- display only -->
               <span
-                *ngIf="true"
-                class="pi pi-circle-fill text-primary text-lg"
-                [title]="'DIALOG.MENU.ASSIGNMENT.OK' | translate"
+                *ngIf="!rowData.roles[role.id] && rowData.rolesInherited[role.id]"
+                class="pi pi-circle-fill text-primary opacity-40 text-lg"
+                [title]="'DIALOG.MENU.ASSIGNMENT.OK_INHERITED' | translate"
               >
               </span>
-              <span
-                *ngIf="false"
-                class="pi pi-circle text-primary text-lg"
-                [title]="'DIALOG.MENU.ASSIGNMENT.NOK' | translate"
-              >
-              </span></td
+              <div *ngIf="!myPermissions.includes('MENU#GRANT')">
+                <span
+                  *ngIf="rowData.roles[role.id]"
+                  class="pi pi-circle-fill text-primary text-lg"
+                  [title]="'DIALOG.MENU.ASSIGNMENT.OK' | translate"
+                >
+                </span>
+                <span
+                  *ngIf="!rowData.roles[role.id] && !rowData.rolesInherited[role.id]"
+                  class="pi pi-circle text-primary text-lg"
+                  [title]="'DIALOG.MENU.ASSIGNMENT.NOK' | translate"
+                >
+                </span>
+              </div>
+              <!-- manipulation -->
+              <div *ngIf="myPermissions.includes('MENU#GRANT')">
+                <span
+                  *ngIf="rowData.roles[role.id]"
+                  class="pi pi-circle-fill text-primary text-lg cursor-pointer"
+                  [title]="
+                    ('DIALOG.MENU.ASSIGNMENT.OK' | translate) +
+                    ' - ' +
+                    ('DIALOG.MENU.ASSIGNMENT.CHANGEABLE' | translate)
+                  "
+                  (click)="onRevokePermission(rowData, role.id, rowData.roles[role.id])"
+                >
+                </span>
+                <span
+                  *ngIf="!rowData.roles[role.id] && !rowData.rolesInherited[role.id]"
+                  class="pi pi-circle text-primary text-lg cursor-pointer"
+                  [title]="
+                    ('DIALOG.MENU.ASSIGNMENT.NOK' | translate) +
+                    ' - ' +
+                    ('DIALOG.MENU.ASSIGNMENT.CHANGEABLE' | translate)
+                  "
+                  (click)="onGrantPermission(rowData, role.id)"
+                >
+                </span>
+              </div></td
           ></ng-container>
         </tr>
       </ng-template>

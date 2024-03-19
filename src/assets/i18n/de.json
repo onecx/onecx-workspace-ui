@@ -264,6 +264,8 @@
         "DETAILS.TOOLTIP": "Verwalten von Details",
         "ROLES": "Rollen",
         "ROLES.TOOLTIP": "Anzeige von Rollen und Berechtigungen",
+        "ROLES.MANAGE": "Rollen verwalten",
+        "ROLES.NOT_EXIST": "Keine Workspace Rollen",
         "PREVIEW.TOOLTIP": "Ansicht in den konfigurierten Sprachen",
         "PREVIEW2.TOOLTIP": "Keine Übersetzungen",
         "REORDER.TOOLTIP": "Umordnen mit Drag & Drop"
@@ -295,8 +297,14 @@
         "EXTERN.TOOLTIP": "Wenn diese Option aktiviert ist, wird der Workspace verlassen"
       },
       "ASSIGNMENT": {
-        "OK": "Menü Item zugeordnet",
-        "NOK": "Menü Item nicht zugeordnet"
+        "OK": "Menüpunkt zugeordnet",
+        "NOK": "Menüpunkt nicht zugeordnet",
+        "OK_INHERITED": "Durch Vererbung zugewiesener Menüpunkt",
+        "CHANGEABLE": "Ändern durch klick",
+        "GRANT_OK": "Berechtigung erteilt",
+        "GRANT_NOK": "Berechtigung konnte nicht erteilt werden",
+        "REVOKE_OK": "Berechtigung entzogen",
+        "REVOKE_NOK": "Berechtigung konnte nicht entzogen werden"
       },
       "PREVIEW": {
         "LANG": "Sprache",

@@ -3,7 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http'
 import { Location } from '@angular/common'
 import { ActivatedRoute } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
-import { catchError, combineLatest, map, Observable, Subject, of, tap } from 'rxjs'
+import { catchError, combineLatest, map, Observable, Subject, of } from 'rxjs'
 
 import { TreeTable } from 'primeng/treetable'
 import { Overlay } from 'primeng/overlay'
@@ -16,6 +16,7 @@ import {
   AssignmentAPIService,
   AssignmentPageResult,
   Assignment,
+  CreateAssignmentRequest,
   MenuItemAPIService,
   MenuItemStructure,
   Workspace,
@@ -30,6 +31,18 @@ import { limitText, dropDownSortItemsByLabel } from 'src/app/shared/utils'
 import { MenuStateService } from './services/menu-state.service'
 
 export type ChangeMode = 'VIEW' | 'CREATE' | 'EDIT' | 'COPY' | 'DELETE'
+export type RoleAssignments = { [key: string]: string | undefined } // assignment id or undefined
+export type MenuItemNodeData = WorkspaceMenuItem & {
+  first: boolean
+  last: boolean
+  prevId: string
+  gotoUrl: string
+  positionPath: string
+  appConnected: boolean
+  roles: RoleAssignments
+  rolesInherited: RoleAssignments
+  node: TreeNode
+}
 
 @Component({
   selector: 'app-menu',
@@ -89,9 +102,8 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.menuItems = state.workspaceMenuItems
     // simplify permission checks
     if (userService.hasPermission('MENU#EDIT')) this.myPermissions.push('MENU#EDIT')
+    if (userService.hasPermission('MENU#GRANT')) this.myPermissions.push('MENU#GRANT')
     if (userService.hasPermission('ROLE#EDIT')) this.myPermissions.push('ROLE#EDIT')
-    if (userService.hasPermission('ROLE#DELETE')) this.myPermissions.push('ROLE#DELETE')
-    if (userService.hasPermission('PERMISSION#GRANT')) this.myPermissions.push('PERMISSION#GRANT')
   }
 
   public ngOnInit(): void {
@@ -294,6 +306,8 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.menuItems = result.menuItems
         this.menuNodes = this.mapToTreeNodes(this.menuItems, undefined)
         this.prepareParentNodes(this.menuNodes)
+        this.loadRolesAndAssignments()
+        console.log('tree nodes', this.menuNodes)
         if (restore) {
           this.restoreTree()
           this.msgService.success({ summaryKey: 'ACTIONS.SEARCH.RELOAD.OK' })
@@ -325,8 +339,7 @@ export class MenuComponent implements OnInit, OnDestroy {
           this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.ROLES'
           console.error('searchRoles():', err)
           return of([])
-        }),
-        tap((data) => console.log('role data', data))
+        })
       )
   }
   private searchAssignments(): Observable<Assignment[]> {
@@ -342,28 +355,80 @@ export class MenuComponent implements OnInit, OnDestroy {
       catchError((err) => {
         console.error('searchAssignments():', err)
         return of([])
-      }),
-      tap((data) => console.log('ass data', data))
+      })
     )
+  }
+  private sortRoleByName(a: WorkspaceRole, b: WorkspaceRole): number {
+    return (a.name ? a.name.toUpperCase() : '').localeCompare(b.name ? b.name.toUpperCase() : '')
   }
   private loadRolesAndAssignments() {
     this.loading = true
     this.wRoles = []
     this.wAssignments = []
-    combineLatest([this.searchRoles(), this.searchAssignments()]).subscribe(
-      () => {}, // next
-      () => {}, // error
-      () => {
-        this.loading = false
-        console.log('loadRolesAndAssignments completed')
-        this.wRoles.sort(this.sortRoleByName)
-        console.log('roles', this.wRoles)
-        console.log('assignments', this.wAssignments)
-      }
-    )
+    combineLatest([this.searchRoles(), this.searchAssignments()]).subscribe(([roles, ass]) => {
+      this.loading = false
+      this.wRoles.sort(this.sortRoleByName)
+      console.log('roles', roles)
+      console.log('assignments', ass)
+      // assignments(role.id, menu.id) => node.roles[role.id] = ass.id
+      ass.forEach((ass: Assignment) => {
+        // find affected node
+        let assignedNode = this.findTreeNodeById(this.menuNodes, ass.menuItemId)
+        if (assignedNode) {
+          assignedNode.data.roles[ass.roleId!] = ass.id
+          this.inheritRoleAssignment(assignedNode, ass.roleId!, ass.id!)
+        }
+      })
+    })
   }
-  public sortRoleByName(a: WorkspaceRole, b: WorkspaceRole): number {
-    return (a.name ? a.name.toUpperCase() : '').localeCompare(b.name ? b.name.toUpperCase() : '')
+  private findTreeNodeById(source: TreeNode[], id?: string): TreeNode | undefined {
+    let treeNode: TreeNode | undefined = undefined
+    for (let node of source) {
+      if (node.data.id === id) treeNode = node
+      else if (!treeNode && node.children && node.children.length > 0)
+        treeNode = this.findTreeNodeById(node.children, id)
+    }
+    return treeNode
+  }
+  private inheritRoleAssignment(node: TreeNode, roleId: string, assId: string | undefined): void {
+    if (node && node.children && node.children.length > 0)
+      node.children.forEach((n) => {
+        n.data.rolesInherited[roleId] = assId
+        this.inheritRoleAssignment(n, roleId, assId)
+      })
+  }
+
+  public onGrantPermission(rowData: MenuItemNodeData, roleId: string): void {
+    console.log('onGrantPermission roleId:' + roleId + '  menuItemId:' + rowData.id)
+    this.assApi
+      .createAssignment({
+        createAssignmentRequest: { roleId: roleId, menuItemId: rowData.id } as CreateAssignmentRequest
+      })
+      .subscribe({
+        next: (data) => {
+          this.msgService.success({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.GRANT_OK' })
+          rowData.roles[roleId] = data.id
+          this.inheritRoleAssignment(rowData.node, roleId!, data.id!)
+        },
+        error: (err: { error: any }) => {
+          this.msgService.error({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.GRANT_NOK' })
+          console.error(err.error)
+        }
+      })
+  }
+  public onRevokePermission(rowData: MenuItemNodeData, roleId: string, assId: string): void {
+    console.log('onRevokePermission')
+    this.assApi.deleteAssignment({ id: assId }).subscribe({
+      next: () => {
+        this.msgService.success({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.REVOKE_OK' })
+        rowData.roles[roleId] = undefined
+        this.inheritRoleAssignment(rowData.node, roleId!, undefined)
+      },
+      error: (err: { error: any }) => {
+        this.msgService.error({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.REVOKE_NOK' })
+        console.error(err.error)
+      }
+    })
   }
 
   /** remove node and sub nodes (recursively) in the tree
@@ -401,8 +466,9 @@ export class MenuComponent implements OnInit, OnDestroy {
    ****************************************************************************
    *  MENU TREE POPUP - outsourced for reordering and preview
    */
+
   // prepare recursively the tree nodes from menu structure
-  private mapToTreeNodes(items?: WorkspaceMenuItem[], parent?: WorkspaceMenuItem): TreeNode[] {
+  private mapToTreeNodes(items?: WorkspaceMenuItem[], parent?: MenuItemNodeData): TreeNode[] {
     if (!items || items.length === 0) {
       return []
     }
@@ -411,23 +477,25 @@ export class MenuComponent implements OnInit, OnDestroy {
     let pos = 1
     let prevId: string | undefined
     for (const item of items) {
-      const extendedItem = {
+      const nodeData = {
         ...item,
         first: pos === 1,
         last: pos === items.length,
         prevId: prevId,
         gotoUrl: this.prepareItemUrl(item.url),
-        // parent info ?
         // concat the positions
         positionPath: parent ? parent.position + '.' + item.position : item.position,
         // true if path is a mfe base path
-        regMfeAligned: item.url && !item.url.startsWith('http') && !item.external ? this.urlMatch(item.url) : false
-      }
-      const newNode: TreeNode = this.createTreeNode(extendedItem)
+        appConnected: item.url && !item.url.startsWith('http') && !item.external ? this.urlMatch(item.url) : false,
+        roles: {},
+        rolesInherited: {}
+      } as MenuItemNodeData
+      const newNode: TreeNode = this.createTreeNode(nodeData)
       if (item.children && item.children.length > 0 && item.children != null && item.children.toLocaleString() != '') {
         newNode.leaf = false
         newNode.data.badge = item.badge ? item.badge : 'folder '
-        newNode.children = this.mapToTreeNodes(item.children, extendedItem)
+        newNode.data.node = newNode
+        newNode.children = this.mapToTreeNodes(item.children, nodeData)
       }
       nodes.push(newNode)
       pos++
@@ -435,7 +503,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     }
     return nodes
   }
-  private createTreeNode(item: WorkspaceMenuItem): TreeNode {
+  private createTreeNode(item: MenuItemNodeData): TreeNode {
     return { data: item, label: item.name, expanded: false, key: item.key, leaf: true, children: [] }
   }
   private prepareItemUrl(url: string | undefined): string | undefined {

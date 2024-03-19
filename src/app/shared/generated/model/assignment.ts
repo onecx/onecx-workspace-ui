@@ -12,6 +12,7 @@
 
 
 export interface Assignment { 
+    id?: string;
     roleId?: string;
     menuItemId?: string;
     workspaceId?: string;
