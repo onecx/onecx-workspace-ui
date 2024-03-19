@@ -99,7 +99,7 @@ export class MenuPreviewComponent implements OnChanges {
   }
 
   private mapToTree(items: WorkspaceMenuItem[], lang: string): TreeNode<WorkspaceMenuItem>[] {
-    items.sort((a, b) => (a.position || 0) - (b.position || 0))
+    items.sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
     return items.map((mi) => {
       const langExists = mi.i18n && Object.keys(mi.i18n).length > 0 && mi.i18n[lang]
       return {
@@ -112,11 +112,9 @@ export class MenuPreviewComponent implements OnChanges {
         expanded: this.stateService.getState().treeExpansionState.get(mi.id!),
         icon:
           (mi.disabled ? 'item-disabled ' : ' ') +
-          (mi.badge
-            ? 'pi pi-' + mi.badge + (langExists ? '' : ' lang-not-exists')
-            : mi.children && mi.children.length > 0
-            ? 'pi pi-folder'
-            : 'pi pi-file invisible')
+          (!langExists ? 'lang-not-exists ' : ' ') +
+          'pi pi-' +
+          (mi.badge ? mi.badge : mi.children && mi.children.length > 0 ? 'folder' : 'file invisible')
       }
     })
   }
@@ -135,7 +133,7 @@ export class MenuPreviewComponent implements OnChanges {
 
     // find new parent id
     let newParentNodeId: string | undefined
-    if (event.dropNode.children && event.dropNode.children.map((child) => child.key).includes(draggedNodeId)) {
+    if (event.dropNode.children?.map((child) => child.key).includes(draggedNodeId)) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       newParentNodeId = event.dropNode.key!
     } else if (event.dropNode.parent) {

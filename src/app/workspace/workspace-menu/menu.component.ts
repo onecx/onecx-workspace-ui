@@ -304,7 +304,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         console.error('getMenuStructure():', result)
       } else if (result.menuItems instanceof Array) {
         this.menuItems = result.menuItems
-        this.menuNodes = this.mapToTreeNodes(this.menuItems, undefined)
+        this.menuNodes = this.mapToTreeNodes(this.menuItems)
         this.prepareParentNodes(this.menuNodes)
         this.loadRolesAndAssignments()
         console.log('tree nodes', this.menuNodes)
@@ -368,15 +368,13 @@ export class MenuComponent implements OnInit, OnDestroy {
     combineLatest([this.searchRoles(), this.searchAssignments()]).subscribe(([roles, ass]) => {
       this.loading = false
       this.wRoles.sort(this.sortRoleByName)
-      console.log('roles', roles)
-      console.log('assignments', ass)
       // assignments(role.id, menu.id) => node.roles[role.id] = ass.id
       ass.forEach((ass: Assignment) => {
-        // find affected node
-        let assignedNode = this.findTreeNodeById(this.menuNodes, ass.menuItemId)
+        // find affected node ... assign role and inherit
+        const assignedNode = this.findTreeNodeById(this.menuNodes, ass.menuItemId)
         if (assignedNode) {
           assignedNode.data.roles[ass.roleId!] = ass.id
-          this.inheritRoleAssignment(assignedNode, ass.roleId!, ass.id!)
+          this.inheritRoleAssignment(assignedNode, ass.roleId!, ass.id)
         }
       })
     })
@@ -391,7 +389,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     return treeNode
   }
   private inheritRoleAssignment(node: TreeNode, roleId: string, assId: string | undefined): void {
-    if (node && node.children && node.children.length > 0)
+    if (node?.children && node.children.length > 0)
       node.children.forEach((n) => {
         n.data.rolesInherited[roleId] = assId
         this.inheritRoleAssignment(n, roleId, assId)
@@ -408,7 +406,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         next: (data) => {
           this.msgService.success({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.GRANT_OK' })
           rowData.roles[roleId] = data.id
-          this.inheritRoleAssignment(rowData.node, roleId!, data.id!)
+          this.inheritRoleAssignment(rowData.node, roleId, data.id)
         },
         error: (err: { error: any }) => {
           this.msgService.error({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.GRANT_NOK' })
@@ -422,7 +420,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       next: () => {
         this.msgService.success({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.REVOKE_OK' })
         rowData.roles[roleId] = undefined
-        this.inheritRoleAssignment(rowData.node, roleId!, undefined)
+        this.inheritRoleAssignment(rowData.node, roleId, undefined)
       },
       error: (err: { error: any }) => {
         this.msgService.error({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.REVOKE_NOK' })
@@ -493,7 +491,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       const newNode: TreeNode = this.createTreeNode(nodeData)
       if (item.children && item.children.length > 0 && item.children != null && item.children.toLocaleString() != '') {
         newNode.leaf = false
-        newNode.data.badge = item.badge ? item.badge : 'folder '
+        newNode.data.badge = item.badge ?? 'folder '
         newNode.data.node = newNode
         newNode.children = this.mapToTreeNodes(item.children, nodeData)
       }
@@ -507,7 +505,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     return { data: item, label: item.name, expanded: false, key: item.key, leaf: true, children: [] }
   }
   private prepareItemUrl(url: string | undefined): string | undefined {
-    if (!(url && this.workspace && this.workspace?.baseUrl)) return undefined
+    if (!(url && this.workspace?.baseUrl)) return undefined
     let url_parts = window.location.href.split('/')
     return url_parts[0] + '//' + url_parts[2] + Location.joinWithSlash(this.workspace?.baseUrl, url)
   }

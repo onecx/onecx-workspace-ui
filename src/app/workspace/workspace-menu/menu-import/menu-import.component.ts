@@ -61,7 +61,7 @@ export class MenuImportComponent implements OnInit {
   }
   private isMenuImportRequestDTO2(obj: unknown): obj is MenuSnapshot {
     const dto = obj as MenuSnapshot
-    return !!(typeof dto === 'object' && dto && dto.menu?.menuItems?.length)
+    return !!(typeof dto === 'object' && dto?.menu?.menuItems?.length)
   }
 
   public onImportMenuConfirmation(): void {

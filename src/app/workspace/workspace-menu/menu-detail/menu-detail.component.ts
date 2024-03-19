@@ -143,7 +143,10 @@ export class MenuDetailComponent implements OnChanges {
     this.menuItem$.subscribe({
       next: (m) => {
         this.menuItem = m ?? undefined
-        if (this.menuItem && this.displayDetailDialog) this.fillForm(this.menuItem)
+        if (this.menuItem && this.displayDetailDialog) {
+          this.fillForm(this.menuItem)
+          this.preparePanelHeight()
+        }
       },
       error: (err) => {
         this.msgService.error({ summaryKey: 'DIALOG.MENU.MENU_ITEM_NOT_FOUND' })
@@ -171,58 +174,57 @@ export class MenuDetailComponent implements OnChanges {
    * SAVE => CREATE + UPDATE
    */
   public onMenuSave(): void {
-    if (this.formGroup.valid) {
-      if (this.menuItem) {
-        this.menuItem.parentItemId = this.formGroup.controls['parentItemId'].value
-        this.menuItem.key = this.formGroup.controls['key'].value
-        this.menuItem.url = this.formGroup.controls['url'].value
-        this.menuItem.name = this.formGroup.controls['name'].value
-        this.menuItem.badge =
-          this.formGroup.controls['badge'].value === null ? '' : this.formGroup.controls['badge'].value
-        this.menuItem.scope = this.formGroup.controls['scope'].value
-        this.menuItem.position = this.formGroup.controls['position'].value
-        this.menuItem.disabled = this.formGroup.controls['disabled'].value
-        this.menuItem.external = this.formGroup.controls['external'].value
-        this.menuItem.description = this.formGroup.controls['description'].value
-        const i18n: I18N = {}
-        for (const l of this.languagesDisplayed) {
-          if (l.data !== '') i18n[l.value] = l.data
-        }
-        this.menuItem.i18n = i18n
+    if (!this.formGroup.valid) console.error('non valid form', this.formGroup)
+    if (this.menuItem) {
+      this.menuItem.parentItemId = this.formGroup.controls['parentItemId'].value
+      this.menuItem.key = this.formGroup.controls['key'].value
+      this.menuItem.url = this.formGroup.controls['url'].value
+      this.menuItem.name = this.formGroup.controls['name'].value
+      this.menuItem.badge = this.formGroup.controls['badge'].value ?? ''
+      this.menuItem.scope = this.formGroup.controls['scope'].value
+      this.menuItem.position = this.formGroup.controls['position'].value
+      this.menuItem.disabled = this.formGroup.controls['disabled'].value
+      this.menuItem.external = this.formGroup.controls['external'].value
+      this.menuItem.description = this.formGroup.controls['description'].value
+      const i18n: I18N = {}
+      for (const l of this.languagesDisplayed) {
+        if (l.data !== '') i18n[l.value] = l.data
       }
-      if (this.changeMode === 'CREATE') {
-        this.menuApi
-          .createMenuItemForWorkspace({
-            createMenuItem: { ...this.menuItem, id: undefined, workspaceId: this.workspaceId } as CreateMenuItem
-          })
-          .subscribe({
-            next: () => {
-              this.msgService.success({ summaryKey: 'ACTIONS.CREATE.MESSAGE.MENU_CREATE_OK' })
-              this.dataChanged.emit(true)
-            },
-            error: (err: { error: any }) => {
-              this.msgService.error({ summaryKey: 'ACTIONS.CREATE.MESSAGE.MENU_CREATE_NOK' })
-              console.error(err.error)
-            }
-          })
-      } else if (this.changeMode === 'EDIT' && this.menuItem && this.menuItem.id) {
-        this.menuApi
-          .updateMenuItem({
-            menuItemId: this.menuItem.id,
-            updateMenuItemRequest: this.menuItem as UpdateMenuItemRequest
-          })
-          .subscribe({
-            next: (data) => {
-              this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' })
-              this.dataChanged.emit(true)
-            },
-            error: (err: { error: any }) => {
-              this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
-              console.error(err.error)
-            }
-          })
-      }
-    } else console.error('non valid form', this.formGroup)
+      this.menuItem.i18n = i18n
+    }
+    if (this.changeMode === 'CREATE') {
+      this.menuApi
+        .createMenuItemForWorkspace({
+          createMenuItem: { ...this.menuItem, id: undefined, workspaceId: this.workspaceId } as CreateMenuItem
+        })
+        .subscribe({
+          next: () => {
+            this.msgService.success({ summaryKey: 'ACTIONS.CREATE.MESSAGE.MENU_CREATE_OK' })
+            this.dataChanged.emit(true)
+          },
+          error: (err: { error: any }) => {
+            this.msgService.error({ summaryKey: 'ACTIONS.CREATE.MESSAGE.MENU_CREATE_NOK' })
+            console.error(err.error)
+          }
+        })
+    }
+    if (this.changeMode === 'EDIT' && this.menuItem?.id) {
+      this.menuApi
+        .updateMenuItem({
+          menuItemId: this.menuItem.id,
+          updateMenuItemRequest: this.menuItem as UpdateMenuItemRequest
+        })
+        .subscribe({
+          next: (data) => {
+            this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' })
+            this.dataChanged.emit(true)
+          },
+          error: (err: { error: any }) => {
+            this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
+            console.error(err.error)
+          }
+        })
+    }
   }
 
   /**
@@ -244,21 +246,25 @@ export class MenuDetailComponent implements OnChanges {
 
   public onTabPanelChange(e: any): void {
     this.tabIndex = e.index
-    if (this.tabIndex) this.prepareLanguagePanel()
+    this.prepareLanguagePanel()
+    this.preparePanelHeight()
   }
   public onFocusFieldUrl(field: any): void {
     field.overlayVisible = true
+  }
+  // same height on all TABs
+  private preparePanelHeight(): void {
+    if (!this.panelDetail) return
+    this.renderer.setStyle(this.panelDetail?.el.nativeElement, 'display', 'block')
+    if (this.panelHeight === 0) this.panelHeight = this.panelDetail?.el.nativeElement.offsetHeight
+    this.renderer.setStyle(this.panelDetail?.el.nativeElement, 'height', this.panelHeight - 70 + 'px')
   }
 
   /**
    * LANGUAGE
    */
   public prepareLanguagePanel(): void {
-    this.languagesDisplayed = []
-    // same height on all TABs
-    if (this.panelHeight === 0) this.panelHeight = this.panelDetail?.el.nativeElement.offsetHeight
-    this.renderer.setStyle(this.panelDetail?.el.nativeElement, 'display', 'block')
-    this.renderer.setStyle(this.panelDetail?.el.nativeElement, 'height', this.panelHeight + 'px')
+    if (this.languagesDisplayed.length > 0) return
     //
     // prepare i18n panel: load defaults
     this.languagesDisplayed = [
@@ -277,7 +283,7 @@ export class MenuDetailComponent implements OnChanges {
         if (this.languagesDisplayed.filter((l) => l.value === k).length === 0) this.onAddLanguage(k)
       }
       for (const l of this.languagesDisplayed) {
-        if (this.menuItem?.i18n && this.menuItem?.i18n[l.value]) l.data = this.menuItem?.i18n[l.value]
+        if (this.menuItem?.i18n[l.value]) l.data = this.menuItem?.i18n[l.value]
       }
       this.languagesDisplayed.sort(dropDownSortItemsByLabel)
     }

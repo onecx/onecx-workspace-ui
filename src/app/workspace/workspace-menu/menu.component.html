@@ -227,7 +227,6 @@
       </ng-template>
       <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
         <tr [id]="'workspace_menu_table_row_' + rowData.key">
-          <!-- menu item  [attr.colspan]="2" -->
           <td class="white-space-nowrap">
             <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
             <span *ngIf="rowData.badge" class="pi pi-{{ rowData.badge }} pr-2"></span>
