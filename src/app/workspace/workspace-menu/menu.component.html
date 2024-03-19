@@ -3,7 +3,7 @@
     *ngIf="workspace"
     [header]="workspaceName ? workspaceName + ': ' + ('DIALOG.MENU.LABEL' | translate) : ''"
     [subheader]="'DIALOG.MENU.SUBHEADER' | translate"
-    [actions]="actions"
+    [actions]="(actions$ | async) ?? []"
   >
   </ocx-page-header>
 
@@ -17,7 +17,7 @@
         [text]="'ACTIONS.LOADING' | translate"
       ></p-message>
     </div>
-    <!-- no menu defined -->
+    <!-- if menu does NOT exist -->
     <div
       *ngIf="menuNodes.length === 0 && !loading"
       class="px-3 card flex flex-wrap justify-content-between align-items-center"
@@ -31,134 +31,212 @@
       ></button>
     </div>
 
-    <!-- menu exist -->
-    <div *ngIf="menuNodes.length > 0">
-      <p-treeTable
-        #menuTree
-        styleClass="px-2"
-        id="workspace_menu_table"
-        [value]="menuNodes"
-        [globalFilterFields]="['name', 'url']"
-        (onNodeCollapse)="onHierarchyViewChange($event)"
-        (onNodeExpand)="onHierarchyViewChange($event)"
-      >
-        <ng-template pTemplate="caption" class="p-0">
-          <div class="flex flex-wrap justify-content-between align-items-center gap-2">
-            <div *ngIf="menuItems" class="flex flex-wrap gap-2">
-              <p-button
-                styleClass="h-full button-min-height"
-                id="workspace_menu_table_header_expand_button"
-                [title]="'ACTIONS.TREE.EXPAND_ALL.TOOLTIP' | translate"
-                (onClick)="onExpandAll()"
-                icon="pi pi-angle-double-down"
-              ></p-button>
-              <p-button
-                styleClass="h-full button-min-height"
-                id="workspace_menu_table_header_collapse_button"
-                [title]="'ACTIONS.TREE.COLLAPSE_ALL.TOOLTIP' | translate"
-                (onClick)="onCollapseAll()"
-                icon="pi pi-angle-double-up"
-              ></p-button>
-              <p-button
-                *ocxIfPermission="'MENU#DRAG_DROP'"
-                id="workspace_menu_table_header_reorder"
-                [label]="'DIALOG.MENU.HEADER.TREE_MODAL' | translate"
-                [title]="'DIALOG.MENU.HEADER.TREE_MODAL.TOOLTIP' | translate"
-                (onClick)="onDisplayTreeModal()"
-                icon="pi pi-sort"
-              ></p-button>
-            </div>
-            <div class="p-inputgroup w-13rem sm:w-17rem md:w-20rem">
-              <span class="p-inputgroup-addon pi pi-filter"> </span>
-              <span class="p-float-label">
-                <input
-                  #menuTreeFilter
-                  pInputText
-                  type="text"
-                  class="py-0"
-                  id="workspace_menu_table_header_filter"
-                  (input)="menuTree.filterGlobal($any($event.target).value, 'contains')"
-                  [title]="'GENERAL.TOOLTIPS.FILTER' | translate"
-                />
-                <label for="workspace_menu_table_filter"> {{ 'GENERAL.FILTER_PLACEHOLDER' | translate }} </label>
-              </span>
-              <span
-                id="workspace_menu_table_header_filter_clear"
-                class="p-inputgroup-addon bg-primary cursor-pointer pi pi-filter-slash"
-                (click)="onClearFilterMenuTable()"
-                [title]="'GENERAL.TOOLTIPS.FILTER_CLEAR' | translate"
-              >
-              </span>
-            </div>
+    <!-- if menu exist -->
+    <p-treeTable
+      *ngIf="menuNodes.length > 0"
+      #menuTree
+      styleClass="px-2"
+      id="workspace_menu_table"
+      [columns]="wRoles"
+      [value]="menuNodes"
+      [globalFilterFields]="['name', 'url']"
+      (onNodeCollapse)="onHierarchyViewChange($event)"
+      (onNodeExpand)="onHierarchyViewChange($event)"
+    >
+      <ng-template pTemplate="caption" class="p-0">
+        <div class="flex flex-wrap justify-content-between align-items-center gap-2">
+          <div *ngIf="menuItems" class="flex flex-wrap gap-2">
             <p-button
-              styleClass="h-full button-min-height"
-              id="workspace_menu_table_reload_button"
-              [title]="'GENERAL.TOOLTIPS.ACTION_RELOAD' | translate"
-              (onClick)="onReload()"
-              icon="pi pi-refresh"
+              *ocxIfPermission="'MENU#DRAG_DROP'"
+              id="workspace_menu_table_header_reorder"
+              [label]="'DIALOG.MENU.HEADER.TREE_MODAL' | translate"
+              [title]="'DIALOG.MENU.HEADER.TREE_MODAL.TOOLTIP' | translate"
+              (onClick)="onDisplayMenuPreview()"
+              icon="pi pi-sort"
             ></p-button>
           </div>
-        </ng-template>
+          <div class="p-inputgroup w-13rem sm:w-17rem md:w-20rem">
+            <span class="p-inputgroup-addon pi pi-filter"> </span>
+            <span class="p-float-label">
+              <input
+                #menuTreeFilter
+                pInputText
+                type="text"
+                class="py-0"
+                id="workspace_menu_table_header_filter"
+                (input)="menuTree.filterGlobal($any($event.target).value, 'contains')"
+                [title]="'GENERAL.TOOLTIPS.FILTER' | translate"
+              />
+              <label for="workspace_menu_table_filter"> {{ 'GENERAL.FILTER_PLACEHOLDER' | translate }} </label>
+            </span>
+            <span
+              id="workspace_menu_table_header_filter_clear"
+              class="p-inputgroup-addon bg-primary cursor-pointer pi pi-filter-slash"
+              (click)="onClearFilterMenuTable()"
+              [title]="'GENERAL.TOOLTIPS.FILTER_CLEAR' | translate"
+            >
+            </span>
+          </div>
+          <p-button
+            styleClass="h-full button-min-height"
+            id="workspace_menu_table_reload_button"
+            [title]="'GENERAL.TOOLTIPS.ACTION_RELOAD' | translate"
+            (onClick)="onReload()"
+            icon="pi pi-refresh"
+          ></p-button>
+        </div>
+      </ng-template>
 
-        <ng-template pTemplate="header">
-          <tr>
-            <th id="workspace_menu_table_header_dummy"></th>
-            <th id="workspace_menu_table_header_actions" class="text-center hidden-xs">
+      <ng-template pTemplate="header" let-columns>
+        <tr>
+          <th id="workspace_menu_table_header_dummy1" class="p-1 text-left border-transparent">
+            <div class="flex flex-row justify-content-between">
+              <div class="flex flex-row gap-2 justify-content-start">
+                <button
+                  pButton
+                  pRipple
+                  type="button"
+                  icon="pi pi-angle-double-down"
+                  class="p-1 p-button-text"
+                  id="workspace_menu_table_header_expand_button"
+                  (click)="onExpandAll()"
+                  [label]="'ACTIONS.TREE.EXPAND_ALL' | translate"
+                  [title]="'ACTIONS.TREE.EXPAND_ALL.TOOLTIP' | translate"
+                ></button>
+                <button
+                  pButton
+                  pRipple
+                  type="button"
+                  icon="pi pi-angle-double-up"
+                  class="p-1 p-button-text"
+                  id="workspace_menu_table_header_expand_button"
+                  (click)="onCollapseAll()"
+                  [label]="'ACTIONS.TREE.COLLAPSE_ALL' | translate"
+                  [title]="'ACTIONS.TREE.COLLAPSE_ALL.TOOLTIP' | translate"
+                ></button>
+              </div>
+              <button
+                *ngIf="!displayRoles"
+                pButton
+                pRipple
+                type="button"
+                icon="pi pi-check-circle"
+                class="p-1 p-button-text"
+                id="workspace_menu_table_header_roles_button"
+                (click)="onDisplayRoles()"
+                [label]="'DIALOG.MENU.HEADER.ROLES' | translate"
+                [title]="'DIALOG.MENU.HEADER.ROLES.TOOLTIP' | translate"
+              ></button>
+              <button
+                *ngIf="displayRoles"
+                pButton
+                pRipple
+                type="button"
+                icon="pi pi-info-circle"
+                class="p-1 p-button-text"
+                id="workspace_menu_table_header_details_button"
+                (click)="onDisplayRoles()"
+                [label]="'DIALOG.MENU.HEADER.DETAILS' | translate"
+                [title]="'DIALOG.MENU.HEADER.DETAILS.TOOLTIP' | translate"
+              ></button>
+            </div>
+          </th>
+          <th *ngIf="!displayRoles" id="workspace_menu_table_header_details" [attr.colspan]="5" class="p-1 text-center">
+            {{ 'DIALOG.MENU.HEADER.DETAILS' | translate }}
+          </th>
+          <th
+            *ngIf="displayRoles"
+            id="workspace_menu_table_header_roles"
+            [attr.colspan]="1 + wRoles.length"
+            class="p-1 text-center"
+          >
+            <div class="flex align-items-center justify-content-center">
+              <div>{{ 'DIALOG.MENU.HEADER.ROLES' | translate }}</div>
+              <button
+                pButton
+                pRipple
+                type="button"
+                icon="pi pi-cog"
+                class="p-1 p-button-text"
+                id="workspace_menu_table_header_button_roles_edit"
+                (click)="onDisplayRoles()"
+                [title]="'DIALOG.MENU.HEADER.ROLES.MANAGE' | translate"
+              ></button>
+            </div>
+          </th>
+        </tr>
+        <tr>
+          <th id="workspace_menu_table_header_dummy2"></th>
+          <ng-container *ngIf="!displayRoles">
+            <th
+              id="workspace_menu_table_header_actions"
+              class="text-center px-4 hidden-xs border-primary border-bottom-2"
+            >
               {{ 'ACTIONS.LABEL' | translate }}
             </th>
             <th
               id="workspace_menu_table_header_position"
-              class="text-center hidden-md"
-              [title]="'DIALOG.MENU.POSITION.TOOLTIP' | translate"
+              class="pl-0 text-center hidden-md border-primary border-bottom-2"
+              [title]="'DIALOG.MENU.TREE.POSITION.TOOLTIP' | translate"
             >
               Pos
             </th>
             <th
               id="workspace_menu_table_header_i18n"
-              class="text-center hidden-md"
-              [title]="'DIALOG.MENU.I18N.TOOLTIP' | translate"
+              class="text-center hidden-md border-primary border-bottom-2"
+              [title]="'DIALOG.MENU.TREE.I18N.TOOLTIP' | translate"
             >
-              {{ 'DIALOG.MENU.I18N.LABEL' | translate }}
+              {{ 'DIALOG.MENU.TREE.I18N' | translate }}
             </th>
             <th
               id="workspace_menu_table_header_app"
-              class="text-center hidden-md"
-              [title]="'PORTAL.MENU.MFE.TOOLTIP' | translate"
+              class="text-center hidden-md border-primary border-bottom-2"
+              [title]="'DIALOG.MENU.TREE.PRODUCT.TOOLTIP' | translate"
             >
               PM
             </th>
-            <th id="workspace_menu_table_header_url" class="hidden-sm" [title]="'PORTAL.MENU.URL.TOOLTIP' | translate">
+            <th
+              id="workspace_menu_table_header_url"
+              class="hidden-sm border-primary border-bottom-2"
+              [title]="'DIALOG.MENU.TREE.URL.TOOLTIP' | translate"
+            >
               URL
             </th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
-          <tr [id]="'workspace_menu_table_row_' + rowData.key">
-            <td class="white-space-nowrap">
-              <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
-              <span *ngIf="rowData.badge" class="pi pi-{{ rowData.badge }} pr-2"></span>
-              <span *ngIf="!rowData.badge" class="pi pi-folder pr-2 invisible"></span>
-              <span [id]="'workspace_menu_table_row_' + rowData.key + '_name'">{{ rowData.name }}</span>
-            </td>
+          </ng-container>
+
+          <!-- ROLES (actually managed by IDM) -->
+          <ng-container *ngIf="displayRoles">
+            <th
+              *ngIf="wRoles.length === 0"
+              id="workspace_menu_table_header_roles_dummy"
+              class="px-8 text-center font-italic border-primary border-bottom-2"
+            >
+              {{ 'DIALOG.MENU.HEADER.ROLES.NOT_EXIST' | translate }}
+            </th>
+            <th
+              *ngFor="let role of columns"
+              id="workspace_menu_table_header_roles"
+              class="px-2 text-center border-primary border-bottom-2"
+            >
+              <div class="flex flex-column justify-content-between">
+                <div [title]="role.description ? role.description : ''">{{ role.name }}</div>
+              </div>
+            </th>
+          </ng-container>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
+        <tr [id]="'workspace_menu_table_row_' + rowData.key">
+          <td class="white-space-nowrap">
+            <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
+            <span *ngIf="rowData.badge" class="pi pi-{{ rowData.badge }} pr-2"></span>
+            <span *ngIf="!rowData.badge" class="pi pi-folder pr-2 invisible"></span>
+            <span [id]="'workspace_menu_table_row_' + rowData.key + '_name'">{{ rowData.name }}</span>
+          </td>
+          <!-- manage the item -->
+          <ng-container *ngIf="!displayRoles">
             <td class="white-space-nowrap hidden-xs">
               <div class="flex gap-1">
-                <button
-                  pbutton
-                  type="button"
-                  [id]="'workspace_menu_table_row_' + rowData.key + '_disabled'"
-                  (click)="onToggleDisable($event, rowData)"
-                  [title]="'DIALOG.MENU.ACTION.DISABLED' | translate"
-                  class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
-                >
-                  <span
-                    class="text-red-500 font-medium p-button-icon pi pi-check-circle"
-                    [class.pi-check-circle]="!rowData['disabled']"
-                    [class.pi-minus-circle]="rowData['disabled']"
-                    [class.text-red-500]="rowData['disabled']"
-                    [class.text-green-500]="!rowData['disabled']"
-                    aria-hidden="true"
-                  ></span>
-                </button>
                 <button
                   pbutton
                   type="button"
@@ -167,7 +245,12 @@
                   [title]="'DIALOG.MENU.ACTION.DETAILS' | translate"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                 >
-                  <span class="text-primary font-medium p-button-icon pi pi-eye" aria-hidden="true"></span>
+                  <span
+                    class="text-primary font-medium p-button-icon pi pi-eye"
+                    [class.pi-eye]="!myPermissions.includes('MENU#EDIT')"
+                    [class.pi-pencil]="myPermissions.includes('MENU#EDIT')"
+                    aria-hidden="true"
+                  ></span>
                 </button>
                 <button
                   *ocxIfPermission="'MENU#EDIT'"
@@ -175,7 +258,7 @@
                   type="button"
                   [id]="'workspace_menu_table_row_' + rowData.key + '_goto_new'"
                   (click)="onCreateMenu($event, rowData)"
-                  [title]="'DIALOG.MENU.ACTION.NEW' | translate"
+                  [title]="'ACTIONS.CREATE.MENU.TOOLTIP' | translate"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                 >
                   <span class="text-primary font-medium p-button-icon pi pi-plus-circle" aria-hidden="true"></span>
@@ -185,8 +268,8 @@
                   pbutton
                   type="button"
                   [id]="'workspace_menu_table_row_' + rowData.key + '_delete'"
-                  (click)="onDeleteMenuItem($event, rowData)"
-                  [title]="('DIALOG.MENU.ACTION.DELETE' | translate).replace('{{TYPE}}', 'Menu')"
+                  (click)="onDeleteMenu($event, rowData)"
+                  [title]="'ACTIONS.DELETE.MENU' | translate"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                 >
                   <span class="danger-action-text font-medium p-button-icon pi pi-trash" aria-hidden="true"></span>
@@ -201,7 +284,7 @@
                 *ngIf="isObjectEmpty(rowData.i18n)"
                 [id]="'workspace_menu_table_row_' + rowData.key + '_i18n'"
                 class="pi pi-check"
-                [title]="'DIALOG.MENU.I18N.ROW.TOOLTIP' | translate"
+                [title]="'DIALOG.MENU.TREE.I18N.ROW.TOOLTIP' | translate"
               ></span>
             </td>
             <td class="text-center hidden-md">
@@ -213,440 +296,107 @@
             </td>
             <td class="hidden-sm">
               <a
+                *ngIf="rowData.gotoUrl"
                 [id]="'workspace_menu_table_row_' + rowData.key + '_url'"
-                [href]="rowData.url"
-                (click)="$event.stopPropagation()"
+                [href]="rowData.gotoUrl"
+                (click)="($event.stopPropagation)"
                 target="_blank"
-                class="text-primary font-italic cursor-pointer"
-                [title]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
+                class="text-primary font-italic cursor-pointer pr-3"
+                [title]="('ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate) + ': ' + rowData.gotoUrl"
               >
-                {{ limitText(rowData.url, 100) }}
+                {{ limitText(rowData.url, 30) }}
               </a>
             </td>
-          </tr>
-        </ng-template>
-      </p-treeTable>
-    </div>
+          </ng-container>
+          <!-- ASSIGNMENTS -->
+          <ng-container *ngIf="displayRoles">
+            <td
+              *ngFor="let role of columns"
+              class="text-center"
+              [id]="'menu_detail_tree_table_data_' + role.name + '_' + rowData.key"
+            >
+              <!-- display only -->
+              <span
+                *ngIf="!rowData.roles[role.id] && rowData.rolesInherited[role.id]"
+                class="pi pi-circle-fill text-primary opacity-40 text-lg"
+                [title]="'DIALOG.MENU.ASSIGNMENT.OK_INHERITED' | translate"
+              >
+              </span>
+              <div *ngIf="!myPermissions.includes('MENU#GRANT')">
+                <span
+                  *ngIf="rowData.roles[role.id]"
+                  class="pi pi-circle-fill text-primary text-lg"
+                  [title]="'DIALOG.MENU.ASSIGNMENT.OK' | translate"
+                >
+                </span>
+                <span
+                  *ngIf="!rowData.roles[role.id] && !rowData.rolesInherited[role.id]"
+                  class="pi pi-circle text-primary text-lg"
+                  [title]="'DIALOG.MENU.ASSIGNMENT.NOK' | translate"
+                >
+                </span>
+              </div>
+              <!-- manipulation -->
+              <div *ngIf="myPermissions.includes('MENU#GRANT')">
+                <span
+                  *ngIf="rowData.roles[role.id]"
+                  class="pi pi-circle-fill text-primary text-lg cursor-pointer"
+                  [title]="
+                    ('DIALOG.MENU.ASSIGNMENT.OK' | translate) +
+                    ' - ' +
+                    ('DIALOG.MENU.ASSIGNMENT.CHANGEABLE' | translate)
+                  "
+                  (click)="onRevokePermission(rowData, role.id, rowData.roles[role.id])"
+                >
+                </span>
+                <span
+                  *ngIf="!rowData.roles[role.id] && !rowData.rolesInherited[role.id]"
+                  class="pi pi-circle text-primary text-lg cursor-pointer"
+                  [title]="
+                    ('DIALOG.MENU.ASSIGNMENT.NOK' | translate) +
+                    ' - ' +
+                    ('DIALOG.MENU.ASSIGNMENT.CHANGEABLE' | translate)
+                  "
+                  (click)="onGrantPermission(rowData, role.id)"
+                >
+                </span>
+              </div></td
+          ></ng-container>
+        </tr>
+      </ng-template>
+    </p-treeTable>
   </ocx-page-content>
 </ocx-portal-page>
 
 <!--
-  DETAIL
+  DETAIL + DELETE
 -->
-<p-dialog
-  [header]="'DIALOG.MENU.HEADER.' + changeMode | translate"
-  [(visible)]="displayMenuDetail"
-  (onShow)="onShowDetailDialog()"
-  [breakpoints]="{ '1330px': '60vw', '1130px': '70vw', '930px': '80vw', '830px': '100vw' }"
-  styleClass="overflow-auto"
-  [style]="{ width: '50vw' }"
-  [modal]="true"
-  [draggable]="true"
-  [resizable]="true"
-  [contentStyle]="{ overflow: 'visible' }"
+<app-menu-detail
+  [workspaceId]="workspace?.id"
+  [menuItems]="menuItems"
+  [menuItemId]="menuItem?.id"
+  [parentItems]="parentItems"
+  [changeMode]="changeMode"
+  [displayDetailDialog]="displayMenuDetail"
+  [displayDeleteDialog]="displayMenuDelete"
+  (dataChanged)="onMenuItemChanged($event)"
+></app-menu-detail>
+
+<!-- PREVIEW + REORDER -->
+<app-menu-preview
+  *ngIf="menuItems"
+  [menuItems]="menuItems"
+  [displayDialog]="displayMenuPreview"
+  (hideDialog)="onHideMenuPreview()"
+  (reorderEmitter)="onUpdateMenuStructure($event)"
 >
-  <p-tabView #panelDetail [(activeIndex)]="tabIndex" (onChange)="onTabPanelChange($event)">
-    <p-tabPanel header="{{ 'DIALOG.MENU.MENU_ITEM_DETAILS' | translate }}">
-      <form [formGroup]="formGroup" errorTailor>
-        <div class="grid">
-          <div
-            class="col-12 md:col-6 my-1"
-            style="min-width: 20rem"
-            [title]="'MENU_ITEM.TOOLTIP.WORKSPACE' | translate"
-          >
-            <span class="p-float-label">
-              <input
-                pInputText
-                type="text"
-                id="workspace_menu_detail_field_workspace_name"
-                class="w-full pt-3 pb-2"
-                [value]="workspaceName"
-                [disabled]="true"
-                [pTooltip]="'MENU_ITEM.TOOLTIP.WORKSPACE' | translate"
-                tooltipPosition="top"
-                tooltipEvent="focus"
-              />
-              <label for="workspace_menu_detail_field_workspace_name"> {{ 'MENU_ITEM.WORKSPACE' | translate }} </label>
-            </span>
-          </div>
+</app-menu-preview>
 
-          <div
-            class="col-12 md:col-6 my-1"
-            style="min-width: 20rem"
-            [title]="'MENU_ITEM.TOOLTIP.PARENT_ID' | translate"
-          >
-            <span class="p-float-label">
-              <p-dropdown
-                id="workspace_menu_detail_field_parent_id"
-                styleClass="w-full input-field-correction"
-                formControlName="parentItemId"
-                [options]="parentItems"
-              >
-              </p-dropdown>
-              <label for="workspace_menu_detail_field_parent_id"> {{ 'MENU_ITEM.PARENT_ID' | translate }} </label>
-            </span>
-          </div>
-
-          <div
-            class="col-12 md:col-6 my-1"
-            style="min-width: 20rem"
-            [title]="'MENU_ITEM.TOOLTIP.MENU_NAME' | translate"
-          >
-            <span class="p-float-label" controlErrorAnchor>
-              <input
-                pInputText
-                type="text"
-                id="workspace_menu_detail_field_menu_name"
-                class="w-full pt-3 pb-2"
-                formControlName="name"
-              />
-              <label class="ocx-required-label" for="workspace_menu_detail_field_menu_name">
-                {{ 'MENU_ITEM.MENU_NAME' | translate }}
-              </label>
-            </span>
-          </div>
-          <div class="col-12 md:col-6 my-1" style="min-width: 20rem" [title]="'MENU_ITEM.TOOLTIP.MENU_ID' | translate">
-            <span class="p-float-label" controlErrorAnchor>
-              <input
-                pInputText
-                type="text"
-                id="workspace_menu_detail_field_menu_id"
-                class="w-full pt-3 pb-2"
-                formControlName="key"
-              />
-              <label class="ocx-required-label" for="workspace_menu_detail_field_menu_id">
-                {{ 'MENU_ITEM.MENU_ID' | translate }}
-              </label>
-            </span>
-          </div>
-
-          <div class="col-12 md:col-9 my-1" [title]="'MENU_ITEM.TOOLTIP.URL' | translate">
-            <span class="p-float-label mb-1" controlErrorAnchor>
-              <p-dropdown
-                #formFieldUrl
-                id="workspace_menu_detail_field_url"
-                formControlName="url"
-                styleClass="w-full"
-                [editable]="true"
-                [options]="mfeRUrlOptions"
-                (onFocus)="onFocusFieldUrl(formFieldUrl)"
-                [pTooltip]="'MENU_ITEM.URL' | translate"
-                tooltipPosition="top"
-                tooltipEvent="focus"
-                appendTo="body"
-              >
-              </p-dropdown>
-              <label for="workspace_menu_detail_field_url"> {{ 'MENU_ITEM.URL' | translate }} </label>
-            </span>
-          </div>
-          <div
-            class="col-12 md:col-3 my-1 pl-6 flex justify-content-start"
-            [title]="'MENU_ITEM.TOOLTIP.EXTERN' | translate"
-          >
-            <p-checkbox
-              id="workspace_menu_detail_field_workspace_exit"
-              class="checkbox-label"
-              formControlName="workspaceExit"
-              [label]="'MENU_ITEM.EXTERN' | translate"
-              [binary]="true"
-            >
-            </p-checkbox>
-          </div>
-
-          <div class="col-12 md:col-2 my-1" [title]="'Position'">
-            <span class="p-float-label mb-1" controlErrorAnchor>
-              <input
-                pInputText
-                type="text"
-                id="workspace_menu_detail_field_position"
-                class="w-full pt-3 pb-2"
-                formControlName="position"
-              />
-              <label for="workspace_menu_detail_field_position">Position</label>
-            </span>
-          </div>
-          <div class="col-12 md:col-4 my-1" style="min-width: 10rem" [title]="'MENU_ITEM.TOOLTIP.BADGE' | translate">
-            <span class="p-float-label mb-1" controlErrorAnchor>
-              <p-dropdown
-                id="workspace_menu_detail_field_badge"
-                styleClass="w-full min-w-min input-field-correction"
-                formControlName="badge"
-                [options]="iconItems"
-              >
-                <ng-template let-ico pTemplate="selectedItem">
-                  <div class="flex">
-                    <span class="pi pi-{{ ico.value }} mr-3"> </span>
-                    <span>{{ ico.label || 'dummy-for-renderer' }}</span>
-                  </div>
-                </ng-template>
-                <ng-template let-ico pTemplate="item">
-                  <div class="flex">
-                    <span class="pi pi-{{ ico.value }} mr-3"> </span>
-                    <span>{{ ico.label }}</span>
-                  </div>
-                </ng-template>
-              </p-dropdown>
-              <label for="workspace_menu_detail_field_badge"> {{ 'MENU_ITEM.BADGE' | translate }} </label>
-            </span>
-          </div>
-          <div class="col-12 md:col-3 my-1" style="min-width: 10rem" [title]="'MENU_ITEM.TOOLTIP.SCOPE' | translate">
-            <span class="p-float-label mb-1" controlErrorAnchor>
-              <p-dropdown
-                id="workspace_menu_detail_field_scope"
-                styleClass="w-full min-w-min input-field-correction"
-                formControlName="scope"
-                [options]="scopeItems"
-              >
-              </p-dropdown>
-              <label for="workspace_menu_detail_field_scope"> {{ 'MENU_ITEM.SCOPE' | translate }} </label>
-            </span>
-          </div>
-
-          <div
-            class="col-12 md:col-3 my-1 pl-6 flex justify-content-start"
-            [title]="'MENU_ITEM.TOOLTIP.DISABLED' | translate"
-          >
-            <p-checkbox
-              id="workspace_menu_detail_field_disabled"
-              class="checkbox-label"
-              formControlName="disabled"
-              [label]="'MENU_ITEM.DISABLED' | translate"
-              [binary]="true"
-            >
-            </p-checkbox>
-          </div>
-
-          <div class="col-12 my-1" [title]="'MENU_ITEM.TOOLTIP.DESCRIPTION' | translate">
-            <span class="p-float-label mb-1" controlErrorAnchor>
-              <input
-                pInputText
-                type="text"
-                id="workspace_menu_detail_field_description"
-                class="w-full pt-3 pb-2"
-                formControlName="description"
-              />
-              <label for="workspace_menu_detail_field_description"> {{ 'MENU_ITEM.DESCRIPTION' | translate }} </label>
-            </span>
-          </div>
-
-          <div
-            *ngIf="changeMode === 'EDIT'"
-            class="col-12 md:col-6 my-1"
-            style="min-width: 15rem"
-            [title]="'DETAIL.TOOLTIPS.CREATION_DATE' | translate"
-          >
-            <span class="p-float-label mb-1" controlErrorAnchor>
-              <input
-                pInputText
-                type="text"
-                id="workspace_menu_detail_field_creation_date"
-                class="w-full pt-3 pb-2"
-                [value]="menuItem?.creationDate | date : dateFormat"
-                [disabled]="true"
-              />
-              <label for="workspace_menu_detail_field_creation_date"> {{ 'DETAIL.CREATION_DATE' | translate }} </label>
-            </span>
-          </div>
-
-          <div
-            *ngIf="changeMode === 'EDIT'"
-            class="col-12 md:col-6 my-1"
-            style="min-width: 15rem"
-            [title]="'DETAIL.TOOLTIPS.MODIFICATION_DATE' | translate"
-          >
-            <span class="p-float-label mb-1" controlErrorAnchor>
-              <input
-                pInputText
-                type="text"
-                id="workspace_menu_detail_field_modification_date"
-                class="w-full pt-3 pb-2"
-                [value]="menuItem?.modificationDate | date : dateFormat"
-                [disabled]="true"
-              />
-              <label for="workspace_menu_detail_field_modification_date">
-                {{ 'DETAIL.MODIFICATION_DATE' | translate }}
-              </label>
-            </span>
-          </div>
-        </div>
-      </form>
-    </p-tabPanel>
-    <p-tabPanel [header]="'DIALOG.MENU.I18N.LABEL' | translate" [tooltip]="'DIALOG.MENU.I18N.TOOLTIP' | translate">
-      <div class="flex flex-column gap-4">
-        <span
-          class="p-float-label p-input-icon-right w-30rem mb-1"
-          *ngFor="let language of languagesDisplayed; index as i"
-        >
-          <i
-            class="pi pi-times"
-            (click)="onRemoveLanguage(language.value)"
-            [title]="'DIALOG.MENU.I18N.REMOVE_LANGUAGE' | translate"
-          ></i>
-          <input
-            pInputText
-            type="text"
-            [id]="'i18n_' + language.value"
-            class="w-30rem pt-3 pb-2"
-            [(ngModel)]="language.data"
-          />
-          <label [for]="'i18n_' + language.value"> {{ getLanguageLabel(language.value) }} </label>
-        </span>
-      </div>
-      <div class="flex align-items-center column-gap-4 row-gap-2 mt-4" *ngIf="languagesAvailable.length > 0">
-        <div class="data-view-control opacity-90 text-sm w-4rem">{{ 'DIALOG.MENU.I18N.ADD_LANGUAGE' | translate }}</div>
-        <p-selectButton
-          inputid="i18n_language_selector"
-          styleClass="data-view-control opacity-90"
-          [options]="languagesAvailable"
-          (onOptionClick)="onAddLanguage($event.option.value)"
-          [title]="'DIALOG.MENU.I18N.ADD_LANGUAGE' | translate"
-        >
-        </p-selectButton>
-      </div>
-    </p-tabPanel>
-  </p-tabView>
-  <ng-template pTemplate="footer">
-    <div class="flex flex-wrap gap-2 justify-content-end">
-      <p-button
-        icon="pi pi-times"
-        styleClass="m-0"
-        (click)="onCloseDetailDialog()"
-        [label]="'ACTIONS.CANCEL' | translate"
-        [title]="'ACTIONS.TOOLTIPS.CANCEL_WITHOUT_SAVE' | translate"
-      ></p-button>
-      <p-button
-        icon="pi pi-save"
-        styleClass="m-0"
-        (onClick)="onMenuSave()"
-        [disabled]="!formGroup.valid"
-        [label]="'ACTIONS.SAVE' | translate"
-        [title]="'ACTIONS.TOOLTIPS.SAVE' | translate"
-      ></p-button>
-    </div>
-  </ng-template>
-</p-dialog>
-
-<!-- DELETE MENU ITEM -->
-<p-dialog
-  [(visible)]="displayDeleteConfirmation"
-  [header]="'ACTIONS.DELETE.MENU_ITEM' | translate"
-  [modal]="true"
-  [closable]="true"
-  [resizable]="false"
-  [dismissableMask]="true"
-  [style]="{ 'max-width': '425px' }"
+<!-- IMPORT -->
+<app-menu-import
+  [workspaceName]="workspaceName"
+  [displayDialog]="displayMenuImport"
+  (hideDialog)="onHideMenuImport()"
+  (importEmitter)="onReload()"
 >
-  <div class="flex column-gap-3 row-gap-1 justify-content-start align-items-center">
-    <div class="pi pi-question-circle text-3xl text-primary"></div>
-    <div>
-      <div>{{ ('ACTIONS.DELETE.MESSAGE' | translate).replace('{{ITEM}}', menuItem?.name) }}</div>
-      <div class="mt-2">{{ 'ACTIONS.DELETE.MESSAGE_INFO' | translate }}</div>
-    </div>
-  </div>
-  <ng-template pTemplate="footer">
-    <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
-      <button
-        pButton
-        autofocus
-        type="button"
-        class="m-0"
-        icon="pi pi-times"
-        iconPos="left"
-        [label]="'ACTIONS.CONFIRMATION.NO' | translate"
-        (click)="displayDeleteConfirmation = false"
-      ></button>
-      <button
-        pButton
-        type="button"
-        class="m-0"
-        icon="pi pi-check"
-        iconPos="left"
-        [label]="'ACTIONS.CONFIRMATION.YES' | translate"
-        (click)="onMenuDelete()"
-      ></button>
-    </div>
-  </ng-template>
-</p-dialog>
-
-<!-- IMPORT MENU -->
-<p-dialog
-  header="{{ 'ACTIONS.IMPORT.MENU' | translate }}"
-  [(visible)]="displayMenuImport"
-  [draggable]="true"
-  [closable]="true"
-  [modal]="true"
-  (onHide)="onImportMenuHide()"
->
-  <p-fileUpload
-    mode="advanced"
-    name="file"
-    accept=".json"
-    [maxFileSize]="1000000"
-    [headers]="httpHeaders"
-    [customUpload]="true"
-    (onClear)="onImportMenuClear()"
-    (onRemove)="onImportMenuClear()"
-    (onSelect)="onImportMenuSelect($event)"
-    (uploadHandler)="onMenuImport()"
-    [showUploadButton]="!menuImportError"
-    [uploadLabel]="'ACTIONS.UPLOAD' | translate"
-    [cancelLabel]="'ACTIONS.CANCEL' | translate"
-    [chooseLabel]="'ACTIONS.CHOOSE' | translate"
-  ></p-fileUpload>
-
-  <p-message
-    *ngIf="menuImportError"
-    severity="error"
-    styleClass="mt-3"
-    text="{{ 'VALIDATION.ERRORS.PARSE_ERROR' | translate }}"
-  ></p-message>
-
-  <div class="flex justify-content-end gap-3 my-3">
-    <button
-      pButton
-      type="button"
-      icon="pi pi-times"
-      id="workspace_import_button_close"
-      [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
-      [title]="'ACTIONS.NAVIGATION.CLOSE_WITHOUT_SAVE' | translate"
-      (click)="onImportMenuHide()"
-    ></button>
-  </div>
-</p-dialog>
-
-<!-- TREE REORDER DIALOG -->
-<p-dialog
-  header="{{ 'DIALOG.MENU.HEADER.TREE_MODAL' | translate }}"
-  [(visible)]="displayTreeModal"
-  [draggable]="true"
-  [closable]="true"
-  [modal]="true"
-  (onHide)="onHideTreeModal()"
-  (onResizeInit)="onStartResizeTree($event)"
-  (onResizeEnd)="onEndResizeTree($event)"
->
-  <ul class="my-2">
-    <li>{{ 'DIALOG.MENU.HEADER.REORDER.TOOLTIP' | translate }}</li>
-    <li>{{ 'DIALOG.MENU.HEADER.PREVIEW.TOOLTIP' | translate }}</li>
-    <li class="danger-action-text">{{ 'DIALOG.MENU.HEADER.PREVIEW2.TOOLTIP' | translate }}</li>
-  </ul>
-  <app-menu-tree
-    *ngIf="menuItems"
-    [selectedWorkspaceId]="workspaceName"
-    [workspaceMenuItems]="menuItems"
-    [updateTree]="displayTreeModal"
-    [languagesPreview]="languagesPreview"
-    (updateMenuStructureEmitter)="updateMenuItems($event)"
-  >
-  </app-menu-tree>
-  <div class="flex justify-content-end my-3">
-    <button
-      pButton
-      type="button"
-      icon="pi pi-times"
-      id="workspace_import_button_close"
-      [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
-      (click)="onHideTreeModal()"
-    ></button>
-  </div>
-</p-dialog>
+</app-menu-import>

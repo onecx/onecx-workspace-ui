@@ -112,7 +112,7 @@ export class ChooseFileComponent implements OnInit {
           } else if (!(typeof el.disabled === 'boolean')) {
             this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_MENU_ITEM_WRONG_DISABLED']
             break
-          } else if (!(typeof el.workspaceExit === 'boolean')) {
+          } else if (!(typeof el.external === 'boolean')) {
             this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_MENU_ITEM_WRONG_PORTALEXIT']
             break
           }
@@ -139,7 +139,7 @@ export class ChooseFileComponent implements OnInit {
       dto.name &&
       typeof dto.position === 'number' &&
       typeof dto.disabled === 'boolean' &&
-      typeof dto.workspaceExit === 'boolean'
+      typeof dto.external === 'boolean'
     )
   }
 }

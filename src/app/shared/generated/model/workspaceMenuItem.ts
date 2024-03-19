@@ -9,10 +9,16 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { EximScope } from './eximScope';
+import { Scope } from './scope';
 
 
-export interface EximWorkspaceMenuItem { 
+export interface WorkspaceMenuItem { 
+    modificationCount?: number;
+    creationDate?: string;
+    creationUser?: string;
+    modificationDate?: string;
+    modificationUser?: string;
+    id?: string;
     key?: string;
     name?: string;
     description?: string;
@@ -21,11 +27,11 @@ export interface EximWorkspaceMenuItem {
     disabled?: boolean;
     position?: number;
     badge?: string;
-    scope?: EximScope;
+    scope?: Scope;
     external?: boolean;
-    roles?: Array<string>;
+    parentItemId?: string;
     i18n?: { [key: string]: string; };
-    children?: Array<EximWorkspaceMenuItem>;
+    children?: Array<WorkspaceMenuItem>;
 }
 
 

@@ -22,7 +22,7 @@
       "ROLE_OK": "The Role was created successfully",
       "ROLE_NOK": "An error has occurred. The Role was not created.",
       "MENU": "Create Menu Item",
-      "MENU.TOOLTIP": "Create a new Menu Item",
+      "MENU.TOOLTIP": "Create a new Menu Item below",
       "MESSAGE": {
         "CREATE_OK": "The workspace was created successfully",
         "CREATE_NOK": "An error has occurred. The workspace was not created.",
@@ -34,14 +34,15 @@
     "DELETE": {
       "LABEL": "Delete",
       "ROLE": "Delete Role",
-      "MENU_ITEM": "Delete Menu item",
       "WORKSPACE": "Delete Workspace",
+      "MENU": "Delete Menu Item",
       "MESSAGE": "Do you want to delete \"{{ITEM}}\"?",
       "MESSAGE_INFO": "This action cannot be undone!",
       "MESSAGE_NOK": "Workspace could not be deleted",
       "MESSAGE_OK": "Workspace deleted successfully",
-      "MENU_DELETE_OK": "The Menu Item was deleted successfully",
-      "MENU_DELETE_NOK": "An error has occurred. The Menu Item could not be deleted.",
+      "MENU_MESSAGE": "This will also delete all menu items below.",
+      "MENU_OK": "The Menu Item was deleted successfully",
+      "MENU_NOK": "An error has occurred. The Menu Item could not be deleted.",
       "ROLE_MESSAGE": "This deletes the role and its assignments for the workspace. Does not changed anycthing in Permission Management.",
       "ROLE_OK": "The Role was deleted successfully",
       "ROLE_NOK": "An error has occurred. The Role was not deleted."
@@ -61,7 +62,7 @@
     "EXPORT": {
       "LABEL": "Export",
       "TOOLTIP": "Export definition in JSON format",
-      "MENU": "Export Menu",
+      "MENU": "Export Menu definition in JSON format",
       "WORKSPACE": "Download the current Workspace definition in JSON format.",
       "THEME_INCLUDE": "Include the Theme definition in the export"
     },
@@ -142,7 +143,6 @@
       "INTERN": "Internal",
       "ROLES": "Roles",
       "PRODUCTS": "Products",
-      "SUBJECTS": "Subjects",
       "TOOLTIPS": {
         "DETAILS": "Base properties",
         "CONTACT": "Contact information",
@@ -256,44 +256,68 @@
       "HEADER": {
         "EDIT": "Menu Item Details",
         "CREATE": "Create Menu Item",
+        "DELETE": "Delete Menu Item",
+        "IMPORT": "Import Menu",
         "TREE_MODAL": "Reorder & Preview",
         "TREE_MODAL.TOOLTIP": "Reorder of Menu Items via Drag & Drop and Preview in configured languages",
+        "DETAILS": "Details",
+        "DETAILS.TOOLTIP": "Manage Details",
+        "ROLES": "Roles",
+        "ROLES.TOOLTIP": "Display Roles and Permissions",
+        "ROLES.MANAGE": "Manage Roles",
+        "ROLES.NOT_EXIST": "No Workspace Roles",
         "PREVIEW.TOOLTIP": "Preview in configured languages",
-        "PREVIEW2.TOOLTIP": "No translation available",
-        "REORDER.TOOLTIP": "Reorder of Menu Items via Drag & Drop"
+        "PREVIEW2.TOOLTIP": "No translation",
+        "REORDER.TOOLTIP": "Reorder via Drag & Drop"
       },
       "SUBHEADER": "Manage the Menu",
       "ACTION": {
-        "DELETE": "Delete Menu Item",
-        "DETAILS": "Display details",
-        "DISABLED": "Green = Item is available in Menu - Changeable by click",
-        "NEW": "Create new Menu Item"
+        "DETAILS": "Display details"
       },
-      "I18N": {
-        "LABEL": "I18n",
-        "TOOLTIP": "Translations available?",
-        "ROW.TOOLTIP": "At least one translation is available",
-        "ADD_LANGUAGE": "Add Language",
-        "REMOVE_LANGUAGE": "Remove Language"
+      "TABS": {
+        "DETAILS": "Details",
+        "DETAILS.TOOLTIP": "Manage Properties",
+        "I18N": {
+          "LABEL": "Translations",
+          "TOOLTIP": "Manage Translations",
+          "ADD_LANGUAGE": "Add Language",
+          "REMOVE_LANGUAGE": "Remove Language"
+        },
+        "INTERN": "Internal",
+        "INTERN.TOOLTIP": "Interne Eigenschaften"
       },
-      "POSITION": "Position",
-      "POSITION.TOOLTIP": "Position path of the menu item in format [parent item.]item ",
-      "URL.TOOLTIP": "The URL to be called upon activation",
-      "MFE.TOOLTIP": "Indicator whether the menu URL is offered by a registered Product ",
-      "EXTERN.TOOLTIP": "If checked then the Workspace is exit",
-      "PREVIEW_LANG": "Language",
-      "PREVIEW_LANG.EMPTY": "No translations available",
-      "PREVIEW_LANG.TOOLTIP": "List of configured languages",
-      "MENU_JSON_DOWNLOAD": "Download Menu Structure as JSON file",
-      "MENU_JSON_UPLOAD": "Upload Menu Structure as JSON file",
+      "TREE": {
+        "POSITION": "Position",
+        "POSITION.TOOLTIP": "Position path of the menu item in format [parent item.]item ",
+        "I18N": "I18n",
+        "I18N.TOOLTIP": "Indicator whether translations exist",
+        "I18N.ROW.TOOLTIP": "At least one translation is available",
+        "URL.TOOLTIP": "The URL to be called upon activation",
+        "PRODUCT.TOOLTIP": "Indicator whether the menu URL is offered by a registered Product ",
+        "EXTERN.TOOLTIP": "If checked then the Workspace is exit"
+      },
+      "ASSIGNMENT": {
+        "OK": "Menu Item assigned",
+        "NOK": "Menu Item not assigned",
+        "OK_INHERITED": "Menu Item assigned by inheritance",
+        "CHANGEABLE": "Change by click",
+        "GRANT_OK": "Permission granted",
+        "GRANT_NOK": "Permission could not be granted",
+        "REVOKE_OK": "Permission revoked",
+        "REVOKE_NOK": "Permission could not be revoked"
+      },
+      "PREVIEW": {
+        "LANG": "Language",
+        "LANG.EMPTY": "No translations available",
+        "LANG.TOOLTIP": "List of configured languages"
+      },
       "MENU_NOT_EXIST": "No menu defined",
-      "MENU_EDIT_ERROR": "Menu item edition error",
-      "MENU_EDIT_SUCCESS": "Menu item edited successfully",
-      "MENU_ITEM_DETAILS": "Details",
-      "MENU_ITEM_HEADER": "Header",
-      "MENU_REMOVE_ERROR": "Error deleting menu item",
-      "MENU_REMOVE_SUCCESS": "Menu item successfully deleted",
-      "ERROR_FIND_MENU": "Cannot find Menu Item with ID: "
+      "MENU_ITEM_NOT_FOUND": "Cannot find Menu Item with ID: ",
+      "IMPORT": {
+        "UPLOAD_INFO": "Please, upload JSON file from your device. Keep in mind, that after upload whole menu structure will be overwritten.",
+        "UPLOAD_OK": "Menu Structure was successfully imported",
+        "UPLOAD_NOK": "An error has occurred. The menu structure wasn't overwritten"
+      }
     },
     "DATAVIEW": {
       "FILTER_PLACEHOLDER": "Filter",
@@ -418,20 +442,6 @@
       "PLACEHOLDER": "Image Placeholder",
       "UPLOAD": "Select and upload image"
     }
-  },
-  "TREE": {
-    "CLEAR_CACHE_INFO": "Cache cleared",
-    "CONFIRM_HEADER": "Update Dialog",
-    "EDIT_ERROR": "Menu structure edition error",
-    "EDIT_SUCCESS": "Menu structure edited successfully",
-    "FETCH_ERROR": "Error while fetching Menu Items",
-    "NO_MENU_ITEMS": "No Menu Items available",
-    "PORTAL_CREATION_INFO": "Do you wish to continue and update Workspace menu structure?",
-    "STRUCTURE_UPLOAD_ERROR": "Error has occurred, menu structure wasn't overwritten",
-    "STRUCTURE_UPLOAD_HEADER": "Upload tree structure",
-    "STRUCTURE_UPLOAD_INFO": "Please, upload JSON file from your device. Keep in mind, that after upload whole menu structure will be overwritten.",
-    "STRUCTURE_UPLOAD_SUCCESS": "Menu Structure was successfully overwritten",
-    "TREE_VIEW": "Menu structure - tree"
   },
   "VALIDATION": {
     "HINTS": {

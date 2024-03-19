@@ -13,6 +13,13 @@
     }
   }
 }
+@mixin invisible {
+  :host ::ng-deep {
+    .invisible {
+      visibility: hidden;
+    }
+  }
+}
 
 @mixin danger-action {
   :host ::ng-deep {
@@ -113,6 +120,24 @@
     .p-dialog .p-dialog-content {
       border-bottom-left-radius: var(--border-radius);
       border-bottom-right-radius: var(--border-radius);
+    }
+  }
+}
+
+@mixin table-inline-buttons {
+  :host ::ng-deep {
+    // reduce the size of buttons used inside a table row
+    th button.p-button,
+    td button.p-button {
+      &.p-button-icon-only {
+        width: unset !important;
+      }
+      &.p-button-rounded {
+        height: unset !important;
+      }
+      &:disabled {
+        opacity: 0.38 !important;
+      }
     }
   }
 }

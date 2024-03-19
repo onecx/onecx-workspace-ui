@@ -9,10 +9,17 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { CreateUpdateMenuItem } from './createUpdateMenuItem';
+import { Assignment } from './assignment';
 
 
-export interface CreateMenuItemRequest { 
-    resource: CreateUpdateMenuItem;
+export interface AssignmentPageResult { 
+    /**
+     * The total elements in the resource.
+     */
+    totalElements?: number;
+    number?: number;
+    size?: number;
+    totalPages?: number;
+    stream?: Array<Assignment>;
 }
 

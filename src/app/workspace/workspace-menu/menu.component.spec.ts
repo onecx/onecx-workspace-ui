@@ -1,7 +1,7 @@
 import { NO_ERRORS_SCHEMA, Component } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { /* HttpClient, */ HttpErrorResponse } from '@angular/common/http'
-import { FormsModule, FormControl, FormGroup } from '@angular/forms'
+import { FormsModule /*, FormControl, FormGroup */ } from '@angular/forms'
 import { Location } from '@angular/common'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router'
@@ -13,16 +13,21 @@ import { PortalMessageService, ConfigurationService, AUTH_SERVICE } from '@onecx
 import { MenuStateService, MenuState } from './services/menu-state.service'
 import { MenuComponent } from './menu.component'
 
-import { Workspace, MenuItem, WorkspaceAPIService, Scope, MenuItemAPIService } from 'src/app/shared/generated'
+import {
+  Workspace,
+  WorkspaceMenuItem,
+  WorkspaceAPIService /*, Scope*/,
+  MenuItemAPIService
+} from 'src/app/shared/generated'
 
 const workspace: Workspace = {
   id: 'id',
-  name: 'name',
+  name: 'workspace-name',
   theme: 'theme',
   baseUrl: '/some/base/url'
 }
 
-const mockMenuItems: MenuItem[] = [
+const mockMenuItems: WorkspaceMenuItem[] = [
   {
     id: 'id',
     key: 'key',
@@ -38,7 +43,7 @@ const mockMenuItems: MenuItem[] = [
   }
 ]
 
-const mockItem = {
+/* const mockItem = {
   id: 'id1',
   key: '1-1',
   positionPath: '1-1',
@@ -51,13 +56,13 @@ const mockItem = {
   parentItemId: 'some parent id',
   name: 'name',
   position: 1,
-  workspaceExit: true,
+  external: true,
   url: 'url',
   badge: 'badge',
   scope: Scope.Workspace,
   description: 'description'
 }
-
+ */
 const state: MenuState = {
   pageSize: 0,
   showDetails: false,
@@ -67,19 +72,19 @@ const state: MenuState = {
   workspaceMenuItems: []
 }
 
-const form = new FormGroup({
+/* const form = new FormGroup({
   parentItemId: new FormControl('some parent id'),
   key: new FormControl('key'),
   name: new FormControl('name'),
   position: new FormControl('1'),
   disabled: new FormControl<boolean>(false),
-  workspaceExit: new FormControl<boolean>(false),
+  external: new FormControl<boolean>(false),
   url: new FormControl('url'),
   badge: new FormControl('badge'),
   scope: new FormControl('scope'),
   description: new FormControl('description')
 })
-
+ */
 describe('MenuComponent', () => {
   let component: MenuComponent
   let fixture: ComponentFixture<MenuComponent>
@@ -88,16 +93,17 @@ describe('MenuComponent', () => {
 
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
   const apiServiceSpy = {
-    getPortalByPortalId: jasmine.createSpy('getPortalByPortalId').and.returnValue(of({}))
+    getWorkspaceByName: jasmine.createSpy('getWorkspaceByName').and.returnValue(of({}))
   }
+  // TODO: check api and use the correct names
   const menuApiServiceSpy = {
-    getMenuStructureForPortalId: jasmine.createSpy('getMenuStructureForPortalId').and.returnValue(of(mockMenuItems)),
+    getMenuStructure: jasmine.createSpy('getMenuStructure').and.returnValue(of(mockMenuItems)),
     getMenuItemById: jasmine.createSpy('getMenuItemById').and.returnValue(of(mockMenuItems)),
     patchMenuItem: jasmine.createSpy('patchMenuItem').and.returnValue(of(mockMenuItems)),
     bulkPatchMenuItems: jasmine.createSpy('bulkPatchMenuItems').and.returnValue(of(mockMenuItems)),
     addMenuItemForPortal: jasmine.createSpy('addMenuItemForPortal').and.returnValue(of(mockMenuItems)),
     deleteMenuItemById: jasmine.createSpy('deleteMenuItemById').and.returnValue(of({})),
-    uploadMenuStructure: jasmine.createSpy('uploadMenuStructure').and.returnValue(of({}))
+    importMenuByWorkspaceName: jasmine.createSpy('importMenuByWorkspaceName').and.returnValue(of({}))
   }
   const configServiceSpy = {
     getProperty: jasmine.createSpy('getProperty').and.returnValue('123'),
@@ -153,14 +159,14 @@ describe('MenuComponent', () => {
     }).compileComponents()
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
-    apiServiceSpy.getPortalByPortalId.calls.reset()
+    apiServiceSpy.getWorkspaceByName.calls.reset()
     menuApiServiceSpy.getMenuItemById.calls.reset()
-    menuApiServiceSpy.getMenuStructureForPortalId.calls.reset()
+    menuApiServiceSpy.getMenuStructure.calls.reset()
     menuApiServiceSpy.patchMenuItem.calls.reset()
     menuApiServiceSpy.bulkPatchMenuItems.calls.reset()
     menuApiServiceSpy.addMenuItemForPortal.calls.reset()
     menuApiServiceSpy.deleteMenuItemById.calls.reset()
-    menuApiServiceSpy.uploadMenuStructure.calls.reset()
+    menuApiServiceSpy.importMenuByWorkspaceName.calls.reset()
     translateServiceSpy.get.calls.reset()
     stateServiceSpy.getState.calls.reset()
   }))
@@ -214,10 +220,10 @@ describe('MenuComponent', () => {
     expect(component.loadMenu).toHaveBeenCalledWith(true)
   })
 
-  it('should call loadMenu onReloadMenu', () => {
+  it('should call loadMenu onReload', () => {
     spyOn(component, 'loadMenu')
 
-    component.onReloadMenu()
+    component.onReload()
 
     expect(component.loadMenu).toHaveBeenCalledWith(true)
   })
@@ -275,7 +281,8 @@ describe('MenuComponent', () => {
   })
 
   it('should loadData', () => {
-    apiServiceSpy.getPortalByPortalId.and.returnValue(of(workspace))
+    apiServiceSpy.getWorkspaceByName.and.returnValue(of(workspace))
+    component.workspaceName = 'workspace-name'
 
     component.loadData()
 
@@ -288,7 +295,7 @@ describe('MenuComponent', () => {
       status: 404,
       statusText: 'Not Found'
     })
-    apiServiceSpy.getPortalByPortalId.and.returnValue(throwError(() => errorResponse))
+    apiServiceSpy.getWorkspaceByName.and.returnValue(throwError(() => errorResponse))
 
     component.loadData()
 
@@ -296,7 +303,7 @@ describe('MenuComponent', () => {
   })
 
   it('it should handle exception on loadData', () => {
-    apiServiceSpy.getPortalByPortalId.and.returnValue(of(null))
+    apiServiceSpy.getWorkspaceByName.and.returnValue(of(null))
 
     component.loadData()
 
@@ -304,7 +311,7 @@ describe('MenuComponent', () => {
   })
 
   it('should loadMenu', () => {
-    menuApiServiceSpy.getMenuStructureForPortalId.and.returnValue(of(mockMenuItems))
+    menuApiServiceSpy.getMenuStructure.and.returnValue(of(mockMenuItems))
 
     component.loadMenu(true)
 
@@ -312,7 +319,7 @@ describe('MenuComponent', () => {
   })
 
   xit('should call prepareParentNodes with a node array containing children', () => {
-    menuApiServiceSpy.getMenuStructureForPortalId.and.returnValue(
+    menuApiServiceSpy.getMenuStructure.and.returnValue(
       of([{ key: '1', data: { id: 'id1' }, children: [{ key: '1-1', data: { id: 'id1-1' } }] }])
     )
 
@@ -327,7 +334,7 @@ describe('MenuComponent', () => {
       status: 404,
       statusText: 'Not Found'
     })
-    menuApiServiceSpy.getMenuStructureForPortalId.and.returnValue(throwError(() => errorResponse))
+    menuApiServiceSpy.getMenuStructure.and.returnValue(throwError(() => errorResponse))
 
     component.loadMenu(true)
 
@@ -335,14 +342,14 @@ describe('MenuComponent', () => {
   })
 
   it('should handle exception on loadMenu', () => {
-    menuApiServiceSpy.getMenuStructureForPortalId.and.returnValue(of(null))
+    menuApiServiceSpy.getMenuStructure.and.returnValue(of(null))
 
     component.loadMenu(true)
 
     expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_404.MENUS')
   })
 
-  it('should set item onDeleteMenuItem', () => {
+  /*   it('should set item onDeleteMenuItem', () => {
     const event: MouseEvent = new MouseEvent('type')
     const item = {
       key: '1-1',
@@ -386,8 +393,9 @@ describe('MenuComponent', () => {
 
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MENU_DELETE_NOK' })
   })
+ */
 
-  xit('should get menu item onGoToDetails', () => {
+  /*   xit('should get menu item onGoToDetails', () => {
     const mockMenuItem = {
       key: 'key',
       parentItemId: 'parent id',
@@ -657,9 +665,9 @@ describe('MenuComponent', () => {
 
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
   })
-
+ */
   it('should export a menu', () => {
-    menuApiServiceSpy.getMenuStructureForPortalId.and.returnValue(of(mockMenuItems))
+    menuApiServiceSpy.getMenuStructure.and.returnValue(of(mockMenuItems))
     component.workspaceName = 'name'
     component.workspace = workspace
     spyOn(FileSaver, 'saveAs')
@@ -672,136 +680,34 @@ describe('MenuComponent', () => {
     )
   })
 
-  it('should enable menu import onImportMenu', () => {
-    component.onImportMenu()
+  it('should set displayMenuPreview to true onDisplayMenuPreview', () => {
+    component.onDisplayMenuPreview()
 
-    expect(component.displayMenuImport).toBeTrue()
-    expect(component.menuImportError).toBeFalse()
+    expect(component.displayMenuPreview).toBeTrue()
   })
 
-  it('should hide menu import onImportMenuHide', () => {
-    component.onImportMenuHide()
+  it('should set displayMenuPreview to false onHideMenuPreview', () => {
+    component.onHideMenuPreview()
 
-    expect(component.displayMenuImport).toBeFalse()
-  })
-
-  it('should clear menu import onImportMenuClear', () => {
-    component.onImportMenuClear()
-
-    expect(component.menuImportError).toBeFalse()
-  })
-
-  it('should import menu from a valid file onImportMenuSelect: success', () => {
-    const validJson = JSON.stringify(mockMenuItems)
-    const mockFile = new File([validJson], 'test.json', { type: 'application/json' })
-    spyOn(mockFile, 'text').and.returnValue(Promise.resolve(validJson))
-    const fileList = { 0: mockFile, length: 1, item: () => mockFile }
-
-    component.onImportMenuSelect({ files: fileList })
-
-    expect(component.menuImportError).toBeFalse()
-  })
-
-  it('should import menu from a valid file onImportMenuSelect: invalid data', (done) => {
-    const validJson = JSON.stringify({ invalid: 'data' })
-    const mockFile = new File([validJson], 'test.json', { type: 'application/json' })
-    spyOn(mockFile, 'text').and.returnValue(Promise.resolve(validJson))
-    const fileList = { 0: mockFile, length: 1, item: () => mockFile }
-    spyOn(console, 'error')
-
-    component.onImportMenuSelect({ files: fileList })
-
-    setTimeout(() => {
-      expect(component.menuImportError).toBeTrue()
-      expect(console.error).toHaveBeenCalledWith('Menu Import Error: Data not valid', jasmine.anything())
-      done()
-    }, 0)
-  })
-
-  it('should import menu from a valid file onImportMenuSelect: parse error', (done) => {
-    const invalidJson = 'not json'
-    const mockFile = new File([invalidJson], 'test.json', { type: 'application/json' })
-    spyOn(mockFile, 'text').and.returnValue(Promise.resolve(invalidJson))
-    const fileList = { 0: mockFile, length: 1, item: () => mockFile }
-    spyOn(console, 'error')
-
-    component.onImportMenuSelect({ files: fileList })
-
-    setTimeout(() => {
-      expect(component.menuImportError).toBeTrue()
-      /* expect(console.error).toHaveBeenCalledWith(
-        'Menu Import Parse Error',
-        new SyntaxError('Unexpected token \'o\', "not json" is not valid JSON')
-      ) */
-      done()
-    }, 0)
-  })
-
-  it('should handle menu import', () => {
-    component.workspaceName = 'name'
-    component.workspaceName = 'name'
-    spyOn(component, 'ngOnInit')
-    menuApiServiceSpy.uploadMenuStructure.and.returnValue(of({}))
-
-    component.onMenuImport()
-
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'TREE.STRUCTURE_UPLOAD_SUCCESS' })
-    expect(component.ngOnInit).toHaveBeenCalled()
-  })
-
-  it('should handle menu import error', () => {
-    component.workspaceName = 'name'
-    component.workspaceName = 'name'
-    menuApiServiceSpy.uploadMenuStructure.and.returnValue(throwError(() => new Error()))
-
-    component.onMenuImport()
-
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'TREE.STRUCTURE_UPLOAD_ERROR' })
-  })
-
-  it('should set displayTreeModal to true onDisplayTreeModal', () => {
-    component.onDisplayTreeModal()
-
-    expect(component.displayTreeModal).toBeTrue()
-  })
-
-  it('should set displayTreeModal to false onHideTreeModal', () => {
-    component.onHideTreeModal()
-
-    expect(component.displayTreeModal).toBeFalse()
+    expect(component.displayMenuPreview).toBeFalse()
   })
 
   it('should handle successful menu item update', () => {
     menuApiServiceSpy.bulkPatchMenuItems.and.returnValue(of({}))
-    spyOn(component, 'onReloadMenu')
+    spyOn(component, 'onReload')
 
-    component.updateMenuItems(mockMenuItems)
+    component.onUpdateMenuStructure(mockMenuItems)
 
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'TREE.EDIT_SUCCESS' })
-    expect(component.onReloadMenu).toHaveBeenCalled()
+    expect(component.onReload).toHaveBeenCalled()
   })
 
   it('should handle menu item update error', () => {
     menuApiServiceSpy.bulkPatchMenuItems.and.returnValue(throwError(() => new Error()))
 
-    component.updateMenuItems(mockMenuItems)
+    component.onUpdateMenuStructure(mockMenuItems)
 
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'TREE.EDIT_ERROR' })
-  })
-
-  it('should call onStartResizeTree without errors', () => {
-    const mockEvent = new MouseEvent('click')
-
-    expect(() => component.onStartResizeTree(mockEvent)).not.toThrow()
-  })
-
-  it('should set treeHeight on onEndResizeTree call', () => {
-    const mockClientY = 300
-    const mockEvent = { clientY: mockClientY } as MouseEvent
-
-    component.onEndResizeTree(mockEvent)
-
-    expect(component['treeHeight']).toEqual(mockClientY)
   })
 })
 

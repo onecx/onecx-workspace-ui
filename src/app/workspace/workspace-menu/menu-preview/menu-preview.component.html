@@ -1,0 +1,71 @@
+<p-dialog
+  header="{{ 'DIALOG.MENU.HEADER.TREE_MODAL' | translate }}"
+  [(visible)]="displayDialog"
+  [draggable]="true"
+  [closable]="true"
+  [modal]="true"
+  (onHide)="onClose()"
+  (onResizeInit)="onStartResizeTree($event)"
+  (onResizeEnd)="onEndResizeTree($event)"
+>
+  <ul class="mt-1">
+    <li>{{ 'DIALOG.MENU.HEADER.REORDER.TOOLTIP' | translate }}</li>
+    <li class="danger-action-text">{{ 'DIALOG.MENU.HEADER.PREVIEW2.TOOLTIP' | translate }}</li>
+  </ul>
+  <div class="mt-4 flex flex-wrap justify-content-between align-items-end gap-2">
+    <div class="h-2rem flex flex-wrap gap-2">
+      <button
+        pButton
+        type="button"
+        icon="pi pi-angle-double-down"
+        id="portal_menu_tree_expand"
+        [title]="'ACTIONS.TREE.EXPAND_ALL' | translate"
+        (click)="expandAll()"
+      ></button>
+      <button
+        pButton
+        type="button"
+        icon="pi pi-angle-double-up"
+        id="portal_menu_tree_collapse"
+        [title]="'ACTIONS.TREE.COLLAPSE_ALL' | translate"
+        (click)="collapseAll()"
+      ></button>
+    </div>
+    <span class="p-float-label">
+      <p-dropdown
+        styleClass="reduced-field-size"
+        id="portal_menu_tree_preview_language_list"
+        [appendTo]="'body'"
+        [title]="'DIALOG.MENU.PREVIEW.LANG.TOOLTIP' | translate"
+        [emptyMessage]="'DIALOG.MENU.PREVIEW.LANG.EMPTY' | translate"
+        [options]="languagesPreview"
+        [(ngModel)]="languagesPreviewValue"
+        (onChange)="onLanguagesPreviewChange($event.value)"
+      ></p-dropdown>
+      <label for="portal_menu_tree_preview_language_list">{{ 'DIALOG.MENU.PREVIEW.LANG' | translate }}</label>
+    </span>
+  </div>
+
+  <p-tree
+    styleClass="my-2 pl-2 pt-1 p-0 max-h-25rem"
+    scrollHeight="flex"
+    [value]="menuNodes"
+    [draggableNodes]="true"
+    [droppableNodes]="true"
+    (onNodeDrop)="onDrop($event)"
+    (onNodeCollapse)="onHierarchyViewChange($event)"
+    (onNodeExpand)="onHierarchyViewChange($event)"
+  >
+    <ng-template let-node pTemplate="default"> {{ node.label }} </ng-template>
+  </p-tree>
+  <div class="flex justify-content-end my-3">
+    <button
+      pButton
+      type="button"
+      icon="pi pi-times"
+      id="workspace_import_button_close"
+      [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+      (click)="onClose()"
+    ></button>
+  </div>
+</p-dialog>

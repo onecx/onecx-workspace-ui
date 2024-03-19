@@ -9,10 +9,10 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { MenuItem } from './menuItem';
 
 
-export interface GetMenuItemResponse { 
-    resource: MenuItem;
+export interface CreateAssignmentRequest { 
+    roleId: string;
+    menuItemId: string;
 }
 

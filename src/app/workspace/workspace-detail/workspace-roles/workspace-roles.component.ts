@@ -83,53 +83,47 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   /**
    * SEARCH
    */
-  private declareWorkspaceRolesObservable(): void {
-    this.wRoles$ = this.wRoleApi.searchWorkspaceRoles({ workspaceRoleSearchCriteria: {} }).pipe(
-      catchError((err) => {
-        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.ROLES'
-        console.error('searchAvailableRoles():', err)
-        return of({} as IAMRolePageResult)
-      }),
-      finalize(() => (this.loading = false))
-    )
-  }
   private searchWorkspaceRoles(): Observable<Role[]> {
-    this.declareWorkspaceRolesObservable()
-    return this.wRoles$.pipe(
-      map((result) => {
-        return result.stream
-          ? result.stream?.map((role) => {
-              return { ...role, isIamRole: false, isWorkspaceRole: true, type: 'WORKSPACE' } as Role
-            })
-          : []
-      })
-    )
-  }
-  private declareIamObservable(): void {
-    this.iamRoles$ = this.iamRoleApi.searchAvailableRoles({ iAMRoleSearchCriteria: {} }).pipe(
-      catchError((err) => {
-        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.ROLES'
-        console.error('searchAvailableRoles():', err)
-        return of({} as IAMRolePageResult)
-      }),
-      finalize(() => (this.loading = false))
-    )
+    return this.wRoleApi
+      .searchWorkspaceRoles({ workspaceRoleSearchCriteria: { workspaceId: this.workspace?.id } })
+      .pipe(
+        map((result) => {
+          return result.stream
+            ? result.stream?.map((role) => {
+                return { ...role, isIamRole: false, isWorkspaceRole: true, type: 'WORKSPACE' } as Role
+              })
+            : []
+        }),
+        catchError((err) => {
+          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.ROLES'
+          console.error('searchAvailableRoles():', err)
+          return of([])
+        }),
+        finalize(() => (this.loading = false))
+      )
   }
   private searchIamRoles(): Observable<Role[]> {
-    this.declareIamObservable()
-    return this.iamRoles$.pipe(
+    return this.iamRoleApi.searchAvailableRoles({ iAMRoleSearchCriteria: {} }).pipe(
       map((result) => {
         return result.stream
           ? result.stream?.map((role) => {
               return { ...role, isIamRole: true, isWorkspaceRole: false, type: 'IAM' } as Role
             })
           : []
-      })
+      }),
+      catchError((err) => {
+        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.ROLES'
+        console.error('searchAvailableRoles():', err)
+        return of([])
+      }),
+      finalize(() => (this.loading = false))
     )
   }
 
   private searchRoles(force: boolean = false): void {
     if (['WORKSPACE', 'ALL'].includes(this.quickFilterValue) && (force || !this.workspaceRolesLoaded)) {
+      this.loading = true
+      this.exceptionKey = undefined
       const result: Role[] = []
       this.searchWorkspaceRoles().subscribe({
         next: (data) => data.forEach((r) => result.push(r)),

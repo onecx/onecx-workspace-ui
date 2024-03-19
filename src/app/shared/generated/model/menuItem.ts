@@ -13,26 +13,23 @@ import { Scope } from './scope';
 
 
 export interface MenuItem { 
-    modificationCount?: number;
+    modificationCount: number;
     creationDate?: string;
     creationUser?: string;
     modificationDate?: string;
     modificationUser?: string;
-    id: string;
+    id?: string;
     key?: string;
     name?: string;
     description?: string;
     url?: string;
-    workspaceName?: string;
     applicationId?: string;
     disabled?: boolean;
     position?: number;
-    permission?: string;
     badge?: string;
+    external?: boolean;
     scope?: Scope;
-    workspaceExit?: boolean;
     parentItemId?: string;
-    children?: Array<MenuItem>;
     i18n?: { [key: string]: string; };
 }
 

@@ -21,28 +21,29 @@
       "ROLE": "Eine neue Rolle erstellen",
       "ROLE_OK": "Die Rolle wurde erfolgreich erstellt",
       "ROLE_NOK": "Ein Fehler ist aufgetreten. Die Rolle wurde nicht erstellt.",
-      "MENU": "Menüeintrag erstellen",
-      "MENU.TOOLTIP": "Ein neuen Menüeintrag erstellen",
+      "MENU": "Menüpunkt erstellen",
+      "MENU.TOOLTIP": "Ein neuen Menüpunkt unterhalb erstellen",
       "MESSAGE": {
         "CREATE_OK": "Der Workspace wurde erfolgreich erstellt",
         "CREATE_NOK": "Ein Fehler ist aufgetreten. Der Workspace wurde nicht erstellt.",
-        "MENU_ALREADY_EXIST": "Ein Menüeintrag mit diesem Namen/ID existert schon",
-        "MENU_CREATE_OK": "Der Menüeintrag wurde erfolgreich erstellt",
-        "MENU_CREATE_NOK": "Ein Fehler ist aufgetreten. Der Menüeintrag wurde nicht erstellt."
+        "MENU_ALREADY_EXIST": "Ein Menüpunkt mit diesem Namen/ID existert schon",
+        "MENU_CREATE_OK": "Der Menüpunkt wurde erfolgreich erstellt",
+        "MENU_CREATE_NOK": "Ein Fehler ist aufgetreten. Der Menüpunkt wurde nicht erstellt."
       }
     },
     "DELETE": {
       "LABEL": "Löschen",
       "ROLE": "Rolle löschen",
-      "MENU_ITEM": "Menüeintrag löschen",
       "WORKSPACE": "Workspace löschen",
+      "MENU": "Menüpunkt löschen",
       "MESSAGE": "Möchten Sie \"{{ITEM}}\" löschen?",
       "MESSAGE_INFO": "Diese Aktion kann nicht rückgängig gemacht werden!",
       "MESSAGE_NOK": "Workspace konnte nicht gelöscht werden",
       "MESSAGE_OK": "Workspace erfolgreich gelöscht",
-      "MENU_DELETE_OK": "Der Menüeintrag wurde erfolgreich gelöscht",
-      "MENU_DELETE_NOK": "Ein Fehler ist aufgetreten. Der Menüeintrag wurde nicht gelöscht.",
-      "ROLE_MESSAGE": "Damit wird die Rolle und deren Zuweisungen (zu Menüitems) für den Workspace gelöscht. Ändert nichts im Permission Management.",
+      "MENU_MESSAGE": "Damit werden auch alle Menupunkte unterhalb gelöscht.",
+      "MENU_OK": "Der Menüpunkt wurde erfolgreich gelöscht",
+      "MENU_NOK": "Ein Fehler ist aufgetreten. Der Menüpunkt wurde nicht gelöscht.",
+      "ROLE_MESSAGE": "Damit wird die Rolle und deren Zuweisungen (zu Menüpunkten) für den Workspace gelöscht. Ändert nichts im Permission Management.",
       "ROLE_OK": "Die Rolle wurde erfolgreich gelöscht",
       "ROLE_NOK": "Ein Fehler ist aufgetreten. Die Rolle wurde nicht gelöscht."
     },
@@ -54,15 +55,15 @@
       "MESSAGE": {
         "CHANGE_OK": "Der Workspace wurde erfolgreich geändert",
         "CHANGE_NOK": "Ein Fehler ist aufgetreten. Der Workspace wurde nicht geändert.",
-        "MENU_CHANGE_OK": "Der Menüeintrag wurde erfolgreich geändert",
-        "MENU_CHANGE_NOK": "Ein Fehler ist aufgetreten. Der Menüeintrag wurde nicht geändert."
+        "MENU_CHANGE_OK": "Der Menüpunkt wurde erfolgreich geändert",
+        "MENU_CHANGE_NOK": "Ein Fehler ist aufgetreten. Der Menüpunkt wurde nicht geändert."
       }
     },
     "EXPORT": {
       "LABEL": "Export",
       "TOOLTIP": "Definition als JSON herunterladen",
-      "MENU": "Menü exportieren",
-      "WORKSPACE": "Die Workspace-Definition im JSON Format herunterladen.",
+      "MENU": "Die Menü-Definition im JSON Format herunterladen",
+      "WORKSPACE": "Die Workspace-Definition im JSON Format herunterladen",
       "THEME_INCLUDE": "Die Theme-Definition in den Export einschließen"
     },
     "IMPORT": {
@@ -99,9 +100,9 @@
       "SORT_DIRECTION_DESC": "absteigend"
     },
     "TREE": {
-      "COLLAPSE_ALL": "Alles zuklappen",
+      "COLLAPSE_ALL": "Alles zu",
       "COLLAPSE_ALL.TOOLTIP": "Alle Ebenen zuklappen",
-      "EXPAND_ALL": "Alles aufklappen",
+      "EXPAND_ALL": "Alles auf",
       "EXPAND_ALL.TOOLTIP": "Alle Ebenen aufklappen"
     },
     "CANCEL": "Abbrechen",
@@ -142,13 +143,12 @@
       "INTERN": "Intern",
       "ROLES": "Rollen",
       "PRODUCTS": "Produkte",
-      "SUBJECTS": "Subjects",
       "TOOLTIPS": {
         "DETAILS": "Basiseigenschaften",
         "CONTACT": "Kontaktinformationen",
         "INTERN": "Interne Eigenschaften",
         "ROLES": "Rollen, die für die Benutzung des Workspaces von Bedeutung sind (als Teil aller Rollen für den Mandant))",
-        "PRODUCTS": "Für den Workspace registrierte Produkte - benutzbar z.B. in Menüeintragen"
+        "PRODUCTS": "Für den Workspace registrierte Produkte - benutzbar z.B. in Menüpunkten"
       }
     },
     "MENU": {}
@@ -203,13 +203,13 @@
     "PARENT_NAME": "Eltern-Menü Name",
     "WORKSPACE": "Workspace Name",
     "POSITION": "Position",
-    "SCOPE": "Aktionsradius",
+    "SCOPE": "Scope",
     "URL": "URL",
     "TOOLTIP": {
       "BADGE": "Icon aus der PrimeNG Bibliothek welches neben dem Menünamen angezeigt werden soll",
       "DESCRIPTION": "Zusatzinformationen",
       "DISABLED": "Wenn gesetzt, dann wird der Menüpunkt inaktiv angezeigt",
-      "EXTERN": "Wenn gesetzt, dann wird mit dem Menüpunkt der Workspace-Kontext verlassen",
+      "EXTERN": "Wenn gesetzt, dann wird bei der Benutzung des Menüpunkst der Workspace-Kontext verlassen",
       "MENU_ID": "Ein eindeutiger Identifikator des Menüpunkts",
       "MENU_NAME": "Angezeigter Name",
       "PARENT_ID": "Der Identifier des übergeordneten Menüpunkts",
@@ -254,46 +254,70 @@
     "MENU": {
       "LABEL": "Menü",
       "HEADER": {
-        "EDIT": "Menüeintrag Details",
-        "CREATE": "Menüeintrag erstellen",
+        "EDIT": "Menüpunkt Details",
+        "CREATE": "Menüpunkt erstellen",
+        "DELETE": "Menüpunkt löschen",
+        "IMPORT": "Menü importieren",
         "TREE_MODAL": "Umordnen & Voransicht",
         "TREE_MODAL.TOOLTIP": "Menüeinträge per Drag & Drop umordnen und Ansicht in den konfigurierten Sprachen",
+        "DETAILS": "Details",
+        "DETAILS.TOOLTIP": "Verwalten von Details",
+        "ROLES": "Rollen",
+        "ROLES.TOOLTIP": "Anzeige von Rollen und Berechtigungen",
+        "ROLES.MANAGE": "Rollen verwalten",
+        "ROLES.NOT_EXIST": "Keine Workspace Rollen",
         "PREVIEW.TOOLTIP": "Ansicht in den konfigurierten Sprachen",
-        "PREVIEW2.TOOLTIP": "Keine Übersetzung vorhanden",
-        "REORDER.TOOLTIP": "Menüeinträge per Drag & Drop umordnen"
+        "PREVIEW2.TOOLTIP": "Keine Übersetzungen",
+        "REORDER.TOOLTIP": "Umordnen mit Drag & Drop"
       },
       "SUBHEADER": "Menü verwalten",
       "ACTION": {
-        "DELETE": "Menüeintrag löschen",
-        "DETAILS": "Anzeige Details",
-        "DISABLED": "Grün = Eintrag ist im Menü verfügbar - durch Klick veränderbar",
-        "NEW": "Neuen Menüeintrag erstellen"
+        "DETAILS": "Anzeige Details"
       },
-      "I18N": {
-        "LABEL": "I18n",
-        "TOOLTIP": "Übersetzungen vorhanden?",
-        "ROW.TOOLTIP": "Mindestens eine Übersetzung ist vorhanden",
-        "ADD_LANGUAGE": "Sprache hinzufügen",
-        "REMOVE_LANGUAGE": "Sprache entfernen"
+      "TABS": {
+        "DETAILS": "Details",
+        "DETAILS.TOOLTIP": "Eigenschaften verwalten",
+        "I18N": {
+          "LABEL": "Übersetzungen",
+          "TOOLTIP": "Übersetzungen verwalten",
+          "ADD_LANGUAGE": "Sprache hinzufügen",
+          "REMOVE_LANGUAGE": "Sprache entfernen"
+        },
+        "INTERN": "Intern",
+        "INTERN.TOOLTIP": "Interne Eigenschaften"
       },
-      "POSITION": "Position",
-      "POSITION.TOOLTIP": "Der Position-Pfad des Menü-Eintrags im Format [Eltern-Position.]Position",
-      "URL.TOOLTIP": "Die URL die beim Aktivieren aufgerufen wird",
-      "MFE.TOOLTIP": "Indikator ob die Menü-URL durch ein registriertes Produkt angeboten wird",
-      "EXTERN.TOOLTIP": "Wenn diese Option aktiviert ist, wird der Workspace verlassen",
-      "PREVIEW_LANG": "Sprache",
-      "PREVIEW_LANG.EMPTY": "Keine Übersetzung vorhanden",
-      "PREVIEW_LANG.TOOLTIP": "Liste der verwendeten Sprachen",
-      "MENU_JSON_DOWNLOAD": "Menüstruktur im JSON Format herunterladen",
-      "MENU_JSON_UPLOAD": "Menüstruktur im JSON Format hochladen",
+      "TREE": {
+        "POSITION": "Position",
+        "POSITION.TOOLTIP": "Der Position-Pfad des Menü-Eintrags im Format [Eltern-Position.]Position",
+        "I18N": "I18n",
+        "I18N.TOOLTIP": "Indikator ob Übersetzungen vorhanden sind",
+        "I18N.ROW.TOOLTIP": "Mindestens eine Übersetzung ist vorhanden",
+        "URL.TOOLTIP": "Die URL die beim Aktivieren aufgerufen wird",
+        "PRODUCT.TOOLTIP": "Indikator ob die Menü-URL durch ein registriertes Produkt angeboten wird",
+        "EXTERN.TOOLTIP": "Wenn diese Option aktiviert ist, wird der Workspace verlassen"
+      },
+      "ASSIGNMENT": {
+        "OK": "Menüpunkt zugeordnet",
+        "NOK": "Menüpunkt nicht zugeordnet",
+        "OK_INHERITED": "Durch Vererbung zugewiesener Menüpunkt",
+        "CHANGEABLE": "Ändern durch klick",
+        "GRANT_OK": "Berechtigung erteilt",
+        "GRANT_NOK": "Berechtigung konnte nicht erteilt werden",
+        "REVOKE_OK": "Berechtigung entzogen",
+        "REVOKE_NOK": "Berechtigung konnte nicht entzogen werden"
+      },
+      "PREVIEW": {
+        "LANG": "Sprache",
+        "LANG.EMPTY": "Keine Übersetzung vorhanden",
+        "LANG.TOOLTIP": "Liste der verwendeten Sprachen"
+      },
       "MENU_NOT_EXIST": "Kein Menü definiert",
-      "MENU_EDIT_ERROR": "Fehler bei der Bearbeitung eines Menüeintrags",
-      "MENU_EDIT_SUCCESS": "Menüeintrag wurde erfolgreich bearbeitet",
-      "MENU_ITEM_DETAILS": "Details",
-      "MENU_ITEM_HEADER": "Header",
-      "MENU_REMOVE_ERROR": "Fehler beim Löschen eines Menüeintrags",
-      "MENU_REMOVE_SUCCESS": "Menüeintrag erfolgreich gelöscht",
-      "ERROR_FIND_MENU": "Menüeintrag mit ID wurde nicht gefunden:"
+      "MENU_ITEM_NOT_FOUND": "Menüpunkt mit ID wurde nicht gefunden:",
+      "IMPORT": {
+        "UPLOAD_INFO": "Bitte laden Sie die JSON-Datei von Ihrem Gerät hoch. Bitte beachten Sie, dass nach dem Upload die gesamte Menüstruktur überschrieben wird.",
+        "UPLOAD_OK": "Menüstruktur wurde erfolgreich überschrieben",
+        "UPLOAD_NOK": "Ein Fehler ist aufgetreten. Die Menüstruktur wurde nicht überschrieben"
+      }
     },
     "DATAVIEW": {
       "FILTER_PLACEHOLDER": "Filter",
@@ -358,11 +382,11 @@
     "VALIDATION_THEME_NAME_MISSING": "Kein Theme-Name in der Theme-Definition enthalten/gefunden",
     "VALIDATION_THEME_NOT_EXIST": "Keine Theme-Definition enthalten",
     "VALIDATION_MENU_NOT_EXIST": "Keine Menü-Definition enthalten",
-    "VALIDATION_MENU_ITEM_KEY_MISSING": "In einem Menüeintrag fehlt der Key",
-    "VALIDATION_MENU_ITEM_NAME_MISSING": "In einem Menüeintrag fehlt der Name",
-    "VALIDATION_MENU_ITEM_WRONG_POSITION": "In einem Menüeintrag ist der Wert für 'position' keine Zahl",
-    "VALIDATION_MENU_ITEM_WRONG_DISABLED": "In einem Menüeintrag ist der Wert für 'disabled' kein Boolean",
-    "VALIDATION_MENU_ITEM_WRONG_PORTALEXIT": "In einem Menüeintrag ist der Wert für 'workspaceExit' kein Boolean",
+    "VALIDATION_MENU_ITEM_KEY_MISSING": "In einem Menüpunkt fehlt der Key",
+    "VALIDATION_MENU_ITEM_NAME_MISSING": "In einem Menüpunkt fehlt der Name",
+    "VALIDATION_MENU_ITEM_WRONG_POSITION": "In einem Menüpunkt ist der Wert für 'position' keine Zahl",
+    "VALIDATION_MENU_ITEM_WRONG_DISABLED": "In einem Menüpunkt ist der Wert für 'disabled' kein Boolean",
+    "VALIDATION_MENU_ITEM_WRONG_PORTALEXIT": "In einem Menüpunkt ist der Wert für 'workspaceExit' kein Boolean",
     "VALIDATION_RESULT": "Verarbeitung nicht möglich: "
   },
   "PRODUCT": {
@@ -418,20 +442,6 @@
       "PLACEHOLDER": "Bild Platzhalter",
       "UPLOAD": "Bild auswählen und hochladen"
     }
-  },
-  "TREE": {
-    "CLEAR_CACHE_INFO": "Cache wurde entfernt",
-    "CONFIRM_HEADER": "Aktualisierungsdialog",
-    "EDIT_ERROR": "Fehler bei der Bearbeitung der Menüstruktur",
-    "EDIT_SUCCESS": "Menüstruktur erfolgreich bearbeitet",
-    "FETCH_ERROR": "Fehler beim Abrufen von Menüeinträgen",
-    "NO_MENU_ITEMS": "Es sind keine Menüeinträge verfügbar",
-    "PORTAL_CREATION_INFO": "Möchten Sie fortsetzen und die Workspace-Menüstruktur aktualisieren?",
-    "STRUCTURE_UPLOAD_ERROR": "Fehler ist aufgetreten, Menüstruktur wurde nicht überschrieben",
-    "STRUCTURE_UPLOAD_HEADER": "Baumstruktur hochladen",
-    "STRUCTURE_UPLOAD_INFO": "Bitte laden Sie die JSON-Datei von Ihrem Gerät hoch. Bitte beachten Sie, dass nach dem Upload die gesamte Menüstruktur überschrieben wird.",
-    "STRUCTURE_UPLOAD_SUCCESS": "Menüstruktur wurde erfolgreich überschrieben",
-    "TREE_VIEW": "Menüstruktur - Baum"
   },
   "VALIDATION": {
     "HINTS": {

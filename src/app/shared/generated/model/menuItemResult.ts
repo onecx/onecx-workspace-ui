@@ -12,22 +12,24 @@
 import { Scope } from './scope';
 
 
-export interface CreateUpdateMenuItem { 
-    modificationCount?: number;
+export interface MenuItemResult { 
+    modificationCount: number;
+    creationDate?: string;
+    creationUser?: string;
+    modificationDate?: string;
+    modificationUser?: string;
+    id?: string;
     key?: string;
     name?: string;
     description?: string;
     url?: string;
-    readonly workspaceName?: string;
-    readonly applicationId?: string;
+    applicationId?: string;
     disabled?: boolean;
     position?: number;
-    permission?: string;
     badge?: string;
     scope?: Scope;
-    workspaceExit?: boolean;
+    external?: boolean;
     parentItemId?: string;
-    i18n?: { [key: string]: string; };
 }
 
 

@@ -1,8 +1,8 @@
-import { NO_ERRORS_SCHEMA, SimpleChanges, SimpleChange } from '@angular/core'
+import { NO_ERRORS_SCHEMA /*SimpleChanges, SimpleChange */ } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
 
-import { MenuTreeComponent } from './menu-tree.component'
+import { MenuPreviewComponent } from './menu-preview.component'
 import { MenuTreeService } from '../services/menu-tree.service'
 import { MenuStateService, MenuState } from '../services/menu-state.service'
 
@@ -19,16 +19,16 @@ const items = [
   { key: 'key2', badge: 'angle-double-down', id: 'id' }
 ]
 
-describe('MenuTreeComponent', () => {
-  let component: MenuTreeComponent
-  let fixture: ComponentFixture<MenuTreeComponent>
+describe('MenuPreviewComponent', () => {
+  let component: MenuPreviewComponent
+  let fixture: ComponentFixture<MenuPreviewComponent>
 
   const treeServiceSpy = jasmine.createSpyObj<MenuTreeService>('MenuTreeService', ['calculateNewNodesPositions'])
   const stateServiceSpy = jasmine.createSpyObj<MenuStateService>('MenuStateService', ['getState'])
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [MenuTreeComponent],
+      declarations: [MenuPreviewComponent],
       imports: [
         HttpClientTestingModule
         /* TranslateModule.forRoot({
@@ -50,7 +50,7 @@ describe('MenuTreeComponent', () => {
   }))
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(MenuTreeComponent)
+    fixture = TestBed.createComponent(MenuPreviewComponent)
     component = fixture.componentInstance
     fixture.detectChanges()
   })
@@ -59,14 +59,12 @@ describe('MenuTreeComponent', () => {
     expect(component).toBeTruthy()
   })
 
-  it('should set menuTreeNodes onChanges if workspaceDetail & changes correct: langExists false', () => {
+  it('should set menuNodes onChanges if workspaceDetail & changes correct: langExists false', () => {
     stateServiceSpy.getState.and.returnValue(state)
-    const changes: SimpleChanges = {
-      updateTree: new SimpleChange(null, component.updateTree, true)
-    }
-    component.workspaceMenuItems = items
+    component.displayDialog = true
+    component.menuItems = items
 
-    component.ngOnChanges(changes)
+    component.ngOnChanges({})
 
     expect(component.treeExpanded).toBeTrue()
   })
@@ -80,7 +78,7 @@ describe('MenuTreeComponent', () => {
       rootFilter: true,
       treeMode: true
     })
-    component.menuTreeNodes = [
+    component.menuNodes = [
       { key: '1', expanded: false, children: [{ key: '1-1', children: [{ key: '1-1-1' }] }] },
       { key: '2' }
     ]
@@ -99,7 +97,7 @@ describe('MenuTreeComponent', () => {
       rootFilter: true,
       treeMode: true
     })
-    component.menuTreeNodes = [
+    component.menuNodes = [
       { key: '1', expanded: true, children: [{ key: '1-1', children: [{ key: '1-1-1' }] }] },
       { key: '2' }
     ]
@@ -115,14 +113,14 @@ describe('MenuTreeComponent', () => {
       dropNode: { key: 'newParentNodeId', children: [{ key: 'draggedNodeId' }], parent: { key: 'parent key' } }
     }
     treeServiceSpy.calculateNewNodesPositions.and.returnValue([{ id: 'id', position: 1 }])
-    component.workspaceMenuItems = items
+    component.menuItems = items
 
     component.onDrop(event)
 
     expect(treeServiceSpy.calculateNewNodesPositions).toHaveBeenCalledWith(
       'oldParentNodeId',
       'newParentNodeId',
-      component.menuTreeNodes
+      component.menuNodes
     )
   })
 
@@ -132,8 +130,8 @@ describe('MenuTreeComponent', () => {
       dropNode: { key: 'newParentNodeId', children: [{ key: 'otherdraggedNodeId' }], parent: { key: 'parent key' } }
     }
     treeServiceSpy.calculateNewNodesPositions.and.returnValue([{ id: 'id', position: 1 }])
-    spyOn(component.updateMenuStructureEmitter, 'emit')
-    component.workspaceMenuItems = items
+    spyOn(component.reorderEmitter, 'emit')
+    component.menuItems = items
     const expectedItems = [
       {
         key: 'key',
@@ -148,7 +146,7 @@ describe('MenuTreeComponent', () => {
 
     component.onDrop(event)
 
-    expect(component.updateMenuStructureEmitter.emit).toHaveBeenCalledWith(expectedItems)
+    expect(component.reorderEmitter.emit).toHaveBeenCalledWith(expectedItems)
   })
 
   it('should set treeExpansionState onHierarchyViewChange', () => {
@@ -170,7 +168,7 @@ describe('MenuTreeComponent', () => {
 
   it('should set languagePreviewValue and mapToTree onLanguagePreviewChange', () => {
     const lang = 'de'
-    component.workspaceMenuItems = items
+    component.menuItems = items
     const mockExpansionState: Map<string, boolean> = new Map<string, boolean>()
     stateServiceSpy.getState.and.returnValue({
       treeExpansionState: mockExpansionState,
@@ -183,5 +181,20 @@ describe('MenuTreeComponent', () => {
     component.onLanguagesPreviewChange(lang)
 
     expect(component.languagesPreviewValue).toEqual(lang)
+  })
+
+  it('should call onStartResizeTree without errors', () => {
+    const mockEvent = new MouseEvent('click')
+
+    expect(() => component.onStartResizeTree(mockEvent)).not.toThrow()
+  })
+
+  it('should set treeHeight on onEndResizeTree call', () => {
+    const mockClientY = 300
+    const mockEvent = { clientY: mockClientY } as MouseEvent
+
+    component.onEndResizeTree(mockEvent)
+
+    expect(component['treeHeight']).toEqual(mockClientY)
   })
 })

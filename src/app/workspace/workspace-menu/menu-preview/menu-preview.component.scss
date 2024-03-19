@@ -8,13 +8,17 @@
       &:hover {
         cursor: pointer;
       }
-      .p-treenode-content .p-tree-toggler {
-        height: 1.7rem;
-      }
-      .p-treenode-content:focus {
-        outline: 0 none;
-        outline-offset: 0;
-        box-shadow: inset 0 0 0 0.1rem var(--primary-color);
+      .p-treenode-content {
+        padding: 0 0 !important;
+        .p-tree-toggler {
+          height: 1.7rem;
+          margin-right: 0.1rem;
+        }
+        &:focus {
+          outline: 0 none;
+          outline-offset: 0;
+          box-shadow: inset 0 0 0 0.1rem var(--primary-color);
+        }
       }
     }
     .p-treenode-droppoint-active {

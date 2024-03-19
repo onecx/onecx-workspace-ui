@@ -9,24 +9,11 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { Scope } from './scope';
 
 
-export interface UpdateMenuItemRequest { 
+export interface UpdateMenuItemParentRequest { 
     modificationCount: number;
-    key?: string;
-    name?: string;
-    description?: string;
-    url?: string;
-    applicationId?: string;
-    disabled?: boolean;
     position: number;
-    badge?: string;
-    scope?: Scope;
-    external?: boolean;
     parentItemId?: string;
-    i18n?: { [key: string]: string; };
 }
-
-
 
