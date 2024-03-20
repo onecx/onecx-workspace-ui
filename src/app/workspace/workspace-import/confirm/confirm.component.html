@@ -24,7 +24,7 @@
   </div>
   <div class="flex flex-wrap align-items-center row-gap-1 mb-4">
     <p-message
-      *ngIf="!(workspaceNameExists || (themeNameExists))"
+      *ngIf="!(workspaceNameExists || themeNameExists)"
       id="workspace_import_confirm_message_import_ok"
       severity="info"
       [text]="'WORKSPACE_IMPORT.WORKSPACE_IMPORT_OK' | translate"

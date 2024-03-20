@@ -79,16 +79,8 @@ describe('WorkspacePropsComponent', () => {
     fixture = TestBed.createComponent(WorkspacePropsComponent)
     component = fixture.componentInstance
     component.workspace = workspace
-    // component.formGroup = formGroup
     fixture.detectChanges()
   })
-
-  function initializeComponent(): void {
-    fixture = TestBed.createComponent(WorkspacePropsComponent)
-    component = fixture.componentInstance
-    component.workspace = workspace
-    fixture.detectChanges()
-  }
 
   it('should create and get themes', () => {
     themeAPIServiceSpy.getThemes.and.returnValue(of([]))
