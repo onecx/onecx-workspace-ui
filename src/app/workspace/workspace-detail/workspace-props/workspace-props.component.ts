@@ -27,7 +27,7 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
   public formGroup: FormGroup
 
   public mfeRList: { label: string | undefined; value: string }[] = []
-  public themes$: Observable<string[]> = of([])
+  public themes$: Observable<(string | undefined)[]> = of([])
   public hasTenantViewPermission = false
   public hasTenantEditPermission = false
   public urlPattern = '/base-path-to-portal'
@@ -67,7 +67,6 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
     if (this.hasTenantViewPermission) {
       this.formGroup.addControl('tenantId', new FormControl(null))
     }
-    this.themes$ = this.workspaceApi.getAllThemes()
   }
 
   public ngOnChanges(): void {
@@ -92,6 +91,11 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
       })
     }
     this.fetchingLogoUrl = this.getImageUrl()
+    if (this.workspace) {
+      this.themes$ = of([this.workspace.theme])
+    } else {
+      this.themes$ = this.workspaceApi.getAllThemes()
+    }
   }
 
   public setFormData(): void {

@@ -86,8 +86,6 @@ export class ChooseFileComponent implements OnInit {
     if (dto.workspaces) {
       key = Object.keys(dto.workspaces)
     }
-    // console.log('NAME', dto.workspaces.keys[0])
-    // const themeCondition = dto.workspaces.keys[0].themeImportData ? dto.workspaces.keys[0].themeImportData.name : true
 
     if (dto.workspaces) {
       if (!dto || !dto.workspaces[key[0]]) {
@@ -96,9 +94,7 @@ export class ChooseFileComponent implements OnInit {
         this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_PORTAL_NAME_MISSING']
         /* } else if (!dto.workspaces[key[0]].workspaceRoles) {
         this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_PORTAL_ROLES_MISSING'] */
-      } /* else if (!themeCondition) {
-        this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_THEME_NAME_MISSING']
-      } */ else if (dto.workspaces[key[0]].menu?.menu?.menuItems) {
+      } else if (dto.workspaces[key[0]].menu?.menu?.menuItems) {
         for (const el of dto.workspaces[key[0]].menu?.menu?.menuItems!) {
           if (!el.key) {
             this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_MENU_ITEM_KEY_MISSING']
@@ -126,10 +122,9 @@ export class ChooseFileComponent implements OnInit {
       this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_RESULT'] + this.validationErrorCause
     }
 
-    return false
+    return true
     // return !!typeof dto === 'object' && dto && dto.workspaces && dto.workspaces[key[0]].name
     // && dto.workspaces[key[0]].menu?.menu?.menuItems?.every?.(this.isMenuItem)
-    // && themeCondition
   }
 
   private isMenuItem(obj: unknown): obj is EximWorkspaceMenuItem {

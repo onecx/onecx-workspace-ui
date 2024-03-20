@@ -1,9 +1,5 @@
 import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core'
-import {
-  /* ThemeDTO, ThemesAPIService, */ WorkspaceAPIService,
-  SearchWorkspacesResponse,
-  WorkspaceAbstract
-} from 'src/app/shared/generated'
+import { WorkspaceAPIService, SearchWorkspacesResponse, WorkspaceAbstract } from 'src/app/shared/generated'
 
 @Component({
   selector: 'app-import-confirm',
@@ -21,14 +17,14 @@ export class ConfirmComponent implements OnInit {
   @Output() public isLoading = new EventEmitter<boolean>(true)
 
   private workspaces!: WorkspaceAbstract[] | undefined
-  // private themes!: ThemeDTO[]
   public workspaceNameExists = false
+  public themes: string[] = []
   public themeNameExists = false
   public baseUrlExists = false
   public baseUrlIsMissing = false
   public workspaceTenantExists = false
 
-  constructor(private readonly workspaceApi: WorkspaceAPIService /* , private readonly themeAPI: ThemesAPIService */) {}
+  constructor(private readonly workspaceApi: WorkspaceAPIService) {}
 
   public ngOnInit(): void {
     this.baseUrlIsMissing = this.baseUrl === undefined || this.baseUrl.length === 0
@@ -39,13 +35,13 @@ export class ConfirmComponent implements OnInit {
     this.workspaceApi.searchWorkspaces({ searchWorkspacesRequest: {} }).subscribe((value: SearchWorkspacesResponse) => {
       this.workspaces = value.stream
       this.checkWorkspaceUniqueness()
-      if (this.themeName) {
-        /* this.themeAPI.getThemes().subscribe((themes: any) => {
+      /* if (this.themeName) {
+        this.workspaceApi.getAllThemes().subscribe((themes: any) => {
           this.themes = themes
           this.checkThemeNames()
           this.isLoading.emit(false)
-        }) */
-      } else this.isLoading.emit(false)
+        })
+      } else  */ this.isLoading.emit(false)
     })
   }
 
@@ -69,12 +65,11 @@ export class ConfirmComponent implements OnInit {
   }
 
   public checkThemeNames(): void {
-    /* this.themeNameExists = false
-    for (const { name } of this.themes) {
-      if (name === this.themeName) {
+    this.themeNameExists = false
+    this.themes.forEach((theme) => {
+      if (theme === this.themeName) {
         this.themeNameExists = true
-        break
       }
-    } */
+    })
   }
 }

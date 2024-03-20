@@ -87,13 +87,12 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
   }
 
   // IMPORT
-  public importPortal(): void {
+  public importWorkspace(): void {
     if (!this.importRequestDTO) {
       this.msgService.error({ summaryKey: 'PORTAL_IMPORT.PORTAL_IMPORT_ERROR' })
       return
     }
     this.isLoading = true
-
     let key: string[] = []
     if (this.importRequestDTO.workspaces) {
       key = Object.keys(this.importRequestDTO.workspaces)
@@ -110,14 +109,13 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
     }
 
     // Theme
-    /*  if (!this.importThemeCheckbox) {
-      this.importRequestDTO.themeImportData = undefined
-    } else {
-      this.importRequestDTO.portal.themeName = this.themeName
-      if (this.importRequestDTO.themeImportData) {
-        this.importRequestDTO.themeImportData.name = this.themeName
-      }
-    } */
+    // if (this.importRequestDTO.workspaces) {
+    //   if (!this.importThemeCheckbox) {
+    //     this.importRequestDTO.workspaces[key[0]].theme = undefined
+    //   } else {
+    //     this.importRequestDTO.workspaces[key[0]].theme = this.themeName
+    //   }
+    // }
 
     // Microfontends: convert Set to Array what the backend expects
     // the default is {} which is not a Set !
@@ -151,7 +149,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
         workspaceSnapshot: this.importRequestDTO
       })
       .subscribe({
-        next: (res) => {
+        next: () => {
           if (this.confirmComponent?.workspaceNameExists) {
             this.msgService.success({ summaryKey: 'PORTAL_IMPORT.PORTAL_IMPORT_UPDATE_SUCCESS' })
           } else {
@@ -187,14 +185,8 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
       if (this.importRequestDTO?.workspaces) {
         keys = Object.keys(this.importRequestDTO.workspaces)
       }
-      // this.themeName = importRequestDTO.portal.themeName || ''
+      this.themeName = importRequestDTO.workspaces[keys[0]].theme || ''
       this.baseUrlOrg = importRequestDTO.workspaces[keys[0]].baseUrl
-      // if (this.importRequestDTO.themeImportData) {
-      //   this.themeCheckboxEnabled = true
-      // } else {
-      //   this.themeCheckboxEnabled = false
-      //   this.importThemeCheckbox = false
-      // }
     } else if (this.activeIndex == 1) {
       this.workspaceName = this.previewComponent?.workspaceName || ''
       this.themeName = this.previewComponent?.themeName || ''
@@ -211,16 +203,10 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
       key = Object.keys(this.importRequestDTO.workspaces)
     }
     if (this.activeIndex == 2) {
-      if (
-        this.activeIndex == 2 &&
-        this.importRequestDTO &&
-        this.importRequestDTO.workspaces /* && this.importRequestDTO.themeImportData */
-      ) {
+      if (this.activeIndex == 2 && this.importRequestDTO && this.importRequestDTO.workspaces) {
         this.importRequestDTO.workspaces[key[0]].name = this.confirmComponent?.workspaceName || ''
-        // this.importRequestDTO.tenantId = this.confirmComponent?.tenantId || ''
         this.importRequestDTO.workspaces[key[0]].baseUrl = this.confirmComponent?.baseUrl || ''
-        // this.importRequestDTO.themeImportData.name = this.confirmComponent?.themeName || ''
-        // if (this.hasPermission) this.importRequestDTO.portal.tenantId = this.confirmComponent?.tenantId || undefined
+        this.importRequestDTO.workspaces[key[0]].theme = this.confirmComponent?.themeName || ''
       }
     }
     this.activeIndex--
