@@ -27,7 +27,6 @@ export class PreviewComponent implements OnInit, OnChanges {
   public workspaceName = ''
   public themeName!: string
   public baseUrl = ''
-  public tenantId: string | undefined = undefined
   public themeProperties: any = null
   public menuItems: TreeNode[] = []
   // public portalMfes = new Array<MicrofrontendRegistrationDTO>()
@@ -108,8 +107,6 @@ export class PreviewComponent implements OnInit, OnChanges {
       this.formGroup.controls['workspaceName'].setValue(this.importRequestDTO?.workspaces[key[0]].name)
       this.formGroup.controls['themeName'].setValue(this.importRequestDTO?.workspaces[key[0]].theme)
       this.formGroup.controls['baseUrl'].setValue(this.importRequestDTO?.workspaces[key[0]].baseUrl)
-      // if (this.hasPermission && this.importRequestDTO?.portal?.tenantId != undefined)
-      //   this.formGroup.controls['tenantId'].setValue(this.importRequestDTO?.portal?.tenantId)
     }
   }
 

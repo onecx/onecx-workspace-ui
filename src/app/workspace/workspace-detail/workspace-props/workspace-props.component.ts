@@ -3,7 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { Location } from '@angular/common'
 import { Observable, of } from 'rxjs'
 
-import { PortalMessageService, UserService } from '@onecx/portal-integration-angular'
+import { PortalMessageService } from '@onecx/portal-integration-angular'
 
 import {
   GetImageRequestParams,
@@ -28,8 +28,6 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
 
   public mfeRList: { label: string | undefined; value: string }[] = []
   public themes$: Observable<(string | undefined)[]> = of([])
-  public hasTenantViewPermission = false
-  public hasTenantEditPermission = false
   public urlPattern = '/base-path-to-portal'
   public copyToClipboard = copyToClipboard // make available from utils
   public sortByLocale = sortByLocale
@@ -45,18 +43,14 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
   public logoImageWasUploaded: boolean | undefined
 
   constructor(
-    private user: UserService,
     private location: Location,
     private msgService: PortalMessageService,
     private imageApi: ImagesInternalAPIService,
     private workspaceApi: WorkspaceAPIService
   ) {
-    this.hasTenantViewPermission = this.user.hasPermission('WORKSPACE_TENANT#VIEW')
-    this.hasTenantEditPermission = this.user.hasPermission('WORKSPACE_TENANT#EDIT')
-
     this.formGroup = new FormGroup({
       name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
-      theme: new FormControl(null /* [Validators.required] */),
+      theme: new FormControl(null, [Validators.required]),
       baseUrl: new FormControl(null, [Validators.required, Validators.minLength(1), Validators.pattern('^/.*')]),
       homePage: new FormControl(null, [Validators.maxLength(255)]),
       logoUrl: new FormControl('', [Validators.maxLength(255)]),
@@ -64,9 +58,6 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
       footerLabel: new FormControl(null, [Validators.maxLength(255)]),
       description: new FormControl(null, [Validators.maxLength(255)])
     })
-    if (this.hasTenantViewPermission) {
-      this.formGroup.addControl('tenantId', new FormControl(null))
-    }
   }
 
   public ngOnChanges(): void {
@@ -74,7 +65,6 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
     this.editMode ? this.formGroup.enable() : this.formGroup.disable()
     this.oldWorkspaceName = this.workspace.name
     if (this.workspace.name === 'ADMIN') this.formGroup.controls['name'].disable()
-    if (this.hasTenantViewPermission && !this.hasTenantEditPermission) this.formGroup.controls['tenantId'].disable()
   }
 
   ngOnInit(): void {
@@ -118,9 +108,6 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
 
   //return the values that are different in form than in PortalDTO
   private getWorkspaceChangesFromForm(): any {
-    if (this.formGroup.value['tenantId'] !== undefined && this.formGroup.value['tenantId'] === '') {
-      this.formGroup.controls['tenantId'].setValue(null)
-    }
     const changes: any = {}
     Object.keys(this.formGroup.controls).forEach((key) => {
       if (this.formGroup.value[key] !== undefined) {

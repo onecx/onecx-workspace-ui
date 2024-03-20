@@ -29,7 +29,6 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
   public isLoading = false
   public workspaceName = ''
   public themeName = ''
-  public tenantId: string | undefined = undefined
   public baseUrl = ''
   public baseUrlOrg: string | undefined = undefined // the original
   public importRequestDTO?: WorkspaceSnapshot
@@ -66,7 +65,6 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
 
   public reset(): void {
     this.workspaceName = ''
-    this.tenantId = ''
     this.themeName = ''
     this.baseUrl = ''
     this.baseUrlOrg = ''
@@ -101,9 +99,6 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
     if (this.importRequestDTO.workspaces) {
       this.importRequestDTO.workspaces[key[0]].name = this.workspaceName
       this.importRequestDTO.workspaces[key[0]].theme = this.themeName
-      /* if (this.hasPermission) {
-        this.importRequestDTO.portal.tenantId = this.tenantId
-      } */
       // this.importRequestDTO.synchronizePermissions = this.syncPermCheckbox
       this.importRequestDTO.workspaces[key[0]].baseUrl = this.baseUrl
     }
@@ -191,7 +186,6 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
       this.workspaceName = this.previewComponent?.workspaceName || ''
       this.themeName = this.previewComponent?.themeName || ''
       this.baseUrl = this.previewComponent?.baseUrl || ''
-      if (this.hasPermission) this.tenantId = this.previewComponent?.tenantId || undefined
     }
     this.activeIndex++
   }

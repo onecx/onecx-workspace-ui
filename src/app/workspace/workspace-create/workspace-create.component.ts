@@ -49,8 +49,6 @@ export class WorkspaceCreateComponent {
     private message: PortalMessageService,
     private translate: TranslateService
   ) {
-    this.hasPermission = this.user.hasPermission('WORKSPACE#EDIT_TENANT')
-
     this.formGroup = new FormGroup({
       name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
       // themeName: new FormControl(null, [Validators.required]),
@@ -67,10 +65,6 @@ export class WorkspaceCreateComponent {
           val.sort(sortThemeByName).map((theme) => ({ label: theme.name, value: theme.name || '', id: theme.id }))
         )
       ) */
-
-    if (this.hasPermission) {
-      this.formGroup.addControl('tenantId', new FormControl(null))
-    }
   }
 
   closeDialog() {

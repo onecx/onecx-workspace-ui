@@ -4,10 +4,6 @@
       <input pInputText type="text" readonly id="workspace_import_confirm_workspace_name" [(ngModel)]="workspaceName" />
       <label for="workspace_import_confirm_workspace_name">{{ 'PORTAL.ITEM.PORTAL_NAME' | translate }}</label>
     </span>
-    <span *ngIf="hasPermission" class="p-float-label">
-      <input pInputText type="text" readonly id="workspace_import_confirm_tenant_id" [(ngModel)]="tenantId" />
-      <label for="workspace_import_confirm_tenant_id">{{ 'PORTAL.ITEM.TENANT_ID' | translate }}</label>
-    </span>
     <span class="p-float-label">
       <input
         pInputText
@@ -28,7 +24,7 @@
   </div>
   <div class="flex flex-wrap align-items-center row-gap-1 mb-4">
     <p-message
-      *ngIf="!(workspaceNameExists || workspaceTenantExists || (themeNameExists && importThemeCheckbox))"
+      *ngIf="!(workspaceNameExists || (themeNameExists && importThemeCheckbox))"
       id="workspace_import_confirm_message_import_ok"
       severity="info"
       [text]="'PORTAL_IMPORT.PORTAL_IMPORT_OK' | translate"
@@ -38,12 +34,6 @@
       id="workspace_import_confirm_message_workspace_exists"
       severity="warn"
       [text]="'PORTAL_IMPORT.PORTAL_EXISTS_MESSAGE' | translate"
-    ></p-message>
-    <p-message
-      *ngIf="workspaceTenantExists && hasPermission"
-      id="workspace_import_confirm_message_tenant_exists"
-      severity="warn"
-      [text]="'PORTAL_IMPORT.TENANT_EXISTS_MESSAGE' | translate"
     ></p-message>
     <p-message
       *ngIf="themeNameExists && importThemeCheckbox"

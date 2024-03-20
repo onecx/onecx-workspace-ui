@@ -11,7 +11,6 @@ export class ConfirmComponent implements OnInit {
   @Input() public themeName?: string
   @Input() public themeProperties?: any
   @Input() public importThemeCheckbox = false
-  @Input() public tenantId?: string | undefined
   @Input() public hasPermission = false
   @Input() public baseUrl?: string
   @Output() public isLoading = new EventEmitter<boolean>(true)
@@ -22,7 +21,6 @@ export class ConfirmComponent implements OnInit {
   public themeNameExists = false
   public baseUrlExists = false
   public baseUrlIsMissing = false
-  public workspaceTenantExists = false
 
   constructor(private readonly workspaceApi: WorkspaceAPIService) {}
 
@@ -49,12 +47,8 @@ export class ConfirmComponent implements OnInit {
     this.workspaceNameExists = false
     this.baseUrlExists = false
     if (this.workspaces) {
-      for (const { name, /* tenantId, */ baseUrl } of this.workspaces) {
-        if (this.hasPermission) {
-          /* if ((tenantId ?? undefined) === this.tenantId && name === this.workspaceName) {
-            this.workspaceTenantExists = true
-          } */
-        } else if (this.workspaceName === name) {
+      for (const { name, baseUrl } of this.workspaces) {
+        if (this.workspaceName === name) {
           this.workspaceNameExists = true
         }
         if (!this.baseUrlIsMissing && baseUrl === this.baseUrl) {

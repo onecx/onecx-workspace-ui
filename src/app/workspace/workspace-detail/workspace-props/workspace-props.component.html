@@ -20,23 +20,6 @@
           </span>
         </div>
 
-        <div *ngIf="hasTenantViewPermission">
-          <span class="p-float-label mb-1" controlErrorAnchor>
-            <input
-              pInputText
-              type="text"
-              [readOnly]="!hasTenantEditPermission"
-              id="workspace_detail_form_tenant_id"
-              class="w-full pt-3 pb-2"
-              formControlName="tenantId"
-              [pTooltip]="'WORKSPACE.TENANT_ID' | translate"
-              tooltipPosition="top"
-              tooltipEvent="focus"
-            />
-            <label for="workspace_detail_form_tenant_id"> {{ 'WORKSPACE.TENANT_ID' | translate }} </label>
-          </span>
-        </div>
-
         <div>
           <span class="p-float-label mb-1">
             <p-dropdown
@@ -45,6 +28,7 @@
               formControlName="theme"
               styleClass="w-full input-field-correction"
               [options]="((themes$ | async) || [workspace.theme]).sort(sortByLocale)"
+              [placeholder]="''"
               [pTooltip]="'WORKSPACE.THEME' | translate"
               tooltipPosition="top"
               tooltipEvent="focus"

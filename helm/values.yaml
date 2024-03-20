@@ -28,9 +28,6 @@ app:
             VIEW: View mode for workspace
             EXPORT: Export workspace
             IMPORT: Import workspace
-          WORKSPACE_TENANT:
-            VIEW: View workspace tenant
-            EDIT: View workspace tenant
           WORKSPACE_CONTACT:
             VIEW: View workspace contact
           WORKSPACE_INTERNAL:
