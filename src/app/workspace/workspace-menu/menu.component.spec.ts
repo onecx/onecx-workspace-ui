@@ -299,7 +299,7 @@ describe('MenuComponent', () => {
 
     component.loadData()
 
-    expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_404.PORTALS')
+    expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_404.WORKSPACES')
   })
 
   it('it should handle exception on loadData', () => {
@@ -307,7 +307,7 @@ describe('MenuComponent', () => {
 
     component.loadData()
 
-    expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_0.PORTALS')
+    expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_0.WORKSPACES')
   })
 
   it('should loadMenu', () => {
@@ -338,7 +338,7 @@ describe('MenuComponent', () => {
 
     component.loadMenu(true)
 
-    expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_0.PORTALS')
+    expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_0.WORKSPACES')
   })
 
   it('should handle exception on loadMenu', () => {

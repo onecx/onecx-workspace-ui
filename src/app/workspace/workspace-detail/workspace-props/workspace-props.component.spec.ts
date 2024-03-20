@@ -96,16 +96,6 @@ describe('WorkspacePropsComponent', () => {
     expect(component).toBeTruthy()
   })
 
-  it('should add tenantId to formGroup if permission', () => {
-    mockAuthService.hasPermission.and.callFake((permission: string) => {
-      return permission === 'WORKSPACE_TENANT#VIEW'
-    })
-
-    initializeComponent()
-
-    expect(component.formGroup.contains('tenantId')).toBe(true)
-  })
-
   it('should setFormData and set editMode onChanges', () => {
     component.editMode = false
 

@@ -139,9 +139,9 @@ export class WorkspaceCreateComponent {
       const files = (ev.target as HTMLInputElement).files
       if (files) {
         if (workspaceName == undefined || workspaceName == '' || workspaceName == null) {
-          this.message.error({ summaryKey: 'LOGO.UPLOAD_FAILED_NAME' })
+          this.message.error({ summaryKey: 'IMAGE.UPLOAD_FAIL' })
         } else if (files[0].size > 110000) {
-          this.message.error({ summaryKey: 'LOGO.UPLOAD_FAILED_SIZE' })
+          this.message.error({ summaryKey: 'IMAGE.UPLOAD_FAIL' })
         } else {
           let requestParametersGet: GetImageRequestParams
           requestParametersGet = {
@@ -168,7 +168,7 @@ export class WorkspaceCreateComponent {
                 this.imageApi.updateImage(requestParameters).subscribe(() => {
                   this.fetchingLogoUrl =
                     this.imageApi.configuration.basePath + '/images/' + workspaceName + '/' + fieldType
-                  this.message.info({ summaryKey: 'LOGO.UPLOADED' })
+                  this.message.info({ summaryKey: 'IMAGE.UPLOAD_SUCCESS' })
                   this.formGroup.controls['imageUrl'].setValue('')
                   this.logoImageWasUploaded = true
                 })
@@ -179,7 +179,7 @@ export class WorkspaceCreateComponent {
                 this.imageApi.uploadImage(requestParameters).subscribe(() => {
                   this.fetchingLogoUrl =
                     this.imageApi.configuration.basePath + '/images/' + workspaceName + '/' + fieldType
-                  this.message.info({ summaryKey: 'LOGO.UPLOADED' })
+                  this.message.info({ summaryKey: 'IMAGE.UPLOAD_SUCCESS' })
                   this.formGroup.controls['imageUrl'].setValue('')
                   this.logoImageWasUploaded = true
                 })

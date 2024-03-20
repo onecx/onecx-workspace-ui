@@ -28,7 +28,6 @@
               formControlName="theme"
               styleClass="w-full input-field-correction"
               [options]="((themes$ | async) || [workspace.theme]).sort(sortByLocale)"
-              [placeholder]="''"
               [pTooltip]="'WORKSPACE.THEME' | translate"
               tooltipPosition="top"
               tooltipEvent="focus"
@@ -140,7 +139,7 @@
             [id]="'workspace_detail_form_logo_image'"
             [imageUrl]="fetchingLogoUrl"
             [small]="true"
-            [title]="'LOGO.TOOLTIPS.' + (fetchingLogoUrl ? 'IMAGE' : 'PLACEHOLDER') | translate"
+            [title]="'IMAGE.TOOLTIPS.' + (fetchingLogoUrl ? 'IMAGE' : 'PLACEHOLDER') | translate"
           ></app-image-container>
           <div class="flex flex-column w-full">
             <div class="p-inputgroup mb-1" controlErrorAnchor>
@@ -152,7 +151,7 @@
                   formControlName="logoUrl"
                   (blur)="onInputChange($event)"
                 />
-                <label for="workspace_detail_form_logo"> {{ 'LOGO.LOGO_URL' | translate }} </label>
+                <label for="workspace_detail_form_logo"> {{ 'IMAGE.LOGO_URL' | translate }} </label>
               </span>
               <span
                 id="workspace_detail_form_upload_logo2"
@@ -164,7 +163,7 @@
                     ? 'p-disabled'
                     : 'cursor-pointer'
                 "
-                [title]="'LOGO.TOOLTIPS.UPLOAD' | translate"
+                [title]="'IMAGE.TOOLTIPS.UPLOAD' | translate"
                 (click)="editMode ? selectedFileInputLogo.click() : null"
               >
                 <span class="pi pi-upload"></span>

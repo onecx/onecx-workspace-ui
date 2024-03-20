@@ -4,17 +4,9 @@
   <div class="flex flex-wrap justify-content-start column-gap-8 row-gap-2 mt-3 mb-5 mx-2">
     <p-checkbox
       class="p-element mr-2"
-      [disabled]="!themeCheckboxEnabled"
-      [(ngModel)]="importThemeCheckbox"
-      [label]="'PORTAL_IMPORT.IMPORT_THEME' | translate"
-      [binary]="true"
-      inputId="workspace_import_import_theme"
-    ></p-checkbox>
-    <p-checkbox
-      class="p-element mr-2"
       [disabled]="activeIndex !== 2"
       [(ngModel)]="syncPermCheckbox"
-      [label]="'PORTAL_IMPORT.SYNCHRONIZE_PERMISSIONS' | translate"
+      [label]="'WORKSPACE_IMPORT.SYNCHRONIZE_PERMISSIONS' | translate"
       [binary]="true"
       inputId="workspace_import_sync_perm"
     ></p-checkbox>
@@ -45,8 +37,8 @@
     <p-button
       *ngIf="activeIndex > 0"
       id="workspace_import_button_restart"
-      [label]="'PORTAL_IMPORT.IMPORT_RESTART' | translate"
-      [title]="'PORTAL_IMPORT.IMPORT_RESTART_TOOLTIP' | translate"
+      [label]="'WORKSPACE_IMPORT.IMPORT_RESTART' | translate"
+      [title]="'WORKSPACE_IMPORT.IMPORT_RESTART_TOOLTIP' | translate"
       (onClick)="reset()"
       icon="pi pi-upload"
     ></p-button>
@@ -71,8 +63,8 @@
     <p-button
       *ngIf="activeIndex === 2"
       id="workspace_import_button_import"
-      [label]="'PORTAL_IMPORT.IMPORT' | translate"
-      [title]="'PORTAL_IMPORT.START_IMPORT' | translate"
+      [label]="'WORKSPACE_IMPORT.IMPORT' | translate"
+      [title]="'WORKSPACE_IMPORT.START_IMPORT' | translate"
       (onClick)="importWorkspace()"
       [icon]="isLoading ? 'pi pi-spin pi-spinner' : 'pi pi-check'"
       [disabled]="isLoading || !isFormValid"

@@ -40,18 +40,18 @@ export class ChooseFileComponent implements OnInit {
 
       this.translate
         .get([
-          'PORTAL_IMPORT.VALIDATION_PORTAL_MISSING',
-          'PORTAL_IMPORT.VALIDATION_PORTAL_NAME_MISSING',
-          'PORTAL_IMPORT.VALIDATION_PORTAL_ROLES_MISSING',
-          'PORTAL_IMPORT.VALIDATION_THEME_NAME_MISSING',
-          'PORTAL_IMPORT.VALIDATION_MENU_ITEM_KEY_MISSING',
-          'PORTAL_IMPORT.VALIDATION_MENU_ITEM_NAME_MISSING',
-          'PORTAL_IMPORT.VALIDATION_MENU_ITEM_WRONG_POSITION',
-          'PORTAL_IMPORT.VALIDATION_MENU_ITEM_WRONG_DISABLED',
-          'PORTAL_IMPORT.VALIDATION_MENU_ITEM_WRONG_PORTALEXIT',
-          'PORTAL_IMPORT.VALIDATION_MENU_NOT_EXIST',
-          'PORTAL_IMPORT.VALIDATION_RESULT',
-          'PORTAL_IMPORT.VALIDATION_JSON_ERROR'
+          'WORKSPACE_IMPORT.VALIDATION_WORKSPACE_MISSING',
+          'WORKSPACE_IMPORT.VALIDATION_WORKSPACE_NAME_MISSING',
+          'WORKSPACE_IMPORT.VALIDATION_WORKSPACE_ROLES_MISSING',
+          'WORKSPACE_IMPORT.VALIDATION_THEME_NAME_MISSING',
+          'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_KEY_MISSING',
+          'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_NAME_MISSING',
+          'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_WRONG_POSITION',
+          'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_WRONG_DISABLED',
+          'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_WRONG_WORKSPACEEXIT',
+          'WORKSPACE_IMPORT.VALIDATION_MENU_NOT_EXIST',
+          'WORKSPACE_IMPORT.VALIDATION_RESULT',
+          'WORKSPACE_IMPORT.VALIDATION_JSON_ERROR'
         ])
         .subscribe((data) => {
           try {
@@ -63,7 +63,7 @@ export class ChooseFileComponent implements OnInit {
             console.error('Import Error' /* , err */)
             this.importError = true
             this.validationErrorCause =
-              data['PORTAL_IMPORT.VALIDATION_RESULT'] + data['PORTAL_IMPORT.VALIDATION_JSON_ERROR']
+              data['WORKSPACE_IMPORT.VALIDATION_RESULT'] + data['WORKSPACE_IMPORT.VALIDATION_JSON_ERROR']
           }
         })
     })
@@ -89,37 +89,37 @@ export class ChooseFileComponent implements OnInit {
 
     if (dto.workspaces) {
       if (!dto || !dto.workspaces[key[0]]) {
-        this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_PORTAL_MISSING']
+        this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_WORKSPACE_MISSING']
       } else if (!dto.workspaces[key[0]].name) {
-        this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_PORTAL_NAME_MISSING']
+        this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_WORKSPACE_NAME_MISSING']
         /* } else if (!dto.workspaces[key[0]].workspaceRoles) {
-        this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_PORTAL_ROLES_MISSING'] */
+        this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_WORKSPACE_ROLES_MISSING'] */
       } else if (dto.workspaces[key[0]].menu?.menu?.menuItems) {
         for (const el of dto.workspaces[key[0]].menu?.menu?.menuItems!) {
           if (!el.key) {
-            this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_MENU_ITEM_KEY_MISSING']
+            this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_KEY_MISSING']
             break
           } else if (!el.name) {
-            this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_MENU_ITEM_NAME_MISSING']
+            this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_NAME_MISSING']
             break
           } else if (!(typeof el.position === 'number')) {
-            this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_MENU_ITEM_WRONG_POSITION']
+            this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_WRONG_POSITION']
             break
           } else if (!(typeof el.disabled === 'boolean')) {
-            this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_MENU_ITEM_WRONG_DISABLED']
+            this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_WRONG_DISABLED']
             break
           } else if (!(typeof el.external === 'boolean')) {
-            this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_MENU_ITEM_WRONG_PORTALEXIT']
+            this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_WRONG_WORKSPACEEXIT']
             break
           }
         }
       } /* else {
-        this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_MENU_NOT_EXIST']
+        this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_MENU_NOT_EXIST']
       } */
     }
     if (this.validationErrorCause !== '') {
       this.importError = true
-      this.validationErrorCause = data['PORTAL_IMPORT.VALIDATION_RESULT'] + this.validationErrorCause
+      this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_RESULT'] + this.validationErrorCause
     }
 
     return true

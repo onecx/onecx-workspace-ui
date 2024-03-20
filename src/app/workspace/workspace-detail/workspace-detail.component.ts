@@ -270,7 +270,7 @@ export class WorkspaceDetailComponent implements OnInit {
             },
             {
               label: data['ACTIONS.EXPORT.LABEL'],
-              title: data['ACTIONS.EXPORT.PORTAL'],
+              title: data['ACTIONS.EXPORT.WORKSPACE'],
               actionCallback: () => (this.workspaceDownloadVisible = true),
               icon: 'pi pi-download',
               show: 'always',

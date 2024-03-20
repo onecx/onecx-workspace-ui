@@ -129,7 +129,7 @@ describe('WorkspaceImportComponent', () => {
 
     component.importPortal()
 
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'PORTAL_IMPORT.PORTAL_IMPORT_ERROR' })
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'WORKSPACE_IMPORT.WORKSPACE_IMPORT_ERROR' })
   })
 
   it('should import a portal', () => {
@@ -153,7 +153,9 @@ describe('WorkspaceImportComponent', () => {
     component.importPortal()
 
     expect(component.isLoading).toBeFalse()
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'PORTAL_IMPORT.PORTAL_IMPORT_CREATE_SUCCESS' })
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({
+      summaryKey: 'WORKSPACE_IMPORT.WORKSPACE_IMPORT_CREATE_SUCCESS'
+    })
   })
 
   xit('should import a portal with theme if checkbox enabled', () => {
@@ -205,7 +207,9 @@ describe('WorkspaceImportComponent', () => {
 
     component.importPortal()
 
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'PORTAL_IMPORT.PORTAL_IMPORT_UPDATE_SUCCESS' })
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({
+      summaryKey: 'WORKSPACE_IMPORT.WORKSPACE_IMPORT_UPDATE_SUCCESS'
+    })
   })
 
   it('should update a portal with new base url', () => {
@@ -240,7 +244,9 @@ describe('WorkspaceImportComponent', () => {
     component.next()
     component.importPortal()
 
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'PORTAL_IMPORT.PORTAL_IMPORT_UPDATE_SUCCESS' })
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({
+      summaryKey: 'WORKSPACE_IMPORT.WORKSPACE_IMPORT_UPDATE_SUCCESS'
+    })
   })
 
   it('should display error msg if api call fails', () => {
@@ -259,7 +265,7 @@ describe('WorkspaceImportComponent', () => {
 
     component.importPortal()
 
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'PORTAL_IMPORT.PORTAL_IMPORT_ERROR' })
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'WORKSPACE_IMPORT.WORKSPACE_IMPORT_ERROR' })
   })
 
   it('should alignMenuItemsBaseUrl', () => {

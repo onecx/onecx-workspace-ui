@@ -335,8 +335,8 @@
     "THEME_NOT_AVALIABLE": "keine verfügbaren Themes ",
     "THEME_NOT_SPECIFIED_MESSAGE": "Theme kann nicht heruntergeladen werden, weil es im Workspace nicht angegeben wurde"
   },
-  "PORTAL_IMPORT": {
-    "IMPORT_PORTAL": "Workspace Import",
+  "WORKSPACE_IMPORT": {
+    "IMPORT_WORKSPACE": "Workspace Import",
     "IMPORT_THEME": "Import Theme",
     "FROM_JSON": "aus einer JSON Datei",
     "IMPORT": "Import",
@@ -351,32 +351,32 @@
     "PREVIEW_MENU": "Menüstruktur",
     "CONFIRMATION": "Bestätigung",
     "SUMMARY": "Zusammenfassung",
-    "PORTAL_NAME": "Workspace Name",
-    "PORTAL_IMPORT_OK": "Die Workspace-Definition wurde geprüft und kann importiert werden.",
-    "PORTAL_EXISTS_MESSAGE": "Ein Workspace mit diesem Namen existiert bereits. Dessen Definition wird überschrieben.",
+    "WORKSPACE_NAME": "Workspace Name",
+    "WORKSPACE_IMPORT_OK": "Die Workspace-Definition wurde geprüft und kann importiert werden.",
+    "WORKSPACE_EXISTS_MESSAGE": "Ein Workspace mit diesem Namen existiert bereits. Dessen Definition wird überschrieben.",
     "THEME_EXISTS_MESSAGE": "Ein Theme mit diesem Namen existiert bereits. Dessen Definition wird überschrieben.",
     "BASE_URL_EXISTS_MESSAGE": "Ein Workspace mit dieser Base URL existiert bereits. Eine erneute Verwendung wird wahrscheinlich zu Problemen führen.",
     "BASE_URL_MISSING": "Eine Base URL wird benötigt.",
     "SYNCHRONIZE_PERMISSIONS": "Berechtigungen synchronisieren",
     "INVALID_FILE": "Ungültige Datei",
-    "PORTAL_IMPORT_CREATE_SUCCESS": "Der Workspace wurde erfolgreich erstellt.",
-    "PORTAL_IMPORT_UPDATE_SUCCESS": "Der Workspace wurde erfolgreich aktualisiert.",
-    "PORTAL_IMPORT_ERROR": "Ein Fehler ist aufgetreten. Der Workspace konnte nicht erstellt/aktualisiert werden.",
+    "WORKSPACE_IMPORT_CREATE_SUCCESS": "Der Workspace wurde erfolgreich erstellt.",
+    "WORKSPACE_IMPORT_UPDATE_SUCCESS": "Der Workspace wurde erfolgreich aktualisiert.",
+    "WORKSPACE_IMPORT_ERROR": "Ein Fehler ist aufgetreten. Der Workspace konnte nicht erstellt/aktualisiert werden.",
     "INVALID_IMPORT_FILE": "Die Workspace Import-Datei ist nicht gültig",
     "MISSING": "fehlen.",
     "INVALID_MENU_ITEMS": "Ein oder mehrere der Menü-Items sind nicht gültig.",
     "IMPORT_THEME_SUCCESS": "Theme wurde erfolgreich importiert.",
     "IMPORT_THEME_FAIL": "Ein Fehler ist aufgetreten. Das Theme wurde nicht importiert.",
-    "PORTAL_FORM_MISSING_FILES": " Workspace- oder Theme-Datei fehlen.",
+    "WORKSPACE_FORM_MISSING_FILES": " Workspace- oder Theme-Datei fehlen.",
     "THEME_COLOR_PRIMARY": "Primärfarbe",
     "THEME_COLOR_SECONDARY": "Sekundärfarbe",
     "THEME_COLOR_TEXT": "Textfarbe",
     "THEME_COLOR_TOP_MENU": "Menüfarbe",
     "THEME_COLOR_TOP_LEFT": "Linkfarbe",
     "VALIDATION_JSON_ERROR": "JSON Formatfehler",
-    "VALIDATION_PORTAL_MISSING": "Keine Workspace-Definition enthalten/gefunden",
-    "VALIDATION_PORTAL_NAME_MISSING": "Kein Workspace-Name enthalten/gefunden",
-    "VALIDATION_PORTAL_ROLES_MISSING": "Keine Workspace-Rollen enthalten/gefunden",
+    "VALIDATION_WORKSPACE_MISSING": "Keine Workspace-Definition enthalten/gefunden",
+    "VALIDATION_WORKSPACE_NAME_MISSING": "Kein Workspace-Name enthalten/gefunden",
+    "VALIDATION_WORKSPACE_ROLES_MISSING": "Keine Workspace-Rollen enthalten/gefunden",
     "VALIDATION_THEME_NAME_MISSING": "Kein Theme-Name in der Theme-Definition enthalten/gefunden",
     "VALIDATION_THEME_NOT_EXIST": "Keine Theme-Definition enthalten",
     "VALIDATION_MENU_NOT_EXIST": "Keine Menü-Definition enthalten",
@@ -384,7 +384,7 @@
     "VALIDATION_MENU_ITEM_NAME_MISSING": "In einem Menüpunkt fehlt der Name",
     "VALIDATION_MENU_ITEM_WRONG_POSITION": "In einem Menüpunkt ist der Wert für 'position' keine Zahl",
     "VALIDATION_MENU_ITEM_WRONG_DISABLED": "In einem Menüpunkt ist der Wert für 'disabled' kein Boolean",
-    "VALIDATION_MENU_ITEM_WRONG_PORTALEXIT": "In einem Menüpunkt ist der Wert für 'workspaceExit' kein Boolean",
+    "VALIDATION_MENU_ITEM_WRONG_WORKSPACEEXIT": "In einem Menüpunkt ist der Wert für 'workspaceExit' kein Boolean",
     "VALIDATION_RESULT": "Verarbeitung nicht möglich: "
   },
   "PRODUCT": {
@@ -430,7 +430,7 @@
       "DEREGISTRATION_NOK": "Bei der Abmeldung des Produkts ist ein Fehler aufgetreten"
     }
   },
-  "LOGO": {
+  "IMAGE": {
     "LOGO_URL": "Logo URL",
     "FAVICON_URL": "Favicon URL",
     "UPLOAD_FAIL": "Die Datei wurde nicht erfolgreich hochgeladen",
@@ -457,19 +457,19 @@
   },
   "EXCEPTIONS": {
     "HTTP_STATUS_0": {
-      "PORTALS": "Unbekanntes Problem beim Abrufen von Workspace-Daten - Bitte versuchen sie es noch einmal.",
+      "WORKSPACES": "Unbekanntes Problem beim Abrufen von Workspace-Daten - Bitte versuchen sie es noch einmal.",
       "MENUS": "Unbekanntes Problem beim Abrufen von Menü-Daten - Bitte versuchen sie es noch einmal."
     },
     "HTTP_STATUS_403": {
-      "PORTALS": "Sie haben keine Rechte um Workspaces zu sehen.",
+      "WORKSPACES": "Sie haben keine Rechte um Workspaces zu sehen.",
       "MENUS": "Sie haben keine Rechte um Menüs zu sehen."
     },
     "HTTP_STATUS_404": {
-      "PORTALS": "Es konnten keine Workspaces gefunden werden.",
+      "WORKSPACES": "Es konnten keine Workspaces gefunden werden.",
       "MENUS": "Es konnten keine Menüs gefunden werden."
     },
     "HTTP_STATUS_500": {
-      "PORTALS": "Unbekanntes Server-Problem beim Abrufen von Workspace-Daten - Bitte versuchen sie es noch einmal.",
+      "WORKSPACES": "Unbekanntes Server-Problem beim Abrufen von Workspace-Daten - Bitte versuchen sie es noch einmal.",
       "MENUS": "Unbekanntes Server-Problem beim Abrufen von Menü-Daten - Bitte versuchen sie es noch einmal."
     }
   }

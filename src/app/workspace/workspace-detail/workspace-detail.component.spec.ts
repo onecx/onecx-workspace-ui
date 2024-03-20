@@ -224,7 +224,7 @@ describe('WorkspaceDetailComponent', () => {
     component.onExportWorkspace()
 
     expect(msgServiceSpy.error).toHaveBeenCalledWith({
-      summaryKey: 'DETAIL.PORTAL_NOT_FOUND'
+      summaryKey: 'DETAIL.WORKSPACE_NOT_FOUND'
     })
   })
 

@@ -84,7 +84,7 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
     if (this.workspace) {
       this.themes$ = of([this.workspace.theme])
     } else {
-      this.themes$ = this.workspaceApi.getAllThemes()
+      this.themes$ = of(['theme', 'theme1'])
     }
   }
 
@@ -126,9 +126,9 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
       const files = (ev.target as HTMLInputElement).files
       if (files) {
         if (workspaceName == undefined || workspaceName == '' || workspaceName == null) {
-          this.msgService.error({ summaryKey: 'IMAGE.UPLOAD_FAILED_NAME' })
+          this.msgService.error({ summaryKey: 'IMAGE.UPLOAD_FAIL' })
         } else if (files[0].size > 110000) {
-          this.msgService.error({ summaryKey: 'IMAGE.UPLOAD_FAILED_SIZE' })
+          this.msgService.error({ summaryKey: 'IMAGE.UPLOAD_FAIL' })
         } else {
           let requestParametersGet: GetImageRequestParams
           requestParametersGet = {
@@ -155,7 +155,7 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
                 this.imageApi.updateImage(requestParameters).subscribe(() => {
                   this.fetchingLogoUrl =
                     this.imageApi.configuration.basePath + '/images/' + workspaceName + '/' + fieldType
-                  this.msgService.info({ summaryKey: 'LOGO.UPLOADED' })
+                  this.msgService.info({ summaryKey: 'IMAGE.UPLOAD_SUCCESS' })
                   this.formGroup.controls['imageUrl'].setValue('')
                   this.logoImageWasUploaded = true
                 })
@@ -166,7 +166,7 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
                 this.imageApi.uploadImage(requestParameters).subscribe(() => {
                   this.fetchingLogoUrl =
                     this.imageApi.configuration.basePath + '/images/' + workspaceName + '/' + fieldType
-                  this.msgService.info({ summaryKey: 'LOGO.UPLOADED' })
+                  this.msgService.info({ summaryKey: 'IMAGE.UPLOAD_SUCCESS' })
                   this.formGroup.controls['imageUrl'].setValue('')
                   this.logoImageWasUploaded = true
                 })

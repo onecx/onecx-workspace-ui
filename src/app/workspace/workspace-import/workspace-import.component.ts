@@ -46,9 +46,9 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
     this.hasPermission = this.user.hasPermission('WORKSPACE#IMPORT')
 
     this.steps = [
-      { label: this.translate.instant('PORTAL_IMPORT.CHOOSE_FILE') },
-      { label: this.translate.instant('PORTAL_IMPORT.PREVIEW') },
-      { label: this.translate.instant('PORTAL_IMPORT.CONFIRMATION') }
+      { label: this.translate.instant('WORKSPACE_IMPORT.CHOOSE_FILE') },
+      { label: this.translate.instant('WORKSPACE_IMPORT.PREVIEW') },
+      { label: this.translate.instant('WORKSPACE_IMPORT.CONFIRMATION') }
     ]
     this.reset()
   }
@@ -87,7 +87,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
   // IMPORT
   public importWorkspace(): void {
     if (!this.importRequestDTO) {
-      this.msgService.error({ summaryKey: 'PORTAL_IMPORT.PORTAL_IMPORT_ERROR' })
+      this.msgService.error({ summaryKey: 'WORKSPACE_IMPORT.WORKSPACE_IMPORT_ERROR' })
       return
     }
     this.isLoading = true
@@ -146,9 +146,9 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
       .subscribe({
         next: () => {
           if (this.confirmComponent?.workspaceNameExists) {
-            this.msgService.success({ summaryKey: 'PORTAL_IMPORT.PORTAL_IMPORT_UPDATE_SUCCESS' })
+            this.msgService.success({ summaryKey: 'WORKSPACE_IMPORT.WORKSPACE_IMPORT_UPDATE_SUCCESS' })
           } else {
-            this.msgService.success({ summaryKey: 'PORTAL_IMPORT.PORTAL_IMPORT_CREATE_SUCCESS' })
+            this.msgService.success({ summaryKey: 'WORKSPACE_IMPORT.WORKSPACE_IMPORT_CREATE_SUCCESS' })
           }
           this.isLoading = false
           if (this.importRequestDTO?.workspaces) {
@@ -157,7 +157,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
         },
         error: () => {
           this.isLoading = false
-          this.msgService.error({ summaryKey: 'PORTAL_IMPORT.PORTAL_IMPORT_ERROR' })
+          this.msgService.error({ summaryKey: 'WORKSPACE_IMPORT.WORKSPACE_IMPORT_ERROR' })
         }
       })
   }
