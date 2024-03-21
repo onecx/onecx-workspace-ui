@@ -50,8 +50,6 @@ app:
             GRANT: Assign roles to menu item
             EXPORT: Export menu
             IMPORT: Import menu
-          MENU_TENANT:
-            VIEW: View menu tenant
 
     # Keycloak
     keycloak:

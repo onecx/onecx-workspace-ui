@@ -56,11 +56,11 @@ export class ChooseFileComponent implements OnInit {
         .subscribe((data) => {
           try {
             const importWorkspace = JSON.parse(text)
-            if (this.isPortalImportWorkspace(importWorkspace, data)) {
+            if (this.isWorkspaceImportValid(importWorkspace, data)) {
               this.importWorkspace = importWorkspace
             }
           } catch (err) {
-            console.error('Import Error' /* , err */)
+            console.error('Import Error', err)
             this.importError = true
             this.validationErrorCause =
               data['WORKSPACE_IMPORT.VALIDATION_RESULT'] + data['WORKSPACE_IMPORT.VALIDATION_JSON_ERROR']
@@ -79,7 +79,7 @@ export class ChooseFileComponent implements OnInit {
     return !this.importError && !!this.importWorkspace
   }
 
-  private isPortalImportWorkspace(obj: unknown, data: any): obj is WorkspaceSnapshot {
+  private isWorkspaceImportValid(obj: unknown, data: any): obj is WorkspaceSnapshot {
     const dto = obj as WorkspaceSnapshot
     // CHANGE WHEN IMPORT OF MORE WORKSPACES IS POSSIBLE
     let key: string[] = []
@@ -92,8 +92,6 @@ export class ChooseFileComponent implements OnInit {
         this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_WORKSPACE_MISSING']
       } else if (!dto.workspaces[key[0]].name) {
         this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_WORKSPACE_NAME_MISSING']
-        /* } else if (!dto.workspaces[key[0]].workspaceRoles) {
-        this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_WORKSPACE_ROLES_MISSING'] */
       } else if (dto.workspaces[key[0]].menu?.menu?.menuItems) {
         for (const el of dto.workspaces[key[0]].menu?.menu?.menuItems!) {
           if (!el.key) {
@@ -113,28 +111,25 @@ export class ChooseFileComponent implements OnInit {
             break
           }
         }
-      } /* else {
-        this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_MENU_NOT_EXIST']
-      } */
+      }
     }
     if (this.validationErrorCause !== '') {
       this.importError = true
       this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_RESULT'] + this.validationErrorCause
+      return false
     }
 
     return true
-    // return !!typeof dto === 'object' && dto && dto.workspaces && dto.workspaces[key[0]].name
-    // && dto.workspaces[key[0]].menu?.menu?.menuItems?.every?.(this.isMenuItem)
   }
 
-  private isMenuItem(obj: unknown): obj is EximWorkspaceMenuItem {
-    const dto = obj as EximWorkspaceMenuItem
-    return !!(
-      dto.key &&
-      dto.name &&
-      typeof dto.position === 'number' &&
-      typeof dto.disabled === 'boolean' &&
-      typeof dto.external === 'boolean'
-    )
-  }
+  // private isMenuItem(obj: unknown): obj is EximWorkspaceMenuItem {
+  //   const dto = obj as EximWorkspaceMenuItem
+  //   return !!(
+  //     dto.key &&
+  //     dto.name &&
+  //     typeof dto.position === 'number' &&
+  //     typeof dto.disabled === 'boolean' &&
+  //     typeof dto.external === 'boolean'
+  //   )
+  // }
 }

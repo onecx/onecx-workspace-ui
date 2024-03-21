@@ -65,49 +65,6 @@
 </ocx-portal-page>
 
 <p-dialog
-  #portalDownload
-  [(visible)]="workspaceDownloadVisible"
-  [header]="'DIALOG.WORKSPACE.HEADER.EXPORT' | translate"
-  [modal]="true"
-  [resizable]="false"
-  [dismissableMask]="true"
-  [style]="{ 'max-width': '460px' }"
->
-  <div>{{ 'ACTIONS.EXPORT.WORKSPACE' | translate }}</div>
-  <div class="field-checkbox mt-3 mb-0">
-    <p-checkbox
-      [(ngModel)]="importThemeCheckbox"
-      [binary]="true"
-      id="theme"
-      [label]="'ACTIONS.EXPORT.THEME_INCLUDE' | translate"
-    ></p-checkbox>
-  </div>
-  <ng-template pTemplate="footer">
-    <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
-      <button
-        pButton
-        autofocus
-        type="button"
-        class="m-0"
-        icon="pi pi-times"
-        iconPos="left"
-        [label]="'ACTIONS.CANCEL' | translate"
-        (click)="workspaceDownloadVisible = false"
-      ></button>
-      <button
-        pButton
-        type="button"
-        class="m-0"
-        icon="pi pi-download"
-        iconPos="left"
-        [label]="'ACTIONS.EXPORT.LABEL' | translate"
-        (click)="onExportWorkspace()"
-      ></button>
-    </div>
-  </ng-template>
-</p-dialog>
-
-<p-dialog
   #workspaceDelete
   [(visible)]="workspaceDeleteVisible"
   [header]="'DIALOG.WORKSPACE.HEADER.DELETE' | translate"
