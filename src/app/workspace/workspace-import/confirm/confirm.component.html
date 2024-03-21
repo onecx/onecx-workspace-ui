@@ -5,13 +5,7 @@
       <label for="workspace_import_confirm_workspace_name">{{ 'WORKSPACE.NAME' | translate }}</label>
     </span>
     <span class="p-float-label">
-      <input
-        pInputText
-        type="text"
-        readonly
-        id="workspace_import_confirm_theme_name"
-        [(ngModel)]="themeName"
-      />
+      <input pInputText type="text" readonly id="workspace_import_confirm_theme_name" [(ngModel)]="themeName" />
       <label for="workspace_import_confirm_theme_name">{{ 'WORKSPACE.THEME' | translate }}</label>
     </span>
     <app-theme-color-box

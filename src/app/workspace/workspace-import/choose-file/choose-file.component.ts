@@ -1,7 +1,7 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core'
 import { HttpHeaders } from '@angular/common/http'
 import { TranslateService } from '@ngx-translate/core'
-import { WorkspaceSnapshot, EximWorkspaceMenuItem } from 'src/app/shared/generated'
+import { WorkspaceSnapshot } from 'src/app/shared/generated'
 
 @Component({
   selector: 'app-import-choose-file',
