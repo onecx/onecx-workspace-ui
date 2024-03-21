@@ -9,10 +9,12 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { EximMicrofrontend } from './eximMicrofrontend';
 
 
-export interface SubjectLink { 
-    label?: string;
-    url?: string;
+export interface EximProduct { 
+    productName?: string;
+    baseUrl?: string;
+    microfrontends?: Array<EximMicrofrontend>;
 }
 

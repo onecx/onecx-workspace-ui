@@ -52,7 +52,7 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
   ) {
     this.formGroup = new FormGroup({
       name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
-      theme: new FormControl(null, [Validators.required]),
+      theme: new FormControl(null),
       baseUrl: new FormControl(null, [Validators.required, Validators.minLength(1), Validators.pattern('^/.*')]),
       homePage: new FormControl(null, [Validators.maxLength(255)]),
       logoUrl: new FormControl('', [Validators.maxLength(255)]),
@@ -86,9 +86,8 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
     if (this.workspace.theme) {
       this.themes[0] = this.workspace.theme
     } else {
-      let arr = ['']
       this.workspaceApi.getAllThemes().subscribe((themes) => {
-        this.themes = arr.concat(themes)
+        this.themes = [''].concat(themes)
       })
     }
   }

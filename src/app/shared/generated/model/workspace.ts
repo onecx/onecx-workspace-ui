@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 import { WorkspaceAddress } from './workspaceAddress';
-import { SubjectLink } from './subjectLink';
 
 
 export interface Workspace { 
@@ -31,7 +30,5 @@ export interface Workspace {
     footerLabel?: string;
     logoUrl?: string;
     address?: WorkspaceAddress;
-    subjectLinks?: Array<SubjectLink>;
-    imageUrls?: Array<string>;
 }
 

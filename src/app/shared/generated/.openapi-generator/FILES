@@ -27,8 +27,9 @@ model/createWorkspaceRequest.ts
 model/createWorkspaceResponse.ts
 model/createWorkspaceRoleRequest.ts
 model/eximMenuStructure.ts
+model/eximMicrofrontend.ts
+model/eximProduct.ts
 model/eximScope.ts
-model/eximSubjectLink.ts
 model/eximWorkspace.ts
 model/eximWorkspaceAddress.ts
 model/eximWorkspaceMenuItem.ts
@@ -62,7 +63,6 @@ model/refType.ts
 model/scope.ts
 model/searchWorkspacesRequest.ts
 model/searchWorkspacesResponse.ts
-model/subjectLink.ts
 model/updateMenuItemParentRequest.ts
 model/updateMenuItemRequest.ts
 model/updateProductRequest.ts
