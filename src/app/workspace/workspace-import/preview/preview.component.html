@@ -17,7 +17,7 @@
         </span>
       </div>
       <div>
-        <span class="p-float-label" controlErrorAnchor>
+        <span class="p-float-label" controlErrorAnchor *ngIf="themeName">
           <input
             pInputText
             type="text"
@@ -30,7 +30,7 @@
             {{ 'WORKSPACE.THEME' | translate }}
           </label>
         </span>
-        <span class="p-float-label w-16rem" controlErrorAnchor>
+        <span class="p-float-label w-16rem" controlErrorAnchor *ngIf="!themeName">
           <p-dropdown
             #inputThemeName
             id="workspace_import_preview_themeName"
@@ -46,18 +46,18 @@
           </label>
         </span>
       </div>
-      <app-theme-color-box
+      <!-- <app-theme-color-box
         *ngIf="themeProperties"
         id="workspace_import_preview_theme_color_box"
         [properties]="themeProperties"
         styleClass="h-inputtext w-15rem"
-      />
-      <p-message
+      /> -->
+      <!-- <p-message
         *ngIf="!themeProperties"
         id="workspace_import_preview_message_theme_not_exists"
         severity="info"
         [text]="'WORKSPACE_IMPORT.VALIDATION_THEME_NOT_EXIST' | translate"
-      ></p-message>
+      ></p-message> -->
     </div>
 
     <div class="mt-4">

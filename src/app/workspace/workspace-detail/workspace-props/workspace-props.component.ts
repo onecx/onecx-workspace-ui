@@ -27,7 +27,9 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
   public formGroup: FormGroup
 
   public mfeRList: { label: string | undefined; value: string }[] = []
-  public themes$: Observable<(string | undefined)[]> = of([])
+  public themes$: Observable<any[]> = of([])
+  public themes: string[] = []
+  public theme: string | undefined
   public urlPattern = '/base-path-to-portal'
   public copyToClipboard = copyToClipboard // make available from utils
   public sortByLocale = sortByLocale
@@ -81,10 +83,13 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
       })
     }
     this.fetchingLogoUrl = this.getImageUrl()
-    if (this.workspace) {
-      this.themes$ = of([this.workspace.theme])
+    if (this.workspace.theme) {
+      this.themes[0] = this.workspace.theme
     } else {
-      this.themes$ = of(['theme', 'theme1'])
+      let arr = ['']
+      this.workspaceApi.getAllThemes().subscribe((themes) => {
+        this.themes = arr.concat(themes)
+      })
     }
   }
 
