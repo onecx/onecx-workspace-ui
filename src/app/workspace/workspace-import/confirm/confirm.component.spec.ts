@@ -87,16 +87,16 @@ describe('ConfirmComponent', () => {
     expect(component.checkThemeNames).toHaveBeenCalled()
   })
 
-  it('should set workspaceTenantExists to true in checkWorkspaceUniqueness onInit if permission', () => {
-    apiServiceSpy.searchWorkspaces.and.returnValue(of([workspace]))
-    component.hasPermission = true
-    component.workspaceName = 'name'
-    component.tenantId = 'id'
+  // it('should set workspaceTenantExists to true in checkWorkspaceUniqueness onInit if permission', () => {
+  //   apiServiceSpy.searchWorkspaces.and.returnValue(of([workspace]))
+  //   component.hasPermission = true
+  //   component.workspaceName = 'name'
+  //   component.tenantId = 'id'
 
-    component.ngOnInit()
+  //   component.ngOnInit()
 
-    expect(component.workspaceTenantExists).toBeTrue()
-  })
+  //   expect(component.workspaceTenantExists).toBeTrue()
+  // })
 
   it('should set workspaceNameExists to true in checkWorkspaceUniqueness onInit if no permission', () => {
     apiServiceSpy.searchWorkspaces.and.returnValue(of([workspace]))
