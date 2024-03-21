@@ -16,23 +16,7 @@
       </span>
     </div>
 
-    <div *ocxIfPermission="'WORKSPACE#EDIT_TENANT'">
-      <span class="p-float-label" controlErrorAnchor>
-        <input
-          pInputText
-          type="text"
-          id="workspace_create_item_tenantId"
-          class="w-full pt-3 pb-2"
-          formControlName="tenantId"
-          [pTooltip]="'WORKSPACE.TENANT_ID' | translate"
-          tooltipPosition="top"
-          tooltipEvent="focus"
-        />
-        <label for="workspace_create_item_tenantId"> {{ 'WORKSPACE.TENANT_ID' | translate }} </label>
-      </span>
-    </div>
-
-    <!-- <div>
+    <div>
       <span class="p-float-label">
         <p-dropdown
           id="workspace_create_item_themeName"
@@ -48,7 +32,7 @@
           {{ 'WORKSPACE.THEME' | translate }}
         </label>
       </span>
-    </div> -->
+    </div>
 
     <div>
       <span class="p-float-label" controlErrorAnchor>
@@ -93,7 +77,7 @@
         [id]="'workspace_create_item_logo_image'"
         [imageUrl]="fetchingLogoUrl"
         [small]="true"
-        [title]="'LOGO.TOOLTIPS.' + (fetchingLogoUrl ? 'IMAGE' : 'PLACEHOLDER') | translate"
+        [title]="'IMAGE.TOOLTIPS.' + (fetchingLogoUrl ? 'IMAGE' : 'PLACEHOLDER') | translate"
       ></app-image-container>
       <div class="p-inputgroup" controlErrorAnchor>
         <span class="p-float-label">
@@ -104,12 +88,12 @@
             formControlName="logoUrl"
             (blur)="inputChange($event)"
           />
-          <label for="workspace_create_item_logo"> {{ 'LOGO.LOGO_URL' | translate }} </label>
+          <label for="workspace_create_item_logo"> {{ 'IMAGE.LOGO_URL' | translate }} </label>
         </span>
         <span
           id="workspace_create_item_logo_upload"
           class="p-inputgroup-addon bg-primary"
-          [title]="'LOGO.TOOLTIPS.UPLOAD' | translate"
+          [title]="'IMAGE.TOOLTIPS.UPLOAD' | translate"
           (click)="selectedFileInputLogo.click()"
           [ngClass]="
             this.formGroup.controls['name'].value === '' || this.formGroup.controls['name'].value === null

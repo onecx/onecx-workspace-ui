@@ -151,7 +151,7 @@ describe('ChooseFileComponent', () => {
     const obj = {
       menuItems: [{ name: 'menu', key: 'key', position: 1, disabled: true, portalExit: true }]
     }
-    const data = { 'PORTAL_IMPORT.VALIDATION_PORTAL_MISSING': 'missing' }
+    const data = { 'WORKSPACE_IMPORT.VALIDATION_WORKSPACE_MISSING': 'missing' }
 
     ;(component as any).isPortalImportRequestDTO(obj, data)
 
@@ -166,7 +166,7 @@ describe('ChooseFileComponent', () => {
       },
       menuItems: [{ name: 'menu', key: 'key', position: 1, disabled: true, portalExit: true }]
     }
-    const data = { 'PORTAL_IMPORT.VALIDATION_PORTAL_NAME_MISSING': 'name missing' }
+    const data = { 'WORKSPACE_IMPORT.VALIDATION_WORKSPACE_NAME_MISSING': 'name missing' }
 
     ;(component as any).isPortalImportRequestDTO(obj, data)
 
@@ -181,7 +181,7 @@ describe('ChooseFileComponent', () => {
       },
       menuItems: [{ name: 'menu', key: 'key', position: 1, disabled: true, portalExit: true }]
     }
-    const data = { 'PORTAL_IMPORT.VALIDATION_PORTAL_ROLES_MISSING': 'roles missing' }
+    const data = { 'WORKSPACE_IMPORT.VALIDATION_WORKSPACE_ROLES_MISSING': 'roles missing' }
 
     ;(component as any).isPortalImportRequestDTO(obj, data)
 
@@ -198,7 +198,7 @@ describe('ChooseFileComponent', () => {
       menuItems: [{ name: 'menu', key: 'key', position: 1, disabled: true, portalExit: true }],
       themeImportData: { name: '' }
     }
-    const data = { 'PORTAL_IMPORT.VALIDATION_THEME_NAME_MISSING': 'theme name missing' }
+    const data = { 'WORKSPACE_IMPORT.VALIDATION_THEME_NAME_MISSING': 'theme name missing' }
 
     ;(component as any).isPortalImportRequestDTO(obj, data)
 
@@ -214,7 +214,7 @@ describe('ChooseFileComponent', () => {
       },
       menuItems: [{ name: 'menu', position: 1, disabled: true, portalExit: true }]
     }
-    const data = { 'PORTAL_IMPORT.VALIDATION_MENU_ITEM_KEY_MISSING': 'menu item key missing' }
+    const data = { 'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_KEY_MISSING': 'menu item key missing' }
 
     ;(component as any).isPortalImportRequestDTO(obj, data)
 
@@ -230,7 +230,7 @@ describe('ChooseFileComponent', () => {
       },
       menuItems: [{ key: 'menu', position: 1, disabled: true, portalExit: true }]
     }
-    const data = { 'PORTAL_IMPORT.VALIDATION_MENU_ITEM_NAME_MISSING': 'menu item name missing' }
+    const data = { 'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_NAME_MISSING': 'menu item name missing' }
 
     ;(component as any).isPortalImportRequestDTO(obj, data)
 
@@ -246,7 +246,7 @@ describe('ChooseFileComponent', () => {
       },
       menuItems: [{ name: 'menu', key: 'key', position: 'one', disabled: true, portalExit: true }]
     }
-    const data = { 'PORTAL_IMPORT.VALIDATION_MENU_ITEM_WRONG_POSITION': 'wrong position' }
+    const data = { 'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_WRONG_POSITION': 'wrong position' }
 
     ;(component as any).isPortalImportRequestDTO(obj, data)
 
@@ -262,7 +262,7 @@ describe('ChooseFileComponent', () => {
       },
       menuItems: [{ name: 'menu', key: 'key', position: 1, disabled: 'true', portalExit: true }]
     }
-    const data = { 'PORTAL_IMPORT.VALIDATION_MENU_ITEM_WRONG_DISABLED': 'wrong disabled' }
+    const data = { 'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_WRONG_DISABLED': 'wrong disabled' }
 
     ;(component as any).isPortalImportRequestDTO(obj, data)
 
@@ -278,7 +278,7 @@ describe('ChooseFileComponent', () => {
       },
       menuItems: [{ name: 'menu', key: 'key', position: 1, disabled: true, portalExit: 'true' }]
     }
-    const data = { 'PORTAL_IMPORT.VALIDATION_MENU_ITEM_WRONG_PORTALEXIT': 'wrong portal exit' }
+    const data = { 'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_WRONG_WORKSPACEEXIT': 'wrong portal exit' }
 
     ;(component as any).isPortalImportRequestDTO(obj, data)
 
@@ -293,7 +293,7 @@ describe('ChooseFileComponent', () => {
         microfrontendRegistrations: new Set([{ version: 1 }])
       }
     }
-    const data = { 'PORTAL_IMPORT.VALIDATION_MENU_NOT_EXIST': 'menu absent' }
+    const data = { 'WORKSPACE_IMPORT.VALIDATION_MENU_NOT_EXIST': 'menu absent' }
 
     ;(component as any).isPortalImportRequestDTO(obj, data)
 

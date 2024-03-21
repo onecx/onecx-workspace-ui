@@ -182,7 +182,6 @@
     "LOGO_URL": "Logo URL",
     "IMAGE_URL": "Image URL",
     "RSS_FEED_URL": "RSS-Feed URL",
-    "TENANT_ID": "Tenant ID",
     "THEME": "Theme",
     "COMPANY_NAME": "Company Name",
     "COUNTRY": "Country",
@@ -336,8 +335,8 @@
     "THEME_NOT_AVALIABLE": "no available themes",
     "THEME_NOT_SPECIFIED_MESSAGE": "Theme cannot be exported because it was not specified in Workspace"
   },
-  "PORTAL_IMPORT": {
-    "IMPORT_PORTAL": "Import Workspace",
+  "WORKSPACE_IMPORT": {
+    "IMPORT_WORKSPACE": "Import Workspace",
     "IMPORT_THEME": "Import Theme",
     "FROM_JSON": "from JSON File",
     "IMPORT": "Import",
@@ -352,33 +351,32 @@
     "PREVIEW_MENU": "Menu Structure",
     "CONFIRMATION": "Confirmation",
     "SUMMARY": "Summary",
-    "PORTAL_NAME": "Workspace Name",
-    "PORTAL_IMPORT_OK": "The Workspace definition has been checked and can be imported.",
-    "PORTAL_EXISTS_MESSAGE": "A Workspace with this name already exists. Its definition is overwritten.",
+    "WORKSPACE_NAME": "Workspace Name",
+    "WORKSPACE_IMPORT_OK": "The Workspace definition has been checked and can be imported.",
+    "WORKSPACE_EXISTS_MESSAGE": "A Workspace with this name already exists. Its definition is overwritten.",
     "THEME_EXISTS_MESSAGE": "A theme with this name already exists. Its definition is overwritten.",
-    "TENANT_EXISTS_MESSAGE": "A Workspace with this name and Tenant Id already exists. Its definition is overwritten.",
     "BASE_URL_EXISTS_MESSAGE": "A Workspace with this Base URL already exists. Using it again will likely cause problems.",
     "BASE_URL_MISSING": "A Base URL is required.",
     "SYNCHRONIZE_PERMISSIONS": "Synchronize permissions",
     "INVALID_FILE": "Invalid file",
-    "PORTAL_IMPORT_CREATE_SUCCESS": "The Workspace was sucessfully created.",
-    "PORTAL_IMPORT_UPDATE_SUCCESS": "The Workspace was sucessfully updated.",
-    "PORTAL_IMPORT_ERROR": "An error occurred, the Workspace could not be created/updated.",
+    "WORKSPACE_IMPORT_CREATE_SUCCESS": "The Workspace was sucessfully created.",
+    "WORKSPACE_IMPORT_UPDATE_SUCCESS": "The Workspace was sucessfully updated.",
+    "WORKSPACE_IMPORT_ERROR": "An error occurred, the Workspace could not be created/updated.",
     "INVALID_IMPORT_FILE": "The Workspace import file is invalid",
     "MISSING": "missing.",
     "INVALID_MENU_ITEMS": "One or more menu items are not valid",
     "IMPORT_THEME_SUCCESS": "The theme was sucessfully imported.",
     "IMPORT_THEME_FAIL": "An error occurred, the theme was not imported.",
-    "PORTAL_FORM_MISSING_FILES": " Workspace or Theme files are missing.",
+    "WORKSPACE_FORM_MISSING_FILES": " Workspace or Theme files are missing.",
     "THEME_COLOR_PRIMARY": "Primary color",
     "THEME_COLOR_SECONDARY": "Secondary color",
     "THEME_COLOR_TEXT": "Text color",
     "THEME_COLOR_TOP_MENU": "Topbar Menu color",
     "THEME_COLOR_TOP_LEFT": "Topbar Link color",
     "VALIDATION_JSON_ERROR": "JSON format error",
-    "VALIDATION_PORTAL_MISSING": "No Workspace definition included/found",
-    "VALIDATION_PORTAL_NAME_MISSING": "No Workspace name included/found",
-    "VALIDATION_PORTAL_ROLES_MISSING": "No Workspace roles included/found",
+    "VALIDATION_WORKSPACE_MISSING": "No Workspace definition included/found",
+    "VALIDATION_WORKSPACE_NAME_MISSING": "No Workspace name included/found",
+    "VALIDATION_WORKSPACE_ROLES_MISSING": "No Workspace roles included/found",
     "VALIDATION_THEME_NAME_MISSING": "No theme name found/found in theme definition",
     "VALIDATION_THEME_NOT_EXIST": "No theme definition included/found",
     "VALIDATION_MENU_NOT_EXIST": "No menu definition included/found",
@@ -386,7 +384,7 @@
     "VALIDATION_MENU_ITEM_NAME_MISSING": "The name is missing in a menu item",
     "VALIDATION_MENU_ITEM_WRONG_POSITION": "In a menu item, the value for 'position' is not a number",
     "VALIDATION_MENU_ITEM_WRONG_DISABLED": "In a menu item, the value for 'disabled' is not a boolean",
-    "VALIDATION_MENU_ITEM_WRONG_PORTALEXIT": "In a menu item, the value for 'workspaceExit' is not a boolean",
+    "VALIDATION_MENU_ITEM_WRONG_WORKSPACEEXIT": "In a menu item, the value for 'workspaceExit' is not a boolean",
     "VALIDATION_RESULT": "Processing not possible: "
   },
   "PRODUCT": {
@@ -432,7 +430,7 @@
       "DEREGISTRATION_NOK": "An error has occurred during Product deregistration"
     }
   },
-  "LOGO": {
+  "IMAGE": {
     "LOGO_URL": "Logo URL",
     "FAVICON_URL": "Favicon URL",
     "UPLOAD_FAIL": " The file was not uploaded successfully",
@@ -459,19 +457,19 @@
   },
   "EXCEPTIONS": {
     "HTTP_STATUS_0": {
-      "PORTALS": "Unknown problem retrieving Workspace data - please try again.",
+      "WORKSPACES": "Unknown problem retrieving Workspace data - please try again.",
       "MENUS": "Unknown problem retrieving menu data - please try again."
     },
     "HTTP_STATUS_403": {
-      "PORTALS": "You have no permissions to see workspaces.",
+      "WORKSPACES": "You have no permissions to see workspaces.",
       "MENUS": "You have no permissions to see menus."
     },
     "HTTP_STATUS_404": {
-      "PORTALS": "No Workspaces could be found.",
+      "WORKSPACES": "No Workspaces could be found.",
       "MENUS": "No menus could be found."
     },
     "HTTP_STATUS_500": {
-      "PORTALS": "Unknown server problem retrieving Workspace data - please try again.",
+      "WORKSPACES": "Unknown server problem retrieving Workspace data - please try again.",
       "MENUS": "Unknown server problem retrieving menu data - please try again."
     }
   }

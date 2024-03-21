@@ -127,9 +127,9 @@ describe('WorkspaceImportComponent', () => {
   it('should display error msg if no importRequestDTO', () => {
     component.importRequestDTO = undefined
 
-    component.importPortal()
+    component.importWorkspace()
 
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'PORTAL_IMPORT.PORTAL_IMPORT_ERROR' })
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'WORKSPACE_IMPORT.WORKSPACE_IMPORT_ERROR' })
   })
 
   it('should import a portal', () => {
@@ -143,17 +143,19 @@ describe('WorkspaceImportComponent', () => {
     }
     component.importRequestDTO = workspaceSnap
     component.hasPermission = true
-    component.tenantId = 'id'
+    // component.tenantId = 'id'
     component.importThemeCheckbox = false
     component.confirmComponent = new MockConfirmComponent() as unknown as ConfirmComponent
     if (component.confirmComponent) {
       component.confirmComponent.workspaceNameExists = false
     }
 
-    component.importPortal()
+    component.importWorkspace()
 
     expect(component.isLoading).toBeFalse()
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'PORTAL_IMPORT.PORTAL_IMPORT_CREATE_SUCCESS' })
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({
+      summaryKey: 'WORKSPACE_IMPORT.WORKSPACE_IMPORT_CREATE_SUCCESS'
+    })
   })
 
   xit('should import a portal with theme if checkbox enabled', () => {
@@ -167,7 +169,7 @@ describe('WorkspaceImportComponent', () => {
     }
     component.importRequestDTO = workspaceSnap
     component.hasPermission = true
-    component.tenantId = 'id'
+    // component.tenantId = 'id'
     component.importThemeCheckbox = true
     component.confirmComponent = new MockConfirmComponent() as unknown as ConfirmComponent
     if (component.confirmComponent) {
@@ -175,7 +177,7 @@ describe('WorkspaceImportComponent', () => {
     }
     component.themeName = 'new name'
 
-    component.importPortal()
+    component.importWorkspace()
 
     const req = httpTestingController.expectOne(`http://localhost/v1/importWorkspaces`)
     expect(req.request.method).toEqual('POST')
@@ -196,16 +198,18 @@ describe('WorkspaceImportComponent', () => {
     }
     component.importRequestDTO = workspaceSnap
     component.hasPermission = true
-    component.tenantId = 'id'
+    // component.tenantId = 'id'
     component.importThemeCheckbox = false
     component.confirmComponent = new MockConfirmComponent() as unknown as ConfirmComponent
     if (component.confirmComponent) {
       component.confirmComponent.workspaceNameExists = true
     }
 
-    component.importPortal()
+    component.importWorkspace()
 
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'PORTAL_IMPORT.PORTAL_IMPORT_UPDATE_SUCCESS' })
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({
+      summaryKey: 'WORKSPACE_IMPORT.WORKSPACE_IMPORT_UPDATE_SUCCESS'
+    })
   })
 
   it('should update a portal with new base url', () => {
@@ -228,7 +232,7 @@ describe('WorkspaceImportComponent', () => {
     }
     component.importRequestDTO = workspaceSnap
     component.hasPermission = true
-    component.tenantId = 'id'
+    // component.tenantId = 'id'
     component.importThemeCheckbox = false
     component.confirmComponent = new MockConfirmComponent() as unknown as ConfirmComponent
     if (component.confirmComponent) {
@@ -238,9 +242,11 @@ describe('WorkspaceImportComponent', () => {
     component.baseUrl = 'http://newbaseurl'
 
     component.next()
-    component.importPortal()
+    component.importWorkspace()
 
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'PORTAL_IMPORT.PORTAL_IMPORT_UPDATE_SUCCESS' })
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({
+      summaryKey: 'WORKSPACE_IMPORT.WORKSPACE_IMPORT_UPDATE_SUCCESS'
+    })
   })
 
   it('should display error msg if api call fails', () => {
@@ -254,12 +260,12 @@ describe('WorkspaceImportComponent', () => {
     component.importRequestDTO = workspaceSnap
     apiServiceSpy.importWorkspaces.and.returnValue(throwError(() => new Error()))
     component.hasPermission = true
-    component.tenantId = 'id'
+    // component.tenantId = 'id'
     component.importThemeCheckbox = false
 
-    component.importPortal()
+    component.importWorkspace()
 
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'PORTAL_IMPORT.PORTAL_IMPORT_ERROR' })
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'WORKSPACE_IMPORT.WORKSPACE_IMPORT_ERROR' })
   })
 
   it('should alignMenuItemsBaseUrl', () => {
@@ -309,7 +315,7 @@ describe('WorkspaceImportComponent', () => {
     expect(component.workspaceName).toEqual(component.previewComponent?.workspaceName)
     expect(component.themeName).toEqual(component.previewComponent?.themeName)
     expect(component.baseUrl).toEqual(component.previewComponent?.baseUrl)
-    expect(component.tenantId).toEqual(component.previewComponent?.tenantId)
+    // expect(component.tenantId).toEqual(component.previewComponent?.tenantId)
   })
 
   it('should set values from confirm component on back when activeIndex is 2 (confirm)', () => {

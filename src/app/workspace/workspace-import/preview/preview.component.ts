@@ -1,15 +1,15 @@
 import { Component, Input, OnInit, Output, EventEmitter, OnChanges } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { TreeNode, SelectItem } from 'primeng/api'
-import { /* first,  map, */ Observable, of } from 'rxjs'
+import { /* first,  map, */ Observable, map, of } from 'rxjs'
 
 import {
   EximWorkspaceMenuItem,
-  WorkspaceSnapshot
+  WorkspaceSnapshot,
   // MicrofrontendRegistrationDTO
-  // ThemesAPIService
+  WorkspaceAPIService
 } from 'src/app/shared/generated'
-import { forceFormValidation /* , sortThemeByName */ } from 'src/app/shared/utils'
+import { forceFormValidation } from 'src/app/shared/utils'
 
 @Component({
   selector: 'app-import-preview',
@@ -27,26 +27,24 @@ export class PreviewComponent implements OnInit, OnChanges {
   public workspaceName = ''
   public themeName!: string
   public baseUrl = ''
-  public tenantId: string | undefined = undefined
   public themeProperties: any = null
   public menuItems: TreeNode[] = []
   // public portalMfes = new Array<MicrofrontendRegistrationDTO>()
   public workspaceRoles = new Array<string>()
 
-  constructor(/* private themeApi: ThemesAPIService */) {
+  constructor(private workspaceService: WorkspaceAPIService) {
     this.formGroup = new FormGroup({
       workspaceName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
-      // themeName: new FormControl(
-      //   null,
-      //   !this.importThemeCheckbox ? [Validators.required, Validators.minLength(2), Validators.maxLength(50)] : []
-      // ),
+      themeName: new FormControl(
+        null,
+        !this.importThemeCheckbox ? [Validators.required, Validators.minLength(2), Validators.maxLength(50)] : []
+      ),
       baseUrl: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(100)])
-      // tenantId: new FormControl(undefined)
     })
 
-    /* this.themes$ = this.themeApi
-      .getThemes()
-      .pipe(map((val) => val.sort(sortThemeByName).map((theme) => ({ label: theme.name, value: theme.name || '' })))) */
+    this.themes$ = this.workspaceService
+      .getAllThemes()
+      .pipe(map((val) => val.map((theme) => ({ label: theme, value: theme || '' }))))
   }
 
   public ngOnInit(): void {
@@ -56,13 +54,11 @@ export class PreviewComponent implements OnInit, OnChanges {
     }
     if (this.importRequestDTO.workspaces) {
       this.workspaceName = this.importRequestDTO.workspaces[key[0]].name || ''
-      // this.themeName = this.importRequestDTO?.themeImportData?.name
-      // ? this.importRequestDTO?.themeImportData?.name
-      // : this.formGroup.controls['themeName'].value || ''
+      this.themeName = this.importRequestDTO?.workspaces[key[0]].theme
+        ? this.importRequestDTO?.workspaces[key[0]].theme
+        : this.formGroup.controls['themeName'].value || ''
       this.baseUrl = this.importRequestDTO.workspaces[key[0]].baseUrl || ''
-      // this.tenantId = this.importRequestDTO?.tenantId || undefined
       this.menuItems = this.mapToTreeNodes(this.importRequestDTO.workspaces[key[0]].menu?.menu?.menuItems)
-      // this.themeProperties = this.importRequestDTO?.themeImportData?.properties
       // check mfe existence
       // if (this.importRequestDTO.portal.microfrontendRegistrations) {
       //   this.portalMfes = Array.from(this.importRequestDTO.portal.microfrontendRegistrations)
@@ -73,30 +69,30 @@ export class PreviewComponent implements OnInit, OnChanges {
       }*/
     }
     // error handling if no theme name or no match with existing themes
-    /* this.themes$.pipe(first()).subscribe((themes) => {
-      if (themes.length > 0) {
-        const matchingTheme = themes.find((theme) => theme.value === this.themeName)
-        if (!this.themeName || !matchingTheme) {
-          const firstTheme = themes[0]
-          this.themeName = firstTheme.value
-        }
-        this.formGroup.controls['themeName'].setValue(this.themeName)
-        this.onModelChange()
-      }
-    }) */
+    // this.themes$.pipe(first()).subscribe((themes) => {
+    //   if (themes.length > 0) {
+    //     const matchingTheme = themes.find((theme) => theme.value === this.themeName)
+    //     if (!this.themeName || !matchingTheme) {
+    //       const firstTheme = themes[0]
+    //       this.themeName = firstTheme.value
+    //     }
+    //     this.formGroup.controls['themeName'].setValue(this.themeName)
+    //     this.onModelChange()
+    //   }
+    // })
   }
 
   public ngOnChanges(): void {
     this.fillForm()
-    // if (this.importThemeCheckbox) {
-    //   this.formGroup.controls['themeName'].addValidators([
-    //     Validators.required,
-    //     Validators.minLength(2),
-    //     Validators.maxLength(50)
-    //   ])
-    // } else {
-    //   this.formGroup.controls['themeName'].clearValidators()
-    // }
+    if (this.importThemeCheckbox) {
+      this.formGroup.controls['themeName'].addValidators([
+        Validators.required,
+        Validators.minLength(2),
+        Validators.maxLength(50)
+      ])
+    } else {
+      this.formGroup.controls['themeName'].clearValidators()
+    }
     // trigger validation to be up-to-date
     forceFormValidation(this.formGroup)
     this.onModelChange()
@@ -109,10 +105,8 @@ export class PreviewComponent implements OnInit, OnChanges {
     }
     if (this.importRequestDTO.workspaces) {
       this.formGroup.controls['workspaceName'].setValue(this.importRequestDTO?.workspaces[key[0]].name)
-      // this.formGroup.controls['themeName'].setValue(this.importRequestDTO?.themeName)
+      this.formGroup.controls['themeName'].setValue(this.importRequestDTO?.workspaces[key[0]].theme)
       this.formGroup.controls['baseUrl'].setValue(this.importRequestDTO?.workspaces[key[0]].baseUrl)
-      // if (this.hasPermission && this.importRequestDTO?.portal?.tenantId != undefined)
-      //   this.formGroup.controls['tenantId'].setValue(this.importRequestDTO?.portal?.tenantId)
     }
   }
 
@@ -122,15 +116,12 @@ export class PreviewComponent implements OnInit, OnChanges {
       key = Object.keys(this.importRequestDTO.workspaces)
     }
     this.workspaceName = this.formGroup.controls['workspaceName'].value
-    // this.themeName = this.formGroup.controls['themeName'].value
+    this.themeName = this.formGroup.controls['themeName'].value
     this.baseUrl = this.formGroup.controls['baseUrl'].value
-    // if (this.hasPermission && this.formGroup.controls['tenantId'].value !== undefined)
-    //   this.tenantId = this.formGroup.controls['tenantId'].value
     if (this.importRequestDTO.workspaces) {
       this.importRequestDTO.workspaces[key[0]].name = this.workspaceName
-      // this.importRequestDTO.portal.themeName = this.themeName
+      this.importRequestDTO.workspaces[key[0]].theme = this.themeName
       this.importRequestDTO.workspaces[key[0]].baseUrl = this.baseUrl
-      // if (this.hasPermission) this.importRequestDTO.portal.tenantId = this.tenantId
     }
     this.isFormValide.emit(this.formGroup.valid)
   }

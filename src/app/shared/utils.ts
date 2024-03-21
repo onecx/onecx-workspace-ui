@@ -75,10 +75,6 @@ export function sortByLocale(a: any, b: any): number {
   return a.toUpperCase().localeCompare(b.toUpperCase())
 }
 
-// export function sortThemeByName(a: ThemeDTO, b: ThemeDTO): number {
-//   return (a.name ? (a.name as string).toUpperCase() : '').localeCompare(b.name ? (b.name as string).toUpperCase() : '')
-// }
-
 /**
  *  TREE
  *

@@ -79,31 +79,13 @@ describe('WorkspacePropsComponent', () => {
     fixture = TestBed.createComponent(WorkspacePropsComponent)
     component = fixture.componentInstance
     component.workspace = workspace
-    // component.formGroup = formGroup
     fixture.detectChanges()
   })
-
-  function initializeComponent(): void {
-    fixture = TestBed.createComponent(WorkspacePropsComponent)
-    component = fixture.componentInstance
-    component.workspace = workspace
-    fixture.detectChanges()
-  }
 
   it('should create and get themes', () => {
     themeAPIServiceSpy.getThemes.and.returnValue(of([]))
 
     expect(component).toBeTruthy()
-  })
-
-  it('should add tenantId to formGroup if permission', () => {
-    mockAuthService.hasPermission.and.callFake((permission: string) => {
-      return permission === 'WORKSPACE_TENANT#VIEW'
-    })
-
-    initializeComponent()
-
-    expect(component.formGroup.contains('tenantId')).toBe(true)
   })
 
   it('should setFormData and set editMode onChanges', () => {

@@ -2,21 +2,20 @@ import { Component, Output, EventEmitter } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
-import { /*  map, */ Observable, of } from 'rxjs'
+import { Observable, map, of } from 'rxjs'
 import { SelectItem } from 'primeng/api/selectitem'
 import { FileUpload } from 'primeng/fileupload'
 
 import { PortalMessageService, UserService } from '@onecx/portal-integration-angular'
-// import { setFetchUrls , sortThemeByName } from '../../shared/utils'
+import { sortByLocale } from 'src/app/shared/utils'
 import {
-  /* ImageV1APIService, */
-  WorkspaceAPIService /* , ThemesAPIService */,
+  WorkspaceAPIService,
   Workspace,
   ImagesInternalAPIService,
   RefType,
   GetImageRequestParams,
   UploadImageRequestParams
-} from '../../shared/generated'
+} from 'src/app/shared/generated'
 
 @Component({
   selector: 'app-workspace-create',
@@ -44,33 +43,20 @@ export class WorkspaceCreateComponent {
     private route: ActivatedRoute,
     private user: UserService,
     private workspaceApi: WorkspaceAPIService,
-    // private themeApi: ThemesAPIService,
     private imageApi: ImagesInternalAPIService,
     private message: PortalMessageService,
     private translate: TranslateService
   ) {
-    this.hasPermission = this.user.hasPermission('WORKSPACE#EDIT_TENANT')
-
     this.formGroup = new FormGroup({
       name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
-      // themeName: new FormControl(null, [Validators.required]),
+      themeName: new FormControl(null /* , [Validators.required] */),
       homePage: new FormControl(null, [Validators.maxLength(255)]),
       logoUrl: new FormControl('', [Validators.maxLength(255)]),
       baseUrl: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.pattern('^/.*')]),
       footerLabel: new FormControl(null, [Validators.maxLength(255)]),
       description: new FormControl(null, [Validators.maxLength(255)])
     })
-    /* this.themes$ = this.themeApi
-      .getThemes()
-      .pipe(
-        map((val) =>
-          val.sort(sortThemeByName).map((theme) => ({ label: theme.name, value: theme.name || '', id: theme.id }))
-        )
-      ) */
-
-    if (this.hasPermission) {
-      this.formGroup.addControl('tenantId', new FormControl(null))
-    }
+    this.themes$ = this.workspaceApi.getAllThemes().pipe(map((val: any[]) => val.sort(sortByLocale)))
   }
 
   closeDialog() {
@@ -145,9 +131,9 @@ export class WorkspaceCreateComponent {
       const files = (ev.target as HTMLInputElement).files
       if (files) {
         if (workspaceName == undefined || workspaceName == '' || workspaceName == null) {
-          this.message.error({ summaryKey: 'LOGO.UPLOAD_FAILED_NAME' })
+          this.message.error({ summaryKey: 'IMAGE.UPLOAD_FAIL' })
         } else if (files[0].size > 110000) {
-          this.message.error({ summaryKey: 'LOGO.UPLOAD_FAILED_SIZE' })
+          this.message.error({ summaryKey: 'IMAGE.UPLOAD_FAIL' })
         } else {
           let requestParametersGet: GetImageRequestParams
           requestParametersGet = {
@@ -174,7 +160,7 @@ export class WorkspaceCreateComponent {
                 this.imageApi.updateImage(requestParameters).subscribe(() => {
                   this.fetchingLogoUrl =
                     this.imageApi.configuration.basePath + '/images/' + workspaceName + '/' + fieldType
-                  this.message.info({ summaryKey: 'LOGO.UPLOADED' })
+                  this.message.info({ summaryKey: 'IMAGE.UPLOAD_SUCCESS' })
                   this.formGroup.controls['imageUrl'].setValue('')
                   this.logoImageWasUploaded = true
                 })
@@ -185,7 +171,7 @@ export class WorkspaceCreateComponent {
                 this.imageApi.uploadImage(requestParameters).subscribe(() => {
                   this.fetchingLogoUrl =
                     this.imageApi.configuration.basePath + '/images/' + workspaceName + '/' + fieldType
-                  this.message.info({ summaryKey: 'LOGO.UPLOADED' })
+                  this.message.info({ summaryKey: 'IMAGE.UPLOAD_SUCCESS' })
                   this.formGroup.controls['imageUrl'].setValue('')
                   this.logoImageWasUploaded = true
                 })

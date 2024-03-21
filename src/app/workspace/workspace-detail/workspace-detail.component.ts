@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core'
 import { DatePipe, Location } from '@angular/common'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
-import { FileSaver } from 'file-saver'
+import FileSaver from 'file-saver'
 import { Observable, map } from 'rxjs'
 
 import { Action, ObjectDetailItem, PortalMessageService, UserService } from '@onecx/portal-integration-angular'
@@ -270,8 +270,8 @@ export class WorkspaceDetailComponent implements OnInit {
             },
             {
               label: data['ACTIONS.EXPORT.LABEL'],
-              title: data['ACTIONS.EXPORT.PORTAL'],
-              actionCallback: () => (this.workspaceDownloadVisible = true),
+              title: data['ACTIONS.EXPORT.WORKSPACE'],
+              actionCallback: () => this.onExportWorkspace(),
               icon: 'pi pi-download',
               show: 'always',
               permission: 'WORKSPACE#EXPORT',

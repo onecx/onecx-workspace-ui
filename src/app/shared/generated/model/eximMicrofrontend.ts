@@ -11,8 +11,8 @@
  */
 
 
-export interface EximSubjectLink { 
-    label?: string;
-    url?: string;
+export interface EximMicrofrontend { 
+    appId?: string;
+    basePath?: string;
 }
 

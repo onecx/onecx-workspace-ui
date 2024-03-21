@@ -10,7 +10,7 @@
  * Do not edit the class manually.
  */
 import { MenuSnapshot } from './menuSnapshot';
-import { EximSubjectLink } from './eximSubjectLink';
+import { EximProduct } from './eximProduct';
 import { EximWorkspaceAddress } from './eximWorkspaceAddress';
 
 
@@ -25,9 +25,8 @@ export interface EximWorkspace {
     rssFeedUrl?: string;
     footerLabel?: string;
     logoUrl?: string;
+    products?: Array<EximProduct>;
     address?: EximWorkspaceAddress;
-    subjectLinks?: Array<EximSubjectLink>;
-    imageUrls?: Array<string>;
     menu?: MenuSnapshot;
 }
 
