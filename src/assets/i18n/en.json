@@ -63,8 +63,7 @@
       "LABEL": "Export",
       "TOOLTIP": "Export definition in JSON format",
       "MENU": "Export Menu definition in JSON format",
-      "WORKSPACE": "Download the current Workspace definition in JSON format.",
-      "THEME_INCLUDE": "Include the Theme definition in the export"
+      "WORKSPACE": "Download the current Workspace definition in JSON format."
     },
     "IMPORT": {
       "LABEL": "Import",
@@ -330,14 +329,12 @@
   },
   "WORKSPACE_EXPORT": {
     "THEME_CHECKBOX_HEADER": "Export Workspace Definition",
-    "THEME_CHECKBOX_MESSAGE": "Download the current Workspace definition as JSON file. You can also integrate the Theme definition.",
+    "THEME_CHECKBOX_MESSAGE": "Download the current Workspace definition as JSON file.",
     "THEME_LOADING": "...is loading",
-    "THEME_NOT_AVALIABLE": "no available themes",
-    "THEME_NOT_SPECIFIED_MESSAGE": "Theme cannot be exported because it was not specified in Workspace"
+    "THEME_NOT_AVALIABLE": "no available themes"
   },
   "WORKSPACE_IMPORT": {
     "IMPORT_WORKSPACE": "Import Workspace",
-    "IMPORT_THEME": "Import Theme",
     "FROM_JSON": "from JSON File",
     "IMPORT": "Import",
     "IMPORT_TOOLTIP": "Import a Workspace definition",
@@ -351,10 +348,10 @@
     "PREVIEW_MENU": "Menu Structure",
     "CONFIRMATION": "Confirmation",
     "SUMMARY": "Summary",
-    "WORKSPACE_NAME": "Workspace Name",
+    "WORKSPACE_NAME": "Workspace",
+    "WORKSPACE_NAME.TOOLTIP": "Name of the new Workspace",
     "WORKSPACE_IMPORT_OK": "The Workspace definition has been checked and can be imported.",
     "WORKSPACE_EXISTS_MESSAGE": "A Workspace with this name already exists. Its definition is overwritten.",
-    "THEME_EXISTS_MESSAGE": "A theme with this name already exists. Its definition is overwritten.",
     "BASE_URL_EXISTS_MESSAGE": "A Workspace with this Base URL already exists. Using it again will likely cause problems.",
     "BASE_URL_MISSING": "A Base URL is required.",
     "SYNCHRONIZE_PERMISSIONS": "Synchronize permissions",
@@ -362,12 +359,10 @@
     "WORKSPACE_IMPORT_CREATE_SUCCESS": "The Workspace was sucessfully created.",
     "WORKSPACE_IMPORT_UPDATE_SUCCESS": "The Workspace was sucessfully updated.",
     "WORKSPACE_IMPORT_ERROR": "An error occurred, the Workspace could not be created/updated.",
-    "INVALID_IMPORT_FILE": "The Workspace import file is invalid",
+    "INVALID_IMPORT_FILE": "The Workspace file is invalid",
     "MISSING": "missing.",
     "INVALID_MENU_ITEMS": "One or more menu items are not valid",
-    "IMPORT_THEME_SUCCESS": "The theme was sucessfully imported.",
-    "IMPORT_THEME_FAIL": "An error occurred, the theme was not imported.",
-    "WORKSPACE_FORM_MISSING_FILES": " Workspace or Theme files are missing.",
+    "WORKSPACE_FORM_MISSING_FILES": " Workspace file is missing",
     "THEME_COLOR_PRIMARY": "Primary color",
     "THEME_COLOR_SECONDARY": "Secondary color",
     "THEME_COLOR_TEXT": "Text color",
@@ -377,8 +372,6 @@
     "VALIDATION_WORKSPACE_MISSING": "No Workspace definition included/found",
     "VALIDATION_WORKSPACE_NAME_MISSING": "No Workspace name included/found",
     "VALIDATION_WORKSPACE_ROLES_MISSING": "No Workspace roles included/found",
-    "VALIDATION_THEME_NAME_MISSING": "No theme name found/found in theme definition",
-    "VALIDATION_THEME_NOT_EXIST": "No theme definition included/found",
     "VALIDATION_MENU_NOT_EXIST": "No menu definition included/found",
     "VALIDATION_MENU_ITEM_KEY_MISSING": "The key is missing in a menu item",
     "VALIDATION_MENU_ITEM_NAME_MISSING": "The name is missing in a menu item",

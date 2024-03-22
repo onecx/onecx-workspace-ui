@@ -123,7 +123,7 @@ describe('WorkspaceSearchComponent', () => {
 
     component.search()
 
-    expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'SEARCH.MSG_NO_RESULTS' })
+    expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.SEARCH.NO_DATA' })
   })
 
   it('should display error if API call fails', () => {
@@ -131,7 +131,7 @@ describe('WorkspaceSearchComponent', () => {
 
     component.search()
 
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'SEARCH.ERROR' })
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.SEARCH.ERROR' })
   })
 
   it('should call filter table onFilterChange', () => {

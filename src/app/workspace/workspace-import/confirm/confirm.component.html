@@ -1,48 +1,53 @@
 <div class="px-1">
   <div class="flex flex-wrap align-items-center gap-3 mb-2">
     <span class="p-float-label">
-      <input pInputText type="text" readonly id="workspace_import_confirm_workspace_name" [(ngModel)]="workspaceName" />
+      <input
+        pInputText
+        type="text"
+        readonly
+        class="w-16rem"
+        id="workspace_import_confirm_workspace_name"
+        [(ngModel)]="workspaceName"
+      />
       <label for="workspace_import_confirm_workspace_name">{{ 'WORKSPACE.NAME' | translate }}</label>
     </span>
     <span class="p-float-label">
-      <input pInputText type="text" readonly id="workspace_import_confirm_theme_name" [(ngModel)]="themeName" />
+      <input
+        pInputText
+        type="text"
+        readonly
+        class="w-16rem"
+        id="workspace_import_confirm_theme_name"
+        [(ngModel)]="themeName"
+      />
       <label for="workspace_import_confirm_theme_name">{{ 'WORKSPACE.THEME' | translate }}</label>
     </span>
-    <app-theme-color-box
-      *ngIf="themeProperties"
-      id="workspace_import_confirm_theme_color_box"
-      [properties]="themeProperties"
-      styleClass="h-inputtext w-15rem"
-    />
+    <span class="p-float-label">
+      <input
+        pInputText
+        type="text"
+        readonly
+        class="w-16rem"
+        id="workspace_import_confirm_base_url"
+        [(ngModel)]="baseUrl"
+      />
+      <label for="workspace_import_confirm_base_url">{{ 'WORKSPACE.BASE_URL' | translate }}</label>
+    </span>
   </div>
+
   <div class="flex flex-wrap align-items-center row-gap-1 mb-4">
     <p-message
-      *ngIf="!(workspaceNameExists || themeNameExists)"
+      *ngIf="!(workspaceNameExists || baseUrlExists)"
       id="workspace_import_confirm_message_import_ok"
       severity="info"
       [text]="'WORKSPACE_IMPORT.WORKSPACE_IMPORT_OK' | translate"
     ></p-message>
     <p-message
-      *ngIf="workspaceNameExists && !hasPermission"
+      *ngIf="workspaceNameExists"
       id="workspace_import_confirm_message_workspace_exists"
       severity="warn"
       [text]="'WORKSPACE_IMPORT.WORKSPACE_EXISTS_MESSAGE' | translate"
     ></p-message>
-    <p-message
-      *ngIf="themeNameExists"
-      id="workspace_import_confirm_message_theme_exists"
-      severity="warn"
-      [text]="'WORKSPACE_IMPORT.THEME_EXISTS_MESSAGE' | translate"
-    ></p-message>
-  </div>
-
-  <div class="flex flex-wrap align-items-center gap-3 mb-2">
-    <span class="p-float-label">
-      <input pInputText type="text" readonly id="workspace_import_confirm_base_url" [(ngModel)]="baseUrl" />
-      <label for="workspace_import_confirm_base_url">{{ 'WORKSPACE.BASE_URL' | translate }}</label>
-    </span>
-  </div>
-  <div class="flex flex-wrap align-items-center row-gap-1">
     <p-message
       *ngIf="baseUrlExists"
       id="workspace_import_confirm_message_base_url_exists"

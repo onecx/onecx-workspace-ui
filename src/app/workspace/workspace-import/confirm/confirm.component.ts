@@ -9,16 +9,12 @@ import { WorkspaceAPIService, SearchWorkspacesResponse, WorkspaceAbstract } from
 export class ConfirmComponent implements OnInit {
   @Input() public workspaceName?: string
   @Input() public themeName?: string
-  @Input() public themeProperties?: any
-  @Input() public importThemeCheckbox = false
   @Input() public hasPermission = false
   @Input() public baseUrl?: string
   @Output() public isLoading = new EventEmitter<boolean>(true)
 
   private workspaces!: WorkspaceAbstract[] | undefined
   public workspaceNameExists = false
-  public themes: string[] = []
-  public themeNameExists = false
   public baseUrlExists = false
   public baseUrlIsMissing = false
 
@@ -26,20 +22,14 @@ export class ConfirmComponent implements OnInit {
 
   public ngOnInit(): void {
     this.baseUrlIsMissing = this.baseUrl === undefined || this.baseUrl.length === 0
-    this.fetchWorkspacesAndThemes()
+    this.fetchWorkspace()
   }
 
-  private fetchWorkspacesAndThemes(): void {
+  private fetchWorkspace(): void {
     this.workspaceApi.searchWorkspaces({ searchWorkspacesRequest: {} }).subscribe((value: SearchWorkspacesResponse) => {
       this.workspaces = value.stream
       this.checkWorkspaceUniqueness()
-      /* if (this.themeName) {
-        this.workspaceApi.getAllThemes().subscribe((themes: any) => {
-          this.themes = themes
-          this.checkThemeNames()
-          this.isLoading.emit(false)
-        })
-      } else  */ this.isLoading.emit(false)
+      this.isLoading.emit(false)
     })
   }
 
@@ -56,14 +46,5 @@ export class ConfirmComponent implements OnInit {
         }
       }
     }
-  }
-
-  public checkThemeNames(): void {
-    this.themeNameExists = false
-    this.themes.forEach((theme) => {
-      if (theme === this.themeName) {
-        this.themeNameExists = true
-      }
-    })
   }
 }

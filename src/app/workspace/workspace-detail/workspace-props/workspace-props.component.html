@@ -133,7 +133,7 @@
           </span>
         </div>
 
-        <div class="flex flex-wrap sm:flex-nowrap align-items-center pb-2 row-gap-2 column-gap-4">
+        <div class="flex flex-wrap sm:flex-nowrap align-items-center mb-1 row-gap-2 column-gap-4">
           <input hidden type="file" accept="image/*" #selectedFileInputLogo (change)="onFileUpload($event, 'logo')" />
           <app-image-container
             [id]="'workspace_detail_form_logo_image'"
@@ -142,7 +142,7 @@
             [title]="'IMAGE.TOOLTIPS.' + (fetchingLogoUrl ? 'IMAGE' : 'PLACEHOLDER') | translate"
           ></app-image-container>
           <div class="flex flex-column w-full">
-            <div class="p-inputgroup mb-1" controlErrorAnchor>
+            <div class="p-inputgroup" controlErrorAnchor>
               <span class="p-float-label">
                 <input
                   pInputText

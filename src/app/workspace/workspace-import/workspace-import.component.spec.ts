@@ -26,13 +26,10 @@ class MockConfirmComponent {
   public workspaceName = 'portal name'
   public themeName = 'theme name'
   public baseUrl = 'base url'
-  public tenantId = 'tenant id'
   public workspaceNameExists = false
   public themeNameExists = false
   public baseUrlExists = false
   public baseUrlIsMissing = false
-  public portalTenantExists = false
-  public importThemeCheckbox = false
   public hasPermission = false
 }
 
@@ -40,7 +37,6 @@ class MockPreviewComponent {
   public workspaceName = 'portal name'
   public themeName = 'theme name'
   public baseUrl = 'base url'
-  public tenantId = 'tenant id'
 }
 
 describe('WorkspaceImportComponent', () => {
@@ -143,8 +139,6 @@ describe('WorkspaceImportComponent', () => {
     }
     component.importRequestDTO = workspaceSnap
     component.hasPermission = true
-    // component.tenantId = 'id'
-    component.importThemeCheckbox = false
     component.confirmComponent = new MockConfirmComponent() as unknown as ConfirmComponent
     if (component.confirmComponent) {
       component.confirmComponent.workspaceNameExists = false
@@ -169,8 +163,6 @@ describe('WorkspaceImportComponent', () => {
     }
     component.importRequestDTO = workspaceSnap
     component.hasPermission = true
-    // component.tenantId = 'id'
-    component.importThemeCheckbox = true
     component.confirmComponent = new MockConfirmComponent() as unknown as ConfirmComponent
     if (component.confirmComponent) {
       component.confirmComponent.workspaceNameExists = false
@@ -198,8 +190,6 @@ describe('WorkspaceImportComponent', () => {
     }
     component.importRequestDTO = workspaceSnap
     component.hasPermission = true
-    // component.tenantId = 'id'
-    component.importThemeCheckbox = false
     component.confirmComponent = new MockConfirmComponent() as unknown as ConfirmComponent
     if (component.confirmComponent) {
       component.confirmComponent.workspaceNameExists = true
@@ -232,8 +222,6 @@ describe('WorkspaceImportComponent', () => {
     }
     component.importRequestDTO = workspaceSnap
     component.hasPermission = true
-    // component.tenantId = 'id'
-    component.importThemeCheckbox = false
     component.confirmComponent = new MockConfirmComponent() as unknown as ConfirmComponent
     if (component.confirmComponent) {
       component.confirmComponent.workspaceNameExists = true
@@ -260,8 +248,6 @@ describe('WorkspaceImportComponent', () => {
     component.importRequestDTO = workspaceSnap
     apiServiceSpy.importWorkspaces.and.returnValue(throwError(() => new Error()))
     component.hasPermission = true
-    // component.tenantId = 'id'
-    component.importThemeCheckbox = false
 
     component.importWorkspace()
 
@@ -315,7 +301,6 @@ describe('WorkspaceImportComponent', () => {
     expect(component.workspaceName).toEqual(component.previewComponent?.workspaceName)
     expect(component.themeName).toEqual(component.previewComponent?.themeName)
     expect(component.baseUrl).toEqual(component.previewComponent?.baseUrl)
-    // expect(component.tenantId).toEqual(component.previewComponent?.tenantId)
   })
 
   it('should set values from confirm component on back when activeIndex is 2 (confirm)', () => {

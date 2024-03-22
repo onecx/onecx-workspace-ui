@@ -16,19 +16,16 @@
     <app-import-choose-file *ngSwitchCase="0" (importFileSelected)="next($event)"></app-import-choose-file>
     <app-import-preview
       *ngSwitchCase="1"
-      [importThemeCheckbox]="importThemeCheckbox"
       [importRequestDTO]="importRequestDTO!"
       [hasPermission]="hasPermission"
       (isFormValide)="handleFormValidation($event)"
     ></app-import-preview>
     <app-import-confirm
       *ngSwitchCase="2"
-      [importThemeCheckbox]="hasPermission"
       [hasPermission]="hasPermission"
       [workspaceName]="workspaceName"
       [baseUrl]="baseUrl"
       [themeName]="themeName"
-      [themeProperties]="importRequestDTO!"
       (isLoading)="handleIsLoading($event)"
     ></app-import-confirm>
   </div>

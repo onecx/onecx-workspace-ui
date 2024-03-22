@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, Output, EventEmitter, OnChanges } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { TreeNode, SelectItem } from 'primeng/api'
-import { /* first,  map, */ Observable, map, of } from 'rxjs'
+import { Observable, map } from 'rxjs'
 
 import {
   EximWorkspaceMenuItem,
@@ -18,12 +18,11 @@ import { forceFormValidation } from 'src/app/shared/utils'
 })
 export class PreviewComponent implements OnInit, OnChanges {
   @Input() public importRequestDTO!: WorkspaceSnapshot
-  @Input() public importThemeCheckbox = false
   @Input() public hasPermission = false
   @Output() public isFormValide = new EventEmitter<boolean>()
 
   public formGroup!: FormGroup
-  public themes$: Observable<SelectItem<string>[]> = of([])
+  public themes$!: Observable<SelectItem<string>[]>
   public workspaceName = ''
   public themeName!: string
   public baseUrl = ''
@@ -35,10 +34,7 @@ export class PreviewComponent implements OnInit, OnChanges {
   constructor(private workspaceService: WorkspaceAPIService) {
     this.formGroup = new FormGroup({
       workspaceName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
-      themeName: new FormControl(
-        null,
-        !this.importThemeCheckbox ? [Validators.required, Validators.minLength(2), Validators.maxLength(50)] : []
-      ),
+      themeName: new FormControl(null),
       baseUrl: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(100)])
     })
 
@@ -84,15 +80,6 @@ export class PreviewComponent implements OnInit, OnChanges {
 
   public ngOnChanges(): void {
     this.fillForm()
-    if (this.importThemeCheckbox) {
-      this.formGroup.controls['themeName'].addValidators([
-        Validators.required,
-        Validators.minLength(2),
-        Validators.maxLength(50)
-      ])
-    } else {
-      this.formGroup.controls['themeName'].clearValidators()
-    }
     // trigger validation to be up-to-date
     forceFormValidation(this.formGroup)
     this.onModelChange()

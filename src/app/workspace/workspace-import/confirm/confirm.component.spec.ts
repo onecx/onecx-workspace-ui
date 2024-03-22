@@ -24,13 +24,6 @@ describe('ConfirmComponent', () => {
   const apiServiceSpy = {
     searchWorkspaces: jasmine.createSpy('searchWorkspaces').and.returnValue(of({}))
   }
-  const themeServiceSpy = jasmine.createSpyObj('ThemeService', ['getThemes'])
-  themeServiceSpy.getThemes.and.returnValue(
-    of([
-      { label: undefined, value: 'theme1' },
-      { label: undefined, value: 'theme2' }
-    ])
-  )
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -46,10 +39,7 @@ describe('ConfirmComponent', () => {
         // })
       ],
       schemas: [NO_ERRORS_SCHEMA],
-      providers: [
-        { provide: WorkspaceAPIService, useValue: apiServiceSpy }
-        // { provide: ThemesAPIService, useValue: themeServiceSpy }
-      ]
+      providers: [{ provide: WorkspaceAPIService, useValue: apiServiceSpy }]
     }).compileComponents()
 
     apiServiceSpy.searchWorkspaces.calls.reset()
@@ -76,28 +66,6 @@ describe('ConfirmComponent', () => {
     expect(component.baseUrlIsMissing).toBeTrue()
   })
 
-  it('should also fetch themes OnInit if themeName exists', () => {
-    apiServiceSpy.searchWorkspaces.and.returnValue(of([]))
-    themeServiceSpy.getThemes.and.returnValue(of([]))
-    spyOn(component, 'checkThemeNames')
-    component.themeName = 'name'
-
-    component.ngOnInit()
-
-    expect(component.checkThemeNames).toHaveBeenCalled()
-  })
-
-  // it('should set workspaceTenantExists to true in checkWorkspaceUniqueness onInit if permission', () => {
-  //   apiServiceSpy.searchWorkspaces.and.returnValue(of([workspace]))
-  //   component.hasPermission = true
-  //   component.workspaceName = 'name'
-  //   component.tenantId = 'id'
-
-  //   component.ngOnInit()
-
-  //   expect(component.workspaceTenantExists).toBeTrue()
-  // })
-
   it('should set workspaceNameExists to true in checkWorkspaceUniqueness onInit if no permission', () => {
     apiServiceSpy.searchWorkspaces.and.returnValue(of([workspace]))
     component.hasPermission = false
@@ -116,16 +84,5 @@ describe('ConfirmComponent', () => {
     component.ngOnInit()
 
     expect(component.baseUrlExists).toBeTrue()
-  })
-
-  it('should set themeNameExists to true in checkWorkspaceUniqueness onInit', () => {
-    apiServiceSpy.searchWorkspaces.and.returnValue(of([workspace]))
-    themeServiceSpy.getThemes.and.returnValue(of([{ name: 'theme' }]))
-    component.hasPermission = false
-    component.themeName = 'theme'
-
-    component.ngOnInit()
-
-    expect(component.themeNameExists).toBeTrue()
   })
 })

@@ -24,6 +24,7 @@ import { ListboxModule } from 'primeng/listbox'
 import { MultiSelectModule } from 'primeng/multiselect'
 import { OverlayPanelModule } from 'primeng/overlaypanel'
 import { PanelModule } from 'primeng/panel'
+import { PickListModule } from 'primeng/picklist'
 import { SelectButtonModule } from 'primeng/selectbutton'
 import { StepsModule } from 'primeng/steps'
 import { TabViewModule } from 'primeng/tabview'
@@ -73,6 +74,7 @@ export function apiConfigProvider(configService: ConfigurationService, appStateS
     MultiSelectModule,
     OverlayPanelModule,
     PanelModule,
+    PickListModule,
     ReactiveFormsModule,
     SelectButtonModule,
     StepsModule,
@@ -127,6 +129,7 @@ export function apiConfigProvider(configService: ConfigurationService, appStateS
     MultiSelectModule,
     OverlayPanelModule,
     PanelModule,
+    PickListModule,
     ReactiveFormsModule,
     SelectButtonModule,
     StepsModule,

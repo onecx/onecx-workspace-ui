@@ -20,7 +20,6 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
   @ViewChild(PreviewComponent) public previewComponent?: PreviewComponent
   @ViewChild(ConfirmComponent) public confirmComponent?: ConfirmComponent
 
-  public importThemeCheckbox = false
   public themeCheckboxEnabled = false
   public syncPermCheckbox = true
   public isFormValid = true
@@ -69,8 +68,6 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
     this.baseUrl = ''
     this.baseUrlOrg = ''
     this.isFormValid = true
-    this.themeCheckboxEnabled = false
-    this.importThemeCheckbox = false
     this.importRequestDTO = undefined
     this.activeIndex = 0
   }
@@ -102,15 +99,6 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
       // this.importRequestDTO.synchronizePermissions = this.syncPermCheckbox
       this.importRequestDTO.workspaces[key[0]].baseUrl = this.baseUrl
     }
-
-    // Theme
-    // if (this.importRequestDTO.workspaces) {
-    //   if (!this.importThemeCheckbox) {
-    //     this.importRequestDTO.workspaces[key[0]].theme = undefined
-    //   } else {
-    //     this.importRequestDTO.workspaces[key[0]].theme = this.themeName
-    //   }
-    // }
 
     // Microfontends: convert Set to Array what the backend expects
     // the default is {} which is not a Set !

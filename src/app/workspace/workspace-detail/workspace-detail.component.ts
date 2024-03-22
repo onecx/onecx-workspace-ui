@@ -71,7 +71,7 @@ export class WorkspaceDetailComponent implements OnInit {
         },
         error: () => {
           // TODO: stay on the page and display an error message
-          this.msgService.error({ summaryKey: 'SEARCH.ERROR', detailKey: 'DIALOG.WORKSPACE.NOT_FOUND' })
+          this.msgService.error({ summaryKey: 'ACTIONS.SEARCH.ERROR', detailKey: 'DIALOG.WORKSPACE.NOT_FOUND' })
           this.onClose() // if workspace was not found then go back
         }
       })

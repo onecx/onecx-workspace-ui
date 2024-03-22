@@ -114,12 +114,12 @@ export class WorkspaceSearchComponent implements OnInit {
         next: (value: SearchWorkspacesResponse) => {
           this.workspaces = value.stream
           if (value.totalElements === 0) {
-            this.msgService.info({ summaryKey: 'SEARCH.MSG_NO_RESULTS' })
+            this.msgService.info({ summaryKey: 'ACTIONS.SEARCH.NO_DATA' })
           }
           this.sortField = this.defaultSortField
         },
         error: () => {
-          this.msgService.error({ summaryKey: 'SEARCH.ERROR' })
+          this.msgService.error({ summaryKey: 'ACTIONS.SEARCH.ERROR' })
         }
       })
   }

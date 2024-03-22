@@ -55,7 +55,6 @@ describe('PreviewComponent', () => {
         })
       ],
       schemas: [NO_ERRORS_SCHEMA]
-      // providers: [{ provide: ThemesAPIService, useValue: themeServiceSpy }]
     }).compileComponents()
     themeServiceSpy.getThemes.calls.reset()
   }))
@@ -96,11 +95,9 @@ describe('PreviewComponent', () => {
   xit('should fillForm, addValidators to formGroup and call onModelChange OnChanges: import theme checkbox enabled', () => {
     spyOn(component, 'fillForm')
     spyOn(component, 'onModelChange')
-    component.importThemeCheckbox = true
 
     component.ngOnChanges()
 
-    expect(component.formGroup.controls['themeName'].validator).toBeDefined()
     expect(component.fillForm).toHaveBeenCalled()
     expect(component.onModelChange).toHaveBeenCalled()
   })
@@ -112,9 +109,6 @@ describe('PreviewComponent', () => {
     expect(component.formGroup.controls['workspaceName'].value).toEqual(
       component.importRequestDTO?.workspaces?.['workspace'].name
     )
-    // expect(component.formGroup.controls['themeName'].value).toEqual(
-    //   component.importRequestDTO?.workspaces?.['workspace'].theme
-    // )
     expect(component.formGroup.controls['baseUrl'].value).toEqual(
       component.importRequestDTO?.workspaces?.['workspace'].baseUrl
     )
@@ -127,9 +121,6 @@ describe('PreviewComponent', () => {
     component.onModelChange()
 
     expect(component.workspaceName).toEqual(component.importRequestDTO?.workspaces?.['workspace'].name!)
-    // expect(component.formGroup.controls['tenantId'].value).toEqual(
-    //   component.importRequestDTO?.workspaces?.['workspace'].tenantId
-    // )
   })
 
   it('should behave correctly onThemeChange', () => {

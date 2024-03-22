@@ -170,7 +170,7 @@ describe('WorkspaceDetailComponent', () => {
     component.ngOnInit()
 
     expect(msgServiceSpy.error).toHaveBeenCalledWith({
-      summaryKey: 'SEARCH.ERROR',
+      summaryKey: 'ACTIONS.SEARCH.ERROR',
       detailKey: 'DIALOG.WORKSPACE.NOT_FOUND'
     })
   })
