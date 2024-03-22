@@ -424,7 +424,7 @@
     }
   },
   "IMAGE": {
-    "LOGO_URL": "Logo URL",
+    "LOGO_URL": "Externe Logo URL",
     "FAVICON_URL": "Favicon URL",
     "UPLOAD_FAIL": "Die Datei wurde nicht erfolgreich hochgeladen",
     "UPLOAD_SUCCESS": "Die Datei wurde erfolgreich hochgeladen",
