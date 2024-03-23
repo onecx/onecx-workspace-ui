@@ -1,4 +1,4 @@
-<div class="px-1">
+<div class="mt-3 px-1">
   <div class="flex flex-wrap align-items-center gap-3 mb-2">
     <span class="p-float-label">
       <input
@@ -8,8 +8,11 @@
         class="w-16rem"
         id="workspace_import_confirm_workspace_name"
         [(ngModel)]="workspaceName"
+        [pTooltip]="'WORKSPACE_IMPORT.WORKSPACE_NAME.TOOLTIP' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
       />
-      <label for="workspace_import_confirm_workspace_name">{{ 'WORKSPACE.NAME' | translate }}</label>
+      <label for="workspace_import_confirm_workspace_name">{{ 'WORKSPACE_IMPORT.WORKSPACE_NAME' | translate }}</label>
     </span>
     <span class="p-float-label">
       <input
@@ -19,6 +22,9 @@
         class="w-16rem"
         id="workspace_import_confirm_theme_name"
         [(ngModel)]="themeName"
+        [pTooltip]="'WORKSPACE_IMPORT.THEME_NAME.TOOLTIP' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
       />
       <label for="workspace_import_confirm_theme_name">{{ 'WORKSPACE.THEME' | translate }}</label>
     </span>
@@ -30,18 +36,15 @@
         class="w-16rem"
         id="workspace_import_confirm_base_url"
         [(ngModel)]="baseUrl"
+        [pTooltip]="'WORKSPACE_IMPORT.BASE_URL.TOOLTIP' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
       />
       <label for="workspace_import_confirm_base_url">{{ 'WORKSPACE.BASE_URL' | translate }}</label>
     </span>
   </div>
 
-  <div class="flex flex-wrap align-items-center row-gap-1 mb-4">
-    <p-message
-      *ngIf="!(workspaceNameExists || baseUrlExists)"
-      id="workspace_import_confirm_message_import_ok"
-      severity="info"
-      [text]="'WORKSPACE_IMPORT.WORKSPACE_IMPORT_OK' | translate"
-    ></p-message>
+  <div class="flex flex-wrap align-items-center row-gap-1 my-4">
     <p-message
       *ngIf="workspaceNameExists"
       id="workspace_import_confirm_message_workspace_exists"
@@ -59,6 +62,12 @@
       id="workspace_import_confirm_message_base_url_missing"
       severity="error"
       [text]="'WORKSPACE_IMPORT.BASE_URL_MISSING' | translate"
+    ></p-message>
+    <p-message
+      *ngIf="importResponse"
+      id="workspace_import_confirm_message_import_error"
+      severity="error"
+      [text]="'WORKSPACE_IMPORT.RESPONSE.ERROR' | translate"
     ></p-message>
   </div>
 </div>

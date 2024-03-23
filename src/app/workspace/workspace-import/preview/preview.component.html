@@ -1,5 +1,5 @@
 <form [formGroup]="formGroup" errorTailor>
-  <div class="flex flex-wrap align-items-top gap-3">
+  <div class="mt-3 flex flex-wrap align-items-top gap-3">
     <div>
       <span class="p-float-label" controlErrorAnchor>
         <input
@@ -7,11 +7,11 @@
           type="text"
           class="w-16rem"
           id="workspace_import_preview_workspace_name"
-          (keyup)="onModelChange()"
           formControlName="workspaceName"
+          (keyup)="onModelChange()"
           [pTooltip]="'WORKSPACE_IMPORT.WORKSPACE_NAME.TOOLTIP' | translate"
           tooltipPosition="top"
-          tooltipEvent="focus"
+          tooltipEvent="hover"
         />
         <label class="ocx-required-label" for="workspace_import_preview_workspace_name">
           {{ 'WORKSPACE_IMPORT.WORKSPACE_NAME' | translate }}
@@ -27,9 +27,9 @@
           styleClass="w-16rem inputgroup-dropdown-with-link input-field-correction"
           [options]="(themes$ | async) || [themeName]"
           (onChange)="onThemeChange($event)"
-          [pTooltip]="'WORKSPACE.THEME' | translate"
+          [pTooltip]="'WORKSPACE_IMPORT.THEME_NAME.TOOLTIP' | translate"
           tooltipPosition="top"
-          tooltipEvent="focus"
+          tooltipEvent="hover"
         >
         </p-dropdown>
         <label class="ocx-required-label" for="workspace_import_preview_themeName">
@@ -44,8 +44,11 @@
           type="text"
           class="w-16rem"
           id="workspace_import_preview_base_url"
-          (keyup)="onModelChange()"
           formControlName="baseUrl"
+          (keyup)="onModelChange()"
+          [pTooltip]="'WORKSPACE_IMPORT.BASE_URL.TOOLTIP' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
         />
         <label class="ocx-required-label" for="workspace_import_preview_base_url">
           {{ 'WORKSPACE.BASE_URL' | translate }}
@@ -55,27 +58,42 @@
   </div>
 
   <p-tabView styleClass="mt-4 mb-2">
-    <p-tabPanel [header]="'WORKSPACE_IMPORT.PREVIEW_MENU' | translate">
-      <p-tree
-        styleClass="py-1 px-0 max-h-25rem overflow-y-auto"
-        id="workspace_import_preview_menu"
-        [value]="menuItems"
-      ></p-tree>
+    <p-tabPanel
+      [header]="'TABS.WORKSPACE.MENU' | translate"
+      [tooltip]="'TABS.WORKSPACE.TOOLTIPS.MENU' | translate"
+      tooltipPosition="top"
+      tooltipEvent="focus|hover"
+    >
+      <div class="mb-1 mx-3">
+        <p-tree
+          styleClass="py-1 px-0 max-h-25rem overflow-y-auto"
+          id="workspace_import_preview_menu"
+          [value]="menuItems"
+          [emptyMessage]="'DIALOG.MENU.MENU_NOT_EXIST' | translate"
+        ></p-tree>
+      </div>
     </p-tabPanel>
-    <p-tabPanel [header]="'TABS.WORKSPACE.ROLES' | translate">
+    <p-tabPanel
+      [header]="'TABS.WORKSPACE.ROLES' | translate"
+      [tooltip]="'TABS.WORKSPACE.TOOLTIPS.ROLES' | translate"
+      tooltipPosition="top"
+      tooltipEvent="focus|hover"
+    >
       <div class="mt-1 mb-2 mx-3">
         <div *ngIf="workspaceRoles.length === 0">{{ 'ROLE.ROLES_NOT_EXIST' | translate }}</div>
         <div *ngIf="workspaceRoles.length > 0">{{ workspaceRoles.join(', ') }}</div>
       </div>
     </p-tabPanel>
-    <!-- <p-tabPanel [header]="'WORKSPACE.TABS.MFES' | translate">
-        <div *ngIf="portalMfes.length === 0" class="mt-1 mb-2 mx-3">{{ 'DETAIL.MFES_NOT_EXIST' | translate }}</div>
-        <table *ngIf="portalMfes.length > 0">
-          <tr *ngFor="let mfe of portalMfes">
-            <td class="pb-1 px-4">{{ mfe.mfeId }}</td>
-            <td class="pb-1 px-4">{{ mfe.baseUrl }}</td>
-          </tr>
-        </table>
-      </p-tabPanel> -->
+    <p-tabPanel
+      [header]="'TABS.WORKSPACE.PRODUCTS' | translate"
+      [tooltip]="'TABS.WORKSPACE.TOOLTIPS.PRODUCTS' | translate"
+      tooltipPosition="top"
+      tooltipEvent="focus|hover"
+    >
+      <div class="mt-1 mb-2 mx-3">
+        <div *ngIf="workspaceProducts.length === 0">{{ 'PRODUCTS.MESSAGES.NOTHING_REGISTERED' | translate }}</div>
+        <div *ngIf="workspaceProducts.length > 0">{{ workspaceProducts.join(', ') }}</div>
+      </div>
+    </p-tabPanel>
   </p-tabView>
 </form>

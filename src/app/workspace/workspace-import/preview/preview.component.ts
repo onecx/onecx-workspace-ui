@@ -28,8 +28,8 @@ export class PreviewComponent implements OnInit, OnChanges {
   public baseUrl = ''
   public themeProperties: any = null
   public menuItems: TreeNode[] = []
-  // public portalMfes = new Array<MicrofrontendRegistrationDTO>()
-  public workspaceRoles = new Array<string>()
+  public workspaceRoles: string[] = []
+  public workspaceProducts: string[] = []
 
   constructor(private workspaceService: WorkspaceAPIService) {
     this.formGroup = new FormGroup({

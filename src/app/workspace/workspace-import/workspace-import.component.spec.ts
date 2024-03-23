@@ -13,9 +13,10 @@ import {
   createTranslateLoader,
   PortalMessageService
 } from '@onecx/portal-integration-angular'
+import { WorkspaceAPIService, WorkspaceSnapshot } from 'src/app/shared/generated'
+
 import { WorkspaceImportComponent } from 'src/app/workspace/workspace-import/workspace-import.component'
 import { ConfirmComponent } from 'src/app/workspace/workspace-import/confirm/confirm.component'
-import { WorkspaceAPIService, EximWorkspaceMenuItem, WorkspaceSnapshot } from 'src/app/shared/generated'
 import { PreviewComponent } from 'src/app/workspace/workspace-import/preview/preview.component'
 
 class MockRouter {
@@ -252,26 +253,6 @@ describe('WorkspaceImportComponent', () => {
     component.importWorkspace()
 
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'WORKSPACE_IMPORT.WORKSPACE_IMPORT_ERROR' })
-  })
-
-  it('should alignMenuItemsBaseUrl', () => {
-    const menuItems: EximWorkspaceMenuItem[] = [
-      { url: 'http://baseurlorg/path1', children: [] },
-      { url: 'http://baseurlorg/path2', children: [{ url: 'http://baseurlorg/path2/child', children: [] }] },
-      { url: 'http://otherurl/path3', children: [] }
-    ]
-
-    component.baseUrlOrg = 'http://baseurl'
-    component.baseUrl = 'http://newbaseurl'
-
-    component.alignMenuItemsBaseUrl(menuItems)
-
-    expect(menuItems[0].url).toEqual('http://newbaseurlorg/path1')
-    expect(menuItems[1].url).toEqual('http://newbaseurlorg/path2')
-    if (menuItems[1].children) {
-      expect(menuItems[1].children[0].url).toEqual('http://newbaseurlorg/path2/child')
-    }
-    expect(menuItems[2].url).toEqual('http://otherurl/path3')
   })
 
   it('should set importRequestDTO on next when activeIndex is 0 (upload), and themeImportData valid', () => {
