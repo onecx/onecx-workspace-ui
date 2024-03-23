@@ -1,13 +1,13 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { HttpClient } from '@angular/common/http'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { of } from 'rxjs'
 
 import { AppStateService, createTranslateLoader } from '@onecx/portal-integration-angular'
-import { PreviewComponent } from 'src/app/workspace/workspace-import/preview/preview.component'
 import { WorkspaceSnapshot } from 'src/app/shared/generated'
+import { PreviewComponent } from './preview.component'
 
 const snapshot: WorkspaceSnapshot = {
   workspaces: {

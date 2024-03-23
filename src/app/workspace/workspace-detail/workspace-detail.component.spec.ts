@@ -17,10 +17,11 @@ import {
   createTranslateLoader,
   PortalMessageService
 } from '@onecx/portal-integration-angular'
-import { WorkspaceDetailComponent } from 'src/app/workspace/workspace-detail/workspace-detail.component'
-import { WorkspaceContactComponent } from 'src/app/workspace/workspace-detail/workspace-contact/workspace-contact.component'
-import { WorkspacePropsComponent } from 'src/app/workspace/workspace-detail/workspace-props/workspace-props.component'
 import { Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
+
+import { WorkspaceDetailComponent } from './workspace-detail.component'
+import { WorkspaceContactComponent } from './workspace-contact/workspace-contact.component'
+import { WorkspacePropsComponent } from './workspace-props/workspace-props.component'
 
 class MockRouter {
   navigate = jasmine.createSpy('navigate')

@@ -15,9 +15,9 @@ import {
 } from '@onecx/portal-integration-angular'
 import { WorkspaceAPIService, WorkspaceSnapshot } from 'src/app/shared/generated'
 
-import { WorkspaceImportComponent } from 'src/app/workspace/workspace-import/workspace-import.component'
-import { ConfirmComponent } from 'src/app/workspace/workspace-import/confirm/confirm.component'
-import { PreviewComponent } from 'src/app/workspace/workspace-import/preview/preview.component'
+import { WorkspaceImportComponent } from './workspace-import.component'
+import { ConfirmComponent } from './confirm/confirm.component'
+import { PreviewComponent } from './preview/preview.component'
 
 class MockRouter {
   navigate = jasmine.createSpy('navigate')

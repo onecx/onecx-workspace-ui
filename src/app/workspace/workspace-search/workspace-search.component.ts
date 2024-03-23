@@ -4,7 +4,6 @@ import { finalize, Observable, map } from 'rxjs'
 import { TranslateService } from '@ngx-translate/core'
 
 import { Action, DataViewControlTranslations, PortalMessageService } from '@onecx/portal-integration-angular'
-import { limitText } from 'src/app/shared/utils'
 import {
   ImagesInternalAPIService,
   SearchWorkspacesResponse,
@@ -12,6 +11,7 @@ import {
   WorkspaceAPIService,
   WorkspaceAbstract
 } from 'src/app/shared/generated'
+import { limitText } from 'src/app/shared/utils'
 
 @Component({
   selector: 'app-workspace-search',

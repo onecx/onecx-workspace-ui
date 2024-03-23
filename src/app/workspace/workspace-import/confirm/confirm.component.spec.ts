@@ -5,9 +5,8 @@ import { HttpClientTestingModule } from '@angular/common/http/testing'
 // import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { of } from 'rxjs'
 
-// import { HttpLoaderFactory } from 'src/app/shared/shared.module'
-import { ConfirmComponent } from 'src/app/workspace/workspace-import/confirm/confirm.component'
 import { WorkspaceAPIService } from 'src/app/shared/generated'
+import { ConfirmComponent } from './confirm.component'
 
 const workspace = {
   workspaceName: 'name',

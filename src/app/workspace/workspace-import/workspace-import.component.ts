@@ -1,13 +1,13 @@
 import { Component, OnInit, ViewChild, Input, Output, EventEmitter, OnChanges } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
-import { MenuItem } from 'primeng/api'
 import { TranslateService } from '@ngx-translate/core'
+import { MenuItem } from 'primeng/api'
 
 import { PortalMessageService, UserService } from '@onecx/portal-integration-angular'
-
-import { PreviewComponent } from 'src/app/workspace/workspace-import/preview/preview.component'
-import { ConfirmComponent } from 'src/app/workspace/workspace-import/confirm/confirm.component'
 import { ImportResponseStatus, WorkspaceAPIService, WorkspaceSnapshot } from 'src/app/shared/generated'
+
+import { PreviewComponent } from './preview/preview.component'
+import { ConfirmComponent } from './confirm/confirm.component'
 
 export type ImportResponse = { workspace: ImportResponseStatus; menu: ImportResponseStatus }
 
