@@ -25,7 +25,7 @@
           id="workspace_import_preview_theme"
           formControlName="theme"
           styleClass="w-16rem inputgroup-dropdown-with-link input-field-correction"
-          [options]="(themes$ | async) || [themeName]"
+          [options]="(themes$ | async)?.sort(sortByLocale) || [themeName]"
           (onChange)="onModelChange()"
           [pTooltip]="'WORKSPACE_IMPORT.THEME_NAME.TOOLTIP' | translate"
           tooltipPosition="top"

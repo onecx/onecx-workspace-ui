@@ -59,7 +59,7 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
       footerLabel: new FormControl(null, [Validators.maxLength(255)]),
       description: new FormControl(null, [Validators.maxLength(255)])
     })
-    this.themes$ = this.workspaceApi.getAllThemes().pipe(map((val: any[]) => val.sort(sortByLocale)))
+    this.themes$ = this.workspaceApi.getAllThemes().pipe(map((val: any[]) => val))
   }
 
   public ngOnChanges(): void {

@@ -33,7 +33,7 @@ export class PreviewComponent implements OnInit, OnChanges {
       theme: new FormControl(null),
       baseUrl: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(100)])
     })
-    this.themes$ = this.workspaceApi.getAllThemes().pipe(map((val: any[]) => val.sort(sortByLocale)))
+    this.themes$ = this.workspaceApi.getAllThemes().pipe(map((val: any[]) => val))
   }
 
   public ngOnInit(): void {
