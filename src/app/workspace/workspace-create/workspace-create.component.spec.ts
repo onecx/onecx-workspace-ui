@@ -1,18 +1,17 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { WorkspaceCreateComponent } from './workspace-create.component'
-import { TranslateModule, TranslateLoader } from '@ngx-translate/core'
+import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core'
 import { ReactiveFormsModule } from '@angular/forms'
 import { RouterTestingModule } from '@angular/router/testing'
-import { NO_ERRORS_SCHEMA } from '@angular/core'
 // import { By } from '@angular/platform-browser'
 import { ConfirmationService, MessageService } from 'primeng/api'
 import { DropdownModule } from 'primeng/dropdown'
 
 import { environment } from 'src/environments/environment'
 import { APP_CONFIG, AppStateService, createTranslateLoader } from '@onecx/portal-integration-angular'
-// import { PortalInternalAPIService } from 'src/app/generated'
+import { WorkspaceCreateComponent } from './workspace-create.component'
 
 describe('WorkspaceCreateComponent', () => {
   let component: WorkspaceCreateComponent
@@ -35,12 +34,7 @@ describe('WorkspaceCreateComponent', () => {
           }
         })
       ],
-      providers: [
-        { provide: APP_CONFIG, useValue: environment },
-        // PortalInternalAPIService,
-        MessageService,
-        ConfirmationService
-      ],
+      providers: [{ provide: APP_CONFIG, useValue: environment }, MessageService, ConfirmationService],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents()
   }))

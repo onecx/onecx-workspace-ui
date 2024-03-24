@@ -1,7 +1,8 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core'
-import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { Location } from '@angular/common'
-import { Observable, of } from 'rxjs'
+import { FormControl, FormGroup, Validators } from '@angular/forms'
+import { map, Observable } from 'rxjs'
+import { SelectItem } from 'primeng/api/selectitem'
 
 import { PortalMessageService } from '@onecx/portal-integration-angular'
 
@@ -27,9 +28,7 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
   public formGroup: FormGroup
 
   public mfeRList: { label: string | undefined; value: string }[] = []
-  public themes$: Observable<any[]> = of([])
-  public themes: string[] = []
-  public theme: string | undefined
+  public themes$: Observable<SelectItem<string>[]>
   public urlPattern = '/base-path-to-workspace'
   public copyToClipboard = copyToClipboard
   public sortByLocale = sortByLocale
@@ -60,6 +59,7 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
       footerLabel: new FormControl(null, [Validators.maxLength(255)]),
       description: new FormControl(null, [Validators.maxLength(255)])
     })
+    this.themes$ = this.workspaceApi.getAllThemes().pipe(map((val: any[]) => val.sort(sortByLocale)))
   }
 
   public ngOnChanges(): void {
@@ -83,13 +83,6 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
       })
     }
     this.fetchingLogoUrl = this.getImageUrl()
-    if (this.workspace.theme) {
-      this.themes[0] = this.workspace.theme
-    } else {
-      this.workspaceApi.getAllThemes().subscribe((themes) => {
-        this.themes = [''].concat(themes)
-      })
-    }
   }
 
   public setFormData(): void {

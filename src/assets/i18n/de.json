@@ -424,10 +424,10 @@
   },
   "IMAGE": {
     "LOGO_URL": "Externe Logo URL",
-    "FAVICON_URL": "Favicon URL",
     "UPLOAD_FAIL": "Die Datei wurde nicht erfolgreich hochgeladen",
     "UPLOAD_SUCCESS": "Die Datei wurde erfolgreich hochgeladen",
     "TOOLTIPS": {
+      "LOGO_URL": "Als Alternative zum Hochladen kann hier eine URL zu einem Bild angegeben werden",
       "IMAGE": "Logo",
       "PLACEHOLDER": "Bild Platzhalter",
       "UPLOAD": "Bild auswählen und hochladen"

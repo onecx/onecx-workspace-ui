@@ -423,11 +423,11 @@
     }
   },
   "IMAGE": {
-    "LOGO_URL": "Logo URL",
-    "FAVICON_URL": "Favicon URL",
+    "LOGO_URL": "External Logo URL",
     "UPLOAD_FAIL": " The file was not uploaded successfully",
     "UPLOAD_SUCCESS": "The file was uploaded successfully",
     "TOOLTIPS": {
+      "LOGO_URL": "As an alternative to uploading, a URL to an image can be specified here",
       "IMAGE": "Logo",
       "PLACEHOLDER": "Image Placeholder",
       "UPLOAD": "Select and upload image"

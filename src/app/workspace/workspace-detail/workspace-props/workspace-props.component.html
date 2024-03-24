@@ -27,7 +27,7 @@
               id="workspace_detail_form_theme"
               formControlName="theme"
               styleClass="w-full input-field-correction"
-              [options]="themes"
+              [options]="(themes$ | async) || [workspace.theme]"
               [pTooltip]="'WORKSPACE.THEME' | translate"
               tooltipPosition="top"
               tooltipEvent="focus"
@@ -153,7 +153,7 @@
                 ? 'p-disabled'
                 : 'cursor-pointer'
             "
-            [title]="'LOGO.TOOLTIPS.UPLOAD' | translate"
+            [title]="'IMAGE.TOOLTIPS.UPLOAD' | translate"
             (click)="editMode ? selectedFileInputLogo.click() : null"
           ></button>
           <span class="p-float-label w-full">
@@ -161,11 +161,12 @@
               pInputText
               type="text"
               class="w-full"
-              id="workspace_detail_form_logo"
+              id="workspace_detail_form_logo_url"
+              [title]="'IMAGE.TOOLTIPS.LOGO_URL' | translate"
               formControlName="logoUrl"
               (blur)="onInputChange($event)"
             />
-            <label for="workspace_detail_form_logo"> {{ 'IMAGE.LOGO_URL' | translate }} </label>
+            <label for="workspace_detail_form_logo_url"> {{ 'IMAGE.LOGO_URL' | translate }} </label>
           </span>
         </div>
 
