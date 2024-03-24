@@ -1,16 +1,13 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-// import { HttpClient } from '@angular/common/http'
-// import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { Router } from '@angular/router'
 import { ActivatedRoute } from '@angular/router'
-// import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { of, throwError } from 'rxjs'
 
 import { PortalMessageService } from '@onecx/portal-integration-angular'
-// import { HttpLoaderFactory } from 'src/app/shared/shared.module'
-import { WorkspaceSearchComponent } from 'src/app/workspace/workspace-search/workspace-search.component'
 import { Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
+
+import { WorkspaceSearchComponent } from './workspace-search.component'
 
 class MockRouter {
   navigate = jasmine.createSpy('navigate')
@@ -123,7 +120,7 @@ describe('WorkspaceSearchComponent', () => {
 
     component.search()
 
-    expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'SEARCH.MSG_NO_RESULTS' })
+    expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.SEARCH.NO_DATA' })
   })
 
   it('should display error if API call fails', () => {
@@ -131,7 +128,7 @@ describe('WorkspaceSearchComponent', () => {
 
     component.search()
 
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'SEARCH.ERROR' })
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.SEARCH.ERROR' })
   })
 
   it('should call filter table onFilterChange', () => {

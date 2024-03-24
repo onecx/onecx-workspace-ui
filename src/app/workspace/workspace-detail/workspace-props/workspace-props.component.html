@@ -27,7 +27,7 @@
               id="workspace_detail_form_theme"
               formControlName="theme"
               styleClass="w-full input-field-correction"
-              [options]="themes"
+              [options]="(themes$ | async)?.sort(sortByLocale) || [workspace.theme]"
               [pTooltip]="'WORKSPACE.THEME' | translate"
               tooltipPosition="top"
               tooltipEvent="focus"
@@ -133,7 +133,7 @@
           </span>
         </div>
 
-        <div class="flex flex-wrap sm:flex-nowrap align-items-center pb-2 row-gap-2 column-gap-4">
+        <div class="flex flex-wrap sm:flex-nowrap align-items-center mb-1 row-gap-2 column-gap-4">
           <input hidden type="file" accept="image/*" #selectedFileInputLogo (change)="onFileUpload($event, 'logo')" />
           <app-image-container
             [id]="'workspace_detail_form_logo_image'"
@@ -141,35 +141,33 @@
             [small]="true"
             [title]="'IMAGE.TOOLTIPS.' + (fetchingLogoUrl ? 'IMAGE' : 'PLACEHOLDER') | translate"
           ></app-image-container>
-          <div class="flex flex-column w-full">
-            <div class="p-inputgroup mb-1" controlErrorAnchor>
-              <span class="p-float-label">
-                <input
-                  pInputText
-                  type="text"
-                  id="workspace_detail_form_logo"
-                  formControlName="logoUrl"
-                  (blur)="onInputChange($event)"
-                />
-                <label for="workspace_detail_form_logo"> {{ 'IMAGE.LOGO_URL' | translate }} </label>
-              </span>
-              <span
-                id="workspace_detail_form_upload_logo2"
-                class="p-inputgroup-addon bg-primary pseudo-button"
-                [ngClass]="
-                  !editMode ||
-                  this.formGroup.controls['name'].value === '' ||
-                  this.formGroup.controls['name'].value === null
-                    ? 'p-disabled'
-                    : 'cursor-pointer'
-                "
-                [title]="'IMAGE.TOOLTIPS.UPLOAD' | translate"
-                (click)="editMode ? selectedFileInputLogo.click() : null"
-              >
-                <span class="pi pi-upload"></span>
-              </span>
-            </div>
-          </div>
+          <button
+            pButton
+            id="product_detail_item_upload_logo2"
+            icon="pi pi-upload"
+            class="action-button p-button-icon-only"
+            [ngClass]="
+              !editMode ||
+              this.formGroup.controls['name'].value === '' ||
+              this.formGroup.controls['name'].value === null
+                ? 'p-disabled'
+                : 'cursor-pointer'
+            "
+            [title]="'IMAGE.TOOLTIPS.UPLOAD' | translate"
+            (click)="editMode ? selectedFileInputLogo.click() : null"
+          ></button>
+          <span class="p-float-label w-full">
+            <input
+              pInputText
+              type="text"
+              class="w-full"
+              id="workspace_detail_form_logo_url"
+              [title]="'IMAGE.TOOLTIPS.LOGO_URL' | translate"
+              formControlName="logoUrl"
+              (blur)="onInputChange($event)"
+            />
+            <label for="workspace_detail_form_logo_url"> {{ 'IMAGE.LOGO_URL' | translate }} </label>
+          </span>
         </div>
 
         <span class="p-float-label mb-1" controlErrorAnchor>

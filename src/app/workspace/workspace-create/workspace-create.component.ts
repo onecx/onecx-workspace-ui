@@ -2,7 +2,7 @@ import { Component, Output, EventEmitter } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
-import { Observable, map, of } from 'rxjs'
+import { Observable, map } from 'rxjs'
 import { SelectItem } from 'primeng/api/selectitem'
 import { FileUpload } from 'primeng/fileupload'
 
@@ -24,7 +24,7 @@ import {
 export class WorkspaceCreateComponent {
   @Output() toggleCreationDialogEvent = new EventEmitter()
 
-  themes$: Observable<SelectItem<string>[]> = of([])
+  public themes$: Observable<SelectItem<string>[]>
   public formGroup: FormGroup
   private workspace!: Workspace
   public hasPermission = false
@@ -49,7 +49,7 @@ export class WorkspaceCreateComponent {
   ) {
     this.formGroup = new FormGroup({
       name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
-      themeName: new FormControl(null /* , [Validators.required] */),
+      theme: new FormControl(null),
       homePage: new FormControl(null, [Validators.maxLength(255)]),
       logoUrl: new FormControl('', [Validators.maxLength(255)]),
       baseUrl: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.pattern('^/.*')]),
@@ -67,10 +67,10 @@ export class WorkspaceCreateComponent {
   }
 
   savePortal() {
-    this.createPortalDto()
+    this.workspace = { ...this.formGroup.value }
     this.workspaceApi
       .createWorkspace({
-        createWorkspaceRequest: { resource: this.workspace }
+        createWorkspaceRequest: { resource: this.formGroup.value }
       })
       .pipe()
       .subscribe({
@@ -84,10 +84,6 @@ export class WorkspaceCreateComponent {
           this.message.error({ summaryKey: 'ACTIONS.CREATE.MESSAGE.CREATE_NOK' })
         }
       })
-  }
-
-  private createPortalDto(): void {
-    this.workspace = { ...this.formGroup.value }
   }
 
   // former used to check the size of the image

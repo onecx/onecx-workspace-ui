@@ -4,7 +4,6 @@ import { finalize, Observable, map } from 'rxjs'
 import { TranslateService } from '@ngx-translate/core'
 
 import { Action, DataViewControlTranslations, PortalMessageService } from '@onecx/portal-integration-angular'
-import { limitText } from 'src/app/shared/utils'
 import {
   ImagesInternalAPIService,
   SearchWorkspacesResponse,
@@ -12,6 +11,7 @@ import {
   WorkspaceAPIService,
   WorkspaceAbstract
 } from 'src/app/shared/generated'
+import { limitText } from 'src/app/shared/utils'
 
 @Component({
   selector: 'app-workspace-search',
@@ -63,6 +63,7 @@ export class WorkspaceSearchComponent implements OnInit {
           }
         })
       )
+      .subscribe()
   }
 
   private prepareActionButtons() {
@@ -114,12 +115,12 @@ export class WorkspaceSearchComponent implements OnInit {
         next: (value: SearchWorkspacesResponse) => {
           this.workspaces = value.stream
           if (value.totalElements === 0) {
-            this.msgService.info({ summaryKey: 'SEARCH.MSG_NO_RESULTS' })
+            this.msgService.info({ summaryKey: 'ACTIONS.SEARCH.NO_DATA' })
           }
           this.sortField = this.defaultSortField
         },
         error: () => {
-          this.msgService.error({ summaryKey: 'SEARCH.ERROR' })
+          this.msgService.error({ summaryKey: 'ACTIONS.SEARCH.ERROR' })
         }
       })
   }

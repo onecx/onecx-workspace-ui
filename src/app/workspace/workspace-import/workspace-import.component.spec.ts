@@ -13,10 +13,11 @@ import {
   createTranslateLoader,
   PortalMessageService
 } from '@onecx/portal-integration-angular'
-import { WorkspaceImportComponent } from 'src/app/workspace/workspace-import/workspace-import.component'
-import { ConfirmComponent } from 'src/app/workspace/workspace-import/confirm/confirm.component'
-import { WorkspaceAPIService, EximWorkspaceMenuItem, WorkspaceSnapshot } from 'src/app/shared/generated'
-import { PreviewComponent } from 'src/app/workspace/workspace-import/preview/preview.component'
+import { WorkspaceAPIService, WorkspaceSnapshot } from 'src/app/shared/generated'
+
+import { WorkspaceImportComponent } from './workspace-import.component'
+import { ConfirmComponent } from './confirm/confirm.component'
+import { PreviewComponent } from './preview/preview.component'
 
 class MockRouter {
   navigate = jasmine.createSpy('navigate')
@@ -26,13 +27,10 @@ class MockConfirmComponent {
   public workspaceName = 'portal name'
   public themeName = 'theme name'
   public baseUrl = 'base url'
-  public tenantId = 'tenant id'
   public workspaceNameExists = false
   public themeNameExists = false
   public baseUrlExists = false
   public baseUrlIsMissing = false
-  public portalTenantExists = false
-  public importThemeCheckbox = false
   public hasPermission = false
 }
 
@@ -40,7 +38,6 @@ class MockPreviewComponent {
   public workspaceName = 'portal name'
   public themeName = 'theme name'
   public baseUrl = 'base url'
-  public tenantId = 'tenant id'
 }
 
 describe('WorkspaceImportComponent', () => {
@@ -143,8 +140,6 @@ describe('WorkspaceImportComponent', () => {
     }
     component.importRequestDTO = workspaceSnap
     component.hasPermission = true
-    // component.tenantId = 'id'
-    component.importThemeCheckbox = false
     component.confirmComponent = new MockConfirmComponent() as unknown as ConfirmComponent
     if (component.confirmComponent) {
       component.confirmComponent.workspaceNameExists = false
@@ -169,8 +164,6 @@ describe('WorkspaceImportComponent', () => {
     }
     component.importRequestDTO = workspaceSnap
     component.hasPermission = true
-    // component.tenantId = 'id'
-    component.importThemeCheckbox = true
     component.confirmComponent = new MockConfirmComponent() as unknown as ConfirmComponent
     if (component.confirmComponent) {
       component.confirmComponent.workspaceNameExists = false
@@ -198,8 +191,6 @@ describe('WorkspaceImportComponent', () => {
     }
     component.importRequestDTO = workspaceSnap
     component.hasPermission = true
-    // component.tenantId = 'id'
-    component.importThemeCheckbox = false
     component.confirmComponent = new MockConfirmComponent() as unknown as ConfirmComponent
     if (component.confirmComponent) {
       component.confirmComponent.workspaceNameExists = true
@@ -232,8 +223,6 @@ describe('WorkspaceImportComponent', () => {
     }
     component.importRequestDTO = workspaceSnap
     component.hasPermission = true
-    // component.tenantId = 'id'
-    component.importThemeCheckbox = false
     component.confirmComponent = new MockConfirmComponent() as unknown as ConfirmComponent
     if (component.confirmComponent) {
       component.confirmComponent.workspaceNameExists = true
@@ -260,32 +249,10 @@ describe('WorkspaceImportComponent', () => {
     component.importRequestDTO = workspaceSnap
     apiServiceSpy.importWorkspaces.and.returnValue(throwError(() => new Error()))
     component.hasPermission = true
-    // component.tenantId = 'id'
-    component.importThemeCheckbox = false
 
     component.importWorkspace()
 
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'WORKSPACE_IMPORT.WORKSPACE_IMPORT_ERROR' })
-  })
-
-  it('should alignMenuItemsBaseUrl', () => {
-    const menuItems: EximWorkspaceMenuItem[] = [
-      { url: 'http://baseurlorg/path1', children: [] },
-      { url: 'http://baseurlorg/path2', children: [{ url: 'http://baseurlorg/path2/child', children: [] }] },
-      { url: 'http://otherurl/path3', children: [] }
-    ]
-
-    component.baseUrlOrg = 'http://baseurl'
-    component.baseUrl = 'http://newbaseurl'
-
-    component.alignMenuItemsBaseUrl(menuItems)
-
-    expect(menuItems[0].url).toEqual('http://newbaseurlorg/path1')
-    expect(menuItems[1].url).toEqual('http://newbaseurlorg/path2')
-    if (menuItems[1].children) {
-      expect(menuItems[1].children[0].url).toEqual('http://newbaseurlorg/path2/child')
-    }
-    expect(menuItems[2].url).toEqual('http://otherurl/path3')
   })
 
   it('should set importRequestDTO on next when activeIndex is 0 (upload), and themeImportData valid', () => {
@@ -315,7 +282,6 @@ describe('WorkspaceImportComponent', () => {
     expect(component.workspaceName).toEqual(component.previewComponent?.workspaceName)
     expect(component.themeName).toEqual(component.previewComponent?.themeName)
     expect(component.baseUrl).toEqual(component.previewComponent?.baseUrl)
-    // expect(component.tenantId).toEqual(component.previewComponent?.tenantId)
   })
 
   it('should set values from confirm component on back when activeIndex is 2 (confirm)', () => {

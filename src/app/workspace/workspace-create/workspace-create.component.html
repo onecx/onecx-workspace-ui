@@ -19,8 +19,8 @@
     <div>
       <span class="p-float-label">
         <p-dropdown
-          id="workspace_create_item_themeName"
-          formControlName="themeName"
+          id="workspace_create_item_theme"
+          formControlName="theme"
           styleClass="w-full"
           [options]="(themes$ | async) || []"
           [pTooltip]="'WORKSPACE.THEME' | translate"
@@ -28,25 +28,9 @@
           tooltipEvent="focus"
         >
         </p-dropdown>
-        <label class="ocx-required-label" for="workspace_create_item_themeName">
+        <label class="ocx-required-label" for="workspace_create_item_theme">
           {{ 'WORKSPACE.THEME' | translate }}
         </label>
-      </span>
-    </div>
-
-    <div>
-      <span class="p-float-label" controlErrorAnchor>
-        <input
-          pInputText
-          type="text"
-          id="workspace_create_item_homePage"
-          class="w-full pt-3 pb-2"
-          formControlName="homePage"
-          [pTooltip]="'WORKSPACE.HOME_PAGE' | translate"
-          tooltipPosition="top"
-          tooltipEvent="focus"
-        />
-        <label for="workspace_create_item_homePage"> {{ 'WORKSPACE.HOME_PAGE' | translate }} </label>
       </span>
     </div>
 
@@ -69,6 +53,22 @@
       <label class="ocx-control-hint block mt-1">
         {{ ('VALIDATION.HINTS.FORMAT_URL' | translate) + urlPattern }}
       </label>
+    </div>
+
+    <div>
+      <span class="p-float-label" controlErrorAnchor>
+        <input
+          pInputText
+          type="text"
+          id="workspace_create_item_homePage"
+          class="w-full pt-3 pb-2"
+          formControlName="homePage"
+          [pTooltip]="'WORKSPACE.HOME_PAGE' | translate"
+          tooltipPosition="top"
+          tooltipEvent="focus"
+        />
+        <label for="workspace_create_item_homePage"> {{ 'WORKSPACE.HOME_PAGE' | translate }} </label>
+      </span>
     </div>
 
     <div class="flex flex-wrap sm:flex-nowrap align-items-center row-gap-2 column-gap-4">

@@ -1,39 +1,26 @@
 <div class="border-solid border-1 border-black-alpha-20 border-round-sm bg-gray-50 px-3">
   <p-steps [model]="steps" [activeIndex]="activeIndex"></p-steps>
 
-  <div class="flex flex-wrap justify-content-start column-gap-8 row-gap-2 mt-3 mb-5 mx-2">
-    <p-checkbox
-      class="p-element mr-2"
-      [disabled]="activeIndex !== 2"
-      [(ngModel)]="syncPermCheckbox"
-      [label]="'WORKSPACE_IMPORT.SYNCHRONIZE_PERMISSIONS' | translate"
-      [binary]="true"
-      inputId="workspace_import_sync_perm"
-    ></p-checkbox>
-  </div>
-
   <div [ngSwitch]="activeIndex" class="p-0 mx-0 mb-2">
     <app-import-choose-file *ngSwitchCase="0" (importFileSelected)="next($event)"></app-import-choose-file>
     <app-import-preview
       *ngSwitchCase="1"
-      [importThemeCheckbox]="importThemeCheckbox"
       [importRequestDTO]="importRequestDTO!"
       [hasPermission]="hasPermission"
       (isFormValide)="handleFormValidation($event)"
     ></app-import-preview>
     <app-import-confirm
       *ngSwitchCase="2"
-      [importThemeCheckbox]="hasPermission"
       [hasPermission]="hasPermission"
       [workspaceName]="workspaceName"
       [baseUrl]="baseUrl"
       [themeName]="themeName"
-      [themeProperties]="importRequestDTO!"
       (isLoading)="handleIsLoading($event)"
+      [importResponse]="importResponse"
     ></app-import-confirm>
   </div>
 
-  <div class="flex flex-wrap justify-content-end gap-2 my-2 px-1">
+  <div class="flex flex-wrap justify-content-end gap-2 my-2">
     <p-button
       *ngIf="activeIndex > 0"
       id="workspace_import_button_restart"

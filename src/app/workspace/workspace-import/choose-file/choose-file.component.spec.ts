@@ -188,23 +188,6 @@ describe('ChooseFileComponent', () => {
     expect(component.validationErrorCause).toEqual('undefinedroles missing')
   })
 
-  it('should validate a request DTO: missing theme name error', () => {
-    const obj = {
-      portal: {
-        portalName: ['name'],
-        portalRoles: ['role'],
-        microfrontendRegistrations: new Set([{ version: 1 }])
-      },
-      menuItems: [{ name: 'menu', key: 'key', position: 1, disabled: true, portalExit: true }],
-      themeImportData: { name: '' }
-    }
-    const data = { 'WORKSPACE_IMPORT.VALIDATION_THEME_NAME_MISSING': 'theme name missing' }
-
-    ;(component as any).isPortalImportRequestDTO(obj, data)
-
-    expect(component.validationErrorCause).toEqual('undefinedtheme name missing')
-  })
-
   it('should validate a request DTO: missing menu item key error', () => {
     const obj = {
       portal: {

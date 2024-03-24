@@ -1,15 +1,10 @@
 import { Component, Input, OnInit, Output, EventEmitter, OnChanges } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { TreeNode, SelectItem } from 'primeng/api'
-import { /* first,  map, */ Observable, map, of } from 'rxjs'
+import { Observable, map } from 'rxjs'
 
-import {
-  EximWorkspaceMenuItem,
-  WorkspaceSnapshot,
-  // MicrofrontendRegistrationDTO
-  WorkspaceAPIService
-} from 'src/app/shared/generated'
-import { forceFormValidation } from 'src/app/shared/utils'
+import { EximProduct, EximWorkspaceMenuItem, WorkspaceSnapshot, WorkspaceAPIService } from 'src/app/shared/generated'
+import { forceFormValidation, sortByLocale } from 'src/app/shared/utils'
 
 @Component({
   selector: 'app-import-preview',
@@ -18,81 +13,45 @@ import { forceFormValidation } from 'src/app/shared/utils'
 })
 export class PreviewComponent implements OnInit, OnChanges {
   @Input() public importRequestDTO!: WorkspaceSnapshot
-  @Input() public importThemeCheckbox = false
   @Input() public hasPermission = false
   @Output() public isFormValide = new EventEmitter<boolean>()
 
   public formGroup!: FormGroup
-  public themes$: Observable<SelectItem<string>[]> = of([])
+  public themes$: Observable<SelectItem<string>[]>
   public workspaceName = ''
   public themeName!: string
   public baseUrl = ''
   public themeProperties: any = null
-  public menuItems: TreeNode[] = []
-  // public portalMfes = new Array<MicrofrontendRegistrationDTO>()
-  public workspaceRoles = new Array<string>()
+  public menuItems!: TreeNode[]
+  public workspaceRoles: string[] = []
+  public workspaceProducts!: string[]
+  public sortByLocale = sortByLocale
 
-  constructor(private workspaceService: WorkspaceAPIService) {
+  constructor(private workspaceApi: WorkspaceAPIService) {
     this.formGroup = new FormGroup({
       workspaceName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
-      themeName: new FormControl(
-        null,
-        !this.importThemeCheckbox ? [Validators.required, Validators.minLength(2), Validators.maxLength(50)] : []
-      ),
+      theme: new FormControl(null),
       baseUrl: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(100)])
     })
-
-    this.themes$ = this.workspaceService
-      .getAllThemes()
-      .pipe(map((val) => val.map((theme) => ({ label: theme, value: theme || '' }))))
+    this.themes$ = this.workspaceApi.getAllThemes().pipe(map((val: any[]) => val))
   }
 
   public ngOnInit(): void {
     let key: string[] = []
     if (this.importRequestDTO.workspaces) {
       key = Object.keys(this.importRequestDTO.workspaces)
-    }
-    if (this.importRequestDTO.workspaces) {
       this.workspaceName = this.importRequestDTO.workspaces[key[0]].name || ''
       this.themeName = this.importRequestDTO?.workspaces[key[0]].theme
         ? this.importRequestDTO?.workspaces[key[0]].theme
-        : this.formGroup.controls['themeName'].value || ''
+        : this.formGroup.controls['theme'].value || ''
       this.baseUrl = this.importRequestDTO.workspaces[key[0]].baseUrl || ''
       this.menuItems = this.mapToTreeNodes(this.importRequestDTO.workspaces[key[0]].menu?.menu?.menuItems)
-      // check mfe existence
-      // if (this.importRequestDTO.portal.microfrontendRegistrations) {
-      //   this.portalMfes = Array.from(this.importRequestDTO.portal.microfrontendRegistrations)
-      // }
-      /*
-      if (this.importRequestDTO.workspaces[key[0]].workspaceRoles) {
-        this.workspaceRoles = Array.from(this.importRequestDTO.workspaces[key[0]].workspaceRoles!)
-      }*/
+      this.workspaceProducts = this.extractProductNames(this.importRequestDTO.workspaces[key[0]].products)
     }
-    // error handling if no theme name or no match with existing themes
-    // this.themes$.pipe(first()).subscribe((themes) => {
-    //   if (themes.length > 0) {
-    //     const matchingTheme = themes.find((theme) => theme.value === this.themeName)
-    //     if (!this.themeName || !matchingTheme) {
-    //       const firstTheme = themes[0]
-    //       this.themeName = firstTheme.value
-    //     }
-    //     this.formGroup.controls['themeName'].setValue(this.themeName)
-    //     this.onModelChange()
-    //   }
-    // })
   }
 
   public ngOnChanges(): void {
     this.fillForm()
-    if (this.importThemeCheckbox) {
-      this.formGroup.controls['themeName'].addValidators([
-        Validators.required,
-        Validators.minLength(2),
-        Validators.maxLength(50)
-      ])
-    } else {
-      this.formGroup.controls['themeName'].clearValidators()
-    }
     // trigger validation to be up-to-date
     forceFormValidation(this.formGroup)
     this.onModelChange()
@@ -105,7 +64,7 @@ export class PreviewComponent implements OnInit, OnChanges {
     }
     if (this.importRequestDTO.workspaces) {
       this.formGroup.controls['workspaceName'].setValue(this.importRequestDTO?.workspaces[key[0]].name)
-      this.formGroup.controls['themeName'].setValue(this.importRequestDTO?.workspaces[key[0]].theme)
+      this.formGroup.controls['theme'].setValue(this.importRequestDTO?.workspaces[key[0]].theme)
       this.formGroup.controls['baseUrl'].setValue(this.importRequestDTO?.workspaces[key[0]].baseUrl)
     }
   }
@@ -116,19 +75,15 @@ export class PreviewComponent implements OnInit, OnChanges {
       key = Object.keys(this.importRequestDTO.workspaces)
     }
     this.workspaceName = this.formGroup.controls['workspaceName'].value
-    this.themeName = this.formGroup.controls['themeName'].value
+    this.themeName = this.formGroup.controls['theme'].value
     this.baseUrl = this.formGroup.controls['baseUrl'].value
+    // update origin => used in the import-detail component
     if (this.importRequestDTO.workspaces) {
       this.importRequestDTO.workspaces[key[0]].name = this.workspaceName
       this.importRequestDTO.workspaces[key[0]].theme = this.themeName
       this.importRequestDTO.workspaces[key[0]].baseUrl = this.baseUrl
     }
     this.isFormValide.emit(this.formGroup.valid)
-  }
-
-  public onThemeChange(event: any): void {
-    this.themeName = event.value
-    this.onModelChange()
   }
 
   private mapToTreeNodes(items?: EximWorkspaceMenuItem[]): TreeNode[] {
@@ -156,5 +111,11 @@ export class PreviewComponent implements OnInit, OnChanges {
       leaf: true,
       children: []
     }
+  }
+
+  private extractProductNames(products?: EximProduct[]): string[] {
+    const par: string[] = []
+    if (products) for (let p of products) par.push(p.productName ?? '')
+    return par
   }
 }

@@ -5,9 +5,9 @@ import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 
 import { AppStateService, createTranslateLoader } from '@onecx/portal-integration-angular'
-import { WorkspaceInternComponent } from 'src/app/workspace/workspace-detail/workspace-intern/workspace-intern.component'
+import { WorkspaceInternComponent } from './workspace-intern.component'
 
-describe('WorkspaceInternComponent', () => {
+fdescribe('WorkspaceInternComponent', () => {
   let component: WorkspaceInternComponent
   let fixture: ComponentFixture<WorkspaceInternComponent>
 
@@ -41,7 +41,7 @@ describe('WorkspaceInternComponent', () => {
     fixture.detectChanges()
   })
 
-  fit('should create', () => {
+  it('should create', () => {
     expect(component).toBeTruthy()
   })
 })

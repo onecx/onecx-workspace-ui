@@ -1,13 +1,15 @@
 import { Component, OnInit, ViewChild, Input, Output, EventEmitter, OnChanges } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
-import { MenuItem } from 'primeng/api'
 import { TranslateService } from '@ngx-translate/core'
+import { MenuItem } from 'primeng/api'
 
 import { PortalMessageService, UserService } from '@onecx/portal-integration-angular'
+import { ImportResponseStatus, WorkspaceAPIService, WorkspaceSnapshot } from 'src/app/shared/generated'
 
-import { PreviewComponent } from 'src/app/workspace/workspace-import/preview/preview.component'
-import { ConfirmComponent } from 'src/app/workspace/workspace-import/confirm/confirm.component'
-import { WorkspaceAPIService, EximWorkspaceMenuItem, WorkspaceSnapshot } from 'src/app/shared/generated'
+import { PreviewComponent } from './preview/preview.component'
+import { ConfirmComponent } from './confirm/confirm.component'
+
+export type ImportResponse = { workspace: ImportResponseStatus; menu: ImportResponseStatus }
 
 @Component({
   selector: 'app-workspace-import',
@@ -20,20 +22,20 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
   @ViewChild(PreviewComponent) public previewComponent?: PreviewComponent
   @ViewChild(ConfirmComponent) public confirmComponent?: ConfirmComponent
 
-  public importThemeCheckbox = false
   public themeCheckboxEnabled = false
-  public syncPermCheckbox = true
   public isFormValid = true
   public steps: MenuItem[] = []
   public activeIndex = 0
   public isLoading = false
   public workspaceName = ''
+  public workspaceNameOrg = ''
   public themeName = ''
   public baseUrl = ''
   public baseUrlOrg: string | undefined = undefined // the original
   public importRequestDTO?: WorkspaceSnapshot
   public activeThemeCheckboxInFirstStep = true
   public hasPermission = false
+  public importResponse: ImportResponse | undefined = undefined
 
   constructor(
     private readonly user: UserService,
@@ -68,11 +70,11 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
     this.themeName = ''
     this.baseUrl = ''
     this.baseUrlOrg = ''
+    this.workspaceNameOrg = ''
     this.isFormValid = true
-    this.themeCheckboxEnabled = false
-    this.importThemeCheckbox = false
     this.importRequestDTO = undefined
     this.activeIndex = 0
+    this.importResponse = undefined
   }
 
   // triggered by PREVIEW => NEXT button enabled?
@@ -91,85 +93,63 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
       return
     }
     this.isLoading = true
-    let key: string[] = []
+    let wKeys: string[] = []
     if (this.importRequestDTO.workspaces) {
-      key = Object.keys(this.importRequestDTO.workspaces)
+      wKeys = Object.keys(this.importRequestDTO.workspaces) //
     }
+    console.log('key', wKeys)
+    console.log('key[0]', wKeys[0])
+    //key[0] = this.workspaceName
     // Basic properties
     if (this.importRequestDTO.workspaces) {
-      this.importRequestDTO.workspaces[key[0]].name = this.workspaceName
-      this.importRequestDTO.workspaces[key[0]].theme = this.themeName
-      // this.importRequestDTO.synchronizePermissions = this.syncPermCheckbox
-      this.importRequestDTO.workspaces[key[0]].baseUrl = this.baseUrl
+      this.importRequestDTO.workspaces[wKeys[0]].name = this.workspaceName
+      this.importRequestDTO.workspaces[wKeys[0]].theme = this.themeName
+      this.importRequestDTO.workspaces[wKeys[0]].baseUrl = this.baseUrl
     }
-
-    // Theme
-    // if (this.importRequestDTO.workspaces) {
-    //   if (!this.importThemeCheckbox) {
-    //     this.importRequestDTO.workspaces[key[0]].theme = undefined
-    //   } else {
-    //     this.importRequestDTO.workspaces[key[0]].theme = this.themeName
-    //   }
-    // }
-
-    // Microfontends: convert Set to Array what the backend expects
-    // the default is {} which is not a Set !
-    // const mfeArray = new Array<MicrofrontendRegistrationDTOv1>()
-    // if (
-    //   this.importRequestDTO.portal.microfrontendRegistrations &&
-    //   this.importRequestDTO.portal.microfrontendRegistrations?.values !== undefined
-    // ) {
-    //   this.importRequestDTO.portal.microfrontendRegistrations.forEach((mfe) => mfeArray.push(mfe))
-    // }
-    // this.importRequestDTO.portal.microfrontendRegistrations = mfeArray as any
-
-    // If the baseUrl was changed then change the correspondig URLs in menu and mfes:
-    if (this.baseUrlOrg && this.baseUrlOrg !== this.baseUrl) {
-      // Microfrontends
-      // this.importRequestDTO.portal.microfrontendRegistrations?.forEach((mfe) => {
-      //   if (this.baseUrlOrg) {
-      //     if (mfe.baseUrl?.startsWith(this.baseUrlOrg))
-      //       mfe.baseUrl = this.baseUrl + mfe.baseUrl?.substring(this.baseUrlOrg.length)
-      //   }
-      // })
-      // Menu items ... hierarchical
-      if (this.importRequestDTO.workspaces) {
-        if (this.importRequestDTO.workspaces[key[0]].menu?.menu?.menuItems) {
-          this.alignMenuItemsBaseUrl(this.importRequestDTO.workspaces[key[0]].menu?.menu!.menuItems!)
-        }
-      }
-    }
+    console.log('request dto: ', this.importRequestDTO)
     this.workspaceApi
       .importWorkspaces({
         workspaceSnapshot: this.importRequestDTO
       })
       .subscribe({
-        next: () => {
-          if (this.confirmComponent?.workspaceNameExists) {
-            this.msgService.success({ summaryKey: 'WORKSPACE_IMPORT.WORKSPACE_IMPORT_UPDATE_SUCCESS' })
-          } else {
-            this.msgService.success({ summaryKey: 'WORKSPACE_IMPORT.WORKSPACE_IMPORT_CREATE_SUCCESS' })
-          }
+        next: (response) => {
           this.isLoading = false
-          if (this.importRequestDTO?.workspaces) {
-            this.router.navigate(['./', this.importRequestDTO.workspaces[key[0]].name], { relativeTo: this.route })
+          console.log('response dto: ', response)
+          /* read data and prepare feedback 
+          {
+            "workspaces": { "<name>": UPDATED | CREATED | SKIPPED | ERROR },
+            "menus":      { "<name>": UPDATED | CREATED | SKIPPED | ERROR }
+          } */
+          if (response.workspaces && response.menus) {
+            let keys
+            this.importResponse = JSON.parse('{"workspace":"ERROR", "menu":"ERROR"}')
+            if (this.importResponse && response.workspaces) {
+              keys = Object.keys(response.workspaces)
+              this.importResponse.workspace = response.workspaces[keys[0]]
+            }
+            if (this.importResponse && response.menus) {
+              keys = Object.keys(response.menus)
+              this.importResponse.menu = response.menus[keys[0]]
+            }
+          }
+          console.log('importResponse', this.importResponse)
+          const messageKey = 'WORKSPACE_IMPORT.RESPONSE.' + this.importResponse?.workspace
+          if (this.importResponse?.workspace === ImportResponseStatus.Error) {
+            this.msgService.error({ summaryKey: messageKey })
+          }
+          if (['CREATED', 'UPDATED'].includes(this.importResponse?.workspace ?? 'ERROR')) {
+            this.importResponse = undefined
+            this.msgService.success({ summaryKey: messageKey })
+            if (this.importRequestDTO?.workspaces) {
+              //  this.router.navigate(['./', this.importRequestDTO.workspaces[key[0]].name], { relativeTo: this.route })
+            }
           }
         },
         error: () => {
           this.isLoading = false
-          this.msgService.error({ summaryKey: 'WORKSPACE_IMPORT.WORKSPACE_IMPORT_ERROR' })
+          this.msgService.error({ summaryKey: 'WORKSPACE_IMPORT.IMPORT_NOK' })
         }
       })
-  }
-
-  // step recursively through menu tree and align base URL
-  public alignMenuItemsBaseUrl(menuItems: Array<EximWorkspaceMenuItem>): void {
-    menuItems?.forEach((item) => {
-      if (this.baseUrlOrg) {
-        if (item.url?.startsWith(this.baseUrlOrg)) item.url = this.baseUrl + item.url?.substring(this.baseUrlOrg.length)
-      }
-      this.alignMenuItemsBaseUrl(item.children || [])
-    })
   }
 
   // NAVIGATE import step : NEXT
@@ -180,12 +160,13 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
       if (this.importRequestDTO?.workspaces) {
         keys = Object.keys(this.importRequestDTO.workspaces)
       }
-      this.themeName = importRequestDTO.workspaces[keys[0]].theme || ''
+      this.workspaceNameOrg = importRequestDTO.workspaces[keys[0]].name ?? ''
+      this.themeName = importRequestDTO.workspaces[keys[0]].theme ?? ''
       this.baseUrlOrg = importRequestDTO.workspaces[keys[0]].baseUrl
     } else if (this.activeIndex == 1) {
-      this.workspaceName = this.previewComponent?.workspaceName || ''
-      this.themeName = this.previewComponent?.themeName || ''
-      this.baseUrl = this.previewComponent?.baseUrl || ''
+      this.workspaceName = this.previewComponent?.workspaceName ?? ''
+      this.themeName = this.previewComponent?.themeName ?? ''
+      this.baseUrl = this.previewComponent?.baseUrl ?? ''
     }
     this.activeIndex++
   }
@@ -198,9 +179,9 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
     }
     if (this.activeIndex == 2) {
       if (this.activeIndex == 2 && this.importRequestDTO && this.importRequestDTO.workspaces) {
-        this.importRequestDTO.workspaces[key[0]].name = this.confirmComponent?.workspaceName || ''
-        this.importRequestDTO.workspaces[key[0]].baseUrl = this.confirmComponent?.baseUrl || ''
-        this.importRequestDTO.workspaces[key[0]].theme = this.confirmComponent?.themeName || ''
+        this.importRequestDTO.workspaces[key[0]].name = this.confirmComponent?.workspaceName ?? ''
+        this.importRequestDTO.workspaces[key[0]].baseUrl = this.confirmComponent?.baseUrl ?? ''
+        this.importRequestDTO.workspaces[key[0]].theme = this.confirmComponent?.themeName ?? ''
       }
     }
     this.activeIndex--
