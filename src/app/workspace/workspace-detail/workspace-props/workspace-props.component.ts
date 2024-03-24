@@ -30,8 +30,8 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
   public themes$: Observable<any[]> = of([])
   public themes: string[] = []
   public theme: string | undefined
-  public urlPattern = '/base-path-to-portal'
-  public copyToClipboard = copyToClipboard // make available from utils
+  public urlPattern = '/base-path-to-workspace'
+  public copyToClipboard = copyToClipboard
   public sortByLocale = sortByLocale
 
   //Logo

@@ -63,6 +63,7 @@ export class WorkspaceSearchComponent implements OnInit {
           }
         })
       )
+      .subscribe()
   }
 
   private prepareActionButtons() {

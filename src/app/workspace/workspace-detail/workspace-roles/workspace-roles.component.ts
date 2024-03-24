@@ -262,28 +262,18 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
    */
   private prepareTranslations(): void {
     this.translate
-      .get([
-        'PRODUCT.NAME',
-        'ACTIONS.SEARCH.SORT_BY',
-        'ACTIONS.SEARCH.FILTER',
-        'ACTIONS.SEARCH.FILTER_OF',
-        'ACTIONS.SEARCH.SORT_DIRECTION_ASC',
-        'ACTIONS.SEARCH.SORT_DIRECTION_DESC'
-      ])
+      .get(['ROLE.NAME', 'ROLE.TYPE', 'ACTIONS.SEARCH.SORT_BY', 'ACTIONS.SEARCH.FILTER', 'ACTIONS.SEARCH.FILTER_OF'])
       .pipe(
         map((data) => {
           this.dataViewControlsTranslations = {
+            sortDropdownTooltip: data['ACTIONS.SEARCH.SORT_BY'],
             sortDropdownPlaceholder: data['ACTIONS.SEARCH.SORT_BY'],
             filterInputPlaceholder: data['ACTIONS.SEARCH.FILTER'],
-            filterInputTooltip: data['ACTIONS.SEARCH.FILTER.OF'] + data['PRODUCT.NAME'],
-            sortOrderTooltips: {
-              ascending: data['ACTIONS.SEARCH.SORT_DIRECTION_ASC'],
-              descending: data['ACTIONS.SEARCH.SORT_DIRECTION_DESC']
-            },
-            sortDropdownTooltip: data['ACTIONS.SEARCH.SORT_BY']
+            filterInputTooltip: data['ACTIONS.SEARCH.FILTER_OF'] + data['ROLE.NAME'] + ', ' + data['ROLE.TYPE']
           }
         })
       )
+      .subscribe()
   }
 
   /**
