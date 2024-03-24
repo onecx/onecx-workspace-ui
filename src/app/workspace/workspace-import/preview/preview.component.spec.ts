@@ -117,19 +117,12 @@ describe('PreviewComponent', () => {
   it('should change values onModelChange', () => {
     component.hasPermission = true
     component.formGroup.controls['workspaceName'].setValue('new name')
+    component.formGroup.controls['theme'].setValue('new theme')
 
     component.onModelChange()
 
     expect(component.workspaceName).toEqual(component.importRequestDTO?.workspaces?.['workspace'].name!)
-  })
-
-  it('should behave correctly onThemeChange', () => {
-    spyOn(component, 'onModelChange')
-    const event = { value: 'theme' }
-
-    component.onThemeChange(event)
-
-    expect(component.onModelChange).toHaveBeenCalled()
+    expect(component.workspaceName).toEqual(component.importRequestDTO?.workspaces?.['workspace'].theme!)
     expect(component.themeName).toEqual('theme')
   })
 
