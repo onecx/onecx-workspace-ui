@@ -22,17 +22,17 @@
       <span class="p-float-label aw-16rem" controlErrorAnchor>
         <p-dropdown
           #inputThemeName
-          id="workspace_import_preview_themeName"
-          formControlName="themeName"
+          id="workspace_import_preview_theme"
+          formControlName="theme"
           styleClass="w-16rem inputgroup-dropdown-with-link input-field-correction"
           [options]="(themes$ | async) || [themeName]"
-          (onChange)="onThemeChange($event)"
+          (onChange)="onModelChange()"
           [pTooltip]="'WORKSPACE_IMPORT.THEME_NAME.TOOLTIP' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"
         >
         </p-dropdown>
-        <label class="ocx-required-label" for="workspace_import_preview_themeName">
+        <label class="ocx-required-label" for="workspace_import_preview_theme">
           {{ 'WORKSPACE.THEME' | translate }}
         </label>
       </span>
