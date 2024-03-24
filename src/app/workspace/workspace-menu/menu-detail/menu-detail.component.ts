@@ -115,18 +115,16 @@ export class MenuDetailComponent implements OnChanges {
   public ngOnChanges(): void {
     this.formGroup.reset()
     this.tabIndex = 0
-    if (this.menuItemId) {
-      if (this.changeMode === 'CREATE') {
-        this.formGroup.reset()
-        this.menuItem = {
-          parentItemId: this.menuItemId,
-          position: 0,
-          external: false,
-          disabled: false
-        } as MenuItem
-        this.formGroup.patchValue(this.menuItem)
-      } else this.getMenu()
-    }
+    if (this.changeMode === 'CREATE') {
+      this.formGroup.reset()
+      this.menuItem = {
+        parentItemId: this.menuItemId,
+        position: 0,
+        external: false,
+        disabled: false
+      } as MenuItem
+      this.formGroup.patchValue(this.menuItem)
+    } else if (this.menuItemId) this.getMenu()
   }
 
   public onCloseDetailDialog(): void {
