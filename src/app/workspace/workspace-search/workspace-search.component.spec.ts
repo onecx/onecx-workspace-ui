@@ -60,7 +60,7 @@ fdescribe('WorkspaceSearchComponent', () => {
     expect(component).toBeTruthy()
   })
 
-  it('should search workspaces', (done) => {
+  it('should search workspaces with results', (done) => {
     const w: WorkspaceAbstract = {
       name: 'name',
       theme: 'theme',
@@ -84,7 +84,7 @@ fdescribe('WorkspaceSearchComponent', () => {
     })
   })
 
-  it('should search workspaces but no data are available', (done) => {
+  it('should search workspaces without results', (done) => {
     wApiServiceSpy.searchWorkspaces.and.returnValue(of({ stream: [] } as SearchWorkspacesResponse))
 
     component.search()
@@ -98,10 +98,9 @@ fdescribe('WorkspaceSearchComponent', () => {
       },
       error: done.fail
     })
-    //expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.SEARCH.NO_DATA' })
   })
 
-  it('should display error if API call fails', (done) => {
+  it('should search workspaces but display error if API call fails', (done) => {
     const err = { status: 403 }
     wApiServiceSpy.searchWorkspaces.and.returnValue(throwError(() => err))
 
@@ -117,8 +116,8 @@ fdescribe('WorkspaceSearchComponent', () => {
       },
       error: done.fail
     })
-    // expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.SEARCH.ERROR' })
   })
+
   /*
   it('should call filter table onFilterChange', () => {
     component.table = jasmine.createSpyObj('table', ['filter'])
