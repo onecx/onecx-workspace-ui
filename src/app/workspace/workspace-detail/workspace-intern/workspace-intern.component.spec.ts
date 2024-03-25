@@ -7,7 +7,7 @@ import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { AppStateService, createTranslateLoader } from '@onecx/portal-integration-angular'
 import { WorkspaceInternComponent } from './workspace-intern.component'
 
-fdescribe('WorkspaceInternComponent', () => {
+describe('WorkspaceInternComponent', () => {
   let component: WorkspaceInternComponent
   let fixture: ComponentFixture<WorkspaceInternComponent>
 

@@ -7,15 +7,25 @@
   >
   </ocx-page-header>
   <ocx-page-content>
+    <div *ngIf="exceptionKey" id="workspace_search_criteria_error" class="card px-3 align-items-center">
+      <p-message
+        id="workspace_search_criteria_error_message"
+        severity="error"
+        styleClass="p-2"
+        [text]="exceptionKey | translate"
+      ></p-message>
+    </div>
     <p-dataView
+      *ngIf="!exceptionKey"
       #table
       id="portal_search_dataview"
-      [value]="workspaces || []"
+      [value]="(workspaces$ | async)?.stream!"
       [paginator]="true"
       [alwaysShowPaginator]="false"
       [rowsPerPageOptions]="[10, 20, 50]"
       [rows]="viewMode === 'grid' ? 12 : 10"
       [layout]="viewMode"
+      [emptyMessage]="'ACTIONS.SEARCH.NO_DATA' | translate"
       filterBy="name,theme"
       [sortField]="sortField"
       [sortOrder]="sortOrder"

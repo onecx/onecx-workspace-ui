@@ -71,6 +71,7 @@ export function dropDownGetLabelByValue(ddArray: SelectItem[], val: string): str
   })
   return a.label
 }
+
 export function sortByLocale(a: any, b: any): number {
   return a.toUpperCase().localeCompare(b.toUpperCase())
 }
@@ -100,71 +101,6 @@ export function expandRecursive(node: TreeNode, isExpand: boolean): void {
       expandRecursive(childNode, isExpand)
     })
   }
-} */
-
-/*
- * DeepCopy class helps to copy an Original Array or an Object without impacting on original data
- */
-/* export function deepCopy(data: any): any {
-  let node: any
-  if (Array.isArray(data)) {
-    node = data.length > 0 ? data.slice(0) : []
-    node.forEach((e: any, i: number) => {
-      if ((typeof e === 'object' && e) || (Array.isArray(e) && e.length > 0)) {
-        node[i] = deepCopy(e)
-      }
-    })
-  } else if (data && typeof data === 'object') {
-    node = data instanceof Date ? data : Object.assign({}, data)
-    Object.keys(node).forEach((key) => {
-      if ((typeof node[key] === 'object' && node[key]) || (Array.isArray(node[key]) && node[key].length > 0)) {
-        node[key] = deepCopy(node[key])
-      }
-    })
-  } else {
-    node = data
-  }
-  return node
-}
-
-export function deepCopy2(data: any, objMap?: WeakMap<any, any>) {
-  if (!objMap) {
-    // Map for handle recursive objects
-    objMap = new WeakMap()
-  }
-
-  // recursion wrapper
-  const deeper: any = (value: any) => {
-    if (value && typeof value === 'object') {
-      return deepCopy2(value, objMap)
-    }
-    return value
-  }
-
-  // Array value
-  if (Array.isArray(data)) return data.map(deeper)
-
-  // Object value
-  if (data && typeof data === 'object') {
-    // Same object seen earlier
-    if (objMap.has(data)) return objMap.get(data)
-    // Date object
-    if (data instanceof Date) {
-      const result = new Date(data.valueOf())
-      objMap.set(data, result)
-      return result
-    }
-    // Use original prototype
-    const node = Object.create(Object.getPrototypeOf(data))
-    // Save object to map before recursion
-    objMap.set(data, node)
-    for (const [key, value] of Object.entries(data)) {
-      node[key] = deeper(value)
-    }
-    return node
-  }
-  // Scalar value
-  return data
 } */
 
 /**

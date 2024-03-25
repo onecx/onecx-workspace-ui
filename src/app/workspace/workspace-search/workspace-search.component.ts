@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
-import { finalize, Observable, map } from 'rxjs'
+import { catchError, finalize, map, of, Observable } from 'rxjs'
 import { TranslateService } from '@ngx-translate/core'
 
 import { Action, DataViewControlTranslations, PortalMessageService } from '@onecx/portal-integration-angular'
@@ -20,11 +20,13 @@ import { limitText } from 'src/app/shared/utils'
 })
 export class WorkspaceSearchComponent implements OnInit {
   public searchInProgress = false
+  public exceptionKey: string | undefined = undefined
   public actions$: Observable<Action[]> | undefined
   public showCreateDialog = false
   public showImportDialog = false
   public limitText = limitText
 
+  public workspaces$!: Observable<SearchWorkspacesResponse>
   public workspaces: WorkspaceAbstract[] | undefined = []
   public viewMode = 'grid'
   public filter: string | undefined
@@ -37,7 +39,7 @@ export class WorkspaceSearchComponent implements OnInit {
 
   constructor(
     private workspaceApi: WorkspaceAPIService,
-    private route: ActivatedRoute,
+    public route: ActivatedRoute,
     private router: Router,
     private translate: TranslateService,
     private msgService: PortalMessageService,
@@ -50,6 +52,24 @@ export class WorkspaceSearchComponent implements OnInit {
     this.search()
   }
 
+  public search(): void {
+    this.searchInProgress = true
+    this.workspaces$ = this.workspaceApi.searchWorkspaces({ searchWorkspacesRequest: {} }).pipe(
+      catchError((err) => {
+        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.WORKSPACES'
+        console.error('searchWorkspaces():', err)
+        return of({ stream: [] } as SearchWorkspacesResponse)
+      }),
+      finalize(() => (this.searchInProgress = false))
+    )
+  }
+  public sortWorkspacesByName(a: WorkspaceAbstract, b: WorkspaceAbstract): number {
+    return (a.name as string).toUpperCase().localeCompare((b.name as string).toUpperCase())
+  }
+
+  /**
+   * DIALOG
+   */
   private prepareDialogTranslations() {
     this.translate
       .get(['WORKSPACE.NAME', 'WORKSPACE.THEME', 'ACTIONS.SEARCH.SORT_BY', 'ACTIONS.SEARCH.FILTER_OF'])
@@ -98,45 +118,29 @@ export class WorkspaceSearchComponent implements OnInit {
       )
   }
 
-  toggleShowCreateDialog = (): void => {
+  /**
+   * UI EVENTS
+   */
+  public toggleShowCreateDialog(): void {
     this.showCreateDialog = !this.showCreateDialog
   }
 
-  toggleShowImportDialog = (): void => {
+  public toggleShowImportDialog(): void {
     this.showImportDialog = !this.showImportDialog
   }
 
-  public search(): void {
-    this.searchInProgress = true
-    this.workspaceApi
-      .searchWorkspaces({ searchWorkspacesRequest: {} })
-      .pipe(finalize(() => (this.searchInProgress = false)))
-      .subscribe({
-        next: (value: SearchWorkspacesResponse) => {
-          this.workspaces = value.stream
-          if (value.totalElements === 0) {
-            this.msgService.info({ summaryKey: 'ACTIONS.SEARCH.NO_DATA' })
-          }
-          this.sortField = this.defaultSortField
-        },
-        error: () => {
-          this.msgService.error({ summaryKey: 'ACTIONS.SEARCH.ERROR' })
-        }
-      })
-  }
-
-  onFilterChange(event: string): void {
+  public onFilterChange(event: string): void {
     this.table.filter(event, 'contains')
   }
 
-  onLayoutChange(viewMode: string) {
+  public onLayoutChange(viewMode: string) {
     this.viewMode = viewMode
   }
 
-  onSortChange(field: string) {
+  public onSortChange(field: string) {
     this.sortField = field
   }
-  onSortDirChange(asc: boolean) {
+  public onSortDirChange(asc: boolean) {
     this.sortOrder = asc ? -1 : 1
   }
   public onGotoWorkspace(ev: any, workspace: Workspace) {
@@ -145,20 +149,10 @@ export class WorkspaceSearchComponent implements OnInit {
   }
   public onGotoMenu(ev: any, workspace: Workspace) {
     ev.stopPropagation()
-    this.workspaceApi
-      .getWorkspaceByName({ workspaceName: workspace.name })
-      .pipe()
-      .subscribe({
-        next: (workspace) => {
-          if (workspace.resource) {
-            this.router.navigate(['./', workspace.resource.name, 'menu'], { relativeTo: this.route })
-          }
-        },
-        error: () => {}
-      })
+    this.router.navigate(['./', workspace.name, 'menu'], { relativeTo: this.route })
   }
 
-  getDescriptionString(text: string): string {
+  public getDescriptionString(text: string): string {
     if (text) {
       const chars = window.innerWidth < 1200 ? 200 : 120
       return text.length < chars ? text : text.substring(0, chars) + '...'
@@ -167,7 +161,7 @@ export class WorkspaceSearchComponent implements OnInit {
     }
   }
 
-  getImageUrl(workspace: any) {
+  public getImageUrl(workspace: any): string {
     if (workspace.logoUrl) {
       return workspace.logoUrl
     } else {
