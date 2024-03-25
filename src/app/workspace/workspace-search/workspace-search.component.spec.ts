@@ -100,25 +100,6 @@ fdescribe('WorkspaceSearchComponent', () => {
     })
   })
 
-  it('should search workspaces but display error if API call fails', (done) => {
-    const err = { status: 403 }
-    wApiServiceSpy.searchWorkspaces.and.returnValue(throwError(() => err))
-
-    component.search()
-
-    component.workspaces$.subscribe({
-      next: (result) => {
-        if (result.stream) {
-          expect(result.stream.length).toBe(0)
-          expect(component.exceptionKey).toEqual('EXCEPTIONS.HTTP_STATUS_403.WORKSPACES')
-        }
-        done()
-      },
-      error: done.fail
-    })
-  })
-
-  /*
   it('should call filter table onFilterChange', () => {
     component.table = jasmine.createSpyObj('table', ['filter'])
 
@@ -143,6 +124,12 @@ fdescribe('WorkspaceSearchComponent', () => {
     component.onSortDirChange(true)
 
     expect(component.sortOrder).toEqual(-1)
+  })
+
+  it('should set correct values onSortDirChange', () => {
+    component.onSortDirChange(false)
+
+    expect(component.sortOrder).toEqual(1)
   })
 
   it('should behave correctly onGotoWorkspace', () => {
@@ -178,8 +165,17 @@ fdescribe('WorkspaceSearchComponent', () => {
     expect(mockRouter.navigate).toHaveBeenCalledWith(['./', w.name, 'menu'], { relativeTo: component.route })
   })
 
-  it('should behave return correct string on getDescriptionString', () => {
-    spyOnProperty(window, 'innerWidth').and.returnValue(500)
+  it('should return correct string on getDescriptionString: smaller width, longer text', () => {
+    spyOnProperty(window, 'innerWidth').and.returnValue(10)
+    const text = 'a'.repeat(201)
+
+    const result = component.getDescriptionString(text)
+
+    expect(result).toEqual('a'.repeat(200) + '...')
+  })
+
+  it('should return correct string on getDescriptionString: greater width', () => {
+    spyOnProperty(window, 'innerWidth').and.returnValue(1250)
     const text = 'text'
 
     const result = component.getDescriptionString(text)
@@ -187,7 +183,7 @@ fdescribe('WorkspaceSearchComponent', () => {
     expect(result).toEqual(text)
   })
 
-  it('should behave return correct string on getDescriptionString: empty string', () => {
+  it('should return correct string on getDescriptionString: empty string', () => {
     const text = ''
 
     const result = component.getDescriptionString(text)
@@ -195,24 +191,44 @@ fdescribe('WorkspaceSearchComponent', () => {
     expect(result).toEqual('')
   })
 
+  it('should return correct imageUrl', () => {
+    const result = component.getImageUrl({ logoUrl: 'logo' })
+
+    expect(result).toBe('logo')
+  })
+
+  it('should return fallback imageUrl', () => {
+    const result = component.getImageUrl({ name: 'workspace' })
+
+    expect(result).toBe('http://onecx-workspace-bff:8080/images/workspace/logo')
+  })
+
   it('should call toggleShowCreateDialog when actionCallback is executed', () => {
     spyOn(component, 'toggleShowCreateDialog')
 
     component.ngOnInit()
-    const action = component.actions[0]
-    action.actionCallback()
 
-    expect(component.toggleShowCreateDialog).toHaveBeenCalled()
+    if (component.actions$) {
+      component.actions$.subscribe((actions) => {
+        const firstAction = actions[0]
+        firstAction.actionCallback()
+        expect(component.toggleShowCreateDialog).toHaveBeenCalled()
+      })
+    }
   })
-  
+
   it('should call toggleShowImportDialog when actionCallback is executed', () => {
     spyOn(component, 'toggleShowImportDialog')
 
     component.ngOnInit()
-    const action = component.actions[1]
-    action.actionCallback()
 
-    expect(component.toggleShowImportDialog).toHaveBeenCalled()
+    if (component.actions$) {
+      component.actions$.subscribe((actions) => {
+        const firstAction = actions[1]
+        firstAction.actionCallback()
+        expect(component.toggleShowImportDialog).toHaveBeenCalled()
+      })
+    }
   })
 
   it('should toggle showCreateDialog from false to true', () => {
@@ -230,5 +246,22 @@ fdescribe('WorkspaceSearchComponent', () => {
 
     expect(component.showImportDialog).toBeFalse()
   })
-  */
+
+  it('should search workspaces but display error if API call fails', (done) => {
+    const err = { status: 403 }
+    wApiServiceSpy.searchWorkspaces.and.returnValue(throwError(() => err))
+
+    component.search()
+
+    component.workspaces$.subscribe({
+      next: (result) => {
+        if (result.stream) {
+          expect(result.stream.length).toBe(0)
+          expect(component.exceptionKey).toEqual('EXCEPTIONS.HTTP_STATUS_403.WORKSPACES')
+        }
+        done()
+      },
+      error: done.fail
+    })
+  })
 })

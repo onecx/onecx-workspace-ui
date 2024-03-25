@@ -63,9 +63,9 @@ export class WorkspaceSearchComponent implements OnInit {
       finalize(() => (this.searchInProgress = false))
     )
   }
-  public sortWorkspacesByName(a: WorkspaceAbstract, b: WorkspaceAbstract): number {
-    return (a.name as string).toUpperCase().localeCompare((b.name as string).toUpperCase())
-  }
+  // public sortWorkspacesByName(a: WorkspaceAbstract, b: WorkspaceAbstract): number {
+  //   return (a.name as string).toUpperCase().localeCompare((b.name as string).toUpperCase())
+  // }
 
   /**
    * DIALOG
