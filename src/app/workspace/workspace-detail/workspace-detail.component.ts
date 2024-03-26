@@ -3,10 +3,16 @@ import { /*DatePipe ,*/ Location } from '@angular/common'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 import FileSaver from 'file-saver'
-import { Observable, map } from 'rxjs'
+import { catchError, finalize, map, Observable, of } from 'rxjs'
 
 import { Action, ObjectDetailItem, PortalMessageService, UserService } from '@onecx/portal-integration-angular'
-import { WorkspaceSnapshot, Workspace, WorkspaceAPIService, ImagesInternalAPIService } from 'src/app/shared/generated'
+import {
+  GetWorkspaceResponse,
+  WorkspaceSnapshot,
+  Workspace,
+  WorkspaceAPIService,
+  ImagesInternalAPIService
+} from 'src/app/shared/generated'
 
 import { WorkspacePropsComponent } from './workspace-props/workspace-props.component'
 import { WorkspaceContactComponent } from './workspace-contact/workspace-contact.component'
@@ -24,10 +30,12 @@ export class WorkspaceDetailComponent implements OnInit {
   public editMode = false
   public exportMenu = true
   public isLoading = false
+  public exceptionKey: string | undefined = undefined
   public headerImageUrl?: string
   public selectedTabIndex = 0
   public dateFormat = 'medium'
   public objectDetails!: ObjectDetailItem[]
+  public workspace$!: Observable<GetWorkspaceResponse>
   public workspace: Workspace | undefined
   public workspaceForRoles: Workspace | undefined
   public workspaceName = this.route.snapshot.params['name']
@@ -52,27 +60,26 @@ export class WorkspaceDetailComponent implements OnInit {
     this.getWorkspace()
   }
 
-  private async getWorkspace() {
-    this.workspaceApi
-      .getWorkspaceByName({ workspaceName: this.workspaceName })
-      .pipe()
-      .subscribe({
-        next: (data) => {
-          if (data.resource) {
-            this.workspace = data.resource
-            this.prepareDialog()
-          }
-        },
-        error: () => {
-          // TODO: stay on the page and display an error message
-          this.msgService.error({ summaryKey: 'ACTIONS.SEARCH.ERROR', detailKey: 'DIALOG.WORKSPACE.NOT_FOUND' })
-          this.onClose() // if workspace was not found then go back
-        }
+  public getWorkspace() {
+    this.isLoading = true
+    this.workspace$ = this.workspaceApi.getWorkspaceByName({ workspaceName: this.workspaceName }).pipe(
+      map((data) => {
+        if (data.resource) this.workspace = data.resource
+        return data
+      }),
+      catchError((err) => {
+        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.WORKSPACE'
+        console.error('getWorkspaceByName():', err)
+        return of({} as GetWorkspaceResponse)
+      }),
+      finalize(() => {
+        this.isLoading = false
+        this.prepareDialog()
       })
+    )
   }
 
   public prepareDialog() {
-    this.preparePageHeaderImage()
     this.prepareActionButtons()
     /* to be deleted?
     this.translate
@@ -179,12 +186,11 @@ export class WorkspaceDetailComponent implements OnInit {
     FileSaver.saveAs(new Blob([workspaceJson], { type: 'text/json' }), `${this.workspace?.name ?? 'Workspace'}.json`)
   }
 
-  private preparePageHeaderImage() {
-    if (this.workspace?.logoUrl == null || this.workspace?.logoUrl == '') {
-      this.headerImageUrl = this.imageApi.configuration.basePath + '/images/' + this.workspace?.name + '/logo'
-    } else {
-      this.headerImageUrl = this.workspace?.logoUrl
-    }
+  public getImagePath(workspace: Workspace): string | undefined {
+    if (workspace) {
+      if (workspace?.logoUrl) return workspace?.logoUrl
+      else return this.imageApi.configuration.basePath + '/images/' + workspace?.name + '/logo'
+    } else return undefined
   }
 
   private toggleEditMode(forcedMode?: 'edit' | 'view'): void {
