@@ -9,7 +9,7 @@
     [header]="workspace.name"
     [subheader]="'DIALOG.WORKSPACE.HEADER.DETAIL' | translate"
     [actions]="(actions$ | async) ?? []"
-    [figureImage]="headerImageUrl"
+    [figureImage]="getImagePath(workspace)"
     [figureBackground]="workspace ? workspace.logoUrl === undefined : false"
   >
   </ocx-page-header>

@@ -80,7 +80,6 @@ export class WorkspaceDetailComponent implements OnInit {
   }
 
   public prepareDialog() {
-    this.preparePageHeaderImage()
     this.prepareActionButtons()
     /* to be deleted?
     this.translate
@@ -187,12 +186,11 @@ export class WorkspaceDetailComponent implements OnInit {
     FileSaver.saveAs(new Blob([workspaceJson], { type: 'text/json' }), `${this.workspace?.name ?? 'Workspace'}.json`)
   }
 
-  private preparePageHeaderImage() {
-    if (this.workspace?.logoUrl == null || this.workspace?.logoUrl == '') {
-      this.headerImageUrl = this.imageApi.configuration.basePath + '/images/' + this.workspace?.name + '/logo'
-    } else {
-      this.headerImageUrl = this.workspace?.logoUrl
-    }
+  public getImagePath(workspace: Workspace): string | undefined {
+    if (workspace) {
+      if (workspace?.logoUrl) return workspace?.logoUrl
+      else return this.imageApi.configuration.basePath + '/images/' + workspace?.name + '/logo'
+    } else return undefined
   }
 
   private toggleEditMode(forcedMode?: 'edit' | 'view'): void {
