@@ -16,6 +16,7 @@ export * from './eximScope';
 export * from './eximWorkspace';
 export * from './eximWorkspaceAddress';
 export * from './eximWorkspaceMenuItem';
+export * from './eximWorkspaceRole';
 export * from './exportWorkspacesRequest';
 export * from './getWorkspaceResponse';
 export * from './iAMRole';

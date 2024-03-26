@@ -178,12 +178,12 @@ describe('WorkspaceDetailComponent', () => {
 
   it('should delete workspace on onConfirmDeleteWorkspace', () => {
     apiServiceSpy.deletePortal.and.returnValue(of({}))
-    component.workspaceDownloadVisible = true
+    component.workspaceExportVisible = true
 
     component.onConfirmDeleteWorkspace()
 
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MESSAGE_OK' })
-    expect(component.workspaceDownloadVisible).toBeFalse()
+    expect(component.workspaceExportVisible).toBeFalse()
   })
 
   it('should display error msg if delete api call fails', () => {
@@ -198,25 +198,10 @@ describe('WorkspaceDetailComponent', () => {
 
   it('should export a workspace', () => {
     component.workspace = workspace
-    component.importThemeCheckbox = true
+    component.exportMenu = true
     component.onExportWorkspace()
 
-    expect(component.workspaceDownloadVisible).toBeFalse()
-  })
-
-  it('should display error if themeNotSpecified on export', () => {
-    component.workspace = workspace
-    if (component.workspace) {
-      component.workspace.theme = ''
-    }
-    component.importThemeCheckbox = true
-    // themeApiServiceSpy.getThemeById.and.returnValue(throwError(() => new Error()))
-
-    component.onExportWorkspace()
-
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({
-      summaryKey: 'DETAIL.THEME_NOT_SPECIFIED_MESSAGE'
-    })
+    expect(component.workspaceExportVisible).toBeFalse()
   })
 
   it('should display error if portalNotFound on export', () => {
@@ -303,7 +288,7 @@ describe('WorkspaceDetailComponent', () => {
     expect(console.error).toHaveBeenCalledWith("Couldn't assign tab to component")
   })
 
-  it('should have prepared action buttons onInit: workspaceDownloadVisible', () => {
+  it('should have prepared action buttons onInit: workspaceExportVisible', () => {
     apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))
     component.ngOnInit()
     let actions: any = []
@@ -311,7 +296,7 @@ describe('WorkspaceDetailComponent', () => {
 
     actions[4].actionCallback()
 
-    expect(component.workspaceDownloadVisible).toBeTrue()
+    expect(component.workspaceExportVisible).toBeTrue()
   })
 
   it('should have prepared action buttons onInit: toggleEditMode', () => {

@@ -12,6 +12,7 @@
 import { MenuSnapshot } from './menuSnapshot';
 import { EximProduct } from './eximProduct';
 import { EximWorkspaceAddress } from './eximWorkspaceAddress';
+import { EximWorkspaceRole } from './eximWorkspaceRole';
 
 
 export interface EximWorkspace { 
@@ -25,6 +26,7 @@ export interface EximWorkspace {
     rssFeedUrl?: string;
     footerLabel?: string;
     logoUrl?: string;
+    roles?: Array<EximWorkspaceRole>;
     products?: Array<EximProduct>;
     address?: EximWorkspaceAddress;
     menu?: MenuSnapshot;
