@@ -21,7 +21,48 @@
   ></p-message>
 </div>
 
-<p-dataView
+<p-pickList
+  #picklist
+  sourceHeader="Source List"
+  targetHeader="Target List"
+  [filterBy]="filterBy"
+  [source]="(psProducts$ | async) ?? []"
+  [target]="(wProducts$ | async) ?? []"
+>
+  <ng-template pTemplate="sourceFilter" let-options="options">
+    <div class="p-picklist-filter">
+      <input
+        [(ngModel)]="sourceFilterValue"
+        type="text"
+        (keyup)="options.filter(getFilterValue($event))"
+        role="textbox"
+        class="p-picklist-filter-input p-inputtext p-component"
+      />
+      <span
+        *ngIf="sourceFilterValue"
+        class="p-picklist-filter-icon pi pi-times"
+        (click)="options.reset(); sourceFilterValue = ''"
+      ></span>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="targetFilter" let-options="options">
+    <div class="p-picklist-filter">
+      <input
+        [(ngModel)]="targetFilterValue"
+        type="text"
+        (keyup)="options.filter(getFilterValue($event))"
+        role="textbox"
+        class="p-picklist-filter-input p-inputtext p-component"
+      />
+      <span
+        *ngIf="targetFilterValue"
+        class="p-picklist-filter-icon pi pi-times"
+        (click)="options.reset(); targetFilterValue = ''"
+      ></span>
+    </div> </ng-template
+></p-pickList>
+
+<!-- p-dataView
   *ngIf="!exceptionKey"
   id="workspace_detail_product_dataview"
   [value]="(products$ | async)?.sort(sortProductsByDisplayName) ?? []"
@@ -78,4 +119,4 @@
       </div>
     </div>
   </ng-template>
-</p-dataView>
+</p-dataView -->

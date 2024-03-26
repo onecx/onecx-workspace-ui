@@ -1,10 +1,17 @@
 import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core'
 import { TranslateService } from '@ngx-translate/core'
-import { Observable, Subject, catchError, finalize, map, of, takeUntil } from 'rxjs'
-import { DataView } from 'primeng/dataview'
+import { /*combineLatest, */ catchError, finalize, map, Observable, of, Subject, takeUntil } from 'rxjs'
+//import { DataView } from 'primeng/dataview'
+import { PickList } from 'primeng/picklist'
 
-import { DataViewControlTranslations, PortalMessageService } from '@onecx/portal-integration-angular'
-import { Product, ProductsAPIService, Workspace, WorkspaceProductAPIService } from 'src/app/shared/generated'
+import { /*DataViewControlTranslations, */ PortalMessageService } from '@onecx/portal-integration-angular'
+import {
+  Product,
+  ProductsAPIService,
+  ProductStoreItem,
+  Workspace,
+  WorkspaceProductAPIService
+} from 'src/app/shared/generated'
 import { limitText } from 'src/app/shared/utils'
 
 @Component({
@@ -17,19 +24,24 @@ export class ProductComponent implements OnInit, OnDestroy {
 
   private readonly destroy$ = new Subject()
   private readonly debug = true // to be removed after finalization
+  public exceptionKey: string | undefined
+  public loading = true
 
   // dialog
-  @ViewChild(DataView) dv: DataView | undefined
-  public dataViewControlsTranslations: DataViewControlTranslations = {}
+  @ViewChild(PickList) picklist: PickList | undefined
+  // @ViewChild(DataView) dv: DataView | undefined
+  //public dataViewControlsTranslations: DataViewControlTranslations = {}
 
-  public loading = true
-  public exceptionKey: string | undefined
+  public wProducts$!: Observable<Product[]>
+  public psProducts$!: Observable<ProductStoreItem[]>
   public displayRegisterDialog = false
   public displayDeregisterDialog = false
   public viewMode = 'grid'
   public filterValue: string | undefined
-  public filterBy = 'name'
-  public sortField = 'name'
+  public filterBy = 'productName'
+  public sourceFilterValue: string | undefined // product store
+  public targetFilterValue: string | undefined // workspace
+  public sortField = 'productName'
   public sortOrder = 1
   public limitText = limitText
 
@@ -39,41 +51,66 @@ export class ProductComponent implements OnInit, OnDestroy {
   private urlPathPattern = '([^:]*)'
 
   constructor(
-    private productApi: WorkspaceProductAPIService,
-    private productStoreApi: ProductsAPIService,
+    private wProductApi: WorkspaceProductAPIService,
+    private psProductApi: ProductsAPIService,
     private translate: TranslateService,
     private msgService: PortalMessageService
   ) {}
 
   ngOnInit() {
-    this.prepareTranslations()
-    this.log('onInit')
+    console.log('onInit')
+    //this.prepareTranslations()
     this.loadData()
   }
   public ngOnDestroy(): void {
     this.destroy$.next(undefined)
     this.destroy$.complete()
   }
-  private log(text: string, obj?: object): void {
-    if (this.debug) {
-      if (obj) console.log('products: ' + text, obj)
-      else console.log('products: ' + text)
-    }
-  }
-  public loadData(): void {
-    this.loading = true
-    this.products$ = this.productApi
+
+  private searchWProducts(): void {
+    this.wProducts$ = this.wProductApi
       .getProductsForWorkspaceId({ id: this.workspace.id ?? '' })
       .pipe(
         catchError((err) => {
           this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.PRODUCTS'
-          console.error('searchProducts():', err)
+          console.error('getProductsForWorkspaceId():', err)
           return of([] as Product[])
         }),
         finalize(() => (this.loading = false))
       )
       .pipe(takeUntil(this.destroy$))
   }
+  private searchPsProducts(): void {
+    this.psProducts$ = this.psProductApi
+      .searchAvailableProducts({ productStoreSearchCriteria: {} })
+      .pipe(
+        map((result) => {
+          return result.stream ? result.stream : []
+        }),
+        catchError((err) => {
+          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.PRODUCTS'
+          console.error('getProductsForWorkspaceId():', err)
+          return of([] as ProductStoreItem[])
+        }),
+        finalize(() => (this.loading = false))
+      )
+      .pipe(takeUntil(this.destroy$))
+  }
+
+  public loadData(): void {
+    this.loading = true
+    this.exceptionKey = undefined
+    this.searchWProducts()
+    this.searchPsProducts()
+    /*
+    combineLatest([this.searchWProducts(), this.searchPsProducts()]).pipe(
+      map(([wp, psp]) => {
+        wp.sort(this.sortProductsByDisplayName)
+        psp.sort(this.sortProductsByDisplayName)
+      })
+    )*/
+  }
+
   public sortProductsByDisplayName(a: Product, b: Product): number {
     return (a.displayName ? a.displayName.toUpperCase() : '').localeCompare(
       b.displayName ? b.displayName.toUpperCase() : ''
@@ -83,6 +120,7 @@ export class ProductComponent implements OnInit, OnDestroy {
   /**
    * Dialog preparation
    */
+  /*
   private prepareTranslations(): void {
     this.translate
       .get([
@@ -108,6 +146,7 @@ export class ProductComponent implements OnInit, OnDestroy {
         })
       )
   }
+*/
 
   /**
    * UI Events
@@ -121,11 +160,14 @@ export class ProductComponent implements OnInit, OnDestroy {
     console.log('onProductClick')
   }
   public onFilterChange(filter: string): void {
-    this.log('onFilterChange')
+    console.log('onFilterChange')
     if (filter === '') {
       this.filterBy = 'productName'
     }
-    this.dv?.filter(filter, 'contains')
+    // this.dv?.filter(filter, 'contains')
+  }
+  public getFilterValue(ev: any): string {
+    return ev.target.value
   }
   public onSortChange(field: string): void {
     this.sortField = field
