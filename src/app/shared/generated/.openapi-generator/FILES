@@ -33,6 +33,7 @@ model/eximScope.ts
 model/eximWorkspace.ts
 model/eximWorkspaceAddress.ts
 model/eximWorkspaceMenuItem.ts
+model/eximWorkspaceRole.ts
 model/exportWorkspacesRequest.ts
 model/getWorkspaceResponse.ts
 model/iAMRole.ts

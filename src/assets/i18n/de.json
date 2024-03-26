@@ -412,7 +412,7 @@
     "FORWARD_1": " würde von folgenden URLs getroffen: ",
     "FORWARD_2": " und ",
     "MESSAGES": {
-      "NOTHING_REGISTERED": "Noch kein Produkt registriert",
+      "NOTHING_REGISTERED": "Kein Produkt registriert",
       "LOAD_ERROR": "Das Laden der Produkt-Liste ist fehlgeschlagen",
       "DOES_NOT_EXIST": "Das verknüpfte Produkt existiert nicht",
       "ALREADY_EXISTS": "Der Pfad wird bereits verwendet",

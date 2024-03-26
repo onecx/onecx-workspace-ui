@@ -80,13 +80,9 @@ export class ChooseFileComponent implements OnInit {
 
   private isWorkspaceImportValid(obj: unknown, data: any): obj is WorkspaceSnapshot {
     const dto = obj as WorkspaceSnapshot
-    // CHANGE WHEN IMPORT OF MORE WORKSPACES IS POSSIBLE
-    let key: string[] = []
+    // CHANGE IF IMPORT OF MORE WORKSPACES IS POSSIBLE
     if (dto.workspaces) {
-      key = Object.keys(dto.workspaces)
-    }
-
-    if (dto.workspaces) {
+      let key: string[] = Object.keys(dto.workspaces)
       if (!dto || !dto.workspaces[key[0]]) {
         this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_WORKSPACE_MISSING']
       } else if (!dto.workspaces[key[0]].name) {

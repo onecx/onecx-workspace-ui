@@ -412,7 +412,7 @@
     "FORWARD_1": "would catch both of the following URLs: ",
     "FORWARD_2": " and ",
     "MESSAGES": {
-      "NOTHING_REGISTERED": "No Product registered yet",
+      "NOTHING_REGISTERED": "No Product registered",
       "LOAD_ERROR": "Failed to load Product list",
       "DOES_NOT_EXIST": "The assigned Product does not exist",
       "ALREADY_EXISTS": "The path is already in use",
