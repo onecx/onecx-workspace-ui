@@ -449,18 +449,22 @@
   },
   "EXCEPTIONS": {
     "HTTP_STATUS_0": {
+      "WORKSPACE": "Unbekanntes Problem beim Abrufen von Workspace Details - Bitte versuchen sie es noch einmal.",
       "WORKSPACES": "Unbekanntes Problem beim Abrufen von Workspace-Daten - Bitte versuchen sie es noch einmal.",
       "MENUS": "Unbekanntes Problem beim Abrufen von Menü-Daten - Bitte versuchen sie es noch einmal."
     },
     "HTTP_STATUS_403": {
+      "WORKSPACE": "Sie haben keine Rechte um Workspace Details zu sehen.",
       "WORKSPACES": "Sie haben keine Rechte um Workspaces zu sehen.",
       "MENUS": "Sie haben keine Rechte um Menüs zu sehen."
     },
     "HTTP_STATUS_404": {
+      "WORKSPACE": "Der Workspace wurde nicht gefunden.",
       "WORKSPACES": "Es konnten keine Workspaces gefunden werden.",
       "MENUS": "Es konnten keine Menüs gefunden werden."
     },
     "HTTP_STATUS_500": {
+      "WORKSPACE": "Unbekanntes Server-Problem beim Abrufen von Workspace Details - Bitte versuchen sie es noch einmal.",
       "WORKSPACES": "Unbekanntes Server-Problem beim Abrufen von Workspace-Daten - Bitte versuchen sie es noch einmal.",
       "MENUS": "Unbekanntes Server-Problem beim Abrufen von Menü-Daten - Bitte versuchen sie es noch einmal."
     }
