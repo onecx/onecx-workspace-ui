@@ -158,11 +158,8 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
 
   // NAVIGATE import step : BACK
   public back(): void {
-    let key: string[] = []
     if (this.importRequestDTO?.workspaces) {
-      key = Object.keys(this.importRequestDTO.workspaces)
-    }
-    if (this.activeIndex == 2) {
+      let key: string[] = Object.keys(this.importRequestDTO.workspaces)
       if (this.activeIndex == 2 && this.importRequestDTO && this.importRequestDTO.workspaces) {
         this.importRequestDTO.workspaces[key[0]].name = this.confirmComponent?.workspaceName ?? ''
         this.importRequestDTO.workspaces[key[0]].baseUrl = this.confirmComponent?.baseUrl ?? ''

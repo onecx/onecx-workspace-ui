@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core'
-import { DatePipe, Location } from '@angular/common'
+import { /*DatePipe ,*/ Location } from '@angular/common'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 import FileSaver from 'file-saver'
@@ -22,18 +22,18 @@ export class WorkspaceDetailComponent implements OnInit {
 
   public actions$: Observable<Action[]> | undefined
   public editMode = false
-  public headerImageUrl?: string
-  public importThemeCheckbox = false
+  public exportMenu = true
   public isLoading = false
+  public headerImageUrl?: string
   public selectedTabIndex = 0
   public dateFormat = 'medium'
-  public objectDetails: ObjectDetailItem[] = []
+  public objectDetails!: ObjectDetailItem[]
   public workspace: Workspace | undefined
   public workspaceForRoles: Workspace | undefined
   public workspaceName = this.route.snapshot.params['name']
   public workspaceDeleteMessage = ''
   public workspaceDeleteVisible = false
-  public workspaceDownloadVisible = false
+  public workspaceExportVisible = false
 
   constructor(
     private user: UserService,
@@ -50,12 +50,6 @@ export class WorkspaceDetailComponent implements OnInit {
 
   ngOnInit() {
     this.getWorkspace()
-  }
-
-  public onTabChange($event: any) {
-    this.selectedTabIndex = $event.index
-    if (this.selectedTabIndex === 3) this.workspaceForRoles = this.workspace
-    this.prepareActionButtons()
   }
 
   private async getWorkspace() {
@@ -80,6 +74,7 @@ export class WorkspaceDetailComponent implements OnInit {
   public prepareDialog() {
     this.preparePageHeaderImage()
     this.prepareActionButtons()
+    /* to be deleted?
     this.translate
       .get(['WORKSPACE.HOME_PAGE', 'WORKSPACE.BASE_URL', 'WORKSPACE.THEME', 'INTERNAL.CREATION_DATE'])
       .subscribe((data) => {
@@ -94,7 +89,7 @@ export class WorkspaceDetailComponent implements OnInit {
             valuePipeArgs: this.dateFormat
           }
         ]
-      })
+      }) */
   }
 
   private updateWorkspace() {
@@ -135,7 +130,7 @@ export class WorkspaceDetailComponent implements OnInit {
   }
 
   public onConfirmDeleteWorkspace(): void {
-    this.workspaceDownloadVisible = false
+    this.workspaceExportVisible = false
     this.workspaceApi.deleteWorkspace({ id: this.workspace?.id ?? '' }).subscribe(
       () => {
         this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MESSAGE_OK' })
@@ -148,18 +143,27 @@ export class WorkspaceDetailComponent implements OnInit {
     )
   }
 
+  /**
+   * UI EVENTS
+   */
+  public onTabChange($event: any) {
+    this.selectedTabIndex = $event.index
+    if (this.selectedTabIndex === 3) this.workspaceForRoles = this.workspace
+    this.prepareActionButtons()
+  }
+
   public onClose(): void {
     this.location.back()
   }
 
   public onExportWorkspace() {
     if (!this.workspace) {
-      this.workspaceNotFoundError()
+      this.msgService.error({ summaryKey: 'DIALOG.WORKSPACE.NOT_FOUND' })
       return
     }
     this.workspaceApi
       .exportWorkspaces({
-        exportWorkspacesRequest: { includeMenus: true, names: [this.workspace.name] }
+        exportWorkspacesRequest: { includeMenus: this.exportMenu, names: [this.workspace.name] }
       })
       .subscribe({
         next: (snapshot) => {
@@ -167,27 +171,12 @@ export class WorkspaceDetailComponent implements OnInit {
         },
         error: () => {}
       })
-
-    if (this.importThemeCheckbox) {
-      if (!this.workspace.theme) {
-        this.themeNotSpecifiedError()
-        return
-      }
-    }
-    this.workspaceDownloadVisible = false
+    this.workspaceExportVisible = false
   }
 
   private saveWorkspaceToFile(workspaceExport: WorkspaceSnapshot) {
     const workspaceJson = JSON.stringify(workspaceExport, null, 2)
     FileSaver.saveAs(new Blob([workspaceJson], { type: 'text/json' }), `${this.workspace?.name ?? 'Workspace'}.json`)
-  }
-
-  private workspaceNotFoundError() {
-    this.msgService.error({ summaryKey: 'DIALOG.WORKSPACE.NOT_FOUND' })
-  }
-
-  private themeNotSpecifiedError() {
-    this.msgService.error({ summaryKey: 'WORKSPACE_EXPORT.THEME_NOT_SPECIFIED_MESSAGE' })
   }
 
   private preparePageHeaderImage() {
