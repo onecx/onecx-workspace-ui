@@ -1,0 +1,35 @@
+.user-avatar-menu-button:hover {
+  background-color: var(--topbar-item-text-hover-bg-color);
+  color: var(--topbar-item-text-hover-color, var(--topbar-item-text-color));
+  transition: background-color var(--transition-duration);
+}
+@mixin material-overlay-transform {
+  transform-origin: top;
+}
+
+@mixin material-overlay-animation {
+  @include material-overlay-transform;
+  animation-name: overlayEnter;
+  animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  animation-duration: 0.12s;
+}
+.layout-topbar-action-panel {
+  background-color: var(--overlay-content-bg-color);
+  color: var(--text-color);
+  position: absolute;
+  top: 4rem;
+  right: 0;
+  z-index: 1000;
+  min-width: 25rem;
+  padding: 1rem 0;
+  list-style: none;
+  @include material-overlay-transform;
+
+  .layout-topbar-action-item {
+    cursor: pointer;
+    &:hover {
+      background-color: var(--hover-bg-color);
+      transition: background-color var(--transition-duration);
+    }
+  }
+}

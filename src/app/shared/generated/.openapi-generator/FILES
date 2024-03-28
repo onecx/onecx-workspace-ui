@@ -8,6 +8,7 @@ api/imagesInternal.service.ts
 api/menuItem.service.ts
 api/products.service.ts
 api/role.service.ts
+api/userMenu.service.ts
 api/workspace.service.ts
 api/workspaceProduct.service.ts
 api/workspaceRoles.service.ts
@@ -33,6 +34,7 @@ model/eximScope.ts
 model/eximWorkspace.ts
 model/eximWorkspaceAddress.ts
 model/eximWorkspaceMenuItem.ts
+model/eximWorkspaceRole.ts
 model/exportWorkspacesRequest.ts
 model/getWorkspaceResponse.ts
 model/iAMRole.ts
@@ -68,6 +70,9 @@ model/updateMenuItemRequest.ts
 model/updateProductRequest.ts
 model/updateWorkspaceRequest.ts
 model/updateWorkspaceRoleRequest.ts
+model/userWorkspaceMenuItem.ts
+model/userWorkspaceMenuRequest.ts
+model/userWorkspaceMenuStructure.ts
 model/validationConstraint.ts
 model/workspace.ts
 model/workspaceAbstract.ts

@@ -1,0 +1,46 @@
+<div class="flex justify-content-center p-2 bg-primary">
+  <p-menu #testMenu [model]="items" [popup]="true">
+    <h1>Test</h1>
+  </p-menu>
+  <div
+    pRipple
+    class="p-2 rounded-circle cursor-pointer user-avatar-menu-button"
+    title="User Profile"
+    pTooltip="User Profile"
+    tooltipPosition="bottom"
+    (click)="handleAvatarClick($event)"
+  >
+    <ocx-user-avatar [user$]="currentUser$"></ocx-user-avatar>
+  </div>
+</div>
+
+<ul class="layout-topbar-action-panel shadow-6" [@topbarActionPanelAnimation]="'visible'" *ngIf="menuOpen">
+  <li class="layout-topbar-action-item flex flex-column" *ocxIfPermission="'PROFILE#VIEW'">
+    <div *ngIf="currentUser$ | async as user">
+      <h5 class="flex flex-row align-items-center justify-content-center text-color-secondary">
+        {{ user.person.displayName }}
+      </h5>
+      <span class="flex flex-row align-items-center justify-content-center text-color-secondary">
+        {{ user.person.email }}</span
+      >
+      <span
+        *ngIf="user.tenantName"
+        class="flex flex-row align-items-center justify-content-center text-color-secondary"
+      >
+        Tenant: {{ user.tenantName }}</span
+      >
+    </div>
+  </li>
+  <div class="layout-topbar-action-item" *ngFor="let item of items; let i = index">
+    <a class="flex flex-row align-items-center w-full h-full p-3" pRipple [routerLink]="item.routerLink">
+      <i [ngClass]="'pi-' + item.icon || ''" class="layout-menuitem-icon pi"></i>
+      <span class="layout-menuitem-text ml-2">{{ item.label }}</span>
+    </a>
+  </div>
+  <li class="layout-topbar-action-item">
+    <a class="flex flex-row align-items-center w-full h-full p-3" pRipple (click)="logout($event)">
+      <i class="mr-2 pi pi-power-off"></i>
+      <span>Logout</span>
+    </a>
+  </li>
+</ul>
