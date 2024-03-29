@@ -2,8 +2,6 @@
 
 @include card-badges;
 @include danger-action;
-@include correct-data-view-control;
-@include correct-data-view-header-for-tabpanel;
 
 :host ::ng-deep {
   .p-dialog .p-dialog-content {
@@ -21,6 +19,33 @@
       .p-inputtext {
         padding: 11px 8px 7px 8px;
       }
+    }
+  }
+  .p-picklist {
+    .p-picklist-header {
+      text-align: center;
+      color: var(--primary-text-color);
+      background-color: var(--primary-color);
+    }
+    .p-picklist-list {
+      height: 34.5rem;
+      .p-picklist-item {
+        padding: 0.2rem 0.5rem;
+        border-bottom: var(--table-header-border);
+        .product-item-table {
+          display: table !important;
+          .product-item-row {
+            display: table-row !important;
+            > * {
+              display: table-cell !important;
+            }
+          }
+        }
+      }
+    }
+    .p-picklist-list-wrapper {
+      /*       width: 22rem !important;
+ */
     }
   }
 }

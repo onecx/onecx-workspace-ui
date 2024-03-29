@@ -1,7 +1,7 @@
 <img
   [id]="id"
   *ngIf="imageUrl && !displayPlaceHolder"
-  [class]="'image-object image-' + (small ? 'sm' : 'lg') + ' sm:image-lg'"
+  [class]="'image-object image-' + (small ? 'sm' : 'lg') + ' sm:image-lg ' + (styleClass ? styleClass : '')"
   [src]="imageUrl"
   (error)="onImageError()"
   alt="Image"

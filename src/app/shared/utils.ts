@@ -1,8 +1,10 @@
 // import { MicrofrontendDTO } from '@onecx/portal-integration-angular'
 import { AbstractControl, FormArray, FormGroup } from '@angular/forms'
 import { SelectItem } from 'primeng/api'
+import { Location } from '@angular/common'
+import { environment } from 'src/environments/environment'
 
-import { Workspace /* , ThemeDTO */ } from 'src/app/shared/generated'
+import { Workspace } from 'src/app/shared/generated'
 
 export function limitText(text: string, limit: number): string {
   if (text) {
@@ -130,4 +132,20 @@ export function filterObjectTree(obj: any, exProps: string[], childProp: string)
     }
   }
   return pickedObj
+}
+
+/**
+ * URLs
+ */
+export function prepareUrl(url: string | undefined): string | undefined {
+  if (url && !url.match(/^(http|https)/g)) {
+    return Location.joinWithSlash(environment.apiPrefix, url)
+  } else {
+    return url
+  }
+}
+export function prepareUrlPath(url?: string, path?: string): string {
+  if (url && path) return Location.joinWithSlash(url, path)
+  else if (url) return url
+  else return ''
 }

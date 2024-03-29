@@ -12,111 +12,135 @@
   ></p-button>
 </div>
 
-<div *ngIf="exceptionKey" id="product_search_criteria_error" class="card px-3 align-items-center">
-  <p-message
-    id="product_search_criteria_error_message"
-    severity="error"
-    styleClass="p-2"
-    [text]="exceptionKey | translate"
-  ></p-message>
-</div>
-
-<p-pickList
-  #picklist
-  sourceHeader="Source List"
-  targetHeader="Target List"
-  [filterBy]="filterBy"
-  [source]="(psProducts$ | async) ?? []"
-  [target]="(wProducts$ | async) ?? []"
->
-  <ng-template pTemplate="sourceFilter" let-options="options">
-    <div class="p-picklist-filter">
-      <input
-        [(ngModel)]="sourceFilterValue"
-        type="text"
-        (keyup)="options.filter(getFilterValue($event))"
-        role="textbox"
-        class="p-picklist-filter-input p-inputtext p-component"
-      />
-      <span
-        *ngIf="sourceFilterValue"
-        class="p-picklist-filter-icon pi pi-times"
-        (click)="options.reset(); sourceFilterValue = ''"
-      ></span>
-    </div>
-  </ng-template>
-  <ng-template pTemplate="targetFilter" let-options="options">
-    <div class="p-picklist-filter">
-      <input
-        [(ngModel)]="targetFilterValue"
-        type="text"
-        (keyup)="options.filter(getFilterValue($event))"
-        role="textbox"
-        class="p-picklist-filter-input p-inputtext p-component"
-      />
-      <span
-        *ngIf="targetFilterValue"
-        class="p-picklist-filter-icon pi pi-times"
-        (click)="options.reset(); targetFilterValue = ''"
-      ></span>
-    </div> </ng-template
-></p-pickList>
-
-<!-- p-dataView
-  *ngIf="!exceptionKey"
-  id="workspace_detail_product_dataview"
-  [value]="(products$ | async)?.sort(sortProductsByDisplayName) ?? []"
-  [paginator]="true"
-  [alwaysShowPaginator]="true"
-  [rowsPerPageOptions]="[12, 24, 48]"
-  [rows]="12"
-  [layout]="viewMode"
-  [filterBy]="filterBy"
-  [sortField]="sortField"
-  [sortOrder]="sortOrder"
->
-  <ng-template pTemplate="header">
-    <div class="flex flex-wrap align-items-center mx-1">
-      <ocx-data-view-controls
-        class="flex-grow-1"
-        [supportedViews]="['grid']"
-        [initialViewMode]="viewMode"
-        [filterValue]="filterValue"
-        [enableFiltering]="true"
-        (filterChange)="onFilterChange($event)"
-        [filterColumns]="['PRODUCT.NAME' | translate]"
-        [enableSorting]="true"
-        [sortingOptions]="[{ label: 'PRODUCT.NAME' | translate, value: 'productName' }]"
-        [defaultSortOption]="sortField"
-        [defaultSortDirection]="sortOrder === 1"
-        (sortChange)="onSortChange($event)"
-        (sortDirectionChange)="onSortDirChange($event)"
-        [translations]="dataViewControlsTranslations"
-      >
-      </ocx-data-view-controls>
-    </div>
-  </ng-template>
-  <ng-template let-product let-item="rowIndex" pTemplate="gridItem">
-    <div class="col-12 sm:col-6 md:col-4 lg:col-4 xl:col-3 p-3">
-      <div
-        [id]="'workspace_detail_product_data_item_' + item"
-        class="card relative p-2 cursor-pointer hover:bg-gray-200 hover:text-color"
-        (click)="onProductClick($event, product)"
-      >
-        <span
-          [id]="'workspace_detail_product_data_item_' + item + '_deregister'"
-          class="card-badge-right badge-1 p-2 pi pi-trash pseudo-button-link"
-          [title]="'PRODUCT.ACTIONS.DEREGISTER.TOOLTIP' | translate"
-          (click)="onDeregister($event, product)"
-        ></span>
-        <div class="h-4rem lg:h-4rem flex flex-column justify-content-between gap-1 lg:gap-2 my-1 lg:my-2 text-center">
-          <div class="font-bold text-lg lg:text-xl" [title]="'Name: ' + product.productName">
-            {{ limitText(product.productName, 17) }}
-          </div>
-          <div class="text-sm" [title]="product.description">{{ limitText(product.description, 25) }}</div>
-          <div class="text-sm" [title]="'Base URL: ' + product.baseUrl">{{ limitText(product.baseUrl, 25) }}</div>
+<div *ngIf="!exceptionKey" class="col-12 p-0 flex flex-row column-gap-2 align-items-start">
+  <div class="col-12 sm:col-9 md:col-8">
+    <p-pickList
+      #picklist
+      id="workspace_detail_product_picklist"
+      [sourceHeader]="'DIALOG.PRODUCTS.PS_PRODUCTS' | translate"
+      [targetHeader]="'DIALOG.PRODUCTS.W_PRODUCTS' | translate"
+      [filterBy]="'displayName,classifications'"
+      [source]="(psProducts$ | async) ?? []"
+      [target]="wProducts"
+      [showSourceControls]="false"
+      [showTargetControls]="false"
+      [sourceFilterPlaceholder]="'Product Name'"
+      [targetFilterPlaceholder]="'Product Name'"
+      [stripedRows]="true"
+      [styleClass]="''"
+      [disabled]="!hasRegisterPermission"
+      (onSourceSelect)="onSourceSelect($event)"
+      (onTargetSelect)="onTargetSelect($event)"
+      (onMoveToSource)="onMoveToSource($event)"
+      (onMoveToTarget)="onMoveToTarget($event)"
+      (onMoveAllToSource)="onMoveToSource($event)"
+      (onMoveAllToTarget)="onMoveToTarget($event)"
+    >
+      <ng-template pTemplate="sourceFilter" let-options="options">
+        <div class="p-picklist-filter">
+          <input
+            id="workspace_detail_product_picklist_source_filter_value"
+            class="p-picklist-filter-input p-inputtext p-component"
+            [(ngModel)]="sourceFilterValue"
+            (keyup)="options.filter(getFilterValue($event))"
+            type="text"
+            role="textbox"
+          />
+          <span
+            *ngIf="sourceFilterValue"
+            class="p-picklist-filter-icon pi pi-times"
+            (click)="options.reset(); sourceFilterValue = ''"
+          ></span>
         </div>
-      </div>
-    </div>
-  </ng-template>
-</p-dataView -->
+      </ng-template>
+      <ng-template pTemplate="targetFilter" let-options="options">
+        <div class="p-picklist-filter">
+          <input
+            id="workspace_detail_product_picklist_target_filter_value"
+            class="p-picklist-filter-input p-inputtext p-component"
+            [(ngModel)]="targetFilterValue"
+            (keyup)="options.filter(getFilterValue($event))"
+            type="text"
+            role="textbox"
+          />
+          <span
+            *ngIf="targetFilterValue"
+            class="p-picklist-filter-icon pi pi-times"
+            (click)="options.reset(); targetFilterValue = ''"
+          ></span>
+        </div>
+      </ng-template>
+      <ng-template let-product pTemplate="item">
+        <div class="col-12 h-2rem md:h-3rem p-0 flex flex-wrap align-items-center">
+          <div class="col-12 md:col-9 p-0 flex flex-row column-gap-2 align-items-center">
+            <app-image-container
+              [imageUrl]="getImageUrl(product.imageUrl)"
+              [small]="true"
+              styleClass="w-2rem md:w-4rem"
+            ></app-image-container>
+            <div class="flex flex-column row-gap-1">
+              <div class="text-sm font-semibold lg:text-md">{{ product.displayName }}</div>
+              <div class="text-xs hidden md:block">{{ product.productName }}</div>
+            </div>
+          </div>
+          <div class="col-3 p-0 text-sm hidden md:block">{{ product.baseUrl }}</div>
+        </div>
+      </ng-template>
+    </p-pickList>
+  </div>
+
+  <div class="col-3 sm:col-3 md:col-4 hidden sm:block">
+    <p-panel *ngIf="displayDetails" [showHeader]="true" styleClass="hidden sm:block">
+      <ng-template pTemplate="header">
+        <div class="flex flex-row justify-content-between align-items-start w-full">
+          <div class="mb-3 flex flex-column text-primary">
+            <div class="font-semibold text-xl mb-1">{{ 'DIALOG.PRODUCTS.DETAILS' | translate }}</div>
+            <div class="text-sm">{{ 'DIALOG.PRODUCTS.ORIGIN.' + displayedDetailsOrigin | translate }}</div>
+          </div>
+          <span
+            id="workspace_detail_product_item_header_close"
+            class="p-2 pi pi-times pseudo-button-link"
+            [title]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
+            (click)="onHideItemDetails()"
+          ></span>
+        </div>
+      </ng-template>
+      <form [formGroup]="formGroup">
+        <div class="flex flex-column row-gap-4">
+          <span class="p-float-label" [title]="'PRODUCT.TOOLTIPS.DISPLAY_NAME' | translate" controlErrorAnchor>
+            <input
+              pInputText
+              type="text"
+              class="w-full"
+              id="workspace_detail_product_item_display_name"
+              formControlName="displayName"
+            />
+            <label for="workspace_detail_product_item_display_name"> {{ 'PRODUCT.DISPLAY_NAME' | translate }}</label>
+          </span>
+          <span class="p-float-label" [title]="'PRODUCT.TOOLTIPS.BASE_URL' | translate" controlErrorAnchor>
+            <input
+              pInputText
+              type="text"
+              class="w-full"
+              id="workspace_detail_product_item_baseurl"
+              formControlName="baseUrl"
+              (keyup)="onBaseUrlChange()"
+            />
+            <label class="ocx-required-label" for="product_detail_item_baseurl">
+              {{ 'PRODUCT.BASE_URL' | translate }}</label
+            >
+          </span>
+          <p-button
+            *ngIf="hasRegisterPermission && displayedDetailsOrigin === 'WORKSPACE'"
+            id="workspace_detail_product_header_button_save"
+            [label]="'ACTIONS.SAVE' | translate"
+            [title]="'ACTIONS.TOOLTIPS.SAVE' | translate"
+            (onClick)="onProductSave($event)"
+            icon="pi pi-save"
+            class="text-right"
+          ></p-button>
+        </div>
+      </form>
+    </p-panel>
+  </div>
+</div>

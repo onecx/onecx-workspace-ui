@@ -9,16 +9,18 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { MicrofrontendPS } from './microfrontendPS';
 
 
-export interface ProductStoreItem { 
-    productName?: string;
-    displayName?: string;
+export interface UserWorkspaceMenuItem { 
+    key?: string;
+    name?: string;
     description?: string;
-    imageUrl?: string;
-    baseUrl?: string;
-    classifications?: string;
-    microfrontends?: Array<MicrofrontendPS>;
+    url?: string;
+    applicationId?: string;
+    position?: number;
+    badge?: string;
+    external?: boolean;
+    i18n?: { [key: string]: string; };
+    children?: Array<UserWorkspaceMenuItem>;
 }
 
