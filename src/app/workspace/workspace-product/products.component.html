@@ -37,7 +37,8 @@
       (onMoveAllToTarget)="onMoveToTarget($event)"
     >
       <ng-template pTemplate="sourceFilter" let-options="options">
-        <div class="p-picklist-filter">
+        <div class="p-inputgroup p-picklist-filter">
+          <span class="p-inputgroup-addon data-view-control-border"><i class="pi pi-filter"></i></span>
           <input
             id="workspace_detail_product_picklist_source_filter_value"
             class="p-picklist-filter-input p-inputtext p-component"
@@ -45,6 +46,7 @@
             (keyup)="options.filter(getFilterValue($event))"
             type="text"
             role="textbox"
+            [placeholder]="'ACTIONS.SEARCH.FILTER' | translate"
           />
           <span
             *ngIf="sourceFilterValue"
@@ -54,7 +56,8 @@
         </div>
       </ng-template>
       <ng-template pTemplate="targetFilter" let-options="options">
-        <div class="p-picklist-filter">
+        <div class="p-inputgroup p-picklist-filter">
+          <span class="p-inputgroup-addon data-view-control-border"><i class="pi pi-filter"></i></span>
           <input
             id="workspace_detail_product_picklist_target_filter_value"
             class="p-picklist-filter-input p-inputtext p-component"
@@ -62,6 +65,7 @@
             (keyup)="options.filter(getFilterValue($event))"
             type="text"
             role="textbox"
+            [placeholder]="'ACTIONS.SEARCH.FILTER' | translate"
           />
           <span
             *ngIf="targetFilterValue"
@@ -70,6 +74,7 @@
           ></span>
         </div>
       </ng-template>
+
       <ng-template let-product pTemplate="item">
         <div class="col-12 h-2rem md:h-3rem p-0 flex flex-wrap align-items-center">
           <div class="col-12 md:col-9 p-0 flex flex-row column-gap-2 align-items-center">

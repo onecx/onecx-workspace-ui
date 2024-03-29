@@ -1,7 +1,8 @@
 @import 'src/_mixins.scss';
 
-@include card-badges;
 @include danger-action;
+@include prepare-inputgroup;
+@include picklist-zebra-rows;
 
 :host ::ng-deep {
   .p-dialog .p-dialog-content {
@@ -28,7 +29,7 @@
       background-color: var(--primary-color);
     }
     .p-picklist-list {
-      height: 34.5rem;
+      height: 34.7rem;
       .p-picklist-item {
         padding: 0.2rem 0.5rem;
         border-bottom: var(--table-header-border);
@@ -42,10 +43,6 @@
           }
         }
       }
-    }
-    .p-picklist-list-wrapper {
-      /*       width: 22rem !important;
- */
     }
   }
 }
