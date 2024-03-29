@@ -50,7 +50,7 @@
     "@ngx-translate/core": "^14.0.0",
     "@ngx-translate/http-loader": "^7.0.0",
     "@onecx/accelerator": "4.12.0",
-    "@onecx/integration-interface": "4.11.0",
+    "@onecx/integration-interface": "4.13.1",
     "@onecx/keycloak-auth": "4.11.0",
     "@onecx/portal-integration-angular": "4.11.0",
     "@onecx/portal-layout-styles": "4.11.0",
