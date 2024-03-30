@@ -79,6 +79,7 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy, AfterView
   public wProducts!: ExtendedProduct[]
   public psProducts$!: Observable<ExtendedProduct[]>
   public psProducts!: ProductStoreItem[]
+  public psProductsOrg!: ProductStoreItem[]
   public currentMfe!: MfeInfo
 
   constructor(
@@ -161,11 +162,17 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy, AfterView
       .pipe(
         map((products) => {
           this.wProducts = []
+          // when product store already loaded retrieve the image URL from them
+          let psp: ExtendedProduct[] = []
           for (let p of products) {
+            if (this.psProductsOrg?.length > 0) {
+              psp = this.psProductsOrg.filter((psp) => psp.productName === p.productName)
+            } else psp = []
             // this.wProducts.push(p as ExtendedProduct)
             // simulate microfrontends:
             this.wProducts.push({
               ...p,
+              imageUrl: psp?.length > 0 ? psp[0].imageUrl : null,
               microfrontends: [{ id: '123', appId: 'onecx-app-id', basePath: '/base-path' } as Microfrontend]
             } as ExtendedProduct)
             // console.log('p', p)
@@ -191,10 +198,13 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy, AfterView
         map((result) => {
           // filter: return psProducts which are not yet registered
           this.psProducts = []
+          this.psProductsOrg = []
           if (result.stream) {
             for (let p of result.stream) {
-              if (this.wProducts.filter((wp) => wp.productName === p.productName).length === 0)
-                this.psProducts.push(p as ExtendedProduct)
+              this.psProductsOrg.push(p as ExtendedProduct) // all
+              const wp = this.wProducts.filter((wp) => wp.productName === p.productName)
+              if (wp.length === 1) wp[0].imageUrl = p.imageUrl
+              else this.psProducts.push(p as ExtendedProduct)
             }
           }
           return this.psProducts.sort(this.sortProductsByDisplayName)
