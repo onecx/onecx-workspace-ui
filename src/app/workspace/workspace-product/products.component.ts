@@ -140,10 +140,17 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy, AfterView
     this.exceptionKey = undefined
     this.searchWProducts()
     this.searchPsProducts()
+    this.wProducts$
+      .pipe(
+        switchMap((wProducts) => {
+          return this.psProducts$
+        })
+      )
+      .subscribe()
   }
 
   public onLoadPsProducts(): void {
-    this.wProducts$.subscribe()
+    this.psProducts$.subscribe()
   }
   public onLoadWProducts(): void {
     this.wProducts$.subscribe()
@@ -178,35 +185,28 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy, AfterView
    * GET all (!) Product Store products which are not yet registered
    */
   private searchPsProducts(): void {
-    //this.psProducts$ =
-    this.wProducts$
+    this.psProducts$ = this.psProductApi
+      .searchAvailableProducts({ productStoreSearchCriteria: {} })
       .pipe(
-        switchMap((wProducts) => {
-          return this.psProductApi
-            .searchAvailableProducts({ productStoreSearchCriteria: {} })
-            .pipe(
-              map((result) => {
-                // filter: return psProducts which are not yet registered
-                this.psProducts = []
-                if (result.stream) {
-                  for (let p of result.stream) {
-                    if (this.wProducts.filter((wp) => wp.productName === p.productName).length === 0)
-                      this.psProducts.push(p as ExtendedProduct)
-                  }
-                }
-                return this.psProducts.sort(this.sortProductsByDisplayName)
-              }),
-              catchError((err) => {
-                this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.PRODUCTS'
-                console.error('searchAvailableProducts():', err)
-                return of([] as Product[])
-              }),
-              finalize(() => (this.loading = false))
-            )
-            .pipe(takeUntil(this.destroy$))
-        })
+        map((result) => {
+          // filter: return psProducts which are not yet registered
+          this.psProducts = []
+          if (result.stream) {
+            for (let p of result.stream) {
+              if (this.wProducts.filter((wp) => wp.productName === p.productName).length === 0)
+                this.psProducts.push(p as ExtendedProduct)
+            }
+          }
+          return this.psProducts.sort(this.sortProductsByDisplayName)
+        }),
+        catchError((err) => {
+          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.PRODUCTS'
+          console.error('searchAvailableProducts():', err)
+          return of([] as Product[])
+        }),
+        finalize(() => (this.loading = false))
       )
-      .subscribe()
+      .pipe(takeUntil(this.destroy$))
   }
 
   public sortProductsByDisplayName(a: Product, b: Product): number {
@@ -264,7 +264,7 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy, AfterView
     // dynamic form array for microfrontends
     const mfes = this.formGroup.get('mfes') as FormArray
     mfes.controls.forEach((item, i) => mfes.removeAt(i))
-    if (item.microfrontends)
+    if (this.displayedDetailItem?.microfrontends)
       for (let mfe of item.microfrontends) {
         this.formGroupMfe.controls['id'].setValue(mfe.id)
         this.formGroupMfe.controls['appId'].setValue(mfe.appId)
@@ -276,22 +276,13 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy, AfterView
     // console.log('mfeControls2().at(0)', this.mfeControls2().at(0))
     // console.log('mfeControls2().at(0) appId', this.mfeControls2().at(0).controls['appId'].value)
   }
-  get mfeControls(): any {
-    return this.formGroup.get('mfes') as FormArray
-  }
-  private addMfe(mfes: FormArray, mfe: Microfrontend) {
-    console.log('addMfe', mfe)
-    if (!mfes.invalid) {
-      this.formGroupMfe.controls['id'].setValue(mfe.id)
-      this.formGroupMfe.controls['appId'].setValue(mfe.appId)
-      this.formGroupMfe.controls['basePath'].setValue(mfe.basePath)
-      mfes.push(this.formGroupMfe)
-    }
-  }
   private clearForm() {
     this.displayDetails = false
     this.displayedDetailItem = undefined
     this.formGroup.reset()
+  }
+  get mfeControls(): any {
+    return this.formGroup.get('mfes') as FormArray
   }
 
   public onProductSave(ev: any): void {
@@ -348,7 +339,6 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy, AfterView
             successCounter++
             // update id
             this.wProducts.filter((wp) => wp.productName === p.productName)[0].id = data.resource.id
-            this.psProducts.sort(this.sortProductsByDisplayName)
             if (itemCount === successCounter + errorCounter)
               this.displayRegisterMessages('REGISTRATION', successCounter, errorCounter)
           },
@@ -386,8 +376,6 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy, AfterView
             successCounter++
             if (itemCount === successCounter + errorCounter)
               this.displayRegisterMessages('DEREGISTRATION', successCounter, errorCounter)
-            this.psProducts.sort(this.sortProductsByDisplayName)
-            this.wProducts.sort(this.sortProductsByDisplayName)
           },
           error: (err) => {
             errorCounter++
@@ -407,9 +395,12 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy, AfterView
 
   private displayRegisterMessages(type: string, success: number, error: number) {
     console.log('displayRegisterMessages s:' + success + ' e:' + error)
-    if (success > 0)
+    this.psProducts = this.psProducts.sort(this.sortProductsByDisplayName)
+    this.wProducts = this.wProducts.sort(this.sortProductsByDisplayName)
+    if (success > 0) {
       if (success === 1) this.msgService.success({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.' + type + '_OK' })
       else this.msgService.success({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.' + type + 'S_OK' })
+    }
     if (error > 0)
       if (error === 1) this.msgService.error({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.' + type + '_NOK' })
       else this.msgService.error({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.' + type + 'S_NOK' })

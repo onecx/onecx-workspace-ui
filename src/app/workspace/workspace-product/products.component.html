@@ -167,22 +167,24 @@
           <div *ngIf="displayedDetailItem?.microfrontends?.length === 0" class="ml-3">
             {{ 'ACTIONS.SEARCH.NO_DATA' | translate }}
           </div>
-          <div formArrayName="mfes">
-            <div *ngFor="let mfe of mfeControls.controls; let i = index">
-              <div [formGroupName]="i">
-                <span class="p-float-label" [title]="'PRODUCT.MFE.BASE_PATH.TOOLTIP' | translate" controlErrorAnchor>
-                  <input
-                    pInputText
-                    type="text"
-                    class="w-full"
-                    [id]="'workspace_detail_product_item_mfe_' + i + '_basePath'"
-                    formControlName="basePath"
-                    (keyup)="onBaseUrlChange()"
-                  />
-                  <label [for]="'workspace_detail_product_item_mfe_' + i + '_basePath'">
-                    {{ mfe.controls['appId'].value }}</label
-                  >
-                </span>
+          <div *ngIf="displayedDetailItem?.microfrontends">
+            <div formArrayName="mfes">
+              <div *ngFor="let mfe of mfeControls.controls; let i = index">
+                <div [formGroupName]="i">
+                  <span class="p-float-label" [title]="'PRODUCT.MFE.BASE_PATH.TOOLTIP' | translate" controlErrorAnchor>
+                    <input
+                      pInputText
+                      type="text"
+                      class="w-full"
+                      [id]="'workspace_detail_product_item_mfe_' + i + '_basePath'"
+                      formControlName="basePath"
+                      (keyup)="onBaseUrlChange()"
+                    />
+                    <label [for]="'workspace_detail_product_item_mfe_' + i + '_basePath'">
+                      {{ mfe.controls['appId'].value }}</label
+                    >
+                  </span>
+                </div>
               </div>
             </div>
           </div>
