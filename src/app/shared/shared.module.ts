@@ -15,6 +15,7 @@ import { ConfirmationService } from 'primeng/api'
 import { DataViewModule } from 'primeng/dataview'
 import { DialogModule } from 'primeng/dialog'
 import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog'
+import { DividerModule } from 'primeng/divider'
 import { DropdownModule } from 'primeng/dropdown'
 import { FileUploadModule } from 'primeng/fileupload'
 import { InputTextModule } from 'primeng/inputtext'
@@ -63,6 +64,7 @@ export function apiConfigProvider(configService: ConfigurationService, appStateS
     ConfirmPopupModule,
     DataViewModule,
     DialogModule,
+    DividerModule,
     DropdownModule,
     DynamicDialogModule,
     FileUploadModule,
@@ -118,6 +120,7 @@ export function apiConfigProvider(configService: ConfigurationService, appStateS
     ConfirmPopupModule,
     DataViewModule,
     DialogModule,
+    DividerModule,
     DropdownModule,
     DynamicDialogModule,
     FileUploadModule,

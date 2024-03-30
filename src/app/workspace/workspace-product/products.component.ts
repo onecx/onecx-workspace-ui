@@ -1,11 +1,23 @@
-import { Component, Input, OnDestroy, OnInit, OnChanges, SimpleChanges, ViewChild } from '@angular/core'
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Renderer2,
+  Input,
+  OnDestroy,
+  OnInit,
+  OnChanges,
+  SimpleChanges,
+  ViewChild
+} from '@angular/core'
 import { TranslateService } from '@ngx-translate/core'
 import { catchError, finalize, map, Observable, of, Subject, switchMap, takeUntil } from 'rxjs'
-import { FormControl, FormGroup, Validators } from '@angular/forms'
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { PickList } from 'primeng/picklist'
 
 import { PortalMessageService } from '@onecx/portal-integration-angular'
 import {
+  Microfrontend,
   CreateProductRequest,
   UpdateProductRequest,
   Product,
@@ -20,24 +32,26 @@ import { environment } from 'src/environments/environment'
 import { limitText, prepareUrlPath } from 'src/app/shared/utils'
 
 // base: Product Store product, Extended with workspace details
-type ExtendedProduct = ProductStoreItem & { id?: string; baseUrl?: string; modificationCount?: number }
-export interface ProductDetailForm {
-  productName: FormControl<string | null>
-  displayName: FormControl<string | null>
-  description: FormControl<string | null>
-  baseUrl: FormControl<string | null>
+type ExtendedProduct = Product & { imageUrl?: string; classifications?: string }
+interface ViewingModes {
+  icon: string
+  mode: string
+  titleKey?: string
 }
+const ALL_VIEW_MODES = [
+  { icon: 'pi pi-list', mode: 'list', titleKey: 'DIALOG.DATAVIEW.VIEW_MODE_LIST' },
+  { icon: 'pi pi-th-large', mode: 'grid', titleKey: 'DIALOG.DATAVIEW.VIEW_MODE_GRID' }
+]
 
 @Component({
   selector: 'app-products',
   templateUrl: './products.component.html',
   styleUrls: ['./products.component.scss']
 })
-export class ProductComponent implements OnInit, OnChanges, OnDestroy {
+export class ProductComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
   @Input() workspace!: Workspace | undefined
 
   private readonly destroy$ = new Subject()
-  private readonly debug = true // to be removed after finalization
   public exceptionKey: string | undefined
   public loading = true
   public editMode = false
@@ -48,8 +62,11 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy {
   public filterValue: string | undefined
   public sourceFilterValue: string | undefined // product store
   public targetFilterValue: string | undefined // workspace
-  public formGroup: FormGroup<ProductDetailForm>
+  public formGroup: FormGroup
+  public formGroupMfe: FormGroup
   public hasRegisterPermission = false
+  public viewingModes: ViewingModes[] = []
+  public selectedViewModeSource: ViewingModes | undefined
 
   @ViewChild(PickList) picklist: PickList | undefined
 
@@ -70,22 +87,45 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy {
     private user: UserService,
     private appState: AppStateService,
     private translate: TranslateService,
-    private msgService: PortalMessageService
+    private msgService: PortalMessageService,
+    private fb: FormBuilder,
+    private renderer: Renderer2,
+    private elem: ElementRef
   ) {
     this.hasRegisterPermission = this.user.hasPermission('WORKSPACE_PRODUCTS#REGISTER')
     this.appState.currentMfe$.pipe(map((mfe) => (this.currentMfe = mfe))).subscribe()
-    this.formGroup = new FormGroup<ProductDetailForm>({
+    this.formGroupMfe = this.fb.group({
+      id: new FormControl(null),
+      appId: new FormControl(null),
+      basePath: new FormControl(null)
+    })
+    this.formGroup = this.fb.group({
       productName: new FormControl(null),
       displayName: new FormControl({ value: null, disabled: true }),
       description: new FormControl(null),
-      baseUrl: new FormControl(null, [Validators.required, Validators.maxLength(255)])
+      baseUrl: new FormControl(null, [Validators.required, Validators.maxLength(255)]),
+      mfes: this.fb.array([])
     })
+    this.viewingModes = ALL_VIEW_MODES
+    this.selectedViewModeSource = this.viewingModes.find((v) => v.mode === 'list')
   }
 
   ngOnInit() {
     console.log('onInit')
     //this.prepareTranslations()
   }
+  ngAfterViewInit() {
+    console.log('ngAfterViewInit')
+    /*
+    const itemElement = (<HTMLElement>this.elem.nativeElement).querySelector(
+      '.p-picklist-list.p-picklist-source .p-picklist-item:first-of-type'
+    )
+    console.log('itemElement: ', itemElement)
+    this.renderer['addClass'](itemElement, 'tile-item')
+    //this.renderer.removeClass(itemElement, 'click')
+    */
+  }
+
   public ngOnChanges(changes: SimpleChanges): void {
     if (this.workspace && changes['workspace']) this.loadData()
   }
@@ -102,6 +142,12 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy {
     this.searchPsProducts()
   }
 
+  public onLoadPsProducts(): void {
+    this.wProducts$.subscribe()
+  }
+  public onLoadWProducts(): void {
+    this.wProducts$.subscribe()
+  }
   private searchWProducts(): void {
     this.wProducts$ = this.wProductApi
       .getProductsForWorkspaceId({ id: this.workspace?.id ?? '' })
@@ -109,14 +155,13 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy {
         map((products) => {
           this.wProducts = []
           for (let p of products) {
+            // this.wProducts.push(p as ExtendedProduct)
+            // simulate microfrontends:
             this.wProducts.push({
-              id: p.id,
-              modificationCount: p.modificationCount,
-              displayName: p.displayName,
-              productName: p.productName,
-              baseUrl: p.baseUrl,
-              microfrontends: p.microfrontends
+              ...p,
+              microfrontends: [{ id: '123', appId: 'onecx-app-id', basePath: '/base-path' } as Microfrontend]
             } as ExtendedProduct)
+            // console.log('p', p)
           }
           return this.wProducts.sort(this.sortProductsByDisplayName)
         }),
@@ -133,32 +178,35 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy {
    * GET all (!) Product Store products which are not yet registered
    */
   private searchPsProducts(): void {
-    this.psProducts$ = this.wProducts$.pipe(
-      switchMap((wProducts) => {
-        return this.psProductApi
-          .searchAvailableProducts({ productStoreSearchCriteria: {} })
-          .pipe(
-            map((result) => {
-              // filter: return psProducts which are not yet registered
-              this.psProducts = []
-              if (result.stream) {
-                for (let p of result.stream) {
-                  if (this.wProducts.filter((wp) => wp.productName === p.productName).length === 0)
-                    this.psProducts.push(p)
+    //this.psProducts$ =
+    this.wProducts$
+      .pipe(
+        switchMap((wProducts) => {
+          return this.psProductApi
+            .searchAvailableProducts({ productStoreSearchCriteria: {} })
+            .pipe(
+              map((result) => {
+                // filter: return psProducts which are not yet registered
+                this.psProducts = []
+                if (result.stream) {
+                  for (let p of result.stream) {
+                    if (this.wProducts.filter((wp) => wp.productName === p.productName).length === 0)
+                      this.psProducts.push(p as ExtendedProduct)
+                  }
                 }
-              }
-              return this.psProducts.sort(this.sortProductsByDisplayName)
-            }),
-            catchError((err) => {
-              this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.PRODUCTS'
-              console.error('searchAvailableProducts():', err)
-              return of([] as Product[])
-            }),
-            finalize(() => (this.loading = false))
-          )
-          .pipe(takeUntil(this.destroy$))
-      })
-    )
+                return this.psProducts.sort(this.sortProductsByDisplayName)
+              }),
+              catchError((err) => {
+                this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.PRODUCTS'
+                console.error('searchAvailableProducts():', err)
+                return of([] as Product[])
+              }),
+              finalize(() => (this.loading = false))
+            )
+            .pipe(takeUntil(this.destroy$))
+        })
+      )
+      .subscribe()
   }
 
   public sortProductsByDisplayName(a: Product, b: Product): number {
@@ -184,6 +232,11 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy {
     if (this.displayedDetailItem)
       this.displayedDetailItem.baseUrl = this.formGroup.controls['baseUrl'].value ?? undefined
   }
+  public onSourceViewModeChange(ev: { icon: string; mode: string }): void {
+    console.log(ev)
+    this.selectedViewModeSource = this.viewingModes.find((v) => v.mode === ev.mode)
+  }
+
   public onSourceSelect(ev: any): void {
     console.log('onSourceSelect', ev.items)
     this.displayedDetailsOrigin = 'PRODUCTSTORE'
@@ -208,6 +261,32 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy {
     this.formGroup.controls['displayName'].setValue(item.displayName)
     this.formGroup.controls['description'].setValue(item.description)
     this.formGroup.controls['baseUrl'].setValue(item.baseUrl)
+    // dynamic form array for microfrontends
+    const mfes = this.formGroup.get('mfes') as FormArray
+    mfes.controls.forEach((item, i) => mfes.removeAt(i))
+    if (item.microfrontends)
+      for (let mfe of item.microfrontends) {
+        this.formGroupMfe.controls['id'].setValue(mfe.id)
+        this.formGroupMfe.controls['appId'].setValue(mfe.appId)
+        this.formGroupMfe.controls['basePath'].setValue(mfe.basePath)
+        mfes.push(this.formGroupMfe)
+      }
+    // console.log('formGroup', this.formGroup)
+    // console.log('mfeControls2().controls', this.mfeControls2().controls)
+    // console.log('mfeControls2().at(0)', this.mfeControls2().at(0))
+    // console.log('mfeControls2().at(0) appId', this.mfeControls2().at(0).controls['appId'].value)
+  }
+  get mfeControls(): any {
+    return this.formGroup.get('mfes') as FormArray
+  }
+  private addMfe(mfes: FormArray, mfe: Microfrontend) {
+    console.log('addMfe', mfe)
+    if (!mfes.invalid) {
+      this.formGroupMfe.controls['id'].setValue(mfe.id)
+      this.formGroupMfe.controls['appId'].setValue(mfe.appId)
+      this.formGroupMfe.controls['basePath'].setValue(mfe.basePath)
+      mfes.push(this.formGroupMfe)
+    }
   }
   private clearForm() {
     this.displayDetails = false
@@ -269,6 +348,7 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy {
             successCounter++
             // update id
             this.wProducts.filter((wp) => wp.productName === p.productName)[0].id = data.resource.id
+            this.psProducts.sort(this.sortProductsByDisplayName)
             if (itemCount === successCounter + errorCounter)
               this.displayRegisterMessages('REGISTRATION', successCounter, errorCounter)
           },
@@ -306,6 +386,8 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy {
             successCounter++
             if (itemCount === successCounter + errorCounter)
               this.displayRegisterMessages('DEREGISTRATION', successCounter, errorCounter)
+            this.psProducts.sort(this.sortProductsByDisplayName)
+            this.wProducts.sort(this.sortProductsByDisplayName)
           },
           error: (err) => {
             errorCounter++
@@ -316,7 +398,9 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy {
             if (itemCount === successCounter + errorCounter)
               this.displayRegisterMessages('DEREGISTRATION', successCounter, errorCounter)
           },
-          complete() {}
+          complete() {
+            console.log('move to source')
+          }
         })
     }
   }

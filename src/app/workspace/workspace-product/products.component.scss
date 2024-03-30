@@ -28,9 +28,14 @@
       color: var(--primary-text-color);
       background-color: var(--primary-color);
     }
+    .p-picklist-filter-container {
+      .p-buttonset .p-button {
+        min-width: unset;
+      }
+    }
     .p-picklist-list {
       height: 34.7rem;
-      .p-picklist-item {
+      li.p-picklist-item {
         padding: 0.2rem 0.5rem;
         border-bottom: var(--table-header-border);
         .product-item-table {
@@ -41,6 +46,9 @@
               display: table-cell !important;
             }
           }
+        }
+        &.tile-item {
+          float: left;
         }
       }
     }

@@ -90,7 +90,7 @@
       "ERROR": "Daten nicht abrufbar",
       "FILTER": "Filter",
       "FILTER_OF": "Filter für ",
-      "FILTER_CLEAR": "Filter entfernen",
+      "FILTER_CLEAR": "Filterwert entfernen",
       "NO_DATA": "Keine Daten",
       "RELOAD": "Daten neu laden",
       "RELOAD.OK": "Daten erfolgreich geladen",
@@ -359,14 +359,15 @@
   },
   "PRODUCT": {
     "DISPLAY_NAME": "Produkt",
-    "DESCRIPTION": "Beschreibung",
-    "BASE_PATH": "Base Path",
+    "DISPLAY_NAME.TOOLTIP": "Name des Produkts",
+    "DESCRIPTION": "Description",
     "BASE_URL": "Base URL",
-    "APP_ID": "UI Service ID",
-    "TOOLTIPS": {
-      "DISPLAY_NAME": "Name des Produkts",
-      "BASE_URL": "Letzter Pfadteil über den aus dem Workspace auf das Produkt zugegriffen wird.",
-      "APP_ID": "Eindeutige ID des spezifischen UI-Dienstes, der verwendet werden soll."
+    "BASE_URL.TOOLTIP": "Letzter Pfadteil für den Zugriff auf das Produkt.",
+    "MFE": {
+      "APP_ID": "UI Service ID",
+      "APP_ID.TOOLTIP": "Eindeutige ID des spezifischen UI-Dienstes, der verwendet werden soll.",
+      "BASE_PATH": "Base Path",
+      "BASE_PATH.TOOLTIP": "Letzter Pfadteil für den Zugriff auf das Microfrontend"
     }
   },
   "WORKSPACE_EXPORT": {
