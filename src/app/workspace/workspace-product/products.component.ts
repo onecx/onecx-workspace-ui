@@ -69,7 +69,6 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy, AfterView
   public sourceFilterValue: string | undefined // product store
   public targetFilterValue: string | undefined // workspace
   public formGroup: FormGroup
-  public formGroupMfe: FormGroup
   public hasRegisterPermission = false
   public viewingModes: ViewingModes[] = []
   public selectedViewModeSource: ViewingModes | undefined
@@ -101,12 +100,6 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy, AfterView
   ) {
     this.hasRegisterPermission = this.user.hasPermission('WORKSPACE_PRODUCTS#REGISTER')
     this.appState.currentMfe$.pipe(map((mfe) => (this.currentMfe = mfe))).subscribe()
-    this.formGroupMfe = this.fb.group({
-      id: new FormControl(null),
-      appId: new FormControl(null),
-      appName: new FormControl(null),
-      basePath: new FormControl(null, [Validators.required, Validators.maxLength(255)])
-    })
     this.formGroup = this.fb.group({
       productName: new FormControl(null),
       displayName: new FormControl({ value: null, disabled: true }),
