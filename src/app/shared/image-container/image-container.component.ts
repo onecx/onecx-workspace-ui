@@ -17,7 +17,6 @@ export class ImageContainerComponent implements OnChanges {
   @Input() public styleClass: string | undefined
 
   public displayPlaceHolder = false
-  private apiPrefix = environment.apiPrefix
   public currentMfe$: Observable<Partial<MfeInfo>>
 
   environment = environment

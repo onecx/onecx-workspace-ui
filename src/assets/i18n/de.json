@@ -328,8 +328,8 @@
       "REGISTER_ALL": "Alle markierte Produkt registriert",
       "DETAILS": "Produktdetails",
       "ORIGIN": "Herkunft",
-      "ORIGIN.WORKSPACE": "Workspace",
-      "ORIGIN.PRODUCTSTORE": "Product Store",
+      "ORIGIN.TARGET": "Workspace",
+      "ORIGIN.SOURCE": "Product Store",
       "MESSAGES": {
         "NOTHING_REGISTERED": "Kein Produkt registriert",
         "LOAD_ERROR": "Das Laden der Produkt-Liste ist fehlgeschlagen",

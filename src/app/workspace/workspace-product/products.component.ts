@@ -22,7 +22,6 @@ import {
   UpdateProductRequest,
   Product,
   ProductsAPIService,
-  ProductStoreItem,
   Workspace,
   WorkspaceProductAPIService
 } from 'src/app/shared/generated'
@@ -31,8 +30,14 @@ import { AppStateService, MfeInfo, UserService } from '@onecx/portal-integration
 import { environment } from 'src/environments/environment'
 import { limitText, prepareUrlPath } from 'src/app/shared/utils'
 
-// base: Product Store product, Extended with workspace details
-type ExtendedProduct = Product & { imageUrl?: string; classifications?: string }
+// combine Workspace Product with properties from product store (ProductStoreItem)
+// => bucket is used to recognize the origin within HTML
+type ExtendedProduct = Product & {
+  imageUrl?: string
+  classifications?: string
+  description?: string
+  bucket: 'SOURCE' | 'TARGET'
+}
 interface ViewingModes {
   icon: string
   mode: string
@@ -57,7 +62,6 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy, AfterView
   public editMode = false
   public displayDetails = false
   public displayedDetailItem: ExtendedProduct | undefined = undefined
-  public displayedDetailsOrigin = 'WORKSPACE' || 'PRODUCTSTORE'
   public viewMode = 'grid'
   public filterValue: string | undefined
   public sourceFilterValue: string | undefined // product store
@@ -78,8 +82,8 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy, AfterView
   public wProducts$!: Observable<ExtendedProduct[]>
   public wProducts!: ExtendedProduct[]
   public psProducts$!: Observable<ExtendedProduct[]>
-  public psProducts!: ProductStoreItem[]
-  public psProductsOrg!: ProductStoreItem[]
+  public psProducts!: ExtendedProduct[]
+  public psProductsOrg!: ExtendedProduct[]
   public currentMfe!: MfeInfo
 
   constructor(
@@ -98,7 +102,7 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy, AfterView
     this.formGroupMfe = this.fb.group({
       id: new FormControl(null),
       appId: new FormControl(null),
-      basePath: new FormControl(null)
+      basePath: new FormControl(null, [Validators.required, Validators.maxLength(255)])
     })
     this.formGroup = this.fb.group({
       productName: new FormControl(null),
@@ -162,7 +166,7 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy, AfterView
       .pipe(
         map((products) => {
           this.wProducts = []
-          // when product store already loaded retrieve the image URL from them
+          // if product store was already loaded then retrieve the image URL from them
           let psp: ExtendedProduct[] = []
           for (let p of products) {
             if (this.psProductsOrg?.length > 0) {
@@ -172,6 +176,7 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy, AfterView
             // simulate microfrontends:
             this.wProducts.push({
               ...p,
+              bucket: 'TARGET',
               imageUrl: psp?.length > 0 ? psp[0].imageUrl : null,
               microfrontends: [{ id: '123', appId: 'onecx-app-id', basePath: '/base-path' } as Microfrontend]
             } as ExtendedProduct)
@@ -182,7 +187,7 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy, AfterView
         catchError((err) => {
           this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.PRODUCTS'
           console.error('getProductsForWorkspaceId():', err)
-          return of([] as Product[])
+          return of([] as ExtendedProduct[])
         })
       )
       .pipe(takeUntil(this.destroy$))
@@ -201,10 +206,10 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy, AfterView
           this.psProductsOrg = []
           if (result.stream) {
             for (let p of result.stream) {
-              this.psProductsOrg.push(p as ExtendedProduct) // all
+              this.psProductsOrg.push({ ...p, bucket: 'SOURCE' } as ExtendedProduct) // all
               const wp = this.wProducts.filter((wp) => wp.productName === p.productName)
               if (wp.length === 1) wp[0].imageUrl = p.imageUrl
-              else this.psProducts.push(p as ExtendedProduct)
+              else this.psProducts.push({ ...p, bucket: 'SOURCE' } as ExtendedProduct)
             }
           }
           return this.psProducts.sort(this.sortProductsByDisplayName)
@@ -212,7 +217,7 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy, AfterView
         catchError((err) => {
           this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.PRODUCTS'
           console.error('searchAvailableProducts():', err)
-          return of([] as Product[])
+          return of([] as ExtendedProduct[])
         }),
         finalize(() => (this.loading = false))
       )
@@ -238,53 +243,40 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy, AfterView
   public onHideItemDetails() {
     this.displayDetails = false
   }
-  public onBaseUrlChange() {
-    if (this.displayedDetailItem)
-      this.displayedDetailItem.baseUrl = this.formGroup.controls['baseUrl'].value ?? undefined
-  }
   public onSourceViewModeChange(ev: { icon: string; mode: string }): void {
     console.log(ev)
     this.selectedViewModeSource = this.viewingModes.find((v) => v.mode === ev.mode)
   }
 
   public onSourceSelect(ev: any): void {
-    console.log('onSourceSelect', ev.items)
-    this.displayedDetailsOrigin = 'PRODUCTSTORE'
+    console.log('onSourceSelect', ev.items[0])
     this.fillForm(ev.items[0])
   }
   public onTargetSelect(ev: any): void {
-    console.log('onTargetSelect', ev.items)
-    this.displayedDetailsOrigin = 'WORKSPACE'
+    console.log('onTargetSelect', ev.items[0])
     this.fillForm(ev.items[0])
   }
 
-  private fillForm(item: any) {
+  private fillForm(item: ExtendedProduct) {
     this.displayDetails = true
-    if (this.displayedDetailsOrigin === 'PRODUCTSTORE') {
-      this.formGroup.controls['baseUrl'].disable()
-    }
-    if (this.displayedDetailsOrigin === 'WORKSPACE') {
-      this.displayedDetailItem = item
-      this.formGroup.controls['baseUrl'].enable()
-    }
+    this.displayedDetailItem = item
+    if (item.bucket === 'SOURCE') this.formGroup.controls['baseUrl'].disable()
+    if (item.bucket === 'TARGET') this.formGroup.controls['baseUrl'].enable()
     this.formGroup.controls['productName'].setValue(item.productName)
     this.formGroup.controls['displayName'].setValue(item.displayName)
     this.formGroup.controls['description'].setValue(item.description)
     this.formGroup.controls['baseUrl'].setValue(item.baseUrl)
     // dynamic form array for microfrontends
     const mfes = this.formGroup.get('mfes') as FormArray
-    mfes.controls.forEach((item, i) => mfes.removeAt(i))
-    if (this.displayedDetailItem?.microfrontends)
+    mfes.controls.forEach((item, i) => mfes.removeAt(i)) // clear
+    if (item.microfrontends)
+      // add mfes if exist
       for (let mfe of item.microfrontends) {
         this.formGroupMfe.controls['id'].setValue(mfe.id)
         this.formGroupMfe.controls['appId'].setValue(mfe.appId)
         this.formGroupMfe.controls['basePath'].setValue(mfe.basePath)
         mfes.push(this.formGroupMfe)
       }
-    // console.log('formGroup', this.formGroup)
-    // console.log('mfeControls2().controls', this.mfeControls2().controls)
-    // console.log('mfeControls2().at(0)', this.mfeControls2().at(0))
-    // console.log('mfeControls2().at(0) appId', this.mfeControls2().at(0).controls['appId'].value)
   }
   private clearForm() {
     this.displayDetails = false
@@ -298,21 +290,28 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy, AfterView
   public onProductSave(ev: any): void {
     ev.stopPropagation()
     this.editMode = false
-    console.log(this.formGroup.valid)
-    if (this.formGroup.valid) {
+    if (this.formGroup.valid && this.displayedDetailItem) {
+      this.displayedDetailItem.baseUrl = this.formGroup.controls['baseUrl'].value
+      if (this.displayedDetailItem) {
+        this.displayedDetailItem.microfrontends = [] // clear
+        const mfes = this.formGroup.get('mfes') as FormArray
+        mfes.controls.forEach((item) => {
+          this.displayedDetailItem?.microfrontends?.push(item.value)
+        })
+      }
       this.wProductApi
         .updateProductById({
           id: this.workspace?.id ?? '',
-          productId: this.displayedDetailItem?.id ?? '',
+          productId: this.displayedDetailItem.id ?? '',
           updateProductRequest: {
-            modificationCount: this.displayedDetailItem?.modificationCount,
-            baseUrl: this.displayedDetailItem?.baseUrl,
-            microfrontends: this.displayedDetailItem?.microfrontends
+            modificationCount: this.displayedDetailItem.modificationCount,
+            baseUrl: this.displayedDetailItem.baseUrl,
+            microfrontends: this.displayedDetailItem.microfrontends
           } as UpdateProductRequest
         })
         .subscribe({
           next: (data) => {
-            this.displayedDetailItem = data.resource
+            this.displayedDetailItem = { ...data.resource, bucket: 'TARGET' }
             this.msgService.success({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.UPDATE_OK' })
           },
           error: (err) => {
@@ -328,7 +327,6 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy, AfterView
    * REGISTER
    */
   public onMoveToTarget(ev: any): void {
-    console.log('onMoveToTarget', ev.items)
     this.clearForm()
     let itemCount = ev.items.length
     let successCounter = 0
@@ -348,20 +346,21 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy, AfterView
           next: (data) => {
             successCounter++
             // update id
-            this.wProducts.filter((wp) => wp.productName === p.productName)[0].id = data.resource.id
+            const wp = this.wProducts.filter((wp) => wp.productName === p.productName)[0]
+            wp.id = data.resource.id
+            wp.bucket = 'TARGET'
             if (itemCount === successCounter + errorCounter)
               this.displayRegisterMessages('REGISTRATION', successCounter, errorCounter)
           },
           error: (err) => {
             console.error(err)
             errorCounter++
-            // Revert change: move item back to original list
+            // Revert change: remove item in target/add item in source list
             this.wProducts = this.wProducts.filter((wp) => wp.productName !== p.productName)
             this.psProducts.push(p)
             if (itemCount === successCounter + errorCounter)
               this.displayRegisterMessages('REGISTRATION', successCounter, errorCounter)
-          },
-          complete() {}
+          }
         })
     }
   }
@@ -370,7 +369,6 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy, AfterView
    * DEREGISTER
    */
   public onMoveToSource(ev: any): void {
-    console.log('onMoveToSource', ev.items)
     this.clearForm()
     let itemCount = ev.items.length
     let successCounter = 0
@@ -384,27 +382,25 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy, AfterView
         .subscribe({
           next: () => {
             successCounter++
+            const psp = this.psProducts.filter((psp) => psp.productName === p.productName)[0]
+            psp.bucket = 'SOURCE'
             if (itemCount === successCounter + errorCounter)
               this.displayRegisterMessages('DEREGISTRATION', successCounter, errorCounter)
           },
           error: (err) => {
             errorCounter++
-            // Revert change: move item back to original list
+            // Revert change: remove item in source/add item in target list
             this.psProducts = this.psProducts.filter((psp) => psp.productName !== p.productName)
             this.wProducts.push(p)
             console.error(err)
             if (itemCount === successCounter + errorCounter)
               this.displayRegisterMessages('DEREGISTRATION', successCounter, errorCounter)
-          },
-          complete() {
-            console.log('move to source')
           }
         })
     }
   }
 
   private displayRegisterMessages(type: string, success: number, error: number) {
-    console.log('displayRegisterMessages s:' + success + ' e:' + error)
     this.psProducts = this.psProducts.sort(this.sortProductsByDisplayName)
     this.wProducts = this.wProducts.sort(this.sortProductsByDisplayName)
     if (success > 0) {
