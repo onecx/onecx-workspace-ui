@@ -171,13 +171,16 @@
           <p-divider align="center" styleClass="m-0">
             <div class="px-3 font-bold text-primary">Microfrontends</div></p-divider
           >
-          <div *ngIf="displayedDetailItem?.microfrontends?.length === 0" class="ml-3">
+          <div
+            *ngIf="!displayedDetailItem?.microfrontends || displayedDetailItem?.microfrontends?.length === 0"
+            class="ml-3"
+          >
             {{ 'ACTIONS.SEARCH.NO_DATA' | translate }}
           </div>
           <div *ngIf="displayedDetailItem?.microfrontends">
             <div formArrayName="mfes">
               <div *ngFor="let mfe of mfeControls.controls; let i = index">
-                <div [formGroupName]="i">
+                <div [formGroupName]="i" class="mb-4">
                   <span class="p-float-label" [title]="'PRODUCT.MFE.BASE_PATH.TOOLTIP' | translate" controlErrorAnchor>
                     <input
                       pInputText
@@ -194,7 +197,9 @@
               </div>
             </div>
           </div>
+        </div>
 
+        <div class="w-full text-right">
           <p-button
             *ngIf="hasRegisterPermission && displayedDetailItem?.bucket === 'TARGET' && formGroup.valid"
             id="workspace_detail_product_header_button_save"

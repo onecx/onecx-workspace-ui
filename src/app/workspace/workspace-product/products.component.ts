@@ -30,6 +30,8 @@ import { AppStateService, MfeInfo, UserService } from '@onecx/portal-integration
 import { environment } from 'src/environments/environment'
 import { limitText, prepareUrlPath } from 'src/app/shared/utils'
 
+// combine Microfrontend (Workspace) with MicrofrontendPS
+type ExtendedMicrofrontend = Microfrontend & { appName?: string }
 // combine Workspace Product with properties from product store (ProductStoreItem)
 // => bucket is used to recognize the origin within HTML
 type ExtendedProduct = Product & {
@@ -102,6 +104,7 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy, AfterView
     this.formGroupMfe = this.fb.group({
       id: new FormControl(null),
       appId: new FormControl(null),
+      appName: new FormControl(null),
       basePath: new FormControl(null, [Validators.required, Validators.maxLength(255)])
     })
     this.formGroup = this.fb.group({
@@ -178,7 +181,14 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy, AfterView
               ...p,
               bucket: 'TARGET',
               imageUrl: psp?.length > 0 ? psp[0].imageUrl : null,
-              microfrontends: [{ id: '123', appId: 'onecx-app-id', basePath: '/base-path' } as Microfrontend]
+              microfrontends: [
+                {
+                  id: '123',
+                  appId: 'onecx-app-id',
+                  appName: 'OneCX App',
+                  basePath: '/base-path'
+                } as ExtendedMicrofrontend
+              ]
             } as ExtendedProduct)
             // console.log('p', p)
           }
@@ -268,15 +278,22 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy, AfterView
     this.formGroup.controls['baseUrl'].setValue(item.baseUrl)
     // dynamic form array for microfrontends
     const mfes = this.formGroup.get('mfes') as FormArray
-    mfes.controls.forEach((item, i) => mfes.removeAt(i)) // clear
-    if (item.microfrontends)
-      // add mfes if exist
-      for (let mfe of item.microfrontends) {
-        this.formGroupMfe.controls['id'].setValue(mfe.id)
-        this.formGroupMfe.controls['appId'].setValue(mfe.appId)
-        this.formGroupMfe.controls['basePath'].setValue(mfe.basePath)
-        mfes.push(this.formGroupMfe)
-      }
+    while (mfes.length > 0) mfes.removeAt(0) // clear
+    if (item.microfrontends) {
+      // add a form groupd for aech mfe
+      item.microfrontends.forEach((mfe, i) => {
+        mfes.push(
+          this.fb.group({
+            id: new FormControl(null),
+            appId: new FormControl(null),
+            basePath: new FormControl(null, [Validators.required, Validators.maxLength(255)])
+          })
+        )
+        mfes.at(i).patchValue({ appId: mfe.appId, basePath: mfe.basePath })
+        if (item.bucket === 'SOURCE') (mfes.controls[i] as FormGroup).controls['basePath'].disable()
+      })
+    }
+    console.log('mfes: ', mfes)
   }
   private clearForm() {
     this.displayDetails = false
