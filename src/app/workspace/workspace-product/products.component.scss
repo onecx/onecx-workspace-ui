@@ -35,9 +35,28 @@
     }
     .p-picklist-list {
       height: 34.7rem;
+      &.p-picklist-source,
+      &.p-picklist-target {
+        &.tile-view li {
+          float: left;
+          max-width: 100px;
+          min-width: fit-content;
+          .tile-view-content {
+            width: 100%;
+          }
+          .tile-view-mandatory {
+            text-align: center;
+          }
+          .tile-view-optional {
+            display: none !important;
+          }
+        }
+      }
       li.p-picklist-item {
         padding: 0.2rem 0.5rem;
         border-bottom: var(--table-header-border);
+
+        // a flex table ?
         .product-item-table {
           display: table !important;
           .product-item-row {
@@ -46,9 +65,6 @@
               display: table-cell !important;
             }
           }
-        }
-        &.tile-item {
-          float: left;
         }
       }
     }

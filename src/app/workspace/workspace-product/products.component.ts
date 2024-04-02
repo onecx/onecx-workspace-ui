@@ -7,13 +7,11 @@ import {
   OnDestroy,
   OnInit,
   OnChanges,
-  SimpleChanges,
-  ViewChild
+  SimpleChanges
 } from '@angular/core'
 import { TranslateService } from '@ngx-translate/core'
 import { catchError, finalize, map, Observable, of, Subject, switchMap, takeUntil } from 'rxjs'
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
-import { PickList } from 'primeng/picklist'
 
 import { PortalMessageService } from '@onecx/portal-integration-angular'
 import {
@@ -62,18 +60,17 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy, AfterView
   public exceptionKey: string | undefined
   public loading = true
   public editMode = false
+  public hasRegisterPermission = false
   public displayDetails = false
   public displayedDetailItem: ExtendedProduct | undefined = undefined
-  public viewMode = 'grid'
-  public filterValue: string | undefined
+  public formGroup: FormGroup
   public sourceFilterValue: string | undefined // product store
   public targetFilterValue: string | undefined // workspace
-  public formGroup: FormGroup
-  public hasRegisterPermission = false
+  public sourceList!: HTMLElement | null
+  public targetList!: HTMLElement | null
+  public sourceListViewMode: ViewingModes | undefined
+  public targetListViewMode: ViewingModes | undefined
   public viewingModes: ViewingModes[] = []
-  public selectedViewModeSource: ViewingModes | undefined
-
-  @ViewChild(PickList) picklist: PickList | undefined
 
   limitText = limitText
   environment = environment
@@ -81,10 +78,10 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy, AfterView
 
   // data
   public wProducts$!: Observable<ExtendedProduct[]>
-  public wProducts!: ExtendedProduct[]
+  public wProducts!: ExtendedProduct[] // registered products
   public psProducts$!: Observable<ExtendedProduct[]>
-  public psProducts!: ExtendedProduct[]
-  public psProductsOrg!: ExtendedProduct[]
+  public psProducts!: ExtendedProduct[] // product store products which are not registered
+  public psProductsOrg!: ExtendedProduct[] // all products in product store
   public currentMfe!: MfeInfo
 
   constructor(
@@ -108,23 +105,17 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy, AfterView
       mfes: this.fb.array([])
     })
     this.viewingModes = ALL_VIEW_MODES
-    this.selectedViewModeSource = this.viewingModes.find((v) => v.mode === 'list')
+    this.sourceListViewMode = this.viewingModes.find((v) => v.mode === 'list')
+    this.targetListViewMode = this.viewingModes.find((v) => v.mode === 'list')
   }
 
   ngOnInit() {
     console.log('onInit')
-    //this.prepareTranslations()
   }
   ngAfterViewInit() {
     console.log('ngAfterViewInit')
-    /*
-    const itemElement = (<HTMLElement>this.elem.nativeElement).querySelector(
-      '.p-picklist-list.p-picklist-source .p-picklist-item:first-of-type'
-    )
-    console.log('itemElement: ', itemElement)
-    this.renderer['addClass'](itemElement, 'tile-item')
-    //this.renderer.removeClass(itemElement, 'click')
-    */
+    this.sourceList = (<HTMLElement>this.elem.nativeElement).querySelector('.p-picklist-list.p-picklist-source')
+    this.targetList = (<HTMLElement>this.elem.nativeElement).querySelector('.p-picklist-list.p-picklist-target')
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
@@ -197,7 +188,7 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy, AfterView
   }
 
   /**
-   * GET all (!) Product Store products which are not yet registered
+   * GET all (!) Product Store products (which are not yet registered)
    */
   private searchPsProducts(): void {
     this.psProducts$ = this.psProductApi
@@ -232,7 +223,6 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy, AfterView
       b.displayName ? b.displayName.toUpperCase() : ''
     )
   }
-
   public getImageUrl(url?: string): string {
     return url ? url : prepareUrlPath(this.currentMfe?.remoteBaseUrl, environment.DEFAULT_PRODUCT_IMAGE)
   }
@@ -247,17 +237,23 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy, AfterView
     this.displayDetails = false
   }
   public onSourceViewModeChange(ev: { icon: string; mode: string }): void {
-    console.log(ev)
-    this.selectedViewModeSource = this.viewingModes.find((v) => v.mode === ev.mode)
+    this.sourceListViewMode = this.viewingModes.find((v) => v.mode === ev.mode)
+    if (ev.mode === 'grid') this.renderer.addClass(this.sourceList, 'tile-view')
+    if (ev.mode === 'list') this.renderer.removeClass(this.sourceList, 'tile-view')
+  }
+  public onTargetViewModeChange(ev: { icon: string; mode: string }): void {
+    this.targetListViewMode = this.viewingModes.find((v) => v.mode === ev.mode)
+    if (ev.mode === 'grid') this.renderer.addClass(this.targetList, 'tile-view')
+    if (ev.mode === 'list') this.renderer.removeClass(this.targetList, 'tile-view')
   }
 
   public onSourceSelect(ev: any): void {
-    console.log('onSourceSelect', ev.items[0])
-    this.fillForm(ev.items[0])
+    if (ev.items[0]) this.fillForm(ev.items[0])
+    else this.displayDetails = false
   }
   public onTargetSelect(ev: any): void {
-    console.log('onTargetSelect', ev.items[0])
-    this.fillForm(ev.items[0])
+    if (ev.items[0]) this.fillForm(ev.items[0])
+    else this.displayDetails = false
   }
 
   private fillForm(item: ExtendedProduct) {
