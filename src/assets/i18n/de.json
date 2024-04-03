@@ -144,12 +144,12 @@
       "ROLES": "Rollen",
       "PRODUCTS": "Produkte",
       "TOOLTIPS": {
-        "DETAILS": "Basiseigenschaften",
-        "CONTACT": "Kontaktinformationen",
-        "INTERN": "Interne Eigenschaften",
-        "MENU": "Menüstruktur die dem Workspace zugeordnet ist",
-        "ROLES": "Rollen, die für die Benutzung des Workspaces von Bedeutung sind (als Teil aller Rollen für den Mandant) - benutzbar z.B. in Menüpunkten",
-        "PRODUCTS": "Für den Workspace registrierte Produkte - benutzbar z.B. in Menüpunkten"
+        "DETAILS": "Basiseigenschaften des Workspaces",
+        "CONTACT": "Kontaktinformationen zum Workspace",
+        "INTERN": "Interne Eigenschaften des Workspaces",
+        "MENU": "Workspace Menü: Verwalten der Menüstruktur für den Workspace",
+        "ROLES": "Workspace Rollen: die für die Benutzung des Workspaces von Bedeutung sind (als Teil aller Rollen des Mandants)",
+        "PRODUCTS": "Registrierte Produkte: Verwalten der für den Workspace registrierten Produkte"
       }
     },
     "MENU": {}

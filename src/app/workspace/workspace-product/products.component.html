@@ -139,10 +139,17 @@
   <div class="col-3 md:col-4 hidden md:block">
     <p-panel *ngIf="displayDetails" [showHeader]="true" styleClass="hidden sm:block">
       <ng-template pTemplate="header">
-        <div class="flex flex-row justify-content-between align-items-start w-full">
-          <div class="mb-3 flex flex-column text-primary">
+        <div class="h-4rem flex flex-row justify-content-between align-items-start w-full">
+          <div class="flex flex-column text-primary">
             <div class="font-semibold text-xl mb-1">{{ 'DIALOG.PRODUCTS.DETAILS' | translate }}</div>
             <div class="text-sm">{{ 'DIALOG.PRODUCTS.ORIGIN.' + displayedDetailItem?.bucket | translate }}</div>
+          </div>
+          <div class="h-full pb-4 flex flex-column justify-content-around">
+            <app-image-container
+              [imageUrl]="getImageUrl(displayedDetailItem?.imageUrl)"
+              [small]="true"
+              styleClass="w-2rem md:w-4rem tile-view-optional "
+            ></app-image-container>
           </div>
           <span
             id="workspace_detail_product_item_header_close"

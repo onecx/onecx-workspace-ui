@@ -22,14 +22,11 @@ import {
   Workspace,
   WorkspaceProductAPIService
 } from 'src/app/shared/generated'
-import {} from 'src/app/shared/utils'
 import { MfeInfo } from '@onecx/portal-integration-angular'
 import { AppStateService, PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 import { environment } from 'src/environments/environment'
 import { limitText, prepareUrlPath } from 'src/app/shared/utils'
 
-// combine Microfrontend (Workspace) with MicrofrontendPS
-type ExtendedMicrofrontend = Microfrontend & { appName?: string }
 // combine Workspace Product with properties from product store (ProductStoreItem)
 // => bucket is used to recognize the origin within HTML
 type ExtendedProduct = Product & {
@@ -144,43 +141,8 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
       .pipe(
         map((products) => {
           this.wProducts = []
-          // if product store was already loaded then retrieve the image URL from them
-          let psp: ExtendedProduct[] = []
-          for (let p of products) {
-            if (this.psProductsOrg?.length > 0) {
-              psp = this.psProductsOrg.filter((psp) => psp.productName === p.productName)
-            }
-            this.wProducts.push({
-              ...p,
-              imageUrl: psp?.length > 0 ? psp[0].imageUrl : undefined,
-              classifications: psp?.length > 0 ? psp[0].classifications : undefined,
-              microfrontends: p.microfrontends?.map(
-                (m) =>
-                  ({
-                    id: m.id,
-                    appId: m.appId,
-                    appName: 'OneCX App',
-                    basePath: m.basePath
-                  } as ExtendedMicrofrontend)
-              ),
-              bucket: 'TARGET'
-            } as ExtendedProduct)
-            // simulate microfrontends:
-            /*             this.wProducts.push({
-              ...p,
-              bucket: 'TARGET',
-              imageUrl: psp?.length > 0 ? psp[0].imageUrl : null,
-              microfrontends: [
-                {
-                  id: '123',
-                  appId: 'onecx-app-id',
-                  appName: 'OneCX App',
-                  basePath: '/base-path'
-                } as ExtendedMicrofrontend
-              ]
-            } as ExtendedProduct)
- */ // console.log('p', p)
-          }
+          for (let p of products) this.wProducts.push({ ...p, bucket: 'TARGET' } as ExtendedProduct)
+
           return this.wProducts.sort(this.sortProductsByDisplayName)
         }),
         catchError((err) => {
@@ -207,8 +169,8 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
             for (let p of result.stream) {
               this.psProductsOrg.push({ ...p, bucket: 'SOURCE' } as ExtendedProduct) // all
               const wp = this.wProducts.filter((wp) => wp.productName === p.productName)
-              if (wp.length === 1) wp[0].imageUrl = p.imageUrl
-              else this.psProducts.push({ ...p, bucket: 'SOURCE' } as ExtendedProduct)
+              if (wp.length === 0) this.psProducts.push({ ...p, bucket: 'SOURCE' } as ExtendedProduct)
+              console.log('psp ', p)
             }
           }
           return this.psProducts.sort(this.sortProductsByDisplayName)
@@ -227,6 +189,9 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     return (a.displayName ? a.displayName.toUpperCase() : '').localeCompare(
       b.displayName ? b.displayName.toUpperCase() : ''
     )
+  }
+  public sortMfesByAppId(a: Microfrontend, b: Microfrontend): number {
+    return (a.appId ? a.appId.toUpperCase() : '').localeCompare(b.appId ? b.appId.toUpperCase() : '')
   }
   public getImageUrl(url?: string): string {
     return url ? url : prepareUrlPath(this.currentMfe?.remoteBaseUrl, environment.DEFAULT_PRODUCT_IMAGE)
@@ -252,6 +217,9 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     if (ev.mode === 'list') this.renderer.removeClass(this.targetList, 'tile-view')
   }
 
+  /**
+   * UI Events: DETAIL
+   */
   public onSourceSelect(ev: any): void {
     if (ev.items[0]) this.fillForm(ev.items[0])
     else this.displayDetails = false
@@ -292,7 +260,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     while (mfes.length > 0) mfes.removeAt(0) // clear
     if (this.displayedDetailItem.microfrontends) {
       // add a form group for each mfe
-      this.displayedDetailItem.microfrontends.forEach((mfe, i) => {
+      this.displayedDetailItem.microfrontends.sort(this.sortMfesByAppId).forEach((mfe, i) => {
         mfes.push(
           this.fb.group({
             id: new FormControl(null),
@@ -305,7 +273,6 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
           (mfes.controls[i] as FormGroup).controls['basePath'].disable()
       })
     }
-    console.log('mfes: ', mfes)
   }
   private clearForm() {
     this.displayDetails = false
@@ -316,18 +283,19 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     return this.formGroup.get('mfes') as FormArray
   }
 
+  /**
+   * UI Events: SAVE
+   */
   public onProductSave(ev: any): void {
     ev.stopPropagation()
     this.editMode = false
     if (this.formGroup.valid && this.displayedDetailItem) {
       this.displayedDetailItem.baseUrl = this.formGroup.controls['baseUrl'].value
-      if (this.displayedDetailItem) {
-        this.displayedDetailItem.microfrontends = [] // clear
-        const mfes = this.formGroup.get('mfes') as FormArray
-        mfes.controls.forEach((item) => {
-          this.displayedDetailItem?.microfrontends?.push(item.value)
-        })
-      }
+      this.displayedDetailItem.microfrontends = [] // clear
+      const mfes = this.formGroup.get('mfes') as FormArray
+      mfes.controls.forEach((item) => {
+        this.displayedDetailItem?.microfrontends?.push(item.value)
+      })
       this.wProductApi
         .updateProductById({
           id: this.workspace?.id ?? '',
@@ -343,7 +311,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
         })
         .subscribe({
           next: (data) => {
-            this.displayedDetailItem = { ...data.resource, bucket: 'TARGET' }
+            if (this.displayedDetailItem) this.displayedDetailItem.modificationCount = data.resource.modificationCount
             this.msgService.success({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.UPDATE_OK' })
           },
           error: (err) => {
@@ -358,8 +326,8 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   /**
    * REGISTER
    *
-   * This event fires after the items were moved from source to target.
-   * Step through the list and on each error roll back the move.
+   * This event fires after the items were moved from source to target => PrimeNG
+   * Afterwards, Step through the list and on each error roll back the move.
    */
   public onMoveToTarget(ev: any): void {
     this.clearForm()
@@ -404,6 +372,9 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
 
   /**
    * DEREGISTER
+   *
+   * This event fires after the items were moved from source to target => PrimeNG
+   * Afterwards, Step through the list and on each error roll back the move.
    */
   public onMoveToSource(ev: any): void {
     this.clearForm()

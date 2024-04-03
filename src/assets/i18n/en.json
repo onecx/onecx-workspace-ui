@@ -144,12 +144,12 @@
       "ROLES": "Roles",
       "PRODUCTS": "Products",
       "TOOLTIPS": {
-        "DETAILS": "Base properties",
-        "CONTACT": "Contact information",
-        "INTERN": "Internal properties",
-        "MENU": "Menu structure assigned to the Workspace",
-        "ROLES": "Roles valid for use the Workspace, used in menu items (as an subset of tenant roles)",
-        "PRODUCTS": "Products registered for this Workspace - usable in menu items etc."
+        "DETAILS": "Base properties of the Workspace",
+        "CONTACT": "Contact information of the Workspace",
+        "INTERN": "Internal properties of the Workspace",
+        "MENU": "Workspace Menu: Management of the menu structure",
+        "ROLES": "Workspace Roles: Management of the Roles usable by the Workspace (as an subset of tenant roles)",
+        "PRODUCTS": "Workspace Products: Management of Products usable in the Workspace"
       }
     },
     "MENU": {}
