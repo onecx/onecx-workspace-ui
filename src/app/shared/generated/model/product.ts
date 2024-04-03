@@ -22,6 +22,9 @@ export interface Product {
     productName?: string;
     displayName?: string;
     baseUrl?: string;
+    imageUrl?: string;
+    classifications?: string;
+    description?: string;
     microfrontends?: Array<Microfrontend>;
 }
 

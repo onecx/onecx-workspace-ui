@@ -33,9 +33,6 @@ type ExtendedMicrofrontend = Microfrontend & { appName?: string }
 // combine Workspace Product with properties from product store (ProductStoreItem)
 // => bucket is used to recognize the origin within HTML
 type ExtendedProduct = Product & {
-  imageUrl?: string
-  classifications?: string
-  description?: string
   bucket: 'SOURCE' | 'TARGET'
 }
 interface ViewingModes {
