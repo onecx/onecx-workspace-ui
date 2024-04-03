@@ -1,6 +1,6 @@
 /**
  * onecx-workspace-bff
- * OneCx workspace Bff
+ * OneCX Workspace BFF
  *
  * The version of the OpenAPI document: 1.0
  * 
@@ -9,14 +9,16 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { MicrofrontendPS } from './microfrontendPS';
 
 
 export interface ProductStoreItem { 
-    name?: string;
+    productName?: string;
     displayName?: string;
     description?: string;
     imageUrl?: string;
-    basePath?: string;
+    baseUrl?: string;
     classifications?: string;
+    microfrontends?: Array<MicrofrontendPS>;
 }
 

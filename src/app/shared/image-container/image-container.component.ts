@@ -1,5 +1,11 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core'
+import { map, Observable } from 'rxjs'
+
+import { MfeInfo } from '@onecx/portal-integration-angular'
+import { AppStateService } from '@onecx/angular-integration-interface'
+
 import { environment } from 'src/environments/environment'
+import { prepareUrl, prepareUrlPath } from 'src/app/shared/utils'
 
 @Component({
   selector: 'app-image-container',
@@ -7,12 +13,21 @@ import { environment } from 'src/environments/environment'
   templateUrl: './image-container.component.html'
 })
 export class ImageContainerComponent implements OnChanges {
-  @Input() public id = ''
-  @Input() public imageUrl: string | undefined
+  @Input() public id = 'workspace_image_id'
   @Input() public small = false
+  @Input() public imageUrl: string | undefined
+  @Input() public styleClass: string | undefined
 
   public displayPlaceHolder = false
-  private apiPrefix = environment.apiPrefix
+  public currentMfe$: Observable<Partial<MfeInfo>>
+
+  prepareUrl = prepareUrl
+  environment = environment
+  prepareUrlPath = prepareUrlPath
+
+  constructor(private appState: AppStateService) {
+    this.currentMfe$ = this.appState.currentMfe$.pipe(map((mfe) => mfe))
+  }
 
   public onImageError() {
     this.displayPlaceHolder = true
@@ -21,12 +36,7 @@ export class ImageContainerComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['imageUrl']) {
       this.displayPlaceHolder = false
-
-      // if image Url does not start with a http the api-prefix ...
-      //   ...then it stored in the backend. So we need to put prefix in front
-      if (this.imageUrl && !this.imageUrl.match(/^(http|https)/g) && this.imageUrl.indexOf(this.apiPrefix) !== 0) {
-        this.imageUrl = this.apiPrefix + this.imageUrl
-      }
+      this.imageUrl = prepareUrl(this.imageUrl)
     }
   }
 }

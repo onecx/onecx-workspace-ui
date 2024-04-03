@@ -1,7 +1,8 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core'
 import { SelectItem, TreeNode } from 'primeng/api'
 
-import { UserService } from '@onecx/portal-integration-angular'
+import { UserService } from '@onecx/angular-integration-interface'
+
 import { dropDownSortItemsByLabel } from 'src/app/shared/utils'
 import { WorkspaceMenuItem } from 'src/app/shared/generated'
 import { MenuTreeService } from '../services/menu-tree.service'

@@ -8,6 +8,7 @@ api/imagesInternal.service.ts
 api/menuItem.service.ts
 api/products.service.ts
 api/role.service.ts
+api/userMenu.service.ts
 api/workspace.service.ts
 api/workspaceProduct.service.ts
 api/workspaceRoles.service.ts
@@ -51,6 +52,7 @@ model/menuItemStructure.ts
 model/menuSnapshot.ts
 model/menuStructureSearchCriteria.ts
 model/microfrontend.ts
+model/microfrontendPS.ts
 model/models.ts
 model/pagingResponse.ts
 model/problemDetailInvalidParam.ts
@@ -69,6 +71,9 @@ model/updateMenuItemRequest.ts
 model/updateProductRequest.ts
 model/updateWorkspaceRequest.ts
 model/updateWorkspaceRoleRequest.ts
+model/userWorkspaceMenuItem.ts
+model/userWorkspaceMenuRequest.ts
+model/userWorkspaceMenuStructure.ts
 model/validationConstraint.ts
 model/workspace.ts
 model/workspaceAbstract.ts

@@ -5,12 +5,11 @@ import { MissingTranslationHandler, TranslateLoader, TranslateModule } from '@ng
 
 import {
   addInitializeModuleGuard,
-  AppStateService,
-  ConfigurationService,
-  createTranslateLoader,
   PortalCoreModule,
   PortalMissingTranslationHandler
 } from '@onecx/portal-integration-angular'
+import { createTranslateLoader } from '@onecx/angular-accelerator'
+import { AppStateService, ConfigurationService } from '@onecx/angular-integration-interface'
 
 const routes: Routes = [
   {

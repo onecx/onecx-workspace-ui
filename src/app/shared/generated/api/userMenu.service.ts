@@ -21,24 +21,24 @@ import { Observable }                                        from 'rxjs';
 // @ts-ignore
 import { ProblemDetailResponse } from '../model/problemDetailResponse';
 // @ts-ignore
-import { ProductStorePageResult } from '../model/productStorePageResult';
+import { UserWorkspaceMenuRequest } from '../model/userWorkspaceMenuRequest';
 // @ts-ignore
-import { ProductStoreSearchCriteria } from '../model/productStoreSearchCriteria';
+import { UserWorkspaceMenuStructure } from '../model/userWorkspaceMenuStructure';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
 
 
-export interface SearchAvailableProductsRequestParams {
-    productStoreSearchCriteria: ProductStoreSearchCriteria;
+export interface GetUserMenuRequestParams {
+    userWorkspaceMenuRequest: UserWorkspaceMenuRequest;
 }
 
 
 @Injectable({
   providedIn: 'any'
 })
-export class ProductsAPIService {
+export class UserMenuAPIService {
 
     protected basePath = 'http://onecx-workspace-bff:8080';
     public defaultHeaders = new HttpHeaders();
@@ -100,18 +100,18 @@ export class ProductsAPIService {
     }
 
     /**
-     * search all available products of product-store
+     * get User specific menu
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public searchAvailableProducts(requestParameters: SearchAvailableProductsRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<ProductStorePageResult>;
-    public searchAvailableProducts(requestParameters: SearchAvailableProductsRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<ProductStorePageResult>>;
-    public searchAvailableProducts(requestParameters: SearchAvailableProductsRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<ProductStorePageResult>>;
-    public searchAvailableProducts(requestParameters: SearchAvailableProductsRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
-        const productStoreSearchCriteria = requestParameters.productStoreSearchCriteria;
-        if (productStoreSearchCriteria === null || productStoreSearchCriteria === undefined) {
-            throw new Error('Required parameter productStoreSearchCriteria was null or undefined when calling searchAvailableProducts.');
+    public getUserMenu(requestParameters: GetUserMenuRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<UserWorkspaceMenuStructure>;
+    public getUserMenu(requestParameters: GetUserMenuRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<UserWorkspaceMenuStructure>>;
+    public getUserMenu(requestParameters: GetUserMenuRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<UserWorkspaceMenuStructure>>;
+    public getUserMenu(requestParameters: GetUserMenuRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+        const userWorkspaceMenuRequest = requestParameters.userWorkspaceMenuRequest;
+        if (userWorkspaceMenuRequest === null || userWorkspaceMenuRequest === undefined) {
+            throw new Error('Required parameter userWorkspaceMenuRequest was null or undefined when calling getUserMenu.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -154,11 +154,11 @@ export class ProductsAPIService {
             }
         }
 
-        let localVarPath = `/products`;
-        return this.httpClient.request<ProductStorePageResult>('post', `${this.configuration.basePath}${localVarPath}`,
+        let localVarPath = `/me/menu`;
+        return this.httpClient.request<UserWorkspaceMenuStructure>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: productStoreSearchCriteria,
+                body: userWorkspaceMenuRequest,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

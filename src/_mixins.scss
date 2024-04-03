@@ -13,6 +13,15 @@
     }
   }
 }
+
+@mixin compact-dropdown-list-items {
+  :host ::ng-deep {
+    .p-dropdown-items .p-dropdown-item {
+      padding: 0.4rem 1rem;
+    }
+  }
+}
+
 @mixin invisible {
   :host ::ng-deep {
     .invisible {
@@ -25,6 +34,27 @@
   :host ::ng-deep {
     .danger-action-text {
       color: var(--danger-button-bg);
+    }
+  }
+}
+
+@mixin prepare-inputgroup {
+  :host ::ng-deep {
+    .inputgroup-dropdown-with-link {
+      border-right: none;
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+    .input-field-correction .p-inputtext {
+      padding-top: 1rem !important;
+      padding-bottom: 0.5rem !important;
+    }
+    .pseudo-button:hover {
+      background: var(--button-hover-bg) !important;
+      cursor: pointer;
+      * {
+        background: var(--button-hover-bg) !important;
+      }
     }
   }
 }
@@ -110,6 +140,15 @@
         &:nth-child(odd) {
           background-color: #f8f9fa;
         }
+      }
+    }
+  }
+}
+@mixin picklist-zebra-rows {
+  :host ::ng-deep {
+    .p-picklist-list li {
+      &:nth-child(odd) {
+        background-color: #f8f9fa;
       }
     }
   }

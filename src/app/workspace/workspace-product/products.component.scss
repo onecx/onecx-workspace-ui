@@ -1,9 +1,8 @@
 @import 'src/_mixins.scss';
 
-@include card-badges;
 @include danger-action;
-@include correct-data-view-control;
-@include correct-data-view-header-for-tabpanel;
+@include prepare-inputgroup;
+@include picklist-zebra-rows;
 
 :host ::ng-deep {
   .p-dialog .p-dialog-content {
@@ -20,6 +19,53 @@
     .p-float-label .p-dropdown {
       .p-inputtext {
         padding: 11px 8px 7px 8px;
+      }
+    }
+  }
+  .p-picklist {
+    .p-picklist-header {
+      text-align: center;
+      color: var(--primary-text-color);
+      background-color: var(--primary-color);
+    }
+    .p-picklist-filter-container {
+      .p-buttonset .p-button {
+        min-width: unset;
+      }
+    }
+    .p-picklist-list {
+      height: 34.7rem;
+      &.p-picklist-source,
+      &.p-picklist-target {
+        &.tile-view li {
+          float: left;
+          max-width: 100px;
+          min-width: fit-content;
+          .tile-view-content {
+            width: 100%;
+          }
+          .tile-view-mandatory {
+            text-align: center;
+          }
+          .tile-view-optional {
+            display: none !important;
+          }
+        }
+      }
+      li.p-picklist-item {
+        padding: 0.2rem 0.5rem;
+        border-bottom: var(--table-header-border);
+
+        // a flex table ?
+        .product-item-table {
+          display: table !important;
+          .product-item-row {
+            display: table-row !important;
+            > * {
+              display: table-cell !important;
+            }
+          }
+        }
       }
     }
   }

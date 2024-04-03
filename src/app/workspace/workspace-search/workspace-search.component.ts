@@ -3,7 +3,10 @@ import { ActivatedRoute, Router } from '@angular/router'
 import { catchError, finalize, map, of, Observable } from 'rxjs'
 import { TranslateService } from '@ngx-translate/core'
 
-import { Action, DataViewControlTranslations, PortalMessageService } from '@onecx/portal-integration-angular'
+import { DataViewControlTranslations } from '@onecx/portal-integration-angular'
+import { PortalMessageService } from '@onecx/angular-integration-interface'
+import { Action } from '@onecx/angular-accelerator'
+
 import {
   ImagesInternalAPIService,
   SearchWorkspacesResponse,

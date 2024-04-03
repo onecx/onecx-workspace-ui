@@ -11,7 +11,8 @@
  */
 
 
-export interface MenuStructureSearchCriteria { 
-    workspaceId: string;
+export interface UserWorkspaceMenuRequest { 
+    workspaceName: string;
+    menuKeys?: Array<string>;
 }
 

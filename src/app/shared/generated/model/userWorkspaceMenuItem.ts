@@ -11,8 +11,16 @@
  */
 
 
-export interface ValidationConstraint { 
+export interface UserWorkspaceMenuItem { 
+    key?: string;
     name?: string;
-    message?: string;
+    description?: string;
+    url?: string;
+    applicationId?: string;
+    position?: number;
+    badge?: string;
+    external?: boolean;
+    i18n?: { [key: string]: string; };
+    children?: Array<UserWorkspaceMenuItem>;
 }
 

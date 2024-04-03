@@ -90,7 +90,7 @@
       "ERROR": "Daten nicht abrufbar",
       "FILTER": "Filter",
       "FILTER_OF": "Filter für ",
-      "FILTER_CLEAR": "Filter entfernen",
+      "FILTER_CLEAR": "Filterwert entfernen",
       "NO_DATA": "Keine Daten",
       "RELOAD": "Daten neu laden",
       "RELOAD.OK": "Daten erfolgreich geladen",
@@ -144,12 +144,12 @@
       "ROLES": "Rollen",
       "PRODUCTS": "Produkte",
       "TOOLTIPS": {
-        "DETAILS": "Basiseigenschaften",
-        "CONTACT": "Kontaktinformationen",
-        "INTERN": "Interne Eigenschaften",
-        "MENU": "Menüstruktur die dem Workspace zugeordnet ist",
-        "ROLES": "Rollen, die für die Benutzung des Workspaces von Bedeutung sind (als Teil aller Rollen für den Mandant) - benutzbar z.B. in Menüpunkten",
-        "PRODUCTS": "Für den Workspace registrierte Produkte - benutzbar z.B. in Menüpunkten"
+        "DETAILS": "Basiseigenschaften des Workspaces",
+        "CONTACT": "Kontaktinformationen zum Workspace",
+        "INTERN": "Interne Eigenschaften des Workspaces",
+        "MENU": "Workspace Menü: Verwalten der Menüstruktur für den Workspace",
+        "ROLES": "Workspace Rollen: die für die Benutzung des Workspaces von Bedeutung sind (als Teil aller Rollen des Mandants)",
+        "PRODUCTS": "Registrierte Produkte: Verwalten der für den Workspace registrierten Produkte"
       }
     },
     "MENU": {}
@@ -249,7 +249,9 @@
         "ALL": "Alle",
         "IAM": "IAM",
         "WORKSPACE": "Workspace"
-      }
+      },
+      "ORIGIN.IAM": "Rolle existiert im Identity Access Management",
+      "ORIGIN.WORKSPACE": "Rolle existiert im Workspace"
     },
     "MENU": {
       "LABEL": "Menü",
@@ -319,6 +321,34 @@
         "UPLOAD_NOK": "Ein Fehler ist aufgetreten. Die Menüstruktur wurde nicht überschrieben"
       }
     },
+    "PRODUCTS": {
+      "PS_PRODUCTS": "Produkt Store",
+      "PS_PRODUCTS.TOOLTIP": "Liste der verfügbaren Produkte aus dem Product Sstore, die noch nicht registriert wurden",
+      "W_PRODUCTS": "Registrierte Produkte",
+      "W_PRODUCTS.TOOLTIP": "Liste der registrierten Produkte",
+      "REGISTER_ONE": "Produkt registriert",
+      "REGISTER_ALL": "Alle markierte Produkt registriert",
+      "DETAILS": "Produktdetails",
+      "ORIGIN": "Herkunft",
+      "ORIGIN.TARGET": "Workspace",
+      "ORIGIN.SOURCE": "Product Store",
+      "MESSAGES": {
+        "NOTHING_REGISTERED": "Kein Produkt registriert",
+        "LOAD_ERROR": "Das Laden des Produkts ist fehlgeschlagen",
+        "DOES_NOT_EXIST": "Das verknüpfte Produkt existiert nicht",
+        "ALREADY_EXISTS": "Der Pfad wird bereits verwendet",
+        "UPDATE_OK": "Das Produkt wurde erfolgreich geändert",
+        "UPDATE_NOK": "Bei der Änderung des Produkts ist ein Fehler aufgetreten",
+        "REGISTRATION_OK": "Das Produkt wurde erfolgreich registriert",
+        "REGISTRATION_NOK": "Bei der Registrierung des Produkts ist ein Fehler aufgetreten",
+        "REGISTRATIONS_OK": "Die Produkte wurden erfolgreich registriert",
+        "REGISTRATIONS_NOK": "Bei der Registrierung von Produkten ist ein Fehler aufgetreten",
+        "DEREGISTRATION_OK": "Das Produkt wurde erfolgreich abgemeldet",
+        "DEREGISTRATION_NOK": "Bei der Abmeldung des Produkts ist ein Fehler aufgetreten",
+        "DEREGISTRATIONS_OK": "Die Produkte wurden erfolgreich abgemeldet",
+        "DEREGISTRATIONS_NOK": "Bei der Abmeldung von Produkten ist ein Fehler aufgetreten"
+      }
+    },
     "DATAVIEW": {
       "FILTER_PLACEHOLDER": "Filter",
       "FILTER": "Filterfelder: ",
@@ -327,6 +357,19 @@
       "VIEW_MODE_LIST": "Listenansicht",
       "VIEW_MODE_TABLE": "Tabellenansicht",
       "VIEW_MODE_TREE": "Baumansicht"
+    }
+  },
+  "PRODUCT": {
+    "DISPLAY_NAME": "Produkt",
+    "DISPLAY_NAME.TOOLTIP": "Name des Produkts",
+    "DESCRIPTION": "Description",
+    "BASE_URL": "Base URL",
+    "BASE_URL.TOOLTIP": "Letzter Pfadteil für den Zugriff auf das Produkt.",
+    "MFE": {
+      "APP_ID": "UI Service ID",
+      "APP_ID.TOOLTIP": "Eindeutige ID des spezifischen UI-Dienstes, der verwendet werden soll.",
+      "BASE_PATH": "Base Path",
+      "BASE_PATH.TOOLTIP": "Letzter Pfadteil für den Zugriff auf das Microfrontend"
     }
   },
   "WORKSPACE_EXPORT": {
@@ -378,49 +421,6 @@
     "VALIDATION_MENU_ITEM_WRONG_DISABLED": "In einem Menüpunkt ist der Wert für 'disabled' kein Boolean",
     "VALIDATION_MENU_ITEM_WRONG_WORKSPACEEXIT": "In einem Menüpunkt ist der Wert für 'workspaceExit' kein Boolean",
     "VALIDATION_RESULT": "Verarbeitung nicht möglich: "
-  },
-  "PRODUCT": {
-    "NAME": "Produktname",
-    "DESCRIPTION": "Beschreibung",
-    "BASE_URL": "Base URL",
-    "MODULE_TYPE": "Modultyp",
-    "REMOTE_NAME": "Remote Name",
-    "REMOTE_BASE_URL": "Remote Base URL",
-    "APP_ID": "Produkt ID",
-    "TOOLTIPS": {
-      "NAME": "Angezeigter Name des Produkts",
-      "BASE_URL": "URL über die aus dem Workspace auf das Produkt zugegriffen wird. \nMuss mit einem '/' (Schrägstrich) beginnen.",
-      "REMOTE_BASE_URL": "Basis URL für dieses Produkt",
-      "APP_ID": "Eindeutige ID des Produkts für die Verwendung im Berechtigungs Management. Alle Module des Produkts müssen hier die gleiche Produkt ID besitzen."
-    },
-    "ACTIONS": {
-      "LABEL": "Aktionen",
-      "TOOLTIP": "Detail-Aktionen",
-      "REGISTER": "Registrieren",
-      "REGISTER.HEADER": "Produkt registrieren",
-      "REGISTER.TOOLTIP": "Ein Produkt für diesen Workspace verfügbar machen",
-      "DEREGISTER": "Abmelden",
-      "DEREGISTER.HEADER": "Produkt abmelden",
-      "DEREGISTER.MESSAGE": "Möchten Sie das Produkt \"{{ITEM}}\" in diesem Workspace nicht mehr verwenden?",
-      "DEREGISTER.TOOLTIP": "Dieses Produkt in diesem Workspace nicht mehr verwenden"
-    }
-  },
-  "PRODUCTS": {
-    "AVAILABLE_PRODUCTS": "Produkte",
-    "AVAILABLE_PRODUCTS.TOOLTIP": "Liste der verfügbaren Produkte",
-    "FORWARD": "Alle URLs, die mit diesem Wert beginnen, werden zum Produkt mit der zugehörigen Base URL weitergeleitet - e.g. die Produkt Base URL ",
-    "FORWARD_1": " würde von folgenden URLs getroffen: ",
-    "FORWARD_2": " und ",
-    "MESSAGES": {
-      "NOTHING_REGISTERED": "Kein Produkt registriert",
-      "LOAD_ERROR": "Das Laden der Produkt-Liste ist fehlgeschlagen",
-      "DOES_NOT_EXIST": "Das verknüpfte Produkt existiert nicht",
-      "ALREADY_EXISTS": "Der Pfad wird bereits verwendet",
-      "REGISTRATION_OK": "Das Produkt wurde erfolgreich registriert",
-      "REGISTRATION_NOK": "Bei der Registrierung des Produkts ist ein Fehler aufgetreten",
-      "DEREGISTRATION_OK": "Das Produkt wurde erfolgreich abgemeldet",
-      "DEREGISTRATION_NOK": "Bei der Abmeldung des Produkts ist ein Fehler aufgetreten"
-    }
   },
   "IMAGE": {
     "LOGO_URL": "Externe Logo URL",

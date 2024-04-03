@@ -1,6 +1,6 @@
 /**
  * onecx-workspace-bff
- * OneCx workspace Bff
+ * OneCX Workspace BFF
  *
  * The version of the OpenAPI document: 1.0
  * 

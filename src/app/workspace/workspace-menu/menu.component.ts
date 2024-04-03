@@ -11,7 +11,8 @@ import { SelectItem, TreeNode } from 'primeng/api'
 
 import FileSaver from 'file-saver'
 
-import { Action, PortalMessageService, UserService } from '@onecx/portal-integration-angular'
+import { Action } from '@onecx/angular-accelerator'
+import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 import {
   AssignmentAPIService,
   AssignmentPageResult,

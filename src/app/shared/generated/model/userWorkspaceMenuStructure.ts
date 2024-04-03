@@ -9,9 +9,11 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { UserWorkspaceMenuItem } from './userWorkspaceMenuItem';
 
 
-export interface MenuStructureSearchCriteria { 
-    workspaceId: string;
+export interface UserWorkspaceMenuStructure { 
+    workspaceName?: string;
+    menu?: Array<UserWorkspaceMenuItem>;
 }
 

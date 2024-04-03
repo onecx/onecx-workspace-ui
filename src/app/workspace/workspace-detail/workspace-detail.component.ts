@@ -5,7 +5,8 @@ import { TranslateService } from '@ngx-translate/core'
 import FileSaver from 'file-saver'
 import { catchError, finalize, map, Observable, of } from 'rxjs'
 
-import { Action, ObjectDetailItem, PortalMessageService, UserService } from '@onecx/portal-integration-angular'
+import { Action, ObjectDetailItem } from '@onecx/angular-accelerator'
+import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 import {
   GetWorkspaceResponse,
   WorkspaceSnapshot,
@@ -38,6 +39,7 @@ export class WorkspaceDetailComponent implements OnInit {
   public workspace$!: Observable<GetWorkspaceResponse>
   public workspace: Workspace | undefined
   public workspaceForRoles: Workspace | undefined
+  public workspaceForProducts: Workspace | undefined
   public workspaceName = this.route.snapshot.params['name']
   public workspaceDeleteMessage = ''
   public workspaceDeleteVisible = false
@@ -156,6 +158,7 @@ export class WorkspaceDetailComponent implements OnInit {
   public onTabChange($event: any) {
     this.selectedTabIndex = $event.index
     if (this.selectedTabIndex === 3) this.workspaceForRoles = this.workspace
+    if (this.selectedTabIndex === 4) this.workspaceForProducts = this.workspace
     this.prepareActionButtons()
   }
 
