@@ -3,7 +3,7 @@ import { Location } from '@angular/common'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { map, Observable } from 'rxjs'
 
-import { PortalMessageService } from '@onecx/portal-integration-angular'
+import { PortalMessageService } from '@onecx/angular-integration-interface'
 
 import {
   GetImageRequestParams,

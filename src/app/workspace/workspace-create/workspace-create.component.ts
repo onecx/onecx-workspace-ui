@@ -6,7 +6,8 @@ import { Observable, map } from 'rxjs'
 import { SelectItem } from 'primeng/api/selectitem'
 import { FileUpload } from 'primeng/fileupload'
 
-import { PortalMessageService, UserService } from '@onecx/portal-integration-angular'
+import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+
 import { sortByLocale } from 'src/app/shared/utils'
 import {
   WorkspaceAPIService,

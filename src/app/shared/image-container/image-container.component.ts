@@ -1,7 +1,9 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core'
 import { map, Observable } from 'rxjs'
 
-import { AppStateService, MfeInfo } from '@onecx/portal-integration-angular'
+import { MfeInfo } from '@onecx/portal-integration-angular'
+import { AppStateService } from '@onecx/angular-integration-interface'
+
 import { environment } from 'src/environments/environment'
 import { prepareUrl, prepareUrlPath } from 'src/app/shared/utils'
 
@@ -11,7 +13,7 @@ import { prepareUrl, prepareUrlPath } from 'src/app/shared/utils'
   templateUrl: './image-container.component.html'
 })
 export class ImageContainerComponent implements OnChanges {
-  @Input() public id = ''
+  @Input() public id = 'workspace_image_id'
   @Input() public small = false
   @Input() public imageUrl: string | undefined
   @Input() public styleClass: string | undefined
@@ -19,8 +21,8 @@ export class ImageContainerComponent implements OnChanges {
   public displayPlaceHolder = false
   public currentMfe$: Observable<Partial<MfeInfo>>
 
-  environment = environment
   prepareUrl = prepareUrl
+  environment = environment
   prepareUrlPath = prepareUrlPath
 
   constructor(private appState: AppStateService) {

@@ -5,7 +5,8 @@ import { TranslateService } from '@ngx-translate/core'
 import FileSaver from 'file-saver'
 import { catchError, finalize, map, Observable, of } from 'rxjs'
 
-import { Action, ObjectDetailItem, PortalMessageService, UserService } from '@onecx/portal-integration-angular'
+import { Action, ObjectDetailItem } from '@onecx/angular-accelerator'
+import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 import {
   GetWorkspaceResponse,
   WorkspaceSnapshot,

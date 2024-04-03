@@ -2,7 +2,7 @@ import { Component, Input, OnChanges } from '@angular/core'
 import { FormControl, FormGroup } from '@angular/forms'
 
 import { Workspace } from 'src/app/shared/generated'
-import { PortalMessageService } from '@onecx/portal-integration-angular'
+import { PortalMessageService } from '@onecx/angular-integration-interface'
 
 @Component({
   selector: 'app-workspace-contact',

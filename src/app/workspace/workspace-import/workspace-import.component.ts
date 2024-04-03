@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 import { MenuItem } from 'primeng/api'
 
-import { PortalMessageService, UserService } from '@onecx/portal-integration-angular'
+import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 import { ImportResponseStatus, WorkspaceAPIService, WorkspaceSnapshot } from 'src/app/shared/generated'
 
 import { PreviewComponent } from './preview/preview.component'

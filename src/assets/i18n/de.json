@@ -249,7 +249,9 @@
         "ALL": "Alle",
         "IAM": "IAM",
         "WORKSPACE": "Workspace"
-      }
+      },
+      "ORIGIN.IAM": "Rolle existiert im Identity Access Management",
+      "ORIGIN.WORKSPACE": "Rolle existiert im Workspace"
     },
     "MENU": {
       "LABEL": "Menü",
@@ -332,7 +334,7 @@
       "ORIGIN.SOURCE": "Product Store",
       "MESSAGES": {
         "NOTHING_REGISTERED": "Kein Produkt registriert",
-        "LOAD_ERROR": "Das Laden der Produkt-Liste ist fehlgeschlagen",
+        "LOAD_ERROR": "Das Laden des Produkts ist fehlgeschlagen",
         "DOES_NOT_EXIST": "Das verknüpfte Produkt existiert nicht",
         "ALREADY_EXISTS": "Der Pfad wird bereits verwendet",
         "UPDATE_OK": "Das Produkt wurde erfolgreich geändert",

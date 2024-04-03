@@ -34,12 +34,8 @@ import { ToastModule } from 'primeng/toast'
 import { TreeModule } from 'primeng/tree'
 import { TreeTableModule } from 'primeng/treetable'
 
-import {
-  AppStateService,
-  ConfigurationService,
-  PortalDialogService,
-  PortalApiConfiguration
-} from '@onecx/portal-integration-angular'
+import { PortalDialogService, PortalApiConfiguration } from '@onecx/portal-integration-angular'
+import { AppStateService, ConfigurationService } from '@onecx/angular-integration-interface'
 
 import { Configuration } from 'src/app/shared/generated'
 import { environment } from 'src/environments/environment'

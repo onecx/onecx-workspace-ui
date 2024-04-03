@@ -249,7 +249,9 @@
         "ALL": "All",
         "IAM": "IAM",
         "WORKSPACE": "Workspace"
-      }
+      },
+      "ORIGIN.IAM": "Role exists in Identity Access Management",
+      "ORIGIN.WORKSPACE": "Role exists in Workspace"
     },
     "MENU": {
       "LABEL": "Menu",
@@ -332,7 +334,7 @@
       "ORIGIN.SOURCE": "Product Store",
       "MESSAGES": {
         "NOTHING_REGISTERED": "No Product registered",
-        "LOAD_ERROR": "Failed to load Product list",
+        "LOAD_ERROR": "Failed to load Product",
         "DOES_NOT_EXIST": "The assigned Product does not exist",
         "ALREADY_EXISTS": "The path is already in use",
         "UPDATE_OK": "The Product was successfully updated",
