@@ -7,7 +7,7 @@ export const environment = {
   KEYCLOAK_URL: 'http://keycloak-app/',
   KEYCLOAK_REALM: 'OneCX',
   KEYCLOAK_CLIENT_ID: 'tkit-angular-example',
-  TKIT_PORTAL_ID: 'ADMIN',
+  TKIT_WORKSPACE_ID: 'ADMIN',
   skipRemoteConfigLoad: true,
   apiPrefix: 'bff',
   DEFAULT_PRODUCT_IMAGE: 'assets/images/product.jpg'
