@@ -1,9 +1,11 @@
-import { AfterViewInit, Component, Inject, OnDestroy, OnInit, Renderer2 } from '@angular/core'
 import { CommonModule } from '@angular/common'
+import { HttpClient } from '@angular/common/http'
+import { AfterViewInit, Component, Inject, OnDestroy, Renderer2 } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { MenuModule } from 'primeng/menu'
-import { AvatarModule } from 'primeng/avatar'
-import { RippleModule } from 'primeng/ripple'
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
+import { RouterModule } from '@angular/router'
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
+import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
 import {
   AngularRemoteComponentsModule,
   BASE_URL,
@@ -21,14 +23,11 @@ import {
   UserService,
   createRemoteComponentTranslateLoader
 } from '@onecx/portal-integration-angular'
+import { AvatarModule } from 'primeng/avatar'
+import { MenuModule } from 'primeng/menu'
+import { RippleModule } from 'primeng/ripple'
 import { Observable, ReplaySubject, filter, mergeMap } from 'rxjs'
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
-import { BrowserAnimationsModule, provideAnimations } from '@angular/platform-browser/animations'
-import { animate, style, transition, trigger } from '@angular/animations'
-import { RouterModule } from '@angular/router'
 import { UserMenuAPIService, UserWorkspaceMenuStructure } from 'src/app/shared/generated'
-import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
-import { HttpClient } from '@angular/common/http'
 import { SharedModule } from 'src/app/shared/shared.module'
 
 @Component({
@@ -48,7 +47,6 @@ import { SharedModule } from 'src/app/shared/shared.module'
     SharedModule
   ],
   providers: [
-    provideAnimations(),
     {
       provide: BASE_URL,
       useValue: new ReplaySubject<string>(1)
@@ -63,19 +61,10 @@ import { SharedModule } from 'src/app/shared/shared.module'
     })
   ],
   templateUrl: './user-avatar-menu.component.html',
-  styleUrls: ['./user-avatar-menu.component.scss'],
-  animations: [
-    trigger('topbarActionPanelAnimation', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'scaleY(0.8)' }),
-        animate('.12s cubic-bezier(0, 0, 0.2, 1)', style({ opacity: 1, transform: '*' }))
-      ]),
-      transition(':leave', [animate('.1s linear', style({ opacity: 0 }))])
-    ])
-  ]
+  styleUrls: ['./user-avatar-menu.component.scss']
 })
 @UntilDestroy()
-export class UserAvatarMenuComponent implements ocxRemoteComponent, OnInit, AfterViewInit, OnDestroy {
+export class UserAvatarMenuComponent implements ocxRemoteComponent, AfterViewInit, OnDestroy {
   config: RemoteComponentConfig | undefined
   currentUser$: Observable<UserProfile>
   userMenu$: Observable<UserWorkspaceMenuStructure>
@@ -92,11 +81,12 @@ export class UserAvatarMenuComponent implements ocxRemoteComponent, OnInit, Afte
     @Inject(BASE_URL) private baseUrl: ReplaySubject<string>,
     private translateService: TranslateService
   ) {
-    this.userService.lang$.subscribe((lang) => translateService.use(lang))
+    this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
 
-    this.currentUser$ = this.userService.profile$
-      .pipe(untilDestroyed(this))
-      .pipe(filter((x) => x !== undefined)) as Observable<UserProfile>
+    this.currentUser$ = this.userService.profile$.pipe(
+      filter((x) => x !== undefined),
+      untilDestroyed(this)
+    ) as Observable<UserProfile>
 
     this.userMenu$ = this.appStateService.currentPortal$.pipe(
       mergeMap((currentWorkspace) =>
@@ -111,15 +101,6 @@ export class UserAvatarMenuComponent implements ocxRemoteComponent, OnInit, Afte
     )
   }
 
-  ngOnInit() {
-    this.ocxInitRemoteComponent({
-      appId: 'workspace-ui',
-      baseUrl: 'http://localhost:4200/',
-      permissions: [],
-      productName: 'workspace'
-    })
-  }
-
   ngAfterViewInit() {
     this.removeDocumentClickListener = this.renderer.listen('body', 'click', () => {
       this.menuOpen = false
@@ -127,15 +108,15 @@ export class UserAvatarMenuComponent implements ocxRemoteComponent, OnInit, Afte
   }
 
   ngOnDestroy() {
-    this.removeDocumentClickListener?.()
+    if (this.removeDocumentClickListener) {
+      this.removeDocumentClickListener()
+    }
   }
 
   ocxInitRemoteComponent(config: RemoteComponentConfig): void {
-    console.log('OCX INIT REMOTE COMPONENT')
     this.baseUrl.next(config.baseUrl)
     this.appConfigService.init(config['baseUrl'])
     this.config = config
-    console.log('CONFIG ', config)
   }
 
   handleAvatarClick(event: MouseEvent) {
