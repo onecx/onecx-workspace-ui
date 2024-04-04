@@ -468,5 +468,12 @@
       "WORKSPACES": "Unknown server problem retrieving Workspace data - please try again.",
       "MENUS": "Unknown server problem retrieving menu data - please try again."
     }
+  },
+  "REMOTES": {
+    "USER_AVATAR_MENU": {
+      "TENANT": "Tenant",
+      "LOGOUT": "Log out",
+      "TOOLTIP": "Profile"
+    }
   }
 }
