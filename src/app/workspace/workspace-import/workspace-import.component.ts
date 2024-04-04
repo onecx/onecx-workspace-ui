@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 import { MenuItem } from 'primeng/api'
 
-import { PortalMessageService, UserService } from '@onecx/portal-integration-angular'
+import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 import { ImportResponseStatus, WorkspaceAPIService, WorkspaceSnapshot } from 'src/app/shared/generated'
 
 import { PreviewComponent } from './preview/preview.component'
@@ -88,25 +88,15 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
 
   // IMPORT
   public importWorkspace(): void {
-    if (!this.importRequestDTO) {
+    if (!this.importRequestDTO || !this.importRequestDTO.workspaces) {
       this.msgService.error({ summaryKey: 'WORKSPACE_IMPORT.WORKSPACE_IMPORT_ERROR' })
       return
     }
     this.isLoading = true
-    let wKeys: string[] = []
-    if (this.importRequestDTO.workspaces) {
-      wKeys = Object.keys(this.importRequestDTO.workspaces) //
-    }
-    console.log('key', wKeys)
-    console.log('key[0]', wKeys[0])
-    //key[0] = this.workspaceName
-    // Basic properties
-    if (this.importRequestDTO.workspaces) {
-      this.importRequestDTO.workspaces[wKeys[0]].name = this.workspaceName
-      this.importRequestDTO.workspaces[wKeys[0]].theme = this.themeName
-      this.importRequestDTO.workspaces[wKeys[0]].baseUrl = this.baseUrl
-    }
-    console.log('request dto: ', this.importRequestDTO)
+    let wKeys: string[] = Object.keys(this.importRequestDTO.workspaces)
+    this.importRequestDTO.workspaces[wKeys[0]].name = this.workspaceName
+    this.importRequestDTO.workspaces[wKeys[0]].theme = this.themeName
+    this.importRequestDTO.workspaces[wKeys[0]].baseUrl = this.baseUrl
     this.workspaceApi
       .importWorkspaces({
         workspaceSnapshot: this.importRequestDTO
@@ -115,11 +105,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
         next: (response) => {
           this.isLoading = false
           console.log('response dto: ', response)
-          /* read data and prepare feedback 
-          {
-            "workspaces": { "<name>": UPDATED | CREATED | SKIPPED | ERROR },
-            "menus":      { "<name>": UPDATED | CREATED | SKIPPED | ERROR }
-          } */
+          // read data and prepare feedback: UPDATED | CREATED | SKIPPED | ERROR
           if (response.workspaces && response.menus) {
             let keys
             this.importResponse = JSON.parse('{"workspace":"ERROR", "menu":"ERROR"}')
@@ -132,7 +118,6 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
               this.importResponse.menu = response.menus[keys[0]]
             }
           }
-          console.log('importResponse', this.importResponse)
           const messageKey = 'WORKSPACE_IMPORT.RESPONSE.' + this.importResponse?.workspace
           if (this.importResponse?.workspace === ImportResponseStatus.Error) {
             this.msgService.error({ summaryKey: messageKey })
@@ -141,7 +126,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
             this.importResponse = undefined
             this.msgService.success({ summaryKey: messageKey })
             if (this.importRequestDTO?.workspaces) {
-              //  this.router.navigate(['./', this.importRequestDTO.workspaces[key[0]].name], { relativeTo: this.route })
+              this.router.navigate(['./', this.importRequestDTO.workspaces[wKeys[0]].name], { relativeTo: this.route })
             }
           }
         },
@@ -173,11 +158,8 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
 
   // NAVIGATE import step : BACK
   public back(): void {
-    let key: string[] = []
     if (this.importRequestDTO?.workspaces) {
-      key = Object.keys(this.importRequestDTO.workspaces)
-    }
-    if (this.activeIndex == 2) {
+      let key: string[] = Object.keys(this.importRequestDTO.workspaces)
       if (this.activeIndex == 2 && this.importRequestDTO && this.importRequestDTO.workspaces) {
         this.importRequestDTO.workspaces[key[0]].name = this.confirmComponent?.workspaceName ?? ''
         this.importRequestDTO.workspaces[key[0]].baseUrl = this.confirmComponent?.baseUrl ?? ''

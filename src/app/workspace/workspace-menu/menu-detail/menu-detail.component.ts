@@ -5,7 +5,7 @@ import { Observable, Subject, catchError, of } from 'rxjs'
 import { TabView } from 'primeng/tabview'
 import { SelectItem } from 'primeng/api'
 
-import { PortalMessageService, UserService } from '@onecx/portal-integration-angular'
+import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 import { dropDownSortItemsByLabel } from 'src/app/shared/utils'
 import {
   CreateMenuItem,

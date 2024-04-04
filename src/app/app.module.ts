@@ -6,14 +6,9 @@ import { BrowserModule } from '@angular/platform-browser'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
 
-import {
-  APP_CONFIG,
-  AppStateService,
-  createTranslateLoader,
-  translateServiceInitializer,
-  PortalCoreModule,
-  UserService
-} from '@onecx/portal-integration-angular'
+import { translateServiceInitializer, PortalCoreModule } from '@onecx/portal-integration-angular'
+import { createTranslateLoader } from '@onecx/angular-accelerator'
+import { APP_CONFIG, AppStateService, UserService } from '@onecx/angular-integration-interface'
 import { KeycloakAuthModule } from '@onecx/keycloak-auth'
 
 import { AppComponent } from './app.component'

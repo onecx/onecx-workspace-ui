@@ -19,7 +19,7 @@
       *ngIf="!exceptionKey"
       #table
       id="portal_search_dataview"
-      [value]="(workspaces$ | async)?.stream!"
+      [value]="((workspaces$ | async)?.stream ?? []).sort(sortWorkspacesByName)"
       [paginator]="true"
       [alwaysShowPaginator]="false"
       [rowsPerPageOptions]="[10, 20, 50]"

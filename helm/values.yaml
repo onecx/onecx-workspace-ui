@@ -38,8 +38,7 @@ app:
             VIEW: View workspace roles
           WORKSPACE_PRODUCTS:
             VIEW: View workspace products
-            REGISTER: Register app module
-            DEREGISTER: Deregister app module
+            REGISTER: Register/Deregister products
           MENU:
             CREATE: Create menu
             DELETE: Delete menu

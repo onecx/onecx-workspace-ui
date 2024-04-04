@@ -1,6 +1,6 @@
 /**
  * onecx-workspace-bff
- * OneCx workspace Bff
+ * OneCX Workspace BFF
  *
  * The version of the OpenAPI document: 1.0
  * 
@@ -22,6 +22,9 @@ export interface Product {
     productName?: string;
     displayName?: string;
     baseUrl?: string;
+    imageUrl?: string;
+    classifications?: string;
+    description?: string;
     microfrontends?: Array<Microfrontend>;
 }
 

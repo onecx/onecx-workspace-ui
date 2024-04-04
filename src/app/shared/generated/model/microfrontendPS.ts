@@ -11,7 +11,8 @@
  */
 
 
-export interface MenuStructureSearchCriteria { 
-    workspaceId: string;
+export interface MicrofrontendPS { 
+    appId?: string;
+    appName?: string;
 }
 

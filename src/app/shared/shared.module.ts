@@ -15,6 +15,7 @@ import { ConfirmationService } from 'primeng/api'
 import { DataViewModule } from 'primeng/dataview'
 import { DialogModule } from 'primeng/dialog'
 import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog'
+import { DividerModule } from 'primeng/divider'
 import { DropdownModule } from 'primeng/dropdown'
 import { FileUploadModule } from 'primeng/fileupload'
 import { InputTextModule } from 'primeng/inputtext'
@@ -33,12 +34,8 @@ import { ToastModule } from 'primeng/toast'
 import { TreeModule } from 'primeng/tree'
 import { TreeTableModule } from 'primeng/treetable'
 
-import {
-  AppStateService,
-  ConfigurationService,
-  PortalDialogService,
-  PortalApiConfiguration
-} from '@onecx/portal-integration-angular'
+import { PortalDialogService, PortalApiConfiguration } from '@onecx/portal-integration-angular'
+import { AppStateService, ConfigurationService } from '@onecx/angular-integration-interface'
 
 import { Configuration } from 'src/app/shared/generated'
 import { environment } from 'src/environments/environment'
@@ -63,6 +60,7 @@ export function apiConfigProvider(configService: ConfigurationService, appStateS
     ConfirmPopupModule,
     DataViewModule,
     DialogModule,
+    DividerModule,
     DropdownModule,
     DynamicDialogModule,
     FileUploadModule,
@@ -118,6 +116,7 @@ export function apiConfigProvider(configService: ConfigurationService, appStateS
     ConfirmPopupModule,
     DataViewModule,
     DialogModule,
+    DividerModule,
     DropdownModule,
     DynamicDialogModule,
     FileUploadModule,

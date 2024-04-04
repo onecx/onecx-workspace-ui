@@ -4,7 +4,8 @@ import { Observable, catchError, finalize, map, of } from 'rxjs'
 import { SelectItem } from 'primeng/api'
 import { DataView } from 'primeng/dataview'
 
-import { PortalMessageService, DataViewControlTranslations, UserService } from '@onecx/portal-integration-angular'
+import { DataViewControlTranslations } from '@onecx/portal-integration-angular'
+import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 
 import {
   Workspace,

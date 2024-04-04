@@ -144,12 +144,12 @@
       "ROLES": "Roles",
       "PRODUCTS": "Products",
       "TOOLTIPS": {
-        "DETAILS": "Base properties",
-        "CONTACT": "Contact information",
-        "INTERN": "Internal properties",
-        "MENU": "Menu structure assigned to the Workspace",
-        "ROLES": "Roles valid for use the Workspace, used in menu items (as an subset of tenant roles)",
-        "PRODUCTS": "Products registered for this Workspace - usable in menu items etc."
+        "DETAILS": "Base properties of the Workspace",
+        "CONTACT": "Contact information of the Workspace",
+        "INTERN": "Internal properties of the Workspace",
+        "MENU": "Workspace Menu: Management of the menu structure",
+        "ROLES": "Workspace Roles: Management of the Roles usable by the Workspace (as an subset of tenant roles)",
+        "PRODUCTS": "Workspace Products: Management of Products usable in the Workspace"
       }
     },
     "MENU": {}
@@ -249,7 +249,9 @@
         "ALL": "All",
         "IAM": "IAM",
         "WORKSPACE": "Workspace"
-      }
+      },
+      "ORIGIN.IAM": "Role exists in Identity Access Management",
+      "ORIGIN.WORKSPACE": "Role exists in Workspace"
     },
     "MENU": {
       "LABEL": "Menu",
@@ -319,6 +321,34 @@
         "UPLOAD_NOK": "An error has occurred. The menu structure wasn't overwritten"
       }
     },
+    "PRODUCTS": {
+      "PS_PRODUCTS": "Product Store",
+      "PS_PRODUCTS.TOOLTIP": "List of available Products in Product Store which are not yet registered",
+      "W_PRODUCTS": "Registered Products",
+      "W_PRODUCTS.TOOLTIP": "List of registered Products",
+      "REGISTER_ONE": "Product registered",
+      "REGISTER_ALL": "All Products registered",
+      "DETAILS": "Product Details",
+      "ORIGIN": "Origin",
+      "ORIGIN.TARGET": "Workspace",
+      "ORIGIN.SOURCE": "Product Store",
+      "MESSAGES": {
+        "NOTHING_REGISTERED": "No Product registered",
+        "LOAD_ERROR": "Failed to load Product",
+        "DOES_NOT_EXIST": "The assigned Product does not exist",
+        "ALREADY_EXISTS": "The path is already in use",
+        "UPDATE_OK": "The Product was successfully updated",
+        "UPDATE_NOK": "An error has occurred during Product update",
+        "REGISTRATION_OK": "The Product was successfully registered",
+        "REGISTRATION_NOK": "An error has occurred during Product registration",
+        "REGISTRATIONS_OK": "The Products wer successfully registered",
+        "REGISTRATIONS_NOK": "An error has occurred during Product registration",
+        "DEREGISTRATION_OK": "The Product was successfully deregistered",
+        "DEREGISTRATION_NOK": "An error has occurred during Product deregistration",
+        "DEREGISTRATIONS_OK": "The Products were successfully deregistered",
+        "DEREGISTRATIONS_NOK": "An error has occurred during Product deregistration"
+      }
+    },
     "DATAVIEW": {
       "FILTER_PLACEHOLDER": "Filter",
       "FILTER": "Filter fields: ",
@@ -327,6 +357,19 @@
       "VIEW_MODE_LIST": "List view",
       "VIEW_MODE_TABLE": "Table view",
       "VIEW_MODE_TREE": "Tree view"
+    }
+  },
+  "PRODUCT": {
+    "DISPLAY_NAME": "Product",
+    "DISPLAY_NAME.TOOLTIP": "Displayed name of the Product",
+    "DESCRIPTION": "Description",
+    "BASE_URL": "Base URL",
+    "BASE_URL.TOOLTIP": "Last path part used to access the Product from the Workspace.",
+    "MFE": {
+      "APP_ID": "UI Service ID",
+      "APP_ID.TOOLTIP": "Unique ID of the specific UI service to be used.",
+      "BASE_PATH": "Base Path",
+      "BASE_PATH.TOOLTIP": "Last path part used to access the Microfrontend"
     }
   },
   "WORKSPACE_EXPORT": {
@@ -379,49 +422,6 @@
     "VALIDATION_MENU_ITEM_WRONG_WORKSPACEEXIT": "In a menu item, the value for 'workspaceExit' is not a boolean",
     "VALIDATION_RESULT": "Processing not possible: "
   },
-  "PRODUCT": {
-    "NAME": "Product Name",
-    "DESCRIPTION": "Description",
-    "BASE_URL": "Base URL",
-    "MODULE_TYPE": "Modul Type",
-    "REMOTE_NAME": "Remote Name",
-    "REMOTE_BASE_URL": "Remote Base URL",
-    "APP_ID": "Product",
-    "TOOLTIPS": {
-      "NAME": "Displayed name of the Product",
-      "BASE_URL": "URL used to access the Product from the Workspace.",
-      "REMOTE_BASE_URL": "Base URL for this Product",
-      "APP_ID": "Unique ID of the Product for use in permission management. All modules of the Product must have the same Product ID."
-    },
-    "ACTIONS": {
-      "LABEL": "Actions",
-      "TOOLTIP": "Detail actions",
-      "REGISTER": "Register",
-      "REGISTER.HEADER": "Register Product",
-      "REGISTER.TOOLTIP": "Make a Product available for this Workspace",
-      "DEREGISTER": "Deregister",
-      "DEREGISTER.HEADER": "Deregister Product",
-      "DEREGISTER.MESSAGE": "Do you no longer want to use the Product \"{{ITEM}}\" in this Workspace?",
-      "DEREGISTER.TOOLTIP": "Do not use these Product in this Workspace anymore"
-    }
-  },
-  "PRODUCTS": {
-    "AVAILABLE_PRODUCTS": "Products",
-    "AVAILABLE_PRODUCTS.TOOLTIP": "List of available Products in Product Store",
-    "FORWARD": "All menu URLs starting with this value will be forwarded to the corresponding Product  - e.g. the Product  Base URL ",
-    "FORWARD_1": "would catch both of the following URLs: ",
-    "FORWARD_2": " and ",
-    "MESSAGES": {
-      "NOTHING_REGISTERED": "No Product registered yet",
-      "LOAD_ERROR": "Failed to load Product list",
-      "DOES_NOT_EXIST": "The assigned Product does not exist",
-      "ALREADY_EXISTS": "The path is already in use",
-      "REGISTRATION_OK": "The Product was successfully registered",
-      "REGISTRATION_NOK": "An error has occurred during Product registration",
-      "DEREGISTRATION_OK": "The Product was successfully deregistered",
-      "DEREGISTRATION_NOK": "An error has occurred during Product deregistration"
-    }
-  },
   "IMAGE": {
     "LOGO_URL": "External Logo URL",
     "UPLOAD_FAIL": " The file was not uploaded successfully",
@@ -449,18 +449,22 @@
   },
   "EXCEPTIONS": {
     "HTTP_STATUS_0": {
+      "WORKSPACE": "Unknown problem retrieving Workspace details - please try again.",
       "WORKSPACES": "Unknown problem retrieving Workspace data - please try again.",
       "MENUS": "Unknown problem retrieving menu data - please try again."
     },
     "HTTP_STATUS_403": {
+      "WORKSPACE": "You have no permissions to see workspace details.",
       "WORKSPACES": "You have no permissions to see workspaces.",
       "MENUS": "You have no permissions to see menus."
     },
     "HTTP_STATUS_404": {
+      "WORKSPACE": "The Workspace could not be found.",
       "WORKSPACES": "No Workspaces could be found.",
       "MENUS": "No menus could be found."
     },
     "HTTP_STATUS_500": {
+      "WORKSPACE": "Unknown server problem retrieving Workspace details - please try again.",
       "WORKSPACES": "Unknown server problem retrieving Workspace data - please try again.",
       "MENUS": "Unknown server problem retrieving menu data - please try again."
     }

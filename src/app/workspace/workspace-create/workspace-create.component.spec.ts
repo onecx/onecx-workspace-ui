@@ -13,7 +13,7 @@ import { environment } from 'src/environments/environment'
 import { APP_CONFIG, AppStateService, createTranslateLoader } from '@onecx/portal-integration-angular'
 import { WorkspaceCreateComponent } from './workspace-create.component'
 
-describe('WorkspaceCreateComponent', () => {
+fdescribe('WorkspaceCreateComponent', () => {
   let component: WorkspaceCreateComponent
   let fixture: ComponentFixture<WorkspaceCreateComponent>
 

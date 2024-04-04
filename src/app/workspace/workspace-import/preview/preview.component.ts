@@ -3,7 +3,13 @@ import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { TreeNode, SelectItem } from 'primeng/api'
 import { Observable, map } from 'rxjs'
 
-import { EximProduct, EximWorkspaceMenuItem, WorkspaceSnapshot, WorkspaceAPIService } from 'src/app/shared/generated'
+import {
+  EximProduct,
+  EximWorkspaceMenuItem,
+  EximWorkspaceRole,
+  WorkspaceSnapshot,
+  WorkspaceAPIService
+} from 'src/app/shared/generated'
 import { forceFormValidation, sortByLocale } from 'src/app/shared/utils'
 
 @Component({
@@ -47,6 +53,7 @@ export class PreviewComponent implements OnInit, OnChanges {
       this.baseUrl = this.importRequestDTO.workspaces[key[0]].baseUrl || ''
       this.menuItems = this.mapToTreeNodes(this.importRequestDTO.workspaces[key[0]].menu?.menu?.menuItems)
       this.workspaceProducts = this.extractProductNames(this.importRequestDTO.workspaces[key[0]].products)
+      this.workspaceRoles = this.extractRoleNames(this.importRequestDTO.workspaces[key[0]].roles)
     }
   }
 
@@ -69,19 +76,28 @@ export class PreviewComponent implements OnInit, OnChanges {
     }
   }
 
+  // fired on each keyup/paste event
   public onModelChange(): void {
-    let key: string[] = []
     if (this.importRequestDTO.workspaces) {
-      key = Object.keys(this.importRequestDTO.workspaces)
-    }
-    this.workspaceName = this.formGroup.controls['workspaceName'].value
-    this.themeName = this.formGroup.controls['theme'].value
-    this.baseUrl = this.formGroup.controls['baseUrl'].value
-    // update origin => used in the import-detail component
-    if (this.importRequestDTO.workspaces) {
-      this.importRequestDTO.workspaces[key[0]].name = this.workspaceName
-      this.importRequestDTO.workspaces[key[0]].theme = this.themeName
-      this.importRequestDTO.workspaces[key[0]].baseUrl = this.baseUrl
+      let key: string[] = Object.keys(this.importRequestDTO.workspaces)
+      // if workspace name was changed then change the also the key:
+      if (key[0] !== this.formGroup.controls['workspaceName'].value) {
+        // save the workspace properties to be reassigned on new key
+        let workspaceProps = Object.getOwnPropertyDescriptor(this.importRequestDTO.workspaces, key[0])
+        Object.defineProperty(
+          this.importRequestDTO.workspaces,
+          this.formGroup.controls['workspaceName'].value,
+          workspaceProps ?? {}
+        )
+        delete this.importRequestDTO.workspaces[key[0]]
+        this.workspaceName = this.formGroup.controls['workspaceName'].value
+      } else this.workspaceName = key[0]
+      this.themeName = this.formGroup.controls['theme'].value
+      this.baseUrl = this.formGroup.controls['baseUrl'].value
+
+      this.importRequestDTO.workspaces[this.workspaceName].name = this.workspaceName
+      this.importRequestDTO.workspaces[this.workspaceName].theme = this.themeName
+      this.importRequestDTO.workspaces[this.workspaceName].baseUrl = this.baseUrl
     }
     this.isFormValide.emit(this.formGroup.valid)
   }
@@ -116,6 +132,11 @@ export class PreviewComponent implements OnInit, OnChanges {
   private extractProductNames(products?: EximProduct[]): string[] {
     const par: string[] = []
     if (products) for (let p of products) par.push(p.productName ?? '')
+    return par
+  }
+  private extractRoleNames(roles?: EximWorkspaceRole[]): string[] {
+    const par: string[] = []
+    if (roles) for (let r of roles) par.push(r.name ?? '')
     return par
   }
 }

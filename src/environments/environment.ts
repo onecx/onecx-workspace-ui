@@ -9,5 +9,6 @@ export const environment = {
   KEYCLOAK_CLIENT_ID: 'tkit-angular-example',
   TKIT_PORTAL_ID: 'ADMIN',
   skipRemoteConfigLoad: true,
-  apiPrefix: 'bff'
+  apiPrefix: 'bff',
+  DEFAULT_PRODUCT_IMAGE: 'assets/images/product.jpg'
 }
