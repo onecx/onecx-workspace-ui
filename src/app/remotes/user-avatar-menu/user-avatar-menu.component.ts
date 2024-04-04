@@ -1,40 +1,67 @@
 import { AfterViewInit, Component, Inject, OnDestroy, OnInit, Renderer2 } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { FormsModule } from '@angular/forms'
-import { SharedModule } from 'src/app/shared/shared.module'
-import { MenuItem, PrimeIcons } from 'primeng/api'
 import { MenuModule } from 'primeng/menu'
 import { AvatarModule } from 'primeng/avatar'
 import { RippleModule } from 'primeng/ripple'
-import { RemoteComponentConfig, ocxRemoteComponent } from '@onecx/angular-remote-components'
+import {
+  AngularRemoteComponentsModule,
+  BASE_URL,
+  RemoteComponentConfig,
+  ocxRemoteComponent,
+  provideTranslateServiceForRoot
+} from '@onecx/angular-remote-components'
 import {
   AUTH_SERVICE,
+  AppConfigService,
+  AppStateService,
   IAuthService,
   PortalCoreModule,
   UserProfile,
-  UserService
+  UserService,
+  createRemoteComponentTranslateLoader
 } from '@onecx/portal-integration-angular'
-import { Observable, filter } from 'rxjs'
+import { Observable, ReplaySubject, filter, mergeMap } from 'rxjs'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { BrowserAnimationsModule, provideAnimations } from '@angular/platform-browser/animations'
 import { animate, style, transition, trigger } from '@angular/animations'
 import { RouterModule } from '@angular/router'
+import { UserMenuAPIService, UserWorkspaceMenuStructure } from 'src/app/shared/generated'
+import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
+import { HttpClient } from '@angular/common/http'
+import { SharedModule } from 'src/app/shared/shared.module'
 
 @Component({
   selector: 'app-user-avatar-menu',
   standalone: true,
   imports: [
+    AngularRemoteComponentsModule,
     CommonModule,
     FormsModule,
-    SharedModule,
     MenuModule,
     AvatarModule,
     RippleModule,
     PortalCoreModule,
     BrowserAnimationsModule,
-    RouterModule
+    RouterModule,
+    TranslateModule,
+    SharedModule
   ],
-  providers: [provideAnimations()],
+  providers: [
+    provideAnimations(),
+    {
+      provide: BASE_URL,
+      useValue: new ReplaySubject<string>(1)
+    },
+    provideTranslateServiceForRoot({
+      isolate: true,
+      loader: {
+        provide: TranslateLoader,
+        useFactory: createRemoteComponentTranslateLoader,
+        deps: [HttpClient, BASE_URL]
+      }
+    })
+  ],
   templateUrl: './user-avatar-menu.component.html',
   styleUrls: ['./user-avatar-menu.component.scss'],
   animations: [
@@ -49,32 +76,51 @@ import { RouterModule } from '@angular/router'
 })
 @UntilDestroy()
 export class UserAvatarMenuComponent implements ocxRemoteComponent, OnInit, AfterViewInit, OnDestroy {
-  items: MenuItem[] = []
+  config: RemoteComponentConfig | undefined
   currentUser$: Observable<UserProfile>
+  userMenu$: Observable<UserWorkspaceMenuStructure>
   menuOpen = false
   removeDocumentClickListener: (() => void) | undefined
 
   constructor(
     @Inject(AUTH_SERVICE) private authService: IAuthService,
     private renderer: Renderer2,
-    private userService: UserService
+    private userService: UserService,
+    private userMenuService: UserMenuAPIService,
+    private appStateService: AppStateService,
+    private appConfigService: AppConfigService,
+    @Inject(BASE_URL) private baseUrl: ReplaySubject<string>,
+    private translateService: TranslateService
   ) {
+    this.userService.lang$.subscribe((lang) => translateService.use(lang))
+
     this.currentUser$ = this.userService.profile$
       .pipe(untilDestroyed(this))
       .pipe(filter((x) => x !== undefined)) as Observable<UserProfile>
+
+    this.userMenu$ = this.appStateService.currentPortal$.pipe(
+      mergeMap((currentWorkspace) =>
+        this.userMenuService.getUserMenu({
+          userWorkspaceMenuRequest: {
+            workspaceName: currentWorkspace.portalName,
+            menuKeys: ['user-profile-menu']
+          }
+        })
+      ),
+      untilDestroyed(this)
+    )
   }
 
   ngOnInit() {
     this.ocxInitRemoteComponent({
       appId: 'workspace-ui',
-      bffUrl: 'http://onecx-workspace-bff',
+      baseUrl: 'http://localhost:4200/',
       permissions: [],
       productName: 'workspace'
     })
   }
 
   ngAfterViewInit() {
-    // hides the horizontal submenus or top menu if outside is clicked
     this.removeDocumentClickListener = this.renderer.listen('body', 'click', () => {
       this.menuOpen = false
     })
@@ -85,18 +131,16 @@ export class UserAvatarMenuComponent implements ocxRemoteComponent, OnInit, Afte
   }
 
   ocxInitRemoteComponent(config: RemoteComponentConfig): void {
-    this.items = [
-      {
-        label: 'My personal info',
-        routerLink: '/test',
-        icon: PrimeIcons.USER
-      }
-    ]
+    console.log('OCX INIT REMOTE COMPONENT')
+    this.baseUrl.next(config.baseUrl)
+    this.appConfigService.init(config['baseUrl'])
+    this.config = config
+    console.log('CONFIG ', config)
   }
 
   handleAvatarClick(event: MouseEvent) {
-    event.stopPropagation()
     event.preventDefault()
+    event.stopPropagation()
     this.menuOpen = !this.menuOpen
   }
 

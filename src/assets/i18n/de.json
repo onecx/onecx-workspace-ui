@@ -464,5 +464,12 @@
       "WORKSPACES": "Unbekanntes Server-Problem beim Abrufen von Workspace-Daten - Bitte versuchen sie es noch einmal.",
       "MENUS": "Unbekanntes Server-Problem beim Abrufen von Menü-Daten - Bitte versuchen sie es noch einmal."
     }
+  },
+  "REMOTES": {
+    "USER_AVATAR_MENU": {
+      "TENANT": "Mandant",
+      "LOGOUT": "Abmelden",
+      "TOOLTIP": "Profil"
+    }
   }
 }
