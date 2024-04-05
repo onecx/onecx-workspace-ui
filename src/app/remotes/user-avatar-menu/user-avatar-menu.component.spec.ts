@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 
-import { UserAvatarMenuComponent } from './user-avatar-menu.component'
+import { OneCXUserAvatarMenuComponent } from './user-avatar-menu.component'
 
 describe('UserAvatarMenuComponent', () => {
-  let component: UserAvatarMenuComponent
-  let fixture: ComponentFixture<UserAvatarMenuComponent>
+  let component: OneCXUserAvatarMenuComponent
+  let fixture: ComponentFixture<OneCXUserAvatarMenuComponent>
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [UserAvatarMenuComponent]
+      imports: [OneCXUserAvatarMenuComponent]
     }).compileComponents()
 
-    fixture = TestBed.createComponent(UserAvatarMenuComponent)
+    fixture = TestBed.createComponent(OneCXUserAvatarMenuComponent)
     component = fixture.componentInstance
     fixture.detectChanges()
   })

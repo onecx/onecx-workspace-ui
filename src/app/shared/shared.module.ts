@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, NgModule } from '@angular/core'
+import { NgModule } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
@@ -34,7 +34,7 @@ import { ToastModule } from 'primeng/toast'
 import { TreeModule } from 'primeng/tree'
 import { TreeTableModule } from 'primeng/treetable'
 
-import { PortalDialogService, PortalApiConfiguration } from '@onecx/portal-integration-angular'
+import { PortalDialogService, PortalApiConfiguration, PortalCoreModule } from '@onecx/portal-integration-angular'
 import { AppStateService, ConfigurationService } from '@onecx/angular-integration-interface'
 
 import { Configuration } from 'src/app/shared/generated'
@@ -50,6 +50,7 @@ export function apiConfigProvider(configService: ConfigurationService, appStateS
 @NgModule({
   declarations: [ImageContainerComponent],
   imports: [
+    PortalCoreModule.forMicroFrontend(),
     AutoCompleteModule,
     BadgeModule,
     CheckboxModule,
@@ -81,6 +82,7 @@ export function apiConfigProvider(configService: ConfigurationService, appStateS
     ToastModule,
     TreeModule,
     TreeTableModule,
+    FileUploadModule,
     TranslateModule,
     ErrorTailorModule.forRoot({
       controlErrorsOn: { async: true, blur: true, change: true },
@@ -139,7 +141,8 @@ export function apiConfigProvider(configService: ConfigurationService, appStateS
     TreeTableModule,
     TranslateModule,
     ErrorTailorModule,
-    ImageContainerComponent
+    ImageContainerComponent,
+    FileUploadModule
   ],
   //this is not elegant, for some reason the injection token from primeng does not work across federated module
   providers: [
@@ -147,7 +150,6 @@ export function apiConfigProvider(configService: ConfigurationService, appStateS
     LabelResolver,
     { provide: DialogService, useClass: PortalDialogService },
     { provide: Configuration, useFactory: apiConfigProvider, deps: [ConfigurationService, AppStateService] }
-  ],
-  schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA]
+  ]
 })
 export class SharedModule {}
