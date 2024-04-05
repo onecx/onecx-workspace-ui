@@ -2,7 +2,7 @@
   [id]="id"
   *ngIf="imageUrl && !displayPlaceHolder"
   [class]="'image-object image-' + (small ? 'sm' : 'lg') + ' sm:image-lg ' + (styleClass ? styleClass : '')"
-  [src]="imageUrl"
+  [ocxSrc]="imageUrl"
   (error)="onImageError()"
   alt="Image"
 />
@@ -10,6 +10,6 @@
   [id]="id"
   *ngIf="!imageUrl || displayPlaceHolder"
   [class]="'image-object image-' + (small ? 'sm' : 'lg') + ' sm:image-lg vertical-align-middle'"
-  [src]="prepareUrlPath((currentMfe$ | async)?.remoteBaseUrl, environment.DEFAULT_PRODUCT_IMAGE)"
+  [ocxSrc]="prepareUrlPath((currentMfe$ | async)?.remoteBaseUrl, environment.DEFAULT_PRODUCT_IMAGE)"
   alt="Logo"
 />
