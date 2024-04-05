@@ -87,7 +87,7 @@
     "@schematics/angular": "15.2.6",
     "@storybook/addon-essentials": "8.0.5",
     "@storybook/angular": "7.6.16",
-    "@storybook/core-server": "7.6.16",
+    "@storybook/core-server": "8.0.5",
     "@svgr/webpack": "^7.0.0",
     "@swc-node/register": "^1.6.5",
     "@swc/cli": "~0.1.63",
