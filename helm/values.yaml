@@ -32,9 +32,10 @@ app:
             VIEW: View workspace contact
           WORKSPACE_INTERNAL:
             VIEW: View workspace internal
-          WORKSPACE_ROLES:
-            CREATE: Create manually a workspace role
-            CHANGE: Change role assignment to workspace
+          WORKSPACE_ROLE:
+            CREATE: Create a workspace role
+            DELETE: Delete a workspace role
+            EDIT: Change workspace role
             VIEW: View workspace roles
           WORKSPACE_PRODUCTS:
             VIEW: View workspace products

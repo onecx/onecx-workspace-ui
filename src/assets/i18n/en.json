@@ -242,10 +242,10 @@
         "EDIT": "Edit Role",
         "VIEW": "View Role"
       },
-      "EDIT.TOOLTIP": "Role Typ",
+      "EDIT.TOOLTIP": "Role Type",
       "QUICK_FILTER": {
-        "LABEL": "Role Typ",
-        "TOOLTIP": "Quickfilter for Roles",
+        "LABEL": "Type",
+        "TOOLTIP": "Quickfilter for Role Type",
         "ALL": "All",
         "IAM": "IAM",
         "WORKSPACE": "Workspace"

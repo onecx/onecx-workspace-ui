@@ -53,7 +53,7 @@
       </ocx-data-view-controls>
       <div class="ml-3 flex column-gap-2">
         <p-button
-          *ocxIfPermission="'WORKSPACE_ROLES#VIEW'"
+          *ocxIfPermission="'WORKSPACE_ROLE#VIEW'"
           type="button"
           id="workspace_roles_header_reload"
           styleClass="h-full"
@@ -63,7 +63,7 @@
         >
         </p-button>
         <p-button
-          *ocxIfPermission="'WORKSPACE_ROLES#CREATE'"
+          *ocxIfPermission="'WORKSPACE_ROLE#CREATE'"
           type="button"
           id="workspace_roles_header_create"
           styleClass="h-full"
@@ -104,14 +104,14 @@
           >IAM</span
         >
         <span
-          *ngIf="role.isWorkspaceRole"
+          *ngIf="role.isWorkspaceRole && hasDeletePermission"
           [id]="'workspace_detail_roles_data_item_' + item + '_delete'"
           [title]="'ACTIONS.DELETE.ROLE' | translate"
           class="card-badge-right badge-1 p-1 pi pi-trash pseudo-button-link bg-primary"
           (click)="onDeleteRole($event, role)"
         ></span>
         <span
-          *ngIf="!role.isWorkspaceRole && role.isIamRole"
+          *ngIf="!role.isWorkspaceRole && role.isIamRole && hasCreatePermission"
           [id]="'workspace_detail_roles_data_item_' + item + '_create'"
           [title]="'ACTIONS.CREATE.WORKSPACE.ROLE' | translate"
           class="card-badge-right badge-1 p-1 pi pi-plus hover:text-white pseudo-button-link text-color"
