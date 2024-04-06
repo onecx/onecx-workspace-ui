@@ -249,6 +249,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
     this.changeMode = 'DELETE'
     this.showRoleDeleteDialog = true
   }
+  // dialog response handling
   public onRoleChanged(changed: boolean) {
     this.role = undefined
     this.changeMode = 'VIEW'

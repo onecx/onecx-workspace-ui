@@ -11,10 +11,10 @@
   [sortOrder]="sortOrder"
 >
   <ng-template pTemplate="header">
-    <div class="flex flex-wrap align-items-center mx-1">
-      <div class="flex flex-wrap align-items-center ml-1 gap-2">
+    <div class="flex flex-wrap align-items-center">
+      <div class="flex flex-wrap align-items-center gap-2">
         <div
-          class="p-selectbutton-title data-view-control opacity-90 text-sm w-3rem text-right"
+          class="p-selectbutton-title data-view-control opacity-90 text-sm w-2rem text-right"
           [title]="'DIALOG.ROLE.QUICK_FILTER.TOOLTIP' | translate"
         >
           {{ 'DIALOG.ROLE.QUICK_FILTER.LABEL' | translate }}
@@ -22,7 +22,7 @@
         <div class="slim-selectbutton filter-selectbutton">
           <p-selectButton
             inputid="app_search_quick_filter"
-            styleClass="data-view-control opacity-90a"
+            styleClass="data-view-control opacity-90"
             [options]="quickFilterItems"
             [(ngModel)]="quickFilterValue"
             (onChange)="onQuickFilterChange($event)"
