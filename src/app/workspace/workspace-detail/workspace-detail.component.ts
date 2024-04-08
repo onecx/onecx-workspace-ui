@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core'
-import { /*DatePipe ,*/ Location } from '@angular/common'
+import { Location } from '@angular/common'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 import FileSaver from 'file-saver'
@@ -43,7 +43,6 @@ export class WorkspaceDetailComponent implements OnInit {
   public workspaceName = this.route.snapshot.params['name']
   public workspaceDeleteMessage = ''
   public workspaceDeleteVisible = false
-  public workspaceExportVisible = false
 
   constructor(
     private user: UserService,
@@ -139,7 +138,6 @@ export class WorkspaceDetailComponent implements OnInit {
   }
 
   public onConfirmDeleteWorkspace(): void {
-    this.workspaceExportVisible = false
     this.workspaceApi.deleteWorkspace({ id: this.workspace?.id ?? '' }).subscribe(
       () => {
         this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MESSAGE_OK' })
@@ -157,8 +155,8 @@ export class WorkspaceDetailComponent implements OnInit {
    */
   public onTabChange($event: any) {
     this.selectedTabIndex = $event.index
-    if (this.selectedTabIndex === 3) this.workspaceForRoles = this.workspace
-    if (this.selectedTabIndex === 4) this.workspaceForProducts = this.workspace
+    // if (this.selectedTabIndex === 3) this.workspaceForRoles = this.workspace
+    // if (this.selectedTabIndex === 4) this.workspaceForProducts = this.workspace
     this.prepareActionButtons()
   }
 
@@ -179,9 +177,10 @@ export class WorkspaceDetailComponent implements OnInit {
         next: (snapshot) => {
           this.saveWorkspaceToFile(snapshot)
         },
-        error: () => {}
+        error: () => {
+          this.msgService.error({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.NOK' })
+        }
       })
-    this.workspaceExportVisible = false
   }
 
   private saveWorkspaceToFile(workspaceExport: WorkspaceSnapshot) {
@@ -189,11 +188,9 @@ export class WorkspaceDetailComponent implements OnInit {
     FileSaver.saveAs(new Blob([workspaceJson], { type: 'text/json' }), `${this.workspace?.name ?? 'Workspace'}.json`)
   }
 
-  public getImagePath(workspace: Workspace): string | undefined {
-    if (workspace) {
-      if (workspace?.logoUrl) return workspace?.logoUrl
-      else return this.imageApi.configuration.basePath + '/images/' + workspace?.name + '/logo'
-    } else return undefined
+  public getImagePath(workspace: Workspace): string {
+    if (workspace?.logoUrl) return workspace?.logoUrl
+    else return this.imageApi.configuration.basePath + '/images/' + workspace?.name + '/logo'
   }
 
   private toggleEditMode(forcedMode?: 'edit' | 'view'): void {
