@@ -9,23 +9,23 @@ import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-transla
 import {
   AngularRemoteComponentsModule,
   BASE_URL,
-  RemoteComponentConfig,
   ocxRemoteComponent,
-  provideTranslateServiceForRoot
+  provideTranslateServiceForRoot,
+  RemoteComponentConfig
 } from '@onecx/angular-remote-components'
 import { EventsPublisher } from '@onecx/integration-interface'
 import {
   AppConfigService,
   AppStateService,
+  createRemoteComponentTranslateLoader,
   PortalCoreModule,
   UserProfile,
-  UserService,
-  createRemoteComponentTranslateLoader
+  UserService
 } from '@onecx/portal-integration-angular'
 import { AvatarModule } from 'primeng/avatar'
 import { MenuModule } from 'primeng/menu'
 import { RippleModule } from 'primeng/ripple'
-import { Observable, ReplaySubject, filter, mergeMap } from 'rxjs'
+import { filter, mergeMap, Observable, ReplaySubject } from 'rxjs'
 import { Configuration, UserMenuAPIService, UserWorkspaceMenuStructure } from 'src/app/shared/generated'
 import { SharedModule } from 'src/app/shared/shared.module'
 import { environment } from 'src/environments/environment'
