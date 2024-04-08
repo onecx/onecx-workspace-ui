@@ -13,11 +13,10 @@ import {
   ocxRemoteComponent,
   provideTranslateServiceForRoot
 } from '@onecx/angular-remote-components'
+import { EventsPublisher } from '@onecx/integration-interface'
 import {
-  AUTH_SERVICE,
   AppConfigService,
   AppStateService,
-  IAuthService,
   PortalCoreModule,
   UserProfile,
   UserService,
@@ -69,11 +68,11 @@ export class OneCXUserAvatarMenuComponent implements ocxRemoteComponent, AfterVi
   config: RemoteComponentConfig | undefined
   currentUser$: Observable<UserProfile>
   userMenu$: Observable<UserWorkspaceMenuStructure>
+  eventsPublisher$: EventsPublisher = new EventsPublisher()
   menuOpen = false
   removeDocumentClickListener: (() => void) | undefined
 
   constructor(
-    @Inject(AUTH_SERVICE) private authService: IAuthService,
     private renderer: Renderer2,
     private userService: UserService,
     private userMenuService: UserMenuAPIService,
@@ -131,6 +130,6 @@ export class OneCXUserAvatarMenuComponent implements ocxRemoteComponent, AfterVi
 
   logout(event: Event) {
     event.preventDefault()
-    this.authService.logout()
+    this.eventsPublisher$.publish({ type: 'authentication#logoutButtonClicked' })
   }
 }
