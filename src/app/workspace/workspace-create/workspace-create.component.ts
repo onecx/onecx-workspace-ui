@@ -6,7 +6,7 @@ import { Observable, map } from 'rxjs'
 import { SelectItem } from 'primeng/api/selectitem'
 import { FileUpload } from 'primeng/fileupload'
 
-import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+import { PortalMessageService } from '@onecx/angular-integration-interface'
 
 import { sortByLocale } from 'src/app/shared/utils'
 import {
@@ -42,7 +42,6 @@ export class WorkspaceCreateComponent {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private user: UserService,
     private workspaceApi: WorkspaceAPIService,
     private imageApi: ImagesInternalAPIService,
     private message: PortalMessageService,
@@ -67,7 +66,7 @@ export class WorkspaceCreateComponent {
     this.toggleCreationDialogEvent.emit()
   }
 
-  savePortal() {
+  saveWorkspace() {
     this.workspace = { ...this.formGroup.value }
     this.workspaceApi
       .createWorkspace({
@@ -75,11 +74,11 @@ export class WorkspaceCreateComponent {
       })
       .pipe()
       .subscribe({
-        next: (fetchedPortal) => {
+        next: (fetchedWorkspace) => {
           this.message.success({ summaryKey: 'ACTIONS.CREATE.MESSAGE.CREATE_OK' })
           this.workspaceCreationValidationMsg = false
           this.closeDialog()
-          this.router.navigate(['./' + fetchedPortal.resource?.name], { relativeTo: this.route })
+          this.router.navigate(['./' + fetchedWorkspace.resource?.name], { relativeTo: this.route })
         },
         error: (err: { error: { message: any } }) => {
           this.message.error({ summaryKey: 'ACTIONS.CREATE.MESSAGE.CREATE_NOK' })
@@ -87,8 +86,8 @@ export class WorkspaceCreateComponent {
       })
   }
 
-  // former used to check the size of the image
-  //   the size should be limited due performance reasons!
+  // formerly used to check the size of the image
+  //   the size should be limited due to performance reasons!
   public onSelect(event: Event, uploader: FileUpload): void {
     this.selectedLogoFile = uploader.files[0]
     this.checkDimension(this.selectedLogoFile, uploader)
