@@ -9,24 +9,23 @@ import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-transla
 import {
   AngularRemoteComponentsModule,
   BASE_URL,
-  RemoteComponentConfig,
   ocxRemoteComponent,
-  provideTranslateServiceForRoot
+  provideTranslateServiceForRoot,
+  RemoteComponentConfig
 } from '@onecx/angular-remote-components'
+import { EventsPublisher } from '@onecx/integration-interface'
 import {
-  AUTH_SERVICE,
   AppConfigService,
   AppStateService,
-  IAuthService,
+  createRemoteComponentTranslateLoader,
   PortalCoreModule,
   UserProfile,
-  UserService,
-  createRemoteComponentTranslateLoader
+  UserService
 } from '@onecx/portal-integration-angular'
 import { AvatarModule } from 'primeng/avatar'
 import { MenuModule } from 'primeng/menu'
 import { RippleModule } from 'primeng/ripple'
-import { Observable, ReplaySubject, filter, mergeMap } from 'rxjs'
+import { filter, mergeMap, Observable, ReplaySubject } from 'rxjs'
 import { Configuration, UserMenuAPIService, UserWorkspaceMenuStructure } from 'src/app/shared/generated'
 import { SharedModule } from 'src/app/shared/shared.module'
 import { environment } from 'src/environments/environment'
@@ -69,11 +68,11 @@ export class OneCXUserAvatarMenuComponent implements ocxRemoteComponent, AfterVi
   config: RemoteComponentConfig | undefined
   currentUser$: Observable<UserProfile>
   userMenu$: Observable<UserWorkspaceMenuStructure>
+  eventsPublisher$: EventsPublisher = new EventsPublisher()
   menuOpen = false
   removeDocumentClickListener: (() => void) | undefined
 
   constructor(
-    @Inject(AUTH_SERVICE) private authService: IAuthService,
     private renderer: Renderer2,
     private userService: UserService,
     private userMenuService: UserMenuAPIService,
@@ -131,6 +130,6 @@ export class OneCXUserAvatarMenuComponent implements ocxRemoteComponent, AfterVi
 
   logout(event: Event) {
     event.preventDefault()
-    this.authService.logout()
+    this.eventsPublisher$.publish({ type: 'authentication#logoutButtonClicked' })
   }
 }
