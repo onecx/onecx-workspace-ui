@@ -1,4 +1,4 @@
-import { NO_ERRORS_SCHEMA /*, Component*/ } from '@angular/core'
+import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { Location } from '@angular/common'
 import { Router } from '@angular/router'
@@ -113,9 +113,14 @@ fdescribe('WorkspaceDetailComponent', () => {
   })
 
   it('should set German date format', () => {
+    expect(component.dateFormat).toEqual('dd.MM.yyyy HH:mm')
+  })
+
+  it('should set English date format', () => {
+    mockUserService.lang$.next('en')
     initializeComponent()
 
-    expect(component.dateFormat).toEqual('dd.MM.yyyy HH:mm')
+    expect(component.dateFormat).toEqual('medium')
   })
 
   it('should set selectedTabIndex onChange', () => {
@@ -146,17 +151,35 @@ fdescribe('WorkspaceDetailComponent', () => {
     expect(component.prepareDialog).toHaveBeenCalled()
   })
 
-  // it('should display error msg if get api call fails', () => {
-  //   apiServiceSpy.getWorkspaceByName.and.returnValue(throwError(() => new Error()))
-  //   spyOn(console, 'error')
+  it('should display error msg if get api call fails', (done) => {
+    const err = {
+      status: '404'
+    }
+    apiServiceSpy.getWorkspaceByName.and.returnValue(throwError(() => err))
 
-  //   component.ngOnInit()
+    component.getWorkspace()
 
-  //   expect(console.error).toHaveBeenCalled()
-  // })
+    component.workspace$.subscribe({
+      next: () => {
+        done()
+      },
+      error: done.fail
+    })
+
+    expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + err.status + '.WORKSPACE')
+  })
 
   it('should delete workspace on onConfirmDeleteWorkspace', () => {
     apiServiceSpy.deleteWorkspace.and.returnValue(of({}))
+
+    component.onConfirmDeleteWorkspace()
+
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MESSAGE_OK' })
+  })
+
+  it('should delete workspace on onConfirmDeleteWorkspace: no workspace', () => {
+    apiServiceSpy.deleteWorkspace.and.returnValue(of({}))
+    component.workspace = undefined
 
     component.onConfirmDeleteWorkspace()
 

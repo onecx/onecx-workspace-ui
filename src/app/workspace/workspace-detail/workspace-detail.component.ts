@@ -185,7 +185,7 @@ export class WorkspaceDetailComponent implements OnInit {
 
   private saveWorkspaceToFile(workspaceExport: WorkspaceSnapshot) {
     const workspaceJson = JSON.stringify(workspaceExport, null, 2)
-    FileSaver.saveAs(new Blob([workspaceJson], { type: 'text/json' }), `${this.workspace?.name ?? 'Workspace'}.json`)
+    FileSaver.saveAs(new Blob([workspaceJson], { type: 'text/json' }), `${this.workspace?.name}.json`)
   }
 
   public getImagePath(workspace: Workspace): string {
@@ -194,7 +194,7 @@ export class WorkspaceDetailComponent implements OnInit {
   }
 
   private toggleEditMode(forcedMode?: 'edit' | 'view'): void {
-    if (forcedMode) this.editMode = forcedMode === 'edit' ? true : false
+    if (forcedMode === 'view') this.editMode = false
     else this.editMode = !this.editMode
     this.prepareActionButtons()
   }
