@@ -15,7 +15,6 @@ import {
 } from '@onecx/angular-remote-components'
 import { EventsPublisher } from '@onecx/integration-interface'
 import {
-  AppConfigService,
   AppStateService,
   createRemoteComponentTranslateLoader,
   PortalCoreModule,
@@ -65,7 +64,6 @@ import { environment } from 'src/environments/environment'
 })
 @UntilDestroy()
 export class OneCXUserAvatarMenuComponent implements ocxRemoteComponent, AfterViewInit, OnDestroy {
-  config: RemoteComponentConfig | undefined
   currentUser$: Observable<UserProfile>
   userMenu$: Observable<UserWorkspaceMenuStructure>
   eventsPublisher$: EventsPublisher = new EventsPublisher()
@@ -77,7 +75,6 @@ export class OneCXUserAvatarMenuComponent implements ocxRemoteComponent, AfterVi
     private userService: UserService,
     private userMenuService: UserMenuAPIService,
     private appStateService: AppStateService,
-    private appConfigService: AppConfigService,
     @Inject(BASE_URL) private baseUrl: ReplaySubject<string>,
     private translateService: TranslateService
   ) {
@@ -118,8 +115,6 @@ export class OneCXUserAvatarMenuComponent implements ocxRemoteComponent, AfterVi
     this.userMenuService.configuration = new Configuration({
       basePath: Location.joinWithSlash(config.baseUrl, environment.apiPrefix)
     })
-    this.appConfigService.init(config['baseUrl'])
-    this.config = config
   }
 
   handleAvatarClick(event: MouseEvent) {
