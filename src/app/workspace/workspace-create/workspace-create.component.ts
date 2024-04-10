@@ -53,6 +53,7 @@ export class WorkspaceCreateComponent {
       homePage: new FormControl(null, [Validators.maxLength(255)]),
       logoUrl: new FormControl('', [Validators.maxLength(255)]),
       baseUrl: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.pattern('^/.*')]),
+      imageUrl: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.pattern('^/.*')]),
       footerLabel: new FormControl(null, [Validators.maxLength(255)]),
       description: new FormControl(null, [Validators.maxLength(255)])
     })

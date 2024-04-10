@@ -7,7 +7,7 @@ import { ReactiveFormsModule } from '@angular/forms'
 import { RouterTestingModule } from '@angular/router/testing'
 import { Router } from '@angular/router'
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router'
-import { ConfirmationService, SelectItem } from 'primeng/api'
+import { ConfirmationService } from 'primeng/api'
 import { DropdownModule } from 'primeng/dropdown'
 
 import { ImagesInternalAPIService, Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
@@ -50,7 +50,7 @@ fdescribe('WorkspaceCreateComponent', () => {
       basePath: 'basepath'
     }
   }
-  const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
+  const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'info', 'error'])
   const mockActivatedRouteSnapshot: Partial<ActivatedRouteSnapshot> = {
     params: {
       id: 'mockId'
@@ -103,28 +103,12 @@ fdescribe('WorkspaceCreateComponent', () => {
     imageServiceSpy.updateImage.calls.reset()
     imageServiceSpy.uploadImage.calls.reset()
     msgServiceSpy.success.calls.reset()
+    msgServiceSpy.info.calls.reset()
     msgServiceSpy.error.calls.reset()
   })
 
   it('should create', () => {
     expect(component).toBeTruthy()
-  })
-
-  xit('should get all themes on construction', (done) => {
-    const themes: SelectItem<string>[] = [{ value: 'theme1' }, { value: 'theme2' }]
-    wApiServiceSpy.getAllThemes.and.returnValue(of(themes))
-
-    fixture = TestBed.createComponent(WorkspaceCreateComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
-
-    component.themes$.subscribe({
-      next: (data) => {
-        expect(data).toEqual(themes)
-        done()
-      },
-      error: done.fail
-    })
   })
 
   it('should create a workspace', () => {
@@ -204,7 +188,7 @@ fdescribe('WorkspaceCreateComponent', () => {
     expect(component.formGroup.valid).toBeFalse()
   })
 
-  fit('should upload a file', () => {
+  it('should upload a file', () => {
     imageServiceSpy.updateImage.and.returnValue(of({}))
     const blob = new Blob(['a'.repeat(10)], { type: 'image/png' })
     const file = new File([blob], 'test.png', { type: 'image/png' })
@@ -213,7 +197,9 @@ fdescribe('WorkspaceCreateComponent', () => {
         files: [file]
       }
     }
+
     component.formGroup.controls['name'].setValue('name')
+    component.formGroup.controls['imageUrl'].setValue('url')
 
     component.onFileUpload(event as any, 'logo')
 
@@ -222,7 +208,7 @@ fdescribe('WorkspaceCreateComponent', () => {
     })
   })
 
-  xit('should display error if upload fails', () => {
+  it('should display error if upload fails', () => {
     imageServiceSpy.getImage.and.returnValue(throwError(() => new Error()))
     const blob = new Blob(['a'.repeat(10)], { type: 'image/png' })
     const file = new File([blob], 'test.png', { type: 'image/png' })
@@ -232,6 +218,7 @@ fdescribe('WorkspaceCreateComponent', () => {
       }
     }
     component.formGroup.controls['name'].setValue('name')
+    component.formGroup.controls['imageUrl'].setValue('url')
 
     component.onFileUpload(event as any, 'logo')
 
