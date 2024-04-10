@@ -4,12 +4,12 @@
   [class]="'image-object image-' + (small ? 'sm' : 'lg') + ' sm:image-lg ' + (styleClass ? styleClass : '')"
   [ocxSrc]="imageUrl"
   (error)="onImageError()"
-  alt="Image"
+  [alt]="'IMAGE.TOOLTIPS.IMAGE' | translate"
 />
 <img
   [id]="id"
   *ngIf="!imageUrl || displayPlaceHolder"
   [class]="'image-object image-' + (small ? 'sm' : 'lg') + ' sm:image-lg vertical-align-middle'"
-  [ocxSrc]="prepareUrlPath((currentMfe$ | async)?.remoteBaseUrl, environment.DEFAULT_PRODUCT_IMAGE)"
-  alt="Logo"
+  [src]="prepareUrlPath((currentMfe$ | async)?.remoteBaseUrl, environment.DEFAULT_PRODUCT_IMAGE)"
+  [alt]="'IMAGE.TOOLTIPS.PLACEHOLDER' | translate"
 />
