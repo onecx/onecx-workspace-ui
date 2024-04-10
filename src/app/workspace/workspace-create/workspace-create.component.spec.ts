@@ -32,7 +32,7 @@ class MockRouter {
   navigate = jasmine.createSpy('navigate')
 }
 
-fdescribe('WorkspaceCreateComponent', () => {
+describe('WorkspaceCreateComponent', () => {
   let component: WorkspaceCreateComponent
   let fixture: ComponentFixture<WorkspaceCreateComponent>
   let mockRouter = new MockRouter()
@@ -199,7 +199,7 @@ fdescribe('WorkspaceCreateComponent', () => {
     }
 
     component.formGroup.controls['name'].setValue('name')
-    component.formGroup.controls['imageUrl'].setValue('url')
+    component.formGroup.controls['logoUrl'].setValue('url')
 
     component.onFileUpload(event as any, 'logo')
 
@@ -218,7 +218,7 @@ fdescribe('WorkspaceCreateComponent', () => {
       }
     }
     component.formGroup.controls['name'].setValue('name')
-    component.formGroup.controls['imageUrl'].setValue('url')
+    component.formGroup.controls['logoUrl'].setValue('url')
 
     component.onFileUpload(event as any, 'logo')
 

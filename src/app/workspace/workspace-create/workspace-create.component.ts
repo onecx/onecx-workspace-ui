@@ -4,7 +4,6 @@ import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 import { Observable, map } from 'rxjs'
 import { SelectItem } from 'primeng/api/selectitem'
-import { FileUpload } from 'primeng/fileupload'
 
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 
@@ -53,7 +52,6 @@ export class WorkspaceCreateComponent {
       homePage: new FormControl(null, [Validators.maxLength(255)]),
       logoUrl: new FormControl('', [Validators.maxLength(255)]),
       baseUrl: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.pattern('^/.*')]),
-      imageUrl: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.pattern('^/.*')]),
       footerLabel: new FormControl(null, [Validators.maxLength(255)]),
       description: new FormControl(null, [Validators.maxLength(255)])
     })
@@ -85,40 +83,6 @@ export class WorkspaceCreateComponent {
           this.message.error({ summaryKey: 'ACTIONS.CREATE.MESSAGE.CREATE_NOK' })
         }
       })
-  }
-
-  // formerly used to check the size of the image
-  //   the size should be limited due to performance reasons!
-  public onSelect(event: Event, uploader: FileUpload): void {
-    this.selectedLogoFile = uploader.files[0]
-    this.checkDimension(this.selectedLogoFile, uploader)
-  }
-
-  /* eslint-disable @typescript-eslint/no-unused-vars */ /* TODO: is uploader needed */
-  private checkDimension(file: File, uploader: FileUpload): void {
-    const reader = new FileReader()
-    const img = new Image()
-
-    reader.onload = (e: any) => {
-      img.src = e.target.result.toString()
-
-      img.onload = () => {
-        const elem = document.createElement('canvas')
-        elem.width = 150
-        elem.height = 150
-        const ctx = elem.getContext('2d')
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        ctx!.drawImage(img, 0, 0, 150, 150)
-        elem.toBlob((blob) => {
-          if (blob) {
-            this.selectedLogoFile = new File([blob], 'untitled', { type: blob.type })
-          }
-        })
-        this.preview = true
-        this.previewSrc = elem.toDataURL()
-      }
-    }
-    reader.readAsDataURL(file)
   }
 
   onFileUpload(ev: Event, fieldType: 'logo') {
@@ -158,7 +122,7 @@ export class WorkspaceCreateComponent {
                   this.fetchingLogoUrl =
                     this.imageApi.configuration.basePath + '/images/' + workspaceName + '/' + fieldType
                   this.message.info({ summaryKey: 'IMAGE.UPLOAD_SUCCESS' })
-                  this.formGroup.controls['imageUrl'].setValue('')
+                  this.formGroup.controls['logoUrl'].setValue('')
                   this.logoImageWasUploaded = true
                 })
               }
@@ -169,7 +133,7 @@ export class WorkspaceCreateComponent {
                   this.fetchingLogoUrl =
                     this.imageApi.configuration.basePath + '/images/' + workspaceName + '/' + fieldType
                   this.message.info({ summaryKey: 'IMAGE.UPLOAD_SUCCESS' })
-                  this.formGroup.controls['imageUrl'].setValue('')
+                  this.formGroup.controls['logoUrl'].setValue('')
                   this.logoImageWasUploaded = true
                 })
               }
