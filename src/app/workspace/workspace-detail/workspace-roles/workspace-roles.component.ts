@@ -53,7 +53,9 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   public quickFilterValue: RoleFilterType = 'WORKSPACE'
   public quickFilterItems: SelectItem[]
   public changeMode: ChangeMode = 'VIEW'
-  public hasChangePermission = false
+  public hasCreatePermission = false
+  public hasDeletePermission = false
+  public hasEditPermission = false
   public showRoleDetailDialog = false
   public showRoleDeleteDialog = false
 
@@ -64,7 +66,9 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
     private translate: TranslateService,
     private msgService: PortalMessageService
   ) {
-    this.hasChangePermission = this.user.hasPermission('WORKSPACE_ROLES#CHANGE')
+    this.hasEditPermission = this.user.hasPermission('WORKSPACE_ROLE#EDIT')
+    this.hasCreatePermission = this.user.hasPermission('WORKSPACE_ROLE#CREATE')
+    this.hasDeletePermission = this.user.hasPermission('WORKSPACE_ROLE#DELETE')
     // quick filter
     this.quickFilterItems = [
       { label: 'DIALOG.ROLE.QUICK_FILTER.ALL', value: 'ALL' },
@@ -170,7 +174,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
    * Create/Delete Roles direct on click
    */
   public onToggleRole(role: any): void {
-    if (!this.hasChangePermission) return
+    if (!this.hasEditPermission) return
     if (!role.isWorkspaceRole) {
       this.wRoleApi
         .createWorkspaceRole({
@@ -235,21 +239,17 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   public onEditRole(ev: Event, role: Role): void {
     ev.stopPropagation()
     this.role = role
-    if (role.isIamRole) {
-      this.changeMode = 'VIEW'
-    } else {
-      if (!this.hasChangePermission) return
-      this.changeMode = 'EDIT'
-    }
+    this.changeMode = role.isWorkspaceRole && this.hasEditPermission ? 'EDIT' : 'VIEW'
     this.showRoleDetailDialog = true
   }
   public onDeleteRole(ev: Event, role: Role): void {
     ev.stopPropagation()
-    if (!this.hasChangePermission) return
+    if (!this.hasEditPermission) return
     this.role = role
     this.changeMode = 'DELETE'
     this.showRoleDeleteDialog = true
   }
+  // dialog response handling
   public onRoleChanged(changed: boolean) {
     this.role = undefined
     this.changeMode = 'VIEW'

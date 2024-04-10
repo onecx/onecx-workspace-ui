@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common'
+import { CommonModule, Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import { AfterViewInit, Component, Inject, OnDestroy, Renderer2 } from '@angular/core'
 import { FormsModule } from '@angular/forms'
@@ -9,26 +9,25 @@ import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-transla
 import {
   AngularRemoteComponentsModule,
   BASE_URL,
-  RemoteComponentConfig,
   ocxRemoteComponent,
-  provideTranslateServiceForRoot
+  provideTranslateServiceForRoot,
+  RemoteComponentConfig
 } from '@onecx/angular-remote-components'
+import { EventsPublisher } from '@onecx/integration-interface'
 import {
-  AUTH_SERVICE,
-  AppConfigService,
   AppStateService,
-  IAuthService,
+  createRemoteComponentTranslateLoader,
   PortalCoreModule,
   UserProfile,
-  UserService,
-  createRemoteComponentTranslateLoader
+  UserService
 } from '@onecx/portal-integration-angular'
 import { AvatarModule } from 'primeng/avatar'
 import { MenuModule } from 'primeng/menu'
 import { RippleModule } from 'primeng/ripple'
-import { Observable, ReplaySubject, filter, mergeMap } from 'rxjs'
-import { UserMenuAPIService, UserWorkspaceMenuStructure } from 'src/app/shared/generated'
+import { filter, mergeMap, Observable, ReplaySubject } from 'rxjs'
+import { Configuration, UserMenuAPIService, UserWorkspaceMenuStructure } from 'src/app/shared/generated'
 import { SharedModule } from 'src/app/shared/shared.module'
+import { environment } from 'src/environments/environment'
 
 @Component({
   selector: 'app-user-avatar-menu',
@@ -64,20 +63,18 @@ import { SharedModule } from 'src/app/shared/shared.module'
   styleUrls: ['./user-avatar-menu.component.scss']
 })
 @UntilDestroy()
-export class UserAvatarMenuComponent implements ocxRemoteComponent, AfterViewInit, OnDestroy {
-  config: RemoteComponentConfig | undefined
+export class OneCXUserAvatarMenuComponent implements ocxRemoteComponent, AfterViewInit, OnDestroy {
   currentUser$: Observable<UserProfile>
   userMenu$: Observable<UserWorkspaceMenuStructure>
+  eventsPublisher$: EventsPublisher = new EventsPublisher()
   menuOpen = false
   removeDocumentClickListener: (() => void) | undefined
 
   constructor(
-    @Inject(AUTH_SERVICE) private authService: IAuthService,
     private renderer: Renderer2,
     private userService: UserService,
     private userMenuService: UserMenuAPIService,
     private appStateService: AppStateService,
-    private appConfigService: AppConfigService,
     @Inject(BASE_URL) private baseUrl: ReplaySubject<string>,
     private translateService: TranslateService
   ) {
@@ -86,7 +83,7 @@ export class UserAvatarMenuComponent implements ocxRemoteComponent, AfterViewIni
     this.currentUser$ = this.userService.profile$.pipe(
       filter((x) => x !== undefined),
       untilDestroyed(this)
-    ) as Observable<UserProfile>
+    )
 
     this.userMenu$ = this.appStateService.currentPortal$.pipe(
       mergeMap((currentWorkspace) =>
@@ -115,8 +112,9 @@ export class UserAvatarMenuComponent implements ocxRemoteComponent, AfterViewIni
 
   ocxInitRemoteComponent(config: RemoteComponentConfig): void {
     this.baseUrl.next(config.baseUrl)
-    this.appConfigService.init(config['baseUrl'])
-    this.config = config
+    this.userMenuService.configuration = new Configuration({
+      basePath: Location.joinWithSlash(config.baseUrl, environment.apiPrefix)
+    })
   }
 
   handleAvatarClick(event: MouseEvent) {
@@ -127,6 +125,6 @@ export class UserAvatarMenuComponent implements ocxRemoteComponent, AfterViewIni
 
   logout(event: Event) {
     event.preventDefault()
-    this.authService.logout()
+    this.eventsPublisher$.publish({ type: 'authentication#logoutButtonClicked' })
   }
 }

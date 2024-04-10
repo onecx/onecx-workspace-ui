@@ -44,6 +44,7 @@ export class WorkspaceRoleDetailComponent implements OnChanges {
     if (this.role) {
       this.formGroupRole.controls['name'].patchValue(this.role.name)
       this.formGroupRole.controls['description'].patchValue(this.role.description)
+      this.changeMode === 'VIEW' ? this.formGroupRole.disable() : this.formGroupRole.enable()
     }
   }
 
