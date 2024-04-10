@@ -33,7 +33,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   public wRoles$!: Observable<IAMRolePageResult>
   public iamRoles$!: Observable<IAMRolePageResult>
   public roles$!: Observable<Role[]>
-  public roles!: Role[]
+  public roles: Role[] = []
   public role!: Role | undefined
   public workspaceRoles!: string[]
   public limitText = limitText
@@ -151,7 +151,8 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
           this.iamRolesLoaded = true
           // combine role results and prevent duplicates
           result.forEach((iam) => {
-            if (iam.name && !this.workspaceRoles.includes(iam.name)) this.roles.push(iam)
+            if (this.workspaceRoles.length === 0) this.roles.push(iam)
+            else if (iam.name && !this.workspaceRoles.includes(iam.name)) this.roles.push(iam)
             else {
               const role = this.roles.filter((r) => r.name === iam.name)
               role[0].isIamRole = true

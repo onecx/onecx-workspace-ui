@@ -223,4 +223,30 @@ fdescribe('WorkspaceRolesComponent', () => {
     expect(component.showRoleDetailDialog).toBeFalse()
     expect(component.showRoleDeleteDialog).toBeFalse()
   })
+
+  it('should reset filter to default when ALL is selected', () => {
+    component.onQuickFilterChange({ value: 'ALL' })
+
+    expect(component.filterBy).toEqual('defaultFilter')
+    expect(component.filterValue).toEqual('')
+  })
+
+  it('should set filter by type and call filter method with "equals" when specific value is selected', () => {
+    component.onQuickFilterChange({ value: 'testType' })
+
+    expect(component.filterBy).toEqual('type')
+    expect(component.filterValue).toEqual('testType')
+  })
+
+  it('should set filterBy to name,type when filter is empty', () => {
+    component.onFilterChange('')
+
+    expect(component.filterBy).toEqual('name,type')
+  })
+
+  it('should call filter method with "contains" when filter has a value', () => {
+    component.dv = jasmine.createSpyObj('DataView', ['filter'])
+
+    component.onFilterChange('testFilter')
+  })
 })
