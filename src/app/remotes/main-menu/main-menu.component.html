@@ -1,12 +1,6 @@
-<div>
-  <br />
-  <li><a href="https://dev.one-cx.org/newShell/admin/workspace">Workspace</a></li>
-  <br />
-  <li><a href="https://dev.one-cx.org/newShell/admin/products-1">Products</a></li>
-  <br />
-  <li><a href="https://dev.one-cx.org/newShell/admin/theme-1">Theme</a></li>
-  <br />
-  <li><a href="https://dev.one-cx.org/newShell/admin/permission-1">Permissions</a></li>
-  <br />
-  <li><a href="https://dev.one-cx.org/newShell/admin/help-1">Help</a></li>
-</div>
+<ul class="layout-menu" id="nav" role="navigation">
+  <ng-container *ngIf="menuItems$ | async as items; else loading">
+    <app-sub-menu *ngFor="let item of items; let i = index" [item]="item" [index]="i" [root]="true"></app-sub-menu>
+  </ng-container>
+  <ng-template #loading> loading... </ng-template>
+</ul>
