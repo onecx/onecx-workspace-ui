@@ -22,8 +22,10 @@ import {
   createRemoteComponentTranslateLoader
 } from '@onecx/portal-integration-angular'
 import { AccordionModule } from 'primeng/accordion'
-import { Observable, ReplaySubject, filter, map, mergeMap } from 'rxjs'
-import { UserMenuAPIService, UserWorkspaceMenuStructure } from 'src/app/shared/generated'
+import { MenuItem } from 'primeng/api'
+import { Observable, ReplaySubject, filter, map, mergeMap, shareReplay, withLatestFrom } from 'rxjs'
+import { UserMenuAPIService } from 'src/app/shared/generated'
+import { MenuItemService } from 'src/app/shared/services/menu-item.service'
 import { SharedModule } from 'src/app/shared/shared.module'
 
 @Component({
@@ -59,7 +61,7 @@ import { SharedModule } from 'src/app/shared/shared.module'
 export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent {
   config: RemoteComponentConfig | undefined
   currentUser$: Observable<UserProfile>
-  userMenu$: Observable<UserWorkspaceMenuStructure>
+  userMenu$: Observable<MenuItem[]>
   displayName$: Observable<string>
   eventsPublisher$: EventsPublisher = new EventsPublisher()
 
@@ -72,6 +74,7 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent {
     private appStateService: AppStateService,
     private userMenuService: UserMenuAPIService,
     private userService: UserService,
+    private menuItemService: MenuItemService,
     @Inject(AUTH_SERVICE) private authService: IAuthService
   ) {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
@@ -95,6 +98,9 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent {
           }
         })
       ),
+      withLatestFrom(this.userService.lang$),
+      map(([data, userLang]) => this.menuItemService.constructMenuItems(data.menu?.[0].children, userLang)),
+      shareReplay(),
       untilDestroyed(this)
     )
   }

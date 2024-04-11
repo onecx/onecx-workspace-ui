@@ -22,11 +22,13 @@ import {
   UserService,
   createRemoteComponentTranslateLoader
 } from '@onecx/portal-integration-angular'
+import { MenuItem } from 'primeng/api'
 import { AvatarModule } from 'primeng/avatar'
 import { MenuModule } from 'primeng/menu'
 import { RippleModule } from 'primeng/ripple'
-import { Observable, ReplaySubject, filter, mergeMap } from 'rxjs'
-import { Configuration, UserMenuAPIService, UserWorkspaceMenuStructure } from 'src/app/shared/generated'
+import { Observable, ReplaySubject, filter, map, mergeMap, shareReplay, withLatestFrom } from 'rxjs'
+import { Configuration, UserMenuAPIService } from 'src/app/shared/generated'
+import { MenuItemService } from 'src/app/shared/services/menu-item.service'
 import { SharedModule } from 'src/app/shared/shared.module'
 import { environment } from 'src/environments/environment'
 
@@ -68,7 +70,7 @@ export type MenuAnchorPositionConfig = 'right' | 'left'
 @UntilDestroy()
 export class OneCXUserAvatarMenuComponent implements ocxRemoteComponent, AfterViewInit, OnDestroy {
   currentUser$: Observable<UserProfile>
-  userMenu$: Observable<UserWorkspaceMenuStructure>
+  userMenu$: Observable<MenuItem[]>
   eventsPublisher$: EventsPublisher = new EventsPublisher()
   menuOpen = false
   removeDocumentClickListener: (() => void) | undefined
@@ -81,7 +83,8 @@ export class OneCXUserAvatarMenuComponent implements ocxRemoteComponent, AfterVi
     private appStateService: AppStateService,
     private appConfigService: AppConfigService,
     @Inject(BASE_URL) private baseUrl: ReplaySubject<string>,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private menuItemService: MenuItemService
   ) {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
 
@@ -99,6 +102,9 @@ export class OneCXUserAvatarMenuComponent implements ocxRemoteComponent, AfterVi
           }
         })
       ),
+      withLatestFrom(this.userService.lang$),
+      map(([data, userLang]) => this.menuItemService.constructMenuItems(data.menu?.[0].children, userLang)),
+      shareReplay(),
       untilDestroyed(this)
     )
   }

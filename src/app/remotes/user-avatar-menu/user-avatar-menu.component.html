@@ -31,10 +31,10 @@
       </div>
     </li>
     <ng-container *ngIf="userMenu$ | async as userMenu">
-      <li class="layout-topbar-action-item" *ngFor="let item of userMenu.menu![0].children; let i = index">
+      <li class="layout-topbar-action-item" *ngFor="let item of userMenu; let i = index">
         <a class="flex flex-row align-items-center w-full h-full p-3 gap-2" pRipple [routerLink]="item.url">
-          <i [ngClass]="'pi-' + item.badge || ''" class="layout-menuitem-icon pi"></i>
-          <span class="layout-menuitem-text">{{ item.name }}</span>
+          <i *ngIf="item.icon" [ngClass]="item.icon"></i>
+          <span>{{ item.label }}</span>
         </a>
       </li>
     </ng-container>
