@@ -1,6 +1,1 @@
-<ul class="layout-menu" id="nav" role="navigation">
-  <ng-container *ngIf="menuItems$ | async as items; else loading">
-    <app-sub-menu *ngFor="let item of items; let i = index" [item]="item" [index]="i" [root]="true"></app-sub-menu>
-  </ng-container>
-  <ng-template #loading> loading... </ng-template>
-</ul>
+<p-panelMenu [model]="(menuItems$ | async) ?? []"></p-panelMenu>
