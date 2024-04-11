@@ -10,9 +10,9 @@ import {
   ImagesInternalAPIService,
   RefType,
   UploadImageRequestParams,
-  WorkspaceAPIService
+  WorkspaceAPIService,
+  Workspace
 } from 'src/app/shared/generated'
-import { Workspace } from 'src/app/shared/generated'
 import { copyToClipboard, sortByLocale } from 'src/app/shared/utils'
 
 @Component({
@@ -60,11 +60,15 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
     })
     this.themes$ = this.workspaceApi.getAllThemes().pipe(
       map((val: any[]) => {
-        return val.length === 0
-          ? [this.workspace.theme]
-          : !val.includes(this.workspace.theme)
-          ? val.sort(sortByLocale).concat(this.workspace.theme)
-          : val.sort(sortByLocale)
+        if (val.length === 0) {
+          return [this.workspace.theme]
+        } else if (!val.includes(this.workspace.theme)) {
+          val.sort(sortByLocale)
+          return val.concat(this.workspace.theme)
+        } else {
+          val.sort(sortByLocale)
+          return val
+        }
       })
     )
   }

@@ -449,7 +449,7 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   // is a menu item (url) supported by reg. MFE ?
   private urlMatch(url: string): boolean {
-    const url2 = url.match(/^.*\/$/) ? url.substring(0, url.length - 1) : url
+    const url2 = /^.*\/$/.exec(url) ? url.substring(0, url.length - 1) : url
     // direct match
     let match = this.mfeRUrls.includes(url) || this.mfeRUrls.includes(url + '/') || this.mfeRUrls.includes(url2)
     if (!match) {
@@ -472,7 +472,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       return []
     }
     const nodes: TreeNode[] = []
-    items.sort((a, b) => (a.position || 0) - (b.position || 0))
+    items.sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
     let pos = 1
     let prevId: string | undefined
     for (const item of items) {

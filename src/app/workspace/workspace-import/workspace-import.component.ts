@@ -88,7 +88,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
 
   // IMPORT
   public importWorkspace(): void {
-    if (!this.importRequestDTO || !this.importRequestDTO.workspaces) {
+    if (!this.importRequestDTO?.workspaces) {
       this.msgService.error({ summaryKey: 'WORKSPACE_IMPORT.WORKSPACE_IMPORT_ERROR' })
       return
     }
@@ -139,7 +139,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
 
   // NAVIGATE import step : NEXT
   public next(importRequestDTO?: WorkspaceSnapshot): void {
-    if (this.activeIndex == 0 && importRequestDTO && importRequestDTO.workspaces) {
+    if (this.activeIndex == 0 && importRequestDTO?.workspaces) {
       this.importRequestDTO = importRequestDTO
       let keys: string[] = []
       if (this.importRequestDTO?.workspaces) {
@@ -160,7 +160,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
   public back(): void {
     if (this.importRequestDTO?.workspaces) {
       let key: string[] = Object.keys(this.importRequestDTO.workspaces)
-      if (this.activeIndex == 2 && this.importRequestDTO && this.importRequestDTO.workspaces) {
+      if (this.activeIndex == 2 && this.importRequestDTO?.workspaces) {
         this.importRequestDTO.workspaces[key[0]].name = this.confirmComponent?.workspaceName ?? ''
         this.importRequestDTO.workspaces[key[0]].baseUrl = this.confirmComponent?.baseUrl ?? ''
         this.importRequestDTO.workspaces[key[0]].theme = this.confirmComponent?.themeName ?? ''
