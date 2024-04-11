@@ -6,7 +6,8 @@ const config = withModuleFederationPlugin({
   filename: 'remoteEntry.js',
   exposes: {
     './OneCXWorkspaceModule': 'src/app/onecx-workspace-remote.module.ts',
-    './OneCXUserAvatarMenuComponent': 'src/app/remotes/user-avatar-menu/user-avatar-menu.component.ts'
+    './OneCXUserAvatarMenuComponent': 'src/app/remotes/user-avatar-menu/user-avatar-menu.component.ts',
+    './OneCXMainMenuComponent': 'src/app/remotes/main-menu/main-menu.component.ts'
   },
   shared: share({
     '@angular/core': { singleton: true, requiredVersion: 'auto' },
@@ -32,6 +33,7 @@ const config = withModuleFederationPlugin({
     rxjs: { requiredVersion: 'auto', includeSecondaries: true },
     '@ngx-translate/core': { singleton: true, requiredVersion: 'auto' },
     '@onecx/accelerator': { requiredVersion: 'auto', includeSecondaries: true },
+    '@onecx/angular-accelerator': { requiredVersion: 'auto', includeSecondaries: true },
     '@onecx/angular-remote-components': { requiredVersion: 'auto', includeSecondaries: true },
     '@onecx/integration-interface': { requiredVersion: 'auto', includeSecondaries: true },
     '@onecx/keycloak-auth': { requiredVersion: 'auto', includeSecondaries: true },
