@@ -1,21 +1,20 @@
-import { NO_ERRORS_SCHEMA /*, Component*/ } from '@angular/core'
+import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { Location } from '@angular/common'
 import { Router } from '@angular/router'
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router'
-//import { TranslateService } from '@ngx-translate/core'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { RouterTestingModule } from '@angular/router/testing'
 
-import { of /*, throwError*/ } from 'rxjs'
+import { of, BehaviorSubject, throwError } from 'rxjs'
 
-import { PortalMessageService } from '@onecx/portal-integration-angular'
+import { PortalMessageService, UserService } from '@onecx/portal-integration-angular'
 import { Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
 
 import { WorkspaceDetailComponent } from './workspace-detail.component'
-//import { WorkspaceContactComponent } from './workspace-contact/workspace-contact.component'
-//import { WorkspacePropsComponent } from './workspace-props/workspace-props.component'
+import { WorkspaceContactComponent } from './workspace-contact/workspace-contact.component'
+import { WorkspacePropsComponent } from './workspace-props/workspace-props.component'
 
 class MockRouter {
   navigate = jasmine.createSpy('navigate')
@@ -28,11 +27,6 @@ const workspace: Workspace = {
   baseUrl: '/some/base/url'
 }
 
-/* 
-@Component({ template: '' })
-class MockMenuComponent {}
-*/
-/* 
 class MockWorkspacePropsComponent {
   public onSubmit(): void {}
 }
@@ -40,25 +34,22 @@ class MockWorkspacePropsComponent {
 class MockWorkspaceContactComponent {
   public onSubmit(): void {}
 }
-*/
+
 fdescribe('WorkspaceDetailComponent', () => {
   let component: WorkspaceDetailComponent
   let fixture: ComponentFixture<WorkspaceDetailComponent>
   let mockActivatedRoute: Partial<ActivatedRoute>
   let mockRouter = new MockRouter()
+  let mockUserService: any
 
-  //const translateServiceSpy = jasmine.createSpyObj<TranslateService>('TranslateService', ['get'])
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
   const apiServiceSpy = {
     getWorkspaceByName: jasmine.createSpy('getWorkspaceByName').and.returnValue(of({})),
-    deleteWorkspace: jasmine.createSpy('deleteWorkspace').and.returnValue(of({}))
+    deleteWorkspace: jasmine.createSpy('deleteWorkspace').and.returnValue(of({})),
+    exportWorkspaces: jasmine.createSpy('exportWorkspaces').and.returnValue(of({})),
+    updateWorkspace: jasmine.createSpy('updateWorkspace').and.returnValue(of({}))
   }
-  /*
-  const configServiceSpy = {
-    getProperty: jasmine.createSpy('getProperty').and.returnValue('123'),
-    lang: 'en'
-  }
- */
+
   const locationSpy = jasmine.createSpyObj<Location>('Location', ['back'])
 
   const mockActivatedRouteSnapshot: Partial<ActivatedRouteSnapshot> = {
@@ -71,6 +62,7 @@ fdescribe('WorkspaceDetailComponent', () => {
   }
 
   beforeEach(waitForAsync(() => {
+    mockUserService = { lang$: new BehaviorSubject('de') }
     TestBed.configureTestingModule({
       declarations: [WorkspaceDetailComponent],
       imports: [
@@ -87,15 +79,16 @@ fdescribe('WorkspaceDetailComponent', () => {
         { provide: Router, useValue: mockRouter },
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: WorkspaceAPIService, useValue: apiServiceSpy },
-        //{ provide: TranslateService, useValue: translateServiceSpy },
-        { provide: Location, useValue: locationSpy }
+        { provide: Location, useValue: locationSpy },
+        { provide: UserService, useValue: mockUserService }
       ]
     }).compileComponents()
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
     apiServiceSpy.getWorkspaceByName.calls.reset()
     apiServiceSpy.deleteWorkspace.calls.reset()
-    //translateServiceSpy.get.calls.reset()
+    apiServiceSpy.exportWorkspaces.calls.reset()
+    apiServiceSpy.updateWorkspace.calls.reset()
     locationSpy.back.calls.reset()
   }))
 
@@ -113,13 +106,16 @@ fdescribe('WorkspaceDetailComponent', () => {
     component.workspaceName = 'name'
     expect(component).toBeTruthy()
   })
-  /* 
-  it('should set German date format', () => {
-    configServiceSpy.lang = 'de'
 
+  it('should set German date format', () => {
+    expect(component.dateFormat).toEqual('dd.MM.yyyy HH:mm')
+  })
+
+  it('should set English date format', () => {
+    mockUserService.lang$.next('en')
     initializeComponent()
 
-    expect(component.dateFormat).toEqual('dd.MM.yyyy HH:mm:ss')
+    expect(component.dateFormat).toEqual('medium')
   })
 
   it('should set selectedTabIndex onChange', () => {
@@ -131,7 +127,7 @@ fdescribe('WorkspaceDetailComponent', () => {
 
     expect(component.selectedTabIndex).toEqual(1)
   })
-*/
+
   it('should getWorkspaceData onInit', (done) => {
     apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
     spyOn(component, 'prepareDialog')
@@ -149,26 +145,40 @@ fdescribe('WorkspaceDetailComponent', () => {
     expect(component.isLoading).toBeFalsy()
     expect(component.prepareDialog).toHaveBeenCalled()
   })
-  /*
-  it('should display error msg if get api call fails', () => {
-    apiServiceSpy.getWorkspaceByName.and.returnValue(throwError(() => new Error()))
 
-    component.ngOnInit()
+  it('should display error msg if get api call fails', (done) => {
+    const err = {
+      status: '404'
+    }
+    apiServiceSpy.getWorkspaceByName.and.returnValue(throwError(() => err))
 
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({
-      summaryKey: 'ACTIONS.SEARCH.ERROR',
-      detailKey: 'DIALOG.WORKSPACE.NOT_FOUND'
+    component.getWorkspace()
+
+    component.workspace$.subscribe({
+      next: () => {
+        done()
+      },
+      error: done.fail
     })
+
+    expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + err.status + '.WORKSPACE')
   })
 
   it('should delete workspace on onConfirmDeleteWorkspace', () => {
     apiServiceSpy.deleteWorkspace.and.returnValue(of({}))
-    component.workspaceExportVisible = true
 
     component.onConfirmDeleteWorkspace()
 
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MESSAGE_OK' })
-    expect(component.workspaceExportVisible).toBeFalse()
+  })
+
+  it('should delete workspace on onConfirmDeleteWorkspace: no workspace', () => {
+    apiServiceSpy.deleteWorkspace.and.returnValue(of({}))
+    component.workspace = undefined
+
+    component.onConfirmDeleteWorkspace()
+
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MESSAGE_OK' })
   })
 
   it('should display error msg if delete api call fails', () => {
@@ -182,11 +192,12 @@ fdescribe('WorkspaceDetailComponent', () => {
   })
 
   it('should export a workspace', () => {
+    apiServiceSpy.exportWorkspaces.and.returnValue(of({}))
     component.workspace = workspace
     component.exportMenu = true
     component.onExportWorkspace()
 
-    expect(component.workspaceExportVisible).toBeFalse()
+    expect(apiServiceSpy.exportWorkspaces).toHaveBeenCalled()
   })
 
   it('should display error if portalNotFound on export', () => {
@@ -195,8 +206,23 @@ fdescribe('WorkspaceDetailComponent', () => {
     component.onExportWorkspace()
 
     expect(msgServiceSpy.error).toHaveBeenCalledWith({
-      summaryKey: 'DETAIL.WORKSPACE_NOT_FOUND'
+      summaryKey: 'DIALOG.WORKSPACE.NOT_FOUND'
     })
+  })
+
+  it('should enter error branch if exportWorkspaces call fails', () => {
+    apiServiceSpy.exportWorkspaces.and.returnValue(throwError(() => new Error()))
+    component.workspace = workspace
+
+    component.onExportWorkspace()
+
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.NOK' })
+  })
+
+  it('should return the logoURL on getImagePath', () => {
+    const result = component.getImagePath({ name: 'name', logoUrl: 'url' })
+
+    expect(result).toBe('url')
   })
 
   it('should have prepared action buttons onInit: close', () => {
@@ -211,11 +237,13 @@ fdescribe('WorkspaceDetailComponent', () => {
   })
 
   it('should have prepared action buttons onInit: onGoToMenu', () => {
-    apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))
+    component.workspace = workspace
     spyOn(component, 'onGoToMenu')
+
     component.ngOnInit()
     let actions: any = []
     component.actions$!.subscribe((act) => (actions = act))
+    component.editMode = false
 
     actions[1].actionCallback()
 
@@ -234,7 +262,7 @@ fdescribe('WorkspaceDetailComponent', () => {
     expect(component.editMode).toBeTrue()
   })
 
-  it('should have prepared action buttons onInit: updatePortal props', () => {
+  it('should have prepared action buttons onInit: update workspace props', () => {
     apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))
     component.workspacePropsComponent = new MockWorkspacePropsComponent() as unknown as WorkspacePropsComponent
     component.selectedTabIndex = 0
@@ -247,7 +275,7 @@ fdescribe('WorkspaceDetailComponent', () => {
     expect(component.editMode).toBeFalse()
   })
 
-  it('should have prepared action buttons onInit: updatePortal contact', () => {
+  it('should have prepared action buttons onInit: update workspace contact', () => {
     apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))
     component.workspaceContactComponent = new MockWorkspaceContactComponent() as unknown as WorkspaceContactComponent
     component.selectedTabIndex = 1
@@ -260,7 +288,7 @@ fdescribe('WorkspaceDetailComponent', () => {
     expect(component.editMode).toBeFalse()
   })
 
-  it('should have prepared action buttons onInit: updateworkspace: default', () => {
+  it('should have prepared action buttons onInit: update workspace: default', () => {
     apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))
     component.selectedTabIndex = 99
     spyOn(console, 'error')
@@ -273,15 +301,30 @@ fdescribe('WorkspaceDetailComponent', () => {
     expect(console.error).toHaveBeenCalledWith("Couldn't assign tab to component")
   })
 
+  it('it should display error on update workspace', () => {
+    apiServiceSpy.updateWorkspace.and.returnValue(throwError(() => new Error()))
+    component.selectedTabIndex = 99
+    spyOn(console, 'error')
+    component.ngOnInit()
+    let actions: any = []
+    component.actions$!.subscribe((act) => (actions = act))
+
+    actions[3].actionCallback()
+
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_NOK' })
+  })
+
   it('should have prepared action buttons onInit: workspaceExportVisible', () => {
     apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))
+    spyOn(component, 'onExportWorkspace')
+
     component.ngOnInit()
     let actions: any = []
     component.actions$!.subscribe((act) => (actions = act))
 
     actions[4].actionCallback()
 
-    expect(component.workspaceExportVisible).toBeTrue()
+    expect(component.onExportWorkspace).toHaveBeenCalled()
   })
 
   it('should have prepared action buttons onInit: toggleEditMode', () => {
@@ -312,5 +355,4 @@ fdescribe('WorkspaceDetailComponent', () => {
 
     expect(mockRouter.navigate).toHaveBeenCalledWith(['./menu'], { relativeTo: mockActivatedRoute })
   })
- */
 })
