@@ -9,25 +9,28 @@ import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-transla
 import {
   AngularRemoteComponentsModule,
   BASE_URL,
+  RemoteComponentConfig,
   ocxRemoteComponent,
-  provideTranslateServiceForRoot,
-  RemoteComponentConfig
+  provideTranslateServiceForRoot
 } from '@onecx/angular-remote-components'
 import { EventsPublisher } from '@onecx/integration-interface'
 import {
+  AppConfigService,
   AppStateService,
-  createRemoteComponentTranslateLoader,
   PortalCoreModule,
   UserProfile,
-  UserService
+  UserService,
+  createRemoteComponentTranslateLoader
 } from '@onecx/portal-integration-angular'
 import { AvatarModule } from 'primeng/avatar'
 import { MenuModule } from 'primeng/menu'
 import { RippleModule } from 'primeng/ripple'
-import { filter, mergeMap, Observable, ReplaySubject } from 'rxjs'
+import { Observable, ReplaySubject, filter, mergeMap } from 'rxjs'
 import { Configuration, UserMenuAPIService, UserWorkspaceMenuStructure } from 'src/app/shared/generated'
 import { SharedModule } from 'src/app/shared/shared.module'
 import { environment } from 'src/environments/environment'
+
+export type MenuAnchorPositionConfig = 'right' | 'left'
 
 @Component({
   selector: 'app-user-avatar-menu',
@@ -69,12 +72,14 @@ export class OneCXUserAvatarMenuComponent implements ocxRemoteComponent, AfterVi
   eventsPublisher$: EventsPublisher = new EventsPublisher()
   menuOpen = false
   removeDocumentClickListener: (() => void) | undefined
+  menuAnchorPosition: MenuAnchorPositionConfig = 'right'
 
   constructor(
     private renderer: Renderer2,
     private userService: UserService,
     private userMenuService: UserMenuAPIService,
     private appStateService: AppStateService,
+    private appConfigService: AppConfigService,
     @Inject(BASE_URL) private baseUrl: ReplaySubject<string>,
     private translateService: TranslateService
   ) {
@@ -114,6 +119,12 @@ export class OneCXUserAvatarMenuComponent implements ocxRemoteComponent, AfterVi
     this.baseUrl.next(config.baseUrl)
     this.userMenuService.configuration = new Configuration({
       basePath: Location.joinWithSlash(config.baseUrl, environment.apiPrefix)
+    })
+    this.appConfigService.init(config.baseUrl).then(() => {
+      const menuAnchorPositionConfig = this.appConfigService.getProperty('USER_AVATAR_MENU_ANCHOR_POSITION')
+      if (menuAnchorPositionConfig) {
+        this.menuAnchorPosition = menuAnchorPositionConfig as MenuAnchorPositionConfig
+      }
     })
   }
 

@@ -1,1 +1,32 @@
-<p>user-sidebar-menu works!</p>
+<p-accordion [activeIndex]="null" id="menuAccordion">
+  <p-accordionTab>
+    <ng-template pTemplate="header">
+      <ocx-user-avatar [user$]="currentUser$"></ocx-user-avatar>
+      <span class="flex flex-column ml-2">
+        <span class="font-bold">{{ displayName$ | async }}</span>
+        <small>Portal User</small>
+      </span>
+    </ng-template>
+    <ng-template pTemplate="content">
+      <ul class="list-none p-0 m-0">
+        <ng-container *ngIf="userMenu$ | async as userMenu">
+          <li
+            class="user-sidebar-menu-item border-round"
+            *ngFor="let item of userMenu.menu![0].children; let i = index"
+          >
+            <a [routerLink]="item.url" class="p-3 inline-block w-full h-full flex gap-2 align-items-center">
+              <i *ngIf="item.badge" class="pi" [ngClass]="'pi-' + item.badge"></i>
+              <span>{{ item.i18n!['de'] }}</span>
+            </a>
+          </li>
+        </ng-container>
+        <li class="user-sidebar-menu-item border-round">
+          <a class="flex flex-row align-items-center w-full h-full p-3 gap-2" pRipple (click)="logout()">
+            <i class="pi pi-power-off"></i>
+            <span>{{ 'REMOTES.USER_SIDEBAR_MENU.LOGOUT' | translate }}</span>
+          </a>
+        </li>
+      </ul>
+    </ng-template>
+  </p-accordionTab>
+</p-accordion>

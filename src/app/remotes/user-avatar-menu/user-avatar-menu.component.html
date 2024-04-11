@@ -9,7 +9,11 @@
   >
     <ocx-user-avatar [user$]="currentUser$"></ocx-user-avatar>
   </div>
-  <ul class="layout-topbar-action-panel shadow-6 m-2 absolute top-100" [hidden]="!menuOpen">
+  <ul
+    class="layout-topbar-action-panel shadow-6 m-2 absolute top-100"
+    [ngClass]="menuAnchorPosition + '-0'"
+    [hidden]="!menuOpen"
+  >
     <li class="layout-topbar-action-item flex flex-column" *ocxIfPermission="'PROFILE#VIEW'">
       <div *ngIf="currentUser$ | async as user">
         <h5 class="flex flex-row align-items-center justify-content-center text-color-secondary">
@@ -28,15 +32,15 @@
     </li>
     <ng-container *ngIf="userMenu$ | async as userMenu">
       <li class="layout-topbar-action-item" *ngFor="let item of userMenu.menu![0].children; let i = index">
-        <a class="flex flex-row align-items-center w-full h-full p-3" pRipple [routerLink]="item.url">
+        <a class="flex flex-row align-items-center w-full h-full p-3 gap-2" pRipple [routerLink]="item.url">
           <i [ngClass]="'pi-' + item.badge || ''" class="layout-menuitem-icon pi"></i>
-          <span class="layout-menuitem-text ml-2">{{ item.name }}</span>
+          <span class="layout-menuitem-text">{{ item.name }}</span>
         </a>
       </li>
     </ng-container>
     <li class="layout-topbar-action-item">
-      <a class="flex flex-row align-items-center w-full h-full p-3" pRipple (click)="logout($event)">
-        <i class="mr-2 pi pi-power-off"></i>
+      <a class="flex flex-row align-items-center w-full h-full p-3 gap-2" pRipple (click)="logout($event)">
+        <i class="pi pi-power-off"></i>
         <span>{{ 'REMOTES.USER_AVATAR_MENU.LOGOUT' | translate }}</span>
       </a>
     </li>

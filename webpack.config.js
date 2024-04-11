@@ -7,7 +7,8 @@ const config = withModuleFederationPlugin({
   exposes: {
     './OneCXWorkspaceModule': 'src/app/onecx-workspace-remote.module.ts',
     './OneCXUserAvatarMenuComponent': 'src/app/remotes/user-avatar-menu/user-avatar-menu.component.ts',
-    './OneCXMainMenuComponent': 'src/app/remotes/main-menu/main-menu.component.ts'
+    './OneCXMainMenuComponent': 'src/app/remotes/main-menu/main-menu.component.ts',
+    './OneCXUserSidebarMenuComponent': 'src/app/remotes/user-sidebar-menu/user-sidebar-menu.component.ts'
   },
   shared: share({
     '@angular/core': { singleton: true, requiredVersion: 'auto' },

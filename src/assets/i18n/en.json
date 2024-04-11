@@ -477,6 +477,9 @@
       "TENANT": "Tenant",
       "LOGOUT": "Log out",
       "TOOLTIP": "Profile"
+    },
+    "USER_SIDEBAR_MENU": {
+      "LOGOUT": "Log out"
     }
   }
 }

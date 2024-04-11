@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 
-import { UserSidebarMenuComponent } from './user-sidebar-menu.component'
+import { OneCXUserSidebarMenuComponent } from './user-sidebar-menu.component'
 
 describe('UserSidebarMenuComponent', () => {
-  let component: UserSidebarMenuComponent
-  let fixture: ComponentFixture<UserSidebarMenuComponent>
+  let component: OneCXUserSidebarMenuComponent
+  let fixture: ComponentFixture<OneCXUserSidebarMenuComponent>
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [UserSidebarMenuComponent]
+      imports: [OneCXUserSidebarMenuComponent]
     }).compileComponents()
 
-    fixture = TestBed.createComponent(UserSidebarMenuComponent)
+    fixture = TestBed.createComponent(OneCXUserSidebarMenuComponent)
     component = fixture.componentInstance
     fixture.detectChanges()
   })
