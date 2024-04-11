@@ -160,7 +160,7 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
                   this.fetchingLogoUrl =
                     this.imageApi.configuration.basePath + '/images/' + workspaceName + '/' + fieldType
                   this.msgService.info({ summaryKey: 'IMAGE.UPLOAD_SUCCESS' })
-                  this.formGroup.controls['imageUrl'].setValue('')
+                  this.formGroup.controls['logoUrl'].setValue('')
                   this.logoImageWasUploaded = true
                 })
               }
@@ -171,7 +171,7 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
                   this.fetchingLogoUrl =
                     this.imageApi.configuration.basePath + '/images/' + workspaceName + '/' + fieldType
                   this.msgService.info({ summaryKey: 'IMAGE.UPLOAD_SUCCESS' })
-                  this.formGroup.controls['imageUrl'].setValue('')
+                  this.formGroup.controls['logoUrl'].setValue('')
                   this.logoImageWasUploaded = true
                 })
               }
@@ -194,7 +194,7 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
 
   private getImageUrl(): string {
     let imgUrl = this.formGroup.controls['logoUrl'].value
-    if (imgUrl == '' || imgUrl == null) {
+    if (imgUrl == '') {
       return this.imageApi.configuration.basePath + '/images/' + this.formGroup.controls['name'].value + '/logo'
     } else {
       return imgUrl

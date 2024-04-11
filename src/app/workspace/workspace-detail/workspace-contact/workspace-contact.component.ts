@@ -46,10 +46,11 @@ export class WorkspaceContactComponent implements OnChanges {
     if (this.formGroup.valid) {
       Object.assign(this.workspace, this.getPortalChangesFromForm())
       this.editMode = false
-    } else {
-      this.msgService.error({ summaryKey: 'GENERAL.FORM_VALIDATION' })
-      console.log('INVALID FORM => contact-info')
     }
+    // else {
+    //   this.msgService.error({ summaryKey: 'GENERAL.FORM_VALIDATION' })
+    //   console.log('INVALID FORM => contact-info')
+    // }
   }
 
   //return the values that are different in form than in Workspace

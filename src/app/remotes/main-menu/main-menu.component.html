@@ -1,12 +1,1 @@
-<div>
-  <br />
-  <li><a href="https://dev.one-cx.org/newShell/admin/workspace">Workspace</a></li>
-  <br />
-  <li><a href="https://dev.one-cx.org/newShell/admin/products-1">Products</a></li>
-  <br />
-  <li><a href="https://dev.one-cx.org/newShell/admin/theme-1">Theme</a></li>
-  <br />
-  <li><a href="https://dev.one-cx.org/newShell/admin/permission-1">Permissions</a></li>
-  <br />
-  <li><a href="https://dev.one-cx.org/newShell/admin/help-1">Help</a></li>
-</div>
+<p-panelMenu [model]="(menuItems$ | async) ?? []"></p-panelMenu>

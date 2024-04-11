@@ -85,7 +85,7 @@ export class OneCXUserAvatarMenuComponent implements ocxRemoteComponent, AfterVi
       untilDestroyed(this)
     )
 
-    this.userMenu$ = this.appStateService.currentPortal$.pipe(
+    this.userMenu$ = this.appStateService.currentWorkspace$.pipe(
       mergeMap((currentWorkspace) =>
         this.userMenuService.getUserMenu({
           userWorkspaceMenuRequest: {

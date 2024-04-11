@@ -4,9 +4,8 @@ import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 import { Observable, map } from 'rxjs'
 import { SelectItem } from 'primeng/api/selectitem'
-import { FileUpload } from 'primeng/fileupload'
 
-import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+import { PortalMessageService } from '@onecx/angular-integration-interface'
 
 import { sortByLocale } from 'src/app/shared/utils'
 import {
@@ -42,7 +41,6 @@ export class WorkspaceCreateComponent {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private user: UserService,
     private workspaceApi: WorkspaceAPIService,
     private imageApi: ImagesInternalAPIService,
     private message: PortalMessageService,
@@ -67,7 +65,7 @@ export class WorkspaceCreateComponent {
     this.toggleCreationDialogEvent.emit()
   }
 
-  savePortal() {
+  saveWorkspace() {
     this.workspace = { ...this.formGroup.value }
     this.workspaceApi
       .createWorkspace({
@@ -75,50 +73,16 @@ export class WorkspaceCreateComponent {
       })
       .pipe()
       .subscribe({
-        next: (fetchedPortal) => {
+        next: (fetchedWorkspace) => {
           this.message.success({ summaryKey: 'ACTIONS.CREATE.MESSAGE.CREATE_OK' })
           this.workspaceCreationValidationMsg = false
           this.closeDialog()
-          this.router.navigate(['./' + fetchedPortal.resource?.name], { relativeTo: this.route })
+          this.router.navigate(['./' + fetchedWorkspace.resource?.name], { relativeTo: this.route })
         },
         error: (err: { error: { message: any } }) => {
           this.message.error({ summaryKey: 'ACTIONS.CREATE.MESSAGE.CREATE_NOK' })
         }
       })
-  }
-
-  // former used to check the size of the image
-  //   the size should be limited due performance reasons!
-  public onSelect(event: Event, uploader: FileUpload): void {
-    this.selectedLogoFile = uploader.files[0]
-    this.checkDimension(this.selectedLogoFile, uploader)
-  }
-
-  /* eslint-disable @typescript-eslint/no-unused-vars */ /* TODO: is uploader needed */
-  private checkDimension(file: File, uploader: FileUpload): void {
-    const reader = new FileReader()
-    const img = new Image()
-
-    reader.onload = (e: any) => {
-      img.src = e.target.result.toString()
-
-      img.onload = () => {
-        const elem = document.createElement('canvas')
-        elem.width = 150
-        elem.height = 150
-        const ctx = elem.getContext('2d')
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        ctx!.drawImage(img, 0, 0, 150, 150)
-        elem.toBlob((blob) => {
-          if (blob) {
-            this.selectedLogoFile = new File([blob], 'untitled', { type: blob.type })
-          }
-        })
-        this.preview = true
-        this.previewSrc = elem.toDataURL()
-      }
-    }
-    reader.readAsDataURL(file)
   }
 
   onFileUpload(ev: Event, fieldType: 'logo') {
@@ -158,7 +122,7 @@ export class WorkspaceCreateComponent {
                   this.fetchingLogoUrl =
                     this.imageApi.configuration.basePath + '/images/' + workspaceName + '/' + fieldType
                   this.message.info({ summaryKey: 'IMAGE.UPLOAD_SUCCESS' })
-                  this.formGroup.controls['imageUrl'].setValue('')
+                  this.formGroup.controls['logoUrl'].setValue('')
                   this.logoImageWasUploaded = true
                 })
               }
@@ -169,7 +133,7 @@ export class WorkspaceCreateComponent {
                   this.fetchingLogoUrl =
                     this.imageApi.configuration.basePath + '/images/' + workspaceName + '/' + fieldType
                   this.message.info({ summaryKey: 'IMAGE.UPLOAD_SUCCESS' })
-                  this.formGroup.controls['imageUrl'].setValue('')
+                  this.formGroup.controls['logoUrl'].setValue('')
                   this.logoImageWasUploaded = true
                 })
               }
