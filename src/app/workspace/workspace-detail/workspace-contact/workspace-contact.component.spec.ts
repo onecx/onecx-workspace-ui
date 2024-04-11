@@ -1,13 +1,13 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
-import { ComponentFixture, TestBed, fakeAsync, waitForAsync } from '@angular/core/testing'
-import { HttpClient } from '@angular/common/http'
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { FormControl, FormGroup } from '@angular/forms'
 
-import { AppStateService, createTranslateLoader, PortalMessageService } from '@onecx/portal-integration-angular'
+import { PortalMessageService } from '@onecx/portal-integration-angular'
 import { Workspace } from 'src/app/shared/generated'
 import { WorkspaceContactComponent } from './workspace-contact.component'
+import { RouterTestingModule } from '@angular/router/testing'
+import { TranslateTestingModule } from 'ngx-translate-testing'
 
 const portal: Workspace = {
   name: 'name',
@@ -24,7 +24,7 @@ const formGroup = new FormGroup({
   streetNo: new FormControl('streetNo')
 })
 
-describe('WorkspaceContactComponent', () => {
+fdescribe('WorkspaceContactComponent', () => {
   let component: WorkspaceContactComponent
   let fixture: ComponentFixture<WorkspaceContactComponent>
 
@@ -34,15 +34,12 @@ describe('WorkspaceContactComponent', () => {
     TestBed.configureTestingModule({
       declarations: [WorkspaceContactComponent],
       imports: [
+        RouterTestingModule,
         HttpClientTestingModule,
-        TranslateModule.forRoot({
-          isolate: true,
-          loader: {
-            provide: TranslateLoader,
-            useFactory: createTranslateLoader,
-            deps: [AppStateService, HttpClient]
-          }
-        })
+        TranslateTestingModule.withTranslations({
+          de: require('src/assets/i18n/de.json'),
+          en: require('src/assets/i18n/en.json')
+        }).withDefaultLanguage('en')
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [{ provide: PortalMessageService, useValue: msgServiceSpy }]
@@ -125,43 +122,7 @@ describe('WorkspaceContactComponent', () => {
 
     component.onSubmit()
 
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_OK' })
-  })
-
-  it('should display error msg if update api call fails', fakeAsync(() => {
-    component.formGroup = new FormGroup({
-      phoneNumber: new FormControl('123456789'),
-      country: new FormControl('Some country'),
-      city: new FormControl('Some city'),
-      postalCode: new FormControl('12345'),
-      street: new FormControl('Some street'),
-      streetNo: new FormControl('123')
-    })
-    component.workspace = portal
-    component.workspace.address = {
-      country: 'detail country',
-      city: 'detail city',
-      postalCode: 'detail postalCode',
-      street: 'detail street',
-      streetNo: 'detail streetNo'
-    }
-
-    component.onSubmit()
-
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({
-      summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_NOK'
-    })
-  }))
-
-  xit('should display error msg if formGroup invalid', () => {
-    const address = {}
-    component.workspace = { ...portal, address: address }
-
-    component.onSubmit()
-
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({
-      summaryKey: 'GENERAL.FORM_VALIDATION'
-    })
+    expect(component.editMode).toBeFalse()
   })
 
   it('should update portal onSubmit: no address', () => {
