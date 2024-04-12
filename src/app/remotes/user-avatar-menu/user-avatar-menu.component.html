@@ -14,7 +14,7 @@
     [ngClass]="menuAnchorPosition + '-0'"
     [hidden]="!menuOpen"
   >
-    <li class="layout-topbar-action-item flex flex-column" *ocxIfPermission="'PROFILE#VIEW'">
+    <li class="layout-topbar-action-item flex flex-column" *ocxIfPermission="'PROFILE#VIEW'; permissions: permissions">
       <div *ngIf="currentUser$ | async as user">
         <h5 class="flex flex-row align-items-center justify-content-center text-color-secondary">
           {{ user.person.displayName }}

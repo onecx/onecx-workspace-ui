@@ -26,8 +26,8 @@ import { SharedModule } from 'src/app/shared/shared.module'
 import { environment } from 'src/environments/environment'
 
 @Component({
-  selector: 'app-main-menu',
-  templateUrl: './main-menu.component.html',
+  selector: 'app-vertical-main-menu',
+  templateUrl: './vertical-main-menu.component.html',
   standalone: true,
   imports: [
     AngularRemoteComponentsModule,
@@ -54,7 +54,7 @@ import { environment } from 'src/environments/environment'
   ]
 })
 @UntilDestroy()
-export class OneCXMainMenuComponent implements ocxRemoteComponent, OnInit {
+export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, OnInit {
   menuItems$: Observable<MenuItem[]> | undefined
 
   constructor(

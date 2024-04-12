@@ -50,7 +50,7 @@
           {{ 'WORKSPACE.BASE_URL' | translate }}</label
         >
       </span>
-      <label class="ocx-control-hint block mt-1">
+      <label class="ocx-control-hint block mt-1" for="workspace_create_item_baseUrl">
         {{ ('VALIDATION.HINTS.FORMAT_URL' | translate) + urlPattern }}
       </label>
     </div>
@@ -77,7 +77,6 @@
         [id]="'workspace_create_item_logo_image'"
         [imageUrl]="fetchingLogoUrl"
         [small]="true"
-        [title]="'IMAGE.TOOLTIPS.' + (fetchingLogoUrl ? 'IMAGE' : 'PLACEHOLDER') | translate"
       ></app-image-container>
       <div class="p-inputgroup" controlErrorAnchor>
         <span class="p-float-label">

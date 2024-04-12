@@ -431,8 +431,8 @@
     "UPLOAD_SUCCESS": "The file was uploaded successfully",
     "TOOLTIPS": {
       "LOGO_URL": "As an alternative to uploading, a URL to an image can be specified here",
-      "IMAGE": "Logo",
-      "PLACEHOLDER": "Image Placeholder",
+      "LOGO": "Logo",
+      "PLACEHOLDER": "Logo Placeholder",
       "UPLOAD": "Select and upload image"
     }
   },

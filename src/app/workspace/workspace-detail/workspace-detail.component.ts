@@ -155,8 +155,8 @@ export class WorkspaceDetailComponent implements OnInit {
    */
   public onTabChange($event: any) {
     this.selectedTabIndex = $event.index
-    // if (this.selectedTabIndex === 3) this.workspaceForRoles = this.workspace
-    // if (this.selectedTabIndex === 4) this.workspaceForProducts = this.workspace
+    if (this.selectedTabIndex === 3) this.workspaceForRoles = this.workspace
+    if (this.selectedTabIndex === 4) this.workspaceForProducts = this.workspace
     this.prepareActionButtons()
   }
 

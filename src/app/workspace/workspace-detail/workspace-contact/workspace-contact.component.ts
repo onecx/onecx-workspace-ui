@@ -67,10 +67,8 @@ export class WorkspaceContactComponent implements OnChanges {
         if (this.formGroup.value[key] !== undefined) {
           changes['address'][key] = this.formGroup.value[key]
         }
-      } else {
-        if (this.formGroup.value[key] !== undefined) {
-          changes[key] = this.formGroup.value[key]
-        }
+      } else if (this.formGroup.value[key] !== undefined) {
+        changes[key] = this.formGroup.value[key]
       }
     })
     return changes

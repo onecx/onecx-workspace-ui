@@ -38,7 +38,7 @@ export class WorkspaceSearchComponent implements OnInit {
   public defaultSortField = 'name'
   public dataViewControlsTranslations: DataViewControlTranslations = {}
 
-  @ViewChild('table', { static: false }) table!: DataView | any
+  @ViewChild('table', { static: false }) table!: any
 
   constructor(
     private workspaceApi: WorkspaceAPIService,
@@ -67,7 +67,7 @@ export class WorkspaceSearchComponent implements OnInit {
     )
   }
   public sortWorkspacesByName(a: WorkspaceAbstract, b: WorkspaceAbstract): number {
-    return (a.name as string).toUpperCase().localeCompare((b.name as string).toUpperCase())
+    return a.name.toUpperCase().localeCompare(b.name.toUpperCase())
   }
 
   /**

@@ -73,6 +73,7 @@ export class OneCXUserAvatarMenuComponent implements ocxRemoteComponent, AfterVi
   userMenu$: Observable<MenuItem[]>
   eventsPublisher$: EventsPublisher = new EventsPublisher()
   menuOpen = false
+  permissions: string[] = []
   removeDocumentClickListener: (() => void) | undefined
   menuAnchorPosition: MenuAnchorPositionConfig = 'right'
 
@@ -123,6 +124,7 @@ export class OneCXUserAvatarMenuComponent implements ocxRemoteComponent, AfterVi
 
   ocxInitRemoteComponent(config: RemoteComponentConfig): void {
     this.baseUrl.next(config.baseUrl)
+    this.permissions = config.permissions
     this.userMenuService.configuration = new Configuration({
       basePath: Location.joinWithSlash(config.baseUrl, environment.apiPrefix)
     })

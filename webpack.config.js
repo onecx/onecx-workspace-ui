@@ -7,8 +7,9 @@ const config = withModuleFederationPlugin({
   exposes: {
     './OneCXWorkspaceModule': 'src/app/onecx-workspace-remote.module.ts',
     './OneCXUserAvatarMenuComponent': 'src/app/remotes/user-avatar-menu/user-avatar-menu.component.ts',
-    './OneCXMainMenuComponent': 'src/app/remotes/main-menu/main-menu.component.ts',
-    './OneCXUserSidebarMenuComponent': 'src/app/remotes/user-sidebar-menu/user-sidebar-menu.component.ts'
+    './OneCXUserSidebarMenuComponent': 'src/app/remotes/user-sidebar-menu/user-sidebar-menu.component.ts',
+    './OneCXVerticalMainMenuComponent': 'src/app/remotes/vertical-main-menu/vertical-main-menu.component.ts',
+    './OneCXHorizontalMainMenuComponent': 'src/app/remotes/horizontal-main-menu/horizontal-main-menu.component.ts'
   },
   shared: share({
     '@angular/core': { singleton: true, requiredVersion: 'auto' },
@@ -36,6 +37,7 @@ const config = withModuleFederationPlugin({
     '@onecx/accelerator': { requiredVersion: 'auto', includeSecondaries: true },
     '@onecx/angular-accelerator': { requiredVersion: 'auto', includeSecondaries: true },
     '@onecx/angular-remote-components': { requiredVersion: 'auto', includeSecondaries: true },
+    '@onecx/angular-integration-interface': { requiredVersion: 'auto', includeSecondaries: true },
     '@onecx/integration-interface': { requiredVersion: 'auto', includeSecondaries: true },
     '@onecx/keycloak-auth': { requiredVersion: 'auto', includeSecondaries: true },
     '@onecx/portal-integration-angular': { requiredVersion: 'auto', includeSecondaries: true }

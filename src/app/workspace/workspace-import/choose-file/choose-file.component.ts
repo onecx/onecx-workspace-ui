@@ -83,48 +83,42 @@ export class ChooseFileComponent implements OnInit {
     // CHANGE IF IMPORT OF MORE WORKSPACES IS POSSIBLE
     if (dto.workspaces) {
       let key: string[] = Object.keys(dto.workspaces)
-      if (!dto || !dto.workspaces[key[0]]) {
+      if (!dto.workspaces[key[0]]) {
         this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_WORKSPACE_MISSING']
       } else if (!dto.workspaces[key[0]].name) {
         this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_WORKSPACE_NAME_MISSING']
-      } else if (dto.workspaces[key[0]].menu?.menu?.menuItems) {
-        for (const el of dto.workspaces[key[0]].menu?.menu?.menuItems!) {
-          if (!el.key) {
-            this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_KEY_MISSING']
-            break
-          } else if (!el.name) {
-            this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_NAME_MISSING']
-            break
-          } else if (!(typeof el.position === 'number')) {
-            this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_WRONG_POSITION']
-            break
-          } else if (!(typeof el.disabled === 'boolean')) {
-            this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_WRONG_DISABLED']
-            break
-          } else if (!(typeof el.external === 'boolean')) {
-            this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_WRONG_WORKSPACEEXIT']
-            break
-          }
-        }
-      }
+      } else this.checkMenuItems(dto, data)
     }
     if (this.validationErrorCause !== '') {
       this.importError = true
       this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_RESULT'] + this.validationErrorCause
       return false
     }
-
     return true
   }
 
-  // private isMenuItem(obj: unknown): obj is EximWorkspaceMenuItem {
-  //   const dto = obj as EximWorkspaceMenuItem
-  //   return !!(
-  //     dto.key &&
-  //     dto.name &&
-  //     typeof dto.position === 'number' &&
-  //     typeof dto.disabled === 'boolean' &&
-  //     typeof dto.external === 'boolean'
-  //   )
-  // }
+  private checkMenuItems(dto: WorkspaceSnapshot, data: any) {
+    if (dto.workspaces) {
+      let key: string[] = Object.keys(dto.workspaces)
+      const menuSnapshot = dto.workspaces[key[0]].menu
+      for (const el of menuSnapshot?.menu?.menuItems!) {
+        if (!el.key) {
+          this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_KEY_MISSING']
+          break
+        } else if (!el.name) {
+          this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_NAME_MISSING']
+          break
+        } else if (typeof el.position !== 'number') {
+          this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_WRONG_POSITION']
+          break
+        } else if (typeof el.disabled !== 'boolean') {
+          this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_WRONG_DISABLED']
+          break
+        } else if (typeof el.external !== 'boolean') {
+          this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_WRONG_WORKSPACEEXIT']
+          break
+        }
+      }
+    }
+  }
 }
