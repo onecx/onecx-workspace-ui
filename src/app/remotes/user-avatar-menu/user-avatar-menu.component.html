@@ -10,7 +10,7 @@
     <ocx-user-avatar [user$]="currentUser$"></ocx-user-avatar>
   </div>
   <ul class="layout-topbar-action-panel shadow-6 m-2 absolute top-100" [hidden]="!menuOpen">
-    <li class="layout-topbar-action-item flex flex-column" *ocxIfPermission="'PROFILE#VIEW'">
+    <li class="layout-topbar-action-item flex flex-column" *ocxIfPermission="'PROFILE#VIEW'; permissions: permissions">
       <div *ngIf="currentUser$ | async as user">
         <h5 class="flex flex-row align-items-center justify-content-center text-color-secondary">
           {{ user.person.displayName }}
