@@ -20,9 +20,9 @@ import { SharedModule } from 'src/app/shared/shared.module'
 import { environment } from 'src/environments/environment'
 
 @Component({
-  selector: 'app-horizontal-menu',
+  selector: 'app-horizontal-main-menu',
   standalone: true,
-  templateUrl: './horizontal-menu.component.html',
+  templateUrl: './horizontal-main-menu.component.html',
   imports: [AngularRemoteComponentsModule, CommonModule, PortalCoreModule, RouterModule, TranslateModule, SharedModule],
   providers: [
     {
@@ -39,7 +39,7 @@ import { environment } from 'src/environments/environment'
     })
   ]
 })
-export class OneCXHorizontalMenuComponent implements OnInit {
+export class OneCXHorizontalMainMenuComponent implements OnInit {
   @ViewChild('menubar') menubar?: Menubar
   menuItems$: Observable<MenuItem[]> | undefined
 
