@@ -1,4 +1,4 @@
-<div class="flex relative">
+<div class="flex relative h-full w-full align-items-center justify-content-center">
   <div
     pRipple
     class="p-2 rounded-circle cursor-pointer user-avatar-menu-button"
@@ -10,7 +10,7 @@
     <ocx-user-avatar [user$]="currentUser$"></ocx-user-avatar>
   </div>
   <ul
-    class="layout-topbar-action-panel shadow-6 m-2 absolute top-100"
+    class="layout-topbar-action-panel shadow-6 sm:m-2 fixed top-4rem sm:absolute sm:top-100 w-screen sm:w-auto"
     [ngClass]="menuAnchorPosition + '-0'"
     [hidden]="!menuOpen"
   >

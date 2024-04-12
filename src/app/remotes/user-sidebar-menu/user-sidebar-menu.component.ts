@@ -12,10 +12,8 @@ import {
 } from '@onecx/angular-remote-components'
 import { EventsPublisher } from '@onecx/integration-interface'
 import {
-  AUTH_SERVICE,
   AppConfigService,
   AppStateService,
-  IAuthService,
   PortalCoreModule,
   UserProfile,
   UserService,
@@ -74,8 +72,7 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent {
     private appStateService: AppStateService,
     private userMenuService: UserMenuAPIService,
     private userService: UserService,
-    private menuItemService: MenuItemService,
-    @Inject(AUTH_SERVICE) private authService: IAuthService
+    private menuItemService: MenuItemService
   ) {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
 
