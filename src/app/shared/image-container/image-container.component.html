@@ -4,7 +4,8 @@
   [class]="'image-object image-' + (small ? 'sm' : 'lg') + ' sm:image-lg ' + (styleClass ? styleClass : '')"
   [ocxSrc]="imageUrl"
   (error)="onImageError()"
-  [alt]="'IMAGE.TOOLTIPS.IMAGE' | translate"
+  [alt]="'IMAGE.TOOLTIPS.LOGO' | translate"
+  [title]="'IMAGE.TOOLTIPS.LOGO' | translate"
 />
 <img
   [id]="id"
@@ -12,4 +13,5 @@
   [class]="'image-object image-' + (small ? 'sm' : 'lg') + ' sm:image-lg vertical-align-middle'"
   [src]="prepareUrlPath((currentMfe$ | async)?.remoteBaseUrl, environment.DEFAULT_PRODUCT_IMAGE)"
   [alt]="'IMAGE.TOOLTIPS.PLACEHOLDER' | translate"
+  [title]="'IMAGE.TOOLTIPS.PLACEHOLDER' | translate"
 />

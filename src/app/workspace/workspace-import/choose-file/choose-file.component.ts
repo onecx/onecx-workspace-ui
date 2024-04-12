@@ -83,12 +83,13 @@ export class ChooseFileComponent implements OnInit {
     // CHANGE IF IMPORT OF MORE WORKSPACES IS POSSIBLE
     if (dto.workspaces) {
       let key: string[] = Object.keys(dto.workspaces)
+      const menuSnapshot = dto.workspaces[key[0]].menu
       if (!dto || !dto.workspaces[key[0]]) {
         this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_WORKSPACE_MISSING']
       } else if (!dto.workspaces[key[0]].name) {
         this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_WORKSPACE_NAME_MISSING']
-      } else if (dto.workspaces[key[0]].menu?.menu?.menuItems) {
-        for (const el of dto.workspaces[key[0]].menu?.menu?.menuItems!) {
+      } else if (menuSnapshot?.menu?.menuItems) {
+        for (const el of menuSnapshot?.menu?.menuItems!) {
           if (!el.key) {
             this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_KEY_MISSING']
             break
@@ -113,18 +114,6 @@ export class ChooseFileComponent implements OnInit {
       this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_RESULT'] + this.validationErrorCause
       return false
     }
-
     return true
   }
-
-  // private isMenuItem(obj: unknown): obj is EximWorkspaceMenuItem {
-  //   const dto = obj as EximWorkspaceMenuItem
-  //   return !!(
-  //     dto.key &&
-  //     dto.name &&
-  //     typeof dto.position === 'number' &&
-  //     typeof dto.disabled === 'boolean' &&
-  //     typeof dto.external === 'boolean'
-  //   )
-  // }
 }
