@@ -194,7 +194,8 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     return (a.appId ? a.appId.toUpperCase() : '').localeCompare(b.appId ? b.appId.toUpperCase() : '')
   }
   public getImageUrl(url?: string): string {
-    return url ? url : prepareUrlPath(this.currentMfe?.remoteBaseUrl, environment.DEFAULT_PRODUCT_IMAGE)
+    if (url) return url
+    return prepareUrlPath(this.currentMfe?.remoteBaseUrl, environment.DEFAULT_PRODUCT_IMAGE)
   }
 
   /**

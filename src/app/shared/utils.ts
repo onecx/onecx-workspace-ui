@@ -79,33 +79,6 @@ export function sortByLocale(a: any, b: any): number {
 }
 
 /**
- *  TREE
- *
- * important: tree need a trigger inside the component like
- *     this.treeNodes = [...this.treeNodes]
- */
-/* export function expandAll(treeNodes: TreeNode[]): void {
-  treeNodes.forEach((node) => {
-    expandRecursive(node, true)
-  })
-}
-
-export function collapseAll(treeNodes: TreeNode[]): void {
-  treeNodes.forEach((node) => {
-    expandRecursive(node, false)
-  })
-}
-
-export function expandRecursive(node: TreeNode, isExpand: boolean): void {
-  node.expanded = isExpand
-  if (node.children) {
-    node.children.forEach((childNode) => {
-      expandRecursive(childNode, isExpand)
-    })
-  }
-} */
-
-/**
  * Filter objects => exclude given properties
  */
 export function filterObject(obj: any, exProps: string[]): any {
