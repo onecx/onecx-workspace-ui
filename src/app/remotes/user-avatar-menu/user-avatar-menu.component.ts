@@ -27,7 +27,7 @@ import { AvatarModule } from 'primeng/avatar'
 import { MenuModule } from 'primeng/menu'
 import { RippleModule } from 'primeng/ripple'
 import { Observable, ReplaySubject, filter, map, mergeMap, shareReplay, withLatestFrom } from 'rxjs'
-import { Configuration, UserMenuAPIService } from 'src/app/shared/generated'
+import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
 import { SharedModule } from 'src/app/shared/shared.module'
 import { environment } from 'src/environments/environment'
@@ -80,7 +80,7 @@ export class OneCXUserAvatarMenuComponent implements ocxRemoteComponent, AfterVi
   constructor(
     private renderer: Renderer2,
     private userService: UserService,
-    private userMenuService: UserMenuAPIService,
+    private menuItemApiService: MenuItemAPIService,
     private appStateService: AppStateService,
     private appConfigService: AppConfigService,
     @Inject(BASE_URL) private baseUrl: ReplaySubject<string>,
@@ -96,8 +96,8 @@ export class OneCXUserAvatarMenuComponent implements ocxRemoteComponent, AfterVi
 
     this.userMenu$ = this.appStateService.currentWorkspace$.pipe(
       mergeMap((currentWorkspace) =>
-        this.userMenuService.getUserMenu({
-          userWorkspaceMenuRequest: {
+        this.menuItemApiService.getMenuItems({
+          getMenuItemsRequest: {
             workspaceName: currentWorkspace.portalName,
             menuKeys: ['user-profile-menu']
           }
@@ -125,7 +125,7 @@ export class OneCXUserAvatarMenuComponent implements ocxRemoteComponent, AfterVi
   ocxInitRemoteComponent(config: RemoteComponentConfig): void {
     this.baseUrl.next(config.baseUrl)
     this.permissions = config.permissions
-    this.userMenuService.configuration = new Configuration({
+    this.menuItemApiService.configuration = new Configuration({
       basePath: Location.joinWithSlash(config.baseUrl, environment.apiPrefix)
     })
     this.appConfigService.init(config.baseUrl).then(() => {

@@ -22,7 +22,7 @@ import {
 import { AccordionModule } from 'primeng/accordion'
 import { MenuItem } from 'primeng/api'
 import { Observable, ReplaySubject, filter, map, mergeMap, shareReplay, withLatestFrom } from 'rxjs'
-import { UserMenuAPIService } from 'src/app/shared/generated'
+import { MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
 import { SharedModule } from 'src/app/shared/shared.module'
 
@@ -70,7 +70,7 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent {
     private translateService: TranslateService,
     private appConfigService: AppConfigService,
     private appStateService: AppStateService,
-    private userMenuService: UserMenuAPIService,
+    private menuItemApiService: MenuItemAPIService,
     private userService: UserService,
     private menuItemService: MenuItemService
   ) {
@@ -88,8 +88,8 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent {
 
     this.userMenu$ = this.appStateService.currentPortal$.pipe(
       mergeMap((currentWorkspace) =>
-        this.userMenuService.getUserMenu({
-          userWorkspaceMenuRequest: {
+        this.menuItemApiService.getMenuItems({
+          getMenuItemsRequest: {
             workspaceName: currentWorkspace.portalName,
             menuKeys: ['user-profile-menu']
           }

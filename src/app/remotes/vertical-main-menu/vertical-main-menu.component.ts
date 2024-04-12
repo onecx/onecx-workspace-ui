@@ -20,7 +20,7 @@ import {
 import { MenuItem } from 'primeng/api'
 import { PanelMenuModule } from 'primeng/panelmenu'
 import { Observable, ReplaySubject, map, mergeMap, shareReplay, withLatestFrom } from 'rxjs'
-import { Configuration, UserMenuAPIService } from 'src/app/shared/generated'
+import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
 import { SharedModule } from 'src/app/shared/shared.module'
 import { environment } from 'src/environments/environment'
@@ -62,7 +62,7 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, OnIni
     private userService: UserService,
     private translateService: TranslateService,
     private appStateService: AppStateService,
-    private userMenuService: UserMenuAPIService,
+    private menuItemApiService: MenuItemAPIService,
     private menuItemService: MenuItemService
   ) {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
@@ -70,7 +70,7 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, OnIni
 
   ocxInitRemoteComponent(remoteComponentConfig: RemoteComponentConfig) {
     this.baseUrl.next(remoteComponentConfig.baseUrl)
-    this.userMenuService.configuration = new Configuration({
+    this.menuItemApiService.configuration = new Configuration({
       basePath: Location.joinWithSlash(remoteComponentConfig.baseUrl, environment.apiPrefix)
     })
   }
@@ -82,8 +82,8 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, OnIni
   getMenuItems() {
     this.menuItems$ = this.appStateService.currentWorkspace$.pipe(
       mergeMap((currentWorkspace) =>
-        this.userMenuService.getUserMenu({
-          userWorkspaceMenuRequest: {
+        this.menuItemApiService.getMenuItems({
+          getMenuItemsRequest: {
             workspaceName: currentWorkspace.portalName,
             menuKeys: ['main-menu']
           }
