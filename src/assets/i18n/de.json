@@ -63,7 +63,10 @@
       "LABEL": "Export",
       "TOOLTIP": "Definition als JSON herunterladen",
       "MENU": "Die Menü-Definition im JSON Format herunterladen",
-      "WORKSPACE": "Die Workspace-Definition im JSON Format herunterladen"
+      "WORKSPACE": "Die Workspace-Definition im JSON Format herunterladen",
+      "MESSAGE": {
+        "NOK": "Workspace konnte nicht exportiert werden"
+      }
     },
     "IMPORT": {
       "LABEL": "Import",
@@ -244,8 +247,8 @@
       },
       "EDIT.TOOLTIP": "Role Typ",
       "QUICK_FILTER": {
-        "LABEL": "Rollen Typ",
-        "TOOLTIP": "Quickfilter für Rolle",
+        "LABEL": "Typ",
+        "TOOLTIP": "Quickfilter für Rollentyp",
         "ALL": "Alle",
         "IAM": "IAM",
         "WORKSPACE": "Workspace"

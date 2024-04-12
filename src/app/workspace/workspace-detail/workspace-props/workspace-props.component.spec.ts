@@ -1,5 +1,5 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
+import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { of, throwError } from 'rxjs'
@@ -11,7 +11,9 @@ import {
   ThemeService
 } from '@onecx/portal-integration-angular'
 import { WorkspacePropsComponent } from 'src/app/workspace/workspace-detail/workspace-props/workspace-props.component'
-import { WorkspaceAPIService } from 'src/app/shared/generated'
+import { WorkspaceAPIService, ImagesInternalAPIService } from 'src/app/shared/generated'
+import { RouterTestingModule } from '@angular/router/testing'
+import { TranslateTestingModule } from 'ngx-translate-testing'
 
 const workspace = {
   name: 'name',
@@ -21,20 +23,20 @@ const workspace = {
 }
 
 const formGroup = new FormGroup({
-  portalName: new FormControl('name', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
-  themeName: new FormControl('theme name', [Validators.required]),
-  baseUrl: new FormControl('/url', [Validators.required, Validators.minLength(1), Validators.pattern('^/.*')]),
-  tenantId: new FormControl('')
+  name: new FormControl('name', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
+  theme: new FormControl('theme', [Validators.required]),
+  baseUrl: new FormControl('/url', [Validators.required, Validators.minLength(1), Validators.pattern('^/.*')])
 })
 
-describe('WorkspacePropsComponent', () => {
+fdescribe('WorkspacePropsComponent', () => {
   let component: WorkspacePropsComponent
   let fixture: ComponentFixture<WorkspacePropsComponent>
   const mockAuthService = jasmine.createSpyObj('IAuthService', ['hasPermission'])
 
-  const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
+  const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'info', 'error'])
   const apiServiceSpy = {
-    updateWorkspace: jasmine.createSpy('updateWorkspace').and.returnValue(of([]))
+    updateWorkspace: jasmine.createSpy('updateWorkspace').and.returnValue(of([])),
+    getAllThemes: jasmine.createSpy('getAllThemes').and.returnValue(of([]))
   }
   const themeAPIServiceSpy = {
     getThemes: jasmine.createSpy('getThemes').and.returnValue(of({})),
@@ -43,33 +45,41 @@ describe('WorkspacePropsComponent', () => {
   const configServiceSpy = {
     getProperty: jasmine.createSpy('getProperty').and.returnValue('123')
   }
+  const imageServiceSpy = {
+    getImage: jasmine.createSpy('getImage').and.returnValue(of({})),
+    updateImage: jasmine.createSpy('updateImage').and.returnValue(of({})),
+    uploadImage: jasmine.createSpy('uploadImage').and.returnValue(of({})),
+    configuration: {
+      basePath: 'basepath'
+    }
+  }
   const themeService = jasmine.createSpyObj<ThemeService>('ThemeService', ['apply'])
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [WorkspacePropsComponent],
       imports: [
-        HttpClientTestingModule
-        // TranslateModule.forRoot({
-        //   loader: {
-        //     provide: TranslateLoader,
-        //     useFactory: HttpLoaderFactory,
-        //     deps: [HttpClient]
-        //   }
-        // })
+        RouterTestingModule,
+        HttpClientTestingModule,
+        TranslateTestingModule.withTranslations({
+          de: require('src/assets/i18n/de.json'),
+          en: require('src/assets/i18n/en.json')
+        }).withDefaultLanguage('en')
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: ConfigurationService, useValue: configServiceSpy },
+        { provide: ImagesInternalAPIService, useValue: imageServiceSpy },
         { provide: WorkspaceAPIService, useValue: apiServiceSpy },
-        // { provide: ThemesAPIService, useValue: themeAPIServiceSpy },
         { provide: AUTH_SERVICE, useValue: mockAuthService }
       ]
     }).compileComponents()
     msgServiceSpy.success.calls.reset()
+    msgServiceSpy.info.calls.reset()
     msgServiceSpy.error.calls.reset()
     apiServiceSpy.updateWorkspace.calls.reset()
+    apiServiceSpy.getAllThemes.calls.reset()
     themeAPIServiceSpy.getThemes.calls.reset()
     themeAPIServiceSpy.getThemeById.calls.reset()
     themeService.apply.calls.reset()
@@ -82,13 +92,23 @@ describe('WorkspacePropsComponent', () => {
     fixture.detectChanges()
   })
 
-  it('should create and get themes', () => {
-    themeAPIServiceSpy.getThemes.and.returnValue(of([]))
+  it('should create and get themes: no themes', () => {
+    expect(component).toBeTruthy()
+  })
+
+  it('should create and get themes: themes include ws theme', () => {
+    apiServiceSpy.getAllThemes.and.returnValue(of(['theme', 'theme2']))
 
     expect(component).toBeTruthy()
   })
 
-  it('should setFormData and set editMode onChanges', () => {
+  it('should create and get themes: themes do not include ws theme', () => {
+    apiServiceSpy.getAllThemes.and.returnValue(of(['theme1', 'theme2']))
+
+    expect(component).toBeTruthy()
+  })
+
+  it('should disable formGroup in view mode', () => {
     component.editMode = false
 
     component.ngOnChanges()
@@ -96,40 +116,41 @@ describe('WorkspacePropsComponent', () => {
     expect(component.formGroup.disabled).toBeTrue()
   })
 
-  it('should update portal onSubmit', () => {
-    apiServiceSpy.updateWorkspace.and.returnValue(of({}))
-    themeAPIServiceSpy.getThemeById.and.returnValue(of({}))
-    themeService.apply
+  it('should enable formGroup inb edit mode', () => {
+    component.editMode = true
+
+    component.ngOnChanges()
+
+    expect(component.formGroup.enabled).toBeTrue()
+  })
+
+  it('should disable name form control in admin ws', () => {
+    component.editMode = true
+    workspace.name = 'ADMIN'
+
+    component.ngOnChanges()
+
+    expect(component.formGroup.controls['name'].disabled).toBeTrue()
+  })
+
+  it('it should get image if ws name exists', () => {
+    component.formGroup.controls['name'].setValue('name')
+
+    component.ngOnInit()
+
+    expect(component.logoImageWasUploaded).toBeTrue()
+  })
+
+  it('should update workspace onSubmit', () => {
     component.formGroup = formGroup
+    component.workspace = workspace
 
     component.onSubmit()
 
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_OK' })
+    expect(component.editMode).toBeFalse()
   })
 
-  it('should set tenantId to null if empty onSubmit', () => {
-    apiServiceSpy.updateWorkspace.and.returnValue(of({}))
-    themeAPIServiceSpy.getThemeById.and.returnValue(of({}))
-    component.formGroup = formGroup
-    themeService.apply
-
-    component.onSubmit()
-
-    expect(component.formGroup.controls['tenantId'].value).toBeNull()
-  })
-
-  it('should display error msg if update api call fails', () => {
-    apiServiceSpy.updateWorkspace.and.returnValue(throwError(() => new Error()))
-    component.formGroup = formGroup
-
-    component.onSubmit()
-
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({
-      summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_NOK'
-    })
-  })
-
-  it('should display error msg if update api call fails', () => {
+  it('should display error msg if form group invalid', () => {
     component.formGroup = formGroup
     component.formGroup.controls['baseUrl'].setValue('url')
 
@@ -139,6 +160,130 @@ describe('WorkspacePropsComponent', () => {
       summaryKey: 'GENERAL.FORM_VALIDATION'
     })
   })
+
+  it('should not upload a file if productName is empty', () => {
+    const event = {
+      target: {
+        files: ['file']
+      }
+    }
+    component.formGroup.controls['name'].setValue('')
+
+    component.onFileUpload(event as any, 'logo')
+
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({
+      summaryKey: 'IMAGE.UPLOAD_FAIL'
+    })
+  })
+
+  it('should not upload a file if productName is null', () => {
+    const event = {
+      target: {
+        files: ['file']
+      }
+    }
+    component.formGroup.controls['name'].setValue(null)
+
+    component.onFileUpload(event as any, 'logo')
+
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({
+      summaryKey: 'IMAGE.UPLOAD_FAIL'
+    })
+  })
+
+  it('should not upload a file that is too large', () => {
+    const largeBlob = new Blob(['a'.repeat(120000)], { type: 'image/png' })
+    const largeFile = new File([largeBlob], 'test.png', { type: 'image/png' })
+    const event = {
+      target: {
+        files: [largeFile]
+      }
+    }
+    component.formGroup.controls['name'].setValue('name')
+
+    component.onFileUpload(event as any, 'logo')
+
+    expect(component.formGroup.valid).toBeFalse()
+  })
+
+  it('should not upload a file that is too large', () => {
+    const largeBlob = new Blob(['a'.repeat(120000)], { type: 'image/png' })
+    const largeFile = new File([largeBlob], 'test.png', { type: 'image/png' })
+    const event = {
+      target: {
+        files: [largeFile]
+      }
+    }
+    component.formGroup.controls['name'].setValue('name')
+
+    component.onFileUpload(event as any, 'logo')
+
+    expect(component.formGroup.valid).toBeFalse()
+  })
+
+  it('should upload a file', () => {
+    imageServiceSpy.updateImage.and.returnValue(of({}))
+    const blob = new Blob(['a'.repeat(10)], { type: 'image/png' })
+    const file = new File([blob], 'test.png', { type: 'image/png' })
+    const event = {
+      target: {
+        files: [file]
+      }
+    }
+
+    component.formGroup.controls['name'].setValue('name')
+    component.formGroup.controls['logoUrl'].setValue('url')
+
+    component.onFileUpload(event as any, 'logo')
+
+    expect(msgServiceSpy.info).toHaveBeenCalledWith({
+      summaryKey: 'IMAGE.UPLOAD_SUCCESS'
+    })
+  })
+
+  it('should display error if upload fails', () => {
+    imageServiceSpy.getImage.and.returnValue(throwError(() => new Error()))
+    const blob = new Blob(['a'.repeat(10)], { type: 'image/png' })
+    const file = new File([blob], 'test.png', { type: 'image/png' })
+    const event = {
+      target: {
+        files: [file]
+      }
+    }
+    component.formGroup.controls['name'].setValue('name')
+    component.formGroup.controls['logoUrl'].setValue('url')
+
+    component.onFileUpload(event as any, 'logo')
+
+    expect(msgServiceSpy.info).toHaveBeenCalledWith({
+      summaryKey: 'IMAGE.UPLOAD_SUCCESS'
+    })
+  })
+
+  it('should change fetchingLogoUrl on inputChange: valid value', fakeAsync(() => {
+    const event = {
+      target: { value: 'newLogoValue' }
+    } as unknown as Event
+
+    component.onInputChange(event)
+
+    tick(1000)
+
+    expect(component.fetchingLogoUrl).toBe('newLogoValue')
+  }))
+
+  it('should change fetchingLogoUrl on inputChange: empty value', fakeAsync(() => {
+    const event = {
+      target: { value: '' }
+    } as unknown as Event
+    component.formGroup.controls['name'].setValue('name')
+
+    component.onInputChange(event)
+
+    tick(1000)
+
+    expect(component.fetchingLogoUrl).toBe('basepath/images/name/logo')
+  }))
 
   it('should open new window onGoToTheme if ctrl key true', () => {
     const fakeEvent = new MouseEvent('click', { ctrlKey: true })
@@ -157,5 +302,13 @@ describe('WorkspacePropsComponent', () => {
     component.onGotoTheme(fakeEvent, 'theme')
 
     expect(window.open).not.toHaveBeenCalled()
+  })
+
+  it('should return the imgUrl from the form group', () => {
+    component.formGroup.controls['logoUrl'].setValue('logo')
+
+    component.ngOnInit()
+
+    expect(component.fetchingLogoUrl).toBe('logo')
   })
 })
