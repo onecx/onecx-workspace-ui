@@ -14,30 +14,16 @@ export class MenuTreeService {
     newParentId: string | undefined,
     menuTreeNodes: TreeNode[]
   ): NewPosition[] {
-    const newNodesPositions: NewPosition[] = []
+    let newNodesPositions: NewPosition[] = []
 
     if (oldParentId && oldParentId !== newParentId) {
       const resultNode = this.findNodeRecursively(oldParentId, menuTreeNodes) as TreeNode<any>
-      if (resultNode.children && resultNode.children.length > 0) {
-        for (const child of resultNode.children) {
-          newNodesPositions.push({
-            id: child.key,
-            position: resultNode.children.indexOf(child)
-          })
-        }
-      }
+      newNodesPositions = this.pushPositions(newNodesPositions, resultNode)
     }
 
     if (newParentId) {
       const resultNode = this.findNodeRecursively(newParentId, menuTreeNodes) as TreeNode<any>
-      if (resultNode.children && resultNode.children.length > 0) {
-        for (const child of resultNode.children) {
-          newNodesPositions.push({
-            id: child.key,
-            position: resultNode.children.indexOf(child)
-          })
-        }
-      }
+      newNodesPositions = this.pushPositions(newNodesPositions, resultNode)
     }
 
     if (!newParentId || !oldParentId) {
@@ -48,8 +34,19 @@ export class MenuTreeService {
         })
       }
     }
-
     return newNodesPositions
+  }
+
+  private pushPositions(positions: NewPosition[], resultNode: TreeNode<any>): NewPosition[] {
+    if (resultNode.children && resultNode.children.length > 0) {
+      for (const child of resultNode.children) {
+        positions.push({
+          id: child.key,
+          position: resultNode.children.indexOf(child)
+        })
+      }
+    }
+    return positions
   }
 
   private findNodeRecursively(searchedId: string, nodes: TreeNode[]): TreeNode | null {

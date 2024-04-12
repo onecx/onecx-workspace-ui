@@ -111,13 +111,22 @@ export class MenuPreviewComponent implements OnChanges {
         label: mi.i18n && langExists ? mi.i18n[lang] : mi.name,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         expanded: this.stateService.getState().treeExpansionState.get(mi.id!),
-        icon:
-          (mi.disabled ? 'item-disabled ' : ' ') +
-          (!langExists ? 'lang-not-exists ' : ' ') +
-          'pi pi-' +
-          (mi.badge ? mi.badge : mi.children && mi.children.length > 0 ? 'folder' : 'file invisible')
+        icon: this.setIcon(mi, langExists)
       }
     })
+  }
+
+  private setIcon(mi: WorkspaceMenuItem, langExists: any): string {
+    let iconBase = mi.disabled ? 'item-disabled ' : ' '
+    iconBase += !langExists ? 'lang-not-exists ' : ' '
+
+    let iconType: string
+    if (mi.badge) {
+      iconType = mi.badge
+    } else {
+      iconType = mi.children && mi.children.length > 0 ? 'folder' : 'file invisible'
+    }
+    return iconBase + 'pi pi-' + iconType
   }
 
   private flatten(mi: WorkspaceMenuItem): WorkspaceMenuItem[] {
