@@ -1,0 +1,13 @@
+.user-sidebar-menu-item {
+  cursor: pointer;
+  &:hover {
+    background-color: var(--hover-bg-color);
+    transition: background-color var(--transition-duration);
+  }
+}
+
+::ng-deep {
+  .p-accordion-tab {
+    box-shadow: none !important;
+  }
+}

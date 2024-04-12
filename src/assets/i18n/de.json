@@ -477,6 +477,9 @@
       "TENANT": "Mandant",
       "LOGOUT": "Abmelden",
       "TOOLTIP": "Profil"
+    },
+    "USER_SIDEBAR_MENU": {
+      "LOGOUT": "Abmelden"
     }
   }
 }

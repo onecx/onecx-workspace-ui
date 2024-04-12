@@ -1,8 +1,5 @@
-import { CommonModule, Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { AfterViewInit, Component, Inject, OnDestroy, Renderer2 } from '@angular/core'
-import { FormsModule } from '@angular/forms'
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
+import { Component, Inject } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
@@ -22,34 +19,25 @@ import {
   UserService,
   createRemoteComponentTranslateLoader
 } from '@onecx/portal-integration-angular'
+import { AccordionModule } from 'primeng/accordion'
 import { MenuItem } from 'primeng/api'
-import { AvatarModule } from 'primeng/avatar'
-import { MenuModule } from 'primeng/menu'
-import { RippleModule } from 'primeng/ripple'
 import { Observable, ReplaySubject, filter, map, mergeMap, shareReplay, withLatestFrom } from 'rxjs'
-import { Configuration, UserMenuAPIService } from 'src/app/shared/generated'
+import { UserMenuAPIService } from 'src/app/shared/generated'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
 import { SharedModule } from 'src/app/shared/shared.module'
-import { environment } from 'src/environments/environment'
-
-export type MenuAnchorPositionConfig = 'right' | 'left'
 
 @Component({
-  selector: 'app-user-avatar-menu',
+  selector: 'app-user-sidebar-menu',
   standalone: true,
   imports: [
     AngularRemoteComponentsModule,
-    CommonModule,
-    FormsModule,
-    MenuModule,
-    AvatarModule,
-    RippleModule,
+    SharedModule,
     PortalCoreModule,
-    BrowserAnimationsModule,
     RouterModule,
-    TranslateModule,
-    SharedModule
+    AccordionModule,
+    TranslateModule
   ],
+
   providers: [
     {
       provide: BASE_URL,
@@ -64,27 +52,26 @@ export type MenuAnchorPositionConfig = 'right' | 'left'
       }
     })
   ],
-  templateUrl: './user-avatar-menu.component.html',
-  styleUrls: ['./user-avatar-menu.component.scss']
+  templateUrl: './user-sidebar-menu.component.html',
+  styleUrls: ['./user-sidebar-menu.component.scss']
 })
 @UntilDestroy()
-export class OneCXUserAvatarMenuComponent implements ocxRemoteComponent, AfterViewInit, OnDestroy {
+export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent {
+  config: RemoteComponentConfig | undefined
   currentUser$: Observable<UserProfile>
   userMenu$: Observable<MenuItem[]>
+  displayName$: Observable<string>
   eventsPublisher$: EventsPublisher = new EventsPublisher()
-  menuOpen = false
-  permissions: string[] = []
-  removeDocumentClickListener: (() => void) | undefined
-  menuAnchorPosition: MenuAnchorPositionConfig = 'right'
+
+  inlineProfileActive = false
 
   constructor(
-    private renderer: Renderer2,
-    private userService: UserService,
-    private userMenuService: UserMenuAPIService,
-    private appStateService: AppStateService,
-    private appConfigService: AppConfigService,
     @Inject(BASE_URL) private baseUrl: ReplaySubject<string>,
     private translateService: TranslateService,
+    private appConfigService: AppConfigService,
+    private appStateService: AppStateService,
+    private userMenuService: UserMenuAPIService,
+    private userService: UserService,
     private menuItemService: MenuItemService
   ) {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
@@ -93,8 +80,13 @@ export class OneCXUserAvatarMenuComponent implements ocxRemoteComponent, AfterVi
       filter((x) => x !== undefined),
       untilDestroyed(this)
     )
+    this.displayName$ = this.currentUser$.pipe(
+      filter((x) => x !== undefined),
+      map((currentUser) => this.determineDisplayName(currentUser)),
+      untilDestroyed(this)
+    )
 
-    this.userMenu$ = this.appStateService.currentWorkspace$.pipe(
+    this.userMenu$ = this.appStateService.currentPortal$.pipe(
       mergeMap((currentWorkspace) =>
         this.userMenuService.getUserMenu({
           userWorkspaceMenuRequest: {
@@ -110,40 +102,33 @@ export class OneCXUserAvatarMenuComponent implements ocxRemoteComponent, AfterVi
     )
   }
 
-  ngAfterViewInit() {
-    this.removeDocumentClickListener = this.renderer.listen('body', 'click', () => {
-      this.menuOpen = false
-    })
+  ocxInitRemoteComponent(config: RemoteComponentConfig): void {
+    this.baseUrl.next(config.baseUrl)
+    this.appConfigService.init(config['baseUrl'])
+    this.config = config
   }
 
-  ngOnDestroy() {
-    if (this.removeDocumentClickListener) {
-      this.removeDocumentClickListener()
+  onInlineProfileClick(event: UIEvent) {
+    this.inlineProfileActive = !this.inlineProfileActive
+    event.preventDefault()
+  }
+
+  determineDisplayName(userProfile: UserProfile) {
+    if (userProfile) {
+      const person = userProfile.person
+      if (person.displayName) {
+        return person.displayName
+      } else if (person.firstName && person.lastName) {
+        return person.firstName + ' ' + person.lastName
+      } else {
+        return userProfile.userId
+      }
+    } else {
+      return 'Guest'
     }
   }
 
-  ocxInitRemoteComponent(config: RemoteComponentConfig): void {
-    this.baseUrl.next(config.baseUrl)
-    this.permissions = config.permissions
-    this.userMenuService.configuration = new Configuration({
-      basePath: Location.joinWithSlash(config.baseUrl, environment.apiPrefix)
-    })
-    this.appConfigService.init(config.baseUrl).then(() => {
-      const menuAnchorPositionConfig = this.appConfigService.getProperty('USER_AVATAR_MENU_ANCHOR_POSITION')
-      if (menuAnchorPositionConfig) {
-        this.menuAnchorPosition = menuAnchorPositionConfig as MenuAnchorPositionConfig
-      }
-    })
-  }
-
-  handleAvatarClick(event: MouseEvent) {
-    event.preventDefault()
-    event.stopPropagation()
-    this.menuOpen = !this.menuOpen
-  }
-
-  logout(event: Event) {
-    event.preventDefault()
+  logout() {
     this.eventsPublisher$.publish({ type: 'authentication#logoutButtonClicked' })
   }
 }
