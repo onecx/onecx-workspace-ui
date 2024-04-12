@@ -99,10 +99,8 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, OnIni
       return item
     })
     if (menuItems) {
-      return menuItems
-        .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
-        .filter((i) => i)
-        .map((item) => this.mapMenuItem(item, userLang))
+      menuItems.sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+      return menuItems.filter((i) => i).map((item) => this.mapMenuItem(item, userLang))
     } else {
       return []
     }
@@ -111,20 +109,19 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, OnIni
   private mapMenuItem(item: UserWorkspaceMenuItem | undefined, userLang: string): MenuItem {
     let isLocal: boolean
     let label: string | undefined
+    let menuItems: MenuItem[] = []
 
     if (item) {
       isLocal = !item.external
       label = item.i18n ? item.i18n[userLang] || item.name : ''
+      if (item.children && item.children.length > 0) {
+        item.children.sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+        menuItems = item.children.filter((i) => i).map((i) => this.mapMenuItem(i, userLang))
+      }
 
       return {
         id: item.key,
-        items:
-          item.children && item.children.length > 0
-            ? item.children
-                .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
-                .filter((i) => i)
-                .map((i) => this.mapMenuItem(i, userLang))
-            : undefined,
+        items: menuItems ? menuItems : undefined,
         label,
         icon: item.badge ? 'pi pi-' + item.badge : undefined,
         routerLink: isLocal ? this.stripBaseHref(item.url) : undefined,
