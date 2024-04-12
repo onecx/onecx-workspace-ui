@@ -3,8 +3,7 @@ import { WorkspaceAPIService, SearchWorkspacesResponse, WorkspaceAbstract } from
 
 @Component({
   selector: 'app-import-confirm',
-  templateUrl: './confirm.component.html',
-  styleUrls: ['./confirm.component.scss']
+  templateUrl: './confirm.component.html'
 })
 export class ConfirmComponent implements OnInit {
   @Input() public workspaceName?: string

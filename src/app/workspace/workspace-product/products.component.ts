@@ -261,7 +261,8 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     while (mfes.length > 0) mfes.removeAt(0) // clear
     if (this.displayedDetailItem.microfrontends) {
       // add a form group for each mfe
-      this.displayedDetailItem.microfrontends.sort(this.sortMfesByAppId).forEach((mfe, i) => {
+      this.displayedDetailItem.microfrontends.sort(this.sortMfesByAppId)
+      this.displayedDetailItem.microfrontends.forEach((mfe, i) => {
         mfes.push(
           this.fb.group({
             id: new FormControl(null),
@@ -344,7 +345,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
             baseUrl: p.baseUrl,
             microfrontends: p.microfrontends.map((m: any, i: number) => ({
               appId: m.appId,
-              basePath: p.baseUrl + '-' + (i + 1) // create initial unique base paths
+              basePath: p.baseUrl + (p.microfrontends.length > 1 ? '-' + (i + 1) : '') // create initial unique base paths
             }))
           } as CreateProductRequest
         })
@@ -410,8 +411,8 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   }
 
   private displayRegisterMessages(type: string, success: number, error: number) {
-    this.psProducts = this.psProducts.sort(this.sortProductsByDisplayName)
-    this.wProducts = this.wProducts.sort(this.sortProductsByDisplayName)
+    this.psProducts.sort(this.sortProductsByDisplayName)
+    this.wProducts.sort(this.sortProductsByDisplayName)
     if (success > 0) {
       if (success === 1) this.msgService.success({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.' + type + '_OK' })
       else this.msgService.success({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.' + type + 'S_OK' })
