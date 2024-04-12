@@ -9,10 +9,7 @@ import {
   Role,
   WorkspaceRolesComponent
 } from 'src/app/workspace/workspace-detail/workspace-roles/workspace-roles.component'
-import {
-  Workspace /* WorkspaceRolesAPIService, RoleAPIService */,
-  WorkspaceRolePageResult
-} from 'src/app/shared/generated'
+import { Workspace, WorkspaceRolesAPIService, RoleAPIService, WorkspaceRolePageResult } from 'src/app/shared/generated'
 import { of } from 'rxjs'
 
 const workspace: Workspace = {
@@ -40,7 +37,7 @@ const wRole: Role = {
 //   type: 'IAM'
 // }
 
-describe('WorkspaceRolesComponent', () => {
+fdescribe('WorkspaceRolesComponent', () => {
   let component: WorkspaceRolesComponent
   let fixture: ComponentFixture<WorkspaceRolesComponent>
 
@@ -69,7 +66,11 @@ describe('WorkspaceRolesComponent', () => {
         })
       ],
       schemas: [NO_ERRORS_SCHEMA],
-      providers: [{ provide: PortalMessageService, useValue: msgServiceSpy }]
+      providers: [
+        { provide: PortalMessageService, useValue: msgServiceSpy },
+        { provide: WorkspaceRolesAPIService, useValue: wRoleServiceSpy },
+        { provide: RoleAPIService, useValue: iamRoleServiceSpy }
+      ]
     }).compileComponents()
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
@@ -107,7 +108,7 @@ describe('WorkspaceRolesComponent', () => {
     expect((component as any).searchRoles).toHaveBeenCalled()
   })
 
-  fit('should populate workspaceRoles on search', () => {
+  it('should populate workspaceRoles on search', () => {
     wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: [{ name: 'role' }] as WorkspaceRolePageResult }))
     const changes = {
       ['workspace']: {
@@ -143,7 +144,7 @@ describe('WorkspaceRolesComponent', () => {
     expect(wRoleServiceSpy.createWorkspaceRole).not.toHaveBeenCalled()
   })
 
-  xit('should create a role onToggleRole', () => {
+  it('should create a role onToggleRole', () => {
     wRoleServiceSpy.createWorkspaceRole.and.returnValue(of({ id: 'newRoleId' }))
     component.hasEditPermission = true
 
@@ -152,7 +153,7 @@ describe('WorkspaceRolesComponent', () => {
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.ROLE_OK' })
   })
 
-  xit('should display error when creating a role onToggleRole', () => {
+  it('should display error when creating a role onToggleRole', () => {
     wRoleServiceSpy.createWorkspaceRole.and.returnValue(of({}))
     component.hasEditPermission = true
 

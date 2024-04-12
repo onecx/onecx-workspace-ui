@@ -89,7 +89,6 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
    * SEARCH
    */
   private searchWorkspaceRoles(): Observable<Role[]> {
-    console.log('WS SEARCH')
     return this.wRoleApi
       .searchWorkspaceRoles({ workspaceRoleSearchCriteria: { workspaceId: this.workspace?.id } })
       .pipe(
