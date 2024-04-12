@@ -124,7 +124,7 @@
     "msw-storybook-addon": "^1.8.0",
     "ng-packagr": "15.2.2",
     "ngx-build-plus": "^14.0.0",
-    "ngx-translate-testing": "^6.1.0",
+    "ngx-translate-testing": "^7.0.0",
     "postcss": "8.4.38",
     "postcss-import": "~16.0.1",
     "postcss-preset-env": "~9.5.2",
