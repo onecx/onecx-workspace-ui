@@ -194,9 +194,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     return (a.appId ? a.appId.toUpperCase() : '').localeCompare(b.appId ? b.appId.toUpperCase() : '')
   }
   public getImageUrl(url?: string): string {
-    if (url) {
-      return url
-    }
+    if (url) return url
     return prepareUrlPath(this.currentMfe?.remoteBaseUrl, environment.DEFAULT_PRODUCT_IMAGE)
   }
 
@@ -263,8 +261,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     while (mfes.length > 0) mfes.removeAt(0) // clear
     if (this.displayedDetailItem.microfrontends) {
       // add a form group for each mfe
-      const sortedMicrofrontends = this.displayedDetailItem.microfrontends.sort(this.sortMfesByAppId)
-      sortedMicrofrontends.forEach((mfe, i) => {
+      this.displayedDetailItem.microfrontends.sort(this.sortMfesByAppId).forEach((mfe, i) => {
         mfes.push(
           this.fb.group({
             id: new FormControl(null),
@@ -413,10 +410,8 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   }
 
   private displayRegisterMessages(type: string, success: number, error: number) {
-    const sortedPsProducts = this.psProducts.sort
-    this.psProducts = sortedPsProducts(this.sortProductsByDisplayName)
-    const sortedWProducts = this.wProducts.sort
-    this.wProducts = sortedWProducts(this.sortProductsByDisplayName)
+    this.psProducts = this.psProducts.sort(this.sortProductsByDisplayName)
+    this.wProducts = this.wProducts.sort(this.sortProductsByDisplayName)
     if (success > 0) {
       if (success === 1) this.msgService.success({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.' + type + '_OK' })
       else this.msgService.success({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.' + type + 'S_OK' })
