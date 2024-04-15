@@ -54,7 +54,7 @@
     "@onecx/angular-accelerator": "^4.14.3",
     "@onecx/angular-integration-interface": "^4.14.3",
     "@onecx/angular-remote-components": "^4.14.3",
-    "@onecx/integration-interface": "^4.14.3",
+    "@onecx/integration-interface": "^4.15.7",
     "@onecx/keycloak-auth": "^4.14.3",
     "@onecx/portal-integration-angular": "^4.14.3",
     "@onecx/portal-layout-styles": "^4.14.3",
