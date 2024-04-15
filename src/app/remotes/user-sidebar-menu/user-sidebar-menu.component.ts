@@ -1,3 +1,4 @@
+import { Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import { Component, Inject } from '@angular/core'
 import { RouterModule } from '@angular/router'
@@ -22,9 +23,10 @@ import {
 import { AccordionModule } from 'primeng/accordion'
 import { MenuItem } from 'primeng/api'
 import { Observable, ReplaySubject, filter, map, mergeMap, shareReplay, withLatestFrom } from 'rxjs'
-import { MenuItemAPIService } from 'src/app/shared/generated'
+import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
 import { SharedModule } from 'src/app/shared/shared.module'
+import { environment } from 'src/environments/environment'
 
 @Component({
   selector: 'app-user-sidebar-menu',
@@ -57,7 +59,6 @@ import { SharedModule } from 'src/app/shared/shared.module'
 })
 @UntilDestroy()
 export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent {
-  config: RemoteComponentConfig | undefined
   currentUser$: Observable<UserProfile>
   userMenu$: Observable<MenuItem[]>
   displayName$: Observable<string>
@@ -105,7 +106,9 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent {
   ocxInitRemoteComponent(config: RemoteComponentConfig): void {
     this.baseUrl.next(config.baseUrl)
     this.appConfigService.init(config['baseUrl'])
-    this.config = config
+    this.menuItemApiService.configuration = new Configuration({
+      basePath: Location.joinWithSlash(config.baseUrl, environment.apiPrefix)
+    })
   }
 
   onInlineProfileClick(event: UIEvent) {
