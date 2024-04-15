@@ -34,15 +34,6 @@ const wRole: Role = {
   type: 'WORKSPACE'
 }
 
-// const iamRole: Role = {
-//   name: 'role name',
-//   id: 'role id',
-//   description: 'role descr',
-//   isWorkspaceRole: false,
-//   isIamRole: true,
-//   type: 'IAM'
-// }
-
 fdescribe('WorkspaceRolesComponent', () => {
   let component: WorkspaceRolesComponent
   let fixture: ComponentFixture<WorkspaceRolesComponent>
@@ -162,7 +153,7 @@ fdescribe('WorkspaceRolesComponent', () => {
     expect(component.workspaceRoles).toEqual([''])
   })
 
-  it('should display error on search', () => {
+  it('should display error on ws search', () => {
     const err = {
       status: '404'
     }
@@ -197,6 +188,27 @@ fdescribe('WorkspaceRolesComponent', () => {
     expect(component.roles[0].name).toEqual('role')
   })
 
+  it('should populate iamRoles on search: change ws role to iam role', () => {
+    iamRoleServiceSpy.searchAvailableRoles.and.returnValue(
+      of({ stream: [{ name: 'api role', isIamRole: false }] as IAMRolePageResult })
+    )
+    const changes = {
+      ['workspace']: {
+        previousValue: 'ws0',
+        currentValue: 'ws1',
+        firstChange: true
+      }
+    }
+    component.quickFilterValue = 'IAM'
+    wRole.name = 'api role'
+    component.roles[0] = wRole
+    component.workspaceRoles = ['api role']
+
+    component.ngOnChanges(changes as unknown as SimpleChanges)
+
+    expect(component.roles[0].name).toEqual('api role')
+  })
+
   it('should populate iamRoles on search: empty stream', () => {
     iamRoleServiceSpy.searchAvailableRoles.and.returnValue(of({}))
     const changes = {
@@ -213,7 +225,7 @@ fdescribe('WorkspaceRolesComponent', () => {
     expect(component.roles[0]).toBeUndefined()
   })
 
-  it('should display error on search', () => {
+  it('should display error on iam search', () => {
     const err = {
       status: '404'
     }
@@ -261,6 +273,20 @@ fdescribe('WorkspaceRolesComponent', () => {
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.ROLE_OK' })
   })
 
+  it('should create a role onToggleRole: no workspace id', () => {
+    wRoleServiceSpy.createWorkspaceRole.and.returnValue(of({ id: 'newRoleId' }))
+    component.hasEditPermission = true
+    component.workspace = {
+      name: 'name',
+      theme: 'theme',
+      baseUrl: '/some/base/url'
+    }
+
+    component.onToggleRole(wRole)
+
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.ROLE_OK' })
+  })
+
   it('should display error when creating a role onToggleRole', () => {
     wRoleServiceSpy.createWorkspaceRole.and.returnValue(throwError(() => new Error()))
     component.hasEditPermission = true
@@ -290,6 +316,29 @@ fdescribe('WorkspaceRolesComponent', () => {
     component.onToggleRole(wRole)
 
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.ROLE_NOK' })
+  })
+
+  it('should create a role onAddRole', () => {
+    wRoleServiceSpy.createWorkspaceRole.and.returnValue(of({ id: 'newRoleId' }))
+    const mockEvent = new MouseEvent('click')
+    component.workspace = {
+      name: 'name',
+      theme: 'theme',
+      baseUrl: '/some/base/url'
+    }
+
+    component.onAddRole(mockEvent, wRole)
+
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.ROLE_OK' })
+  })
+
+  it('should display error when creating a role onAddRole', () => {
+    wRoleServiceSpy.createWorkspaceRole.and.returnValue(throwError(() => new Error()))
+    const mockEvent = new MouseEvent('click')
+
+    component.onAddRole(mockEvent, wRole)
+
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.ROLE_NOK' })
   })
 
   it('should set properties for creating a new role', () => {

@@ -136,7 +136,6 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
         complete: () => {
           this.workspaceRolesLoaded = true
           this.roles = [...result]
-          console.log('ROLES', this.roles)
           this.workspaceRoles = this.roles.map((r) => r.name ?? '')
         }
       })
@@ -229,7 +228,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
           role.isWorkspaceRole = true
         },
         error: () => {
-          this.msgService.success({ summaryKey: 'ACTIONS.CREATE.ROLE_NOK' })
+          this.msgService.error({ summaryKey: 'ACTIONS.CREATE.ROLE_NOK' })
         }
       })
   }
