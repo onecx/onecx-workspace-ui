@@ -132,10 +132,11 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
       const result: Role[] = []
       this.searchWorkspaceRoles().subscribe({
         next: (data) => data.forEach((r) => result.push(r)),
-        error: () => {},
+        // error: () => {},
         complete: () => {
           this.workspaceRolesLoaded = true
           this.roles = [...result]
+          console.log('ROLES', this.roles)
           this.workspaceRoles = this.roles.map((r) => r.name ?? '')
         }
       })
@@ -146,7 +147,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
       const result: Role[] = [] // temporary used
       this.searchIamRoles().subscribe({
         next: (data) => data.forEach((r) => result.push(r)),
-        error: () => {},
+        // error: () => {},
         complete: () => {
           this.iamRolesLoaded = true
           // combine role results and prevent duplicates
@@ -193,7 +194,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
             role.isWorkspaceRole = true
           },
           error: () => {
-            this.msgService.success({ summaryKey: 'ACTIONS.CREATE.ROLE_NOK' })
+            this.msgService.error({ summaryKey: 'ACTIONS.CREATE.ROLE_NOK' })
           }
         })
     }
@@ -205,7 +206,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
           role.isWorkspaceRole = false
         },
         error: () => {
-          this.msgService.success({ summaryKey: 'ACTIONS.DELETE.ROLE_NOK' })
+          this.msgService.error({ summaryKey: 'ACTIONS.DELETE.ROLE_NOK' })
         }
       })
     }
