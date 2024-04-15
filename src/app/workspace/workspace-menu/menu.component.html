@@ -65,9 +65,9 @@
                 class="py-0"
                 id="workspace_menu_table_header_filter"
                 (input)="menuTree.filterGlobal($any($event.target).value, 'contains')"
-                [title]="'GENERAL.TOOLTIPS.FILTER' | translate"
+                [title]="('DIALOG.DATAVIEW.FILTER' | translate) + ' henry'"
               />
-              <label for="workspace_menu_table_filter"> {{ 'GENERAL.FILTER_PLACEHOLDER' | translate }} </label>
+              <label for="workspace_menu_table_filter"> {{ 'DIALOG.DATAVIEW.FILTER_PLACEHOLDER' | translate }} </label>
             </span>
             <span
               id="workspace_menu_table_header_filter_clear"
