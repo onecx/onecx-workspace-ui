@@ -107,6 +107,8 @@ describe('WorkspaceRoleDetailComponent', () => {
     expect(component.dataChanged.emit).toHaveBeenCalledWith(false)
   })
 
+  it('should return if formGroup invalid')
+
   it('should delete a workspace role and display success message', () => {
     wRoleServiceSpy.deleteWorkspaceRole.and.returnValue(of({}))
     spyOn(component.dataChanged, 'emit')
@@ -115,6 +117,158 @@ describe('WorkspaceRoleDetailComponent', () => {
 
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.ROLE_OK' })
     expect(component.dataChanged.emit).toHaveBeenCalledWith(true)
+  })
+
+  it('should not proceed onSaveRole if form is invalid', () => {
+    component.formGroupRole = { valid: false } as any
+    spyOn(console, 'info')
+
+    component.onSaveRole()
+
+    expect(console.info).toHaveBeenCalledWith('form not valid')
+  })
+
+  it('should not create/update role onSaveRole if it already exists', () => {
+    component.formGroupRole = {
+      valid: true,
+      controls: {
+        name: { value: 'role name' },
+        description: { value: 'role description' }
+      }
+    } as any
+    component.roles = [wRole]
+    component.changeMode = 'EDIT'
+    component.role = {
+      id: 'role id',
+      name: 'role name',
+      description: 'role descr',
+      isWorkspaceRole: false,
+      isIamRole: false,
+      type: 'WORKSPACE'
+    }
+
+    component.onSaveRole()
+
+    expect(msgServiceSpy.error).toHaveBeenCalled()
+  })
+
+  it('should create a new role successfully', () => {
+    component.formGroupRole = {
+      valid: true,
+      controls: {
+        name: { value: 'new role name' },
+        description: { value: 'new description' }
+      }
+    } as any
+    component.roles = []
+    component.changeMode = 'CREATE'
+
+    component.onSaveRole()
+
+    expect(wRoleServiceSpy.createWorkspaceRole).toHaveBeenCalled()
+    expect(msgServiceSpy.success).toHaveBeenCalled()
+  })
+
+  it('should create a new role successfully: no ws id', () => {
+    component.formGroupRole = {
+      valid: true,
+      controls: {
+        name: { value: 'new role name' },
+        description: { value: 'new description' }
+      }
+    } as any
+    component.roles = []
+    component.changeMode = 'CREATE'
+    component.workspace = {
+      name: 'name',
+      theme: 'theme',
+      baseUrl: '/some/base/url'
+    }
+
+    component.onSaveRole()
+
+    expect(wRoleServiceSpy.createWorkspaceRole).toHaveBeenCalled()
+    expect(msgServiceSpy.success).toHaveBeenCalled()
+  })
+
+  it('should display error if create role fails', () => {
+    wRoleServiceSpy.createWorkspaceRole.and.returnValue(throwError(() => new Error()))
+    component.formGroupRole = {
+      valid: true,
+      controls: {
+        name: { value: 'new role name' },
+        description: { value: 'new description' }
+      }
+    } as any
+    component.roles = []
+    component.changeMode = 'CREATE'
+
+    component.onSaveRole()
+
+    expect(wRoleServiceSpy.createWorkspaceRole).toHaveBeenCalled()
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.ROLE_NOK' })
+  })
+
+  it('should update the role successfully', () => {
+    component.formGroupRole = {
+      valid: true,
+      controls: {
+        name: { value: 'updated role name' },
+        description: { value: 'updated description' }
+      }
+    } as any
+    component.roles = [wRole]
+    component.role = { ...wRole, id: 'role id' }
+    component.changeMode = 'EDIT'
+
+    component.onSaveRole()
+
+    expect(wRoleServiceSpy.updateWorkspaceRole).toHaveBeenCalled()
+    expect(msgServiceSpy.success).toHaveBeenCalled()
+  })
+
+  it('should update the role successfully: no role id', () => {
+    component.formGroupRole = {
+      valid: true,
+      controls: {
+        name: { value: 'updated role name' },
+        description: { value: 'updated description' }
+      }
+    } as any
+    component.roles = [wRole]
+    component.role = { ...wRole, id: 'role id' }
+    component.changeMode = 'EDIT'
+    component.role = {
+      name: 'name',
+      description: 'role descr',
+      isWorkspaceRole: false,
+      isIamRole: false,
+      type: 'WORKSPACE'
+    }
+
+    component.onSaveRole()
+
+    expect(wRoleServiceSpy.updateWorkspaceRole).toHaveBeenCalled()
+    expect(msgServiceSpy.success).toHaveBeenCalled()
+  })
+
+  it('should update the role successfully', () => {
+    wRoleServiceSpy.updateWorkspaceRole.and.returnValue(throwError(() => new Error()))
+    component.formGroupRole = {
+      valid: true,
+      controls: {
+        name: { value: 'updated role name' },
+        description: { value: 'updated description' }
+      }
+    } as any
+    component.roles = [wRole]
+    component.role = { ...wRole, id: 'role id' }
+    component.changeMode = 'EDIT'
+
+    component.onSaveRole()
+
+    expect(wRoleServiceSpy.updateWorkspaceRole).toHaveBeenCalled()
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.ROLE_NOK' })
   })
 
   it('should display error message if delete api call fails', () => {
