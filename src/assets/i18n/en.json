@@ -367,12 +367,12 @@
     "DISPLAY_NAME.TOOLTIP": "Displayed name of the Product",
     "DESCRIPTION": "Description",
     "BASE_URL": "Base URL",
-    "BASE_URL.TOOLTIP": "Last path part used to access the Product from the Workspace.",
+    "BASE_URL.TOOLTIP": "Suggested path to access product modules. Defined in the product store.",
     "MFE": {
       "APP_ID": "UI Service ID",
       "APP_ID.TOOLTIP": "Unique ID of the specific UI service to be used.",
       "BASE_PATH": "Base Path",
-      "BASE_PATH.TOOLTIP": "Last path part used to access the Microfrontend"
+      "BASE_PATH.TOOLTIP": "Path appended to the workspace base path to access the product module."
     }
   },
   "WORKSPACE_EXPORT": {
@@ -431,9 +431,19 @@
     "UPLOAD_SUCCESS": "The file was uploaded successfully",
     "TOOLTIPS": {
       "LOGO_URL": "As an alternative to uploading, a URL to an image can be specified here",
-      "IMAGE": "Logo",
-      "PLACEHOLDER": "Image Placeholder",
+      "LOGO": "Logo",
+      "PLACEHOLDER": "Logo Placeholder",
       "UPLOAD": "Select and upload image"
+    }
+  },
+  "REMOTES": {
+    "USER_AVATAR_MENU": {
+      "TENANT": "Tenant",
+      "LOGOUT": "Log out",
+      "TOOLTIP": "Profile"
+    },
+    "USER_SIDEBAR_MENU": {
+      "LOGOUT": "Log out"
     }
   },
   "VALIDATION": {
@@ -470,13 +480,6 @@
       "WORKSPACE": "Unknown server problem retrieving Workspace details - please try again.",
       "WORKSPACES": "Unknown server problem retrieving Workspace data - please try again.",
       "MENUS": "Unknown server problem retrieving menu data - please try again."
-    }
-  },
-  "REMOTES": {
-    "USER_AVATAR_MENU": {
-      "TENANT": "Tenant",
-      "LOGOUT": "Log out",
-      "TOOLTIP": "Profile"
     }
   }
 }
