@@ -95,7 +95,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
       productName: new FormControl(null),
       displayName: new FormControl({ value: null, disabled: true }),
       description: new FormControl(null),
-      baseUrl: new FormControl(null, [Validators.required, Validators.maxLength(255)]),
+      baseUrl: new FormControl({ value: null, disabled: true }),
       mfes: this.fb.array([])
     })
     this.viewingModes = ALL_VIEW_MODES
@@ -170,7 +170,6 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
               this.psProductsOrg.push({ ...p, bucket: 'SOURCE' } as ExtendedProduct) // all
               const wp = this.wProducts.filter((wp) => wp.productName === p.productName)
               if (wp.length === 0) this.psProducts.push({ ...p, bucket: 'SOURCE' } as ExtendedProduct)
-              console.log('psp ', p)
             }
           }
           return this.psProducts.sort(this.sortProductsByDisplayName)
@@ -250,8 +249,6 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   private fillForm(item: ExtendedProduct) {
     this.displayDetails = true
     this.displayedDetailItem = item
-    if (this.displayedDetailItem.bucket === 'SOURCE') this.formGroup.controls['baseUrl'].disable()
-    if (this.displayedDetailItem.bucket === 'TARGET') this.formGroup.controls['baseUrl'].enable()
     this.formGroup.controls['productName'].setValue(this.displayedDetailItem.productName)
     this.formGroup.controls['displayName'].setValue(this.displayedDetailItem.displayName)
     this.formGroup.controls['description'].setValue(this.displayedDetailItem.description) // from item
@@ -261,7 +258,8 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     while (mfes.length > 0) mfes.removeAt(0) // clear
     if (this.displayedDetailItem.microfrontends) {
       // add a form group for each mfe
-      this.displayedDetailItem.microfrontends.sort(this.sortMfesByAppId).forEach((mfe, i) => {
+      this.displayedDetailItem.microfrontends.sort(this.sortMfesByAppId)
+      this.displayedDetailItem.microfrontends.forEach((mfe, i) => {
         mfes.push(
           this.fb.group({
             id: new FormControl(null),
@@ -336,15 +334,17 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     let successCounter = 0
     let errorCounter = 0
     for (let p of ev.items) {
+      console.log('onMoveToTarget', p.microfrontends)
+      const mfes = p.microfrontends ?? []
       this.wProductApi
         .createProductInWorkspace({
           id: this.workspace?.id ?? '',
           createProductRequest: {
             productName: p.productName,
             baseUrl: p.baseUrl,
-            microfrontends: p.microfrontends.map((m: any, i: number) => ({
+            microfrontends: mfes.map((m: any, i: number) => ({
               appId: m.appId,
-              basePath: p.baseUrl + '-' + (i + 1) // create initial unique base paths
+              basePath: p.baseUrl + (p.microfrontends.length > 1 ? '-' + (i + 1) : '') // create initial unique base paths
             }))
           } as CreateProductRequest
         })
@@ -410,8 +410,8 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   }
 
   private displayRegisterMessages(type: string, success: number, error: number) {
-    this.psProducts = this.psProducts.sort(this.sortProductsByDisplayName)
-    this.wProducts = this.wProducts.sort(this.sortProductsByDisplayName)
+    this.psProducts.sort(this.sortProductsByDisplayName)
+    this.wProducts.sort(this.sortProductsByDisplayName)
     if (success > 0) {
       if (success === 1) this.msgService.success({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.' + type + '_OK' })
       else this.msgService.success({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.' + type + 'S_OK' })

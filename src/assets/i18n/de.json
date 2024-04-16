@@ -367,12 +367,12 @@
     "DISPLAY_NAME.TOOLTIP": "Name des Produkts",
     "DESCRIPTION": "Description",
     "BASE_URL": "Base URL",
-    "BASE_URL.TOOLTIP": "Letzter Pfadteil für den Zugriff auf das Produkt.",
+    "BASE_URL.TOOLTIP": "Vorgeschlagener Pfad für den Zugriff auf Produktmodule. Im Produkt Store definiert.",
     "MFE": {
       "APP_ID": "UI Service ID",
       "APP_ID.TOOLTIP": "Eindeutige ID des spezifischen UI-Dienstes, der verwendet werden soll.",
       "BASE_PATH": "Base Path",
-      "BASE_PATH.TOOLTIP": "Letzter Pfadteil für den Zugriff auf das Microfrontend"
+      "BASE_PATH.TOOLTIP": "Am Base-Pfad des Workspaces angehängter Pfad, für den Zugriff auf das Produktmodul."
     }
   },
   "WORKSPACE_EXPORT": {
@@ -431,9 +431,19 @@
     "UPLOAD_SUCCESS": "Die Datei wurde erfolgreich hochgeladen",
     "TOOLTIPS": {
       "LOGO_URL": "Als Alternative zum Hochladen kann hier eine URL zu einem Bild angegeben werden",
-      "IMAGE": "Logo",
-      "PLACEHOLDER": "Bild Platzhalter",
+      "LOGO": "Logo",
+      "PLACEHOLDER": "Logo Platzhalter",
       "UPLOAD": "Bild auswählen und hochladen"
+    }
+  },
+  "REMOTES": {
+    "USER_AVATAR_MENU": {
+      "TENANT": "Mandant",
+      "LOGOUT": "Abmelden",
+      "TOOLTIP": "Profil"
+    },
+    "USER_SIDEBAR_MENU": {
+      "LOGOUT": "Abmelden"
     }
   },
   "VALIDATION": {
@@ -470,13 +480,6 @@
       "WORKSPACE": "Unbekanntes Server-Problem beim Abrufen von Workspace Details - Bitte versuchen sie es noch einmal.",
       "WORKSPACES": "Unbekanntes Server-Problem beim Abrufen von Workspace-Daten - Bitte versuchen sie es noch einmal.",
       "MENUS": "Unbekanntes Server-Problem beim Abrufen von Menü-Daten - Bitte versuchen sie es noch einmal."
-    }
-  },
-  "REMOTES": {
-    "USER_AVATAR_MENU": {
-      "TENANT": "Mandant",
-      "LOGOUT": "Abmelden",
-      "TOOLTIP": "Profil"
     }
   }
 }
