@@ -2,3 +2,9 @@
 
 @include danger-action;
 @include compact-dropdown-list-items;
+
+:host ::ng-deep {
+  .menu-url-dropdown.p-dropdown .p-dropdown-label:not(.p-dropdown-label-empty) {
+    padding: 0.4rem 1rem !important;
+  }
+}

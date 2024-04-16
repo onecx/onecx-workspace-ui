@@ -69,19 +69,40 @@
 
           <div class="col-12 md:col-9 my-1" [title]="'MENU_ITEM.TOOLTIP.URL' | translate">
             <span class="p-float-label mb-1" controlErrorAnchor>
+              <!-- [editable]="true" -->
               <p-dropdown
-                #formFieldUrl
+                #mfeDropdown
                 id="workspace_menu_detail_field_url"
                 formControlName="url"
-                styleClass="w-full"
-                [editable]="true"
-                [options]="mfeRUrlOptions"
-                (onFocus)="onFocusFieldUrl(formFieldUrl)"
-                [pTooltip]="'MENU_ITEM.URL' | translate"
+                styleClass="w-full menu-url-dropdown"
+                [options]="mfeItems"
+                optionValue="id"
+                dataKey="value"
+                ngDefaultControl
+                (onChange)="onSelectMfe($event)"
+                [pTooltip]="'MENU_ITEM.TOOLTIP.URL' | translate"
                 tooltipPosition="top"
                 tooltipEvent="focus"
                 appendTo="body"
               >
+                <ng-template pTemplate="selectedItem">
+                  <div class="flex flex-row column-gap-2 align-items-center">
+                    <div class="w-20rem">{{ mfeMap.get(mfeDropdown.value)?.basePath }}</div>
+                    <div class="flex flex-column">
+                      <div class="text-xs font-bold">{{ mfeMap.get(mfeDropdown.value)?.product }}</div>
+                      <div class="text-xs">{{ mfeMap.get(mfeDropdown.value)?.appId }}</div>
+                    </div>
+                  </div>
+                </ng-template>
+                <ng-template let-mfeItem pTemplate="item">
+                  <div class="flex flex-row column-gap-2 align-items-center">
+                    <div class="w-20rem">{{ mfeItem.basePath }}</div>
+                    <div class="flex flex-column">
+                      <div class="text-sm font-bold">{{ mfeItem.product }}</div>
+                      <div class="text-xs">{{ mfeItem.appId }}</div>
+                    </div>
+                  </div>
+                </ng-template>
               </p-dropdown>
               <label for="workspace_menu_detail_field_url"> {{ 'MENU_ITEM.URL' | translate }} </label>
             </span>

@@ -16,8 +16,8 @@
 
 @mixin compact-dropdown-list-items {
   :host ::ng-deep {
-    .p-dropdown-items .p-dropdown-item {
-      padding: 0.4rem 1rem;
+    .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
+      padding: 0.4rem 1rem !important;
     }
   }
 }

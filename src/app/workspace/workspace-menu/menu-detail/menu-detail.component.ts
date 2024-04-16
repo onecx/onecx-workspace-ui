@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, Output, Renderer2, ViewChild } from '@angular/core'
 import { TranslateService } from '@ngx-translate/core'
 import { DefaultValueAccessor, FormControl, FormGroup, Validators } from '@angular/forms'
-import { Observable, Subject, catchError, of } from 'rxjs'
+import { Observable, Subject, catchError, map, of, takeUntil } from 'rxjs'
 import { TabView } from 'primeng/tabview'
 import { SelectItem } from 'primeng/api'
 
@@ -12,13 +12,17 @@ import {
   MenuItem,
   WorkspaceMenuItem,
   MenuItemAPIService,
-  UpdateMenuItemRequest
+  UpdateMenuItemRequest,
+  Microfrontend,
+  WorkspaceProductAPIService
 } from 'src/app/shared/generated'
 import { ChangeMode } from '../menu.component'
 import { IconService } from '../services/iconservice'
 
 type I18N = { [key: string]: string }
 type LanguageItem = SelectItem & { data: string }
+type MFE = Microfrontend & { product?: string }
+export type DropDownChangeEvent = MouseEvent & { value: any }
 
 // trim the value (string!) of a form control before passes to the control
 const original = DefaultValueAccessor.prototype.registerOnChange
@@ -57,7 +61,9 @@ export class MenuDetailComponent implements OnChanges {
     '(https://www.|http://www.|https://|http://)?[a-zA-Z]{2,}(.[a-zA-Z]{2,})(.[a-zA-Z]{2,})?/[a-zA-Z0-9]{2,}|((https://www.|http://www.|https://|http://)?[a-zA-Z]{2,}(.[a-zA-Z]{2,})(.[a-zA-Z]{2,})?)|(https://www.|http://www.|https://|http://)?[a-zA-Z0-9]{2,}.[a-zA-Z0-9]{2,}.[a-zA-Z0-9]{2,}(.[a-zA-Z0-9]{2,})?'
   private posPattern = '[0-9]{1,9}'
   private panelHeight = 0
-  public mfeRUrlOptions: SelectItem[] = []
+  public mfeMap: Map<string, MFE> = new Map()
+  public mfeItems: MFE[] = []
+  public selectedMfe: MFE | undefined
 
   // language settings and preview
   public languagesAvailable: LanguageItem[] = []
@@ -77,6 +83,7 @@ export class MenuDetailComponent implements OnChanges {
     private user: UserService,
     private icon: IconService,
     private menuApi: MenuItemAPIService,
+    private wProductApi: WorkspaceProductAPIService,
     private renderer: Renderer2,
     private translate: TranslateService,
     private msgService: PortalMessageService
@@ -142,6 +149,7 @@ export class MenuDetailComponent implements OnChanges {
       next: (m) => {
         this.menuItem = m ?? undefined
         if (this.menuItem && this.displayDetailDialog) {
+          this.loadMfeUrls()
           this.fillForm(this.menuItem)
           this.preparePanelHeight()
         }
@@ -156,7 +164,7 @@ export class MenuDetailComponent implements OnChanges {
     this.formGroup.reset()
     this.formGroup.setValue({
       parentItemId: m.parentItemId,
-      url: m.url,
+      url: this.mfeMap.has(m.url!) ? this.mfeMap.get(m.url!)?.basePath : '<unknown entry>',
       key: m.key,
       name: m.name,
       position: m.position,
@@ -247,9 +255,6 @@ export class MenuDetailComponent implements OnChanges {
     this.prepareLanguagePanel()
     this.preparePanelHeight()
   }
-  public onFocusFieldUrl(field: any): void {
-    field.overlayVisible = true
-  }
   // same height on all TABs
   private preparePanelHeight(): void {
     if (!this.panelDetail) return
@@ -309,5 +314,63 @@ export class MenuDetailComponent implements OnChanges {
   }
   public displayLanguageField(lang: string) {
     return !this.languagesDisplayed.some((l) => l.value === lang)
+  }
+
+  private loadMfeUrls(): void {
+    this.wProductApi
+      .getProductsForWorkspaceId({ id: this.workspaceId ?? '' })
+      .pipe(
+        map((products) => {
+          for (let p of products) {
+            // work-around
+            const mfe = {
+              id: p.productName!,
+              appId: p.productName,
+              basePath: '/base-path-to-microfrontend',
+              product: p.displayName
+            }
+            this.mfeMap.set(mfe.id, mfe)
+            this.mfeItems.push(mfe)
+            // final
+            if (p.microfrontends) {
+              p.microfrontends.reduce(
+                (mfeMap, mfe) => mfeMap.set(mfe.id!, { ...mfe, product: p.displayName! }),
+                this.mfeMap
+              )
+              for (let mfe of p.microfrontends) {
+                this.mfeItems.push({ ...mfe, product: p.displayName ?? '' })
+              }
+            }
+          }
+          console.log('loadMfeUrls', this.mfeItems)
+          console.log('loadMfeUrls', this.mfeMap)
+          return this.mfeItems.sort(this.sortMfesByProductAndBasePath)
+        }),
+        catchError((err) => {
+          console.error('getProductsForWorkspaceId():', err)
+          return of([] as SelectItem[])
+        })
+      )
+      .pipe(takeUntil(this.destroy$))
+      .subscribe()
+  }
+
+  public onFocusFieldUrl(field: any): void {
+    field.overlayVisible = true
+  }
+
+  public sortMfesByProductAndBasePath(a: MFE, b: MFE): number {
+    return (
+      (a.product ? a.product.toUpperCase() : '').localeCompare(b.product ? b.product.toUpperCase() : '') ||
+      (a.basePath ? a.basePath : '').localeCompare(b.basePath ? b.basePath : '')
+    )
+  }
+  public onSelectMfe(ev: DropDownChangeEvent): void {
+    if (ev && ev.value) {
+      if (this.mfeMap.has(ev.value)) {
+        this.selectedMfe = this.mfeMap.get(ev.value)
+        console.log('onSelectMfe', this.selectedMfe)
+      }
+    }
   }
 }
