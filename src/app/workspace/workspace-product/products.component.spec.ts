@@ -5,6 +5,7 @@ import { ActivatedRoute } from '@angular/router'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { RouterTestingModule } from '@angular/router/testing'
+import { ReactiveFormsModule, FormBuilder, FormArray, FormControl } from '@angular/forms'
 
 import { PortalMessageService } from '@onecx/portal-integration-angular'
 import {
@@ -12,7 +13,8 @@ import {
   WorkspaceProductAPIService,
   ProductsAPIService,
   Workspace,
-  ProductStoreItem
+  ProductStoreItem,
+  Microfrontend
 } from 'src/app/shared/generated'
 
 import { ProductComponent } from './products.component'
@@ -24,10 +26,19 @@ const workspace: Workspace = {
   baseUrl: '/some/base/url'
 }
 
+const microfrontend: Microfrontend = {
+  id: 'id',
+  appId: 'appId',
+  basePath: 'path'
+}
+
 const product: Product = {
   id: 'prod id',
   productName: 'prod name',
-  displayName: 'display name'
+  displayName: 'display name',
+  description: 'description',
+  microfrontends: [microfrontend],
+  modificationCount: 1
 }
 
 const prodStoreItem: ProductStoreItem = {
@@ -39,7 +50,7 @@ fdescribe('ProductComponent', () => {
   let fixture: ComponentFixture<ProductComponent>
   let mockActivatedRoute: ActivatedRoute
   let mockRenderer: Renderer2
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let fb: FormBuilder
 
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
   const wProductServiceSpy = {
@@ -57,6 +68,7 @@ fdescribe('ProductComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ProductComponent],
       imports: [
+        ReactiveFormsModule,
         RouterTestingModule,
         HttpClientTestingModule,
         TranslateTestingModule.withTranslations({
@@ -87,6 +99,7 @@ fdescribe('ProductComponent', () => {
     mockRenderer = jasmine.createSpyObj('Renderer2', ['addClass', 'removeClass'])
     component = fixture.componentInstance
     component.workspace = workspace
+    fb = TestBed.inject(FormBuilder)
     component['renderer'] = mockRenderer
     fixture.detectChanges()
   })
@@ -141,7 +154,8 @@ fdescribe('ProductComponent', () => {
     expect(console.error).toHaveBeenCalledWith('getProductsForWorkspaceId():', err)
   })
 
-  fit('should loadData onChanges: searchPsProducts call succes', () => {
+  it('should loadData onChanges: searchPsProducts call succes', () => {
+    wProductServiceSpy.getProductsForWorkspaceId.and.returnValue(of([product]))
     productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [prodStoreItem] }))
     const changes = {
       ['workspace']: {
@@ -150,10 +164,30 @@ fdescribe('ProductComponent', () => {
         firstChange: true
       }
     }
+    component.wProducts = [{ ...product, bucket: 'SOURCE' }]
 
     component.ngOnChanges(changes as unknown as SimpleChanges)
 
-    expect(component.psProductsOrg).toBe([])
+    expect(component.psProductsOrg).toEqual([{ ...prodStoreItem, bucket: 'SOURCE' }])
+  })
+
+  it('should loadData onChanges: searchPsProducts call error', () => {
+    const err = {
+      status: '404'
+    }
+    productServiceSpy.searchAvailableProducts.and.returnValue(throwError(() => err))
+    const changes = {
+      ['workspace']: {
+        previousValue: 'ws0',
+        currentValue: 'ws1',
+        firstChange: true
+      }
+    }
+    spyOn(console, 'error')
+
+    component.ngOnChanges(changes as unknown as SimpleChanges)
+
+    expect(console.error).toHaveBeenCalledWith('searchAvailableProducts():', err)
   })
 
   it('should subscribe to psProducts$', () => {
@@ -318,7 +352,24 @@ fdescribe('ProductComponent', () => {
   })
 
   it('should call fillForm when item is selected', () => {
-    const event = { items: [{ id: 1 }] }
+    component.formGroup = fb.group({
+      productName: new FormControl(''),
+      displayName: new FormControl(''),
+      description: new FormControl(''),
+      baseUrl: new FormControl(''),
+      mfes: fb.array([])
+    })
+    const mfes: FormArray = component.formGroup.get('mfes') as FormArray
+    const addMfeControl = (data: any) => {
+      const formGroup = fb.group({
+        id: [data.id],
+        appId: [data.appId],
+        basePath: [data.basePath]
+      })
+      mfes.push(formGroup)
+    }
+    addMfeControl({ microfrontend })
+    const event = { items: [{ ...product, bucket: 'SOURCE' }] }
     component.displayDetails = true
 
     component.onSourceSelect(event)
@@ -334,7 +385,7 @@ fdescribe('ProductComponent', () => {
     expect(component.displayDetails).toBeFalse()
   })
 
-  it('should call getWProduct when an item is selected: caöö getProductById', () => {
+  it('should call getWProduct when an item is selected: call getProductById', () => {
     const event = { items: [{ id: 1 }] }
     component.displayDetails = true
 
@@ -359,5 +410,90 @@ fdescribe('ProductComponent', () => {
     component.onTargetSelect(event)
 
     expect(component.displayDetails).toBeFalse()
+  })
+
+  it('should update a product by id', () => {
+    wProductServiceSpy.updateProductById.and.returnValue(of({ resource: product }))
+    const event: any = { items: [{ id: 1 }] }
+    component.formGroup = fb.group({
+      productName: new FormControl(''),
+      displayName: new FormControl(''),
+      description: new FormControl(''),
+      baseUrl: new FormControl(''),
+      mfes: fb.array([])
+    })
+    const mfes: FormArray = component.formGroup.get('mfes') as FormArray
+    const addMfeControl = (data: any) => {
+      const formGroup = fb.group({
+        id: [data.id],
+        appId: [data.appId],
+        basePath: [data.basePath]
+      })
+      mfes.push(formGroup)
+    }
+    addMfeControl({ microfrontend })
+    component.displayedDetailItem = { ...product, bucket: 'SOURCE' }
+
+    component.onProductSave(event)
+
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.UPDATE_OK' })
+  })
+
+  it('should update a product by id: no ids in ws and product', () => {
+    const product2: Product = {
+      productName: 'prod name',
+      displayName: 'display name',
+      description: 'description',
+      microfrontends: [microfrontend],
+      modificationCount: 1
+    }
+    wProductServiceSpy.updateProductById.and.returnValue(of({ resource: product2 }))
+    const event: any = { items: [{ id: 1 }] }
+    component.formGroup = fb.group({
+      productName: new FormControl(''),
+      displayName: new FormControl(''),
+      description: new FormControl(''),
+      baseUrl: new FormControl(''),
+      mfes: fb.array([])
+    })
+    component.displayedDetailItem = { ...product2, bucket: 'SOURCE' }
+    const workspace2: Workspace = {
+      name: 'name',
+      theme: 'theme',
+      baseUrl: '/some/base/url'
+    }
+    component.workspace = workspace2
+
+    component.onProductSave(event)
+
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.UPDATE_OK' })
+  })
+
+  it('should update a product by id: no ids in ws and product', () => {
+    wProductServiceSpy.updateProductById.and.returnValue(throwError(() => new Error()))
+    const event: any = { items: [product] }
+    component.formGroup = fb.group({
+      productName: new FormControl(''),
+      displayName: new FormControl(''),
+      description: new FormControl(''),
+      baseUrl: new FormControl(''),
+      mfes: fb.array([])
+    })
+    component.displayedDetailItem = { ...product, bucket: 'SOURCE' }
+
+    component.onProductSave(event)
+
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.UPDATE_NOK' })
+  })
+
+  it('should createProductInWorkspace onMoveToTarget', () => {
+    wProductServiceSpy.createProductInWorkspace.and.returnValue(of({ resource: product }))
+    const event: any = { items: [product] }
+    component.wProducts = [{ ...product, bucket: 'SOURCE' }]
+    component.psProducts = [{ ...product, bucket: 'SOURCE' }]
+
+    component.onMoveToTarget(event)
+
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.REGISTRATION_OK' })
   })
 })
