@@ -11,24 +11,24 @@ app:
     microfrontend:
       enabled: true
       specs:
-        OneCXWorkspaceModule:
+        main:
           exposedModule: "./OneCXWorkspaceModule"
           description: "OneCX Workspace UI"
           note: "OneCX Workspace UI auto import via MF operator"
           type: MODULE
-        OneCXUserAvatarMenuComponent:
+        user-avatar-menu:
           exposedModule: "./OneCXUserAvatarMenuComponent"
           description: "User avatar menu component"
           type: COMPONENT
-        OneCXUserSidebarMenuComponent:
+        user-siderbar-menu:
           exposedModule: "./OneCXUserSidebarMenuComponent"
           description: "User siderbar menu component"
           type: COMPONENT
-        OneCXVerticalMainMenuComponent:
+        vertical-main-menu:
           exposedModule: "./OneCXVerticalMainMenuComponent"
           description: "Vercital main menu component"
           type: COMPONENT
-        OneCXHorizontalMainMenuComponent:
+        horizontal-main-menu:
           exposedModule: "./OneCXHorizontalMainMenuComponent"
           description: "Horizontal main menu component"
           type: COMPONENT
