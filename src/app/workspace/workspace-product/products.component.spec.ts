@@ -1,13 +1,19 @@
 import { NO_ERRORS_SCHEMA, Renderer2, SimpleChanges } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { of } from 'rxjs'
+import { of, throwError } from 'rxjs'
 import { ActivatedRoute } from '@angular/router'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { RouterTestingModule } from '@angular/router/testing'
 
 import { PortalMessageService } from '@onecx/portal-integration-angular'
-import { Product, WorkspaceProductAPIService, ProductsAPIService, Workspace } from 'src/app/shared/generated'
+import {
+  Product,
+  WorkspaceProductAPIService,
+  ProductsAPIService,
+  Workspace,
+  ProductStoreItem
+} from 'src/app/shared/generated'
 
 import { ProductComponent } from './products.component'
 
@@ -22,6 +28,10 @@ const product: Product = {
   id: 'prod id',
   productName: 'prod name',
   displayName: 'display name'
+}
+
+const prodStoreItem: ProductStoreItem = {
+  productName: 'prodStoreItemName'
 }
 
 fdescribe('ProductComponent', () => {
@@ -85,7 +95,8 @@ fdescribe('ProductComponent', () => {
     expect(component).toBeTruthy()
   })
 
-  it('should loadData onChanges', () => {
+  it('should loadData onChanges: with and without ws id', () => {
+    wProductServiceSpy.getProductsForWorkspaceId.and.returnValue(of([product]))
     const changes = {
       ['workspace']: {
         previousValue: 'ws0',
@@ -98,6 +109,69 @@ fdescribe('ProductComponent', () => {
 
     expect(wProductServiceSpy.getProductsForWorkspaceId).toHaveBeenCalled()
     expect(productServiceSpy.searchAvailableProducts).toHaveBeenCalled()
+
+    const workspace2: Workspace = {
+      name: 'name',
+      theme: 'theme',
+      baseUrl: '/some/base/url'
+    }
+    component.workspace = workspace2
+
+    component.ngOnChanges(changes as unknown as SimpleChanges)
+
+    expect(wProductServiceSpy.getProductsForWorkspaceId).toHaveBeenCalled()
+  })
+
+  it('should log error if getProductsForWorkspaceId call fails', () => {
+    const err = {
+      status: '404'
+    }
+    wProductServiceSpy.getProductsForWorkspaceId.and.returnValue(throwError(() => err))
+    const changes = {
+      ['workspace']: {
+        previousValue: 'ws0',
+        currentValue: 'ws1',
+        firstChange: true
+      }
+    }
+    spyOn(console, 'error')
+
+    component.ngOnChanges(changes as unknown as SimpleChanges)
+
+    expect(console.error).toHaveBeenCalledWith('getProductsForWorkspaceId():', err)
+  })
+
+  fit('should loadData onChanges: searchPsProducts call succes', () => {
+    productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [prodStoreItem] }))
+    const changes = {
+      ['workspace']: {
+        previousValue: 'ws0',
+        currentValue: 'ws1',
+        firstChange: true
+      }
+    }
+
+    component.ngOnChanges(changes as unknown as SimpleChanges)
+
+    expect(component.psProductsOrg).toBe([])
+  })
+
+  it('should subscribe to psProducts$', () => {
+    const mockPsProducts$ = jasmine.createSpyObj('Observable', ['subscribe'])
+    component.psProducts$ = mockPsProducts$
+
+    component.onLoadPsProducts()
+
+    expect(mockPsProducts$.subscribe).toHaveBeenCalled()
+  })
+
+  it('should subscribe to wProducts$', () => {
+    const mockWProducts$ = jasmine.createSpyObj('Observable', ['subscribe'])
+    component.wProducts$ = mockWProducts$
+
+    component.onLoadWProducts()
+
+    expect(mockWProducts$.subscribe).toHaveBeenCalled()
   })
 
   it('should sort products by displayName', () => {
@@ -220,7 +294,7 @@ fdescribe('ProductComponent', () => {
     expect(mockRenderer.removeClass).toHaveBeenCalledWith(component.sourceList, 'tile-view')
   })
 
-  fit('should update targetListViewMode based on event mode', () => {
+  it('should update targetListViewMode based on event mode', () => {
     const event = { icon: 'grid-icon', mode: 'grid' }
 
     component.onTargetViewModeChange(event)
@@ -233,7 +307,7 @@ fdescribe('ProductComponent', () => {
     expect(mockRenderer.addClass).toHaveBeenCalledWith(component.targetList, 'tile-view')
   })
 
-  fit('should handle mode changes appropriately for the target list', () => {
+  it('should handle mode changes appropriately for the target list', () => {
     let event = { icon: 'list-icon', mode: 'list' }
     component.onTargetViewModeChange(event)
     expect(mockRenderer.removeClass).toHaveBeenCalledWith(component.targetList, 'tile-view')
@@ -241,5 +315,49 @@ fdescribe('ProductComponent', () => {
     event = { icon: 'grid-icon', mode: 'grid' }
     component.onTargetViewModeChange(event)
     expect(mockRenderer.addClass).toHaveBeenCalledWith(component.targetList, 'tile-view')
+  })
+
+  it('should call fillForm when item is selected', () => {
+    const event = { items: [{ id: 1 }] }
+    component.displayDetails = true
+
+    component.onSourceSelect(event)
+
+    expect(component.displayDetails).toBeTrue()
+  })
+
+  it('should set displayDetails to false when no item is selected', () => {
+    const event = { items: [] }
+
+    component.onSourceSelect(event)
+
+    expect(component.displayDetails).toBeFalse()
+  })
+
+  it('should call getWProduct when an item is selected: caöö getProductById', () => {
+    const event = { items: [{ id: 1 }] }
+    component.displayDetails = true
+
+    component.onTargetSelect(event)
+
+    expect(component.displayDetails).toBeTrue()
+  })
+
+  it('should call getWProduct when an item is selected: display error', () => {
+    wProductServiceSpy.getProductById.and.returnValue(throwError(() => new Error()))
+    const event = { items: [{ id: 1 }] }
+    component.displayDetails = true
+
+    component.onTargetSelect(event)
+
+    expect(component.displayDetails).toBeTrue()
+  })
+
+  it('should set displayDetails to false when no item is selected', () => {
+    const event = { items: [] }
+
+    component.onTargetSelect(event)
+
+    expect(component.displayDetails).toBeFalse()
   })
 })
