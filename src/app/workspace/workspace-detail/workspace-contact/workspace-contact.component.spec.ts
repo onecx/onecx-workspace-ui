@@ -24,7 +24,7 @@ const formGroup = new FormGroup({
   streetNo: new FormControl('streetNo')
 })
 
-fdescribe('WorkspaceContactComponent', () => {
+describe('WorkspaceContactComponent', () => {
   let component: WorkspaceContactComponent
   let fixture: ComponentFixture<WorkspaceContactComponent>
 
