@@ -1,25 +1,32 @@
 import { Component, EventEmitter, Input, OnChanges, Output, Renderer2, ViewChild } from '@angular/core'
 import { TranslateService } from '@ngx-translate/core'
 import { DefaultValueAccessor, FormControl, FormGroup, Validators } from '@angular/forms'
-import { Observable, Subject, catchError, of } from 'rxjs'
+import { Observable, Subject, catchError, map, of, takeUntil } from 'rxjs'
 import { TabView } from 'primeng/tabview'
 import { SelectItem } from 'primeng/api'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
-import { dropDownSortItemsByLabel } from 'src/app/shared/utils'
+import { dropDownSortItemsByLabel, limitText } from 'src/app/shared/utils'
 import {
   CreateMenuItem,
   MenuItem,
   WorkspaceMenuItem,
   MenuItemAPIService,
-  UpdateMenuItemRequest
+  UpdateMenuItemRequest,
+  Microfrontend,
+  WorkspaceProductAPIService
 } from 'src/app/shared/generated'
 import { ChangeMode } from '../menu.component'
 import { IconService } from '../services/iconservice'
 
 type I18N = { [key: string]: string }
 type LanguageItem = SelectItem & { data: string }
-
+type MFE = Microfrontend & { product?: string }
+type DropDownChangeEvent = MouseEvent & { value: any }
+interface AutoCompleteCompleteEvent {
+  originalEvent: Event
+  query: string
+}
 // trim the value (string!) of a form control before passes to the control
 const original = DefaultValueAccessor.prototype.registerOnChange
 DefaultValueAccessor.prototype.registerOnChange = function (fn) {
@@ -44,6 +51,7 @@ export class MenuDetailComponent implements OnChanges {
   @Input() displayDeleteDialog = false
   @Output() dataChanged: EventEmitter<boolean> = new EventEmitter()
 
+  limitText = limitText
   @ViewChild('panelDetail') panelDetail: TabView | undefined
   private readonly destroy$ = new Subject()
   public formGroup: FormGroup
@@ -57,7 +65,10 @@ export class MenuDetailComponent implements OnChanges {
     '(https://www.|http://www.|https://|http://)?[a-zA-Z]{2,}(.[a-zA-Z]{2,})(.[a-zA-Z]{2,})?/[a-zA-Z0-9]{2,}|((https://www.|http://www.|https://|http://)?[a-zA-Z]{2,}(.[a-zA-Z]{2,})(.[a-zA-Z]{2,})?)|(https://www.|http://www.|https://|http://)?[a-zA-Z0-9]{2,}.[a-zA-Z0-9]{2,}.[a-zA-Z0-9]{2,}(.[a-zA-Z0-9]{2,})?'
   private posPattern = '[0-9]{1,9}'
   private panelHeight = 0
-  public mfeRUrlOptions: SelectItem[] = []
+  public mfeMap: Map<string, MFE> = new Map()
+  public mfeItems!: MFE[]
+  public selectedMfe: MFE | undefined
+  public filteredMfes: MFE[] = []
 
   // language settings and preview
   public languagesAvailable: LanguageItem[] = []
@@ -77,6 +88,7 @@ export class MenuDetailComponent implements OnChanges {
     private user: UserService,
     private icon: IconService,
     private menuApi: MenuItemAPIService,
+    private wProductApi: WorkspaceProductAPIService,
     private renderer: Renderer2,
     private translate: TranslateService,
     private msgService: PortalMessageService
@@ -115,6 +127,7 @@ export class MenuDetailComponent implements OnChanges {
   public ngOnChanges(): void {
     this.formGroup.reset()
     this.tabIndex = 0
+    this.mfeItems
     if (this.changeMode === 'CREATE') {
       this.formGroup.reset()
       this.menuItem = {
@@ -139,10 +152,10 @@ export class MenuDetailComponent implements OnChanges {
       .getMenuItemById({ menuItemId: this.menuItemId! })
       .pipe(catchError((error) => of(error)))
     this.menuItem$.subscribe({
-      next: (m) => {
-        this.menuItem = m ?? undefined
+      next: (item) => {
+        this.menuItem = item ?? undefined
         if (this.menuItem && this.displayDetailDialog) {
-          this.fillForm(this.menuItem)
+          this.loadMfeUrls()
           this.preparePanelHeight()
         }
       },
@@ -152,37 +165,92 @@ export class MenuDetailComponent implements OnChanges {
       }
     })
   }
-  private fillForm(m: MenuItem) {
+  private fillForm() {
+    if (!this.menuItem) return
     this.formGroup.reset()
     this.formGroup.setValue({
-      parentItemId: m.parentItemId,
-      url: m.url,
-      key: m.key,
-      name: m.name,
-      position: m.position,
-      description: m.description,
-      scope: m.scope,
-      badge: m.badge,
-      disabled: m.disabled,
-      external: m.external
+      parentItemId: this.menuItem.parentItemId,
+      key: this.menuItem.key,
+      name: this.menuItem.name,
+      position: this.menuItem.position,
+      disabled: this.menuItem.disabled,
+      external: this.menuItem.external,
+      url: this.prepareUrlObject(this.menuItem.url),
+      badge: this.menuItem.badge,
+      scope: this.menuItem.scope,
+      description: this.menuItem.description
     })
   }
 
   /**
-   * SAVE => CREATE + UPDATE
+   * Prepare URL object to be displayed and extend item list for specific entries
+   * 1. If URL exists then search for existing mfe with best match with base path
+   *    In case the original URL was extended then create a new item for it
+   * 2. If url is http address or unknown => add a specific item for it
+   * 3. Add an empty item on top (to clean the field by selection = no url)
    */
+  private prepareUrlObject(url?: string): MFE | undefined {
+    let mfe: MFE | undefined = undefined
+    let maxLength = 0
+    let itemCreated = false
+    if (url) {
+      if (url.match(/^(http|https)/g)) {
+        mfe = { id: undefined, appId: undefined, basePath: url, product: 'MENU_ITEM.URL.HTTP' } as MFE
+        itemCreated = true
+      } else {
+        // search for mfe with best match of base path
+        for (let i = 0; i < this.mfeItems.length; i++) {
+          const bp = this.mfeItems[i].basePath!
+          // perfect
+          if (url === bp) {
+            mfe = this.mfeItems[i]
+            break
+          }
+          // if URL was extended then create such specific item with best match
+          if (url.toLowerCase().indexOf(bp.toLowerCase()) === 0 && maxLength < bp.length!) {
+            mfe = { ...this.mfeItems[i] }
+            maxLength = bp.length // matching length
+            mfe.basePath = url
+            itemCreated = true
+          }
+        }
+        if (!mfe) {
+          mfe = { id: undefined, appId: undefined, basePath: url, product: 'MENU_ITEM.URL.UNKNOWN.PRODUCT' } as MFE
+          itemCreated = true
+        }
+      }
+      if (itemCreated) {
+        this.mfeMap.set(url, mfe)
+        this.mfeItems.unshift(mfe) // add on top
+      }
+      this.selectedMfe = mfe
+    }
+    this.mfeItems.unshift({ id: undefined, appId: undefined, basePath: '', product: 'MENU_ITEM.URL.EMPTY' })
+    return url ? mfe : this.mfeItems[0]
+  }
+
+  /***************************************************************************
+   * SAVE => CREATE + UPDATE
+   **************************************************************************/
   public onMenuSave(): void {
-    if (!this.formGroup.valid) console.error('non valid form', this.formGroup)
+    if (!this.formGroup.valid) {
+      console.error('non valid form', this.formGroup)
+      return
+    }
     if (this.menuItem) {
+      if (this.formGroup.controls['url'].value instanceof Object)
+        this.menuItem.url = this.formGroup.controls['url'].value.basePath
+      else this.menuItem.url = this.formGroup.controls['url'].value
+
+      // get form values
       this.menuItem.parentItemId = this.formGroup.controls['parentItemId'].value
       this.menuItem.key = this.formGroup.controls['key'].value
-      this.menuItem.url = this.formGroup.controls['url'].value
       this.menuItem.name = this.formGroup.controls['name'].value
-      this.menuItem.badge = this.formGroup.controls['badge'].value ?? ''
-      this.menuItem.scope = this.formGroup.controls['scope'].value
       this.menuItem.position = this.formGroup.controls['position'].value
       this.menuItem.disabled = this.formGroup.controls['disabled'].value
       this.menuItem.external = this.formGroup.controls['external'].value
+      this.menuItem.badge = this.formGroup.controls['badge'].value
+      this.menuItem.scope = this.formGroup.controls['scope'].value
       this.menuItem.description = this.formGroup.controls['description'].value
       const i18n: I18N = {}
       for (const l of this.languagesDisplayed) {
@@ -206,10 +274,10 @@ export class MenuDetailComponent implements OnChanges {
           }
         })
     }
-    if (this.changeMode === 'EDIT' && this.menuItem?.id) {
+    if (this.changeMode === 'EDIT' && this.menuItemId) {
       this.menuApi
         .updateMenuItem({
-          menuItemId: this.menuItem.id,
+          menuItemId: this.menuItemId!,
           updateMenuItemRequest: this.menuItem as UpdateMenuItemRequest
         })
         .subscribe({
@@ -246,9 +314,6 @@ export class MenuDetailComponent implements OnChanges {
     this.tabIndex = e.index
     this.prepareLanguagePanel()
     this.preparePanelHeight()
-  }
-  public onFocusFieldUrl(field: any): void {
-    field.overlayVisible = true
   }
   // same height on all TABs
   private preparePanelHeight(): void {
@@ -309,5 +374,91 @@ export class MenuDetailComponent implements OnChanges {
   }
   public displayLanguageField(lang: string) {
     return !this.languagesDisplayed.some((l) => l.value === lang)
+  }
+
+  /**
+   * LOAD Microfrontends from registered products
+   **/
+  private loadMfeUrls(): void {
+    this.mfeItems = []
+    this.wProductApi
+      .getProductsForWorkspaceId({ id: this.workspaceId ?? '' })
+      .pipe(
+        map((products) => {
+          for (let p of products) {
+            if (p.microfrontends) {
+              p.microfrontends.reduce(
+                (mfeMap, mfe) => mfeMap.set(mfe.id!, { ...mfe, product: p.displayName! }),
+                this.mfeMap
+              )
+              for (let mfe of p.microfrontends) {
+                this.mfeItems.push({ ...mfe, product: p.displayName ?? '' })
+              }
+            }
+          }
+          this.filteredMfes = this.mfeItems.sort(this.sortMfesByProductAndBasePath)
+          this.fillForm() // now the form can be filled
+        }),
+        catchError((err) => {
+          console.error('getProductsForWorkspaceId():', err)
+          return of([] as SelectItem[])
+        })
+      )
+      .pipe(takeUntil(this.destroy$))
+      .subscribe()
+  }
+  public sortMfesByProductAndBasePath(a: MFE, b: MFE): number {
+    return (
+      (a.product ? a.product.toUpperCase() : '').localeCompare(b.product ? b.product.toUpperCase() : '') ||
+      (a.basePath ? a.basePath : '').localeCompare(b.basePath ? b.basePath : '')
+    )
+  }
+
+  /***************************************************************************
+   * EVENTS on URL field
+   **************************************************************************/
+  public onFocusUrl(field: any): void {
+    field.overlayVisible = true
+  }
+  public onSelectPath(ev: DropDownChangeEvent): void {
+    if (ev && ev.value) {
+      if (this.mfeMap.has(ev.value)) {
+        this.selectedMfe = this.mfeMap.get(ev.value)
+      }
+    }
+  }
+  public onClearPath(): void {
+    this.selectedMfe = this.mfeItems[0]
+    this.formGroup.controls['url'].setValue(this.mfeItems[0])
+  }
+  /**
+   * FILTER URL (query)
+   *   try to filter with best match with some exceptions:
+   *     a) empty query => list all
+   *     b) unknown entry => list all
+   */
+  public onFilterPathes(ev: AutoCompleteCompleteEvent): void {
+    let filtered: MFE[] = []
+    let query = ev && ev.query ? ev.query : undefined
+    if (!query) {
+      if (this.formGroup.controls['url'].value instanceof Object) query = this.formGroup.controls['url'].value.basePath
+      else query = this.formGroup.controls['url'].value
+    }
+    if (!query || query === '') {
+      filtered = this.mfeItems // exception a)
+    } else {
+      for (let i = 0; i < this.mfeItems.length; i++) {
+        const mfe = this.mfeItems[i]
+        if (
+          mfe.basePath?.toLowerCase().indexOf(query.toLowerCase()) === 0 ||
+          query.toLowerCase().indexOf(mfe.basePath?.toLowerCase()!) === 0
+        ) {
+          filtered.push(mfe)
+        }
+      }
+      // exception b)
+      if (filtered.length === 2 && !filtered[0].id) filtered = this.mfeItems
+    }
+    this.filteredMfes = filtered
   }
 }
