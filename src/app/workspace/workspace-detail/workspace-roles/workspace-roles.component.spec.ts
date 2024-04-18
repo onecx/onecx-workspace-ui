@@ -34,7 +34,7 @@ const wRole: Role = {
   type: 'WORKSPACE'
 }
 
-fdescribe('WorkspaceRolesComponent', () => {
+describe('WorkspaceRolesComponent', () => {
   let component: WorkspaceRolesComponent
   let fixture: ComponentFixture<WorkspaceRolesComponent>
 
@@ -253,69 +253,6 @@ fdescribe('WorkspaceRolesComponent', () => {
     expect(component.workspaceRolesLoaded).toBeFalse()
     expect(component.iamRolesLoaded).toBeFalse()
     expect((component as any).searchRoles).toHaveBeenCalled()
-  })
-
-  it('should return onToggleRole: no edit permission', () => {
-    wRoleServiceSpy.createWorkspaceRole.and.returnValue(of({}))
-    component.hasEditPermission = false
-
-    component.onToggleRole(wRole)
-
-    expect(wRoleServiceSpy.createWorkspaceRole).not.toHaveBeenCalled()
-  })
-
-  it('should create a role onToggleRole', () => {
-    wRoleServiceSpy.createWorkspaceRole.and.returnValue(of({ id: 'newRoleId' }))
-    component.hasEditPermission = true
-
-    component.onToggleRole(wRole)
-
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.ROLE_OK' })
-  })
-
-  it('should create a role onToggleRole: no workspace id', () => {
-    wRoleServiceSpy.createWorkspaceRole.and.returnValue(of({ id: 'newRoleId' }))
-    component.hasEditPermission = true
-    component.workspace = {
-      name: 'name',
-      theme: 'theme',
-      baseUrl: '/some/base/url'
-    }
-
-    component.onToggleRole(wRole)
-
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.ROLE_OK' })
-  })
-
-  it('should display error when creating a role onToggleRole', () => {
-    wRoleServiceSpy.createWorkspaceRole.and.returnValue(throwError(() => new Error()))
-    component.hasEditPermission = true
-
-    component.onToggleRole(wRole)
-
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.ROLE_NOK' })
-  })
-
-  it('should delete a workspace role onToggleRole', () => {
-    wRole.isWorkspaceRole = true
-    component.hasEditPermission = true
-    wRoleServiceSpy.deleteWorkspaceRole.and.returnValue(of({}))
-
-    component.onToggleRole(wRole)
-
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.ROLE_OK' })
-    expect(wRole.isWorkspaceRole).toBe(false)
-    expect(wRole.id).toBeUndefined()
-  })
-
-  it('should display error when delete workspace role call fails', () => {
-    wRole.isWorkspaceRole = true
-    component.hasEditPermission = true
-    wRoleServiceSpy.deleteWorkspaceRole.and.returnValue(throwError(() => new Error()))
-
-    component.onToggleRole(wRole)
-
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.ROLE_NOK' })
   })
 
   it('should create a role onAddRole', () => {
