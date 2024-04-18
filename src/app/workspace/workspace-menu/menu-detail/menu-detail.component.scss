@@ -7,4 +7,8 @@
   .menu-url-dropdown.p-dropdown .p-dropdown-label:not(.p-dropdown-label-empty) {
     padding: 0.4rem 1rem !important;
   }
+  .p-autocomplete-clear-icon {
+    /* fix for bug in PrimeNG */
+    right: 3.5rem;
+  }
 }

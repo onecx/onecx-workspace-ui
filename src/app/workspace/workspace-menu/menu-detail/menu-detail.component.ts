@@ -22,8 +22,11 @@ import { IconService } from '../services/iconservice'
 type I18N = { [key: string]: string }
 type LanguageItem = SelectItem & { data: string }
 type MFE = Microfrontend & { product?: string }
-export type DropDownChangeEvent = MouseEvent & { value: any }
-
+type DropDownChangeEvent = MouseEvent & { value: any }
+interface AutoCompleteCompleteEvent {
+  originalEvent: Event
+  query: string
+}
 // trim the value (string!) of a form control before passes to the control
 const original = DefaultValueAccessor.prototype.registerOnChange
 DefaultValueAccessor.prototype.registerOnChange = function (fn) {
@@ -62,8 +65,9 @@ export class MenuDetailComponent implements OnChanges {
   private posPattern = '[0-9]{1,9}'
   private panelHeight = 0
   public mfeMap: Map<string, MFE> = new Map()
-  public mfeItems: MFE[] = []
+  public mfeItems!: MFE[]
   public selectedMfe: MFE | undefined
+  public filteredMfes: MFE[] = []
 
   // language settings and preview
   public languagesAvailable: LanguageItem[] = []
@@ -122,6 +126,7 @@ export class MenuDetailComponent implements OnChanges {
   public ngOnChanges(): void {
     this.formGroup.reset()
     this.tabIndex = 0
+    this.mfeItems
     if (this.changeMode === 'CREATE') {
       this.formGroup.reset()
       this.menuItem = {
@@ -146,11 +151,10 @@ export class MenuDetailComponent implements OnChanges {
       .getMenuItemById({ menuItemId: this.menuItemId! })
       .pipe(catchError((error) => of(error)))
     this.menuItem$.subscribe({
-      next: (m) => {
-        this.menuItem = m ?? undefined
+      next: (item) => {
+        this.menuItem = item ?? undefined
         if (this.menuItem && this.displayDetailDialog) {
           this.loadMfeUrls()
-          this.fillForm(this.menuItem)
           this.preparePanelHeight()
         }
       },
@@ -160,37 +164,76 @@ export class MenuDetailComponent implements OnChanges {
       }
     })
   }
-  private fillForm(m: MenuItem) {
+  private fillForm() {
+    if (!this.menuItem) return
     this.formGroup.reset()
     this.formGroup.setValue({
-      parentItemId: m.parentItemId,
-      url: this.mfeMap.has(m.url!) ? this.mfeMap.get(m.url!)?.basePath : '<unknown entry>',
-      key: m.key,
-      name: m.name,
-      position: m.position,
-      description: m.description,
-      scope: m.scope,
-      badge: m.badge,
-      disabled: m.disabled,
-      external: m.external
+      parentItemId: this.menuItem.parentItemId,
+      key: this.menuItem.key,
+      name: this.menuItem.name,
+      position: this.menuItem.position,
+      disabled: this.menuItem.disabled,
+      external: this.menuItem.external,
+      url: this.prepareUrlObject(this.menuItem.url),
+      badge: this.menuItem.badge,
+      scope: this.menuItem.scope,
+      description: this.menuItem.description
     })
+  }
+
+  // /permission         => product
+  // /permission/detail  => product variation
+  private prepareUrlObject(url?: string): MFE {
+    console.log('prepareUrlObject: ' + url, this.mfeMap)
+    let mfe: MFE | undefined = undefined
+    let maxLength = 0
+    if (!url) mfe = { id: 'empty', basePath: '', appId: '', product: '' }
+    else {
+      for (let i = 0; i < this.mfeItems.length; i++) {
+        // search for the best match
+        const bp = this.mfeItems[i].basePath!
+        console.log('prepareUrlObject: ' + i + ' ' + bp, this.mfeItems[i])
+        if (url.toLowerCase().indexOf(this.mfeItems[i] && bp.toLowerCase()) === 0 && maxLength < bp.length!) {
+          mfe = { ...this.mfeItems[i] }
+          maxLength = bp.length // matching length
+          mfe.basePath = url
+        }
+      }
+      if (!mfe) {
+        mfe = { id: undefined, appId: 'unknown', basePath: url, product: 'unknown' } as MFE
+      }
+      this.mfeMap.set(url, mfe)
+      this.mfeItems.unshift(mfe) // add at the beginning
+    }
+    console.log('prepareUrlObject: ' + url, this.mfeItems)
+    this.selectedMfe = mfe
+    return mfe
   }
 
   /**
    * SAVE => CREATE + UPDATE
    */
   public onMenuSave(): void {
-    if (!this.formGroup.valid) console.error('non valid form', this.formGroup)
+    if (!this.formGroup.valid) {
+      console.error('non valid form', this.formGroup)
+      return
+    }
     if (this.menuItem) {
+      console.log('this.selectedMfe', this.selectedMfe)
+      console.log('url', this.formGroup.controls['url'].value)
+      if (this.formGroup.controls['url'].value instanceof Object)
+        this.menuItem.url = this.formGroup.controls['url'].value.basePath
+      else this.menuItem.url = this.formGroup.controls['url'].value
+
+      // form
       this.menuItem.parentItemId = this.formGroup.controls['parentItemId'].value
       this.menuItem.key = this.formGroup.controls['key'].value
-      this.menuItem.url = this.formGroup.controls['url'].value
       this.menuItem.name = this.formGroup.controls['name'].value
-      this.menuItem.badge = this.formGroup.controls['badge'].value ?? ''
-      this.menuItem.scope = this.formGroup.controls['scope'].value
       this.menuItem.position = this.formGroup.controls['position'].value
       this.menuItem.disabled = this.formGroup.controls['disabled'].value
       this.menuItem.external = this.formGroup.controls['external'].value
+      this.menuItem.badge = this.formGroup.controls['badge'].value
+      this.menuItem.scope = this.formGroup.controls['scope'].value
       this.menuItem.description = this.formGroup.controls['description'].value
       const i18n: I18N = {}
       for (const l of this.languagesDisplayed) {
@@ -198,6 +241,7 @@ export class MenuDetailComponent implements OnChanges {
       }
       this.menuItem.i18n = i18n
     }
+    console.log(this.changeMode + ' : ' + this.menuItemId, this.menuItem)
     if (this.changeMode === 'CREATE') {
       this.menuApi
         .createMenuItemForWorkspace({
@@ -214,10 +258,10 @@ export class MenuDetailComponent implements OnChanges {
           }
         })
     }
-    if (this.changeMode === 'EDIT' && this.menuItem?.id) {
+    if (this.changeMode === 'EDIT' && this.menuItemId) {
       this.menuApi
         .updateMenuItem({
-          menuItemId: this.menuItem.id,
+          menuItemId: this.menuItemId!,
           updateMenuItemRequest: this.menuItem as UpdateMenuItemRequest
         })
         .subscribe({
@@ -316,22 +360,16 @@ export class MenuDetailComponent implements OnChanges {
     return !this.languagesDisplayed.some((l) => l.value === lang)
   }
 
+  /**
+   * LOAD Microfrontends from registered products
+   **/
   private loadMfeUrls(): void {
+    this.mfeItems = []
     this.wProductApi
       .getProductsForWorkspaceId({ id: this.workspaceId ?? '' })
       .pipe(
         map((products) => {
           for (let p of products) {
-            // work-around
-            const mfe = {
-              id: p.productName!,
-              appId: p.productName,
-              basePath: '/base-path-to-microfrontend',
-              product: p.displayName
-            }
-            this.mfeMap.set(mfe.id, mfe)
-            this.mfeItems.push(mfe)
-            // final
             if (p.microfrontends) {
               p.microfrontends.reduce(
                 (mfeMap, mfe) => mfeMap.set(mfe.id!, { ...mfe, product: p.displayName! }),
@@ -342,9 +380,8 @@ export class MenuDetailComponent implements OnChanges {
               }
             }
           }
-          console.log('loadMfeUrls', this.mfeItems)
-          console.log('loadMfeUrls', this.mfeMap)
-          return this.mfeItems.sort(this.sortMfesByProductAndBasePath)
+          this.filteredMfes = this.mfeItems.sort(this.sortMfesByProductAndBasePath)
+          this.fillForm() // now the form can be filled
         }),
         catchError((err) => {
           console.error('getProductsForWorkspaceId():', err)
@@ -354,23 +391,47 @@ export class MenuDetailComponent implements OnChanges {
       .pipe(takeUntil(this.destroy$))
       .subscribe()
   }
-
-  public onFocusFieldUrl(field: any): void {
-    field.overlayVisible = true
-  }
-
   public sortMfesByProductAndBasePath(a: MFE, b: MFE): number {
     return (
       (a.product ? a.product.toUpperCase() : '').localeCompare(b.product ? b.product.toUpperCase() : '') ||
       (a.basePath ? a.basePath : '').localeCompare(b.basePath ? b.basePath : '')
     )
   }
+  public onFocusMfeUrl(field: any): void {
+    field.overlayVisible = true
+  }
   public onSelectMfe(ev: DropDownChangeEvent): void {
     if (ev && ev.value) {
       if (this.mfeMap.has(ev.value)) {
         this.selectedMfe = this.mfeMap.get(ev.value)
-        console.log('onSelectMfe', this.selectedMfe)
       }
     }
+  }
+  // after each keyUp try to filter (shrink list), with exceptions
+  public onFilterMfes(ev: AutoCompleteCompleteEvent): void {
+    let filtered: MFE[] = []
+    let query = ev && ev.query ? ev.query : undefined
+    if (!query) {
+      if (this.formGroup.controls['url'].value instanceof Object) query = this.formGroup.controls['url'].value.basePath
+      else query = this.formGroup.controls['url'].value
+    }
+    console.log('query ' + query)
+    if (!query || query === '') {
+      filtered = this.mfeItems // exception: no query => list all
+    } else {
+      for (let i = 0; i < this.mfeItems.length; i++) {
+        const mfe = this.mfeItems[i]
+        if (
+          mfe.basePath?.toLowerCase().indexOf(query.toLowerCase()) === 0 ||
+          query.toLowerCase().indexOf(mfe.basePath?.toLowerCase()!) === 0
+        ) {
+          filtered.push(mfe)
+        }
+      }
+      // exception: unknown entry => add all
+      if (filtered.length === 1 && !filtered[0].id) filtered = this.mfeItems
+    }
+    this.filteredMfes = filtered
+    console.log('this.filteredMfes ', this.filteredMfes)
   }
 }

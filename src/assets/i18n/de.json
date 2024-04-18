@@ -208,6 +208,8 @@
     "POSITION": "Position",
     "SCOPE": "Scope",
     "URL": "URL",
+    "URL.UNKNOWN.APP": "Unbekannte App",
+    "URL.UNKNOWN.PRODUCT": "Unbekanntes Produkt",
     "TOOLTIP": {
       "BADGE": "Icon aus der PrimeNG Bibliothek welches neben dem Menünamen angezeigt werden soll",
       "DESCRIPTION": "Zusatzinformationen",
@@ -220,7 +222,7 @@
       "WORKSPACE": "Name des Workspaces",
       "POSITION": "Eine ganzzahlige Nummer welche die Position des Menüpunkts in der Menüstruktur festlegt",
       "SCOPE": "Aktionsradius",
-      "URL": "Die durch den Menüpunkt aufgerufene URL. Kann intern (via registriertes Produkt) oder extern (Verlassen des Workspaces) sein"
+      "URL": "Die durch den Menüpunkt aufgerufene URL. Auswählen aus Liste und/oder manuelle Änderungen/Erweiterungen möglich."
     }
   },
   "DIALOG": {
