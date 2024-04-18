@@ -6,7 +6,7 @@ import { TabView } from 'primeng/tabview'
 import { SelectItem } from 'primeng/api'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
-import { dropDownSortItemsByLabel } from 'src/app/shared/utils'
+import { dropDownSortItemsByLabel, limitText } from 'src/app/shared/utils'
 import {
   CreateMenuItem,
   MenuItem,
@@ -51,6 +51,7 @@ export class MenuDetailComponent implements OnChanges {
   @Input() displayDeleteDialog = false
   @Output() dataChanged: EventEmitter<boolean> = new EventEmitter()
 
+  limitText = limitText
   @ViewChild('panelDetail') panelDetail: TabView | undefined
   private readonly destroy$ = new Subject()
   public formGroup: FormGroup
@@ -181,51 +182,67 @@ export class MenuDetailComponent implements OnChanges {
     })
   }
 
-  // /permission         => product
-  // /permission/detail  => product variation
-  private prepareUrlObject(url?: string): MFE {
-    console.log('prepareUrlObject: ' + url, this.mfeMap)
+  /**
+   * Prepare URL object to be displayed and extend item list for specific entries
+   * 1. If URL exists then search for existing mfe with best match with base path
+   *    In case the original URL was extended then create a new item for it
+   * 2. If url is http address or unknown => add a specific item for it
+   * 3. Add an empty item on top (to clean the field by selection = no url)
+   */
+  private prepareUrlObject(url?: string): MFE | undefined {
     let mfe: MFE | undefined = undefined
     let maxLength = 0
-    if (!url) mfe = { id: 'empty', basePath: '', appId: '', product: '' }
-    else {
-      for (let i = 0; i < this.mfeItems.length; i++) {
-        // search for the best match
-        const bp = this.mfeItems[i].basePath!
-        console.log('prepareUrlObject: ' + i + ' ' + bp, this.mfeItems[i])
-        if (url.toLowerCase().indexOf(this.mfeItems[i] && bp.toLowerCase()) === 0 && maxLength < bp.length!) {
-          mfe = { ...this.mfeItems[i] }
-          maxLength = bp.length // matching length
-          mfe.basePath = url
+    let itemCreated = false
+    if (url) {
+      if (url.match(/^(http|https)/g)) {
+        mfe = { id: undefined, appId: undefined, basePath: url, product: 'MENU_ITEM.URL.HTTP' } as MFE
+        itemCreated = true
+      } else {
+        // search for mfe with best match of base path
+        for (let i = 0; i < this.mfeItems.length; i++) {
+          const bp = this.mfeItems[i].basePath!
+          // perfect
+          if (url === bp) {
+            mfe = this.mfeItems[i]
+            break
+          }
+          // if URL was extended then create such specific item with best match
+          if (url.toLowerCase().indexOf(bp.toLowerCase()) === 0 && maxLength < bp.length!) {
+            mfe = { ...this.mfeItems[i] }
+            maxLength = bp.length // matching length
+            mfe.basePath = url
+            itemCreated = true
+          }
+        }
+        if (!mfe) {
+          mfe = { id: undefined, appId: undefined, basePath: url, product: 'MENU_ITEM.URL.UNKNOWN.PRODUCT' } as MFE
+          itemCreated = true
         }
       }
-      if (!mfe) {
-        mfe = { id: undefined, appId: 'unknown', basePath: url, product: 'unknown' } as MFE
+      if (itemCreated) {
+        this.mfeMap.set(url, mfe)
+        this.mfeItems.unshift(mfe) // add on top
       }
-      this.mfeMap.set(url, mfe)
-      this.mfeItems.unshift(mfe) // add at the beginning
+      this.selectedMfe = mfe
     }
-    console.log('prepareUrlObject: ' + url, this.mfeItems)
-    this.selectedMfe = mfe
-    return mfe
+    this.mfeItems.unshift({ id: undefined, appId: undefined, basePath: '', product: 'MENU_ITEM.URL.EMPTY' })
+    return url ? mfe : this.mfeItems[0]
   }
 
-  /**
+  /***************************************************************************
    * SAVE => CREATE + UPDATE
-   */
+   **************************************************************************/
   public onMenuSave(): void {
     if (!this.formGroup.valid) {
       console.error('non valid form', this.formGroup)
       return
     }
     if (this.menuItem) {
-      console.log('this.selectedMfe', this.selectedMfe)
-      console.log('url', this.formGroup.controls['url'].value)
       if (this.formGroup.controls['url'].value instanceof Object)
         this.menuItem.url = this.formGroup.controls['url'].value.basePath
       else this.menuItem.url = this.formGroup.controls['url'].value
 
-      // form
+      // get form values
       this.menuItem.parentItemId = this.formGroup.controls['parentItemId'].value
       this.menuItem.key = this.formGroup.controls['key'].value
       this.menuItem.name = this.formGroup.controls['name'].value
@@ -241,7 +258,6 @@ export class MenuDetailComponent implements OnChanges {
       }
       this.menuItem.i18n = i18n
     }
-    console.log(this.changeMode + ' : ' + this.menuItemId, this.menuItem)
     if (this.changeMode === 'CREATE') {
       this.menuApi
         .createMenuItemForWorkspace({
@@ -397,27 +413,39 @@ export class MenuDetailComponent implements OnChanges {
       (a.basePath ? a.basePath : '').localeCompare(b.basePath ? b.basePath : '')
     )
   }
-  public onFocusMfeUrl(field: any): void {
+
+  /***************************************************************************
+   * EVENTS on URL field
+   **************************************************************************/
+  public onFocusUrl(field: any): void {
     field.overlayVisible = true
   }
-  public onSelectMfe(ev: DropDownChangeEvent): void {
+  public onSelectPath(ev: DropDownChangeEvent): void {
     if (ev && ev.value) {
       if (this.mfeMap.has(ev.value)) {
         this.selectedMfe = this.mfeMap.get(ev.value)
       }
     }
   }
-  // after each keyUp try to filter (shrink list), with exceptions
-  public onFilterMfes(ev: AutoCompleteCompleteEvent): void {
+  public onClearPath(): void {
+    this.selectedMfe = this.mfeItems[0]
+    this.formGroup.controls['url'].setValue(this.mfeItems[0])
+  }
+  /**
+   * FILTER URL (query)
+   *   try to filter with best match with some exceptions:
+   *     a) empty query => list all
+   *     b) unknown entry => list all
+   */
+  public onFilterPathes(ev: AutoCompleteCompleteEvent): void {
     let filtered: MFE[] = []
     let query = ev && ev.query ? ev.query : undefined
     if (!query) {
       if (this.formGroup.controls['url'].value instanceof Object) query = this.formGroup.controls['url'].value.basePath
       else query = this.formGroup.controls['url'].value
     }
-    console.log('query ' + query)
     if (!query || query === '') {
-      filtered = this.mfeItems // exception: no query => list all
+      filtered = this.mfeItems // exception a)
     } else {
       for (let i = 0; i < this.mfeItems.length; i++) {
         const mfe = this.mfeItems[i]
@@ -428,10 +456,9 @@ export class MenuDetailComponent implements OnChanges {
           filtered.push(mfe)
         }
       }
-      // exception: unknown entry => add all
-      if (filtered.length === 1 && !filtered[0].id) filtered = this.mfeItems
+      // exception b)
+      if (filtered.length === 2 && !filtered[0].id) filtered = this.mfeItems
     }
     this.filteredMfes = filtered
-    console.log('this.filteredMfes ', this.filteredMfes)
   }
 }

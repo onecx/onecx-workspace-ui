@@ -73,12 +73,11 @@
                 #mfeUrl
                 formControlName="url"
                 [suggestions]="filteredMfes"
-                (completeMethod)="onFilterMfes($event)"
-                (onSelect)="onSelectMfe($event)"
-                (onFocus)="onFocusMfeUrl(mfeUrl)"
-                (onKeyUp)="onFilterMfes($event)"
-                (onClear)="onFilterMfes($event)"
-                (onDropdownClick)="onFocusMfeUrl(mfeUrl)"
+                (completeMethod)="onFilterPathes($event)"
+                (onSelect)="onSelectPath($event)"
+                (onFocus)="onFocusUrl(mfeUrl)"
+                (onClear)="onClearPath()"
+                (onDropdownClick)="onFocusUrl(mfeUrl)"
                 [minLength]="0"
                 styleClass="w-full"
                 field="basePath"
@@ -89,10 +88,10 @@
               >
                 <ng-template let-mfe pTemplate="item">
                   <div class="flex flex-row column-gap-2 align-items-center">
-                    <div class="w-20rem">{{ mfe.basePath }}</div>
+                    <div class="w-25rem">{{ limitText(mfe.basePath, 45) }}</div>
                     <div class="flex flex-column">
                       <div class="text-sm font-bold" [class.danger-action-text]="!mfe.id">
-                        {{ mfe.id ? mfe.product : ('MENU_ITEM.URL.UNKNOWN.PRODUCT' | translate) }}
+                        {{ mfe.id ? mfe.product : (mfe.product | translate) }}
                       </div>
                       <div class="text-xs" *ngIf="mfe.id">{{ mfe.appId }}</div>
                     </div>

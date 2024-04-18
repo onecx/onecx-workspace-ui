@@ -179,3 +179,20 @@
     }
   }
 }
+
+@mixin correct-autocomplete {
+  :host ::ng-deep {
+    .p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item {
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+    }
+    .p-autocomplete-clear-icon {
+      /* fix for bug in PrimeNG */
+      right: 3.5rem;
+    }
+    .p-autocomplete .p-autocomplete-loader {
+      /* fix for bug in PrimeNG */
+      display: none;
+    }
+  }
+}

@@ -208,7 +208,8 @@
     "POSITION": "Position",
     "SCOPE": "Scope",
     "URL": "URL",
-    "URL.UNKNOWN.APP": "Unknown App",
+    "URL.EMPTY": "",
+    "URL.HTTP": "Web Address",
     "URL.UNKNOWN.PRODUCT": "Unknown Product",
     "TOOLTIP": {
       "BADGE": "Icon from the PrimeNG library which should be displayed next to the menu name",
