@@ -1,5 +1,6 @@
 @import 'src/_mixins.scss';
 
+@include invisible;
 @include danger-action;
 @include correct-data-view-control;
 @include table-inline-buttons;
@@ -8,6 +9,9 @@
   .p-dialog .p-dialog-content {
     padding-bottom: 0;
     overflow-y: hidden;
+  }
+  .p-dialog.p-dialog {
+    height: auto !important;
   }
 
   .p-treetable {
@@ -53,20 +57,10 @@
   }
   .p-button.p-button-icon-only {
     padding: 0.3rem;
-    &.p-button-rounded {
-      height: unset;
-    }
-  }
-
-  .p-dialog.p-dialog {
-    height: auto !important;
   }
 
   .p-tabview-panel {
     margin-top: 0.7rem;
-  }
-  .invisible {
-    visibility: hidden;
   }
   .button-min-height {
     min-height: 33.2px;

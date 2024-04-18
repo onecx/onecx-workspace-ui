@@ -308,7 +308,6 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.menuNodes = this.mapToTreeNodes(this.menuItems)
         this.prepareParentNodes(this.menuNodes)
         this.loadRolesAndAssignments()
-        console.log('tree nodes', this.menuNodes)
         if (restore) {
           this.restoreTree()
           this.msgService.success({ summaryKey: 'ACTIONS.SEARCH.RELOAD.OK' })
@@ -398,7 +397,6 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   public onGrantPermission(rowData: MenuItemNodeData, roleId: string): void {
-    console.log('onGrantPermission roleId:' + roleId + '  menuItemId:' + rowData.id)
     this.assApi
       .createAssignment({
         createAssignmentRequest: { roleId: roleId, menuItemId: rowData.id } as CreateAssignmentRequest
@@ -416,7 +414,6 @@ export class MenuComponent implements OnInit, OnDestroy {
       })
   }
   public onRevokePermission(rowData: MenuItemNodeData, roleId: string, assId: string): void {
-    console.log('onRevokePermission')
     this.assApi.deleteAssignment({ id: assId }).subscribe({
       next: () => {
         this.msgService.success({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.REVOKE_OK' })
@@ -553,29 +550,6 @@ export class MenuComponent implements OnInit, OnDestroy {
   // triggered by changes of tree structure in tree popup
   public onUpdateMenuStructure(changed: WorkspaceMenuItem[]): void {
     console.log('onUpdateMenuStructure')
-    /*
-    const patchRequestItems: UpdateMenuItemRequest[] = []
-    updatedMenuItems.forEach((item) => {
-      const patchMenuItem = { resource: item }
-      patchRequestItems.push(patchMenuItem)
-    })
-    this.menuApi
-      .updateMenuItem({
-        workspaceName: this.workspaceName,
-        patchMenuItemsRequest: patchRequestItems
-      })
-      .subscribe({
-        next: () => {
-          this.msgService.success({ summaryKey: 'TREE.EDIT_SUCCESS' })
-        },
-        error: (err: any) => {
-          this.msgService.error({ summaryKey: 'TREE.EDIT_ERROR' })
-          console.error(err)
-        },
-        complete: () => {
-          this.onReloadMenu()
-        }
-      })
-    */
+    /* to do => check api facility, it should be different from MonoRepo */
   }
 }

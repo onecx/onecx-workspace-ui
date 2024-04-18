@@ -382,7 +382,9 @@
   (dataChanged)="onMenuItemChanged($event)"
 ></app-menu-detail>
 
-<!-- PREVIEW + REORDER -->
+<!-- 
+  PREVIEW + REORDER 
+-->
 <app-menu-preview
   *ngIf="menuItems"
   [menuItems]="menuItems"
@@ -392,7 +394,9 @@
 >
 </app-menu-preview>
 
-<!-- IMPORT -->
+<!-- 
+  IMPORT 
+-->
 <app-menu-import
   [workspaceName]="workspaceName"
   [displayDialog]="displayMenuImport"

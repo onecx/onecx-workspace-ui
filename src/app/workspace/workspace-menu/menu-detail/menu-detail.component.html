@@ -69,20 +69,35 @@
 
           <div class="col-12 md:col-9 my-1" [title]="'MENU_ITEM.TOOLTIP.URL' | translate">
             <span class="p-float-label mb-1" controlErrorAnchor>
-              <p-dropdown
-                #formFieldUrl
-                id="workspace_menu_detail_field_url"
+              <p-autoComplete
+                #mfeUrl
                 formControlName="url"
+                [suggestions]="filteredMfes"
+                (completeMethod)="onFilterPathes($event)"
+                (onSelect)="onSelectPath($event)"
+                (onFocus)="onFocusUrl(mfeUrl)"
+                (onClear)="onClearPath()"
+                (onDropdownClick)="onFocusUrl(mfeUrl)"
+                [minLength]="0"
                 styleClass="w-full"
-                [editable]="true"
-                [options]="mfeRUrlOptions"
-                (onFocus)="onFocusFieldUrl(formFieldUrl)"
-                [pTooltip]="'MENU_ITEM.URL' | translate"
-                tooltipPosition="top"
-                tooltipEvent="focus"
-                appendTo="body"
+                field="basePath"
+                [dropdown]="true"
+                [dropdownMode]="'current'"
+                [completeOnFocus]="true"
+                [showClear]="true"
               >
-              </p-dropdown>
+                <ng-template let-mfe pTemplate="item">
+                  <div class="flex flex-row column-gap-2 align-items-center">
+                    <div class="w-25rem">{{ limitText(mfe.basePath, 45) }}</div>
+                    <div class="flex flex-column">
+                      <div class="text-sm font-bold" [class.danger-action-text]="!mfe.id">
+                        {{ mfe.id ? mfe.product : (mfe.product | translate) }}
+                      </div>
+                      <div class="text-xs" *ngIf="mfe.id">{{ mfe.appId }}</div>
+                    </div>
+                  </div>
+                </ng-template>
+              </p-autoComplete>
               <label for="workspace_menu_detail_field_url"> {{ 'MENU_ITEM.URL' | translate }} </label>
             </span>
           </div>
