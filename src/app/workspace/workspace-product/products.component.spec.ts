@@ -7,7 +7,7 @@ import { TranslateTestingModule } from 'ngx-translate-testing'
 import { RouterTestingModule } from '@angular/router/testing'
 import { ReactiveFormsModule, FormBuilder, FormArray, FormControl } from '@angular/forms'
 
-import { PortalMessageService } from '@onecx/portal-integration-angular'
+import { MfeInfo, PortalMessageService, AppStateService } from '@onecx/portal-integration-angular'
 import {
   Product,
   WorkspaceProductAPIService,
@@ -45,12 +45,22 @@ const prodStoreItem: ProductStoreItem = {
   productName: 'prodStoreItemName'
 }
 
+const mfeInfo: MfeInfo = {
+  mountPath: 'path',
+  remoteBaseUrl: 'url',
+  baseHref: 'href',
+  shellName: 'shell',
+  appId: 'appId',
+  productName: 'prodName'
+}
+
 fdescribe('ProductComponent', () => {
   let component: ProductComponent
   let fixture: ComponentFixture<ProductComponent>
   let mockActivatedRoute: ActivatedRoute
   let mockRenderer: Renderer2
   let fb: FormBuilder
+  let mockAppState
 
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
   const wProductServiceSpy = {
@@ -65,6 +75,7 @@ fdescribe('ProductComponent', () => {
   }
 
   beforeEach(waitForAsync(() => {
+    mockAppState = { currentMfe$: of(mfeInfo) }
     TestBed.configureTestingModule({
       declarations: [ProductComponent],
       imports: [
@@ -81,7 +92,8 @@ fdescribe('ProductComponent', () => {
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: WorkspaceProductAPIService, useValue: wProductServiceSpy },
-        { provide: ProductsAPIService, useValue: productServiceSpy }
+        { provide: ProductsAPIService, useValue: productServiceSpy },
+        { provide: AppStateService, useValue: mockAppState }
       ]
     }).compileComponents()
     msgServiceSpy.success.calls.reset()
@@ -106,6 +118,10 @@ fdescribe('ProductComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy()
+  })
+
+  it('should set currentMfe', () => {
+    expect(component.currentMfe).toEqual(mfeInfo)
   })
 
   it('should loadData onChanges: with and without ws id', () => {
@@ -412,6 +428,10 @@ fdescribe('ProductComponent', () => {
     expect(component.displayDetails).toBeFalse()
   })
 
+  it('should access mfeControls as FormArray', () => {
+    expect(component.mfeControls instanceof FormArray).toBeTruthy()
+  })
+
   it('should update a product by id', () => {
     wProductServiceSpy.updateProductById.and.returnValue(of({ resource: product }))
     const event: any = { items: [{ id: 1 }] }
@@ -469,7 +489,7 @@ fdescribe('ProductComponent', () => {
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.UPDATE_OK' })
   })
 
-  it('should update a product by id: no ids in ws and product', () => {
+  it('should display error when trying to update a product by id', () => {
     wProductServiceSpy.updateProductById.and.returnValue(throwError(() => new Error()))
     const event: any = { items: [product] }
     component.formGroup = fb.group({
@@ -486,7 +506,7 @@ fdescribe('ProductComponent', () => {
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.UPDATE_NOK' })
   })
 
-  it('should createProductInWorkspace onMoveToTarget', () => {
+  it('should createProductInWorkspace onMoveToTarget: one product', () => {
     wProductServiceSpy.createProductInWorkspace.and.returnValue(of({ resource: product }))
     const event: any = { items: [product] }
     component.wProducts = [{ ...product, bucket: 'SOURCE' }]
@@ -495,5 +515,150 @@ fdescribe('ProductComponent', () => {
     component.onMoveToTarget(event)
 
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.REGISTRATION_OK' })
+  })
+
+  it('should createProductInWorkspace onMoveToTarget: multiple products', () => {
+    wProductServiceSpy.createProductInWorkspace.and.returnValue(of({ resource: product }))
+    const product2: Product = {
+      productName: 'prod name',
+      displayName: 'display name',
+      description: 'description',
+      microfrontends: [microfrontend],
+      modificationCount: 1
+    }
+    const event: any = { items: [product, product2] }
+    component.wProducts = [{ ...product, bucket: 'SOURCE' }]
+    component.psProducts = [{ ...product, bucket: 'SOURCE' }]
+
+    component.onMoveToTarget(event)
+
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.REGISTRATIONS_OK' })
+  })
+
+  it('should createProductInWorkspace onMoveToTarget: no ws id', () => {
+    wProductServiceSpy.createProductInWorkspace.and.returnValue(of({ resource: product }))
+    const event: any = { items: [product] }
+    component.wProducts = [{ ...product, bucket: 'SOURCE' }]
+    component.psProducts = [{ ...product, bucket: 'SOURCE' }]
+    const workspace2: Workspace = {
+      name: 'name',
+      theme: 'theme',
+      baseUrl: '/some/base/url'
+    }
+    component.workspace = workspace2
+
+    component.onMoveToTarget(event)
+
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.REGISTRATION_OK' })
+  })
+
+  it('should createProductInWorkspace onMoveToTarget: no mfes', () => {
+    wProductServiceSpy.createProductInWorkspace.and.returnValue(of({ resource: product }))
+    component.wProducts = [{ ...product, bucket: 'SOURCE' }]
+    component.psProducts = [{ ...product, bucket: 'SOURCE' }]
+    const productNoMfes: Product = {
+      id: 'prod id',
+      productName: 'prod name',
+      displayName: 'display name',
+      description: 'description',
+      modificationCount: 1
+    }
+    const event: any = { items: [productNoMfes] }
+
+    component.onMoveToTarget(event)
+
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.REGISTRATION_OK' })
+  })
+
+  it('should createProductInWorkspace onMoveToTarget: multiple mfes', () => {
+    const microfrontend2: Microfrontend = {
+      id: 'id',
+      appId: 'appId',
+      basePath: 'path'
+    }
+    const productMfes: Product = {
+      id: 'prod id',
+      productName: 'prod name',
+      displayName: 'display name',
+      description: 'description',
+      microfrontends: [microfrontend, microfrontend2],
+      modificationCount: 1
+    }
+    wProductServiceSpy.createProductInWorkspace.and.returnValue(of({ resource: productMfes }))
+    component.wProducts = [{ ...productMfes, bucket: 'SOURCE' }]
+    component.psProducts = [{ ...productMfes, bucket: 'SOURCE' }]
+    const event: any = { items: [productMfes] }
+
+    component.onMoveToTarget(event)
+
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.REGISTRATION_OK' })
+  })
+
+  it('should display error when trying to createProductInWorkspace onMoveToTarget', () => {
+    wProductServiceSpy.createProductInWorkspace.and.returnValue(throwError(() => new Error()))
+    const event: any = { items: [product] }
+    component.wProducts = [{ ...product, bucket: 'SOURCE' }]
+    component.psProducts = [{ ...product, bucket: 'SOURCE' }]
+
+    component.onMoveToTarget(event)
+
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.REGISTRATION_NOK' })
+  })
+
+  it('should display error when trying to createProductInWorkspace onMoveToTarget', () => {
+    wProductServiceSpy.createProductInWorkspace.and.returnValue(throwError(() => new Error()))
+    component.wProducts = [{ ...product, bucket: 'SOURCE' }]
+    component.psProducts = [{ ...product, bucket: 'SOURCE' }]
+    const product2: Product = {
+      productName: 'prod name',
+      displayName: 'display name',
+      description: 'description',
+      microfrontends: [microfrontend],
+      modificationCount: 1
+    }
+    const event: any = { items: [product, product2] }
+
+    component.onMoveToTarget(event)
+
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.REGISTRATIONS_NOK' })
+  })
+
+  it('should deleteProductById onMoveToSource', () => {
+    wProductServiceSpy.deleteProductById.and.returnValue(of({ resource: product }))
+    const event: any = { items: [product] }
+    component.wProducts = [{ ...product, bucket: 'SOURCE' }]
+    component.psProducts = [{ ...product, bucket: 'SOURCE' }]
+
+    component.onMoveToSource(event)
+
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.DEREGISTRATION_OK' })
+  })
+
+  it('should deleteProductById onMoveToSource: no ws id', () => {
+    wProductServiceSpy.deleteProductById.and.returnValue(of({ resource: product }))
+    const event: any = { items: [product] }
+    component.wProducts = [{ ...product, bucket: 'SOURCE' }]
+    component.psProducts = [{ ...product, bucket: 'SOURCE' }]
+    const workspace2: Workspace = {
+      name: 'name',
+      theme: 'theme',
+      baseUrl: '/some/base/url'
+    }
+    component.workspace = workspace2
+
+    component.onMoveToSource(event)
+
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.DEREGISTRATION_OK' })
+  })
+
+  it('should deleteProductById onMoveToSource', () => {
+    wProductServiceSpy.deleteProductById.and.returnValue(throwError(() => new Error()))
+    const event: any = { items: [product] }
+    component.wProducts = [{ ...product, bucket: 'SOURCE' }]
+    component.psProducts = [{ ...product, bucket: 'SOURCE' }]
+
+    component.onMoveToSource(event)
+
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.DEREGISTRATION_NOK' })
   })
 })

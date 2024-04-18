@@ -286,7 +286,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
    * UI Events: SAVE
    */
   public onProductSave(ev: any): void {
-    ev.stopPropagation()
+    //ev.stopPropagation()
     this.editMode = false
     if (this.formGroup.valid && this.displayedDetailItem) {
       this.displayedDetailItem.baseUrl = this.formGroup.controls['baseUrl'].value
