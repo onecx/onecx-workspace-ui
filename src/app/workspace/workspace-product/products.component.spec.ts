@@ -17,7 +17,7 @@ import {
   Microfrontend
 } from 'src/app/shared/generated'
 
-import { ProductComponent } from './products.component'
+import { ExtendedProduct, ProductComponent } from './products.component'
 
 const workspace: Workspace = {
   id: 'id',
@@ -32,13 +32,16 @@ const microfrontend: Microfrontend = {
   basePath: 'path'
 }
 
-const product: Product = {
+const product: ExtendedProduct = {
   id: 'prod id',
   productName: 'prod name',
   displayName: 'display name',
   description: 'description',
   microfrontends: [microfrontend],
-  modificationCount: 1
+  modificationCount: 1,
+  bucket: 'SOURCE',
+  undeployed: false,
+  changedMfe: false
 }
 
 const prodStoreItem: ProductStoreItem = {
@@ -170,7 +173,7 @@ fdescribe('ProductComponent', () => {
     expect(console.error).toHaveBeenCalledWith('getProductsForWorkspaceId():', err)
   })
 
-  it('should loadData onChanges: searchPsProducts call succes', () => {
+  it('should loadData onChanges: searchPsProducts call success', () => {
     wProductServiceSpy.getProductsForWorkspaceId.and.returnValue(of([product]))
     productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [prodStoreItem] }))
     const changes = {
@@ -180,11 +183,18 @@ fdescribe('ProductComponent', () => {
         firstChange: true
       }
     }
-    component.wProducts = [{ ...product, bucket: 'SOURCE' }]
+    component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedMfe: false }]
 
     component.ngOnChanges(changes as unknown as SimpleChanges)
 
-    expect(component.psProductsOrg).toEqual([{ ...prodStoreItem, bucket: 'SOURCE' }])
+    expect(component.psProducts).toEqual([
+      {
+        ...prodStoreItem,
+        bucket: 'SOURCE',
+        undeployed: false,
+        changedMfe: false
+      }
+    ])
   })
 
   it('should loadData onChanges: searchPsProducts call error', () => {
@@ -452,7 +462,7 @@ fdescribe('ProductComponent', () => {
       mfes.push(formGroup)
     }
     addMfeControl({ microfrontend })
-    component.displayedDetailItem = { ...product, bucket: 'SOURCE' }
+    component.displayedDetailItem = { ...product, bucket: 'SOURCE', undeployed: false, changedMfe: false }
 
     component.onProductSave(event)
 
@@ -476,7 +486,7 @@ fdescribe('ProductComponent', () => {
       baseUrl: new FormControl(''),
       mfes: fb.array([])
     })
-    component.displayedDetailItem = { ...product2, bucket: 'SOURCE' }
+    component.displayedDetailItem = { ...product2, bucket: 'SOURCE', undeployed: false, changedMfe: false }
     const workspace2: Workspace = {
       name: 'name',
       theme: 'theme',
@@ -499,7 +509,7 @@ fdescribe('ProductComponent', () => {
       baseUrl: new FormControl(''),
       mfes: fb.array([])
     })
-    component.displayedDetailItem = { ...product, bucket: 'SOURCE' }
+    component.displayedDetailItem = { ...product, bucket: 'SOURCE', undeployed: false, changedMfe: false }
 
     component.onProductSave(event)
 
@@ -509,8 +519,8 @@ fdescribe('ProductComponent', () => {
   it('should createProductInWorkspace onMoveToTarget: one product', () => {
     wProductServiceSpy.createProductInWorkspace.and.returnValue(of({ resource: product }))
     const event: any = { items: [product] }
-    component.wProducts = [{ ...product, bucket: 'SOURCE' }]
-    component.psProducts = [{ ...product, bucket: 'SOURCE' }]
+    component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedMfe: false }]
+    component.psProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedMfe: false }]
 
     component.onMoveToTarget(event)
 
@@ -527,8 +537,8 @@ fdescribe('ProductComponent', () => {
       modificationCount: 1
     }
     const event: any = { items: [product, product2] }
-    component.wProducts = [{ ...product, bucket: 'SOURCE' }]
-    component.psProducts = [{ ...product, bucket: 'SOURCE' }]
+    component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedMfe: false }]
+    component.psProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedMfe: false }]
 
     component.onMoveToTarget(event)
 
@@ -538,8 +548,8 @@ fdescribe('ProductComponent', () => {
   it('should createProductInWorkspace onMoveToTarget: no ws id', () => {
     wProductServiceSpy.createProductInWorkspace.and.returnValue(of({ resource: product }))
     const event: any = { items: [product] }
-    component.wProducts = [{ ...product, bucket: 'SOURCE' }]
-    component.psProducts = [{ ...product, bucket: 'SOURCE' }]
+    component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedMfe: false }]
+    component.psProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedMfe: false }]
     const workspace2: Workspace = {
       name: 'name',
       theme: 'theme',
@@ -554,8 +564,8 @@ fdescribe('ProductComponent', () => {
 
   it('should createProductInWorkspace onMoveToTarget: no mfes', () => {
     wProductServiceSpy.createProductInWorkspace.and.returnValue(of({ resource: product }))
-    component.wProducts = [{ ...product, bucket: 'SOURCE' }]
-    component.psProducts = [{ ...product, bucket: 'SOURCE' }]
+    component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedMfe: false }]
+    component.psProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedMfe: false }]
     const productNoMfes: Product = {
       id: 'prod id',
       productName: 'prod name',
@@ -585,8 +595,8 @@ fdescribe('ProductComponent', () => {
       modificationCount: 1
     }
     wProductServiceSpy.createProductInWorkspace.and.returnValue(of({ resource: productMfes }))
-    component.wProducts = [{ ...productMfes, bucket: 'SOURCE' }]
-    component.psProducts = [{ ...productMfes, bucket: 'SOURCE' }]
+    component.wProducts = [{ ...productMfes, bucket: 'SOURCE', undeployed: false, changedMfe: false }]
+    component.psProducts = [{ ...productMfes, bucket: 'SOURCE', undeployed: false, changedMfe: false }]
     const event: any = { items: [productMfes] }
 
     component.onMoveToTarget(event)
@@ -597,8 +607,8 @@ fdescribe('ProductComponent', () => {
   it('should display error when trying to createProductInWorkspace onMoveToTarget', () => {
     wProductServiceSpy.createProductInWorkspace.and.returnValue(throwError(() => new Error()))
     const event: any = { items: [product] }
-    component.wProducts = [{ ...product, bucket: 'SOURCE' }]
-    component.psProducts = [{ ...product, bucket: 'SOURCE' }]
+    component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedMfe: false }]
+    component.psProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedMfe: false }]
 
     component.onMoveToTarget(event)
 
@@ -607,8 +617,8 @@ fdescribe('ProductComponent', () => {
 
   it('should display error when trying to createProductInWorkspace onMoveToTarget', () => {
     wProductServiceSpy.createProductInWorkspace.and.returnValue(throwError(() => new Error()))
-    component.wProducts = [{ ...product, bucket: 'SOURCE' }]
-    component.psProducts = [{ ...product, bucket: 'SOURCE' }]
+    component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedMfe: false }]
+    component.psProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedMfe: false }]
     const product2: Product = {
       productName: 'prod name',
       displayName: 'display name',
@@ -626,8 +636,8 @@ fdescribe('ProductComponent', () => {
   it('should deleteProductById onMoveToSource', () => {
     wProductServiceSpy.deleteProductById.and.returnValue(of({ resource: product }))
     const event: any = { items: [product] }
-    component.wProducts = [{ ...product, bucket: 'SOURCE' }]
-    component.psProducts = [{ ...product, bucket: 'SOURCE' }]
+    component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedMfe: false }]
+    component.psProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedMfe: false }]
 
     component.onMoveToSource(event)
 
@@ -637,8 +647,8 @@ fdescribe('ProductComponent', () => {
   it('should deleteProductById onMoveToSource: no ws id', () => {
     wProductServiceSpy.deleteProductById.and.returnValue(of({ resource: product }))
     const event: any = { items: [product] }
-    component.wProducts = [{ ...product, bucket: 'SOURCE' }]
-    component.psProducts = [{ ...product, bucket: 'SOURCE' }]
+    component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedMfe: false }]
+    component.psProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedMfe: false }]
     const workspace2: Workspace = {
       name: 'name',
       theme: 'theme',
@@ -654,8 +664,8 @@ fdescribe('ProductComponent', () => {
   it('should deleteProductById onMoveToSource', () => {
     wProductServiceSpy.deleteProductById.and.returnValue(throwError(() => new Error()))
     const event: any = { items: [product] }
-    component.wProducts = [{ ...product, bucket: 'SOURCE' }]
-    component.psProducts = [{ ...product, bucket: 'SOURCE' }]
+    component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedMfe: false }]
+    component.psProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedMfe: false }]
 
     component.onMoveToSource(event)
 

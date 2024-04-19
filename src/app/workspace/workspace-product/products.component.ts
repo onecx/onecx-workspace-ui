@@ -29,7 +29,7 @@ import { limitText, prepareUrlPath } from 'src/app/shared/utils'
 
 // combine Workspace Product with properties from product store (ProductStoreItem)
 // => bucket is used to recognize the origin within HTML
-type ExtendedProduct = Product & {
+export type ExtendedProduct = Product & {
   bucket: 'SOURCE' | 'TARGET'
   undeployed: boolean | undefined
   changedMfe: boolean | undefined
