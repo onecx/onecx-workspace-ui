@@ -13,8 +13,8 @@ import {
   WorkspaceProductAPIService,
   ProductsAPIService,
   Workspace,
-  ProductStoreItem,
-  Microfrontend
+  Microfrontend,
+  MicrofrontendType
 } from 'src/app/shared/generated'
 
 import { ExtendedProduct, ProductComponent } from './products.component'
@@ -29,7 +29,8 @@ const workspace: Workspace = {
 const microfrontend: Microfrontend = {
   id: 'id',
   appId: 'appId',
-  basePath: 'path'
+  basePath: 'path',
+  type: MicrofrontendType.Module
 }
 
 const product: ExtendedProduct = {
@@ -44,8 +45,11 @@ const product: ExtendedProduct = {
   changedMfe: false
 }
 
-const prodStoreItem: ProductStoreItem = {
-  productName: 'prodStoreItemName'
+const prodStoreItem: ExtendedProduct = {
+  productName: 'prodStoreItemName',
+  bucket: 'SOURCE',
+  undeployed: false,
+  changedMfe: false
 }
 
 const mfeInfo: MfeInfo = {

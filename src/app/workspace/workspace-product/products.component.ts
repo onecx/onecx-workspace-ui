@@ -32,8 +32,8 @@ import { limitText, prepareUrlPath } from 'src/app/shared/utils'
 // => bucket is used to recognize the origin within HTML
 export type ExtendedProduct = Product & {
   bucket: 'SOURCE' | 'TARGET'
-  changedMfe: boolean
-  components: Microfrontend[]
+  changedMfe?: boolean
+  components?: Microfrontend[]
 }
 interface ViewingModes {
   icon: string
