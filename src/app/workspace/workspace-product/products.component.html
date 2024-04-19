@@ -125,6 +125,18 @@
       <ng-template let-product pTemplate="item">
         <div class="col-12 h-2rem md:h-3rem p-0 flex flex-wrap align-items-center">
           <div class="col-12 md:col-9 p-0 flex flex-row column-gap-2 align-items-center tile-view-content">
+            <span
+              *ngIf="product?.undeployed"
+              [id]="'workspace_detail_product_picklist_' + product.productName + '_undeployed'"
+              class="card-badge-right badge-1 p-2 pi pi-ban danger-action-bg cursor-auto"
+              [title]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
+            ></span>
+            <span
+              *ngIf="!product?.undeployed && product.changedMfe"
+              [id]="'workspace_detail_product_picklist_' + product.productName + '_changed_mfe'"
+              class="card-badge-right badge-1 p-2 pi pi-exclamation-circle danger-action-bg cursor-auto"
+              [title]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
+            ></span>
             <app-image-container
               [imageUrl]="getImageUrl(product.imageUrl)"
               [small]="true"

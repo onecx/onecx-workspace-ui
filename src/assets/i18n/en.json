@@ -338,6 +338,8 @@
       "ORIGIN": "Origin",
       "ORIGIN.TARGET": "Workspace",
       "ORIGIN.SOURCE": "Product Store",
+      "UNDEPLOYED": "This product can no longer be used. Further use leads to error messages.",
+      "CHANGED_MFE": "Es gibt wichtige Änderungen in den Microfrontends.",
       "MESSAGES": {
         "NOTHING_REGISTERED": "No Product registered",
         "LOAD_ERROR": "Failed to load Product",

@@ -31,6 +31,8 @@ import { limitText, prepareUrlPath } from 'src/app/shared/utils'
 // => bucket is used to recognize the origin within HTML
 type ExtendedProduct = Product & {
   bucket: 'SOURCE' | 'TARGET'
+  undeployed: boolean | undefined
+  changedMfe: boolean | undefined
 }
 interface ViewingModes {
   icon: string
@@ -75,7 +77,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   public wProducts!: ExtendedProduct[] // registered products
   public psProducts$!: Observable<ExtendedProduct[]>
   public psProducts!: ExtendedProduct[] // product store products which are not registered
-  public psProductsOrg!: ExtendedProduct[] // all products in product store
+  public psProductsOrg!: Map<string, ExtendedProduct> // all products in product store
   public currentMfe!: MfeInfo
 
   constructor(
@@ -142,7 +144,6 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
         map((products) => {
           this.wProducts = []
           for (let p of products) this.wProducts.push({ ...p, bucket: 'TARGET' } as ExtendedProduct)
-
           return this.wProducts.sort(this.sortProductsByDisplayName)
         }),
         catchError((err) => {
@@ -164,12 +165,22 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
         map((result) => {
           // filter: return psProducts which are not yet registered
           this.psProducts = []
-          this.psProductsOrg = []
+          this.psProductsOrg = new Map()
+          console.log('this.wProducts: ' + this.wProducts.length)
           if (result.stream) {
             for (let p of result.stream) {
-              this.psProductsOrg.push({ ...p, bucket: 'SOURCE' } as ExtendedProduct) // all
+              this.psProductsOrg.set(p.productName!, { ...p, bucket: 'SOURCE' } as ExtendedProduct)
               const wp = this.wProducts.filter((wp) => wp.productName === p.productName)
-              if (wp.length === 0) this.psProducts.push({ ...p, bucket: 'SOURCE' } as ExtendedProduct)
+              console.log('this.wProducts: ' + p.productName, wp)
+              if (wp.length === 0 && !p.undeployed) this.psProducts.push({ ...p, bucket: 'SOURCE' } as ExtendedProduct)
+              else {
+                wp[0].undeployed = p.undeployed // product
+                // mark product if there is a change on microfrontends
+                if (p.microfrontends)
+                  for (const mfe of p.microfrontends)
+                    wp[0].changedMfe =
+                      (mfe.undeployed ?? false) || (mfe.deprecated ?? false) || (wp[0].changedMfe ?? false)
+              }
             }
           }
           return this.psProducts.sort(this.sortProductsByDisplayName)
