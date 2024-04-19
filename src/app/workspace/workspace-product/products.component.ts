@@ -263,7 +263,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
             if (this.displayedDetailItem.microfrontends && product.microfrontends) {
               for (const ddiMfe of this.displayedDetailItem.microfrontends)
                 for (const mfe of product.microfrontends) {
-                  if (mfe.type === MicrofrontendType.Module && mfe.appId === ddiMfe.appId) {
+                  if (mfe.appId === ddiMfe.appId) {
                     ddiMfe.deprecated = mfe.deprecated
                     ddiMfe.undeployed = mfe.undeployed
                     ddiMfe.type = mfe.type

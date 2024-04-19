@@ -257,8 +257,12 @@
               class="mt-1 ml-3 flex flex-row column-gap-4"
             >
               <div>{{ component.appId }}</div>
-              <div *ngIf="component.deprecated">a{{ 'DIALOG.PRODUCTS.MFES.DEPRECATED' | translate }}</div>
-              <div *ngIf="component.undeployed">b{{ 'DIALOG.PRODUCTS.MFES.UNDEPLOYED' | translate }}</div>
+              <div *ngIf="component.deprecated" class="danger-action-text">
+                {{ 'DIALOG.PRODUCTS.MFES.DEPRECATED' | translate }}
+              </div>
+              <div *ngIf="component.undeployed" class="danger-action-text">
+                {{ 'DIALOG.PRODUCTS.MFES.UNDEPLOYED' | translate }}
+              </div>
             </div>
           </div>
         </div>
