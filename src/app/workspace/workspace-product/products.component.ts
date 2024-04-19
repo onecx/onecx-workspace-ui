@@ -248,6 +248,9 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
           this.displayedDetailItem = data as ExtendedProduct
           this.displayedDetailItem.description = item.description
           this.displayedDetailItem.bucket = item.bucket
+          const p = this.psProductsOrg.get(this.displayedDetailItem.productName!)
+          this.displayedDetailItem.undeployed = p?.undeployed
+          this.displayedDetailItem.changedMfe = p?.changedMfe
           this.fillForm(this.displayedDetailItem)
         },
         error: (err) => {
@@ -264,6 +267,8 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     this.formGroup.controls['displayName'].setValue(this.displayedDetailItem.displayName)
     this.formGroup.controls['description'].setValue(this.displayedDetailItem.description) // from item
     this.formGroup.controls['baseUrl'].setValue(this.displayedDetailItem.baseUrl)
+    // get product for extend information on mfes
+    //const product = this.psProductsOrg.get(this.displayedDetailItem.productName!)
     // dynamic form array for microfrontends
     const mfes = this.formGroup.get('mfes') as FormArray
     while (mfes.length > 0) mfes.removeAt(0) // clear

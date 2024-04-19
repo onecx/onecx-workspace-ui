@@ -65,6 +65,10 @@
 
 @mixin card-badges {
   :host ::ng-deep {
+    .card-badge-base {
+      border-radius: var(--border-radius);
+      opacity: 0.7;
+    }
     .card-badge-right {
       border-radius: var(--border-radius);
       display: inline-block;
