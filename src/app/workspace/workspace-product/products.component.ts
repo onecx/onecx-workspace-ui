@@ -249,7 +249,6 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
       .getProductById({ id: this.workspace?.id, productId: item.id } as GetProductByIdRequestParams)
       .subscribe({
         next: (data) => {
-          console.log('data', data)
           this.displayedDetailItem = data as ExtendedProduct
           this.displayedDetailItem.description = item.description
           this.displayedDetailItem.bucket = item.bucket
@@ -291,7 +290,6 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     if (this.displayedDetailItem.microfrontends) {
       // add a form group for each mfe
       this.displayedDetailItem.microfrontends.forEach((mfe, i) => {
-        console.log(mfe)
         if (mfe.type === MicrofrontendType.Module) {
           mfes.push(
             this.fb.group({
@@ -372,7 +370,6 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     let successCounter = 0
     let errorCounter = 0
     for (let p of ev.items) {
-      console.log('onMoveToTarget', p.microfrontends)
       const mfes = p.microfrontends ?? []
       this.wProductApi
         .createProductInWorkspace({
