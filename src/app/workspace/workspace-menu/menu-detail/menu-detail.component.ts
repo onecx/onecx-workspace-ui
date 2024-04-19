@@ -127,7 +127,7 @@ export class MenuDetailComponent implements OnChanges {
   public ngOnChanges(): void {
     this.formGroup.reset()
     this.tabIndex = 0
-    this.mfeItems
+    this.languagesDisplayed = []
     if (this.changeMode === 'CREATE') {
       this.formGroup.reset()
       this.menuItem = {
