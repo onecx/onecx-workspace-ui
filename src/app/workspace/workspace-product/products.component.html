@@ -124,7 +124,10 @@
       -->
       <ng-template let-product pTemplate="item">
         <div class="col-12 h-2rem md:h-3rem p-0 flex flex-wrap align-items-center">
-          <div class="col-12 md:col-9 p-0 flex flex-row column-gap-2 align-items-center tile-view-content">
+          <div
+            class="col-12 md:col-9 p-0 flex flex-row column-gap-2 align-items-center tile-view-content"
+            (dblclick)="return($event)"
+          >
             <span
               *ngIf="product?.undeployed"
               [id]="'workspace_detail_product_picklist_' + product.productName + '_undeployed'"
@@ -179,6 +182,12 @@
             [title]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
           ></span>
           <span
+            *ngIf="!displayedDetailItem?.undeployed && displayedDetailItem?.changedMfe"
+            id="workspace_detail_product_item_header_changed_mfe"
+            class="card-badge-base p-2 pi pi-exclamation-circle danger-action-bg cursor-auto"
+            [title]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
+          ></span>
+          <span
             id="workspace_detail_product_item_header_close"
             class="p-2 pi pi-times cursor-pointer pseudo-button-link"
             [title]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
@@ -211,7 +220,7 @@
             </span>
           </div>
           <p-divider align="center" styleClass="m-0">
-            <div class="px-3 font-bold text-primary">Microfrontends</div></p-divider
+            <div class="px-3 font-bold text-primary">Microfrontends - Modules</div></p-divider
           >
           <div
             *ngIf="!displayedDetailItem?.microfrontends || displayedDetailItem?.microfrontends?.length === 0"
@@ -222,7 +231,7 @@
           <div *ngIf="displayedDetailItem?.microfrontends">
             <div formArrayName="mfes">
               <div *ngFor="let mfe of mfeControls.controls; let i = index">
-                <div [formGroupName]="i" class="mb-4">
+                <div [formGroupName]="i" [class.mb-4]="i < mfeControls.controls.length - 2">
                   <span class="p-float-label" [title]="'PRODUCT.MFE.BASE_PATH.TOOLTIP' | translate" controlErrorAnchor>
                     <input
                       pInputText
@@ -239,9 +248,22 @@
               </div>
             </div>
           </div>
+          <div *ngIf="displayedDetailItem?.components">
+            <p-divider align="center" styleClass="m-0">
+              <div class="px-3 font-bold text-primary">Microfrontends - Components</div></p-divider
+            >
+            <div
+              *ngFor="let component of displayedDetailItem?.components; let i = index"
+              class="mt-1 ml-3 flex flex-row column-gap-4"
+            >
+              <div>{{ component.appId }}</div>
+              <div *ngIf="component.deprecated">a{{ 'DIALOG.PRODUCTS.MFES.DEPRECATED' | translate }}</div>
+              <div *ngIf="component.undeployed">b{{ 'DIALOG.PRODUCTS.MFES.UNDEPLOYED' | translate }}</div>
+            </div>
+          </div>
         </div>
 
-        <div class="w-full text-right">
+        <div class="w-full text-right mt-4">
           <p-button
             *ngIf="hasRegisterPermission && displayedDetailItem?.bucket === 'TARGET' && formGroup.valid"
             id="workspace_detail_product_header_button_save"

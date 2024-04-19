@@ -9,11 +9,18 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { MicrofrontendType } from './microfrontendType';
 
 
 export interface Microfrontend { 
     id?: string;
     appId?: string;
+    appName?: string;
     basePath?: string;
+    deprecated?: boolean;
+    undeployed?: boolean;
+    type?: MicrofrontendType;
 }
+
+
 

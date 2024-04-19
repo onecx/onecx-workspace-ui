@@ -382,7 +382,7 @@ export class MenuDetailComponent implements OnChanges {
   private loadMfeUrls(): void {
     this.mfeItems = []
     this.wProductApi
-      .getProductsForWorkspaceId({ id: this.workspaceId ?? '' })
+      .getProductsByWorkspaceId({ id: this.workspaceId ?? '' })
       .pipe(
         map((products) => {
           for (let p of products) {
