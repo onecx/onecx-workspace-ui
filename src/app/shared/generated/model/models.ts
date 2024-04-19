@@ -37,6 +37,7 @@ export * from './menuSnapshot';
 export * from './menuStructureSearchCriteria';
 export * from './microfrontend';
 export * from './microfrontendPS';
+export * from './microfrontendType';
 export * from './pagingResponse';
 export * from './problemDetailInvalidParam';
 export * from './problemDetailParam';
