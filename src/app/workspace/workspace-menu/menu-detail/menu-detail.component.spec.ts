@@ -13,6 +13,19 @@
 // import { MenuStateService, MenuState } from './services/menu-state.service'
 // import { MenuComponent } from './menu.component'
 
+/* const form = new FormGroup({
+  parentItemId: new FormControl('some parent id'),
+  key: new FormControl('key'),
+  name: new FormControl('name'),
+  position: new FormControl('1'),
+  disabled: new FormControl<boolean>(false),
+  external: new FormControl<boolean>(false),
+  url: new FormControl('url'),
+  badge: new FormControl('badge'),
+  scope: new FormControl('scope'),
+  description: new FormControl('description')
+}) */
+
 /* it('should save a menu: create', () => {
   menuApiServiceSpy.addMenuItemForPortal.and.returnValue(of({}))
   component.formGroup = form
