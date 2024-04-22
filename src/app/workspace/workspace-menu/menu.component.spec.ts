@@ -21,11 +21,13 @@ import {
   WorkspaceMenuItem,
   WorkspaceAPIService,
   MenuItemAPIService,
-  WorkspaceRolesAPIService
+  WorkspaceRolesAPIService,
+  AssignmentAPIService,
+  Assignment,
+  WorkspaceRole
 } from 'src/app/shared/generated'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { HttpErrorResponse } from '@angular/common/http'
-import { Role } from '../workspace-detail/workspace-roles/workspace-roles.component'
 
 const workspace: Workspace = {
   id: 'id',
@@ -62,13 +64,17 @@ const menuItemNode: MenuItemNodeData = {
   node: { label: 'treeNodeLabel' }
 }
 
-const wRole: Role = {
+const wRole: WorkspaceRole = {
   name: 'role name',
   id: 'role id',
-  description: 'role descr',
-  isWorkspaceRole: false,
-  isIamRole: false,
-  type: 'WORKSPACE'
+  description: 'role descr'
+}
+
+const assgmt: Assignment = {
+  id: 'assgmt id',
+  roleId: 'roleId',
+  menuItemId: 'menuItemId',
+  workspaceId: 'id'
 }
 
 const state: MenuState = {
@@ -104,6 +110,11 @@ fdescribe('MenuComponent', () => {
   }
   const wRoleServiceSpy = {
     searchWorkspaceRoles: jasmine.createSpy('searchWorkspaceRoles').and.returnValue(of({}))
+  }
+  const assgmtApiServiceSpy = {
+    searchAssignments: jasmine.createSpy('searchAssignments').and.returnValue(of({})),
+    createAssignment: jasmine.createSpy('createAssignment').and.returnValue(of({})),
+    deleteAssignment: jasmine.createSpy('deleteAssignment').and.returnValue(of({}))
   }
   const configServiceSpy = {
     getProperty: jasmine.createSpy('getProperty').and.returnValue('123'),
@@ -151,7 +162,7 @@ fdescribe('MenuComponent', () => {
         { provide: WorkspaceRolesAPIService, useValue: wRoleServiceSpy },
         { provide: ConfigurationService, useValue: configServiceSpy },
         { provide: MenuItemAPIService, useValue: menuApiServiceSpy },
-        { provide: MenuItemAPIService, useValue: menuApiServiceSpy },
+        { provide: AssignmentAPIService, useValue: assgmtApiServiceSpy },
         { provide: AUTH_SERVICE, useValue: mockAuthService },
         { provide: MenuStateService, useValue: stateServiceSpy },
         { provide: Location, useValue: locationSpy },
@@ -168,6 +179,10 @@ fdescribe('MenuComponent', () => {
     menuApiServiceSpy.addMenuItemForPortal.calls.reset()
     menuApiServiceSpy.deleteMenuItemById.calls.reset()
     menuApiServiceSpy.importMenuByWorkspaceName.calls.reset()
+    wRoleServiceSpy.searchWorkspaceRoles.calls.reset()
+    assgmtApiServiceSpy.searchAssignments.calls.reset()
+    assgmtApiServiceSpy.createAssignment.calls.reset()
+    assgmtApiServiceSpy.deleteAssignment.calls.reset()
     translateServiceSpy.get.calls.reset()
     stateServiceSpy.getState.calls.reset()
   }))
@@ -177,6 +192,7 @@ fdescribe('MenuComponent', () => {
 
     fixture = TestBed.createComponent(MenuComponent)
     component = fixture.componentInstance
+    component.workspace = workspace
     // component.menuItems = state.workspaceMenuItems
     fixture.detectChanges()
   })
@@ -484,6 +500,36 @@ fdescribe('MenuComponent', () => {
   /****************************************************************************
    * ROLES + ASSIGNMENTS
    */
+
+  fit('should loadRolesandAssignments -> seachRoles and searchAssignments on loadMenu', () => {
+    const wRole2: WorkspaceRole = {
+      name: 'role name2',
+      id: 'role id2',
+      description: 'role descr2'
+    }
+    menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
+    wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: [wRole, wRole2] }))
+    assgmtApiServiceSpy.searchAssignments.and.returnValue(of({ stream: [assgmt] }))
+
+    component.loadMenu(true)
+
+    expect(component.wRoles).toEqual([wRole, wRole2])
+    expect(component.wAssignments).toEqual([assgmt])
+  })
+
+  fit('should throw errors for seachRoles and searchAssignments on loadMenu', () => {
+    const err = { status: '404' }
+    wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(throwError(() => err))
+    assgmtApiServiceSpy.searchAssignments.and.returnValue(throwError(() => err))
+    menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
+    spyOn(console, 'error')
+
+    component.loadMenu(true)
+
+    expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + '404' + '.ROLES')
+    expect(console.error).toHaveBeenCalledWith('searchRoles():', err)
+    expect(console.error).toHaveBeenCalledWith('searchAssignments():', err)
+  })
 
   xit('should grant permission/grant an assignment to a role', () => {
     component.onGrantPermission(menuItemNode, 'roleId')
