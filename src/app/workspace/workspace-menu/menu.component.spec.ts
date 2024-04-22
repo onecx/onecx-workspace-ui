@@ -48,7 +48,8 @@ const mockMenuItems: WorkspaceMenuItem[] = [
     id: 'id',
     key: 'key',
     name: 'menu2 name',
-    i18n: { ['en']: 'en' }
+    i18n: { ['en']: 'en' },
+    children: [{ name: 'child name', key: 'key', id: 'id' }]
   }
 ]
 
@@ -71,9 +72,9 @@ const wRole: WorkspaceRole = {
 }
 
 const assgmt: Assignment = {
-  id: 'assgmt id',
+  id: 'assgnmt id',
   roleId: 'roleId',
-  menuItemId: 'menuItemId',
+  menuItemId: 'id',
   workspaceId: 'id'
 }
 
@@ -515,6 +516,51 @@ fdescribe('MenuComponent', () => {
 
     expect(component.wRoles).toEqual([wRole, wRole2])
     expect(component.wAssignments).toEqual([assgmt])
+  })
+
+  fit('should handle roles without name in sortRoleName function', () => {
+    const wRole2: WorkspaceRole = {
+      id: 'role id2',
+      description: 'role descr2'
+    }
+    const wRole3: WorkspaceRole = {
+      id: 'role id3',
+      description: 'role descr3'
+    }
+    menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
+    wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: [wRole3, wRole2] }))
+    assgmtApiServiceSpy.searchAssignments.and.returnValue(of({ stream: [assgmt] }))
+
+    component.loadMenu(true)
+
+    expect(component.wRoles).toEqual([wRole3, wRole2])
+    expect(component.wAssignments).toEqual([assgmt])
+  })
+
+  fit('should have found a tree node by id and used the assigned node in inheritRoleAssignment', () => {
+    menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
+    wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: [wRole] }))
+    assgmtApiServiceSpy.searchAssignments.and.returnValue(of({ stream: [assgmt] }))
+
+    component.loadMenu(true)
+
+    expect(component.wAssignments).toEqual([assgmt])
+  })
+
+  fit('should have looked at children nodes to find a tree node by id', () => {
+    const assgmt2: Assignment = {
+      id: 'assgnmt id',
+      roleId: 'roleId',
+      menuItemId: 'other id',
+      workspaceId: 'id'
+    }
+    menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
+    wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: [wRole] }))
+    assgmtApiServiceSpy.searchAssignments.and.returnValue(of({ stream: [assgmt2] }))
+
+    component.loadMenu(true)
+
+    expect(component.wAssignments).toEqual([assgmt2])
   })
 
   fit('should throw errors for seachRoles and searchAssignments on loadMenu', () => {
