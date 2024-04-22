@@ -14,7 +14,7 @@ import {
 } from '@onecx/portal-integration-angular'
 
 import { MenuStateService, MenuState } from './services/menu-state.service'
-import { MenuComponent, MenuItemNodeData } from './menu.component'
+import { MenuComponent } from './menu.component'
 
 import {
   Workspace,
@@ -42,28 +42,18 @@ const mockMenuItems: WorkspaceMenuItem[] = [
     key: 'key',
     name: 'menu name',
     i18n: { ['en']: 'en' },
-    children: [{ name: 'child name', key: 'key', id: 'id' }]
+    children: [{ name: 'child name', key: 'key', id: 'id' }],
+    url: '/workspace'
   },
   {
     id: 'id',
     key: 'key',
     name: 'menu2 name',
     i18n: { ['en']: 'en' },
-    children: [{ name: 'child name', key: 'key', id: 'id' }]
+    children: [{ name: 'child name', key: 'key', id: 'id' }],
+    url: '/workspace'
   }
 ]
-
-const menuItemNode: MenuItemNodeData = {
-  first: true,
-  last: false,
-  prevId: 'prevId',
-  gotoUrl: 'gotoUrl',
-  positionPath: 'posPath',
-  appConnected: false,
-  roles: { ['roleAsgmt']: 'RoleAsgmt' },
-  rolesInherited: { ['inhRoleAsgmt']: 'inhRoleAsgmt' },
-  node: { label: 'treeNodeLabel' }
-}
 
 const wRole: WorkspaceRole = {
   name: 'role name',
@@ -316,7 +306,7 @@ fdescribe('MenuComponent', () => {
     expect(component.displayMenuDetail).toBeTrue()
   })
 
-  fit('should removeNodeFromTree and refresh menuNodes if delete displayed onMenuItemChanged', () => {
+  fit('should removeNodeFromTree if key is present and refresh menuNodes if delete displayed onMenuItemChanged', () => {
     component.displayMenuDelete = true
     const item = {
       key: 'key'
@@ -334,7 +324,46 @@ fdescribe('MenuComponent', () => {
 
     component.onMenuItemChanged(true)
 
-    expect(component.menuItems).not.toContain(item)
+    expect(component.menuNodes).not.toContain(item)
+  })
+
+  fit('should removeNodeFromTree if key is present in node children', () => {
+    component.displayMenuDelete = true
+    const item = {
+      key: 'child key'
+    }
+    component.menuItem = item
+    const nodes = [
+      {
+        key: 'key2',
+        children: [{ key: 'child key' }]
+      }
+    ]
+    component.menuNodes = nodes
+
+    component.onMenuItemChanged(true)
+
+    expect(component.menuNodes).not.toContain(item)
+  })
+
+  fit('should not removeNodeFromTree if no key present', () => {
+    component.displayMenuDelete = true
+    const key = undefined
+    const item = {
+      key: key
+    }
+    component.menuItem = item
+    const nodes = [
+      item,
+      {
+        key: 'key2'
+      }
+    ]
+    component.menuNodes = nodes
+
+    component.onMenuItemChanged(true)
+
+    expect(component.menuNodes).toContain(item)
   })
 
   fit('should loadMenu if detail displayed onMenuItemChanged', () => {
@@ -404,6 +433,22 @@ fdescribe('MenuComponent', () => {
     component.onExpandAll()
 
     expect(stateServiceSpy.getState().treeExpansionState.get('1')).toBeTrue()
+  })
+
+  fit('should recursively expand all menu nodes onExpandAll: no key in first node', () => {
+    component.menuNodes = [{ expanded: false, children: [{ key: '1-1', children: [{ key: '1-1-1' }] }] }, { key: '2' }]
+    const mockExpansionState: Map<string, boolean> = new Map<string, boolean>()
+    stateServiceSpy.getState.and.returnValue({
+      treeExpansionState: mockExpansionState,
+      pageSize: 0,
+      showDetails: false,
+      rootFilter: true,
+      treeMode: true
+    })
+
+    component.onExpandAll()
+
+    expect(stateServiceSpy.getState().treeExpansionState.get('2')).toBeTrue()
   })
 
   fit('should recursively collapse all menu nodes onCollapseAll', () => {
@@ -485,6 +530,24 @@ fdescribe('MenuComponent', () => {
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.SEARCH.RELOAD.OK' })
   })
 
+  fit('should loadMenu: no node key in restoreRecursive', () => {
+    const mockMenuItems: WorkspaceMenuItem[] = [
+      {
+        id: 'id',
+        key: undefined,
+        name: 'menu name',
+        i18n: { ['en']: 'en' },
+        children: [{ name: 'child name', key: 'key', id: 'id' }],
+        url: '/workspace'
+      }
+    ]
+    menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
+
+    component.loadMenu(true)
+
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.SEARCH.RELOAD.OK' })
+  })
+
   fit('should handle error response on loadMenu', () => {
     const errorResponse = new HttpErrorResponse({
       error: 'test error',
@@ -496,6 +559,14 @@ fdescribe('MenuComponent', () => {
     component.loadMenu(true)
 
     expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_404.MENUS')
+  })
+
+  fit('should return an empty array from mapToTreeNodes if no menuItems onLoadMenu', () => {
+    menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: [] }))
+
+    component.loadMenu(true)
+
+    expect(component.menuNodes).toEqual([])
   })
 
   /****************************************************************************
@@ -547,6 +618,16 @@ fdescribe('MenuComponent', () => {
     expect(component.wAssignments).toEqual([assgmt])
   })
 
+  xit('should have found a match in menu item url and ', () => {
+    menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
+    wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: [wRole] }))
+    assgmtApiServiceSpy.searchAssignments.and.returnValue(of({ stream: [assgmt] }))
+
+    component.loadMenu(true)
+
+    expect(component.wAssignments).toEqual([assgmt])
+  })
+
   fit('should have looked at children nodes to find a tree node by id', () => {
     const assgmt2: Assignment = {
       id: 'assgnmt id',
@@ -575,10 +656,6 @@ fdescribe('MenuComponent', () => {
     expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + '404' + '.ROLES')
     expect(console.error).toHaveBeenCalledWith('searchRoles():', err)
     expect(console.error).toHaveBeenCalledWith('searchAssignments():', err)
-  })
-
-  xit('should grant permission/grant an assignment to a role', () => {
-    component.onGrantPermission(menuItemNode, 'roleId')
   })
 
   /****************************************************************************
