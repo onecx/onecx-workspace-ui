@@ -48,9 +48,9 @@ const mockMenuItems: MenuItem[] = [
     description: 'description'
   },
   {
-    id: 'id',
+    id: 'id2',
     parentItemId: 'parentId',
-    key: 'key',
+    key: 'key2',
     name: 'menu2 name',
     i18n: { ['en']: 'en' },
     url: '/workspace',
@@ -384,65 +384,32 @@ fdescribe('MenuDetailComponent', () => {
    * DELETE
    */
 
-  // it('should set item onDeleteMenuItem', () => {
-  //   const event: MouseEvent = new MouseEvent('type')
-  //   const item = {
-  //     key: '1-1',
-  //     id: 'id1',
-  //     positionPath: '1-1',
-  //     regMfeAligned: true,
-  //     parentItemName: '1',
-  //     first: true,
-  //     last: false,
-  //     prevId: undefined
-  //   }
-  //   spyOn(event, 'stopPropagation')
+  fit('should delete menu item', () => {
+    menuApiServiceSpy.deleteMenuItemById({ menuItemId: 'id' })
+    component.menuItem = mockMenuItems[0]
 
-  //   component.onDeleteMenuItem(event, item)
+    component.onMenuDelete()
 
-  //   expect(event.stopPropagation).toHaveBeenCalled()
-  //   expect(component.menuItem).toEqual(item)
-  //   expect(component.displayDeleteConfirmation).toBeTrue()
-  // })
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MENU_OK' })
+  })
 
-  // it('should delete menu item', () => {
-  //   menuApiServiceSpy.deleteMenuItemById({ portalId: 'id', menuItemId: 'menu id' })
-  //   component.menuNodes = [{ key: '1', data: { id: 'id1' }, children: [{ key: '1-1', data: { id: 'id1-1' } }] }]
-  //   component.menuItem = {
-  //     key: '1-1',
-  //     id: 'id1',
-  //     position: 1.1,
-  //     parentItemId: '1'
-  //   }
+  fit('should display error message on delete menu item', () => {
+    menuApiServiceSpy.deleteMenuItemById.and.returnValue(throwError(() => new Error()))
 
-  //   component.onMenuDelete()
+    component.onMenuDelete()
 
-  //   expect(component.menuNodes.length).toBe(1)
-  //   expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MENU_DELETE_OK' })
-  // })
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MENU_NOK' })
+  })
 
-  // it('should display error message on delete menu item', () => {
-  //   menuApiServiceSpy.deleteMenuItemById.and.returnValue(throwError(() => new Error()))
+  fit('should update tabIndex onTabPanelChange', () => {
+    let mockEvent = { index: 3 }
+    spyOn(component as any, 'preparePanelHeight')
 
-  //   component.onMenuDelete()
+    component.onTabPanelChange(mockEvent)
 
-  //   expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MENU_DELETE_NOK' })
-  // })
-
-  // it('should update tabIndex onTabPanelChange', () => {
-  //   let mockEvent = { index: 3 }
-
-  //   component.onTabPanelChange(mockEvent)
-
-  //   expect(component.tabIndex).toBe(mockEvent.index)
-  // })
-
-  // it('should update properties onCloseDetailDialog', () => {
-  //   component.onCloseDetailDialog()
-
-  //   expect(component.menuItem).toBeUndefined()
-  //   expect(component.displayMenuDetail).toBeFalse()
-  // })
+    expect(component.tabIndex).toBe(mockEvent.index)
+    expect((component as any).preparePanelHeight).toHaveBeenCalled()
+  })
 
   /**
    * LANGUAGE
