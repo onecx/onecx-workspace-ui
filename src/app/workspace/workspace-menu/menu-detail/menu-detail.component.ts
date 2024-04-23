@@ -166,20 +166,21 @@ export class MenuDetailComponent implements OnChanges {
     })
   }
   private fillForm() {
-    if (!this.menuItem) return
-    this.formGroup.reset()
-    this.formGroup.setValue({
-      parentItemId: this.menuItem.parentItemId,
-      key: this.menuItem.key,
-      name: this.menuItem.name,
-      position: this.menuItem.position,
-      disabled: this.menuItem.disabled,
-      external: this.menuItem.external,
-      url: this.prepareUrlObject(this.menuItem.url),
-      badge: this.menuItem.badge,
-      scope: this.menuItem.scope,
-      description: this.menuItem.description
-    })
+    if (this.menuItem) {
+      this.formGroup.reset()
+      this.formGroup.setValue({
+        parentItemId: this.menuItem.parentItemId,
+        key: this.menuItem.key,
+        name: this.menuItem.name,
+        position: this.menuItem.position,
+        disabled: this.menuItem.disabled,
+        external: this.menuItem.external,
+        url: this.prepareUrlObject(this.menuItem.url),
+        badge: this.menuItem.badge,
+        scope: this.menuItem.scope,
+        description: this.menuItem.description
+      })
+    }
   }
 
   /**

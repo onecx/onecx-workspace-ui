@@ -5,14 +5,20 @@ import { FormControl, FormGroup, FormsModule } from '@angular/forms'
 import { Location } from '@angular/common'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router'
-import { BehaviorSubject, of } from 'rxjs'
+import { BehaviorSubject, of, throwError } from 'rxjs'
 
 import { PortalMessageService, UserService } from '@onecx/portal-integration-angular'
 
-// import { MenuStateService, MenuState } from './services/menu-state.service'
 import { MenuDetailComponent } from './menu-detail.component'
 import { TranslateTestingModule } from 'ngx-translate-testing'
-import { WorkspaceProductAPIService, MenuItemAPIService, MenuItem } from 'src/app/shared/generated'
+import {
+  WorkspaceProductAPIService,
+  MenuItemAPIService,
+  MenuItem,
+  Product,
+  Microfrontend,
+  Scope
+} from 'src/app/shared/generated'
 
 const form = new FormGroup({
   parentItemId: new FormControl('some parent id'),
@@ -29,11 +35,17 @@ const form = new FormGroup({
 
 const mockMenuItems: MenuItem[] = [
   {
+    id: 'id',
     modificationCount: 0,
     parentItemId: 'parentId',
+    key: 'key',
+    name: 'menu name',
     position: 0,
     external: false,
-    disabled: false
+    disabled: false,
+    badge: 'badge',
+    scope: Scope.App,
+    description: 'description'
   },
   {
     id: 'id',
@@ -45,6 +57,21 @@ const mockMenuItems: MenuItem[] = [
     modificationCount: 0
   }
 ]
+
+const microfrontend: Microfrontend = {
+  id: 'id',
+  appId: 'appId',
+  basePath: 'path'
+}
+
+const product: Product = {
+  id: 'prod id',
+  productName: 'prod name',
+  displayName: 'display name',
+  description: 'description',
+  microfrontends: [microfrontend],
+  modificationCount: 1
+}
 
 // const state: MenuState = {
 //   pageSize: 0,
@@ -68,7 +95,8 @@ fdescribe('MenuDetailComponent', () => {
   const menuApiServiceSpy = {
     getMenuStructure: jasmine.createSpy('getMenuStructure').and.returnValue(of(mockMenuItems)),
     getMenuItemById: jasmine.createSpy('getMenuItemById').and.returnValue(of(mockMenuItems)),
-    addMenuItemForPortal: jasmine.createSpy('addMenuItemForPortal').and.returnValue(of(mockMenuItems)),
+    createMenuItemForWorkspace: jasmine.createSpy('createMenuItemForWorkspace').and.returnValue(of(mockMenuItems)),
+    updateMenuItem: jasmine.createSpy('updateMenuItem').and.returnValue(of(mockMenuItems)),
     deleteMenuItemById: jasmine.createSpy('deleteMenuItemById').and.returnValue(of({})),
     exportMenuByWorkspaceName: jasmine.createSpy('exportMenuByWorkspaceName').and.returnValue(of({}))
   }
@@ -111,7 +139,8 @@ fdescribe('MenuDetailComponent', () => {
     menuApiServiceSpy.getMenuItemById.calls.reset()
     menuApiServiceSpy.getMenuStructure.calls.reset()
     menuApiServiceSpy.deleteMenuItemById.calls.reset()
-    menuApiServiceSpy.addMenuItemForPortal.calls.reset()
+    menuApiServiceSpy.createMenuItemForWorkspace.calls.reset()
+    menuApiServiceSpy.updateMenuItem.calls.reset()
     translateServiceSpy.get.calls.reset()
   }))
 
@@ -126,25 +155,25 @@ fdescribe('MenuDetailComponent', () => {
     component.formGroup = form
   })
 
-  fit('should create', () => {
+  it('should create', () => {
     expect(component).toBeTruthy()
   })
 
-  fit('should set German date format', () => {
+  it('should set German date format', () => {
     mockUserService.lang$.next('de')
     initializeComponent()
 
     expect(component.dateFormat).toEqual('dd.MM.yyyy HH:mm')
   })
 
-  fit('should set English date format', () => {
+  it('should set English date format', () => {
     mockUserService.lang$.next('en')
     initializeComponent()
 
     expect(component.dateFormat).toEqual('short')
   })
 
-  fit('should init menuItem and set formGroup in create mode onChanges', () => {
+  it('should init menuItem and set formGroup in create mode onChanges', () => {
     component.changeMode = 'CREATE'
     spyOn(component.formGroup, 'reset')
     component.menuItemId = 'menuItemId'
@@ -156,7 +185,7 @@ fdescribe('MenuDetailComponent', () => {
     expect(component.formGroup.controls['parentItemId'].value).toBe('menuItemId')
   })
 
-  fit('should call getMenu in view mode onChanges and fetch menuItem', () => {
+  it('should call getMenu in view mode onChanges and fetch menuItem', () => {
     menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[0]))
     component.changeMode = 'VIEW'
     component.menuItemId = 'menuItemId'
@@ -166,77 +195,194 @@ fdescribe('MenuDetailComponent', () => {
     expect(component.menuItem).toBe(mockMenuItems[0])
   })
 
-  /* it('should save a menu: create', () => {
-  menuApiServiceSpy.addMenuItemForPortal.and.returnValue(of({}))
-  component.formGroup = form
-  component.menuItem = mockItem
-  component.changeMode = 'CREATE'
-  component.languagesDisplayed = [{ label: 'English', value: 'en', data: 'data' }]
+  it('should call getMenu in view mode onChanges and fetch menuItem', () => {
+    menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[0]))
+    wProductApiServiceSpy.getProductsForWorkspaceId.and.returnValue(of([product]))
+    component.changeMode = 'VIEW'
+    component.menuItemId = 'menuItemId'
+    component.displayDetailDialog = true
+    spyOn(component as any, 'loadMfeUrls')
+    spyOn(component as any, 'preparePanelHeight')
 
-  component.onMenuSave()
+    component.ngOnChanges()
 
-  expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.MESSAGE.MENU_CREATE_OK' })
-})
+    expect(component.menuItem).toBe(mockMenuItems[0])
+    expect((component as any).loadMfeUrls).toHaveBeenCalled()
+    expect((component as any).preparePanelHeight).toHaveBeenCalled()
+  })
 
-it('should display error message on save menu: create', () => {
-  menuApiServiceSpy.addMenuItemForPortal.and.returnValue(throwError(() => new Error()))
-  component.formGroup = form
-  component.menuItem = mockItem
-  component.changeMode = 'CREATE'
+  it('should call getMenu in view mode onChanges and fetch undefined menuItem', () => {
+    menuApiServiceSpy.getMenuItemById.and.returnValue(of(undefined))
+    component.changeMode = 'VIEW'
+    component.menuItemId = 'menuItemId'
 
-  component.onMenuSave()
+    component.ngOnChanges()
 
-  expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.MESSAGE.MENU_CREATE_NOK' })
-})
+    expect(component.menuItem).toBe(undefined)
+  })
 
-it('should save a menu: edit', () => {
-  menuApiServiceSpy.patchMenuItem.and.returnValue(of(mockItem))
-  component.formGroup = form
-  component.menuItem = {
-    key: '1-1',
-    id: 'id1',
-    parentItemId: '1',
-    disabled: true,
-    name: 'name',
-    position: 1,
-    url: 'url',
-    badge: 'badge',
-    scope: Scope.Workspace,
-    description: 'description'
-  }
-  component.menuItems = mockMenuItems
-  component.menuNodes = [
-    { key: 'key', children: [{ key: 'key', data: { i18n: { en: 'en' } } }], data: { i18n: { en: 'en' } } }
-  ]
-  component.changeMode = 'EDIT'
-  component.displayMenuDetail = true
+  it('should call getMenu in view mode onChanges and catch error if api call fails', () => {
+    menuApiServiceSpy.getMenuItemById.and.returnValue(throwError(() => new Error('test error')))
+    component.changeMode = 'VIEW'
+    component.menuItemId = 'menuItemId'
 
-  component.onMenuSave()
+    component.ngOnChanges()
 
-  expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' })
-})
+    expect(component.menuItem).not.toBe(mockMenuItems[0])
+  })
 
-it('should display error message on save menu: edit', () => {
-  menuApiServiceSpy.patchMenuItem.and.returnValue(throwError(() => new Error()))
-  component.formGroup = form
-  component.menuItem = {
-    key: '1-1',
-    id: 'id1',
-    parentItemId: '1',
-    disabled: true,
-    name: 'name',
-    position: 1,
-    url: 'url',
-    badge: 'badge',
-    scope: Scope.Workspace,
-    description: 'description'
-  }
-  component.changeMode = 'EDIT'
+  it('should call getMenu in view mode onChanges and fetch menuItem', () => {
+    menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[0]))
+    wProductApiServiceSpy.getProductsForWorkspaceId.and.returnValue(of([product]))
+    component.changeMode = 'VIEW'
+    component.menuItemId = 'menuItemId'
+    component.displayDetailDialog = true
+    spyOn(component as any, 'loadMfeUrls')
+    spyOn(component as any, 'preparePanelHeight')
 
-  component.onMenuSave()
+    component.ngOnChanges()
 
-  expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
-}) */
+    expect(component.menuItem).toBe(mockMenuItems[0])
+    expect((component as any).loadMfeUrls).toHaveBeenCalled()
+    expect((component as any).preparePanelHeight).toHaveBeenCalled()
+  })
+
+  /**
+   * LOAD Microfrontends from registered products
+   **/
+
+  it('should loadMfeUrls', () => {
+    menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[0]))
+    wProductApiServiceSpy.getProductsForWorkspaceId.and.returnValue(of([product]))
+    component.changeMode = 'VIEW'
+    component.menuItemId = 'menuItemId'
+    component.displayDetailDialog = true
+    spyOn(component as any, 'preparePanelHeight')
+
+    component.ngOnChanges()
+
+    expect(component.mfeItems).toBe([microfrontend])
+    expect((component as any).preparePanelHeight).toHaveBeenCalled()
+  })
+
+  it('should loadMfeUrls: no product display name', () => {
+    const productWithoutDisplayName: Product = {
+      id: 'prod id',
+      productName: 'prod name',
+      description: 'description',
+      microfrontends: [microfrontend],
+      modificationCount: 1
+    }
+    menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[0]))
+    wProductApiServiceSpy.getProductsForWorkspaceId.and.returnValue(of([productWithoutDisplayName]))
+    component.changeMode = 'VIEW'
+    component.menuItemId = 'menuItemId'
+    component.displayDetailDialog = true
+    spyOn(component as any, 'preparePanelHeight')
+
+    component.ngOnChanges()
+
+    expect(component.mfeItems).toBe([{ ...microfrontend, product: 'display name' }])
+    expect((component as any).preparePanelHeight).toHaveBeenCalled()
+  })
+
+  it('should emit false when onCloseDetailDialog is called', () => {
+    spyOn(component.dataChanged, 'emit')
+
+    component.onCloseDetailDialog()
+
+    expect(component.dataChanged.emit).toHaveBeenCalledWith(false)
+  })
+
+  it('should emit false when onCloseDeleteDialog is called', () => {
+    spyOn(component.dataChanged, 'emit')
+
+    component.onCloseDeleteDialog()
+
+    expect(component.dataChanged.emit).toHaveBeenCalledWith(false)
+  })
+
+  /***************************************************************************
+   * SAVE => CREATE + UPDATE
+   **************************************************************************/
+
+  fit('should save a menu: create', () => {
+    menuApiServiceSpy.createMenuItemForWorkspace.and.returnValue(of({}))
+    component.formGroup = form
+    component.menuItem = mockMenuItems[0]
+    component.changeMode = 'CREATE'
+    component.languagesDisplayed = [{ label: 'English', value: 'en', data: 'data' }]
+
+    component.onMenuSave()
+
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.MESSAGE.MENU_CREATE_OK' })
+  })
+
+  fit('should display error message on save menu: create', () => {
+    menuApiServiceSpy.createMenuItemForWorkspace.and.returnValue(throwError(() => new Error()))
+    component.formGroup = form
+    component.menuItem = mockMenuItems[0]
+    component.changeMode = 'CREATE'
+
+    component.onMenuSave()
+
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.MESSAGE.MENU_CREATE_NOK' })
+  })
+
+  fit('should save a menu: edit', () => {
+    menuApiServiceSpy.updateMenuItem.and.returnValue(of(mockMenuItems))
+    component.formGroup = form
+    component.menuItem = mockMenuItems[0]
+    //   key: '1-1',
+    //   id: 'id1',
+    //   parentItemId: '1',
+    //   disabled: true,
+    //   name: 'name',
+    //   position: 1,
+    //   url: 'url',
+    //   badge: 'badge',
+    //   scope: Scope.Workspace,
+    //   description: 'description'
+    // }
+    component.menuItems = mockMenuItems
+    // component.menuNodes = [
+    //   { key: 'key', children: [{ key: 'key', data: { i18n: { en: 'en' } } }], data: { i18n: { en: 'en' } } }
+    // ]
+    component.menuItemId = 'id'
+    component.changeMode = 'EDIT'
+
+    component.onMenuSave()
+
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' })
+  })
+
+  fit('should display error message on save menu: edit', () => {
+    menuApiServiceSpy.updateMenuItem.and.returnValue(throwError(() => new Error()))
+    component.formGroup = form
+    component.menuItem = mockMenuItems[0]
+    // component.menuItem = {
+    //   key: '1-1',
+    //   id: 'id1',
+    //   parentItemId: '1',
+    //   disabled: true,
+    //   name: 'name',
+    //   position: 1,
+    //   url: 'url',
+    //   badge: 'badge',
+    //   scope: Scope.Workspace,
+    //   description: 'description'
+    // }
+    component.changeMode = 'EDIT'
+    component.menuItemId = 'id'
+
+    component.onMenuSave()
+
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
+  })
+
+  /**
+   * DELETE
+   */
 
   // it('should set item onDeleteMenuItem', () => {
   //   const event: MouseEvent = new MouseEvent('type')
@@ -298,6 +444,10 @@ it('should display error message on save menu: edit', () => {
   //   expect(component.displayMenuDetail).toBeFalse()
   // })
 
+  /**
+   * LANGUAGE
+   */
+
   // it('should remove language from languagesDisplayed, add it to languagesAvailable', () => {
   //   component.languagesDisplayed = [{ label: 'English', value: 'en', data: 'Data' }]
   //   component.languagesAvailable = [{ label: 'German', value: 'de', data: '' }]
@@ -350,6 +500,17 @@ it('should display error message on save menu: edit', () => {
   //   expect(component.displayLanguageField('de')).toBeTrue()
   //   expect(component.displayLanguageField('en')).toBeFalse()
   // })
+
+  /***************************************************************************
+   * EVENTS on URL field
+   **************************************************************************/
+
+  /**
+   * FILTER URL (query)
+   *   try to filter with best match with some exceptions:
+   *     a) empty query => list all
+   *     b) unknown entry => list all
+   */
 })
 
 /* Test modification of built-in Angular class registerOnChange at top of the file  */
