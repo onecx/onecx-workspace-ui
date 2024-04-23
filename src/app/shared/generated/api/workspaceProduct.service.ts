@@ -49,7 +49,7 @@ export interface GetProductByIdRequestParams {
     productId: string;
 }
 
-export interface GetProductsForWorkspaceIdRequestParams {
+export interface GetProductsByWorkspaceIdRequestParams {
     id: string;
 }
 
@@ -329,13 +329,13 @@ export class WorkspaceProductAPIService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getProductsForWorkspaceId(requestParameters: GetProductsForWorkspaceIdRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<Array<Product>>;
-    public getProductsForWorkspaceId(requestParameters: GetProductsForWorkspaceIdRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<Array<Product>>>;
-    public getProductsForWorkspaceId(requestParameters: GetProductsForWorkspaceIdRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<Array<Product>>>;
-    public getProductsForWorkspaceId(requestParameters: GetProductsForWorkspaceIdRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+    public getProductsByWorkspaceId(requestParameters: GetProductsByWorkspaceIdRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<Array<Product>>;
+    public getProductsByWorkspaceId(requestParameters: GetProductsByWorkspaceIdRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<Array<Product>>>;
+    public getProductsByWorkspaceId(requestParameters: GetProductsByWorkspaceIdRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<Array<Product>>>;
+    public getProductsByWorkspaceId(requestParameters: GetProductsByWorkspaceIdRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
         const id = requestParameters.id;
         if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling getProductsForWorkspaceId.');
+            throw new Error('Required parameter id was null or undefined when calling getProductsByWorkspaceId.');
         }
 
         let localVarHeaders = this.defaultHeaders;
