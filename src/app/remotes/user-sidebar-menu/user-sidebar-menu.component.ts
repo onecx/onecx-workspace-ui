@@ -105,8 +105,7 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent {
         this.menuItemApiService
           .getMenuItems({
             getMenuItemsRequest: {
-              // TODO: Change to workspace name after libs update
-              workspaceName: currentWorkspace.portalName,
+              workspaceName: currentWorkspace.workspaceName,
               menuKeys: ['user-profile-menu']
             }
           })
