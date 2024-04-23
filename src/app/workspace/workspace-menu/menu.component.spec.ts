@@ -6,12 +6,7 @@ import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router'
 import { of, throwError } from 'rxjs'
 import FileSaver from 'file-saver'
 
-import {
-  PortalMessageService,
-  ConfigurationService,
-  AUTH_SERVICE,
-  UserService
-} from '@onecx/portal-integration-angular'
+import { PortalMessageService, UserService } from '@onecx/portal-integration-angular'
 
 import { MenuStateService, MenuState } from './services/menu-state.service'
 import { MenuComponent } from './menu.component'
@@ -77,26 +72,21 @@ const state: MenuState = {
   workspaceMenuItems: []
 }
 
-fdescribe('MenuComponent', () => {
+describe('MenuComponent', () => {
   let component: MenuComponent
   let fixture: ComponentFixture<MenuComponent>
   let mockActivatedRoute: Partial<ActivatedRoute>
-  const mockAuthService = jasmine.createSpyObj('IAuthService', ['hasPermission'])
   let mockUserService: any
 
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
   const apiServiceSpy = {
     getWorkspaceByName: jasmine.createSpy('getWorkspaceByName').and.returnValue(of({}))
   }
-  // TODO: check api and use the correct names
   const menuApiServiceSpy = {
     getMenuStructure: jasmine.createSpy('getMenuStructure').and.returnValue(of(mockMenuItems)),
     getMenuItemById: jasmine.createSpy('getMenuItemById').and.returnValue(of(mockMenuItems)),
-    patchMenuItem: jasmine.createSpy('patchMenuItem').and.returnValue(of(mockMenuItems)),
     bulkPatchMenuItems: jasmine.createSpy('bulkPatchMenuItems').and.returnValue(of(mockMenuItems)),
-    addMenuItemForPortal: jasmine.createSpy('addMenuItemForPortal').and.returnValue(of(mockMenuItems)),
     deleteMenuItemById: jasmine.createSpy('deleteMenuItemById').and.returnValue(of({})),
-    importMenuByWorkspaceName: jasmine.createSpy('importMenuByWorkspaceName').and.returnValue(of({})),
     exportMenuByWorkspaceName: jasmine.createSpy('exportMenuByWorkspaceName').and.returnValue(of({}))
   }
   const wRoleServiceSpy = {
@@ -106,16 +96,6 @@ fdescribe('MenuComponent', () => {
     searchAssignments: jasmine.createSpy('searchAssignments').and.returnValue(of({})),
     createAssignment: jasmine.createSpy('createAssignment').and.returnValue(of({})),
     deleteAssignment: jasmine.createSpy('deleteAssignment').and.returnValue(of({}))
-  }
-  const configServiceSpy = {
-    getProperty: jasmine.createSpy('getProperty').and.returnValue('123'),
-    getPortal: jasmine.createSpy('getPortal').and.returnValue({
-      themeId: '1234',
-      portalName: 'test',
-      baseUrl: '/',
-      microfrontendRegistrations: []
-    }),
-    lang: 'en'
   }
   const translateServiceSpy = jasmine.createSpyObj('TranslateService', ['get'])
   const stateServiceSpy = jasmine.createSpyObj<MenuStateService>('MenuStateService', ['getState', 'updateState'])
@@ -151,10 +131,8 @@ fdescribe('MenuComponent', () => {
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: WorkspaceAPIService, useValue: apiServiceSpy },
         { provide: WorkspaceRolesAPIService, useValue: wRoleServiceSpy },
-        { provide: ConfigurationService, useValue: configServiceSpy },
         { provide: MenuItemAPIService, useValue: menuApiServiceSpy },
         { provide: AssignmentAPIService, useValue: assgmtApiServiceSpy },
-        { provide: AUTH_SERVICE, useValue: mockAuthService },
         { provide: MenuStateService, useValue: stateServiceSpy },
         { provide: Location, useValue: locationSpy },
         { provide: UserService, useValue: mockUserService }
@@ -165,11 +143,8 @@ fdescribe('MenuComponent', () => {
     apiServiceSpy.getWorkspaceByName.calls.reset()
     menuApiServiceSpy.getMenuItemById.calls.reset()
     menuApiServiceSpy.getMenuStructure.calls.reset()
-    menuApiServiceSpy.patchMenuItem.calls.reset()
     menuApiServiceSpy.bulkPatchMenuItems.calls.reset()
-    menuApiServiceSpy.addMenuItemForPortal.calls.reset()
     menuApiServiceSpy.deleteMenuItemById.calls.reset()
-    menuApiServiceSpy.importMenuByWorkspaceName.calls.reset()
     wRoleServiceSpy.searchWorkspaceRoles.calls.reset()
     assgmtApiServiceSpy.searchAssignments.calls.reset()
     assgmtApiServiceSpy.createAssignment.calls.reset()
@@ -180,25 +155,23 @@ fdescribe('MenuComponent', () => {
 
   beforeEach(() => {
     stateServiceSpy.getState.and.returnValue(state)
-
     fixture = TestBed.createComponent(MenuComponent)
     component = fixture.componentInstance
     component.workspace = workspace
-    // component.menuItems = state.workspaceMenuItems
     fixture.detectChanges()
   })
 
-  fit('should create', () => {
+  it('should create', () => {
     expect(component).toBeTruthy()
   })
 
-  fit('it should push permissions to array if userService has them', () => {
+  it('it should push permissions to array if userService has them', () => {
     expect(component.myPermissions).toContain('MENU#EDIT')
     expect(component.myPermissions).toContain('MENU#GRANT')
     expect(component.myPermissions).toContain('ROLE#EDIT')
   })
 
-  fit('should have prepared action buttons onInit: onClose, and called it', () => {
+  it('should have prepared action buttons onInit: onClose, and called it', () => {
     component.ngOnInit()
 
     if (component.actions$) {
@@ -210,7 +183,7 @@ fdescribe('MenuComponent', () => {
     }
   })
 
-  fit('should have prepared action buttons onInit: onExportMenu', () => {
+  it('should have prepared action buttons onInit: onExportMenu', () => {
     spyOn(component, 'onExportMenu')
 
     component.ngOnInit()
@@ -224,7 +197,7 @@ fdescribe('MenuComponent', () => {
     }
   })
 
-  fit('should have prepared action buttons onInit: onImportMenu', () => {
+  it('should have prepared action buttons onInit: onImportMenu', () => {
     spyOn(component, 'onImportMenu')
 
     component.ngOnInit()
@@ -238,7 +211,7 @@ fdescribe('MenuComponent', () => {
     }
   })
 
-  fit('should call loadMenu onReload', () => {
+  it('should call loadMenu onReload', () => {
     spyOn(component, 'loadMenu')
 
     component.onReload()
@@ -246,7 +219,7 @@ fdescribe('MenuComponent', () => {
     expect(component.loadMenu).toHaveBeenCalledWith(true)
   })
 
-  fit('should return true if an object is empty', () => {
+  it('should return true if an object is empty', () => {
     expect(component.isObjectEmpty({})).toBeTrue()
     expect(component.isObjectEmpty({ key: 'value' })).toBeFalse()
   })
@@ -255,7 +228,7 @@ fdescribe('MenuComponent', () => {
    * CREATE + EDIT + DELETE
    */
 
-  fit('should displayMenuDetail and change mode onGoToDetails: edit permission', () => {
+  it('should displayMenuDetail and change mode onGoToDetails: edit permission', () => {
     const event: MouseEvent = new MouseEvent('type')
     const item = {
       id: 'id1'
@@ -268,7 +241,7 @@ fdescribe('MenuComponent', () => {
     expect(component.menuItem).toBe(item)
   })
 
-  fit('should displayMenuDetail and change mode onGoToDetails: no edit permission', () => {
+  it('should displayMenuDetail and change mode onGoToDetails: no edit permission', () => {
     const event: MouseEvent = new MouseEvent('type')
     const item = {
       id: 'id1'
@@ -281,7 +254,7 @@ fdescribe('MenuComponent', () => {
     expect(component.changeMode).toBe('VIEW')
   })
 
-  fit('should not displayMenuDetail: no item id', () => {
+  it('should not displayMenuDetail: no item id', () => {
     const event: MouseEvent = new MouseEvent('type')
     const item = {
       name: 'name'
@@ -292,7 +265,7 @@ fdescribe('MenuComponent', () => {
     expect(component.displayMenuDetail).toBeFalse()
   })
 
-  fit('should handle onCreateMenu correctly', () => {
+  it('should handle onCreateMenu correctly', () => {
     const mockEvent = jasmine.createSpyObj('MouseEvent', ['stopPropagation'])
     const mockParent = {
       key: '1-1',
@@ -306,7 +279,7 @@ fdescribe('MenuComponent', () => {
     expect(component.displayMenuDetail).toBeTrue()
   })
 
-  fit('should removeNodeFromTree if key is present and refresh menuNodes if delete displayed onMenuItemChanged', () => {
+  it('should removeNodeFromTree if key is present and refresh menuNodes if delete displayed onMenuItemChanged', () => {
     component.displayMenuDelete = true
     const item = {
       key: 'key'
@@ -327,7 +300,7 @@ fdescribe('MenuComponent', () => {
     expect(component.menuNodes).not.toContain(item)
   })
 
-  fit('should removeNodeFromTree if key is present in node children', () => {
+  it('should removeNodeFromTree if key is present in node children', () => {
     component.displayMenuDelete = true
     const item = {
       key: 'child key'
@@ -346,7 +319,7 @@ fdescribe('MenuComponent', () => {
     expect(component.menuNodes).not.toContain(item)
   })
 
-  fit('should not removeNodeFromTree if no key present', () => {
+  it('should not removeNodeFromTree if no key present', () => {
     component.displayMenuDelete = true
     const key = undefined
     const item = {
@@ -366,7 +339,7 @@ fdescribe('MenuComponent', () => {
     expect(component.menuNodes).toContain(item)
   })
 
-  fit('should loadMenu if detail displayed onMenuItemChanged', () => {
+  it('should loadMenu if detail displayed onMenuItemChanged', () => {
     component.displayMenuDelete = false
     component.displayMenuDetail = true
     spyOn(component, 'loadMenu')
@@ -376,7 +349,7 @@ fdescribe('MenuComponent', () => {
     expect(component.loadMenu).toHaveBeenCalled()
   })
 
-  fit('should set correct values if nothing changed onMenuItemChanged', () => {
+  it('should set correct values if nothing changed onMenuItemChanged', () => {
     component.onMenuItemChanged(false)
 
     expect(component.displayMenuDetail).toBeFalse()
@@ -384,7 +357,7 @@ fdescribe('MenuComponent', () => {
     expect(component.menuItem).toBeUndefined()
   })
 
-  fit('should display delete pop up with item', () => {
+  it('should display delete pop up with item', () => {
     const event: MouseEvent = new MouseEvent('click')
     const item = {
       key: 'key'
@@ -402,7 +375,7 @@ fdescribe('MenuComponent', () => {
    * TREE + DIALOG
    */
 
-  fit('should empty menuTreeFiler and reset filter onClearFilterMenuTable', () => {
+  it('should empty menuTreeFiler and reset filter onClearFilterMenuTable', () => {
     const mockMenuTreeFilter = {
       nativeElement: jasmine.createSpyObj('nativeElement', ['value'])
     }
@@ -416,7 +389,7 @@ fdescribe('MenuComponent', () => {
     expect(mockMenuTree.filterGlobal).toHaveBeenCalledWith('', 'contains')
   })
 
-  fit('should recursively expand all menu nodes onExpandAll', () => {
+  it('should recursively expand all menu nodes onExpandAll', () => {
     component.menuNodes = [
       { key: '1', expanded: false, children: [{ key: '1-1', children: [{ key: '1-1-1' }] }] },
       { key: '2' }
@@ -435,7 +408,7 @@ fdescribe('MenuComponent', () => {
     expect(stateServiceSpy.getState().treeExpansionState.get('1')).toBeTrue()
   })
 
-  fit('should recursively expand all menu nodes onExpandAll: no key in first node', () => {
+  it('should recursively expand all menu nodes onExpandAll: no key in first node', () => {
     component.menuNodes = [{ expanded: false, children: [{ key: '1-1', children: [{ key: '1-1-1' }] }] }, { key: '2' }]
     const mockExpansionState: Map<string, boolean> = new Map<string, boolean>()
     stateServiceSpy.getState.and.returnValue({
@@ -451,7 +424,7 @@ fdescribe('MenuComponent', () => {
     expect(stateServiceSpy.getState().treeExpansionState.get('2')).toBeTrue()
   })
 
-  fit('should recursively collapse all menu nodes onCollapseAll', () => {
+  it('should recursively collapse all menu nodes onCollapseAll', () => {
     component.menuNodes = [
       { key: '1', expanded: true, children: [{ key: '1-1', children: [{ key: '1-1-1' }] }] },
       { key: '2' }
@@ -470,7 +443,7 @@ fdescribe('MenuComponent', () => {
     expect(stateServiceSpy.getState().treeExpansionState.get('1')).toBeFalse()
   })
 
-  fit('should getState onHierarchyViewChange', () => {
+  it('should getState onHierarchyViewChange', () => {
     const mockExpansionState: Map<string, boolean> = new Map<string, boolean>()
     stateServiceSpy.getState.and.returnValue({
       treeExpansionState: mockExpansionState,
@@ -492,7 +465,7 @@ fdescribe('MenuComponent', () => {
   /****************************************************************************
    * DATA
    */
-  fit('should loadData', () => {
+  it('should loadData', () => {
     apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
     component.workspaceName = 'workspace-name'
 
@@ -501,7 +474,7 @@ fdescribe('MenuComponent', () => {
     expect(component.workspace).toEqual(workspace)
   })
 
-  fit('it should handle error response on loadData', () => {
+  it('it should handle error response on loadData', () => {
     const errorResponse = new HttpErrorResponse({
       error: 'test error',
       status: 404,
@@ -514,7 +487,7 @@ fdescribe('MenuComponent', () => {
     expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_404.WORKSPACES')
   })
 
-  fit('it should handle exception on loadData', () => {
+  it('it should handle exception on loadData', () => {
     apiServiceSpy.getWorkspaceByName.and.returnValue(of(null))
 
     component.loadData()
@@ -522,7 +495,7 @@ fdescribe('MenuComponent', () => {
     expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_0.WORKSPACES')
   })
 
-  fit('should loadMenu', () => {
+  it('should loadMenu', () => {
     menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
 
     component.loadMenu(true)
@@ -530,7 +503,7 @@ fdescribe('MenuComponent', () => {
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.SEARCH.RELOAD.OK' })
   })
 
-  fit('should loadMenu: no node key in restoreRecursive', () => {
+  it('should loadMenu: no node key in restoreRecursive', () => {
     const mockMenuItems: WorkspaceMenuItem[] = [
       {
         id: 'id',
@@ -548,7 +521,7 @@ fdescribe('MenuComponent', () => {
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.SEARCH.RELOAD.OK' })
   })
 
-  fit('should handle error response on loadMenu', () => {
+  it('should handle error response on loadMenu', () => {
     const errorResponse = new HttpErrorResponse({
       error: 'test error',
       status: 404,
@@ -561,7 +534,7 @@ fdescribe('MenuComponent', () => {
     expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_404.MENUS')
   })
 
-  fit('should return an empty array from mapToTreeNodes if no menuItems onLoadMenu', () => {
+  it('should return an empty array from mapToTreeNodes if no menuItems onLoadMenu', () => {
     menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: [] }))
 
     component.loadMenu(true)
@@ -573,7 +546,7 @@ fdescribe('MenuComponent', () => {
    * ROLES + ASSIGNMENTS
    */
 
-  fit('should loadRolesandAssignments -> seachRoles and searchAssignments on loadMenu', () => {
+  it('should loadRolesandAssignments -> seachRoles and searchAssignments on loadMenu', () => {
     const wRole2: WorkspaceRole = {
       name: 'role name2',
       id: 'role id2',
@@ -589,7 +562,7 @@ fdescribe('MenuComponent', () => {
     expect(component.wAssignments).toEqual([assgmt])
   })
 
-  fit('should handle roles without name in sortRoleName function', () => {
+  it('should handle roles without name in sortRoleName function', () => {
     const wRole2: WorkspaceRole = {
       id: 'role id2',
       description: 'role descr2'
@@ -608,7 +581,7 @@ fdescribe('MenuComponent', () => {
     expect(component.wAssignments).toEqual([assgmt])
   })
 
-  fit('should have found a tree node by id and used the assigned node in inheritRoleAssignment', () => {
+  it('should have found a tree node by id and used the assigned node in inheritRoleAssignment', () => {
     menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
     wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: [wRole] }))
     assgmtApiServiceSpy.searchAssignments.and.returnValue(of({ stream: [assgmt] }))
@@ -628,7 +601,7 @@ fdescribe('MenuComponent', () => {
     expect(component.wAssignments).toEqual([assgmt])
   })
 
-  fit('should have looked at children nodes to find a tree node by id', () => {
+  it('should have looked at children nodes to find a tree node by id', () => {
     const assgmt2: Assignment = {
       id: 'assgnmt id',
       roleId: 'roleId',
@@ -644,7 +617,7 @@ fdescribe('MenuComponent', () => {
     expect(component.wAssignments).toEqual([assgmt2])
   })
 
-  fit('should throw errors for seachRoles and searchAssignments on loadMenu', () => {
+  it('should throw errors for seachRoles and searchAssignments on loadMenu', () => {
     const err = { status: '404' }
     wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(throwError(() => err))
     assgmtApiServiceSpy.searchAssignments.and.returnValue(throwError(() => err))
@@ -662,7 +635,7 @@ fdescribe('MenuComponent', () => {
    *  EXPORT / IMPORT
    */
 
-  fit('should export a menu', () => {
+  it('should export a menu', () => {
     menuApiServiceSpy.exportMenuByWorkspaceName.and.returnValue(of(mockMenuItems))
     component.workspaceName = 'name'
     component.workspace = workspace
@@ -676,19 +649,19 @@ fdescribe('MenuComponent', () => {
     )
   })
 
-  fit('should set displayMenuImport to true', () => {
+  it('should set displayMenuImport to true', () => {
     component.onImportMenu()
 
     expect(component.displayMenuImport).toBeTrue()
   })
 
-  fit('should set displayMenuImport to false', () => {
+  it('should set displayMenuImport to false', () => {
     component.onHideMenuImport()
 
     expect(component.displayMenuImport).toBeFalse()
   })
 
-  fit('should set displayRoles to true when displayRoles is false and wRoles is empty', () => {
+  it('should set displayRoles to true when displayRoles is false and wRoles is empty', () => {
     component.displayRoles = false
     component.wRoles = []
 
@@ -697,7 +670,7 @@ fdescribe('MenuComponent', () => {
     expect(component.displayRoles).toBeTrue()
   })
 
-  fit('should set displayRoles to true when displayRoles is false and wRoles is not empty', () => {
+  it('should set displayRoles to true when displayRoles is false and wRoles is not empty', () => {
     component.displayRoles = false
     component.wRoles = [wRole]
 
@@ -706,19 +679,19 @@ fdescribe('MenuComponent', () => {
     expect(component.displayRoles).toBeTrue()
   })
 
-  fit('should set displayMenuPreview to true onDisplayMenuPreview', () => {
+  it('should set displayMenuPreview to true onDisplayMenuPreview', () => {
     component.onDisplayMenuPreview()
 
     expect(component.displayMenuPreview).toBeTrue()
   })
 
-  fit('should set displayMenuPreview to false onHideMenuPreview', () => {
+  it('should set displayMenuPreview to false onHideMenuPreview', () => {
     component.onHideMenuPreview()
 
     expect(component.displayMenuPreview).toBeFalse()
   })
 
-  fit('should handle successful menu item update', () => {
+  it('should handle successful menu item update', () => {
     menuApiServiceSpy.bulkPatchMenuItems.and.returnValue(of({}))
     spyOn(console, 'log')
 
