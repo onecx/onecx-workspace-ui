@@ -132,7 +132,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
       const result: Role[] = []
       this.searchWorkspaceRoles().subscribe({
         next: (data) => data.forEach((r) => result.push(r)),
-        error: () => {},
+        // error: () => {},
         complete: () => {
           this.workspaceRolesLoaded = true
           this.roles = [...result]
@@ -146,7 +146,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
       const result: Role[] = [] // temporary used
       this.searchIamRoles().subscribe({
         next: (data) => data.forEach((r) => result.push(r)),
-        error: () => {},
+        // error: () => {},
         complete: () => {
           this.iamRolesLoaded = true
           // combine role results and prevent duplicates
@@ -172,45 +172,6 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
     this.searchRoles()
   }
 
-  /**
-   * Create/Delete Roles direct on click
-   */
-  public onToggleRole(role: any): void {
-    if (!this.hasEditPermission) return
-    if (!role.isWorkspaceRole) {
-      this.wRoleApi
-        .createWorkspaceRole({
-          createWorkspaceRoleRequest: {
-            workspaceId: this.workspace?.id ?? '',
-            name: role.name,
-            description: role.description
-          } as CreateWorkspaceRoleRequest
-        })
-        .subscribe({
-          next: (data) => {
-            this.msgService.success({ summaryKey: 'ACTIONS.CREATE.ROLE_OK' })
-            role.id = data.id
-            role.isWorkspaceRole = true
-          },
-          error: () => {
-            this.msgService.success({ summaryKey: 'ACTIONS.CREATE.ROLE_NOK' })
-          }
-        })
-    }
-    if (role.isWorkspaceRole) {
-      this.wRoleApi.deleteWorkspaceRole({ id: role.id }).subscribe({
-        next: () => {
-          this.msgService.success({ summaryKey: 'ACTIONS.DELETE.ROLE_OK' })
-          role.id = undefined
-          role.isWorkspaceRole = false
-        },
-        error: () => {
-          this.msgService.success({ summaryKey: 'ACTIONS.DELETE.ROLE_NOK' })
-        }
-      })
-    }
-  }
-
   public onAddRole(ev: MouseEvent, role: Role): void {
     ev.stopPropagation()
     this.wRoleApi
@@ -228,7 +189,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
           role.isWorkspaceRole = true
         },
         error: () => {
-          this.msgService.success({ summaryKey: 'ACTIONS.CREATE.ROLE_NOK' })
+          this.msgService.error({ summaryKey: 'ACTIONS.CREATE.ROLE_NOK' })
         }
       })
   }

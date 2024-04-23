@@ -208,6 +208,9 @@
     "POSITION": "Position",
     "SCOPE": "Scope",
     "URL": "URL",
+    "URL.EMPTY": "",
+    "URL.HTTP": "Webadresse",
+    "URL.UNKNOWN.PRODUCT": "Unbekanntes Produkt",
     "TOOLTIP": {
       "BADGE": "Icon aus der PrimeNG Bibliothek welches neben dem Menünamen angezeigt werden soll",
       "DESCRIPTION": "Zusatzinformationen",
@@ -220,7 +223,7 @@
       "WORKSPACE": "Name des Workspaces",
       "POSITION": "Eine ganzzahlige Nummer welche die Position des Menüpunkts in der Menüstruktur festlegt",
       "SCOPE": "Aktionsradius",
-      "URL": "Die durch den Menüpunkt aufgerufene URL. Kann intern (via registriertes Produkt) oder extern (Verlassen des Workspaces) sein"
+      "URL": "Die durch den Menüpunkt aufgerufene URL. Auswählen aus Liste und/oder manuelle Änderungen/Erweiterungen möglich."
     }
   },
   "DIALOG": {
@@ -335,6 +338,12 @@
       "ORIGIN": "Herkunft",
       "ORIGIN.TARGET": "Workspace",
       "ORIGIN.SOURCE": "Product Store",
+      "UNDEPLOYED": "Dieses Produkt ist nicht länger nutzbar. Eine weitere Benutzung führt zu Fehlermeldungen.",
+      "CHANGED_MFE": "Es gibt wichtige Änderungen in den Microfrontends.",
+      "MFES": {
+        "DEPRECATED": "Veraltet",
+        "UNDEPLOYED": "Unverfügbar"
+      },
       "MESSAGES": {
         "NOTHING_REGISTERED": "Kein Produkt registriert",
         "LOAD_ERROR": "Das Laden des Produkts ist fehlgeschlagen",

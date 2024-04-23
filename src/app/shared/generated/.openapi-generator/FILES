@@ -54,6 +54,7 @@ model/menuSnapshot.ts
 model/menuStructureSearchCriteria.ts
 model/microfrontend.ts
 model/microfrontendPS.ts
+model/microfrontendType.ts
 model/models.ts
 model/pagingResponse.ts
 model/problemDetailInvalidParam.ts

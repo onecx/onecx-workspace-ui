@@ -3,6 +3,7 @@
 @include danger-action;
 @include prepare-inputgroup;
 @include picklist-zebra-rows;
+@include card-badges;
 
 :host ::ng-deep {
   .p-dialog .p-dialog-content {
@@ -55,17 +56,6 @@
       li.p-picklist-item {
         padding: 0.2rem 0.5rem;
         border-bottom: var(--table-header-border);
-
-        // a flex table ?
-        .product-item-table {
-          display: table !important;
-          .product-item-row {
-            display: table-row !important;
-            > * {
-              display: table-cell !important;
-            }
-          }
-        }
       }
     }
   }

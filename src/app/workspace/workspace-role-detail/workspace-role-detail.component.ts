@@ -63,7 +63,7 @@ export class WorkspaceRoleDetailComponent implements OnChanges {
     let roleExists = false
     if (this.roles.length > 0) {
       let roles = this.roles.filter((r) => r.name === this.formGroupRole.controls['name'].value)
-      if (this.changeMode !== 'CREATE') roles = roles.filter((r) => r.id !== this.role?.id)
+      if (this.changeMode !== 'CREATE') roles = roles.filter((r) => r.id === this.role?.id)
       roleExists = roles.length > 0
     }
     if (roleExists) {
@@ -92,7 +92,7 @@ export class WorkspaceRoleDetailComponent implements OnChanges {
             this.dataChanged.emit(true)
           },
           error: (err) => {
-            this.msgService.success({ summaryKey: 'ACTIONS.CREATE.ROLE_NOK' })
+            this.msgService.error({ summaryKey: 'ACTIONS.CREATE.ROLE_NOK' })
             console.error(err)
           }
         })

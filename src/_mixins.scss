@@ -16,8 +16,8 @@
 
 @mixin compact-dropdown-list-items {
   :host ::ng-deep {
-    .p-dropdown-items .p-dropdown-item {
-      padding: 0.4rem 1rem;
+    .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
+      padding: 0.4rem 1rem !important;
     }
   }
 }
@@ -34,6 +34,10 @@
   :host ::ng-deep {
     .danger-action-text {
       color: var(--danger-button-bg);
+    }
+    .danger-action-bg {
+      color: white;
+      background-color: var(--danger-button-bg);
     }
   }
 }
@@ -61,7 +65,12 @@
 
 @mixin card-badges {
   :host ::ng-deep {
+    .card-badge-base {
+      border-radius: var(--border-radius);
+      opacity: 0.7;
+    }
     .card-badge-right {
+      border-radius: var(--border-radius);
       display: inline-block;
       position: absolute;
       right: 3px;
@@ -74,6 +83,7 @@
       }
     }
     .card-badge-left {
+      border-radius: var(--border-radius);
       display: inline-block;
       position: absolute;
       left: 3px;
@@ -176,6 +186,23 @@
       &:disabled {
         opacity: 0.38 !important;
       }
+    }
+  }
+}
+
+@mixin correct-autocomplete {
+  :host ::ng-deep {
+    .p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item {
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+    }
+    .p-autocomplete-clear-icon {
+      /* fix for bug in PrimeNG */
+      right: 3.5rem;
+    }
+    .p-autocomplete .p-autocomplete-loader {
+      /* fix for bug in PrimeNG */
+      display: none;
     }
   }
 }
