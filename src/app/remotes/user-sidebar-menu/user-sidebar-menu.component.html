@@ -8,22 +8,7 @@
       </span>
     </ng-template>
     <ng-template pTemplate="content">
-      <ul class="list-none p-0 m-0">
-        <ng-container *ngIf="userMenu$ | async as userMenu">
-          <li class="user-sidebar-menu-item border-round" *ngFor="let item of userMenu; let i = index">
-            <a [routerLink]="item.url" class="p-3 inline-block w-full h-full flex gap-2 align-items-center">
-              <i *ngIf="item.icon" [ngClass]="item.icon"></i>
-              <span>{{ item.label }}</span>
-            </a>
-          </li>
-        </ng-container>
-        <li class="user-sidebar-menu-item border-round">
-          <a class="flex flex-row align-items-center w-full h-full p-3 gap-2" pRipple (click)="logout()">
-            <i class="pi pi-power-off"></i>
-            <span>{{ 'REMOTES.USER_SIDEBAR_MENU.LOGOUT' | translate }}</span>
-          </a>
-        </li>
-      </ul>
+      <p-panelMenu *ngIf="userMenu$ | async as menu" [model]="menu" styleClass="shadow-none"></p-panelMenu>
     </ng-template>
   </p-accordionTab>
 </p-accordion>

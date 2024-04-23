@@ -22,11 +22,22 @@ import {
   UserService,
   createRemoteComponentTranslateLoader
 } from '@onecx/portal-integration-angular'
-import { MenuItem } from 'primeng/api'
+import { MenuItem, PrimeIcons } from 'primeng/api'
 import { AvatarModule } from 'primeng/avatar'
 import { MenuModule } from 'primeng/menu'
 import { RippleModule } from 'primeng/ripple'
-import { Observable, ReplaySubject, filter, map, mergeMap, shareReplay, withLatestFrom } from 'rxjs'
+import {
+  Observable,
+  ReplaySubject,
+  catchError,
+  filter,
+  map,
+  mergeMap,
+  of,
+  retry,
+  shareReplay,
+  withLatestFrom
+} from 'rxjs'
 import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
 import { SharedModule } from 'src/app/shared/shared.module'
@@ -96,15 +107,38 @@ export class OneCXUserAvatarMenuComponent implements ocxRemoteComponent, AfterVi
 
     this.userMenu$ = this.appStateService.currentWorkspace$.pipe(
       mergeMap((currentWorkspace) =>
-        this.menuItemApiService.getMenuItems({
-          getMenuItemsRequest: {
-            workspaceName: currentWorkspace.portalName,
-            menuKeys: ['user-profile-menu']
-          }
-        })
+        this.menuItemApiService
+          .getMenuItems({
+            getMenuItemsRequest: {
+              workspaceName: currentWorkspace.workspaceName,
+              menuKeys: ['user-profile-menu']
+            }
+          })
+          .pipe(
+            retry({ delay: 500, count: 3 }),
+            catchError(() => {
+              console.error('Unable to load menu items for user profile menu.')
+              return of(undefined)
+            })
+          )
       ),
       withLatestFrom(this.userService.lang$),
-      map(([data, userLang]) => this.menuItemService.constructMenuItems(data.menu?.[0].children, userLang)),
+      map(([data, userLang]) => this.menuItemService.constructMenuItems(data?.menu?.[0].children, userLang)),
+      mergeMap((currentMenu) => {
+        return this.translateService.get('REMOTES.USER_AVATAR_MENU.LOGOUT').pipe(
+          catchError(() => {
+            return of('Logout')
+          }),
+          map((translatedLabel) => {
+            const newMenuItem: MenuItem = {
+              label: translatedLabel,
+              icon: PrimeIcons.POWER_OFF,
+              command: this.logout
+            }
+            return [...currentMenu, newMenuItem]
+          })
+        )
+      }),
       shareReplay(),
       untilDestroyed(this)
     )
