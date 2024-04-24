@@ -20,6 +20,7 @@ import {
   Scope
 } from 'src/app/shared/generated'
 import { TabView } from 'primeng/tabview'
+import { DropDownChangeEvent } from 'src/app/shared/utils'
 
 const form = new FormGroup({
   parentItemId: new FormControl('some parent id'),
@@ -363,21 +364,7 @@ fdescribe('MenuDetailComponent', () => {
     menuApiServiceSpy.updateMenuItem.and.returnValue(of(mockMenuItems))
     component.formGroup = form
     component.menuItem = mockMenuItems[0]
-    //   key: '1-1',
-    //   id: 'id1',
-    //   parentItemId: '1',
-    //   disabled: true,
-    //   name: 'name',
-    //   position: 1,
-    //   url: 'url',
-    //   badge: 'badge',
-    //   scope: Scope.Workspace,
-    //   description: 'description'
-    // }
     component.menuItems = mockMenuItems
-    // component.menuNodes = [
-    //   { key: 'key', children: [{ key: 'key', data: { i18n: { en: 'en' } } }], data: { i18n: { en: 'en' } } }
-    // ]
     component.menuItemId = 'id'
     component.changeMode = 'EDIT'
 
@@ -390,18 +377,6 @@ fdescribe('MenuDetailComponent', () => {
     menuApiServiceSpy.updateMenuItem.and.returnValue(throwError(() => new Error()))
     component.formGroup = form
     component.menuItem = mockMenuItems[0]
-    // component.menuItem = {
-    //   key: '1-1',
-    //   id: 'id1',
-    //   parentItemId: '1',
-    //   disabled: true,
-    //   name: 'name',
-    //   position: 1,
-    //   url: 'url',
-    //   badge: 'badge',
-    //   scope: Scope.Workspace,
-    //   description: 'description'
-    // }
     component.changeMode = 'EDIT'
     component.menuItemId = 'id'
 
@@ -582,12 +557,109 @@ fdescribe('MenuDetailComponent', () => {
    * EVENTS on URL field
    **************************************************************************/
 
+  fit('should set overlayVisible to true on field onFocusUrl', () => {
+    let mockField: any = { overlayVisible: false }
+
+    component.onFocusUrl(mockField)
+
+    expect(mockField.overlayVisible).toBeTrue()
+  })
+
+  fit('should update selectedMfe based on value from mfeMap onSelectPath', () => {
+    const mouseEvent = jasmine.createSpyObj('MouseEvent', ['preventDefault', 'stopPropagation'])
+    const mockEvent: DropDownChangeEvent = { ...mouseEvent, value: 'testPath' }
+    const expectedMfe = { ...microfrontend }
+    component.mfeMap = new Map()
+    component.mfeMap.set('testPath', expectedMfe)
+
+    component.onSelectPath(mockEvent)
+
+    expect(component.selectedMfe).toBe(expectedMfe)
+  })
+
+  fit('should reset selectedMfe and set the formGroup url control to the first mfeItem when onClearPath is called', () => {
+    component.mfeItems = [microfrontend]
+    component.formGroup = new FormGroup({
+      url: new FormControl('')
+    })
+
+    component.onClearPath()
+
+    expect(component.selectedMfe).toEqual(component.mfeItems[0])
+    expect(component.formGroup.controls['url'].value).toEqual(component.mfeItems[0])
+  })
+
   /**
    * FILTER URL (query)
    *   try to filter with best match with some exceptions:
    *     a) empty query => list all
    *     b) unknown entry => list all
    */
+
+  fit('should filter MFE items based on the query', () => {
+    const mockEvent = { originalEvent: new Event('filter'), query: 'pa' }
+    component.formGroup = new FormGroup({
+      url: new FormControl('')
+    })
+    component.mfeItems = [microfrontend]
+
+    component.onFilterPaths(mockEvent)
+
+    expect(component.filteredMfes.length).toBe(1)
+    expect(component.filteredMfes[0].id).toBe('id')
+  })
+
+  fit('should assign all MFE items if query is empty', () => {
+    const mockEvent = { originalEvent: new Event('filter'), query: '' }
+
+    component.onFilterPaths(mockEvent)
+
+    expect(component.filteredMfes).toEqual(component.mfeItems)
+  })
+
+  fit('should use url object basePath if query is not provided', () => {
+    component.formGroup.controls['url'].setValue({ basePath: 'path' })
+    const mockEvent = { originalEvent: new Event('filter'), query: '' }
+
+    component.mfeItems = [microfrontend]
+
+    component.onFilterPaths(mockEvent)
+
+    expect(component.filteredMfes.length).toBe(1)
+    expect(component.filteredMfes[0].basePath).toBe('path')
+  })
+
+  xit('should check if the query is found at the beginning of mfe path', () => {
+    const mockEvent = { originalEvent: new Event('filter'), query: 'url' }
+    component.formGroup = new FormGroup({
+      url: new FormControl({
+        basePath: 'url basePath'
+      })
+    })
+    component.mfeItems = [microfrontend]
+
+    component.onFilterPaths(mockEvent)
+
+    expect(component.filteredMfes.length).toBe(1)
+    expect(component.filteredMfes[0].basePath).toBe('url basePath')
+  })
+
+  fit('should filter MFE items based on the query', () => {
+    const mockEvent = { originalEvent: new Event('filter'), query: 'pa' }
+    component.formGroup = new FormGroup({
+      url: new FormControl('')
+    })
+    const microfrontendNoId: Microfrontend = {
+      appId: 'appId',
+      basePath: 'path'
+    }
+    component.mfeItems = [microfrontendNoId, microfrontend]
+
+    component.onFilterPaths(mockEvent)
+
+    expect(component.filteredMfes.length).toBe(2)
+    expect(component.filteredMfes[0].id).toBeUndefined()
+  })
 })
 
 /* Test modification of built-in Angular class registerOnChange at top of the file  */

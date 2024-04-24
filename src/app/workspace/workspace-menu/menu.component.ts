@@ -17,7 +17,7 @@ import {
   AssignmentAPIService,
   AssignmentPageResult,
   Assignment,
-  // CreateAssignmentRequest,
+  CreateAssignmentRequest,
   MenuItemAPIService,
   MenuItemStructure,
   Workspace,
@@ -396,37 +396,36 @@ export class MenuComponent implements OnInit, OnDestroy {
       })
   }
 
-  /* UNUSED */
-  // public onGrantPermission(rowData: MenuItemNodeData, roleId: string): void {
-  //   this.assApi
-  //     .createAssignment({
-  //       createAssignmentRequest: { roleId: roleId, menuItemId: rowData.id } as CreateAssignmentRequest
-  //     })
-  //     .subscribe({
-  //       next: (data) => {
-  //         this.msgService.success({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.GRANT_OK' })
-  //         rowData.roles[roleId] = data.id
-  //         this.inheritRoleAssignment(rowData.node, roleId, data.id)
-  //       },
-  //       error: (err: { error: any }) => {
-  //         this.msgService.error({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.GRANT_NOK' })
-  //         console.error(err.error)
-  //       }
-  //     })
-  // }
-  // public onRevokePermission(rowData: MenuItemNodeData, roleId: string, assId: string): void {
-  //   this.assApi.deleteAssignment({ id: assId }).subscribe({
-  //     next: () => {
-  //       this.msgService.success({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.REVOKE_OK' })
-  //       rowData.roles[roleId] = undefined
-  //       this.inheritRoleAssignment(rowData.node, roleId, undefined)
-  //     },
-  //     error: (err: { error: any }) => {
-  //       this.msgService.error({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.REVOKE_NOK' })
-  //       console.error(err.error)
-  //     }
-  //   })
-  // }
+  public onGrantPermission(rowData: MenuItemNodeData, roleId: string): void {
+    this.assApi
+      .createAssignment({
+        createAssignmentRequest: { roleId: roleId, menuItemId: rowData.id } as CreateAssignmentRequest
+      })
+      .subscribe({
+        next: (data) => {
+          this.msgService.success({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.GRANT_OK' })
+          rowData.roles[roleId] = data.id
+          this.inheritRoleAssignment(rowData.node, roleId, data.id)
+        },
+        error: (err: { error: any }) => {
+          this.msgService.error({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.GRANT_NOK' })
+          console.error(err.error)
+        }
+      })
+  }
+  public onRevokePermission(rowData: MenuItemNodeData, roleId: string, assId: string): void {
+    this.assApi.deleteAssignment({ id: assId }).subscribe({
+      next: () => {
+        this.msgService.success({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.REVOKE_OK' })
+        rowData.roles[roleId] = undefined
+        this.inheritRoleAssignment(rowData.node, roleId, undefined)
+      },
+      error: (err: { error: any }) => {
+        this.msgService.error({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.REVOKE_NOK' })
+        console.error(err.error)
+      }
+    })
+  }
 
   /** remove node and sub nodes (recursively) in the tree
    */

@@ -438,7 +438,7 @@ export class MenuDetailComponent implements OnChanges {
    *     a) empty query => list all
    *     b) unknown entry => list all
    */
-  public onFilterPathes(ev: AutoCompleteCompleteEvent): void {
+  public onFilterPaths(ev: AutoCompleteCompleteEvent): void {
     let filtered: MFE[] = []
     let query = ev && ev.query ? ev.query : undefined
     if (!query) {
