@@ -1,6 +1,5 @@
 import { NO_ERRORS_SCHEMA, Component } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-// import { HttpErrorResponse } from '@angular/common/http'
 import { FormControl, FormGroup, FormsModule, Validators } from '@angular/forms'
 import { Location } from '@angular/common'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
@@ -47,7 +46,8 @@ const mockMenuItems: MenuItem[] = [
     disabled: false,
     badge: 'badge',
     scope: Scope.App,
-    description: 'description'
+    description: 'description',
+    url: '/workspace'
   },
   {
     id: 'id2',
@@ -75,7 +75,7 @@ const product: Product = {
   modificationCount: 1
 }
 
-fdescribe('MenuDetailComponent', () => {
+describe('MenuDetailComponent', () => {
   let component: MenuDetailComponent
   let fixture: ComponentFixture<MenuDetailComponent>
   let mockActivatedRoute: Partial<ActivatedRoute>
@@ -245,8 +245,22 @@ fdescribe('MenuDetailComponent', () => {
    **/
 
   xit('should loadMfeUrls', () => {
+    const product2: Product = {
+      id: 'prod2 id',
+      productName: 'prod2 name',
+      displayName: 'display name2',
+      description: 'description2',
+      microfrontends: [
+        {
+          id: 'id2',
+          appId: 'appId2',
+          basePath: 'path2'
+        }
+      ],
+      modificationCount: 1
+    }
     menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[0]))
-    wProductApiServiceSpy.getProductsForWorkspaceId.and.returnValue(of([product]))
+    wProductApiServiceSpy.getProductsForWorkspaceId.and.returnValue(of([product, product2]))
     component.changeMode = 'VIEW'
     component.menuItemId = 'menuItemId'
     component.displayDetailDialog = true
@@ -254,7 +268,7 @@ fdescribe('MenuDetailComponent', () => {
 
     component.ngOnChanges()
 
-    expect(component.mfeItems).toBe([microfrontend])
+    expect(component.mfeItems).toEqual([microfrontend])
     expect((component as any).preparePanelHeight).toHaveBeenCalled()
   })
 
@@ -276,6 +290,21 @@ fdescribe('MenuDetailComponent', () => {
     component.ngOnChanges()
 
     expect(component.mfeItems).toBe([{ ...microfrontend, product: 'display name' }])
+    expect((component as any).preparePanelHeight).toHaveBeenCalled()
+  })
+
+  fit('should display error when trying to loadMfeUrls', () => {
+    menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[0]))
+    wProductApiServiceSpy.getProductsForWorkspaceId.and.returnValue(throwError(() => new Error()))
+    component.changeMode = 'VIEW'
+    component.menuItemId = 'menuItemId'
+    component.displayDetailDialog = true
+    spyOn(component as any, 'preparePanelHeight')
+    spyOn(console, 'error')
+
+    component.ngOnChanges()
+
+    expect(console.error).toHaveBeenCalledWith('getProductsForWorkspaceId():', new Error())
     expect((component as any).preparePanelHeight).toHaveBeenCalled()
   })
 

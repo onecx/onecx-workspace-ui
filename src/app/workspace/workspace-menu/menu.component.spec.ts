@@ -9,7 +9,7 @@ import FileSaver from 'file-saver'
 import { PortalMessageService, UserService } from '@onecx/portal-integration-angular'
 
 import { MenuStateService, MenuState } from './services/menu-state.service'
-import { MenuComponent } from './menu.component'
+import { MenuComponent, MenuItemNodeData } from './menu.component'
 
 import {
   Workspace,
@@ -50,6 +50,19 @@ const mockMenuItems: WorkspaceMenuItem[] = [
   }
 ]
 
+const nodeData: MenuItemNodeData = {
+  id: 'id',
+  first: true,
+  last: false,
+  prevId: 'prev',
+  gotoUrl: 'goToUrk',
+  positionPath: 'posPath',
+  appConnected: true,
+  roles: { ['role']: 'role' },
+  rolesInherited: { ['inhRole']: 'inhRole' },
+  node: { key: 'nodeKey' }
+}
+
 const wRole: WorkspaceRole = {
   name: 'role name',
   id: 'role id',
@@ -72,7 +85,7 @@ const state: MenuState = {
   workspaceMenuItems: []
 }
 
-describe('MenuComponent', () => {
+fdescribe('MenuComponent', () => {
   let component: MenuComponent
   let fixture: ComponentFixture<MenuComponent>
   let mockActivatedRoute: Partial<ActivatedRoute>
@@ -591,16 +604,6 @@ describe('MenuComponent', () => {
     expect(component.wAssignments).toEqual([assgmt])
   })
 
-  xit('should have found a match in menu item url and ', () => {
-    menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
-    wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: [wRole] }))
-    assgmtApiServiceSpy.searchAssignments.and.returnValue(of({ stream: [assgmt] }))
-
-    component.loadMenu(true)
-
-    expect(component.wAssignments).toEqual([assgmt])
-  })
-
   it('should have looked at children nodes to find a tree node by id', () => {
     const assgmt2: Assignment = {
       id: 'assgnmt id',
@@ -629,6 +632,14 @@ describe('MenuComponent', () => {
     expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + '404' + '.ROLES')
     expect(console.error).toHaveBeenCalledWith('searchRoles():', err)
     expect(console.error).toHaveBeenCalledWith('searchAssignments():', err)
+  })
+
+  xit('should handle successful assignment creation onGrantPermission', () => {
+    assgmtApiServiceSpy.createAssignment().and.returnValue()
+
+    component.onGrantPermission(nodeData, 'role123')
+
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.GRANT_OK' })
   })
 
   /****************************************************************************
