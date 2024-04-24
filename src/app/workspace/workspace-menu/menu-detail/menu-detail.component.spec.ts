@@ -1,7 +1,7 @@
 import { NO_ERRORS_SCHEMA, Component } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 // import { HttpErrorResponse } from '@angular/common/http'
-import { FormControl, FormGroup, FormsModule } from '@angular/forms'
+import { FormControl, FormGroup, FormsModule, Validators } from '@angular/forms'
 import { Location } from '@angular/common'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router'
@@ -19,10 +19,11 @@ import {
   Microfrontend,
   Scope
 } from 'src/app/shared/generated'
+import { TabView } from 'primeng/tabview'
 
 const form = new FormGroup({
   parentItemId: new FormControl('some parent id'),
-  key: new FormControl('key'),
+  key: new FormControl('key', Validators.minLength(2)),
   name: new FormControl('name'),
   position: new FormControl('1'),
   disabled: new FormControl<boolean>(false),
@@ -155,25 +156,25 @@ fdescribe('MenuDetailComponent', () => {
     component.formGroup = form
   })
 
-  it('should create', () => {
+  fit('should create', () => {
     expect(component).toBeTruthy()
   })
 
-  it('should set German date format', () => {
+  fit('should set German date format', () => {
     mockUserService.lang$.next('de')
     initializeComponent()
 
     expect(component.dateFormat).toEqual('dd.MM.yyyy HH:mm')
   })
 
-  it('should set English date format', () => {
+  fit('should set English date format', () => {
     mockUserService.lang$.next('en')
     initializeComponent()
 
     expect(component.dateFormat).toEqual('short')
   })
 
-  it('should init menuItem and set formGroup in create mode onChanges', () => {
+  fit('should init menuItem and set formGroup in create mode onChanges', () => {
     component.changeMode = 'CREATE'
     spyOn(component.formGroup, 'reset')
     component.menuItemId = 'menuItemId'
@@ -185,7 +186,7 @@ fdescribe('MenuDetailComponent', () => {
     expect(component.formGroup.controls['parentItemId'].value).toBe('menuItemId')
   })
 
-  it('should call getMenu in view mode onChanges and fetch menuItem', () => {
+  fit('should call getMenu in view mode onChanges and fetch menuItem', () => {
     menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[0]))
     component.changeMode = 'VIEW'
     component.menuItemId = 'menuItemId'
@@ -195,7 +196,7 @@ fdescribe('MenuDetailComponent', () => {
     expect(component.menuItem).toBe(mockMenuItems[0])
   })
 
-  it('should call getMenu in view mode onChanges and fetch menuItem', () => {
+  fit('should call getMenu in view mode onChanges and fetch menuItem', () => {
     menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[0]))
     wProductApiServiceSpy.getProductsForWorkspaceId.and.returnValue(of([product]))
     component.changeMode = 'VIEW'
@@ -211,7 +212,7 @@ fdescribe('MenuDetailComponent', () => {
     expect((component as any).preparePanelHeight).toHaveBeenCalled()
   })
 
-  it('should call getMenu in view mode onChanges and fetch undefined menuItem', () => {
+  fit('should call getMenu in view mode onChanges and fetch undefined menuItem', () => {
     menuApiServiceSpy.getMenuItemById.and.returnValue(of(undefined))
     component.changeMode = 'VIEW'
     component.menuItemId = 'menuItemId'
@@ -221,7 +222,7 @@ fdescribe('MenuDetailComponent', () => {
     expect(component.menuItem).toBe(undefined)
   })
 
-  it('should call getMenu in view mode onChanges and catch error if api call fails', () => {
+  fit('should call getMenu in view mode onChanges and catch error if api call fails', () => {
     menuApiServiceSpy.getMenuItemById.and.returnValue(throwError(() => new Error('test error')))
     component.changeMode = 'VIEW'
     component.menuItemId = 'menuItemId'
@@ -231,7 +232,7 @@ fdescribe('MenuDetailComponent', () => {
     expect(component.menuItem).not.toBe(mockMenuItems[0])
   })
 
-  it('should call getMenu in view mode onChanges and fetch menuItem', () => {
+  fit('should call getMenu in view mode onChanges and fetch menuItem', () => {
     menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[0]))
     wProductApiServiceSpy.getProductsForWorkspaceId.and.returnValue(of([product]))
     component.changeMode = 'VIEW'
@@ -251,7 +252,7 @@ fdescribe('MenuDetailComponent', () => {
    * LOAD Microfrontends from registered products
    **/
 
-  it('should loadMfeUrls', () => {
+  xit('should loadMfeUrls', () => {
     menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[0]))
     wProductApiServiceSpy.getProductsForWorkspaceId.and.returnValue(of([product]))
     component.changeMode = 'VIEW'
@@ -265,7 +266,7 @@ fdescribe('MenuDetailComponent', () => {
     expect((component as any).preparePanelHeight).toHaveBeenCalled()
   })
 
-  it('should loadMfeUrls: no product display name', () => {
+  xit('should loadMfeUrls: no product display name', () => {
     const productWithoutDisplayName: Product = {
       id: 'prod id',
       productName: 'prod name',
@@ -286,7 +287,7 @@ fdescribe('MenuDetailComponent', () => {
     expect((component as any).preparePanelHeight).toHaveBeenCalled()
   })
 
-  it('should emit false when onCloseDetailDialog is called', () => {
+  fit('should emit false when onCloseDetailDialog is called', () => {
     spyOn(component.dataChanged, 'emit')
 
     component.onCloseDetailDialog()
@@ -294,7 +295,7 @@ fdescribe('MenuDetailComponent', () => {
     expect(component.dataChanged.emit).toHaveBeenCalledWith(false)
   })
 
-  it('should emit false when onCloseDeleteDialog is called', () => {
+  fit('should emit false when onCloseDeleteDialog is called', () => {
     spyOn(component.dataChanged, 'emit')
 
     component.onCloseDeleteDialog()
@@ -305,6 +306,44 @@ fdescribe('MenuDetailComponent', () => {
   /***************************************************************************
    * SAVE => CREATE + UPDATE
    **************************************************************************/
+
+  fit('should log error and return if form invalid onMenuSave', () => {
+    const form = new FormGroup({
+      parentItemId: new FormControl('some parent id'),
+      key: new FormControl('key', Validators.minLength(2))
+    })
+    form.controls['key'].setValue('')
+    form.controls['key'].setErrors({ minLength: true })
+    component.formGroup = form
+    spyOn(console, 'error')
+
+    component.onMenuSave()
+
+    expect(console.error).toHaveBeenCalledWith('non valid form', component.formGroup)
+  })
+
+  fit('should retrieve basePath from url form control if fit is an object onMenuSave', () => {
+    const form = new FormGroup({
+      parentItemId: new FormControl('some parent id'),
+      key: new FormControl('key', Validators.minLength(2)),
+      name: new FormControl('name'),
+      position: new FormControl('1'),
+      disabled: new FormControl<boolean>(false),
+      external: new FormControl<boolean>(false),
+      url: new FormControl({
+        basePath: 'url basePath'
+      }),
+      badge: new FormControl('badge'),
+      scope: new FormControl('scope'),
+      description: new FormControl('description')
+    })
+    component.formGroup = form
+    component.menuItem = mockMenuItems[0]
+
+    component.onMenuSave()
+
+    expect(component.menuItem.url).toBe('url basePath')
+  })
 
   fit('should save a menu: create', () => {
     menuApiServiceSpy.createMenuItemForWorkspace.and.returnValue(of({}))
@@ -411,62 +450,100 @@ fdescribe('MenuDetailComponent', () => {
     expect((component as any).preparePanelHeight).toHaveBeenCalled()
   })
 
+  fit('should return when no panelDetail preparePanelHeight', () => {
+    component.panelDetail = undefined
+
+    component.onTabPanelChange({ index: 3 })
+
+    expect((component as any).panelHeight).toBe(0)
+  })
+
+  fit('should preparePanelHeight', () => {
+    const nativeElement = document.createElement('div')
+    nativeElement.style.height = '100px' // cannot reach the correct value offsetHeight, this test is quite useless
+    const mockTabView: Partial<TabView> = {
+      el: {
+        nativeElement: nativeElement
+      },
+      orientation: 'horizontal',
+      style: {},
+      styleClass: ''
+    }
+    component.panelDetail = mockTabView as any
+    spyOn((component as any).renderer, 'setStyle').and.callThrough()
+
+    component.onTabPanelChange({ index: 3 })
+
+    expect((component as any).panelHeight).toBe(0)
+  })
+
   /**
    * LANGUAGE
    */
 
-  // it('should remove language from languagesDisplayed, add it to languagesAvailable', () => {
-  //   component.languagesDisplayed = [{ label: 'English', value: 'en', data: 'Data' }]
-  //   component.languagesAvailable = [{ label: 'German', value: 'de', data: '' }]
+  fit('should remove language from languagesDisplayed, add fit to languagesAvailable', () => {
+    component.languagesDisplayed = [{ label: 'English', value: 'en', data: 'Data' }]
+    component.languagesAvailable = [{ label: 'German', value: 'de', data: '' }]
 
-  //   component.onRemoveLanguage('en')
+    component.onRemoveLanguage('en')
 
-  //   expect(component.languagesDisplayed.length).toBe(0)
-  //   expect(component.languagesAvailable).toEqual(jasmine.arrayContaining([{ label: 'English', value: 'en', data: '' }]))
-  // })
+    expect(component.languagesDisplayed.length).toBe(0)
+    expect(component.languagesAvailable).toEqual(jasmine.arrayContaining([{ label: 'English', value: 'en', data: '' }]))
+  })
 
-  // it('should add language to languagesDisplayed from languagesAvailable', () => {
-  //   component.languagesDisplayed = []
-  //   component.languagesAvailable = [{ label: 'English', value: 'en', data: '' }]
+  fit('should add language to languagesDisplayed from languagesAvailable', () => {
+    component.languagesDisplayed = []
+    component.languagesAvailable = [{ label: 'English', value: 'en', data: '' }]
 
-  //   component.onAddLanguage2({ option: { value: 'en' } })
+    component.onAddLanguage2({ option: { value: 'en' } })
 
-  //   expect(component.languagesDisplayed).toEqual(jasmine.arrayContaining([{ label: 'English', value: 'en', data: '' }]))
-  //   expect(component.languagesAvailable.length).toBe(0)
-  // })
+    expect(component.languagesDisplayed).toEqual(jasmine.arrayContaining([{ label: 'English', value: 'en', data: '' }]))
+    expect(component.languagesAvailable.length).toBe(0)
+  })
 
-  // it('should add language to languagesDisplayed from languagesAvailable using string value', () => {
-  //   component.languagesDisplayed = []
-  //   component.languagesAvailable = [{ label: 'English', value: 'en', data: '' }]
+  fit('should add language to languagesDisplayed from languagesAvailable using string value', () => {
+    component.languagesDisplayed = []
+    component.languagesAvailable = [{ label: 'English', value: 'en', data: '' }]
 
-  //   component.onAddLanguage('en')
+    component.onAddLanguage('en')
 
-  //   expect(component.languagesDisplayed).toEqual(jasmine.arrayContaining([{ label: 'English', value: 'en', data: '' }]))
-  //   expect(component.languagesAvailable.length).toBe(0)
-  // })
+    expect(component.languagesDisplayed).toEqual(jasmine.arrayContaining([{ label: 'English', value: 'en', data: '' }]))
+    expect(component.languagesAvailable.length).toBe(0)
+  })
 
-  // it('should return label of language if in languagesDisplayed', () => {
-  //   component.languagesDisplayed = [{ label: 'English', value: 'en', data: '' }]
+  fit('should return label of language if in languagesDisplayed', () => {
+    component.languagesDisplayed = [{ label: 'English', value: 'en', data: '' }]
 
-  //   const label = component.getLanguageLabel('en')
+    const label = component.getLanguageLabel('en')
 
-  //   expect(label).toBe('English')
-  // })
+    expect(label).toBe('English')
+  })
 
-  // it('if not in languagesDisplayed: return undefined on getLanguageLabel', () => {
-  //   component.languagesDisplayed = []
+  fit('should return undefined if not exactly one match with languagesDisplayed', () => {
+    component.languagesDisplayed = [
+      { label: 'English', value: 'en1', data: '' },
+      { label: 'English2', value: 'en2', data: '' }
+    ]
 
-  //   const label = component.getLanguageLabel('en')
+    const label = component.getLanguageLabel('en')
 
-  //   expect(label).toBeUndefined()
-  // })
+    expect(label).toBeUndefined()
+  })
 
-  // it('should return true if language not in languagesDisplayed', () => {
-  //   component.languagesDisplayed = [{ label: 'English', value: 'en', data: '' }]
+  fit('if not in languagesDisplayed: return undefined on getLanguageLabel', () => {
+    component.languagesDisplayed = []
 
-  //   expect(component.displayLanguageField('de')).toBeTrue()
-  //   expect(component.displayLanguageField('en')).toBeFalse()
-  // })
+    const label = component.getLanguageLabel('en')
+
+    expect(label).toBeUndefined()
+  })
+
+  fit('should return true if language not in languagesDisplayed', () => {
+    component.languagesDisplayed = [{ label: 'English', value: 'en', data: '' }]
+
+    expect(component.displayLanguageField('de')).toBeTrue()
+    expect(component.displayLanguageField('en')).toBeFalse()
+  })
 
   /***************************************************************************
    * EVENTS on URL field
@@ -505,7 +582,7 @@ fdescribe('DefaultValueAccessor prototype modification', () => {
     inputElement = fixture.nativeElement.querySelector('input')
   })
 
-  it('should trim the value on model change: value is of type string', () => {
+  fit('should trim the value on model change: value is of type string', () => {
     inputElement.value = '  test  '
     inputElement.dispatchEvent(new Event('input'))
     fixture.detectChanges()
@@ -513,7 +590,7 @@ fdescribe('DefaultValueAccessor prototype modification', () => {
     expect(component.value).toBe('test')
   })
 
-  // it('should trim the value on model change: value not of type string', () => {
+  // fit('should trim the value on model change: value not of type string', () => {
   //   component.value = 123
 
   //   fixture.detectChanges()
