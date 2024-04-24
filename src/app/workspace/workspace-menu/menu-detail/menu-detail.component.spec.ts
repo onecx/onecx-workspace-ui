@@ -53,7 +53,7 @@ const mockMenuItems: MenuItem[] = [
     parentItemId: 'parentId',
     key: 'key2',
     name: 'menu2 name',
-    i18n: { ['en']: 'en' },
+    i18n: { ['es']: 'es' },
     url: '/workspace',
     modificationCount: 0
   }
@@ -73,15 +73,6 @@ const product: Product = {
   microfrontends: [microfrontend],
   modificationCount: 1
 }
-
-// const state: MenuState = {
-//   pageSize: 0,
-//   showDetails: false,
-//   rootFilter: true,
-//   treeMode: true,
-//   treeExpansionState: new Map(),
-//   workspaceMenuItems: []
-// }
 
 fdescribe('MenuDetailComponent', () => {
   let component: MenuDetailComponent
@@ -322,7 +313,7 @@ fdescribe('MenuDetailComponent', () => {
     expect(console.error).toHaveBeenCalledWith('non valid form', component.formGroup)
   })
 
-  fit('should retrieve basePath from url form control if fit is an object onMenuSave', () => {
+  fit('should retrieve basePath from url form control if it is an object onMenuSave', () => {
     const form = new FormGroup({
       parentItemId: new FormControl('some parent id'),
       key: new FormControl('key', Validators.minLength(2)),
@@ -481,7 +472,49 @@ fdescribe('MenuDetailComponent', () => {
    * LANGUAGE
    */
 
-  fit('should remove language from languagesDisplayed, add fit to languagesAvailable', () => {
+  fit('should return if no languagesDisplayed on prepareLanguagePanel', () => {
+    const languagesDisplayed = [
+      { label: component.languageNames['de'], value: 'de', data: '' },
+      { label: component.languageNames['en'], value: 'en', data: '' }
+    ]
+    component.languagesDisplayed = languagesDisplayed
+
+    component.prepareLanguagePanel()
+
+    expect(component.languagesDisplayed).toBe(languagesDisplayed)
+  })
+
+  fit('should prepareLanguagePanel: language of menuItem is added', () => {
+    const languagesDisplayed: any = []
+    component.languagesDisplayed = languagesDisplayed
+    component.menuItem = mockMenuItems[1]
+    spyOn(component, 'onAddLanguage')
+
+    component.prepareLanguagePanel()
+
+    expect(component.onAddLanguage).toHaveBeenCalled()
+  })
+
+  fit('should prepareLanguagePanel: language of menuItem exists', () => {
+    const languagesDisplayed: any = []
+    component.languagesDisplayed = languagesDisplayed
+    const mockMenuItem: MenuItem = {
+      id: 'id2',
+      parentItemId: 'parentId',
+      key: 'key2',
+      name: 'menu2 name',
+      i18n: { ['en']: 'en' },
+      url: '/workspace',
+      modificationCount: 0
+    }
+    component.menuItem = mockMenuItem
+
+    component.prepareLanguagePanel()
+
+    expect(component.languagesDisplayed[1].value).toBe('en')
+  })
+
+  fit('should remove language from languagesDisplayed, add it to languagesAvailable', () => {
     component.languagesDisplayed = [{ label: 'English', value: 'en', data: 'Data' }]
     component.languagesAvailable = [{ label: 'German', value: 'de', data: '' }]
 
