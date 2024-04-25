@@ -138,6 +138,7 @@ export class MenuDetailComponent implements OnChanges {
       } as MenuItem
       this.formGroup.patchValue(this.menuItem)
     } else if (this.menuItemId) this.getMenu()
+    console.log('MFE ITEMS END', this.mfeItems)
   }
 
   public onCloseDetailDialog(): void {
@@ -393,6 +394,7 @@ export class MenuDetailComponent implements OnChanges {
                 this.mfeMap
               )
               for (let mfe of p.microfrontends) {
+                console.log('MFE', mfe)
                 this.mfeItems.push({ ...mfe, product: p.displayName ?? '' })
               }
             }

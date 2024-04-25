@@ -75,7 +75,7 @@ const product: Product = {
   modificationCount: 1
 }
 
-describe('MenuDetailComponent', () => {
+fdescribe('MenuDetailComponent', () => {
   let component: MenuDetailComponent
   let fixture: ComponentFixture<MenuDetailComponent>
   let mockActivatedRoute: Partial<ActivatedRoute>
@@ -148,25 +148,25 @@ describe('MenuDetailComponent', () => {
     component.formGroup = form
   })
 
-  fit('should create', () => {
+  it('should create', () => {
     expect(component).toBeTruthy()
   })
 
-  fit('should set German date format', () => {
+  it('should set German date format', () => {
     mockUserService.lang$.next('de')
     initializeComponent()
 
     expect(component.dateFormat).toEqual('dd.MM.yyyy HH:mm')
   })
 
-  fit('should set English date format', () => {
+  it('should set English date format', () => {
     mockUserService.lang$.next('en')
     initializeComponent()
 
     expect(component.dateFormat).toEqual('short')
   })
 
-  fit('should init menuItem and set formGroup in create mode onChanges', () => {
+  it('should init menuItem and set formGroup in create mode onChanges', () => {
     component.changeMode = 'CREATE'
     spyOn(component.formGroup, 'reset')
     component.menuItemId = 'menuItemId'
@@ -178,7 +178,7 @@ describe('MenuDetailComponent', () => {
     expect(component.formGroup.controls['parentItemId'].value).toBe('menuItemId')
   })
 
-  fit('should call getMenu in view mode onChanges and fetch menuItem', () => {
+  it('should call getMenu in view mode onChanges and fetch menuItem', () => {
     menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[0]))
     component.changeMode = 'VIEW'
     component.menuItemId = 'menuItemId'
@@ -188,7 +188,7 @@ describe('MenuDetailComponent', () => {
     expect(component.menuItem).toBe(mockMenuItems[0])
   })
 
-  fit('should call getMenu in view mode onChanges and fetch menuItem', () => {
+  it('should call getMenu in view mode onChanges and fetch menuItem', () => {
     menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[0]))
     wProductApiServiceSpy.getProductsForWorkspaceId.and.returnValue(of([product]))
     component.changeMode = 'VIEW'
@@ -204,7 +204,7 @@ describe('MenuDetailComponent', () => {
     expect((component as any).preparePanelHeight).toHaveBeenCalled()
   })
 
-  fit('should call getMenu in view mode onChanges and fetch undefined menuItem', () => {
+  it('should call getMenu in view mode onChanges and fetch undefined menuItem', () => {
     menuApiServiceSpy.getMenuItemById.and.returnValue(of(undefined))
     component.changeMode = 'VIEW'
     component.menuItemId = 'menuItemId'
@@ -214,7 +214,7 @@ describe('MenuDetailComponent', () => {
     expect(component.menuItem).toBe(undefined)
   })
 
-  fit('should call getMenu in view mode onChanges and catch error if api call fails', () => {
+  it('should call getMenu in view mode onChanges and catch error if api call fails', () => {
     menuApiServiceSpy.getMenuItemById.and.returnValue(throwError(() => new Error('test error')))
     component.changeMode = 'VIEW'
     component.menuItemId = 'menuItemId'
@@ -224,7 +224,7 @@ describe('MenuDetailComponent', () => {
     expect(component.menuItem).not.toBe(mockMenuItems[0])
   })
 
-  fit('should call getMenu in view mode onChanges and fetch menuItem', () => {
+  it('should call getMenu in view mode onChanges and fetch menuItem', () => {
     menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[0]))
     wProductApiServiceSpy.getProductsForWorkspaceId.and.returnValue(of([product]))
     component.changeMode = 'VIEW'
@@ -293,7 +293,7 @@ describe('MenuDetailComponent', () => {
     expect((component as any).preparePanelHeight).toHaveBeenCalled()
   })
 
-  fit('should display error when trying to loadMfeUrls', () => {
+  it('should display error when trying to loadMfeUrls', () => {
     menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[0]))
     wProductApiServiceSpy.getProductsForWorkspaceId.and.returnValue(throwError(() => new Error()))
     component.changeMode = 'VIEW'
@@ -308,7 +308,7 @@ describe('MenuDetailComponent', () => {
     expect((component as any).preparePanelHeight).toHaveBeenCalled()
   })
 
-  fit('should emit false when onCloseDetailDialog is called', () => {
+  it('should emit false when onCloseDetailDialog is called', () => {
     spyOn(component.dataChanged, 'emit')
 
     component.onCloseDetailDialog()
@@ -316,7 +316,7 @@ describe('MenuDetailComponent', () => {
     expect(component.dataChanged.emit).toHaveBeenCalledWith(false)
   })
 
-  fit('should emit false when onCloseDeleteDialog is called', () => {
+  it('should emit false when onCloseDeleteDialog is called', () => {
     spyOn(component.dataChanged, 'emit')
 
     component.onCloseDeleteDialog()
@@ -328,7 +328,7 @@ describe('MenuDetailComponent', () => {
    * SAVE => CREATE + UPDATE
    **************************************************************************/
 
-  fit('should log error and return if form invalid onMenuSave', () => {
+  it('should log error and return if form invalid onMenuSave', () => {
     const form = new FormGroup({
       parentItemId: new FormControl('some parent id'),
       key: new FormControl('key', Validators.minLength(2))
@@ -343,7 +343,7 @@ describe('MenuDetailComponent', () => {
     expect(console.error).toHaveBeenCalledWith('non valid form', component.formGroup)
   })
 
-  fit('should retrieve basePath from url form control if it is an object onMenuSave', () => {
+  it('should retrieve basePath from url form control if it is an object onMenuSave', () => {
     const form = new FormGroup({
       parentItemId: new FormControl('some parent id'),
       key: new FormControl('key', Validators.minLength(2)),
@@ -366,7 +366,7 @@ describe('MenuDetailComponent', () => {
     expect(component.menuItem.url).toBe('url basePath')
   })
 
-  fit('should save a menu: create', () => {
+  it('should save a menu: create', () => {
     menuApiServiceSpy.createMenuItemForWorkspace.and.returnValue(of({}))
     component.formGroup = form
     component.menuItem = mockMenuItems[0]
@@ -378,7 +378,7 @@ describe('MenuDetailComponent', () => {
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.MESSAGE.MENU_CREATE_OK' })
   })
 
-  fit('should display error message on save menu: create', () => {
+  it('should display error message on save menu: create', () => {
     menuApiServiceSpy.createMenuItemForWorkspace.and.returnValue(throwError(() => new Error()))
     component.formGroup = form
     component.menuItem = mockMenuItems[0]
@@ -389,7 +389,7 @@ describe('MenuDetailComponent', () => {
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.MESSAGE.MENU_CREATE_NOK' })
   })
 
-  fit('should save a menu: edit', () => {
+  it('should save a menu: edit', () => {
     menuApiServiceSpy.updateMenuItem.and.returnValue(of(mockMenuItems))
     component.formGroup = form
     component.menuItem = mockMenuItems[0]
@@ -402,7 +402,7 @@ describe('MenuDetailComponent', () => {
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' })
   })
 
-  fit('should display error message on save menu: edit', () => {
+  it('should display error message on save menu: edit', () => {
     menuApiServiceSpy.updateMenuItem.and.returnValue(throwError(() => new Error()))
     component.formGroup = form
     component.menuItem = mockMenuItems[0]
@@ -418,7 +418,7 @@ describe('MenuDetailComponent', () => {
    * DELETE
    */
 
-  fit('should delete menu item', () => {
+  it('should delete menu item', () => {
     menuApiServiceSpy.deleteMenuItemById({ menuItemId: 'id' })
     component.menuItem = mockMenuItems[0]
 
@@ -427,7 +427,7 @@ describe('MenuDetailComponent', () => {
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MENU_OK' })
   })
 
-  fit('should display error message on delete menu item', () => {
+  it('should display error message on delete menu item', () => {
     menuApiServiceSpy.deleteMenuItemById.and.returnValue(throwError(() => new Error()))
 
     component.onMenuDelete()
@@ -435,7 +435,7 @@ describe('MenuDetailComponent', () => {
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MENU_NOK' })
   })
 
-  fit('should update tabIndex onTabPanelChange', () => {
+  it('should update tabIndex onTabPanelChange', () => {
     let mockEvent = { index: 3 }
     spyOn(component as any, 'preparePanelHeight')
 
@@ -445,7 +445,7 @@ describe('MenuDetailComponent', () => {
     expect((component as any).preparePanelHeight).toHaveBeenCalled()
   })
 
-  fit('should return when no panelDetail preparePanelHeight', () => {
+  it('should return when no panelDetail preparePanelHeight', () => {
     component.panelDetail = undefined
 
     component.onTabPanelChange({ index: 3 })
@@ -453,7 +453,7 @@ describe('MenuDetailComponent', () => {
     expect((component as any).panelHeight).toBe(0)
   })
 
-  fit('should preparePanelHeight', () => {
+  it('should preparePanelHeight', () => {
     const nativeElement = document.createElement('div')
     nativeElement.style.height = '100px' // cannot reach the correct value offsetHeight, this test is quite useless
     const mockTabView: Partial<TabView> = {
@@ -476,7 +476,7 @@ describe('MenuDetailComponent', () => {
    * LANGUAGE
    */
 
-  fit('should return if no languagesDisplayed on prepareLanguagePanel', () => {
+  it('should return if no languagesDisplayed on prepareLanguagePanel', () => {
     const languagesDisplayed = [
       { label: component.languageNames['de'], value: 'de', data: '' },
       { label: component.languageNames['en'], value: 'en', data: '' }
@@ -488,7 +488,7 @@ describe('MenuDetailComponent', () => {
     expect(component.languagesDisplayed).toBe(languagesDisplayed)
   })
 
-  fit('should prepareLanguagePanel: language of menuItem is added', () => {
+  it('should prepareLanguagePanel: language of menuItem is added', () => {
     const languagesDisplayed: any = []
     component.languagesDisplayed = languagesDisplayed
     component.menuItem = mockMenuItems[1]
@@ -499,7 +499,7 @@ describe('MenuDetailComponent', () => {
     expect(component.onAddLanguage).toHaveBeenCalled()
   })
 
-  fit('should prepareLanguagePanel: language of menuItem exists', () => {
+  it('should prepareLanguagePanel: language of menuItem exists', () => {
     const languagesDisplayed: any = []
     component.languagesDisplayed = languagesDisplayed
     const mockMenuItem: MenuItem = {
@@ -518,7 +518,7 @@ describe('MenuDetailComponent', () => {
     expect(component.languagesDisplayed[1].value).toBe('en')
   })
 
-  fit('should remove language from languagesDisplayed, add it to languagesAvailable', () => {
+  it('should remove language from languagesDisplayed, add it to languagesAvailable', () => {
     component.languagesDisplayed = [{ label: 'English', value: 'en', data: 'Data' }]
     component.languagesAvailable = [{ label: 'German', value: 'de', data: '' }]
 
@@ -528,7 +528,7 @@ describe('MenuDetailComponent', () => {
     expect(component.languagesAvailable).toEqual(jasmine.arrayContaining([{ label: 'English', value: 'en', data: '' }]))
   })
 
-  fit('should add language to languagesDisplayed from languagesAvailable', () => {
+  it('should add language to languagesDisplayed from languagesAvailable', () => {
     component.languagesDisplayed = []
     component.languagesAvailable = [{ label: 'English', value: 'en', data: '' }]
 
@@ -538,7 +538,7 @@ describe('MenuDetailComponent', () => {
     expect(component.languagesAvailable.length).toBe(0)
   })
 
-  fit('should add language to languagesDisplayed from languagesAvailable using string value', () => {
+  it('should add language to languagesDisplayed from languagesAvailable using string value', () => {
     component.languagesDisplayed = []
     component.languagesAvailable = [{ label: 'English', value: 'en', data: '' }]
 
@@ -548,7 +548,7 @@ describe('MenuDetailComponent', () => {
     expect(component.languagesAvailable.length).toBe(0)
   })
 
-  fit('should return label of language if in languagesDisplayed', () => {
+  it('should return label of language if in languagesDisplayed', () => {
     component.languagesDisplayed = [{ label: 'English', value: 'en', data: '' }]
 
     const label = component.getLanguageLabel('en')
@@ -556,7 +556,7 @@ describe('MenuDetailComponent', () => {
     expect(label).toBe('English')
   })
 
-  fit('should return undefined if not exactly one match with languagesDisplayed', () => {
+  it('should return undefined if not exactly one match with languagesDisplayed', () => {
     component.languagesDisplayed = [
       { label: 'English', value: 'en1', data: '' },
       { label: 'English2', value: 'en2', data: '' }
@@ -567,7 +567,7 @@ describe('MenuDetailComponent', () => {
     expect(label).toBeUndefined()
   })
 
-  fit('if not in languagesDisplayed: return undefined on getLanguageLabel', () => {
+  it('if not in languagesDisplayed: return undefined on getLanguageLabel', () => {
     component.languagesDisplayed = []
 
     const label = component.getLanguageLabel('en')
@@ -575,7 +575,7 @@ describe('MenuDetailComponent', () => {
     expect(label).toBeUndefined()
   })
 
-  fit('should return true if language not in languagesDisplayed', () => {
+  it('should return true if language not in languagesDisplayed', () => {
     component.languagesDisplayed = [{ label: 'English', value: 'en', data: '' }]
 
     expect(component.displayLanguageField('de')).toBeTrue()
@@ -586,7 +586,7 @@ describe('MenuDetailComponent', () => {
    * EVENTS on URL field
    **************************************************************************/
 
-  fit('should set overlayVisible to true on field onFocusUrl', () => {
+  it('should set overlayVisible to true on field onFocusUrl', () => {
     let mockField: any = { overlayVisible: false }
 
     component.onFocusUrl(mockField)
@@ -594,7 +594,7 @@ describe('MenuDetailComponent', () => {
     expect(mockField.overlayVisible).toBeTrue()
   })
 
-  fit('should update selectedMfe based on value from mfeMap onSelectPath', () => {
+  it('should update selectedMfe based on value from mfeMap onSelectPath', () => {
     const mouseEvent = jasmine.createSpyObj('MouseEvent', ['preventDefault', 'stopPropagation'])
     const mockEvent: DropDownChangeEvent = { ...mouseEvent, value: 'testPath' }
     const expectedMfe = { ...microfrontend }
@@ -606,7 +606,7 @@ describe('MenuDetailComponent', () => {
     expect(component.selectedMfe).toBe(expectedMfe)
   })
 
-  fit('should reset selectedMfe and set the formGroup url control to the first mfeItem when onClearPath is called', () => {
+  it('should reset selectedMfe and set the formGroup url control to the first mfeItem when onClearPath is called', () => {
     component.mfeItems = [microfrontend]
     component.formGroup = new FormGroup({
       url: new FormControl('')
@@ -625,7 +625,7 @@ describe('MenuDetailComponent', () => {
    *     b) unknown entry => list all
    */
 
-  fit('should filter MFE items based on the query', () => {
+  it('should filter MFE items based on the query', () => {
     const mockEvent = { originalEvent: new Event('filter'), query: 'pa' }
     component.formGroup = new FormGroup({
       url: new FormControl('')
@@ -638,7 +638,7 @@ describe('MenuDetailComponent', () => {
     expect(component.filteredMfes[0].id).toBe('id')
   })
 
-  fit('should assign all MFE items if query is empty', () => {
+  it('should assign all MFE items if query is empty', () => {
     const mockEvent = { originalEvent: new Event('filter'), query: '' }
 
     component.onFilterPaths(mockEvent)
@@ -646,7 +646,7 @@ describe('MenuDetailComponent', () => {
     expect(component.filteredMfes).toEqual(component.mfeItems)
   })
 
-  fit('should use url object basePath if query is not provided', () => {
+  it('should use url object basePath if query is not provided', () => {
     component.formGroup.controls['url'].setValue({ basePath: 'path' })
     const mockEvent = { originalEvent: new Event('filter'), query: '' }
 
@@ -673,7 +673,7 @@ describe('MenuDetailComponent', () => {
     expect(component.filteredMfes[0].basePath).toBe('url basePath')
   })
 
-  fit('should filter MFE items based on the query', () => {
+  it('should filter MFE items based on the query', () => {
     const mockEvent = { originalEvent: new Event('filter'), query: 'pa' }
     component.formGroup = new FormGroup({
       url: new FormControl('')
@@ -716,7 +716,7 @@ fdescribe('DefaultValueAccessor prototype modification', () => {
     inputElement = fixture.nativeElement.querySelector('input')
   })
 
-  fit('should trim the value on model change: value is of type string', () => {
+  it('should trim the value on model change: value is of type string', () => {
     inputElement.value = '  test  '
     inputElement.dispatchEvent(new Event('input'))
     fixture.detectChanges()
@@ -724,7 +724,7 @@ fdescribe('DefaultValueAccessor prototype modification', () => {
     expect(component.value).toBe('test')
   })
 
-  // fit('should trim the value on model change: value not of type string', () => {
+  // it('should trim the value on model change: value not of type string', () => {
   //   component.value = 123
 
   //   fixture.detectChanges()

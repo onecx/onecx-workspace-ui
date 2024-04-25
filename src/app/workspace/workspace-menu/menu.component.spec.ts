@@ -71,7 +71,7 @@ const wRole: WorkspaceRole = {
 
 const assgmt: Assignment = {
   id: 'assgnmt id',
-  roleId: 'roleId',
+  roleId: 'assgmtRoleId',
   menuItemId: 'id',
   workspaceId: 'id'
 }
@@ -107,7 +107,7 @@ fdescribe('MenuComponent', () => {
   }
   const assgmtApiServiceSpy = {
     searchAssignments: jasmine.createSpy('searchAssignments').and.returnValue(of({})),
-    createAssignment: jasmine.createSpy('createAssignment').and.returnValue(of({})),
+    createAssignment: jasmine.createSpy('createAssignment').and.returnValue(of(assgmt)),
     deleteAssignment: jasmine.createSpy('deleteAssignment').and.returnValue(of({}))
   }
   const translateServiceSpy = jasmine.createSpyObj('TranslateService', ['get'])
@@ -634,12 +634,38 @@ fdescribe('MenuComponent', () => {
     expect(console.error).toHaveBeenCalledWith('searchAssignments():', err)
   })
 
-  xit('should handle successful assignment creation onGrantPermission', () => {
-    assgmtApiServiceSpy.createAssignment().and.returnValue()
+  it('should handle successful assignment creation onGrantPermission', () => {
+    assgmtApiServiceSpy.createAssignment.and.returnValue(of(assgmt))
 
-    component.onGrantPermission(nodeData, 'role123')
+    component.onGrantPermission(nodeData, 'role')
 
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.GRANT_OK' })
+    expect(nodeData.roles['role']).toBe('assgnmt id')
+  })
+
+  it('should display error onGrantPermission', () => {
+    assgmtApiServiceSpy.createAssignment.and.returnValue(throwError(() => new Error()))
+
+    component.onGrantPermission(nodeData, 'role')
+
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.GRANT_NOK' })
+  })
+
+  it('should deletel assignment onRevokePermission', () => {
+    assgmtApiServiceSpy.deleteAssignment.and.returnValue(of(assgmt))
+
+    component.onRevokePermission(nodeData, 'role', assgmt.id!)
+
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.REVOKE_OK' })
+    expect(nodeData.roles['role']).toBeUndefined()
+  })
+
+  it('should display error onRevokePermission', () => {
+    assgmtApiServiceSpy.deleteAssignment.and.returnValue(throwError(() => new Error()))
+
+    component.onRevokePermission(nodeData, 'role', assgmt.id!)
+
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.REVOKE_NOK' })
   })
 
   /****************************************************************************
