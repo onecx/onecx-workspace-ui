@@ -2,7 +2,7 @@ import { CommonModule, Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import { Component, Inject, OnInit, ViewChild } from '@angular/core'
 import { RouterModule } from '@angular/router'
-import { untilDestroyed } from '@ngneat/until-destroy'
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
 import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
 import {
@@ -40,6 +40,7 @@ import { environment } from 'src/environments/environment'
     })
   ]
 })
+@UntilDestroy()
 export class OneCXHorizontalMainMenuComponent implements OnInit {
   @ViewChild('menubar') menubar?: Menubar
   menuItems$: Observable<MenuItem[]> | undefined
