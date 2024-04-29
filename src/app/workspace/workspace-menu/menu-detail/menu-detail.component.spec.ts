@@ -268,7 +268,7 @@ fdescribe('MenuDetailComponent', () => {
 
     component.ngOnChanges()
 
-    expect(component.mfeItems).toEqual([microfrontend])
+    expect(component.mfeItems).toEqual([microfrontend, product2.microfrontends![0]])
     expect((component as any).preparePanelHeight).toHaveBeenCalled()
   })
 
