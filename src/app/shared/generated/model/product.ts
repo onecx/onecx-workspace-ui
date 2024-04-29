@@ -25,6 +25,7 @@ export interface Product {
     imageUrl?: string;
     classifications?: string;
     description?: string;
+    undeployed?: boolean;
     microfrontends?: Array<Microfrontend>;
 }
 

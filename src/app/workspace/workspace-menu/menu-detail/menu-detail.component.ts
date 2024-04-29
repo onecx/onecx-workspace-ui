@@ -127,7 +127,7 @@ export class MenuDetailComponent implements OnChanges {
   public ngOnChanges(): void {
     this.formGroup.reset()
     this.tabIndex = 0
-    // this.mfeItems
+    // this.languagesDisplayed = []
     if (this.changeMode === 'CREATE') {
       this.formGroup.reset()
       this.menuItem = {
@@ -384,7 +384,7 @@ export class MenuDetailComponent implements OnChanges {
   private loadMfeUrls(): void {
     this.mfeItems = []
     this.wProductApi
-      .getProductsForWorkspaceId({ id: this.workspaceId ?? '' })
+      .getProductsByWorkspaceId({ id: this.workspaceId ?? '' })
       .pipe(
         map((products) => {
           for (let p of products) {
