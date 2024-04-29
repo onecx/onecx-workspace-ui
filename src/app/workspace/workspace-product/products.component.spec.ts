@@ -47,6 +47,9 @@ const product: ExtendedProduct = {
 
 const prodStoreItem: ExtendedProduct = {
   productName: 'prodStoreItemName',
+  displayName: 'display name2',
+  description: 'description2',
+  microfrontends: [microfrontend],
   bucket: 'SOURCE',
   undeployed: false,
   changedMfe: false
@@ -126,15 +129,15 @@ fdescribe('ProductComponent', () => {
     fixture.detectChanges()
   })
 
-  fit('should create', () => {
+  it('should create', () => {
     expect(component).toBeTruthy()
   })
 
-  fit('should set currentMfe', () => {
+  it('should set currentMfe', () => {
     expect(component.currentMfe).toEqual(mfeInfo)
   })
 
-  fit('should loadData onChanges: with and without ws id', () => {
+  it('should loadData onChanges: with and without ws id', () => {
     wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([product]))
     const changes = {
       ['workspace']: {
@@ -161,7 +164,7 @@ fdescribe('ProductComponent', () => {
     expect(wProductServiceSpy.getProductsByWorkspaceId).toHaveBeenCalled()
   })
 
-  fit('should log error if getProductsByWorkspaceId call fails', () => {
+  it('should log error if getProductsByWorkspaceId call fails', () => {
     const err = {
       status: '404'
     }
@@ -180,7 +183,7 @@ fdescribe('ProductComponent', () => {
     expect(console.error).toHaveBeenCalledWith('getProductsByWorkspaceId():', err)
   })
 
-  fit('should loadData onChanges: searchPsProducts call success', () => {
+  it('should loadData onChanges: searchPsProducts call success: prod deployed', () => {
     wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([product]))
     productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [prodStoreItem] }))
     const changes = {
@@ -196,15 +199,30 @@ fdescribe('ProductComponent', () => {
 
     expect(component.psProducts).toEqual([
       {
-        ...prodStoreItem,
-        bucket: 'SOURCE',
-        undeployed: false,
-        changedMfe: false
+        ...prodStoreItem
       }
     ])
   })
 
-  fit('should loadData onChanges: searchPsProducts call error', () => {
+  it('should loadData onChanges: searchPsProducts call success: prod undeployed', () => {
+    prodStoreItem.productName = 'prod name'
+    wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([product]))
+    productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [prodStoreItem] }))
+    const changes = {
+      ['workspace']: {
+        previousValue: 'ws0',
+        currentValue: 'ws1',
+        firstChange: true
+      }
+    }
+    component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedMfe: false }]
+
+    component.ngOnChanges(changes as unknown as SimpleChanges)
+
+    expect(component.psProducts.length).toBe(0)
+  })
+
+  it('should loadData onChanges: searchPsProducts call error', () => {
     const err = {
       status: '404'
     }
@@ -223,7 +241,7 @@ fdescribe('ProductComponent', () => {
     expect(console.error).toHaveBeenCalledWith('searchAvailableProducts():', err)
   })
 
-  fit('should subscribe to psProducts$', () => {
+  it('should subscribe to psProducts$', () => {
     const mockPsProducts$ = jasmine.createSpyObj('Observable', ['subscribe'])
     component.psProducts$ = mockPsProducts$
 
@@ -232,7 +250,7 @@ fdescribe('ProductComponent', () => {
     expect(mockPsProducts$.subscribe).toHaveBeenCalled()
   })
 
-  fit('should subscribe to wProducts$', () => {
+  it('should subscribe to wProducts$', () => {
     const mockWProducts$ = jasmine.createSpyObj('Observable', ['subscribe'])
     component.wProducts$ = mockWProducts$
 
@@ -241,7 +259,7 @@ fdescribe('ProductComponent', () => {
     expect(mockWProducts$.subscribe).toHaveBeenCalled()
   })
 
-  fit('should sort products by displayName', () => {
+  it('should sort products by displayName', () => {
     const products = [
       {
         id: 'prod id2',
@@ -263,7 +281,7 @@ fdescribe('ProductComponent', () => {
     ])
   })
 
-  fit('should sort products by displayName: no display name', () => {
+  it('should sort products by displayName: no display name', () => {
     product.displayName = undefined
     const products = [
       {
@@ -284,7 +302,7 @@ fdescribe('ProductComponent', () => {
     ])
   })
 
-  fit('should sort mfes by appId', () => {
+  it('should sort mfes by appId', () => {
     const mfes = [{ appId: 'b' }, { appId: 'a' }, { appId: 'c' }]
 
     mfes.sort((a, b) => component.sortMfesByAppId(a, b))
@@ -292,7 +310,7 @@ fdescribe('ProductComponent', () => {
     expect(mfes).toEqual([{ appId: 'a' }, { appId: 'b' }, { appId: 'c' }])
   })
 
-  fit('should sort mfes by appId: no appIds', () => {
+  it('should sort mfes by appId: no appIds', () => {
     const mfes = [{ appId: '' }, { appId: '' }, { id: 'id a' }]
 
     mfes.sort((a, b) => component.sortMfesByAppId(a, b))
@@ -300,13 +318,13 @@ fdescribe('ProductComponent', () => {
     expect(mfes).toEqual([{ appId: '' }, { appId: '' }, { id: 'id a' }])
   })
 
-  fit('should return imageUrl path', () => {
+  it('should return imageUrl path', () => {
     const result = component.getImageUrl('/url')
 
     expect(result).toBe('/url')
   })
 
-  fit('should return fallback imageUrl', () => {
+  it('should return fallback imageUrl', () => {
     const mfe = {
       mountPath: 'mount',
       remoteBaseUrl: 'baseUrl',
@@ -321,13 +339,16 @@ fdescribe('ProductComponent', () => {
     expect(result).toBe('baseUrl/assets/images/product.jpg')
   })
 
-  fit('should return value from event object', () => {
+  /**
+   * UI Events
+   */
+  it('should return value from event object', () => {
     const event = { target: { value: 'test value' } }
 
     expect(component.getFilterValue(event)).toEqual('test value')
   })
 
-  fit('should set displayDetails to false', () => {
+  it('should set displayDetails to false', () => {
     component.displayDetails = true
 
     component.onHideItemDetails()
@@ -335,7 +356,7 @@ fdescribe('ProductComponent', () => {
     expect(component.displayDetails).toBeFalse()
   })
 
-  fit('should update sourceListViewMode based on event mode: grid', () => {
+  it('should update sourceListViewMode based on event mode: grid', () => {
     const event = { icon: 'grid-icon', mode: 'grid' }
 
     component.onSourceViewModeChange(event)
@@ -348,7 +369,7 @@ fdescribe('ProductComponent', () => {
     expect(mockRenderer.addClass).toHaveBeenCalledWith(component.sourceList, 'tile-view')
   })
 
-  fit('should update sourceListViewMode based on event mode: list', () => {
+  it('should update sourceListViewMode based on event mode: list', () => {
     const event = { icon: 'list-icon', mode: 'list' }
 
     component.onSourceViewModeChange(event)
@@ -361,7 +382,7 @@ fdescribe('ProductComponent', () => {
     expect(mockRenderer.removeClass).toHaveBeenCalledWith(component.sourceList, 'tile-view')
   })
 
-  fit('should update targetListViewMode based on event mode', () => {
+  it('should update targetListViewMode based on event mode', () => {
     const event = { icon: 'grid-icon', mode: 'grid' }
 
     component.onTargetViewModeChange(event)
@@ -374,7 +395,7 @@ fdescribe('ProductComponent', () => {
     expect(mockRenderer.addClass).toHaveBeenCalledWith(component.targetList, 'tile-view')
   })
 
-  fit('should handle mode changes appropriately for the target list', () => {
+  it('should handle mode changes appropriately for the target list', () => {
     let event = { icon: 'list-icon', mode: 'list' }
     component.onTargetViewModeChange(event)
     expect(mockRenderer.removeClass).toHaveBeenCalledWith(component.targetList, 'tile-view')
@@ -384,7 +405,7 @@ fdescribe('ProductComponent', () => {
     expect(mockRenderer.addClass).toHaveBeenCalledWith(component.targetList, 'tile-view')
   })
 
-  fit('should call fillForm when item is selected', () => {
+  it('should call fillForm when item is selected', () => {
     component.formGroup = fb.group({
       productName: new FormControl(''),
       displayName: new FormControl(''),
@@ -410,7 +431,20 @@ fdescribe('ProductComponent', () => {
     expect(component.displayDetails).toBeTrue()
   })
 
-  fit('should set displayDetails to false when no item is selected', () => {
+  /**
+   * UI Events: DETAIL
+   */
+  it('should call stopPropagation on the event', () => {
+    const mockEvent = {
+      stopPropagation: jasmine.createSpy('stopPropagation')
+    }
+
+    component.return(mockEvent)
+
+    expect(mockEvent.stopPropagation).toHaveBeenCalled()
+  })
+
+  it('should set displayDetails to false when no item is selected', () => {
     const event = { items: [] }
 
     component.onSourceSelect(event)
@@ -418,7 +452,7 @@ fdescribe('ProductComponent', () => {
     expect(component.displayDetails).toBeFalse()
   })
 
-  fit('should call getWProduct when an item is selected: call getProductById', () => {
+  it('should call getWProduct when an item is selected: call getProductById', () => {
     const event = { items: [{ id: 1 }] }
     component.displayDetails = true
     wProductServiceSpy.getProductById.and.returnValue(of(product))
@@ -429,7 +463,7 @@ fdescribe('ProductComponent', () => {
     expect(component.displayDetails).toBeTrue()
   })
 
-  fit('should call getWProduct when an item is selected: display error', () => {
+  it('should call getWProduct when an item is selected: display error', () => {
     wProductServiceSpy.getProductById.and.returnValue(throwError(() => new Error()))
     const event = { items: [{ id: 1 }] }
     component.displayDetails = true
@@ -439,7 +473,7 @@ fdescribe('ProductComponent', () => {
     expect(component.displayDetails).toBeTrue()
   })
 
-  fit('should set displayDetails to false when no item is selected', () => {
+  it('should set displayDetails to false when no item is selected', () => {
     const event = { items: [] }
 
     component.onTargetSelect(event)
@@ -447,11 +481,14 @@ fdescribe('ProductComponent', () => {
     expect(component.displayDetails).toBeFalse()
   })
 
-  fit('should access mfeControls as FormArray', () => {
+  it('should access mfeControls as FormArray', () => {
     expect(component.mfeControls instanceof FormArray).toBeTruthy()
   })
 
-  fit('should update a product by id', () => {
+  /**
+   * UI Events: SAVE
+   */
+  it('should update a product by id', () => {
     wProductServiceSpy.updateProductById.and.returnValue(of({ resource: product }))
     const event: any = { items: [{ id: 1 }] }
     component.formGroup = fb.group({
@@ -478,7 +515,7 @@ fdescribe('ProductComponent', () => {
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.UPDATE_OK' })
   })
 
-  fit('should update a product by id: no ids in ws and product', () => {
+  it('should update a product by id: no ids in ws and product', () => {
     const product2: Product = {
       productName: 'prod name',
       displayName: 'display name',
@@ -508,7 +545,7 @@ fdescribe('ProductComponent', () => {
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.UPDATE_OK' })
   })
 
-  fit('should display error when trying to update a product by id', () => {
+  it('should display error when trying to update a product by id', () => {
     wProductServiceSpy.updateProductById.and.returnValue(throwError(() => new Error()))
     const event: any = { items: [product] }
     component.formGroup = fb.group({
@@ -525,7 +562,10 @@ fdescribe('ProductComponent', () => {
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.UPDATE_NOK' })
   })
 
-  fit('should createProductInWorkspace onMoveToTarget: one product', () => {
+  /**
+   * REGISTER
+   */
+  it('should createProductInWorkspace onMoveToTarget: one product', () => {
     wProductServiceSpy.createProductInWorkspace.and.returnValue(of({ resource: product }))
     const event: any = { items: [product] }
     component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedMfe: false }]
@@ -536,7 +576,7 @@ fdescribe('ProductComponent', () => {
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.REGISTRATION_OK' })
   })
 
-  fit('should createProductInWorkspace onMoveToTarget: multiple products', () => {
+  it('should createProductInWorkspace onMoveToTarget: multiple products', () => {
     wProductServiceSpy.createProductInWorkspace.and.returnValue(of({ resource: product }))
     const product2: Product = {
       productName: 'prod name',
@@ -554,7 +594,7 @@ fdescribe('ProductComponent', () => {
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.REGISTRATIONS_OK' })
   })
 
-  fit('should createProductInWorkspace onMoveToTarget: no ws id', () => {
+  it('should createProductInWorkspace onMoveToTarget: no ws id', () => {
     wProductServiceSpy.createProductInWorkspace.and.returnValue(of({ resource: product }))
     const event: any = { items: [product] }
     component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedMfe: false }]
@@ -571,7 +611,7 @@ fdescribe('ProductComponent', () => {
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.REGISTRATION_OK' })
   })
 
-  fit('should createProductInWorkspace onMoveToTarget: no mfes', () => {
+  it('should createProductInWorkspace onMoveToTarget: no mfes', () => {
     wProductServiceSpy.createProductInWorkspace.and.returnValue(of({ resource: product }))
     component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedMfe: false }]
     component.psProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedMfe: false }]
@@ -589,7 +629,7 @@ fdescribe('ProductComponent', () => {
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.REGISTRATION_OK' })
   })
 
-  fit('should createProductInWorkspace onMoveToTarget: multiple mfes', () => {
+  it('should createProductInWorkspace onMoveToTarget: multiple mfes', () => {
     const microfrontend2: Microfrontend = {
       id: 'id',
       appId: 'appId',
@@ -613,7 +653,7 @@ fdescribe('ProductComponent', () => {
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.REGISTRATION_OK' })
   })
 
-  fit('should display error when trying to createProductInWorkspace onMoveToTarget', () => {
+  it('should display error when trying to createProductInWorkspace onMoveToTarget', () => {
     wProductServiceSpy.createProductInWorkspace.and.returnValue(throwError(() => new Error()))
     const event: any = { items: [product] }
     component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedMfe: false }]
@@ -624,7 +664,7 @@ fdescribe('ProductComponent', () => {
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.REGISTRATION_NOK' })
   })
 
-  fit('should display error when trying to createProductInWorkspace onMoveToTarget', () => {
+  it('should display error when trying to createProductInWorkspace onMoveToTarget', () => {
     wProductServiceSpy.createProductInWorkspace.and.returnValue(throwError(() => new Error()))
     component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedMfe: false }]
     component.psProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedMfe: false }]
@@ -642,7 +682,7 @@ fdescribe('ProductComponent', () => {
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.REGISTRATIONS_NOK' })
   })
 
-  fit('should deleteProductById onMoveToSource', () => {
+  it('should deleteProductById onMoveToSource', () => {
     wProductServiceSpy.deleteProductById.and.returnValue(of({ resource: product }))
     const event: any = { items: [product] }
     component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedMfe: false }]
@@ -653,7 +693,7 @@ fdescribe('ProductComponent', () => {
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.DEREGISTRATION_OK' })
   })
 
-  fit('should deleteProductById onMoveToSource: no ws id', () => {
+  it('should deleteProductById onMoveToSource: no ws id', () => {
     wProductServiceSpy.deleteProductById.and.returnValue(of({ resource: product }))
     const event: any = { items: [product] }
     component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedMfe: false }]
@@ -670,7 +710,7 @@ fdescribe('ProductComponent', () => {
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.DEREGISTRATION_OK' })
   })
 
-  fit('should deleteProductById onMoveToSource', () => {
+  it('should deleteProductById onMoveToSource', () => {
     wProductServiceSpy.deleteProductById.and.returnValue(throwError(() => new Error()))
     const event: any = { items: [product] }
     component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedMfe: false }]
