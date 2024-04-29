@@ -46,7 +46,7 @@ const mockMenuItems: WorkspaceMenuItem[] = [
     name: 'menu2 name',
     i18n: { ['en']: 'en' },
     children: [{ name: 'child name', key: 'key', id: 'id' }],
-    url: '/workspace'
+    url: '/workspace/'
   }
 ]
 
@@ -559,7 +559,7 @@ fdescribe('MenuComponent', () => {
    * ROLES + ASSIGNMENTS
    */
 
-  it('should loadRolesandAssignments -> seachRoles and searchAssignments on loadMenu', () => {
+  it('should loadRolesandAssignments -> searchRoles and searchAssignments on loadMenu', () => {
     const wRole2: WorkspaceRole = {
       name: 'role name2',
       id: 'role id2',
