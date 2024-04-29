@@ -147,7 +147,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
         }),
         catchError((err) => {
           this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.PRODUCTS'
-          console.error('getProductsForWorkspaceId():', err)
+          console.error('getProductsByWorkspaceId():', err)
           return of([] as ExtendedProduct[])
         })
       )
