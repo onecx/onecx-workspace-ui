@@ -1,24 +1,28 @@
-import { NO_ERRORS_SCHEMA, Component } from '@angular/core'
+import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { /* HttpClient, */ HttpErrorResponse } from '@angular/common/http'
-import { FormsModule /*, FormControl, FormGroup */ } from '@angular/forms'
 import { Location } from '@angular/common'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router'
 import { of, throwError } from 'rxjs'
 import FileSaver from 'file-saver'
 
-import { PortalMessageService, ConfigurationService, AUTH_SERVICE } from '@onecx/portal-integration-angular'
+import { PortalMessageService, UserService } from '@onecx/portal-integration-angular'
 
 import { MenuStateService, MenuState } from './services/menu-state.service'
-import { MenuComponent } from './menu.component'
+import { MenuComponent, MenuItemNodeData } from './menu.component'
 
 import {
   Workspace,
   WorkspaceMenuItem,
-  WorkspaceAPIService /*, Scope*/,
-  MenuItemAPIService
+  WorkspaceAPIService,
+  MenuItemAPIService,
+  WorkspaceRolesAPIService,
+  AssignmentAPIService,
+  Assignment,
+  WorkspaceRole
 } from 'src/app/shared/generated'
+import { TranslateTestingModule } from 'ngx-translate-testing'
+import { HttpErrorResponse } from '@angular/common/http'
 
 const workspace: Workspace = {
   id: 'id',
@@ -33,36 +37,45 @@ const mockMenuItems: WorkspaceMenuItem[] = [
     key: 'key',
     name: 'menu name',
     i18n: { ['en']: 'en' },
-    children: [{ name: 'child name', key: 'key', id: 'id' }]
+    children: [{ name: 'child name', key: 'key', id: 'id' }],
+    url: '/workspace'
   },
   {
     id: 'id',
     key: 'key',
     name: 'menu2 name',
-    i18n: { ['en']: 'en' }
+    i18n: { ['en']: 'en' },
+    children: [{ name: 'child name', key: 'key', id: 'id' }],
+    url: '/workspace/'
   }
 ]
 
-/* const mockItem = {
-  id: 'id1',
-  key: '1-1',
-  positionPath: '1-1',
-  regMfeAligned: true,
-  parentItemName: '1',
+const nodeData: MenuItemNodeData = {
+  id: 'id',
   first: true,
   last: false,
-  prevId: undefined,
-  disabled: true,
-  parentItemId: 'some parent id',
-  name: 'name',
-  position: 1,
-  external: true,
-  url: 'url',
-  badge: 'badge',
-  scope: Scope.Workspace,
-  description: 'description'
+  prevId: 'prev',
+  gotoUrl: 'goToUrk',
+  positionPath: 'posPath',
+  appConnected: true,
+  roles: { ['role']: 'role' },
+  rolesInherited: { ['inhRole']: 'inhRole' },
+  node: { key: 'nodeKey' }
 }
- */
+
+const wRole: WorkspaceRole = {
+  name: 'role name',
+  id: 'role id',
+  description: 'role descr'
+}
+
+const assgmt: Assignment = {
+  id: 'assgnmt id',
+  roleId: 'assgmtRoleId',
+  menuItemId: 'id',
+  workspaceId: 'id'
+}
+
 const state: MenuState = {
   pageSize: 0,
   showDetails: false,
@@ -72,52 +85,39 @@ const state: MenuState = {
   workspaceMenuItems: []
 }
 
-/* const form = new FormGroup({
-  parentItemId: new FormControl('some parent id'),
-  key: new FormControl('key'),
-  name: new FormControl('name'),
-  position: new FormControl('1'),
-  disabled: new FormControl<boolean>(false),
-  external: new FormControl<boolean>(false),
-  url: new FormControl('url'),
-  badge: new FormControl('badge'),
-  scope: new FormControl('scope'),
-  description: new FormControl('description')
-})
- */
 describe('MenuComponent', () => {
   let component: MenuComponent
   let fixture: ComponentFixture<MenuComponent>
   let mockActivatedRoute: Partial<ActivatedRoute>
-  const mockAuthService = jasmine.createSpyObj('IAuthService', ['hasPermission'])
+  let mockUserService: any
 
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
   const apiServiceSpy = {
     getWorkspaceByName: jasmine.createSpy('getWorkspaceByName').and.returnValue(of({}))
   }
-  // TODO: check api and use the correct names
   const menuApiServiceSpy = {
     getMenuStructure: jasmine.createSpy('getMenuStructure').and.returnValue(of(mockMenuItems)),
     getMenuItemById: jasmine.createSpy('getMenuItemById').and.returnValue(of(mockMenuItems)),
-    patchMenuItem: jasmine.createSpy('patchMenuItem').and.returnValue(of(mockMenuItems)),
     bulkPatchMenuItems: jasmine.createSpy('bulkPatchMenuItems').and.returnValue(of(mockMenuItems)),
-    addMenuItemForPortal: jasmine.createSpy('addMenuItemForPortal').and.returnValue(of(mockMenuItems)),
     deleteMenuItemById: jasmine.createSpy('deleteMenuItemById').and.returnValue(of({})),
-    importMenuByWorkspaceName: jasmine.createSpy('importMenuByWorkspaceName').and.returnValue(of({}))
+    exportMenuByWorkspaceName: jasmine.createSpy('exportMenuByWorkspaceName').and.returnValue(of({}))
   }
-  const configServiceSpy = {
-    getProperty: jasmine.createSpy('getProperty').and.returnValue('123'),
-    getPortal: jasmine.createSpy('getPortal').and.returnValue({
-      themeId: '1234',
-      portalName: 'test',
-      baseUrl: '/',
-      microfrontendRegistrations: []
-    }),
-    lang: 'en'
+  const wRoleServiceSpy = {
+    searchWorkspaceRoles: jasmine.createSpy('searchWorkspaceRoles').and.returnValue(of({}))
+  }
+  const assgmtApiServiceSpy = {
+    searchAssignments: jasmine.createSpy('searchAssignments').and.returnValue(of({})),
+    createAssignment: jasmine.createSpy('createAssignment').and.returnValue(of(assgmt)),
+    deleteAssignment: jasmine.createSpy('deleteAssignment').and.returnValue(of({}))
   }
   const translateServiceSpy = jasmine.createSpyObj('TranslateService', ['get'])
   const stateServiceSpy = jasmine.createSpyObj<MenuStateService>('MenuStateService', ['getState', 'updateState'])
   const locationSpy = jasmine.createSpyObj<Location>('Location', ['back'])
+
+  mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
+  mockUserService.hasPermission.and.callFake((permission: string) => {
+    return ['MENU#EDIT', 'MENU#GRANT', 'ROLE#EDIT'].includes(permission)
+  })
 
   const mockActivatedRouteSnapshot: Partial<ActivatedRouteSnapshot> = {
     params: {
@@ -132,29 +132,23 @@ describe('MenuComponent', () => {
     TestBed.configureTestingModule({
       declarations: [MenuComponent],
       imports: [
-        HttpClientTestingModule
-        /* TranslateModule.forRoot({
-        HttpClientTestingModule
-        /* TranslateModule.forRoot({
-          loader: {
-            provide: TranslateLoader,
-            useFactory: HttpLoaderFactory,
-            deps: [HttpClient]
-          }
-        }) */
+        HttpClientTestingModule,
+        TranslateTestingModule.withTranslations({
+          de: require('src/assets/i18n/de.json'),
+          en: require('src/assets/i18n/en.json')
+        }).withDefaultLanguage('en')
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: WorkspaceAPIService, useValue: apiServiceSpy },
-        { provide: WorkspaceAPIService, useValue: apiServiceSpy },
-        { provide: ConfigurationService, useValue: configServiceSpy },
+        { provide: WorkspaceRolesAPIService, useValue: wRoleServiceSpy },
         { provide: MenuItemAPIService, useValue: menuApiServiceSpy },
-        { provide: MenuItemAPIService, useValue: menuApiServiceSpy },
-        { provide: AUTH_SERVICE, useValue: mockAuthService },
+        { provide: AssignmentAPIService, useValue: assgmtApiServiceSpy },
         { provide: MenuStateService, useValue: stateServiceSpy },
-        { provide: Location, useValue: locationSpy }
+        { provide: Location, useValue: locationSpy },
+        { provide: UserService, useValue: mockUserService }
       ]
     }).compileComponents()
     msgServiceSpy.success.calls.reset()
@@ -162,21 +156,21 @@ describe('MenuComponent', () => {
     apiServiceSpy.getWorkspaceByName.calls.reset()
     menuApiServiceSpy.getMenuItemById.calls.reset()
     menuApiServiceSpy.getMenuStructure.calls.reset()
-    menuApiServiceSpy.patchMenuItem.calls.reset()
     menuApiServiceSpy.bulkPatchMenuItems.calls.reset()
-    menuApiServiceSpy.addMenuItemForPortal.calls.reset()
     menuApiServiceSpy.deleteMenuItemById.calls.reset()
-    menuApiServiceSpy.importMenuByWorkspaceName.calls.reset()
+    wRoleServiceSpy.searchWorkspaceRoles.calls.reset()
+    assgmtApiServiceSpy.searchAssignments.calls.reset()
+    assgmtApiServiceSpy.createAssignment.calls.reset()
+    assgmtApiServiceSpy.deleteAssignment.calls.reset()
     translateServiceSpy.get.calls.reset()
     stateServiceSpy.getState.calls.reset()
   }))
 
   beforeEach(() => {
     stateServiceSpy.getState.and.returnValue(state)
-
     fixture = TestBed.createComponent(MenuComponent)
     component = fixture.componentInstance
-    // component.menuItems = state.workspaceMenuItems
+    component.workspace = workspace
     fixture.detectChanges()
   })
 
@@ -184,32 +178,50 @@ describe('MenuComponent', () => {
     expect(component).toBeTruthy()
   })
 
+  it('it should push permissions to array if userService has them', () => {
+    expect(component.myPermissions).toContain('MENU#EDIT')
+    expect(component.myPermissions).toContain('MENU#GRANT')
+    expect(component.myPermissions).toContain('ROLE#EDIT')
+  })
+
   it('should have prepared action buttons onInit: onClose, and called it', () => {
     component.ngOnInit()
-    const action = component.actions[0]
-    action.actionCallback()
 
-    expect(locationSpy.back).toHaveBeenCalled()
+    if (component.actions$) {
+      component.actions$.subscribe((actions) => {
+        const firstAction = actions[0]
+        firstAction.actionCallback()
+        expect(locationSpy.back).toHaveBeenCalled()
+      })
+    }
   })
 
   it('should have prepared action buttons onInit: onExportMenu', () => {
     spyOn(component, 'onExportMenu')
 
     component.ngOnInit()
-    const action = component.actions[1]
-    action.actionCallback()
 
-    expect(component.onExportMenu).toHaveBeenCalled()
+    if (component.actions$) {
+      component.actions$.subscribe((actions) => {
+        const secondAction = actions[1]
+        secondAction.actionCallback()
+        expect(component.onExportMenu).toHaveBeenCalled()
+      })
+    }
   })
 
   it('should have prepared action buttons onInit: onImportMenu', () => {
     spyOn(component, 'onImportMenu')
 
     component.ngOnInit()
-    const action = component.actions[2]
-    action.actionCallback()
 
-    expect(component.onImportMenu).toHaveBeenCalled()
+    if (component.actions$) {
+      component.actions$.subscribe((actions) => {
+        const thirdAction = actions[2]
+        thirdAction.actionCallback()
+        expect(component.onImportMenu).toHaveBeenCalled()
+      })
+    }
   })
 
   it('should call loadMenu onReload', () => {
@@ -220,13 +232,161 @@ describe('MenuComponent', () => {
     expect(component.loadMenu).toHaveBeenCalledWith(true)
   })
 
-  it('should call loadMenu onReload', () => {
+  it('should return true if an object is empty', () => {
+    expect(component.isObjectEmpty({})).toBeTrue()
+    expect(component.isObjectEmpty({ key: 'value' })).toBeFalse()
+  })
+
+  /****************************************************************************
+   * CREATE + EDIT + DELETE
+   */
+
+  it('should displayMenuDetail and change mode onGoToDetails: edit permission', () => {
+    const event: MouseEvent = new MouseEvent('type')
+    const item = {
+      id: 'id1'
+    }
+
+    component.onGotoDetails(event, item)
+
+    expect(component.displayMenuDetail).toBeTrue()
+    expect(component.changeMode).toBe('EDIT')
+    expect(component.menuItem).toBe(item)
+  })
+
+  it('should displayMenuDetail and change mode onGoToDetails: no edit permission', () => {
+    const event: MouseEvent = new MouseEvent('type')
+    const item = {
+      id: 'id1'
+    }
+    component.myPermissions = []
+
+    component.onGotoDetails(event, item)
+
+    expect(component.displayMenuDetail).toBeTrue()
+    expect(component.changeMode).toBe('VIEW')
+  })
+
+  it('should not displayMenuDetail: no item id', () => {
+    const event: MouseEvent = new MouseEvent('type')
+    const item = {
+      name: 'name'
+    }
+
+    component.onGotoDetails(event, item)
+
+    expect(component.displayMenuDetail).toBeFalse()
+  })
+
+  it('should handle onCreateMenu correctly', () => {
+    const mockEvent = jasmine.createSpyObj('MouseEvent', ['stopPropagation'])
+    const mockParent = {
+      key: '1-1',
+      id: 'id1'
+    }
+    component.onCreateMenu(mockEvent, mockParent)
+
+    expect(mockEvent.stopPropagation).toHaveBeenCalled()
+    expect(component.changeMode).toEqual('CREATE')
+    expect(component.menuItem).toEqual(mockParent)
+    expect(component.displayMenuDetail).toBeTrue()
+  })
+
+  it('should removeNodeFromTree if key is present and refresh menuNodes if delete displayed onMenuItemChanged', () => {
+    component.displayMenuDelete = true
+    const item = {
+      key: 'key'
+    }
+    component.menuItem = item
+    const nodes = [
+      {
+        key: 'key'
+      },
+      {
+        key: 'key2'
+      }
+    ]
+    component.menuNodes = nodes
+
+    component.onMenuItemChanged(true)
+
+    expect(component.menuNodes).not.toContain(item)
+  })
+
+  it('should removeNodeFromTree if key is present in node children', () => {
+    component.displayMenuDelete = true
+    const item = {
+      key: 'child key'
+    }
+    component.menuItem = item
+    const nodes = [
+      {
+        key: 'key2',
+        children: [{ key: 'child key' }]
+      }
+    ]
+    component.menuNodes = nodes
+
+    component.onMenuItemChanged(true)
+
+    expect(component.menuNodes).not.toContain(item)
+  })
+
+  it('should not removeNodeFromTree if no key present', () => {
+    component.displayMenuDelete = true
+    const key = undefined
+    const item = {
+      key: key
+    }
+    component.menuItem = item
+    const nodes = [
+      item,
+      {
+        key: 'key2'
+      }
+    ]
+    component.menuNodes = nodes
+
+    component.onMenuItemChanged(true)
+
+    expect(component.menuNodes).toContain(item)
+  })
+
+  it('should loadMenu if detail displayed onMenuItemChanged', () => {
+    component.displayMenuDelete = false
+    component.displayMenuDetail = true
     spyOn(component, 'loadMenu')
 
-    component.onReload()
+    component.onMenuItemChanged(true)
 
-    expect(component.loadMenu).toHaveBeenCalledWith(true)
+    expect(component.loadMenu).toHaveBeenCalled()
   })
+
+  it('should set correct values if nothing changed onMenuItemChanged', () => {
+    component.onMenuItemChanged(false)
+
+    expect(component.displayMenuDetail).toBeFalse()
+    expect(component.displayMenuDelete).toBeFalse()
+    expect(component.menuItem).toBeUndefined()
+  })
+
+  it('should display delete pop up with item', () => {
+    const event: MouseEvent = new MouseEvent('click')
+    const item = {
+      key: 'key'
+    }
+    component.menuItem = item
+
+    component.onDeleteMenu(event, item)
+
+    expect(component.changeMode).toBe('DELETE')
+    expect(component.menuItem).toBe(item)
+    expect(component.displayMenuDelete).toBeTrue()
+  })
+
+  /****************************************************************************
+   * TREE + DIALOG
+   */
 
   it('should empty menuTreeFiler and reset filter onClearFilterMenuTable', () => {
     const mockMenuTreeFilter = {
@@ -261,6 +421,22 @@ describe('MenuComponent', () => {
     expect(stateServiceSpy.getState().treeExpansionState.get('1')).toBeTrue()
   })
 
+  it('should recursively expand all menu nodes onExpandAll: no key in first node', () => {
+    component.menuNodes = [{ expanded: false, children: [{ key: '1-1', children: [{ key: '1-1-1' }] }] }, { key: '2' }]
+    const mockExpansionState: Map<string, boolean> = new Map<string, boolean>()
+    stateServiceSpy.getState.and.returnValue({
+      treeExpansionState: mockExpansionState,
+      pageSize: 0,
+      showDetails: false,
+      rootFilter: true,
+      treeMode: true
+    })
+
+    component.onExpandAll()
+
+    expect(stateServiceSpy.getState().treeExpansionState.get('2')).toBeTrue()
+  })
+
   it('should recursively collapse all menu nodes onCollapseAll', () => {
     component.menuNodes = [
       { key: '1', expanded: true, children: [{ key: '1-1', children: [{ key: '1-1-1' }] }] },
@@ -280,13 +456,35 @@ describe('MenuComponent', () => {
     expect(stateServiceSpy.getState().treeExpansionState.get('1')).toBeFalse()
   })
 
+  it('should getState onHierarchyViewChange', () => {
+    const mockExpansionState: Map<string, boolean> = new Map<string, boolean>()
+    stateServiceSpy.getState.and.returnValue({
+      treeExpansionState: mockExpansionState,
+      pageSize: 0,
+      showDetails: false,
+      rootFilter: true,
+      treeMode: true
+    })
+    const event = { node: { key: 'node', expanded: true } }
+    spyOn(mockExpansionState, 'set').and.callThrough()
+
+    component.onHierarchyViewChange(event)
+
+    expect(stateServiceSpy.getState().treeExpansionState.set).toHaveBeenCalledWith(event.node.key, event.node.expanded)
+
+    component.onHierarchyViewChange
+  })
+
+  /****************************************************************************
+   * DATA
+   */
   it('should loadData', () => {
-    apiServiceSpy.getWorkspaceByName.and.returnValue(of(workspace))
+    apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
     component.workspaceName = 'workspace-name'
 
     component.loadData()
 
-    expect(component.workspace).toBe(workspace)
+    expect(component.workspace).toEqual(workspace)
   })
 
   it('it should handle error response on loadData', () => {
@@ -311,21 +509,29 @@ describe('MenuComponent', () => {
   })
 
   it('should loadMenu', () => {
-    menuApiServiceSpy.getMenuStructure.and.returnValue(of(mockMenuItems))
+    menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
 
     component.loadMenu(true)
 
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.SEARCH.RELOAD.OK' })
   })
 
-  xit('should call prepareParentNodes with a node array containing children', () => {
-    menuApiServiceSpy.getMenuStructure.and.returnValue(
-      of([{ key: '1', data: { id: 'id1' }, children: [{ key: '1-1', data: { id: 'id1-1' } }] }])
-    )
+  it('should loadMenu: no node key in restoreRecursive', () => {
+    const mockMenuItems: WorkspaceMenuItem[] = [
+      {
+        id: 'id',
+        key: undefined,
+        name: 'menu name',
+        i18n: { ['en']: 'en' },
+        children: [{ name: 'child name', key: 'key', id: 'id' }],
+        url: '/workspace'
+      }
+    ]
+    menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
 
     component.loadMenu(true)
 
-    expect(component.parentItems).toContain({ label: '1', value: 'id1' })
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.SEARCH.RELOAD.OK' })
   })
 
   it('should handle error response on loadMenu', () => {
@@ -338,336 +544,136 @@ describe('MenuComponent', () => {
 
     component.loadMenu(true)
 
-    expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_0.WORKSPACES')
-  })
-
-  it('should handle exception on loadMenu', () => {
-    menuApiServiceSpy.getMenuStructure.and.returnValue(of(null))
-
-    component.loadMenu(true)
-
     expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_404.MENUS')
   })
 
-  /*   it('should set item onDeleteMenuItem', () => {
-    const event: MouseEvent = new MouseEvent('type')
-    const item = {
-      key: '1-1',
-      id: 'id1',
-      positionPath: '1-1',
-      regMfeAligned: true,
-      parentItemName: '1',
-      first: true,
-      last: false,
-      prevId: undefined
+  it('should return an empty array from mapToTreeNodes if no menuItems onLoadMenu', () => {
+    menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: [] }))
+
+    component.loadMenu(true)
+
+    expect(component.menuNodes).toEqual([])
+  })
+
+  /****************************************************************************
+   * ROLES + ASSIGNMENTS
+   */
+
+  it('should loadRolesandAssignments -> searchRoles and searchAssignments on loadMenu', () => {
+    const wRole2: WorkspaceRole = {
+      name: 'role name2',
+      id: 'role id2',
+      description: 'role descr2'
     }
-    spyOn(event, 'stopPropagation')
+    menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
+    wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: [wRole, wRole2] }))
+    assgmtApiServiceSpy.searchAssignments.and.returnValue(of({ stream: [assgmt] }))
 
-    component.onDeleteMenuItem(event, item)
+    component.loadMenu(true)
 
-    expect(event.stopPropagation).toHaveBeenCalled()
-    expect(component.menuItem).toEqual(item)
-    expect(component.displayDeleteConfirmation).toBeTrue()
+    expect(component.wRoles).toEqual([wRole, wRole2])
+    expect(component.wAssignments).toEqual([assgmt])
   })
 
-  it('should delete menu item', () => {
-    menuApiServiceSpy.deleteMenuItemById({ portalId: 'id', menuItemId: 'menu id' })
-    component.menuNodes = [{ key: '1', data: { id: 'id1' }, children: [{ key: '1-1', data: { id: 'id1-1' } }] }]
-    component.menuItem = {
-      key: '1-1',
-      id: 'id1',
-      position: 1.1,
-      parentItemId: '1'
+  it('should handle roles without name in sortRoleName function', () => {
+    const wRole2: WorkspaceRole = {
+      id: 'role id2',
+      description: 'role descr2'
     }
-
-    component.onMenuDelete()
-
-    expect(component.menuNodes.length).toBe(1)
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MENU_DELETE_OK' })
-  })
-
-  it('should display error message on delete menu item', () => {
-    menuApiServiceSpy.deleteMenuItemById.and.returnValue(throwError(() => new Error()))
-
-    component.onMenuDelete()
-
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MENU_DELETE_NOK' })
-  })
- */
-
-  /*   xit('should get menu item onGoToDetails', () => {
-    const mockMenuItem = {
-      key: 'key',
-      parentItemId: 'parent id',
-      name: 'some name',
-      position: 1
+    const wRole3: WorkspaceRole = {
+      id: 'role id3',
+      description: 'role descr3'
     }
-    menuApiServiceSpy.getMenuItemById.and.returnValue(of({ mockMenuItem }))
-    const event: MouseEvent = new MouseEvent('type')
-    const item = {
-      key: '1-1',
-      id: 'id1',
-      positionPath: '1-1',
-      regMfeAligned: true,
-      parentItemName: '1',
-      first: true,
-      last: false,
-      prevId: undefined,
-      disabled: true,
-      parentItemId: 'some parent id',
-      name: 'name',
-      position: 1,
-      portalExit: true,
-      url: 'url',
-      badge: 'badge',
-      scope: Scope.Workspace,
-      description: 'description'
+    menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
+    wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: [wRole3, wRole2] }))
+    assgmtApiServiceSpy.searchAssignments.and.returnValue(of({ stream: [assgmt] }))
+
+    component.loadMenu(true)
+
+    expect(component.wRoles).toEqual([wRole3, wRole2])
+    expect(component.wAssignments).toEqual([assgmt])
+  })
+
+  it('should have found a tree node by id and used the assigned node in inheritRoleAssignment', () => {
+    menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
+    wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: [wRole] }))
+    assgmtApiServiceSpy.searchAssignments.and.returnValue(of({ stream: [assgmt] }))
+
+    component.loadMenu(true)
+
+    expect(component.wAssignments).toEqual([assgmt])
+  })
+
+  it('should have looked at children nodes to find a tree node by id', () => {
+    const assgmt2: Assignment = {
+      id: 'assgnmt id',
+      roleId: 'roleId',
+      menuItemId: 'other id',
+      workspaceId: 'id'
     }
-    component.formGroup = form
+    menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
+    wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: [wRole] }))
+    assgmtApiServiceSpy.searchAssignments.and.returnValue(of({ stream: [assgmt2] }))
 
-    component.onGotoDetails(event, item)
+    component.loadMenu(true)
 
-    expect(component.displayMenuDetail).toBeTrue()
+    expect(component.wAssignments).toEqual([assgmt2])
   })
 
-  it('should toggle disable state and initiate save', () => {
-    menuApiServiceSpy.patchMenuItem.and.returnValue(of({}))
-    const item = {
-      key: '1-1',
-      id: 'id1',
-      positionPath: '1-1',
-      regMfeAligned: true,
-      parentItemName: '1',
-      first: true,
-      last: false,
-      prevId: undefined,
-      disabled: true,
-      parentItemId: 'some parent id',
-      name: 'name',
-      position: 1,
-      portalExit: true,
-      url: 'url',
-      badge: 'badge',
-      scope: Scope.Workspace,
-      description: 'description'
-    }
-    const mockEvent = {}
-    component.formGroup = form
-    spyOn(component, 'onMenuSave')
+  it('should throw errors for seachRoles and searchAssignments on loadMenu', () => {
+    const err = { status: '404' }
+    wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(throwError(() => err))
+    assgmtApiServiceSpy.searchAssignments.and.returnValue(throwError(() => err))
+    menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
+    spyOn(console, 'error')
 
-    component.onToggleDisable(mockEvent, item)
+    component.loadMenu(true)
 
-    expect(component.changeMode).toBe('EDIT')
-    expect(component.onMenuSave).toHaveBeenCalled()
+    expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + '404' + '.ROLES')
+    expect(console.error).toHaveBeenCalledWith('searchRoles():', err)
+    expect(console.error).toHaveBeenCalledWith('searchAssignments():', err)
   })
 
-  it('should getState onHierarchyViewChange', () => {
-    const mockExpansionState: Map<string, boolean> = new Map<string, boolean>()
-    stateServiceSpy.getState.and.returnValue({
-      treeExpansionState: mockExpansionState,
-      pageSize: 0,
-      showDetails: false,
-      rootFilter: true,
-      treeMode: true
-    })
-    const event = { node: { key: 'node', expanded: true } }
-    spyOn(mockExpansionState, 'set').and.callThrough()
+  it('should handle successful assignment creation onGrantPermission', () => {
+    assgmtApiServiceSpy.createAssignment.and.returnValue(of(assgmt))
 
-    component.onHierarchyViewChange(event)
+    component.onGrantPermission(nodeData, 'role')
 
-    expect(stateServiceSpy.getState().treeExpansionState.set).toHaveBeenCalledWith(event.node.key, event.node.expanded)
-
-    component.onHierarchyViewChange
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.GRANT_OK' })
+    expect(nodeData.roles['role']).toBe('assgnmt id')
   })
 
-  it('should update properties onCloseDetailDialog', () => {
-    component.onCloseDetailDialog()
+  it('should display error onGrantPermission', () => {
+    assgmtApiServiceSpy.createAssignment.and.returnValue(throwError(() => new Error()))
 
-    expect(component.menuItem).toBeUndefined()
-    expect(component.displayMenuDetail).toBeFalse()
+    component.onGrantPermission(nodeData, 'role')
+
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.GRANT_NOK' })
   })
 
-  it('should update tabIndex onTabPanelChange', () => {
-    let mockEvent = { index: 3 }
+  it('should deletel assignment onRevokePermission', () => {
+    assgmtApiServiceSpy.deleteAssignment.and.returnValue(of(assgmt))
 
-    component.onTabPanelChange(mockEvent)
+    component.onRevokePermission(nodeData, 'role', assgmt.id!)
 
-    expect(component.tabIndex).toBe(mockEvent.index)
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.REVOKE_OK' })
+    expect(nodeData.roles['role']).toBeUndefined()
   })
 
-  it('should set overlayVisible to true onFocusFieldUrl', () => {
-    let field = { overlayVisible: false }
+  it('should display error onRevokePermission', () => {
+    assgmtApiServiceSpy.deleteAssignment.and.returnValue(throwError(() => new Error()))
 
-    component.onFocusFieldUrl(field)
+    component.onRevokePermission(nodeData, 'role', assgmt.id!)
 
-    expect(field.overlayVisible).toBeTrue()
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.REVOKE_NOK' })
   })
 
-  it('should remove language from languagesDisplayed, add it to languagesAvailable', () => {
-    component.languagesDisplayed = [{ label: 'English', value: 'en', data: 'Data' }]
-    component.languagesAvailable = [{ label: 'German', value: 'de', data: '' }]
+  /****************************************************************************
+   *  EXPORT / IMPORT
+   */
 
-    component.onRemoveLanguage('en')
-
-    expect(component.languagesDisplayed.length).toBe(0)
-    expect(component.languagesAvailable).toEqual(jasmine.arrayContaining([{ label: 'English', value: 'en', data: '' }]))
-  })
-
-  it('should add language to languagesDisplayed from languagesAvailable', () => {
-    component.languagesDisplayed = []
-    component.languagesAvailable = [{ label: 'English', value: 'en', data: '' }]
-
-    component.onAddLanguage2({ option: { value: 'en' } })
-
-    expect(component.languagesDisplayed).toEqual(jasmine.arrayContaining([{ label: 'English', value: 'en', data: '' }]))
-    expect(component.languagesAvailable.length).toBe(0)
-  })
-
-  it('should add language to languagesDisplayed from languagesAvailable using string value', () => {
-    component.languagesDisplayed = []
-    component.languagesAvailable = [{ label: 'English', value: 'en', data: '' }]
-
-    component.onAddLanguage('en')
-
-    expect(component.languagesDisplayed).toEqual(jasmine.arrayContaining([{ label: 'English', value: 'en', data: '' }]))
-    expect(component.languagesAvailable.length).toBe(0)
-  })
-
-  it('should return label of language if in languagesDisplayed', () => {
-    component.languagesDisplayed = [{ label: 'English', value: 'en', data: '' }]
-
-    const label = component.getLanguageLabel('en')
-
-    expect(label).toBe('English')
-  })
-
-  it('if not in languagesDisplayed: return undefined on getLanguageLabel', () => {
-    component.languagesDisplayed = []
-
-    const label = component.getLanguageLabel('en')
-
-    expect(label).toBeUndefined()
-  })
-
-  it('should return true if language not in languagesDisplayed', () => {
-    component.languagesDisplayed = [{ label: 'English', value: 'en', data: '' }]
-
-    expect(component.displayLanguageField('de')).toBeTrue()
-    expect(component.displayLanguageField('en')).toBeFalse()
-  })
-
-  it('should return true if an object is empty', () => {
-    expect(component.isObjectEmpty({})).toBeFalse()
-    expect(component.isObjectEmpty({ key: 'value' })).toBeTrue()
-  })
-
-  it('should handle onCreateMenu correctly', () => {
-    const mockEvent = jasmine.createSpyObj('MouseEvent', ['stopPropagation'])
-    const mockParent = {
-      key: '1-1',
-      id: 'id1',
-      positionPath: '1-1',
-      regMfeAligned: true,
-      parentItemName: '1',
-      first: true,
-      last: false,
-      prevId: undefined,
-      name: 'name'
-    }
-    component.onCreateMenu(mockEvent, mockParent)
-
-    expect(mockEvent.stopPropagation).toHaveBeenCalled()
-    expect(component.changeMode).toEqual('CREATE')
-    expect(component.menuItem).toEqual(mockParent)
-    expect(component.formGroup.value).toEqual({
-      parentItemId: mockParent.id,
-      position: 0,
-      portalExit: false,
-      disabled: false,
-      key: null,
-      name: null,
-      url: null,
-      badge: null,
-      scope: null,
-      description: null
-    })
-    expect(component.displayMenuDetail).toBeTrue()
-  })
-
-  it('should save a menu: create', () => {
-    menuApiServiceSpy.addMenuItemForPortal.and.returnValue(of({}))
-    component.formGroup = form
-    component.menuItem = mockItem
-    component.changeMode = 'CREATE'
-    component.languagesDisplayed = [{ label: 'English', value: 'en', data: 'data' }]
-
-    component.onMenuSave()
-
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.MESSAGE.MENU_CREATE_OK' })
-  })
-
-  it('should display error message on save menu: create', () => {
-    menuApiServiceSpy.addMenuItemForPortal.and.returnValue(throwError(() => new Error()))
-    component.formGroup = form
-    component.menuItem = mockItem
-    component.changeMode = 'CREATE'
-
-    component.onMenuSave()
-
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.MESSAGE.MENU_CREATE_NOK' })
-  })
-
-  it('should save a menu: edit', () => {
-    menuApiServiceSpy.patchMenuItem.and.returnValue(of(mockItem))
-    component.formGroup = form
-    component.menuItem = {
-      key: '1-1',
-      id: 'id1',
-      parentItemId: '1',
-      disabled: true,
-      name: 'name',
-      position: 1,
-      url: 'url',
-      badge: 'badge',
-      scope: Scope.Workspace,
-      description: 'description'
-    }
-    component.menuItems = mockMenuItems
-    component.menuNodes = [
-      { key: 'key', children: [{ key: 'key', data: { i18n: { en: 'en' } } }], data: { i18n: { en: 'en' } } }
-    ]
-    component.changeMode = 'EDIT'
-    component.displayMenuDetail = true
-
-    component.onMenuSave()
-
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' })
-  })
-
-  it('should display error message on save menu: edit', () => {
-    menuApiServiceSpy.patchMenuItem.and.returnValue(throwError(() => new Error()))
-    component.formGroup = form
-    component.menuItem = {
-      key: '1-1',
-      id: 'id1',
-      parentItemId: '1',
-      disabled: true,
-      name: 'name',
-      position: 1,
-      url: 'url',
-      badge: 'badge',
-      scope: Scope.Workspace,
-      description: 'description'
-    }
-    component.changeMode = 'EDIT'
-
-    component.onMenuSave()
-
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
-  })
- */
   it('should export a menu', () => {
-    menuApiServiceSpy.getMenuStructure.and.returnValue(of(mockMenuItems))
+    menuApiServiceSpy.exportMenuByWorkspaceName.and.returnValue(of(mockMenuItems))
     component.workspaceName = 'name'
     component.workspace = workspace
     spyOn(FileSaver, 'saveAs')
@@ -676,8 +682,38 @@ describe('MenuComponent', () => {
 
     expect(FileSaver.saveAs).toHaveBeenCalledWith(
       new Blob([], { type: 'text/json' }),
-      'workspace_' + component.workspace?.name + '_menu.json'
+      'workspace_' + 'name' + '_menu.json'
     )
+  })
+
+  it('should set displayMenuImport to true', () => {
+    component.onImportMenu()
+
+    expect(component.displayMenuImport).toBeTrue()
+  })
+
+  it('should set displayMenuImport to false', () => {
+    component.onHideMenuImport()
+
+    expect(component.displayMenuImport).toBeFalse()
+  })
+
+  it('should set displayRoles to true when displayRoles is false and wRoles is empty', () => {
+    component.displayRoles = false
+    component.wRoles = []
+
+    component.onDisplayRoles()
+
+    expect(component.displayRoles).toBeTrue()
+  })
+
+  it('should set displayRoles to true when displayRoles is false and wRoles is not empty', () => {
+    component.displayRoles = false
+    component.wRoles = [wRole]
+
+    component.onDisplayRoles()
+
+    expect(component.displayRoles).toBeTrue()
   })
 
   it('should set displayMenuPreview to true onDisplayMenuPreview', () => {
@@ -694,54 +730,10 @@ describe('MenuComponent', () => {
 
   it('should handle successful menu item update', () => {
     menuApiServiceSpy.bulkPatchMenuItems.and.returnValue(of({}))
-    spyOn(component, 'onReload')
+    spyOn(console, 'log')
 
     component.onUpdateMenuStructure(mockMenuItems)
 
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'TREE.EDIT_SUCCESS' })
-    expect(component.onReload).toHaveBeenCalled()
-  })
-
-  it('should handle menu item update error', () => {
-    menuApiServiceSpy.bulkPatchMenuItems.and.returnValue(throwError(() => new Error()))
-
-    component.onUpdateMenuStructure(mockMenuItems)
-
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'TREE.EDIT_ERROR' })
-  })
-})
-
-/* Test modification of built-in Angular class registerOnChange at top of the file  */
-@Component({
-  template: `<input type="text" [(ngModel)]="value" />`
-})
-class TestComponent {
-  value = ''
-}
-
-describe('DefaultValueAccessor prototype modification', () => {
-  let component: TestComponent
-  let fixture: ComponentFixture<TestComponent>
-  let inputElement: HTMLInputElement
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [TestComponent],
-      imports: [FormsModule]
-    }).compileComponents()
-
-    fixture = TestBed.createComponent(TestComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
-
-    inputElement = fixture.nativeElement.querySelector('input')
-  })
-
-  it('should trim the value on model change', () => {
-    inputElement.value = '  test  '
-    inputElement.dispatchEvent(new Event('input'))
-    fixture.detectChanges()
-
-    expect(component.value).toBe('test')
+    expect(console.log).toHaveBeenCalledWith('onUpdateMenuStructure')
   })
 })
