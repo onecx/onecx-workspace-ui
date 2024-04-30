@@ -33,6 +33,13 @@ const microfrontend: Microfrontend = {
   type: MicrofrontendType.Module
 }
 
+const microfrontendComponent: Microfrontend = {
+  id: 'id',
+  appId: 'appId',
+  basePath: 'path',
+  type: MicrofrontendType.Component
+}
+
 const product: ExtendedProduct = {
   id: 'prod id',
   productName: 'prod name',
@@ -54,9 +61,6 @@ const prodStoreItem: ExtendedProduct = {
   undeployed: false,
   changedMfe: false
 }
-
-const psProductsOrg = new Map<string, ExtendedProduct>()
-psProductsOrg.set(product.id!, product)
 
 const mfeInfo: MfeInfo = {
   mountPath: 'path',
@@ -193,7 +197,6 @@ fdescribe('ProductComponent', () => {
         firstChange: true
       }
     }
-    component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedMfe: false }]
 
     component.ngOnChanges(changes as unknown as SimpleChanges)
 
@@ -202,6 +205,8 @@ fdescribe('ProductComponent', () => {
         ...prodStoreItem
       }
     ])
+    expect(component.wProducts).toEqual([{ ...product, bucket: 'TARGET', undeployed: false, changedMfe: false }])
+    expect(component.psProductsOrg.get(prodStoreItem.productName!)).toEqual({ ...prodStoreItem })
   })
 
   it('should loadData onChanges: searchPsProducts call success: prod undeployed', () => {
@@ -405,7 +410,20 @@ fdescribe('ProductComponent', () => {
     expect(mockRenderer.addClass).toHaveBeenCalledWith(component.targetList, 'tile-view')
   })
 
-  it('should call fillForm when item is selected', () => {
+  /**
+   * UI Events: DETAIL
+   */
+  it('should call stopPropagation on the event', () => {
+    const mockEvent = {
+      stopPropagation: jasmine.createSpy('stopPropagation')
+    }
+
+    component.return(mockEvent)
+
+    expect(mockEvent.stopPropagation).toHaveBeenCalled()
+  })
+
+  it('should call fillForm when item is selected: mfe module', () => {
     component.formGroup = fb.group({
       productName: new FormControl(''),
       displayName: new FormControl(''),
@@ -431,17 +449,31 @@ fdescribe('ProductComponent', () => {
     expect(component.displayDetails).toBeTrue()
   })
 
-  /**
-   * UI Events: DETAIL
-   */
-  it('should call stopPropagation on the event', () => {
-    const mockEvent = {
-      stopPropagation: jasmine.createSpy('stopPropagation')
+  it('should call fillForm when item is selected: mfe component', () => {
+    component.formGroup = fb.group({
+      productName: new FormControl(''),
+      displayName: new FormControl(''),
+      description: new FormControl(''),
+      baseUrl: new FormControl(''),
+      mfes: fb.array([])
+    })
+    const mfes: FormArray = component.formGroup.get('mfes') as FormArray
+    const addMfeControl = (data: any) => {
+      const formGroup = fb.group({
+        id: [data.id],
+        appId: [data.appId],
+        basePath: [data.basePath]
+      })
+      mfes.push(formGroup)
     }
+    addMfeControl({ microfrontend })
+    product.microfrontends = [microfrontendComponent]
+    const event = { items: [{ ...product, bucket: 'SOURCE' }] }
+    component.displayDetails = true
 
-    component.return(mockEvent)
+    component.onSourceSelect(event)
 
-    expect(mockEvent.stopPropagation).toHaveBeenCalled()
+    expect(component.displayDetails).toBeTrue()
   })
 
   it('should set displayDetails to false when no item is selected', () => {
@@ -453,11 +485,20 @@ fdescribe('ProductComponent', () => {
   })
 
   it('should call getWProduct when an item is selected: call getProductById', () => {
-    const event = { items: [{ id: 1 }] }
+    const event = { items: [prodStoreItem] }
     component.displayDetails = true
-    wProductServiceSpy.getProductById.and.returnValue(of(product))
-    component.psProductsOrg = psProductsOrg
+    wProductServiceSpy.getProductById.and.returnValue(of(prodStoreItem))
+    wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([prodStoreItem]))
+    productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [prodStoreItem] }))
+    const changes = {
+      ['workspace']: {
+        previousValue: 'ws0',
+        currentValue: 'ws1',
+        firstChange: true
+      }
+    }
 
+    component.ngOnChanges(changes as unknown as SimpleChanges)
     component.onTargetSelect(event)
 
     expect(component.displayDetails).toBeTrue()

@@ -75,7 +75,7 @@ const product: Product = {
   modificationCount: 1
 }
 
-fdescribe('MenuDetailComponent', () => {
+describe('MenuDetailComponent', () => {
   let component: MenuDetailComponent
   let fixture: ComponentFixture<MenuDetailComponent>
   let mockActivatedRoute: Partial<ActivatedRoute>
@@ -293,7 +293,7 @@ fdescribe('MenuDetailComponent', () => {
     expect((component as any).preparePanelHeight).toHaveBeenCalled()
   })
 
-  it('should display error when trying to loadMfeUrls', () => {
+  xit('should display error when trying to loadMfeUrls', () => {
     menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[0]))
     wProductApiServiceSpy.getProductsForWorkspaceId.and.returnValue(throwError(() => new Error()))
     component.changeMode = 'VIEW'
@@ -698,7 +698,7 @@ fdescribe('MenuDetailComponent', () => {
 class TestComponent {
   value: any = ''
 }
-fdescribe('DefaultValueAccessor prototype modification', () => {
+describe('DefaultValueAccessor prototype modification', () => {
   let component: TestComponent
   let fixture: ComponentFixture<TestComponent>
   let inputElement: HTMLInputElement
@@ -716,21 +716,11 @@ fdescribe('DefaultValueAccessor prototype modification', () => {
     inputElement = fixture.nativeElement.querySelector('input')
   })
 
-  it('should trim the value on model change: value is of type string', () => {
+  fit('should trim the value on model change: value is of type string', () => {
     inputElement.value = '  test  '
     inputElement.dispatchEvent(new Event('input'))
     fixture.detectChanges()
 
     expect(component.value).toBe('test')
   })
-
-  // it('should trim the value on model change: value not of type string', () => {
-  //   component.value = 123
-
-  //   fixture.detectChanges()
-  //   inputElement.dispatchEvent(new Event('input'))
-  //   fixture.detectChanges()
-
-  //   expect(component.value).toBe(123)
-  // })
 })

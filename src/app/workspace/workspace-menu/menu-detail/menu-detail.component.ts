@@ -31,7 +31,7 @@ interface AutoCompleteCompleteEvent {
 const original = DefaultValueAccessor.prototype.registerOnChange
 DefaultValueAccessor.prototype.registerOnChange = function (fn) {
   return original.call(this, (value) => {
-    const trimmed = typeof value === 'string' || value instanceof String ? value.trim() : value
+    const trimmed = value.trim()
     return fn(trimmed)
   })
 }
