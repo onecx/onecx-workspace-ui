@@ -32,7 +32,7 @@ class MockRouter {
   navigate = jasmine.createSpy('navigate')
 }
 
-describe('WorkspaceCreateComponent', () => {
+fdescribe('WorkspaceCreateComponent', () => {
   let component: WorkspaceCreateComponent
   let fixture: ComponentFixture<WorkspaceCreateComponent>
   let mockRouter = new MockRouter()

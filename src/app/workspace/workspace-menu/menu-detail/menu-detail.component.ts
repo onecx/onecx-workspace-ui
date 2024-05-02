@@ -138,7 +138,6 @@ export class MenuDetailComponent implements OnChanges {
       } as MenuItem
       this.formGroup.patchValue(this.menuItem)
     } else if (this.menuItemId) this.getMenu()
-    console.log('MFE ITEMS END', this.mfeItems)
   }
 
   public onCloseDetailDialog(): void {
@@ -149,9 +148,13 @@ export class MenuDetailComponent implements OnChanges {
   }
 
   private getMenu() {
-    this.menuItem$ = this.menuApi
-      .getMenuItemById({ menuItemId: this.menuItemId! })
-      .pipe(catchError((error) => of(error)))
+    this.menuItem$ = this.menuApi.getMenuItemById({ menuItemId: this.menuItemId! }).pipe(
+      catchError((err) => {
+        this.msgService.error({ summaryKey: 'DIALOG.MENU.MENU_ITEM_NOT_FOUND' })
+        console.error(err.error)
+        return of(err)
+      })
+    )
     this.menuItem$.subscribe({
       next: (item) => {
         this.menuItem = item ?? undefined
@@ -159,10 +162,6 @@ export class MenuDetailComponent implements OnChanges {
           this.loadMfeUrls()
           this.preparePanelHeight()
         }
-      },
-      error: (err) => {
-        this.msgService.error({ summaryKey: 'DIALOG.MENU.MENU_ITEM_NOT_FOUND' })
-        console.error(err.error)
       }
     })
   }

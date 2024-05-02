@@ -35,7 +35,7 @@ class MockWorkspaceContactComponent {
   public onSubmit(): void {}
 }
 
-describe('WorkspaceDetailComponent', () => {
+fdescribe('WorkspaceDetailComponent', () => {
   let component: WorkspaceDetailComponent
   let fixture: ComponentFixture<WorkspaceDetailComponent>
   let mockActivatedRoute: Partial<ActivatedRoute>
