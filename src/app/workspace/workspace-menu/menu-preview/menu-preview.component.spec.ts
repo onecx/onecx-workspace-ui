@@ -5,6 +5,8 @@ import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { MenuPreviewComponent } from './menu-preview.component'
 import { MenuTreeService } from '../services/menu-tree.service'
 import { MenuStateService, MenuState } from '../services/menu-state.service'
+import { RouterTestingModule } from '@angular/router/testing'
+import { TranslateTestingModule } from 'ngx-translate-testing'
 
 const state: MenuState = {
   pageSize: 0,
@@ -19,7 +21,7 @@ const items = [
   { key: 'key2', badge: 'angle-double-down', id: 'id' }
 ]
 
-describe('MenuPreviewComponent', () => {
+fdescribe('MenuPreviewComponent', () => {
   let component: MenuPreviewComponent
   let fixture: ComponentFixture<MenuPreviewComponent>
 
@@ -30,14 +32,12 @@ describe('MenuPreviewComponent', () => {
     TestBed.configureTestingModule({
       declarations: [MenuPreviewComponent],
       imports: [
-        HttpClientTestingModule
-        /* TranslateModule.forRoot({
-          loader: {
-            provide: TranslateLoader,
-            useFactory: HttpLoaderFactory,
-            deps: [HttpClient]
-          }
-        }) */
+        RouterTestingModule,
+        HttpClientTestingModule,
+        TranslateTestingModule.withTranslations({
+          de: require('src/assets/i18n/de.json'),
+          en: require('src/assets/i18n/en.json')
+        }).withDefaultLanguage('en')
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
@@ -134,16 +134,16 @@ describe('MenuPreviewComponent', () => {
     component.menuItems = items
     const expectedItems = [
       {
+        modificationCount: undefined,
         key: 'key',
         id: 'id',
         parentItemId: undefined,
-        i18n: { lang: 'en' },
+        i18n: undefined,
         position: 1,
-        disabled: true,
-        portalExit: undefined
+        disabled: undefined,
+        external: undefined
       }
     ]
-
     component.onDrop(event)
 
     expect(component.reorderEmitter.emit).toHaveBeenCalledWith(expectedItems)

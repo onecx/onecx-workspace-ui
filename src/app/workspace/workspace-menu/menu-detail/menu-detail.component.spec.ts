@@ -75,7 +75,7 @@ const product: Product = {
   modificationCount: 1
 }
 
-fdescribe('MenuDetailComponent', () => {
+describe('MenuDetailComponent', () => {
   let component: MenuDetailComponent
   let fixture: ComponentFixture<MenuDetailComponent>
   let mockActivatedRoute: Partial<ActivatedRoute>
