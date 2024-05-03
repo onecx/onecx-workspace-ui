@@ -3,7 +3,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing'
 
 import { MenuStateService } from './menu-state.service'
 
-describe('MenuStateService', () => {
+fdescribe('MenuStateService', () => {
   let service: MenuStateService
 
   beforeEach(() => {

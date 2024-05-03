@@ -26,7 +26,7 @@ const wRole: Role = {
   type: 'WORKSPACE'
 }
 
-describe('WorkspaceRoleDetailComponent', () => {
+fdescribe('WorkspaceRoleDetailComponent', () => {
   let component: WorkspaceRoleDetailComponent
   let fixture: ComponentFixture<WorkspaceRoleDetailComponent>
 

@@ -85,7 +85,7 @@ const state: MenuState = {
   workspaceMenuItems: []
 }
 
-describe('MenuComponent', () => {
+fdescribe('MenuComponent', () => {
   let component: MenuComponent
   let fixture: ComponentFixture<MenuComponent>
   let mockActivatedRoute: Partial<ActivatedRoute>

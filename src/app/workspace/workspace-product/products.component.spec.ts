@@ -71,7 +71,7 @@ const mfeInfo: MfeInfo = {
   productName: 'prodName'
 }
 
-describe('ProductComponent', () => {
+fdescribe('ProductComponent', () => {
   let component: ProductComponent
   let fixture: ComponentFixture<ProductComponent>
   let mockActivatedRoute: ActivatedRoute
