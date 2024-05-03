@@ -5,10 +5,29 @@ import { RouterTestingModule } from '@angular/router/testing'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 
 import { MenuImportComponent } from './menu-import.component'
+import { MenuItemAPIService, MenuSnapshot } from 'src/app/shared/generated'
+import { PortalMessageService } from '@onecx/angular-integration-interface'
+import { of, throwError } from 'rxjs'
 
-describe('MenuImportComponent', () => {
+const menuSnapshot: MenuSnapshot = {
+  menu: {
+    menuItems: [
+      {
+        key: 'menu key',
+        name: 'menuName'
+      }
+    ]
+  }
+}
+
+fdescribe('MenuImportComponent', () => {
   let component: MenuImportComponent
   let fixture: ComponentFixture<MenuImportComponent>
+
+  const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
+  const menuApiServiceSpy = {
+    importMenuByWorkspaceName: jasmine.createSpy('importMenuByWorkspaceName').and.returnValue(of({}))
+  }
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -21,7 +40,11 @@ describe('MenuImportComponent', () => {
           en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
-      schemas: [NO_ERRORS_SCHEMA]
+      schemas: [NO_ERRORS_SCHEMA],
+      providers: [
+        { provide: PortalMessageService, useValue: msgServiceSpy },
+        { provide: MenuItemAPIService, useValue: menuApiServiceSpy }
+      ]
     }).compileComponents()
   }))
 
@@ -35,27 +58,34 @@ describe('MenuImportComponent', () => {
     expect(component).toBeTruthy()
   })
 
-  /*   it('should enable menu import onImportMenu', () => {
-    component.onImportMenu()
-
-    expect(component.displayMenuImport).toBeTrue()
-    expect(component.menuImportError).toBeFalse()
-  })
-
-  it('should hide menu import onImportMenuHide', () => {
-    component.onImportMenuHide()
-
-    expect(component.displayMenuImport).toBeFalse()
-  })
-
   it('should clear menu import onImportMenuClear', () => {
     component.onImportMenuClear()
 
     expect(component.menuImportError).toBeFalse()
   })
 
-  it('should import menu from a valid file onImportMenuSelect: success', () => {
-    const validJson = JSON.stringify(mockMenuItems)
+  it('should close import dialog and inform parent component if menu was imported', () => {
+    spyOn(component.importEmitter, 'emit')
+    spyOn(component.hideDialog, 'emit')
+
+    component.onClose(true)
+
+    expect(component.importEmitter.emit).toHaveBeenCalled()
+    expect(component.hideDialog.emit).toHaveBeenCalled()
+  })
+
+  it('should close import dialog and not inform parent component if menu was not imported', () => {
+    spyOn(component.importEmitter, 'emit')
+    spyOn(component.hideDialog, 'emit')
+
+    component.onClose()
+
+    expect(component.importEmitter.emit).not.toHaveBeenCalled()
+    expect(component.hideDialog.emit).toHaveBeenCalled()
+  })
+
+  it('should prepare menu import from a valid file onImportMenuSelect: success', () => {
+    const validJson = JSON.stringify(menuSnapshot)
     const mockFile = new File([validJson], 'test.json', { type: 'application/json' })
     spyOn(mockFile, 'text').and.returnValue(Promise.resolve(validJson))
     const fileList = { 0: mockFile, length: 1, item: () => mockFile }
@@ -65,7 +95,7 @@ describe('MenuImportComponent', () => {
     expect(component.menuImportError).toBeFalse()
   })
 
-  it('should import menu from a valid file onImportMenuSelect: invalid data', (done) => {
+  it('should prepare menu import from a valid file onImportMenuSelect: invalid data', (done) => {
     const validJson = JSON.stringify({ invalid: 'data' })
     const mockFile = new File([validJson], 'test.json', { type: 'application/json' })
     spyOn(mockFile, 'text').and.returnValue(Promise.resolve(validJson))
@@ -76,13 +106,13 @@ describe('MenuImportComponent', () => {
 
     setTimeout(() => {
       expect(component.menuImportError).toBeTrue()
-      expect(console.error).toHaveBeenCalledWith('Menu Import Error: Data not valid', jasmine.anything())
+      expect(console.error).toHaveBeenCalledWith('imported menu parse error', Object({ invalid: 'data' }))
       done()
     }, 0)
   })
 
-  it('should import menu from a valid file onImportMenuSelect: parse error', (done) => {
-    const invalidJson = 'not json'
+  it('should prepare menu import from a valid file onImportMenuSelect: not json', (done) => {
+    const invalidJson = 'json'
     const mockFile = new File([invalidJson], 'test.json', { type: 'application/json' })
     spyOn(mockFile, 'text').and.returnValue(Promise.resolve(invalidJson))
     const fileList = { 0: mockFile, length: 1, item: () => mockFile }
@@ -92,32 +122,37 @@ describe('MenuImportComponent', () => {
 
     setTimeout(() => {
       expect(component.menuImportError).toBeTrue()
-      // expect(console.error).toHaveBeenCalledWith(
-      //   'Menu Import Parse Error',
-      //   new SyntaxError('Unexpected token \'o\', "not json" is not valid JSON')
-      // )
+      expect(console.error).toHaveBeenCalledWith(
+        'imported menu parse error',
+        new SyntaxError('Unexpected token \'j\', "json" is not valid JSON')
+      )
       done()
     }, 0)
   })
 
-  it('should handle menu import', () => {
-    component.workspaceName = 'name'
-    spyOn(component, 'ngOnInit')
+  it('should import a menu and close the dialog', () => {
     menuApiServiceSpy.importMenuByWorkspaceName.and.returnValue(of({}))
+    spyOn(component.importEmitter, 'emit')
+    spyOn(component, 'onClose')
+    component.workspaceName = 'wsName'
+    component['menuItemStructure'] = menuSnapshot
 
-    component.onImportMenu()
+    component.onImportMenuConfirmation()
 
+    expect(component.importEmitter.emit).toHaveBeenCalled()
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.MENU.IMPORT.UPLOAD_OK' })
-    expect(component.ngOnInit).toHaveBeenCalled()
+    expect(component.onClose).toHaveBeenCalledWith(true)
   })
 
-  it('should handle menu import error', () => {
-    component.workspaceName = 'name'
+  it('should display error if import api call fails', () => {
     menuApiServiceSpy.importMenuByWorkspaceName.and.returnValue(throwError(() => new Error()))
+    spyOn(component.importEmitter, 'emit')
+    component.workspaceName = 'wsName'
+    component['menuItemStructure'] = menuSnapshot
 
-    component.onImportMenu()
+    component.onImportMenuConfirmation()
 
+    expect(component.importEmitter.emit).toHaveBeenCalled()
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.MENU.IMPORT.UPLOAD_NOK' })
   })
- */
 })

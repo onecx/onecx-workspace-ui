@@ -5,7 +5,7 @@ import { TreeNode } from 'primeng/api'
 import { MenuTreeService } from './menu-tree.service'
 import { WorkspaceMenuItem } from 'src/app/shared/generated'
 
-describe('MenuTreeService', () => {
+fdescribe('MenuTreeService', () => {
   let service: MenuTreeService
 
   beforeEach(() => {

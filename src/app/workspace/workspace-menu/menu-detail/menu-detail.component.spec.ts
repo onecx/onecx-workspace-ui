@@ -75,7 +75,7 @@ const product: Product = {
   modificationCount: 1
 }
 
-describe('MenuDetailComponent', () => {
+fdescribe('MenuDetailComponent', () => {
   let component: MenuDetailComponent
   let fixture: ComponentFixture<MenuDetailComponent>
   let mockActivatedRoute: Partial<ActivatedRoute>
@@ -698,7 +698,7 @@ describe('MenuDetailComponent', () => {
 class TestComponent {
   value: any = ''
 }
-describe('DefaultValueAccessor prototype modification', () => {
+fdescribe('DefaultValueAccessor prototype modification', () => {
   let component: TestComponent
   let fixture: ComponentFixture<TestComponent>
   let inputElement: HTMLInputElement

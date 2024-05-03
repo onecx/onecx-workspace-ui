@@ -6,7 +6,7 @@
 // import { MfeInfo, TranslateCombinedLoader } from '@onecx/portal-integration-angular'
 // import { basePathProvider, HttpLoaderFactory } from './shared.module'
 
-// describe('SharedModule', () => {
+// fdescribe('SharedModule', () => {
 //   let httpClient: HttpClient
 
 //   beforeEach(() => {

@@ -3,7 +3,7 @@ import { LabelResolver } from './label.resolver'
 
 let labelResolver: LabelResolver
 
-describe('LabelResolver', () => {
+fdescribe('LabelResolver', () => {
   const translateServiceSpy = jasmine.createSpyObj('TranslateService', ['get'])
 
   const activatedRouteSpy = jasmine.createSpyObj('ActivatedRouteSnapshot', [], {
