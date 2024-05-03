@@ -69,6 +69,17 @@ fdescribe('MenuPreviewComponent', () => {
     expect(component.treeExpanded).toBeTrue()
   })
 
+  it('should set menuNodes onChanges if workspaceDetail & changes correct: langExists true', () => {
+    stateServiceSpy.getState.and.returnValue(state)
+    component.displayDialog = true
+    component.menuItems = items
+    component.languagesPreviewValue = 'lang'
+
+    component.ngOnChanges({})
+
+    expect(component.treeExpanded).toBeTrue()
+  })
+
   it('should expand tree nodes on expandAll', () => {
     const mockExpansionState: Map<string, boolean> = new Map<string, boolean>()
     stateServiceSpy.getState.and.returnValue({
@@ -86,6 +97,22 @@ fdescribe('MenuPreviewComponent', () => {
     component.expandAll()
 
     expect(stateServiceSpy.getState().treeExpansionState.get('1')).toBeTrue()
+  })
+
+  it('should expand tree nodes on expandAll: no node key', () => {
+    const mockExpansionState: Map<string, boolean> = new Map<string, boolean>()
+    stateServiceSpy.getState.and.returnValue({
+      treeExpansionState: mockExpansionState,
+      pageSize: 0,
+      showDetails: false,
+      rootFilter: true,
+      treeMode: true
+    })
+    component.menuNodes = [{ expanded: false, children: [{ key: '1-1', children: [{ key: '1-1-1' }] }] }, { key: '2' }]
+
+    component.expandAll()
+
+    expect(stateServiceSpy.getState().treeExpansionState.get('1')).toBeUndefined()
   })
 
   it('should collapse tree nodes on collapseAll', () => {
@@ -112,7 +139,7 @@ fdescribe('MenuPreviewComponent', () => {
       dragNode: { key: 'draggedNodeId', parent: { key: 'oldParentNodeId' } },
       dropNode: { key: 'newParentNodeId', children: [{ key: 'draggedNodeId' }], parent: { key: 'parent key' } }
     }
-    treeServiceSpy.calculateNewNodesPositions.and.returnValue([{ id: 'id', position: 1 }])
+    treeServiceSpy.calculateNewNodesPositions.and.returnValue([{ id: '', position: 1 }])
     component.menuItems = items
 
     component.onDrop(event)
@@ -127,6 +154,56 @@ fdescribe('MenuPreviewComponent', () => {
   it('should update menu items onDrop: other branches: complete updating the structure', () => {
     const event = {
       dragNode: { key: 'draggedNodeId', parent: { key: 'oldParentNodeId' } },
+      dropNode: { key: 'newParentNodeId', children: [{ key: 'otherdraggedNodeId' }], parent: { key: 'parent key' } }
+    }
+    treeServiceSpy.calculateNewNodesPositions.and.returnValue([{ id: 'id', position: 1 }])
+    spyOn(component.reorderEmitter, 'emit')
+    component.menuItems = items
+    const expectedItems = [
+      {
+        modificationCount: undefined,
+        key: 'key',
+        id: 'id',
+        parentItemId: undefined,
+        i18n: undefined,
+        position: 1,
+        disabled: undefined,
+        external: undefined
+      }
+    ]
+    component.onDrop(event)
+
+    expect(component.reorderEmitter.emit).toHaveBeenCalledWith(expectedItems)
+  })
+
+  it('should update menu items onDrop: other branches: complete updating the structure for dragged node', () => {
+    const event = {
+      dragNode: { key: 'id', parent: { key: 'oldParentNodeId' } },
+      dropNode: { key: 'newParentNodeId', children: [{ key: 'otherdraggedNodeId' }], parent: { key: 'parent key' } }
+    }
+    treeServiceSpy.calculateNewNodesPositions.and.returnValue([{ id: 'id', position: 1 }])
+    spyOn(component.reorderEmitter, 'emit')
+    component.menuItems = items
+    const expectedItems = [
+      {
+        modificationCount: undefined,
+        key: 'key',
+        id: 'id',
+        parentItemId: 'parent key',
+        i18n: undefined,
+        position: 1,
+        disabled: undefined,
+        external: undefined
+      }
+    ]
+    component.onDrop(event)
+
+    expect(component.reorderEmitter.emit).toHaveBeenCalledWith(expectedItems)
+  })
+
+  it('should update menu items onDrop: other branches: complete updating the structure, no parent key', () => {
+    const event = {
+      dragNode: { key: 'draggedNodeId' },
       dropNode: { key: 'newParentNodeId', children: [{ key: 'otherdraggedNodeId' }], parent: { key: 'parent key' } }
     }
     treeServiceSpy.calculateNewNodesPositions.and.returnValue([{ id: 'id', position: 1 }])
@@ -181,6 +258,14 @@ fdescribe('MenuPreviewComponent', () => {
     component.onLanguagesPreviewChange(lang)
 
     expect(component.languagesPreviewValue).toEqual(lang)
+  })
+
+  it('should hide the dialog', () => {
+    spyOn(component.hideDialog, 'emit')
+
+    component.onClose()
+
+    expect(component.hideDialog.emit).toHaveBeenCalled()
   })
 
   it('should call onStartResizeTree without errors', () => {
