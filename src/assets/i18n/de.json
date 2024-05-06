@@ -438,9 +438,10 @@
     "LOGO_URL": "Externe Logo URL",
     "UPLOAD_FAIL": "Die Datei wurde nicht erfolgreich hochgeladen",
     "UPLOAD_SUCCESS": "Die Datei wurde erfolgreich hochgeladen",
-    "IMAGE_WRONG_FILE_TYPE": "Die folgenden Bildformate werden akzeptiert: jpg, jpeg, png",
-    "IMAGE_CONSTRAINT": "Ein Fehler ist aufgetreten. Bitte füge einen Namen hinzu bevor das Bild geladen wird.",
-    "IMAGE_CONSTRAINT_SIZE": "Ein Fehler ist aufgetreten. Das Bild ist zu groß.",
+    "CONSTRAINT_FILE_TYPE": "Die folgenden Bildformate werden akzeptiert: jpg, jpeg, png",
+    "CONSTRAINT_FAILED": "Bedingung zum Hochladen nicht erfüllt:",
+    "CONSTRAINT_NAME": "Bitte füge einen Namen hinzu bevor das Bild geladen wird.",
+    "CONSTRAINT_SIZE": "Die Größe der Bilddatei übersteigt die maximale Lönge von 30.000 Bytes.",
     "TOOLTIPS": {
       "LOGO_URL": "Als Alternative zum Hochladen kann hier eine URL zu einem Bild angegeben werden",
       "LOGO": "Logo",

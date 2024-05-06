@@ -1,6 +1,6 @@
 <img
   [id]="id"
-  *ngIf="imageUrl && !displayDefaultLogo"
+  *ngIf="!displayDefaultLogo"
   [class]="'image-object image-' + (small ? 'sm' : 'lg') + ' sm:image-lg ' + (styleClass ? styleClass : '')"
   [ocxSrc]="displayImageUrl"
   (error)="onImageError()"
@@ -9,7 +9,7 @@
 />
 <img
   [id]="id"
-  *ngIf="!imageUrl || displayDefaultLogo"
+  *ngIf="displayDefaultLogo"
   [class]="'image-object image-' + (small ? 'sm' : 'lg') + ' sm:image-lg ' + (styleClass ? styleClass : '')"
   [src]="defaultImageUrl"
   [alt]="'IMAGE.TOOLTIPS.PLACEHOLDER' | translate"

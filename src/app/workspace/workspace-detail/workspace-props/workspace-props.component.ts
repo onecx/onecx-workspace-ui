@@ -111,21 +111,30 @@ export class WorkspacePropsComponent implements OnChanges {
     ev.stopPropagation
     const workspaceName = this.formGroup.controls['name'].value
     if (!workspaceName || workspaceName === '') {
-      this.msgService.error({ summaryKey: 'IMAGE.UPLOAD_FAIL' })
+      this.msgService.error({
+        summaryKey: 'IMAGE.CONSTRAINT_FAILED',
+        detailKey: 'IMAGE.CONSTRAINT_NAME'
+      })
       return
     }
     if (ev.target && (ev.target as HTMLInputElement).files) {
       const files = (ev.target as HTMLInputElement).files
       if (files) {
         if (files[0].size > 30000) {
-          this.msgService.error({ summaryKey: 'IMAGE.IMAGE_CONSTRAINT_SIZE' })
+          this.msgService.error({
+            summaryKey: 'IMAGE.CONSTRAINT_FAILED',
+            detailKey: 'IMAGE.CONSTRAINT_SIZE'
+          })
         } else if (!/^.*.(jpg|jpeg|png)$/.exec(files[0].name)) {
-          this.msgService.error({ summaryKey: 'IMAGE.IMAGE_WRONG_FILE_TYPE' })
+          this.msgService.error({
+            summaryKey: 'IMAGE.CONSTRAINT_FAILED',
+            detailKey: 'IMAGE.CONSTRAINT_FILE_TYPE'
+          })
         } else {
           this.saveImage(workspaceName, files) // store image
         }
       } else {
-        this.msgService.error({ summaryKey: 'IMAGE.IMAGE_CONSTRAINT' })
+        this.msgService.error({ summaryKey: 'IMAGE.CONSTRAINT' })
       }
     }
   }
