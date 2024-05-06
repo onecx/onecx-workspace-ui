@@ -39,11 +39,9 @@ export interface UpdateImageRequestParams {
     refId: string;
     refType: RefType;
     body: Blob;
-    contentLength?: number;
 }
 
 export interface UploadImageRequestParams {
-    contentLength: number;
     refId: string;
     refType: RefType;
     body: Blob;
@@ -189,12 +187,8 @@ export class ImagesInternalAPIService {
         if (body === null || body === undefined) {
             throw new Error('Required parameter body was null or undefined when calling updateImage.');
         }
-        const contentLength = requestParameters.contentLength;
 
         let localVarHeaders = this.defaultHeaders;
-        if (contentLength !== undefined && contentLength !== null) {
-            localVarHeaders = localVarHeaders.set('Content-Length', String(contentLength));
-        }
 
         let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
         if (localVarHttpHeaderAcceptSelected === undefined) {
@@ -258,10 +252,6 @@ export class ImagesInternalAPIService {
     public uploadImage(requestParameters: UploadImageRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<ImageInfo>>;
     public uploadImage(requestParameters: UploadImageRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<ImageInfo>>;
     public uploadImage(requestParameters: UploadImageRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
-        const contentLength = requestParameters.contentLength;
-        if (contentLength === null || contentLength === undefined) {
-            throw new Error('Required parameter contentLength was null or undefined when calling uploadImage.');
-        }
         const refId = requestParameters.refId;
         if (refId === null || refId === undefined) {
             throw new Error('Required parameter refId was null or undefined when calling uploadImage.');
@@ -276,9 +266,6 @@ export class ImagesInternalAPIService {
         }
 
         let localVarHeaders = this.defaultHeaders;
-        if (contentLength !== undefined && contentLength !== null) {
-            localVarHeaders = localVarHeaders.set('Content-Length', String(contentLength));
-        }
 
         let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
         if (localVarHttpHeaderAcceptSelected === undefined) {
