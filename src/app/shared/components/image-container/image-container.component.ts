@@ -1,7 +1,6 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core'
-import { map, Observable } from 'rxjs'
+import { map } from 'rxjs'
 
-import { MfeInfo } from '@onecx/portal-integration-angular'
 import { AppStateService } from '@onecx/angular-integration-interface'
 
 import { environment } from 'src/environments/environment'
@@ -18,25 +17,34 @@ export class ImageContainerComponent implements OnChanges {
   @Input() public imageUrl: string | undefined
   @Input() public styleClass: string | undefined
 
-  public displayPlaceHolder = false
-  public currentMfe$: Observable<Partial<MfeInfo>>
+  public displayImageUrl: string | undefined
+  public defaultImageUrl = ''
+  public displayDefaultLogo = false
 
   prepareUrl = prepareUrl
-  environment = environment
   prepareUrlPath = prepareUrlPath
 
   constructor(private appState: AppStateService) {
-    this.currentMfe$ = this.appState.currentMfe$.pipe(map((mfe) => mfe))
+    appState.currentMfe$
+      .pipe(
+        map((mfe) => {
+          this.defaultImageUrl = this.prepareUrlPath(mfe.remoteBaseUrl, environment.DEFAULT_LOGO_IMAGE)
+        })
+      )
+      .subscribe()
   }
 
   public onImageError() {
-    this.displayPlaceHolder = true
+    this.displayDefaultLogo = true
+    this.displayImageUrl = undefined
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    console.log('image container ' + this.imageUrl)
+    this.displayDefaultLogo = false
     if (changes['imageUrl']) {
-      this.displayPlaceHolder = false
-      this.imageUrl = prepareUrl(this.imageUrl)
+      if (this.imageUrl) this.displayImageUrl = prepareUrl(this.imageUrl)
+      else this.displayDefaultLogo = true
     }
   }
 }

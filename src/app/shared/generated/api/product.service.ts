@@ -38,7 +38,7 @@ export interface SearchAvailableProductsRequestParams {
 @Injectable({
   providedIn: 'any'
 })
-export class ProductsAPIService {
+export class ProductAPIService {
 
     protected basePath = 'http://onecx-workspace-bff:8080';
     public defaultHeaders = new HttpHeaders();

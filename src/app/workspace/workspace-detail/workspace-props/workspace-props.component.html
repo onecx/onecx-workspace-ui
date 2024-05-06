@@ -134,7 +134,7 @@
         </div>
 
         <div class="flex flex-wrap sm:flex-nowrap align-items-center mb-1 row-gap-2 column-gap-4">
-          <input hidden type="file" accept="image/*" #selectedFileInputLogo (change)="onFileUpload($event, 'logo')" />
+          <input hidden type="file" accept="image/*" #selectedFileInputLogo (change)="onFileUpload($event)" />
           <app-image-container
             [id]="'workspace_detail_form_logo_image'"
             [imageUrl]="fetchingLogoUrl"
@@ -144,16 +144,11 @@
             pButton
             id="product_detail_item_upload_logo2"
             icon="pi pi-upload"
+            [disabled]="!editMode"
             class="action-button p-button-icon-only"
-            [ngClass]="
-              !editMode ||
-              this.formGroup.controls['name'].value === '' ||
-              this.formGroup.controls['name'].value === null
-                ? 'p-disabled'
-                : 'cursor-pointer'
-            "
+            [class.cursor-pointer]="editMode"
             [title]="'IMAGE.TOOLTIPS.UPLOAD' | translate"
-            (click)="editMode ? selectedFileInputLogo.click() : null"
+            (click)="selectedFileInputLogo.click()"
           ></button>
           <span class="p-float-label w-full">
             <input

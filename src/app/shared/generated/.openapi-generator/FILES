@@ -6,8 +6,9 @@ api/api.ts
 api/assignment.service.ts
 api/imagesInternal.service.ts
 api/menuItem.service.ts
-api/products.service.ts
+api/product.service.ts
 api/role.service.ts
+api/slot.service.ts
 api/workspace.service.ts
 api/workspaceProduct.service.ts
 api/workspaceRoles.service.ts
@@ -21,6 +22,7 @@ model/assignmentSearchCriteria.ts
 model/createAssignmentRequest.ts
 model/createMenuItem.ts
 model/createProductRequest.ts
+model/createSlotRequest.ts
 model/createUpdateMicrofrontend.ts
 model/createUpdateProductResponse.ts
 model/createWorkspaceRequest.ts
@@ -68,9 +70,13 @@ model/refType.ts
 model/scope.ts
 model/searchWorkspacesRequest.ts
 model/searchWorkspacesResponse.ts
+model/slot.ts
+model/slotComponent.ts
+model/slotPS.ts
 model/updateMenuItemParentRequest.ts
 model/updateMenuItemRequest.ts
 model/updateProductRequest.ts
+model/updateSlotRequest.ts
 model/updateWorkspaceRequest.ts
 model/updateWorkspaceRoleRequest.ts
 model/userWorkspaceMenuItem.ts
@@ -83,6 +89,7 @@ model/workspaceMenuItem.ts
 model/workspaceRole.ts
 model/workspaceRolePageResult.ts
 model/workspaceRoleSearchCriteria.ts
+model/workspaceSlots.ts
 model/workspaceSnapshot.ts
 param.ts
 variables.ts
