@@ -10,5 +10,6 @@ export const environment = {
   TKIT_WORKSPACE_ID: 'ADMIN',
   skipRemoteConfigLoad: true,
   apiPrefix: 'bff',
-  DEFAULT_PRODUCT_IMAGE: 'assets/images/product.jpg'
+  DEFAULT_LOGO_IMAGE: 'assets/images/workspace.png',
+  DEFAULT_PRODUCT_IMAGE: 'assets/images/product.png'
 }
