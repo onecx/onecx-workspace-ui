@@ -153,7 +153,7 @@ fdescribe('WorkspacePropsComponent', () => {
     })
   })
 
-  it('should not upload a file if productName is empty', () => {
+  it('should not upload a file if name is empty', () => {
     const event = {
       target: {
         files: ['file']
@@ -164,11 +164,12 @@ fdescribe('WorkspacePropsComponent', () => {
     component.onFileUpload(event as any)
 
     expect(msgServiceSpy.error).toHaveBeenCalledWith({
-      summaryKey: 'IMAGE.UPLOAD_FAIL'
+      summaryKey: 'IMAGE.CONSTRAINT_FAILED',
+      detailKey: 'IMAGE.CONSTRAINT_NAME'
     })
   })
 
-  it('should not upload a file if productName is null', () => {
+  it('should not upload a file if name is null', () => {
     const event = {
       target: {
         files: ['file']
@@ -179,7 +180,8 @@ fdescribe('WorkspacePropsComponent', () => {
     component.onFileUpload(event as any)
 
     expect(msgServiceSpy.error).toHaveBeenCalledWith({
-      summaryKey: 'IMAGE.UPLOAD_FAIL'
+      summaryKey: 'IMAGE.CONSTRAINT_FAILED',
+      detailKey: 'IMAGE.CONSTRAINT_NAME'
     })
   })
 
