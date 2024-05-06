@@ -134,7 +134,10 @@ export class WorkspacePropsComponent implements OnChanges {
           this.saveImage(workspaceName, files) // store image
         }
       } else {
-        this.msgService.error({ summaryKey: 'IMAGE.CONSTRAINT' })
+        this.msgService.error({
+          summaryKey: 'IMAGE.CONSTRAINT_FAILED',
+          detailKey: 'IMAGE.CONSTRAINT_FILE_MISSING'
+        })
       }
     }
   }
