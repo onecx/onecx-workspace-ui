@@ -144,7 +144,7 @@ export class WorkspacePropsComponent implements OnChanges {
 
   private saveImage(name: string, files: FileList) {
     const blob = new Blob([files[0]], { type: files[0].type })
-    this.fetchingLogoUrl = undefined
+    this.fetchingLogoUrl = undefined // reset - important to trigger the change in UI
     const saveRequestParameter = {
       contentLength: files.length,
       refId: name,
@@ -165,7 +165,6 @@ export class WorkspacePropsComponent implements OnChanges {
     )
   }
   private prepareImageResponse(name: string): void {
-    console.info('image uploaded')
     this.fetchingLogoUrl = this.bffImageUrl(name, RefType.Logo)
     this.msgService.info({ summaryKey: 'IMAGE.UPLOAD_SUCCESS' })
     this.formGroup.controls['logoUrl'].setValue('')

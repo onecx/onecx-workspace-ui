@@ -40,9 +40,11 @@ export class ImageContainerComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    console.log('image container ' + this.imageUrl)
     this.displayDefaultLogo = false
-    if (changes['imageUrl'] && this.imageUrl) {
-      this.displayImageUrl = prepareUrl(this.imageUrl)
+    if (changes['imageUrl']) {
+      if (this.imageUrl) this.displayImageUrl = prepareUrl(this.imageUrl)
+      else this.displayDefaultLogo = true
     }
   }
 }
