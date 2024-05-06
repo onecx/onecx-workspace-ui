@@ -341,7 +341,7 @@ fdescribe('ProductComponent', () => {
     component.currentMfe = mfe
     const result = component.getImageUrl()
 
-    expect(result).toBe('baseUrl/assets/images/product.jpg')
+    expect(result).toBe('baseUrl/assets/images/product.png')
   })
 
   /**
