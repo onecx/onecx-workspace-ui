@@ -11,7 +11,7 @@ import { MfeInfo, PortalMessageService, AppStateService } from '@onecx/portal-in
 import {
   Product,
   WorkspaceProductAPIService,
-  ProductsAPIService,
+  ProductAPIService,
   Workspace,
   Microfrontend,
   MicrofrontendType
@@ -109,7 +109,7 @@ fdescribe('ProductComponent', () => {
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: WorkspaceProductAPIService, useValue: wProductServiceSpy },
-        { provide: ProductsAPIService, useValue: productServiceSpy },
+        { provide: ProductAPIService, useValue: productServiceSpy },
         { provide: AppStateService, useValue: mockAppState }
       ]
     }).compileComponents()

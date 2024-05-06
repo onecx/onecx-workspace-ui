@@ -18,6 +18,7 @@ export class ImageContainerComponent implements OnChanges {
   @Input() public styleClass: string | undefined
 
   public displayImageUrl: string | undefined
+  public defaultImageUrl = ''
   public displayDefaultLogo = false
 
   prepareUrl = prepareUrl
@@ -27,7 +28,7 @@ export class ImageContainerComponent implements OnChanges {
     appState.currentMfe$
       .pipe(
         map((mfe) => {
-          this.displayImageUrl = this.prepareUrlPath(mfe.remoteBaseUrl, environment.DEFAULT_LOGO_IMAGE)
+          this.defaultImageUrl = this.prepareUrlPath(mfe.remoteBaseUrl, environment.DEFAULT_LOGO_IMAGE)
         })
       )
       .subscribe()
@@ -35,12 +36,13 @@ export class ImageContainerComponent implements OnChanges {
 
   public onImageError() {
     this.displayDefaultLogo = true
+    this.displayImageUrl = undefined
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    this.displayDefaultLogo = false
     if (changes['imageUrl'] && this.imageUrl) {
-      this.displayDefaultLogo = false
-      this.imageUrl = prepareUrl(this.imageUrl)
+      this.displayImageUrl = prepareUrl(this.imageUrl)
     }
   }
 }

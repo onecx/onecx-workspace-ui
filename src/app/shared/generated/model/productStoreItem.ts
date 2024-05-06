@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 import { MicrofrontendPS } from './microfrontendPS';
+import { SlotPS } from './slotPS';
 
 
 export interface ProductStoreItem { 
@@ -21,5 +22,6 @@ export interface ProductStoreItem {
     classifications?: string;
     undeployed?: boolean;
     microfrontends?: Array<MicrofrontendPS>;
+    slots?: Array<SlotPS>;
 }
 

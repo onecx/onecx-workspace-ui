@@ -18,7 +18,7 @@ import {
   CreateProductRequest,
   UpdateProductRequest,
   Product,
-  ProductsAPIService,
+  ProductAPIService,
   Workspace,
   WorkspaceProductAPIService,
   MicrofrontendType
@@ -83,7 +83,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
 
   constructor(
     private wProductApi: WorkspaceProductAPIService,
-    private psProductApi: ProductsAPIService,
+    private psProductApi: ProductAPIService,
     private user: UserService,
     private appState: AppStateService,
     private translate: TranslateService,

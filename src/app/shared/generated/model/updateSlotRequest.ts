@@ -9,17 +9,12 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { MicrofrontendType } from './microfrontendType';
+import { SlotComponent } from './slotComponent';
 
 
-export interface MicrofrontendPS { 
-    appId?: string;
-    appName?: string;
-    deprecated?: boolean;
-    undeployed?: boolean;
-    type?: MicrofrontendType;
-    exposedModule?: string;
+export interface UpdateSlotRequest { 
+    modificationCount: number;
+    name: string;
+    components?: Array<SlotComponent>;
 }
-
-
 

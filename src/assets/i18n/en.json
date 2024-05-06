@@ -438,6 +438,9 @@
     "LOGO_URL": "External Logo URL",
     "UPLOAD_FAIL": " The file was not uploaded successfully",
     "UPLOAD_SUCCESS": "The file was uploaded successfully",
+    "IMAGE_WRONG_FILE_TYPE": "The following image formats are accepted: jpg, jpeg, png",
+    "IMAGE_CONSTRAINT": "An error has occurred. Please add a theme name before uploading a file.",
+    "IMAGE_CONSTRAINT_SIZE": "An error has occurred. The image is too large.",
     "TOOLTIPS": {
       "LOGO_URL": "As an alternative to uploading, a URL to an image can be specified here",
       "LOGO": "Logo",

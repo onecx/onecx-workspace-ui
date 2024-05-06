@@ -133,14 +133,6 @@ fdescribe('WorkspacePropsComponent', () => {
     expect(component.formGroup.controls['name'].disabled).toBeTrue()
   })
 
-  it('it should get image if ws name exists', () => {
-    component.formGroup.controls['name'].setValue('name')
-
-    component.ngOnInit()
-
-    expect(component.logoImageWasUploaded).toBeTrue()
-  })
-
   it('should update workspace onSubmit', () => {
     component.formGroup = formGroup
     component.workspace = workspace
@@ -169,7 +161,7 @@ fdescribe('WorkspacePropsComponent', () => {
     }
     component.formGroup.controls['name'].setValue('')
 
-    component.onFileUpload(event as any, 'logo')
+    component.onFileUpload(event as any)
 
     expect(msgServiceSpy.error).toHaveBeenCalledWith({
       summaryKey: 'IMAGE.UPLOAD_FAIL'
@@ -184,7 +176,7 @@ fdescribe('WorkspacePropsComponent', () => {
     }
     component.formGroup.controls['name'].setValue(null)
 
-    component.onFileUpload(event as any, 'logo')
+    component.onFileUpload(event as any)
 
     expect(msgServiceSpy.error).toHaveBeenCalledWith({
       summaryKey: 'IMAGE.UPLOAD_FAIL'
@@ -201,7 +193,7 @@ fdescribe('WorkspacePropsComponent', () => {
     }
     component.formGroup.controls['name'].setValue('name')
 
-    component.onFileUpload(event as any, 'logo')
+    component.onFileUpload(event as any)
 
     expect(component.formGroup.valid).toBeFalse()
   })
@@ -216,7 +208,7 @@ fdescribe('WorkspacePropsComponent', () => {
     }
     component.formGroup.controls['name'].setValue('name')
 
-    component.onFileUpload(event as any, 'logo')
+    component.onFileUpload(event as any)
 
     expect(component.formGroup.valid).toBeFalse()
   })
@@ -234,7 +226,7 @@ fdescribe('WorkspacePropsComponent', () => {
     component.formGroup.controls['name'].setValue('name')
     component.formGroup.controls['logoUrl'].setValue('url')
 
-    component.onFileUpload(event as any, 'logo')
+    component.onFileUpload(event as any)
 
     expect(msgServiceSpy.info).toHaveBeenCalledWith({
       summaryKey: 'IMAGE.UPLOAD_SUCCESS'
@@ -253,7 +245,7 @@ fdescribe('WorkspacePropsComponent', () => {
     component.formGroup.controls['name'].setValue('name')
     component.formGroup.controls['logoUrl'].setValue('url')
 
-    component.onFileUpload(event as any, 'logo')
+    component.onFileUpload(event as any)
 
     expect(msgServiceSpy.info).toHaveBeenCalledWith({
       summaryKey: 'IMAGE.UPLOAD_SUCCESS'
@@ -284,31 +276,4 @@ fdescribe('WorkspacePropsComponent', () => {
 
     expect(component.fetchingLogoUrl).toBe('basepath/images/name/logo')
   }))
-
-  it('should open new window onGoToTheme if ctrl key true', () => {
-    const fakeEvent = new MouseEvent('click', { ctrlKey: true })
-    spyOn(window, 'open')
-    const expectedUrl = window.document.location.href + 'theme'
-
-    component.onGotoTheme(fakeEvent, 'theme')
-
-    expect(window.open).toHaveBeenCalledWith(expectedUrl, '_blank')
-  })
-
-  xit('should navigate onGoToTheme if ctrl key false', () => {
-    const fakeEvent = new MouseEvent('click', { ctrlKey: false })
-    spyOn(window, 'open')
-
-    component.onGotoTheme(fakeEvent, 'theme')
-
-    expect(window.open).not.toHaveBeenCalled()
-  })
-
-  it('should return the imgUrl from the form group', () => {
-    component.formGroup.controls['logoUrl'].setValue('logo')
-
-    component.ngOnInit()
-
-    expect(component.fetchingLogoUrl).toBe('logo')
-  })
 })
