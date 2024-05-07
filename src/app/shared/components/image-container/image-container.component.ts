@@ -35,6 +35,7 @@ export class ImageContainerComponent implements OnChanges {
   }
 
   public onImageError(): void {
+    console.error('image container - on image load error')
     this.displayDefaultLogo = true
     this.displayImageUrl = undefined
   }
@@ -42,6 +43,7 @@ export class ImageContainerComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     this.displayDefaultLogo = false
     if (changes['imageUrl']) {
+      console.log('image container - image url:' + this.imageUrl)
       if (this.imageUrl) this.displayImageUrl = prepareUrl(this.imageUrl)
       else this.displayDefaultLogo = true
     }
