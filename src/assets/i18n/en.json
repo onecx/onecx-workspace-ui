@@ -442,7 +442,7 @@
     "CONSTRAINT_FILE_TYPE": "The following image formats are accepted: jpg, jpeg, png",
     "CONSTRAINT_FAILED": "File upload condition check failed:",
     "CONSTRAINT_NAME": "Please add a Workspace name before uploading a file.",
-    "CONSTRAINT_SIZE": "The image file size exceeds the maximum length of 30,000 bytes.",
+    "CONSTRAINT_SIZE": "The image file size exceeds the maximum length of 100,000 bytes.",
     "TOOLTIPS": {
       "LOGO_URL": "As an alternative to uploading, a URL to an image can be specified here",
       "LOGO": "Logo",
@@ -461,6 +461,7 @@
     }
   },
   "VALIDATION": {
+    "FORM_INVALID": "The form contains invalid values.",
     "HINTS": {
       "FORMAT_URL": "Format: "
     },

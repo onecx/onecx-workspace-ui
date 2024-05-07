@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges } from '@angular/core'
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core'
 import { Location } from '@angular/common'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { map, Observable } from 'rxjs'
@@ -6,7 +6,7 @@ import { map, Observable } from 'rxjs'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 
 import { ImagesInternalAPIService, RefType, WorkspaceAPIService, Workspace } from 'src/app/shared/generated'
-import { copyToClipboard, sortByLocale } from 'src/app/shared/utils'
+import { copyToClipboard, bffImageUrl, sortByLocale } from 'src/app/shared/utils'
 
 @Component({
   selector: 'app-workspace-props',
@@ -16,6 +16,7 @@ import { copyToClipboard, sortByLocale } from 'src/app/shared/utils'
 export class WorkspacePropsComponent implements OnChanges {
   @Input() workspace!: Workspace
   @Input() editMode = false
+  @Output() currentLogoUrl = new EventEmitter<string>()
 
   public formGroup: FormGroup
 
@@ -31,7 +32,7 @@ export class WorkspacePropsComponent implements OnChanges {
   public selectedFile: File | undefined
   public minimumImageWidth = 150
   public minimumImageHeight = 150
-  public fetchingLogoUrl?: string
+  public fetchingLogoUrl: string | undefined = undefined
   private oldWorkspaceName: string = ''
   RefType = RefType
 
@@ -79,18 +80,18 @@ export class WorkspacePropsComponent implements OnChanges {
     })
     if (this.workspace.logoUrl && this.workspace.logoUrl !== '') this.fetchingLogoUrl = this.workspace.logoUrl
     else if (this.workspace.name && this.workspace.name !== '')
-      this.fetchingLogoUrl = this.bffImageUrl(this.workspace.name, RefType.Logo)
+      this.fetchingLogoUrl = bffImageUrl(this.imageApi.configuration.basePath, this.workspace.name, RefType.Logo)
+    this.currentLogoUrl.emit(this.fetchingLogoUrl)
   }
 
   public onSubmit(): void {
     if (this.formGroup.valid) {
       Object.assign(this.workspace, this.getWorkspaceChangesFromForm())
-      //this.editMode = false
       if (this.oldWorkspaceName !== this.workspace.name) {
         this.location.back()
       }
     } else {
-      this.msgService.error({ summaryKey: 'GENERAL.FORM_VALIDATION' })
+      this.msgService.error({ summaryKey: 'VALIDATION.FORM_INVALID' })
     }
   }
 
@@ -120,7 +121,7 @@ export class WorkspacePropsComponent implements OnChanges {
     if (ev.target && (ev.target as HTMLInputElement).files) {
       const files = (ev.target as HTMLInputElement).files
       if (files) {
-        if (files[0].size > 30000) {
+        if (files[0].size > 100000) {
           this.msgService.error({
             summaryKey: 'IMAGE.CONSTRAINT_FAILED',
             detailKey: 'IMAGE.CONSTRAINT_SIZE'
@@ -145,6 +146,7 @@ export class WorkspacePropsComponent implements OnChanges {
   private saveImage(name: string, files: FileList) {
     const blob = new Blob([files[0]], { type: files[0].type })
     this.fetchingLogoUrl = undefined // reset - important to trigger the change in UI
+    this.currentLogoUrl.emit(this.fetchingLogoUrl)
     const saveRequestParameter = {
       contentLength: files.length,
       refId: name,
@@ -165,19 +167,16 @@ export class WorkspacePropsComponent implements OnChanges {
     )
   }
   private prepareImageResponse(name: string): void {
-    this.fetchingLogoUrl = this.bffImageUrl(name, RefType.Logo)
+    this.fetchingLogoUrl = bffImageUrl(this.imageApi.configuration.basePath, name, RefType.Logo)
+    this.currentLogoUrl.emit(this.fetchingLogoUrl)
     this.msgService.info({ summaryKey: 'IMAGE.UPLOAD_SUCCESS' })
     this.formGroup.controls['logoUrl'].setValue('')
-  }
-
-  public bffImageUrl(themeName: string | undefined, refType: RefType): string {
-    return !themeName ? '' : this.imageApi.configuration.basePath + '/images/' + themeName + '/' + refType
   }
 
   public onInputChange(event: Event): void {
     this.fetchingLogoUrl = (event.target as HTMLInputElement).value
     if ((event.target as HTMLInputElement).value == undefined || (event.target as HTMLInputElement).value == '') {
-      this.fetchingLogoUrl = this.bffImageUrl(this.workspace.name, RefType.Logo)
+      this.fetchingLogoUrl = bffImageUrl(this.imageApi.configuration.basePath, this.workspace.name, RefType.Logo)
     }
   }
 }

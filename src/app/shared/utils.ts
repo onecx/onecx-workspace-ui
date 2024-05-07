@@ -4,7 +4,7 @@ import { SelectItem } from 'primeng/api'
 import { Location } from '@angular/common'
 import { environment } from 'src/environments/environment'
 
-import { Workspace } from 'src/app/shared/generated'
+import { RefType, Workspace } from 'src/app/shared/generated'
 
 export function limitText(text: string, limit: number): string {
   if (text) {
@@ -121,4 +121,7 @@ export function prepareUrlPath(url?: string, path?: string): string {
   if (url && path) return Location.joinWithSlash(url, path)
   else if (url) return url
   else return ''
+}
+export function bffImageUrl(basePath: string | undefined, name: string | undefined, refType: RefType): string {
+  return !name ? '' : basePath + '/images/' + name + '/' + refType
 }
