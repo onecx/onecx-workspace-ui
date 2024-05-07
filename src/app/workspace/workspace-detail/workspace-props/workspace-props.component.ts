@@ -5,7 +5,7 @@ import { map, Observable } from 'rxjs'
 
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 
-import { ImagesInternalAPIService, RefType, WorkspaceAPIService, Workspace } from 'src/app/shared/generated'
+import { ImagesInternalAPIService, RefType, Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
 import { copyToClipboard, bffImageUrl, sortByLocale } from 'src/app/shared/utils'
 
 @Component({
@@ -81,6 +81,7 @@ export class WorkspacePropsComponent implements OnChanges {
     if (this.workspace.logoUrl && this.workspace.logoUrl !== '') this.fetchingLogoUrl = this.workspace.logoUrl
     else if (this.workspace.name && this.workspace.name !== '')
       this.fetchingLogoUrl = bffImageUrl(this.imageApi.configuration.basePath, this.workspace.name, RefType.Logo)
+    console.log('fetchingLogoUrl: ' + this.fetchingLogoUrl)
     this.currentLogoUrl.emit(this.fetchingLogoUrl)
   }
 
