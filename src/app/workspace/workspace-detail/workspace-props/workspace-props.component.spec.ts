@@ -149,7 +149,7 @@ fdescribe('WorkspacePropsComponent', () => {
     component.onSubmit()
 
     expect(msgServiceSpy.error).toHaveBeenCalledWith({
-      summaryKey: 'GENERAL.FORM_VALIDATION'
+      summaryKey: 'VALIDATION.FORM_INVALID'
     })
   })
 

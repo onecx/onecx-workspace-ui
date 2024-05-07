@@ -219,8 +219,8 @@ fdescribe('WorkspaceDetailComponent', () => {
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.NOK' })
   })
 
-  it('should return the logoURL on getImagePath', () => {
-    const result = component.getImagePath({ name: 'name', logoUrl: 'url' })
+  it('should return the logoURL on getLogoUrl', () => {
+    const result = component.getLogoUrl({ name: 'name', logoUrl: 'url' })
 
     expect(result).toBe('url')
   })

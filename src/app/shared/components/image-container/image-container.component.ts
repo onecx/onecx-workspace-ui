@@ -12,7 +12,7 @@ import { prepareUrl, prepareUrlPath } from 'src/app/shared/utils'
   templateUrl: './image-container.component.html'
 })
 export class ImageContainerComponent implements OnChanges {
-  @Input() public id = 'workspace_image_id'
+  @Input() public id = ''
   @Input() public small = false
   @Input() public imageUrl: string | undefined
   @Input() public styleClass: string | undefined
@@ -34,13 +34,12 @@ export class ImageContainerComponent implements OnChanges {
       .subscribe()
   }
 
-  public onImageError() {
+  public onImageError(): void {
     this.displayDefaultLogo = true
     this.displayImageUrl = undefined
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log('image container ' + this.imageUrl)
     this.displayDefaultLogo = false
     if (changes['imageUrl']) {
       if (this.imageUrl) this.displayImageUrl = prepareUrl(this.imageUrl)
