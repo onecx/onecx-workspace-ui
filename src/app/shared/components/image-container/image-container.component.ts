@@ -41,6 +41,7 @@ export class ImageContainerComponent implements OnChanges {
   }
 
   public onImageError(): void {
+    console.error('image container - on image load error')
     this.displayDefaultLogo = true
     this.displayImageUrl = undefined
   }
