@@ -206,7 +206,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   }
   public getImageUrl(url?: string): string {
     if (url) return url
-    return prepareUrlPath(this.currentMfe?.remoteBaseUrl, environment.DEFAULT_PRODUCT_IMAGE)
+    return prepareUrlPath(this.currentMfe?.remoteBaseUrl, environment.DEFAULT_PRODUCT_PATH)
   }
 
   /**

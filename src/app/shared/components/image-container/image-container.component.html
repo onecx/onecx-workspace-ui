@@ -4,14 +4,14 @@
   [class]="'image-object image-' + (small ? 'sm' : 'lg') + ' sm:image-lg ' + (styleClass ? styleClass : '')"
   [ocxSrc]="displayImageUrl"
   (error)="onImageError()"
-  [alt]="'IMAGE.TOOLTIPS.LOGO' | translate"
-  [title]="'IMAGE.TOOLTIPS.LOGO' | translate"
+  [alt]="'IMAGE.TOOLTIPS.IMAGE' | translate"
+  [title]="title ? title : ('IMAGE.TOOLTIPS.IMAGE' | translate)"
 />
 <img
   [id]="id"
   *ngIf="displayDefaultLogo"
   [class]="'image-object image-' + (small ? 'sm' : 'lg') + ' sm:image-lg ' + (styleClass ? styleClass : '')"
   [src]="defaultImageUrl"
-  [alt]="'IMAGE.TOOLTIPS.PLACEHOLDER' | translate"
-  [title]="'IMAGE.TOOLTIPS.PLACEHOLDER' | translate"
+  [alt]="'IMAGE.TOOLTIPS.IMAGE' | translate"
+  [title]="title ? title : ('IMAGE.TOOLTIPS.PLACEHOLDER' | translate)"
 />
