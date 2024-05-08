@@ -281,7 +281,7 @@
             </td>
             <td class="text-center hidden-md">
               <span
-                *ngIf="isObjectEmpty(rowData.i18n)"
+                *ngIf="!isObjectEmpty(rowData.i18n)"
                 [id]="'workspace_menu_table_row_' + rowData.key + '_i18n'"
                 class="pi pi-check"
                 [title]="'DIALOG.MENU.TREE.I18N.ROW.TOOLTIP' | translate"

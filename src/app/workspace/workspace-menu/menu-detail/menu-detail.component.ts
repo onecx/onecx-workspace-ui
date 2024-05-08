@@ -31,7 +31,7 @@ interface AutoCompleteCompleteEvent {
 const original = DefaultValueAccessor.prototype.registerOnChange
 DefaultValueAccessor.prototype.registerOnChange = function (fn) {
   return original.call(this, (value) => {
-    const trimmed = typeof value === 'string' || value instanceof String ? value.trim() : value
+    const trimmed = value.trim()
     return fn(trimmed)
   })
 }
@@ -127,7 +127,7 @@ export class MenuDetailComponent implements OnChanges {
   public ngOnChanges(): void {
     this.formGroup.reset()
     this.tabIndex = 0
-    this.languagesDisplayed = []
+    // this.languagesDisplayed = []
     if (this.changeMode === 'CREATE') {
       this.formGroup.reset()
       this.menuItem = {
@@ -138,6 +138,7 @@ export class MenuDetailComponent implements OnChanges {
       } as MenuItem
       this.formGroup.patchValue(this.menuItem)
     } else if (this.menuItemId) this.getMenu()
+    console.log('MFE ITEMS END', this.mfeItems)
   }
 
   public onCloseDetailDialog(): void {
@@ -148,9 +149,13 @@ export class MenuDetailComponent implements OnChanges {
   }
 
   private getMenu() {
-    this.menuItem$ = this.menuApi
-      .getMenuItemById({ menuItemId: this.menuItemId! })
-      .pipe(catchError((error) => of(error)))
+    this.menuItem$ = this.menuApi.getMenuItemById({ menuItemId: this.menuItemId! }).pipe(
+      catchError((err) => {
+        this.msgService.error({ summaryKey: 'DIALOG.MENU.MENU_ITEM_NOT_FOUND' })
+        console.error(err.error)
+        return of(err)
+      })
+    )
     this.menuItem$.subscribe({
       next: (item) => {
         this.menuItem = item ?? undefined
@@ -158,28 +163,25 @@ export class MenuDetailComponent implements OnChanges {
           this.loadMfeUrls()
           this.preparePanelHeight()
         }
-      },
-      error: (err) => {
-        this.msgService.error({ summaryKey: 'DIALOG.MENU.MENU_ITEM_NOT_FOUND' })
-        console.error(err.error)
       }
     })
   }
   private fillForm() {
-    if (!this.menuItem) return
-    this.formGroup.reset()
-    this.formGroup.setValue({
-      parentItemId: this.menuItem.parentItemId,
-      key: this.menuItem.key,
-      name: this.menuItem.name,
-      position: this.menuItem.position,
-      disabled: this.menuItem.disabled,
-      external: this.menuItem.external,
-      url: this.prepareUrlObject(this.menuItem.url),
-      badge: this.menuItem.badge,
-      scope: this.menuItem.scope,
-      description: this.menuItem.description
-    })
+    if (this.menuItem) {
+      this.formGroup.reset()
+      this.formGroup.setValue({
+        parentItemId: this.menuItem.parentItemId,
+        key: this.menuItem.key,
+        name: this.menuItem.name,
+        position: this.menuItem.position,
+        disabled: this.menuItem.disabled,
+        external: this.menuItem.external,
+        url: this.prepareUrlObject(this.menuItem.url),
+        badge: this.menuItem.badge,
+        scope: this.menuItem.scope,
+        description: this.menuItem.description
+      })
+    }
   }
 
   /**
@@ -392,6 +394,7 @@ export class MenuDetailComponent implements OnChanges {
                 this.mfeMap
               )
               for (let mfe of p.microfrontends) {
+                console.log('MFE', mfe)
                 this.mfeItems.push({ ...mfe, product: p.displayName ?? '' })
               }
             }
@@ -437,7 +440,7 @@ export class MenuDetailComponent implements OnChanges {
    *     a) empty query => list all
    *     b) unknown entry => list all
    */
-  public onFilterPathes(ev: AutoCompleteCompleteEvent): void {
+  public onFilterPaths(ev: AutoCompleteCompleteEvent): void {
     let filtered: MFE[] = []
     let query = ev && ev.query ? ev.query : undefined
     if (!query) {

@@ -18,7 +18,7 @@ import {
   CreateProductRequest,
   UpdateProductRequest,
   Product,
-  ProductsAPIService,
+  ProductAPIService,
   Workspace,
   WorkspaceProductAPIService,
   MicrofrontendType
@@ -76,14 +76,14 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   // data
   public wProducts$!: Observable<ExtendedProduct[]>
   public wProducts!: ExtendedProduct[] // registered products
-  public psProducts$!: Observable<ExtendedProduct[]>
   public psProducts!: ExtendedProduct[] // not registered product store products
+  public psProducts$!: Observable<ExtendedProduct[]>
   public psProductsOrg!: Map<string, ExtendedProduct> // all products in product store (not undeployed)
   public currentMfe!: MfeInfo
 
   constructor(
     private wProductApi: WorkspaceProductAPIService,
-    private psProductApi: ProductsAPIService,
+    private psProductApi: ProductAPIService,
     private user: UserService,
     private appState: AppStateService,
     private translate: TranslateService,
@@ -147,7 +147,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
         }),
         catchError((err) => {
           this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.PRODUCTS'
-          console.error('getProductsForWorkspaceId():', err)
+          console.error('getProductsByWorkspaceId():', err)
           return of([] as ExtendedProduct[])
         })
       )

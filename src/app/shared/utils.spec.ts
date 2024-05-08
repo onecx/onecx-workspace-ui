@@ -11,8 +11,8 @@ import {
   sortByLocale
 } from './utils'
 
-describe('util functions', () => {
-  describe('limitText', () => {
+fdescribe('util functions', () => {
+  fdescribe('limitText', () => {
     it('should truncate text that exceeds the specified limit', () => {
       const result = limitText('hello', 4)
 
@@ -33,7 +33,7 @@ describe('util functions', () => {
     })
   })
 
-  describe('setFetchUrls', () => {
+  fdescribe('setFetchUrls', () => {
     it('should prepend apiPrefix to a relative URL', () => {
       const result = setFetchUrls('ahm-api', '/am')
 
@@ -47,7 +47,7 @@ describe('util functions', () => {
     })
   })
 
-  describe('copyToClipboard', () => {
+  fdescribe('copyToClipboard', () => {
     let writeTextSpy: jasmine.Spy
 
     beforeEach(() => {
@@ -61,7 +61,7 @@ describe('util functions', () => {
     })
   })
 
-  describe('forceFormValidation', () => {
+  fdescribe('forceFormValidation', () => {
     it('should mark controls as dirty and touched', () => {
       const group = new FormGroup({
         control1: new FormControl(''),
@@ -75,7 +75,7 @@ describe('util functions', () => {
     })
   })
 
-  describe('dropDownSortItemsByLabel', () => {
+  fdescribe('dropDownSortItemsByLabel', () => {
     it('should correctly sort items by label', () => {
       const items: SelectItem[] = [
         { label: 'label2', value: 2 },
@@ -88,7 +88,7 @@ describe('util functions', () => {
     })
   })
 
-  describe('dropDownGetLabelByValue', () => {
+  fdescribe('dropDownGetLabelByValue', () => {
     it('should return the label corresponding to the value', () => {
       const items: SelectItem[] = [
         { label: 'label2', value: 2 },
@@ -101,7 +101,7 @@ describe('util functions', () => {
     })
   })
 
-  describe('sortByLocale', () => {
+  fdescribe('sortByLocale', () => {
     it('should sort strings based on locale', () => {
       const strings: string[] = ['str2', 'str1']
 

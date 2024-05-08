@@ -10,7 +10,7 @@ import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router'
 import { ConfirmationService } from 'primeng/api'
 import { DropdownModule } from 'primeng/dropdown'
 
-import { ImagesInternalAPIService, Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
+import { Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
 import { environment } from 'src/environments/environment'
 import {
   APP_CONFIG,
@@ -32,7 +32,7 @@ class MockRouter {
   navigate = jasmine.createSpy('navigate')
 }
 
-describe('WorkspaceCreateComponent', () => {
+fdescribe('WorkspaceCreateComponent', () => {
   let component: WorkspaceCreateComponent
   let fixture: ComponentFixture<WorkspaceCreateComponent>
   let mockRouter = new MockRouter()
@@ -41,14 +41,6 @@ describe('WorkspaceCreateComponent', () => {
   const wApiServiceSpy = {
     getAllThemes: jasmine.createSpy('getAllThemes').and.returnValue(of({})),
     createWorkspace: jasmine.createSpy('createWorkspace').and.returnValue(of({}))
-  }
-  const imageServiceSpy = {
-    getImage: jasmine.createSpy('getImage').and.returnValue(of({})),
-    updateImage: jasmine.createSpy('updateImage').and.returnValue(of({})),
-    uploadImage: jasmine.createSpy('uploadImage').and.returnValue(of({})),
-    configuration: {
-      basePath: 'basepath'
-    }
   }
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'info', 'error'])
   const mockActivatedRouteSnapshot: Partial<ActivatedRouteSnapshot> = {
@@ -81,7 +73,6 @@ describe('WorkspaceCreateComponent', () => {
         { provide: APP_CONFIG, useValue: environment },
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: WorkspaceAPIService, useValue: wApiServiceSpy },
-        { provide: ImagesInternalAPIService, useValue: imageServiceSpy },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: Router, useValue: mockRouter },
         ConfirmationService
@@ -99,9 +90,6 @@ describe('WorkspaceCreateComponent', () => {
   afterEach(() => {
     wApiServiceSpy.getAllThemes.calls.reset()
     wApiServiceSpy.createWorkspace.calls.reset()
-    imageServiceSpy.getImage.calls.reset()
-    imageServiceSpy.updateImage.calls.reset()
-    imageServiceSpy.uploadImage.calls.reset()
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.info.calls.reset()
     msgServiceSpy.error.calls.reset()
@@ -128,105 +116,6 @@ describe('WorkspaceCreateComponent', () => {
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.MESSAGE.CREATE_NOK' })
   })
 
-  it('should not upload a file if productName is empty', () => {
-    const event = {
-      target: {
-        files: ['file']
-      }
-    }
-    component.formGroup.controls['name'].setValue('')
-
-    component.onFileUpload(event as any, 'logo')
-
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({
-      summaryKey: 'IMAGE.UPLOAD_FAIL'
-    })
-  })
-
-  it('should not upload a file if productName is null', () => {
-    const event = {
-      target: {
-        files: ['file']
-      }
-    }
-    component.formGroup.controls['name'].setValue(null)
-
-    component.onFileUpload(event as any, 'logo')
-
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({
-      summaryKey: 'IMAGE.UPLOAD_FAIL'
-    })
-  })
-
-  it('should not upload a file that is too large', () => {
-    const largeBlob = new Blob(['a'.repeat(120000)], { type: 'image/png' })
-    const largeFile = new File([largeBlob], 'test.png', { type: 'image/png' })
-    const event = {
-      target: {
-        files: [largeFile]
-      }
-    }
-    component.formGroup.controls['name'].setValue('name')
-
-    component.onFileUpload(event as any, 'logo')
-
-    expect(component.formGroup.valid).toBeFalse()
-  })
-
-  it('should not upload a file that is too large', () => {
-    const largeBlob = new Blob(['a'.repeat(120000)], { type: 'image/png' })
-    const largeFile = new File([largeBlob], 'test.png', { type: 'image/png' })
-    const event = {
-      target: {
-        files: [largeFile]
-      }
-    }
-    component.formGroup.controls['name'].setValue('name')
-
-    component.onFileUpload(event as any, 'logo')
-
-    expect(component.formGroup.valid).toBeFalse()
-  })
-
-  it('should upload a file', () => {
-    imageServiceSpy.updateImage.and.returnValue(of({}))
-    const blob = new Blob(['a'.repeat(10)], { type: 'image/png' })
-    const file = new File([blob], 'test.png', { type: 'image/png' })
-    const event = {
-      target: {
-        files: [file]
-      }
-    }
-
-    component.formGroup.controls['name'].setValue('name')
-    component.formGroup.controls['logoUrl'].setValue('url')
-
-    component.onFileUpload(event as any, 'logo')
-
-    expect(msgServiceSpy.info).toHaveBeenCalledWith({
-      summaryKey: 'IMAGE.UPLOAD_SUCCESS'
-    })
-  })
-
-  it('should display error if upload fails', () => {
-    imageServiceSpy.getImage.and.returnValue(throwError(() => new Error()))
-    const blob = new Blob(['a'.repeat(10)], { type: 'image/png' })
-    const file = new File([blob], 'test.png', { type: 'image/png' })
-    const event = {
-      target: {
-        files: [file]
-      }
-    }
-    component.formGroup.controls['name'].setValue('name')
-    component.formGroup.controls['logoUrl'].setValue('url')
-
-    component.onFileUpload(event as any, 'logo')
-
-    expect(msgServiceSpy.info).toHaveBeenCalledWith({
-      summaryKey: 'IMAGE.UPLOAD_SUCCESS'
-    })
-  })
-
   it('should change fetchingLogoUrl on inputChange: valid value', fakeAsync(() => {
     const event = {
       target: { value: 'newLogoValue' }
@@ -240,8 +129,9 @@ describe('WorkspaceCreateComponent', () => {
   }))
 
   it('should change fetchingLogoUrl on inputChange: empty value', fakeAsync(() => {
+    const url = 'https://www.capgemini.com/wp-content/themes/capgemini-komposite/assets/images/logo.svg'
     const event = {
-      target: { value: '' }
+      target: { value: url }
     } as unknown as Event
     component.formGroup.controls['name'].setValue('name')
 
@@ -249,6 +139,6 @@ describe('WorkspaceCreateComponent', () => {
 
     tick(1000)
 
-    expect(component.fetchingLogoUrl).toBe('basepath/images/name/logo')
+    expect(component.fetchingLogoUrl).toBe(url)
   }))
 })

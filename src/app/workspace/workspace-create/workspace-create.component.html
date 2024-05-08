@@ -72,37 +72,22 @@
     </div>
 
     <div class="flex flex-wrap sm:flex-nowrap align-items-center row-gap-2 column-gap-4">
-      <input hidden type="file" accept=".png,.svg" #selectedFileInputLogo (change)="onFileUpload($event, 'logo')" />
       <app-image-container
         [id]="'workspace_create_item_logo_image'"
         [imageUrl]="fetchingLogoUrl"
         [small]="true"
       ></app-image-container>
-      <div class="p-inputgroup" controlErrorAnchor>
-        <span class="p-float-label">
-          <input
-            pInputText
-            type="text"
-            id="workspace_create_item_logo"
-            formControlName="logoUrl"
-            (blur)="inputChange($event)"
-          />
-          <label for="workspace_create_item_logo"> {{ 'IMAGE.LOGO_URL' | translate }} </label>
-        </span>
-        <span
-          id="workspace_create_item_logo_upload"
-          class="p-inputgroup-addon bg-primary"
-          [title]="'IMAGE.TOOLTIPS.UPLOAD' | translate"
-          (click)="selectedFileInputLogo.click()"
-          [ngClass]="
-            this.formGroup.controls['name'].value === '' || this.formGroup.controls['name'].value === null
-              ? 'p-disabled'
-              : 'p-inputgroup-addon bg-primary'
-          "
-        >
-          <i class="pi pi-upload"></i>
-        </span>
-      </div>
+      <span class="p-float-label w-full">
+        <input
+          pInputText
+          type="text"
+          id="workspace_create_item_logo"
+          class="w-full pt-3 pb-2"
+          formControlName="logoUrl"
+          (blur)="inputChange($event)"
+        />
+        <label for="workspace_create_item_logo"> {{ 'IMAGE.LOGO_URL' | translate }} </label>
+      </span>
     </div>
 
     <div>

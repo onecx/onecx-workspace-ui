@@ -9,7 +9,7 @@
     [header]="workspace.name"
     [subheader]="'DIALOG.WORKSPACE.HEADER.DETAIL' | translate"
     [actions]="(actions$ | async) ?? []"
-    [figureImage]="getImagePath(workspace)"
+    [figureImage]="currentLogoUrl"
     [figureBackground]="workspace ? workspace.logoUrl === undefined : false"
   >
   </ocx-page-header>
@@ -31,7 +31,11 @@
           [header]="'TABS.WORKSPACE.DETAILS' | translate"
           [tooltip]="'TABS.WORKSPACE.TOOLTIPS.DETAILS' | translate"
         >
-          <app-workspace-props [workspace]="workspace" [editMode]="editMode"></app-workspace-props>
+          <app-workspace-props
+            [workspace]="workspace"
+            [editMode]="editMode"
+            (currentLogoUrl)="onUpdateLogoUrl($event)"
+          ></app-workspace-props>
         </p-tabPanel>
 
         <p-tabPanel

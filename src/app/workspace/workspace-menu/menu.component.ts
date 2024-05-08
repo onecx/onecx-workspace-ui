@@ -169,7 +169,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.loadMenu(true)
   }
   public isObjectEmpty(obj: object) {
-    return Object.keys(obj).length > 0
+    return Object.keys(obj).length === 0
   }
 
   /****************************************************************************

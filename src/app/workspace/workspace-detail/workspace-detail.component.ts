@@ -9,11 +9,12 @@ import { Action, ObjectDetailItem } from '@onecx/angular-accelerator'
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 import {
   GetWorkspaceResponse,
-  WorkspaceSnapshot,
   Workspace,
   WorkspaceAPIService,
-  ImagesInternalAPIService
+  ImagesInternalAPIService,
+  RefType
 } from 'src/app/shared/generated'
+import { bffImageUrl } from 'src/app/shared/utils'
 
 import { WorkspacePropsComponent } from './workspace-props/workspace-props.component'
 import { WorkspaceContactComponent } from './workspace-contact/workspace-contact.component'
@@ -43,6 +44,7 @@ export class WorkspaceDetailComponent implements OnInit {
   public workspaceName = this.route.snapshot.params['name']
   public workspaceDeleteMessage = ''
   public workspaceDeleteVisible = false
+  public currentLogoUrl: string | undefined = undefined
 
   constructor(
     private user: UserService,
@@ -66,6 +68,7 @@ export class WorkspaceDetailComponent implements OnInit {
     this.workspace$ = this.workspaceApi.getWorkspaceByName({ workspaceName: this.workspaceName }).pipe(
       map((data) => {
         if (data.resource) this.workspace = data.resource
+        this.currentLogoUrl = this.getLogoUrl(data.resource!)
         return data
       }),
       catchError((err) => {
@@ -82,22 +85,6 @@ export class WorkspaceDetailComponent implements OnInit {
 
   public prepareDialog() {
     this.prepareActionButtons()
-    /* to be deleted?
-    this.translate
-      .get(['WORKSPACE.HOME_PAGE', 'WORKSPACE.BASE_URL', 'WORKSPACE.THEME', 'INTERNAL.CREATION_DATE'])
-      .subscribe((data) => {
-        this.objectDetails = [
-          { label: data['WORKSPACE.HOME_PAGE'], value: this.workspace?.homePage },
-          { label: data['WORKSPACE.BASE_URL'], value: this.workspace?.baseUrl },
-          { label: data['WORKSPACE.THEME'], value: this.workspace?.theme },
-          {
-            label: data['INTERNAL.CREATION_DATE'],
-            value: this.workspace?.creationDate,
-            valuePipe: DatePipe,
-            valuePipeArgs: this.dateFormat
-          }
-        ]
-      }) */
   }
 
   private updateWorkspace() {
@@ -175,7 +162,8 @@ export class WorkspaceDetailComponent implements OnInit {
       })
       .subscribe({
         next: (snapshot) => {
-          this.saveWorkspaceToFile(snapshot)
+          const workspaceJson = JSON.stringify(snapshot, null, 2)
+          FileSaver.saveAs(new Blob([workspaceJson], { type: 'text/json' }), `${this.workspace?.name}.json`)
         },
         error: () => {
           this.msgService.error({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.NOK' })
@@ -183,20 +171,20 @@ export class WorkspaceDetailComponent implements OnInit {
       })
   }
 
-  private saveWorkspaceToFile(workspaceExport: WorkspaceSnapshot) {
-    const workspaceJson = JSON.stringify(workspaceExport, null, 2)
-    FileSaver.saveAs(new Blob([workspaceJson], { type: 'text/json' }), `${this.workspace?.name}.json`)
-  }
-
-  public getImagePath(workspace: Workspace): string {
-    if (workspace?.logoUrl) return workspace?.logoUrl
-    else return this.imageApi.configuration.basePath + '/images/' + workspace?.name + '/logo'
-  }
-
   private toggleEditMode(forcedMode?: 'edit' | 'view'): void {
     if (forcedMode === 'view') this.editMode = false
     else this.editMode = !this.editMode
     this.prepareActionButtons()
+  }
+
+  public getLogoUrl(workspace: Workspace): string {
+    if (workspace?.logoUrl) return workspace?.logoUrl
+    else return bffImageUrl(this.imageApi.configuration.basePath, workspace?.name, RefType.Logo)
+  }
+
+  // called by props component (this is the master of this url)
+  public onUpdateLogoUrl(url: string) {
+    this.currentLogoUrl = url
   }
 
   public onGoToMenu(): void {
