@@ -23,6 +23,7 @@ export class WorkspacePropsComponent implements OnChanges {
   public mfeRList: { label: string | undefined; value: string }[] = []
   public themes$: Observable<string[]>
   public urlPattern = '/base-path-to-workspace'
+  public externUrlPattern = 'http(s)://base-path-to-image'
   public copyToClipboard = copyToClipboard
   public sortByLocale = sortByLocale
 

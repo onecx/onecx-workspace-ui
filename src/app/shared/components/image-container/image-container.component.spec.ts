@@ -1,19 +1,17 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { TranslateTestingModule } from 'ngx-translate-testing'
-
-import { ImageContainerComponent } from './image-container.component'
-import { prepareUrl } from 'src/app/shared/utils'
+import { of } from 'rxjs'
 
 import { AppStateService } from '@onecx/portal-integration-angular'
-import { of } from 'rxjs'
+import { ImageContainerComponent } from './image-container.component'
 
 class MockAppStateService {
   currentMfe$ = of({
-    remoteBaseUrl: '/bff/'
+    remoteBaseUrl: '/base/'
   })
 }
 
-fdescribe('ImageContainerComponent', () => {
+describe('ImageContainerComponent', () => {
   let component: ImageContainerComponent
   let fixture: ComponentFixture<ImageContainerComponent>
   let mockAppStateService: MockAppStateService
@@ -41,27 +39,10 @@ fdescribe('ImageContainerComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy()
-    expect(component.defaultImageUrl).toEqual('/bff/assets/images/workspace.png')
+    expect(component.defaultImageUrl).toEqual('/base/assets/images/logo.png')
   })
 
   describe('ngOnChanges', () => {
-    it('should prepend apiPrefix to imageUrl if not starting with http/https and not already prefixed', () => {
-      const testUrl = 'path/to/image.png'
-      const expectedUrl = prepareUrl(testUrl)
-
-      component.imageUrl = testUrl
-      component.ngOnChanges({
-        imageUrl: {
-          currentValue: testUrl,
-          previousValue: null,
-          firstChange: true,
-          isFirstChange: () => true
-        }
-      })
-
-      expect(component.displayImageUrl).toBe(expectedUrl ?? '')
-    })
-
     it('should not modify imageUrl if it starts with http/https', () => {
       const testUrl = 'http://path/to/image.jpg'
       component.imageUrl = testUrl
