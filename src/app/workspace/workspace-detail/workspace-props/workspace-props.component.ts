@@ -7,6 +7,7 @@ import { PortalMessageService } from '@onecx/angular-integration-interface'
 
 import { ImagesInternalAPIService, RefType, Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
 import { copyToClipboard, bffImageUrl, sortByLocale } from 'src/app/shared/utils'
+import { getLocation } from '@onecx/accelerator'
 
 @Component({
   selector: 'app-workspace-props',
@@ -25,6 +26,7 @@ export class WorkspacePropsComponent implements OnChanges {
   public urlPattern = '/base-path-to-workspace'
   public copyToClipboard = copyToClipboard
   public sortByLocale = sortByLocale
+  public deploymentPath: string = ''
 
   //Logo
   public preview = false
@@ -42,6 +44,10 @@ export class WorkspacePropsComponent implements OnChanges {
     private imageApi: ImagesInternalAPIService,
     private workspaceApi: WorkspaceAPIService
   ) {
+    getLocation().deploymentPath === '/'
+      ? (this.deploymentPath = '')
+      : (this.deploymentPath = getLocation().deploymentPath.slice(0, -1))
+
     this.formGroup = new FormGroup({
       name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
       theme: new FormControl(null),

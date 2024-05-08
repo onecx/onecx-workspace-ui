@@ -15,6 +15,7 @@ import {
   WorkspaceAbstract
 } from 'src/app/shared/generated'
 import { limitText } from 'src/app/shared/utils'
+import { getLocation } from '@onecx/accelerator'
 
 @Component({
   selector: 'app-workspace-search',
@@ -37,6 +38,7 @@ export class WorkspaceSearchComponent implements OnInit {
   public sortOrder = 1
   public defaultSortField = 'name'
   public dataViewControlsTranslations: DataViewControlTranslations = {}
+  public deploymentPath = ''
 
   @ViewChild('table', { static: false }) table!: any
 
@@ -148,7 +150,10 @@ export class WorkspaceSearchComponent implements OnInit {
   }
   public onGotoWorkspace(ev: any, workspace: Workspace) {
     ev.stopPropagation()
-    window.open(window.document.location.href + '../../../..' + workspace.baseUrl, '_blank')
+    getLocation().deploymentPath === '/'
+      ? (this.deploymentPath = '')
+      : (this.deploymentPath = getLocation().deploymentPath.slice(0, -1))
+    window.open(window.document.location.href + '../../../..' + this.deploymentPath + workspace.baseUrl, '_blank')
   }
   public onGotoMenu(ev: any, workspace: Workspace) {
     ev.stopPropagation()
