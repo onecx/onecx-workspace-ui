@@ -28,7 +28,7 @@ const formGroup = new FormGroup({
   baseUrl: new FormControl('/url', [Validators.required, Validators.minLength(1), Validators.pattern('^/.*')])
 })
 
-fdescribe('WorkspacePropsComponent', () => {
+describe('WorkspacePropsComponent', () => {
   let component: WorkspacePropsComponent
   let fixture: ComponentFixture<WorkspacePropsComponent>
   const mockAuthService = jasmine.createSpyObj('IAuthService', ['hasPermission'])
@@ -133,11 +133,11 @@ fdescribe('WorkspacePropsComponent', () => {
     expect(component.formGroup.controls['name'].disabled).toBeTrue()
   })
 
-  it('should update workspace onSubmit', () => {
+  it('should update workspace onSave', () => {
     component.formGroup = formGroup
     component.workspace = workspace
 
-    component.onSubmit()
+    component.onSave()
 
     expect(component.editMode).toBeFalse()
   })
@@ -146,7 +146,7 @@ fdescribe('WorkspacePropsComponent', () => {
     component.formGroup = formGroup
     component.formGroup.controls['baseUrl'].setValue('url')
 
-    component.onSubmit()
+    component.onSave()
 
     expect(msgServiceSpy.error).toHaveBeenCalledWith({
       summaryKey: 'VALIDATION.FORM_INVALID'

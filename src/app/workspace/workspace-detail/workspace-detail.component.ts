@@ -63,6 +63,7 @@ export class WorkspaceDetailComponent implements OnInit {
     this.getWorkspace()
   }
 
+  // prepare Observable - trigger request in HTML with async
   public getWorkspace() {
     this.isLoading = true
     this.workspace$ = this.workspaceApi.getWorkspaceByName({ workspaceName: this.workspaceName }).pipe(
@@ -78,26 +79,23 @@ export class WorkspaceDetailComponent implements OnInit {
       }),
       finalize(() => {
         this.isLoading = false
-        this.prepareDialog()
+        this.prepareActionButtons()
       })
     )
   }
 
-  public prepareDialog() {
-    this.prepareActionButtons()
-  }
-
   private updateWorkspace() {
     // Trigger update on the form of the currently selected tab
+    let workspaceData: Workspace | undefined
     switch (this.selectedTabIndex) {
       case 0: {
-        this.workspacePropsComponent.onSubmit()
-        this.workspace = this.workspacePropsComponent.workspace
+        this.workspacePropsComponent.onSave()
+        workspaceData = this.workspacePropsComponent.workspace
         break
       }
       case 1: {
-        this.workspaceContactComponent.onSubmit()
-        this.workspace = this.workspaceContactComponent.workspace
+        this.workspaceContactComponent.onSave()
+        workspaceData = this.workspaceContactComponent.workspace
         break
       }
       default: {
@@ -105,17 +103,17 @@ export class WorkspaceDetailComponent implements OnInit {
         break
       }
     }
-    this.toggleEditMode('view')
     this.workspaceApi
       .updateWorkspace({
-        id: this.workspace?.id ?? '',
-        updateWorkspaceRequest: { resource: this.workspace! }
+        id: workspaceData?.id ?? '',
+        updateWorkspaceRequest: { resource: workspaceData! }
       })
       .subscribe({
         next: (data) => {
-          this.workspace = data
           this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_OK' })
-          this.prepareDialog()
+          this.toggleEditMode('view')
+          // update observable with response data
+          this.workspace$ = new Observable((sub) => sub.next({ resource: data } as GetWorkspaceResponse))
         },
         error: (err) => {
           console.error('update workspace', err)
@@ -140,10 +138,12 @@ export class WorkspaceDetailComponent implements OnInit {
   /**
    * UI EVENTS
    */
-  public onTabChange($event: any) {
-    this.selectedTabIndex = $event.index
-    if (this.selectedTabIndex === 3) this.workspaceForRoles = this.workspace
-    if (this.selectedTabIndex === 4) this.workspaceForProducts = this.workspace
+  public onTabChange($event: any, workspace: Workspace | undefined) {
+    if (workspace) {
+      this.selectedTabIndex = $event.index
+      if (this.selectedTabIndex === 3) this.workspaceForRoles = workspace
+      if (this.selectedTabIndex === 4) this.workspaceForProducts = workspace
+    }
     this.prepareActionButtons()
   }
 
@@ -191,7 +191,7 @@ export class WorkspaceDetailComponent implements OnInit {
     this.router.navigate(['./menu'], { relativeTo: this.route })
   }
 
-  private prepareActionButtons(): void {
+  public prepareActionButtons(): void {
     this.actions$ = this.translate
       .get([
         'DIALOG.MENU.LABEL',

@@ -14,16 +14,16 @@ import { copyToClipboard, bffImageUrl, sortByLocale } from 'src/app/shared/utils
   styleUrls: ['./workspace-props.component.scss']
 })
 export class WorkspacePropsComponent implements OnChanges {
-  @Input() workspace!: Workspace
+  @Input() workspace: Workspace | undefined
   @Input() editMode = false
   @Output() currentLogoUrl = new EventEmitter<string>()
 
   public formGroup: FormGroup
 
   public mfeRList: { label: string | undefined; value: string }[] = []
-  public themes$: Observable<string[]>
+  public themes$!: Observable<string[]>
   public urlPattern = '/base-path-to-workspace'
-  public externUrlPattern = 'http(s)://base-path-to-image'
+  public externUrlPattern = 'http(s)://path-to-image'
   public copyToClipboard = copyToClipboard
   public sortByLocale = sortByLocale
 
@@ -34,7 +34,7 @@ export class WorkspacePropsComponent implements OnChanges {
   public minimumImageWidth = 150
   public minimumImageHeight = 150
   public fetchingLogoUrl: string | undefined = undefined
-  private oldWorkspaceName: string = ''
+  private oldWorkspaceName: string | undefined
   RefType = RefType
 
   constructor(
@@ -53,40 +53,47 @@ export class WorkspacePropsComponent implements OnChanges {
       footerLabel: new FormControl(null, [Validators.maxLength(255)]),
       description: new FormControl(null, [Validators.maxLength(255)])
     })
-    this.themes$ = this.workspaceApi.getAllThemes().pipe(
-      map((val: any[]) => {
-        if (val.length === 0) {
-          return [this.workspace.theme]
-        } else if (!val.includes(this.workspace.theme)) {
-          val.sort(sortByLocale)
-          return val.concat(this.workspace.theme)
-        } else {
-          val.sort(sortByLocale)
-          return val
-        }
-      })
-    )
+    if (this.workspace) {
+      this.themes$ = this.workspaceApi.getAllThemes().pipe(
+        map((val: any[]) => {
+          if (val.length === 0) {
+            return [this.workspace?.theme]
+          } else if (!val.includes(this.workspace?.theme)) {
+            val.sort(sortByLocale)
+            return val.concat(this.workspace?.theme)
+          } else {
+            val.sort(sortByLocale)
+            return val
+          }
+        })
+      )
+    }
   }
 
   public ngOnChanges(): void {
-    this.setFormData()
-    this.editMode ? this.formGroup.enable() : this.formGroup.disable()
-    this.oldWorkspaceName = this.workspace.name
-    if (this.workspace.name === 'ADMIN') this.formGroup.controls['name'].disable()
+    if (this.workspace) {
+      this.setFormData()
+      if (this.editMode) this.formGroup.enable()
+      else this.formGroup.disable()
+      this.oldWorkspaceName = this.workspace.name
+      if (this.workspace.name === 'ADMIN') this.formGroup.controls['name'].disable()
+    } else {
+      this.formGroup.reset()
+      this.formGroup.disable()
+      this.oldWorkspaceName = undefined
+    }
   }
 
   public setFormData(): void {
     Object.keys(this.formGroup.controls).forEach((element) => {
       this.formGroup.controls[element].setValue((this.workspace as any)[element])
     })
-    if (this.workspace.logoUrl && this.workspace.logoUrl !== '') this.fetchingLogoUrl = this.workspace.logoUrl
-    else if (this.workspace.name && this.workspace.name !== '')
-      this.fetchingLogoUrl = bffImageUrl(this.imageApi.configuration.basePath, this.workspace.name, RefType.Logo)
-    console.log('fetchingLogoUrl: ' + this.fetchingLogoUrl)
+    this.fetchingLogoUrl = this.getLogoUrl(this.workspace)
     this.currentLogoUrl.emit(this.fetchingLogoUrl)
   }
 
-  public onSubmit(): void {
+  public onSave(): void {
+    if (!this.workspace) return
     if (this.formGroup.valid) {
       Object.assign(this.workspace, this.getWorkspaceChangesFromForm())
       if (this.oldWorkspaceName !== this.workspace.name) {
@@ -175,10 +182,20 @@ export class WorkspacePropsComponent implements OnChanges {
     this.formGroup.controls['logoUrl'].setValue('')
   }
 
+  public getLogoUrl(workspace: Workspace | undefined): string | undefined {
+    if (!workspace) {
+      return undefined
+    }
+    if (workspace.logoUrl && workspace.logoUrl != '') {
+      return workspace.logoUrl
+    }
+    return bffImageUrl(this.imageApi.configuration.basePath, workspace.name, RefType.Logo)
+  }
+
   public onInputChange(event: Event): void {
     this.fetchingLogoUrl = (event.target as HTMLInputElement).value
     if ((event.target as HTMLInputElement).value == undefined || (event.target as HTMLInputElement).value == '') {
-      this.fetchingLogoUrl = bffImageUrl(this.imageApi.configuration.basePath, this.workspace.name, RefType.Logo)
+      this.fetchingLogoUrl = bffImageUrl(this.imageApi.configuration.basePath, this.workspace?.name, RefType.Logo)
     }
   }
 }

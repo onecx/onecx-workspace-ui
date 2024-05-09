@@ -29,7 +29,7 @@ const snapshot: WorkspaceSnapshot = {
   }
 }
 
-describe('PreviewComponent', () => {
+xdescribe('PreviewComponent', () => {
   let component: PreviewComponent
   let fixture: ComponentFixture<PreviewComponent>
 

@@ -444,7 +444,7 @@
     "CONSTRAINT_NAME": "Please add a Workspace name before uploading a file.",
     "CONSTRAINT_SIZE": "The image file size exceeds the maximum length of 100,000 bytes.",
     "TOOLTIPS": {
-      "URL": "As an alternative to uploading, a URL to an image can be specified here",
+      "URL": "As an alternative to uploading, a URL to an image can be specified here.",
       "IMAGE": "Logo",
       "PLACEHOLDER": "Logo Placeholder",
       "UPLOAD": "Select and upload image"

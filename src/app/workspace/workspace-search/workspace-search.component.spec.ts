@@ -12,7 +12,7 @@ import { WorkspaceAbstract, WorkspaceAPIService, SearchWorkspacesResponse } from
 
 import { WorkspaceSearchComponent } from './workspace-search.component'
 
-fdescribe('WorkspaceSearchComponent', () => {
+describe('WorkspaceSearchComponent', () => {
   let component: WorkspaceSearchComponent
   let fixture: ComponentFixture<WorkspaceSearchComponent>
   let mockActivatedRoute: ActivatedRoute

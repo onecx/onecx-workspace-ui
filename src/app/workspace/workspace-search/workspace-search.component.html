@@ -52,13 +52,17 @@
         </ocx-data-view-controls>
       </ng-template>
       <!-- List - view -->
-      <ng-template let-workspace pTemplate="listItem">
+      <ng-template let-workspace let-row="rowIndex" pTemplate="listItem">
         <div
           class="col-12 grid grid-nogutter row-gap-1 align-items-center listview-row p-1 hover:bg-gray-200 cursor-pointer line-height-2"
           [routerLink]="['./' + workspace.name]"
         >
           <div class="col-12 sm:col-2 md:col-2 lg:col-2 xl:col-2 px-2 text-center mt-1">
-            <app-image-container [imageUrl]="getImageUrl(workspace)" [small]="true"></app-image-container>
+            <app-image-container
+              [id]="'app_workspace_search_data_row_' + row + '_logo'"
+              [small]="false"
+              [imageUrl]="getLogoUrl(workspace)"
+            ></app-image-container>
           </div>
           <div
             class="col-12 sm:col-3 md:col-3 lg:col-3 xl:col-2 px-2 font-bold text-center sm:text-left"
@@ -69,6 +73,7 @@
           <div class="col-12 sm:col-4 md:col-4 lg:col-4 xl:col-2 px-2 text-center sm:text-left">
             <a
               [routerLink]="workspace.baseUrl"
+              [id]="'app_workspace_search_data_row_' + row + '_goto_workspace'"
               (click)="$event.stopPropagation()"
               target="_blank"
               class="text-primary"
@@ -113,7 +118,11 @@
               (click)="onGotoMenu($event, workspace)"
             ></span>
             <div class="h-3rem md:h-5rem mt-1 flex flex-column justify-content-center align-items-center text-center">
-              <app-image-container [imageUrl]="getImageUrl(workspace)" [small]="false"></app-image-container>
+              <app-image-container
+                [id]="'app_workspace_search_data_row_' + row + '_logo'"
+                [small]="false"
+                [imageUrl]="getLogoUrl(workspace)"
+              ></app-image-container>
             </div>
             <div class="h-3rem mb-1 flex flex-column justify-content-between px-2 text-center gap-1">
               <div

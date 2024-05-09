@@ -75,7 +75,7 @@ const product: Product = {
   modificationCount: 1
 }
 
-fdescribe('MenuDetailComponent', () => {
+describe('MenuDetailComponent', () => {
   let component: MenuDetailComponent
   let fixture: ComponentFixture<MenuDetailComponent>
   let mockActivatedRoute: Partial<ActivatedRoute>
@@ -698,7 +698,7 @@ fdescribe('MenuDetailComponent', () => {
 class TestComponent {
   value: any = ''
 }
-fdescribe('DefaultValueAccessor prototype modification', () => {
+describe('DefaultValueAccessor prototype modification', () => {
   let component: TestComponent
   let fixture: ComponentFixture<TestComponent>
   let inputElement: HTMLInputElement
@@ -716,7 +716,7 @@ fdescribe('DefaultValueAccessor prototype modification', () => {
     inputElement = fixture.nativeElement.querySelector('input')
   })
 
-  fit('should trim the value on model change: value is of type string', () => {
+  it('should trim the value on model change: value is of type string', () => {
     inputElement.value = '  test  '
     inputElement.dispatchEvent(new Event('input'))
     fixture.detectChanges()
