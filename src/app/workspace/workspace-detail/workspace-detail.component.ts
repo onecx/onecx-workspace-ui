@@ -69,7 +69,7 @@ export class WorkspaceDetailComponent implements OnInit {
     this.workspace$ = this.workspaceApi.getWorkspaceByName({ workspaceName: this.workspaceName }).pipe(
       map((data) => {
         if (data.resource) this.workspace = data.resource
-        this.currentLogoUrl = this.getLogoUrl(data.resource!)
+        this.currentLogoUrl = this.getLogoUrl(data.resource)
         return data
       }),
       catchError((err) => {
@@ -177,8 +177,9 @@ export class WorkspaceDetailComponent implements OnInit {
     this.prepareActionButtons()
   }
 
-  public getLogoUrl(workspace: Workspace): string {
-    if (workspace?.logoUrl) return workspace?.logoUrl
+  public getLogoUrl(workspace: Workspace | undefined): string | undefined {
+    if (!workspace) return undefined
+    if (workspace.logoUrl) return workspace?.logoUrl
     else return bffImageUrl(this.imageApi.configuration.basePath, workspace?.name, RefType.Logo)
   }
 

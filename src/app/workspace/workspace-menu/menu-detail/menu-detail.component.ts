@@ -201,16 +201,17 @@ export class MenuDetailComponent implements OnChanges {
         itemCreated = true
       } else {
         // search for mfe with best match of base path
-        for (let i = 0; i < this.mfeItems.length; i++) {
-          const bp = this.mfeItems[i].basePath!
+        for (const mfeItem of this.mfeItems) {
+          //for (let i = 0; i < this.mfeItems.length; i++) {
+          const bp = mfeItem.basePath!
           // perfect
           if (url === bp) {
-            mfe = this.mfeItems[i]
+            mfe = mfeItem
             break
           }
           // if URL was extended then create such specific item with best match
           if (url.toLowerCase().indexOf(bp.toLowerCase()) === 0 && maxLength < bp.length!) {
-            mfe = { ...this.mfeItems[i] }
+            mfe = { ...mfeItem }
             maxLength = bp.length // matching length
             mfe.basePath = url
             itemCreated = true
@@ -450,13 +451,12 @@ export class MenuDetailComponent implements OnChanges {
     if (!query || query === '') {
       filtered = this.mfeItems // exception a)
     } else {
-      for (let i = 0; i < this.mfeItems.length; i++) {
-        const mfe = this.mfeItems[i]
+      for (const mfeItem of this.mfeItems) {
         if (
-          mfe.basePath?.toLowerCase().indexOf(query.toLowerCase()) === 0 ||
-          query.toLowerCase().indexOf(mfe.basePath?.toLowerCase()!) === 0
+          mfeItem.basePath?.toLowerCase().indexOf(query.toLowerCase()) === 0 ||
+          query.toLowerCase().indexOf(mfeItem.basePath?.toLowerCase()!) === 0
         ) {
-          filtered.push(mfe)
+          filtered.push(mfeItem)
         }
       }
       // exception b)
