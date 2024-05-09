@@ -35,6 +35,7 @@
         <div class="flex flex-row justify-content-between align-items-center column-gap-2">
           <div class="flex-grow-1 font-semibold">{{ 'DIALOG.PRODUCTS.PS_PRODUCTS' | translate }}</div>
           <div
+            id="workspace_detail_product_picklist_ps_load"
             class="pi pi-refresh cursor-pointer"
             (click)="onLoadPsProducts()"
             [title]="'ACTIONS.RELOAD' | translate"
@@ -45,6 +46,7 @@
         <div class="flex flex-row justify-content-between align-items-center column-gap-2">
           <div class="flex-grow-1 font-semibold">{{ 'DIALOG.PRODUCTS.W_PRODUCTS' | translate }}</div>
           <div
+            id="workspace_detail_product_picklist_w_load"
             class="pi pi-refresh cursor-pointer"
             (click)="onLoadWProducts()"
             [title]="'ACTIONS.RELOAD' | translate"
