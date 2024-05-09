@@ -9,12 +9,13 @@ import { Action } from '@onecx/angular-accelerator'
 
 import {
   ImagesInternalAPIService,
+  RefType,
   SearchWorkspacesResponse,
   Workspace,
   WorkspaceAPIService,
   WorkspaceAbstract
 } from 'src/app/shared/generated'
-import { limitText } from 'src/app/shared/utils'
+import { bffImageUrl, limitText } from 'src/app/shared/utils'
 
 @Component({
   selector: 'app-workspace-search',
@@ -170,5 +171,14 @@ export class WorkspaceSearchComponent implements OnInit {
     } else {
       return this.imageApi.configuration.basePath + '/images/' + workspace.name + '/logo'
     }
+  }
+  public getLogoUrl(workspace: Workspace | undefined): string | undefined {
+    if (!workspace) {
+      return undefined
+    }
+    if (workspace.logoUrl && workspace.logoUrl != '') {
+      return workspace.logoUrl
+    }
+    return bffImageUrl(this.imageApi.configuration.basePath, workspace.name, RefType.Logo)
   }
 }

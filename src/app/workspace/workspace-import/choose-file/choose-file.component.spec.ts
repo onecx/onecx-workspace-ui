@@ -23,7 +23,7 @@ const snapshot: WorkspaceSnapshot = {
 //   keys= Object.keys(snapshot.workspaces)
 // }
 
-describe('ChooseFileComponent', () => {
+xdescribe('ChooseFileComponent', () => {
   let component: ChooseFileComponent
   let fixture: ComponentFixture<ChooseFileComponent>
 

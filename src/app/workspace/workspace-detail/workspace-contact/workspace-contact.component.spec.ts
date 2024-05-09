@@ -24,7 +24,7 @@ const formGroup = new FormGroup({
   streetNo: new FormControl('streetNo')
 })
 
-fdescribe('WorkspaceContactComponent', () => {
+describe('WorkspaceContactComponent', () => {
   let component: WorkspaceContactComponent
   let fixture: ComponentFixture<WorkspaceContactComponent>
 
@@ -102,7 +102,7 @@ fdescribe('WorkspaceContactComponent', () => {
     expect(component.formGroup.controls['street'].value).toEqual('detail street')
   })
 
-  it('should update portal onSubmit', () => {
+  it('should update portal onSave', () => {
     component.formGroup = new FormGroup({
       phoneNumber: new FormControl('123456789'),
       country: new FormControl('Some country'),
@@ -120,12 +120,12 @@ fdescribe('WorkspaceContactComponent', () => {
       streetNo: 'detail streetNo'
     }
 
-    component.onSubmit()
+    component.onSave()
 
     expect(component.editMode).toBeFalse()
   })
 
-  it('should update portal onSubmit: no address', () => {
+  it('should update portal onSave: no address', () => {
     const newPortal: Workspace = {
       name: 'name',
       theme: 'theme',
@@ -134,7 +134,7 @@ fdescribe('WorkspaceContactComponent', () => {
     }
     component.workspace = { ...newPortal, address: undefined }
 
-    component.onSubmit()
+    component.onSave()
 
     expect(component.workspace.address).toBeDefined()
   })
