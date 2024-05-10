@@ -75,7 +75,6 @@
               [(ngModel)]="sourceFilterValue"
               (keyup)="options.filter(getFilterValue($event))"
               type="text"
-              role="textbox"
               [placeholder]="'ACTIONS.SEARCH.FILTER' | translate"
             />
             <span
@@ -108,7 +107,6 @@
               [(ngModel)]="targetFilterValue"
               (keyup)="options.filter(getFilterValue($event))"
               type="text"
-              role="textbox"
               [placeholder]="'ACTIONS.SEARCH.FILTER' | translate"
             />
             <span

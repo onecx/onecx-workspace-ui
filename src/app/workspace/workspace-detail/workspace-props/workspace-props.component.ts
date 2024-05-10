@@ -196,6 +196,6 @@ export class WorkspacePropsComponent implements OnChanges {
     this.fetchingLogoUrl = (event.target as HTMLInputElement).value
     if ((event.target as HTMLInputElement).value == undefined || (event.target as HTMLInputElement).value == '') {
       this.fetchingLogoUrl = bffImageUrl(this.imageApi.configuration.basePath, this.workspace?.name, RefType.Logo)
-    }
+    } else this.currentLogoUrl.emit(this.fetchingLogoUrl)
   }
 }

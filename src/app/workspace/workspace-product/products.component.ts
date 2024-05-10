@@ -168,7 +168,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
           if (result.stream) {
             for (let p of result.stream) {
               let sp = { ...p, bucket: 'SOURCE', changedMfe: false } as ExtendedProduct
-              this.psProductsOrg.set(p.productName!, sp)
+              this.psProductsOrg.set(p.productName ?? '', sp)
               // mark product if there are changes on microfrontends
               if (p.microfrontends)
                 for (const mfe of p.microfrontends) {
@@ -255,20 +255,18 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
           this.displayedDetailItem.microfrontends?.sort(this.sortMfesByAppId)
           // get product for extend information on mfes
           const product = this.psProductsOrg.get(this.displayedDetailItem.productName!)
-          if (product) {
-            this.displayedDetailItem.undeployed = product.undeployed
-            this.displayedDetailItem.changedMfe = product.changedMfe ?? false
-            // enrich microfrontends with product store information
-            if (this.displayedDetailItem.microfrontends && product.microfrontends) {
-              for (const ddiMfe of this.displayedDetailItem.microfrontends)
-                for (const mfe of product.microfrontends) {
-                  if (mfe.appId === ddiMfe.appId) {
-                    ddiMfe.deprecated = mfe.deprecated
-                    ddiMfe.undeployed = mfe.undeployed
-                    ddiMfe.type = mfe.type
-                  }
+          this.displayedDetailItem.undeployed = product?.undeployed
+          this.displayedDetailItem.changedMfe = product?.changedMfe ?? false
+          // enrich microfrontends with product store information
+          if (this.displayedDetailItem.microfrontends && product?.microfrontends) {
+            for (const ddiMfe of this.displayedDetailItem.microfrontends)
+              for (const mfe of product.microfrontends) {
+                if (mfe.appId === ddiMfe.appId) {
+                  ddiMfe.deprecated = mfe.deprecated
+                  ddiMfe.undeployed = mfe.undeployed
+                  ddiMfe.type = mfe.type
                 }
-            }
+              }
           }
           this.fillForm(this.displayedDetailItem)
         },

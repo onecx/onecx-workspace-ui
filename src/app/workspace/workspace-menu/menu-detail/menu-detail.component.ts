@@ -202,7 +202,6 @@ export class MenuDetailComponent implements OnChanges {
       } else {
         // search for mfe with best match of base path
         for (const mfeItem of this.mfeItems) {
-          //for (let i = 0; i < this.mfeItems.length; i++) {
           const bp = mfeItem.basePath!
           // perfect
           if (url === bp) {
@@ -210,9 +209,9 @@ export class MenuDetailComponent implements OnChanges {
             break
           }
           // if URL was extended then create such specific item with best match
-          if (url.toLowerCase().indexOf(bp.toLowerCase()) === 0 && maxLength < bp.length!) {
+          if (url.toLowerCase().startsWith(bp.toLowerCase()) && maxLength < bp.length!) {
             mfe = { ...mfeItem }
-            maxLength = bp.length // matching length
+            maxLength = bp.length // remember length for matching
             mfe.basePath = url
             itemCreated = true
           }
@@ -280,7 +279,7 @@ export class MenuDetailComponent implements OnChanges {
     if (this.changeMode === 'EDIT' && this.menuItemId) {
       this.menuApi
         .updateMenuItem({
-          menuItemId: this.menuItemId!,
+          menuItemId: this.menuItemId,
           updateMenuItemRequest: this.menuItem as UpdateMenuItemRequest
         })
         .subscribe({
@@ -391,7 +390,7 @@ export class MenuDetailComponent implements OnChanges {
           for (let p of products) {
             if (p.microfrontends) {
               p.microfrontends.reduce(
-                (mfeMap, mfe) => mfeMap.set(mfe.id!, { ...mfe, product: p.displayName! }),
+                (mfeMap, mfe) => mfeMap.set(mfe.id ?? '', { ...mfe, product: p.displayName! }),
                 this.mfeMap
               )
               for (let mfe of p.microfrontends) {
