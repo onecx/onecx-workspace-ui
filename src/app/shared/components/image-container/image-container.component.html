@@ -1,17 +1,17 @@
 <img
-  [id]="id"
   *ngIf="!displayDefaultLogo"
+  [id]="id"
   [class]="'image-object image-' + (small ? 'sm' : 'lg') + ' sm:image-lg ' + (styleClass ? styleClass : '')"
   [ocxSrc]="displayImageUrl"
   (error)="onImageError()"
-  [alt]="'IMAGE.TOOLTIPS.IMAGE' | translate"
-  [title]="title ? title : ('IMAGE.TOOLTIPS.IMAGE' | translate)"
+  [alt]="'DIALOG.LOGO.LABEL' | translate"
+  [title]="title ? title : ('DIALOG.LOGO.LABEL' | translate)"
 />
 <img
-  [id]="id"
   *ngIf="displayDefaultLogo"
+  [id]="id"
   [class]="'image-object image-' + (small ? 'sm' : 'lg') + ' sm:image-lg ' + (styleClass ? styleClass : '')"
   [src]="defaultImageUrl"
-  [alt]="'IMAGE.TOOLTIPS.IMAGE' | translate"
-  [title]="title ? title : ('IMAGE.TOOLTIPS.PLACEHOLDER' | translate)"
+  [alt]="'DIALOG.LOGO.PLACEHOLDER' | translate"
+  [title]="title ? title : ('DIALOG.LOGO.PLACEHOLDER' | translate)"
 />
