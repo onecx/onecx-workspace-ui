@@ -34,9 +34,8 @@ export class WorkspaceSearchComponent implements OnInit {
   public workspaces: WorkspaceAbstract[] | undefined = []
   public viewMode = 'grid'
   public filter: string | undefined
-  public sortField = ''
+  public sortField = 'name'
   public sortOrder = 1
-  public defaultSortField = 'name'
   public dataViewControlsTranslations: DataViewControlTranslations = {}
 
   @ViewChild('table', { static: false }) table!: any

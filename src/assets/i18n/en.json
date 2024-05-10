@@ -369,6 +369,10 @@
       "VIEW_MODE_LIST": "List view",
       "VIEW_MODE_TABLE": "Table view",
       "VIEW_MODE_TREE": "Tree view"
+    },
+    "LOGO": {
+      "LABEL": "Logo",
+      "PLACEHOLDER": "Logo Placeholder"
     }
   },
   "PRODUCT": {

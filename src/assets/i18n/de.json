@@ -369,6 +369,10 @@
       "VIEW_MODE_LIST": "Listenansicht",
       "VIEW_MODE_TABLE": "Tabellenansicht",
       "VIEW_MODE_TREE": "Baumansicht"
+    },
+    "LOGO": {
+      "LABEL": "Logo",
+      "PLACEHOLDER": "Logo Platzhalter"
     }
   },
   "PRODUCT": {

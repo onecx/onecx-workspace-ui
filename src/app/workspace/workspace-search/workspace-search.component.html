@@ -40,8 +40,8 @@
             { label: 'WORKSPACE.NAME' | translate, value: 'name' },
             { label: 'WORKSPACE.THEME' | translate, value: 'theme' }
           ]"
-          [defaultSortOption]="defaultSortField"
-          [defaultSortDirection]="sortOrder === -1"
+          [defaultSortOption]="sortField"
+          [defaultSortDirection]="false"
           (dataViewChange)="onLayoutChange($event)"
           (filterChange)="onFilterChange($event)"
           [filterColumns]="['WORKSPACE.NAME' | translate, 'WORKSPACE.THEME' | translate]"

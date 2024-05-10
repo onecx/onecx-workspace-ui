@@ -118,7 +118,6 @@ export class WorkspacePropsComponent implements OnChanges {
   }
 
   public onFileUpload(ev: Event): void {
-    ev.stopPropagation
     const workspaceName = this.formGroup.controls['name'].value
     if (!workspaceName || workspaceName === '') {
       this.msgService.error({
@@ -192,10 +191,12 @@ export class WorkspacePropsComponent implements OnChanges {
     return bffImageUrl(this.imageApi.configuration.basePath, workspace.name, RefType.Logo)
   }
 
+  // changes on external log URL field: user enters text (change) or paste something
   public onInputChange(event: Event): void {
     this.fetchingLogoUrl = (event.target as HTMLInputElement).value
-    if ((event.target as HTMLInputElement).value == undefined || (event.target as HTMLInputElement).value == '') {
+    if (!this.fetchingLogoUrl || this.fetchingLogoUrl === '') {
       this.fetchingLogoUrl = bffImageUrl(this.imageApi.configuration.basePath, this.workspace?.name, RefType.Logo)
     }
+    this.currentLogoUrl.emit(this.fetchingLogoUrl)
   }
 }

@@ -159,7 +159,8 @@
                 id="workspace_detail_form_logo_url"
                 [title]="'IMAGE.TOOLTIPS.URL' | translate"
                 formControlName="logoUrl"
-                (blur)="onInputChange($event)"
+                (input)="onInputChange($event)"
+                (change)="onInputChange($event)"
               />
               <label for="workspace_detail_form_logo_url"> {{ 'IMAGE.LOGO_URL' | translate }} </label>
             </span>
