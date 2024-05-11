@@ -219,17 +219,17 @@
               <label for="product_detail_item_baseurl"> {{ 'PRODUCT.BASE_URL' | translate }}</label>
             </span>
           </div>
-          <p-divider align="center" styleClass="m-0">
-            <div class="px-3 font-bold text-primary">Microfrontends - Modules</div></p-divider
-          >
-          <div
-            *ngIf="!displayedDetailItem?.microfrontends || displayedDetailItem?.microfrontends?.length === 0"
-            class="ml-3"
-          >
-            {{ 'ACTIONS.SEARCH.NO_DATA' | translate }}
-          </div>
-          <div *ngIf="displayedDetailItem?.microfrontends">
-            <div formArrayName="mfes">
+          <div>
+            <p-divider align="center" styleClass="mt-0 mb-2">
+              <div class="px-3 font-bold text-primary">Microfrontends - Modules</div></p-divider
+            >
+            <div
+              *ngIf="!displayedDetailItem?.microfrontends || displayedDetailItem?.microfrontends?.length === 0"
+              class="ml-3"
+            >
+              {{ 'ACTIONS.SEARCH.NO_DATA' | translate }}
+            </div>
+            <div *ngIf="displayedDetailItem?.microfrontends" formArrayName="mfes" class="mt-3">
               <div *ngFor="let mfe of mfeControls.controls; let i = index">
                 <div [formGroupName]="i" [class.mb-4]="i < mfeControls.controls.length - 2">
                   <span class="p-float-label" [title]="'PRODUCT.MFE.BASE_PATH.TOOLTIP' | translate" controlErrorAnchor>
@@ -249,20 +249,28 @@
             </div>
           </div>
           <div *ngIf="displayedDetailItem?.components">
-            <p-divider align="center" styleClass="m-0">
+            <p-divider align="center" styleClass="mt-0 mb-2">
               <div class="px-3 font-bold text-primary">Microfrontends - Components</div></p-divider
             >
             <div
-              *ngFor="let component of displayedDetailItem?.components; let i = index"
-              class="mt-1 ml-3 flex flex-row column-gap-4"
+              *ngFor="let item of displayedDetailItem?.components; let i = index"
+              class="ml-3 flex flex-row column-gap-4"
             >
-              <div>{{ component.appId }}</div>
-              <div *ngIf="component.deprecated" class="danger-action-text">
+              <div>{{ item.exposedModule }}</div>
+              <div *ngIf="item.deprecated" class="danger-action-text">
                 {{ 'DIALOG.PRODUCTS.MFES.DEPRECATED' | translate }}
               </div>
-              <div *ngIf="component.undeployed" class="danger-action-text">
+              <div *ngIf="item.undeployed" class="danger-action-text">
                 {{ 'DIALOG.PRODUCTS.MFES.UNDEPLOYED' | translate }}
               </div>
+            </div>
+          </div>
+          <div *ngIf="displayedDetailItem?.slots">
+            <p-divider align="center" styleClass="mt-0 mb-2">
+              <div class="px-3 font-bold text-primary">Microfrontends - Slots</div></p-divider
+            >
+            <div *ngFor="let item of displayedDetailItem?.slots; let i = index" class="ml-3 flex flex-row column-gap-4">
+              <div>{{ item.name }}</div>
             </div>
           </div>
         </div>
