@@ -14,6 +14,7 @@ import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@ang
 
 import {
   Microfrontend,
+  MicrofrontendType,
   GetProductByIdRequestParams,
   CreateProductRequest,
   UpdateProductRequest,
@@ -21,8 +22,7 @@ import {
   ProductAPIService,
   SlotPS,
   Workspace,
-  WorkspaceProductAPIService,
-  MicrofrontendType
+  WorkspaceProductAPIService
 } from 'src/app/shared/generated'
 import { MfeInfo } from '@onecx/portal-integration-angular'
 import { AppStateService, PortalMessageService, UserService } from '@onecx/angular-integration-interface'
@@ -32,12 +32,17 @@ import { limitText, prepareUrlPath } from 'src/app/shared/utils'
 export type ExtendedMicrofrontend = Microfrontend & {
   exposedModule?: string // MicrofrontendPS
 }
+export type AppType = {
+  appId: string
+  modules?: ExtendedMicrofrontend[]
+  components?: ExtendedMicrofrontend[]
+}
 // combine Workspace Product with properties from product store (ProductStoreItem)
 // => bucket is used to recognize the origin within HTML
 export type ExtendedProduct = Product & {
-  bucket: 'SOURCE' | 'TARGET'
-  changedMfe?: boolean
-  components?: ExtendedMicrofrontend[]
+  bucket: 'SOURCE' | 'TARGET' // target: workspace product = registered
+  changedMfe: boolean // true if there is a MFE with deprecated or undeployed
+  apps: Map<string, AppType> // key: appId
   slots?: Array<SlotPS> // from ProductStoreItem
 }
 interface ViewingModes {
@@ -102,7 +107,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     this.formGroup = this.fb.group({
       displayName: new FormControl({ value: null, disabled: true }),
       baseUrl: new FormControl({ value: null, disabled: true }),
-      mfes: this.fb.array([])
+      modules: this.fb.array([])
     })
     this.viewingModes = ALL_VIEW_MODES
     this.sourceListViewMode = this.viewingModes.find((v) => v.mode === 'list')
@@ -136,9 +141,11 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   }
 
   public onLoadPsProducts(): void {
+    this.displayDetails = true
     this.psProducts$.subscribe()
   }
   public onLoadWProducts(): void {
+    this.displayDetails = true
     this.wProducts$.subscribe()
   }
   private searchWProducts(): void {
@@ -170,12 +177,14 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
           // filter: return psProducts which are not yet registered
           this.psProducts = []
           this.psProductsOrg = new Map()
-          console.log(result.stream)
           if (result.stream)
             for (let p of result.stream) {
-              let sp = { ...p, bucket: 'SOURCE', changedMfe: false } as ExtendedProduct
-              this.psProductsOrg.set(p.productName ?? '', sp)
-              this.enrichWProductWithPSData(sp)
+              let psp = { ...p, bucket: 'SOURCE', changedMfe: false } as ExtendedProduct
+              this.prepareProductApps(psp)
+              this.psProductsOrg.set(psp.productName ?? '', psp)
+              // add product to SOURCE picklist only if not yet registered
+              const wp = this.wProducts.filter((wp) => wp.productName === psp.productName)
+              if (wp.length === 0 && !psp.undeployed) this.psProducts.push(psp)
             }
           return this.psProducts.sort(this.sortProductsByDisplayName)
         }),
@@ -189,34 +198,49 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
       .pipe(takeUntil(this.destroy$))
   }
 
-  // Enrich Workspace Product (if exists) with useful Product Store data
-  private enrichWProductWithPSData(psp: ExtendedProduct) {
-    // search for workspace product
-    const wp = this.wProducts.filter((wp) => wp.productName === psp.productName)
-    // mark product if there are changes on microfrontends
-    if (psp.microfrontends)
-      for (const mfe of psp.microfrontends) {
-        psp.changedMfe = (mfe.undeployed ?? false) || (mfe.deprecated ?? false) || (psp.changedMfe ?? false)
+  // build map of apps, which containing modules and components
+  private prepareProductApps(psp: ExtendedProduct) {
+    if (!psp.microfrontends) return
+    psp.apps = new Map()
+    psp.microfrontends.map((mfe) => {
+      if (!psp.apps.has(mfe.appId!)) psp.apps.set(mfe.appId!, { appId: mfe.appId! })
+    })
+    // step through mfe array and pick modules and components
+    for (const mfe of psp.microfrontends) {
+      const app = psp.apps.get(mfe.appId!)
+      if (app) {
+        if (mfe.type === MicrofrontendType.Module) {
+          if (!app.modules) app.modules = []
+          app.modules!.push(mfe as ExtendedMicrofrontend)
+        }
+        if (mfe.type === MicrofrontendType.Component) {
+          if (!app.components) app.components = []
+          app.components.push(mfe as ExtendedMicrofrontend)
+          app.components.sort(this.sortMfesByExposedModule)
+        }
       }
-    if (wp.length === 0) {
-      if (!psp.undeployed) this.psProducts.push(psp)
-    } else {
-      wp[0].undeployed = psp.undeployed
-      wp[0].changedMfe = psp.changedMfe ?? false
-      //wp[0].slots = psp.slots?.sort(this.sortSlotsByName)
+      // mark product if there are changes on microfrontends
+      psp.changedMfe = (mfe.undeployed ?? false) || (mfe.deprecated ?? false) || psp.changedMfe
     }
   }
+
   public sortProductsByDisplayName(a: Product, b: Product): number {
     return (a.displayName ? a.displayName.toUpperCase() : '').localeCompare(
       b.displayName ? b.displayName.toUpperCase() : ''
     )
   }
-  public sortSlotsByName(a: SlotPS, b: SlotPS): number {
-    return (a.name ? a.name.toUpperCase() : '').localeCompare(b.name ? b.name.toUpperCase() : '')
-  }
   public sortMfesByAppId(a: Microfrontend, b: Microfrontend): number {
     return (a.appId ? a.appId.toUpperCase() : '').localeCompare(b.appId ? b.appId.toUpperCase() : '')
   }
+  public sortMfesByExposedModule(a: ExtendedMicrofrontend, b: ExtendedMicrofrontend): number {
+    return (a.exposedModule ? a.exposedModule.toUpperCase() : '').localeCompare(
+      b.exposedModule ? b.exposedModule.toUpperCase() : ''
+    )
+  }
+  public sortSlotsByName(a: SlotPS, b: SlotPS): number {
+    return (a.name ? a.name.toUpperCase() : '').localeCompare(b.name ? b.name.toUpperCase() : '')
+  }
+
   public getImageUrl(url?: string): string {
     if (url) return url
     return prepareUrlPath(this.currentMfe?.remoteBaseUrl, environment.DEFAULT_PRODUCT_PATH)
@@ -249,8 +273,10 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     event.stopPropagation()
   }
   public onSourceSelect(ev: any): void {
-    if (ev.items[0]) this.fillForm(ev.items[0])
-    else this.displayDetails = false
+    if (ev.items[0]) {
+      const pspOrg = this.psProductsOrg.get(ev.items[0].productName!)
+      if (pspOrg) this.fillForm(pspOrg)
+    } else this.displayDetails = false
   }
   public onTargetSelect(ev: any): void {
     if (ev.items[0]) this.getWProduct(ev.items[0])
@@ -263,24 +289,27 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
       .subscribe({
         next: (data) => {
           let item = data as ExtendedProduct
-          item.description = item.description
+          //item.description = item.description
           item.bucket = wProduct.bucket
           item.microfrontends?.sort(this.sortMfesByAppId)
           // get product for extend information on mfes
           const pspOrg = this.psProductsOrg.get(item.productName!)
-          console.log('pspOrg', pspOrg)
-          item.undeployed = pspOrg?.undeployed
-          item.changedMfe = pspOrg?.changedMfe ?? false
-          item.slots = pspOrg?.slots
-          // enrich microfrontends with product store information
-          if (item.microfrontends && pspOrg?.microfrontends) {
-            for (const ddiMfe of item.microfrontends)
-              for (const mfe of pspOrg.microfrontends) {
-                if (mfe.appId === ddiMfe.appId && mfe.type === MicrofrontendType.Module) {
-                  ddiMfe.deprecated = mfe.deprecated
-                  ddiMfe.undeployed = mfe.undeployed
+          if (pspOrg) {
+            item.undeployed = pspOrg.undeployed
+            item.changedMfe = pspOrg.changedMfe
+            item.slots = pspOrg.slots
+            item.apps = pspOrg.apps
+            // enrich microfrontends with product store information
+            if (item.microfrontends && pspOrg.microfrontends) {
+              for (const ddiMfe of item.microfrontends)
+                for (const mfe of pspOrg.microfrontends) {
+                  // the workspace knows only about a Module (one module)!
+                  if (mfe.appId === ddiMfe.appId && mfe.type === MicrofrontendType.Module) {
+                    ddiMfe.deprecated = mfe.deprecated
+                    ddiMfe.undeployed = mfe.undeployed
+                  }
                 }
-              }
+            }
           }
           this.fillForm(item)
         },
@@ -291,59 +320,78 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
         complete() {}
       })
   }
+
   private fillForm(item: ExtendedProduct) {
     this.displayDetails = true
     this.displayedDetailItem = item
+    this.displayedDetailItem.slots?.sort(this.sortSlotsByName)
     this.formGroup.controls['displayName'].setValue(this.displayedDetailItem.displayName)
     this.formGroup.controls['baseUrl'].setValue(this.displayedDetailItem.baseUrl)
-    // dynamic form array for microfrontends
-    const mfes = this.formGroup.get('mfes') as FormArray
-    while (mfes.length > 0) mfes.removeAt(0) // clear
-    this.displayedDetailItem.slots?.sort(this.sortSlotsByName)
-    if (this.displayedDetailItem.microfrontends) {
-      if (this.displayedDetailItem.microfrontends.length === 0) this.displayedDetailItem.microfrontends = undefined
-      // add a form group for each mfe
-      else
-        this.displayedDetailItem.microfrontends.forEach((mfe, i) => {
-          if (mfe.type === MicrofrontendType.Module) {
-            mfes.push(
-              this.fb.group({
-                id: new FormControl(null),
-                appId: new FormControl(null),
-                type: new FormControl(null),
-                basePath: new FormControl(null, [Validators.required, Validators.maxLength(255)])
-              })
-            )
-            mfes.at(i).patchValue({ appId: mfe.appId, type: mfe.type, basePath: mfe.basePath })
-            if (this.displayedDetailItem?.bucket === 'SOURCE')
-              (mfes.controls[i] as FormGroup).controls['basePath'].disable()
-          } else {
-            if (!this.displayedDetailItem?.components) this.displayedDetailItem!.components = []
-            this.displayedDetailItem?.components.push(mfe)
-          }
-        })
+
+    // build a dynamic form array for all microfrontend modules for a TARGET product
+    if (item.bucket === 'TARGET') {
+      const modules = this.formGroup.get('modules') as FormArray
+      while (modules.length > 0) modules.removeAt(0) // clear form
+      if (this.displayedDetailItem.microfrontends) {
+        if (this.displayedDetailItem.microfrontends.length === 0) {
+          this.displayedDetailItem.microfrontends = undefined
+        }
+        this.prepareFormForModulesAndComponents(this.displayedDetailItem, modules)
+      }
     }
   }
+  private prepareFormForModulesAndComponents(item: ExtendedProduct, modules: FormArray): void {
+    if (!item || !item.microfrontends) return
+    item.microfrontends?.forEach((mfe, i) => {
+      const psMfeModule = this.getProductStoreMfeData(item, mfe.appId!)
+      modules.push(
+        this.fb.group({
+          id: new FormControl(null),
+          appId: new FormControl(null),
+          basePath: new FormControl(null, [Validators.required, Validators.maxLength(255)]),
+          deprecated: new FormControl(null),
+          undeployed: new FormControl(null),
+          exposedModule: new FormControl(null)
+        })
+      )
+      modules.at(i).patchValue({
+        id: mfe.id,
+        appId: mfe.appId,
+        basePath: mfe.basePath,
+        deprecated: psMfeModule?.deprecated,
+        undeployed: psMfeModule?.undeployed,
+        exposedModule: psMfeModule?.exposedModule
+      })
+    })
+  }
+  private getProductStoreMfeData(item: ExtendedProduct, appId: string): ExtendedMicrofrontend | undefined {
+    let module: ExtendedMicrofrontend | undefined
+    if (item.apps.has(appId)) {
+      const a = item.apps.get(appId)
+      module = a?.modules ? a.modules[0] : undefined
+    }
+    return module
+  }
+
   private clearForm() {
     this.displayDetails = false
     this.displayedDetailItem = undefined
     this.formGroup.reset()
   }
-  get mfeControls(): any {
-    return this.formGroup.get('mfes') as FormArray
+  get moduleControls(): any {
+    return this.formGroup.get('modules') as FormArray
   }
 
   /**
    * UI Events: SAVE
    */
   public onProductSave(ev: any): void {
-    //ev.stopPropagation()
     this.editMode = false
     if (this.formGroup.valid && this.displayedDetailItem) {
       this.displayedDetailItem.baseUrl = this.formGroup.controls['baseUrl'].value
       this.displayedDetailItem.microfrontends = [] // clear
-      const mfes = this.formGroup.get('mfes') as FormArray
-      mfes.controls.forEach((item) => {
+      const modules = this.formGroup.get('modules') as FormArray
+      modules.controls.forEach((item) => {
         this.displayedDetailItem?.microfrontends?.push(item.value)
       })
       this.wProductApi
@@ -385,7 +433,8 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     let successCounter = 0
     let errorCounter = 0
     for (let p of ev.items) {
-      const mfes = p.microfrontends ?? []
+      // register modules only
+      const mfes = p.microfrontends?.filter((m: Microfrontend) => m.type === MicrofrontendType.Module) ?? []
       this.wProductApi
         .createProductInWorkspace({
           id: this.workspace?.id ?? '',
@@ -394,7 +443,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
             baseUrl: p.baseUrl,
             microfrontends: mfes.map((m: any, i: number) => ({
               appId: m.appId,
-              basePath: p.baseUrl + (p.microfrontends.length > 1 ? '-' + (i + 1) : '') // create initial unique base paths
+              basePath: p.baseUrl + (mfes.length > 1 ? '-' + (i + 1) : '') // create initial unique base paths
             }))
           } as CreateProductRequest
         })
