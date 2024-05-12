@@ -273,7 +273,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     event.stopPropagation()
   }
   public onSourceSelect(ev: any): void {
-    if (ev.items[0]) {
+    if (ev.items[0] && this.psProductsOrg.has(ev.items[0].productName!)) {
       const pspOrg = this.psProductsOrg.get(ev.items[0].productName!)
       if (pspOrg) this.fillForm(pspOrg)
     } else this.displayDetails = false
