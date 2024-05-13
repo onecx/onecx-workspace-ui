@@ -185,6 +185,10 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
               // add product to SOURCE picklist only if not yet registered
               const wp = this.wProducts.filter((wp) => wp.productName === psp.productName)
               if (wp.length === 0 && !psp.undeployed) this.psProducts.push(psp)
+              if (wp.length === 1) {
+                wp[0].changedMfe = psp.changedMfe
+                wp[0].undeployed = psp.undeployed
+              }
             }
           return this.psProducts.sort(this.sortProductsByDisplayName)
         }),
@@ -327,7 +331,6 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     this.displayedDetailItem.slots?.sort(this.sortSlotsByName)
     this.formGroup.controls['displayName'].setValue(this.displayedDetailItem.displayName)
     this.formGroup.controls['baseUrl'].setValue(this.displayedDetailItem.baseUrl)
-
     // build a dynamic form array for all microfrontend modules for a TARGET product
     if (item.bucket === 'TARGET') {
       const modules = this.formGroup.get('modules') as FormArray

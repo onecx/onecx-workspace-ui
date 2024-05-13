@@ -6,6 +6,9 @@
 @include card-badges;
 
 :host ::ng-deep {
+  .mt-05 {
+    margin-top: 0.125rem !important;
+  }
   .p-dialog .p-dialog-content {
     padding-top: 1rem;
     padding-bottom: 0;
