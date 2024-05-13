@@ -209,7 +209,7 @@ export class MenuDetailComponent implements OnChanges {
           break
         }
         // if URL was extended then create such specific item with best match
-        if (url.toLowerCase().startsWith(bp.toLowerCase()) && maxLength < bp.length!) {
+        if (url.toLowerCase().startsWith(bp.toLowerCase()) && maxLength < bp.length) {
           mfe = { ...mfeItem }
           maxLength = bp.length // remember length for matching
           mfe.basePath = url
