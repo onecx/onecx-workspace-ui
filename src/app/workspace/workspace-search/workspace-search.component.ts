@@ -150,9 +150,7 @@ export class WorkspaceSearchComponent implements OnInit {
   }
   public onGotoWorkspace(ev: any, workspace: Workspace) {
     ev.stopPropagation()
-    getLocation().deploymentPath === '/'
-      ? (this.deploymentPath = '')
-      : (this.deploymentPath = getLocation().deploymentPath.slice(0, -1))
+    this.deploymentPath = getLocation().deploymentPath === '/' ? '' : getLocation().deploymentPath.slice(0, -1)
     window.open(window.document.location.href + '../../../..' + this.deploymentPath + workspace.baseUrl, '_blank')
   }
   public onGotoMenu(ev: any, workspace: Workspace) {

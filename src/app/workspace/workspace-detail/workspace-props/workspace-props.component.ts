@@ -45,9 +45,7 @@ export class WorkspacePropsComponent implements OnChanges {
     private imageApi: ImagesInternalAPIService,
     private workspaceApi: WorkspaceAPIService
   ) {
-    getLocation().deploymentPath === '/'
-      ? (this.deploymentPath = '')
-      : (this.deploymentPath = getLocation().deploymentPath.slice(0, -1))
+    this.deploymentPath = getLocation().deploymentPath === '/' ? '' : getLocation().deploymentPath.slice(0, -1)
 
     this.formGroup = new FormGroup({
       name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
