@@ -104,7 +104,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     // simplify permission checks
     if (userService.hasPermission('MENU#EDIT')) this.myPermissions.push('MENU#EDIT')
     if (userService.hasPermission('MENU#GRANT')) this.myPermissions.push('MENU#GRANT')
-    if (userService.hasPermission('ROLE#EDIT')) this.myPermissions.push('ROLE#EDIT')
+    if (userService.hasPermission('WORKSPACE_ROLE#EDIT')) this.myPermissions.push('WORKSPACE_ROLE#EDIT')
   }
 
   public ngOnInit(): void {

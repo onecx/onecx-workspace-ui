@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, Output, Renderer2, ViewChild } from '@angular/core'
+import { Location } from '@angular/common'
 import { TranslateService } from '@ngx-translate/core'
 import { DefaultValueAccessor, FormControl, FormGroup, Validators } from '@angular/forms'
 import { Observable, Subject, catchError, map, of, takeUntil } from 'rxjs'
@@ -21,7 +22,7 @@ import { IconService } from '../services/iconservice'
 
 type I18N = { [key: string]: string }
 type LanguageItem = SelectItem & { data: string }
-type MFE = Microfrontend & { product?: string }
+type MFE = Microfrontend & { product?: string; baseUrl?: string }
 type DropDownChangeEvent = MouseEvent & { value: any }
 interface AutoCompleteCompleteEvent {
   originalEvent: Event
@@ -138,7 +139,6 @@ export class MenuDetailComponent implements OnChanges {
       } as MenuItem
       this.formGroup.patchValue(this.menuItem)
     } else if (this.menuItemId) this.getMenu()
-    console.log('MFE ITEMS END', this.mfeItems)
   }
 
   public onCloseDetailDialog(): void {
@@ -387,17 +387,19 @@ export class MenuDetailComponent implements OnChanges {
       .pipe(
         map((products) => {
           for (let p of products) {
+            console.log('p', p)
             if (p.microfrontends) {
               p.microfrontends.reduce(
-                (mfeMap, mfe) => mfeMap.set(mfe.id ?? '', { ...mfe, product: p.displayName! }),
+                (mfeMap, mfe) => mfeMap.set(mfe.id ?? '', { ...mfe, product: p.displayName!, baseUrl: p.baseUrl }),
                 this.mfeMap
               )
               for (let mfe of p.microfrontends) {
-                console.log('MFE', mfe)
-                this.mfeItems.push({ ...mfe, product: p.displayName ?? '' })
+                this.mfeItems.push({ ...mfe, product: p.displayName!, baseUrl: p.baseUrl })
+                this.mfeItems[this.mfeItems.length - 1].basePath = Location.joinWithSlash(p.baseUrl!, mfe.basePath!)
               }
             }
           }
+          console.log('this.mfeItems', this.mfeItems)
           this.filteredMfes = this.mfeItems.sort(this.sortMfesByProductAndBasePath)
           this.fillForm() // now the form can be filled
         }),
