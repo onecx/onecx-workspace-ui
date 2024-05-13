@@ -1,6 +1,6 @@
 <div class="surface-section grid grid-nogutter m-3">
   <div class="col-12 md:col-10 lg:col-10 xl:col-6">
-    <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+    <form [formGroup]="formGroup">
       <div class="flex flex-wrap flex-column gap-4 justify-content-between">
         <div>
           <span class="p-float-label mb-1" controlErrorAnchor>
@@ -127,7 +127,7 @@
             class="p-inputgroup-addon bg-primary pseudo-button"
             [ngClass]="inputRssFeedUrl.value ? 'cursor-pointer' : 'p-disabled'"
             [title]="'ACTIONS.COPY.CLIPBOARD' | translate"
-            (click)="copyToClipboard(workspace.rssFeedUrl)"
+            (click)="copyToClipboard(workspace?.rssFeedUrl)"
           >
             <span class="pi pi-copy"></span>
           </span>
@@ -159,7 +159,8 @@
                 id="workspace_detail_form_logo_url"
                 [title]="'IMAGE.TOOLTIPS.URL' | translate"
                 formControlName="logoUrl"
-                (blur)="onInputChange($event)"
+                (input)="onInputChange($event)"
+                (change)="onInputChange($event)"
               />
               <label for="workspace_detail_form_logo_url"> {{ 'IMAGE.LOGO_URL' | translate }} </label>
             </span>

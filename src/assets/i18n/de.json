@@ -369,6 +369,10 @@
       "VIEW_MODE_LIST": "Listenansicht",
       "VIEW_MODE_TABLE": "Tabellenansicht",
       "VIEW_MODE_TREE": "Baumansicht"
+    },
+    "LOGO": {
+      "LABEL": "Logo",
+      "PLACEHOLDER": "Logo Platzhalter"
     }
   },
   "PRODUCT": {
@@ -444,7 +448,7 @@
     "CONSTRAINT_NAME": "Bitte füge einen Namen hinzu bevor das Bild geladen wird.",
     "CONSTRAINT_SIZE": "Die Größe der Bilddatei übersteigt die maximale Lönge von 100.000 Bytes.",
     "TOOLTIPS": {
-      "URL": "Als Alternative zum Hochladen kann hier eine URL zu einem Bild angegeben werden",
+      "URL": "Als Alternative zum Hochladen kann hier eine URL zu einem Bild angegeben werden.",
       "IMAGE": "Logo",
       "PLACEHOLDER": "Logo Platzhalter",
       "UPLOAD": "Bild auswählen und hochladen"

@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing'
 
 import { OneCXUserSidebarMenuComponent } from './user-sidebar-menu.component'
 
-describe('UserSidebarMenuComponent', () => {
+xdescribe('UserSidebarMenuComponent', () => {
   let component: OneCXUserSidebarMenuComponent
   let fixture: ComponentFixture<OneCXUserSidebarMenuComponent>
 

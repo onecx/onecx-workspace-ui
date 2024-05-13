@@ -6,7 +6,7 @@ import { TranslateTestingModule } from 'ngx-translate-testing'
 
 import { MenuInternComponent } from './menu-intern.component'
 
-fdescribe('MenuInternComponent', () => {
+describe('MenuInternComponent', () => {
   let component: MenuInternComponent
   let fixture: ComponentFixture<MenuInternComponent>
 

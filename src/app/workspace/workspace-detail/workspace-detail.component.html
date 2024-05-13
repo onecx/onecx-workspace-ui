@@ -1,20 +1,14 @@
-<ocx-portal-page
-  *ngIf="(workspace$ | async)?.resource as workspace"
-  permission="WORKSPACE#VIEW"
-  helpArticleId="PAGE_WORKSPACE_DETAIL"
-  pageName="PAGE_WORKSPACE_DETAIL"
->
+<ocx-portal-page permission="WORKSPACE#VIEW" helpArticleId="PAGE_WORKSPACE_DETAIL" pageName="PAGE_WORKSPACE_DETAIL">
   <ocx-page-header
-    *ngIf="workspace"
-    [header]="workspace.name"
+    [header]="workspaceName"
     [subheader]="'DIALOG.WORKSPACE.HEADER.DETAIL' | translate"
     [actions]="(actions$ | async) ?? []"
     [figureImage]="currentLogoUrl"
-    [figureBackground]="workspace ? workspace.logoUrl === undefined : false"
+    [figureBackground]="!currentLogoUrl"
   >
   </ocx-page-header>
 
-  <ocx-page-content>
+  <ocx-page-content *ngIf="(workspace$ | async)?.resource as workspace">
     <div *ngIf="exceptionKey" id="workspace_detail_error" class="card px-3 align-items-center">
       <p-message
         id="workspace_detail_error_message"
@@ -24,7 +18,7 @@
       ></p-message>
     </div>
     <div *ngIf="!exceptionKey">
-      <p-tabView (onChange)="onTabChange($event)" [activeIndex]="selectedTabIndex">
+      <p-tabView (onChange)="onTabChange($event, workspace)" [activeIndex]="selectedTabIndex">
         <p-tabPanel
           *ocxIfPermission="'WORKSPACE#VIEW'"
           id="workspace_detail_details"

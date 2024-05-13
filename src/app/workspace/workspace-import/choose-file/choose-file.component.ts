@@ -101,24 +101,25 @@ export class ChooseFileComponent implements OnInit {
     if (dto.workspaces) {
       let key: string[] = Object.keys(dto.workspaces)
       const menuSnapshot = dto.workspaces[key[0]].menu
-      for (const el of menuSnapshot?.menu?.menuItems!) {
-        if (!el.key) {
-          this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_KEY_MISSING']
-          break
-        } else if (!el.name) {
-          this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_NAME_MISSING']
-          break
-        } else if (typeof el.position !== 'number') {
-          this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_WRONG_POSITION']
-          break
-        } else if (typeof el.disabled !== 'boolean') {
-          this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_WRONG_DISABLED']
-          break
-        } else if (typeof el.external !== 'boolean') {
-          this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_WRONG_WORKSPACEEXIT']
-          break
+      if (menuSnapshot?.menu && menuSnapshot.menu.menuItems)
+        for (const el of menuSnapshot.menu.menuItems) {
+          if (!el.key) {
+            this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_KEY_MISSING']
+            break
+          } else if (!el.name) {
+            this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_NAME_MISSING']
+            break
+          } else if (typeof el.position !== 'number') {
+            this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_WRONG_POSITION']
+            break
+          } else if (typeof el.disabled !== 'boolean') {
+            this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_WRONG_DISABLED']
+            break
+          } else if (typeof el.external !== 'boolean') {
+            this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_WRONG_WORKSPACEEXIT']
+            break
+          }
         }
-      }
     }
   }
 }

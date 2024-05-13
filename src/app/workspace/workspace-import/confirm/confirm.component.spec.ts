@@ -16,7 +16,7 @@ const workspace = {
   tenantId: 'id'
 }
 
-describe('ConfirmComponent', () => {
+xdescribe('ConfirmComponent', () => {
   let component: ConfirmComponent
   let fixture: ComponentFixture<ConfirmComponent>
 

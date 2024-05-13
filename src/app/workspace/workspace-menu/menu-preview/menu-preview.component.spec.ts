@@ -21,7 +21,7 @@ const items = [
   { key: 'key2', badge: 'angle-double-down', id: 'id' }
 ]
 
-fdescribe('MenuPreviewComponent', () => {
+describe('MenuPreviewComponent', () => {
   let component: MenuPreviewComponent
   let fixture: ComponentFixture<MenuPreviewComponent>
 

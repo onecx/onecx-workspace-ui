@@ -192,41 +192,40 @@ export class MenuDetailComponent implements OnChanges {
    * 3. Add an empty item on top (to clean the field by selection = no url)
    */
   private prepareUrlObject(url?: string): MFE | undefined {
+    if (!url) return undefined
     let mfe: MFE | undefined = undefined
     let maxLength = 0
     let itemCreated = false
-    if (url) {
-      if (url.match(/^(http|https)/g)) {
-        mfe = { id: undefined, appId: undefined, basePath: url, product: 'MENU_ITEM.URL.HTTP' } as MFE
-        itemCreated = true
-      } else {
-        // search for mfe with best match of base path
-        for (let i = 0; i < this.mfeItems.length; i++) {
-          const bp = this.mfeItems[i].basePath!
-          // perfect
-          if (url === bp) {
-            mfe = this.mfeItems[i]
-            break
-          }
-          // if URL was extended then create such specific item with best match
-          if (url.toLowerCase().indexOf(bp.toLowerCase()) === 0 && maxLength < bp.length!) {
-            mfe = { ...this.mfeItems[i] }
-            maxLength = bp.length // matching length
-            mfe.basePath = url
-            itemCreated = true
-          }
+    if (url.match(/^(http|https)/g)) {
+      mfe = { id: undefined, appId: undefined, basePath: url, product: 'MENU_ITEM.URL.HTTP' } as MFE
+      itemCreated = true
+    } else {
+      // search for mfe with best match of base path
+      for (const mfeItem of this.mfeItems) {
+        const bp = mfeItem.basePath!
+        // perfect
+        if (url === bp) {
+          mfe = mfeItem
+          break
         }
-        if (!mfe) {
-          mfe = { id: undefined, appId: undefined, basePath: url, product: 'MENU_ITEM.URL.UNKNOWN.PRODUCT' } as MFE
+        // if URL was extended then create such specific item with best match
+        if (url.toLowerCase().startsWith(bp.toLowerCase()) && maxLength < bp.length) {
+          mfe = { ...mfeItem }
+          maxLength = bp.length // remember length for matching
+          mfe.basePath = url
           itemCreated = true
         }
       }
-      if (itemCreated) {
-        this.mfeMap.set(url, mfe)
-        this.mfeItems.unshift(mfe) // add on top
+      if (!mfe) {
+        mfe = { id: undefined, appId: undefined, basePath: url, product: 'MENU_ITEM.URL.UNKNOWN.PRODUCT' } as MFE
+        itemCreated = true
       }
-      this.selectedMfe = mfe
     }
+    if (itemCreated) {
+      this.mfeMap.set(url, mfe)
+      this.mfeItems.unshift(mfe) // add on top
+    }
+    this.selectedMfe = mfe
     this.mfeItems.unshift({ id: undefined, appId: undefined, basePath: '', product: 'MENU_ITEM.URL.EMPTY' })
     return url ? mfe : this.mfeItems[0]
   }
@@ -279,7 +278,7 @@ export class MenuDetailComponent implements OnChanges {
     if (this.changeMode === 'EDIT' && this.menuItemId) {
       this.menuApi
         .updateMenuItem({
-          menuItemId: this.menuItemId!,
+          menuItemId: this.menuItemId,
           updateMenuItemRequest: this.menuItem as UpdateMenuItemRequest
         })
         .subscribe({
@@ -390,7 +389,7 @@ export class MenuDetailComponent implements OnChanges {
           for (let p of products) {
             if (p.microfrontends) {
               p.microfrontends.reduce(
-                (mfeMap, mfe) => mfeMap.set(mfe.id!, { ...mfe, product: p.displayName! }),
+                (mfeMap, mfe) => mfeMap.set(mfe.id ?? '', { ...mfe, product: p.displayName! }),
                 this.mfeMap
               )
               for (let mfe of p.microfrontends) {
@@ -450,13 +449,12 @@ export class MenuDetailComponent implements OnChanges {
     if (!query || query === '') {
       filtered = this.mfeItems // exception a)
     } else {
-      for (let i = 0; i < this.mfeItems.length; i++) {
-        const mfe = this.mfeItems[i]
+      for (const mfeItem of this.mfeItems) {
         if (
-          mfe.basePath?.toLowerCase().indexOf(query.toLowerCase()) === 0 ||
-          query.toLowerCase().indexOf(mfe.basePath?.toLowerCase()!) === 0
+          mfeItem.basePath?.toLowerCase().indexOf(query.toLowerCase()) === 0 ||
+          query.toLowerCase().indexOf(mfeItem.basePath?.toLowerCase()!) === 0
         ) {
-          filtered.push(mfe)
+          filtered.push(mfeItem)
         }
       }
       // exception b)
