@@ -20,6 +20,7 @@ import {
   UpdateProductRequest,
   Product,
   ProductAPIService,
+  RefType,
   SlotPS,
   Workspace,
   WorkspaceProductAPIService
@@ -27,7 +28,7 @@ import {
 import { MfeInfo } from '@onecx/portal-integration-angular'
 import { AppStateService, PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 import { environment } from 'src/environments/environment'
-import { limitText, prepareUrlPath } from 'src/app/shared/utils'
+import { bffImageUrl, limitText, prepareUrlPath } from 'src/app/shared/utils'
 
 export type ExtendedMicrofrontend = Microfrontend & {
   exposedModule?: string // MicrofrontendPS
@@ -245,9 +246,12 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     return (a.name ? a.name.toUpperCase() : '').localeCompare(b.name ? b.name.toUpperCase() : '')
   }
 
-  public getImageUrl(url?: string): string {
-    if (url) return url
-    return prepareUrlPath(this.currentMfe?.remoteBaseUrl, environment.DEFAULT_PRODUCT_PATH)
+  public getImageUrl(product?: ExtendedProduct): string | undefined {
+    if (!product) return undefined
+    if (product.imageUrl && product.imageUrl != '') {
+      return product.imageUrl
+    }
+    return bffImageUrl(this.wProductApi.configuration.basePath, product.productName, RefType.Logo)
   }
 
   /**

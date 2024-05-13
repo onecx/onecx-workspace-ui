@@ -41,7 +41,7 @@ import { Configuration } from 'src/app/shared/generated'
 import { environment } from 'src/environments/environment'
 import { LabelResolver } from 'src/app/shared/label.resolver'
 
-import { ImageContainerComponent } from './components/image-container/image-container.component'
+import { ImageContainerComponent } from './image-container/image-container.component'
 
 export function apiConfigProvider(configService: ConfigurationService, appStateService: AppStateService) {
   return new PortalApiConfiguration(Configuration, environment.apiPrefix, configService, appStateService)

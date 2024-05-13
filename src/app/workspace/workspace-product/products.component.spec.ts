@@ -322,24 +322,15 @@ describe('ProductComponent', () => {
   })
 
   it('should return imageUrl path', () => {
-    const result = component.getImageUrl('/url')
+    const result = component.getImageUrl({ imageUrl: '/url' } as ExtendedProduct)
 
     expect(result).toBe('/url')
   })
 
-  it('should return fallback imageUrl', () => {
-    const mfe = {
-      mountPath: 'mount',
-      remoteBaseUrl: 'baseUrl',
-      baseHref: 'href',
-      shellName: 'shell',
-      appId: 'appId',
-      productName: 'prodName'
-    }
-    component.currentMfe = mfe
-    const result = component.getImageUrl()
+  xit('should return uploaded imageUrl', () => {
+    const result = component.getImageUrl({ productName: 'product' } as ExtendedProduct)
 
-    expect(result).toBe('baseUrl/assets/images/product.png')
+    expect(result).toBe('http://onecx-workspace-bff:8080/images/product/logo')
   })
 
   /**

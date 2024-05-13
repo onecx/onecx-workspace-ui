@@ -8,7 +8,7 @@ import { TranslateTestingModule } from 'ngx-translate-testing'
 import { RouterTestingModule } from '@angular/router/testing'
 
 import { PortalMessageService } from '@onecx/portal-integration-angular'
-import { WorkspaceAbstract, WorkspaceAPIService, SearchWorkspacesResponse } from 'src/app/shared/generated'
+import { Workspace, WorkspaceAbstract, WorkspaceAPIService, SearchWorkspacesResponse } from 'src/app/shared/generated'
 
 import { WorkspaceSearchComponent } from './workspace-search.component'
 
@@ -192,13 +192,13 @@ describe('WorkspaceSearchComponent', () => {
   })
 
   it('should return correct imageUrl', () => {
-    const result = component.getImageUrl({ logoUrl: 'logo' })
+    const result = component.getLogoUrl({ logoUrl: 'url' } as Workspace)
 
-    expect(result).toBe('logo')
+    expect(result).toBe('url')
   })
 
-  it('should return fallback imageUrl', () => {
-    const result = component.getImageUrl({ name: 'workspace' })
+  it('should return uploaded imageUrl', () => {
+    const result = component.getLogoUrl({ name: 'workspace' } as Workspace)
 
     expect(result).toBe('http://onecx-workspace-bff:8080/images/workspace/logo')
   })
