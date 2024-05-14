@@ -131,13 +131,13 @@
             <span
               *ngIf="product?.undeployed"
               [id]="'workspace_detail_product_picklist_' + product.productName + '_undeployed'"
-              class="card-badge-right badge-1 p-2 pi pi-ban danger-action-bg cursor-auto"
+              class="card-badge-right badge-1 p-2 pi pi-ban danger-action-bg cursor-auto tile-view-optional"
               [title]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
             ></span>
             <span
               *ngIf="!product?.undeployed && product?.changedMfe"
               [id]="'workspace_detail_product_picklist_' + product.productName + '_changed_mfe'"
-              class="card-badge-right badge-1 p-2 pi pi-exclamation-circle danger-action-bg cursor-auto"
+              class="card-badge-right badge-1 p-2 pi pi-exclamation-circle danger-action-bg cursor-auto tile-view-optional"
               [title]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
             ></span>
             <app-image-container
@@ -146,7 +146,12 @@
               styleClass="w-2rem md:w-4rem tile-view-optional "
             ></app-image-container>
             <div class="flex flex-column row-gap-1">
-              <div class="tile-view-mandatory font-semibold text-sm lg:text-md">{{ product.displayName }}</div>
+              <div
+                class="tile-view-mandatory font-semibold text-sm lg:text-md"
+                [class.danger-action-text]="product?.undeployed || product?.changedMfe"
+              >
+                {{ product.displayName }}
+              </div>
               <div class="tile-view-optional text-xs hidden md:block">{{ product.productName }}</div>
             </div>
           </div>

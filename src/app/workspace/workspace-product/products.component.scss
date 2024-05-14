@@ -4,6 +4,7 @@
 @include prepare-inputgroup;
 @include picklist-zebra-rows;
 @include card-badges;
+@include danger-action;
 
 :host ::ng-deep {
   .mt-05 {
@@ -14,10 +15,6 @@
     padding-bottom: 0;
     .p-inputgroup .p-float-label:first-child {
       width: unset;
-    }
-    .p-inputtext.slash {
-      border-left: 0;
-      border-right: 0;
     }
     .p-float-label,
     .p-float-label .p-dropdown {
@@ -50,6 +47,7 @@
           }
           .tile-view-mandatory {
             text-align: center;
+            width: min-content;
           }
           .tile-view-optional {
             display: none !important;

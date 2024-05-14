@@ -116,7 +116,7 @@ describe('MenuComponent', () => {
 
   mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
   mockUserService.hasPermission.and.callFake((permission: string) => {
-    return ['MENU#EDIT', 'MENU#GRANT', 'ROLE#EDIT'].includes(permission)
+    return ['MENU#EDIT', 'MENU#GRANT', 'WORKSPACE_ROLE#EDIT'].includes(permission)
   })
 
   const mockActivatedRouteSnapshot: Partial<ActivatedRouteSnapshot> = {
@@ -181,7 +181,7 @@ describe('MenuComponent', () => {
   it('it should push permissions to array if userService has them', () => {
     expect(component.myPermissions).toContain('MENU#EDIT')
     expect(component.myPermissions).toContain('MENU#GRANT')
-    expect(component.myPermissions).toContain('ROLE#EDIT')
+    expect(component.myPermissions).toContain('WORKSPACE_ROLE#EDIT')
   })
 
   it('should have prepared action buttons onInit: onClose, and called it', () => {

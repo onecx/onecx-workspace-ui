@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, Output, Renderer2, ViewChild } from '@angular/core'
+//import { Location } from '@angular/common'
 import { TranslateService } from '@ngx-translate/core'
 import { DefaultValueAccessor, FormControl, FormGroup, Validators } from '@angular/forms'
 import { Observable, Subject, catchError, map, of, takeUntil } from 'rxjs'
@@ -106,6 +107,8 @@ export class MenuDetailComponent implements OnChanges {
       parentItemId: new FormControl(null),
       key: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(100)]),
       name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(100)]),
+      badge: new FormControl(undefined),
+      scope: new FormControl(null),
       position: new FormControl(null, [
         Validators.required,
         Validators.maxLength(9),
@@ -118,8 +121,6 @@ export class MenuDetailComponent implements OnChanges {
         Validators.maxLength(255)
         /*, Validators.pattern(this.urlPattern)*/ // Trian wish to deactivate this
       ]),
-      badge: new FormControl(undefined),
-      scope: new FormControl(null),
       description: new FormControl(null, [Validators.maxLength(255)])
     })
   }
@@ -138,7 +139,6 @@ export class MenuDetailComponent implements OnChanges {
       } as MenuItem
       this.formGroup.patchValue(this.menuItem)
     } else if (this.menuItemId) this.getMenu()
-    console.log('MFE ITEMS END', this.mfeItems)
   }
 
   public onCloseDetailDialog(): void {
@@ -173,21 +173,21 @@ export class MenuDetailComponent implements OnChanges {
         parentItemId: this.menuItem.parentItemId,
         key: this.menuItem.key,
         name: this.menuItem.name,
+        badge: this.menuItem.badge,
+        scope: this.menuItem.scope,
         position: this.menuItem.position,
         disabled: this.menuItem.disabled,
         external: this.menuItem.external,
         url: this.prepareUrlObject(this.menuItem.url),
-        badge: this.menuItem.badge,
-        scope: this.menuItem.scope,
         description: this.menuItem.description
       })
     }
   }
 
   /**
-   * Prepare URL object to be displayed and extend item list for specific entries
-   * 1. If URL exists then search for existing mfe with best match with base path
-   *    In case the original URL was extended then create a new item for it
+   * Prepare URL object to be displayed and extend the item list for specific entries:
+   * 1. If URL exists then search for existing mfe with best match of base path
+   *    In case the original URL was extended (with suffix) then create a new item for it
    * 2. If url is http address or unknown => add a specific item for it
    * 3. Add an empty item on top (to clean the field by selection = no url)
    */
@@ -203,7 +203,7 @@ export class MenuDetailComponent implements OnChanges {
       // search for mfe with best match of base path
       for (const mfeItem of this.mfeItems) {
         const bp = mfeItem.basePath!
-        // perfect
+        // perfect match
         if (url === bp) {
           mfe = mfeItem
           break
@@ -211,7 +211,7 @@ export class MenuDetailComponent implements OnChanges {
         // if URL was extended then create such specific item with best match
         if (url.toLowerCase().startsWith(bp.toLowerCase()) && maxLength < bp.length) {
           mfe = { ...mfeItem }
-          maxLength = bp.length // remember length for matching
+          maxLength = bp.length // remember length for finding the best match
           mfe.basePath = url
           itemCreated = true
         }
@@ -235,7 +235,7 @@ export class MenuDetailComponent implements OnChanges {
    **************************************************************************/
   public onMenuSave(): void {
     if (!this.formGroup.valid) {
-      console.error('non valid form', this.formGroup)
+      console.error('invalid form', this.formGroup)
       return
     }
     if (this.menuItem) {
@@ -247,11 +247,11 @@ export class MenuDetailComponent implements OnChanges {
       this.menuItem.parentItemId = this.formGroup.controls['parentItemId'].value
       this.menuItem.key = this.formGroup.controls['key'].value
       this.menuItem.name = this.formGroup.controls['name'].value
+      this.menuItem.badge = this.formGroup.controls['badge'].value
+      this.menuItem.scope = this.formGroup.controls['scope'].value
       this.menuItem.position = this.formGroup.controls['position'].value
       this.menuItem.disabled = this.formGroup.controls['disabled'].value
       this.menuItem.external = this.formGroup.controls['external'].value
-      this.menuItem.badge = this.formGroup.controls['badge'].value
-      this.menuItem.scope = this.formGroup.controls['scope'].value
       this.menuItem.description = this.formGroup.controls['description'].value
       const i18n: I18N = {}
       for (const l of this.languagesDisplayed) {
@@ -316,7 +316,7 @@ export class MenuDetailComponent implements OnChanges {
     this.prepareLanguagePanel()
     this.preparePanelHeight()
   }
-  // same height on all TABs
+  // use the same height on all TABs
   private preparePanelHeight(): void {
     if (!this.panelDetail) return
     this.renderer.setStyle(this.panelDetail?.el.nativeElement, 'display', 'block')
@@ -393,11 +393,13 @@ export class MenuDetailComponent implements OnChanges {
                 this.mfeMap
               )
               for (let mfe of p.microfrontends) {
-                console.log('MFE', mfe)
-                this.mfeItems.push({ ...mfe, product: p.displayName ?? '' })
+                this.mfeItems.push({ ...mfe, product: p.displayName! })
+                // TODO: in sync with shell-bff: concat url+path
+                //this.mfeItems[this.mfeItems.length - 1].basePath = Location.joinWithSlash(p.baseUrl!, mfe.basePath!)
               }
             }
           }
+          console.log('loadMfeUrls() - mfeItems:', this.mfeItems)
           this.filteredMfes = this.mfeItems.sort(this.sortMfesByProductAndBasePath)
           this.fillForm() // now the form can be filled
         }),
@@ -416,9 +418,9 @@ export class MenuDetailComponent implements OnChanges {
     )
   }
 
-  /***************************************************************************
+  /**
    * EVENTS on URL field
-   **************************************************************************/
+   **/
   public onFocusUrl(field: any): void {
     field.overlayVisible = true
   }
@@ -434,7 +436,7 @@ export class MenuDetailComponent implements OnChanges {
     this.formGroup.controls['url'].setValue(this.mfeItems[0])
   }
   /**
-   * FILTER URL (query)
+   * FILTER URL (query = field value)
    *   try to filter with best match with some exceptions:
    *     a) empty query => list all
    *     b) unknown entry => list all
