@@ -30,5 +30,6 @@ export interface Workspace {
     footerLabel?: string;
     logoUrl?: string;
     address?: WorkspaceAddress;
+    mandatory?: boolean;
 }
 

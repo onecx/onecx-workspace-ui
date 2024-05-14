@@ -141,7 +141,7 @@
               [title]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
             ></span>
             <app-image-container
-              [imageUrl]="getImageUrl(product.imageUrl)"
+              [imageUrl]="getImageUrl(product)"
               [small]="true"
               styleClass="w-2rem md:w-4rem tile-view-optional "
             ></app-image-container>
@@ -175,7 +175,7 @@
           <div class="h-full pb-4 flex flex-column justify-content-around">
             <app-image-container
               id="workspace_detail_product_item_header_logo"
-              [imageUrl]="getImageUrl(displayedDetailItem?.imageUrl)"
+              [imageUrl]="getImageUrl(displayedDetailItem)"
               [small]="true"
               styleClass="w-2rem md:w-4rem tile-view-optional "
             ></app-image-container>

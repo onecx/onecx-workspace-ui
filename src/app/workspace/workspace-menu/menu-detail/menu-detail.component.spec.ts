@@ -19,7 +19,6 @@ import {
   Scope
 } from 'src/app/shared/generated'
 import { TabView } from 'primeng/tabview'
-import { DropDownChangeEvent } from 'src/app/shared/utils'
 
 const form = new FormGroup({
   parentItemId: new FormControl('some parent id'),
@@ -592,30 +591,6 @@ describe('MenuDetailComponent', () => {
     component.onFocusUrl(mockField)
 
     expect(mockField.overlayVisible).toBeTrue()
-  })
-
-  it('should update selectedMfe based on value from mfeMap onSelectPath', () => {
-    const mouseEvent = jasmine.createSpyObj('MouseEvent', ['preventDefault', 'stopPropagation'])
-    const mockEvent: DropDownChangeEvent = { ...mouseEvent, value: 'testPath' }
-    const expectedMfe = { ...microfrontend }
-    component.mfeMap = new Map()
-    component.mfeMap.set('testPath', expectedMfe)
-
-    component.onSelectPath(mockEvent)
-
-    expect(component.selectedMfe).toBe(expectedMfe)
-  })
-
-  it('should reset selectedMfe and set the formGroup url control to the first mfeItem when onClearPath is called', () => {
-    component.mfeItems = [microfrontend]
-    component.formGroup = new FormGroup({
-      url: new FormControl('')
-    })
-
-    component.onClearPath()
-
-    expect(component.selectedMfe).toEqual(component.mfeItems[0])
-    expect(component.formGroup.controls['url'].value).toEqual(component.mfeItems[0])
   })
 
   /**
