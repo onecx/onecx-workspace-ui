@@ -227,8 +227,8 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
           app.components.sort(this.sortMfesByExposedModule)
         }
       }
-      // mark product if there are changes on microfrontends
-      psp.changedMfe = (mfe.undeployed ?? false) || (mfe.deprecated ?? false) || psp.changedMfe
+      // mark product if there are important changes on microfrontends
+      psp.changedMfe = mfe.undeployed || mfe.deprecated || psp.changedMfe
     }
   }
 
