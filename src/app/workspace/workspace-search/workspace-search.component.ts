@@ -151,7 +151,7 @@ export class WorkspaceSearchComponent implements OnInit {
   }
   public onGotoWorkspace(ev: any, workspace: Workspace) {
     ev.stopPropagation()
-    this.deploymentPath = getLocation().deploymentPath === '/' ? '' : getLocation().deploymentPath.slice(0, -1)
+    this.deploymentPath = getLocation().deploymentPath === '/' ? '' : getLocation().deploymentPath
     window.open(
       Location.joinWithSlash(
         Location.joinWithSlash(window.document.location.origin, this.deploymentPath),

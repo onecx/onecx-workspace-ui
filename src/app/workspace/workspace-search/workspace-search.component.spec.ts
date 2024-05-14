@@ -11,6 +11,8 @@ import { PortalMessageService } from '@onecx/portal-integration-angular'
 import { WorkspaceAbstract, WorkspaceAPIService, SearchWorkspacesResponse } from 'src/app/shared/generated'
 
 import { WorkspaceSearchComponent } from './workspace-search.component'
+import { getLocation } from '@onecx/accelerator'
+import { Location } from '@angular/common'
 
 describe('WorkspaceSearchComponent', () => {
   let component: WorkspaceSearchComponent
@@ -143,10 +145,15 @@ describe('WorkspaceSearchComponent', () => {
       baseUrl: '/some/base/url'
     }
 
+    const deploymentPath = getLocation().deploymentPath === '/' ? '' : getLocation().deploymentPath
+
     component.onGotoWorkspace(mockEvent, w)
 
     expect(mockEvent.stopPropagation).toHaveBeenCalled()
-    expect(window.open).toHaveBeenCalledWith(window.document.location.href + '../../../..' + w.baseUrl, '_blank')
+    expect(window.open).toHaveBeenCalledWith(
+      Location.joinWithSlash(Location.joinWithSlash(window.document.location.origin, deploymentPath), w.baseUrl || ''),
+      '_blank'
+    )
   })
 
   it('should behave correctly onGotoMenu', () => {
