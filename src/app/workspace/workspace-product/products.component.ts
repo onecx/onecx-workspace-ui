@@ -320,19 +320,22 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
         item.changedMfe = pspOrg.changedMfe
         item.slots = pspOrg.slots
         item.apps = pspOrg.apps
-        // enrich microfrontends
         if (item.microfrontends && pspOrg.microfrontends) {
-          for (const ddiMfe of item.microfrontends)
-            for (const mfe of pspOrg.microfrontends) {
-              // the workspace knows only one module
-              if (mfe.appId === ddiMfe.appId && mfe.type === MicrofrontendType.Module) {
-                ddiMfe.deprecated = mfe.deprecated
-                ddiMfe.undeployed = mfe.undeployed
-              }
-            }
+          this.syncMfeState(item.microfrontends, pspOrg.microfrontends)
         }
       }
     }
+  }
+  private syncMfeState(itemMfes: Microfrontend[], pspOrgMfes: Microfrontend[]): void {
+    for (const iMfe of itemMfes)
+      if (iMfe.type === MicrofrontendType.Module)
+        for (const mfe of pspOrgMfes) {
+          // the workspace knows only one module
+          if (mfe.appId === iMfe.appId && mfe.type === MicrofrontendType.Module) {
+            iMfe.deprecated = mfe.deprecated
+            iMfe.undeployed = mfe.undeployed
+          }
+        }
   }
 
   private fillForm(item: ExtendedProduct) {
