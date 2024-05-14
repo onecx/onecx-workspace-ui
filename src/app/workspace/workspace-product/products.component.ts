@@ -13,6 +13,7 @@ import { catchError, finalize, map, Observable, of, Subject, switchMap, takeUnti
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 
 import {
+  ImagesInternalAPIService,
   Microfrontend,
   MicrofrontendType,
   GetProductByIdRequestParams,
@@ -28,7 +29,7 @@ import {
 import { MfeInfo } from '@onecx/portal-integration-angular'
 import { AppStateService, PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 import { environment } from 'src/environments/environment'
-import { bffImageUrl, limitText, prepareUrlPath } from 'src/app/shared/utils'
+import { bffProductImageUrl, limitText, prepareUrlPath } from 'src/app/shared/utils'
 
 export type ExtendedMicrofrontend = Microfrontend & {
   exposedModule?: string // MicrofrontendPS
@@ -95,6 +96,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   constructor(
     private wProductApi: WorkspaceProductAPIService,
     private psProductApi: ProductAPIService,
+    private imageApi: ImagesInternalAPIService,
     private user: UserService,
     private appState: AppStateService,
     private translate: TranslateService,
@@ -252,7 +254,11 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     if (product.imageUrl && product.imageUrl != '') {
       return product.imageUrl
     }
-    return bffImageUrl(this.wProductApi.configuration.basePath, product.productName, RefType.Logo)
+    console.log(
+      'bffProductImageUrl: ' +
+        bffProductImageUrl(this.imageApi.configuration.basePath, product.productName, RefType.Logo)
+    )
+    return bffProductImageUrl(this.imageApi.configuration.basePath, product.productName, RefType.Logo)
   }
 
   /**
