@@ -1,12 +1,14 @@
 import { Component, OnInit, ViewChild } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
-import { catchError, finalize, map, of, Observable } from 'rxjs'
 import { TranslateService } from '@ngx-translate/core'
+import { Observable, catchError, finalize, map, of } from 'rxjs'
 
-import { DataViewControlTranslations } from '@onecx/portal-integration-angular'
-import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { Action } from '@onecx/angular-accelerator'
+import { PortalMessageService } from '@onecx/angular-integration-interface'
+import { DataViewControlTranslations } from '@onecx/portal-integration-angular'
 
+import { Location } from '@angular/common'
+import { getLocation } from '@onecx/accelerator'
 import {
   ImagesInternalAPIService,
   RefType,
@@ -16,7 +18,6 @@ import {
   WorkspaceAbstract
 } from 'src/app/shared/generated'
 import { bffImageUrl, limitText } from 'src/app/shared/utils'
-import { getLocation } from '@onecx/accelerator'
 
 @Component({
   selector: 'app-workspace-search',
@@ -151,7 +152,13 @@ export class WorkspaceSearchComponent implements OnInit {
   public onGotoWorkspace(ev: any, workspace: Workspace) {
     ev.stopPropagation()
     this.deploymentPath = getLocation().deploymentPath === '/' ? '' : getLocation().deploymentPath.slice(0, -1)
-    window.open(window.document.location.href + '../../../..' + this.deploymentPath + workspace.baseUrl, '_blank')
+    window.open(
+      Location.joinWithSlash(
+        Location.joinWithSlash(window.document.location.origin, this.deploymentPath),
+        workspace.baseUrl || ''
+      ),
+      '_blank'
+    )
   }
   public onGotoMenu(ev: any, workspace: Workspace) {
     ev.stopPropagation()
