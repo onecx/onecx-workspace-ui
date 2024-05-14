@@ -155,7 +155,7 @@ export class WorkspaceSearchComponent implements OnInit {
     window.open(
       Location.joinWithSlash(
         Location.joinWithSlash(window.document.location.origin, this.deploymentPath),
-        workspace.baseUrl || ''
+        workspace.baseUrl ?? ''
       ),
       '_blank'
     )
