@@ -74,7 +74,7 @@
                 formControlName="url"
                 [suggestions]="filteredMfes"
                 (completeMethod)="onFilterPaths($event)"
-                (onSelect)="onSelectPath($event)"
+                (onClick)="onFocusUrl(mfeUrl)"
                 (onFocus)="onFocusUrl(mfeUrl)"
                 (onClear)="onClearPath()"
                 (onDropdownClick)="onFocusUrl(mfeUrl)"

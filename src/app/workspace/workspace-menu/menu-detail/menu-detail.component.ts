@@ -23,7 +23,6 @@ import { IconService } from '../services/iconservice'
 type I18N = { [key: string]: string }
 type LanguageItem = SelectItem & { data: string }
 type MFE = Microfrontend & { product?: string }
-type DropDownChangeEvent = MouseEvent & { value: any }
 interface AutoCompleteCompleteEvent {
   originalEvent: Event
   query: string
@@ -68,7 +67,6 @@ export class MenuDetailComponent implements OnChanges {
   private panelHeight = 0
   public mfeMap: Map<string, MFE> = new Map()
   public mfeItems!: MFE[]
-  public selectedMfe: MFE | undefined
   public filteredMfes: MFE[] = []
 
   // language settings and preview
@@ -116,11 +114,7 @@ export class MenuDetailComponent implements OnChanges {
       ]),
       disabled: new FormControl<boolean>(false),
       external: new FormControl<boolean>(false),
-      url: new FormControl(null, [
-        Validators.minLength(2),
-        Validators.maxLength(255)
-        /*, Validators.pattern(this.urlPattern)*/ // Trian wish to deactivate this
-      ]),
+      url: new FormControl(null, [Validators.maxLength(255)]),
       description: new FormControl(null, [Validators.maxLength(255)])
     })
   }
@@ -191,15 +185,16 @@ export class MenuDetailComponent implements OnChanges {
    * 2. If url is http address or unknown => add a specific item for it
    * 3. Add an empty item on top (to clean the field by selection = no url)
    */
-  private prepareUrlObject(url?: string): MFE | undefined {
-    if (!url) return undefined
-    let mfe: MFE | undefined = undefined
+  private prepareUrlObject(url?: string): MFE | null {
+    //if (!url) return null
+    let mfe: MFE | null = null
     let maxLength = 0
     let itemCreated = false
-    if (url.match(/^(http|https)/g)) {
-      mfe = { id: undefined, appId: undefined, basePath: url, product: 'MENU_ITEM.URL.HTTP' } as MFE
+    if (url?.match(/^(http|https)/g)) {
+      mfe = { appId: '$$$-http-address', basePath: url, product: 'MENU_ITEM.URL.HTTP' } as MFE
       itemCreated = true
-    } else {
+    }
+    if (url) {
       // search for mfe with best match of base path
       for (const mfeItem of this.mfeItems) {
         const bp = mfeItem.basePath!
@@ -209,7 +204,7 @@ export class MenuDetailComponent implements OnChanges {
           break
         }
         // if URL was extended then create such specific item with best match
-        if (url.toLowerCase().startsWith(bp.toLowerCase()) && maxLength < bp.length) {
+        if (url?.toLowerCase().startsWith(bp.toLowerCase()) && maxLength < bp.length) {
           mfe = { ...mfeItem }
           maxLength = bp.length // remember length for finding the best match
           mfe.basePath = url
@@ -217,16 +212,14 @@ export class MenuDetailComponent implements OnChanges {
         }
       }
       if (!mfe) {
-        mfe = { id: undefined, appId: undefined, basePath: url, product: 'MENU_ITEM.URL.UNKNOWN.PRODUCT' } as MFE
+        mfe = { appId: '$$$-unknown-product', basePath: url, product: 'MENU_ITEM.URL.UNKNOWN.PRODUCT' } as MFE
         itemCreated = true
       }
     }
-    if (itemCreated) {
-      this.mfeMap.set(url, mfe)
+    if (mfe && itemCreated) {
       this.mfeItems.unshift(mfe) // add on top
     }
-    this.selectedMfe = mfe
-    this.mfeItems.unshift({ id: undefined, appId: undefined, basePath: '', product: 'MENU_ITEM.URL.EMPTY' })
+    this.mfeItems.unshift({ appId: '$$$-empty', basePath: '', product: 'MENU_ITEM.URL.EMPTY' })
     return url ? mfe : this.mfeItems[0]
   }
 
@@ -388,10 +381,6 @@ export class MenuDetailComponent implements OnChanges {
         map((products) => {
           for (let p of products) {
             if (p.microfrontends) {
-              p.microfrontends.reduce(
-                (mfeMap, mfe) => mfeMap.set(mfe.id ?? '', { ...mfe, product: p.displayName! }),
-                this.mfeMap
-              )
               for (let mfe of p.microfrontends) {
                 this.mfeItems.push({ ...mfe, product: p.displayName! })
                 // TODO: in sync with shell-bff: concat url+path
@@ -424,15 +413,7 @@ export class MenuDetailComponent implements OnChanges {
   public onFocusUrl(field: any): void {
     field.overlayVisible = true
   }
-  public onSelectPath(ev: DropDownChangeEvent): void {
-    if (ev && ev.value) {
-      if (this.mfeMap.has(ev.value)) {
-        this.selectedMfe = this.mfeMap.get(ev.value)
-      }
-    }
-  }
   public onClearPath(): void {
-    this.selectedMfe = this.mfeItems[0]
     this.formGroup.controls['url'].setValue(this.mfeItems[0])
   }
   /**

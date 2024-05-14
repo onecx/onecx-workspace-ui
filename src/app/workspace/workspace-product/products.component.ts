@@ -207,7 +207,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   private prepareProductApps(psp: ExtendedProduct) {
     if (!psp.microfrontends) return
     psp.apps = new Map()
-    psp.microfrontends.map((mfe) => {
+    psp.microfrontends.forEach((mfe) => {
       if (mfe.appId && !psp.apps.has(mfe.appId)) psp.apps.set(mfe.appId, { appId: mfe.appId })
     })
     this.prepareProductAppParts(psp)
