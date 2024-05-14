@@ -340,7 +340,7 @@ describe('MenuDetailComponent', () => {
 
     component.onMenuSave()
 
-    expect(console.error).toHaveBeenCalledWith('non valid form', component.formGroup)
+    expect(console.error).toHaveBeenCalledWith('invalid form', component.formGroup)
   })
 
   it('should retrieve basePath from url form control if it is an object onMenuSave', () => {
