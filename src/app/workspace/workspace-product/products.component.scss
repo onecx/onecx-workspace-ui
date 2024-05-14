@@ -34,6 +34,12 @@
         min-width: unset;
       }
     }
+    .p-picklist-buttons {
+      button[icon='pi pi-angle-double-left'],
+      button[icon='pi pi-angle-double-right'] {
+        display: none !important;
+      }
+    }
     .p-picklist-list {
       height: 34.7rem;
       &.p-picklist-source,

@@ -442,26 +442,29 @@ export class MenuDetailComponent implements OnChanges {
    *     b) unknown entry => list all
    */
   public onFilterPaths(ev: AutoCompleteCompleteEvent): void {
-    let filtered: MFE[] = []
-    let query = ev && ev.query ? ev.query : undefined
+    let query = ev?.query ?? undefined
     if (!query) {
       if (this.formGroup.controls['url'].value instanceof Object) query = this.formGroup.controls['url'].value.basePath
       else query = this.formGroup.controls['url'].value
     }
+    this.filteredMfes = this.filterUrl(query)
+  }
+
+  private filterUrl(query: string): MFE[] {
+    let filtered: MFE[] = []
     if (!query || query === '') {
       filtered = this.mfeItems // exception a)
     } else {
       for (const mfeItem of this.mfeItems) {
         if (
-          mfeItem.basePath?.toLowerCase().indexOf(query.toLowerCase()) === 0 ||
-          query.toLowerCase().indexOf(mfeItem.basePath?.toLowerCase()!) === 0
-        ) {
+          mfeItem.basePath?.toLowerCase().startsWith(query.toLowerCase()) ||
+          query.toLowerCase().startsWith(mfeItem.basePath?.toLowerCase()!)
+        )
           filtered.push(mfeItem)
-        }
       }
       // exception b)
       if (filtered.length === 2 && !filtered[0].id) filtered = this.mfeItems
     }
-    this.filteredMfes = filtered
+    return filtered
   }
 }

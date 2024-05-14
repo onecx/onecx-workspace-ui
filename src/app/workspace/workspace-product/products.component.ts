@@ -208,15 +208,18 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     if (!psp.microfrontends) return
     psp.apps = new Map()
     psp.microfrontends.map((mfe) => {
-      if (!psp.apps.has(mfe.appId!)) psp.apps.set(mfe.appId!, { appId: mfe.appId! })
+      if (mfe.appId && !psp.apps.has(mfe.appId)) psp.apps.set(mfe.appId, { appId: mfe.appId })
     })
+    this.prepareProductAppParts(psp)
+  }
+  private prepareProductAppParts(psp: ExtendedProduct) {
     // step through mfe array and pick modules and components
-    for (const mfe of psp.microfrontends) {
+    for (const mfe of psp.microfrontends!) {
       const app = psp.apps.get(mfe.appId!)
       if (app) {
         if (mfe.type === MicrofrontendType.Module) {
           if (!app.modules) app.modules = []
-          app.modules!.push(mfe as ExtendedMicrofrontend)
+          app.modules.push(mfe as ExtendedMicrofrontend)
         }
         if (mfe.type === MicrofrontendType.Component) {
           if (!app.components) app.components = []
@@ -281,8 +284,8 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     event.stopPropagation()
   }
   public onSourceSelect(ev: any): void {
-    if (ev.items[0] && this.psProductsOrg.has(ev.items[0].productName!)) {
-      const pspOrg = this.psProductsOrg.get(ev.items[0].productName!)
+    if (ev.items[0] && this.psProductsOrg.has(ev.items[0].productName)) {
+      const pspOrg = this.psProductsOrg.get(ev.items[0].productName)
       if (pspOrg) this.fillForm(pspOrg)
     } else this.displayDetails = false
   }
@@ -297,28 +300,9 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
       .subscribe({
         next: (data) => {
           let item = data as ExtendedProduct
-          //item.description = item.description
           item.bucket = wProduct.bucket
           item.microfrontends?.sort(this.sortMfesByAppId)
-          // get product for extend information on mfes
-          const pspOrg = this.psProductsOrg.get(item.productName!)
-          if (pspOrg) {
-            item.undeployed = pspOrg.undeployed
-            item.changedMfe = pspOrg.changedMfe
-            item.slots = pspOrg.slots
-            item.apps = pspOrg.apps
-            // enrich microfrontends with product store information
-            if (item.microfrontends && pspOrg.microfrontends) {
-              for (const ddiMfe of item.microfrontends)
-                for (const mfe of pspOrg.microfrontends) {
-                  // the workspace knows only about a Module (one module)!
-                  if (mfe.appId === ddiMfe.appId && mfe.type === MicrofrontendType.Module) {
-                    ddiMfe.deprecated = mfe.deprecated
-                    ddiMfe.undeployed = mfe.undeployed
-                  }
-                }
-            }
-          }
+          this.prepareWProduct(item)
           this.fillForm(item)
         },
         error: (err) => {
@@ -327,6 +311,30 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
         },
         complete() {}
       })
+  }
+
+  // enrich workspace product with info from product store
+  private prepareWProduct(item: ExtendedProduct) {
+    if (item.productName && this.psProductsOrg.has(item.productName)) {
+      const pspOrg = this.psProductsOrg.get(item.productName)
+      if (pspOrg) {
+        item.undeployed = pspOrg.undeployed
+        item.changedMfe = pspOrg.changedMfe
+        item.slots = pspOrg.slots
+        item.apps = pspOrg.apps
+        // enrich microfrontends
+        if (item.microfrontends && pspOrg.microfrontends) {
+          for (const ddiMfe of item.microfrontends)
+            for (const mfe of pspOrg.microfrontends) {
+              // the workspace knows only one module
+              if (mfe.appId === ddiMfe.appId && mfe.type === MicrofrontendType.Module) {
+                ddiMfe.deprecated = mfe.deprecated
+                ddiMfe.undeployed = mfe.undeployed
+              }
+            }
+        }
+      }
+    }
   }
 
   private fillForm(item: ExtendedProduct) {
