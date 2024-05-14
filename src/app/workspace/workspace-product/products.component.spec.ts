@@ -330,7 +330,7 @@ describe('ProductComponent', () => {
   xit('should return uploaded imageUrl', () => {
     const result = component.getImageUrl({ productName: 'product' } as ExtendedProduct)
 
-    expect(result).toBe('http://onecx-workspace-bff:8080/images/product/logo')
+    expect(result).toBe('http://onecx-workspace-bff:8080/images/product/product/logo')
   })
 
   /**
