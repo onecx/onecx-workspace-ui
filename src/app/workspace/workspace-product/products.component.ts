@@ -216,16 +216,14 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     // step through mfe array and pick modules and components
     for (const mfe of psp.microfrontends!) {
       const app = psp.apps.get(mfe.appId!)
-      if (app) {
-        if (mfe.type === MicrofrontendType.Module) {
-          if (!app.modules) app.modules = []
-          app.modules.push(mfe as ExtendedMicrofrontend)
-        }
-        if (mfe.type === MicrofrontendType.Component) {
-          if (!app.components) app.components = []
-          app.components.push(mfe as ExtendedMicrofrontend)
-          app.components.sort(this.sortMfesByExposedModule)
-        }
+      if (app && mfe.type === MicrofrontendType.Module) {
+        if (!app.modules) app.modules = []
+        app.modules.push(mfe as ExtendedMicrofrontend)
+      }
+      if (app && mfe.type === MicrofrontendType.Component) {
+        if (!app.components) app.components = []
+        app.components.push(mfe as ExtendedMicrofrontend)
+        app.components.sort(this.sortMfesByExposedModule)
       }
       // mark product if there are important changes on microfrontends
       psp.changedMfe = mfe.undeployed || mfe.deprecated || psp.changedMfe
@@ -315,8 +313,8 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
 
   // enrich workspace product with info from product store
   private prepareWProduct(item: ExtendedProduct) {
-    if (item.productName && this.psProductsOrg.has(item.productName)) {
-      const pspOrg = this.psProductsOrg.get(item.productName)
+    if (this.psProductsOrg.has(item.productName!)) {
+      const pspOrg = this.psProductsOrg.get(item.productName!)
       if (pspOrg) {
         item.undeployed = pspOrg.undeployed
         item.changedMfe = pspOrg.changedMfe
