@@ -37,7 +37,6 @@ export interface GetImageRequestParams {
 
 export interface GetProductLogoRequestParams {
     productName: string;
-    refType: RefType;
 }
 
 export interface UpdateImageRequestParams {
@@ -184,10 +183,6 @@ export class ImagesInternalAPIService {
         if (productName === null || productName === undefined) {
             throw new Error('Required parameter productName was null or undefined when calling getProductLogo.');
         }
-        const refType = requestParameters.refType;
-        if (refType === null || refType === undefined) {
-            throw new Error('Required parameter refType was null or undefined when calling getProductLogo.');
-        }
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -210,7 +205,7 @@ export class ImagesInternalAPIService {
         }
 
 
-        let localVarPath = `/images/product/${this.configuration.encodeParam({name: "productName", value: productName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/${this.configuration.encodeParam({name: "refType", value: refType, in: "path", style: "simple", explode: false, dataType: "RefType", dataFormat: undefined})}`;
+        let localVarPath = `/images/product/${this.configuration.encodeParam({name: "productName", value: productName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
         return this.httpClient.request('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
