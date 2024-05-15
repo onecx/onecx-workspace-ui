@@ -117,7 +117,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     this.targetListViewMode = this.viewingModes.find((v) => v.mode === 'list')
   }
 
-  ngAfterViewInit() {
+  public ngAfterViewInit() {
     this.sourceList = (<HTMLElement>this.elem.nativeElement).querySelector('.p-picklist-list.p-picklist-source')
     this.targetList = (<HTMLElement>this.elem.nativeElement).querySelector('.p-picklist-list.p-picklist-target')
   }
@@ -134,6 +134,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     this.exceptionKey = undefined
     this.searchWProducts()
     this.searchPsProducts()
+    this.onHideItemDetails()
     this.wProducts$
       .pipe(
         switchMap((wProducts) => {
@@ -144,12 +145,14 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   }
 
   public onLoadPsProducts(): void {
-    this.displayDetails = true
+    this.onHideItemDetails()
     this.psProducts$.subscribe()
+    //this.psProducts$ = new Observable((sub) => sub.next())
   }
   public onLoadWProducts(): void {
-    this.displayDetails = true
+    this.onHideItemDetails()
     this.wProducts$.subscribe()
+    //this.wProducts$ = new Observable((sub) => sub.next())
   }
   private searchWProducts(): void {
     this.wProducts$ = this.wProductApi
@@ -269,6 +272,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   }
   public onHideItemDetails() {
     this.displayDetails = false
+    this.displayedDetailItem = undefined
   }
   public onSourceViewModeChange(ev: { icon: string; mode: string }): void {
     this.sourceListViewMode = this.viewingModes.find((v) => v.mode === ev.mode)
@@ -291,11 +295,11 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     if (ev.items[0] && this.psProductsOrg.has(ev.items[0].productName)) {
       const pspOrg = this.psProductsOrg.get(ev.items[0].productName)
       if (pspOrg) this.fillForm(pspOrg)
-    } else this.displayDetails = false
+    } else this.onHideItemDetails()
   }
   public onTargetSelect(ev: any): void {
     if (ev.items[0]) this.getWProduct(ev.items[0])
-    else this.displayDetails = false
+    else this.onHideItemDetails()
   }
 
   private getWProduct(wProduct: ExtendedProduct) {
@@ -345,7 +349,6 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   }
 
   private fillForm(item: ExtendedProduct) {
-    this.displayDetails = true
     this.displayedDetailItem = item
     this.displayedDetailItem.slots?.sort(this.sortSlotsByName)
     this.formGroup.controls['displayName'].setValue(this.displayedDetailItem.displayName)
@@ -361,6 +364,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
         this.prepareFormForModulesAndComponents(this.displayedDetailItem, modules)
       }
     }
+    this.displayDetails = true
   }
   private prepareFormForModulesAndComponents(item: ExtendedProduct, modules: FormArray): void {
     if (!item || !item.microfrontends) return
@@ -396,8 +400,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   }
 
   private clearForm() {
-    this.displayDetails = false
-    this.displayedDetailItem = undefined
+    this.onHideItemDetails()
     this.formGroup.reset()
   }
   get moduleControls(): any {

@@ -955,7 +955,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetailResponse'
-  /images/product/{productName}/logo:
+  /images/product/{productName}/{refType}:
     get:
       x-onecx:
         permissions:
@@ -971,6 +971,11 @@ paths:
           required: true
           schema:
             type: string
+        - name: refType
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/RefType'
       responses:
         '200':
           description: OK
