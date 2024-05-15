@@ -21,7 +21,6 @@ import {
   UpdateProductRequest,
   Product,
   ProductAPIService,
-  RefType,
   SlotPS,
   Workspace,
   WorkspaceProductAPIService
@@ -146,13 +145,13 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
 
   public onLoadPsProducts(): void {
     this.onHideItemDetails()
-    this.psProducts$.subscribe()
-    //this.psProducts$ = new Observable((sub) => sub.next())
+    //this.psProducts$.subscribe()
+    this.psProducts$ = new Observable((sub) => sub.next())
   }
   public onLoadWProducts(): void {
     this.onHideItemDetails()
-    this.wProducts$.subscribe()
-    //this.wProducts$ = new Observable((sub) => sub.next())
+    //this.wProducts$.subscribe()
+    this.wProducts$ = new Observable((sub) => sub.next())
   }
   private searchWProducts(): void {
     this.wProducts$ = this.wProductApi
@@ -257,11 +256,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     if (product.imageUrl && product.imageUrl != '') {
       return product.imageUrl
     }
-    console.log(
-      'bffProductImageUrl: ' +
-        bffProductImageUrl(this.imageApi.configuration.basePath, product.productName, RefType.Logo)
-    )
-    return bffProductImageUrl(this.imageApi.configuration.basePath, product.productName, RefType.Logo)
+    return bffProductImageUrl(this.imageApi.configuration.basePath, product.productName)
   }
 
   /**
