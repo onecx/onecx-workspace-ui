@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core'
-import { map } from 'rxjs'
+import { Observable, map } from 'rxjs'
 
 import { AppStateService } from '@onecx/angular-integration-interface'
 
@@ -18,26 +18,24 @@ import { prepareUrlPath } from 'src/app/shared/utils'
   templateUrl: './image-container.component.html'
 })
 export class ImageContainerComponent implements OnChanges {
-  @Input() public id = ''
+  @Input() public id = 'image-container'
   @Input() public title: string | undefined
   @Input() public small = false
   @Input() public imageUrl: string | undefined
   @Input() public styleClass: string | undefined
 
   public displayImageUrl: string | undefined
-  public defaultImageUrl = ''
+  public defaultImageUrl$: Observable<string>
   public displayDefaultLogo = false
 
   prepareUrlPath = prepareUrlPath
 
   constructor(private appState: AppStateService) {
-    appState.currentMfe$
-      .pipe(
-        map((mfe) => {
-          this.defaultImageUrl = this.prepareUrlPath(mfe.remoteBaseUrl, environment.DEFAULT_LOGO_PATH)
-        })
-      )
-      .subscribe()
+    this.defaultImageUrl$ = appState.currentMfe$.pipe(
+      map((mfe) => {
+        return this.prepareUrlPath(mfe.remoteBaseUrl, environment.DEFAULT_LOGO_PATH)
+      })
+    )
   }
 
   public onImageError(): void {
@@ -46,8 +44,8 @@ export class ImageContainerComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.displayDefaultLogo = false
     if (changes['imageUrl']) {
+      this.displayDefaultLogo = false
       if (this.imageUrl) this.displayImageUrl = this.imageUrl
       else this.displayDefaultLogo = true
     }
