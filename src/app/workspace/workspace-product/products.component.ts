@@ -145,13 +145,11 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
 
   public onLoadPsProducts(): void {
     this.onHideItemDetails()
-    //this.psProducts$.subscribe()
-    this.psProducts$ = new Observable((sub) => sub.next())
+    this.psProducts$.subscribe()
   }
   public onLoadWProducts(): void {
     this.onHideItemDetails()
-    //this.wProducts$.subscribe()
-    this.wProducts$ = new Observable((sub) => sub.next())
+    this.wProducts$.subscribe()
   }
   private searchWProducts(): void {
     this.wProducts$ = this.wProductApi
