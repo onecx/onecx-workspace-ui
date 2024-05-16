@@ -128,7 +128,7 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent {
             const newMenuItem: MenuItem = {
               label: translatedLabel,
               icon: PrimeIcons.POWER_OFF,
-              command: this.logout
+              command: () => this.logout()
             }
             return [...currentMenu, newMenuItem]
           })
