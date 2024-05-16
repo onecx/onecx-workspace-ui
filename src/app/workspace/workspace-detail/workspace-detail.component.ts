@@ -283,7 +283,7 @@ export class WorkspaceDetailComponent implements OnInit {
               show: 'asOverflow',
               permission: 'WORKSPACE#DELETE',
               conditional: true,
-              showCondition: !this.editMode && this.workspace && this.workspace?.name != 'ADMIN'
+              showCondition: !this.editMode && this.workspace && !this.workspace?.mandatory
             }
           ]
         })
