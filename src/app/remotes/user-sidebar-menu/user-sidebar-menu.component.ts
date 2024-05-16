@@ -118,7 +118,7 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent {
           )
       ),
       withLatestFrom(this.userService.lang$),
-      map(([data, userLang]) => this.menuItemService.constructMenuItems(data?.menu?.[0].children, userLang)),
+      map(([data, userLang]) => this.menuItemService.constructMenuItems(data?.menu?.[0]?.children, userLang)),
       mergeMap((currentMenu) => {
         return this.translateService.get('REMOTES.USER_SIDEBAR_MENU.LOGOUT').pipe(
           catchError(() => {
