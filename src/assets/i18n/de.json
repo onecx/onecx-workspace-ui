@@ -162,11 +162,13 @@
     "CREATION_USER": "Erstellt von",
     "MODIFICATION_DATE": "Geändert am",
     "MODIFICATION_USER": "Geändert von",
+    "MANDATORY": "Notwendig",
     "TOOLTIPS": {
       "CREATION_DATE": "Zeitpunkt der Erstellung",
-      "CREATION_USER": "Name des Benutzers",
+      "CREATION_USER": "ID des Benutzers der Erstellung",
       "MODIFICATION_DATE": "Zeitpunkt der letzten Änderung",
-      "MODIFICATION_USER": "Name des Benutzers der letzten Änderung"
+      "MODIFICATION_USER": "ID des Benutzers der letzten Änderung",
+      "MANDATORY": "Wenn gesetzt, dann ist dieser Workspace notwendig für den Betrieb. Der Workspace kann nicht somit nicht gelöscht werden."
     }
   },
   "ROLE": {

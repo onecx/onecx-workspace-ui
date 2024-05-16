@@ -162,11 +162,13 @@
     "CREATION_USER": "Created by",
     "MODIFICATION_DATE": "Changed on",
     "MODIFICATION_USER": "Changed by",
+    "MANDATORY": "Mandatory",
     "TOOLTIPS": {
       "CREATION_DATE": "Timestamp of the creation",
-      "CREATION_USER": "Name of the user of the creation",
+      "CREATION_USER": "ID of the user of the creation",
       "MODIFICATION_DATE": "Timestamp of the last change",
-      "MODIFICATION_USER": "Name of the user of the last change"
+      "MODIFICATION_USER": "ID of the user of the last change",
+      "MANDATORY": "If set then this workspace is necessary for operation. The workspace cannot therefore be deleted."
     }
   },
   "ROLE": {
