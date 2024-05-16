@@ -133,7 +133,7 @@ export class OneCXUserAvatarMenuComponent implements ocxRemoteComponent, AfterVi
             const newMenuItem: MenuItem = {
               label: translatedLabel,
               icon: PrimeIcons.POWER_OFF,
-              command: this.logout
+              command: (event) => this.logout(event)
             }
             return [...currentMenu, newMenuItem]
           })
