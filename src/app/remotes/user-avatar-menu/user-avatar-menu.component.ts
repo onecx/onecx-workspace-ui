@@ -1,8 +1,7 @@
-import { CommonModule, Location } from '@angular/common'
+import { Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import { AfterViewInit, Component, Inject, OnDestroy, Renderer2 } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
@@ -50,16 +49,14 @@ export type MenuAnchorPositionConfig = 'right' | 'left'
   standalone: true,
   imports: [
     AngularRemoteComponentsModule,
-    CommonModule,
     FormsModule,
+    SharedModule,
     MenuModule,
     AvatarModule,
     RippleModule,
     PortalCoreModule,
-    BrowserAnimationsModule,
     RouterModule,
-    TranslateModule,
-    SharedModule
+    TranslateModule
   ],
   providers: [
     {
@@ -123,7 +120,7 @@ export class OneCXUserAvatarMenuComponent implements ocxRemoteComponent, AfterVi
           )
       ),
       withLatestFrom(this.userService.lang$),
-      map(([data, userLang]) => this.menuItemService.constructMenuItems(data?.menu?.[0].children, userLang)),
+      map(([data, userLang]) => this.menuItemService.constructMenuItems(data?.menu?.[0]?.children, userLang)),
       mergeMap((currentMenu) => {
         return this.translateService.get('REMOTES.USER_AVATAR_MENU.LOGOUT').pipe(
           catchError(() => {
@@ -133,7 +130,7 @@ export class OneCXUserAvatarMenuComponent implements ocxRemoteComponent, AfterVi
             const newMenuItem: MenuItem = {
               label: translatedLabel,
               icon: PrimeIcons.POWER_OFF,
-              command: this.logout
+              command: () => this.logout()
             }
             return [...currentMenu, newMenuItem]
           })
@@ -176,8 +173,7 @@ export class OneCXUserAvatarMenuComponent implements ocxRemoteComponent, AfterVi
     this.menuOpen = !this.menuOpen
   }
 
-  logout(event: Event) {
-    event.preventDefault()
+  logout() {
     this.eventsPublisher$.publish({ type: 'authentication#logoutButtonClicked' })
   }
 }

@@ -35,6 +35,10 @@ export interface GetImageRequestParams {
     refType: RefType;
 }
 
+export interface GetProductLogoRequestParams {
+    productName: string;
+}
+
 export interface UpdateImageRequestParams {
     refId: string;
     refType: RefType;
@@ -153,6 +157,55 @@ export class ImagesInternalAPIService {
 
 
         let localVarPath = `/images/${this.configuration.encodeParam({name: "refId", value: refId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/${this.configuration.encodeParam({name: "refType", value: refType, in: "path", style: "simple", explode: false, dataType: "RefType", dataFormat: undefined})}`;
+        return this.httpClient.request('get', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: "blob",
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Get product logo by name
+     * @param requestParameters
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public getProductLogo(requestParameters: GetProductLogoRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'image/*' | 'application/json', context?: HttpContext}): Observable<Blob>;
+    public getProductLogo(requestParameters: GetProductLogoRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'image/*' | 'application/json', context?: HttpContext}): Observable<HttpResponse<Blob>>;
+    public getProductLogo(requestParameters: GetProductLogoRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'image/*' | 'application/json', context?: HttpContext}): Observable<HttpEvent<Blob>>;
+    public getProductLogo(requestParameters: GetProductLogoRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'image/*' | 'application/json', context?: HttpContext}): Observable<any> {
+        const productName = requestParameters.productName;
+        if (productName === null || productName === undefined) {
+            throw new Error('Required parameter productName was null or undefined when calling getProductLogo.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'image/*',
+                'application/json'
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+
+        let localVarPath = `/images/product/${this.configuration.encodeParam({name: "productName", value: productName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
         return this.httpClient.request('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,

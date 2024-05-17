@@ -174,17 +174,8 @@ export class WorkspaceSearchComponent implements OnInit {
     }
   }
 
-  public getImageUrl(workspace: any): string {
-    if (workspace.logoUrl) {
-      return workspace.logoUrl
-    } else {
-      return this.imageApi.configuration.basePath + '/images/' + workspace.name + '/logo'
-    }
-  }
   public getLogoUrl(workspace: Workspace | undefined): string | undefined {
-    if (!workspace) {
-      return undefined
-    }
+    if (!workspace) return undefined
     if (workspace.logoUrl && workspace.logoUrl != '') {
       return workspace.logoUrl
     }

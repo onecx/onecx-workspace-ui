@@ -162,11 +162,13 @@
     "CREATION_USER": "Erstellt von",
     "MODIFICATION_DATE": "Geändert am",
     "MODIFICATION_USER": "Geändert von",
+    "MANDATORY": "Notwendig",
     "TOOLTIPS": {
       "CREATION_DATE": "Zeitpunkt der Erstellung",
-      "CREATION_USER": "Name des Benutzers",
+      "CREATION_USER": "ID des Benutzers der Erstellung",
       "MODIFICATION_DATE": "Zeitpunkt der letzten Änderung",
-      "MODIFICATION_USER": "Name des Benutzers der letzten Änderung"
+      "MODIFICATION_USER": "ID des Benutzers der letzten Änderung",
+      "MANDATORY": "Wenn gesetzt, dann ist dieser Workspace notwendig für den Betrieb. Der Workspace kann nicht somit nicht gelöscht werden."
     }
   },
   "ROLE": {
@@ -483,21 +485,25 @@
     "HTTP_STATUS_0": {
       "WORKSPACE": "Unbekanntes Problem beim Abrufen von Workspace Details - Bitte versuchen sie es noch einmal.",
       "WORKSPACES": "Unbekanntes Problem beim Abrufen von Workspace-Daten - Bitte versuchen sie es noch einmal.",
+      "PRODUCTS": "Unbekanntes Problem beim Abrufen von Produkt-Daten - Bitte versuchen sie es noch einmal.",
       "MENUS": "Unbekanntes Problem beim Abrufen von Menü-Daten - Bitte versuchen sie es noch einmal."
     },
     "HTTP_STATUS_403": {
       "WORKSPACE": "Sie haben keine Rechte um Workspace Details zu sehen.",
       "WORKSPACES": "Sie haben keine Rechte um Workspaces zu sehen.",
+      "PRODUCTS": "Sie haben keine Rechte um Produkte zu sehen.",
       "MENUS": "Sie haben keine Rechte um Menüs zu sehen."
     },
     "HTTP_STATUS_404": {
       "WORKSPACE": "Der Workspace wurde nicht gefunden.",
       "WORKSPACES": "Es konnten keine Workspaces gefunden werden.",
+      "PRODUCTS": "Es konnten keine Produkte geladen werden.",
       "MENUS": "Es konnten keine Menüs gefunden werden."
     },
     "HTTP_STATUS_500": {
-      "WORKSPACE": "Unbekanntes Server-Problem beim Abrufen von Workspace Details - Bitte versuchen sie es noch einmal.",
+      "WORKSPACE": "Unbekanntes Server-Problem beim Abrufen von Workspace-Details - Bitte versuchen sie es noch einmal.",
       "WORKSPACES": "Unbekanntes Server-Problem beim Abrufen von Workspace-Daten - Bitte versuchen sie es noch einmal.",
+      "PRODUCTS": "Unbekanntes Server-Problem beim Abrufen von Produktdaten - Bitte versuchen sie es noch einmal.",
       "MENUS": "Unbekanntes Server-Problem beim Abrufen von Menü-Daten - Bitte versuchen sie es noch einmal."
     }
   }

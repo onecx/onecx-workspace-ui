@@ -28,8 +28,6 @@
       (onTargetSelect)="onTargetSelect($event)"
       (onMoveToSource)="onMoveToSource($event)"
       (onMoveToTarget)="onMoveToTarget($event)"
-      (onMoveAllToSource)="onMoveToSource($event)"
-      (onMoveAllToTarget)="onMoveToTarget($event)"
     >
       <ng-template pTemplate="sourceHeader">
         <div class="flex flex-row justify-content-between align-items-center column-gap-2">
@@ -141,7 +139,8 @@
               [title]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
             ></span>
             <app-image-container
-              [imageUrl]="getImageUrl(product.imageUrl)"
+              [id]="'workspace_detail_product_picklist_' + product.productName + '_logo'"
+              [imageUrl]="getImageUrl(product)"
               [small]="true"
               styleClass="w-2rem md:w-4rem tile-view-optional "
             ></app-image-container>
@@ -167,17 +166,19 @@
   <div class="col-3 md:col-4 hidden md:block">
     <p-panel *ngIf="displayDetails" [showHeader]="true" styleClass="hidden sm:block">
       <ng-template pTemplate="header">
-        <div class="h-4rem flex flex-row justify-content-between align-items-start w-full">
+        <div
+          class="h-3rem lg:h-4rem flex flex-row flex-wrap row-gap-2 justify-content-between align-items-start w-full"
+        >
           <div class="flex flex-column text-primary">
             <div class="font-semibold text-xl mb-1">{{ 'DIALOG.PRODUCTS.DETAILS' | translate }}</div>
             <div class="text-sm">{{ 'DIALOG.PRODUCTS.ORIGIN.' + displayedDetailItem?.bucket | translate }}</div>
           </div>
           <div class="h-full pb-4 flex flex-column justify-content-around">
             <app-image-container
-              id="workspace_detail_product_item_header_logo"
-              [imageUrl]="getImageUrl(displayedDetailItem?.imageUrl)"
+              id="workspace_detail_product_detail_logo"
+              [imageUrl]="getImageUrl(displayedDetailItem)"
               [small]="true"
-              styleClass="w-2rem md:w-4rem tile-view-optional "
+              styleClass="hidden lg:block w-3rem md:w-5rem tile-view-optional "
             ></app-image-container>
           </div>
           <span
