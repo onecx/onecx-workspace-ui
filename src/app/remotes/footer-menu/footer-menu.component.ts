@@ -45,7 +45,6 @@ import { environment } from 'src/environments/environment'
 export class OneCXFooterMenuComponent implements OnInit, ocxRemoteComponent {
   @ViewChild('menubar') menubar?: Menubar
   menuItems$: Observable<MenuItem[]> | undefined
-  permissions: string[] = []
 
   constructor(
     @Inject(BASE_URL) private baseUrl: ReplaySubject<string>,
@@ -60,7 +59,6 @@ export class OneCXFooterMenuComponent implements OnInit, ocxRemoteComponent {
 
   ocxInitRemoteComponent(config: RemoteComponentConfig): void {
     this.baseUrl.next(config.baseUrl)
-    this.permissions = config.permissions
     this.menuItemApiService.configuration = new Configuration({
       basePath: Location.joinWithSlash(config.baseUrl, environment.apiPrefix)
     })
