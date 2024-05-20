@@ -1,6 +1,6 @@
 import { CommonModule, Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { Component, Inject, OnInit, ViewChild } from '@angular/core'
+import { Component, Inject, OnInit } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
@@ -14,7 +14,6 @@ import {
 } from '@onecx/angular-remote-components'
 import { AppStateService, PortalCoreModule, UserService } from '@onecx/portal-integration-angular'
 import { MenuItem } from 'primeng/api'
-import { Menubar } from 'primeng/menubar'
 import { Observable, ReplaySubject, map, mergeMap, shareReplay, withLatestFrom } from 'rxjs'
 import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
@@ -43,7 +42,6 @@ import { environment } from 'src/environments/environment'
 })
 @UntilDestroy()
 export class OneCXFooterMenuComponent implements OnInit, ocxRemoteComponent {
-  @ViewChild('menubar') menubar?: Menubar
   menuItems$: Observable<MenuItem[]> | undefined
 
   constructor(
