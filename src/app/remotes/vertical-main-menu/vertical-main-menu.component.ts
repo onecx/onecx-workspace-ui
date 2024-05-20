@@ -84,7 +84,7 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, OnIni
       mergeMap((currentWorkspace) =>
         this.menuItemApiService.getMenuItems({
           getMenuItemsRequest: {
-            workspaceName: currentWorkspace.portalName,
+            workspaceName: currentWorkspace.workspaceName,
             menuKeys: ['main-menu']
           }
         })

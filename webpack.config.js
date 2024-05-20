@@ -13,12 +13,11 @@ const config = withModuleFederationPlugin({
     './OneCXFooterMenuComponent': 'src/app/remotes/footer-menu/footer-menu.component.ts'
   },
   shared: share({
-    '@angular/core': { singleton: true, requiredVersion: 'auto' },
+    '@angular/core': { singleton: true, requiredVersion: 'auto', includeSecondaries: true },
     '@angular/forms': {
       singleton: true,
       requiredVersion: 'auto',
-      includeSecondaries: true,
-      eager: false
+      includeSecondaries: true
     },
     '@angular/common': {
       singleton: true,

@@ -11,7 +11,7 @@
   *ngIf="displayDefaultLogo"
   [id]="id"
   [class]="'image-object image-' + (small ? 'sm' : 'lg') + ' sm:image-lg ' + (styleClass ? styleClass : '')"
-  [src]="defaultImageUrl"
+  [src]="defaultImageUrl$ | async"
   [alt]="'DIALOG.LOGO.PLACEHOLDER' | translate"
   [title]="title ? title : ('DIALOG.LOGO.PLACEHOLDER' | translate)"
 />

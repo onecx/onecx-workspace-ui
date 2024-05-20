@@ -162,11 +162,13 @@
     "CREATION_USER": "Created by",
     "MODIFICATION_DATE": "Changed on",
     "MODIFICATION_USER": "Changed by",
+    "MANDATORY": "Mandatory",
     "TOOLTIPS": {
       "CREATION_DATE": "Timestamp of the creation",
-      "CREATION_USER": "Name of the user of the creation",
+      "CREATION_USER": "ID of the user of the creation",
       "MODIFICATION_DATE": "Timestamp of the last change",
-      "MODIFICATION_USER": "Name of the user of the last change"
+      "MODIFICATION_USER": "ID of the user of the last change",
+      "MANDATORY": "If set then this workspace is necessary for operation. The workspace cannot therefore be deleted."
     }
   },
   "ROLE": {
@@ -483,21 +485,25 @@
     "HTTP_STATUS_0": {
       "WORKSPACE": "Unknown problem retrieving Workspace details - please try again.",
       "WORKSPACES": "Unknown problem retrieving Workspace data - please try again.",
+      "PRODUCTS": "Unknown problem retrieving Product data - please try again.",
       "MENUS": "Unknown problem retrieving menu data - please try again."
     },
     "HTTP_STATUS_403": {
       "WORKSPACE": "You have no permissions to see workspace details.",
       "WORKSPACES": "You have no permissions to see workspaces.",
+      "PRODUCTS": "You have no permissions to see products.",
       "MENUS": "You have no permissions to see menus."
     },
     "HTTP_STATUS_404": {
       "WORKSPACE": "The Workspace could not be found.",
       "WORKSPACES": "No Workspaces could be found.",
+      "PRODUCTS": "No Products could be load.",
       "MENUS": "No menus could be found."
     },
     "HTTP_STATUS_500": {
       "WORKSPACE": "Unknown server problem retrieving Workspace details - please try again.",
       "WORKSPACES": "Unknown server problem retrieving Workspace data - please try again.",
+      "PRODUCTS": "Unknown server problem retrieving Product data - please try again.",
       "MENUS": "Unknown server problem retrieving menu data - please try again."
     }
   }

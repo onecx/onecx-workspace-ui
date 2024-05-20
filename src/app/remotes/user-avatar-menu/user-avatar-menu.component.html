@@ -1,4 +1,4 @@
-<div class="flex relative h-full w-full align-items-center justify-content-center">
+<div class="flex relative">
   <div
     pRipple
     class="p-2 rounded-circle cursor-pointer user-avatar-menu-button"
@@ -12,7 +12,7 @@
   <ul
     class="layout-topbar-action-panel shadow-6 sm:m-2 fixed top-4rem sm:absolute sm:top-100 w-screen sm:w-auto"
     [ngClass]="menuAnchorPosition + '-0'"
-    *ngIf="menuOpen"
+    [hidden]="!menuOpen"
   >
     <li class="layout-topbar-action-item flex flex-column" *ocxIfPermission="'PROFILE#VIEW'; permissions: permissions">
       <div *ngIf="currentUser$ | async as user">
@@ -33,10 +33,28 @@
     <ng-container *ngIf="userMenu$ | async as userMenu">
       <li class="layout-topbar-action-item" *ngFor="let item of userMenu; let i = index">
         <a
+          *ngIf="!item.routerLink && item.url && !item.command"
+          class="flex flex-row align-items-center w-full h-full p-3 gap-2"
+          pRipple
+          [attr.href]="item.url"
+        >
+          <i *ngIf="item.icon" [ngClass]="item.icon"></i>
+          <span>{{ item.label }}</span>
+        </a>
+        <a
+          *ngIf="item.routerLink && !item.url && !item.command"
           class="flex flex-row align-items-center w-full h-full p-3 gap-2"
           pRipple
           [routerLink]="item.routerLink"
-          [href]="item.url"
+        >
+          <i *ngIf="item.icon" [ngClass]="item.icon"></i>
+          <span>{{ item.label }}</span>
+        </a>
+        <a
+          *ngIf="!item.routerLink && !item.url && item.command"
+          class="flex flex-row align-items-center w-full h-full p-3 gap-2"
+          pRipple
+          (click)="item.command()"
         >
           <i *ngIf="item.icon" [ngClass]="item.icon"></i>
           <span>{{ item.label }}</span>
