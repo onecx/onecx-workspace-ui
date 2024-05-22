@@ -13,7 +13,7 @@ import {
   createTranslateLoader,
   PortalMessageService
 } from '@onecx/portal-integration-angular'
-import { WorkspaceAPIService, WorkspaceSnapshot } from 'src/app/shared/generated'
+import { ImportResponseStatus, WorkspaceAPIService, WorkspaceSnapshot } from 'src/app/shared/generated'
 
 import { WorkspaceImportComponent } from './workspace-import.component'
 import { ConfirmComponent } from './confirm/confirm.component'
@@ -40,10 +40,9 @@ class MockPreviewComponent {
   public baseUrl = 'base url'
 }
 
-xdescribe('WorkspaceImportComponent', () => {
+describe('WorkspaceImportComponent', () => {
   let component: WorkspaceImportComponent
   let fixture: ComponentFixture<WorkspaceImportComponent>
-  let httpTestingController: HttpTestingController
   let mockActivatedRoute: ActivatedRoute
   let mockRouter = new MockRouter()
   const mockAuthService = jasmine.createSpyObj('IAuthService', ['hasPermission'])
@@ -130,7 +129,17 @@ xdescribe('WorkspaceImportComponent', () => {
   })
 
   it('should import a portal', () => {
-    apiServiceSpy.importWorkspaces.and.returnValue(of({}))
+    const response = {
+      id: 'testString1',
+      workspaces: {
+        Updated: ImportResponseStatus.Updated
+      },
+      menus: {
+        Updated: ImportResponseStatus.Updated
+      }
+    }
+
+    apiServiceSpy.importWorkspaces.and.returnValue(of(response))
     const workspaceSnap = {
       workspaces: {
         workspace: {
@@ -149,39 +158,22 @@ xdescribe('WorkspaceImportComponent', () => {
 
     expect(component.isLoading).toBeFalse()
     expect(msgServiceSpy.success).toHaveBeenCalledWith({
-      summaryKey: 'WORKSPACE_IMPORT.WORKSPACE_IMPORT_CREATE_SUCCESS'
+      summaryKey: 'WORKSPACE_IMPORT.RESPONSE.UPDATED'
     })
   })
 
-  xit('should import a portal with theme if checkbox enabled', () => {
-    apiServiceSpy.importWorkspaces.and.returnValue(of({}))
-    const workspaceSnap = {
+  it('should update a portal', () => {
+    const response = {
+      id: 'testString1',
       workspaces: {
-        workspace: {
-          name: 'name'
-        }
+        Updated: ImportResponseStatus.Updated
+      },
+      menus: {
+        Updated: ImportResponseStatus.Updated
       }
     }
-    component.importRequestDTO = workspaceSnap
-    component.hasPermission = true
-    component.confirmComponent = new MockConfirmComponent() as unknown as ConfirmComponent
-    if (component.confirmComponent) {
-      component.confirmComponent.workspaceNameExists = false
-    }
-    component.themeName = 'new name'
 
-    component.importWorkspace()
-
-    const req = httpTestingController.expectOne(`http://localhost/v1/importWorkspaces`)
-    expect(req.request.method).toEqual('POST')
-    req.flush({})
-
-    // expect(component.importRequestDTO.portal.themeName).toEqual('new name')
-    // expect(component.importRequestDTO.themeImportData?.name).toEqual('new name')
-  })
-
-  it('should update a portal', () => {
-    apiServiceSpy.importWorkspaces.and.returnValue(of({}))
+    apiServiceSpy.importWorkspaces.and.returnValue(of(response))
     const workspaceSnap = {
       workspaces: {
         workspace: {
@@ -199,12 +191,22 @@ xdescribe('WorkspaceImportComponent', () => {
     component.importWorkspace()
 
     expect(msgServiceSpy.success).toHaveBeenCalledWith({
-      summaryKey: 'WORKSPACE_IMPORT.WORKSPACE_IMPORT_UPDATE_SUCCESS'
+      summaryKey: 'WORKSPACE_IMPORT.RESPONSE.UPDATED'
     })
   })
 
   it('should update a portal with new base url', () => {
-    apiServiceSpy.importWorkspaces.and.returnValue(of({}))
+    const response = {
+      id: 'testString1',
+      workspaces: {
+        Updated: ImportResponseStatus.Updated
+      },
+      menus: {
+        Updated: ImportResponseStatus.Updated
+      }
+    }
+
+    apiServiceSpy.importWorkspaces.and.returnValue(of(response))
     const workspaceSnap = {
       workspaces: {
         workspace: {
@@ -234,7 +236,7 @@ xdescribe('WorkspaceImportComponent', () => {
     component.importWorkspace()
 
     expect(msgServiceSpy.success).toHaveBeenCalledWith({
-      summaryKey: 'WORKSPACE_IMPORT.WORKSPACE_IMPORT_UPDATE_SUCCESS'
+      summaryKey: 'WORKSPACE_IMPORT.RESPONSE.UPDATED'
     })
   })
 
@@ -252,7 +254,7 @@ xdescribe('WorkspaceImportComponent', () => {
 
     component.importWorkspace()
 
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'WORKSPACE_IMPORT.WORKSPACE_IMPORT_ERROR' })
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'WORKSPACE_IMPORT.IMPORT_NOK' })
   })
 
   it('should set importRequestDTO on next when activeIndex is 0 (upload), and themeImportData valid', () => {

@@ -61,7 +61,7 @@ const prodStoreItem: ExtendedProduct = {
   bucket: 'SOURCE',
   undeployed: false,
   changedMfe: false,
-  apps: new Map()
+  apps: new Map().set('appId', { appId: 'appId', modules: [microfrontend] })
 }
 
 const mfeInfo: MfeInfo = {
@@ -189,7 +189,7 @@ describe('ProductComponent', () => {
     expect(console.error).toHaveBeenCalledWith('getProductsByWorkspaceId():', err)
   })
 
-  xit('should loadData onChanges: searchPsProducts call success: prod deployed', () => {
+  it('should loadData onChanges: searchPsProducts call success: prod deployed', () => {
     wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([product]))
     productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [prodStoreItem] }))
     const changes = {
@@ -203,8 +203,10 @@ describe('ProductComponent', () => {
     component.ngOnChanges(changes as unknown as SimpleChanges)
 
     expect(component.psProducts).toEqual([{ ...prodStoreItem }])
-    expect(component.wProducts).toEqual([{ ...product, bucket: 'TARGET', undeployed: false, changedMfe: false }])
-    expect(component.psProductsOrg.get(prodStoreItem.productName!)).toEqual({ ...prodStoreItem })
+    expect(component.wProducts?.at(0)).toEqual(
+      [{ ...product, bucket: 'TARGET', undeployed: false, changedMfe: false }]?.at(0) as ExtendedProduct
+    )
+    expect(component.psProductsOrg.get(prodStoreItem.productName!)!).toEqual({ ...prodStoreItem })
   })
 
   it('should loadData onChanges: searchPsProducts call success: prod undeployed', () => {
@@ -412,7 +414,7 @@ describe('ProductComponent', () => {
     expect(mockEvent.stopPropagation).toHaveBeenCalled()
   })
 
-  xit('should call fillForm when item is selected: mfe module', () => {
+  it('should call fillForm when item is selected: mfe module', () => {
     component.formGroup = fb.group({
       displayName: new FormControl(''),
       baseUrl: new FormControl(''),
@@ -428,15 +430,17 @@ describe('ProductComponent', () => {
       modules.push(formGroup)
     }
     addMfeControl({ microfrontend })
-    const event = { items: [{ ...product, bucket: 'SOURCE' }] }
+    const psp = { items: [{ ...product, bucket: 'SOURCE' }] }
     component.displayDetails = true
+    component.psProductsOrg = new Map()
+    component.psProductsOrg.set(product.productName ?? '', product)
 
-    component.onSourceSelect(event)
+    component.onSourceSelect(psp)
 
     expect(component.displayDetails).toBeTrue()
   })
 
-  xit('should call fillForm when item is selected: mfe component', () => {
+  it('should call fillForm when item is selected: mfe component', () => {
     component.formGroup = fb.group({
       displayName: new FormControl(''),
       baseUrl: new FormControl(''),
@@ -455,6 +459,8 @@ describe('ProductComponent', () => {
     product.microfrontends = [microfrontendComponent]
     const event = { items: [{ ...product, bucket: 'SOURCE' }] }
     component.displayDetails = true
+    component.psProductsOrg = new Map()
+    component.psProductsOrg.set(product.productName ?? '', product)
 
     component.onSourceSelect(event)
 
