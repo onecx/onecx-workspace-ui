@@ -9,14 +9,11 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { CreateUpdateMicrofrontend } from './createUpdateMicrofrontend';
-import { CreateSlot } from './createSlot';
 
 
-export interface CreateProductRequest { 
+export interface EximComponent { 
     productName: string;
-    baseUrl: string;
-    microfrontends?: Array<CreateUpdateMicrofrontend>;
-    slots?: Array<CreateSlot>;
+    appId: string;
+    name: string;
 }
 
