@@ -1,7 +1,7 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { HttpClient } from '@angular/common/http'
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing'
+import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { Router } from '@angular/router'
 import { ActivatedRoute } from '@angular/router'
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
@@ -85,7 +85,6 @@ describe('WorkspaceImportComponent', () => {
     fixture = TestBed.createComponent(WorkspaceImportComponent)
     component = fixture.componentInstance
     fixture.detectChanges()
-    httpTestingController = TestBed.inject(HttpTestingController)
   })
 
   it('should create', () => {
