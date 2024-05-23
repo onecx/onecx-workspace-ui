@@ -1,5 +1,6 @@
 <div class="flex relative">
   <div
+    id="user-avatar-menu-button"
     pRipple
     class="p-2 rounded-circle cursor-pointer user-avatar-menu-button"
     title="{{ 'REMOTES.USER_AVATAR_MENU.TOOLTIP' | translate }}"
@@ -14,15 +15,26 @@
     [ngClass]="menuAnchorPosition + '-0'"
     [hidden]="!menuOpen"
   >
-    <li class="layout-topbar-action-item flex flex-column" *ocxIfPermission="'PROFILE#VIEW'; permissions: permissions">
+    <li
+      id="user-avatar-profile-item"
+      class="layout-topbar-action-item flex flex-column"
+      *ocxIfPermission="'PROFILE#VIEW'; permissions: permissions"
+    >
       <div *ngIf="currentUser$ | async as user">
-        <h5 class="flex flex-row align-items-center justify-content-center text-color-secondary">
+        <h5
+          id="user-avatar-profile-item-name"
+          class="flex flex-row align-items-center justify-content-center text-color-secondary"
+        >
           {{ user.person.displayName }}
         </h5>
-        <span class="flex flex-row align-items-center justify-content-center text-color-secondary">
+        <span
+          id="user-avatar-profile-item-email"
+          class="flex flex-row align-items-center justify-content-center text-color-secondary"
+        >
           {{ user.person.email }}</span
         >
         <span
+          id="user-avatar-profile-item-tenant"
           *ngIf="user.tenantName"
           class="flex flex-row align-items-center justify-content-center text-color-secondary"
         >
