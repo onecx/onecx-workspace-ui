@@ -125,7 +125,6 @@ describe('PreviewComponent', () => {
   })
 
   it('should set workspaceName correctly', () => {
-    console.log('Workspacename########################', component.formGroup.controls['workspaceName'].value)
     component.hasPermission = true
     component.formGroup.controls['workspaceName'].setValue('workspace')
 

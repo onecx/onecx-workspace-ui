@@ -108,29 +108,44 @@ describe('WorkspacePropsComponent', () => {
     expect(component).toBeTruthy()
   })
 
-  it('should disable formGroup in view mode', () => {
-    component.editMode = false
+  describe('ngOnChanges', () => {
+    it('should disable formGroup in view mode', () => {
+      component.editMode = false
 
-    component.ngOnChanges()
+      component.ngOnChanges()
 
-    expect(component.formGroup.disabled).toBeTrue()
-  })
+      expect(component.formGroup.disabled).toBeTrue()
+    })
 
-  it('should enable formGroup inb edit mode', () => {
-    component.editMode = true
+    it('should enable formGroup inb edit mode', () => {
+      component.editMode = true
 
-    component.ngOnChanges()
+      component.ngOnChanges()
 
-    expect(component.formGroup.enabled).toBeTrue()
-  })
+      expect(component.formGroup.enabled).toBeTrue()
+    })
 
-  it('should disable name form control in admin ws', () => {
-    component.editMode = true
-    workspace.name = 'ADMIN'
+    it('should disable name form control in admin ws', () => {
+      component.editMode = true
+      workspace.name = 'ADMIN'
 
-    component.ngOnChanges()
+      component.ngOnChanges()
 
-    expect(component.formGroup.controls['name'].disabled).toBeTrue()
+      expect(component.formGroup.controls['name'].disabled).toBeTrue()
+    })
+
+    it('should reset formGroup when workspace is empty', () => {
+      component.editMode = true
+      workspace.name = 'ADMIN'
+
+      component.workspace = undefined
+      component.ngOnChanges()
+
+      expect(component.formGroup.controls['name'].value).toBeNull()
+      expect(component.formGroup.controls['theme'].value).toBeNull()
+      expect(component.formGroup.controls['baseUrl'].value).toBeNull()
+      expect(component.formGroup.disabled).toBeTrue()
+    })
   })
 
   it('should update workspace onSave', () => {
@@ -153,104 +168,132 @@ describe('WorkspacePropsComponent', () => {
     })
   })
 
-  it('should not upload a file if name is empty', () => {
-    const event = {
-      target: {
-        files: ['file']
+  describe('onFileUpload', () => {
+    it('should not upload a file if name is empty', () => {
+      const event = {
+        target: {
+          files: ['file']
+        }
       }
-    }
-    component.formGroup.controls['name'].setValue('')
+      component.formGroup.controls['name'].setValue('')
 
-    component.onFileUpload(event as any)
+      component.onFileUpload(event as any)
 
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({
-      summaryKey: 'IMAGE.CONSTRAINT_FAILED',
-      detailKey: 'IMAGE.CONSTRAINT_NAME'
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({
+        summaryKey: 'IMAGE.CONSTRAINT_FAILED',
+        detailKey: 'IMAGE.CONSTRAINT_NAME'
+      })
     })
-  })
 
-  it('should not upload a file if name is null', () => {
-    const event = {
-      target: {
-        files: ['file']
+    it('should not upload a file if name is null', () => {
+      const event = {
+        target: {
+          files: ['file']
+        }
       }
-    }
-    component.formGroup.controls['name'].setValue(null)
+      component.formGroup.controls['name'].setValue(null)
 
-    component.onFileUpload(event as any)
+      component.onFileUpload(event as any)
 
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({
-      summaryKey: 'IMAGE.CONSTRAINT_FAILED',
-      detailKey: 'IMAGE.CONSTRAINT_NAME'
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({
+        summaryKey: 'IMAGE.CONSTRAINT_FAILED',
+        detailKey: 'IMAGE.CONSTRAINT_NAME'
+      })
     })
-  })
 
-  it('should not upload a file that is too large', () => {
-    const largeBlob = new Blob(['a'.repeat(120000)], { type: 'image/png' })
-    const largeFile = new File([largeBlob], 'test.png', { type: 'image/png' })
-    const event = {
-      target: {
-        files: [largeFile]
+    it('should not upload a file that is too large', () => {
+      const largeBlob = new Blob(['a'.repeat(120000)], { type: 'image/png' })
+      const largeFile = new File([largeBlob], 'test.png', { type: 'image/png' })
+      const event = {
+        target: {
+          files: [largeFile]
+        }
       }
-    }
-    component.formGroup.controls['name'].setValue('name')
+      component.formGroup.controls['name'].setValue('name')
 
-    component.onFileUpload(event as any)
+      component.onFileUpload(event as any)
 
-    expect(component.formGroup.valid).toBeFalse()
-  })
-
-  it('should not upload a file that is too large', () => {
-    const largeBlob = new Blob(['a'.repeat(120000)], { type: 'image/png' })
-    const largeFile = new File([largeBlob], 'test.png', { type: 'image/png' })
-    const event = {
-      target: {
-        files: [largeFile]
-      }
-    }
-    component.formGroup.controls['name'].setValue('name')
-
-    component.onFileUpload(event as any)
-
-    expect(component.formGroup.valid).toBeFalse()
-  })
-
-  it('should upload a file', () => {
-    imageServiceSpy.updateImage.and.returnValue(of({}))
-    const blob = new Blob(['a'.repeat(10)], { type: 'image/png' })
-    const file = new File([blob], 'test.png', { type: 'image/png' })
-    const event = {
-      target: {
-        files: [file]
-      }
-    }
-
-    component.formGroup.controls['name'].setValue('name')
-    component.formGroup.controls['logoUrl'].setValue('url')
-
-    component.onFileUpload(event as any)
-
-    expect(msgServiceSpy.info).toHaveBeenCalledWith({
-      summaryKey: 'IMAGE.UPLOAD_SUCCESS'
+      expect(component.formGroup.valid).toBeFalse()
     })
-  })
 
-  it('should display error if upload fails', () => {
-    imageServiceSpy.getImage.and.returnValue(throwError(() => new Error()))
-    const blob = new Blob(['a'.repeat(10)], { type: 'image/png' })
-    const file = new File([blob], 'test.png', { type: 'image/png' })
-    const event = {
-      target: {
-        files: [file]
+    it('should not upload a file that does not end with file ending', () => {
+      const largeBlob = new Blob(['a'.repeat(10)], { type: 'image/png' })
+      const largeFile = new File([largeBlob], 'test.wrong', { type: 'image/png' })
+      const event = {
+        target: {
+          files: [largeFile]
+        }
       }
-    }
-    component.formGroup.controls['name'].setValue('name')
-    component.formGroup.controls['logoUrl'].setValue('url')
+      component.formGroup.controls['name'].setValue('name')
 
-    component.onFileUpload(event as any)
+      component.onFileUpload(event as any)
 
-    expect(msgServiceSpy.info).toHaveBeenCalledWith({
-      summaryKey: 'IMAGE.UPLOAD_SUCCESS'
+      expect(component.formGroup.valid).toBeFalse()
+    })
+
+    it('should show error if file empty', () => {
+      const event = {
+        target: {}
+      }
+      component.formGroup.controls['name'].setValue('name')
+
+      component.onFileUpload(event as any)
+
+      expect(component.formGroup.valid).toBeFalse()
+    })
+
+    it('should not upload a file that is too large', () => {
+      const largeBlob = new Blob(['a'.repeat(120000)], { type: 'image/png' })
+      const largeFile = new File([largeBlob], 'test.png', { type: 'image/png' })
+      const event = {
+        target: {
+          files: [largeFile]
+        }
+      }
+      component.formGroup.controls['name'].setValue('name')
+
+      component.onFileUpload(event as any)
+
+      expect(component.formGroup.valid).toBeFalse()
+    })
+
+    it('should upload a file', () => {
+      imageServiceSpy.updateImage.and.returnValue(of({}))
+      const blob = new Blob(['a'.repeat(10)], { type: 'image/png' })
+      const file = new File([blob], 'test.png', { type: 'image/png' })
+      const event = {
+        target: {
+          files: [file]
+        }
+      }
+
+      component.formGroup.controls['name'].setValue('name')
+      component.formGroup.controls['logoUrl'].setValue('url')
+
+      component.onFileUpload(event as any)
+
+      expect(msgServiceSpy.info).toHaveBeenCalledWith({
+        summaryKey: 'IMAGE.UPLOAD_SUCCESS'
+      })
+    })
+
+    it('should display error if upload fails', () => {
+      imageServiceSpy.getImage.and.returnValue(throwError(() => new Error()))
+      const blob = new Blob(['a'.repeat(10)], { type: 'image/png' })
+      const file = new File([blob], 'test.png', { type: 'image/png' })
+      const event = {
+        target: {
+          files: [file]
+        }
+      }
+      component.formGroup.controls['name'].setValue('name')
+      component.formGroup.controls['logoUrl'].setValue('url')
+
+      component.onFileUpload(event as any)
+
+      expect(msgServiceSpy.info).toHaveBeenCalledWith({
+        summaryKey: 'IMAGE.UPLOAD_SUCCESS'
+      })
     })
   })
 

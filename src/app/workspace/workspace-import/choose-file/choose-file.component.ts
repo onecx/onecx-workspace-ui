@@ -110,7 +110,6 @@ export class ChooseFileComponent implements OnInit {
             this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_NAME_MISSING']
             break
           } else if (typeof el.position !== 'number') {
-            console.log('EL#########################', typeof el.position !== 'number')
             this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_WRONG_POSITION']
             break
           } else if (typeof el.disabled !== 'boolean') {

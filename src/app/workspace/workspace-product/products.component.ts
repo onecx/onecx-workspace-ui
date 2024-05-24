@@ -109,7 +109,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     this.formGroup = this.fb.group({
       displayName: new FormControl({ value: null, disabled: true }),
       baseUrl: new FormControl({ value: null, disabled: true }),
-      modules: this.fb.array([])
+      modules: this.fb.array(['a', 'b'])
     })
     this.viewingModes = ALL_VIEW_MODES
     this.sourceListViewMode = this.viewingModes.find((v) => v.mode === 'list')

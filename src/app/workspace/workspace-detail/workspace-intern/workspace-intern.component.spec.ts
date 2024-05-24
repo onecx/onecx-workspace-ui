@@ -44,4 +44,11 @@ describe('WorkspaceInternComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy()
   })
+
+  describe('ngOnChanges', () => {
+    it('should create', () => {
+      component.ngOnChanges()
+      expect(component.mandatory).toEqual(component.workspace?.mandatory ?? false)
+    })
+  })
 })

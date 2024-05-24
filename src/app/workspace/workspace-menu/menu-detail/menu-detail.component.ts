@@ -392,12 +392,11 @@ export class MenuDetailComponent implements OnChanges {
               }
             }
           }
-          //console.log('loadMfeUrls() - mfeItems:', this.mfeItems)
           this.mfeItems.sort(this.sortMfesByProductAndBasePath)
           this.fillForm()
         }),
         catchError((err) => {
-          console.error('getProductsForWorkspaceId():', err)
+          console.error('getProductsByWorkspaceId():', err)
           return of([] as SelectItem[])
         })
       )

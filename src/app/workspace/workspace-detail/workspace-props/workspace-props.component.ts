@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core'
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core'
 import { Location } from '@angular/common'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { map, Observable } from 'rxjs'
@@ -13,7 +13,7 @@ import { copyToClipboard, bffImageUrl, sortByLocale } from 'src/app/shared/utils
   templateUrl: './workspace-props.component.html',
   styleUrls: ['./workspace-props.component.scss']
 })
-export class WorkspacePropsComponent implements OnChanges {
+export class WorkspacePropsComponent implements OnInit, OnChanges {
   @Input() workspace: Workspace | undefined
   @Input() editMode = false
   @Output() currentLogoUrl = new EventEmitter<string>()
@@ -53,6 +53,9 @@ export class WorkspacePropsComponent implements OnChanges {
       footerLabel: new FormControl(null, [Validators.maxLength(255)]),
       description: new FormControl(null, [Validators.maxLength(255)])
     })
+  }
+
+  public ngOnInit(): void {
     if (this.workspace) {
       this.themes$ = this.workspaceApi.getAllThemes().pipe(
         map((val: any[]) => {
@@ -142,12 +145,12 @@ export class WorkspacePropsComponent implements OnChanges {
         } else {
           this.saveImage(workspaceName, files) // store image
         }
-      } else {
-        this.msgService.error({
-          summaryKey: 'IMAGE.CONSTRAINT_FAILED',
-          detailKey: 'IMAGE.CONSTRAINT_FILE_MISSING'
-        })
       }
+    } else {
+      this.msgService.error({
+        summaryKey: 'IMAGE.CONSTRAINT_FAILED',
+        detailKey: 'IMAGE.CONSTRAINT_FILE_MISSING'
+      })
     }
   }
 

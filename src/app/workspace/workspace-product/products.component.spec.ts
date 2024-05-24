@@ -14,10 +14,11 @@ import {
   ProductAPIService,
   Workspace,
   Microfrontend,
-  MicrofrontendType
+  MicrofrontendType,
+  SlotPS
 } from 'src/app/shared/generated'
 
-import { ExtendedProduct, ProductComponent } from './products.component'
+import { ExtendedMicrofrontend, ExtendedProduct, ProductComponent } from './products.component'
 
 const workspace: Workspace = {
   id: 'id',
@@ -59,6 +60,28 @@ const prodStoreItem: ExtendedProduct = {
   description: 'description2',
   microfrontends: [microfrontend],
   bucket: 'SOURCE',
+  undeployed: false,
+  changedMfe: false,
+  apps: new Map().set('appId', { appId: 'appId', modules: [microfrontend] })
+}
+
+const prodStoreItemTarget: ExtendedProduct = {
+  productName: 'prodStoreItemName',
+  displayName: 'display name2',
+  description: 'description2',
+  microfrontends: [microfrontend],
+  bucket: 'TARGET',
+  undeployed: false,
+  changedMfe: false,
+  apps: new Map().set('appId', { appId: 'appId', modules: [microfrontend] })
+}
+
+const prodStoreItemEmptyMicrofrontends: ExtendedProduct = {
+  productName: 'prodStoreItemName',
+  displayName: 'display name2',
+  description: 'description2',
+  microfrontends: [],
+  bucket: 'TARGET',
   undeployed: false,
   changedMfe: false,
   apps: new Map().set('appId', { appId: 'appId', modules: [microfrontend] })
@@ -189,61 +212,81 @@ describe('ProductComponent', () => {
     expect(console.error).toHaveBeenCalledWith('getProductsByWorkspaceId():', err)
   })
 
-  it('should loadData onChanges: searchPsProducts call success: prod deployed', () => {
-    wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([product]))
-    productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [prodStoreItem] }))
-    const changes = {
-      ['workspace']: {
-        previousValue: 'ws0',
-        currentValue: 'ws1',
-        firstChange: true
+  describe('searchPsProducts', () => {
+    it('should loadData onChanges: searchPsProducts call success: prod deployed', () => {
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([product]))
+      productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [prodStoreItem] }))
+      const changes = {
+        ['workspace']: {
+          previousValue: 'ws0',
+          currentValue: 'ws1',
+          firstChange: true
+        }
       }
-    }
+      component.ngOnChanges(changes as unknown as SimpleChanges)
 
-    component.ngOnChanges(changes as unknown as SimpleChanges)
+      expect(component.psProducts).toEqual([{ ...prodStoreItem }])
+      expect(component.wProducts?.at(0)).toEqual(
+        [{ ...product, bucket: 'TARGET', undeployed: false, changedMfe: false }]?.at(0) as ExtendedProduct
+      )
+      expect(component.psProductsOrg.get(prodStoreItem.productName!)!).toEqual({ ...prodStoreItem })
+    })
 
-    expect(component.psProducts).toEqual([{ ...prodStoreItem }])
-    expect(component.wProducts?.at(0)).toEqual(
-      [{ ...product, bucket: 'TARGET', undeployed: false, changedMfe: false }]?.at(0) as ExtendedProduct
-    )
-    expect(component.psProductsOrg.get(prodStoreItem.productName!)!).toEqual({ ...prodStoreItem })
-  })
-
-  it('should loadData onChanges: searchPsProducts call success: prod undeployed', () => {
-    prodStoreItem.productName = 'prod name'
-    wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([product]))
-    productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [prodStoreItem] }))
-    const changes = {
-      ['workspace']: {
-        previousValue: 'ws0',
-        currentValue: 'ws1',
-        firstChange: true
+    it('should loadData onChanges: searchPsProducts call success: prod undeployed', () => {
+      prodStoreItem.productName = 'prod name'
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([product]))
+      productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [prodStoreItem] }))
+      const changes = {
+        ['workspace']: {
+          previousValue: 'ws0',
+          currentValue: 'ws1',
+          firstChange: true
+        }
       }
-    }
-    component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedMfe: false }]
+      component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedMfe: false }]
 
-    component.ngOnChanges(changes as unknown as SimpleChanges)
+      component.ngOnChanges(changes as unknown as SimpleChanges)
 
-    expect(component.psProducts.length).toBe(0)
-  })
+      expect(component.psProducts.length).toBe(0)
+    })
 
-  it('should loadData onChanges: searchPsProducts call error', () => {
-    const err = {
-      status: '404'
-    }
-    productServiceSpy.searchAvailableProducts.and.returnValue(throwError(() => err))
-    const changes = {
-      ['workspace']: {
-        previousValue: 'ws0',
-        currentValue: 'ws1',
-        firstChange: true
+    it('should loadData onChanges: searchPsProducts call error', () => {
+      const err = {
+        status: '404'
       }
-    }
-    spyOn(console, 'error')
+      productServiceSpy.searchAvailableProducts.and.returnValue(throwError(() => err))
+      const changes = {
+        ['workspace']: {
+          previousValue: 'ws0',
+          currentValue: 'ws1',
+          firstChange: true
+        }
+      }
+      spyOn(console, 'error')
 
-    component.ngOnChanges(changes as unknown as SimpleChanges)
+      component.ngOnChanges(changes as unknown as SimpleChanges)
 
-    expect(console.error).toHaveBeenCalledWith('searchAvailableProducts():', err)
+      expect(console.error).toHaveBeenCalledWith('searchAvailableProducts():', err)
+    })
+
+    it('should loadData onChanges: searchPsProducts call error', () => {
+      const err = {
+        status: '404'
+      }
+      productServiceSpy.searchAvailableProducts.and.returnValue(throwError(() => err))
+      const changes = {
+        ['workspace']: {
+          previousValue: 'ws0',
+          currentValue: 'ws1',
+          firstChange: true
+        }
+      }
+      spyOn(console, 'error')
+
+      component.ngOnChanges(changes as unknown as SimpleChanges)
+
+      expect(console.error).toHaveBeenCalledWith('searchAvailableProducts():', err)
+    })
   })
 
   it('should subscribe to psProducts$', () => {
@@ -307,20 +350,162 @@ describe('ProductComponent', () => {
     ])
   })
 
-  it('should sort mfes by appId', () => {
-    const mfes = [{ appId: 'b' }, { appId: 'a' }, { appId: 'c' }]
+  describe('sortMfesByAppId', () => {
+    it('should sort mfes by appId', () => {
+      const mfes = [{ appId: 'b' }, { appId: 'a' }, { appId: 'c' }]
 
-    mfes.sort((a, b) => component.sortMfesByAppId(a, b))
+      mfes.sort((a, b) => component.sortMfesByAppId(a, b))
 
-    expect(mfes).toEqual([{ appId: 'a' }, { appId: 'b' }, { appId: 'c' }])
+      expect(mfes).toEqual([{ appId: 'a' }, { appId: 'b' }, { appId: 'c' }])
+    })
+
+    it('should sort mfes by appId: no appIds', () => {
+      const mfes = [{ appId: '' }, { appId: '' }, { id: 'id a' }]
+
+      mfes.sort((a, b) => component.sortMfesByAppId(a, b))
+
+      expect(mfes).toEqual([{ appId: '' }, { appId: '' }, { id: 'id a' }])
+    })
   })
 
-  it('should sort mfes by appId: no appIds', () => {
-    const mfes = [{ appId: '' }, { appId: '' }, { id: 'id a' }]
+  describe('sortMfesByExposedModule', () => {
+    it('should sort mfes by exposedModule ', () => {
+      let a: ExtendedMicrofrontend = {
+        exposedModule: 'a'
+      }
+      let b: ExtendedMicrofrontend = {
+        exposedModule: 'b'
+      }
+      let c: ExtendedMicrofrontend = {
+        exposedModule: 'c'
+      }
+      const eMfes = [b, c, a]
 
-    mfes.sort((a, b) => component.sortMfesByAppId(a, b))
+      eMfes.sort((x, y) => component.sortMfesByExposedModule(x, y))
 
-    expect(mfes).toEqual([{ appId: '' }, { appId: '' }, { id: 'id a' }])
+      expect(eMfes).toEqual([a, b, c])
+    })
+
+    it('should sort mfes by appId: some empty exposedModule ', () => {
+      let a: ExtendedMicrofrontend = {
+        exposedModule: 'a'
+      }
+      let b: ExtendedMicrofrontend = {
+        exposedModule: ''
+      }
+      let c: ExtendedMicrofrontend = {
+        exposedModule: ''
+      }
+      const eMfes = [b, c, a]
+
+      eMfes.sort((x, y) => component.sortMfesByExposedModule(x, y))
+
+      expect(eMfes).toEqual([b, c, a])
+    })
+
+    it('should sort mfes by appId: all empty exposedModule ', () => {
+      let a: ExtendedMicrofrontend = {
+        exposedModule: ''
+      }
+      let b: ExtendedMicrofrontend = {
+        exposedModule: ''
+      }
+      let c: ExtendedMicrofrontend = {
+        exposedModule: ''
+      }
+      const eMfes = [b, c, a]
+
+      eMfes.sort((x, y) => component.sortMfesByExposedModule(x, y))
+
+      expect(eMfes).toEqual([b, c, a])
+    })
+
+    it('should sort mfes by appId: special char exposedModule ', () => {
+      let a: ExtendedMicrofrontend = {
+        exposedModule: 'a'
+      }
+      let b: ExtendedMicrofrontend = {
+        exposedModule: 'b'
+      }
+      let c: ExtendedMicrofrontend = {
+        exposedModule: '$'
+      }
+      const eMfes = [b, c, a]
+
+      eMfes.sort((x, y) => component.sortMfesByExposedModule(x, y))
+
+      expect(eMfes).toEqual([c, a, b])
+    })
+  })
+
+  describe('sortSlotsByName', () => {
+    it('should sort slots by name ', () => {
+      let a: SlotPS = {
+        name: 'a'
+      }
+      let b: SlotPS = {
+        name: 'b'
+      }
+      let c: SlotPS = {
+        name: 'c'
+      }
+      const eMfes = [b, c, a]
+
+      eMfes.sort((x, y) => component.sortSlotsByName(x, y))
+
+      expect(eMfes).toEqual([a, b, c])
+    })
+
+    it('should sort slots by name : some empty name ', () => {
+      let a: SlotPS = {
+        name: 'a'
+      }
+      let b: SlotPS = {
+        name: ''
+      }
+      let c: SlotPS = {
+        name: ''
+      }
+      const eMfes: SlotPS[] = [b, c, a]
+
+      eMfes.sort((x, y) => component.sortSlotsByName(x, y))
+
+      expect(eMfes).toEqual([b, c, a])
+    })
+
+    it('should sort slots by name : all empty name ', () => {
+      let a: SlotPS = {
+        name: ''
+      }
+      let b: SlotPS = {
+        name: ''
+      }
+      let c: SlotPS = {
+        name: ''
+      }
+      const eMfes = [b, c, a]
+
+      eMfes.sort((x, y) => component.sortSlotsByName(x, y))
+
+      expect(eMfes).toEqual([b, c, a])
+    })
+
+    it('should sort slots by name : special char name ', () => {
+      let a: SlotPS = {
+        name: 'a'
+      }
+      let b: SlotPS = {
+        name: 'b'
+      }
+      let c: SlotPS = {
+        name: '$'
+      }
+      const eMfes = [b, a, c]
+
+      eMfes.sort((x, y) => component.sortSlotsByName(x, y))
+
+      expect(eMfes).toEqual([c, a, b])
+    })
   })
 
   it('should return imageUrl path', () => {
@@ -475,42 +660,88 @@ describe('ProductComponent', () => {
     expect(component.displayDetails).toBeFalse()
   })
 
-  it('should call getWProduct when an item is selected: call getProductById', () => {
-    const event = { items: [prodStoreItem] }
-    component.displayDetails = true
-    wProductServiceSpy.getProductById.and.returnValue(of(prodStoreItem))
-    wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([prodStoreItem]))
-    productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [prodStoreItem] }))
-    const changes = {
-      ['workspace']: {
-        previousValue: 'ws0',
-        currentValue: 'ws1',
-        firstChange: true
+  describe('onTargetSelect', () => {
+    it('should call getWProduct when an item is selected: call getProductById', () => {
+      const event = { items: [prodStoreItem] }
+      component.displayDetails = true
+      wProductServiceSpy.getProductById.and.returnValue(of(prodStoreItem))
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([prodStoreItem]))
+      productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [prodStoreItem] }))
+      const changes = {
+        ['workspace']: {
+          previousValue: 'ws0',
+          currentValue: 'ws1',
+          firstChange: true
+        }
       }
-    }
 
-    component.ngOnChanges(changes as unknown as SimpleChanges)
-    component.onTargetSelect(event)
+      component.ngOnChanges(changes as unknown as SimpleChanges)
+      component.onTargetSelect(event)
 
-    expect(component.displayDetails).toBeTrue()
-  })
+      expect(component.displayDetails).toBeTrue()
+    })
 
-  it('should call getWProduct when an item is selected: display error', () => {
-    wProductServiceSpy.getProductById.and.returnValue(throwError(() => new Error()))
-    const event = { items: [{ id: 1 }] }
-    component.displayDetails = true
+    it('should call getWProduct when an item is selected: display error', () => {
+      wProductServiceSpy.getProductById.and.returnValue(throwError(() => new Error()))
+      const event = { items: [{ id: 1 }] }
+      component.displayDetails = true
 
-    component.onTargetSelect(event)
+      component.onTargetSelect(event)
 
-    expect(component.displayDetails).toBeTrue()
-  })
+      expect(component.displayDetails).toBeTrue()
+    })
 
-  it('should set displayDetails to false when no item is selected', () => {
-    const event = { items: [] }
+    it('should set displayDetails to false when no item is selected', () => {
+      const event = { items: [] }
 
-    component.onTargetSelect(event)
+      component.onTargetSelect(event)
 
-    expect(component.displayDetails).toBeFalse()
+      expect(component.displayDetails).toBeFalse()
+    })
+
+    it('should call getWProduct when an item is selected: call getProductById forTARGET product', () => {
+      const event = { items: [prodStoreItemTarget] }
+      component.displayDetails = true
+      wProductServiceSpy.getProductById.and.returnValue(of(prodStoreItemTarget))
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([prodStoreItem]))
+      productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [prodStoreItem] }))
+      const changes = {
+        ['workspace']: {
+          previousValue: 'ws0',
+          currentValue: 'ws1',
+          firstChange: true
+        }
+      }
+
+      component.displayedDetailItem = prodStoreItemTarget
+
+      component.ngOnChanges(changes as unknown as SimpleChanges)
+      component.onTargetSelect(event)
+
+      expect(component.displayDetails).toBeTrue()
+    })
+    it('should call getWProduct when an item is selected: call getProductById forTARGET product', () => {
+      const event = { items: [prodStoreItemEmptyMicrofrontends] }
+      component.displayDetails = true
+      wProductServiceSpy.getProductById.and.returnValue(of(prodStoreItemEmptyMicrofrontends))
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([prodStoreItemEmptyMicrofrontends]))
+      productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [prodStoreItemEmptyMicrofrontends] }))
+      const changes = {
+        ['workspace']: {
+          previousValue: 'ws0',
+          currentValue: 'ws1',
+          firstChange: true
+        }
+      }
+
+      component.displayedDetailItem = prodStoreItemEmptyMicrofrontends
+
+      component.ngOnChanges(changes as unknown as SimpleChanges)
+      component.onTargetSelect(event)
+
+      expect(component.displayDetails).toBeTrue()
+      expect(component.displayedDetailItem.microfrontends).toBeUndefined()
+    })
   })
 
   it('should access moduleControls as FormArray', () => {
