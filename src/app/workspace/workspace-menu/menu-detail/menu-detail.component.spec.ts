@@ -19,6 +19,7 @@ import {
   Scope
 } from 'src/app/shared/generated'
 import { TabView } from 'primeng/tabview'
+import { By } from '@angular/platform-browser'
 
 type MFE = Microfrontend & { product?: string }
 
@@ -72,6 +73,34 @@ const mockMenuItems: MenuItem[] = [
     scope: Scope.App,
     description: 'description',
     url: 'http://testdomain/workspace'
+  },
+  {
+    id: 'id',
+    modificationCount: 0,
+    parentItemId: 'parentId',
+    key: 'key',
+    name: 'menu name',
+    position: 0,
+    external: false,
+    disabled: false,
+    badge: 'badge',
+    scope: Scope.App,
+    description: 'description',
+    url: 'path'
+  },
+  {
+    id: 'id',
+    modificationCount: 0,
+    parentItemId: 'parentId',
+    key: 'key',
+    name: 'menu name',
+    position: 0,
+    external: false,
+    disabled: false,
+    badge: 'badge',
+    scope: Scope.App,
+    description: 'description',
+    url: 'PATHEXT'
   }
 ]
 
@@ -290,7 +319,7 @@ describe('MenuDetailComponent', () => {
       expect((component as any).preparePanelHeight).toHaveBeenCalled()
     })
 
-    it('should loadMfeUrls: no product display name', () => {
+    it('should loadMfeUrls: match url with mfeItem.url => no $$$-unknown-product', () => {
       const productWithoutDisplayName: Product = {
         id: 'prod id',
         productName: 'prod name',
@@ -298,7 +327,31 @@ describe('MenuDetailComponent', () => {
         microfrontends: [microfrontend],
         modificationCount: 1
       }
-      menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[0]))
+      menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[3]))
+      wProductApiServiceSpy.getProductsByWorkspaceId.and.returnValue(of([productWithoutDisplayName]))
+      component.changeMode = 'VIEW'
+      component.menuItemId = 'menuItemId'
+      component.displayDetailDialog = true
+      spyOn(component as any, 'preparePanelHeight')
+
+      component.ngOnChanges()
+      let controlMfeItems: MFE[] = []
+      controlMfeItems.push({ appId: '$$$-empty', basePath: '', product: 'MENU_ITEM.URL.EMPTY' })
+      controlMfeItems.push({ ...microfrontend, product: undefined })
+
+      expect(component.mfeItems).toEqual(controlMfeItems)
+      expect((component as any).preparePanelHeight).toHaveBeenCalled()
+    })
+
+    it('should loadMfeUrls: URL was extended then create such specific item with best match => no $$$-unknown-product', () => {
+      const productWithoutDisplayName: Product = {
+        id: 'prod id',
+        productName: 'prod name',
+        description: 'description',
+        microfrontends: [microfrontend],
+        modificationCount: 1
+      }
+      menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[4]))
       wProductApiServiceSpy.getProductsByWorkspaceId.and.returnValue(of([productWithoutDisplayName]))
       component.changeMode = 'VIEW'
       component.menuItemId = 'menuItemId'
@@ -309,9 +362,10 @@ describe('MenuDetailComponent', () => {
       let controlMfeItems: MFE[] = []
       controlMfeItems.push({ appId: '$$$-empty', basePath: '', product: 'MENU_ITEM.URL.EMPTY' })
       controlMfeItems.push({
-        appId: '$$$-unknown-product',
-        basePath: '/workspace',
-        product: 'MENU_ITEM.URL.UNKNOWN.PRODUCT'
+        id: 'id',
+        appId: 'appId',
+        basePath: 'PATHEXT',
+        product: undefined
       })
       controlMfeItems.push({ ...microfrontend, product: undefined })
 
@@ -677,6 +731,58 @@ describe('MenuDetailComponent', () => {
     component.onFocusUrl(mockField)
 
     expect(mockField.overlayVisible).toBeTrue()
+  })
+
+  describe('onDropDownClick', () => {
+    it('expect filteredMfes to equal mfeItems', () => {
+      let mockField: any = { overlayVisible: false }
+
+      component.onDropdownClick(mockField)
+
+      expect(component.filteredMfes).toEqual(component.mfeItems)
+    })
+
+    it('expect field.overlayVisible equal true', () => {
+      let mockField: any = { overlayVisible: false }
+
+      component.onDropdownClick(mockField)
+
+      expect(mockField.overlayVisible).toBeTrue()
+    })
+  })
+
+  it('should call onFilterPaths with correct query when keyup event is triggered', () => {
+    // Spy on the onFilterPaths method
+    spyOn(component, 'onFilterPaths')
+    const mockEvent = new KeyboardEvent('keyup', {
+      bubbles: true,
+      cancelable: true
+    })
+    // Create a mock event with a target value
+    const inputElement = fixture.debugElement.query(By.css('input')).nativeElement
+    inputElement.value = 'test query'
+    Object.defineProperty(mockEvent, 'target', { writable: false, value: inputElement })
+
+    // Dispatch the event
+    component.onKeyUpUrl(mockEvent)
+
+    // Assert that onFilterPaths was called with the correct argument
+    expect(component.onFilterPaths).toHaveBeenCalled()
+  })
+
+  it('onClearUrl', () => {
+    let controlMfeItems: MFE[] = []
+    controlMfeItems.push({ appId: '$$$-empty', basePath: '', product: 'MENU_ITEM.URL.EMPTY' })
+    controlMfeItems.push({
+      appId: '$$$-http-address',
+      basePath: 'http://testdomain/workspace',
+      product: 'MENU_ITEM.URL.HTTP'
+    })
+
+    component.mfeItems = controlMfeItems
+    component.onClearUrl()
+
+    expect(component.formGroup.controls['url'].value).toEqual(controlMfeItems[0])
   })
 
   /**

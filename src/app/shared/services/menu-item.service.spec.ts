@@ -98,6 +98,36 @@ describe('MenuItemService', () => {
     expect(result[1].id).toBe('2')
   })
 
+  it('should handle empty menu items', () => {
+    const input: UserWorkspaceMenuItem[] = [
+      {
+        key: '2',
+        name: 'Item 2',
+        position: 2,
+        external: false,
+        url: '/item2',
+        badge: 'check',
+        children: [],
+        i18n: { en: 'Item 2 EN' }
+      },
+      {
+        key: '1',
+        name: 'Item 1',
+        position: 1,
+        external: false,
+        url: '/item1',
+        badge: 'star',
+        children: [],
+        i18n: { en: 'Item 1 EN' }
+      },
+      {}
+    ]
+    const result = service.constructMenuItems(input, 'en')
+    expect(result[0].id).toBe(undefined)
+    expect(result[1].id).toBe('1')
+    expect(result[2].id).toBe('2')
+  })
+
   it('should map children correctly', () => {
     const input: UserWorkspaceMenuItem[] = [
       {

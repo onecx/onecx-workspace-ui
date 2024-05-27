@@ -265,3 +265,97 @@ describe('WorkspaceSearchComponent', () => {
     })
   })
 })
+
+describe('sortMfesByExposedModule', () => {
+  let component: WorkspaceSearchComponent
+  let fixture: ComponentFixture<WorkspaceSearchComponent>
+
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      declarations: [WorkspaceSearchComponent],
+      imports: [
+        RouterTestingModule,
+        HttpClientTestingModule,
+        TranslateTestingModule.withTranslations({
+          de: require('src/assets/i18n/de.json'),
+          en: require('src/assets/i18n/en.json')
+        }).withDefaultLanguage('en')
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
+    }).compileComponents()
+  }))
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(WorkspaceSearchComponent)
+    component = fixture.componentInstance
+    fixture.detectChanges()
+  })
+
+  it('should sort mfes by exposedModule ', () => {
+    let a: WorkspaceAbstract = {
+      name: 'a'
+    }
+    let b: WorkspaceAbstract = {
+      name: 'b'
+    }
+    let c: WorkspaceAbstract = {
+      name: 'c'
+    }
+    const eMfes = [b, c, a]
+
+    eMfes.sort((x, y) => component.sortWorkspacesByName(x, y))
+
+    expect(eMfes).toEqual([a, b, c])
+  })
+
+  it('should sort mfes by appId: some empty exposedModule ', () => {
+    let a: WorkspaceAbstract = {
+      name: 'a'
+    }
+    let b: WorkspaceAbstract = {
+      name: ''
+    }
+    let c: WorkspaceAbstract = {
+      name: ''
+    }
+    const eMfes = [b, c, a]
+
+    eMfes.sort((x, y) => component.sortWorkspacesByName(x, y))
+
+    expect(eMfes).toEqual([b, c, a])
+  })
+
+  it('should sort mfes by appId: all empty exposedModule ', () => {
+    let a: WorkspaceAbstract = {
+      name: ''
+    }
+    let b: WorkspaceAbstract = {
+      name: ''
+    }
+    let c: WorkspaceAbstract = {
+      name: ''
+    }
+    const eMfes = [b, c, a]
+
+    eMfes.sort((x, y) => component.sortWorkspacesByName(x, y))
+
+    expect(eMfes).toEqual([b, c, a])
+  })
+
+  it('should sort mfes by appId: special char exposedModule ', () => {
+    let a: WorkspaceAbstract = {
+      name: 'a'
+    }
+    let b: WorkspaceAbstract = {
+      name: 'b'
+    }
+    let c: WorkspaceAbstract = {
+      name: '$'
+    }
+    const eMfes = [b, c, a]
+
+    eMfes.sort((x, y) => component.sortWorkspacesByName(x, y))
+
+    expect(eMfes).toEqual([c, a, b])
+  })
+})
