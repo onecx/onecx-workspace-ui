@@ -32,6 +32,10 @@ app:
           exposedModule: "./OneCXHorizontalMainMenuComponent"
           description: "Horizontal main menu component"
           type: COMPONENT
+        footer-menu:
+          exposedModule: "./OneCXFooterMenuComponent"
+          description: "Footer menu component"
+          type: COMPONENT
     # Permission
     permission:
       enabled: true
