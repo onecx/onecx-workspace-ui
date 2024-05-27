@@ -805,9 +805,28 @@ describe('MenuDetailComponent', () => {
     expect(component.filteredMfes[0].id).toBe('id')
   })
 
-  xit('should assign all MFE items if query is empty', () => {
+  it('should filter when query is empty', () => {
+    const mockEvent = { originalEvent: new Event('filter'), query: undefined! }
+    component.formGroup = new FormGroup({
+      url: new FormControl('')
+    })
+    component.mfeItems = [microfrontend]
+
+    component.onFilterPaths(mockEvent)
+
+    expect(component.filteredMfes.length).toBe(1)
+    expect(component.filteredMfes[0].id).toBe('id')
+  })
+
+  it('should assign filtered MFE items if query equals microfrontend basePath', () => {
+    let mf: Microfrontend = {
+      id: 'id',
+      appId: 'appId',
+      basePath: 'ur'
+    }
     const mockEvent = { originalEvent: new Event('filter'), query: '' }
 
+    component.mfeItems = [mf]
     component.onFilterPaths(mockEvent)
 
     expect(component.filteredMfes).toEqual(component.mfeItems)

@@ -451,12 +451,14 @@ export class MenuDetailComponent implements OnChanges {
     if (!query || query === '') {
       filtered = this.mfeItems // exception a)
     } else {
-      for (const mfeItem of this.mfeItems)
+      for (const mfeItem of this.mfeItems) {
         if (
-          mfeItem.basePath?.toLowerCase().startsWith(query.toLowerCase()) ||
-          query.toLowerCase().startsWith(mfeItem.basePath?.toLowerCase()!)
-        )
+          query.toLowerCase().startsWith(mfeItem.basePath!.toLowerCase()) ||
+          mfeItem.basePath?.toLowerCase().startsWith(query.toLowerCase())
+        ) {
           filtered.push(mfeItem)
+        }
+      }
     }
     return filtered
   }

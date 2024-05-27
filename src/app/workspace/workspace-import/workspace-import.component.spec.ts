@@ -256,33 +256,50 @@ describe('WorkspaceImportComponent', () => {
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'WORKSPACE_IMPORT.IMPORT_NOK' })
   })
 
-  it('should set importRequestDTO on next when activeIndex is 0 (upload), and themeImportData valid', () => {
-    const workspaceSnap: WorkspaceSnapshot = {
-      workspaces: {
-        workspace: {
-          name: 'name',
-          baseUrl: 'url'
+  describe('next', () => {
+    it('should set importRequestDTO on next when activeIndex is 0 (upload), and themeImportData valid', () => {
+      const workspaceSnap: WorkspaceSnapshot = {
+        workspaces: {
+          workspace: {
+            name: 'name',
+            baseUrl: 'url'
+          }
         }
       }
-    }
-    component.importRequestDTO = workspaceSnap
-    component.activeIndex = 0
+      component.importRequestDTO = workspaceSnap
+      component.activeIndex = 0
 
-    component.next(workspaceSnap)
+      component.next(workspaceSnap)
 
-    expect(component.baseUrlOrg).toEqual('url')
-  })
+      expect(component.baseUrlOrg).toEqual('url')
+    })
 
-  it('should set values from preview component on next when activeIndex is 1 (preview)', () => {
-    component.previewComponent = new MockPreviewComponent() as unknown as PreviewComponent
-    component.activeIndex = 1
-    component.hasPermission = true
+    it('should set values from preview component on next when activeIndex is 1 (preview) this.previewComponent values undefined', () => {
+      component.previewComponent = new MockPreviewComponent() as unknown as PreviewComponent
+      component.activeIndex = 1
+      component.hasPermission = true
 
-    component.next()
+      component.previewComponent.workspaceName = undefined!
+      component.previewComponent.themeName = undefined!
+      component.previewComponent.baseUrl = undefined!
+      component.next()
 
-    expect(component.workspaceName).toEqual(component.previewComponent?.workspaceName)
-    expect(component.themeName).toEqual(component.previewComponent?.themeName)
-    expect(component.baseUrl).toEqual(component.previewComponent?.baseUrl)
+      expect(component.workspaceName).toEqual('')
+      expect(component.themeName).toEqual('')
+      expect(component.baseUrl).toEqual('')
+    })
+
+    it('should set values from preview component on next when activeIndex is 1 (preview)', () => {
+      component.previewComponent = new MockPreviewComponent() as unknown as PreviewComponent
+      component.activeIndex = 1
+      component.hasPermission = true
+
+      component.next()
+
+      expect(component.workspaceName).toEqual(component.previewComponent?.workspaceName)
+      expect(component.themeName).toEqual(component.previewComponent?.themeName)
+      expect(component.baseUrl).toEqual(component.previewComponent?.baseUrl)
+    })
   })
 
   it('should set values from confirm component on back when activeIndex is 2 (confirm)', () => {
@@ -320,5 +337,37 @@ describe('WorkspaceImportComponent', () => {
     if (component.confirmComponent.baseUrl) {
       expect(component.importRequestDTO.workspaces?.['workspace'].baseUrl).toEqual(component.confirmComponent.baseUrl)
     }
+  })
+
+  it('should set values from confirm component on back when activeIndex is 2 (confirm)', () => {
+    component.confirmComponent = new MockConfirmComponent() as unknown as ConfirmComponent
+    component.activeIndex = 2
+    component.hasPermission = true
+    const workspaceSnap = {
+      workspaces: {
+        workspace: {
+          name: 'name',
+          menu: {
+            menu: {
+              menuItems: [
+                {
+                  name: 'menuName'
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+    component.importRequestDTO = workspaceSnap
+    component.confirmComponent.workspaceName = undefined
+    component.confirmComponent.baseUrl = undefined
+    component.confirmComponent.themeName = undefined
+
+    component.back()
+
+    expect(component.importRequestDTO.workspaces?.['workspace'].name).toEqual('')
+    expect(component.importRequestDTO.workspaces?.['workspace'].baseUrl).toEqual('')
+    expect(component.importRequestDTO.workspaces?.['workspace'].theme).toEqual('')
   })
 })

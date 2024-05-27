@@ -18,30 +18,27 @@ export class MenuItemService {
     }
   }
 
-  private mapMenuItem(item: UserWorkspaceMenuItem | undefined, userLang: string): MenuItem {
+  /** Item is never undefined when filtered out in constructMenuItems() */
+  private mapMenuItem(item: UserWorkspaceMenuItem, userLang: string): MenuItem {
     let isLocal: boolean
     let label: string | undefined
 
-    if (item) {
-      isLocal = !item.external
-      label = item.i18n ? item.i18n[userLang] || item.name : ''
+    isLocal = !item.external
+    label = item.i18n ? item.i18n[userLang] || item.name : ''
 
-      return {
-        id: item.key,
-        items:
-          item.children && item.children.length > 0
-            ? item.children
-                .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
-                .filter((i) => i)
-                .map((i) => this.mapMenuItem(i, userLang))
-            : undefined,
-        label,
-        icon: item.badge ? 'pi pi-' + item.badge : undefined,
-        routerLink: isLocal ? this.stripBaseHref(item.url) : undefined,
-        url: isLocal ? undefined : item.url
-      }
-    } else {
-      return {}
+    return {
+      id: item.key,
+      items:
+        item.children && item.children.length > 0
+          ? item.children
+              .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+              .filter((i) => i)
+              .map((i) => this.mapMenuItem(i, userLang))
+          : undefined,
+      label,
+      icon: item.badge ? 'pi pi-' + item.badge : undefined,
+      routerLink: isLocal ? this.stripBaseHref(item.url) : undefined,
+      url: isLocal ? undefined : item.url
     }
   }
 

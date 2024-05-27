@@ -98,6 +98,70 @@ describe('MenuItemService', () => {
     expect(result[1].id).toBe('2')
   })
 
+  it('should sort menu items by position with empty i18n and sort children', () => {
+    const input: UserWorkspaceMenuItem[] = [
+      {
+        key: '2',
+        name: 'Item 2',
+        position: 2,
+        external: false,
+        url: '/item2',
+        badge: 'check',
+        children: [
+          {
+            key: '1.1',
+            name: 'Child Item',
+            position: 1,
+            external: false,
+            url: '/child',
+            badge: 'child',
+            children: [],
+            i18n: { en: 'Child Item EN' }
+          },
+          {
+            key: '1.1',
+            name: 'Child Item',
+            position: 1,
+            external: false,
+            url: '/child',
+            badge: 'child',
+            children: [],
+            i18n: { en: 'Child Item EN' }
+          }
+        ]
+      },
+      {
+        key: '1',
+        name: 'Item 1',
+        position: 1,
+        external: false,
+        url: '/item1',
+        badge: 'star'
+      }
+    ]
+    const result = service.constructMenuItems(input, 'en')
+    expect(result[0].id).toBe('1')
+    expect(result[1].id).toBe('2')
+  })
+
+  it('should sort menu items items undefined', () => {
+    const input: UserWorkspaceMenuItem[] = [
+      {
+        key: '2',
+        name: 'Item 2',
+        position: 2,
+        external: false,
+        url: '/item2',
+        badge: 'check',
+        children: [],
+        i18n: { en: 'Item 2 EN' }
+      },
+      undefined!
+    ]
+    const result = service.constructMenuItems(input, 'en')
+    expect(result[0].id).toBe('2')
+  })
+
   it('should handle empty menu items', () => {
     const input: UserWorkspaceMenuItem[] = [
       {

@@ -11,7 +11,7 @@ import {
   ThemeService
 } from '@onecx/portal-integration-angular'
 import { WorkspacePropsComponent } from 'src/app/workspace/workspace-detail/workspace-props/workspace-props.component'
-import { WorkspaceAPIService, ImagesInternalAPIService } from 'src/app/shared/generated'
+import { WorkspaceAPIService, ImagesInternalAPIService, Workspace } from 'src/app/shared/generated'
 import { RouterTestingModule } from '@angular/router/testing'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 
@@ -148,23 +148,32 @@ describe('WorkspacePropsComponent', () => {
     })
   })
 
-  it('should update workspace onSave', () => {
-    component.formGroup = formGroup
-    component.workspace = workspace
+  describe('onSave', () => {
+    it('should update workspace onSave', () => {
+      component.formGroup = formGroup
+      component.workspace = workspace
 
-    component.onSave()
+      component.onSave()
 
-    expect(component.editMode).toBeFalse()
-  })
+      expect(component.editMode).toBeFalse()
+    })
 
-  it('should display error msg if form group invalid', () => {
-    component.formGroup = formGroup
-    component.formGroup.controls['baseUrl'].setValue('url')
+    it('should display error msg if form group invalid', () => {
+      component.formGroup = formGroup
+      component.formGroup.controls['baseUrl'].setValue('url')
 
-    component.onSave()
+      component.onSave()
 
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({
-      summaryKey: 'VALIDATION.FORM_INVALID'
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({
+        summaryKey: 'VALIDATION.FORM_INVALID'
+      })
+    })
+
+    it('should return directly when workspace is empty', () => {
+      spyOn(component, 'onSave')
+      component.workspace = undefined
+      component.onSave()
+      expect(component.onSave).toHaveBeenCalled
     })
   })
 
@@ -321,4 +330,22 @@ describe('WorkspacePropsComponent', () => {
 
     expect(component.fetchingLogoUrl).toBe('basepath/images/name/logo')
   }))
+
+  describe('getLogoUrl', () => {
+    it('call with undefined workspace', () => {
+      let testWorkspace: Workspace = undefined!
+      expect(component.getLogoUrl(testWorkspace)).toBeUndefined
+    })
+
+    it('call with undefined workspace', () => {
+      let testWorkspace: Workspace = {
+        name: 'name',
+        theme: 'theme',
+        baseUrl: '/some/base/url',
+        id: 'id',
+        logoUrl: 'testlogoUrl'
+      }
+      expect(component.getLogoUrl(testWorkspace)).toBe(testWorkspace.logoUrl)
+    })
+  })
 })
