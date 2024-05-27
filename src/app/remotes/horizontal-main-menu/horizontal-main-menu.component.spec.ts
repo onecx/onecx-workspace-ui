@@ -1,9 +1,10 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing'
+import { TestBed } from '@angular/core/testing'
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { RouterTestingModule } from '@angular/router/testing'
 import { CommonModule } from '@angular/common'
+import { Router, RouterModule } from '@angular/router'
 import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
 import { AppStateService } from '@onecx/angular-integration-interface'
 import { PMenuBarHarness } from '@onecx/angular-testing'
@@ -15,10 +16,15 @@ import { MenuItemAPIService } from 'src/app/shared/generated'
 import { OneCXHorizontalMainMenuComponent } from './horizontal-main-menu.component'
 
 describe('OneCXHorizontalMainMenuComponent', () => {
-  let component: OneCXHorizontalMainMenuComponent
-  let fixture: ComponentFixture<OneCXHorizontalMainMenuComponent>
-
   const menuItemApiSpy = jasmine.createSpyObj<MenuItemAPIService>('MenuItemAPIService', ['getMenuItems'])
+
+  function setUp() {
+    const fixture = TestBed.createComponent(OneCXHorizontalMainMenuComponent)
+    const component = fixture.componentInstance
+    fixture.detectChanges()
+
+    return { fixture, component }
+  }
 
   let baseUrlSubject: ReplaySubject<any>
   beforeEach(() => {
@@ -28,7 +34,17 @@ describe('OneCXHorizontalMainMenuComponent', () => {
       imports: [
         TranslateTestingModule.withTranslations({
           en: require('../../../assets/i18n/en.json')
-        }).withDefaultLanguage('en')
+        }).withDefaultLanguage('en'),
+        RouterTestingModule.withRoutes([
+          {
+            path: 'admin/welcome',
+            component: {} as any
+          },
+          {
+            path: '',
+            component: {} as any
+          }
+        ])
       ],
       providers: [
         provideHttpClient(),
@@ -41,7 +57,7 @@ describe('OneCXHorizontalMainMenuComponent', () => {
     })
       .overrideComponent(OneCXHorizontalMainMenuComponent, {
         set: {
-          imports: [TranslateTestingModule, CommonModule, RouterTestingModule, MenubarModule],
+          imports: [TranslateTestingModule, CommonModule, RouterModule, MenubarModule],
           providers: [{ provide: MenuItemAPIService, useValue: menuItemApiSpy }]
         }
       })
@@ -53,17 +69,13 @@ describe('OneCXHorizontalMainMenuComponent', () => {
   })
 
   it('should create', () => {
-    fixture = TestBed.createComponent(OneCXHorizontalMainMenuComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    const { component } = setUp()
 
     expect(component).toBeTruthy()
   })
 
   it('should init remote component', (done: DoneFn) => {
-    fixture = TestBed.createComponent(OneCXHorizontalMainMenuComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    const { component } = setUp()
 
     component.ocxInitRemoteComponent({
       baseUrl: 'base_url'
@@ -115,9 +127,7 @@ describe('OneCXHorizontalMainMenuComponent', () => {
       } as any)
     )
 
-    fixture = TestBed.createComponent(OneCXHorizontalMainMenuComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    const { fixture, component } = setUp()
     await component.ngOnInit()
 
     const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PMenuBarHarness)
@@ -161,9 +171,7 @@ describe('OneCXHorizontalMainMenuComponent', () => {
       } as any)
     )
 
-    fixture = TestBed.createComponent(OneCXHorizontalMainMenuComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    const { fixture, component } = setUp()
     await component.ngOnInit()
 
     const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PMenuBarHarness)
@@ -203,9 +211,7 @@ describe('OneCXHorizontalMainMenuComponent', () => {
       } as any)
     )
 
-    fixture = TestBed.createComponent(OneCXHorizontalMainMenuComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    const { fixture, component } = setUp()
     await component.ngOnInit()
 
     const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PMenuBarHarness)
@@ -243,17 +249,16 @@ describe('OneCXHorizontalMainMenuComponent', () => {
         ]
       } as any)
     )
+    const router = TestBed.inject(Router)
 
-    fixture = TestBed.createComponent(OneCXHorizontalMainMenuComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    const { fixture, component } = setUp()
     await component.ngOnInit()
 
     const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PMenuBarHarness)
     const menuItems = await menu.getAllMenuItems()
     expect(menuItems.length).toEqual(1)
-
-    expect(await menuItems[0].isExternal()).toBeFalse()
+    await menuItems[0].click()
+    expect(router.url).toBe('/admin/welcome')
   })
 
   it('should use href for external urls', async () => {
@@ -285,16 +290,13 @@ describe('OneCXHorizontalMainMenuComponent', () => {
       } as any)
     )
 
-    fixture = TestBed.createComponent(OneCXHorizontalMainMenuComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    const { fixture, component } = setUp()
     await component.ngOnInit()
 
     const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PMenuBarHarness)
     const menuItems = await menu.getAllMenuItems()
     expect(menuItems.length).toEqual(1)
-
-    expect(await menuItems[0].isExternal()).toBeTrue()
+    expect(await menuItems[0].getLink()).toBe('https://www.google.com/')
   })
 
   it('should render submenus', async () => {
@@ -355,9 +357,7 @@ describe('OneCXHorizontalMainMenuComponent', () => {
       } as any)
     )
 
-    fixture = TestBed.createComponent(OneCXHorizontalMainMenuComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    const { fixture, component } = setUp()
     await component.ngOnInit()
 
     const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PMenuBarHarness)

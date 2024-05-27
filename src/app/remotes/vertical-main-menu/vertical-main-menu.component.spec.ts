@@ -1,9 +1,10 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing'
+import { TestBed } from '@angular/core/testing'
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { RouterTestingModule } from '@angular/router/testing'
 import { CommonModule } from '@angular/common'
+import { Router, RouterModule } from '@angular/router'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'
 import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
 import { PPanelMenuHarness } from '@onecx/angular-testing'
@@ -16,10 +17,15 @@ import { MenuItemAPIService } from 'src/app/shared/generated'
 import { OneCXVerticalMainMenuComponent } from './vertical-main-menu.component'
 
 describe('OneCXVerticalMainMenuComponent', () => {
-  let component: OneCXVerticalMainMenuComponent
-  let fixture: ComponentFixture<OneCXVerticalMainMenuComponent>
-
   const menuItemApiSpy = jasmine.createSpyObj<MenuItemAPIService>('MenuItemAPIService', ['getMenuItems'])
+
+  function setUp() {
+    const fixture = TestBed.createComponent(OneCXVerticalMainMenuComponent)
+    const component = fixture.componentInstance
+    fixture.detectChanges()
+
+    return { fixture, component }
+  }
 
   let baseUrlSubject: ReplaySubject<any>
   beforeEach(() => {
@@ -30,6 +36,12 @@ describe('OneCXVerticalMainMenuComponent', () => {
         TranslateTestingModule.withTranslations({
           en: require('../../../assets/i18n/en.json')
         }).withDefaultLanguage('en'),
+        RouterTestingModule.withRoutes([
+          {
+            path: 'admin/welcome',
+            component: {} as any
+          }
+        ]),
         NoopAnimationsModule
       ],
       providers: [
@@ -43,7 +55,7 @@ describe('OneCXVerticalMainMenuComponent', () => {
     })
       .overrideComponent(OneCXVerticalMainMenuComponent, {
         set: {
-          imports: [TranslateTestingModule, CommonModule, RouterTestingModule, PanelMenuModule],
+          imports: [TranslateTestingModule, CommonModule, RouterModule, PanelMenuModule],
           providers: [{ provide: MenuItemAPIService, useValue: menuItemApiSpy }]
         }
       })
@@ -55,17 +67,13 @@ describe('OneCXVerticalMainMenuComponent', () => {
   })
 
   it('should create', () => {
-    fixture = TestBed.createComponent(OneCXVerticalMainMenuComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    const { component } = setUp()
 
     expect(component).toBeTruthy()
   })
 
   it('should init remote component', (done: DoneFn) => {
-    fixture = TestBed.createComponent(OneCXVerticalMainMenuComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    const { component } = setUp()
 
     component.ocxInitRemoteComponent({
       baseUrl: 'base_url'
@@ -117,9 +125,7 @@ describe('OneCXVerticalMainMenuComponent', () => {
       } as any)
     )
 
-    fixture = TestBed.createComponent(OneCXVerticalMainMenuComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    const { fixture, component } = setUp()
     await component.ngOnInit()
 
     const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PPanelMenuHarness)
@@ -163,9 +169,7 @@ describe('OneCXVerticalMainMenuComponent', () => {
       } as any)
     )
 
-    fixture = TestBed.createComponent(OneCXVerticalMainMenuComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    const { fixture, component } = setUp()
     await component.ngOnInit()
 
     const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PPanelMenuHarness)
@@ -205,9 +209,7 @@ describe('OneCXVerticalMainMenuComponent', () => {
       } as any)
     )
 
-    fixture = TestBed.createComponent(OneCXVerticalMainMenuComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    const { fixture, component } = setUp()
     await component.ngOnInit()
 
     const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PPanelMenuHarness)
@@ -245,17 +247,16 @@ describe('OneCXVerticalMainMenuComponent', () => {
         ]
       } as any)
     )
+    const router = TestBed.inject(Router)
 
-    fixture = TestBed.createComponent(OneCXVerticalMainMenuComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    const { fixture, component } = setUp()
     await component.ngOnInit()
 
     const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PPanelMenuHarness)
     const panels = await menu.getAllPanels()
     expect(panels.length).toEqual(1)
-
-    expect(await panels[0].isExternal()).toBeFalse()
+    await panels[0].click()
+    expect(router.url).toBe('/admin/welcome')
   })
 
   it('should use href for external urls', async () => {
@@ -287,16 +288,13 @@ describe('OneCXVerticalMainMenuComponent', () => {
       } as any)
     )
 
-    fixture = TestBed.createComponent(OneCXVerticalMainMenuComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    const { fixture, component } = setUp()
     await component.ngOnInit()
 
     const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PPanelMenuHarness)
     const panels = await menu.getAllPanels()
     expect(panels.length).toEqual(1)
-
-    expect(await panels[0].isExternal()).toBeTrue()
+    expect(await panels[0].getLink()).toBe('https://www.google.com/')
   })
 
   it('should render submenus', async () => {
@@ -357,9 +355,7 @@ describe('OneCXVerticalMainMenuComponent', () => {
       } as any)
     )
 
-    fixture = TestBed.createComponent(OneCXVerticalMainMenuComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    const { fixture, component } = setUp()
     await component.ngOnInit()
 
     const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PPanelMenuHarness)

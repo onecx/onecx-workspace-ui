@@ -1,9 +1,10 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing'
+import { TestBed } from '@angular/core/testing'
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { RouterTestingModule } from '@angular/router/testing'
 import { CommonModule } from '@angular/common'
+import { Router, RouterModule } from '@angular/router'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'
 import { TranslateService } from '@ngx-translate/core'
 import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
@@ -19,13 +20,23 @@ import { OneCXUserSidebarMenuComponent } from './user-sidebar-menu.component'
 import { OneCXUserSidebarMenuHarness } from './user-sidebar-menu.harness'
 
 describe('OneCXUserSidebarMenuComponent', () => {
-  let component: OneCXUserSidebarMenuComponent
-  let fixture: ComponentFixture<OneCXUserSidebarMenuComponent>
-  let oneCXUserSidebarMenuHarness: OneCXUserSidebarMenuHarness
-
   const menuItemApiSpy = jasmine.createSpyObj<MenuItemAPIService>('MenuItemAPIService', ['getMenuItems'])
 
   const appConfigSpy = jasmine.createSpyObj<AppConfigService>('AppConfigService', ['init'])
+
+  function setUp() {
+    const fixture = TestBed.createComponent(OneCXUserSidebarMenuComponent)
+    const component = fixture.componentInstance
+    fixture.detectChanges()
+
+    return { fixture, component }
+  }
+
+  async function setUpWithHarness() {
+    const { fixture, component } = setUp()
+    const sidebarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXUserSidebarMenuHarness)
+    return { fixture, component, sidebarMenuHarness }
+  }
 
   let baseUrlSubject: ReplaySubject<any>
   beforeEach(() => {
@@ -36,6 +47,12 @@ describe('OneCXUserSidebarMenuComponent', () => {
         TranslateTestingModule.withTranslations({
           en: require('../../../assets/i18n/en.json')
         }).withDefaultLanguage('en'),
+        RouterTestingModule.withRoutes([
+          {
+            path: 'admin/user-profile',
+            component: {} as any
+          }
+        ]),
         NoopAnimationsModule
       ],
       providers: [
@@ -53,7 +70,7 @@ describe('OneCXUserSidebarMenuComponent', () => {
     })
       .overrideComponent(OneCXUserSidebarMenuComponent, {
         set: {
-          imports: [TranslateTestingModule, CommonModule, RouterTestingModule, PanelMenuModule, AccordionModule],
+          imports: [TranslateTestingModule, CommonModule, RouterModule, PanelMenuModule, AccordionModule],
           providers: [{ provide: MenuItemAPIService, useValue: menuItemApiSpy }]
         }
       })
@@ -65,17 +82,13 @@ describe('OneCXUserSidebarMenuComponent', () => {
   })
 
   it('should create', () => {
-    fixture = TestBed.createComponent(OneCXUserSidebarMenuComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    const { component } = setUp()
 
     expect(component).toBeTruthy()
   })
 
   it('should init remote component', (done: DoneFn) => {
-    fixture = TestBed.createComponent(OneCXUserSidebarMenuComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    const { component } = setUp()
 
     component.ocxInitRemoteComponent({
       baseUrl: 'base_url'
@@ -103,15 +116,9 @@ describe('OneCXUserSidebarMenuComponent', () => {
         }) as any
       )
 
-      fixture = TestBed.createComponent(OneCXUserSidebarMenuComponent)
-      component = fixture.componentInstance
-      fixture.detectChanges()
+      const { sidebarMenuHarness } = await setUpWithHarness()
 
-      oneCXUserSidebarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(
-        fixture,
-        OneCXUserSidebarMenuHarness
-      )
-      expect(await oneCXUserSidebarMenuHarness.getDisplayName()).toEqual('My user')
+      expect(await sidebarMenuHarness.getDisplayName()).toEqual('My user')
     })
 
     it('should display person firstName and lastName when displayName unavailable', async () => {
@@ -127,15 +134,9 @@ describe('OneCXUserSidebarMenuComponent', () => {
         }) as any
       )
 
-      fixture = TestBed.createComponent(OneCXUserSidebarMenuComponent)
-      component = fixture.componentInstance
-      fixture.detectChanges()
+      const { sidebarMenuHarness } = await setUpWithHarness()
 
-      oneCXUserSidebarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(
-        fixture,
-        OneCXUserSidebarMenuHarness
-      )
-      expect(await oneCXUserSidebarMenuHarness.getDisplayName()).toEqual('Name Lastname')
+      expect(await sidebarMenuHarness.getDisplayName()).toEqual('Name Lastname')
     })
 
     it('should display userId when none other user info available', async () => {
@@ -151,30 +152,18 @@ describe('OneCXUserSidebarMenuComponent', () => {
         }) as any
       )
 
-      fixture = TestBed.createComponent(OneCXUserSidebarMenuComponent)
-      component = fixture.componentInstance
-      fixture.detectChanges()
+      const { sidebarMenuHarness } = await setUpWithHarness()
 
-      oneCXUserSidebarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(
-        fixture,
-        OneCXUserSidebarMenuHarness
-      )
-      expect(await oneCXUserSidebarMenuHarness.getDisplayName()).toEqual('my-user-id')
+      expect(await sidebarMenuHarness.getDisplayName()).toEqual('my-user-id')
     })
 
     it('should display guest when no user info', async () => {
       const userService = TestBed.inject(UserService)
       spyOn(userService.profile$, 'asObservable').and.returnValue(of(null) as any)
 
-      fixture = TestBed.createComponent(OneCXUserSidebarMenuComponent)
-      component = fixture.componentInstance
-      fixture.detectChanges()
+      const { sidebarMenuHarness } = await setUpWithHarness()
 
-      oneCXUserSidebarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(
-        fixture,
-        OneCXUserSidebarMenuHarness
-      )
-      expect(await oneCXUserSidebarMenuHarness.getDisplayName()).toEqual('Guest')
+      expect(await sidebarMenuHarness.getDisplayName()).toEqual('Guest')
     })
   })
 
@@ -232,17 +221,10 @@ describe('OneCXUserSidebarMenuComponent', () => {
         } as any)
       )
 
-      fixture = TestBed.createComponent(OneCXUserSidebarMenuComponent)
-      component = fixture.componentInstance
-      fixture.detectChanges()
+      const { sidebarMenuHarness } = await setUpWithHarness()
+      await sidebarMenuHarness.expand()
 
-      oneCXUserSidebarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(
-        fixture,
-        OneCXUserSidebarMenuHarness
-      )
-      await oneCXUserSidebarMenuHarness.expand()
-
-      const menu = await oneCXUserSidebarMenuHarness.getPanelMenu()
+      const menu = await sidebarMenuHarness.getPanelMenu()
       expect(menu).toBeTruthy()
       const panels = await menu?.getAllPanels()
       expect(panels?.length).toEqual(3)
@@ -279,17 +261,10 @@ describe('OneCXUserSidebarMenuComponent', () => {
         } as any)
       )
 
-      fixture = TestBed.createComponent(OneCXUserSidebarMenuComponent)
-      component = fixture.componentInstance
-      fixture.detectChanges()
+      const { sidebarMenuHarness } = await setUpWithHarness()
+      await sidebarMenuHarness.expand()
 
-      oneCXUserSidebarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(
-        fixture,
-        OneCXUserSidebarMenuHarness
-      )
-      await oneCXUserSidebarMenuHarness.expand()
-
-      const menu = await oneCXUserSidebarMenuHarness.getPanelMenu()
+      const menu = await sidebarMenuHarness.getPanelMenu()
       expect(menu).toBeTruthy()
       const panels = await menu?.getAllPanels()
       expect(await panels![0].getText()).toEqual('English personal info')
@@ -320,17 +295,10 @@ describe('OneCXUserSidebarMenuComponent', () => {
         } as any)
       )
 
-      fixture = TestBed.createComponent(OneCXUserSidebarMenuComponent)
-      component = fixture.componentInstance
-      fixture.detectChanges()
+      const { sidebarMenuHarness } = await setUpWithHarness()
+      await sidebarMenuHarness.expand()
 
-      oneCXUserSidebarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(
-        fixture,
-        OneCXUserSidebarMenuHarness
-      )
-      await oneCXUserSidebarMenuHarness.expand()
-
-      const menu = await oneCXUserSidebarMenuHarness.getPanelMenu()
+      const menu = await sidebarMenuHarness.getPanelMenu()
       expect(menu).toBeTruthy()
       const panels = await menu?.getAllPanels()
       expect(await panels![0].hasIcon(PrimeIcons.HOME)).toBeTrue()
@@ -359,21 +327,16 @@ describe('OneCXUserSidebarMenuComponent', () => {
           ]
         } as any)
       )
+      const router = TestBed.inject(Router)
 
-      fixture = TestBed.createComponent(OneCXUserSidebarMenuComponent)
-      component = fixture.componentInstance
-      fixture.detectChanges()
+      const { sidebarMenuHarness } = await setUpWithHarness()
+      await sidebarMenuHarness.expand()
 
-      oneCXUserSidebarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(
-        fixture,
-        OneCXUserSidebarMenuHarness
-      )
-      await oneCXUserSidebarMenuHarness.expand()
-
-      const menu = await oneCXUserSidebarMenuHarness.getPanelMenu()
+      const menu = await sidebarMenuHarness.getPanelMenu()
       expect(menu).toBeTruthy()
       const panels = await menu?.getAllPanels()
-      expect(await panels![0].isExternal()).toBeFalse()
+      await panels![0].click()
+      expect(router.url).toBe('/admin/user-profile')
     })
 
     it('should use href for external urls', async () => {
@@ -399,20 +362,13 @@ describe('OneCXUserSidebarMenuComponent', () => {
         } as any)
       )
 
-      fixture = TestBed.createComponent(OneCXUserSidebarMenuComponent)
-      component = fixture.componentInstance
-      fixture.detectChanges()
+      const { sidebarMenuHarness } = await setUpWithHarness()
+      await sidebarMenuHarness.expand()
 
-      oneCXUserSidebarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(
-        fixture,
-        OneCXUserSidebarMenuHarness
-      )
-      await oneCXUserSidebarMenuHarness.expand()
-
-      const menu = await oneCXUserSidebarMenuHarness.getPanelMenu()
+      const menu = await sidebarMenuHarness.getPanelMenu()
       expect(menu).toBeTruthy()
       const panels = await menu?.getAllPanels()
-      expect(await panels![0].isExternal()).toBeTrue()
+      expect(await panels![0].getLink()).toBe('https://www.google.com/')
     })
 
     it('should render submenus', async () => {
@@ -457,17 +413,10 @@ describe('OneCXUserSidebarMenuComponent', () => {
         } as any)
       )
 
-      fixture = TestBed.createComponent(OneCXUserSidebarMenuComponent)
-      component = fixture.componentInstance
-      fixture.detectChanges()
+      const { sidebarMenuHarness } = await setUpWithHarness()
+      await sidebarMenuHarness.expand()
 
-      oneCXUserSidebarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(
-        fixture,
-        OneCXUserSidebarMenuHarness
-      )
-      await oneCXUserSidebarMenuHarness.expand()
-
-      const menu = await oneCXUserSidebarMenuHarness.getPanelMenu()
+      const menu = await sidebarMenuHarness.getPanelMenu()
       expect(menu).toBeTruthy()
       const panels = await menu?.getAllPanels()
 
@@ -481,17 +430,10 @@ describe('OneCXUserSidebarMenuComponent', () => {
     it('should only show logout on failed menu fetch call', async () => {
       menuItemApiSpy.getMenuItems.and.returnValue(throwError(() => {}))
 
-      fixture = TestBed.createComponent(OneCXUserSidebarMenuComponent)
-      component = fixture.componentInstance
-      fixture.detectChanges()
+      const { sidebarMenuHarness } = await setUpWithHarness()
+      await sidebarMenuHarness.expand()
 
-      oneCXUserSidebarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(
-        fixture,
-        OneCXUserSidebarMenuHarness
-      )
-      await oneCXUserSidebarMenuHarness.expand()
-
-      const menu = await oneCXUserSidebarMenuHarness.getPanelMenu()
+      const menu = await sidebarMenuHarness.getPanelMenu()
       expect(menu).toBeTruthy()
       const panels = await menu?.getAllPanels()
 
@@ -528,17 +470,10 @@ describe('OneCXUserSidebarMenuComponent', () => {
     })
 
     it('should have correct icon for logout', async () => {
-      fixture = TestBed.createComponent(OneCXUserSidebarMenuComponent)
-      component = fixture.componentInstance
-      fixture.detectChanges()
+      const { sidebarMenuHarness } = await setUpWithHarness()
+      await sidebarMenuHarness.expand()
 
-      oneCXUserSidebarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(
-        fixture,
-        OneCXUserSidebarMenuHarness
-      )
-      await oneCXUserSidebarMenuHarness.expand()
-
-      const menu = await oneCXUserSidebarMenuHarness.getPanelMenu()
+      const menu = await sidebarMenuHarness.getPanelMenu()
       expect(menu).toBeTruthy()
       const panels = await menu?.getAllPanels()
 
@@ -549,17 +484,10 @@ describe('OneCXUserSidebarMenuComponent', () => {
       const translateService = TestBed.inject(TranslateService)
       spyOn(translateService, 'get').and.returnValue(throwError(() => {}))
 
-      fixture = TestBed.createComponent(OneCXUserSidebarMenuComponent)
-      component = fixture.componentInstance
-      fixture.detectChanges()
+      const { sidebarMenuHarness } = await setUpWithHarness()
+      await sidebarMenuHarness.expand()
 
-      oneCXUserSidebarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(
-        fixture,
-        OneCXUserSidebarMenuHarness
-      )
-      await oneCXUserSidebarMenuHarness.expand()
-
-      const menu = await oneCXUserSidebarMenuHarness.getPanelMenu()
+      const menu = await sidebarMenuHarness.getPanelMenu()
       expect(menu).toBeTruthy()
       const panels = await menu?.getAllPanels()
 
@@ -567,19 +495,13 @@ describe('OneCXUserSidebarMenuComponent', () => {
     })
 
     it('should publish event on logout click', async () => {
-      fixture = TestBed.createComponent(OneCXUserSidebarMenuComponent)
-      component = fixture.componentInstance
-      fixture.detectChanges()
+      const { component, sidebarMenuHarness } = await setUpWithHarness()
 
       spyOn(component.eventsPublisher$, 'publish')
 
-      oneCXUserSidebarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(
-        fixture,
-        OneCXUserSidebarMenuHarness
-      )
-      await oneCXUserSidebarMenuHarness.expand()
+      await sidebarMenuHarness.expand()
 
-      const menu = await oneCXUserSidebarMenuHarness.getPanelMenu()
+      const menu = await sidebarMenuHarness.getPanelMenu()
       expect(menu).toBeTruthy()
       const panels = await menu?.getAllPanels()
 

@@ -1,10 +1,11 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing'
+import { TestBed } from '@angular/core/testing'
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { RouterTestingModule } from '@angular/router/testing'
 import { NgModule, Renderer2 } from '@angular/core'
 import { CommonModule } from '@angular/common'
+import { Router, RouterModule } from '@angular/router'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'
 import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
 import { AppStateService, UserService } from '@onecx/angular-integration-interface'
@@ -28,13 +29,36 @@ import { OneCXUserAvatarMenuHarness } from './user-avatar-menu.harness'
 class PortalDependencyModule {}
 
 describe('OneCXUserAvatarMenuComponent', () => {
-  let component: OneCXUserAvatarMenuComponent
-  let fixture: ComponentFixture<OneCXUserAvatarMenuComponent>
-  let oneCXUserAvatarMenuHarness: OneCXUserAvatarMenuHarness
-
   const menuItemApiSpy = jasmine.createSpyObj<MenuItemAPIService>('MenuItemAPIService', ['getMenuItems'])
 
   const appConfigSpy = jasmine.createSpyObj<AppConfigService>('AppConfigService', ['init', 'getProperty'])
+
+  function setUp() {
+    const fixture = TestBed.createComponent(OneCXUserAvatarMenuComponent)
+    const component = fixture.componentInstance
+    fixture.detectChanges()
+
+    return { fixture, component }
+  }
+
+  async function setUpWithHarness() {
+    const { fixture, component } = setUp()
+    const avatarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXUserAvatarMenuHarness)
+    return { fixture, component, avatarMenuHarness }
+  }
+
+  async function setUpWithHarnessAndInit(permissions: Array<string>) {
+    const fixture = TestBed.createComponent(OneCXUserAvatarMenuComponent)
+    const component = fixture.componentInstance
+    component.ocxInitRemoteComponent({
+      baseUrl: 'base_url',
+      permissions: permissions
+    } as any)
+    fixture.detectChanges()
+
+    const avatarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXUserAvatarMenuHarness)
+    return { fixture, component, avatarMenuHarness }
+  }
 
   let baseUrlSubject: ReplaySubject<any>
   beforeEach(async () => {
@@ -44,6 +68,7 @@ describe('OneCXUserAvatarMenuComponent', () => {
         TranslateTestingModule.withTranslations({
           en: require('../../../assets/i18n/en.json')
         }).withDefaultLanguage('en'),
+        RouterTestingModule.withRoutes([{ path: 'admin/user-profile', component: {} as any }]),
         NoopAnimationsModule
       ],
       providers: [
@@ -65,7 +90,7 @@ describe('OneCXUserAvatarMenuComponent', () => {
             PortalDependencyModule,
             TranslateTestingModule,
             CommonModule,
-            RouterTestingModule,
+            RouterModule,
             MenuModule,
             AvatarModule,
             RippleModule,
@@ -84,9 +109,7 @@ describe('OneCXUserAvatarMenuComponent', () => {
   })
 
   it('should create', () => {
-    fixture = TestBed.createComponent(OneCXUserAvatarMenuComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    const { component } = setUp()
 
     expect(component).toBeTruthy()
   })
@@ -94,9 +117,7 @@ describe('OneCXUserAvatarMenuComponent', () => {
   it('should init remote component', (done: DoneFn) => {
     appConfigSpy.getProperty.and.returnValue('right')
 
-    fixture = TestBed.createComponent(OneCXUserAvatarMenuComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    const { component } = setUp()
 
     component.ocxInitRemoteComponent({
       baseUrl: 'base_url',
@@ -116,32 +137,27 @@ describe('OneCXUserAvatarMenuComponent', () => {
   it('should show button initially', async () => {
     appConfigSpy.getProperty.and.returnValue('right')
 
-    fixture = TestBed.createComponent(OneCXUserAvatarMenuComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    const { avatarMenuHarness } = await setUpWithHarness()
 
-    oneCXUserAvatarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXUserAvatarMenuHarness)
-
-    expect(await oneCXUserAvatarMenuHarness.getButtonTitle()).toEqual('Profile')
+    expect(await avatarMenuHarness.getButtonTitle()).toEqual('Profile')
   })
 
   it('should not show profile info if permissions not met', async () => {
     appConfigSpy.getProperty.and.returnValue('right')
 
-    fixture = TestBed.createComponent(OneCXUserAvatarMenuComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
-
+    const fixture = TestBed.createComponent(OneCXUserAvatarMenuComponent)
+    const component = fixture.componentInstance
     component.ocxInitRemoteComponent({
       baseUrl: 'base_url',
       permissions: []
     } as any)
+    fixture.detectChanges()
 
-    oneCXUserAvatarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXUserAvatarMenuHarness)
+    const avatarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXUserAvatarMenuHarness)
 
-    expect(await oneCXUserAvatarMenuHarness.getUserName()).toBeUndefined()
-    expect(await oneCXUserAvatarMenuHarness.getUserEmail()).toBeUndefined()
-    expect(await oneCXUserAvatarMenuHarness.getUserTenant()).toBeUndefined()
+    expect(await avatarMenuHarness.getUserName()).toBeUndefined()
+    expect(await avatarMenuHarness.getUserEmail()).toBeUndefined()
+    expect(await avatarMenuHarness.getUserTenant()).toBeUndefined()
   })
 
   it('should not show profile info if user undefined', async () => {
@@ -149,19 +165,19 @@ describe('OneCXUserAvatarMenuComponent', () => {
     const userService = TestBed.inject(UserService)
     spyOn(userService.profile$, 'asObservable').and.returnValue(of(null) as any)
 
-    fixture = TestBed.createComponent(OneCXUserAvatarMenuComponent)
-    component = fixture.componentInstance
+    const fixture = TestBed.createComponent(OneCXUserAvatarMenuComponent)
+    const component = fixture.componentInstance
     component.ocxInitRemoteComponent({
       baseUrl: 'base_url',
       permissions: ['PROFILE#VIEW']
     } as any)
     fixture.detectChanges()
 
-    oneCXUserAvatarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXUserAvatarMenuHarness)
+    const avatarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXUserAvatarMenuHarness)
 
-    expect(await oneCXUserAvatarMenuHarness.getUserName()).toBeUndefined()
-    expect(await oneCXUserAvatarMenuHarness.getUserEmail()).toBeUndefined()
-    expect(await oneCXUserAvatarMenuHarness.getUserTenant()).toBeUndefined()
+    expect(await avatarMenuHarness.getUserName()).toBeUndefined()
+    expect(await avatarMenuHarness.getUserEmail()).toBeUndefined()
+    expect(await avatarMenuHarness.getUserTenant()).toBeUndefined()
   })
 
   it('should show profile info if permissions met and user defined', async () => {
@@ -177,19 +193,11 @@ describe('OneCXUserAvatarMenuComponent', () => {
       }) as any
     )
 
-    fixture = TestBed.createComponent(OneCXUserAvatarMenuComponent)
-    component = fixture.componentInstance
-    component.ocxInitRemoteComponent({
-      baseUrl: 'base_url',
-      permissions: ['PROFILE#VIEW']
-    } as any)
-    fixture.detectChanges()
+    const { avatarMenuHarness } = await setUpWithHarnessAndInit(['PROFILE#VIEW'])
 
-    oneCXUserAvatarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXUserAvatarMenuHarness)
-
-    expect(await oneCXUserAvatarMenuHarness.getUserName()).toEqual('My user')
-    expect(await oneCXUserAvatarMenuHarness.getUserEmail()).toEqual('my-user@example.com')
-    expect(await oneCXUserAvatarMenuHarness.getUserTenant()).toEqual('Tenant: user-tenant')
+    expect(await avatarMenuHarness.getUserName()).toEqual('My user')
+    expect(await avatarMenuHarness.getUserEmail()).toEqual('my-user@example.com')
+    expect(await avatarMenuHarness.getUserTenant()).toEqual('Tenant: user-tenant')
   })
 
   describe('menu section', () => {
@@ -246,20 +254,9 @@ describe('OneCXUserAvatarMenuComponent', () => {
         } as any)
       )
 
-      fixture = TestBed.createComponent(OneCXUserAvatarMenuComponent)
-      component = fixture.componentInstance
-      component.ocxInitRemoteComponent({
-        baseUrl: 'base_url',
-        permissions: ['PROFILE#VIEW']
-      } as any)
-      fixture.detectChanges()
+      const { avatarMenuHarness } = await setUpWithHarnessAndInit(['PROFILE#VIEW'])
 
-      oneCXUserAvatarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(
-        fixture,
-        OneCXUserAvatarMenuHarness
-      )
-
-      const menuItems = await oneCXUserAvatarMenuHarness.getMenuItems()
+      const menuItems = await avatarMenuHarness.getMenuItems()
       expect(menuItems.length).toBe(3)
 
       expect(await menuItems[0].getText()).toEqual('Account Settings')
@@ -294,20 +291,9 @@ describe('OneCXUserAvatarMenuComponent', () => {
         } as any)
       )
 
-      fixture = TestBed.createComponent(OneCXUserAvatarMenuComponent)
-      component = fixture.componentInstance
-      component.ocxInitRemoteComponent({
-        baseUrl: 'base_url',
-        permissions: ['PROFILE#VIEW']
-      } as any)
-      fixture.detectChanges()
+      const { avatarMenuHarness } = await setUpWithHarnessAndInit(['PROFILE#VIEW'])
 
-      oneCXUserAvatarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(
-        fixture,
-        OneCXUserAvatarMenuHarness
-      )
-
-      const menuItems = await oneCXUserAvatarMenuHarness.getMenuItems()
+      const menuItems = await avatarMenuHarness.getMenuItems()
       expect(await menuItems[0].getText()).toEqual('English personal info')
     })
 
@@ -336,20 +322,9 @@ describe('OneCXUserAvatarMenuComponent', () => {
         } as any)
       )
 
-      fixture = TestBed.createComponent(OneCXUserAvatarMenuComponent)
-      component = fixture.componentInstance
-      component.ocxInitRemoteComponent({
-        baseUrl: 'base_url',
-        permissions: ['PROFILE#VIEW']
-      } as any)
-      fixture.detectChanges()
+      const { avatarMenuHarness } = await setUpWithHarnessAndInit(['PROFILE#VIEW'])
 
-      oneCXUserAvatarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(
-        fixture,
-        OneCXUserAvatarMenuHarness
-      )
-
-      const menuItems = await oneCXUserAvatarMenuHarness.getMenuItems()
+      const menuItems = await avatarMenuHarness.getMenuItems()
       expect(await menuItems[0].hasIcon(PrimeIcons.HOME)).toBeTrue()
     })
 
@@ -376,22 +351,13 @@ describe('OneCXUserAvatarMenuComponent', () => {
           ]
         } as any)
       )
+      const router = TestBed.inject(Router)
 
-      fixture = TestBed.createComponent(OneCXUserAvatarMenuComponent)
-      component = fixture.componentInstance
-      component.ocxInitRemoteComponent({
-        baseUrl: 'base_url',
-        permissions: ['PROFILE#VIEW']
-      } as any)
-      fixture.detectChanges()
+      const { avatarMenuHarness } = await setUpWithHarnessAndInit(['PROFILE#VIEW'])
 
-      oneCXUserAvatarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(
-        fixture,
-        OneCXUserAvatarMenuHarness
-      )
-
-      const menuItems = await oneCXUserAvatarMenuHarness.getMenuItems()
-      expect(await menuItems[0].isExternal()).toBeFalse()
+      const menuItems = await avatarMenuHarness.getMenuItems()
+      await menuItems[0].selectItem()
+      expect(router.url).toBe('/admin/user-profile')
     })
 
     it('should use href for external urls', async () => {
@@ -417,40 +383,18 @@ describe('OneCXUserAvatarMenuComponent', () => {
         } as any)
       )
 
-      fixture = TestBed.createComponent(OneCXUserAvatarMenuComponent)
-      component = fixture.componentInstance
-      component.ocxInitRemoteComponent({
-        baseUrl: 'base_url',
-        permissions: ['PROFILE#VIEW']
-      } as any)
-      fixture.detectChanges()
+      const { avatarMenuHarness } = await setUpWithHarnessAndInit(['PROFILE#VIEW'])
 
-      oneCXUserAvatarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(
-        fixture,
-        OneCXUserAvatarMenuHarness
-      )
-
-      const menuItems = await oneCXUserAvatarMenuHarness.getMenuItems()
-      expect(await menuItems[0].isExternal()).toBeTrue()
+      const menuItems = await avatarMenuHarness.getMenuItems()
+      expect(await menuItems[0].getLink()).toBe('https://www.google.com/')
     })
 
     it('should only show logout on failed menu fetch call', async () => {
       menuItemApiSpy.getMenuItems.and.returnValue(throwError(() => {}))
 
-      fixture = TestBed.createComponent(OneCXUserAvatarMenuComponent)
-      component = fixture.componentInstance
-      component.ocxInitRemoteComponent({
-        baseUrl: 'base_url',
-        permissions: ['PROFILE#VIEW']
-      } as any)
-      fixture.detectChanges()
+      const { avatarMenuHarness } = await setUpWithHarnessAndInit(['PROFILE#VIEW'])
 
-      oneCXUserAvatarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(
-        fixture,
-        OneCXUserAvatarMenuHarness
-      )
-
-      const menuItems = await oneCXUserAvatarMenuHarness.getMenuItems()
+      const menuItems = await avatarMenuHarness.getMenuItems()
       expect(await menuItems[0].getText()).toEqual('Log out')
     })
 
@@ -462,33 +406,19 @@ describe('OneCXUserAvatarMenuComponent', () => {
         } as any)
       )
 
-      fixture = TestBed.createComponent(OneCXUserAvatarMenuComponent)
-      component = fixture.componentInstance
-      fixture.detectChanges()
+      const { avatarMenuHarness } = await setUpWithHarness()
 
-      oneCXUserAvatarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(
-        fixture,
-        OneCXUserAvatarMenuHarness
-      )
-
-      const menuItems = await oneCXUserAvatarMenuHarness.getMenuItems()
+      const menuItems = await avatarMenuHarness.getMenuItems()
 
       expect(await menuItems[0].hasIcon(PrimeIcons.POWER_OFF)).toBeTrue()
     })
 
     it('should publish event on logout click', async () => {
-      fixture = TestBed.createComponent(OneCXUserAvatarMenuComponent)
-      component = fixture.componentInstance
-      fixture.detectChanges()
+      const { component, avatarMenuHarness } = await setUpWithHarness()
 
       spyOn(component.eventsPublisher$, 'publish')
 
-      oneCXUserAvatarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(
-        fixture,
-        OneCXUserAvatarMenuHarness
-      )
-
-      const menuItems = await oneCXUserAvatarMenuHarness.getMenuItems()
+      const menuItems = await avatarMenuHarness.getMenuItems()
       await menuItems[0].selectItem()
 
       expect(component.eventsPublisher$.publish).toHaveBeenCalledOnceWith({
@@ -504,35 +434,23 @@ describe('OneCXUserAvatarMenuComponent', () => {
         } as any)
       )
 
-      fixture = TestBed.createComponent(OneCXUserAvatarMenuComponent)
-      component = fixture.componentInstance
-      component.ocxInitRemoteComponent({
-        baseUrl: 'base_url',
-        permissions: ['PROFILE#VIEW']
-      } as any)
-      fixture.detectChanges()
+      const { avatarMenuHarness } = await setUpWithHarnessAndInit(['PROFILE#VIEW'])
 
-      oneCXUserAvatarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(
-        fixture,
-        OneCXUserAvatarMenuHarness
-      )
+      expect(await avatarMenuHarness.isMenuHidden()).toBeTrue()
 
-      expect(await oneCXUserAvatarMenuHarness.isMenuHidden()).toBeTrue()
+      await avatarMenuHarness.clickButton()
 
-      await oneCXUserAvatarMenuHarness.clickButton()
-
-      expect(await oneCXUserAvatarMenuHarness.isMenuHidden()).toBeFalse()
+      expect(await avatarMenuHarness.isMenuHidden()).toBeFalse()
     })
   })
 
   it('should create listener on ngAfterViewInit and remove it on ngOnDestroy', () => {
     const spyRemoveFunction = jasmine.createSpy()
 
-    fixture = TestBed.createComponent(OneCXUserAvatarMenuComponent)
+    const { fixture, component } = setUp()
+
     const renderer = fixture.componentRef.injector.get<Renderer2>(Renderer2)
     spyOn(renderer, 'listen').and.returnValue(spyRemoveFunction)
-    component = fixture.componentInstance
-    fixture.detectChanges()
 
     component.ngAfterViewInit()
 
