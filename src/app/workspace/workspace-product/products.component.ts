@@ -13,6 +13,7 @@ import { catchError, finalize, map, Observable, of, Subject, switchMap, takeUnti
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 
 import {
+  CreateSlot,
   ImagesInternalAPIService,
   Microfrontend,
   MicrofrontendType,
@@ -459,10 +460,14 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
           createProductRequest: {
             productName: p.productName,
             baseUrl: p.baseUrl,
-            microfrontends: mfes.map((m: any, i: number) => ({
-              appId: m.appId,
-              basePath: p.baseUrl + (mfes.length > 1 ? '-' + (i + 1) : '') // create initial unique base paths
-            }))
+            microfrontends:
+              mfes.length === 0
+                ? undefined
+                : mfes.map((m: any, i: number) => ({
+                    appId: m.appId,
+                    basePath: p.baseUrl + (mfes.length > 1 ? '-' + (i + 1) : '') // create initial unique base paths
+                  })),
+            slots: p.slots ? p.slots.map((s: SlotPS) => ({ name: s.name } as CreateSlot)) : undefined
           } as CreateProductRequest
         })
         .subscribe({
