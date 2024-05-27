@@ -11,7 +11,7 @@ export class OneCXUserSidebarMenuHarness extends ComponentHarness {
     return await (await this.locatorFor('#user-sidebar-display-name')()).text()
   }
 
-  async expand() {
+  async expandAccordion() {
     const tabs = await (await this.getAccordion()).getAllAccordionTabs()
     await tabs[0].expand()
   }

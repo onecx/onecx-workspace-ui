@@ -222,7 +222,7 @@ describe('OneCXUserSidebarMenuComponent', () => {
       )
 
       const { sidebarMenuHarness } = await setUpWithHarness()
-      await sidebarMenuHarness.expand()
+      await sidebarMenuHarness.expandAccordion()
 
       const menu = await sidebarMenuHarness.getPanelMenu()
       expect(menu).toBeTruthy()
@@ -262,7 +262,7 @@ describe('OneCXUserSidebarMenuComponent', () => {
       )
 
       const { sidebarMenuHarness } = await setUpWithHarness()
-      await sidebarMenuHarness.expand()
+      await sidebarMenuHarness.expandAccordion()
 
       const menu = await sidebarMenuHarness.getPanelMenu()
       expect(menu).toBeTruthy()
@@ -296,7 +296,7 @@ describe('OneCXUserSidebarMenuComponent', () => {
       )
 
       const { sidebarMenuHarness } = await setUpWithHarness()
-      await sidebarMenuHarness.expand()
+      await sidebarMenuHarness.expandAccordion()
 
       const menu = await sidebarMenuHarness.getPanelMenu()
       expect(menu).toBeTruthy()
@@ -330,7 +330,7 @@ describe('OneCXUserSidebarMenuComponent', () => {
       const router = TestBed.inject(Router)
 
       const { sidebarMenuHarness } = await setUpWithHarness()
-      await sidebarMenuHarness.expand()
+      await sidebarMenuHarness.expandAccordion()
 
       const menu = await sidebarMenuHarness.getPanelMenu()
       expect(menu).toBeTruthy()
@@ -363,7 +363,7 @@ describe('OneCXUserSidebarMenuComponent', () => {
       )
 
       const { sidebarMenuHarness } = await setUpWithHarness()
-      await sidebarMenuHarness.expand()
+      await sidebarMenuHarness.expandAccordion()
 
       const menu = await sidebarMenuHarness.getPanelMenu()
       expect(menu).toBeTruthy()
@@ -414,7 +414,7 @@ describe('OneCXUserSidebarMenuComponent', () => {
       )
 
       const { sidebarMenuHarness } = await setUpWithHarness()
-      await sidebarMenuHarness.expand()
+      await sidebarMenuHarness.expandAccordion()
 
       const menu = await sidebarMenuHarness.getPanelMenu()
       expect(menu).toBeTruthy()
@@ -431,7 +431,7 @@ describe('OneCXUserSidebarMenuComponent', () => {
       menuItemApiSpy.getMenuItems.and.returnValue(throwError(() => {}))
 
       const { sidebarMenuHarness } = await setUpWithHarness()
-      await sidebarMenuHarness.expand()
+      await sidebarMenuHarness.expandAccordion()
 
       const menu = await sidebarMenuHarness.getPanelMenu()
       expect(menu).toBeTruthy()
@@ -471,7 +471,7 @@ describe('OneCXUserSidebarMenuComponent', () => {
 
     it('should have correct icon for logout', async () => {
       const { sidebarMenuHarness } = await setUpWithHarness()
-      await sidebarMenuHarness.expand()
+      await sidebarMenuHarness.expandAccordion()
 
       const menu = await sidebarMenuHarness.getPanelMenu()
       expect(menu).toBeTruthy()
@@ -485,7 +485,7 @@ describe('OneCXUserSidebarMenuComponent', () => {
       spyOn(translateService, 'get').and.returnValue(throwError(() => {}))
 
       const { sidebarMenuHarness } = await setUpWithHarness()
-      await sidebarMenuHarness.expand()
+      await sidebarMenuHarness.expandAccordion()
 
       const menu = await sidebarMenuHarness.getPanelMenu()
       expect(menu).toBeTruthy()
@@ -499,7 +499,7 @@ describe('OneCXUserSidebarMenuComponent', () => {
 
       spyOn(component.eventsPublisher$, 'publish')
 
-      await sidebarMenuHarness.expand()
+      await sidebarMenuHarness.expandAccordion()
 
       const menu = await sidebarMenuHarness.getPanelMenu()
       expect(menu).toBeTruthy()

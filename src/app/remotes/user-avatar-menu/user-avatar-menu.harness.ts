@@ -4,16 +4,16 @@ import { MenuItemWithIconHarness } from '@onecx/angular-testing'
 export class OneCXUserAvatarMenuHarness extends ComponentHarness {
   static readonly hostSelector = 'app-user-avatar-menu'
 
-  getButton = this.locatorFor('#user-avatar-menu-button')
+  getUserAvatarButton = this.locatorFor('#user-avatar-menu-button')
 
   getMenuItems = this.locatorForAll(MenuItemWithIconHarness)
 
-  async getButtonTitle(): Promise<string | null> {
-    return await (await this.getButton()).getAttribute('title')
+  async getUserAvatarButtonTitle(): Promise<string | null> {
+    return await (await this.getUserAvatarButton()).getAttribute('title')
   }
 
   async clickButton() {
-    await (await this.getButton()).click()
+    await (await this.getUserAvatarButton()).click()
   }
 
   async getUserName() {

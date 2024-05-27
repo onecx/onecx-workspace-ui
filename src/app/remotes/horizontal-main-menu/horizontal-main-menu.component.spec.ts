@@ -114,7 +114,7 @@ describe('OneCXHorizontalMainMenuComponent', () => {
               },
               {
                 key: 'CORE_AH_MGMT',
-                name: 'Announcement & Help',
+                name: 'Announcement and Help',
                 url: '/announcementAndHelpUrl',
                 position: 0,
                 external: false,
@@ -134,7 +134,7 @@ describe('OneCXHorizontalMainMenuComponent', () => {
     const menuItems = await menu.getAllMenuItems()
     expect(menuItems.length).toEqual(2)
 
-    expect(await menuItems[0].getText()).toEqual('Announcement & Help')
+    expect(await menuItems[0].getText()).toEqual('Announcement and Help')
     expect(await menuItems[1].getText()).toEqual('Welcome Page')
   })
 
@@ -160,8 +160,7 @@ describe('OneCXHorizontalMainMenuComponent', () => {
                 position: 1,
                 external: false,
                 i18n: {
-                  en: 'English welcome page',
-                  de: 'German welcome page'
+                  en: 'English welcome page'
                 },
                 children: []
               }
@@ -325,7 +324,7 @@ describe('OneCXHorizontalMainMenuComponent', () => {
               },
               {
                 key: 'CORE_AH_MGMT',
-                name: 'Announcement & Help',
+                name: 'Announcement and Help',
                 url: '',
                 position: 1,
                 external: false,
