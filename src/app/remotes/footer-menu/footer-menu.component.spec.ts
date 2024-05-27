@@ -12,17 +12,6 @@ import { OneCXFooterMenuComponent } from './footer-menu.component'
 import { OneCXFooterMenuHarness } from './footer-menu.harness'
 import { RouterTestingModule } from '@angular/router/testing'
 import { Router, RouterModule } from '@angular/router'
-import { TestElement } from '@angular/cdk/testing'
-
-async function findTestElementWithId(itemArray: TestElement[], itemId: string) {
-  const transformedItemArr = await Promise.all(
-    itemArray.map(async (item) => {
-      const id = await item.getAttribute('id')
-      return id === itemId
-    })
-  )
-  return itemArray.find((_, index) => transformedItemArr[index])
-}
 
 describe('OneCXFooterMenuComponent', () => {
   const menuItemApiSpy = jasmine.createSpyObj<MenuItemAPIService>('MenuItemAPIService', ['getMenuItems'])
@@ -143,13 +132,13 @@ describe('OneCXFooterMenuComponent', () => {
     const menuItems = await oneCXFooterMenuHarness.getMenuItems()
     expect(menuItems.length).toEqual(2)
 
-    const translatedItem = await findTestElementWithId(menuItems, 'footer-FOOTER_CONTACT-router')
+    const translatedItem = await oneCXFooterMenuHarness.getMenuItem('footer-FOOTER_CONTACT-router')
     expect(translatedItem).toBeTruthy()
     expect(await translatedItem?.text()).toEqual('English Contact value')
     await translatedItem?.click()
     expect(router.url).toBe('/contact')
 
-    const nameItem = await findTestElementWithId(menuItems, 'footer-FOOTER_CONTACT_ONLY_NAME-router')
+    const nameItem = await oneCXFooterMenuHarness.getMenuItem('footer-FOOTER_CONTACT_ONLY_NAME-router')
     expect(nameItem).toBeTruthy()
     expect(await nameItem?.text()).toEqual('Contact')
     await nameItem?.click()
