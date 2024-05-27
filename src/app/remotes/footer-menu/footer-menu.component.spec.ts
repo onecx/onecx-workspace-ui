@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing'
+import { TestBed } from '@angular/core/testing'
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
@@ -11,13 +11,28 @@ import { MenuItemAPIService } from 'src/app/shared/generated'
 import { OneCXFooterMenuComponent } from './footer-menu.component'
 import { OneCXFooterMenuHarness } from './footer-menu.harness'
 import { RouterTestingModule } from '@angular/router/testing'
+import { Router, RouterModule } from '@angular/router'
+import { TestElement } from '@angular/cdk/testing'
+
+async function findTestElementWithId(itemArray: TestElement[], itemId: string) {
+  const transformedItemArr = await Promise.all(
+    itemArray.map(async (item) => {
+      const id = await item.getAttribute('id')
+      return id === itemId
+    })
+  )
+  return itemArray.find((_, index) => transformedItemArr[index])
+}
 
 describe('OneCXFooterMenuComponent', () => {
-  let component: OneCXFooterMenuComponent
-  let fixture: ComponentFixture<OneCXFooterMenuComponent>
-  let oneCXFooterMenuHarness: OneCXFooterMenuHarness
-
   const menuItemApiSpy = jasmine.createSpyObj<MenuItemAPIService>('MenuItemAPIService', ['getMenuItems'])
+
+  function setUp() {
+    const fixture = TestBed.createComponent(OneCXFooterMenuComponent)
+    const component = fixture.componentInstance
+    fixture.detectChanges()
+    return { fixture, component }
+  }
 
   let baseUrlSubject: ReplaySubject<any>
   beforeEach(() => {
@@ -27,7 +42,17 @@ describe('OneCXFooterMenuComponent', () => {
       imports: [
         TranslateTestingModule.withTranslations({
           en: require('../../../assets/i18n/en.json')
-        }).withDefaultLanguage('en')
+        }).withDefaultLanguage('en'),
+        RouterTestingModule.withRoutes([
+          {
+            path: 'contact',
+            component: {} as any
+          },
+          {
+            path: 'contact2',
+            component: {} as any
+          }
+        ])
       ],
       providers: [
         provideHttpClient(),
@@ -40,7 +65,7 @@ describe('OneCXFooterMenuComponent', () => {
     })
       .overrideComponent(OneCXFooterMenuComponent, {
         set: {
-          imports: [TranslateTestingModule, CommonModule, RouterTestingModule],
+          imports: [TranslateTestingModule, CommonModule, RouterModule],
           providers: [{ provide: MenuItemAPIService, useValue: menuItemApiSpy }]
         }
       })
@@ -52,17 +77,13 @@ describe('OneCXFooterMenuComponent', () => {
   })
 
   it('should create', () => {
-    fixture = TestBed.createComponent(OneCXFooterMenuComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    const { component } = setUp()
 
     expect(component).toBeTruthy()
   })
 
   it('should init remote component', (done: DoneFn) => {
-    fixture = TestBed.createComponent(OneCXFooterMenuComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    const { component } = setUp()
 
     component.ocxInitRemoteComponent({
       baseUrl: 'base_url'
@@ -106,44 +127,33 @@ describe('OneCXFooterMenuComponent', () => {
                 i18n: {},
                 name: 'Contact',
                 key: 'FOOTER_CONTACT_ONLY_NAME',
-                url: '/contact'
+                url: '/contact2'
               }
             ]
           }
         ]
       } as any)
     )
+    const router = TestBed.inject(Router)
 
-    fixture = TestBed.createComponent(OneCXFooterMenuComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    const { fixture, component } = setUp()
     await component.ngOnInit()
 
-    oneCXFooterMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXFooterMenuHarness)
+    const oneCXFooterMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXFooterMenuHarness)
     const menuItems = await oneCXFooterMenuHarness.getMenuItems()
     expect(menuItems.length).toEqual(2)
 
-    const translatedItemArr = await Promise.all(
-      menuItems.map(async (item) => {
-        const id = await item.getAttribute('id')
-        return id === 'footer-FOOTER_CONTACT-router'
-      })
-    )
-    const translatedItem = menuItems.find((_, index) => translatedItemArr[index])
+    const translatedItem = await findTestElementWithId(menuItems, 'footer-FOOTER_CONTACT-router')
     expect(translatedItem).toBeTruthy()
     expect(await translatedItem?.text()).toEqual('English Contact value')
-    expect(await translatedItem?.getAttribute('ng-reflect-router-link')).toEqual('/contact')
+    await translatedItem?.click()
+    expect(router.url).toBe('/contact')
 
-    const nameItemArr = await Promise.all(
-      menuItems.map(async (item) => {
-        const id = await item.getAttribute('id')
-        return id === 'footer-FOOTER_CONTACT_ONLY_NAME-router'
-      })
-    )
-    const nameItem = menuItems.find((_, index) => nameItemArr[index])
+    const nameItem = await findTestElementWithId(menuItems, 'footer-FOOTER_CONTACT_ONLY_NAME-router')
     expect(nameItem).toBeTruthy()
     expect(await nameItem?.text()).toEqual('Contact')
-    expect(await nameItem?.getAttribute('ng-reflect-router-link')).toEqual('/contact')
+    await nameItem?.click()
+    expect(router.url).toBe('/contact2')
   })
 
   it('should use href for external urls', async () => {
@@ -174,12 +184,10 @@ describe('OneCXFooterMenuComponent', () => {
       } as any)
     )
 
-    fixture = TestBed.createComponent(OneCXFooterMenuComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    const { fixture, component } = setUp()
     await component.ngOnInit()
 
-    oneCXFooterMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXFooterMenuHarness)
+    const oneCXFooterMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXFooterMenuHarness)
     const menuItems = await oneCXFooterMenuHarness.getMenuItems()
     expect(menuItems.length).toEqual(1)
 
