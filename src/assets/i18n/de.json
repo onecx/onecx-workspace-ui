@@ -45,7 +45,9 @@
       "MENU_NOK": "Ein Fehler ist aufgetreten. Der Menüpunkt wurde nicht gelöscht.",
       "ROLE_MESSAGE": "Damit wird die Rolle und deren Zuweisungen (zu Menüpunkten) für den Workspace gelöscht. Ändert nichts im Permission Management.",
       "ROLE_OK": "Die Rolle wurde erfolgreich gelöscht",
-      "ROLE_NOK": "Ein Fehler ist aufgetreten. Die Rolle wurde nicht gelöscht."
+      "ROLE_NOK": "Ein Fehler ist aufgetreten. Die Rolle wurde nicht gelöscht.",
+      "PRODUCTS_MESSAGE": "Die ausgewählten Applikationen und ihre Apps werden für den Arbeitsbereich abgemeldet. Menüelemente, die solche Pfade verwenden, werden nicht berührt, funktionieren aber nicht mehr.",
+      "PRODUCTS_QUESTION": "Möchten Sie die ausgewählten Applikationen abmelden?"
     },
     "EDIT": {
       "LABEL": "Bearbeiten",
@@ -145,14 +147,14 @@
       "INTERN": "Intern",
       "MENU": "Menü",
       "ROLES": "Rollen",
-      "PRODUCTS": "Produkte",
+      "PRODUCTS": "Applikationen",
       "TOOLTIPS": {
         "DETAILS": "Basiseigenschaften des Workspaces",
         "CONTACT": "Kontaktinformationen zum Workspace",
         "INTERN": "Interne Eigenschaften des Workspaces",
         "MENU": "Workspace Menü: Verwalten der Menüstruktur für den Workspace",
         "ROLES": "Workspace Rollen: die für die Benutzung des Workspaces von Bedeutung sind (als Teil aller Rollen des Mandants)",
-        "PRODUCTS": "Registrierte Produkte: Verwalten der für den Workspace registrierten Produkte"
+        "PRODUCTS": "Registrierte Applikationen: Verwalten der für den Workspace registrierten Applikationen"
       }
     },
     "MENU": {}
@@ -212,7 +214,7 @@
     "URL": "URL",
     "URL.EMPTY": "",
     "URL.HTTP": "Webadresse",
-    "URL.UNKNOWN.PRODUCT": "Unbekanntes Produkt",
+    "URL.UNKNOWN.PRODUCT": "Unbekannte Applikation",
     "TOOLTIP": {
       "BADGE": "Icon aus der PrimeNG Bibliothek welches neben dem Menünamen angezeigt werden soll",
       "DESCRIPTION": "Zusatzinformationen",
@@ -303,7 +305,7 @@
         "I18N.TOOLTIP": "Indikator ob Übersetzungen vorhanden sind",
         "I18N.ROW.TOOLTIP": "Mindestens eine Übersetzung ist vorhanden",
         "URL.TOOLTIP": "Die URL die beim Aktivieren aufgerufen wird",
-        "PRODUCT.TOOLTIP": "Indikator ob die Menü-URL durch ein registriertes Produkt angeboten wird",
+        "PRODUCT.TOOLTIP": "Indikator ob die Menü-URL durch eine registrierte Applikation angeboten wird",
         "EXTERN.TOOLTIP": "Wenn diese Option aktiviert ist, wird der Workspace verlassen"
       },
       "ASSIGNMENT": {
@@ -330,37 +332,38 @@
       }
     },
     "PRODUCTS": {
-      "PS_PRODUCTS": "Produkt Store",
-      "PS_PRODUCTS.TOOLTIP": "Liste der verfügbaren Produkte aus dem Product Sstore, die noch nicht registriert wurden",
-      "W_PRODUCTS": "Registrierte Produkte",
-      "W_PRODUCTS.TOOLTIP": "Liste der registrierten Produkte",
-      "REGISTER_ONE": "Produkt registriert",
-      "REGISTER_ALL": "Alle markierte Produkt registriert",
-      "DETAILS": "Produktdetails",
+      "PS_PRODUCTS": "Application Store",
+      "PS_PRODUCTS.TOOLTIP": "Liste der verfügbaren Applikationen aus dem Application Sstore, die noch nicht registriert wurden",
+      "W_PRODUCTS": "Registrierte Applikationen",
+      "W_PRODUCTS.TOOLTIP": "Liste der registrierten Applikationen",
+      "DEREGISTER": "Applikationen deregistrieren",
+      "REGISTER_ONE": "Applikation registriert",
+      "REGISTER_ALL": "Alle markierte Applikationen registriert",
+      "DETAILS": "Applikationsdetails",
       "ORIGIN": "Herkunft",
       "ORIGIN.TARGET": "Workspace",
-      "ORIGIN.SOURCE": "Product Store",
-      "UNDEPLOYED": "Dieses Produkt ist nicht länger nutzbar. Eine weitere Benutzung führt zu Fehlermeldungen.",
-      "CHANGED_MFE": "Es gibt wichtige Änderungen in den Microfrontends.",
+      "ORIGIN.SOURCE": "Application Store",
+      "UNDEPLOYED": "Diese Applikation ist nicht länger nutzbar. Eine weitere Benutzung führt zu Fehlermeldungen.",
+      "CHANGED_MFE": "Es gibt wichtige Änderungen in der Applikation.",
       "MFES": {
         "DEPRECATED": "Veraltet",
         "UNDEPLOYED": "Unverfügbar"
       },
       "MESSAGES": {
-        "NOTHING_REGISTERED": "Kein Produkt registriert",
-        "LOAD_ERROR": "Das Laden des Produkts ist fehlgeschlagen",
-        "DOES_NOT_EXIST": "Das verknüpfte Produkt existiert nicht",
+        "NOTHING_REGISTERED": "Keine Applikation registriert",
+        "LOAD_ERROR": "Das Laden der Applikation ist fehlgeschlagen",
+        "DOES_NOT_EXIST": "Die verknüpfte Applikation existiert nicht",
         "ALREADY_EXISTS": "Der Pfad wird bereits verwendet",
-        "UPDATE_OK": "Das Produkt wurde erfolgreich geändert",
-        "UPDATE_NOK": "Bei der Änderung des Produkts ist ein Fehler aufgetreten",
-        "REGISTRATION_OK": "Das Produkt wurde erfolgreich registriert",
-        "REGISTRATION_NOK": "Bei der Registrierung des Produkts ist ein Fehler aufgetreten",
-        "REGISTRATIONS_OK": "Die Produkte wurden erfolgreich registriert",
-        "REGISTRATIONS_NOK": "Bei der Registrierung von Produkten ist ein Fehler aufgetreten",
-        "DEREGISTRATION_OK": "Das Produkt wurde erfolgreich abgemeldet",
-        "DEREGISTRATION_NOK": "Bei der Abmeldung des Produkts ist ein Fehler aufgetreten",
-        "DEREGISTRATIONS_OK": "Die Produkte wurden erfolgreich abgemeldet",
-        "DEREGISTRATIONS_NOK": "Bei der Abmeldung von Produkten ist ein Fehler aufgetreten"
+        "UPDATE_OK": "Die Applikation wurde erfolgreich geändert",
+        "UPDATE_NOK": "Bei der Änderung der Applikation ist ein Fehler aufgetreten",
+        "REGISTRATION_OK": "Die Applikation wurde erfolgreich registriert",
+        "REGISTRATION_NOK": "Bei der Registrierung der Applikation ist ein Fehler aufgetreten",
+        "REGISTRATIONS_OK": "Die Applikationen wurden erfolgreich registriert",
+        "REGISTRATIONS_NOK": "Bei der Registrierung von Applikationen ist ein Fehler aufgetreten",
+        "DEREGISTRATION_OK": "Die Applikation wurde erfolgreich abgemeldet",
+        "DEREGISTRATION_NOK": "Bei der Abmeldung der Applikation ist ein Fehler aufgetreten",
+        "DEREGISTRATIONS_OK": "Die Applikationen wurden erfolgreich abgemeldet",
+        "DEREGISTRATIONS_NOK": "Bei der Abmeldung von Applikationen ist ein Fehler aufgetreten"
       }
     },
     "DATAVIEW": {
@@ -378,16 +381,16 @@
     }
   },
   "PRODUCT": {
-    "DISPLAY_NAME": "Produkt",
-    "DISPLAY_NAME.TOOLTIP": "Name des Produkts",
+    "DISPLAY_NAME": "Applikation",
+    "DISPLAY_NAME.TOOLTIP": "Name der Applikation",
     "DESCRIPTION": "Description",
     "BASE_URL": "Base URL",
-    "BASE_URL.TOOLTIP": "Vorgeschlagener Pfad für den Zugriff auf Produktmodule. Im Produkt Store definiert.",
+    "BASE_URL.TOOLTIP": "Basispfad für alle Apps der Applikation. Muss eindeutig sein für alle Applikationen im Workspace.",
     "MFE": {
       "APP_ID": "UI Service ID",
       "APP_ID.TOOLTIP": "Eindeutige ID des spezifischen UI-Dienstes, der verwendet werden soll.",
       "BASE_PATH": "Base Path",
-      "BASE_PATH.TOOLTIP": "Am Base-Pfad des Workspaces angehängter Pfad, für den Zugriff auf das Produktmodul."
+      "BASE_PATH.TOOLTIP": "Am Basispfad der Applikation angehängter Pfad, für den Zugriff auf die App."
     }
   },
   "WORKSPACE_EXPORT": {
@@ -485,25 +488,25 @@
     "HTTP_STATUS_0": {
       "WORKSPACE": "Unbekanntes Problem beim Abrufen von Workspace Details - Bitte versuchen sie es noch einmal.",
       "WORKSPACES": "Unbekanntes Problem beim Abrufen von Workspace-Daten - Bitte versuchen sie es noch einmal.",
-      "PRODUCTS": "Unbekanntes Problem beim Abrufen von Produkt-Daten - Bitte versuchen sie es noch einmal.",
+      "PRODUCTS": "Unbekanntes Problem beim Abrufen von Applikation-Daten - Bitte versuchen sie es noch einmal.",
       "MENUS": "Unbekanntes Problem beim Abrufen von Menü-Daten - Bitte versuchen sie es noch einmal."
     },
     "HTTP_STATUS_403": {
       "WORKSPACE": "Sie haben keine Rechte um Workspace Details zu sehen.",
       "WORKSPACES": "Sie haben keine Rechte um Workspaces zu sehen.",
-      "PRODUCTS": "Sie haben keine Rechte um Produkte zu sehen.",
+      "PRODUCTS": "Sie haben keine Rechte um Applikationen zu sehen.",
       "MENUS": "Sie haben keine Rechte um Menüs zu sehen."
     },
     "HTTP_STATUS_404": {
       "WORKSPACE": "Der Workspace wurde nicht gefunden.",
       "WORKSPACES": "Es konnten keine Workspaces gefunden werden.",
-      "PRODUCTS": "Es konnten keine Produkte geladen werden.",
+      "PRODUCTS": "Es konnten keine Applikationen geladen werden.",
       "MENUS": "Es konnten keine Menüs gefunden werden."
     },
     "HTTP_STATUS_500": {
       "WORKSPACE": "Unbekanntes Server-Problem beim Abrufen von Workspace-Details - Bitte versuchen sie es noch einmal.",
       "WORKSPACES": "Unbekanntes Server-Problem beim Abrufen von Workspace-Daten - Bitte versuchen sie es noch einmal.",
-      "PRODUCTS": "Unbekanntes Server-Problem beim Abrufen von Produktdaten - Bitte versuchen sie es noch einmal.",
+      "PRODUCTS": "Unbekanntes Server-Problem beim Abrufen von Applikation-Daten - Bitte versuchen sie es noch einmal.",
       "MENUS": "Unbekanntes Server-Problem beim Abrufen von Menü-Daten - Bitte versuchen sie es noch einmal."
     }
   }

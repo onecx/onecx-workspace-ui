@@ -1,6 +1,6 @@
 @import 'src/_mixins.scss';
 
-@include danger-action;
+@include make-disabled-form-readable-input;
 @include prepare-inputgroup;
 @include picklist-zebra-rows;
 @include card-badges;

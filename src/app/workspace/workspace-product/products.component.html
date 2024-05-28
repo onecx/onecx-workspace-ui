@@ -133,7 +133,7 @@
               [title]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
             ></span>
             <span
-              *ngIf="!product?.undeployed && product?.changedMfe"
+              *ngIf="!product?.undeployed && product?.changedComponents"
               [id]="'workspace_detail_product_picklist_' + product.productName + '_changed_mfe'"
               class="card-badge-right badge-1 tile-view-optional danger-action-text font-bold text-xl pi pi-exclamation-circle"
               [title]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
@@ -147,7 +147,7 @@
             <div class="flex flex-column row-gap-1">
               <div
                 class="tile-view-mandatory font-semibold text-sm lg:text-md"
-                [class.danger-action-text]="product?.undeployed || product?.changedMfe"
+                [class.danger-action-text]="product?.undeployed || product?.changedComponents"
               >
                 {{ product.displayName }}
               </div>
@@ -188,7 +188,7 @@
             [title]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
           ></span>
           <span
-            *ngIf="!displayedDetailItem?.undeployed && displayedDetailItem?.changedMfe"
+            *ngIf="!displayedDetailItem?.undeployed && displayedDetailItem?.changedComponents"
             id="workspace_detail_product_item_header_changed_mfe"
             class="p-2 danger-action-text font-bold text-xl pi pi-exclamation-circle"
             [title]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
@@ -361,3 +361,49 @@
     </p-panel>
   </div>
 </div>
+
+<p-confirmDialog></p-confirmDialog>
+<p-dialog
+  [(visible)]="displayDeregisterConfirmation"
+  [header]="'DIALOG.PRODUCTS.DEREGISTER' | translate"
+  (onHide)="onDeregisterCancellation()"
+  [modal]="true"
+  [closable]="true"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [style]="{ 'max-width': '425px' }"
+>
+  <div class="mb-3 flex column-gap-3 row-gap-1 justify-content-start align-items-center">
+    <div class="pi pi-question-circle text-3xl danger-action-text"></div>
+    <div>
+      <div class="font-bold">{{ 'ACTIONS.DELETE.PRODUCTS_QUESTION' | translate }}</div>
+      <div class="mt-2">{{ 'ACTIONS.DELETE.PRODUCTS_MESSAGE' | translate }}</div>
+      <div class="mt-1">{{ 'ACTIONS.DELETE.MESSAGE_INFO' | translate }}</div>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
+      <button
+        pButton
+        autofocus
+        type="button"
+        class="m-0"
+        id="workspace_detail_product_deregister_button_no"
+        icon="pi pi-times"
+        iconPos="left"
+        [label]="'ACTIONS.CONFIRMATION.NO' | translate"
+        (click)="onDeregisterCancellation()"
+      ></button>
+      <button
+        pButton
+        type="button"
+        class="m-0"
+        id="workspace_detail_product_deregister_button_yes"
+        icon="pi pi-check"
+        iconPos="left"
+        [label]="'ACTIONS.CONFIRMATION.YES' | translate"
+        (click)="onDeregisterConfirmation()"
+      ></button>
+    </div>
+  </ng-template>
+</p-dialog>
