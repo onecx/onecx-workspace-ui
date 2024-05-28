@@ -59,8 +59,13 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     })
   }
 
-  public ngOnInit(): void {
+  public ngOnChanges(): void {
     if (this.workspace) {
+      this.setFormData()
+      if (this.editMode) this.formGroup.enable()
+      else this.formGroup.disable()
+      this.oldWorkspaceName = this.workspace.name
+      if (this.workspace.name === 'ADMIN') this.formGroup.controls['name'].disable()
       this.themes$ = this.workspaceApi.getAllThemes().pipe(
         map((val: any[]) => {
           if (val.length === 0) {
@@ -74,16 +79,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
           }
         })
       )
-    }
-  }
-
-  public ngOnChanges(): void {
-    if (this.workspace) {
-      this.setFormData()
-      if (this.editMode) this.formGroup.enable()
-      else this.formGroup.disable()
-      this.oldWorkspaceName = this.workspace.name
-      if (this.workspace.name === 'ADMIN') this.formGroup.controls['name'].disable()
     } else {
       this.formGroup.reset()
       this.formGroup.disable()
