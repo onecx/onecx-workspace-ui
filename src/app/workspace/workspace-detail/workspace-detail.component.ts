@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core'
+import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core'
 import { Location } from '@angular/common'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
@@ -24,7 +24,7 @@ import { WorkspaceContactComponent } from './workspace-contact/workspace-contact
   templateUrl: './workspace-detail.component.html',
   styleUrls: ['./workspace-detail.component.scss']
 })
-export class WorkspaceDetailComponent implements OnInit {
+export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
   @ViewChild(WorkspacePropsComponent, { static: false }) workspacePropsComponent!: WorkspacePropsComponent
   @ViewChild(WorkspaceContactComponent, { static: false }) workspaceContactComponent!: WorkspaceContactComponent
 
@@ -54,13 +54,18 @@ export class WorkspaceDetailComponent implements OnInit {
     private translate: TranslateService,
     private msgService: PortalMessageService,
     private workspaceApi: WorkspaceAPIService,
-    private imageApi: ImagesInternalAPIService
+    private imageApi: ImagesInternalAPIService,
+    private cd: ChangeDetectorRef
   ) {
     this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm' : 'medium'
   }
 
   ngOnInit() {
     this.getWorkspace()
+  }
+
+  ngAfterViewInit() {
+    this.cd.detectChanges()
   }
 
   // prepare Observable - trigger request in HTML with async

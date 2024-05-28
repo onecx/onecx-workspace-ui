@@ -6,12 +6,72 @@ import {
   setFetchUrls,
   copyToClipboard,
   forceFormValidation,
-  dropDownSortItemsByLabel,
   dropDownGetLabelByValue,
+  prepareUrl,
+  prepareUrlPath,
+  bffImageUrl,
+  bffProductImageUrl,
+  filterObject,
+  filterObjectTree,
+  cloneWorkspaceWithMicrofrontendsArray,
   sortByLocale
 } from './utils'
+import { RefType, Workspace } from './generated'
 
 describe('util functions', () => {
+  describe('cloneWorkspaceWithMicrofrontendsArray', () => {
+    it('should test with empty workspace', () => {
+      const updatedPortal: Workspace = {
+        name: ''
+      }
+      expect(cloneWorkspaceWithMicrofrontendsArray(updatedPortal)).toEqual(updatedPortal)
+    })
+
+    it('should test with empty workspace', () => {
+      const updatedPortal: Workspace = {
+        id: 'testId',
+        name: 'testName',
+        phoneNumber: 'string',
+        rssFeedUrl: 'string',
+        footerLabel: 'string',
+        logoUrl: 'string'
+      }
+      expect(cloneWorkspaceWithMicrofrontendsArray(updatedPortal)).toEqual(updatedPortal)
+    })
+  })
+
+  describe('sortByLocale', () => {
+    it('should return 0 when both strings are identical', () => {
+      const result = sortByLocale('apple', 'apple')
+      expect(result).toBe(0)
+    })
+
+    it('should correctly sort strings ignoring case', () => {
+      expect(sortByLocale('apple', 'Banana')).toBeLessThan(0)
+      expect(sortByLocale('Banana', 'apple')).toBeGreaterThan(0)
+    })
+
+    it('should correctly sort strings with different cases', () => {
+      expect(sortByLocale('Apple', 'apple')).toBe(0)
+      expect(sortByLocale('apple', 'Apple')).toBe(0)
+    })
+
+    it('should correctly sort strings with special characters', () => {
+      expect(sortByLocale('café', 'Cafe')).toBeGreaterThan(0)
+      expect(sortByLocale('Cafe', 'café')).toBeLessThan(0)
+    })
+
+    it('should correctly sort strings with different alphabets', () => {
+      expect(sortByLocale('äpple', 'banana')).toBeLessThan(0)
+      expect(sortByLocale('banana', 'äpple')).toBeGreaterThan(0)
+    })
+
+    it('should correctly sort strings with numbers', () => {
+      expect(sortByLocale('apple1', 'apple2')).toBeLessThan(0)
+      expect(sortByLocale('apple2', 'apple1')).toBeGreaterThan(0)
+    })
+  })
+
   describe('limitText', () => {
     it('should truncate text that exceeds the specified limit', () => {
       const result = limitText('hello', 4)
@@ -75,19 +135,6 @@ describe('util functions', () => {
     })
   })
 
-  describe('dropDownSortItemsByLabel', () => {
-    it('should correctly sort items by label', () => {
-      const items: SelectItem[] = [
-        { label: 'label2', value: 2 },
-        { label: 'label1', value: 1 }
-      ]
-
-      const sortedItems = items.sort(dropDownSortItemsByLabel)
-
-      expect(sortedItems[0].label).toEqual('label1')
-    })
-  })
-
   describe('dropDownGetLabelByValue', () => {
     it('should return the label corresponding to the value', () => {
       const items: SelectItem[] = [
@@ -101,13 +148,162 @@ describe('util functions', () => {
     })
   })
 
-  describe('sortByLocale', () => {
-    it('should sort strings based on locale', () => {
-      const strings: string[] = ['str2', 'str1']
+  describe('filterObject', () => {
+    it('should return an empty object when input object is empty', () => {
+      const result = filterObject({}, [])
+      expect(result).toEqual({})
+    })
 
-      const sortedStrings = strings.sort(sortByLocale)
+    it('should return the same object when no properties are excluded', () => {
+      const input = { a: 1, b: 2, c: 3 }
+      const result = filterObject(input, [])
+      expect(result).toEqual(input)
+    })
 
-      expect(sortedStrings[0]).toEqual('str1')
+    it('should exclude specified properties from the object', () => {
+      const input = { a: 1, b: 2, c: 3 }
+      const exProps = ['b']
+      const expected = { a: 1, c: 3 }
+      const result = filterObject(input, exProps)
+      expect(result).toEqual(expected)
+    })
+  })
+
+  describe('filterObjectTree', () => {
+    it('should return an empty object when input object is empty', () => {
+      const result = filterObjectTree({}, [], 'children')
+      expect(result).toEqual({})
+    })
+
+    it('should return the same object when no properties are excluded and there are no children', () => {
+      const input = { a: 1, b: 2, c: 3 }
+      const result = filterObjectTree(input, [], 'children')
+      expect(result).toEqual(input)
+    })
+
+    it('should exclude specified properties from the object', () => {
+      const input = { a: 1, b: 2, c: 3 }
+      const exProps = ['b']
+      const expected = { a: 1, c: 3 }
+      const result = filterObjectTree(input, exProps, 'children')
+      expect(result).toEqual(expected)
+    })
+
+    it('should exclude specified properties from nested objects', () => {
+      const input = {
+        a: 1,
+        b: 2,
+        c: 3,
+        children: [
+          { a: 1, b: 2 },
+          { a: 2, c: 3 }
+        ]
+      }
+      const exProps = ['b']
+      const expected = { a: 1, c: 3, children: [{ a: 1 }, { a: 2, c: 3 }] }
+      const result = filterObjectTree(input, exProps, 'children')
+      expect(result).toEqual(expected)
+    })
+
+    it('should handle multiple levels of nesting', () => {
+      const input = {
+        a: 1,
+        b: 2,
+        c: 3,
+        children: [
+          { a: 1, b: 2, children: [{ a: 1, b: 2 }] },
+          { a: 2, c: 3, children: [{ a: 2, c: 3 }] }
+        ]
+      }
+      const exProps = ['b']
+      const expected = {
+        a: 1,
+        c: 3,
+        children: [
+          { a: 1, children: [{ a: 1 }] },
+          { a: 2, c: 3, children: [{ a: 2, c: 3 }] }
+        ]
+      }
+      const result = filterObjectTree(input, exProps, 'children')
+      expect(result).toEqual(expected)
+    })
+  })
+
+  describe('prepareUrl', () => {
+    it('should return the URL unchanged if it starts with http', () => {
+      const url = 'http://example.com/endpoint'
+      const result = prepareUrl(url)
+
+      expect(result).toBe(url)
+    })
+
+    it('should return the URL unchanged if it starts with https', () => {
+      const url = 'https://example.com/endpoint'
+      const result = prepareUrl(url)
+
+      expect(result).toBe(url)
+    })
+
+    it('should return undefined if the URL is undefined', () => {
+      const result = prepareUrl(undefined)
+
+      expect(result).toBeUndefined()
+    })
+
+    it('should return URL if the URL is undefined', () => {
+      const result = prepareUrl(undefined)
+
+      expect(result).toBeUndefined()
+    })
+
+    it('should return the URL unchanged if it does not start with http', () => {
+      const url = 'example.com/endpoint'
+      const result = prepareUrl(url)
+      expect(result).toBe('bff/example.com/endpoint')
+    })
+  })
+
+  describe('prepareUrlPath', () => {
+    it('should join URL and path if both are provided', () => {
+      const url = 'http://example.com'
+      const path = 'path'
+      const result = prepareUrlPath(url, path)
+      expect(result).toBe(`${url}/${path}`)
+    })
+
+    it('should return the URL if only URL is provided', () => {
+      const url = 'http://example.com'
+      const result = prepareUrlPath(url)
+      expect(result).toBe(url)
+    })
+
+    it('should return an empty string if neither URL nor path is provided', () => {
+      const result = prepareUrlPath()
+      expect(result).toBe('')
+    })
+  })
+
+  describe('bffImageUrl', () => {
+    it('should return an empty string if name is not provided', () => {
+      const result = bffImageUrl('http://example.com', undefined, 'refTypeTest' as RefType)
+      expect(result).toBe('')
+    })
+
+    it('should construct the correct image URL if basePath and name are provided', () => {
+      const result = bffImageUrl('http://example.com', 'imageName', 'refTypeTest' as RefType)
+      expect(result).toBe('http://example.com/images/imageName/refTypeTest')
+    })
+  })
+
+  describe('bffProductImageUrl', () => {
+    it('should return an empty string if name is not provided', () => {
+      const result = bffProductImageUrl('http://example.com', undefined)
+      expect(result).toBe('')
+    })
+
+    it('should construct the correct product image URL if basePath and name are provided', () => {
+      const result = bffProductImageUrl('http://example.com', 'productName')
+      expect(result).toBe('http://example.com/images/product/productName')
     })
   })
 })

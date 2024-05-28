@@ -24,12 +24,22 @@ const snapshot: WorkspaceSnapshot = {
             }
           ]
         }
-      }
+      },
+      products: [
+        {
+          productName: 'productTestName'
+        }
+      ],
+      roles: [
+        {
+          name: 'roleTestName'
+        }
+      ]
     }
   }
 }
 
-xdescribe('PreviewComponent', () => {
+describe('PreviewComponent', () => {
   let component: PreviewComponent
   let fixture: ComponentFixture<PreviewComponent>
 
@@ -114,22 +124,29 @@ xdescribe('PreviewComponent', () => {
     )
   })
 
+  it('should set workspaceName correctly', () => {
+    component.hasPermission = true
+    component.formGroup.controls['workspaceName'].setValue('workspace')
+
+    component.onModelChange()
+    expect(component.workspaceName).toEqual('workspace')
+  })
+
   it('should change values onModelChange', () => {
     component.hasPermission = true
-    component.formGroup.controls['workspaceName'].setValue('new name')
+    component.formGroup.controls['workspaceName'].setValue('newName')
     component.formGroup.controls['theme'].setValue('new theme')
 
     component.onModelChange()
-
-    expect(component.workspaceName).toEqual(component.importRequestDTO?.workspaces?.['workspace'].name!)
-    expect(component.workspaceName).toEqual(component.importRequestDTO?.workspaces?.['workspace'].theme!)
-    expect(component.themeName).toEqual('theme')
+    expect(component.themeName).toEqual('new theme')
+    expect(component.workspaceName).toEqual(component.importRequestDTO?.workspaces?.['newName'].name!)
+    expect(component.themeName).toEqual(component.importRequestDTO?.workspaces?.['newName'].theme!)
   })
 
   it('should map menuItems to tree nodes: standard case', () => {
     component.ngOnInit()
 
-    if (component.importRequestDTO?.workspaces?.['workspace'].menu?.menu?.menuItems) {
+    if (component.importRequestDTO?.workspaces?.['newName'].menu?.menu?.menuItems) {
       expect(component.menuItems).toContain({
         label: 'name',
         expanded: false,
@@ -147,16 +164,16 @@ xdescribe('PreviewComponent', () => {
     if (!component.importRequestDTO.workspaces) {
       component.importRequestDTO.workspaces = {}
     }
-    if (!component.importRequestDTO.workspaces['workspace']) {
-      component.importRequestDTO.workspaces['workspace'] = {}
+    if (!component.importRequestDTO.workspaces['newName']) {
+      component.importRequestDTO.workspaces['newName'] = {}
     }
-    if (!component.importRequestDTO.workspaces['workspace'].menu) {
-      component.importRequestDTO.workspaces['workspace'].menu = {}
+    if (!component.importRequestDTO.workspaces['newName'].menu) {
+      component.importRequestDTO.workspaces['newName'].menu = {}
     }
-    if (!component.importRequestDTO.workspaces['workspace'].menu.menu) {
-      component.importRequestDTO.workspaces['workspace'].menu.menu = {}
+    if (!component.importRequestDTO.workspaces['newName'].menu.menu) {
+      component.importRequestDTO.workspaces['newName'].menu.menu = {}
     }
-    component.importRequestDTO.workspaces['workspace'].menu.menu.menuItems = undefined
+    component.importRequestDTO.workspaces['newName'].menu.menu.menuItems = undefined
 
     component.ngOnInit()
 
@@ -170,16 +187,16 @@ xdescribe('PreviewComponent', () => {
     if (!component.importRequestDTO.workspaces) {
       component.importRequestDTO.workspaces = {}
     }
-    if (!component.importRequestDTO.workspaces['workspace']) {
-      component.importRequestDTO.workspaces['workspace'] = {}
+    if (!component.importRequestDTO.workspaces['newName']) {
+      component.importRequestDTO.workspaces['newName'] = {}
     }
-    if (!component.importRequestDTO.workspaces['workspace'].menu) {
-      component.importRequestDTO.workspaces['workspace'].menu = {}
+    if (!component.importRequestDTO.workspaces['newName'].menu) {
+      component.importRequestDTO.workspaces['newName'].menu = {}
     }
-    if (!component.importRequestDTO.workspaces['workspace'].menu.menu) {
-      component.importRequestDTO.workspaces['workspace'].menu.menu = {}
+    if (!component.importRequestDTO.workspaces['newName'].menu.menu) {
+      component.importRequestDTO.workspaces['newName'].menu.menu = {}
     }
-    component.importRequestDTO.workspaces['workspace'].menu.menu.menuItems = [
+    component.importRequestDTO.workspaces['newName'].menu.menu.menuItems = [
       {
         name: 'menu',
         key: 'key',
@@ -192,7 +209,7 @@ xdescribe('PreviewComponent', () => {
 
     component.ngOnInit()
 
-    if (component.importRequestDTO?.workspaces?.['workspace'].menu?.menu?.menuItems) {
+    if (component.importRequestDTO?.workspaces?.['newName'].menu?.menu?.menuItems) {
       expect(component.menuItems).toContain({
         label: 'menu',
         expanded: false,

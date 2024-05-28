@@ -1,22 +1,23 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-// import { HttpClient } from '@angular/common/http'
+import { HttpClient } from '@angular/common/http'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
-// import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { of } from 'rxjs'
 
-import { WorkspaceAPIService } from 'src/app/shared/generated'
+import { WorkspaceAPIService, WorkspaceAbstract } from 'src/app/shared/generated'
 import { ConfirmComponent } from './confirm.component'
+import { AppStateService } from '@onecx/angular-integration-interface'
+import { createTranslateLoader } from '@onecx/angular-accelerator'
 
-const workspace = {
-  workspaceName: 'name',
-  workspaceRoles: ['role'],
-  themeName: 'theme',
+const workspace: WorkspaceAbstract = {
+  theme: 'theme',
   baseUrl: 'url',
-  tenantId: 'id'
+  description: 'descr',
+  name: 'name'
 }
 
-xdescribe('ConfirmComponent', () => {
+describe('ConfirmComponent', () => {
   let component: ConfirmComponent
   let fixture: ComponentFixture<ConfirmComponent>
 
@@ -28,14 +29,14 @@ xdescribe('ConfirmComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ConfirmComponent],
       imports: [
-        HttpClientTestingModule
-        // TranslateModule.forRoot({
-        //   loader: {
-        //     provide: TranslateLoader,
-        //     useFactory: HttpLoaderFactory,
-        //     deps: [HttpClient]
-        //   }
-        // })
+        HttpClientTestingModule,
+        TranslateModule.forRoot({
+          loader: {
+            provide: TranslateLoader,
+            useFactory: createTranslateLoader,
+            deps: [HttpClient, AppStateService]
+          }
+        })
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [{ provide: WorkspaceAPIService, useValue: apiServiceSpy }]
@@ -66,7 +67,8 @@ xdescribe('ConfirmComponent', () => {
   })
 
   it('should set workspaceNameExists to true in checkWorkspaceUniqueness onInit if no permission', () => {
-    apiServiceSpy.searchWorkspaces.and.returnValue(of([workspace]))
+    apiServiceSpy.searchWorkspaces.and.returnValue(of({ stream: [workspace] }))
+
     component.hasPermission = false
     component.workspaceName = 'name'
 
@@ -76,7 +78,7 @@ xdescribe('ConfirmComponent', () => {
   })
 
   it('should set baseUrlExists to true in checkWorkspaceUniqueness onInit', () => {
-    apiServiceSpy.searchWorkspaces.and.returnValue(of([workspace]))
+    apiServiceSpy.searchWorkspaces.and.returnValue(of({ stream: [workspace] }))
     component.baseUrl = 'url'
     component.baseUrlIsMissing = false
 

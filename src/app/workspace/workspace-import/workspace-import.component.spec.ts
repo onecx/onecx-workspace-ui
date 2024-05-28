@@ -1,7 +1,7 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { HttpClient } from '@angular/common/http'
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing'
+import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { Router } from '@angular/router'
 import { ActivatedRoute } from '@angular/router'
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
@@ -13,7 +13,7 @@ import {
   createTranslateLoader,
   PortalMessageService
 } from '@onecx/portal-integration-angular'
-import { WorkspaceAPIService, WorkspaceSnapshot } from 'src/app/shared/generated'
+import { ImportResponseStatus, WorkspaceAPIService, WorkspaceSnapshot } from 'src/app/shared/generated'
 
 import { WorkspaceImportComponent } from './workspace-import.component'
 import { ConfirmComponent } from './confirm/confirm.component'
@@ -40,10 +40,9 @@ class MockPreviewComponent {
   public baseUrl = 'base url'
 }
 
-xdescribe('WorkspaceImportComponent', () => {
+describe('WorkspaceImportComponent', () => {
   let component: WorkspaceImportComponent
   let fixture: ComponentFixture<WorkspaceImportComponent>
-  let httpTestingController: HttpTestingController
   let mockActivatedRoute: ActivatedRoute
   let mockRouter = new MockRouter()
   const mockAuthService = jasmine.createSpyObj('IAuthService', ['hasPermission'])
@@ -86,7 +85,6 @@ xdescribe('WorkspaceImportComponent', () => {
     fixture = TestBed.createComponent(WorkspaceImportComponent)
     component = fixture.componentInstance
     fixture.detectChanges()
-    httpTestingController = TestBed.inject(HttpTestingController)
   })
 
   it('should create', () => {
@@ -130,7 +128,17 @@ xdescribe('WorkspaceImportComponent', () => {
   })
 
   it('should import a portal', () => {
-    apiServiceSpy.importWorkspaces.and.returnValue(of({}))
+    const response = {
+      id: 'testString1',
+      workspaces: {
+        Updated: ImportResponseStatus.Updated
+      },
+      menus: {
+        Updated: ImportResponseStatus.Updated
+      }
+    }
+
+    apiServiceSpy.importWorkspaces.and.returnValue(of(response))
     const workspaceSnap = {
       workspaces: {
         workspace: {
@@ -149,39 +157,22 @@ xdescribe('WorkspaceImportComponent', () => {
 
     expect(component.isLoading).toBeFalse()
     expect(msgServiceSpy.success).toHaveBeenCalledWith({
-      summaryKey: 'WORKSPACE_IMPORT.WORKSPACE_IMPORT_CREATE_SUCCESS'
+      summaryKey: 'WORKSPACE_IMPORT.RESPONSE.UPDATED'
     })
   })
 
-  xit('should import a portal with theme if checkbox enabled', () => {
-    apiServiceSpy.importWorkspaces.and.returnValue(of({}))
-    const workspaceSnap = {
+  it('should update a portal', () => {
+    const response = {
+      id: 'testString1',
       workspaces: {
-        workspace: {
-          name: 'name'
-        }
+        Updated: ImportResponseStatus.Updated
+      },
+      menus: {
+        Updated: ImportResponseStatus.Updated
       }
     }
-    component.importRequestDTO = workspaceSnap
-    component.hasPermission = true
-    component.confirmComponent = new MockConfirmComponent() as unknown as ConfirmComponent
-    if (component.confirmComponent) {
-      component.confirmComponent.workspaceNameExists = false
-    }
-    component.themeName = 'new name'
 
-    component.importWorkspace()
-
-    const req = httpTestingController.expectOne(`http://localhost/v1/importWorkspaces`)
-    expect(req.request.method).toEqual('POST')
-    req.flush({})
-
-    // expect(component.importRequestDTO.portal.themeName).toEqual('new name')
-    // expect(component.importRequestDTO.themeImportData?.name).toEqual('new name')
-  })
-
-  it('should update a portal', () => {
-    apiServiceSpy.importWorkspaces.and.returnValue(of({}))
+    apiServiceSpy.importWorkspaces.and.returnValue(of(response))
     const workspaceSnap = {
       workspaces: {
         workspace: {
@@ -199,12 +190,22 @@ xdescribe('WorkspaceImportComponent', () => {
     component.importWorkspace()
 
     expect(msgServiceSpy.success).toHaveBeenCalledWith({
-      summaryKey: 'WORKSPACE_IMPORT.WORKSPACE_IMPORT_UPDATE_SUCCESS'
+      summaryKey: 'WORKSPACE_IMPORT.RESPONSE.UPDATED'
     })
   })
 
   it('should update a portal with new base url', () => {
-    apiServiceSpy.importWorkspaces.and.returnValue(of({}))
+    const response = {
+      id: 'testString1',
+      workspaces: {
+        Updated: ImportResponseStatus.Updated
+      },
+      menus: {
+        Updated: ImportResponseStatus.Updated
+      }
+    }
+
+    apiServiceSpy.importWorkspaces.and.returnValue(of(response))
     const workspaceSnap = {
       workspaces: {
         workspace: {
@@ -234,7 +235,7 @@ xdescribe('WorkspaceImportComponent', () => {
     component.importWorkspace()
 
     expect(msgServiceSpy.success).toHaveBeenCalledWith({
-      summaryKey: 'WORKSPACE_IMPORT.WORKSPACE_IMPORT_UPDATE_SUCCESS'
+      summaryKey: 'WORKSPACE_IMPORT.RESPONSE.UPDATED'
     })
   })
 
@@ -252,36 +253,53 @@ xdescribe('WorkspaceImportComponent', () => {
 
     component.importWorkspace()
 
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'WORKSPACE_IMPORT.WORKSPACE_IMPORT_ERROR' })
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'WORKSPACE_IMPORT.IMPORT_NOK' })
   })
 
-  it('should set importRequestDTO on next when activeIndex is 0 (upload), and themeImportData valid', () => {
-    const workspaceSnap: WorkspaceSnapshot = {
-      workspaces: {
-        workspace: {
-          name: 'name',
-          baseUrl: 'url'
+  describe('next', () => {
+    it('should set importRequestDTO on next when activeIndex is 0 (upload), and themeImportData valid', () => {
+      const workspaceSnap: WorkspaceSnapshot = {
+        workspaces: {
+          workspace: {
+            name: 'name',
+            baseUrl: 'url'
+          }
         }
       }
-    }
-    component.importRequestDTO = workspaceSnap
-    component.activeIndex = 0
+      component.importRequestDTO = workspaceSnap
+      component.activeIndex = 0
 
-    component.next(workspaceSnap)
+      component.next(workspaceSnap)
 
-    expect(component.baseUrlOrg).toEqual('url')
-  })
+      expect(component.baseUrlOrg).toEqual('url')
+    })
 
-  it('should set values from preview component on next when activeIndex is 1 (preview)', () => {
-    component.previewComponent = new MockPreviewComponent() as unknown as PreviewComponent
-    component.activeIndex = 1
-    component.hasPermission = true
+    it('should set values from preview component on next when activeIndex is 1 (preview) this.previewComponent values undefined', () => {
+      component.previewComponent = new MockPreviewComponent() as unknown as PreviewComponent
+      component.activeIndex = 1
+      component.hasPermission = true
 
-    component.next()
+      component.previewComponent.workspaceName = undefined!
+      component.previewComponent.themeName = undefined!
+      component.previewComponent.baseUrl = undefined!
+      component.next()
 
-    expect(component.workspaceName).toEqual(component.previewComponent?.workspaceName)
-    expect(component.themeName).toEqual(component.previewComponent?.themeName)
-    expect(component.baseUrl).toEqual(component.previewComponent?.baseUrl)
+      expect(component.workspaceName).toEqual('')
+      expect(component.themeName).toEqual('')
+      expect(component.baseUrl).toEqual('')
+    })
+
+    it('should set values from preview component on next when activeIndex is 1 (preview)', () => {
+      component.previewComponent = new MockPreviewComponent() as unknown as PreviewComponent
+      component.activeIndex = 1
+      component.hasPermission = true
+
+      component.next()
+
+      expect(component.workspaceName).toEqual(component.previewComponent?.workspaceName)
+      expect(component.themeName).toEqual(component.previewComponent?.themeName)
+      expect(component.baseUrl).toEqual(component.previewComponent?.baseUrl)
+    })
   })
 
   it('should set values from confirm component on back when activeIndex is 2 (confirm)', () => {
@@ -319,5 +337,37 @@ xdescribe('WorkspaceImportComponent', () => {
     if (component.confirmComponent.baseUrl) {
       expect(component.importRequestDTO.workspaces?.['workspace'].baseUrl).toEqual(component.confirmComponent.baseUrl)
     }
+  })
+
+  it('should set values from confirm component on back when activeIndex is 2 (confirm)', () => {
+    component.confirmComponent = new MockConfirmComponent() as unknown as ConfirmComponent
+    component.activeIndex = 2
+    component.hasPermission = true
+    const workspaceSnap = {
+      workspaces: {
+        workspace: {
+          name: 'name',
+          menu: {
+            menu: {
+              menuItems: [
+                {
+                  name: 'menuName'
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+    component.importRequestDTO = workspaceSnap
+    component.confirmComponent.workspaceName = undefined
+    component.confirmComponent.baseUrl = undefined
+    component.confirmComponent.themeName = undefined
+
+    component.back()
+
+    expect(component.importRequestDTO.workspaces?.['workspace'].name).toEqual('')
+    expect(component.importRequestDTO.workspaces?.['workspace'].baseUrl).toEqual('')
+    expect(component.importRequestDTO.workspaces?.['workspace'].theme).toEqual('')
   })
 })

@@ -392,12 +392,11 @@ export class MenuDetailComponent implements OnChanges {
               }
             }
           }
-          //console.log('loadMfeUrls() - mfeItems:', this.mfeItems)
           this.mfeItems.sort(this.sortMfesByProductAndBasePath)
           this.fillForm()
         }),
         catchError((err) => {
-          console.error('getProductsForWorkspaceId():', err)
+          console.error('getProductsByWorkspaceId():', err)
           return of([] as SelectItem[])
         })
       )
@@ -452,12 +451,14 @@ export class MenuDetailComponent implements OnChanges {
     if (!query || query === '') {
       filtered = this.mfeItems // exception a)
     } else {
-      for (const mfeItem of this.mfeItems)
+      for (const mfeItem of this.mfeItems) {
         if (
-          mfeItem.basePath?.toLowerCase().startsWith(query.toLowerCase()) ||
-          query.toLowerCase().startsWith(mfeItem.basePath?.toLowerCase()!)
-        )
+          query.toLowerCase().startsWith(mfeItem.basePath!.toLowerCase()) ||
+          mfeItem.basePath?.toLowerCase().startsWith(query.toLowerCase())
+        ) {
           filtered.push(mfeItem)
+        }
+      }
     }
     return filtered
   }
