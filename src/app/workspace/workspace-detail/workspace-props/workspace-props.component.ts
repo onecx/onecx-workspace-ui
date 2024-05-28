@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core'
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core'
 import { Location } from '@angular/common'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { map, Observable } from 'rxjs'
@@ -14,7 +14,7 @@ import { getLocation } from '@onecx/accelerator'
   templateUrl: './workspace-props.component.html',
   styleUrls: ['./workspace-props.component.scss']
 })
-export class WorkspacePropsComponent implements OnInit, OnChanges {
+export class WorkspacePropsComponent implements OnChanges {
   @Input() workspace: Workspace | undefined
   @Input() editMode = false
   @Output() currentLogoUrl = new EventEmitter<string>()
