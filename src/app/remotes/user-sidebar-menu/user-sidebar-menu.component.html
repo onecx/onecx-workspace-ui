@@ -3,7 +3,7 @@
     <ng-template pTemplate="header">
       <ocx-user-avatar [user$]="currentUser$"></ocx-user-avatar>
       <span class="flex flex-column ml-2">
-        <span class="font-bold">{{ displayName$ | async }}</span>
+        <span id="user-sidebar-display-name" class="font-bold">{{ displayName$ | async }}</span>
         <small>Portal User</small>
       </span>
     </ng-template>
