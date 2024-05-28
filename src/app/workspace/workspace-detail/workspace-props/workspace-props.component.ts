@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core'
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core'
 import { Location } from '@angular/common'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { map, Observable } from 'rxjs'
@@ -14,7 +14,7 @@ import { getLocation } from '@onecx/accelerator'
   templateUrl: './workspace-props.component.html',
   styleUrls: ['./workspace-props.component.scss']
 })
-export class WorkspacePropsComponent implements OnChanges, OnInit {
+export class WorkspacePropsComponent implements OnChanges {
   @Input() workspace: Workspace | undefined
   @Input() editMode = false
   @Output() currentLogoUrl = new EventEmitter<string>()
@@ -59,8 +59,13 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
     })
   }
 
-  public ngOnInit(): void {
+  public ngOnChanges(): void {
     if (this.workspace) {
+      this.setFormData()
+      if (this.editMode) this.formGroup.enable()
+      else this.formGroup.disable()
+      this.oldWorkspaceName = this.workspace.name
+      if (this.workspace.name === 'ADMIN') this.formGroup.controls['name'].disable()
       this.themes$ = this.workspaceApi.getAllThemes().pipe(
         map((val: any[]) => {
           if (val.length === 0) {
@@ -74,16 +79,6 @@ export class WorkspacePropsComponent implements OnChanges, OnInit {
           }
         })
       )
-    }
-  }
-
-  public ngOnChanges(): void {
-    if (this.workspace) {
-      this.setFormData()
-      if (this.editMode) this.formGroup.enable()
-      else this.formGroup.disable()
-      this.oldWorkspaceName = this.workspace.name
-      if (this.workspace.name === 'ADMIN') this.formGroup.controls['name'].disable()
     } else {
       this.formGroup.reset()
       this.formGroup.disable()
