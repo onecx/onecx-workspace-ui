@@ -129,13 +129,13 @@
             <span
               *ngIf="product?.undeployed"
               [id]="'workspace_detail_product_picklist_' + product.productName + '_undeployed'"
-              class="card-badge-right badge-1 p-2 pi pi-ban danger-action-bg cursor-auto tile-view-optional"
+              class="card-badge-right badge-1 tile-view-optional danger-action-text font-bold text-xl pi pi-ban"
               [title]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
             ></span>
             <span
               *ngIf="!product?.undeployed && product?.changedMfe"
               [id]="'workspace_detail_product_picklist_' + product.productName + '_changed_mfe'"
-              class="card-badge-right badge-1 p-2 pi pi-exclamation-circle danger-action-bg cursor-auto tile-view-optional"
+              class="card-badge-right badge-1 tile-view-optional danger-action-text font-bold text-xl pi pi-exclamation-circle"
               [title]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
             ></span>
             <app-image-container
@@ -184,13 +184,13 @@
           <span
             *ngIf="displayedDetailItem?.undeployed"
             id="workspace_detail_product_item_header_undeployed"
-            class="card-badge-base p-2 pi pi-ban danger-action-bg cursor-auto"
+            class="p-2 danger-action-text font-bold text-xl pi pi-ban"
             [title]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
           ></span>
           <span
             *ngIf="!displayedDetailItem?.undeployed && displayedDetailItem?.changedMfe"
             id="workspace_detail_product_item_header_changed_mfe"
-            class="card-badge-base p-2 pi pi-exclamation-circle danger-action-bg cursor-auto"
+            class="p-2 danger-action-text font-bold text-xl pi pi-exclamation-circle"
             [title]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
           ></span>
           <span
@@ -330,11 +330,17 @@
             >
             <div *ngFor="let item of displayedDetailItem?.slots" class="ml-3 flex flex-row column-gap-4">
               <span>{{ item.name }}</span>
-              <span *ngIf="item.deprecated" class="danger-action-text">
-                {{ 'DIALOG.PRODUCTS.MFES.DEPRECATED' | translate }}
+              <span
+                *ngIf="item.undeployed"
+                class="danger-action-text pi pi-ban"
+                [title]="'DIALOG.PRODUCTS.MFES.UNDEPLOYED' | translate"
+              >
               </span>
-              <span *ngIf="item.undeployed" class="danger-action-text">
-                {{ 'DIALOG.PRODUCTS.MFES.UNDEPLOYED' | translate }}
+              <span
+                *ngIf="item.deprecated"
+                class="danger-action-text pi pi-exclamation-circle"
+                [title]="'DIALOG.PRODUCTS.MFES.DEPRECATED' | translate"
+              >
               </span>
             </div>
           </div>
