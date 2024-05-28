@@ -91,7 +91,9 @@ export class PreviewComponent implements OnInit, OnChanges {
         )
         delete this.importRequestDTO.workspaces[key[0]]
         this.workspaceName = this.formGroup.controls['workspaceName'].value
-      } else this.workspaceName = key[0]
+      } else {
+        this.workspaceName = key[0]
+      }
       this.themeName = this.formGroup.controls['theme'].value
       this.baseUrl = this.formGroup.controls['baseUrl'].value
 

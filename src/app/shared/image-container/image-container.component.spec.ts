@@ -56,6 +56,19 @@ describe('ImageContainerComponent', () => {
 
       expect(component.imageUrl).toBe(testUrl)
     })
+
+    it('should set defaultLogoUrl if component imageUrl is undefined', () => {
+      component.ngOnChanges({
+        imageUrl: {
+          currentValue: '',
+          previousValue: null,
+          firstChange: true,
+          isFirstChange: () => true
+        }
+      })
+
+      expect(component.displayDefaultLogo).toBeTrue
+    })
   })
 
   it('onImageError should set displayDefaultLogo to true', () => {

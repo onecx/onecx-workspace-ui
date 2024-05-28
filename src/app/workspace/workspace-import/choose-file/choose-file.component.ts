@@ -78,7 +78,7 @@ export class ChooseFileComponent implements OnInit {
     return !this.importError && !!this.importWorkspace
   }
 
-  private isWorkspaceImportValid(obj: unknown, data: any): obj is WorkspaceSnapshot {
+  public isWorkspaceImportValid(obj: unknown, data: any): obj is WorkspaceSnapshot {
     const dto = obj as WorkspaceSnapshot
     // CHANGE IF IMPORT OF MORE WORKSPACES IS POSSIBLE
     if (dto.workspaces) {
@@ -101,7 +101,7 @@ export class ChooseFileComponent implements OnInit {
     if (dto.workspaces) {
       let key: string[] = Object.keys(dto.workspaces)
       const menuSnapshot = dto.workspaces[key[0]].menu
-      if (menuSnapshot?.menu && menuSnapshot.menu.menuItems)
+      if (menuSnapshot?.menu && menuSnapshot.menu.menuItems) {
         for (const el of menuSnapshot.menu.menuItems) {
           if (!el.key) {
             this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_KEY_MISSING']
@@ -120,6 +120,7 @@ export class ChooseFileComponent implements OnInit {
             break
           }
         }
+      }
     }
   }
 }
