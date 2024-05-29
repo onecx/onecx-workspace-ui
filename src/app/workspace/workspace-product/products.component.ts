@@ -11,7 +11,7 @@ import {
 import { TranslateService } from '@ngx-translate/core'
 import { catchError, finalize, map, Observable, of, Subject, switchMap, takeUntil } from 'rxjs'
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
-
+import { ConfirmationService } from 'primeng/api'
 import {
   CreateSlot,
   ImagesInternalAPIService,
@@ -43,7 +43,7 @@ export type AppType = {
 // => bucket is used to recognize the origin within HTML
 export type ExtendedProduct = Product & {
   bucket: 'SOURCE' | 'TARGET' // target: workspace product = registered
-  changedMfe: boolean // true if there is a MFE with deprecated or undeployed
+  changedComponents: boolean // true if there is a MFE with deprecated or undeployed
   apps: Map<string, AppType> // key: appId
   slots?: Array<SlotPS> // from ProductStoreItem
 }
@@ -60,7 +60,8 @@ const ALL_VIEW_MODES = [
 @Component({
   selector: 'app-products',
   templateUrl: './products.component.html',
-  styleUrls: ['./products.component.scss']
+  styleUrls: ['./products.component.scss'],
+  providers: [ConfirmationService]
 })
 export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   @Input() workspace!: Workspace | undefined
@@ -80,6 +81,8 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   public sourceListViewMode: ViewingModes | undefined
   public targetListViewMode: ViewingModes | undefined
   public viewingModes: ViewingModes[] = []
+  public displayDeregisterConfirmation = false
+  private deregisterItems: ExtendedProduct[] = []
 
   limitText = limitText
   environment = environment
@@ -103,13 +106,14 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     private msgService: PortalMessageService,
     private fb: FormBuilder,
     private renderer: Renderer2,
-    private elem: ElementRef
+    private elem: ElementRef,
+    private confirmationService: ConfirmationService
   ) {
     this.hasRegisterPermission = this.user.hasPermission('WORKSPACE_PRODUCTS#REGISTER')
     this.appState.currentMfe$.pipe(map((mfe) => (this.currentMfe = mfe))).subscribe()
     this.formGroup = this.fb.group({
       displayName: new FormControl({ value: null, disabled: true }),
-      baseUrl: new FormControl({ value: null, disabled: true }),
+      baseUrl: new FormControl(null),
       modules: this.fb.array(['a', 'b'])
     })
     this.viewingModes = ALL_VIEW_MODES
@@ -183,14 +187,14 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
           this.psProductsOrg = new Map()
           if (result.stream)
             for (let p of result.stream) {
-              let psp = { ...p, bucket: 'SOURCE', changedMfe: false } as ExtendedProduct
+              let psp = { ...p, bucket: 'SOURCE', changedComponents: false } as ExtendedProduct
               this.prepareProductApps(psp)
               this.psProductsOrg.set(psp.productName ?? '', psp)
               // add product to SOURCE picklist only if not yet registered
               const wp = this.wProducts.filter((wp) => wp.productName === psp.productName)
               if (wp.length === 0 && !psp.undeployed) this.psProducts.push(psp)
               if (wp.length === 1) {
-                wp[0].changedMfe = psp.changedMfe
+                wp[0].changedComponents = psp.changedComponents
                 wp[0].undeployed = psp.undeployed
               }
             }
@@ -207,30 +211,36 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   }
 
   // build map of apps, which containing modules and components
-  private prepareProductApps(psp: ExtendedProduct) {
-    if (!psp.microfrontends) return
-    psp.apps = new Map()
-    psp.microfrontends.forEach((mfe) => {
-      if (mfe.appId && !psp.apps.has(mfe.appId)) psp.apps.set(mfe.appId, { appId: mfe.appId })
-    })
-    this.prepareProductAppParts(psp)
+  private prepareProductApps(psp: ExtendedProduct): void {
+    if (psp.microfrontends) {
+      psp.apps = new Map()
+      psp.microfrontends.forEach((mfe) => {
+        if (mfe.appId && !psp.apps.has(mfe.appId)) psp.apps.set(mfe.appId, { appId: mfe.appId })
+      })
+    }
+    if (psp.microfrontends || psp.slots) this.prepareProductAppParts(psp)
   }
   private prepareProductAppParts(psp: ExtendedProduct) {
     // step through mfe array and pick modules and components
-    for (const mfe of psp.microfrontends!) {
-      const app = psp.apps.get(mfe.appId!)
-      if (app && mfe.type === MicrofrontendType.Module) {
-        if (!app.modules) app.modules = []
-        app.modules.push(mfe as ExtendedMicrofrontend)
+    if (psp.microfrontends)
+      for (const mfe of psp.microfrontends) {
+        const app = psp.apps.get(mfe.appId!)
+        if (app && mfe.type === MicrofrontendType.Module) {
+          if (!app.modules) app.modules = []
+          app.modules.push(mfe as ExtendedMicrofrontend)
+        }
+        if (app && mfe.type === MicrofrontendType.Component) {
+          if (!app.components) app.components = []
+          app.components.push(mfe as ExtendedMicrofrontend)
+          app.components.sort(this.sortMfesByExposedModule)
+        }
+        // mark product if there are important changes on microfrontends
+        psp.changedComponents = mfe.undeployed || mfe.deprecated || psp.changedComponents
       }
-      if (app && mfe.type === MicrofrontendType.Component) {
-        if (!app.components) app.components = []
-        app.components.push(mfe as ExtendedMicrofrontend)
-        app.components.sort(this.sortMfesByExposedModule)
+    if (psp.slots)
+      for (const slot of psp.slots) {
+        psp.changedComponents = slot.undeployed || slot.deprecated || psp.changedComponents
       }
-      // mark product if there are important changes on microfrontends
-      psp.changedMfe = mfe.undeployed || mfe.deprecated || psp.changedMfe
-    }
   }
 
   public sortProductsByDisplayName(a: Product, b: Product): number {
@@ -321,7 +331,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
       const pspOrg = this.psProductsOrg.get(item.productName!)
       if (pspOrg) {
         item.undeployed = pspOrg.undeployed
-        item.changedMfe = pspOrg.changedMfe
+        item.changedComponents = pspOrg.changedComponents
         item.slots = pspOrg.slots
         item.apps = pspOrg.apps
         if (item.microfrontends && pspOrg.microfrontends) {
@@ -456,7 +466,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
       const mfes = p.microfrontends?.filter((m: Microfrontend) => m.type === MicrofrontendType.Module) ?? []
       this.wProductApi
         .createProductInWorkspace({
-          id: this.workspace?.id ?? '',
+          id: this.workspace?.id!,
           createProductRequest: {
             productName: p.productName,
             baseUrl: p.baseUrl,
@@ -465,7 +475,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
                 ? undefined
                 : mfes.map((m: any, i: number) => ({
                     appId: m.appId,
-                    basePath: p.baseUrl + (mfes.length > 1 ? '-' + (i + 1) : '') // create initial unique base paths
+                    basePath: '/' + (mfes.length > 1 ? i + 1 : '') // create initial unique base paths
                   })),
             slots: p.slots ? p.slots.map((s: SlotPS) => ({ name: s.name } as CreateSlot)) : undefined
           } as CreateProductRequest
@@ -497,18 +507,36 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
    * DEREGISTER
    *
    * This event fires after the items were moved from source to target => PrimeNG
-   * Afterwards, Step through the list and on each error roll back the move.
+   * Afterwards, ask for confirmation:
+   *   accepted: delete product from workspace, on each error roll back the moved item
+   *   rejected: roll back the moved items
    */
-  public onMoveToSource(ev: any): void {
+  public onMoveToSource(event: any): void {
+    this.deregisterItems = [...event.items]
+    this.displayDeregisterConfirmation = true
+  }
+  public onDeregisterCancellation() {
+    this.displayDeregisterConfirmation = false
+    // restore
+    for (let p of this.deregisterItems) {
+      this.psProducts = this.psProducts.filter((psp) => psp.productName !== p.productName)
+      this.wProducts.push(p)
+    }
+    this.deregisterItems = []
+    this.psProducts.sort(this.sortProductsByDisplayName)
+    this.wProducts.sort(this.sortProductsByDisplayName)
+  }
+  public onDeregisterConfirmation(): void {
+    this.displayDeregisterConfirmation = false
     this.clearForm()
-    let itemCount = ev.items.length
+    let itemCount = this.deregisterItems.length
     let successCounter = 0
     let errorCounter = 0
-    for (let p of ev.items) {
+    for (let p of this.deregisterItems) {
       this.wProductApi
         .deleteProductById({
-          id: this.workspace?.id ?? '',
-          productId: p.id
+          id: this.workspace?.id!,
+          productId: p.id!
         })
         .subscribe({
           next: () => {
@@ -532,6 +560,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   }
 
   private displayRegisterMessages(type: string, success: number, error: number) {
+    this.deregisterItems = []
     this.psProducts.sort(this.sortProductsByDisplayName)
     this.wProducts.sort(this.sortProductsByDisplayName)
     if (success > 0) {

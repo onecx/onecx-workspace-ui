@@ -4,6 +4,7 @@
 @include danger-action;
 @include correct-data-view-control;
 @include table-inline-buttons;
+@include filter-select-button;
 
 :host ::ng-deep {
   .p-dialog .p-dialog-content {
@@ -96,5 +97,14 @@
     .hidden-xl {
       display: none !important;
     }
+  }
+
+  .p-togglebutton {
+    text-align: center;
+    display: inline-block;
+    color: var(--emphasis-medium);
+    font-weight: var(--font-weight);
+    padding: 0.3rem 0.8rem;
+    border: var(--input-border);
   }
 }

@@ -31,6 +31,7 @@ import { StepsModule } from 'primeng/steps'
 import { TabViewModule } from 'primeng/tabview'
 import { TableModule } from 'primeng/table'
 import { ToastModule } from 'primeng/toast'
+import { ToggleButtonModule } from 'primeng/togglebutton'
 import { TreeModule } from 'primeng/tree'
 import { TreeTableModule } from 'primeng/treetable'
 
@@ -80,6 +81,7 @@ export function apiConfigProvider(configService: ConfigurationService, appStateS
     TabViewModule,
     TableModule,
     ToastModule,
+    ToggleButtonModule,
     TreeModule,
     TreeTableModule,
     FileUploadModule,
@@ -137,6 +139,7 @@ export function apiConfigProvider(configService: ConfigurationService, appStateS
     TabViewModule,
     TableModule,
     ToastModule,
+    ToggleButtonModule,
     TreeModule,
     TreeTableModule,
     TranslateModule,

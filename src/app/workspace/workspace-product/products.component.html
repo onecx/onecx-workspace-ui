@@ -129,13 +129,13 @@
             <span
               *ngIf="product?.undeployed"
               [id]="'workspace_detail_product_picklist_' + product.productName + '_undeployed'"
-              class="card-badge-right badge-1 p-2 pi pi-ban danger-action-bg cursor-auto tile-view-optional"
+              class="card-badge-right badge-1 tile-view-optional danger-action-text font-bold text-xl pi pi-ban"
               [title]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
             ></span>
             <span
-              *ngIf="!product?.undeployed && product?.changedMfe"
+              *ngIf="!product?.undeployed && product?.changedComponents"
               [id]="'workspace_detail_product_picklist_' + product.productName + '_changed_mfe'"
-              class="card-badge-right badge-1 p-2 pi pi-exclamation-circle danger-action-bg cursor-auto tile-view-optional"
+              class="card-badge-right badge-1 tile-view-optional danger-action-text font-bold text-xl pi pi-exclamation-circle"
               [title]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
             ></span>
             <app-image-container
@@ -147,7 +147,7 @@
             <div class="flex flex-column row-gap-1">
               <div
                 class="tile-view-mandatory font-semibold text-sm lg:text-md"
-                [class.danger-action-text]="product?.undeployed || product?.changedMfe"
+                [class.danger-action-text]="product?.undeployed || product?.changedComponents"
               >
                 {{ product.displayName }}
               </div>
@@ -184,13 +184,13 @@
           <span
             *ngIf="displayedDetailItem?.undeployed"
             id="workspace_detail_product_item_header_undeployed"
-            class="card-badge-base p-2 pi pi-ban danger-action-bg cursor-auto"
+            class="p-2 danger-action-text font-bold text-xl pi pi-ban"
             [title]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
           ></span>
           <span
-            *ngIf="!displayedDetailItem?.undeployed && displayedDetailItem?.changedMfe"
+            *ngIf="!displayedDetailItem?.undeployed && displayedDetailItem?.changedComponents"
             id="workspace_detail_product_item_header_changed_mfe"
-            class="card-badge-base p-2 pi pi-exclamation-circle danger-action-bg cursor-auto"
+            class="p-2 danger-action-text font-bold text-xl pi pi-exclamation-circle"
             [title]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
           ></span>
           <span
@@ -223,7 +223,9 @@
                 id="workspace_detail_product_item_baseurl"
                 formControlName="baseUrl"
               />
-              <label for="product_detail_item_baseurl"> {{ 'PRODUCT.BASE_URL' | translate }}</label>
+              <label class="ocx-required-label" for="product_detail_item_baseurl">
+                {{ 'PRODUCT.BASE_URL' | translate }}</label
+              >
             </span>
           </div>
 
@@ -247,7 +249,6 @@
                     class="mt-3 flex flex-column"
                   >
                     <span
-                      *ngIf="!mfe.controls['undeployed'].value"
                       class="p-float-label"
                       [title]="'PRODUCT.MFE.BASE_PATH.TOOLTIP' | translate"
                       controlErrorAnchor
@@ -263,10 +264,7 @@
                         {{ 'PRODUCT.MFE.BASE_PATH' | translate }}</label
                       >
                     </span>
-                    <div
-                      class="mt-05 ml-2 flex flex-row column-gap-2"
-                      [class.text-xs]="!mfe.controls['undeployed'].value"
-                    >
+                    <div class="mt-05 ml-2 flex flex-row column-gap-2">
                       <span class="mr-2">{{ mfe.controls['exposedModule'].value }}</span>
                       <span
                         *ngIf="mfe.controls['undeployed'].value"
@@ -330,11 +328,17 @@
             >
             <div *ngFor="let item of displayedDetailItem?.slots" class="ml-3 flex flex-row column-gap-4">
               <span>{{ item.name }}</span>
-              <span *ngIf="item.deprecated" class="danger-action-text">
-                {{ 'DIALOG.PRODUCTS.MFES.DEPRECATED' | translate }}
+              <span
+                *ngIf="item.undeployed"
+                class="danger-action-text pi pi-ban"
+                [title]="'DIALOG.PRODUCTS.MFES.UNDEPLOYED' | translate"
+              >
               </span>
-              <span *ngIf="item.undeployed" class="danger-action-text">
-                {{ 'DIALOG.PRODUCTS.MFES.UNDEPLOYED' | translate }}
+              <span
+                *ngIf="item.deprecated"
+                class="danger-action-text pi pi-exclamation-circle"
+                [title]="'DIALOG.PRODUCTS.MFES.DEPRECATED' | translate"
+              >
               </span>
             </div>
           </div>
@@ -355,3 +359,49 @@
     </p-panel>
   </div>
 </div>
+
+<p-confirmDialog></p-confirmDialog>
+<p-dialog
+  [(visible)]="displayDeregisterConfirmation"
+  [header]="'DIALOG.PRODUCTS.DEREGISTER' | translate"
+  (onHide)="onDeregisterCancellation()"
+  [modal]="true"
+  [closable]="true"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [style]="{ 'max-width': '425px' }"
+>
+  <div class="my-2 flex column-gap-4 row-gap-1 justify-content-start align-items-center">
+    <div class="pi pi-question-circle text-3xl danger-action-text"></div>
+    <div>
+      <div class="font-bold">{{ 'ACTIONS.DELETE.PRODUCTS_QUESTION' | translate }}</div>
+      <div class="mt-2">{{ 'ACTIONS.DELETE.PRODUCTS_MESSAGE' | translate }}</div>
+      <div class="mt-1">{{ 'ACTIONS.DELETE.MESSAGE_INFO' | translate }}</div>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
+      <button
+        pButton
+        autofocus
+        type="button"
+        class="m-0"
+        id="workspace_detail_product_deregister_button_no"
+        icon="pi pi-times"
+        iconPos="left"
+        [label]="'ACTIONS.CONFIRMATION.NO' | translate"
+        (click)="onDeregisterCancellation()"
+      ></button>
+      <button
+        pButton
+        type="button"
+        class="m-0"
+        id="workspace_detail_product_deregister_button_yes"
+        icon="pi pi-check"
+        iconPos="left"
+        [label]="'ACTIONS.CONFIRMATION.YES' | translate"
+        (click)="onDeregisterConfirmation()"
+      ></button>
+    </div>
+  </ng-template>
+</p-dialog>

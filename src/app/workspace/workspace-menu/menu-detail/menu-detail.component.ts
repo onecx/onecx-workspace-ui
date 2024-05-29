@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, Output, Renderer2, ViewChild } from '@angular/core'
-//import { Location } from '@angular/common'
+import { Location } from '@angular/common'
 import { TranslateService } from '@ngx-translate/core'
 import { DefaultValueAccessor, FormControl, FormGroup, Validators } from '@angular/forms'
 import { Observable, Subject, catchError, map, of, takeUntil } from 'rxjs'
@@ -22,7 +22,7 @@ import { IconService } from '../services/iconservice'
 
 type I18N = { [key: string]: string }
 type LanguageItem = SelectItem & { data: string }
-type MFE = Microfrontend & { product?: string }
+export type MenuURL = Microfrontend & { mfePath?: string; product?: string }
 interface AutoCompleteCompleteEvent {
   originalEvent: Event
   query: string
@@ -61,13 +61,11 @@ export class MenuDetailComponent implements OnChanges {
   private menuItem$: Observable<MenuItem | null> = new Observable<MenuItem | null>()
   public iconItems: SelectItem[] = [{ label: '', value: null }] // default value is empty
   public scopeItems: SelectItem[]
-  private urlPattern =
-    '(https://www.|http://www.|https://|http://)?[a-zA-Z]{2,}(.[a-zA-Z]{2,})(.[a-zA-Z]{2,})?/[a-zA-Z0-9]{2,}|((https://www.|http://www.|https://|http://)?[a-zA-Z]{2,}(.[a-zA-Z]{2,})(.[a-zA-Z]{2,})?)|(https://www.|http://www.|https://|http://)?[a-zA-Z0-9]{2,}.[a-zA-Z0-9]{2,}.[a-zA-Z0-9]{2,}(.[a-zA-Z0-9]{2,})?'
   private posPattern = '[0-9]{1,9}'
   private panelHeight = 0
-  public mfeMap: Map<string, MFE> = new Map()
-  public mfeItems!: MFE[]
-  public filteredMfes: MFE[] = []
+  public mfeMap: Map<string, MenuURL> = new Map()
+  public mfeItems!: MenuURL[]
+  public filteredMfes: MenuURL[] = []
 
   // language settings and preview
   public languagesAvailable: LanguageItem[] = []
@@ -185,48 +183,49 @@ export class MenuDetailComponent implements OnChanges {
    * 2. If url is http address or unknown => add a specific item for it
    * 3. Add an empty item on top (to clean the field by selection = no url)
    */
-  private prepareUrlList(url?: string): MFE | null {
-    let mfe: MFE | null = null
+  private prepareUrlList(url?: string): MenuURL | null {
+    let item: MenuURL | null = null
     let itemCreated = false
     if (url?.match(/^(http|https)/g)) {
-      mfe = { appId: '$$$-http-address', basePath: url, product: 'MENU_ITEM.URL.HTTP' } as MFE
+      item = { appId: '$$$-http-address', mfePath: url, product: 'MENU_ITEM.URL.HTTP' } as MenuURL
       itemCreated = true
     } else if (url) {
       // search for mfe with best match of base path
       const match = this.searchMfeForBasePathMatch(url)
-      mfe = match[0]
+      item = match[0]
       itemCreated = match[1]
     }
-    if (mfe && itemCreated) this.mfeItems.unshift(mfe) // add the new one on top
-    this.mfeItems.unshift({ appId: '$$$-empty', basePath: '', product: 'MENU_ITEM.URL.EMPTY' })
-    return url ? mfe : this.mfeItems[0]
+    if (item && itemCreated) this.mfeItems.unshift(item) // add the new one on top
+    this.mfeItems.unshift({ appId: '$$$-empty', mfePath: '', product: 'MENU_ITEM.URL.EMPTY' })
+    return url ? item : this.mfeItems[0]
   }
 
-  private searchMfeForBasePathMatch(url: string): [MFE, boolean] {
-    let mfe: MFE | null = null
+  private searchMfeForBasePathMatch(url: string): [MenuURL, boolean] {
+    let item: MenuURL | null = null
     let maxLength = 0
     let itemCreated = false
     for (const mfeItem of this.mfeItems) {
-      const bp = mfeItem.basePath!
+      const bp = mfeItem.mfePath!
       // perfect match
       if (url === bp) {
-        mfe = mfeItem
+        item = mfeItem
         break
       }
       // if URL was extended then create such specific item with best match
       if (url?.toLowerCase().startsWith(bp.toLowerCase()) && maxLength < bp.length) {
-        mfe = { ...mfeItem }
-        mfe.basePath = url
+        item = { ...mfeItem }
+        item.mfePath = url
         maxLength = bp.length // remember length for finding the best match
         itemCreated = true
       }
     }
-    if (!mfe) {
-      mfe = { appId: '$$$-unknown-product', basePath: url, product: 'MENU_ITEM.URL.UNKNOWN.PRODUCT' } as MFE
+    if (!item) {
+      item = { appId: '$$$-unknown-product', mfePath: url, product: 'MENU_ITEM.URL.UNKNOWN.PRODUCT' } as MenuURL
       itemCreated = true
     }
-    return [mfe, itemCreated]
+    return [item, itemCreated]
   }
+
   /***************************************************************************
    * SAVE => CREATE + UPDATE
    **************************************************************************/
@@ -237,7 +236,7 @@ export class MenuDetailComponent implements OnChanges {
     }
     if (this.menuItem) {
       if (this.formGroup.controls['url'].value instanceof Object)
-        this.menuItem.url = this.formGroup.controls['url'].value.basePath
+        this.menuItem.url = this.formGroup.controls['url'].value.mfePath
       else this.menuItem.url = this.formGroup.controls['url'].value
 
       // get form values
@@ -386,13 +385,15 @@ export class MenuDetailComponent implements OnChanges {
           for (let p of products) {
             if (p.microfrontends) {
               for (let mfe of p.microfrontends) {
-                this.mfeItems.push({ ...mfe, product: p.displayName! })
-                // TODO: in sync with shell-bff: concat url+path
-                //this.mfeItems[this.mfeItems.length - 1].basePath = Location.joinWithSlash(p.baseUrl!, mfe.basePath!)
+                this.mfeItems.push({
+                  ...mfe,
+                  mfePath: Location.joinWithSlash(mfe.basePath!, p.baseUrl!),
+                  product: p.displayName!
+                })
               }
             }
           }
-          this.mfeItems.sort(this.sortMfesByProductAndBasePath)
+          this.mfeItems.sort(this.sortMfesByPath)
           this.fillForm()
         }),
         catchError((err) => {
@@ -403,11 +404,14 @@ export class MenuDetailComponent implements OnChanges {
       .pipe(takeUntil(this.destroy$))
       .subscribe()
   }
-  public sortMfesByProductAndBasePath(a: MFE, b: MFE): number {
+  public sortMfesByProductAndBasePath(a: MenuURL, b: MenuURL): number {
     return (
       (a.product ? a.product.toUpperCase() : '').localeCompare(b.product ? b.product.toUpperCase() : '') ||
-      (a.basePath ? a.basePath : '').localeCompare(b.basePath ? b.basePath : '')
+      (a.mfePath ? a.mfePath : '').localeCompare(b.mfePath ? b.mfePath : '')
     )
+  }
+  public sortMfesByPath(a: MenuURL, b: MenuURL): number {
+    return (a.mfePath ? a.mfePath : '').localeCompare(b.mfePath ? b.mfePath : '')
   }
 
   /**
@@ -440,21 +444,21 @@ export class MenuDetailComponent implements OnChanges {
   public onFilterPaths(ev: AutoCompleteCompleteEvent): void {
     let query = ev?.query ?? undefined
     if (!query) {
-      if (this.formGroup.controls['url'].value instanceof Object) query = this.formGroup.controls['url'].value.basePath
+      if (this.formGroup.controls['url'].value instanceof Object) query = this.formGroup.controls['url'].value.mfePath
       else query = this.formGroup.controls['url'].value
     }
     this.filteredMfes = this.filterUrl(query) // this split fixed a sonar complexity issue
   }
 
-  private filterUrl(query: string): MFE[] {
-    let filtered: MFE[] = []
+  private filterUrl(query: string): MenuURL[] {
+    let filtered: MenuURL[] = []
     if (!query || query === '') {
       filtered = this.mfeItems // exception a)
     } else {
       for (const mfeItem of this.mfeItems) {
         if (
-          query.toLowerCase().startsWith(mfeItem.basePath!.toLowerCase()) ||
-          mfeItem.basePath?.toLowerCase().startsWith(query.toLowerCase())
+          query.toLowerCase().startsWith(mfeItem.mfePath!.toLowerCase()) ||
+          mfeItem.mfePath?.toLowerCase().startsWith(query.toLowerCase())
         ) {
           filtered.push(mfeItem)
         }

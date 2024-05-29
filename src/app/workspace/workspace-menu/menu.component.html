@@ -90,69 +90,36 @@
       <ng-template pTemplate="header" let-columns>
         <tr>
           <th id="workspace_menu_table_header_dummy1" class="p-1 text-left border-transparent">
-            <div class="flex flex-row justify-content-between">
-              <div class="flex flex-row gap-2 justify-content-start">
-                <button
-                  pButton
-                  pRipple
-                  type="button"
-                  icon="pi pi-angle-double-down"
-                  class="p-1 p-button-text"
-                  id="workspace_menu_table_header_expand_button"
-                  (click)="onExpandAll()"
-                  [label]="'ACTIONS.TREE.EXPAND_ALL' | translate"
-                  [title]="'ACTIONS.TREE.EXPAND_ALL.TOOLTIP' | translate"
-                ></button>
-                <button
-                  pButton
-                  pRipple
-                  type="button"
-                  icon="pi pi-angle-double-up"
-                  class="p-1 p-button-text"
-                  id="workspace_menu_table_header_expand_button"
-                  (click)="onCollapseAll()"
-                  [label]="'ACTIONS.TREE.COLLAPSE_ALL' | translate"
-                  [title]="'ACTIONS.TREE.COLLAPSE_ALL.TOOLTIP' | translate"
-                ></button>
-              </div>
-              <button
-                *ngIf="!displayRoles"
-                pButton
-                pRipple
-                type="button"
-                icon="pi pi-check-circle"
-                class="p-1 p-button-text"
-                id="workspace_menu_table_header_roles_button"
-                (click)="onDisplayRoles()"
-                [label]="'DIALOG.MENU.HEADER.ROLES' | translate"
-                [title]="'DIALOG.MENU.HEADER.ROLES.TOOLTIP' | translate"
-              ></button>
-              <button
-                *ngIf="displayRoles"
-                pButton
-                pRipple
-                type="button"
-                icon="pi pi-info-circle"
-                class="p-1 p-button-text"
-                id="workspace_menu_table_header_details_button"
-                (click)="onDisplayRoles()"
-                [label]="'DIALOG.MENU.HEADER.DETAILS' | translate"
-                [title]="'DIALOG.MENU.HEADER.DETAILS.TOOLTIP' | translate"
-              ></button>
-            </div>
-          </th>
-          <th *ngIf="!displayRoles" id="workspace_menu_table_header_details" [attr.colspan]="5" class="p-1 text-center">
-            {{ 'DIALOG.MENU.HEADER.DETAILS' | translate }}
+            <p-toggleButton
+              inputId="workspace_menu_table_header_tree_toggle"
+              styleClass="mb-2 data-view-control"
+              [(ngModel)]="treeExpanded"
+              [onLabel]="'ACTIONS.TREE.COLLAPSE_ALL' | translate"
+              [offLabel]="'ACTIONS.TREE.EXPAND_ALL' | translate"
+              ariaLabel="Toggle Tree View"
+              (onChange)="onToggleTreeViewMode($event)"
+              [title]="'ACTIONS.TREE.EXPAND_ALL.TOOLTIP' | translate"
+            />
           </th>
           <th
-            *ngIf="displayRoles"
-            id="workspace_menu_table_header_roles"
-            [attr.colspan]="1 + wRoles.length"
-            class="p-1 text-center"
+            id="workspace_menu_table_header"
+            class="p-1 text-center border-transparent"
+            [attr.colspan]="displayRoles ? 1 + wRoles.length : 5"
           >
-            <div class="flex align-items-center justify-content-center">
-              <div>{{ 'DIALOG.MENU.HEADER.ROLES' | translate }}</div>
-              <button
+            <div class="mb-2 flex align-items-center justify-content-center">
+              <div class="slim-selectbutton filter-selectbutton">
+                <p-selectButton
+                  inputid="workspace_menu_table_header_context"
+                  styleClass="data-view-control"
+                  [options]="menuContextItems"
+                  [(ngModel)]="menuContextValue"
+                  (onChange)="onMenuContextChange($event)"
+                >
+                  <ng-template let-item>{{ item.label | translate }}</ng-template>
+                </p-selectButton>
+              </div>
+              <!--button
+                *ngIf="displayRoles"
                 pButton
                 pRipple
                 type="button"
@@ -161,7 +128,7 @@
                 id="workspace_menu_table_header_button_roles_edit"
                 (click)="onDisplayRoles()"
                 [title]="'DIALOG.MENU.HEADER.ROLES.MANAGE' | translate"
-              ></button>
+              ></button-->
             </div>
           </th>
         </tr>

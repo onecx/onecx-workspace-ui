@@ -4,7 +4,8 @@ import { FormsModule } from '@angular/forms'
 import { RouterModule, Routes } from '@angular/router'
 import { TreeDragDropService } from 'primeng/api'
 
-import { addInitializeModuleGuard, InitializeModuleGuard, PortalCoreModule } from '@onecx/portal-integration-angular'
+import { PortalCoreModule } from '@onecx/portal-integration-angular'
+import { addInitializeModuleGuard, InitializeModuleGuard } from '@onecx/angular-integration-interface'
 import { SharedModule } from 'src/app/shared/shared.module'
 
 import { MenuTreeService } from './services/menu-tree.service'

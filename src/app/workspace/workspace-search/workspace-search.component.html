@@ -117,7 +117,7 @@
               [title]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_MENU' | translate"
               (click)="onGotoMenu($event, workspace)"
             ></span>
-            <div class="h-3rem md:h-5rem mt-1 flex flex-column justify-content-center align-items-center text-center">
+            <div class="h-3rem md:h-4rem mt-1 flex flex-column justify-content-center align-items-center text-center">
               <app-image-container
                 [id]="'app_workspace_search_data_row_' + row + '_logo'"
                 [small]="false"
@@ -126,10 +126,10 @@
             </div>
             <div class="h-3rem mb-1 flex flex-column justify-content-between px-2 text-center gap-1">
               <div
-                class="font-bold text-xl lg:text-2xl"
+                class="font-bold text-lg lg:text-xl"
                 [title]="('WORKSPACE.NAME' | translate) + ': ' + workspace.name"
               >
-                {{ limitText(workspace.name, 15) }}
+                {{ limitText(workspace.name, 20) }}
               </div>
               <div title="Theme">{{ limitText(workspace.theme, 25) }}</div>
             </div>
