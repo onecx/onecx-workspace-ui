@@ -273,10 +273,10 @@
   [dismissableMask]="true"
   [style]="{ 'max-width': '425px' }"
 >
-  <div class="flex column-gap-3 row-gap-1 justify-content-start align-items-center">
+  <div class="my-2 flex column-gap-4 row-gap-1 justify-content-start align-items-center">
     <div class="pi pi-question-circle text-3xl danger-action-text"></div>
     <div>
-      <div>{{ ('ACTIONS.DELETE.MESSAGE' | translate).replace('{{ITEM}}', menuItem?.name) }}</div>
+      <div class="font-bold">{{ ('ACTIONS.DELETE.MESSAGE' | translate).replace('{{ITEM}}', menuItem?.name) }}</div>
       <div class="mt-2">{{ 'ACTIONS.DELETE.MENU_MESSAGE' | translate }}</div>
       <div class="mt-2">{{ 'ACTIONS.DELETE.MESSAGE_INFO' | translate }}</div>
     </div>

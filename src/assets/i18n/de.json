@@ -336,7 +336,7 @@
       "PS_PRODUCTS.TOOLTIP": "Liste der verfügbaren Applikationen aus dem Application Sstore, die noch nicht registriert wurden",
       "W_PRODUCTS": "Registrierte Applikationen",
       "W_PRODUCTS.TOOLTIP": "Liste der registrierten Applikationen",
-      "DEREGISTER": "Applikationen deregistrieren",
+      "DEREGISTER": "Applikationen abmelden",
       "REGISTER_ONE": "Applikation registriert",
       "REGISTER_ALL": "Alle markierte Applikationen registriert",
       "DETAILS": "Applikationsdetails",

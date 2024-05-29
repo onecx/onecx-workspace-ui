@@ -63,6 +63,10 @@ export class MenuComponent implements OnInit, OnDestroy {
   public loading = true
   public exceptionKey = ''
   public myPermissions = new Array<string>() // permissions of the user
+  public menuContextItems: SelectItem[]
+  public menuContextValue = 'DETAILS'
+  public treeExpanded = false // off = collabsed
+
   // workspace
   public workspace?: Workspace
   private workspace$!: Observable<GetWorkspaceResponse>
@@ -105,6 +109,11 @@ export class MenuComponent implements OnInit, OnDestroy {
     if (userService.hasPermission('MENU#EDIT')) this.myPermissions.push('MENU#EDIT')
     if (userService.hasPermission('MENU#GRANT')) this.myPermissions.push('MENU#GRANT')
     if (userService.hasPermission('WORKSPACE_ROLE#EDIT')) this.myPermissions.push('WORKSPACE_ROLE#EDIT')
+    // switch context
+    this.menuContextItems = [
+      { label: 'DIALOG.MENU.HEADER.DETAILS', value: 'DETAILS' },
+      { label: 'DIALOG.MENU.HEADER.ROLES', value: 'ROLES' }
+    ]
   }
 
   public ngOnInit(): void {
@@ -168,6 +177,9 @@ export class MenuComponent implements OnInit, OnDestroy {
   public onReload(): void {
     this.loadMenu(true)
   }
+  public onMenuContextChange(ev: any): void {
+    this.displayRoles = ev.value === 'ROLES'
+  }
   public isObjectEmpty(obj: object) {
     return Object.keys(obj).length === 0
   }
@@ -218,15 +230,9 @@ export class MenuComponent implements OnInit, OnDestroy {
     if (this.menuTreeFilter) this.menuTreeFilter.nativeElement.value = ''
     if (this.menuTree) this.menuTree.filterGlobal('', 'contains')
   }
-  public onExpandAll(): void {
+  public onToggleTreeViewMode(event: any): void {
     this.menuNodes.forEach((node) => {
-      this.expandRecursive(node, true)
-    })
-    this.menuNodes = [...this.menuNodes]
-  }
-  public onCollapseAll(): void {
-    this.menuNodes.forEach((node) => {
-      this.expandRecursive(node, false)
+      this.expandRecursive(node, event.checked)
     })
     this.menuNodes = [...this.menuNodes]
   }
@@ -306,6 +312,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       } else if (result.menuItems instanceof Array) {
         this.menuItems = result.menuItems
         this.menuNodes = this.mapToTreeNodes(this.menuItems)
+        this.parentItems = []
         this.prepareParentNodes(this.menuNodes)
         this.loadRolesAndAssignments()
         if (restore) {
