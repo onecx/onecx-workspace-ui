@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core'
+import { Component, EventEmitter, Input, OnInit, OnChanges, Output } from '@angular/core'
 import { Location } from '@angular/common'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { map, Observable } from 'rxjs'
@@ -14,7 +14,7 @@ import { getLocation } from '@onecx/accelerator'
   templateUrl: './workspace-props.component.html',
   styleUrls: ['./workspace-props.component.scss']
 })
-export class WorkspacePropsComponent implements OnChanges {
+export class WorkspacePropsComponent implements OnInit, OnChanges {
   @Input() workspace: Workspace | undefined
   @Input() editMode = false
   @Output() currentLogoUrl = new EventEmitter<string>()
@@ -59,6 +59,20 @@ export class WorkspacePropsComponent implements OnChanges {
     })
   }
 
+  public ngOnInit(): void {
+    this.themes$ = this.workspaceApi.getAllThemes().pipe(
+      map((val: any[]) => {
+        if (val.length === 0) {
+          return [this.workspace?.theme]
+        } else {
+          val.sort(sortByLocale)
+          if (!val.includes(this.workspace?.theme)) val.concat(this.workspace?.theme)
+          return val
+        }
+      })
+    )
+  }
+
   public ngOnChanges(): void {
     if (this.workspace) {
       this.setFormData()
@@ -66,19 +80,6 @@ export class WorkspacePropsComponent implements OnChanges {
       else this.formGroup.disable()
       this.oldWorkspaceName = this.workspace.name
       if (this.workspace.name === 'ADMIN') this.formGroup.controls['name'].disable()
-      this.themes$ = this.workspaceApi.getAllThemes().pipe(
-        map((val: any[]) => {
-          if (val.length === 0) {
-            return [this.workspace?.theme]
-          } else if (!val.includes(this.workspace?.theme)) {
-            val.sort(sortByLocale)
-            return val.concat(this.workspace?.theme)
-          } else {
-            val.sort(sortByLocale)
-            return val
-          }
-        })
-      )
     } else {
       this.formGroup.reset()
       this.formGroup.disable()

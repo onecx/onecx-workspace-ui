@@ -265,16 +265,16 @@
                       >
                     </span>
                     <div class="mt-05 ml-2 flex flex-row column-gap-2">
-                      <span class="mr-2">{{ mfe.controls['exposedModule'].value }}</span>
+                      <span class="mr-2 text-sm">{{ mfe.controls['exposedModule'].value }}</span>
                       <span
                         *ngIf="mfe.controls['undeployed'].value"
-                        class="danger-action-text pi pi-ban"
+                        class="danger-action-text text-sm pi pi-ban"
                         [title]="'DIALOG.PRODUCTS.MFES.UNDEPLOYED' | translate"
                       >
                       </span>
                       <span
                         *ngIf="mfe.controls['deprecated'].value"
-                        class="danger-action-text pi pi-exclamation-circle"
+                        class="danger-action-text text-sm pi pi-exclamation-circle"
                         [title]="'DIALOG.PRODUCTS.MFES.DEPRECATED' | translate"
                       >
                       </span>
