@@ -107,7 +107,7 @@
       "COLLAPSE_ALL": "Collapse all",
       "COLLAPSE_ALL.TOOLTIP": "Collapse all levels",
       "EXPAND_ALL": "Expand all",
-      "EXPAND_ALL.TOOLTIP": "Expand all levels"
+      "EXPAND_ALL.TOOLTIP": "Expand/Collapse all levels"
     },
     "CANCEL": "Cancel",
     "CHOOSE": "Choose",

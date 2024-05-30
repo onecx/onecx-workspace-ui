@@ -107,7 +107,7 @@
       "COLLAPSE_ALL": "Alles zu",
       "COLLAPSE_ALL.TOOLTIP": "Alle Ebenen zuklappen",
       "EXPAND_ALL": "Alles auf",
-      "EXPAND_ALL.TOOLTIP": "Alle Ebenen aufklappen"
+      "EXPAND_ALL.TOOLTIP": "Alle Ebenen auf/zuklappen"
     },
     "CANCEL": "Abbrechen",
     "CHOOSE": "Auswählen",
