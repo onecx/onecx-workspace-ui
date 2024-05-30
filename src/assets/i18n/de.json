@@ -279,7 +279,7 @@
         "ROLES.MANAGE": "Rollen verwalten",
         "ROLES.NOT_EXIST": "Keine Workspace Rollen",
         "PREVIEW.TOOLTIP": "Ansicht in den konfigurierten Sprachen",
-        "PREVIEW2.TOOLTIP": "Keine Übersetzungen",
+        "PREVIEW2.TOOLTIP": "Rot = keine Übersetzungen",
         "REORDER.TOOLTIP": "Umordnen mit Drag & Drop"
       },
       "SUBHEADER": "Menü verwalten",

@@ -65,7 +65,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   public myPermissions = new Array<string>() // permissions of the user
   public menuContextItems: SelectItem[]
   public menuContextValue = 'DETAILS'
-  public treeExpanded = false // off = collabsed
+  public treeExpanded = false // off = collapsed
 
   // workspace
   public workspace?: Workspace

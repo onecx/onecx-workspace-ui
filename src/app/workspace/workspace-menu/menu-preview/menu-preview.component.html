@@ -8,33 +8,25 @@
   (onResizeInit)="onStartResizeTree($event)"
   (onResizeEnd)="onEndResizeTree($event)"
 >
-  <ul class="mt-1">
+  <ul class="mt-1 px-5">
     <li>{{ 'DIALOG.MENU.HEADER.REORDER.TOOLTIP' | translate }}</li>
     <li class="danger-action-text">{{ 'DIALOG.MENU.HEADER.PREVIEW2.TOOLTIP' | translate }}</li>
   </ul>
-  <div class="mt-4 flex flex-wrap justify-content-between align-items-end gap-2">
-    <div class="h-2rem flex flex-wrap gap-2">
-      <button
-        pButton
-        type="button"
-        icon="pi pi-angle-double-down"
-        id="portal_menu_tree_expand"
-        [title]="'ACTIONS.TREE.EXPAND_ALL' | translate"
-        (click)="expandAll()"
-      ></button>
-      <button
-        pButton
-        type="button"
-        icon="pi pi-angle-double-up"
-        id="portal_menu_tree_collapse"
-        [title]="'ACTIONS.TREE.COLLAPSE_ALL' | translate"
-        (click)="collapseAll()"
-      ></button>
-    </div>
+  <div class="mt-4 flex flex-wrap justify-content-between align-items-start gap-2">
+    <p-toggleButton
+      inputId="workspace_menu_table_header_tree_toggle"
+      styleClass="data-view-control"
+      [(ngModel)]="treeExpanded"
+      [onLabel]="'ACTIONS.TREE.COLLAPSE_ALL' | translate"
+      [offLabel]="'ACTIONS.TREE.EXPAND_ALL' | translate"
+      ariaLabel="Toggle Tree View"
+      (onChange)="onToggleTreeViewMode($event)"
+      [title]="'ACTIONS.TREE.EXPAND_ALL.TOOLTIP' | translate"
+    />
     <span class="p-float-label">
       <p-dropdown
-        styleClass="reduced-field-size"
         id="portal_menu_tree_preview_language_list"
+        styleClass="reduced-field-size"
         [appendTo]="'body'"
         [title]="'DIALOG.MENU.PREVIEW.LANG.TOOLTIP' | translate"
         [emptyMessage]="'DIALOG.MENU.PREVIEW.LANG.EMPTY' | translate"

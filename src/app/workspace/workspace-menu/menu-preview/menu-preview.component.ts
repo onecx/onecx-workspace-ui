@@ -48,7 +48,7 @@ export class MenuPreviewComponent implements OnChanges {
   public ngOnChanges(changes: SimpleChanges): void {
     if (changes['menuItems'] || this.displayDialog) {
       this.menuNodes = this.mapToTree(this.menuItems, this.languagesPreviewValue)
-      this.treeExpanded = true
+      this.treeExpanded = false
       this.preparePreviewLanguages()
     }
   }
@@ -77,16 +77,11 @@ export class MenuPreviewComponent implements OnChanges {
   /**
    * TREE
    */
-  expandAll() {
+  public onToggleTreeViewMode(event: any): void {
     this.menuNodes.forEach((node) => {
-      this.expandRecursive(node, true)
+      this.expandRecursive(node, event.checked)
     })
-  }
-
-  collapseAll() {
-    this.menuNodes.forEach((node) => {
-      this.expandRecursive(node, false)
-    })
+    this.menuNodes = [...this.menuNodes]
   }
 
   private expandRecursive(node: TreeNode, isExpand: boolean) {

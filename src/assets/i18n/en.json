@@ -279,7 +279,7 @@
         "ROLES.MANAGE": "Manage Roles",
         "ROLES.NOT_EXIST": "No Workspace Roles",
         "PREVIEW.TOOLTIP": "Preview in configured languages",
-        "PREVIEW2.TOOLTIP": "No translation",
+        "PREVIEW2.TOOLTIP": "Red = no translation",
         "REORDER.TOOLTIP": "Reorder via Drag & Drop"
       },
       "SUBHEADER": "Manage the Menu",
