@@ -107,7 +107,7 @@
       "COLLAPSE_ALL": "Collapse all",
       "COLLAPSE_ALL.TOOLTIP": "Collapse all levels",
       "EXPAND_ALL": "Expand all",
-      "EXPAND_ALL.TOOLTIP": "Expand all levels"
+      "EXPAND_ALL.TOOLTIP": "Expand/Collapse all levels"
     },
     "CANCEL": "Cancel",
     "CHOOSE": "Choose",
@@ -279,7 +279,7 @@
         "ROLES.MANAGE": "Manage Roles",
         "ROLES.NOT_EXIST": "No Workspace Roles",
         "PREVIEW.TOOLTIP": "Preview in configured languages",
-        "PREVIEW2.TOOLTIP": "No translation",
+        "PREVIEW2.TOOLTIP": "Red = no translation",
         "REORDER.TOOLTIP": "Reorder via Drag & Drop"
       },
       "SUBHEADER": "Manage the Menu",
