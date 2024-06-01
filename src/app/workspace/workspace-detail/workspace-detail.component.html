@@ -63,6 +63,17 @@
         </p-tabPanel>
 
         <p-tabPanel
+          *ocxIfPermission="'WORKSPACE_SLOT#VIEW'"
+          id="workspace_detail_slots"
+          [disabled]="editMode"
+          class="p-0"
+          [header]="'TABS.WORKSPACE.SLOTS' | translate"
+          [tooltip]="'TABS.WORKSPACE.TOOLTIPS.SLOTS' | translate"
+        >
+          <app-workspace-slots [workspace]="workspaceForSlots"></app-workspace-slots>
+        </p-tabPanel>
+
+        <p-tabPanel
           *ocxIfPermission="'WORKSPACE_PRODUCTS#VIEW'"
           id="workspace_detail_products"
           class="p-0"

@@ -34,6 +34,7 @@
     "DELETE": {
       "LABEL": "Löschen",
       "ROLE": "Rolle löschen",
+      "SLOT": "Slot löschen",
       "WORKSPACE": "Workspace löschen",
       "MENU": "Menüpunkt löschen",
       "MESSAGE": "Möchten Sie \"{{ITEM}}\" löschen?",
@@ -46,6 +47,9 @@
       "ROLE_MESSAGE": "Damit wird die Rolle und deren Zuweisungen (zu Menüpunkten) für den Workspace gelöscht. Ändert nichts im Permission Management.",
       "ROLE_OK": "Die Rolle wurde erfolgreich gelöscht",
       "ROLE_NOK": "Ein Fehler ist aufgetreten. Die Rolle wurde nicht gelöscht.",
+      "SLOT_MESSAGE": "Damit wird die Zuweisung von Slot zur Komponente für den Workspace gelöscht.",
+      "SLOT_OK": "Die Slot-Zuweisung wurde erfolgreich gelöscht",
+      "SLOT_NOK": "Ein Fehler ist aufgetreten. Die Slot-Zuweisung wurde nicht gelöscht.",
       "PRODUCTS_MESSAGE": "Die ausgewählten Applikationen und ihre Apps werden für den Arbeitsbereich abgemeldet. Menüelemente, die solche Pfade verwenden, werden nicht berührt, funktionieren aber nicht mehr.",
       "PRODUCTS_QUESTION": "Möchten Sie die ausgewählten Applikationen abmelden?"
     },
@@ -147,6 +151,7 @@
       "INTERN": "Intern",
       "MENU": "Menü",
       "ROLES": "Rollen",
+      "SLOTS": "Slots",
       "PRODUCTS": "Applikationen",
       "TOOLTIPS": {
         "DETAILS": "Basiseigenschaften des Workspaces",
@@ -154,6 +159,7 @@
         "INTERN": "Interne Eigenschaften des Workspaces",
         "MENU": "Workspace Menü: Verwalten der Menüstruktur für den Workspace",
         "ROLES": "Workspace Rollen: die für die Benutzung des Workspaces von Bedeutung sind (als Teil aller Rollen des Mandants)",
+        "SLOTS": "Workspace Slots: die für die Benutzung des Workspaces von Bedeutung sind.",
         "PRODUCTS": "Registrierte Applikationen: Verwalten der für den Workspace registrierten Applikationen"
       }
     },
@@ -178,6 +184,13 @@
     "TYPE": "Typ",
     "DESCRIPTION": "Beschreibung",
     "ROLES_NOT_EXIST": "Keine Rollen definiert"
+  },
+  "SLOT": {
+    "NAME": "Name",
+    "PRODUCT": "Applikation",
+    "APP_ID": "App ID",
+    "COMPONENT": "Komponente",
+    "COMPONENTS": "Anzahl Komponenten"
   },
   "WORKSPACE": {
     "ID": "ID",

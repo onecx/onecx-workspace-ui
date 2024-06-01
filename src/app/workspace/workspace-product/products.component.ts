@@ -224,6 +224,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     // step through mfe array and pick modules and components
     if (psp.microfrontends)
       for (const mfe of psp.microfrontends) {
+        //console.log('prepareProductAppParts: mfe', mfe)
         const app = psp.apps.get(mfe.appId!)
         if (app && mfe.type === MicrofrontendType.Module) {
           if (!app.modules) app.modules = []
@@ -241,6 +242,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
       for (const slot of psp.slots) {
         psp.changedComponents = slot.undeployed || slot.deprecated || psp.changedComponents
       }
+    console.log('prepareProductAppParts: psp', psp)
   }
 
   public sortProductsByDisplayName(a: Product, b: Product): number {
@@ -361,6 +363,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     if (item.bucket === 'TARGET') {
       const modules = this.formGroup.get('modules') as FormArray
       while (modules.length > 0) modules.removeAt(0) // clear form
+      console.log('fillForm: ', this.displayedDetailItem)
       if (this.displayedDetailItem.microfrontends) {
         if (this.displayedDetailItem.microfrontends.length === 0) {
           this.displayedDetailItem.microfrontends = undefined

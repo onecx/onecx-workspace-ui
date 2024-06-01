@@ -59,6 +59,11 @@ app:
             DELETE: Delete a workspace role
             EDIT: Change workspace role
             VIEW: View workspace roles
+          WORKSPACE_SLOT:
+            CREATE: Create a workspace slot
+            DELETE: Delete a workspace slot
+            EDIT: Change workspace slot
+            VIEW: View workspace slots
           WORKSPACE_PRODUCTS:
             VIEW: View workspace products
             REGISTER: Register/Deregister products

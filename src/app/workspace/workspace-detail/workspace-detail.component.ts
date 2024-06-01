@@ -40,6 +40,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
   public workspace$!: Observable<GetWorkspaceResponse>
   public workspace: Workspace | undefined
   public workspaceForRoles: Workspace | undefined
+  public workspaceForSlots: Workspace | undefined
   public workspaceForProducts: Workspace | undefined
   public workspaceName = this.route.snapshot.params['name']
   public workspaceDeleteMessage = ''
@@ -147,7 +148,8 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
     if (workspace) {
       this.selectedTabIndex = $event.index
       if (this.selectedTabIndex === 3) this.workspaceForRoles = workspace
-      if (this.selectedTabIndex === 4) this.workspaceForProducts = workspace
+      if (this.selectedTabIndex === 4) this.workspaceForSlots = workspace
+      if (this.selectedTabIndex === 5) this.workspaceForProducts = workspace
     }
     this.prepareActionButtons()
   }
