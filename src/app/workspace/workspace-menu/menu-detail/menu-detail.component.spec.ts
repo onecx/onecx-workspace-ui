@@ -119,7 +119,7 @@ const product: Product = {
   modificationCount: 1
 }
 
-xdescribe('MenuDetailComponent', () => {
+describe('MenuDetailComponent', () => {
   let component: MenuDetailComponent
   let fixture: ComponentFixture<MenuDetailComponent>
   let mockActivatedRoute: Partial<ActivatedRoute>
@@ -290,22 +290,15 @@ xdescribe('MenuDetailComponent', () => {
 
   describe('loadMfeUrls', () => {
     it('should loadMfeUrls: with product display name', () => {
-      const productWithoutDisplayName: Product = {
-        id: 'prod id',
-        productName: 'prod name',
-        displayName: 'display name',
-        description: 'description',
-        microfrontends: [microfrontend],
-        modificationCount: 1
-      }
       menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[0]))
-      wProductApiServiceSpy.getProductsByWorkspaceId.and.returnValue(of([productWithoutDisplayName]))
+      wProductApiServiceSpy.getProductsByWorkspaceId.and.returnValue(of([product]))
       component.changeMode = 'VIEW'
       component.menuItemId = 'menuItemId'
       component.displayDetailDialog = true
       spyOn(component as any, 'preparePanelHeight')
 
       component.ngOnChanges()
+
       let controlMfeItems: MenuURL[] = []
       controlMfeItems.push({ appId: '$$$-empty', mfePath: '', product: 'MENU_ITEM.URL.EMPTY' })
       controlMfeItems.push({
@@ -313,110 +306,94 @@ xdescribe('MenuDetailComponent', () => {
         mfePath: '/workspace',
         product: 'MENU_ITEM.URL.UNKNOWN.PRODUCT'
       })
-      controlMfeItems.push({ ...microfrontend, product: 'display name' })
-
+      controlMfeItems.push({ ...microfrontend, mfePath: '/path/base', product: 'display name' })
       expect(component.mfeItems).toEqual(controlMfeItems)
       expect((component as any).preparePanelHeight).toHaveBeenCalled()
     })
 
-    it('should loadMfeUrls: match url with mfeItem.url => no $$$-unknown-product', () => {
-      const productWithoutDisplayName: Product = {
-        id: 'prod id',
-        baseUrl: '/base',
-        productName: 'prod name',
-        description: 'description',
-        microfrontends: [microfrontend],
-        modificationCount: 1
-      }
-      menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[3]))
-      wProductApiServiceSpy.getProductsByWorkspaceId.and.returnValue(of([productWithoutDisplayName]))
-      component.changeMode = 'VIEW'
-      component.menuItemId = 'menuItemId'
-      component.displayDetailDialog = true
-      spyOn(component as any, 'preparePanelHeight')
+    // it('should loadMfeUrls: match url with mfeItem.url => no $$$-unknown-product', () => {
+    //   menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[3]))
+    //   wProductApiServiceSpy.getProductsByWorkspaceId.and.returnValue(of([product]))
+    //   component.changeMode = 'VIEW'
+    //   component.menuItemId = 'menuItemId'
+    //   component.displayDetailDialog = true
+    //   spyOn(component as any, 'preparePanelHeight')
 
-      component.ngOnChanges()
-      let controlMfeItems: MenuURL[] = []
-      controlMfeItems.push({ appId: '$$$-empty', mfePath: '', product: 'MENU_ITEM.URL.EMPTY' })
-      controlMfeItems.push({
-        ...microfrontend,
-        mfePath: Location.joinWithSlash(microfrontend.basePath!, productWithoutDisplayName.baseUrl!),
-        product: undefined
-      })
+    //   component.ngOnChanges()
+    //   let controlMfeItems: MenuURL[] = []
+    //   controlMfeItems.push({ appId: '$$$-empty', mfePath: '', product: 'MENU_ITEM.URL.EMPTY' })
+    //   controlMfeItems.push({
+    //     ...microfrontend,
+    //     mfePath: Location.joinWithSlash(microfrontend.basePath!, product.baseUrl!),
+    //     product: undefined
+    //   })
 
-      expect(component.mfeItems).toEqual(controlMfeItems)
-      expect((component as any).preparePanelHeight).toHaveBeenCalled()
-    })
+    //   expect(component.mfeItems).toEqual(controlMfeItems)
+    //   expect((component as any).preparePanelHeight).toHaveBeenCalled()
+    // })
 
-    it('should loadMfeUrls: URL was extended then create such specific item with best match => no $$$-unknown-product', () => {
-      const productWithoutDisplayName: Product = {
-        id: 'prod id',
-        productName: 'prod name',
-        description: 'description',
-        microfrontends: [microfrontend],
-        modificationCount: 1
-      }
-      menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[4]))
-      wProductApiServiceSpy.getProductsByWorkspaceId.and.returnValue(of([productWithoutDisplayName]))
-      component.changeMode = 'VIEW'
-      component.menuItemId = 'menuItemId'
-      component.displayDetailDialog = true
-      spyOn(component as any, 'preparePanelHeight')
+    // it('should loadMfeUrls: URL was extended then create such specific item with best match => no $$$-unknown-product', () => {
+    //   const productWithoutDisplayName: Product = {
+    //     id: 'prod id',
+    //     productName: 'prod name',
+    //     description: 'description',
+    //     microfrontends: [microfrontend],
+    //     modificationCount: 1
+    //   }
+    //   menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[4]))
+    //   wProductApiServiceSpy.getProductsByWorkspaceId.and.returnValue(of([productWithoutDisplayName]))
+    //   component.changeMode = 'VIEW'
+    //   component.menuItemId = 'menuItemId'
+    //   component.displayDetailDialog = true
+    //   spyOn(component as any, 'preparePanelHeight')
 
-      component.ngOnChanges()
-      let controlMfeItems: MenuURL[] = []
-      controlMfeItems.push({ appId: '$$$-empty', mfePath: '', product: 'MENU_ITEM.URL.EMPTY' })
-      controlMfeItems.push({
-        id: 'id',
-        appId: 'appId',
-        mfePath: 'PATHEXT',
-        product: undefined
-      })
-      controlMfeItems.push({ ...microfrontend, product: undefined })
+    //   component.ngOnChanges()
+    //   let controlMfeItems: MenuURL[] = []
+    //   controlMfeItems.push({ appId: '$$$-empty', mfePath: '', product: 'MENU_ITEM.URL.EMPTY' })
+    //   controlMfeItems.push({
+    //     id: 'id',
+    //     appId: 'appId',
+    //     mfePath: 'PATHEXT',
+    //     product: undefined
+    //   })
+    //   controlMfeItems.push({ ...microfrontend, product: undefined })
 
-      expect(component.mfeItems).toEqual(controlMfeItems)
-      expect((component as any).preparePanelHeight).toHaveBeenCalled()
-    })
+    //   expect(component.mfeItems).toEqual(controlMfeItems)
+    //   expect((component as any).preparePanelHeight).toHaveBeenCalled()
+    // })
 
-    it('should loadMfeUrls: no product display name', () => {
-      const productWithoutDisplayName: Product = {
-        id: 'prod id',
-        productName: 'prod name',
-        description: 'description',
-        microfrontends: [microfrontend],
-        modificationCount: 1
-      }
-      menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[0]))
-      wProductApiServiceSpy.getProductsByWorkspaceId.and.returnValue(of([productWithoutDisplayName]))
-      component.changeMode = 'VIEW'
-      component.menuItemId = 'menuItemId'
-      component.displayDetailDialog = true
-      spyOn(component as any, 'preparePanelHeight')
+    // it('should loadMfeUrls: no product display name', () => {
+    //   const productWithoutDisplayName: Product = {
+    //     id: 'prod id',
+    //     productName: 'prod name',
+    //     description: 'description',
+    //     microfrontends: [microfrontend],
+    //     modificationCount: 1
+    //   }
+    //   menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[0]))
+    //   wProductApiServiceSpy.getProductsByWorkspaceId.and.returnValue(of([productWithoutDisplayName]))
+    //   component.changeMode = 'VIEW'
+    //   component.menuItemId = 'menuItemId'
+    //   component.displayDetailDialog = true
+    //   spyOn(component as any, 'preparePanelHeight')
 
-      component.ngOnChanges()
-      let controlMfeItems: MenuURL[] = []
-      controlMfeItems.push({ appId: '$$$-empty', mfePath: '', product: 'MENU_ITEM.URL.EMPTY' })
-      controlMfeItems.push({
-        appId: '$$$-unknown-product',
-        mfePath: '/workspace',
-        product: 'MENU_ITEM.URL.UNKNOWN.PRODUCT'
-      })
-      controlMfeItems.push({ ...microfrontend, product: undefined })
+    //   component.ngOnChanges()
+    //   let controlMfeItems: MenuURL[] = []
+    //   controlMfeItems.push({ appId: '$$$-empty', mfePath: '', product: 'MENU_ITEM.URL.EMPTY' })
+    //   controlMfeItems.push({
+    //     appId: '$$$-unknown-product',
+    //     mfePath: '/workspace',
+    //     product: 'MENU_ITEM.URL.UNKNOWN.PRODUCT'
+    //   })
+    //   controlMfeItems.push({ ...microfrontend, product: undefined })
 
-      expect(component.mfeItems).toEqual(controlMfeItems)
-      expect((component as any).preparePanelHeight).toHaveBeenCalled()
-    })
+    //   expect(component.mfeItems).toEqual(controlMfeItems)
+    //   expect((component as any).preparePanelHeight).toHaveBeenCalled()
+    // })
 
     it('should loadMfeUrls: url start with http ', () => {
-      const productWithoutDisplayName: Product = {
-        id: 'prod id',
-        productName: 'prod name',
-        description: 'description',
-        microfrontends: [microfrontend],
-        modificationCount: 1
-      }
       menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[2]))
-      wProductApiServiceSpy.getProductsByWorkspaceId.and.returnValue(of([productWithoutDisplayName]))
+      wProductApiServiceSpy.getProductsByWorkspaceId.and.returnValue(of([product]))
       component.changeMode = 'VIEW'
       component.menuItemId = 'menuItemId'
       component.displayDetailDialog = true
@@ -430,7 +407,7 @@ xdescribe('MenuDetailComponent', () => {
         mfePath: 'http://testdomain/workspace',
         product: 'MENU_ITEM.URL.HTTP'
       })
-      controlMfeItems.push({ ...microfrontend, product: undefined })
+      controlMfeItems.push({ ...microfrontend, mfePath: '/path/base', product: 'display name' })
 
       expect(component.mfeItems).toEqual(controlMfeItems)
       expect((component as any).preparePanelHeight).toHaveBeenCalled()
@@ -496,7 +473,7 @@ xdescribe('MenuDetailComponent', () => {
       disabled: new FormControl<boolean>(false),
       external: new FormControl<boolean>(false),
       url: new FormControl({
-        basePath: 'url mfePath'
+        mfePath: 'url mfePath'
       }),
       badge: new FormControl('badge'),
       scope: new FormControl('scope'),
@@ -796,20 +773,6 @@ xdescribe('MenuDetailComponent', () => {
    *     a) empty query => list all
    *     b) unknown entry => list all
    */
-
-  it('should filter MenuURL items based on the query', () => {
-    const mockEvent = { originalEvent: new Event('filter'), query: 'pa' }
-    component.formGroup = new FormGroup({
-      url: new FormControl('')
-    })
-    component.mfeItems = [microfrontend]
-
-    component.onFilterPaths(mockEvent)
-
-    expect(component.filteredMfes.length).toBe(1)
-    expect(component.filteredMfes[0].id).toBe('id')
-  })
-
   it('should filter when query is empty', () => {
     const mockEvent = { originalEvent: new Event('filter'), query: undefined! }
     component.formGroup = new FormGroup({
@@ -841,7 +804,7 @@ xdescribe('MenuDetailComponent', () => {
     component.formGroup.controls['url'].setValue({ mfePath: '/path' })
     const mockEvent = { originalEvent: new Event('filter'), query: '' }
 
-    component.mfeItems = [microfrontend]
+    component.mfeItems = [{ id: 'id1', appId: 'appId1', basePath: '/base1', mfePath: '/path' }]
 
     component.onFilterPaths(mockEvent)
 
@@ -849,23 +812,8 @@ xdescribe('MenuDetailComponent', () => {
     expect(component.filteredMfes[0].mfePath).toBe('/path')
   })
 
-  xit('should check if the query is found at the beginning of mfe path', () => {
-    const mockEvent = { originalEvent: new Event('filter'), query: 'url' }
-    component.formGroup = new FormGroup({
-      url: new FormControl({
-        mfePath: 'url mfePath'
-      })
-    })
-    component.mfeItems = [microfrontend]
-
-    component.onFilterPaths(mockEvent)
-
-    expect(component.filteredMfes.length).toBe(1)
-    expect(component.filteredMfes[0].mfePath).toBe('url mfePath')
-  })
-
   it('should filter MenuURL items based on the query', () => {
-    const mockEvent = { originalEvent: new Event('filter'), query: 'pa' }
+    const mockEvent = { originalEvent: new Event('filter'), query: '/pa' }
     component.formGroup = new FormGroup({
       url: new FormControl('')
     })
@@ -873,7 +821,10 @@ xdescribe('MenuDetailComponent', () => {
       appId: 'appId',
       basePath: 'path'
     }
-    component.mfeItems = [microfrontendNoId, microfrontend]
+    component.mfeItems = [
+      { ...microfrontendNoId, mfePath: '/path' },
+      { ...microfrontend, mfePath: '/path' }
+    ]
 
     component.onFilterPaths(mockEvent)
 

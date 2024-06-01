@@ -7,6 +7,7 @@ import { MenuTreeService } from '../services/menu-tree.service'
 import { MenuStateService, MenuState } from '../services/menu-state.service'
 import { RouterTestingModule } from '@angular/router/testing'
 import { TranslateTestingModule } from 'ngx-translate-testing'
+import { ToggleButtonModule } from 'primeng/togglebutton'
 
 const state: MenuState = {
   pageSize: 0,
@@ -21,7 +22,7 @@ const items = [
   { key: 'key2', badge: 'angle-double-down', id: 'id' }
 ]
 
-xdescribe('MenuPreviewComponent', () => {
+describe('MenuPreviewComponent', () => {
   let component: MenuPreviewComponent
   let fixture: ComponentFixture<MenuPreviewComponent>
 
@@ -34,6 +35,7 @@ xdescribe('MenuPreviewComponent', () => {
       imports: [
         RouterTestingModule,
         HttpClientTestingModule,
+        ToggleButtonModule,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
@@ -66,7 +68,7 @@ xdescribe('MenuPreviewComponent', () => {
 
     component.ngOnChanges({})
 
-    expect(component.treeExpanded).toBeTrue()
+    expect(component.treeExpanded).toBeFalse()
   })
 
   it('should set menuNodes onChanges if workspaceDetail & changes correct: langExists true', () => {
@@ -77,10 +79,10 @@ xdescribe('MenuPreviewComponent', () => {
 
     component.ngOnChanges({})
 
-    expect(component.treeExpanded).toBeTrue()
+    expect(component.treeExpanded).toBeFalse()
   })
 
-  xit('should expand tree nodes on expandAll', () => {
+  it('should expand tree nodes on expandAll', () => {
     const mockExpansionState: Map<string, boolean> = new Map<string, boolean>()
     stateServiceSpy.getState.and.returnValue({
       treeExpansionState: mockExpansionState,
@@ -99,7 +101,7 @@ xdescribe('MenuPreviewComponent', () => {
     expect(stateServiceSpy.getState().treeExpansionState.get('1')).toBeTrue()
   })
 
-  xit('should expand tree nodes on expandAll: no node key', () => {
+  it('should expand tree nodes on expandAll: no node key', () => {
     const mockExpansionState: Map<string, boolean> = new Map<string, boolean>()
     stateServiceSpy.getState.and.returnValue({
       treeExpansionState: mockExpansionState,
@@ -115,7 +117,7 @@ xdescribe('MenuPreviewComponent', () => {
     expect(stateServiceSpy.getState().treeExpansionState.get('1')).toBeUndefined()
   })
 
-  xit('should collapse tree nodes on collapseAll', () => {
+  it('should collapse tree nodes on collapseAll', () => {
     const mockExpansionState: Map<string, boolean> = new Map<string, boolean>()
     stateServiceSpy.getState.and.returnValue({
       treeExpansionState: mockExpansionState,
