@@ -1,0 +1,18 @@
+@import 'src/_mixins.scss';
+
+@include card-badges;
+@include danger-action;
+@include correct-data-view-control;
+@include correct-data-view-header-for-tabpanel;
+
+:host ::ng-deep {
+  .h-2-5rem {
+    height: 2.5rem !important;
+  }
+  .card-badge-left,
+  .card-badge-right {
+    &.badge-2-1 {
+      top: 25px;
+    }
+  }
+}

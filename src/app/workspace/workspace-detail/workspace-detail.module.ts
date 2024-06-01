@@ -3,16 +3,18 @@ import { CommonModule } from '@angular/common'
 import { FormsModule } from '@angular/forms'
 import { RouterModule, Routes } from '@angular/router'
 
-import { addInitializeModuleGuard, InitializeModuleGuard, PortalCoreModule } from '@onecx/portal-integration-angular'
+import { PortalCoreModule } from '@onecx/portal-integration-angular'
+import { addInitializeModuleGuard, InitializeModuleGuard } from '@onecx/angular-integration-interface'
 import { SharedModule } from 'src/app/shared/shared.module'
 import { LabelResolver } from 'src/app/shared/label.resolver'
 
 import { WorkspaceDetailComponent } from './workspace-detail.component'
 import { WorkspacePropsComponent } from './workspace-props/workspace-props.component'
-import { WorkspaceRolesComponent } from './workspace-roles/workspace-roles.component'
-import { WorkspaceRoleDetailComponent } from '../workspace-role-detail/workspace-role-detail.component'
 import { WorkspaceInternComponent } from './workspace-intern/workspace-intern.component'
 import { WorkspaceContactComponent } from './workspace-contact/workspace-contact.component'
+import { WorkspaceRolesComponent } from './workspace-roles/workspace-roles.component'
+import { WorkspaceRoleDetailComponent } from '../workspace-role-detail/workspace-role-detail.component'
+import { WorkspaceSlotsComponent } from './workspace-slots/workspace-slots.component'
 import { ProductComponent } from '../workspace-product/products.component'
 
 const routes: Routes = [
@@ -40,6 +42,7 @@ const routes: Routes = [
     WorkspaceInternComponent,
     WorkspaceRolesComponent,
     WorkspaceRoleDetailComponent,
+    WorkspaceSlotsComponent,
     ProductComponent
   ],
   imports: [

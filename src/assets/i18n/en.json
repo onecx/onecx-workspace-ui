@@ -34,6 +34,7 @@
     "DELETE": {
       "LABEL": "Delete",
       "ROLE": "Delete Role",
+      "SLOT": "Delete Slot assignment",
       "WORKSPACE": "Delete Workspace",
       "MENU": "Delete Menu Item",
       "MESSAGE": "Do you want to delete \"{{ITEM}}\"?",
@@ -46,6 +47,9 @@
       "ROLE_MESSAGE": "This deletes the role and its assignments for the workspace. Does not changed anycthing in Permission Management.",
       "ROLE_OK": "The Role was deleted successfully",
       "ROLE_NOK": "An error has occurred. The Role was not deleted.",
+      "SLOT_MESSAGE": "This deletes the assignment of Slot to Component for the Workspace.",
+      "SLOT_OK": "The assignment of Slot to Component was deleted successfully",
+      "SLOT_NOK": "An error has occurred. The Slot was not deleted.",
       "PRODUCTS_MESSAGE": "The selected Applications and their apps are deregistered from the Workspace. Menu items that use such paths are not touched but no longer work.",
       "PRODUCTS_QUESTION": "Do you want to deregister selected Applications?"
     },
@@ -147,6 +151,7 @@
       "INTERN": "Internal",
       "MENU": "Menu",
       "ROLES": "Roles",
+      "SLOTS": "Slots",
       "PRODUCTS": "Applications",
       "TOOLTIPS": {
         "DETAILS": "Base properties of the Workspace",
@@ -154,6 +159,7 @@
         "INTERN": "Internal properties of the Workspace",
         "MENU": "Workspace Menu: Management of the menu structure",
         "ROLES": "Workspace Roles: Management of the Roles usable by the Workspace (as an subset of tenant roles)",
+        "SLOTS": "Workspace Slots: Management of the Slots usable by the Workspace.",
         "PRODUCTS": "Workspace Applications: Management of Applications usable in the Workspace"
       }
     },
@@ -178,6 +184,13 @@
     "TYPE": "Type",
     "DESCRIPTION": "Description",
     "ROLES_NOT_EXIST": "No roles defined"
+  },
+  "SLOT": {
+    "NAME": "Name",
+    "PRODUCT": "Application",
+    "APP_ID": "App ID",
+    "COMPONENT": "Component",
+    "COMPONENTS": "Number of Components"
   },
   "WORKSPACE": {
     "ID": "ID",

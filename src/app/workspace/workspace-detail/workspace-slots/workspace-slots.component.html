@@ -1,0 +1,104 @@
+<p-dataView
+  id="workspace_detail_slots_dataview"
+  [value]="(wSlots$ | async)?.slots?.sort(sortSlotsByName) || []"
+  [paginator]="true"
+  [alwaysShowPaginator]="true"
+  [rowsPerPageOptions]="[24, 48]"
+  [rows]="24"
+  [layout]="'grid'"
+  [filterBy]="filterBy"
+  [sortField]="sortField"
+  [sortOrder]="sortOrder"
+>
+  <ng-template pTemplate="header">
+    <div class="flex flex-wrap align-items-center">
+      <ocx-data-view-controls
+        class="flex-grow-1"
+        [supportedViews]="['grid']"
+        [initialViewMode]="'grid'"
+        [filterValue]="filterValue"
+        [enableFiltering]="true"
+        (filterChange)="onFilterChange($event)"
+        [filterColumns]="['SLOT.NAME' | translate]"
+        [enableSorting]="true"
+        [sortingOptions]="[{ label: 'SLOT.NAME' | translate, value: 'name' }]"
+        [defaultSortOption]="sortField"
+        [defaultSortDirection]="sortOrder === 1"
+        (sortChange)="onSortChange($event)"
+        (sortDirectionChange)="onSortDirChange($event)"
+        [translations]="dataViewControlsTranslations"
+      >
+      </ocx-data-view-controls>
+      <div class="ml-3 flex column-gap-2">
+        <p-button
+          *ocxIfPermission="'WORKSPACE_SLOT#VIEW'"
+          type="button"
+          id="workspace_slots_header_reload"
+          styleClass="h-full"
+          [title]="'ACTIONS.SEARCH.RELOAD' | translate"
+          (onClick)="onReload()"
+          icon="pi pi-refresh"
+        >
+        </p-button>
+        <!--p-button
+          *ocxIfPermission="'WORKSPACE_SLOT#CREATE'"
+          type="button"
+          id="workspace_slots_header_create"
+          styleClass="h-full"
+          [title]="'ACTIONS.CREATE.SLOT' | translate"
+          (onClick)="onCreateRole($event)"
+          icon="pi pi-plus"
+        >
+        </p-button-->
+      </div>
+    </div>
+  </ng-template>
+  <ng-template let-slot let-item="rowIndex" pTemplate="gridItem">
+    <div class="col-12 sm:col-6 md:col-4 lg:col-4 xl:col-3 p-3">
+      <!-- 
+          (click)="onDeleteRole($event, role)"
+          (click)="onAddRole($event, role)"
+      -->
+      <div
+        [id]="'workspace_detail_slots_data_item_' + item"
+        class="card relative p-2 hover:bg-gray-200 cursor-pointer"
+        (click)="onEditSlot($event, slot)"
+      >
+        <span
+          *ngIf="slot.components"
+          [id]="'workspace_detail_slots_data_item_' + item + '_components'"
+          [title]="'SLOT.COMPONENTS' | translate"
+          class="card-badge-right badge-2-1 p-1 text-primary"
+          >{{ slot.components.length }}</span
+        >
+        <!--
+        <span
+          *ngIf="hasDeletePermission"
+          [id]="'workspace_detail_slots_data_item_' + item + '_delete'"
+          [title]="'ACTIONS.DELETE.SLOT' | translate"
+          class="card-badge-right badge-1 p-1 pi pi-trash pseudo-button-link bg-primary"
+        ></span>
+        <span
+          *ngIf="hasCreatePermission"
+          [id]="'workspace_detail_slots_data_item_' + item + '_create'"
+          [title]="'ACTIONS.CREATE.WORKSPACE.ROLE' | translate"
+          class="card-badge-right badge-1 p-1 pi pi-plus hover:text-white pseudo-button-link text-color"
+        ></span>
+        -->
+        <div class="h-2-5rem flex flex-column justify-content-center text-center">
+          <div class="font-bold" [title]="'Name: ' + slot.name">{{ limitText(slot.name, 30) }}</div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</p-dataView>
+
+<!--app-workspace-role-detail
+  [workspace]="workspace"
+  [slots]="slots"
+  [role]="role"
+  [changeMode]="changeMode"
+  [displayDetailDialog]="showRoleDetailDialog"
+  [displayDeleteDialog]="showRoleDeleteDialog"
+  (dataChanged)="onRoleChanged($event)"
+></app-workspace-role-detail-->
