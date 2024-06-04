@@ -69,6 +69,18 @@
         <p-checkbox
           type="text"
           [readonly]="true"
+          inputId="workspace_detail_item_operator"
+          [(ngModel)]="operator"
+          [binary]="true"
+          [styleClass]="'cursor-auto shadow-none'"
+          [label]="'INTERNAL.OPERATOR' | translate"
+          [title]="'INTERNAL.TOOLTIPS.OPERATOR' | translate"
+        ></p-checkbox>
+      </div>
+      <div class="w-12 sm:w-6 px-3 flex align-items-center">
+        <p-checkbox
+          type="text"
+          [readonly]="true"
           inputId="workspace_detail_item_mandatory"
           [(ngModel)]="mandatory"
           [binary]="true"

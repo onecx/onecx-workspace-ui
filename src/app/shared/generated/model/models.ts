@@ -28,6 +28,7 @@ export * from './getWorkspaceResponse';
 export * from './iAMRole';
 export * from './iAMRolePageResult';
 export * from './iAMRoleSearchCriteria';
+export * from './image';
 export * from './imageInfo';
 export * from './importMenuResponse';
 export * from './importResponseStatus';

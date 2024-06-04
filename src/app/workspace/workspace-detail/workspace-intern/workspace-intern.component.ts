@@ -12,10 +12,12 @@ export class WorkspaceInternComponent implements OnChanges {
   @Input() dateFormat = 'medium'
 
   public mandatory = false
+  public operator = false
 
   constructor(private translate: TranslateService) {}
 
   public ngOnChanges(): void {
     this.mandatory = this.workspace?.mandatory ?? false
+    this.operator = this.workspace?.operator ?? false
   }
 }

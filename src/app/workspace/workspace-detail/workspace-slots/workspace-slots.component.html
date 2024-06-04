@@ -1,15 +1,19 @@
 <p-dataView
   id="workspace_detail_slots_dataview"
-  [value]="(wSlots$ | async)?.slots?.sort(sortSlotsByName) || []"
+  [value]="wSlots"
   [paginator]="true"
   [alwaysShowPaginator]="true"
-  [rowsPerPageOptions]="[24, 48]"
+  [rowsPerPageOptions]="[24, 48, 96]"
   [rows]="24"
   [layout]="'grid'"
   [filterBy]="filterBy"
   [sortField]="sortField"
   [sortOrder]="sortOrder"
 >
+  <!--
+  [value]="wSlots"
+  [value]="(wSlots$ | async)?.sort(sortSlotsByName) || []"
+-->
   <ng-template pTemplate="header">
     <div class="flex flex-wrap align-items-center">
       <ocx-data-view-controls
@@ -93,12 +97,12 @@
   </ng-template>
 </p-dataView>
 
-<!--app-workspace-role-detail
+<!--app-workspace-slot-detail
   [workspace]="workspace"
   [slots]="slots"
-  [role]="role"
+  [role]="slot"
   [changeMode]="changeMode"
-  [displayDetailDialog]="showRoleDetailDialog"
-  [displayDeleteDialog]="showRoleDeleteDialog"
-  (dataChanged)="onRoleChanged($event)"
-></app-workspace-role-detail-->
+  [displayDetailDialog]="showSlotDetailDialog"
+  [displayDeleteDialog]="showSlotDeleteDialog"
+  (dataChanged)="onSlotChanged($event)"
+></app-workspace-slot-detail-->

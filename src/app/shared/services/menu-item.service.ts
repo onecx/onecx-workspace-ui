@@ -5,13 +5,11 @@ import { MenuItem } from 'primeng/api'
 @Injectable({ providedIn: 'root' })
 export class MenuItemService {
   public constructMenuItems(userWorkspaceMenuItem: UserWorkspaceMenuItem[] | undefined, userLang: string): MenuItem[] {
-    const menuItems = userWorkspaceMenuItem?.filter((item) => {
-      return item
-    })
+    const menuItems = userWorkspaceMenuItem?.filter((i) => i) // exclude undefined
     if (menuItems) {
       return menuItems
         .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
-        .filter((i) => i)
+        .filter((i) => !i.disabled)
         .map((item) => this.mapMenuItem(item, userLang))
     } else {
       return []
@@ -32,7 +30,7 @@ export class MenuItemService {
         item.children && item.children.length > 0
           ? item.children
               .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
-              .filter((i) => i)
+              .filter((i) => !i.disabled)
               .map((i) => this.mapMenuItem(i, userLang))
           : undefined,
       label,

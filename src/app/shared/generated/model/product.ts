@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 import { Microfrontend } from './microfrontend';
+import { Slot } from './slot';
 
 
 export interface Product { 
@@ -27,5 +28,6 @@ export interface Product {
     description?: string;
     undeployed?: boolean;
     microfrontends?: Array<Microfrontend>;
+    slots?: Array<Slot>;
 }
 

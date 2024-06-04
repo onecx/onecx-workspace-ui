@@ -1,6 +1,6 @@
 import { Component, Input, SimpleChanges, OnChanges, OnDestroy, OnInit, ViewChild } from '@angular/core'
 import { TranslateService } from '@ngx-translate/core'
-import { Subject, catchError, finalize, map, of, tap, takeUntil, Observable } from 'rxjs'
+import { Subject, catchError, finalize, map, of, switchMap, tap, takeUntil, Observable } from 'rxjs'
 //import { SelectItem } from 'primeng/api'
 import { DataView } from 'primeng/dataview'
 
@@ -9,8 +9,9 @@ import { PortalMessageService, UserService } from '@onecx/angular-integration-in
 
 import {
   GetSlotsForWorkspaceRequestParams,
+  ProductAPIService,
   Workspace,
-  WorkspaceSlots,
+  //WorkspaceSlots,
   Slot, // id, workspaceId, name, components[]
   SlotPS, // name, undeployed, deprecated
   //  SlotComponent, // productName, appId, name
@@ -19,6 +20,7 @@ import {
 import { limitText } from 'src/app/shared/utils'
 
 export type ChangeMode = 'VIEW' | 'CREATE' | 'EDIT' | 'COPY' | 'DELETE'
+export type CombinedSlot = Slot & { changes?: boolean; psSlot?: SlotPS }
 
 @Component({
   selector: 'app-workspace-slots',
@@ -32,12 +34,12 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
 
   // data
   private readonly destroy$ = new Subject()
-  //private wSlotsSubject$ = new Subject<void>()
-  public wSlots$: Observable<WorkspaceSlots> | undefined
-  //public wSlots$ = this.wSlotsSubject$.asObservable()
-  //public slotComponents: WorkspaceSlots[] | undefined
-  public psSlots$: Observable<SlotPS[]> | undefined
-  public psSlots: SlotPS[] | undefined
+  private triggerSubject = new Subject<CombinedSlot[]>()
+  public wSlots$!: Observable<CombinedSlot[]>
+  public wSlots!: CombinedSlot[]
+  public psSlots$!: Observable<CombinedSlot[]>
+  public psSlotMap!: Map<string, SlotPS>
+  public psSlots!: CombinedSlot[]
   public slot: Slot | undefined
 
   // dialog
@@ -60,6 +62,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   constructor(
     private user: UserService,
     private slotApi: SlotAPIService,
+    private psProductApi: ProductAPIService,
     private translate: TranslateService,
     private msgService: PortalMessageService
   ) {
@@ -72,7 +75,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     this.prepareTranslations()
   }
   public ngOnChanges(changes: SimpleChanges): void {
-    if (this.workspace && changes['workspace']) this.searchWorkspaceSlots()
+    if (this.workspace && changes['workspace']) this.loadData()
   }
   public ngOnDestroy(): void {
     this.destroy$.next(undefined)
@@ -80,30 +83,71 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   }
   public onReload() {
     console.log('reload')
-    //this.wSlotsSubject$?.next()
-    this.searchWorkspaceSlots()
+    this.loadData()
+    // this.triggerSubject.next([])
+  }
+  public loadData(): void {
+    this.loading = true
+    this.exceptionKey = undefined
+    this.declareWorkspaceSlots()
+    this.declarePsSlots()
+    this.wSlots$ //= this.triggerSubject.asObservable()
+      .pipe(
+        switchMap((wSlots) => {
+          this.wSlots = wSlots
+          return this.psSlots$
+        })
+      )
+      .subscribe()
   }
 
   /**
    * SEARCH
    */
-  private searchWorkspaceSlots(): void {
-    //this.wSlots$ = this.wSlotsSubject$.pipe()
+  private declareWorkspaceSlots(): void {
     this.wSlots$ = this.slotApi
       .getSlotsForWorkspace({ id: this.workspace?.id } as GetSlotsForWorkspaceRequestParams)
       .pipe(
         takeUntil(this.destroy$),
-        tap((res) => console.log(res)),
+        tap((res) => console.log('wSlots', res)),
+        map((res) => {
+          this.wSlots = []
+          res.slots?.forEach((slot) => {
+            this.wSlots.push(slot)
+          })
+          return this.wSlots
+        }),
         catchError((err) => {
           this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.SLOTS'
           console.error('searchSlots():', err)
-          return of({})
+          return of([] as Slot[])
         }),
         finalize(() => (this.loading = false))
       )
   }
   public sortSlotsByName(a: Slot, b: Slot): number {
     return (a.name ? a.name.toUpperCase() : '').localeCompare(b.name ? b.name.toUpperCase() : '')
+  }
+  private declarePsSlots(): void {
+    this.psSlots$ = this.psProductApi.searchAvailableProducts({ productStoreSearchCriteria: {} }).pipe(
+      tap((res) => console.log('psSlots', res)),
+      map((res) => {
+        this.psSlots = []
+        if (res.stream)
+          for (let p of res.stream)
+            p.slots?.forEach((s) => {
+              this.psSlots.push(s)
+            })
+        console.log('this.psSlots', this.psSlots)
+        return this.psSlots
+      }),
+      catchError((err) => {
+        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.PRODUCTS'
+        console.error('searchAvailableProducts():', err)
+        return of([])
+      }),
+      finalize(() => (this.loading = false))
+    )
   }
 
   /**
@@ -133,7 +177,6 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
       this.filterBy = 'name'
     }
     this.dv?.filter(filter, 'contains')
-    this.searchWorkspaceSlots()
   }
   public onSortChange(field: string): void {
     this.sortField = field
@@ -151,48 +194,13 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     this.changeMode = this.hasEditPermission ? 'EDIT' : 'VIEW'
     this.showSlotDetailDialog = true
   }
-  /*
-  public onAddRole(ev: MouseEvent, role: Role): void {
-    ev.stopPropagation()
-    this.wRoleApi
-      .createWorkspaceRole({
-        createWorkspaceRoleRequest: {
-          workspaceId: this.workspace?.id ?? '',
-          name: role.name,
-          description: role.description
-        } as CreateWorkspaceRoleRequest
-      })
-      .subscribe({
-        next: (data) => {
-          this.msgService.success({ summaryKey: 'ACTIONS.CREATE.ROLE_OK' })
-          role.id = data.id
-          role.isWorkspaceRole = true
-        },
-        error: () => {
-          this.msgService.error({ summaryKey: 'ACTIONS.CREATE.ROLE_NOK' })
-        }
-      })
-  }
-  public onCreateRole(ev: MouseEvent): void {
-    ev.stopPropagation()
-    this.role = undefined
-    this.changeMode = 'CREATE'
-    this.showRoleDetailDialog = true
-  }
-  public onDeleteRole(ev: Event, role: Role): void {
-    ev.stopPropagation()
-    if (!this.hasEditPermission) return
-    this.role = role
-    this.changeMode = 'DELETE'
-    this.showRoleDeleteDialog = true
-  }
+
   // dialog response handling
-  public onRoleChanged(changed: boolean) {
-    this.role = undefined
+  public onSlotChanged(changed: boolean) {
+    this.slot = undefined
     this.changeMode = 'VIEW'
-    this.showRoleDetailDialog = false
-    this.showRoleDeleteDialog = false
-    if (changed) this.searchRoles(true)
+    this.showSlotDetailDialog = false
+    this.showSlotDeleteDialog = false
+    if (changed) this.loadData()
   }
-*/
 }

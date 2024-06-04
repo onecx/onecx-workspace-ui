@@ -14,6 +14,7 @@ import { EximProduct } from './eximProduct';
 import { EximSlot } from './eximSlot';
 import { EximWorkspaceAddress } from './eximWorkspaceAddress';
 import { EximWorkspaceRole } from './eximWorkspaceRole';
+import { Image } from './image';
 
 
 export interface EximWorkspace { 
@@ -32,5 +33,6 @@ export interface EximWorkspace {
     address?: EximWorkspaceAddress;
     slots?: Array<EximSlot>;
     menu?: MenuSnapshot;
+    images?: { [key: string]: Image; };
 }
 

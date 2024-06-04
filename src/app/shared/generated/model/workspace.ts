@@ -31,5 +31,6 @@ export interface Workspace {
     logoUrl?: string;
     address?: WorkspaceAddress;
     mandatory?: boolean;
+    operator?: boolean;
 }
 

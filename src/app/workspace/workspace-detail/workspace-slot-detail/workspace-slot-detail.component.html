@@ -1,0 +1,117 @@
+<p-dialog
+  [(visible)]="displayDetailDialog"
+  [header]="'DIALOG.ROLE.HEADER.' + changeMode | translate"
+  (onHide)="onClose()"
+  [modal]="true"
+  [closable]="true"
+  [resizable]="true"
+  [dismissableMask]="true"
+  [style]="{ width: '400px' }"
+>
+  <div class="flex flex-wrap flex-column gap-4 justify-content-between">
+    <div class="mt-1">
+      <span class="p-float-label" controlErrorAnchor>
+        <input pInputText type="text" class="w-full" id="workspace_role_create_field_name" formControlName="name" />
+        <label class="ocx-required-label" for="workspace_role_create_field_name"> {{ 'ROLE.NAME' | translate }} </label>
+      </span>
+    </div>
+    <div>
+      <span class="p-float-label">
+        <input
+          pInputText
+          type="text"
+          class="w-full"
+          id="workspace_role_create_field_description"
+          formControlName="description"
+        />
+        <label for="workspace_role_create_field_description">{{ 'ROLE.DESCRIPTION' | translate }} </label>
+      </span>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
+      <button
+        *ngIf="changeMode === 'VIEW'"
+        pButton
+        autofocus
+        type="button"
+        class="m-0"
+        id="workspace_role_create_button_close"
+        icon="pi pi-times"
+        iconPos="left"
+        [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+        [title]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
+        (click)="onClose()"
+      ></button>
+      <button
+        *ngIf="changeMode !== 'VIEW'"
+        pButton
+        autofocus
+        type="button"
+        class="m-0"
+        id="workspace_role_create_button_cancel"
+        icon="pi pi-times"
+        iconPos="left"
+        [label]="'ACTIONS.CANCEL' | translate"
+        (click)="onClose()"
+      ></button>
+      <button
+        *ngIf="changeMode !== 'VIEW'"
+        pButton
+        type="button"
+        class="m-0"
+        id="workspace_role_create_button_save"
+        icon="pi pi-save"
+        iconPos="left"
+        [label]="'ACTIONS.SAVE' | translate"
+        (click)="onSaveSlot()"
+      ></button>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- DELETE ROLE -->
+<p-dialog
+  [(visible)]="displayDeleteDialog"
+  [header]="'DIALOG.ROLE.HEADER.DELETE' | translate"
+  (onHide)="onClose()"
+  [modal]="true"
+  [closable]="true"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [style]="{ 'max-width': '425px' }"
+>
+  <div class="flex column-gap-3 row-gap-1 justify-content-start align-items-center">
+    <div class="pi pi-question-circle text-3xl danger-action-text"></div>
+    <div>
+      <div>{{ ('ACTIONS.DELETE.MESSAGE' | translate).replace('{{ITEM}}', slot?.name) }}</div>
+      <div class="mt-2">{{ 'ACTIONS.DELETE.ROLE_MESSAGE' | translate }}</div>
+      <div class="mt-2">{{ 'ACTIONS.DELETE.MESSAGE_INFO' | translate }}</div>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
+      <button
+        pButton
+        autofocus
+        type="button"
+        class="m-0"
+        id="workspace_role_delete_button_cancel"
+        icon="pi pi-times"
+        iconPos="left"
+        [label]="'ACTIONS.CONFIRMATION.NO' | translate"
+        (click)="onClose()"
+      ></button>
+      <button
+        pButton
+        type="button"
+        class="m-0"
+        id="workspace_role_delete_button_save"
+        icon="pi pi-check"
+        iconPos="left"
+        [label]="'ACTIONS.CONFIRMATION.YES' | translate"
+        (click)="onDeleteSlotComponentConfirmation()"
+      ></button>
+    </div>
+  </ng-template>
+</p-dialog>

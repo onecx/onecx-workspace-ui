@@ -20,6 +20,7 @@ export interface UserWorkspaceMenuItem {
     position?: number;
     badge?: string;
     external?: boolean;
+    disabled?: boolean;
     i18n?: { [key: string]: string; };
     children?: Array<UserWorkspaceMenuItem>;
 }

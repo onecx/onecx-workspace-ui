@@ -46,6 +46,7 @@ model/getWorkspaceResponse.ts
 model/iAMRole.ts
 model/iAMRolePageResult.ts
 model/iAMRoleSearchCriteria.ts
+model/image.ts
 model/imageInfo.ts
 model/importMenuResponse.ts
 model/importResponseStatus.ts
