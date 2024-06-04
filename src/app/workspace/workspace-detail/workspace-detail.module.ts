@@ -15,6 +15,7 @@ import { WorkspaceContactComponent } from './workspace-contact/workspace-contact
 import { WorkspaceRolesComponent } from './workspace-roles/workspace-roles.component'
 import { WorkspaceRoleDetailComponent } from '../workspace-role-detail/workspace-role-detail.component'
 import { WorkspaceSlotsComponent } from './workspace-slots/workspace-slots.component'
+import { WorkspaceSlotDetailComponent } from './workspace-slot-detail/workspace-slot-detail.component'
 import { ProductComponent } from '../workspace-product/products.component'
 
 const routes: Routes = [
@@ -43,6 +44,7 @@ const routes: Routes = [
     WorkspaceRolesComponent,
     WorkspaceRoleDetailComponent,
     WorkspaceSlotsComponent,
+    WorkspaceSlotDetailComponent,
     ProductComponent
   ],
   imports: [

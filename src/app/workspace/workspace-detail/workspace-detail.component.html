@@ -6,6 +6,12 @@
     [figureImage]="currentLogoUrl"
     [figureBackground]="!currentLogoUrl"
   >
+    <p-message
+      *ngIf="workspace?.operator"
+      id="workspace_detail_operator_message"
+      severity="warn"
+      [text]="'INTERNAL.OPERATOR_MESSAGE' | translate"
+    ></p-message>
   </ocx-page-header>
 
   <ocx-page-content *ngIf="(workspace$ | async)?.resource as workspace">

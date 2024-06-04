@@ -1351,6 +1351,9 @@ components:
         mandatory:
           type: boolean
           default: false
+        operator:
+          type: boolean
+          default: false
     WorkspaceAbstract:
       required:
         - name
@@ -1747,6 +1750,10 @@ components:
           minItems: 1
           items:
             $ref: '#/components/schemas/Microfrontend'
+        slots:
+          type: array
+          items:
+            $ref: '#/components/schemas/Slot'
     Microfrontend:
       type: object
       properties:
@@ -1907,6 +1914,21 @@ components:
             $ref: '#/components/schemas/EximSlot'
         menu:
           $ref: '#/components/schemas/MenuSnapshot'
+        images:
+          $ref: '#/components/schemas/Images'
+    Images:
+      type: object
+      nullable: false
+      additionalProperties:
+        $ref: '#/components/schemas/Image'
+    Image:
+      type: object
+      properties:
+        imageData:
+          type: string
+          format: byte
+        mimeType:
+          type: string
     EximSlot:
       type: object
       properties:
@@ -2391,6 +2413,8 @@ components:
         external:
           type: boolean
           default: false
+        disabled:
+          type: boolean
         i18n:
           type: object
           additionalProperties:

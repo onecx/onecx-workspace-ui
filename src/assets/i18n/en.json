@@ -10,7 +10,7 @@
     "COPY": {
       "LABEL": "Copy",
       "OF": "Copy of ",
-      "DATA": "Create a new workspace with the data",
+      "DATA": "Create a new Workspace with the data",
       "CLIPBOARD": "Copy to clipboard"
     },
     "CREATE": {
@@ -24,8 +24,8 @@
       "MENU": "Create Menu Item",
       "MENU.TOOLTIP": "Create a new Menu Item below",
       "MESSAGE": {
-        "CREATE_OK": "The workspace was created successfully",
-        "CREATE_NOK": "An error has occurred. The workspace was not created.",
+        "CREATE_OK": "The Workspace was created successfully",
+        "CREATE_NOK": "An error has occurred. The Workspace was not created.",
         "MENU_ALREADY_EXIST": "A Menu Item with that name/id already exists",
         "MENU_CREATE_OK": "The Menu Item was created successfully",
         "MENU_CREATE_NOK": "An error has occurred. The Menu Item was not created."
@@ -44,7 +44,7 @@
       "MENU_MESSAGE": "This will also delete all menu items below.",
       "MENU_OK": "The Menu Item was deleted successfully",
       "MENU_NOK": "An error has occurred. The Menu Item could not be deleted.",
-      "ROLE_MESSAGE": "This deletes the role and its assignments for the workspace. Does not changed anycthing in Permission Management.",
+      "ROLE_MESSAGE": "This deletes the role and its assignments for the Workspace. Does not changed anycthing in Permission Management.",
       "ROLE_OK": "The Role was deleted successfully",
       "ROLE_NOK": "An error has occurred. The Role was not deleted.",
       "SLOT_MESSAGE": "This deletes the assignment of Slot to Component for the Workspace.",
@@ -171,12 +171,15 @@
     "MODIFICATION_DATE": "Changed on",
     "MODIFICATION_USER": "Changed by",
     "MANDATORY": "Mandatory",
+    "OPERATOR": "Created by Operator",
+    "OPERATOR_MESSAGE": "This Workspace was created by the operator. All changes will be lost on the next deployment.",
     "TOOLTIPS": {
       "CREATION_DATE": "Timestamp of the creation",
       "CREATION_USER": "ID of the user of the creation",
       "MODIFICATION_DATE": "Timestamp of the last change",
       "MODIFICATION_USER": "ID of the user of the last change",
-      "MANDATORY": "If set then this workspace is necessary for operation. The workspace cannot therefore be deleted."
+      "MANDATORY": "If set then this Workspace is necessary for operation. The Workspace cannot therefore be deleted.",
+      "OPERATOR": "If set, the Workspace cannot be deleted and all changes will be lost during the next deployment."
     }
   },
   "ROLE": {
@@ -502,24 +505,28 @@
       "WORKSPACE": "Unknown problem retrieving Workspace details - please try again.",
       "WORKSPACES": "Unknown problem retrieving Workspace data - please try again.",
       "PRODUCTS": "Unknown problem retrieving Application data - please try again.",
+      "SLOTS": "Unknown problem retrieving Slot data - please try again.",
       "MENUS": "Unknown problem retrieving Menu data - please try again."
     },
     "HTTP_STATUS_403": {
       "WORKSPACE": "You have no permissions to see Workspace details.",
       "WORKSPACES": "You have no permissions to see Workspaces.",
       "PRODUCTS": "You have no permissions to see Applications.",
+      "SLOTS": "You have no permissions to see Slots.",
       "MENUS": "You have no permissions to see Menus."
     },
     "HTTP_STATUS_404": {
       "WORKSPACE": "The Workspace could not be found.",
       "WORKSPACES": "No Workspaces could be found.",
       "PRODUCTS": "No Applications could be load.",
+      "SLOTS": "No Slots could be load.",
       "MENUS": "No Menus could be found."
     },
     "HTTP_STATUS_500": {
       "WORKSPACE": "Unknown server problem retrieving Workspace details - please try again.",
       "WORKSPACES": "Unknown server problem retrieving Workspace data - please try again.",
       "PRODUCTS": "Unknown server problem retrieving Application data - please try again.",
+      "SLOTS": "Unknown server problem retrieving Slot data - please try again.",
       "MENUS": "Unknown server problem retrieving Menu data - please try again."
     }
   }

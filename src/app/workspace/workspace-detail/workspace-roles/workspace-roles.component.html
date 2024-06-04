@@ -53,16 +53,6 @@
       </ocx-data-view-controls>
       <div class="ml-3 flex column-gap-2">
         <p-button
-          *ocxIfPermission="'WORKSPACE_ROLE#VIEW'"
-          type="button"
-          id="workspace_roles_header_reload"
-          styleClass="h-full"
-          [title]="'ACTIONS.SEARCH.RELOAD' | translate"
-          (onClick)="onReload()"
-          icon="pi pi-refresh"
-        >
-        </p-button>
-        <p-button
           *ocxIfPermission="'WORKSPACE_ROLE#CREATE'"
           type="button"
           id="workspace_roles_header_create"
@@ -70,6 +60,16 @@
           [title]="'ACTIONS.CREATE.ROLE' | translate"
           (onClick)="onCreateRole($event)"
           icon="pi pi-plus"
+        >
+        </p-button>
+        <p-button
+          *ocxIfPermission="'WORKSPACE_ROLE#VIEW'"
+          type="button"
+          id="workspace_roles_header_reload"
+          styleClass="h-full"
+          [title]="'ACTIONS.SEARCH.RELOAD' | translate"
+          (onClick)="onReload()"
+          icon="pi pi-refresh"
         >
         </p-button>
       </div>
