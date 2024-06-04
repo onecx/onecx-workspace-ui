@@ -5,7 +5,7 @@ import { MenuItem } from 'primeng/api'
 @Injectable({ providedIn: 'root' })
 export class MenuItemService {
   public constructMenuItems(userWorkspaceMenuItem: UserWorkspaceMenuItem[] | undefined, userLang: string): MenuItem[] {
-    const menuItems = userWorkspaceMenuItem
+    const menuItems = userWorkspaceMenuItem?.filter((i) => i) // exclude undefined
     if (menuItems) {
       return menuItems
         .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
