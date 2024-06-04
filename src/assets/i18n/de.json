@@ -218,6 +218,7 @@
   "MENU_ITEM": {
     "BADGE": "Icon",
     "DESCRIPTION": "Beschreibung",
+    "ENABLED": "Aktiviert (sichtbar)",
     "DISABLED": "Deaktiviert",
     "EXTERN": "Externer Link",
     "MENU_ID": "Menü-ID",
@@ -234,7 +235,7 @@
     "TOOLTIP": {
       "BADGE": "Icon aus der PrimeNG Bibliothek welches neben dem Menünamen angezeigt werden soll",
       "DESCRIPTION": "Zusatzinformationen",
-      "DISABLED": "Wenn gesetzt, dann wird der Menüpunkt inaktiv angezeigt",
+      "DISABLED": "Wenn gesetzt, dann wird der Menüpunkt nicht angezeigt",
       "EXTERN": "Wenn gesetzt, dann wird bei der Benutzung des Menüpunkst der Workspace-Kontext verlassen",
       "MENU_ID": "Ein eindeutiger Identifikator des Menüpunkts",
       "MENU_NAME": "Angezeigter Name",

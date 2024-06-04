@@ -729,11 +729,10 @@ describe('MenuComponent', () => {
   })
 
   it('should handle successful menu item update', () => {
-    menuApiServiceSpy.bulkPatchMenuItems.and.returnValue(of({}))
-    spyOn(console, 'log')
+    spyOn(component, 'loadMenu')
 
-    component.onUpdateMenuStructure(mockMenuItems)
+    component.onUpdateMenuStructure(true)
 
-    expect(console.log).toHaveBeenCalledWith('onUpdateMenuStructure')
+    expect(component.loadMenu).toHaveBeenCalledWith(true)
   })
 })

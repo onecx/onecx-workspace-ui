@@ -218,6 +218,7 @@
   "MENU_ITEM": {
     "BADGE": "Icon",
     "DESCRIPTION": "Description",
+    "ENABLED": "Activated (visible)",
     "DISABLED": "Deactivated",
     "EXTERN": "External Link",
     "MENU_ID": "Menu ID",
@@ -234,7 +235,7 @@
     "TOOLTIP": {
       "BADGE": "Icon from the PrimeNG library which should be displayed next to the menu name",
       "DESCRIPTION": "Additional informationen",
-      "DISABLED": "If set, the menu item is displayed inactive",
+      "DISABLED": "If set, then the menu item is not displayed",
       "EXTERN": "If set, the menu item exits the Workspace context",
       "MENU_ID": "A unique identifier of the menu item",
       "MENU_NAME": "Displayed Name",

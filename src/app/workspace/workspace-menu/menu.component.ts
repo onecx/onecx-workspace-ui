@@ -20,6 +20,7 @@ import {
   CreateAssignmentRequest,
   MenuItemAPIService,
   MenuItemStructure,
+  UpdateMenuItemRequest,
   Workspace,
   WorkspaceMenuItem,
   WorkspaceRole,
@@ -184,6 +185,21 @@ export class MenuComponent implements OnInit, OnDestroy {
     return Object.keys(obj).length === 0
   }
 
+  // change visibility of menu item by click in tree
+  public onToggleDisable(ev: any, item: WorkspaceMenuItem): void {
+    this.menuItem = item
+    this.menuItem.disabled = !item.disabled
+    this.menuApi
+      .updateMenuItem({
+        menuItemId: this.menuItem.id!,
+        updateMenuItemRequest: this.menuItem as UpdateMenuItemRequest
+      })
+      .subscribe({
+        next: (data) => this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' }),
+        error: (err: { error: any }) => this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
+      })
+  }
+
   /****************************************************************************
    ****************************************************************************
    * CREATE + EDIT + DELETE
@@ -281,16 +297,6 @@ export class MenuComponent implements OnInit, OnDestroy {
         console.error('getWorkspaceByName():', result)
       } else if (result instanceof Object) {
         this.workspace = result.resource
-        /*
-        this.workspace?.microfrontendRegistrations = new Set(Array.from(workspace.microfrontendRegistrations ?? []))
-        this.mfeRUrls = Array.from(this.workspace?.microfrontendRegistrations || []).map((mfe) => mfe.baseUrl || '')
-        this.mfeRUrlOptions = Array.from(this.workspace?.microfrontendRegistrations ?? [])
-          .map((mfe) => ({
-            label: mfe.baseUrl,
-            value: mfe.baseUrl || '',
-          }))
-          .sort(dropDownSortItemsByLabel)
-        */
         this.loadMenu(false)
       } else {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_0.WORKSPACES'
@@ -554,9 +560,8 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.displayMenuPreview = false
   }
 
-  // triggered by changes of tree structure in tree popup
-  public onUpdateMenuStructure(changed: WorkspaceMenuItem[]): void {
-    console.log('onUpdateMenuStructure')
-    /* to do => check api facility, it should be different from MonoRepo */
+  // triggered by changes of tree structure in preview
+  public onUpdateMenuStructure(changed: boolean): void {
+    this.onReload()
   }
 }
