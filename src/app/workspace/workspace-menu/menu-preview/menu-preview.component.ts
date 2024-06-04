@@ -1,10 +1,10 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core'
 import { SelectItem, TreeNode } from 'primeng/api'
 
-import { UserService } from '@onecx/angular-integration-interface'
+import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 
 import { dropDownSortItemsByLabel } from 'src/app/shared/utils'
-import { WorkspaceMenuItem } from 'src/app/shared/generated'
+import { MenuItemAPIService, WorkspaceMenuItem } from 'src/app/shared/generated'
 import { MenuTreeService } from '../services/menu-tree.service'
 import { MenuStateService } from '../services/menu-state.service'
 
@@ -19,7 +19,7 @@ export class MenuPreviewComponent implements OnChanges {
   @Input() public menuItems!: WorkspaceMenuItem[]
   @Input() public displayDialog = false
   @Output() public hideDialog = new EventEmitter()
-  @Output() public reorderEmitter = new EventEmitter<WorkspaceMenuItem[]>()
+  @Output() public reorderEmitter = new EventEmitter<boolean>()
 
   public menuNodes!: TreeNode<WorkspaceMenuItem>[]
   public treeExpanded = false
@@ -40,7 +40,9 @@ export class MenuPreviewComponent implements OnChanges {
   constructor(
     private stateService: MenuStateService,
     private treeService: MenuTreeService,
-    private userService: UserService
+    private userService: UserService,
+    private msgService: PortalMessageService,
+    private menuApi: MenuItemAPIService
   ) {
     this.languagesPreviewValue = this.userService.lang$.getValue()
   }
@@ -124,67 +126,35 @@ export class MenuPreviewComponent implements OnChanges {
     return iconBase + 'pi pi-' + iconType
   }
 
-  private flatten(mi: WorkspaceMenuItem): WorkspaceMenuItem[] {
-    const res =
-      mi.children && mi.children.length > 0
-        ? mi.children.flatMap((pi: WorkspaceMenuItem) => this.flatten(pi)).concat(mi)
-        : [mi]
-    return res
-  }
-
+  /**
+   * End of DRAG & DROP action
+   */
   public onDrop(event: { dragNode: TreeNode<WorkspaceMenuItem>; dropNode: TreeNode<WorkspaceMenuItem> }): void {
-    const draggedNodeId = event.dragNode.key
-    const oldParentNodeId = event.dragNode.parent ? event.dragNode.parent.key : undefined
-
-    // find new parent id
-    let newParentNodeId: string | undefined
-    if (event.dropNode.children?.map((child) => child.key).includes(draggedNodeId)) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      newParentNodeId = event.dropNode.key!
-    } else if (event.dropNode.parent) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      newParentNodeId = event.dropNode.parent.key!
-    }
-
-    const newNodesPositions = this.treeService.calculateNewNodesPositions(
-      oldParentNodeId,
-      newParentNodeId,
-      this.menuNodes
-    )
-    const flatMenuItem = this.menuItems.flatMap((pi) => this.flatten(pi))
-
-    // prepare menu items to update
-    const updatedMenuItems: WorkspaceMenuItem[] = []
-    for (const updatedNode of newNodesPositions) {
-      const updateMenuItem = flatMenuItem.find((item: WorkspaceMenuItem) => item.id === updatedNode.id)
-      if (!updateMenuItem) {
-        return
-      }
-      if (updatedNode.id !== draggedNodeId) {
-        updatedMenuItems.push({
-          modificationCount: updateMenuItem.modificationCount,
-          key: updateMenuItem.key,
-          id: updateMenuItem.id,
-          parentItemId: updateMenuItem.parentItemId,
-          i18n: updateMenuItem.i18n,
-          position: updatedNode.position,
-          disabled: updateMenuItem.disabled,
-          external: updateMenuItem.external
-        })
-      } else {
-        updatedMenuItems.push({
-          key: updateMenuItem.key,
-          modificationCount: updateMenuItem.modificationCount,
-          id: updateMenuItem.id,
-          parentItemId: newParentNodeId,
-          i18n: updateMenuItem.i18n,
-          position: updatedNode.position,
-          disabled: updateMenuItem.disabled,
-          external: updateMenuItem.external
-        })
+    if (event.dragNode && event.dropNode) {
+      const menuItem = event.dragNode.data
+      const targetPos = event.dropNode.data?.position ?? 0
+      const parentItem = event.dropNode.parent?.data
+      if (menuItem && parentItem) {
+        this.menuApi
+          .updateMenuItemParent({
+            menuItemId: menuItem?.id!,
+            updateMenuItemParentRequest: {
+              modificationCount: menuItem.modificationCount!,
+              position: targetPos,
+              parentItemId: parentItem.id
+            }
+          })
+          .subscribe({
+            next: (data) => {
+              this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' })
+              event.dragNode.data = data
+              this.reorderEmitter.emit(true)
+            },
+            error: (err: { error: any }) =>
+              this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
+          })
       }
     }
-    this.reorderEmitter.emit(updatedMenuItems)
   }
 
   public onHierarchyViewChange(event: { node: { key: string; expanded: boolean } }): void {

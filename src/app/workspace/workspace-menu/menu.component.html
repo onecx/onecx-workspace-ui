@@ -156,13 +156,6 @@
               {{ 'DIALOG.MENU.TREE.I18N' | translate }}
             </th>
             <th
-              id="workspace_menu_table_header_app"
-              class="text-center hidden-md border-primary border-bottom-2"
-              [title]="'DIALOG.MENU.TREE.PRODUCT.TOOLTIP' | translate"
-            >
-              PM
-            </th>
-            <th
               id="workspace_menu_table_header_url"
               class="hidden-sm border-primary border-bottom-2"
               [title]="'DIALOG.MENU.TREE.URL.TOOLTIP' | translate"
@@ -204,6 +197,23 @@
           <ng-container *ngIf="!displayRoles">
             <td class="white-space-nowrap hidden-xs">
               <div class="flex gap-1">
+                <button
+                  pbutton
+                  type="button"
+                  [id]="'portal_menu_table_row_' + rowData.key + '_disabled'"
+                  (click)="onToggleDisable($event, rowData)"
+                  [title]="'MENU_ITEM.' + (rowData['disabled'] ? 'DISABLED' : 'ENABLED') | translate"
+                  class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
+                >
+                  <span
+                    class="text-red-500 font-medium p-button-icon pi pi-check-circle"
+                    [class.pi-check-circle]="!rowData['disabled']"
+                    [class.pi-minus-circle]="rowData['disabled']"
+                    [class.text-red-500]="rowData['disabled']"
+                    [class.text-green-500]="!rowData['disabled']"
+                    aria-hidden="true"
+                  ></span>
+                </button>
                 <button
                   pbutton
                   type="button"
@@ -252,13 +262,6 @@
                 [id]="'workspace_menu_table_row_' + rowData.key + '_i18n'"
                 class="pi pi-check"
                 [title]="'DIALOG.MENU.TREE.I18N.ROW.TOOLTIP' | translate"
-              ></span>
-            </td>
-            <td class="text-center hidden-md">
-              <span
-                *ngIf="rowData.regMfeAligned"
-                [id]="'workspace_menu_table_row_' + rowData.key + '_url'"
-                class="pi pi-check"
               ></span>
             </td>
             <td class="hidden-sm">

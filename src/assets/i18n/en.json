@@ -218,6 +218,7 @@
   "MENU_ITEM": {
     "BADGE": "Icon",
     "DESCRIPTION": "Description",
+    "ENABLED": "Activated (visible)",
     "DISABLED": "Deactivated",
     "EXTERN": "External Link",
     "MENU_ID": "Menu ID",
