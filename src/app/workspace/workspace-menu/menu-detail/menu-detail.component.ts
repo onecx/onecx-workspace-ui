@@ -42,7 +42,7 @@ DefaultValueAccessor.prototype.registerOnChange = function (fn) {
   styleUrls: ['./menu-detail.component.scss']
 })
 export class MenuDetailComponent implements OnChanges {
-  @Input() public workspaceId!: string | undefined
+  @Input() public workspaceId: string | undefined
   @Input() public menuItems: WorkspaceMenuItem[] | undefined
   @Input() public menuItemId: string | undefined
   @Input() public parentItems!: SelectItem[]
@@ -380,6 +380,7 @@ export class MenuDetailComponent implements OnChanges {
    * LOAD Microfrontends from registered products
    **/
   private loadMfeUrls(): void {
+    if (!this.workspaceId) return
     this.mfeItems = []
     this.wProductApi
       .getProductsByWorkspaceId({ id: this.workspaceId! })
@@ -420,7 +421,6 @@ export class MenuDetailComponent implements OnChanges {
   public onDropdownClick(field: any): void {
     field.overlayVisible = true
     this.filteredMfes = this.mfeItems
-    console.log('this.mfeItems', this.mfeItems)
   }
   // inkremental filtering: search path with current value after key up
   public onKeyUpUrl(ev: Event): void {
