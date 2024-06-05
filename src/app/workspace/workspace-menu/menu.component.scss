@@ -39,19 +39,19 @@
       }
       .p-treetable-tbody > tr {
         > td {
-          padding: 0 0.3rem;
+          padding: 0 0.15rem;
           align-items: center !important;
           .p-treetable-toggler {
             margin-right: unset;
           }
         }
         > td:first-of-type {
-          padding: 0.1rem 3rem 0.1rem 0.1rem;
+          padding: 0.1rem 2rem 0.1rem 0.1rem;
           display: flex !important;
           border-style: dotted;
         }
         > td:nth-of-type(2) {
-          padding: 0 0.8rem;
+          padding: 0 0.5rem;
         }
       }
     }
