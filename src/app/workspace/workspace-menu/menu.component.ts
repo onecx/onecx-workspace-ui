@@ -82,7 +82,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   public menuNodes: TreeNode[] = []
   public menuItems: WorkspaceMenuItem[] | undefined
   public menuItem: WorkspaceMenuItem | undefined
-  public parentItems: SelectItem[] = [{ label: '', value: null }] // default value is empty
+  public parentItems!: SelectItem[]
   // detail
   public changeMode: ChangeMode = 'EDIT'
   public displayMenuDetail = false
@@ -318,7 +318,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       } else if (result.menuItems instanceof Array) {
         this.menuItems = result.menuItems
         this.menuNodes = this.mapToTreeNodes(this.menuItems)
-        this.parentItems = []
+        this.initParentNodes()
         this.prepareParentNodes(this.menuNodes)
         this.loadRolesAndAssignments()
         if (restore) {
@@ -521,6 +521,9 @@ export class MenuComponent implements OnInit, OnDestroy {
     return url_parts[0] + '//' + url_parts[2] + Location.joinWithSlash(this.workspace?.baseUrl, url)
   }
 
+  private initParentNodes(): void {
+    this.parentItems = [{ label: '', value: null }] // default value is empty
+  }
   private prepareParentNodes(nodes: TreeNode[]): void {
     nodes.forEach((m) => {
       this.parentItems.push({ label: m.key, value: m.data.id } as SelectItem)
