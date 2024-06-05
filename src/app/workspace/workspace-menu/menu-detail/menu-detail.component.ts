@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, Renderer2, ViewChild } from '@angular/core'
+import { Component, EventEmitter, Input, OnChanges, Output, Renderer2, SimpleChanges, ViewChild } from '@angular/core'
 import { Location } from '@angular/common'
 import { TranslateService } from '@ngx-translate/core'
 import { DefaultValueAccessor, FormControl, FormGroup, Validators } from '@angular/forms'
@@ -22,7 +22,7 @@ import { IconService } from '../services/iconservice'
 
 type I18N = { [key: string]: string }
 type LanguageItem = SelectItem & { data: string }
-export type MenuURL = Microfrontend & { mfePath?: string; product?: string }
+export type MenuURL = Microfrontend & { mfePath?: string; product?: string; isSpecial?: boolean }
 interface AutoCompleteCompleteEvent {
   originalEvent: Event
   query: string
@@ -117,8 +117,9 @@ export class MenuDetailComponent implements OnChanges {
     })
   }
 
-  public ngOnChanges(): void {
-    this.loadMfeUrls()
+  public ngOnChanges(changes: SimpleChanges): void {
+    if (this.workspaceId && changes['workspaceId']) this.loadMfeUrls()
+    this.cleanupMfeUrls() // remove special entries
     this.formGroup.reset()
     this.tabIndex = 0
     this.languagesDisplayed = []
@@ -190,7 +191,7 @@ export class MenuDetailComponent implements OnChanges {
     let item: MenuURL | null = null
     let itemCreated = false
     if (url?.match(/^(http|https)/g)) {
-      item = { appId: '$$$-http-address', mfePath: url, product: 'MENU_ITEM.URL.HTTP' } as MenuURL
+      item = { mfePath: url, product: 'MENU_ITEM.URL.HTTP', isSpecial: true } as MenuURL
       itemCreated = true
     } else if (url) {
       // search for mfe with best match of base path
@@ -199,10 +200,12 @@ export class MenuDetailComponent implements OnChanges {
       itemCreated = match[1]
     }
     if (item && itemCreated) this.mfeItems.unshift(item) // add the new one on top
-    this.mfeItems.unshift({ appId: '$$$-empty', mfePath: '', product: 'MENU_ITEM.URL.EMPTY' })
     return url ? item : this.mfeItems[0]
   }
-
+  // remove special entries from list
+  private cleanupMfeUrls() {
+    this.mfeItems = this.mfeItems?.filter((mfe) => !mfe.isSpecial)
+  }
   private searchMfeForBasePathMatch(url: string): [MenuURL, boolean] {
     let item: MenuURL | null = null
     let maxLength = 0
@@ -216,14 +219,14 @@ export class MenuDetailComponent implements OnChanges {
       }
       // if URL was extended then create such specific item with best match
       if (url?.toLowerCase().startsWith(bp.toLowerCase()) && maxLength < bp.length) {
-        item = { ...mfeItem }
+        item = { ...mfeItem, isSpecial: true }
         item.mfePath = url
         maxLength = bp.length // remember length for finding the best match
         itemCreated = true
       }
     }
     if (!item) {
-      item = { appId: '$$$-unknown-product', mfePath: url, product: 'MENU_ITEM.URL.UNKNOWN.PRODUCT' } as MenuURL
+      item = { mfePath: url, product: 'MENU_ITEM.URL.UNKNOWN.PRODUCT', isSpecial: true } as MenuURL
       itemCreated = true
     }
     return [item, itemCreated]
@@ -381,7 +384,7 @@ export class MenuDetailComponent implements OnChanges {
    **/
   private loadMfeUrls(): void {
     if (!this.workspaceId) return
-    this.mfeItems = []
+    this.mfeItems = [{ mfePath: '', product: 'MENU_ITEM.URL.EMPTY' }]
     this.wProductApi
       .getProductsByWorkspaceId({ id: this.workspaceId! })
       .pipe(
