@@ -171,6 +171,16 @@
     }
   }
 }
+@mixin non-full-size-modal-dialog {
+  :host ::ng-deep {
+    @media (max-width: 991px) {
+      .p-dialog.p-dialog {
+        max-height: unset !important;
+        height: unset !important;
+      }
+    }
+  }
+}
 
 @mixin table-inline-buttons {
   :host ::ng-deep {
@@ -193,8 +203,11 @@
 @mixin correct-autocomplete {
   :host ::ng-deep {
     .p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item {
-      padding-top: 0.5rem;
-      padding-bottom: 0.5rem;
+      padding-top: 0.4rem;
+      padding-bottom: 0.4rem;
+      &:nth-child(odd) {
+        background-color: #f8f9fa;
+      }
     }
     .p-autocomplete-clear-icon {
       /* fix for bug in PrimeNG */

@@ -118,6 +118,7 @@ export class MenuDetailComponent implements OnChanges {
   }
 
   public ngOnChanges(): void {
+    this.loadMfeUrls()
     this.formGroup.reset()
     this.tabIndex = 0
     this.languagesDisplayed = []
@@ -130,7 +131,8 @@ export class MenuDetailComponent implements OnChanges {
         disabled: false
       } as MenuItem
       this.formGroup.patchValue(this.menuItem)
-    } else if (this.menuItemId) this.getMenu()
+      this.prepareUrlList()
+    } else if (this.menuItemId) this.getMenu() // edit
   }
 
   public onCloseDetailDialog(): void {
@@ -152,7 +154,7 @@ export class MenuDetailComponent implements OnChanges {
       next: (item) => {
         this.menuItem = item ?? undefined
         if (this.menuItem && this.displayDetailDialog) {
-          this.loadMfeUrls()
+          this.fillForm()
           this.preparePanelHeight()
         }
       }
@@ -184,6 +186,7 @@ export class MenuDetailComponent implements OnChanges {
    * 3. Add an empty item on top (to clean the field by selection = no url)
    */
   private prepareUrlList(url?: string): MenuURL | null {
+    if (!this.mfeItems) return null
     let item: MenuURL | null = null
     let itemCreated = false
     if (url?.match(/^(http|https)/g)) {
@@ -317,7 +320,7 @@ export class MenuDetailComponent implements OnChanges {
     if (!this.panelDetail) return
     this.renderer.setStyle(this.panelDetail?.el.nativeElement, 'display', 'block')
     if (this.panelHeight === 0) this.panelHeight = this.panelDetail?.el.nativeElement.offsetHeight
-    this.renderer.setStyle(this.panelDetail?.el.nativeElement, 'height', this.panelHeight - 70 + 'px')
+    this.renderer.setStyle(this.panelDetail?.el.nativeElement, 'height', this.panelHeight - 50 + 'px')
   }
 
   /**
@@ -379,7 +382,7 @@ export class MenuDetailComponent implements OnChanges {
   private loadMfeUrls(): void {
     this.mfeItems = []
     this.wProductApi
-      .getProductsByWorkspaceId({ id: this.workspaceId ?? '' })
+      .getProductsByWorkspaceId({ id: this.workspaceId! })
       .pipe(
         map((products) => {
           for (let p of products) {
@@ -394,7 +397,6 @@ export class MenuDetailComponent implements OnChanges {
             }
           }
           this.mfeItems.sort(this.sortMfesByPath)
-          this.fillForm()
         }),
         catchError((err) => {
           console.error('getProductsByWorkspaceId():', err)
@@ -403,12 +405,6 @@ export class MenuDetailComponent implements OnChanges {
       )
       .pipe(takeUntil(this.destroy$))
       .subscribe()
-  }
-  public sortMfesByProductAndBasePath(a: MenuURL, b: MenuURL): number {
-    return (
-      (a.product ? a.product.toUpperCase() : '').localeCompare(b.product ? b.product.toUpperCase() : '') ||
-      (a.mfePath ? a.mfePath : '').localeCompare(b.mfePath ? b.mfePath : '')
-    )
   }
   public sortMfesByPath(a: MenuURL, b: MenuURL): number {
     return (a.mfePath ? a.mfePath : '').localeCompare(b.mfePath ? b.mfePath : '')
@@ -424,6 +420,7 @@ export class MenuDetailComponent implements OnChanges {
   public onDropdownClick(field: any): void {
     field.overlayVisible = true
     this.filteredMfes = this.mfeItems
+    console.log('this.mfeItems', this.mfeItems)
   }
   // inkremental filtering: search path with current value after key up
   public onKeyUpUrl(ev: Event): void {

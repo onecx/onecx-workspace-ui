@@ -229,7 +229,7 @@
     "POSITION": "Position",
     "SCOPE": "Scope",
     "URL": "URL",
-    "URL.EMPTY": "",
+    "URL.EMPTY": "leer",
     "URL.HTTP": "Webadresse",
     "URL.UNKNOWN.PRODUCT": "Unbekannte Applikation",
     "TOOLTIP": {

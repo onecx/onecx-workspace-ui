@@ -87,8 +87,11 @@
                 [showClear]="true"
               >
                 <ng-template let-mfe pTemplate="item">
-                  <div class="flex flex-row column-gap-2 align-items-center">
-                    <div class="w-25rem">{{ limitText(mfe.mfePath, 45) }}</div>
+                  <div
+                    class="flex flex-row column-gap-2 align-items-center"
+                    [class.empty-dropdown-list-entry]="mfe.appId === '$$$-empty'"
+                  >
+                    <div class="w-23rem">{{ limitText(mfe.mfePath, 43) }}</div>
                     <div class="flex flex-column">
                       <div class="text-sm font-bold" [class.danger-action-text]="!mfe.id">
                         {{ mfe.id ? mfe.product : (mfe.product | translate) }}

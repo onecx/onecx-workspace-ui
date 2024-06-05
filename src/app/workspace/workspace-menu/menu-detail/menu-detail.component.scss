@@ -3,9 +3,13 @@
 @include danger-action;
 @include compact-dropdown-list-items;
 @include correct-autocomplete;
+@include non-full-size-modal-dialog;
 
 :host ::ng-deep {
   .menu-url-dropdown.p-dropdown .p-dropdown-label:not(.p-dropdown-label-empty) {
-    padding: 0.4rem 1rem !important;
+    padding: 0.2rem 1rem !important;
+  }
+  .empty-dropdown-list-entry {
+    min-height: 1rem;
   }
 }
