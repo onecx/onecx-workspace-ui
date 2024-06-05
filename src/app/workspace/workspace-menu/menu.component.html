@@ -142,13 +142,6 @@
               {{ 'ACTIONS.LABEL' | translate }}
             </th>
             <th
-              id="workspace_menu_table_header_position"
-              class="pl-0 text-center hidden-md border-primary border-bottom-2"
-              [title]="'DIALOG.MENU.TREE.POSITION.TOOLTIP' | translate"
-            >
-              Pos
-            </th>
-            <th
               id="workspace_menu_table_header_i18n"
               class="text-center hidden-md border-primary border-bottom-2"
               [title]="'DIALOG.MENU.TREE.I18N.TOOLTIP' | translate"
@@ -160,7 +153,7 @@
               class="hidden-sm border-primary border-bottom-2"
               [title]="'DIALOG.MENU.TREE.URL.TOOLTIP' | translate"
             >
-              URL
+              {{ 'MENU_ITEM.URL' | translate }}
             </th>
           </ng-container>
 
@@ -253,9 +246,6 @@
                 </button>
               </div>
             </td>
-            <td [id]="'workspace_menu_table_row_' + rowData.key + '_position'" class="hidden-md">
-              {{ rowData.positionPath }}
-            </td>
             <td class="text-center hidden-md">
               <span
                 *ngIf="!isObjectEmpty(rowData.i18n)"
@@ -274,7 +264,7 @@
                 class="text-primary font-italic cursor-pointer pr-3"
                 [title]="('ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate) + ': ' + rowData.gotoUrl"
               >
-                {{ limitText(rowData.url, 30) }}
+                {{ limitText(rowData.url, 40) }}
               </a>
             </td>
           </ng-container>

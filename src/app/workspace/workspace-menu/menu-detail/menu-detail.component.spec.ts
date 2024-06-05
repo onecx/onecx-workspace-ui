@@ -294,6 +294,7 @@ describe('MenuDetailComponent', () => {
       wProductApiServiceSpy.getProductsByWorkspaceId.and.returnValue(of([product]))
       component.changeMode = 'VIEW'
       component.menuItemId = 'menuItemId'
+      component.workspaceId = 'workspaceId'
       component.displayDetailDialog = true
       spyOn(component as any, 'preparePanelHeight')
 
@@ -395,6 +396,7 @@ describe('MenuDetailComponent', () => {
       menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[2]))
       wProductApiServiceSpy.getProductsByWorkspaceId.and.returnValue(of([product]))
       component.changeMode = 'VIEW'
+      component.workspaceId = 'workspaceId'
       component.menuItemId = 'menuItemId'
       component.displayDetailDialog = true
       spyOn(component as any, 'preparePanelHeight')
@@ -417,6 +419,7 @@ describe('MenuDetailComponent', () => {
       menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[0]))
       wProductApiServiceSpy.getProductsByWorkspaceId.and.returnValue(throwError(() => new Error()))
       component.changeMode = 'VIEW'
+      component.workspaceId = 'workspaceId'
       component.menuItemId = 'menuItemId'
       component.displayDetailDialog = true
       spyOn(component as any, 'preparePanelHeight')
