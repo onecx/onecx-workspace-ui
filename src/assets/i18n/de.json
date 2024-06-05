@@ -228,7 +228,7 @@
     "WORKSPACE": "Workspace Name",
     "POSITION": "Position",
     "SCOPE": "Scope",
-    "URL": "URL",
+    "URL": "Pfad oder URL",
     "URL.EMPTY": "leer",
     "URL.HTTP": "Webadresse",
     "URL.UNKNOWN.PRODUCT": "Unbekannte Applikation",
