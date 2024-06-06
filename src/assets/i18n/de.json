@@ -509,6 +509,13 @@
       "SLOTS": "Unbekanntes Problem beim Abrufen von Slot-Daten - Bitte versuchen sie es noch einmal.",
       "MENUS": "Unbekanntes Problem beim Abrufen von Menü-Daten - Bitte versuchen sie es noch einmal."
     },
+    "HTTP_STATUS_401": {
+      "WORKSPACE": "Sie sind nicht autorisiert um Workspace Details zu sehen.",
+      "WORKSPACES": "Sie sind nicht autorisiert um Workspaces zu sehen.",
+      "PRODUCTS": "Sie sind nicht autorisiert um Applikationen zu sehen.",
+      "SLOTS": "Sie sind nicht autorisiert um Slots zu sehen.",
+      "MENUS": "Sie sind nicht autorisiert um Menüs zu sehen."
+    },
     "HTTP_STATUS_403": {
       "WORKSPACE": "Sie haben keine Rechte um Workspace Details zu sehen.",
       "WORKSPACES": "Sie haben keine Rechte um Workspaces zu sehen.",

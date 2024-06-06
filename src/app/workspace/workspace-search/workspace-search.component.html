@@ -21,7 +21,7 @@
       id="portal_search_dataview"
       [value]="((workspaces$ | async)?.stream ?? []).sort(sortWorkspacesByName)"
       [paginator]="true"
-      [alwaysShowPaginator]="false"
+      [alwaysShowPaginator]="true"
       [rowsPerPageOptions]="'grid' ? [12, 24, 60] : [10, 20, 50]"
       [rows]="viewMode === 'grid' ? 12 : 10"
       [layout]="viewMode"

@@ -753,9 +753,9 @@ export class MenuItemAPIService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public updateMenuItem(requestParameters: UpdateMenuItemRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<Array<MenuItem>>;
-    public updateMenuItem(requestParameters: UpdateMenuItemRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<Array<MenuItem>>>;
-    public updateMenuItem(requestParameters: UpdateMenuItemRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<Array<MenuItem>>>;
+    public updateMenuItem(requestParameters: UpdateMenuItemRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<MenuItem>;
+    public updateMenuItem(requestParameters: UpdateMenuItemRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<MenuItem>>;
+    public updateMenuItem(requestParameters: UpdateMenuItemRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<MenuItem>>;
     public updateMenuItem(requestParameters: UpdateMenuItemRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
         const menuItemId = requestParameters.menuItemId;
         if (menuItemId === null || menuItemId === undefined) {
@@ -807,7 +807,7 @@ export class MenuItemAPIService {
         }
 
         let localVarPath = `/menu/${this.configuration.encodeParam({name: "menuItemId", value: menuItemId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
-        return this.httpClient.request<Array<MenuItem>>('put', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<MenuItem>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: updateMenuItemRequest,
