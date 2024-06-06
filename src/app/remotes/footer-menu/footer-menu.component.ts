@@ -77,7 +77,7 @@ export class OneCXFooterMenuComponent implements OnInit, ocxRemoteComponent {
         })
       ),
       withLatestFrom(this.userService.lang$),
-      map(([data, userLang]) => this.menuItemService.constructMenuItems(data?.menu?.[0].children, userLang)),
+      map(([data, userLang]) => this.menuItemService.constructMenuItems(data?.menu?.[0]?.children, userLang)),
       shareReplay(),
       untilDestroyed(this)
     )
