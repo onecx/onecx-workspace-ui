@@ -509,6 +509,13 @@
       "SLOTS": "Unknown problem retrieving Slot data - please try again.",
       "MENUS": "Unknown problem retrieving Menu data - please try again."
     },
+    "HTTP_STATUS_401": {
+      "WORKSPACE": "You are not authorized to see Workspace details.",
+      "WORKSPACES": "You are not authorized to see Workspaces.",
+      "PRODUCTS": "You are not authorized to see Applications.",
+      "SLOTS": "You are not authorized to see Slots.",
+      "MENUS": "You are not authorized to see Menus."
+    },
     "HTTP_STATUS_403": {
       "WORKSPACE": "You have no permissions to see Workspace details.",
       "WORKSPACES": "You have no permissions to see Workspaces.",

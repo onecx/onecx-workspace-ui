@@ -187,15 +187,21 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   // change visibility of menu item by click in tree
   public onToggleDisable(ev: any, item: WorkspaceMenuItem): void {
-    this.menuItem = item
-    this.menuItem.disabled = !item.disabled
+    ev.stopPropagation()
+    this.displayMenuDetail = false // prevent detail dialog activation
+    this.displayMenuDelete = false
+    item.disabled = !item.disabled
     this.menuApi
       .updateMenuItem({
-        menuItemId: this.menuItem.id!,
-        updateMenuItemRequest: this.menuItem as UpdateMenuItemRequest
+        menuItemId: item.id!,
+        updateMenuItemRequest: item as UpdateMenuItemRequest
       })
       .subscribe({
-        next: (data) => this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' }),
+        next: (data) => {
+          item.modificationCount = data.modificationCount
+          item.modificationDate = data.modificationDate
+          this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' })
+        },
         error: (err: { error: any }) => this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
       })
   }
