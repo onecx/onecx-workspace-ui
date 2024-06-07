@@ -57,20 +57,26 @@
       </div>
     </div>
   </ng-template>
-  <ng-template let-slot let-item="rowIndex" pTemplate="gridItem">
+  <ng-template let-slot let-idx="rowIndex" pTemplate="gridItem">
     <div class="col-12 sm:col-6 md:col-4 lg:col-4 xl:col-3 p-3">
       <!-- 
           (click)="onDeleteRole($event, role)"
           (click)="onAddRole($event, role)"
       -->
       <div
-        [id]="'workspace_detail_slots_data_item_' + item"
+        [id]="'workspace_detail_slots_data_idx_' + idx"
         class="card relative p-2 hover:bg-gray-200 cursor-pointer"
         (click)="onEditSlot($event, slot)"
       >
         <span
+          *ngIf="slot.changes"
+          [id]="'workspace_detail_slots_' + idx + '_changed_mfe'"
+          class="card-badge-right badge-1 danger-action-text font-bold text-xl pi pi-exclamation-circle"
+          [title]="'DIALOG.SLOT.CHANGED' | translate"
+        ></span>
+        <span
           *ngIf="slot.components"
-          [id]="'workspace_detail_slots_data_item_' + item + '_components'"
+          [id]="'workspace_detail_slots_data_item_' + idx + '_components'"
           [title]="'SLOT.COMPONENTS' | translate"
           class="card-badge-right badge-2-1 p-1 text-primary"
           >{{ slot.components.length }}</span
@@ -97,12 +103,11 @@
   </ng-template>
 </p-dataView>
 
-<!--app-workspace-slot-detail
+<app-workspace-slot-detail
   [workspace]="workspace"
-  [slots]="slots"
-  [role]="slot"
+  [slot]="slot"
   [changeMode]="changeMode"
   [displayDetailDialog]="showSlotDetailDialog"
   [displayDeleteDialog]="showSlotDeleteDialog"
   (dataChanged)="onSlotChanged($event)"
-></app-workspace-slot-detail-->
+></app-workspace-slot-detail>

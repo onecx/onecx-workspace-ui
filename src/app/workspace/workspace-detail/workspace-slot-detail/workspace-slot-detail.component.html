@@ -1,6 +1,6 @@
 <p-dialog
   [(visible)]="displayDetailDialog"
-  [header]="'DIALOG.ROLE.HEADER.' + changeMode | translate"
+  [header]="'DIALOG.SLOT.HEADER.VIEW' | translate"
   (onHide)="onClose()"
   [modal]="true"
   [closable]="true"
@@ -8,25 +8,47 @@
   [dismissableMask]="true"
   [style]="{ width: '400px' }"
 >
-  <div class="flex flex-wrap flex-column gap-4 justify-content-between">
-    <div class="mt-1">
-      <span class="p-float-label" controlErrorAnchor>
-        <input pInputText type="text" class="w-full" id="workspace_role_create_field_name" formControlName="name" />
-        <label class="ocx-required-label" for="workspace_role_create_field_name"> {{ 'ROLE.NAME' | translate }} </label>
-      </span>
-    </div>
-    <div>
-      <span class="p-float-label">
-        <input
-          pInputText
-          type="text"
-          class="w-full"
-          id="workspace_role_create_field_description"
-          formControlName="description"
-        />
-        <label for="workspace_role_create_field_description">{{ 'ROLE.DESCRIPTION' | translate }} </label>
-      </span>
-    </div>
+  <div class="flex flex-wrap flex-column gap-3 justify-content-between">
+    <p-fieldset [toggleable]="false" [collapsed]="false" styleClass="surface-100 py-0 mx-0">
+      <ng-template pTemplate="header">
+        <span [title]="'DIALOG.SLOT.PRODUCTS.TOOLTIP' | translate"> {{ 'DIALOG.SLOT.PRODUCTS' | translate }} </span>
+      </ng-template>
+      <div *ngFor="let slot of slot?.psSlots; let i = index" class="mb-2 flex flex-row column-gap-2">
+        <span
+          class="danger-action-text text-md pi pi-ban"
+          [class.invisible]="!slot.undeployed"
+          [title]="'DIALOG.SLOT.UNDEPLOYED' | translate"
+        >
+        </span>
+        <span
+          class="danger-action-text text-md pi pi-exclamation-circle"
+          [class.invisible]="!slot.deprecated"
+          [title]="'DIALOG.SLOT.DEPRECATED' | translate"
+        >
+        </span>
+        <span class="text-md">{{ slot.pDisplayName }}</span>
+      </div>
+    </p-fieldset>
+    <p-fieldset [toggleable]="false" [collapsed]="false" styleClass="surface-100 py-0 mx-0">
+      <ng-template pTemplate="header">
+        <span [title]="'DIALOG.SLOT.COMPONENTS.TOOLTIP' | translate"> {{ 'DIALOG.SLOT.COMPONENTS' | translate }} </span>
+      </ng-template>
+      <div *ngFor="let comp of slot?.psComponents; let i = index" class="mb-2 flex flex-row column-gap-2">
+        <span
+          class="danger-action-text text-md pi pi-ban"
+          [class.invisible]="!comp.undeployed"
+          [title]="'DIALOG.PRODUCTS.MFES.UNDEPLOYED' | translate"
+        >
+        </span>
+        <span
+          class="danger-action-text text-md pi pi-exclamation-circle"
+          [class.invisible]="!comp.deprecated"
+          [title]="'DIALOG.PRODUCTS.MFES.DEPRECATED' | translate"
+        >
+        </span>
+        <span class="text-md">{{ comp.name }}</span>
+      </div>
+    </p-fieldset>
   </div>
   <ng-template pTemplate="footer">
     <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
@@ -36,7 +58,7 @@
         autofocus
         type="button"
         class="m-0"
-        id="workspace_role_create_button_close"
+        id="workspace_slot_detail_button_close"
         icon="pi pi-times"
         iconPos="left"
         [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
@@ -49,7 +71,7 @@
         autofocus
         type="button"
         class="m-0"
-        id="workspace_role_create_button_cancel"
+        id="workspace_slot_detail_button_cancel"
         icon="pi pi-times"
         iconPos="left"
         [label]="'ACTIONS.CANCEL' | translate"
@@ -60,7 +82,7 @@
         pButton
         type="button"
         class="m-0"
-        id="workspace_role_create_button_save"
+        id="workspace_slot_create_button_save"
         icon="pi pi-save"
         iconPos="left"
         [label]="'ACTIONS.SAVE' | translate"
@@ -70,10 +92,10 @@
   </ng-template>
 </p-dialog>
 
-<!-- DELETE ROLE -->
+<!-- DELETE SLOT -->
 <p-dialog
   [(visible)]="displayDeleteDialog"
-  [header]="'DIALOG.ROLE.HEADER.DELETE' | translate"
+  [header]="'DIALOG.SLOT.HEADER.DELETE' | translate"
   (onHide)="onClose()"
   [modal]="true"
   [closable]="true"
@@ -96,7 +118,7 @@
         autofocus
         type="button"
         class="m-0"
-        id="workspace_role_delete_button_cancel"
+        id="workspace_slot_delete_button_cancel"
         icon="pi pi-times"
         iconPos="left"
         [label]="'ACTIONS.CONFIRMATION.NO' | translate"
@@ -106,7 +128,7 @@
         pButton
         type="button"
         class="m-0"
-        id="workspace_role_delete_button_save"
+        id="workspace_slot_delete_button_save"
         icon="pi pi-check"
         iconPos="left"
         [label]="'ACTIONS.CONFIRMATION.YES' | translate"
