@@ -8,7 +8,8 @@ import { ChangeMode, CombinedSlot } from '../workspace-slots/workspace-slots.com
 
 @Component({
   selector: 'app-workspace-slot-detail',
-  templateUrl: './workspace-slot-detail.component.html'
+  templateUrl: './workspace-slot-detail.component.html',
+  styleUrls: ['./workspace-slot-detail.component.scss']
 })
 export class WorkspaceSlotDetailComponent implements OnChanges {
   @Input() workspace!: Workspace | undefined
@@ -25,7 +26,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   ) {}
 
   public ngOnChanges(): void {
-    console.log('ngOnChanges')
+    console.log('slot detail ngOnChanges')
   }
 
   public onClose(): void {
@@ -36,7 +37,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
    * Add a Slot Component
    */
   public onSaveSlot(): void {
-    console.log('ngOnChanges')
+    console.log('onSaveSlot')
   }
 
   /**

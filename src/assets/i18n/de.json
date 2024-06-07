@@ -280,6 +280,20 @@
       "ORIGIN.IAM": "Rolle existiert im Identity Access Management",
       "ORIGIN.WORKSPACE": "Rolle existiert im Workspace"
     },
+    "SLOT": {
+      "HEADER": {
+        "DELETE": "Slot löschen",
+        "EDIT": "Slot ändern",
+        "VIEW": "Slot Details"
+      },
+      "CHANGED": "Es gibt wichtige Änderungen.",
+      "DEPRECATED": "Dieser Slot ist veraltet und wird in absehbarer Zeit nicht mehr nutzbar sein.",
+      "UNDEPLOYED": "Dieser Slot ist nicht länger nutzbar.",
+      "PRODUCTS": "Produkte",
+      "PRODUCTS.TOOLTIP": "Liste der Produkte die den Slot bereitstellen",
+      "COMPONENTS": "Zugewiesene Komponenten",
+      "COMPONENTS.TOOLTIP": "Liste der zugewiesenen Komponenten"
+    },
     "MENU": {
       "LABEL": "Menü",
       "HEADER": {

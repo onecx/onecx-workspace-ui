@@ -280,6 +280,20 @@
       "ORIGIN.IAM": "Role exists in Identity Access Management",
       "ORIGIN.WORKSPACE": "Role exists in Workspace"
     },
+    "SLOT": {
+      "HEADER": {
+        "DELETE": "Delete Slot",
+        "EDIT": "Change Slot",
+        "VIEW": "Slot Details"
+      },
+      "CHANGED": "There are important changes.",
+      "DEPRECATED": "This slot is outdated and will no longer be usable in the foreseeable future.",
+      "UNDEPLOYED": "This slot is no longer usable.",
+      "PRODUCTS": "Products",
+      "PRODUCTS.TOOLTIP": "List of Products that provide the slot",
+      "COMPONENTS": "Assigned Components",
+      "COMPONENTS.TOOLTIP": "List of assigned Components"
+    },
     "MENU": {
       "LABEL": "Menu",
       "HEADER": {
