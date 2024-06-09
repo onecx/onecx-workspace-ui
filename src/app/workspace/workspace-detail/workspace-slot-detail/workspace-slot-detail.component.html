@@ -14,6 +14,7 @@
         <span [title]="'DIALOG.SLOT.PRODUCTS.TOOLTIP' | translate"> {{ 'DIALOG.SLOT.PRODUCTS' | translate }} </span>
       </ng-template>
       <div *ngFor="let slot of slot?.psSlots; let i = index" class="mb-2 flex flex-row column-gap-2">
+        <span class="text-md">{{ slot.pDisplayName }}</span>
         <span
           class="danger-action-text text-md pi pi-ban"
           [class.invisible]="!slot.undeployed"
@@ -26,7 +27,6 @@
           [title]="'DIALOG.SLOT.DEPRECATED' | translate"
         >
         </span>
-        <span class="text-md">{{ slot.pDisplayName }}</span>
       </div>
     </p-fieldset>
     <p-fieldset [toggleable]="false" [collapsed]="false" styleClass="surface-100 py-0 mx-0">
@@ -34,19 +34,20 @@
         <span [title]="'DIALOG.SLOT.COMPONENTS.TOOLTIP' | translate"> {{ 'DIALOG.SLOT.COMPONENTS' | translate }} </span>
       </ng-template>
       <div *ngFor="let comp of slot?.psComponents; let i = index" class="mb-2 flex flex-row column-gap-2">
+        <span class="text-md">{{ comp.name }}</span>
         <span
+          *ngIf="comp.undeployed"
           class="danger-action-text text-md pi pi-ban"
-          [class.invisible]="!comp.undeployed"
           [title]="'DIALOG.PRODUCTS.MFES.UNDEPLOYED' | translate"
         >
         </span>
         <span
+          *ngIf="comp.deprecated"
           class="danger-action-text text-md pi pi-exclamation-circle"
-          [class.invisible]="!comp.deprecated"
           [title]="'DIALOG.PRODUCTS.MFES.DEPRECATED' | translate"
         >
         </span>
-        <span class="text-md">{{ comp.name }}</span>
+        <span class="text-xs">{{ comp.productName }}</span>
       </div>
     </p-fieldset>
   </div>
