@@ -3,7 +3,7 @@ import { TranslateService } from '@ngx-translate/core'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 
-import { SlotAPIService, UpdateSlotRequest, Workspace } from 'src/app/shared/generated'
+import { SlotAPIService, SlotComponent, UpdateSlotRequest, Workspace } from 'src/app/shared/generated'
 import { ChangeMode, CombinedSlot, ExtendedComponent } from '../workspace-slots/workspace-slots.component'
 
 @Component({
@@ -13,19 +13,24 @@ import { ChangeMode, CombinedSlot, ExtendedComponent } from '../workspace-slots/
 })
 export class WorkspaceSlotDetailComponent implements OnChanges {
   @Input() workspace!: Workspace | undefined
-  @Input() slot: CombinedSlot | undefined
+  @Input() slotOrg: CombinedSlot | undefined
   @Input() psComponentsOrg!: ExtendedComponent[]
 
   @Input() changeMode: ChangeMode = 'VIEW'
   @Input() displayDetailDialog = false
   @Input() displayDeleteDialog = false
-  @Output() dataChanged: EventEmitter<boolean> = new EventEmitter()
+  @Output() detailClosed: EventEmitter<boolean> = new EventEmitter()
 
+  public dateFormat = 'medium'
+  public dataChanged = false
+  public slot!: CombinedSlot
+  public slotName!: string
   public wComponents!: ExtendedComponent[]
   public psComponents!: ExtendedComponent[] // org ps components reduced by used in slot
   public hasEditPermission = false
   public displayDeregisterConfirmation = false
   private deregisterItems: ExtendedComponent[] = []
+  private wComponentsOrg: ExtendedComponent[] = []
 
   constructor(
     private slotApi: SlotAPIService,
@@ -34,6 +39,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
     private msgService: PortalMessageService
   ) {
     this.hasEditPermission = this.user.hasPermission('WORKSPACE_SLOT#EDIT')
+    this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm' : 'medium'
   }
 
   public sortComponentsByName(a: ExtendedComponent, b: ExtendedComponent): number {
@@ -41,11 +47,15 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   }
 
   public ngOnChanges(): void {
-    if (this.slot) {
+    if (this.slotOrg) {
       console.log('slot detail ngOnChanges')
+      this.dataChanged = false
+      this.slot = { ...this.slotOrg }
+      this.slotName = this.slot.name ?? ''
       // extract ps components
       this.wComponents = this.slot.psComponents ?? []
       this.wComponents.sort(this.sortComponentsByName)
+      this.wComponentsOrg = [...this.wComponents]
       this.psComponents = []
       this.psComponentsOrg.forEach((c) => {
         if (this.wComponents.filter((wc) => wc.name === c.name).length === 0) this.psComponents.push(c)
@@ -55,7 +65,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   }
 
   public onClose(): void {
-    this.dataChanged.emit(false)
+    this.detailClosed.emit(this.dataChanged)
   }
 
   /**
@@ -65,73 +75,51 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
     event.stopPropagation()
   }
   public onMoveToSource(event: any): void {
-    this.deregisterItems = [...event.items]
+    this.deregisterItems = event.items
     this.displayDeregisterConfirmation = true
   }
   public onDeregisterCancellation() {
+    if (this.deregisterItems.length === 0) return
     this.displayDeregisterConfirmation = false
     // restore
     for (let comp of this.deregisterItems) {
       this.psComponents = this.psComponents.filter((psc) => psc.name !== comp.name)
-      this.wComponents.push(comp)
     }
+    this.wComponents = this.wComponentsOrg
+    this.wComponentsOrg = [...this.wComponents]
     this.deregisterItems = []
-    this.psComponents.sort(this.sortComponentsByName)
-    this.wComponents.sort(this.sortComponentsByName)
   }
+
   public onDeregisterConfirmation(): void {
     this.displayDeregisterConfirmation = false
-    /*
-    let itemCount = this.deregisterItems.length
-    let successCounter = 0
-    let errorCounter = 0
-    for (let c of this.deregisterItems) {
-      this.wProductApi
-        .deleteProductById({
-          id: this.workspace?.id!,
-          productId: p.id!
-        })
-        .subscribe({
-          next: () => {
-            successCounter++
-            const psc = this.psComponents.filter((psc) => psc.name === c.name)[0]
-            psc.bucket = 'SOURCE'
-            if (itemCount === successCounter + errorCounter)
-              this.displayRegisterMessages('DEREGISTRATION', successCounter, errorCounter)
-          },
-          error: (err) => {
-            errorCounter++
-            // Revert change: remove item in source + add item in target list
-            this.psComponents = this.psComponents.filter((psc) => psc.name !== c.name)
-            this.wComponents.push(c)
-            console.error(err)
-            if (itemCount === successCounter + errorCounter)
-              this.displayRegisterMessages('DEREGISTRATION', successCounter, errorCounter)
-          }
-        })
-    } */
+    this.onSaveSlot()
   }
 
-  private displayRegisterMessages(type: string, success: number, error: number) {
-    this.deregisterItems = []
-    this.psComponents.sort(this.sortComponentsByName)
-    this.wComponents.sort(this.sortComponentsByName)
-    if (success > 0) {
-      if (success === 1) this.msgService.success({ summaryKey: 'DIALOG.SLOT.MESSAGES.' + type + '_OK' })
-      else this.msgService.success({ summaryKey: 'DIALOG.SLOT.MESSAGES.' + type + 'S_OK' })
-    }
-    if (error > 0)
-      if (error === 1) this.msgService.error({ summaryKey: 'DIALOG.SLOT.MESSAGES.' + type + '_NOK' })
-      else this.msgService.error({ summaryKey: 'DIALOG.SLOT.MESSAGES.' + type + 'S_NOK' })
-  }
-
-  public onMoveToTarget(ev: any): void {}
-
-  /**
-   * Add a Slot Component
-   */
-  public onSaveSlot(): void {
+  public onSaveSlot() {
     console.log('onSaveSlot')
+    this.slotApi
+      .updateSlot({
+        id: this.slot.id!,
+        updateSlotRequest: {
+          modificationCount: this.slot.modificationCount!,
+          name: this.slot.name!,
+          components: this.wComponents.map((ec) => {
+            return { productName: ec.productName, appId: ec.appId, name: ec.name } as SlotComponent
+          })
+        } as UpdateSlotRequest
+      })
+      .subscribe({
+        next: (data) => {
+          this.slot.modificationCount = data.modificationCount
+          this.slot.modificationDate = data.modificationDate
+          this.msgService.success({ summaryKey: 'ACTIONS.EDIT.SLOT_OK' })
+          this.dataChanged = true
+        },
+        error: (err) => {
+          this.msgService.error({ summaryKey: 'ACTIONS.EDIT.SLOT_NOK' })
+          console.error(err.error)
+        }
+      })
   }
 
   /**
@@ -141,7 +129,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
     this.slotApi.updateSlot({ id: this.slot?.id ?? '', updateSlotRequest: {} as UpdateSlotRequest }).subscribe({
       next: () => {
         this.msgService.success({ summaryKey: 'ACTIONS.DELETE.ROLE_OK' })
-        this.dataChanged.emit(true)
+        this.dataChanged = true
       },
       error: (err) => {
         this.msgService.error({ summaryKey: 'ACTIONS.DELETE.ROLE_NOK' })

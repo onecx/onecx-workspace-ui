@@ -87,10 +87,10 @@
 
 <app-workspace-slot-detail
   [workspace]="workspace"
-  [slot]="slot"
+  [slotOrg]="slot"
   [psComponentsOrg]="psComponents"
   [changeMode]="changeMode"
   [displayDetailDialog]="showSlotDetailDialog"
   [displayDeleteDialog]="showSlotDeleteDialog"
-  (dataChanged)="onSlotChanged($event)"
+  (detailClosed)="onSlotDetailClosed($event)"
 ></app-workspace-slot-detail>

@@ -242,8 +242,8 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     this.showSlotDetailDialog = true
   }
 
-  // dialog response handling
-  public onSlotChanged(changed: boolean) {
+  // detail dialog closed - reload data on changes
+  public onSlotDetailClosed(changed: boolean) {
     this.slot = undefined
     this.changeMode = 'VIEW'
     this.showSlotDetailDialog = false

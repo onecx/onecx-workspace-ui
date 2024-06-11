@@ -7,13 +7,54 @@
   [resizable]="true"
   [dismissableMask]="true"
 >
-  <p-divider align="center" styleClass="mt-0 mb-3">
-    <div class="px-3 font-bold text-base">{{ 'DIALOG.SLOT.PRODUCTS' | translate }}</div>
-  </p-divider>
+  <div class="">
+    <div class="flex flex-wrap flex-row justify-content-start md:justify-content-evenly row-gap-1 column-gap-2">
+      <span class="p-float-label my-1">
+        <input
+          pInputText
+          type="text"
+          readonly
+          id="slot_detail_slot_name"
+          class="min-w-max pt-3 pb-2"
+          [value]="slot ? slot.name : ''"
+          [title]="'SLOT.NAME' | translate"
+        />
+        <label for="slot_detail_slot_name">{{ 'SLOT.NAME' | translate }}</label>
+      </span>
+      <span class="p-float-label my-1">
+        <input
+          pInputText
+          type="text"
+          readonly
+          id="slot_detail_slot_creationDate"
+          class="w-13rem pt-3 pb-2"
+          [value]="slot ? (slot.creationDate | date : dateFormat) : ''"
+          [title]="'INTERNAL.TOOLTIPS.CREATION_DATE' | translate"
+        />
+        <label for="slot_detail_slot_creationDate">{{ 'INTERNAL.CREATION_DATE' | translate }}</label>
+      </span>
+      <span class="p-float-label my-1">
+        <input
+          pInputText
+          type="text"
+          readonly
+          id="slot_detail_slot_modifcationDate"
+          class="w-13rem pt-3 pb-2"
+          [value]="slot ? (slot.modificationDate | date : dateFormat) : ''"
+          [title]="'INTERNAL.TOOLTIPS.MODIFICATION_DATE' | translate"
+        />
+        <label for="slot_detail_slot_modifcationDate">{{ 'INTERNAL.MODIFICATION_DATE' | translate }}</label>
+      </span>
+    </div>
 
-  <div class="flex flex-wrap flex-column gap-3 justify-content-between">
+    <p-divider align="center" styleClass="mt-3 mb-2">
+      <div class="px-3 font-bold text-base" [title]="'DIALOG.SLOT.PRODUCTS.TOOLTIP' | translate">
+        {{ 'DIALOG.SLOT.PRODUCTS' | translate }}
+      </div>
+    </p-divider>
+
     <div *ngIf="slot?.psSlots?.length === 0" class="px-3 py-2 card surface-50 flex flex-row column-gap-2">
-      no sports
+      {{ 'DIALOG.SLOT.NO_PRODUCTS' | translate }}
     </div>
     <ng-container *ngIf="slot?.psSlots?.length !== 0">
       <div class="flex flex-wrap flex-row column-gap-3">
@@ -21,15 +62,15 @@
           *ngFor="let slot of slot?.psSlots; let i = index"
           class="px-3 py-2 card surface-50 mb-2 flex flex-row column-gap-2"
         >
-          <span class="text-md">{{ slot.pDisplayName }}</span>
+          <span class="text-md">{{ slot?.pDisplayName }}</span>
           <span
-            *ngIf="slot.undeployed"
+            *ngIf="slot?.undeployed"
             class="danger-action-text text-md pi pi-ban"
             [title]="'DIALOG.SLOT.UNDEPLOYED' | translate"
           >
           </span>
           <span
-            *ngIf="slot.deprecated"
+            *ngIf="slot?.deprecated"
             class="danger-action-text text-md pi pi-exclamation-circle"
             [title]="'DIALOG.SLOT.DEPRECATED' | translate"
           >
@@ -37,7 +78,7 @@
         </div></div
     ></ng-container>
 
-    <p-divider align="center" styleClass="mt-2 mb-2">
+    <p-divider align="center" styleClass="my-3">
       <div class="px-3 font-bold text-base">{{ 'DIALOG.SLOT.COMPONENTS' | translate }}</div>
     </p-divider>
 
@@ -51,8 +92,9 @@
       [showTargetControls]="true"
       [responsive]="false"
       [disabled]="!hasEditPermission"
+      (onTargetReorder)="onSaveSlot()"
+      (onMoveToTarget)="onSaveSlot()"
       (onMoveToSource)="onMoveToSource($event)"
-      (onMoveToTarget)="onMoveToTarget($event)"
     >
       <ng-template pTemplate="sourceHeader">
         <div class="flex flex-row justify-content-between align-items-center column-gap-2">
@@ -103,29 +145,6 @@
         [title]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
         (click)="onClose()"
       ></button>
-      <!--button
-        *ngIf="changeMode !== 'VIEW'"
-        pButton
-        autofocus
-        type="button"
-        class="m-0"
-        id="workspace_slot_detail_button_cancel"
-        icon="pi pi-times"
-        iconPos="left"
-        [label]="'ACTIONS.CANCEL' | translate"
-        (click)="onClose()"
-      ></button -->
-      <!-- button
-        *ngIf="changeMode !== 'VIEW'"
-        pButton
-        type="button"
-        class="m-0"
-        id="workspace_slot_create_button_save"
-        icon="pi pi-save"
-        iconPos="left"
-        [label]="'ACTIONS.SAVE' | translate"
-        (click)="onSaveSlot()"
-      ></button -->
     </div>
   </ng-template>
 </p-dialog>
@@ -144,7 +163,7 @@
   <div class="flex column-gap-3 row-gap-1 justify-content-start align-items-center">
     <div class="pi pi-question-circle text-3xl danger-action-text"></div>
     <div>
-      <div>{{ ('ACTIONS.DELETE.MESSAGE' | translate).replace('{{ITEM}}', slot?.name) }}</div>
+      <div>{{ ('ACTIONS.DELETE.MESSAGE' | translate).replace('{{ITEM}}', slotName) }}</div>
       <div class="mt-2">{{ 'ACTIONS.DELETE.ROLE_MESSAGE' | translate }}</div>
       <div class="mt-2">{{ 'ACTIONS.DELETE.MESSAGE_INFO' | translate }}</div>
     </div>
