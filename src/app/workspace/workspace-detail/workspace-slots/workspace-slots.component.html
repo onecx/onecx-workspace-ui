@@ -59,14 +59,10 @@
   </ng-template>
   <ng-template let-slot let-idx="rowIndex" pTemplate="gridItem">
     <div class="col-12 sm:col-6 md:col-4 lg:col-4 xl:col-3 p-3">
-      <!-- 
-          (click)="onDeleteRole($event, role)"
-          (click)="onAddRole($event, role)"
-      -->
       <div
         [id]="'workspace_detail_slots_data_idx_' + idx"
         class="card relative p-2 hover:bg-gray-200 cursor-pointer"
-        (click)="onEditSlot($event, slot)"
+        (click)="onSlotDetail($event, slot)"
       >
         <span
           *ngIf="slot.changes"
@@ -81,20 +77,6 @@
           class="card-badge-right badge-2-1 p-1 text-primary"
           >{{ slot.components.length }}</span
         >
-        <!--
-        <span
-          *ngIf="hasDeletePermission"
-          [id]="'workspace_detail_slots_data_item_' + item + '_delete'"
-          [title]="'ACTIONS.DELETE.SLOT' | translate"
-          class="card-badge-right badge-1 p-1 pi pi-trash pseudo-button-link bg-primary"
-        ></span>
-        <span
-          *ngIf="hasCreatePermission"
-          [id]="'workspace_detail_slots_data_item_' + item + '_create'"
-          [title]="'ACTIONS.CREATE.WORKSPACE.ROLE' | translate"
-          class="card-badge-right badge-1 p-1 pi pi-plus hover:text-white pseudo-button-link text-color"
-        ></span>
-        -->
         <div class="h-2-5rem flex flex-column justify-content-center text-center">
           <div class="font-bold" [title]="'Name: ' + slot.name">{{ limitText(slot.name, 30) }}</div>
         </div>
@@ -106,6 +88,7 @@
 <app-workspace-slot-detail
   [workspace]="workspace"
   [slot]="slot"
+  [psComponentsOrg]="psComponents"
   [changeMode]="changeMode"
   [displayDetailDialog]="showSlotDetailDialog"
   [displayDeleteDialog]="showSlotDeleteDialog"

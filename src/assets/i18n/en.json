@@ -51,7 +51,8 @@
       "SLOT_OK": "The assignment of Slot to Component was deleted successfully",
       "SLOT_NOK": "An error has occurred. The Slot was not deleted.",
       "PRODUCTS_MESSAGE": "The selected Applications and their apps are deregistered from the Workspace. Menu items that use such paths are not touched but no longer work.",
-      "PRODUCTS_QUESTION": "Do you want to deregister selected Applications?"
+      "PRODUCTS_QUESTION": "Do you want to deregister selected Applications?",
+      "COMPONENTS_QUESTION": "Do you want to deregister selected Components?"
     },
     "EDIT": {
       "LABEL": "Edit",
@@ -284,15 +285,31 @@
       "HEADER": {
         "DELETE": "Delete Slot",
         "EDIT": "Change Slot",
-        "VIEW": "Slot Details"
+        "VIEW": "Slot Details",
+        "COMPONENTS.DEREGISTER": "Deregister Components"
       },
       "CHANGED": "There are important changes.",
-      "DEPRECATED": "This slot is outdated and will no longer be usable in the foreseeable future.",
-      "UNDEPLOYED": "This slot is no longer usable.",
+      "DEPRECATED": "Outdated",
+      "DEPRECATED.TOOLTIP": "This Slot is outdated and will no longer be usable in the foreseeable future.",
+      "UNDEPLOYED": "Unavailable",
+      "UNDEPLOYED.TOOLTIP": "This Slot is no longer usable.",
       "PRODUCTS": "Products",
-      "PRODUCTS.TOOLTIP": "List of Products that provide the slot",
-      "COMPONENTS": "Assigned Components",
-      "COMPONENTS.TOOLTIP": "List of assigned Components"
+      "PRODUCTS.TOOLTIP": "Products that provide the Slot",
+      "COMPONENTS": "Content-forming components",
+      "COMPONENTS.USED": "Used Components",
+      "COMPONENTS.USED.TOOLTIP": "Within the Slot used Components",
+      "COMPONENTS.NOT_USED": "Available Components",
+      "COMPONENTS.NOT_USED.TOOLTIP": "List of available Components (extracted from Application Store)",
+      "MESSAGES": {
+        "REGISTRATION_OK": "The Component was successfully registered",
+        "REGISTRATION_NOK": "An error has occurred during Component registration",
+        "REGISTRATIONS_OK": "The Components wer successfully registered",
+        "REGISTRATIONS_NOK": "An error has occurred during Component registration",
+        "DEREGISTRATION_OK": "The Component was successfully deregistered",
+        "DEREGISTRATION_NOK": "An error has occurred during Component deregistration",
+        "DEREGISTRATIONS_OK": "The Components were successfully deregistered",
+        "DEREGISTRATIONS_NOK": "An error has occurred during Component deregistration"
+      }
     },
     "MENU": {
       "LABEL": "Menu",

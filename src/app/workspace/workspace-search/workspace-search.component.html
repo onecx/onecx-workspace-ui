@@ -54,14 +54,14 @@
       <!-- List - view -->
       <ng-template let-workspace let-row="rowIndex" pTemplate="listItem">
         <div
-          class="col-12 grid grid-nogutter row-gap-1 align-items-center listview-row p-1 hover:bg-gray-200 cursor-pointer line-height-2"
+          class="col-12 grid grid-nogutter row-gap-1 align-items-center p-1 hover:bg-gray-200 cursor-pointer line-height-2"
           [routerLink]="['./' + workspace.name]"
         >
-          <div class="h-3rem col-12 sm:col-2 md:col-2 lg:col-2 xl:col-2 px-2 text-center">
+          <div class="h-3rem col-12 sm:col-2 px-2 flex justify-content-around align-items-center">
             <app-image-container
               [id]="'app_workspace_search_data_row_' + row + '_logo'"
               [small]="false"
-              styleClass="max-h-3rem"
+              styleClass="max-h-3rem max-w-10rem"
               [imageUrl]="getLogoUrl(workspace)"
             ></app-image-container>
           </div>
