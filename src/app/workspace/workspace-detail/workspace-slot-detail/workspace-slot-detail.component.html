@@ -6,55 +6,134 @@
   [closable]="true"
   [resizable]="true"
   [dismissableMask]="true"
-  [style]="{ width: '400px' }"
 >
-  <div class="flex flex-wrap flex-column gap-3 justify-content-between">
-    <p-fieldset [toggleable]="false" [collapsed]="false" styleClass="surface-100 py-0 mx-0">
-      <ng-template pTemplate="header">
-        <span [title]="'DIALOG.SLOT.PRODUCTS.TOOLTIP' | translate"> {{ 'DIALOG.SLOT.PRODUCTS' | translate }} </span>
-      </ng-template>
-      <div *ngFor="let slot of slot?.psSlots; let i = index" class="mb-2 flex flex-row column-gap-2">
-        <span class="text-md">{{ slot.pDisplayName }}</span>
-        <span
-          class="danger-action-text text-md pi pi-ban"
-          [class.invisible]="!slot.undeployed"
-          [title]="'DIALOG.SLOT.UNDEPLOYED' | translate"
-        >
-        </span>
-        <span
-          class="danger-action-text text-md pi pi-exclamation-circle"
-          [class.invisible]="!slot.deprecated"
-          [title]="'DIALOG.SLOT.DEPRECATED' | translate"
-        >
-        </span>
+  <div class="">
+    <div class="flex flex-wrap flex-row justify-content-start md:justify-content-evenly row-gap-1 column-gap-2">
+      <span class="p-float-label my-1">
+        <input
+          pInputText
+          type="text"
+          readonly
+          id="slot_detail_slot_name"
+          class="min-w-max pt-3 pb-2"
+          [value]="slot ? slot.name : ''"
+          [title]="'SLOT.NAME' | translate"
+        />
+        <label for="slot_detail_slot_name">{{ 'SLOT.NAME' | translate }}</label>
+      </span>
+      <span class="p-float-label my-1">
+        <input
+          pInputText
+          type="text"
+          readonly
+          id="slot_detail_slot_creationDate"
+          class="w-13rem pt-3 pb-2"
+          [value]="slot ? (slot.creationDate | date : dateFormat) : ''"
+          [title]="'INTERNAL.TOOLTIPS.CREATION_DATE' | translate"
+        />
+        <label for="slot_detail_slot_creationDate">{{ 'INTERNAL.CREATION_DATE' | translate }}</label>
+      </span>
+      <span class="p-float-label my-1">
+        <input
+          pInputText
+          type="text"
+          readonly
+          id="slot_detail_slot_modifcationDate"
+          class="w-13rem pt-3 pb-2"
+          [value]="slot ? (slot.modificationDate | date : dateFormat) : ''"
+          [title]="'INTERNAL.TOOLTIPS.MODIFICATION_DATE' | translate"
+        />
+        <label for="slot_detail_slot_modifcationDate">{{ 'INTERNAL.MODIFICATION_DATE' | translate }}</label>
+      </span>
+    </div>
+
+    <p-divider align="center" styleClass="mt-3 mb-2">
+      <div class="px-3 font-bold text-base" [title]="'DIALOG.SLOT.PRODUCTS.TOOLTIP' | translate">
+        {{ 'DIALOG.SLOT.PRODUCTS' | translate }}
       </div>
-    </p-fieldset>
-    <p-fieldset [toggleable]="false" [collapsed]="false" styleClass="surface-100 py-0 mx-0">
-      <ng-template pTemplate="header">
-        <span [title]="'DIALOG.SLOT.COMPONENTS.TOOLTIP' | translate"> {{ 'DIALOG.SLOT.COMPONENTS' | translate }} </span>
+    </p-divider>
+
+    <div *ngIf="slot?.psSlots?.length === 0" class="px-3 py-2 card surface-50 flex flex-row column-gap-2">
+      {{ 'DIALOG.SLOT.NO_PRODUCTS' | translate }}
+    </div>
+    <ng-container *ngIf="slot?.psSlots?.length !== 0">
+      <div class="flex flex-wrap flex-row column-gap-3">
+        <div
+          *ngFor="let slot of slot?.psSlots; let i = index"
+          class="px-3 py-2 card surface-50 mb-2 flex flex-row column-gap-2"
+        >
+          <span class="text-md">{{ slot?.pDisplayName }}</span>
+          <span
+            *ngIf="slot?.undeployed"
+            class="danger-action-text text-md pi pi-ban"
+            [title]="'DIALOG.SLOT.UNDEPLOYED' | translate"
+          >
+          </span>
+          <span
+            *ngIf="slot?.deprecated"
+            class="danger-action-text text-md pi pi-exclamation-circle"
+            [title]="'DIALOG.SLOT.DEPRECATED' | translate"
+          >
+          </span>
+        </div></div
+    ></ng-container>
+
+    <p-divider align="center" styleClass="my-3">
+      <div class="px-3 font-bold text-base">{{ 'DIALOG.SLOT.COMPONENTS' | translate }}</div>
+    </p-divider>
+
+    <p-pickList
+      #picklist
+      id="slot_detail_component_picklist"
+      [filterBy]="'name'"
+      [source]="psComponents"
+      [target]="wComponents"
+      [showSourceControls]="false"
+      [showTargetControls]="true"
+      [responsive]="false"
+      [disabled]="!hasEditPermission"
+      (onTargetReorder)="onSaveSlot()"
+      (onMoveToTarget)="onSaveSlot()"
+      (onMoveToSource)="onMoveToSource($event)"
+    >
+      <ng-template pTemplate="sourceHeader">
+        <div class="flex flex-row justify-content-between align-items-center column-gap-2">
+          <div class="flex-grow-1 font-semibold">{{ 'DIALOG.SLOT.COMPONENTS.NOT_USED' | translate }}</div>
+        </div>
       </ng-template>
-      <div *ngFor="let comp of slot?.psComponents; let i = index" class="mb-2 flex flex-row column-gap-2">
-        <span class="text-md">{{ comp.name }}</span>
+      <ng-template pTemplate="targetHeader">
+        <div class="flex flex-row justify-content-between align-items-center column-gap-2">
+          <div class="flex-grow-1 font-semibold">{{ 'DIALOG.SLOT.COMPONENTS.USED' | translate }}</div>
+        </div>
+      </ng-template>
+
+      <ng-template let-component let-idx="rowIndex" pTemplate="item">
         <span
-          *ngIf="comp.undeployed"
-          class="danger-action-text text-md pi pi-ban"
-          [title]="'DIALOG.PRODUCTS.MFES.UNDEPLOYED' | translate"
-        >
-        </span>
+          *ngIf="component?.undeployed"
+          [id]="'workspace_detail_slot_picklist_' + idx + '_undeployed'"
+          class="card-badge-right badge-1 danger-action-text font-bold text-lg pi pi-ban"
+          [title]="'DIALOG.SLOT.UNDEPLOYED.TOOLTIP' | translate"
+        ></span>
         <span
-          *ngIf="comp.deprecated"
-          class="danger-action-text text-md pi pi-exclamation-circle"
-          [title]="'DIALOG.PRODUCTS.MFES.DEPRECATED' | translate"
-        >
-        </span>
-        <span class="text-xs">{{ comp.productName }}</span>
-      </div>
-    </p-fieldset>
+          *ngIf="component?.deprecated && !component?.undeployed"
+          [id]="'workspace_detail_slot_picklist_' + idx + '_deprecated'"
+          class="card-badge-right badge-1 danger-action-text font-bold text-lg pi pi-exclamation-circle"
+          [title]="'DIALOG.SLOT.DEPRECATED.TOOLTIP' | translate"
+        ></span>
+        <div class="py-1 px-2 flex flex-column row-gap-1" (dblclick)="return($event)">
+          <div *ngIf="component.bucket === 'TARGET'" class="font-semibold text-sm md:text-md">
+            {{ component.index }}
+          </div>
+          <div class="font-semibold text-sm md:text-md">{{ component.name }}</div>
+          <div class="text-xs">{{ component.productName }}</div>
+        </div>
+        <div class="relative"></div>
+      </ng-template>
+    </p-pickList>
   </div>
   <ng-template pTemplate="footer">
     <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
       <button
-        *ngIf="changeMode === 'VIEW'"
         pButton
         autofocus
         type="button"
@@ -66,49 +145,24 @@
         [title]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
         (click)="onClose()"
       ></button>
-      <button
-        *ngIf="changeMode !== 'VIEW'"
-        pButton
-        autofocus
-        type="button"
-        class="m-0"
-        id="workspace_slot_detail_button_cancel"
-        icon="pi pi-times"
-        iconPos="left"
-        [label]="'ACTIONS.CANCEL' | translate"
-        (click)="onClose()"
-      ></button>
-      <button
-        *ngIf="changeMode !== 'VIEW'"
-        pButton
-        type="button"
-        class="m-0"
-        id="workspace_slot_create_button_save"
-        icon="pi pi-save"
-        iconPos="left"
-        [label]="'ACTIONS.SAVE' | translate"
-        (click)="onSaveSlot()"
-      ></button>
     </div>
   </ng-template>
 </p-dialog>
 
-<!-- DELETE SLOT -->
 <p-dialog
-  [(visible)]="displayDeleteDialog"
-  [header]="'DIALOG.SLOT.HEADER.DELETE' | translate"
-  (onHide)="onClose()"
+  [(visible)]="displayDeregisterConfirmation"
+  [header]="'DIALOG.SLOT.HEADER.COMPONENTS.DEREGISTER' | translate"
+  (onHide)="onDeregisterCancellation()"
   [modal]="true"
   [closable]="true"
   [resizable]="false"
   [dismissableMask]="true"
   [style]="{ 'max-width': '425px' }"
 >
-  <div class="flex column-gap-3 row-gap-1 justify-content-start align-items-center">
+  <div class="my-2 flex column-gap-4 row-gap-1 justify-content-start align-items-center">
     <div class="pi pi-question-circle text-3xl danger-action-text"></div>
     <div>
-      <div>{{ ('ACTIONS.DELETE.MESSAGE' | translate).replace('{{ITEM}}', slot?.name) }}</div>
-      <div class="mt-2">{{ 'ACTIONS.DELETE.ROLE_MESSAGE' | translate }}</div>
+      <div class="font-bold">{{ 'ACTIONS.DELETE.COMPONENTS_QUESTION' | translate }}</div>
       <div class="mt-2">{{ 'ACTIONS.DELETE.MESSAGE_INFO' | translate }}</div>
     </div>
   </div>
@@ -119,21 +173,21 @@
         autofocus
         type="button"
         class="m-0"
-        id="workspace_slot_delete_button_cancel"
+        id="workspace_detail_product_deregister_button_no"
         icon="pi pi-times"
         iconPos="left"
         [label]="'ACTIONS.CONFIRMATION.NO' | translate"
-        (click)="onClose()"
+        (click)="onDeregisterCancellation()"
       ></button>
       <button
         pButton
         type="button"
         class="m-0"
-        id="workspace_slot_delete_button_save"
+        id="workspace_detail_product_deregister_button_yes"
         icon="pi pi-check"
         iconPos="left"
         [label]="'ACTIONS.CONFIRMATION.YES' | translate"
-        (click)="onDeleteSlotComponentConfirmation()"
+        (click)="onDeregisterConfirmation()"
       ></button>
     </div>
   </ng-template>

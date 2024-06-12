@@ -2,9 +2,9 @@
   <p-accordionTab>
     <ng-template pTemplate="header">
       <ocx-user-avatar [user$]="currentUser$"></ocx-user-avatar>
-      <span class="flex flex-column ml-2">
+      <span class="flex flex-column ml-3 row-gap-1">
         <span id="user-sidebar-display-name" class="font-bold">{{ displayName$ | async }}</span>
-        <small>Portal User</small>
+        <span id="user-sidebar-display-name" class="text-sm">{{ organization$ | async }}</span>
       </span>
     </ng-template>
     <ng-template pTemplate="content">

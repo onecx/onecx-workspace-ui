@@ -1,6 +1,7 @@
 @import '/src/_mixins.scss';
 
-@include invisible;
+@include card-badges;
+@include picklist-zebra-rows;
 
 :host ::ng-deep {
   .p-fieldset {
@@ -11,6 +12,28 @@
     }
     .p-fieldset-content {
       padding: 0.5rem 0.2rem 0rem;
+    }
+  }
+  .p-picklist {
+    .p-picklist-buttons {
+      button[icon='pi pi-angle-double-up'],
+      button[icon='pi pi-angle-double-down'],
+      button[icon='pi pi-angle-double-left'],
+      button[icon='pi pi-angle-double-right'] {
+        display: none !important;
+      }
+    }
+    .p-picklist-header {
+      padding: 0.5rem;
+      text-align: center;
+      color: var(--primary-text-color);
+      background-color: var(--primary-color);
+    }
+    .p-picklist-list {
+      height: 15.7rem;
+      .p-picklist-item {
+        padding: 0.3rem;
+      }
     }
   }
 }

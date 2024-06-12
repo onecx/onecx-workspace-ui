@@ -51,13 +51,16 @@
       "SLOT_OK": "Die Slot-Zuweisung wurde erfolgreich gelöscht",
       "SLOT_NOK": "Ein Fehler ist aufgetreten. Die Slot-Zuweisung wurde nicht gelöscht.",
       "PRODUCTS_MESSAGE": "Die ausgewählten Applikationen und ihre Apps werden für den Arbeitsbereich abgemeldet. Menüelemente, die solche Pfade verwenden, werden nicht berührt, funktionieren aber nicht mehr.",
-      "PRODUCTS_QUESTION": "Möchten Sie die ausgewählten Applikationen abmelden?"
+      "PRODUCTS_QUESTION": "Möchten Sie die ausgewählten Applikationen abmelden?",
+      "COMPONENTS_QUESTION": "Möchten Sie die ausgewählten Komponenten abmelden?"
     },
     "EDIT": {
       "LABEL": "Bearbeiten",
       "TOOLTIP": "Die Eigenschaften bearbeiten",
       "ROLE_OK": "Die Rolle wurde erfolgreich geändert",
       "ROLE_NOK": "Ein Fehler ist aufgetreten. Die Rolle wurde nicht geändert.",
+      "SLOT_OK": "Der Slot wurde erfolgreich geändert",
+      "SLOT_NOK": "Ein Fehler ist aufgetreten. Der Slot wurde nicht geändert.",
       "MESSAGE": {
         "CHANGE_OK": "Der Workspace wurde erfolgreich geändert",
         "CHANGE_NOK": "Ein Fehler ist aufgetreten. Der Workspace wurde nicht geändert.",
@@ -284,15 +287,32 @@
       "HEADER": {
         "DELETE": "Slot löschen",
         "EDIT": "Slot ändern",
-        "VIEW": "Slot Details"
+        "VIEW": "Slot Details",
+        "COMPONENTS.DEREGISTER": "Komponenten abmelden"
       },
       "CHANGED": "Es gibt wichtige Änderungen.",
-      "DEPRECATED": "Dieser Slot ist veraltet und wird in absehbarer Zeit nicht mehr nutzbar sein.",
-      "UNDEPLOYED": "Dieser Slot ist nicht länger nutzbar.",
-      "PRODUCTS": "Produkte",
-      "PRODUCTS.TOOLTIP": "Liste der Produkte die den Slot bereitstellen",
-      "COMPONENTS": "Zugewiesene Komponenten",
-      "COMPONENTS.TOOLTIP": "Liste der zugewiesenen Komponenten"
+      "DEPRECATED": "Veraltet",
+      "DEPRECATED.TOOLTIP": "Dieser Slot ist veraltet und wird in absehbarer Zeit nicht mehr nutzbar sein.",
+      "UNDEPLOYED": "Unverfügbar",
+      "UNDEPLOYED.TOOLTIP": "Dieser Slot ist nicht länger nutzbar.",
+      "PRODUCTS": "Registrierende Applikationen",
+      "PRODUCTS.NOT_EXIST": "Keine",
+      "PRODUCTS.TOOLTIP": "Applikationen, die den Slot registriert haben",
+      "COMPONENTS": "Inhaltsbildende Komponenten",
+      "COMPONENTS.USED": "Verwendete Komponenten",
+      "COMPONENTS.USED.TOOLTIP": "Im Slot verwendeten Komponenten",
+      "COMPONENTS.NOT_USED": "Verfügbare Komponenten",
+      "COMPONENTS.NOT_USED.TOOLTIP": "Liste der verfügbaren Komponenten (aus dem Application Store)",
+      "MESSAGES": {
+        "REGISTRATION_OK": "Die Komponente wurde erfolgreich registriert",
+        "REGISTRATION_NOK": "Bei der Registrierung der Komponente ist ein Fehler aufgetreten",
+        "REGISTRATIONS_OK": "Die Komponenteen wurden erfolgreich registriert",
+        "REGISTRATIONS_NOK": "Bei der Registrierung von Komponenteen ist ein Fehler aufgetreten",
+        "DEREGISTRATION_OK": "Die Komponente wurde erfolgreich abgemeldet",
+        "DEREGISTRATION_NOK": "Bei der Abmeldung der Komponente ist ein Fehler aufgetreten",
+        "DEREGISTRATIONS_OK": "Die Komponenteen wurden erfolgreich abgemeldet",
+        "DEREGISTRATIONS_NOK": "Bei der Abmeldung von Komponenteen ist ein Fehler aufgetreten"
+      }
     },
     "MENU": {
       "LABEL": "Menü",

@@ -11,32 +11,26 @@
     <ocx-user-avatar [user$]="currentUser$"></ocx-user-avatar>
   </div>
   <ul
-    class="layout-topbar-action-panel shadow-6 sm:m-2 fixed top-4rem sm:absolute sm:top-100 w-screen sm:w-auto"
+    class="layout-topbar-action-panel shadow-6 sm:m-2 fixed sm:absolute mt-2 sm:top-100 w-screen sm:w-auto"
     [ngClass]="menuAnchorPosition + '-0'"
     [hidden]="!menuOpen"
   >
     <li
+      *ocxIfPermission="'USERPROFILE#VIEW'"
       id="user-avatar-profile-item"
-      class="layout-topbar-action-item flex flex-column"
-      *ocxIfPermission="'PROFILE#VIEW'; permissions: permissions"
+      class="layout-topbar-action-item cursor-auto user-info"
     >
-      <div *ngIf="currentUser$ | async as user">
-        <h5
-          id="user-avatar-profile-item-name"
-          class="flex flex-row align-items-center justify-content-center text-color-secondary"
-        >
+      <div *ngIf="currentUser$ | async as user" class="my-1 flex flex-column justify-content-evenly row-gap-1">
+        <div id="user-avatar-profile-item-name" class="font-bold text-center text-lg text-color-secondary">
           {{ user.person.displayName }}
-        </h5>
+        </div>
+        <div id="user-avatar-profile-item-email" class="text-center text-sm text-color-secondary">
+          {{ user.person.email }}
+        </div>
         <span
-          id="user-avatar-profile-item-email"
-          class="flex flex-row align-items-center justify-content-center text-color-secondary"
-        >
-          {{ user.person.email }}</span
-        >
-        <span
-          id="user-avatar-profile-item-tenant"
           *ngIf="user.tenantName"
-          class="flex flex-row align-items-center justify-content-center text-color-secondary"
+          id="user-avatar-profile-item-tenant"
+          class="my-1 text-center text-sm text-color-secondary"
         >
           {{ 'REMOTES.USER_AVATAR_MENU.TENANT' | translate }}: {{ user.tenantName }}</span
         >

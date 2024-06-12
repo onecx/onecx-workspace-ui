@@ -75,6 +75,7 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent {
   currentUser$: Observable<UserProfile>
   userMenu$: Observable<MenuItem[]>
   displayName$: Observable<string>
+  organization$: Observable<string | undefined>
   eventsPublisher$: EventsPublisher = new EventsPublisher()
 
   inlineProfileActive = false
@@ -97,6 +98,13 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent {
     this.displayName$ = this.currentUser$.pipe(
       filter((x) => x !== undefined),
       map((currentUser) => this.determineDisplayName(currentUser)),
+      untilDestroyed(this)
+    )
+    this.organization$ = this.currentUser$.pipe(
+      filter((x) => x !== undefined),
+      map((currentUser) => {
+        return currentUser.organization ? currentUser.organization : ''
+      }),
       untilDestroyed(this)
     )
 
