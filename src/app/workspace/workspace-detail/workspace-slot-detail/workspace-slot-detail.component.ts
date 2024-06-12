@@ -55,7 +55,6 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
       this.slotName = this.slot.name ?? ''
       // extract ps components
       this.wComponents = this.slot.psComponents ?? []
-      this.wComponents.sort(this.sortComponentsByName)
       this.wComponentsOrg = [...this.wComponents]
       this.psComponents = []
       this.psComponentsOrg.forEach((c) => {
