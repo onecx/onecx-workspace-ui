@@ -75,6 +75,7 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent {
   currentUser$: Observable<UserProfile>
   userMenu$: Observable<MenuItem[]>
   displayName$: Observable<string>
+  organization$: Observable<string | undefined>
   eventsPublisher$: EventsPublisher = new EventsPublisher()
 
   inlineProfileActive = false
@@ -97,6 +98,11 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent {
     this.displayName$ = this.currentUser$.pipe(
       filter((x) => x !== undefined),
       map((currentUser) => this.determineDisplayName(currentUser)),
+      untilDestroyed(this)
+    )
+    this.organization$ = this.currentUser$.pipe(
+      filter((x) => x !== undefined),
+      map((currentUser) => currentUser.organization),
       untilDestroyed(this)
     )
 
@@ -166,6 +172,12 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent {
       return 'Guest'
     }
   }
+  /*
+  determineOrganization(userProfile: UserProfile): string | undefined {
+    if (userProfile) {
+    } else
+    return undefined
+*/
 
   logout() {
     this.eventsPublisher$.publish({ type: 'authentication#logoutButtonClicked' })

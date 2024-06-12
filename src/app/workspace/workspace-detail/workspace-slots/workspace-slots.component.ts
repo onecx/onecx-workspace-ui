@@ -49,6 +49,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   public psComponents!: ExtendedComponent[]
 
   public slot: CombinedSlot | undefined
+  public detailSlotId: string | undefined
 
   // dialog
   @ViewChild(DataView) dv: DataView | undefined
@@ -186,10 +187,11 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
         }
         console.log('psComponents', this.psComponents)
         console.log('wSlots', this.wSlots)
+        if (this.detailSlotId) this.slot = this.wSlots.filter((s) => (s.id = this.detailSlotId))[0]
         return this.psSlots
       }),
       catchError((err) => {
-        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.PRODUCTS'
+        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.SLOTS'
         console.error('searchAvailableProducts():', err)
         return of([])
       }),
@@ -238,16 +240,23 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   public onSlotDetail(ev: Event, slot: CombinedSlot): void {
     ev.stopPropagation()
     this.slot = slot
+    this.detailSlotId = this.slot.id
     this.changeMode = this.hasEditPermission ? 'EDIT' : 'VIEW'
     this.showSlotDetailDialog = true
   }
 
   // detail dialog closed - reload data on changes
   public onSlotDetailClosed(changed: boolean) {
+    console.log('onSlotDetailClosed')
     this.slot = undefined
+    this.detailSlotId = undefined
     this.changeMode = 'VIEW'
     this.showSlotDetailDialog = false
     this.showSlotDeleteDialog = false
     if (changed) this.loadData()
+  }
+  public onSlotComponentsChanged(changed: boolean) {
+    console.log('onSlotComponentsChanged')
+    // if (changed) this.loadData()
   }
 }

@@ -20,6 +20,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   @Input() displayDetailDialog = false
   @Input() displayDeleteDialog = false
   @Output() detailClosed: EventEmitter<boolean> = new EventEmitter()
+  @Output() changed: EventEmitter<boolean> = new EventEmitter()
 
   public dateFormat = 'medium'
   public dataChanged = false
@@ -112,29 +113,15 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
         next: (data) => {
           this.slot.modificationCount = data.modificationCount
           this.slot.modificationDate = data.modificationDate
+          this.slot.components = data.components
           this.msgService.success({ summaryKey: 'ACTIONS.EDIT.SLOT_OK' })
           this.dataChanged = true
+          this.changed.emit(true)
         },
         error: (err) => {
           this.msgService.error({ summaryKey: 'ACTIONS.EDIT.SLOT_NOK' })
           console.error(err.error)
         }
       })
-  }
-
-  /**
-   * Remove a Slot Component
-   */
-  public onDeleteSlotComponentConfirmation() {
-    this.slotApi.updateSlot({ id: this.slot?.id ?? '', updateSlotRequest: {} as UpdateSlotRequest }).subscribe({
-      next: () => {
-        this.msgService.success({ summaryKey: 'ACTIONS.DELETE.ROLE_OK' })
-        this.dataChanged = true
-      },
-      error: (err) => {
-        this.msgService.error({ summaryKey: 'ACTIONS.DELETE.ROLE_NOK' })
-        console.error(err.error)
-      }
-    })
   }
 }

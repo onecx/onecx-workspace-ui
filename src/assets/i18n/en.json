@@ -347,7 +347,7 @@
           "REMOVE_LANGUAGE": "Remove Language"
         },
         "INTERN": "Internal",
-        "INTERN.TOOLTIP": "Interne Eigenschaften"
+        "INTERN.TOOLTIP": "Internal Properties"
       },
       "TREE": {
         "POSITION": "Position",

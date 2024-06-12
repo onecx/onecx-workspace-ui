@@ -149,52 +149,6 @@
   </ng-template>
 </p-dialog>
 
-<!-- DELETE SLOT -->
-<p-dialog
-  [(visible)]="displayDeleteDialog"
-  [header]="'DIALOG.SLOT.HEADER.DELETE' | translate"
-  (onHide)="onClose()"
-  [modal]="true"
-  [closable]="true"
-  [resizable]="false"
-  [dismissableMask]="true"
-  [style]="{ 'max-width': '425px' }"
->
-  <div class="flex column-gap-3 row-gap-1 justify-content-start align-items-center">
-    <div class="pi pi-question-circle text-3xl danger-action-text"></div>
-    <div>
-      <div>{{ ('ACTIONS.DELETE.MESSAGE' | translate).replace('{{ITEM}}', slotName) }}</div>
-      <div class="mt-2">{{ 'ACTIONS.DELETE.ROLE_MESSAGE' | translate }}</div>
-      <div class="mt-2">{{ 'ACTIONS.DELETE.MESSAGE_INFO' | translate }}</div>
-    </div>
-  </div>
-  <ng-template pTemplate="footer">
-    <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
-      <button
-        pButton
-        autofocus
-        type="button"
-        class="m-0"
-        id="workspace_slot_delete_button_cancel"
-        icon="pi pi-times"
-        iconPos="left"
-        [label]="'ACTIONS.CONFIRMATION.NO' | translate"
-        (click)="onClose()"
-      ></button>
-      <button
-        pButton
-        type="button"
-        class="m-0"
-        id="workspace_slot_delete_button_save"
-        icon="pi pi-check"
-        iconPos="left"
-        [label]="'ACTIONS.CONFIRMATION.YES' | translate"
-        (click)="onDeleteSlotComponentConfirmation()"
-      ></button>
-    </div>
-  </ng-template>
-</p-dialog>
-
 <p-dialog
   [(visible)]="displayDeregisterConfirmation"
   [header]="'DIALOG.SLOT.HEADER.COMPONENTS.DEREGISTER' | translate"

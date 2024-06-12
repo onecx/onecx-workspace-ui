@@ -121,10 +121,10 @@ describe('OneCXUserAvatarMenuComponent', () => {
 
     component.ocxInitRemoteComponent({
       baseUrl: 'base_url',
-      permissions: ['PROFILE#VIEW']
+      permissions: ['USERPROFILE#VIEW']
     } as RemoteComponentConfig)
 
-    expect(component.permissions).toEqual(['PROFILE#VIEW'])
+    expect(component.permissions).toEqual(['USERPROFILE#VIEW'])
     expect(menuItemApiSpy.configuration.basePath).toEqual('base_url/bff')
     expect(component.menuAnchorPosition).toBe('right')
     baseUrlSubject.asObservable().subscribe((item) => {
@@ -169,7 +169,7 @@ describe('OneCXUserAvatarMenuComponent', () => {
     const component = fixture.componentInstance
     component.ocxInitRemoteComponent({
       baseUrl: 'base_url',
-      permissions: ['PROFILE#VIEW']
+      permissions: ['USERPROFILE#VIEW']
     } as any)
     fixture.detectChanges()
 
@@ -193,7 +193,7 @@ describe('OneCXUserAvatarMenuComponent', () => {
       }) as any
     )
 
-    const { avatarMenuHarness } = await setUpWithHarnessAndInit(['PROFILE#VIEW'])
+    const { avatarMenuHarness } = await setUpWithHarnessAndInit(['USERPROFILE#VIEW'])
 
     expect(await avatarMenuHarness.getUserName()).toEqual('My user')
     expect(await avatarMenuHarness.getUserEmail()).toEqual('my-user@example.com')
@@ -254,7 +254,7 @@ describe('OneCXUserAvatarMenuComponent', () => {
         } as any)
       )
 
-      const { avatarMenuHarness } = await setUpWithHarnessAndInit(['PROFILE#VIEW'])
+      const { avatarMenuHarness } = await setUpWithHarnessAndInit(['USERPROFILE#VIEW'])
 
       const menuItems = await avatarMenuHarness.getMenuItems()
       expect(menuItems.length).toBe(3)
@@ -291,7 +291,7 @@ describe('OneCXUserAvatarMenuComponent', () => {
         } as any)
       )
 
-      const { avatarMenuHarness } = await setUpWithHarnessAndInit(['PROFILE#VIEW'])
+      const { avatarMenuHarness } = await setUpWithHarnessAndInit(['USERPROFILE#VIEW'])
 
       const menuItems = await avatarMenuHarness.getMenuItems()
       expect(await menuItems[0].getText()).toEqual('English personal info')
@@ -322,7 +322,7 @@ describe('OneCXUserAvatarMenuComponent', () => {
         } as any)
       )
 
-      const { avatarMenuHarness } = await setUpWithHarnessAndInit(['PROFILE#VIEW'])
+      const { avatarMenuHarness } = await setUpWithHarnessAndInit(['USERPROFILE#VIEW'])
 
       const menuItems = await avatarMenuHarness.getMenuItems()
       expect(await menuItems[0].hasIcon(PrimeIcons.HOME)).toBeTrue()
@@ -353,7 +353,7 @@ describe('OneCXUserAvatarMenuComponent', () => {
       )
       const router = TestBed.inject(Router)
 
-      const { avatarMenuHarness } = await setUpWithHarnessAndInit(['PROFILE#VIEW'])
+      const { avatarMenuHarness } = await setUpWithHarnessAndInit(['USERPROFILE#VIEW'])
 
       const menuItems = await avatarMenuHarness.getMenuItems()
       await menuItems[0].selectItem()
@@ -383,7 +383,7 @@ describe('OneCXUserAvatarMenuComponent', () => {
         } as any)
       )
 
-      const { avatarMenuHarness } = await setUpWithHarnessAndInit(['PROFILE#VIEW'])
+      const { avatarMenuHarness } = await setUpWithHarnessAndInit(['USERPROFILE#VIEW'])
 
       const menuItems = await avatarMenuHarness.getMenuItems()
       expect(await menuItems[0].getLink()).toBe('https://www.google.com/')
@@ -392,7 +392,7 @@ describe('OneCXUserAvatarMenuComponent', () => {
     it('should only show logout on failed menu fetch call', async () => {
       menuItemApiSpy.getMenuItems.and.returnValue(throwError(() => {}))
 
-      const { avatarMenuHarness } = await setUpWithHarnessAndInit(['PROFILE#VIEW'])
+      const { avatarMenuHarness } = await setUpWithHarnessAndInit(['USERPROFILE#VIEW'])
 
       const menuItems = await avatarMenuHarness.getMenuItems()
       expect(await menuItems[0].getText()).toEqual('Log out')
@@ -434,7 +434,7 @@ describe('OneCXUserAvatarMenuComponent', () => {
         } as any)
       )
 
-      const { avatarMenuHarness } = await setUpWithHarnessAndInit(['PROFILE#VIEW'])
+      const { avatarMenuHarness } = await setUpWithHarnessAndInit(['USERPROFILE#VIEW'])
 
       expect(await avatarMenuHarness.isMenuHidden()).toBeTrue()
 
