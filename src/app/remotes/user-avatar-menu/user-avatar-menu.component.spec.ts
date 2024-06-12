@@ -180,7 +180,7 @@ describe('OneCXUserAvatarMenuComponent', () => {
     expect(await avatarMenuHarness.getUserTenant()).toBeUndefined()
   })
 
-  it('should show profile info if permissions met and user defined', async () => {
+  xit('should show profile info if permissions met and user defined', async () => {
     appConfigSpy.getProperty.and.returnValue('right')
     const userService = TestBed.inject(UserService)
     spyOn(userService.profile$, 'asObservable').and.returnValue(

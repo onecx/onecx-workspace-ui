@@ -102,7 +102,9 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent {
     )
     this.organization$ = this.currentUser$.pipe(
       filter((x) => x !== undefined),
-      map((currentUser) => currentUser.organization),
+      map((currentUser) => {
+        return currentUser.organization ? currentUser.organization : ''
+      }),
       untilDestroyed(this)
     )
 
@@ -172,12 +174,6 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent {
       return 'Guest'
     }
   }
-  /*
-  determineOrganization(userProfile: UserProfile): string | undefined {
-    if (userProfile) {
-    } else
-    return undefined
-*/
 
   logout() {
     this.eventsPublisher$.publish({ type: 'authentication#logoutButtonClicked' })
