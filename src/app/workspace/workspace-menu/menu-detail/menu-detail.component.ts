@@ -45,6 +45,7 @@ export class MenuDetailComponent implements OnChanges {
   @Input() public workspaceId: string | undefined
   @Input() public menuItems: WorkspaceMenuItem[] | undefined
   @Input() public menuItemId: string | undefined
+  @Input() public menuItemName: string | undefined
   @Input() public parentItems!: SelectItem[]
   @Input() changeMode: ChangeMode = 'VIEW'
   @Input() displayDetailDialog = false
@@ -118,22 +119,29 @@ export class MenuDetailComponent implements OnChanges {
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
-    if (this.workspaceId && changes['workspaceId']) this.loadMfeUrls()
-    this.cleanupMfeUrls() // remove special entries
-    this.formGroup.reset()
-    this.tabIndex = 0
-    this.languagesDisplayed = []
-    if (this.changeMode === 'CREATE') {
+    // prepare detail dialog (not used on deletion)
+    if (!this.menuItemId) {
+      this.dataChanged.emit(false)
+      return
+    }
+    if (this.displayDetailDialog) {
+      if (this.workspaceId && changes['workspaceId']) this.loadMfeUrls()
+      this.cleanupMfeUrls() // remove special entries
       this.formGroup.reset()
-      this.menuItem = {
-        parentItemId: this.menuItemId,
-        position: 0,
-        external: false,
-        disabled: false
-      } as MenuItem
-      this.formGroup.patchValue(this.menuItem)
-      this.prepareUrlList()
-    } else if (this.menuItemId) this.getMenu() // edit
+      this.tabIndex = 0
+      this.languagesDisplayed = []
+      if (this.changeMode === 'CREATE') {
+        this.formGroup.reset()
+        this.menuItem = {
+          parentItemId: this.menuItemId,
+          position: 0,
+          external: false,
+          disabled: false
+        } as MenuItem
+        this.formGroup.patchValue(this.menuItem)
+        this.prepareUrlList()
+      } else if (this.menuItemId) this.getMenu() // edit
+    }
   }
 
   public onCloseDetailDialog(): void {
@@ -301,7 +309,7 @@ export class MenuDetailComponent implements OnChanges {
    */
   public onMenuDelete(): void {
     this.displayDeleteDialog = false
-    this.menuApi.deleteMenuItemById({ menuItemId: this.menuItem?.id! }).subscribe({
+    this.menuApi.deleteMenuItemById({ menuItemId: this.menuItemId! }).subscribe({
       next: () => {
         this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MENU_OK' })
         this.dataChanged.emit(true)
@@ -320,7 +328,7 @@ export class MenuDetailComponent implements OnChanges {
   }
   // use the same height on all TABs
   private preparePanelHeight(): void {
-    if (!this.panelDetail) return
+    if (!this.panelDetail?.el?.nativeElement) return
     this.renderer.setStyle(this.panelDetail?.el.nativeElement, 'display', 'block')
     if (this.panelHeight === 0) this.panelHeight = this.panelDetail?.el.nativeElement.offsetHeight
     this.renderer.setStyle(this.panelDetail?.el.nativeElement, 'height', this.panelHeight - 50 + 'px')

@@ -277,7 +277,7 @@
   <div class="my-2 flex column-gap-4 row-gap-1 justify-content-start align-items-center">
     <div class="pi pi-question-circle text-3xl danger-action-text"></div>
     <div>
-      <div class="font-bold">{{ ('ACTIONS.DELETE.MESSAGE' | translate).replace('{{ITEM}}', menuItem?.name) }}</div>
+      <div class="font-bold">{{ ('ACTIONS.DELETE.MESSAGE' | translate).replace('{{ITEM}}', menuItemName) }}</div>
       <div class="mt-2">{{ 'ACTIONS.DELETE.MENU_MESSAGE' | translate }}</div>
       <div class="mt-2">{{ 'ACTIONS.DELETE.MESSAGE_INFO' | translate }}</div>
     </div>
@@ -286,7 +286,6 @@
     <div class="mt-3 flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
       <button
         pButton
-        autofocus
         type="button"
         class="m-0"
         icon="pi pi-times"

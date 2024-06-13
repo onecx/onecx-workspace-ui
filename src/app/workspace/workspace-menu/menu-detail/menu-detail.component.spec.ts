@@ -214,6 +214,7 @@ describe('MenuDetailComponent', () => {
     component.changeMode = 'CREATE'
     spyOn(component.formGroup, 'reset')
     component.menuItemId = 'menuItemId'
+    component.displayDetailDialog = true
 
     component.ngOnChanges({})
 
@@ -226,6 +227,7 @@ describe('MenuDetailComponent', () => {
     menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[0]))
     component.changeMode = 'VIEW'
     component.menuItemId = 'menuItemId'
+    component.displayDetailDialog = true
 
     component.ngOnChanges({})
 

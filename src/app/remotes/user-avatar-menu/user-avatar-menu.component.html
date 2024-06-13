@@ -15,11 +15,7 @@
     [ngClass]="menuAnchorPosition + '-0'"
     [hidden]="!menuOpen"
   >
-    <li
-      *ocxIfPermission="'USERPROFILE#VIEW'"
-      id="user-avatar-profile-item"
-      class="layout-topbar-action-item cursor-auto user-info"
-    >
+    <li id="user-avatar-profile-item" class="layout-topbar-action-item cursor-auto user-info">
       <div *ngIf="currentUser$ | async as user" class="my-1 flex flex-column justify-content-evenly row-gap-1">
         <div id="user-avatar-profile-item-name" class="font-bold text-center text-lg text-color-secondary">
           {{ user.person.displayName }}
