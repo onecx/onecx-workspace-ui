@@ -134,14 +134,14 @@ export class MenuPreviewComponent implements OnChanges {
       const menuItem = event.dragNode.data
       const targetPos = event.dropNode.data?.position ?? 0
       const parentItem = event.dropNode.parent?.data
-      if (menuItem && parentItem) {
+      if (menuItem) {
         this.menuApi
           .updateMenuItemParent({
             menuItemId: menuItem?.id!,
             updateMenuItemParentRequest: {
               modificationCount: menuItem.modificationCount!,
               position: targetPos,
-              parentItemId: parentItem.id
+              parentItemId: parentItem?.id
             }
           })
           .subscribe({
