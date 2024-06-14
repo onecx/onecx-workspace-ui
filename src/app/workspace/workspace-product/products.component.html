@@ -326,18 +326,25 @@
             <p-divider align="center" styleClass="mt-0 mb-2">
               <div class="px-3 font-bold text-primary">Slots</div></p-divider
             >
-            <div *ngFor="let item of displayedDetailItem?.slots" class="ml-3 flex flex-row column-gap-4">
+            <div *ngFor="let item of displayedDetailItem?.slots" class="ml-3 flex flex-row column-gap-3">
               <span>{{ item.name }}</span>
               <span
                 *ngIf="item.undeployed"
                 class="danger-action-text pi pi-ban"
-                [title]="'DIALOG.PRODUCTS.MFES.UNDEPLOYED' | translate"
+                [title]="'DIALOG.SLOT.UNDEPLOYED' | translate"
               >
               </span>
               <span
                 *ngIf="item.deprecated"
                 class="danger-action-text pi pi-exclamation-circle"
-                [title]="'DIALOG.PRODUCTS.MFES.DEPRECATED' | translate"
+                [title]="'DIALOG.SLOT.DEPRECATED' | translate"
+              >
+              </span>
+              <span
+                *ngIf="item.new"
+                class="danger-action-text pi pi-plus-circle pseudo-button-link"
+                [title]="'DIALOG.SLOT.NEW.TOOLTIP' | translate"
+                (click)="onAddSlot($event, item)"
               >
               </span>
             </div>

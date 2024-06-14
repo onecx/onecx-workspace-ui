@@ -107,14 +107,14 @@
             <span
               *ngIf="workspace.name !== 'ADMIN'"
               [id]="'app_workspace_search_data_row_' + row + '_goto_workspace'"
-              class="card-badge-right badge-1 p-2 pi pi-external-link pseudo-button-link"
+              class="card-badge-right badge-1 p-1 pi pi-external-link pseudo-button-link"
               [title]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_WORKSPACE' | translate"
               (click)="onGotoWorkspace($event, workspace)"
             ></span>
             <span
               *ocxIfPermission="'MENU#VIEW'"
               [id]="'app_workspace_search_data_row_' + row + '_goto_menu'"
-              class="card-badge-right badge-2 p-2 pi pi-sitemap pseudo-button-link"
+              class="card-badge-right badge-2 p-1 pi pi-sitemap pseudo-button-link"
               [title]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_MENU' | translate"
               (click)="onGotoMenu($event, workspace)"
             ></span>

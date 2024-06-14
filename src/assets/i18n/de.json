@@ -52,7 +52,8 @@
       "SLOT_NOK": "Ein Fehler ist aufgetreten. Die Slot-Zuweisung wurde nicht gelöscht.",
       "PRODUCTS_MESSAGE": "Die ausgewählten Applikationen und ihre Apps werden für den Arbeitsbereich abgemeldet. Menüelemente, die solche Pfade verwenden, werden nicht berührt, funktionieren aber nicht mehr.",
       "PRODUCTS_QUESTION": "Möchten Sie die ausgewählten Applikationen abmelden?",
-      "COMPONENTS_QUESTION": "Möchten Sie die ausgewählten Komponenten abmelden?"
+      "COMPONENTS_QUESTION": "Möchten Sie die ausgewählten Komponenten abmelden?",
+      "SLOT_QUESTION": "Möchten Sie den Slot löschen?"
     },
     "EDIT": {
       "LABEL": "Bearbeiten",
@@ -291,6 +292,7 @@
         "COMPONENTS.DEREGISTER": "Komponenten abmelden"
       },
       "CHANGED": "Es gibt wichtige Änderungen.",
+      "NEW.TOOLTIP": "Dieser Slot ist neu. Mit einem Klick zum Workspace hinzufügen.",
       "DEPRECATED": "Veraltet",
       "DEPRECATED.TOOLTIP": "Dieser Slot ist veraltet und wird in absehbarer Zeit nicht mehr nutzbar sein.",
       "UNDEPLOYED": "Unverfügbar",
@@ -304,6 +306,8 @@
       "COMPONENTS.NOT_USED": "Verfügbare Komponenten",
       "COMPONENTS.NOT_USED.TOOLTIP": "Liste der verfügbaren Komponenten (aus dem Application Store)",
       "MESSAGES": {
+        "CREATE_OK": "Der Slot wurde erfolgreich registriert",
+        "CREATE_NOK": "Bei der Registrierung des Slots ist ein Fehler aufgetreten",
         "REGISTRATION_OK": "Die Komponente wurde erfolgreich registriert",
         "REGISTRATION_NOK": "Bei der Registrierung der Komponente ist ein Fehler aufgetreten",
         "REGISTRATIONS_OK": "Die Komponenteen wurden erfolgreich registriert",

@@ -52,7 +52,8 @@
       "SLOT_NOK": "An error has occurred. The Slot was not deleted.",
       "PRODUCTS_MESSAGE": "The selected Applications and their apps are deregistered from the Workspace. Menu items that use such paths are not touched but no longer work.",
       "PRODUCTS_QUESTION": "Do you want to deregister selected Applications?",
-      "COMPONENTS_QUESTION": "Do you want to deregister selected Components?"
+      "COMPONENTS_QUESTION": "Do you want to deregister selected Components?",
+      "SLOT_QUESTION": "Do you want to delete the Slot?"
     },
     "EDIT": {
       "LABEL": "Edit",
@@ -291,6 +292,7 @@
         "COMPONENTS.DEREGISTER": "Deregister Components"
       },
       "CHANGED": "There are important changes.",
+      "NEW.TOOLTIP": "This Slot is new. Add to Workspace with one click.",
       "DEPRECATED": "Outdated",
       "DEPRECATED.TOOLTIP": "This Slot is outdated and will no longer be usable in the foreseeable future.",
       "UNDEPLOYED": "Unavailable",
@@ -304,6 +306,8 @@
       "COMPONENTS.NOT_USED": "Available Components",
       "COMPONENTS.NOT_USED.TOOLTIP": "List of available Components (extracted from Application Store)",
       "MESSAGES": {
+        "CREATE_OK": "The Slot was successfully registered",
+        "CREATE_NOK": "An error has occurred during Slot registration",
         "REGISTRATION_OK": "The Component was successfully registered",
         "REGISTRATION_NOK": "An error has occurred during Component registration",
         "REGISTRATIONS_OK": "The Components wer successfully registered",

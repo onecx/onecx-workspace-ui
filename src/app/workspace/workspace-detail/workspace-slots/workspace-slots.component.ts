@@ -1,28 +1,30 @@
 import { Component, Input, SimpleChanges, OnChanges, OnDestroy, OnInit, ViewChild } from '@angular/core'
 import { TranslateService } from '@ngx-translate/core'
-import { Subject, catchError, finalize, map, of, switchMap, tap, takeUntil, Observable } from 'rxjs'
-//import { SelectItem } from 'primeng/api'
+import { Subject, catchError, finalize, map, mergeMap, of, tap, takeUntil, Observable } from 'rxjs'
 import { DataView } from 'primeng/dataview'
 
 import { DataViewControlTranslations } from '@onecx/portal-integration-angular'
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 
 import {
+  CreateSlotRequest,
   GetSlotsForWorkspaceRequestParams,
   ProductAPIService,
   Workspace,
-  //WorkspaceSlots,
   Slot, // id, workspaceId, name, components[]
   SlotPS, // name, undeployed, deprecated
   SlotComponent, // productName, appId, name
-  SlotAPIService
+  SlotAPIService,
+  WorkspaceProductAPIService
 } from 'src/app/shared/generated'
 import { limitText } from 'src/app/shared/utils'
 
 export type ChangeMode = 'VIEW' | 'CREATE' | 'EDIT' | 'COPY' | 'DELETE'
 export type PSSlot = SlotPS & { pName?: string; pDisplayName?: string }
 export type CombinedSlot = Slot & {
+  productName?: string
   bucket: 'SOURCE' | 'TARGET'
+  new: boolean
   changes: boolean
   psSlots: PSSlot[]
   psComponents?: ExtendedComponent[]
@@ -41,10 +43,11 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
 
   // data
   private readonly destroy$ = new Subject()
-  private triggerSubject = new Subject<CombinedSlot[]>()
-  public wSlots$!: Observable<CombinedSlot[]>
+  public wProducts$!: Observable<string[]>
+  public wProductNames!: string[]
+  public wSlots$!: Observable<string[]>
   public wSlots!: CombinedSlot[]
-  public psSlots$!: Observable<CombinedSlot[]>
+  public psSlots$!: Observable<string[]>
   public psSlots!: CombinedSlot[]
   public psComponents!: ExtendedComponent[]
 
@@ -72,6 +75,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     private user: UserService,
     private slotApi: SlotAPIService,
     private psProductApi: ProductAPIService,
+    private wProductApi: WorkspaceProductAPIService,
     private translate: TranslateService,
     private msgService: PortalMessageService
   ) {
@@ -92,25 +96,44 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   }
   public onReload() {
     this.loadData()
-    // this.triggerSubject.next([])
   }
   public loadData(): void {
     this.loading = true
     this.exceptionKey = undefined
+    this.declareWorkspaceProducts()
     this.declareWorkspaceSlots()
     this.declarePsSlots()
-    this.wSlots$ //= this.triggerSubject.asObservable()
+    this.wSlots$
       .pipe(
-        switchMap((wSlots) => {
-          return this.psSlots$
-        })
+        mergeMap((slots) => this.wProducts$),
+        mergeMap((slots) => this.psSlots$)
       )
       .subscribe()
+  }
+
+  private declareWorkspaceProducts(): void {
+    this.wProducts$ = this.wProductApi
+      .getProductsByWorkspaceId({ id: this.workspace?.id! })
+      .pipe(
+        map((products) => {
+          this.wProductNames = []
+          for (let p of products) this.wProductNames.push(p.productName!)
+          //return this.wProductNames
+          return []
+        }),
+        catchError((err) => {
+          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.PRODUCTS'
+          console.error('getProductsByWorkspaceId():', err)
+          return of([] as string[])
+        })
+      )
+      .pipe(takeUntil(this.destroy$))
   }
 
   /**
    * SEARCH
    */
+  // Slots which were registered together with Products/Applications
   private declareWorkspaceSlots(): void {
     this.wSlots$ = this.slotApi
       .getSlotsForWorkspace({ id: this.workspace?.id } as GetSlotsForWorkspaceRequestParams)
@@ -120,27 +143,28 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
         map((res) => {
           this.wSlots = []
           if (res.slots)
-            for (let s of res.slots)
+            for (const s of res.slots)
               this.wSlots.push({
                 ...s,
+                new: false,
                 bucket: 'TARGET',
                 changes: false,
                 psSlots: [],
                 psComponents: []
               } as CombinedSlot)
-          return this.wSlots.sort(this.sortSlotsByName)
+          //return this.wSlots.sort(this.sortSlotsByName)
+          return [] as string[]
         }),
         catchError((err) => {
           this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.SLOTS'
           console.error('searchSlots():', err)
-          return of([] as CombinedSlot[])
+          return of([] as string[])
         }),
         finalize(() => (this.loading = false))
       )
   }
-  public sortSlotsByName(a: Slot, b: Slot): number {
-    return (a.name ? a.name.toUpperCase() : '').localeCompare(b.name ? b.name.toUpperCase() : '')
-  }
+
+  // All declared Slots of Product store Products: containing deployment information
   private declarePsSlots(): void {
     this.psSlots$ = this.psProductApi.searchAvailableProducts({ productStoreSearchCriteria: {} }).pipe(
       tap((res) => console.log('tap => psSlots', res)),
@@ -149,9 +173,9 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
         this.psComponents = []
         if (res.stream) {
           for (let p of res.stream) {
-            // 1. enrich wSlots with product store flags
+            // 1. enrich wSlots with deployment information (contained in product store)
             p.slots?.forEach((ps) => {
-              this.psSlots.push(ps as CombinedSlot)
+              this.psSlots.push({ ...ps, productName: p.productName } as CombinedSlot)
               const ws = this.wSlots.filter((s) => s.name === ps.name)
               if (ws.length === 1) {
                 ws[0].psSlots.push({ ...ps, pName: p.productName, pDisplayName: p.displayName! })
@@ -174,7 +198,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
                 })
             }
           }
-          // 3. enrich component data
+          // 3. collect the components per wSlots
           this.wSlots.forEach((ws) => {
             ws.components?.forEach((c) => {
               const psc = this.psComponents?.filter((pc) => pc.name === c.name)
@@ -185,10 +209,20 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
             })
           })
         }
-        console.log('psComponents', this.psComponents)
-        console.log('wSlots', this.wSlots)
-        if (this.detailSlotId) this.slot = this.wSlots.filter((s) => (s.id = this.detailSlotId))[0]
-        return this.psSlots
+        // 4. add new Slots (not yet in Workspace but part of registered product)
+        this.wProductNames.forEach((pn) => {
+          this.psSlots
+            .filter((psp) => psp.productName === pn)
+            .forEach((s) => {
+              if (this.wSlots.filter((ws) => ws.name === s.name).length === 0) {
+                // the slot does not exist, then add this candidate
+                this.wSlots.push({ ...s, new: true })
+              }
+            })
+        })
+        //if (this.detailSlotId) this.slot = this.wSlots.filter((s) => (s.id = this.detailSlotId))[0]
+        return [] as string[]
+        // return this.psSlots
       }),
       catchError((err) => {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.SLOTS'
@@ -197,6 +231,10 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
       }),
       finalize(() => (this.loading = false))
     )
+  }
+
+  private sortSlotsByName(a: Slot, b: Slot): number {
+    return (a.name ? a.name.toUpperCase() : '').localeCompare(b.name ? b.name.toUpperCase() : '')
   }
 
   /**
@@ -247,7 +285,6 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
 
   // detail dialog closed - reload data on changes
   public onSlotDetailClosed(changed: boolean) {
-    console.log('onSlotDetailClosed')
     this.slot = undefined
     this.detailSlotId = undefined
     this.changeMode = 'VIEW'
@@ -255,8 +292,26 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     this.showSlotDeleteDialog = false
     if (changed) this.loadData()
   }
-  public onSlotComponentsChanged(changed: boolean) {
-    console.log('onSlotComponentsChanged')
-    // if (changed) this.loadData()
+
+  public onAddSlot(ev: Event, slot: CombinedSlot): void {
+    ev.stopPropagation()
+    this.slotApi
+      .createSlot({
+        createSlotRequest: { workspaceId: this.workspace?.id, name: slot.name } as CreateSlotRequest
+      })
+      .subscribe({
+        next: (slot) => this.loadData(),
+        error: () => {
+          this.msgService.error({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.NOK' })
+        }
+      })
+  }
+
+  public onDeleteSlot(ev: Event, slot: CombinedSlot): void {
+    ev.stopPropagation()
+    this.slot = slot
+    this.detailSlotId = this.slot.id
+    this.changeMode = this.hasEditPermission ? 'EDIT' : 'VIEW'
+    this.showSlotDeleteDialog = true
   }
 }
