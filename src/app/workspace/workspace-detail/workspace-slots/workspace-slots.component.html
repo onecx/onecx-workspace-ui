@@ -10,10 +10,6 @@
   [sortField]="sortField"
   [sortOrder]="sortOrder"
 >
-  <!--
-  [value]="wSlots"
-  [value]="(wSlots$ | async)?.sort(sortSlotsByName) || []"
--->
   <ng-template pTemplate="header">
     <div class="flex flex-wrap align-items-center">
       <ocx-data-view-controls
@@ -44,16 +40,6 @@
           icon="pi pi-refresh"
         >
         </p-button>
-        <!--p-button
-          *ocxIfPermission="'WORKSPACE_SLOT#CREATE'"
-          type="button"
-          id="workspace_slots_header_create"
-          styleClass="h-full"
-          [title]="'ACTIONS.CREATE.SLOT' | translate"
-          (onClick)="onCreateRole($event)"
-          icon="pi pi-plus"
-        >
-        </p-button-->
       </div>
     </div>
   </ng-template>
@@ -61,13 +47,28 @@
     <div class="col-12 sm:col-6 md:col-4 lg:col-4 xl:col-3 p-3">
       <div
         [id]="'workspace_detail_slots_data_idx_' + idx"
-        class="card relative p-2 hover:bg-gray-200 cursor-pointer"
+        class="card relative py-2 px-3"
+        [ngClass]="{ 'hover:bg-gray-200 cursor-pointer': !slot.new }"
         (click)="onSlotDetail($event, slot)"
       >
         <span
+          *ngIf="hasCreatePermission && slot.new"
+          [id]="'workspace_detail_slots_' + idx + '_new'"
+          class="card-badge-right badge-1 p-1 pi pi-plus pseudo-button-link"
+          [title]="'DIALOG.SLOT.NEW.TOOLTIP' | translate"
+          (click)="onAddSlot($event, slot)"
+        ></span>
+        <span
+          *ngIf="hasDeletePermission && !slot.new && slot.components.length === 0"
+          [id]="'workspace_detail_roles_data_item_' + idx + '_delete'"
+          [title]="'ACTIONS.DELETE.SLOT' | translate"
+          class="card-badge-left badge-2-1 p-1 pi pi-trash pseudo-button-link"
+          (click)="onDeleteSlot($event, slot)"
+        ></span>
+        <span
           *ngIf="slot.changes"
-          [id]="'workspace_detail_slots_' + idx + '_changed_mfe'"
-          class="card-badge-right badge-1 danger-action-text font-bold text-xl pi pi-exclamation-circle"
+          [id]="'workspace_detail_slots_' + idx + '_changed'"
+          class="card-badge-right badge-1 pi pi-exclamation-circle danger-action-text text-lg"
           [title]="'DIALOG.SLOT.CHANGED' | translate"
         ></span>
         <span
@@ -93,5 +94,4 @@
   [displayDetailDialog]="showSlotDetailDialog"
   [displayDeleteDialog]="showSlotDeleteDialog"
   (detailClosed)="onSlotDetailClosed($event)"
-  (changed)="onSlotComponentsChanged($event)"
 ></app-workspace-slot-detail>

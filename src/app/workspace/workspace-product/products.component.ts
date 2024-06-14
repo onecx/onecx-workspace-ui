@@ -14,6 +14,7 @@ import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@ang
 import { ConfirmationService } from 'primeng/api'
 import {
   CreateSlot,
+  CreateSlotRequest,
   ImagesInternalAPIService,
   Microfrontend,
   MicrofrontendType,
@@ -23,6 +24,7 @@ import {
   Product,
   ProductAPIService,
   SlotPS,
+  SlotAPIService,
   Workspace,
   WorkspaceProductAPIService
 } from 'src/app/shared/generated'
@@ -39,13 +41,14 @@ export type AppType = {
   modules?: ExtendedMicrofrontend[]
   components?: ExtendedMicrofrontend[]
 }
+export type ExtendedSlot = SlotPS & { new?: boolean }
 // combine Workspace Product with properties from product store (ProductStoreItem)
 // => bucket is used to recognize the origin within HTML
 export type ExtendedProduct = Product & {
   bucket: 'SOURCE' | 'TARGET' // target: workspace product = registered
   changedComponents: boolean // true if there is a MFE with deprecated or undeployed
   apps: Map<string, AppType> // key: appId
-  slots?: Array<SlotPS> // from ProductStoreItem
+  slots?: Array<ExtendedSlot> // from ProductStoreItem
 }
 interface ViewingModes {
   icon: string
@@ -100,6 +103,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     private wProductApi: WorkspaceProductAPIService,
     private psProductApi: ProductAPIService,
     private imageApi: ImagesInternalAPIService,
+    private slotApi: SlotAPIService,
     private user: UserService,
     private appState: AppStateService,
     private translate: TranslateService,
@@ -572,5 +576,22 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     if (error > 0)
       if (error === 1) this.msgService.error({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.' + type + '_NOK' })
       else this.msgService.error({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.' + type + 'S_NOK' })
+  }
+
+  /**
+   * UI Events: ADD slot
+   */
+  public onAddSlot(ev: any, item: ExtendedSlot) {
+    console.log('onAddSlot', item)
+    this.slotApi
+      .createSlot({ createSlotRequest: { workspaceId: '', name: item.name } as CreateSlotRequest })
+      .subscribe({
+        next: (data) => {
+          this.msgService.success({ summaryKey: 'DIALOG.SLOT.MESSAGES.CREATE_OK' })
+        },
+        error: (err) => {
+          this.msgService.error({ summaryKey: 'DIALOG.SLOT.MESSAGES.CREATE_NOK' })
+        }
+      })
   }
 }

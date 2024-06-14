@@ -96,7 +96,6 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   }
 
   public onSaveSlot() {
-    console.log('onSaveSlot')
     this.slotApi
       .updateSlot({
         id: this.slot.id!,
@@ -115,12 +114,25 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
           this.slot.components = data.components
           this.msgService.success({ summaryKey: 'ACTIONS.EDIT.SLOT_OK' })
           this.dataChanged = true
-          this.changed.emit(true)
         },
         error: (err) => {
           this.msgService.error({ summaryKey: 'ACTIONS.EDIT.SLOT_NOK' })
           console.error(err.error)
         }
       })
+  }
+
+  public onDeleteSlot() {
+    this.slotApi.deleteSlotById({ id: this.slot.id! }).subscribe({
+      next: () => {
+        this.msgService.success({ summaryKey: 'ACTIONS.DELETE.SLOT_OK' })
+        this.dataChanged = true
+        this.detailClosed.emit(true)
+      },
+      error: (err) => {
+        this.msgService.error({ summaryKey: 'ACTIONS.DELETE.SLOT_NOK' })
+        console.error(err.error)
+      }
+    })
   }
 }

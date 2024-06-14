@@ -150,9 +150,9 @@
 </p-dialog>
 
 <p-dialog
-  [(visible)]="displayDeregisterConfirmation"
-  [header]="'DIALOG.SLOT.HEADER.COMPONENTS.DEREGISTER' | translate"
-  (onHide)="onDeregisterCancellation()"
+  [(visible)]="displayDeleteDialog"
+  [header]="'DIALOG.SLOT.HEADER.DELETE' | translate"
+  (onHide)="onClose()"
   [modal]="true"
   [closable]="true"
   [resizable]="false"
@@ -162,7 +162,7 @@
   <div class="my-2 flex column-gap-4 row-gap-1 justify-content-start align-items-center">
     <div class="pi pi-question-circle text-3xl danger-action-text"></div>
     <div>
-      <div class="font-bold">{{ 'ACTIONS.DELETE.COMPONENTS_QUESTION' | translate }}</div>
+      <div class="font-bold">{{ ('ACTIONS.DELETE.MESSAGE' | translate).replace('{{ITEM}}', slot?.name) }}</div>
       <div class="mt-2">{{ 'ACTIONS.DELETE.MESSAGE_INFO' | translate }}</div>
     </div>
   </div>
@@ -177,7 +177,7 @@
         icon="pi pi-times"
         iconPos="left"
         [label]="'ACTIONS.CONFIRMATION.NO' | translate"
-        (click)="onDeregisterCancellation()"
+        (click)="onClose()"
       ></button>
       <button
         pButton
@@ -187,7 +187,7 @@
         icon="pi pi-check"
         iconPos="left"
         [label]="'ACTIONS.CONFIRMATION.YES' | translate"
-        (click)="onDeregisterConfirmation()"
+        (click)="onDeleteSlot()"
       ></button>
     </div>
   </ng-template>

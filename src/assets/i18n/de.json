@@ -291,6 +291,7 @@
         "COMPONENTS.DEREGISTER": "Komponenten abmelden"
       },
       "CHANGED": "Es gibt wichtige Änderungen.",
+      "NEW.TOOLTIP": "Dieser Slot ist neu. Mit einem Klick zum Workspace hinzufügen.",
       "DEPRECATED": "Veraltet",
       "DEPRECATED.TOOLTIP": "Dieser Slot ist veraltet und wird in absehbarer Zeit nicht mehr nutzbar sein.",
       "UNDEPLOYED": "Unverfügbar",
@@ -304,6 +305,8 @@
       "COMPONENTS.NOT_USED": "Verfügbare Komponenten",
       "COMPONENTS.NOT_USED.TOOLTIP": "Liste der verfügbaren Komponenten (aus dem Application Store)",
       "MESSAGES": {
+        "CREATE_OK": "Der Slot wurde erfolgreich registriert",
+        "CREATE_NOK": "Bei der Registrierung des Slots ist ein Fehler aufgetreten",
         "REGISTRATION_OK": "Die Komponente wurde erfolgreich registriert",
         "REGISTRATION_NOK": "Bei der Registrierung der Komponente ist ein Fehler aufgetreten",
         "REGISTRATIONS_OK": "Die Komponenteen wurden erfolgreich registriert",
