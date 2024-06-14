@@ -23,7 +23,6 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   @Output() changed: EventEmitter<boolean> = new EventEmitter()
 
   public dateFormat = 'medium'
-  public dataChanged = false
   public slot!: CombinedSlot
   public slotName!: string
   public wComponents!: ExtendedComponent[]
@@ -50,7 +49,6 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   public ngOnChanges(): void {
     if (this.slotOrg) {
       console.log('slot detail ngOnChanges')
-      this.dataChanged = false
       this.slot = { ...this.slotOrg }
       this.slotName = this.slot.name ?? ''
       // extract ps components
@@ -65,7 +63,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   }
 
   public onClose(): void {
-    this.detailClosed.emit(this.dataChanged)
+    this.detailClosed.emit(false)
   }
 
   /**
@@ -113,7 +111,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
           this.slot.modificationDate = data.modificationDate
           this.slot.components = data.components
           this.msgService.success({ summaryKey: 'ACTIONS.EDIT.SLOT_OK' })
-          this.dataChanged = true
+          this.changed.emit(true)
         },
         error: (err) => {
           this.msgService.error({ summaryKey: 'ACTIONS.EDIT.SLOT_NOK' })
@@ -126,7 +124,6 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
     this.slotApi.deleteSlotById({ id: this.slot.id! }).subscribe({
       next: () => {
         this.msgService.success({ summaryKey: 'ACTIONS.DELETE.SLOT_OK' })
-        this.dataChanged = true
         this.detailClosed.emit(true)
       },
       error: (err) => {

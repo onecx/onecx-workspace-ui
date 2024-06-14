@@ -152,7 +152,6 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
                 psSlots: [],
                 psComponents: []
               } as CombinedSlot)
-          //return this.wSlots.sort(this.sortSlotsByName)
           return [] as string[]
         }),
         catchError((err) => {
@@ -219,10 +218,10 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
                 this.wSlots.push({ ...s, new: true })
               }
             })
+          this.wSlots.sort(this.sortSlotsByName)
         })
-        //if (this.detailSlotId) this.slot = this.wSlots.filter((s) => (s.id = this.detailSlotId))[0]
+        // if (this.detailSlotId) this.slot = this.wSlots.filter((s) => (s.id = this.detailSlotId))[0]
         return [] as string[]
-        // return this.psSlots
       }),
       catchError((err) => {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.SLOTS'
@@ -277,6 +276,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
    */
   public onSlotDetail(ev: Event, slot: CombinedSlot): void {
     ev.stopPropagation()
+    if (slot.new) return
     this.slot = slot
     this.detailSlotId = this.slot.id
     this.changeMode = this.hasEditPermission ? 'EDIT' : 'VIEW'
@@ -290,6 +290,9 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     this.changeMode = 'VIEW'
     this.showSlotDetailDialog = false
     this.showSlotDeleteDialog = false
+    if (changed) this.loadData()
+  }
+  public onSlotDetailChanged(changed: boolean) {
     if (changed) this.loadData()
   }
 
