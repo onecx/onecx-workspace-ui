@@ -292,6 +292,9 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     this.showSlotDeleteDialog = false
     if (changed) this.loadData()
   }
+  public onSlotDetailChanged(changed: boolean) {
+    if (changed) this.loadData()
+  }
 
   public onAddSlot(ev: Event, slot: CombinedSlot): void {
     ev.stopPropagation()
