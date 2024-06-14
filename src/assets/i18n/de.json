@@ -52,8 +52,7 @@
       "SLOT_NOK": "Ein Fehler ist aufgetreten. Die Slot-Zuweisung wurde nicht gelöscht.",
       "PRODUCTS_MESSAGE": "Die ausgewählten Applikationen und ihre Apps werden für den Arbeitsbereich abgemeldet. Menüelemente, die solche Pfade verwenden, werden nicht berührt, funktionieren aber nicht mehr.",
       "PRODUCTS_QUESTION": "Möchten Sie die ausgewählten Applikationen abmelden?",
-      "COMPONENTS_QUESTION": "Möchten Sie die ausgewählten Komponenten abmelden?",
-      "SLOT_QUESTION": "Möchten Sie den Slot löschen?"
+      "COMPONENTS_QUESTION": "Möchten Sie die ausgewählten Komponenten abmelden?"
     },
     "EDIT": {
       "LABEL": "Bearbeiten",
