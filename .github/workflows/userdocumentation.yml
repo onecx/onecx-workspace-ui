@@ -1,0 +1,17 @@
+name: Update user documentation
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'userdocs/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger website update
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.CI_PAT }}
+          repository: onecx/userdocs
+          event-type: dispatch-build-website
