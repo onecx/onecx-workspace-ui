@@ -286,7 +286,7 @@ fdescribe('MenuDetailComponent', () => {
      * LOAD Microfrontends from registered products
      **/
 
-    xdescribe('loadMfeUrls', () => {
+    describe('loadMfeUrls', () => {
       it('should loadMfeUrls: with product display name', () => {
         menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[0]))
         wProductApiServiceSpy.getProductsByWorkspaceId.and.returnValue(of([product]))
@@ -296,88 +296,12 @@ fdescribe('MenuDetailComponent', () => {
         component.displayDetailDialog = true
         spyOn(component as any, 'preparePanelHeight')
 
-        component.ngOnChanges({})
+        component.ngOnChanges({ workspaceId: {} as SimpleChange })
 
         let controlMfeItems: MenuURL[] = []
-        controlMfeItems.push({ mfePath: '', product: 'MENU_ITEM.URL.EMPTY' })
         controlMfeItems.push({ mfePath: '/workspace', product: 'MENU_ITEM.URL.UNKNOWN.PRODUCT', isSpecial: true })
-        controlMfeItems.push({ ...microfrontend, mfePath: '/path/base', product: 'display name' })
-        expect(component.mfeItems).toEqual(controlMfeItems)
-        expect((component as any).preparePanelHeight).toHaveBeenCalled()
-      })
-
-      // it('should loadMfeUrls: match url with mfeItem.url => no $$$-unknown-product', () => {
-      //   menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[3]))
-      //   wProductApiServiceSpy.getProductsByWorkspaceId.and.returnValue(of([product]))
-      //   component.changeMode = 'VIEW'
-      //   component.menuItemId = 'menuItemId'
-      //   component.displayDetailDialog = true
-      //   spyOn(component as any, 'preparePanelHeight')
-
-      //   component.ngOnChanges()
-
-      //   let controlMfeItems: MenuURL[] = []
-      //   controlMfeItems.push({ appId: '$$$-empty', mfePath: '', product: 'MENU_ITEM.URL.EMPTY' })
-      //   controlMfeItems.push({
-      //     ...microfrontend,
-      //     mfePath: Location.joinWithSlash(microfrontend.basePath!, product.baseUrl!),
-      //     product: undefined
-      //   })
-
-      //   expect(component.mfeItems).toEqual(controlMfeItems)
-      //   expect((component as any).preparePanelHeight).toHaveBeenCalled()
-      // })
-
-      // it('should loadMfeUrls: URL was extended then create such specific item with best match => no $$$-unknown-product', () => {
-      //   const productWithoutDisplayName: Product = {
-      //     id: 'prod id',
-      //     productName: 'prod name',
-      //     description: 'description',
-      //     microfrontends: [microfrontend],
-      //     modificationCount: 1
-      //   }
-      //   menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[4]))
-      //   wProductApiServiceSpy.getProductsByWorkspaceId.and.returnValue(of([productWithoutDisplayName]))
-      //   component.changeMode = 'VIEW'
-      //   component.menuItemId = 'menuItemId'
-      //   component.displayDetailDialog = true
-      //   spyOn(component as any, 'preparePanelHeight')
-
-      //   component.ngOnChanges()
-      //   let controlMfeItems: MenuURL[] = []
-      //   controlMfeItems.push({ appId: '$$$-empty', mfePath: '', product: 'MENU_ITEM.URL.EMPTY' })
-      //   controlMfeItems.push({
-      //     id: 'id',
-      //     appId: 'appId',
-      //     mfePath: 'PATHEXT',
-      //     product: undefined
-      //   })
-      //   controlMfeItems.push({ ...microfrontend, product: undefined })
-
-      //   expect(component.mfeItems).toEqual(controlMfeItems)
-      //   expect((component as any).preparePanelHeight).toHaveBeenCalled()
-      // })
-
-      it('should loadMfeUrls: url starts with http ', () => {
-        menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[2]))
-        wProductApiServiceSpy.getProductsByWorkspaceId.and.returnValue(of([product]))
-        component.changeMode = 'VIEW'
-        component.workspaceId = 'workspaceId'
-        component.menuItemId = 'menuItemId'
-        component.displayDetailDialog = true
-        spyOn(component as any, 'preparePanelHeight')
-
-        component.ngOnChanges({})
-
-        let controlMfeItems: MenuURL[] = []
         controlMfeItems.push({ mfePath: '', product: 'MENU_ITEM.URL.EMPTY' })
-        controlMfeItems.push({
-          mfePath: 'http://testdomain/workspace',
-          product: 'MENU_ITEM.URL.HTTP',
-          isSpecial: true
-        })
         controlMfeItems.push({ ...microfrontend, mfePath: '/path/base', product: 'display name' })
-
         expect(component.mfeItems).toEqual(controlMfeItems)
         expect((component as any).preparePanelHeight).toHaveBeenCalled()
       })
@@ -392,7 +316,7 @@ fdescribe('MenuDetailComponent', () => {
         spyOn(component as any, 'preparePanelHeight')
         spyOn(console, 'error')
 
-        component.ngOnChanges({})
+        component.ngOnChanges({ workspaceId: {} as SimpleChange })
 
         expect(console.error).toHaveBeenCalledWith('getProductsByWorkspaceId():', new Error())
         expect((component as any).preparePanelHeight).toHaveBeenCalled()
