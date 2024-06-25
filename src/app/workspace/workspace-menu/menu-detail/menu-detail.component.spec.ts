@@ -324,20 +324,64 @@ fdescribe('MenuDetailComponent', () => {
     })
   })
 
-  it('should emit false when onCloseDetailDialog is called', () => {
-    spyOn(component.dataChanged, 'emit')
+  describe('prepareUrlList', () => {
+    it('should prepare URL list with correct mfePath', () => {
+      component.mfeItems = [microfrontend]
 
-    component.onCloseDetailDialog()
+      const result = component['prepareUrlList']('http://url')
 
-    expect(component.dataChanged.emit).toHaveBeenCalledWith(false)
+      expect(result).toEqual({
+        mfePath: 'http://url',
+        product: 'MENU_ITEM.URL.HTTP',
+        isSpecial: true
+      } as MenuURL)
+    })
+
+    it('should return the matching item for a perfect match', () => {
+      const mfeItems: MenuURL[] = [
+        { mfePath: 'http://url/path1', product: 'Product 1' },
+        { mfePath: 'http://url/path2', product: 'Product 2' }
+      ]
+
+      component.mfeItems = mfeItems
+
+      const [result, itemCreated] = component['searchMfeForBasePathMatch']('http://url/path1')
+
+      expect(result).toEqual(mfeItems[0])
+      expect(itemCreated).toBe(false)
+    })
+
+    it('should return a special item for an extended match', () => {
+      const mfeItems: MenuURL[] = [
+        { mfePath: 'http://url/path1', product: 'Product 1' },
+        { mfePath: 'http://url/path2', product: 'Product 2' }
+      ]
+
+      component.mfeItems = mfeItems
+
+      const [result, itemCreated] = component['searchMfeForBasePathMatch']('http://url/path1/subpath')
+
+      expect(result).toEqual({ ...mfeItems[0], mfePath: 'http://url/path1/subpath', isSpecial: true })
+      expect(itemCreated).toBe(true)
+    })
   })
 
-  it('should emit false when onCloseDeleteDialog is called', () => {
-    spyOn(component.dataChanged, 'emit')
+  describe('onCloseDetailDialog', () => {
+    it('should emit false when onCloseDetailDialog is called', () => {
+      spyOn(component.dataChanged, 'emit')
 
-    component.onCloseDeleteDialog()
+      component.onCloseDetailDialog()
 
-    expect(component.dataChanged.emit).toHaveBeenCalledWith(false)
+      expect(component.dataChanged.emit).toHaveBeenCalledWith(false)
+    })
+
+    it('should emit false when onCloseDeleteDialog is called', () => {
+      spyOn(component.dataChanged, 'emit')
+
+      component.onCloseDeleteDialog()
+
+      expect(component.dataChanged.emit).toHaveBeenCalledWith(false)
+    })
   })
 
   /***************************************************************************
