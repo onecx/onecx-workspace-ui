@@ -119,7 +119,7 @@ const product: Product = {
   modificationCount: 1
 }
 
-fdescribe('MenuDetailComponent', () => {
+describe('MenuDetailComponent', () => {
   let component: MenuDetailComponent
   let fixture: ComponentFixture<MenuDetailComponent>
   let mockActivatedRoute: Partial<ActivatedRoute>
@@ -428,7 +428,18 @@ fdescribe('MenuDetailComponent', () => {
 
   it('should save a menu: create', () => {
     menuApiServiceSpy.createMenuItemForWorkspace.and.returnValue(of({}))
-    component.formGroup = form
+    component.formGroup = new FormGroup({
+      parentItemId: new FormControl('some parent id'),
+      key: new FormControl('key', Validators.minLength(2)),
+      name: new FormControl('name'),
+      position: new FormControl('1'),
+      disabled: new FormControl<boolean>(false),
+      external: new FormControl<boolean>(false),
+      url: new FormControl('url'),
+      badge: new FormControl('badge'),
+      scope: new FormControl('scope'),
+      description: new FormControl('description')
+    })
     component.menuItem = mockMenuItems[0]
     component.changeMode = 'CREATE'
     component.languagesDisplayed = [{ label: 'English', value: 'en', data: 'data' }]
