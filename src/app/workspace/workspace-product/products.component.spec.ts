@@ -52,7 +52,8 @@ const product: ExtendedProduct = {
   bucket: 'SOURCE',
   undeployed: false,
   changedComponents: false,
-  apps: new Map().set('appId', { appId: 'appId', modules: [microfrontend] })
+  apps: new Map().set('appId', { appId: 'appId', modules: [microfrontend] }),
+  slots: [{ name: 'psSlot' } as SlotPS]
 }
 
 const prodStoreItem: ExtendedProduct = {
@@ -97,7 +98,7 @@ const mfeInfo: MfeInfo = {
   productName: 'prodName'
 }
 
-fdescribe('ProductComponent', () => {
+describe('ProductComponent', () => {
   let component: ProductComponent
   let fixture: ComponentFixture<ProductComponent>
   let mockActivatedRoute: ActivatedRoute
@@ -290,6 +291,37 @@ fdescribe('ProductComponent', () => {
       component.ngOnChanges(changes as unknown as SimpleChanges)
 
       expect(console.error).toHaveBeenCalledWith('searchAvailableProducts():', err)
+    })
+
+    it('prepare product app parts: mfe type is component', () => {
+      const psp: ExtendedProduct = {
+        microfrontends: [
+          { appId: 'app1', type: MicrofrontendType.Module },
+          { appId: 'app2', type: MicrofrontendType.Component, undeployed: true },
+          { appId: 'app2', type: MicrofrontendType.Component, deprecated: true }
+        ],
+        apps: new Map<string, any>([
+          ['app1', {}],
+          ['app2', {}]
+        ])
+      } as ExtendedProduct
+      spyOn<any>(component, 'prepareProductAppParts').and.callThrough()
+
+      component['prepareProductAppParts'](psp)
+
+      expect(psp.changedComponents).toBeTrue()
+    })
+
+    it('should handle slots and mark product as changed if undeployed or deprecated', () => {
+      const psp: ExtendedProduct = {
+        apps: new Map<string, any>(),
+        slots: [{ undeployed: true }, { deprecated: true }]
+      } as ExtendedProduct
+      spyOn<any>(component, 'prepareProductAppParts').and.callThrough()
+
+      component['prepareProductAppParts'](psp)
+
+      expect(psp.changedComponents).toBeTrue()
     })
   })
 
@@ -518,10 +550,16 @@ fdescribe('ProductComponent', () => {
     expect(result).toBe('/url')
   })
 
-  xit('should return uploaded imageUrl', () => {
+  it('should return imageUrl path', () => {
+    const result = component.getImageUrl()
+
+    expect(result).toBeUndefined()
+  })
+
+  it('should return uploaded imageUrl', () => {
     const result = component.getImageUrl({ productName: 'product' } as ExtendedProduct)
 
-    expect(result).toBe('http://onecx-workspace-bff:8080/images/product/product/logo')
+    expect(result).toBe('http://onecx-workspace-bff:8080/images/product/product')
   })
 
   /**
