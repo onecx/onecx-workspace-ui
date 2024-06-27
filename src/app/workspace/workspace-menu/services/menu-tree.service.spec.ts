@@ -52,22 +52,36 @@ describe('MenuTreeService', () => {
     ])
   })
 
-  it('should calculate new positions correctly: nodes are null', () => {
-    const id = 'otherParent'
-    const mockTreeNodes = null
+  describe('findNodeRecursively', () => {
+    it('should find node in node child', () => {
+      const id = 'otherChild'
+      const mockTreeNodes = [
+        { key: 'oldParent', children: [{ key: 'child1' }, { key: 'child2' }] },
+        { key: 'newParent', children: [{ key: 'otherChild' }, { key: 'child4' }] }
+      ]
 
-    const result = service['findNodeRecursively'](id, mockTreeNodes as unknown as TreeNode<any>[])
+      let result = service['findNodeRecursively'](id, mockTreeNodes as unknown as TreeNode<any>[])
 
-    expect(result).toBeNull()
-  })
+      expect(result).toEqual({ key: 'otherChild' })
+    })
 
-  it('should calculate new positions correctly: nodes are empty', () => {
-    const id = 'otherParent'
-    const mockTreeNodes: TreeNode[] = []
+    it('should calculate new positions correctly: nodes are null', () => {
+      const id = 'otherParent'
+      const mockTreeNodes = null
 
-    const result = service['findNodeRecursively'](id, mockTreeNodes as unknown as TreeNode<any>[])
+      const result = service['findNodeRecursively'](id, mockTreeNodes as unknown as TreeNode<any>[])
 
-    expect(result).toBeNull()
+      expect(result).toBeNull()
+    })
+
+    it('should calculate new positions correctly: nodes are empty', () => {
+      const id = 'otherParent'
+      const mockTreeNodes: TreeNode[] = []
+
+      const result = service['findNodeRecursively'](id, mockTreeNodes as unknown as TreeNode<any>[])
+
+      expect(result).toBeNull()
+    })
   })
 
   it('should parse items from structure correctly', () => {
@@ -123,6 +137,12 @@ describe('MenuTreeService', () => {
     ])
   })
 
+  it('should return an empty array if there are no items', () => {
+    const result = service.mapToTreeNodes([])
+
+    expect(result).toEqual([])
+  })
+
   it('should map items to TreeNodes correctly', () => {
     const items: WorkspaceMenuItem[] = [
       {
@@ -175,6 +195,100 @@ describe('MenuTreeService', () => {
                 styleClass: 'leaf',
                 label: 'Subsubitem 1.1.1',
                 key: 'subsubitem1',
+                expanded: false,
+                children: [],
+                leaf: false
+              }
+            ],
+            leaf: false
+          },
+          {
+            styleClass: 'leaf',
+            label: 'Subitem 1.2',
+            key: 'subitem2',
+            expanded: false,
+            children: [],
+            leaf: false
+          }
+        ],
+        leaf: false
+      },
+      {
+        styleClass: 'leaf',
+        label: 'Item 2',
+        key: 'item2',
+        expanded: false,
+        children: [],
+        leaf: false
+      }
+    ])
+  })
+
+  it('should sort and map items to TreeNodes correctly if position values are decreasing', () => {
+    const items: WorkspaceMenuItem[] = [
+      {
+        id: 'item1',
+        name: 'Item 1',
+        position: 1,
+        children: [
+          {
+            id: 'subitem1',
+            name: 'Subitem 1.1',
+            position: 2,
+            children: [
+              {
+                id: 'subsubitem2',
+                name: 'Subsubitem 1.1.2',
+                position: 4
+              },
+              {
+                id: 'subsubitem1',
+                name: 'Subsubitem 1.1.1',
+                position: 3
+              }
+            ]
+          },
+          {
+            id: 'subitem2',
+            name: 'Subitem 1.2',
+            position: 5
+          }
+        ]
+      },
+      {
+        id: 'item2',
+        name: 'Item 2',
+        position: 6
+      }
+    ]
+
+    const result = service.mapToTreeNodes(items)
+
+    expect(result).toEqual([
+      {
+        styleClass: 'non-leaf',
+        label: 'Item 1',
+        key: 'item1',
+        expanded: false,
+        children: [
+          {
+            styleClass: 'non-leaf',
+            label: 'Subitem 1.1',
+            key: 'subitem1',
+            expanded: false,
+            children: [
+              {
+                styleClass: 'leaf',
+                label: 'Subsubitem 1.1.1',
+                key: 'subsubitem1',
+                expanded: false,
+                children: [],
+                leaf: false
+              },
+              {
+                styleClass: 'leaf',
+                label: 'Subsubitem 1.1.2',
+                key: 'subsubitem2',
                 expanded: false,
                 children: [],
                 leaf: false
