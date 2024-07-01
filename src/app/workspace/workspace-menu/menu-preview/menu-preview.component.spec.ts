@@ -1,4 +1,4 @@
-import { NO_ERRORS_SCHEMA /*SimpleChanges, SimpleChange */ } from '@angular/core'
+import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
 
@@ -8,6 +8,9 @@ import { MenuStateService, MenuState } from '../services/menu-state.service'
 import { RouterTestingModule } from '@angular/router/testing'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { ToggleButtonModule } from 'primeng/togglebutton'
+import { MenuItemAPIService } from 'src/app/shared/generated'
+import { PortalMessageService } from '@onecx/angular-integration-interface'
+import { of, throwError } from 'rxjs'
 
 const state: MenuState = {
   pageSize: 0,
@@ -28,6 +31,10 @@ describe('MenuPreviewComponent', () => {
 
   const treeServiceSpy = jasmine.createSpyObj<MenuTreeService>('MenuTreeService', ['calculateNewNodesPositions'])
   const stateServiceSpy = jasmine.createSpyObj<MenuStateService>('MenuStateService', ['getState'])
+  const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
+  const menuApiService = {
+    updateMenuItemParent: jasmine.createSpy('updateMenuItemParent').and.returnValue(of({}))
+  }
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -44,11 +51,16 @@ describe('MenuPreviewComponent', () => {
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
         { provide: MenuTreeService, useValue: treeServiceSpy },
-        { provide: MenuStateService, useValue: stateServiceSpy }
+        { provide: MenuStateService, useValue: stateServiceSpy },
+        { provide: MenuItemAPIService, useValue: menuApiService },
+        { provide: PortalMessageService, useValue: msgServiceSpy }
       ]
     }).compileComponents()
     treeServiceSpy.calculateNewNodesPositions.calls.reset()
     stateServiceSpy.getState.calls.reset()
+    menuApiService.updateMenuItemParent.calls.reset()
+    msgServiceSpy.success.calls.reset()
+    msgServiceSpy.error.calls.reset()
   }))
 
   beforeEach(() => {
@@ -136,60 +148,28 @@ describe('MenuPreviewComponent', () => {
     expect(stateServiceSpy.getState().treeExpansionState.get('1')).toBeFalse()
   })
 
-  xit('should update menu items onDrop: return before pushing items', () => {
+  it('should update menu items onDrop: return before pushing items', () => {
     const event = {
-      dragNode: { key: 'draggedNodeId', parent: { key: 'oldParentNodeId' } },
+      dragNode: { key: 'draggedNodeId', parent: { key: 'oldParentNodeId' }, data: items[0] },
       dropNode: { key: 'newParentNodeId', children: [{ key: 'draggedNodeId' }], parent: { key: 'parent key' } }
     }
-    treeServiceSpy.calculateNewNodesPositions.and.returnValue([{ id: '', position: 1 }])
-    component.menuItems = items
+    menuApiService.updateMenuItemParent.and.returnValue(of({}))
 
     component.onDrop(event)
 
-    expect(treeServiceSpy.calculateNewNodesPositions).toHaveBeenCalledWith(
-      'oldParentNodeId',
-      'newParentNodeId',
-      component.menuNodes
-    )
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' })
   })
 
-  xit('should update menu items onDrop: other branches: complete updating the structure', () => {
+  it('should update menu items onDrop: return before pushing items', () => {
     const event = {
-      dragNode: { key: 'draggedNodeId', parent: { key: 'oldParentNodeId' } },
-      dropNode: { key: 'newParentNodeId', children: [{ key: 'otherdraggedNodeId' }], parent: { key: 'parent key' } }
+      dragNode: { key: 'draggedNodeId', parent: { key: 'oldParentNodeId' }, data: items[0] },
+      dropNode: { key: 'newParentNodeId', children: [{ key: 'draggedNodeId' }], parent: { key: 'parent key' } }
     }
-    treeServiceSpy.calculateNewNodesPositions.and.returnValue([{ id: 'id', position: 1 }])
-    spyOn(component.reorderEmitter, 'emit')
-    component.menuItems = items
+    menuApiService.updateMenuItemParent.and.returnValue(throwError(() => new Error()))
+
     component.onDrop(event)
 
-    expect(component.reorderEmitter.emit).toHaveBeenCalledWith(true)
-  })
-
-  xit('should update menu items onDrop: other branches: complete updating the structure for dragged node', () => {
-    const event = {
-      dragNode: { key: 'id', parent: { key: 'oldParentNodeId' } },
-      dropNode: { key: 'newParentNodeId', children: [{ key: 'otherdraggedNodeId' }], parent: { key: 'parent key' } }
-    }
-    treeServiceSpy.calculateNewNodesPositions.and.returnValue([{ id: 'id', position: 1 }])
-    spyOn(component.reorderEmitter, 'emit')
-    component.menuItems = items
-    component.onDrop(event)
-
-    expect(component.reorderEmitter.emit).toHaveBeenCalledWith(true)
-  })
-
-  xit('should update menu items onDrop: other branches: complete updating the structure, no parent key', () => {
-    const event = {
-      dragNode: { key: 'draggedNodeId' },
-      dropNode: { key: 'newParentNodeId', children: [{ key: 'otherdraggedNodeId' }], parent: { key: 'parent key' } }
-    }
-    treeServiceSpy.calculateNewNodesPositions.and.returnValue([{ id: 'id', position: 1 }])
-    spyOn(component.reorderEmitter, 'emit')
-    component.menuItems = items
-    component.onDrop(event)
-
-    expect(component.reorderEmitter.emit).toHaveBeenCalledWith(true)
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
   })
 
   it('should set treeExpansionState onHierarchyViewChange', () => {

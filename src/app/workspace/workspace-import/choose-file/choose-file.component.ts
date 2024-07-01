@@ -101,7 +101,7 @@ export class ChooseFileComponent implements OnInit {
     if (dto.workspaces) {
       let key: string[] = Object.keys(dto.workspaces)
       const menuSnapshot = dto.workspaces[key[0]].menu
-      if (menuSnapshot?.menu && menuSnapshot.menu.menuItems) {
+      if (menuSnapshot?.menu?.menuItems) {
         for (const el of menuSnapshot.menu.menuItems) {
           if (!el.key) {
             this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_KEY_MISSING']

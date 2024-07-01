@@ -15,10 +15,11 @@ import {
   Workspace,
   Microfrontend,
   MicrofrontendType,
-  SlotPS
+  SlotPS,
+  SlotAPIService
 } from 'src/app/shared/generated'
 
-import { ExtendedMicrofrontend, ExtendedProduct, ProductComponent } from './products.component'
+import { ExtendedMicrofrontend, ExtendedProduct, ExtendedSlot, ProductComponent } from './products.component'
 
 const workspace: Workspace = {
   id: 'id',
@@ -51,7 +52,8 @@ const product: ExtendedProduct = {
   bucket: 'SOURCE',
   undeployed: false,
   changedComponents: false,
-  apps: new Map().set('appId', { appId: 'appId', modules: [microfrontend] })
+  apps: new Map().set('appId', { appId: 'appId', modules: [microfrontend] }),
+  slots: [{ name: 'psSlot' } as SlotPS]
 }
 
 const prodStoreItem: ExtendedProduct = {
@@ -115,6 +117,7 @@ describe('ProductComponent', () => {
   const productServiceSpy = {
     searchAvailableProducts: jasmine.createSpy('searchAvailableProducts').and.returnValue(of({}))
   }
+  const slotApiServiceSpy = { createSlot: jasmine.createSpy('createSlot').and.returnValue(of({})) }
 
   beforeEach(waitForAsync(() => {
     mockAppState = { currentMfe$: of(mfeInfo) }
@@ -135,7 +138,8 @@ describe('ProductComponent', () => {
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: WorkspaceProductAPIService, useValue: wProductServiceSpy },
         { provide: ProductAPIService, useValue: productServiceSpy },
-        { provide: AppStateService, useValue: mockAppState }
+        { provide: AppStateService, useValue: mockAppState },
+        { provide: SlotAPIService, useValue: slotApiServiceSpy }
       ]
     }).compileComponents()
     msgServiceSpy.success.calls.reset()
@@ -146,6 +150,7 @@ describe('ProductComponent', () => {
     wProductServiceSpy.createProductInWorkspace.calls.reset()
     wProductServiceSpy.deleteProductById.calls.reset()
     productServiceSpy.searchAvailableProducts.calls.reset()
+    slotApiServiceSpy.createSlot.calls.reset()
   }))
 
   beforeEach(() => {
@@ -286,6 +291,37 @@ describe('ProductComponent', () => {
       component.ngOnChanges(changes as unknown as SimpleChanges)
 
       expect(console.error).toHaveBeenCalledWith('searchAvailableProducts():', err)
+    })
+
+    it('prepare product app parts: mfe type is component', () => {
+      const psp: ExtendedProduct = {
+        microfrontends: [
+          { appId: 'app1', type: MicrofrontendType.Module },
+          { appId: 'app2', type: MicrofrontendType.Component, undeployed: true },
+          { appId: 'app2', type: MicrofrontendType.Component, deprecated: true }
+        ],
+        apps: new Map<string, any>([
+          ['app1', {}],
+          ['app2', {}]
+        ])
+      } as ExtendedProduct
+      spyOn<any>(component, 'prepareProductAppParts').and.callThrough()
+
+      component['prepareProductAppParts'](psp)
+
+      expect(psp.changedComponents).toBeTrue()
+    })
+
+    it('should handle slots and mark product as changed if undeployed or deprecated', () => {
+      const psp: ExtendedProduct = {
+        apps: new Map<string, any>(),
+        slots: [{ undeployed: true }, { deprecated: true }]
+      } as ExtendedProduct
+      spyOn<any>(component, 'prepareProductAppParts').and.callThrough()
+
+      component['prepareProductAppParts'](psp)
+
+      expect(psp.changedComponents).toBeTrue()
     })
   })
 
@@ -514,10 +550,16 @@ describe('ProductComponent', () => {
     expect(result).toBe('/url')
   })
 
-  xit('should return uploaded imageUrl', () => {
+  it('should return imageUrl path', () => {
+    const result = component.getImageUrl()
+
+    expect(result).toBeUndefined()
+  })
+
+  it('should return uploaded imageUrl', () => {
     const result = component.getImageUrl({ productName: 'product' } as ExtendedProduct)
 
-    expect(result).toBe('http://onecx-workspace-bff:8080/images/product/product/logo')
+    expect(result).toBe('http://onecx-workspace-bff:8080/images/product/product')
   })
 
   /**
@@ -949,42 +991,87 @@ describe('ProductComponent', () => {
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.REGISTRATIONS_NOK' })
   })
 
-  xit('should deleteProductById onMoveToSource', () => {
-    wProductServiceSpy.deleteProductById.and.returnValue(of({ resource: product }))
+  it('should deleteProductById onMoveToSource', () => {
     const event: any = { items: [product] }
     component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
     component.psProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
 
     component.onMoveToSource(event)
 
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.DEREGISTRATION_OK' })
+    expect(component.displayDeregisterConfirmation).toBeTrue()
   })
 
-  xit('should deleteProductById onMoveToSource: no ws id', () => {
-    wProductServiceSpy.deleteProductById.and.returnValue(of({ resource: product }))
-    const event: any = { items: [product] }
+  it('should restore items on deregister cancellation', () => {
+    component['deregisterItems'] = [product]
+    component.displayDeregisterConfirmation = true
+    component.psProducts = [prodStoreItem]
     component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
-    component.psProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
-    const workspace2: Workspace = {
-      name: 'name',
-      theme: 'theme',
-      baseUrl: '/some/base/url'
-    }
-    component.workspace = workspace2
 
-    component.onMoveToSource(event)
+    component.onDeregisterCancellation()
 
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.DEREGISTRATION_OK' })
+    expect(component.displayDeregisterConfirmation).toBeFalse()
+    expect(component['deregisterItems']).toEqual([])
   })
 
-  xit('should deleteProductById onMoveToSource', () => {
-    wProductServiceSpy.deleteProductById.and.returnValue(throwError(() => new Error()))
-    const event: any = { items: [product] }
-    component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
-    component.psProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
+  it('should handle successful deregistration', () => {
+    component['deregisterItems'] = [product]
+    component.psProducts = [prodStoreItem]
+    spyOn(component as any, 'displayRegisterMessages')
 
-    component.onMoveToSource(event)
+    component.onDeregisterConfirmation()
 
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.DEREGISTRATION_NOK' })
+    expect(component.displayDeregisterConfirmation).toBeFalse()
+    expect(wProductServiceSpy.deleteProductById).toHaveBeenCalledWith({
+      id: 'id',
+      productId: 'prod id'
+    })
+    expect(component.psProducts[0].bucket).toBe('SOURCE')
+  })
+
+  it('should handle failed deregistration', () => {
+    wProductServiceSpy.deleteProductById.and.returnValue(throwError(() => new Error('Failed to deregister')))
+    component['deregisterItems'] = [product]
+    component.psProducts = [prodStoreItem]
+    component.wProducts = []
+    spyOn(component as any, 'displayRegisterMessages')
+
+    component.onDeregisterConfirmation()
+
+    expect(component.displayDeregisterConfirmation).toBeFalse()
+    expect(wProductServiceSpy.deleteProductById).toHaveBeenCalledWith({
+      id: 'id',
+      productId: 'prod id'
+    })
+    expect(component.psProducts.length).toBe(0)
+    expect(component.wProducts.length).toBe(1)
+    expect(component.wProducts[0].productName).toBe('prod name')
+  })
+
+  /**
+   * UI Events: ADD slot
+   */
+  it('should handle successful slot creation', () => {
+    const extendedSlot: ExtendedSlot = { name: 'Test Slot' }
+
+    component.onAddSlot({}, extendedSlot)
+
+    expect(slotApiServiceSpy.createSlot).toHaveBeenCalledWith({
+      createSlotRequest: { workspaceId: '', name: extendedSlot.name }
+    })
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.SLOT.MESSAGES.CREATE_OK' })
+    expect(msgServiceSpy.error).not.toHaveBeenCalled()
+  })
+
+  it('should handle failed slot creation', () => {
+    slotApiServiceSpy.createSlot.and.returnValue(throwError(() => new Error('Failed to create slot')))
+    const extendedSlot: ExtendedSlot = { name: 'Test Slot' }
+
+    component.onAddSlot({}, extendedSlot)
+
+    expect(slotApiServiceSpy.createSlot).toHaveBeenCalledWith({
+      createSlotRequest: { workspaceId: '', name: extendedSlot.name }
+    })
+    expect(msgServiceSpy.success).not.toHaveBeenCalled()
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.SLOT.MESSAGES.CREATE_NOK' })
   })
 })
