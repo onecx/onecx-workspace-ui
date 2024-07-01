@@ -23,6 +23,7 @@ import {
 } from 'src/app/shared/generated'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { HttpErrorResponse } from '@angular/common/http'
+import { TreeNode } from 'primeng/api'
 
 const workspace: Workspace = {
   id: 'id',
@@ -63,6 +64,15 @@ const nodeData: MenuItemNodeData = {
   node: { key: 'nodeKey' }
 }
 
+const treeNodes: TreeNode = {
+  key: '1',
+  expanded: false,
+  children: [
+    { key: '1.1', expanded: true, children: [] },
+    { expanded: true, children: [] }
+  ]
+}
+
 const wRole: WorkspaceRole = {
   name: 'role name',
   id: 'role id',
@@ -100,7 +110,8 @@ describe('MenuComponent', () => {
     getMenuItemById: jasmine.createSpy('getMenuItemById').and.returnValue(of(mockMenuItems)),
     bulkPatchMenuItems: jasmine.createSpy('bulkPatchMenuItems').and.returnValue(of(mockMenuItems)),
     deleteMenuItemById: jasmine.createSpy('deleteMenuItemById').and.returnValue(of({})),
-    exportMenuByWorkspaceName: jasmine.createSpy('exportMenuByWorkspaceName').and.returnValue(of({}))
+    exportMenuByWorkspaceName: jasmine.createSpy('exportMenuByWorkspaceName').and.returnValue(of({})),
+    updateMenuItem: jasmine.createSpy('updateMenuItem').and.returnValue(of({}))
   }
   const wRoleServiceSpy = {
     searchWorkspaceRoles: jasmine.createSpy('searchWorkspaceRoles').and.returnValue(of({}))
@@ -224,6 +235,9 @@ describe('MenuComponent', () => {
     }
   })
 
+  /**
+   * UI ACTIONS
+   */
   it('should call loadMenu onReload', () => {
     spyOn(component, 'loadMenu')
 
@@ -232,9 +246,46 @@ describe('MenuComponent', () => {
     expect(component.loadMenu).toHaveBeenCalledWith(true)
   })
 
+  it('should change the display of roles', () => {
+    component.displayRoles = false
+    const event = { value: 'ROLES' }
+
+    component.onMenuContextChange(event)
+
+    expect(component.displayRoles).toBeTrue()
+  })
+
   it('should return true if an object is empty', () => {
     expect(component.isObjectEmpty({})).toBeTrue()
     expect(component.isObjectEmpty({ key: 'value' })).toBeFalse()
+  })
+
+  it('should toggle item.disabled and call updateMenuItem with success', () => {
+    const event = { stopPropagation: jasmine.createSpy('stopPropagation') } as any
+    const updatedItem = { ...mockMenuItems[0], modificationCount: 1, modificationDate: new Date() }
+
+    menuApiServiceSpy.updateMenuItem.and.returnValue(of(updatedItem))
+
+    component.onToggleDisable(event, mockMenuItems[0])
+
+    expect(event.stopPropagation).toHaveBeenCalled()
+    expect(component.displayMenuDetail).toBe(false)
+    expect(component.displayMenuDelete).toBe(false)
+    expect(mockMenuItems[0].disabled).toBe(true)
+    expect(mockMenuItems[0].modificationCount).toBe(updatedItem.modificationCount)
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' })
+  })
+
+  it('should call updateMenuItem and handle error', () => {
+    const event = { stopPropagation: jasmine.createSpy('stopPropagation') } as any
+    const errorResponse = { error: 'error' }
+
+    menuApiServiceSpy.updateMenuItem.and.returnValue(throwError(() => errorResponse))
+
+    component.onToggleDisable(event, mockMenuItems[0])
+
+    expect(event.stopPropagation).toHaveBeenCalled()
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
   })
 
   /****************************************************************************
@@ -402,58 +453,40 @@ describe('MenuComponent', () => {
     expect(mockMenuTree.filterGlobal).toHaveBeenCalledWith('', 'contains')
   })
 
-  xit('should recursively expand all menu nodes onExpandAll', () => {
-    component.menuNodes = [
-      { key: '1', expanded: false, children: [{ key: '1-1', children: [{ key: '1-1-1' }] }] },
-      { key: '2' }
-    ]
-    const mockExpansionState: Map<string, boolean> = new Map<string, boolean>()
-    stateServiceSpy.getState.and.returnValue({
-      treeExpansionState: mockExpansionState,
-      pageSize: 0,
-      showDetails: false,
-      rootFilter: true,
-      treeMode: true
+  it('should toggle tree view mode and update tree nodes', () => {
+    const event = { checked: true }
+    component.menuNodes = [treeNodes]
+
+    component.onToggleTreeViewMode(event)
+
+    component.menuNodes.forEach((node) => {
+      expect(node.expanded).toBe(true)
+      if (node.children) {
+        node.children.forEach((child) => {
+          expect(child.expanded).toBe(true)
+        })
+      }
     })
 
-    //component.onExpandAll()
-
-    expect(stateServiceSpy.getState().treeExpansionState.get('1')).toBeTrue()
-  })
-
-  xit('should recursively expand all menu nodes onExpandAll: no key in first node', () => {
-    component.menuNodes = [{ expanded: false, children: [{ key: '1-1', children: [{ key: '1-1-1' }] }] }, { key: '2' }]
-    const mockExpansionState: Map<string, boolean> = new Map<string, boolean>()
-    stateServiceSpy.getState.and.returnValue({
-      treeExpansionState: mockExpansionState,
-      pageSize: 0,
-      showDetails: false,
-      rootFilter: true,
-      treeMode: true
+    component.menuNodes.forEach((node) => {
+      expect(stateServiceSpy.getState().treeExpansionState.get(node.key || '')).toBe(true)
+      if (node.children) {
+        node.children.forEach((child) => {
+          expect(stateServiceSpy.getState().treeExpansionState.get(child.key || '')).toBe(true)
+        })
+      }
     })
 
-    //component.onExpandAll()
-
-    expect(stateServiceSpy.getState().treeExpansionState.get('2')).toBeTrue()
-  })
-
-  xit('should recursively collapse all menu nodes onCollapseAll', () => {
-    component.menuNodes = [
-      { key: '1', expanded: true, children: [{ key: '1-1', children: [{ key: '1-1-1' }] }] },
-      { key: '2' }
-    ]
-    const mockExpansionState: Map<string, boolean> = new Map<string, boolean>()
-    stateServiceSpy.getState.and.returnValue({
-      treeExpansionState: mockExpansionState,
-      pageSize: 0,
-      showDetails: false,
-      rootFilter: true,
-      treeMode: true
-    })
-
-    //component.onCollapseAll()
-
-    expect(stateServiceSpy.getState().treeExpansionState.get('1')).toBeFalse()
+    expect(component.menuNodes).toEqual([
+      {
+        key: '1',
+        expanded: true,
+        children: [
+          { key: '1.1', expanded: true, children: [] },
+          { expanded: true, children: [] }
+        ]
+      }
+    ])
   })
 
   it('should getState onHierarchyViewChange', () => {
@@ -666,6 +699,18 @@ describe('MenuComponent', () => {
     component.onRevokePermission(nodeData, 'role', assgmt.id!)
 
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.REVOKE_NOK' })
+  })
+
+  it('should match URLs by prefix ', () => {
+    component['mfeRUrls'] = [
+      'http://example.com',
+      'http://example.com/page',
+      'http://example.com/page/',
+      'http://example.com/anotherpage',
+      'http://test.com/test/'
+    ]
+    expect(component['urlMatch']('http://example.com/page/subpage')).toBe(true)
+    expect(component['urlMatch']('http://example.com/anotherpage/extra')).toBe(true)
   })
 
   /****************************************************************************

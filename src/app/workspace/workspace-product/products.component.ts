@@ -582,14 +582,14 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
    * UI Events: ADD slot
    */
   public onAddSlot(ev: any, item: ExtendedSlot) {
-    console.log('onAddSlot', item)
+    // console.log('onAddSlot', item)
     this.slotApi
       .createSlot({ createSlotRequest: { workspaceId: '', name: item.name } as CreateSlotRequest })
       .subscribe({
-        next: (data) => {
+        next: () => {
           this.msgService.success({ summaryKey: 'DIALOG.SLOT.MESSAGES.CREATE_OK' })
         },
-        error: (err) => {
+        error: () => {
           this.msgService.error({ summaryKey: 'DIALOG.SLOT.MESSAGES.CREATE_NOK' })
         }
       })

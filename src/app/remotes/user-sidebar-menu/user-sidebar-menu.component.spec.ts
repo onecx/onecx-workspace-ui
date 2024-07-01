@@ -18,8 +18,10 @@ import { PrimeIcons } from 'primeng/api'
 import { MenuItemAPIService } from 'src/app/shared/generated'
 import { OneCXUserSidebarMenuComponent } from './user-sidebar-menu.component'
 import { OneCXUserSidebarMenuHarness } from './user-sidebar-menu.harness'
+import { NO_ERRORS_SCHEMA } from '@angular/core'
+import { UserProfile } from '@onecx/integration-interface'
 
-xdescribe('OneCXUserSidebarMenuComponent', () => {
+describe('OneCXUserSidebarMenuComponent', () => {
   const menuItemApiSpy = jasmine.createSpyObj<MenuItemAPIService>('MenuItemAPIService', ['getMenuItems'])
 
   const appConfigSpy = jasmine.createSpyObj<AppConfigService>('AppConfigService', ['init'])
@@ -71,7 +73,8 @@ xdescribe('OneCXUserSidebarMenuComponent', () => {
       .overrideComponent(OneCXUserSidebarMenuComponent, {
         set: {
           imports: [TranslateTestingModule, CommonModule, RouterModule, PanelMenuModule, AccordionModule],
-          providers: [{ provide: MenuItemAPIService, useValue: menuItemApiSpy }]
+          providers: [{ provide: MenuItemAPIService, useValue: menuItemApiSpy }],
+          schemas: [NO_ERRORS_SCHEMA]
         }
       })
       .compileComponents()
@@ -161,12 +164,24 @@ xdescribe('OneCXUserSidebarMenuComponent', () => {
     })
 
     it('should display guest when no user info', async () => {
-      const userService = TestBed.inject(UserService)
-      spyOn(userService.profile$, 'asObservable').and.returnValue(of(null) as any)
+      const fixture = TestBed.createComponent(OneCXUserSidebarMenuComponent)
+      const component = fixture.componentInstance
 
-      const { sidebarMenuHarness } = await setUpWithHarness()
+      const result = component.determineDisplayName(undefined as unknown as UserProfile)
 
-      expect(await sidebarMenuHarness.getDisplayName()).toEqual('Guest')
+      expect(result).toBe('Guest')
+    })
+
+    it('should activate inline profile', () => {
+      const fixture = TestBed.createComponent(OneCXUserSidebarMenuComponent)
+      const component = fixture.componentInstance
+      const mockEvent = {
+        preventDefault: jasmine.createSpy('preventDefault')
+      } as unknown as UIEvent
+
+      component.onInlineProfileClick(mockEvent)
+
+      expect(component.inlineProfileActive).toBe(true)
     })
   })
 

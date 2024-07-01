@@ -110,26 +110,58 @@ describe('WorkspaceDetailComponent', () => {
       expect(component.dateFormat).toEqual('medium')
     })
 
-    it('should set selectedTabIndex onChange', (done) => {
-      const event = {
-        index: 1
-      }
-      apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
-      component.workspaceName = 'name'
+    describe('onTabChange', () => {
+      it('should set selectedTabIndex onChange', (done) => {
+        const event = {
+          index: 1
+        }
+        apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
+        component.workspaceName = 'name'
 
-      component.getWorkspace()
+        component.getWorkspace()
 
-      component.workspace$.subscribe({
-        next: (data) => {
-          expect(data.resource).toEqual(workspace)
-          done()
-        },
-        error: done.fail
+        component.workspace$.subscribe({
+          next: (data) => {
+            expect(data.resource).toEqual(workspace)
+            done()
+          },
+          error: done.fail
+        })
+
+        component.onTabChange(event, component.workspace)
+
+        expect(component.selectedTabIndex).toEqual(1)
       })
 
-      component.onTabChange(event, component.workspace)
+      it('should set workspace for roles', () => {
+        const event = {
+          index: 3
+        }
 
-      expect(component.selectedTabIndex).toEqual(1)
+        component.onTabChange(event, component.workspace)
+
+        expect(component.workspaceForRoles).toBe(workspace)
+      })
+
+      it('should set workspace for slots', () => {
+        const event = {
+          index: 4
+        }
+
+        component.onTabChange(event, component.workspace)
+
+        expect(component.workspaceForSlots).toBe(workspace)
+      })
+
+      it('should set workspace for products', () => {
+        const event = {
+          index: 5
+        }
+
+        component.onTabChange(event, component.workspace)
+
+        expect(component.workspaceForProducts).toBe(workspace)
+      })
     })
   })
 
@@ -235,6 +267,14 @@ describe('WorkspaceDetailComponent', () => {
       const result = component.getLogoUrl({ name: 'name', logoUrl: 'url' })
 
       expect(result).toBe('url')
+    })
+  })
+
+  describe('onUpdateLogoUrl', () => {
+    it('should set current logo url', () => {
+      component.onUpdateLogoUrl('url')
+
+      expect(component.currentLogoUrl).toBe('url')
     })
   })
 
@@ -353,6 +393,22 @@ describe('WorkspaceDetailComponent', () => {
   })
 
   describe('update workspace data', () => {
+    it('it should display error on update workspace', (done) => {
+      apiServiceSpy.updateWorkspace.and.returnValue(of(workspace))
+      component.selectedTabIndex = 99
+      component.ngOnInit()
+      let actions: any = []
+      component.actions$!.subscribe((act) => (actions = act))
+
+      actions[3].actionCallback()
+
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_OK' })
+      component.workspace$.subscribe((data) => {
+        expect(data).toEqual({ resource: workspace })
+        done()
+      })
+    })
+
     it('it should display error on update workspace', () => {
       apiServiceSpy.updateWorkspace.and.returnValue(throwError(() => new Error()))
       component.selectedTabIndex = 99

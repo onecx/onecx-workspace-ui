@@ -391,7 +391,6 @@ export class MenuDetailComponent implements OnChanges {
    * LOAD Microfrontends from registered products
    **/
   private loadMfeUrls(): void {
-    if (!this.workspaceId) return
     this.mfeItems = [{ mfePath: '', product: 'MENU_ITEM.URL.EMPTY' }]
     this.wProductApi
       .getProductsByWorkspaceId({ id: this.workspaceId! })
