@@ -7,10 +7,8 @@ export class MenuItemService {
   public constructMenuItems(userWorkspaceMenuItem: UserWorkspaceMenuItem[] | undefined, userLang: string): MenuItem[] {
     const menuItems = userWorkspaceMenuItem?.filter((i) => i) // exclude undefined
     if (menuItems) {
-      return menuItems
-        .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
-        .filter((i) => !i.disabled)
-        .map((item) => this.mapMenuItem(item, userLang))
+      menuItems.sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+      return menuItems.filter((i) => !i.disabled).map((item) => this.mapMenuItem(item, userLang))
     } else {
       return []
     }
@@ -24,14 +22,15 @@ export class MenuItemService {
     isLocal = !item.external
     label = item.i18n ? item.i18n[userLang] || item.name : ''
 
+    if (item.children && item.children.length > 0) {
+      // separated due to sonar
+      item.children.sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+    }
     return {
       id: item.key,
       items:
         item.children && item.children.length > 0
-          ? item.children
-              .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
-              .filter((i) => !i.disabled)
-              .map((i) => this.mapMenuItem(i, userLang))
+          ? item.children.filter((i) => !i.disabled).map((i) => this.mapMenuItem(i, userLang))
           : undefined,
       label,
       icon: item.badge ? 'pi pi-' + item.badge : undefined,

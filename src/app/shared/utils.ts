@@ -6,7 +6,7 @@ import { environment } from 'src/environments/environment'
 
 import { RefType, Workspace } from 'src/app/shared/generated'
 
-export function limitText(text: string, limit: number): string {
+export function limitText(text: string | null, limit: number): string {
   if (text) {
     return text.length < limit ? text : text.substring(0, limit) + '...'
   } else {
@@ -63,9 +63,7 @@ export function forceFormValidation(form: AbstractControl): void {
 export type DropDownChangeEvent = MouseEvent & { value: any }
 
 export function dropDownSortItemsByLabel(a: SelectItem, b: SelectItem): number {
-  return (a.label ? (a.label as string).toUpperCase() : '').localeCompare(
-    b.label ? (b.label as string).toUpperCase() : ''
-  )
+  return (a.label ? a.label.toUpperCase() : '').localeCompare(b.label ? b.label.toUpperCase() : '')
 }
 export function dropDownGetLabelByValue(ddArray: SelectItem[], val: string): string | undefined {
   const a: any = ddArray.find((item: SelectItem) => {

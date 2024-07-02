@@ -66,7 +66,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
           return [this.workspace?.theme]
         } else {
           val.sort(sortByLocale)
-          if (!val.includes(this.workspace?.theme)) val.concat(this.workspace?.theme)
+          if (!val.includes(this.workspace?.theme)) val.push(this.workspace?.theme)
           return val
         }
       })
