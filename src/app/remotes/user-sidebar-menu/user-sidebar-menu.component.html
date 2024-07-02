@@ -1,7 +1,7 @@
 <p-accordion [activeIndex]="null">
   <p-accordionTab>
     <ng-template pTemplate="header">
-      <ocx-user-avatar [user$]="currentUser$"></ocx-user-avatar>
+      <ocx-slot name="onecx-avatar-image"></ocx-slot>
       <span class="flex flex-column ml-3 row-gap-1">
         <span id="user-sidebar-display-name" class="font-bold">{{ displayName$ | async }}</span>
         <span id="user-sidebar-display-name" class="text-sm">{{ organization$ | async }}</span>
