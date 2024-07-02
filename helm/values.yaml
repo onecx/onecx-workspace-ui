@@ -86,4 +86,11 @@ app:
           kcConfig:
             clientId: "onecx-workspace-ui"
 
+    slot:
+      enabled: true
+      specs:
+        onecx-avatar-image:
+          name: 'onecx-avatar-image'
+          description: 'User Profile avatar image'
+
 # PIPE Config
