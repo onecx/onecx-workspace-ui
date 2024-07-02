@@ -247,6 +247,7 @@ describe('WorkspaceRolesComponent', () => {
   it('should behave correctly onReload', () => {
     spyOn(component as any, 'searchRoles')
 
+    component.quickFilterValue = 'ALL'
     component.onReload()
 
     expect(component.roles).toEqual([])

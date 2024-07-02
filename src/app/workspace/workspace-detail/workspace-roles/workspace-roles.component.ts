@@ -125,43 +125,47 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
     )
   }
 
+  private getWorkspaceRoles(): void {
+    const result: Role[] = []
+    this.searchWorkspaceRoles().subscribe({
+      next: (data) => data.forEach((r) => result.push(r)),
+      complete: () => {
+        this.workspaceRolesLoaded = true
+        this.roles = [...result]
+        this.workspaceRoles = this.roles.map((r) => r.name ?? '')
+      }
+    })
+  }
+  private getIamRoles(): void {
+    const result: Role[] = []
+    this.searchIamRoles().subscribe({
+      next: (data) => data.forEach((r) => result.push(r)),
+      complete: () => {
+        this.iamRolesLoaded = true
+        // combine role results and prevent duplicates
+        result.forEach((iam) => {
+          if (iam.name) {
+            if (this.workspaceRoles.length === 0 || !this.workspaceRoles.includes(iam.name)) this.roles.push(iam)
+            else {
+              const role = this.roles.filter((r) => r.name === iam.name)
+              role[0].isIamRole = true
+            }
+          }
+        })
+        this.roles = [...this.roles]
+      }
+    })
+  }
   private searchRoles(force: boolean = false): void {
     if (['WORKSPACE', 'ALL'].includes(this.quickFilterValue) && (force || !this.workspaceRolesLoaded)) {
       this.loading = true
       this.exceptionKey = undefined
-      const result: Role[] = []
-      this.searchWorkspaceRoles().subscribe({
-        next: (data) => data.forEach((r) => result.push(r)),
-        // error: () => {},
-        complete: () => {
-          this.workspaceRolesLoaded = true
-          this.roles = [...result]
-          this.workspaceRoles = this.roles.map((r) => r.name ?? '')
-        }
-      })
+      this.getWorkspaceRoles()
     }
     if (['IAM', 'ALL'].includes(this.quickFilterValue) && (force || !this.iamRolesLoaded)) {
       this.loading = true
       this.exceptionKey = undefined
-      const result: Role[] = [] // temporary used
-      this.searchIamRoles().subscribe({
-        next: (data) => data.forEach((r) => result.push(r)),
-        // error: () => {},
-        complete: () => {
-          this.iamRolesLoaded = true
-          // combine role results and prevent duplicates
-          result.forEach((iam) => {
-            if (iam.name) {
-              if (this.workspaceRoles.length === 0 || !this.workspaceRoles.includes(iam.name)) this.roles.push(iam)
-              else {
-                const role = this.roles.filter((r) => r.name === iam.name)
-                role[0].isIamRole = true
-              }
-            }
-          })
-          this.roles = [...this.roles]
-        }
-      })
+      this.getIamRoles()
     }
   }
 

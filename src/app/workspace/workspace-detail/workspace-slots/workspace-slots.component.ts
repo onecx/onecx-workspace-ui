@@ -1,6 +1,6 @@
 import { Component, Input, SimpleChanges, OnChanges, OnDestroy, OnInit, ViewChild } from '@angular/core'
 import { TranslateService } from '@ngx-translate/core'
-import { Subject, catchError, finalize, map, mergeMap, of, tap, takeUntil, Observable } from 'rxjs'
+import { Subject, catchError, finalize, map, mergeMap, of, switchMap, tap, takeUntil, Observable } from 'rxjs'
 import { DataView } from 'primeng/dataview'
 
 import { DataViewControlTranslations } from '@onecx/portal-integration-angular'
@@ -106,7 +106,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     this.wSlots$
       .pipe(
         mergeMap((slots) => this.wProducts$),
-        mergeMap((slots) => this.psSlots$)
+        switchMap((slots) => this.psSlots$)
       )
       .subscribe()
   }
@@ -118,7 +118,6 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
         map((products) => {
           this.wProductNames = []
           for (let p of products) this.wProductNames.push(p.productName!)
-          //return this.wProductNames
           return []
         }),
         catchError((err) => {
@@ -152,14 +151,13 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
                 psSlots: [],
                 psComponents: []
               } as CombinedSlot)
-          return [] as string[]
+          return []
         }),
         catchError((err) => {
           this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.SLOTS'
           console.error('searchSlots():', err)
-          return of([] as string[])
-        }),
-        finalize(() => (this.loading = false))
+          return of([])
+        })
       )
   }
 
@@ -220,8 +218,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
             })
           this.wSlots.sort(this.sortSlotsByName)
         })
-        // if (this.detailSlotId) this.slot = this.wSlots.filter((s) => (s.id = this.detailSlotId))[0]
-        return [] as string[]
+        return []
       }),
       catchError((err) => {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.SLOTS'

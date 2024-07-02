@@ -91,6 +91,11 @@ describe('util functions', () => {
 
       expect(result).toEqual('')
     })
+
+    it('should handle zero length text', () => {
+      const result = limitText(null, 4)
+      expect(result).toEqual('')
+    })
   })
 
   describe('setFetchUrls', () => {

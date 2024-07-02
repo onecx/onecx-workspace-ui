@@ -48,7 +48,6 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
 
   public ngOnChanges(): void {
     if (this.slotOrg) {
-      console.log('slot detail ngOnChanges')
       this.slot = { ...this.slotOrg }
       this.slotName = this.slot.name ?? ''
       // extract ps components
