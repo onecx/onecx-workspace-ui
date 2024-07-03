@@ -5,7 +5,11 @@ import { createCustomElement } from '@angular/elements'
 import { MissingTranslationHandler, TranslateLoader, TranslateModule } from '@ngx-translate/core'
 
 import { createTranslateLoader } from '@onecx/angular-accelerator'
-import { PortalCoreModule, PortalMissingTranslationHandler } from '@onecx/portal-integration-angular'
+import {
+  PortalApiConfiguration,
+  PortalCoreModule,
+  PortalMissingTranslationHandler
+} from '@onecx/portal-integration-angular'
 import { addInitializeModuleGuard, AppStateService, ConfigurationService } from '@onecx/angular-integration-interface'
 import { AngularAuthModule } from '@onecx/angular-auth'
 import { initializeRouter, startsWith } from '@onecx/angular-webcomponents'
@@ -13,6 +17,12 @@ import { AppEntrypointComponent } from './app-entrypoint.component'
 import { BrowserModule } from '@angular/platform-browser'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { SharedModule } from './shared/shared.module'
+import { Configuration } from './shared/generated'
+import { environment } from 'src/environments/environment'
+
+export function apiConfigProvider(configService: ConfigurationService, appStateService: AppStateService) {
+  return new PortalApiConfiguration(Configuration, environment.apiPrefix, configService, appStateService)
+}
 
 const routes: Routes = [
   {
@@ -20,6 +30,7 @@ const routes: Routes = [
     loadChildren: () => import('./workspace/workspace.module').then((m) => m.WorkspaceModule)
   }
 ]
+
 @NgModule({
   declarations: [AppEntrypointComponent],
   imports: [
@@ -48,7 +59,8 @@ const routes: Routes = [
       useFactory: initializeRouter,
       multi: true,
       deps: [Router, AppStateService]
-    }
+    },
+    { provide: Configuration, useFactory: apiConfigProvider, deps: [ConfigurationService, AppStateService] }
   ],
   schemas: []
 })

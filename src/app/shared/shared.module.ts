@@ -35,18 +35,10 @@ import { ToggleButtonModule } from 'primeng/togglebutton'
 import { TreeModule } from 'primeng/tree'
 import { TreeTableModule } from 'primeng/treetable'
 
-import { PortalDialogService, PortalApiConfiguration, PortalCoreModule } from '@onecx/portal-integration-angular'
-import { AppStateService, ConfigurationService } from '@onecx/angular-integration-interface'
-
-import { Configuration } from 'src/app/shared/generated'
-import { environment } from 'src/environments/environment'
+import { PortalDialogService, PortalCoreModule } from '@onecx/portal-integration-angular'
 import { LabelResolver } from 'src/app/shared/label.resolver'
 
 import { ImageContainerComponent } from './image-container/image-container.component'
-
-export function apiConfigProvider(configService: ConfigurationService, appStateService: AppStateService) {
-  return new PortalApiConfiguration(Configuration, environment.apiPrefix, configService, appStateService)
-}
 
 @NgModule({
   declarations: [ImageContainerComponent],
@@ -148,11 +140,6 @@ export function apiConfigProvider(configService: ConfigurationService, appStateS
     FileUploadModule
   ],
   //this is not elegant, for some reason the injection token from primeng does not work across federated module
-  providers: [
-    ConfirmationService,
-    LabelResolver,
-    { provide: DialogService, useClass: PortalDialogService },
-    { provide: Configuration, useFactory: apiConfigProvider, deps: [ConfigurationService, AppStateService] }
-  ]
+  providers: [ConfirmationService, LabelResolver, { provide: DialogService, useClass: PortalDialogService }]
 })
 export class SharedModule {}
