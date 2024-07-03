@@ -35,7 +35,7 @@
               "node_modules/@onecx/portal-integration-angular/assets/styles.scss",
               "src/styles.scss"
             ],
-            "scripts": [],
+            "scripts": ["node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"],
             "extraWebpackConfig": "webpack.config.js",
             "commonChunk": false
           },

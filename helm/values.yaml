@@ -16,6 +16,9 @@ app:
           description: "OneCX Workspace UI"
           note: "OneCX Workspace UI auto import via MF operator"
           type: MODULE
+          technology: WEBCOMPONENTMODULE
+          remoteName: onecx-workspace
+          tagName: ocx-workspace-component
         user-avatar-menu:
           exposedModule: "./OneCXUserAvatarMenuComponent"
           description: "User avatar menu component"

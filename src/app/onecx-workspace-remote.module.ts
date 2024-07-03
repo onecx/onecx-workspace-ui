@@ -1,22 +1,35 @@
-import { NgModule } from '@angular/core'
-import { HttpClient } from '@angular/common/http'
-import { RouterModule, Routes } from '@angular/router'
+import { APP_INITIALIZER, DoBootstrap, Injector, NgModule } from '@angular/core'
+import { HttpClient, HttpClientModule } from '@angular/common/http'
+import { Router, RouterModule, Routes } from '@angular/router'
+import { createCustomElement } from '@angular/elements'
 import { MissingTranslationHandler, TranslateLoader, TranslateModule } from '@ngx-translate/core'
 
 import { createTranslateLoader } from '@onecx/angular-accelerator'
 import { PortalCoreModule, PortalMissingTranslationHandler } from '@onecx/portal-integration-angular'
 import { addInitializeModuleGuard, AppStateService, ConfigurationService } from '@onecx/angular-integration-interface'
+import { AngularAuthModule } from '@onecx/angular-auth'
+import { initializeRouter, startsWith } from '@onecx/angular-webcomponents'
+import { AppEntrypointComponent } from './app-entrypoint.component'
+import { BrowserModule } from '@angular/platform-browser'
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
+import { SharedModule } from './shared/shared.module'
 
 const routes: Routes = [
   {
-    path: '',
+    matcher: startsWith(''),
     loadChildren: () => import('./workspace/workspace.module').then((m) => m.WorkspaceModule)
   }
 ]
 @NgModule({
+  declarations: [AppEntrypointComponent],
   imports: [
+    BrowserModule,
+    BrowserAnimationsModule,
+    HttpClientModule,
+    AngularAuthModule,
+    SharedModule,
     PortalCoreModule.forMicroFrontend(),
-    RouterModule.forChild(addInitializeModuleGuard(routes)),
+    RouterModule.forRoot(addInitializeModuleGuard(routes)),
     TranslateModule.forRoot({
       isolate: true,
       loader: {
@@ -28,11 +41,26 @@ const routes: Routes = [
     })
   ],
   exports: [],
-  providers: [ConfigurationService],
+  providers: [
+    ConfigurationService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeRouter,
+      multi: true,
+      deps: [Router, AppStateService]
+    }
+  ],
   schemas: []
 })
-export class OneCXWorkspaceModule {
-  constructor() {
+export class OneCXWorkspaceModule implements DoBootstrap {
+  constructor(private injector: Injector) {
     console.info('OneCX Workspace Module constructor')
+  }
+
+  ngDoBootstrap(): void {
+    const appEntrypoint = createCustomElement(AppEntrypointComponent, {
+      injector: this.injector
+    })
+    customElements.define('ocx-workspace-component', appEntrypoint)
   }
 }
