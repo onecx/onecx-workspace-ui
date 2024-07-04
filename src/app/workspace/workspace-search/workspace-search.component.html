@@ -104,20 +104,22 @@
           <div
             class="card relative p-2 flex flex-column justify-content-center row-gap-1 md:row-gap-2 hover:bg-gray-200 cursor-pointer"
           >
-            <span
+            <a
               *ngIf="workspace.name !== 'ADMIN'"
               [id]="'app_workspace_search_data_row_' + row + '_goto_workspace'"
               class="card-badge-right badge-1 p-1 pi pi-external-link pseudo-button-link"
               [title]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_WORKSPACE' | translate"
               (click)="onGotoWorkspace($event, workspace)"
-            ></span>
-            <span
+              tabindex="0"
+            ></a>
+            <a
               *ocxIfPermission="'MENU#VIEW'"
               [id]="'app_workspace_search_data_row_' + row + '_goto_menu'"
               class="card-badge-right badge-2 p-1 pi pi-sitemap pseudo-button-link"
               [title]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_MENU' | translate"
               (click)="onGotoMenu($event, workspace)"
-            ></span>
+              tabindex="0"
+            ></a>
             <div class="h-3rem md:h-4rem flex flex-column justify-content-center align-items-center text-center">
               <app-image-container
                 [id]="'app_workspace_search_data_row_' + row + '_logo'"
