@@ -53,27 +53,27 @@
       >
         <!-- right badges -->
         <span
-          *ngIf="hasCreatePermission && slot.new"
+          *ngIf="slot.new && hasCreatePermission"
           [id]="'workspace_detail_slots_' + idx + '_new'"
           class="card-badge-right badge-1 p-1 pi pi-plus pseudo-button-link"
           [title]="'DIALOG.SLOT.NEW.TOOLTIP' | translate"
           (click)="onAddSlot($event, slot)"
         ></span>
         <span
+          *ngIf="!slot.new && hasDeletePermission && slot.changes && slot.components.length === 0"
+          [id]="'workspace_detail_roles_data_item_' + idx + '_delete'"
+          [title]="'ACTIONS.DELETE.SLOT' | translate"
+          class="card-badge-right badge-1 p-1 pi pi-trash pseudo-button-link"
+          (click)="onDeleteSlot($event, slot)"
+        ></span>
+        <span
           *ngIf="slot.components"
           [id]="'workspace_detail_slots_data_item_' + idx + '_components'"
           [title]="'SLOT.COMPONENTS' | translate"
-          class="card-badge-right badge-2-1 p-1"
+          class="card-badge-right badge-2-number p-1"
           >{{ slot.components.length }}</span
         >
         <!-- left badges -->
-        <span
-          *ngIf="hasDeletePermission && !slot.new && slot.changes && slot.components.length === 0"
-          [id]="'workspace_detail_roles_data_item_' + idx + '_delete'"
-          [title]="'ACTIONS.DELETE.SLOT' | translate"
-          class="card-badge-left badge-2-1 p-1 pi pi-trash pseudo-button-link"
-          (click)="onDeleteSlot($event, slot)"
-        ></span>
         <span
           *ngIf="slot.changes && !slot.deprecated"
           [id]="'workspace_detail_slots_' + idx + '_changed'"

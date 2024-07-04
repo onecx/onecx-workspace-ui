@@ -214,10 +214,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
             .filter((psp) => psp.productName === pn)
             .forEach((ps) => {
               if (this.wSlots.filter((ws) => ws.name === ps.name).length === 0) {
-                // the slot does not exist, then add this candidate
-                if (!ps.undeployed) {
-                  this.wSlots.push({ ...ps, new: true })
-                }
+                if (!ps.undeployed) this.wSlots.push({ ...ps, new: true })
               }
             })
         })
