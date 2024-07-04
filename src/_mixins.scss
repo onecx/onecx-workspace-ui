@@ -69,6 +69,13 @@
       border-radius: var(--border-radius);
       opacity: 0.7;
     }
+    .card-primary-bg-color {
+      background-color: var(--primary-color) !important;
+      color: var(--primary-color-text) !important;
+      &:hover {
+        opacity: 0.8;
+      }
+    }
     .card-badge-right {
       border-radius: var(--border-radius);
       display: inline-block;

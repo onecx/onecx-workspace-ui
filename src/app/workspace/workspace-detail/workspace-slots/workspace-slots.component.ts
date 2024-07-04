@@ -1,6 +1,6 @@
 import { Component, Input, SimpleChanges, OnChanges, OnDestroy, OnInit, ViewChild } from '@angular/core'
 import { TranslateService } from '@ngx-translate/core'
-import { Subject, catchError, finalize, map, mergeMap, of, switchMap, tap, takeUntil, Observable } from 'rxjs'
+import { Subject, catchError, finalize, map, mergeMap, of, switchMap, takeUntil, Observable } from 'rxjs'
 import { DataView } from 'primeng/dataview'
 
 import { DataViewControlTranslations } from '@onecx/portal-integration-angular'
@@ -26,6 +26,8 @@ export type CombinedSlot = Slot & {
   bucket: 'SOURCE' | 'TARGET'
   new: boolean
   changes: boolean
+  undeployed?: boolean
+  deprecated?: boolean
   psSlots: PSSlot[]
   psComponents?: ExtendedComponent[]
 }
@@ -138,7 +140,6 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
       .getSlotsForWorkspace({ id: this.workspace?.id } as GetSlotsForWorkspaceRequestParams)
       .pipe(
         takeUntil(this.destroy$),
-        tap((res) => console.log('tap => wSlots', res)),
         map((res) => {
           this.wSlots = []
           if (res.slots)
@@ -164,15 +165,16 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   // All declared Slots of Product store Products: containing deployment information
   private declarePsSlots(): void {
     this.psSlots$ = this.psProductApi.searchAvailableProducts({ productStoreSearchCriteria: {} }).pipe(
-      tap((res) => console.log('tap => psSlots', res)),
       map((res) => {
         this.psSlots = []
         this.psComponents = []
         if (res.stream) {
           for (let p of res.stream) {
             // 1. enrich wSlots with deployment information (contained in product store)
-            p.slots?.forEach((ps) => {
-              this.psSlots.push({ ...ps, productName: p.productName } as CombinedSlot)
+            p.slots?.forEach((sps: SlotPS) => {
+              const ps: CombinedSlot = { ...sps, productName: p.productName } as CombinedSlot
+              ps.changes = ps.undeployed || ps.deprecated || ps.changes
+              this.psSlots.push(ps)
               const ws = this.wSlots.filter((s) => s.name === ps.name)
               if (ws.length === 1) {
                 ws[0].psSlots.push({ ...ps, pName: p.productName, pDisplayName: p.displayName! })
@@ -189,8 +191,8 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
                     productName: p.productName,
                     appId: c.appId,
                     name: c.exposedModule,
-                    undeployed: c.undeployed || false,
-                    deprecated: c.deprecated || false
+                    undeployed: c.undeployed ?? false,
+                    deprecated: c.deprecated ?? false
                   } as ExtendedComponent)
                 })
             }
@@ -206,18 +208,18 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
             })
           })
         }
-        // 4. add new Slots (not yet in Workspace but part of registered product)
+        // 4. add new (not undeployed) Slots (not yet in Workspace but part of registered product)
         this.wProductNames.forEach((pn) => {
           this.psSlots
             .filter((psp) => psp.productName === pn)
-            .forEach((s) => {
-              if (this.wSlots.filter((ws) => ws.name === s.name).length === 0) {
-                // the slot does not exist, then add this candidate
-                this.wSlots.push({ ...s, new: true })
+            .forEach((ps) => {
+              if (this.wSlots.filter((ws) => ws.name === ps.name).length === 0) {
+                if (!ps.undeployed) this.wSlots.push({ ...ps, new: true })
               }
             })
-          this.wSlots.sort(this.sortSlotsByName)
         })
+        this.wSlots = [...this.wSlots] // renew required to trigger update in HTML component
+        this.wSlots.sort(this.sortSlotsByName)
         return []
       }),
       catchError((err) => {

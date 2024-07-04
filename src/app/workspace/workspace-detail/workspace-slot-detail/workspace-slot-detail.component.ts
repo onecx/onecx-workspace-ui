@@ -23,7 +23,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   @Output() changed: EventEmitter<boolean> = new EventEmitter()
 
   public dateFormat = 'medium'
-  public slot!: CombinedSlot
+  public slot: CombinedSlot | undefined
   public slotName!: string
   public wComponents!: ExtendedComponent[]
   public psComponents!: ExtendedComponent[] // org ps components reduced by used in slot
@@ -95,10 +95,10 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   public onSaveSlot() {
     this.slotApi
       .updateSlot({
-        id: this.slot.id!,
+        id: this.slot?.id!,
         updateSlotRequest: {
-          modificationCount: this.slot.modificationCount!,
-          name: this.slot.name!,
+          modificationCount: this.slot?.modificationCount!,
+          name: this.slot?.name!,
           components: this.wComponents.map((ec) => {
             return { productName: ec.productName, appId: ec.appId, name: ec.name } as SlotComponent
           })
@@ -106,9 +106,11 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
       })
       .subscribe({
         next: (data) => {
-          this.slot.modificationCount = data.modificationCount
-          this.slot.modificationDate = data.modificationDate
-          this.slot.components = data.components
+          if (this.slot) {
+            this.slot.modificationCount = data.modificationCount
+            this.slot.modificationDate = data.modificationDate
+            this.slot.components = data.components
+          }
           this.msgService.success({ summaryKey: 'ACTIONS.EDIT.SLOT_OK' })
           this.changed.emit(true)
         },
@@ -120,7 +122,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   }
 
   public onDeleteSlot() {
-    this.slotApi.deleteSlotById({ id: this.slot.id! }).subscribe({
+    this.slotApi.deleteSlotById({ id: this.slot?.id! }).subscribe({
       next: () => {
         this.msgService.success({ summaryKey: 'ACTIONS.DELETE.SLOT_OK' })
         this.detailClosed.emit(true)
