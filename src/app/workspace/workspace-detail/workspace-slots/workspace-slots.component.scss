@@ -9,10 +9,15 @@
   .h-2-5rem {
     height: 2.5rem !important;
   }
-  .card-badge-left,
   .card-badge-right {
     &.badge-2-1 {
       top: 26px;
+    }
+  }
+  .card-badge-left {
+    &.badge-2-1 {
+      top: 29px;
+      left: 6px;
     }
   }
 }

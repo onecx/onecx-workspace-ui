@@ -79,8 +79,8 @@
     <div class="col-12 sm:col-6 md:col-4 lg:col-4 xl:col-3 p-3">
       <div
         [id]="'workspace_detail_roles_data_item_' + item"
-        class="card relative p-2 cursor-pointer"
-        [class.bg-primary]="role.isWorkspaceRole"
+        class="card relative py-2 px-3 cursor-pointer"
+        [class.card-primary-bg-color]="role.isWorkspaceRole"
         [class.hover:bg-gray-200]="role.isIamRole && !role.isWorkspaceRole"
         [class.hover:text-color]="role.isIamRole && !role.isWorkspaceRole"
         [title]="role.description"
