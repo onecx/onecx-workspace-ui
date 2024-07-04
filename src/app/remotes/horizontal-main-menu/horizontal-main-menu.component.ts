@@ -1,6 +1,6 @@
 import { CommonModule, Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { Component, Inject, OnInit, ViewChild } from '@angular/core'
+import { Component, Inject, Input, OnInit, ViewChild } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
@@ -9,6 +9,8 @@ import {
   AngularRemoteComponentsModule,
   BASE_URL,
   RemoteComponentConfig,
+  ocxRemoteComponent,
+  ocxRemoteWebcomponent,
   provideTranslateServiceForRoot
 } from '@onecx/angular-remote-components'
 import { AppStateService, PortalCoreModule, UserService } from '@onecx/portal-integration-angular'
@@ -41,7 +43,7 @@ import { environment } from 'src/environments/environment'
   ]
 })
 @UntilDestroy()
-export class OneCXHorizontalMainMenuComponent implements OnInit {
+export class OneCXHorizontalMainMenuComponent implements OnInit, ocxRemoteComponent, ocxRemoteWebcomponent {
   @ViewChild('menubar') menubar?: Menubar
   menuItems$: Observable<MenuItem[]> | undefined
 
@@ -54,6 +56,10 @@ export class OneCXHorizontalMainMenuComponent implements OnInit {
     private menuItemService: MenuItemService
   ) {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
+  }
+
+  @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
+    this.ocxInitRemoteComponent(config)
   }
 
   ocxInitRemoteComponent(remoteComponentConfig: RemoteComponentConfig) {

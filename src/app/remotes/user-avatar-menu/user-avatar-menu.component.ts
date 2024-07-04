@@ -1,6 +1,6 @@
 import { Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { AfterViewInit, Component, Inject, OnDestroy, Renderer2 } from '@angular/core'
+import { APP_INITIALIZER, AfterViewInit, Component, Inject, Input, OnDestroy, Renderer2 } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
@@ -9,7 +9,10 @@ import {
   AngularRemoteComponentsModule,
   BASE_URL,
   RemoteComponentConfig,
+  SLOT_SERVICE,
+  SlotService,
   ocxRemoteComponent,
+  ocxRemoteWebcomponent,
   provideTranslateServiceForRoot
 } from '@onecx/angular-remote-components'
 import { EventsPublisher } from '@onecx/integration-interface'
@@ -44,6 +47,10 @@ import { environment } from 'src/environments/environment'
 
 export type MenuAnchorPositionConfig = 'right' | 'left'
 
+export function slotInitializer(slotService: SlotService) {
+  return () => slotService.init()
+}
+
 @Component({
   selector: 'app-user-avatar-menu',
   standalone: true,
@@ -70,13 +77,25 @@ export type MenuAnchorPositionConfig = 'right' | 'left'
         useFactory: createRemoteComponentTranslateLoader,
         deps: [HttpClient, BASE_URL]
       }
-    })
+    }),
+    {
+      provide: APP_INITIALIZER,
+      useFactory: slotInitializer,
+      deps: [SLOT_SERVICE],
+      multi: true
+    },
+    {
+      provide: SLOT_SERVICE,
+      useExisting: SlotService
+    }
   ],
   templateUrl: './user-avatar-menu.component.html',
   styleUrls: ['./user-avatar-menu.component.scss']
 })
 @UntilDestroy()
-export class OneCXUserAvatarMenuComponent implements ocxRemoteComponent, AfterViewInit, OnDestroy {
+export class OneCXUserAvatarMenuComponent
+  implements ocxRemoteComponent, ocxRemoteWebcomponent, AfterViewInit, OnDestroy
+{
   currentUser$: Observable<UserProfile>
   userMenu$: Observable<MenuItem[]>
   eventsPublisher$: EventsPublisher = new EventsPublisher()
@@ -151,6 +170,10 @@ export class OneCXUserAvatarMenuComponent implements ocxRemoteComponent, AfterVi
     if (this.removeDocumentClickListener) {
       this.removeDocumentClickListener()
     }
+  }
+
+  @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
+    this.ocxInitRemoteComponent(config)
   }
 
   ocxInitRemoteComponent(config: RemoteComponentConfig): void {
