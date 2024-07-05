@@ -165,7 +165,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
       )
   }
 
-  private extractPsData(products: ProductStoreItem[]) {
+  private extractPsData(products: ProductStoreItem[]): void {
     for (let p of products) {
       // 1. enrich wSlotsIntern with deployment information
       p.slots?.forEach((sps: SlotPS) => {
@@ -206,7 +206,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     })
   }
 
-  private addNewSlots() {
+  private addNewSlots(): void {
     // 4. add new (not undeployed) Slots (not yet in Workspace but part of a registered product)
     this.wProductNames.forEach((pn) => {
       this.psSlots
