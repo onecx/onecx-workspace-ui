@@ -4,8 +4,8 @@
     "CONFIRMATION": {
       "NO": "Nein",
       "YES": "Ja",
-      "NO.TOOLTIP": "Abbruch der Aktion",
-      "YES.TOOLTIP": "Fortfahren mit der Aktion"
+      "NO.TOOLTIP": "Abbruch ohne Änderung",
+      "YES.TOOLTIP": "Bestätigen und Ausführen"
     },
     "COPY": {
       "LABEL": "Kopieren",
@@ -291,14 +291,15 @@
         "COMPONENTS.DEREGISTER": "Komponenten abmelden"
       },
       "CHANGED": "Es gibt wichtige Änderungen.",
-      "NEW.TOOLTIP": "Dieser Slot ist neu. Mit einem Klick zum Workspace hinzufügen.",
+      "NEW.TOOLTIP": "Dieser Slot ist nicht für den Workspace registriert. Mit Klick registrieren.",
       "DEPRECATED": "Veraltet",
       "DEPRECATED.TOOLTIP": "Dieser Slot ist veraltet und wird in absehbarer Zeit nicht mehr nutzbar sein.",
       "UNDEPLOYED": "Unverfügbar",
       "UNDEPLOYED.TOOLTIP": "Dieser Slot ist nicht länger nutzbar.",
       "PRODUCTS": "Registrierende Applikationen",
       "PRODUCTS.NOT_EXIST": "Keine",
-      "PRODUCTS.TOOLTIP": "Applikationen, die den Slot registriert haben",
+      "PRODUCTS.TOOLTIP": "Applikationen, die diesen Slot registriert haben",
+      "NO_PRODUCTS": "Keine Applikation gefunden, die diesen Slot registriert hat",
       "COMPONENTS": "Inhaltsbildende Komponenten",
       "COMPONENTS.USED": "Verwendete Komponenten",
       "COMPONENTS.USED.TOOLTIP": "Im Slot verwendeten Komponenten",
@@ -393,7 +394,7 @@
       "DEREGISTER": "Applikationen abmelden",
       "REGISTER_ONE": "Applikation registriert",
       "REGISTER_ALL": "Alle markierte Applikationen registriert",
-      "DETAILS": "Applikationsdetails",
+      "DETAILS": "Details",
       "ORIGIN": "Herkunft",
       "ORIGIN.TARGET": "Workspace",
       "ORIGIN.SOURCE": "Application Store",
@@ -438,13 +439,13 @@
     "DISPLAY_NAME": "Applikation",
     "DISPLAY_NAME.TOOLTIP": "Name der Applikation",
     "DESCRIPTION": "Description",
-    "BASE_URL": "Base URL",
-    "BASE_URL.TOOLTIP": "Basispfad für alle Apps der Applikation. Muss eindeutig sein für alle Applikationen im Workspace.",
+    "BASE_URL": "Application Base Path",
+    "BASE_URL.TOOLTIP": "Basispfad für alle Apps der Applikation. Muss eindeutig sein über alle Applikationen im Workspace.",
     "MFE": {
       "APP_ID": "UI Service ID",
       "APP_ID.TOOLTIP": "Eindeutige ID des spezifischen UI-Dienstes, der verwendet werden soll.",
-      "BASE_PATH": "Base Path",
-      "BASE_PATH.TOOLTIP": "Am Basispfad der Applikation angehängter Pfad, für den Zugriff auf die App."
+      "BASE_PATH": "Module Base Path",
+      "BASE_PATH.TOOLTIP": "Am Basispfad der Applikation angehängter Pfad, für den direkten Zugriff auf das Modul."
     }
   },
   "WORKSPACE_EXPORT": {

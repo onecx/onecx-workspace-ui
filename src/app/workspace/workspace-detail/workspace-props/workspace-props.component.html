@@ -96,6 +96,7 @@
             [title]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
           >
             <a
+              tabindex="0"
               target="_blank"
               [href]="inputHomePage.value"
               (click)="$event.stopPropagation()"
@@ -122,15 +123,16 @@
             />
             <label for="workspace_detail_form_rssFeedUrl"> {{ 'WORKSPACE.RSS_FEED_URL' | translate }} </label>
           </span>
-          <span
+          <a
+            tabindex="0"
             id="workspace_detail_form_rssFeedUrl_link"
             class="p-inputgroup-addon bg-primary pseudo-button"
             [ngClass]="inputRssFeedUrl.value ? 'cursor-pointer' : 'p-disabled'"
-            [title]="'ACTIONS.COPY.CLIPBOARD' | translate"
             (click)="copyToClipboard(workspace?.rssFeedUrl)"
+            [title]="'ACTIONS.COPY.CLIPBOARD' | translate"
           >
             <span class="pi pi-copy"></span>
-          </span>
+          </a>
         </div>
 
         <div class="flex flex-wrap sm:flex-nowrap align-items-center mb-1 row-gap-2 column-gap-4">

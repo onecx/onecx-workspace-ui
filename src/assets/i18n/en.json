@@ -4,8 +4,8 @@
     "CONFIRMATION": {
       "NO": "No",
       "YES": "Yes",
-      "NO.TOOLTIP": "Cancel the action",
-      "YES.TOOLTIP": "Proceed with the action"
+      "NO.TOOLTIP": "Cancel without change",
+      "YES.TOOLTIP": "Confirm and execute"
     },
     "COPY": {
       "LABEL": "Copy",
@@ -291,14 +291,15 @@
         "COMPONENTS.DEREGISTER": "Deregister Components"
       },
       "CHANGED": "There are important changes.",
-      "NEW.TOOLTIP": "This Slot is new. Add to Workspace with one click.",
+      "NEW.TOOLTIP": "This Slot is not registered for the Workspace. Click to register.",
       "DEPRECATED": "Outdated",
       "DEPRECATED.TOOLTIP": "This Slot is outdated and will no longer be usable in the foreseeable future.",
       "UNDEPLOYED": "Unavailable",
       "UNDEPLOYED.TOOLTIP": "This Slot is no longer usable.",
       "PRODUCTS": "Registered by Applications",
       "PRODUCTS.NOT_EXIST": "Not available",
-      "PRODUCTS.TOOLTIP": "Applications that have registered the Slot",
+      "PRODUCTS.TOOLTIP": "Applications that have registered this Slot",
+      "NO_PRODUCTS": "No Application found which has registered this Slot",
       "COMPONENTS": "Content-forming Components",
       "COMPONENTS.USED": "Used Components",
       "COMPONENTS.USED.TOOLTIP": "Within the Slot used Components",
@@ -393,7 +394,7 @@
       "DEREGISTER": "Deregister Applications",
       "REGISTER_ONE": "Application registered",
       "REGISTER_ALL": "All Applications registered",
-      "DETAILS": "Application Details",
+      "DETAILS": "Details",
       "ORIGIN": "Origin",
       "ORIGIN.TARGET": "Workspace",
       "ORIGIN.SOURCE": "Application Store",
@@ -438,13 +439,13 @@
     "DISPLAY_NAME": "Application",
     "DISPLAY_NAME.TOOLTIP": "Displayed name of the Application",
     "DESCRIPTION": "Description",
-    "BASE_URL": "Base URL",
+    "BASE_URL": "Application Base Path",
     "BASE_URL.TOOLTIP": "Base path for all Apps in the Application. Must be unique for all Applications in the Workspace.",
     "MFE": {
       "APP_ID": "UI Service ID",
       "APP_ID.TOOLTIP": "Unique ID of the specific UI service to be used.",
-      "BASE_PATH": "Base Path",
-      "BASE_PATH.TOOLTIP": "Path appended to the Application base path for accessing the App."
+      "BASE_PATH": "Module Base Path",
+      "BASE_PATH.TOOLTIP": "Path appended to the Application base path for accessing the specific Module."
     }
   },
   "WORKSPACE_EXPORT": {

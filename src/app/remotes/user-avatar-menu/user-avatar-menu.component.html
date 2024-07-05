@@ -1,15 +1,14 @@
 <div class="flex relative">
-  <div
+  <a
     id="user-avatar-menu-button"
     pRipple
     class="p-2 rounded-circle cursor-pointer user-avatar-menu-button"
-    title="{{ 'REMOTES.USER_AVATAR_MENU.TOOLTIP' | translate }}"
-    pTooltip="{{ 'REMOTES.USER_AVATAR_MENU.TOOLTIP' | translate }}"
-    tooltipPosition="bottom"
     (click)="handleAvatarClick($event)"
+    [pTooltip]="'REMOTES.USER_AVATAR_MENU.TOOLTIP' | translate"
+    tooltipPosition="bottom"
   >
     <ocx-slot name="onecx-avatar-image"></ocx-slot>
-  </div>
+  </a>
   <ul
     class="layout-topbar-action-panel shadow-6 sm:m-2 fixed sm:absolute mt-2 sm:top-100 w-screen sm:w-auto"
     [ngClass]="menuAnchorPosition + '-0'"

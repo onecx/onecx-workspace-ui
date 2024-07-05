@@ -301,7 +301,7 @@ describe('MenuDetailComponent', () => {
         let controlMfeItems: MenuURL[] = []
         controlMfeItems.push({ mfePath: '/workspace', product: 'MENU_ITEM.URL.UNKNOWN.PRODUCT', isSpecial: true })
         controlMfeItems.push({ mfePath: '', product: 'MENU_ITEM.URL.EMPTY' })
-        controlMfeItems.push({ ...microfrontend, mfePath: '/path/base', product: 'display name' })
+        controlMfeItems.push({ ...microfrontend, mfePath: '/path/base', product: 'display name', isSpecial: false })
         expect(component.mfeItems).toEqual(controlMfeItems)
         expect((component as any).preparePanelHeight).toHaveBeenCalled()
       })
