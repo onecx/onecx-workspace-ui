@@ -262,7 +262,7 @@ describe('MenuComponent', () => {
 
   it('should toggle item.disabled and call updateMenuItem with success', () => {
     const event = { stopPropagation: jasmine.createSpy('stopPropagation') } as any
-    const updatedItem = { ...mockMenuItems[0], modificationCount: 1, modificationDate: new Date() }
+    const updatedItem = { ...mockMenuItems[0], modificationCount: 1, modificationDate: new Date(), disabled: true }
 
     menuApiServiceSpy.updateMenuItem.and.returnValue(of(updatedItem))
 

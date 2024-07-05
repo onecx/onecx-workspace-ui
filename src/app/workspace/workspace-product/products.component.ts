@@ -224,20 +224,23 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     }
     if (psp.microfrontends || psp.slots) this.prepareProductAppParts(psp)
   }
+  private prepareProductAppPart(mfe: Microfrontend, psp: ExtendedProduct): void {
+    const app = psp.apps.get(mfe.appId!)
+    if (app && mfe.type === MicrofrontendType.Module) {
+      if (!app.modules) app.modules = []
+      app.modules.push(mfe as ExtendedMicrofrontend)
+    }
+    if (app && mfe.type === MicrofrontendType.Component) {
+      if (!app.components) app.components = []
+      app.components.push(mfe as ExtendedMicrofrontend)
+      app.components.sort(this.sortMfesByExposedModule)
+    }
+  }
   private prepareProductAppParts(psp: ExtendedProduct) {
     // step through mfe array and pick modules and components
     if (psp.microfrontends)
       for (const mfe of psp.microfrontends) {
-        const app = psp.apps.get(mfe.appId!)
-        if (app && mfe.type === MicrofrontendType.Module) {
-          if (!app.modules) app.modules = []
-          app.modules.push(mfe as ExtendedMicrofrontend)
-        }
-        if (app && mfe.type === MicrofrontendType.Component) {
-          if (!app.components) app.components = []
-          app.components.push(mfe as ExtendedMicrofrontend)
-          app.components.sort(this.sortMfesByExposedModule)
-        }
+        this.prepareProductAppPart(mfe, psp)
         // mark product if there are important changes on microfrontends
         psp.changedComponents = mfe.undeployed || mfe.deprecated || psp.changedComponents
       }
@@ -460,6 +463,15 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
    * This event fires after the items were moved from source to target => PrimeNG
    * Afterwards, Step through the list and on each error roll back the move.
    */
+  private prepareMfePaths(mfes: any): any[] | undefined {
+    return mfes.length === 0
+      ? undefined
+      : mfes.map((m: any, i: number) => ({
+          appId: m.appId,
+          basePath: '/' + (mfes.length > 1 ? i + 1 : '') // create initial unique base paths
+        }))
+  }
+
   public onMoveToTarget(ev: any): void {
     this.clearForm()
     let itemCount = ev.items.length
@@ -474,13 +486,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
           createProductRequest: {
             productName: p.productName,
             baseUrl: p.baseUrl,
-            microfrontends:
-              mfes.length === 0
-                ? undefined
-                : mfes.map((m: any, i: number) => ({
-                    appId: m.appId,
-                    basePath: '/' + (mfes.length > 1 ? i + 1 : '') // create initial unique base paths
-                  })),
+            microfrontends: this.prepareMfePaths(mfes),
             slots: p.slots
               ? p.slots.filter((s: SlotPS) => !s.undeployed).map((s: SlotPS) => ({ name: s.name } as CreateSlot))
               : undefined

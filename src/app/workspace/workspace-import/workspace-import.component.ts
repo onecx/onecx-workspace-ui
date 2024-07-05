@@ -86,7 +86,37 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
     this.isLoading = load
   }
 
-  // IMPORT
+  /**
+   * IMPORT
+   */
+  private importParseAndExtract(response: any) {
+    if (response.workspaces && response.menus) {
+      let keys
+      this.importResponse = JSON.parse('{"workspace":"ERROR", "menu":"ERROR"}')
+      if (this.importResponse && response.workspaces) {
+        keys = Object.keys(response.workspaces)
+        this.importResponse.workspace = response.workspaces[keys[0]]
+      }
+      if (this.importResponse && response.menus) {
+        keys = Object.keys(response.menus)
+        this.importResponse.menu = response.menus[keys[0]]
+      }
+    }
+  }
+  private importCheckAndRoute(wKeys: string[]) {
+    const messageKey = 'WORKSPACE_IMPORT.RESPONSE.' + this.importResponse?.workspace
+    if (this.importResponse?.workspace === ImportResponseStatus.Error) {
+      this.msgService.error({ summaryKey: messageKey })
+    }
+    if (['CREATED', 'UPDATED'].includes(this.importResponse?.workspace ?? 'ERROR')) {
+      this.importResponse = undefined
+      this.msgService.success({ summaryKey: messageKey })
+      if (this.importRequestDTO?.workspaces) {
+        this.router.navigate(['./', this.importRequestDTO.workspaces[wKeys[0]].name], { relativeTo: this.route })
+      }
+    }
+  }
+
   public importWorkspace(): void {
     if (!this.importRequestDTO?.workspaces) {
       this.msgService.error({ summaryKey: 'WORKSPACE_IMPORT.WORKSPACE_IMPORT_ERROR' })
@@ -104,31 +134,9 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
       .subscribe({
         next: (response) => {
           this.isLoading = false
-          console.log('response dto: ', response)
           // read data and prepare feedback: UPDATED | CREATED | SKIPPED | ERROR
-          if (response.workspaces && response.menus) {
-            let keys
-            this.importResponse = JSON.parse('{"workspace":"ERROR", "menu":"ERROR"}')
-            if (this.importResponse && response.workspaces) {
-              keys = Object.keys(response.workspaces)
-              this.importResponse.workspace = response.workspaces[keys[0]]
-            }
-            if (this.importResponse && response.menus) {
-              keys = Object.keys(response.menus)
-              this.importResponse.menu = response.menus[keys[0]]
-            }
-          }
-          const messageKey = 'WORKSPACE_IMPORT.RESPONSE.' + this.importResponse?.workspace
-          if (this.importResponse?.workspace === ImportResponseStatus.Error) {
-            this.msgService.error({ summaryKey: messageKey })
-          }
-          if (['CREATED', 'UPDATED'].includes(this.importResponse?.workspace ?? 'ERROR')) {
-            this.importResponse = undefined
-            this.msgService.success({ summaryKey: messageKey })
-            if (this.importRequestDTO?.workspaces) {
-              this.router.navigate(['./', this.importRequestDTO.workspaces[wKeys[0]].name], { relativeTo: this.route })
-            }
-          }
+          this.importParseAndExtract(response)
+          this.importCheckAndRoute(wKeys)
         },
         error: () => {
           this.isLoading = false
