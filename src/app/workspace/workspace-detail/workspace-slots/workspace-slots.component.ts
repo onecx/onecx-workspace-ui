@@ -206,6 +206,19 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     })
   }
 
+  private addNewSlots() {
+    // 4. add new (not undeployed) Slots (not yet in Workspace but part of a registered product)
+    this.wProductNames.forEach((pn) => {
+      this.psSlots
+        .filter((psp) => psp.productName === pn)
+        .forEach((ps) => {
+          if (this.wSlotsIntern.filter((ws) => ws.name === ps.name).length === 0) {
+            if (!ps.undeployed) this.wSlotsIntern.push({ ...ps, new: true })
+          }
+        })
+    })
+  }
+
   // All declared Slots of Product store Products: containing deployment information
   private declarePsSlots(): void {
     this.psSlots$ = this.psProductApi.searchAvailableProducts({ productStoreSearchCriteria: {} }).pipe(
@@ -214,16 +227,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
         this.psComponents = []
         if (res.stream) {
           this.extractPsData(res.stream) // steps: 1, 2, 3
-          // 4. add new (not undeployed) Slots (not yet in Workspace but part of a registered product)
-          this.wProductNames.forEach((pn) => {
-            this.psSlots
-              .filter((psp) => psp.productName === pn)
-              .forEach((ps) => {
-                if (this.wSlotsIntern.filter((ws) => ws.name === ps.name).length === 0) {
-                  if (!ps.undeployed) this.wSlotsIntern.push({ ...ps, new: true })
-                }
-              })
-          })
+          this.addNewSlots() // steps: 4
           this.wSlotsIntern.sort(this.sortSlotsByName)
           this.wSlots = [...this.wSlotsIntern]
         }
