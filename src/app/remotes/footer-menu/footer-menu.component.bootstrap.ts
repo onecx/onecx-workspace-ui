@@ -11,5 +11,10 @@ bootstrapRemoteComponent(OneCXFooterMenuComponent, 'ocx-footer-menu-component', 
   provideHttpClient(withInterceptorsFromDi()),
   importProvidersFrom(AngularAuthModule),
   importProvidersFrom(BrowserModule),
-  provideRouter([])
+  provideRouter([
+    {
+      path: '**',
+      children: []
+    }
+  ])
 ])

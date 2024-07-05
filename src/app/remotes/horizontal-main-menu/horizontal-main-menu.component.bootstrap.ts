@@ -17,6 +17,11 @@ bootstrapRemoteComponent(
     importProvidersFrom(AngularAuthModule),
     importProvidersFrom(BrowserModule),
     importProvidersFrom(BrowserAnimationsModule),
-    provideRouter([])
+    provideRouter([
+      {
+        path: '**',
+        children: []
+      }
+    ])
   ]
 )

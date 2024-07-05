@@ -13,5 +13,10 @@ bootstrapRemoteComponent(OneCXUserSidebarMenuComponent, 'ocx-user-siderbar-menu-
   importProvidersFrom(AngularAuthModule),
   importProvidersFrom(BrowserModule),
   importProvidersFrom(BrowserAnimationsModule),
-  provideRouter([])
+  provideRouter([
+    {
+      path: '**',
+      children: []
+    }
+  ])
 ])

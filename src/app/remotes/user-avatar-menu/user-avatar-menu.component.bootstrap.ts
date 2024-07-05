@@ -11,5 +11,10 @@ bootstrapRemoteComponent(OneCXUserAvatarMenuComponent, 'ocx-user-avatar-menu-com
   provideHttpClient(withInterceptorsFromDi()),
   importProvidersFrom(AngularAuthModule),
   importProvidersFrom(BrowserModule),
-  provideRouter([])
+  provideRouter([
+    {
+      path: '**',
+      children: []
+    }
+  ])
 ])
