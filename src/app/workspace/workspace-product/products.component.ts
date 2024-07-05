@@ -460,6 +460,15 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
    * This event fires after the items were moved from source to target => PrimeNG
    * Afterwards, Step through the list and on each error roll back the move.
    */
+  private prepareMfePaths(mfes: any): any[] | undefined {
+    return mfes.length === 0
+      ? undefined
+      : mfes.map((m: any, i: number) => ({
+          appId: m.appId,
+          basePath: '/' + (mfes.length > 1 ? i + 1 : '') // create initial unique base paths
+        }))
+  }
+
   public onMoveToTarget(ev: any): void {
     this.clearForm()
     let itemCount = ev.items.length
@@ -474,13 +483,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
           createProductRequest: {
             productName: p.productName,
             baseUrl: p.baseUrl,
-            microfrontends:
-              mfes.length === 0
-                ? undefined
-                : mfes.map((m: any, i: number) => ({
-                    appId: m.appId,
-                    basePath: '/' + (mfes.length > 1 ? i + 1 : '') // create initial unique base paths
-                  })),
+            microfrontends: this.prepareMfePaths(mfes),
             slots: p.slots
               ? p.slots.filter((s: SlotPS) => !s.undeployed).map((s: SlotPS) => ({ name: s.name } as CreateSlot))
               : undefined
