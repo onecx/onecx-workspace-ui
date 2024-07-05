@@ -401,7 +401,7 @@ export class MenuDetailComponent implements OnChanges {
               for (let mfe of p.microfrontends) {
                 this.mfeItems.push({
                   ...mfe,
-                  mfePath: Location.joinWithSlash(mfe.basePath!, p.baseUrl!),
+                  mfePath: Location.joinWithSlash(mfe.basePath ?? '', p.baseUrl ?? ''),
                   product: p.displayName!
                 })
               }

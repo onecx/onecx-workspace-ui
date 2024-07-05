@@ -42,6 +42,19 @@
   }
 }
 
+@mixin input-clear-icon {
+  .p-input-icon-right > a:last-of-type {
+    right: 0.75rem;
+    color: var(--emphasis-medium);
+  }
+  .p-input-icon-left > a,
+  .p-input-icon-right > a {
+    position: absolute;
+    top: 50%;
+    margin-top: -0.5rem;
+  }
+}
+
 @mixin prepare-inputgroup {
   :host ::ng-deep {
     .inputgroup-dropdown-with-link {
