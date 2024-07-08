@@ -4,6 +4,7 @@
 @include compact-dropdown-list-items;
 @include correct-autocomplete;
 @include non-full-size-modal-dialog;
+@include input-clear-icon;
 
 :host ::ng-deep {
   .menu-url-dropdown.p-dropdown .p-dropdown-label:not(.p-dropdown-label-empty) {

@@ -125,8 +125,8 @@ export class MenuDetailComponent implements OnChanges {
       return
     }
     if (this.displayDetailDialog) {
-      if (this.workspaceId && changes['workspaceId']) this.loadMfeUrls()
       this.cleanupMfeUrls() // remove special entries
+      this.loadMfeUrls() // load first time only
       this.formGroup.reset()
       this.tabIndex = 0
       this.languagesDisplayed = []
@@ -388,9 +388,10 @@ export class MenuDetailComponent implements OnChanges {
   }
 
   /**
-   * LOAD Microfrontends from registered products
+   * LOAD Microfrontends from registered products (if not yet done)
    **/
   private loadMfeUrls(): void {
+    if (this.mfeItems?.length > 0) return
     this.mfeItems = [{ mfePath: '', product: 'MENU_ITEM.URL.EMPTY' }]
     this.wProductApi
       .getProductsByWorkspaceId({ id: this.workspaceId! })
@@ -401,8 +402,9 @@ export class MenuDetailComponent implements OnChanges {
               for (let mfe of p.microfrontends) {
                 this.mfeItems.push({
                   ...mfe,
-                  mfePath: Location.joinWithSlash(mfe.basePath!, p.baseUrl!),
-                  product: p.displayName!
+                  mfePath: Location.joinWithSlash(mfe.basePath ?? '', p.baseUrl ?? ''),
+                  product: p.displayName!,
+                  isSpecial: false
                 })
               }
             }

@@ -1,19 +1,16 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
 # compiled output
-/tmp
-/out-tsc
-
-# dependencies
-/node_modules
+tmp
+out-tsc
 
 # IDEs and editors
-/.idea
+.idea
 .project
 .classpath
-.c9/
+.c9
 *.launch
-.settings/
+.settings
 *.sublime-workspace
 
 # IDE - VSCode
@@ -24,10 +21,12 @@
 !.vscode/extensions.json
 
 # misc
+.angular
+.git
 .sass-cache
-.gitlab*
 .scannerwork
 connect.lock
+node_modules
 reports
 typings
 *.log

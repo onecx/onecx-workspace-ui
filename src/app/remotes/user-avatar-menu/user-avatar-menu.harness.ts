@@ -8,8 +8,8 @@ export class OneCXUserAvatarMenuHarness extends ComponentHarness {
 
   getMenuItems = this.locatorForAll(MenuItemWithIconHarness)
 
-  async getUserAvatarButtonTitle(): Promise<string | null> {
-    return await (await this.getUserAvatarButton()).getAttribute('title')
+  async getUserAvatarButtonId(): Promise<string | null> {
+    return await (await this.getUserAvatarButton()).getAttribute('id')
   }
 
   async clickButton() {

@@ -1,6 +1,6 @@
 import { Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { Component, Inject } from '@angular/core'
+import { APP_INITIALIZER, Component, Inject, Input } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
@@ -8,7 +8,10 @@ import {
   AngularRemoteComponentsModule,
   BASE_URL,
   RemoteComponentConfig,
+  SLOT_SERVICE,
+  SlotService,
   ocxRemoteComponent,
+  ocxRemoteWebcomponent,
   provideTranslateServiceForRoot
 } from '@onecx/angular-remote-components'
 import { EventsPublisher } from '@onecx/integration-interface'
@@ -40,6 +43,10 @@ import { MenuItemService } from 'src/app/shared/services/menu-item.service'
 import { SharedModule } from 'src/app/shared/shared.module'
 import { environment } from 'src/environments/environment'
 
+export function slotInitializer(slotService: SlotService) {
+  return () => slotService.init()
+}
+
 @Component({
   selector: 'app-user-sidebar-menu',
   standalone: true,
@@ -65,13 +72,23 @@ import { environment } from 'src/environments/environment'
         useFactory: createRemoteComponentTranslateLoader,
         deps: [HttpClient, BASE_URL]
       }
-    })
+    }),
+    {
+      provide: APP_INITIALIZER,
+      useFactory: slotInitializer,
+      deps: [SLOT_SERVICE],
+      multi: true
+    },
+    {
+      provide: SLOT_SERVICE,
+      useExisting: SlotService
+    }
   ],
   templateUrl: './user-sidebar-menu.component.html',
   styleUrls: ['./user-sidebar-menu.component.scss']
 })
 @UntilDestroy()
-export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent {
+export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
   currentUser$: Observable<UserProfile>
   userMenu$: Observable<MenuItem[]>
   displayName$: Observable<string>
@@ -145,6 +162,10 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent {
       shareReplay(),
       untilDestroyed(this)
     )
+  }
+
+  @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
+    this.ocxInitRemoteComponent(config)
   }
 
   ocxInitRemoteComponent(config: RemoteComponentConfig): void {

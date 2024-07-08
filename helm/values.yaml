@@ -16,26 +16,44 @@ app:
           description: "OneCX Workspace UI"
           note: "OneCX Workspace UI auto import via MF operator"
           type: MODULE
+          technology: WEBCOMPONENTMODULE
+          remoteName: onecx-workspace
+          tagName: ocx-workspace-component
         user-avatar-menu:
           exposedModule: "./OneCXUserAvatarMenuComponent"
           description: "User avatar menu component"
           type: COMPONENT
+          technology: WEBCOMPONENTMODULE
+          remoteName: onecx-workspace
+          tagName: ocx-user-avatar-menu-component
         user-siderbar-menu:
           exposedModule: "./OneCXUserSidebarMenuComponent"
           description: "User siderbar menu component"
           type: COMPONENT
+          technology: WEBCOMPONENTMODULE
+          remoteName: onecx-workspace
+          tagName: ocx-user-siderbar-menu-component
         vertical-main-menu:
           exposedModule: "./OneCXVerticalMainMenuComponent"
           description: "Vercital main menu component"
           type: COMPONENT
+          technology: WEBCOMPONENTMODULE
+          remoteName: onecx-workspace
+          tagName: ocx-vertical-main-menu-component
         horizontal-main-menu:
           exposedModule: "./OneCXHorizontalMainMenuComponent"
           description: "Horizontal main menu component"
           type: COMPONENT
+          technology: WEBCOMPONENTMODULE
+          remoteName: onecx-workspace
+          tagName: ocx-horizontal-main-menu-component
         footer-menu:
           exposedModule: "./OneCXFooterMenuComponent"
           description: "Footer menu component"
           type: COMPONENT
+          technology: WEBCOMPONENTMODULE
+          remoteName: onecx-workspace
+          tagName: ocx-footer-menu-component
     # Permission
     permission:
       enabled: true

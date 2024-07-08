@@ -20,7 +20,6 @@ import {
   CreateAssignmentRequest,
   MenuItemAPIService,
   MenuItemStructure,
-  UpdateMenuItemRequest,
   Workspace,
   WorkspaceMenuItem,
   WorkspaceRole,
@@ -190,19 +189,35 @@ export class MenuComponent implements OnInit, OnDestroy {
     ev.stopPropagation()
     this.displayMenuDetail = false // prevent detail dialog activation
     this.displayMenuDelete = false
-    item.disabled = !item.disabled
     this.menuApi
       .updateMenuItem({
         menuItemId: item.id!,
-        updateMenuItemRequest: item as UpdateMenuItemRequest
+        updateMenuItemRequest: {
+          badge: item.badge,
+          description: item.description,
+          disabled: !item.disabled,
+          external: item.external,
+          i18n: item.i18n,
+          key: item.key,
+          modificationCount: item.modificationCount ?? 0,
+          name: item.name,
+          parentItemId: item.parentItemId,
+          position: item.position ?? 0,
+          scope: item.scope,
+          url: item.url
+        }
       })
       .subscribe({
         next: (data) => {
+          item.disabled = data.disabled
           item.modificationCount = data.modificationCount
           item.modificationDate = data.modificationDate
           this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' })
         },
-        error: (err: { error: any }) => this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
+        error: (err: { error: any }) => {
+          console.error(err)
+          this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
+        }
       })
   }
 
