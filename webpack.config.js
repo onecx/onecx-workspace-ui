@@ -58,7 +58,7 @@ module.exports = {
   ...config,
   plugins,
   output: {
-    uniqueName: 'my-ui',
+    uniqueName: 'onecx-workspace-ui',
     publicPath: 'auto'
   },
   experiments: {
