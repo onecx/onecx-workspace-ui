@@ -95,7 +95,6 @@ describe('OneCXFooterMenuComponent', () => {
 
     expect(menuItemApiSpy.configuration.basePath).toEqual('base_url/bff')
     baseUrlSubject.asObservable().subscribe((item) => {
-      console.log(item)
       expect(item).toEqual('base_url')
       done()
     })
