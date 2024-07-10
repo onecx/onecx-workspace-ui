@@ -128,7 +128,6 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
     this.importRequestDTO.workspaces[wKeys[0]].displayName = this.workspaceName
     this.importRequestDTO.workspaces[wKeys[0]].theme = this.themeName
     this.importRequestDTO.workspaces[wKeys[0]].baseUrl = this.baseUrl
-    console.log('TEST#################', this.importRequestDTO.workspaces[wKeys[0]])
     this.workspaceApi
       .importWorkspaces({
         workspaceSnapshot: this.importRequestDTO
