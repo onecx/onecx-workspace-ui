@@ -34,6 +34,7 @@ describe('WorkspaceInternComponent', () => {
 
     component.workspace = {
       name: 'name',
+      displayName: 'name',
       theme: 'theme',
       baseUrl: '/some/base/url',
       id: 'id'

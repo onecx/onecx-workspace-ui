@@ -13,7 +13,8 @@ const portal: Workspace = {
   name: 'name',
   theme: 'theme',
   baseUrl: '/some/base/url',
-  id: 'id'
+  id: 'id',
+  displayName: ''
 }
 
 const formGroup = new FormGroup({
@@ -130,7 +131,8 @@ describe('WorkspaceContactComponent', () => {
       name: 'name',
       theme: 'theme',
       baseUrl: '/some/base/url',
-      id: 'id'
+      id: 'id',
+      displayName: ''
     }
     component.workspace = { ...newPortal, address: undefined }
 

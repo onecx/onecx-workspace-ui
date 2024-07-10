@@ -25,7 +25,8 @@ const workspace: Workspace = {
   id: 'id',
   name: 'name',
   theme: 'theme',
-  baseUrl: '/some/base/url'
+  baseUrl: '/some/base/url',
+  displayName: ''
 }
 
 const microfrontend: Microfrontend = {
@@ -189,7 +190,8 @@ describe('ProductComponent', () => {
     const workspace2: Workspace = {
       name: 'name',
       theme: 'theme',
-      baseUrl: '/some/base/url'
+      baseUrl: '/some/base/url',
+      displayName: ''
     }
     component.workspace = workspace2
 
@@ -843,7 +845,8 @@ describe('ProductComponent', () => {
     const workspace2: Workspace = {
       name: 'name',
       theme: 'theme',
-      baseUrl: '/some/base/url'
+      baseUrl: '/some/base/url',
+      displayName: ''
     }
     component.workspace = workspace2
 
@@ -907,7 +910,8 @@ describe('ProductComponent', () => {
     const workspace2: Workspace = {
       name: 'name',
       theme: 'theme',
-      baseUrl: '/some/base/url'
+      baseUrl: '/some/base/url',
+      displayName: ''
     }
     component.workspace = workspace2
 

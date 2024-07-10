@@ -22,7 +22,8 @@ const workspace: Workspace = {
   id: 'id',
   name: 'name',
   theme: 'theme',
-  baseUrl: '/some/base/url'
+  baseUrl: '/some/base/url',
+  displayName: ''
 }
 
 const wRole: Role = {
@@ -261,6 +262,7 @@ describe('WorkspaceRolesComponent', () => {
     const mockEvent = new MouseEvent('click')
     component.workspace = {
       name: 'name',
+      displayName: 'name',
       theme: 'theme',
       baseUrl: '/some/base/url'
     }

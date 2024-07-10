@@ -17,6 +17,7 @@ import { TranslateTestingModule } from 'ngx-translate-testing'
 
 const workspace = {
   name: 'name',
+  displayName: 'name',
   theme: 'theme',
   baseUrl: '/some/base/url',
   id: 'id'
@@ -343,7 +344,8 @@ describe('WorkspacePropsComponent', () => {
         theme: 'theme',
         baseUrl: '/some/base/url',
         id: 'id',
-        logoUrl: 'testlogoUrl'
+        logoUrl: 'testlogoUrl',
+        displayName: ''
       }
       expect(component.getLogoUrl(testWorkspace)).toBe(testWorkspace.logoUrl)
     })
