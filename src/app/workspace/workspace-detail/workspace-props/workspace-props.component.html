@@ -2,10 +2,11 @@
   <div class="col-12 md:col-10 lg:col-10 xl:col-6">
     <form [formGroup]="formGroup">
       <div class="flex flex-wrap flex-column gap-4 justify-content-between">
-        <div>
+        <div *ngIf="!editMode">
           <span class="p-float-label mb-1" controlErrorAnchor>
             <input
               pInputText
+              readonly
               type="text"
               id="workspace_detail_form_name"
               class="w-full pt-3 pb-2"
@@ -16,6 +17,24 @@
             />
             <label class="ocx-required-label" for="workspace_detail_form_name">
               {{ 'WORKSPACE.NAME' | translate }}
+            </label>
+          </span>
+        </div>
+
+        <div>
+          <span class="p-float-label mb-1" controlErrorAnchor>
+            <input
+              pInputText
+              type="text"
+              id="workspace_detail_form_display_name"
+              class="w-full pt-3 pb-2"
+              formControlName="displayName"
+              [pTooltip]="'WORKSPACE.DISPLAY_NAME' | translate"
+              tooltipPosition="top"
+              tooltipEvent="focus"
+            />
+            <label class="ocx-required-label" for="workspace_detail_form_display_name">
+              {{ 'WORKSPACE.DISPLAY_NAME' | translate }}
             </label>
           </span>
         </div>
