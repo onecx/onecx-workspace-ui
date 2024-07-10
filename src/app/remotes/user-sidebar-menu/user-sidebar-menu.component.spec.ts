@@ -90,6 +90,21 @@ describe('OneCXUserSidebarMenuComponent', () => {
     expect(component).toBeTruthy()
   })
 
+  it('should call ocxInitRemoteComponent with the correct config', () => {
+    const { component } = setUp()
+    const mockConfig: RemoteComponentConfig = {
+      appId: 'appId',
+      productName: 'prodName',
+      permissions: ['permission'],
+      baseUrl: 'base'
+    }
+    spyOn(component, 'ocxInitRemoteComponent')
+
+    component.ocxRemoteComponentConfig = mockConfig
+
+    expect(component.ocxInitRemoteComponent).toHaveBeenCalledWith(mockConfig)
+  })
+
   it('should init remote component', (done: DoneFn) => {
     const { component } = setUp()
 
