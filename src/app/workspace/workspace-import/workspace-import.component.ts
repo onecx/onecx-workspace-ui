@@ -125,6 +125,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
     this.isLoading = true
     let wKeys: string[] = Object.keys(this.importRequestDTO.workspaces)
     this.importRequestDTO.workspaces[wKeys[0]].name = this.workspaceName
+    this.importRequestDTO.workspaces[wKeys[0]].displayName = this.workspaceName
     this.importRequestDTO.workspaces[wKeys[0]].theme = this.themeName
     this.importRequestDTO.workspaces[wKeys[0]].baseUrl = this.baseUrl
     this.workspaceApi

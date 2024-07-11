@@ -1,6 +1,6 @@
 <ocx-portal-page permission="WORKSPACE#VIEW" helpArticleId="PAGE_WORKSPACE_DETAIL" pageName="PAGE_WORKSPACE_DETAIL">
   <ocx-page-header
-    [header]="workspaceName"
+    [header]="workspace?.displayName ?? ''"
     [subheader]="'DIALOG.WORKSPACE.HEADER.DETAIL' | translate"
     [actions]="(actions$ | async) ?? []"
     [figureImage]="currentLogoUrl"

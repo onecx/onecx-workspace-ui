@@ -201,6 +201,7 @@
   "WORKSPACE": {
     "ID": "ID",
     "NAME": "Name",
+    "DISPLAY_NAME": "Anzeigename",
     "BASE_URL": "Base URL",
     "DESCRIPTION": "Beschreibung",
     "FOOTER_LABEL": "Fußzeile",

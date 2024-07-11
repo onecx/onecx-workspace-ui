@@ -4,7 +4,7 @@ import { Router, RouterModule, Routes } from '@angular/router'
 import { createCustomElement } from '@angular/elements'
 import { MissingTranslationHandler, TranslateLoader, TranslateModule } from '@ngx-translate/core'
 
-import { createTranslateLoader } from '@onecx/angular-accelerator'
+import { MFE_ID, createTranslateLoader } from '@onecx/angular-accelerator'
 import {
   PortalApiConfiguration,
   PortalCoreModule,
@@ -44,7 +44,7 @@ const routes: Routes = [
       loader: {
         provide: TranslateLoader,
         useFactory: createTranslateLoader,
-        deps: [HttpClient, AppStateService]
+        deps: [HttpClient, AppStateService, MFE_ID]
       },
       missingTranslationHandler: { provide: MissingTranslationHandler, useClass: PortalMissingTranslationHandler }
     })
@@ -58,7 +58,11 @@ const routes: Routes = [
       multi: true,
       deps: [Router, AppStateService]
     },
-    { provide: Configuration, useFactory: apiConfigProvider, deps: [ConfigurationService, AppStateService] }
+    { provide: Configuration, useFactory: apiConfigProvider, deps: [ConfigurationService, AppStateService] },
+    {
+      provide: MFE_ID,
+      useValue: 'onecx-workspace'
+    }
   ],
   schemas: []
 })

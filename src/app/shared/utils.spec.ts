@@ -22,7 +22,8 @@ describe('util functions', () => {
   describe('cloneWorkspaceWithMicrofrontendsArray', () => {
     it('should test with empty workspace', () => {
       const updatedPortal: Workspace = {
-        name: ''
+        name: '',
+        displayName: ''
       }
       expect(cloneWorkspaceWithMicrofrontendsArray(updatedPortal)).toEqual(updatedPortal)
     })
@@ -34,7 +35,8 @@ describe('util functions', () => {
         phoneNumber: 'string',
         rssFeedUrl: 'string',
         footerLabel: 'string',
-        logoUrl: 'string'
+        logoUrl: 'string',
+        displayName: 'testName'
       }
       expect(cloneWorkspaceWithMicrofrontendsArray(updatedPortal)).toEqual(updatedPortal)
     })

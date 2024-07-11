@@ -14,7 +14,8 @@ const workspace: WorkspaceAbstract = {
   theme: 'theme',
   baseUrl: 'url',
   description: 'descr',
-  name: 'name'
+  name: 'name',
+  displayName: ''
 }
 
 describe('ConfirmComponent', () => {

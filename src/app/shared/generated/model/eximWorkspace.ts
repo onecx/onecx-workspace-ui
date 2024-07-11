@@ -19,6 +19,7 @@ import { Image } from './image';
 
 export interface EximWorkspace { 
     name?: string;
+    displayName?: string;
     description?: string;
     theme?: string;
     homePage?: string;
