@@ -40,7 +40,7 @@ describe('WorkspaceCreateComponent', () => {
   let mockActivatedRoute: Partial<ActivatedRoute>
 
   const wApiServiceSpy = {
-    getAllThemes: jasmine.createSpy('getAllThemes').and.returnValue(of({})),
+    getAllThemes: jasmine.createSpy('getAllThemes').and.returnValue(of(['theme1', 'theme2'])),
     createWorkspace: jasmine.createSpy('createWorkspace').and.returnValue(of({}))
   }
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'info', 'error'])
@@ -80,6 +80,7 @@ describe('WorkspaceCreateComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents()
+    wApiServiceSpy.getAllThemes.calls.reset()
   }))
 
   beforeEach(() => {

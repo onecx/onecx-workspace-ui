@@ -73,6 +73,9 @@ export function dropDownGetLabelByValue(ddArray: SelectItem[], val: string): str
 }
 
 export function sortByLocale(a: any, b: any): number {
+  if (typeof a !== 'string' || typeof b !== 'string') {
+    return 0
+  }
   return a.toUpperCase().localeCompare(b.toUpperCase())
 }
 

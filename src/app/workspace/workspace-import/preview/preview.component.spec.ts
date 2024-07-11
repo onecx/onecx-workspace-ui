@@ -6,7 +6,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { of } from 'rxjs'
 
 import { AppStateService, createTranslateLoader } from '@onecx/portal-integration-angular'
-import { WorkspaceSnapshot } from 'src/app/shared/generated'
+import { WorkspaceSnapshot, WorkspaceAPIService } from 'src/app/shared/generated'
 import { PreviewComponent } from './preview.component'
 
 const snapshot: WorkspaceSnapshot = {
@@ -43,8 +43,8 @@ describe('PreviewComponent', () => {
   let component: PreviewComponent
   let fixture: ComponentFixture<PreviewComponent>
 
-  const themeServiceSpy = jasmine.createSpyObj('ThemeService', ['getThemes'])
-  themeServiceSpy.getThemes.and.returnValue(
+  const wsServiceSpy = jasmine.createSpyObj('WorkspaceAPIService', ['getAllThemes'])
+  wsServiceSpy.getAllThemes.and.returnValue(
     of([
       { label: undefined, value: 'theme1' },
       { label: undefined, value: 'theme2' }
@@ -64,9 +64,10 @@ describe('PreviewComponent', () => {
           }
         })
       ],
+      providers: [{ provide: WorkspaceAPIService, useValue: wsServiceSpy }],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents()
-    themeServiceSpy.getThemes.calls.reset()
+    wsServiceSpy.getAllThemes.calls.reset()
   }))
 
   beforeEach(() => {
@@ -80,29 +81,17 @@ describe('PreviewComponent', () => {
     expect(component).toBeTruthy()
   })
 
-  xit('should get themeNames from service', (done) => {
-    themeServiceSpy.getThemes
-
+  it('should get themeNames from service', (done) => {
     component.themes$.subscribe((themes) => {
       expect(themes).toEqual([
-        { label: undefined, value: '' },
-        { label: undefined, value: '' }
+        { label: undefined, value: 'theme1' },
+        { label: undefined, value: 'theme2' }
       ])
       done()
     })
   })
 
   it('should fillForm, addValidators to formGroup and call onModelChange OnChanges: import theme checkbox disabled', () => {
-    spyOn(component, 'fillForm')
-    spyOn(component, 'onModelChange')
-
-    component.ngOnChanges()
-
-    expect(component.fillForm).toHaveBeenCalled()
-    expect(component.onModelChange).toHaveBeenCalled()
-  })
-
-  xit('should fillForm, addValidators to formGroup and call onModelChange OnChanges: import theme checkbox enabled', () => {
     spyOn(component, 'fillForm')
     spyOn(component, 'onModelChange')
 

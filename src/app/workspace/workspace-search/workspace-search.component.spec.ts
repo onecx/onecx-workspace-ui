@@ -201,6 +201,12 @@ describe('WorkspaceSearchComponent', () => {
     expect(result).toEqual('')
   })
 
+  it('should return undefined if there is no ws object', () => {
+    const result = component.getLogoUrl(undefined)
+
+    expect(result).toBeUndefined()
+  })
+
   it('should return correct imageUrl', () => {
     const result = component.getLogoUrl({ logoUrl: 'url' } as Workspace)
 

@@ -256,6 +256,32 @@ describe('WorkspaceImportComponent', () => {
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'WORKSPACE_IMPORT.IMPORT_NOK' })
   })
 
+  it('should display error msg if response status is error', () => {
+    const response = {
+      id: 'testString1',
+      workspaces: {
+        Updated: ImportResponseStatus.Error
+      },
+      menus: {
+        Updated: ImportResponseStatus.Updated
+      }
+    }
+    apiServiceSpy.importWorkspaces.and.returnValue(of(response))
+    const workspaceSnap = {
+      workspaces: {
+        workspace: {
+          name: 'name'
+        }
+      }
+    }
+    component.importRequestDTO = workspaceSnap
+    component.hasPermission = true
+
+    component.importWorkspace()
+
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'WORKSPACE_IMPORT.RESPONSE.ERROR' })
+  })
+
   describe('next', () => {
     it('should set importRequestDTO on next when activeIndex is 0 (upload), and themeImportData valid', () => {
       const workspaceSnap: WorkspaceSnapshot = {

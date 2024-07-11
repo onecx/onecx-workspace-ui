@@ -150,6 +150,15 @@ describe('WorkspacePropsComponent', () => {
   })
 
   describe('onSave', () => {
+    it('should return if no workspace to save', () => {
+      component.formGroup = formGroup
+      component.workspace = undefined
+
+      component.onSave()
+
+      expect(component.editMode).toBeFalse()
+    })
+
     it('should update workspace onSave', () => {
       component.formGroup = formGroup
       component.workspace = workspace
@@ -168,13 +177,6 @@ describe('WorkspacePropsComponent', () => {
       expect(msgServiceSpy.error).toHaveBeenCalledWith({
         summaryKey: 'VALIDATION.FORM_INVALID'
       })
-    })
-
-    it('should return directly when workspace is empty', () => {
-      spyOn(component, 'onSave')
-      component.workspace = undefined
-      component.onSave()
-      expect(component.onSave).toHaveBeenCalled
     })
   })
 
