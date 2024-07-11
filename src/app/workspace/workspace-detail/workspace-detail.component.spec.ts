@@ -24,7 +24,8 @@ const workspace: Workspace = {
   id: 'id',
   name: 'name',
   theme: 'theme',
-  baseUrl: '/some/base/url'
+  baseUrl: '/some/base/url',
+  displayName: ''
 }
 
 class MockWorkspacePropsComponent {
@@ -264,7 +265,7 @@ describe('WorkspaceDetailComponent', () => {
 
   describe('get logoUrl', () => {
     it('should return the logoURL on getLogoUrl', () => {
-      const result = component.getLogoUrl({ name: 'name', logoUrl: 'url' })
+      const result = component.getLogoUrl({ name: 'name', displayName: 'name', logoUrl: 'url' })
 
       expect(result).toBe('url')
     })

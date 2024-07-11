@@ -29,7 +29,8 @@ const workspace: Workspace = {
   id: 'id',
   name: 'workspace-name',
   theme: 'theme',
-  baseUrl: '/some/base/url'
+  baseUrl: '/some/base/url',
+  displayName: ''
 }
 
 const mockMenuItems: WorkspaceMenuItem[] = [

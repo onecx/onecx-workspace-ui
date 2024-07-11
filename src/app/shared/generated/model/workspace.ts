@@ -20,6 +20,7 @@ export interface Workspace {
     modificationDate?: string;
     readonly modificationUser?: string;
     name: string;
+    displayName: string;
     description?: string;
     theme?: string;
     homePage?: string;

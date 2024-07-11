@@ -14,7 +14,8 @@ const workspace: Workspace = {
   id: 'id',
   name: 'name',
   theme: 'theme',
-  baseUrl: '/some/base/url'
+  baseUrl: '/some/base/url',
+  displayName: 'name'
 }
 
 const wRole: Role = {
@@ -181,6 +182,7 @@ describe('WorkspaceRoleDetailComponent', () => {
     component.changeMode = 'CREATE'
     component.workspace = {
       name: 'name',
+      displayName: 'name',
       theme: 'theme',
       baseUrl: '/some/base/url'
     }

@@ -66,7 +66,8 @@ describe('WorkspaceSearchComponent', () => {
     const w: WorkspaceAbstract = {
       name: 'name',
       theme: 'theme',
-      baseUrl: 'url'
+      baseUrl: 'url',
+      displayName: ''
     }
     wApiServiceSpy.searchWorkspaces.and.returnValue(of({ stream: [w] } as SearchWorkspacesResponse))
 
@@ -142,7 +143,8 @@ describe('WorkspaceSearchComponent', () => {
     const w: WorkspaceAbstract = {
       name: 'name',
       theme: 'theme',
-      baseUrl: '/some/base/url'
+      baseUrl: '/some/base/url',
+      displayName: ''
     }
 
     const deploymentPath = getLocation().deploymentPath === '/' ? '' : getLocation().deploymentPath
@@ -163,7 +165,8 @@ describe('WorkspaceSearchComponent', () => {
     const w: WorkspaceAbstract = {
       name: 'name',
       theme: 'theme',
-      baseUrl: '/some/base/url'
+      baseUrl: '/some/base/url',
+      displayName: ''
     }
 
     component.onGotoMenu(mockEvent, w)
@@ -306,13 +309,16 @@ describe('sortMfesByExposedModule', () => {
 
   it('should sort mfes by exposedModule ', () => {
     let a: WorkspaceAbstract = {
-      name: 'a'
+      name: 'a',
+      displayName: ''
     }
     let b: WorkspaceAbstract = {
-      name: 'b'
+      name: 'b',
+      displayName: ''
     }
     let c: WorkspaceAbstract = {
-      name: 'c'
+      name: 'c',
+      displayName: ''
     }
     const eMfes = [b, c, a]
 
@@ -323,13 +329,16 @@ describe('sortMfesByExposedModule', () => {
 
   it('should sort mfes by appId: some empty exposedModule ', () => {
     let a: WorkspaceAbstract = {
-      name: 'a'
+      name: 'a',
+      displayName: ''
     }
     let b: WorkspaceAbstract = {
-      name: ''
+      name: '',
+      displayName: ''
     }
     let c: WorkspaceAbstract = {
-      name: ''
+      name: '',
+      displayName: ''
     }
     const eMfes = [b, c, a]
 
@@ -340,13 +349,16 @@ describe('sortMfesByExposedModule', () => {
 
   it('should sort mfes by appId: all empty exposedModule ', () => {
     let a: WorkspaceAbstract = {
-      name: ''
+      name: '',
+      displayName: ''
     }
     let b: WorkspaceAbstract = {
-      name: ''
+      name: '',
+      displayName: ''
     }
     let c: WorkspaceAbstract = {
-      name: ''
+      name: '',
+      displayName: ''
     }
     const eMfes = [b, c, a]
 
@@ -357,13 +369,16 @@ describe('sortMfesByExposedModule', () => {
 
   it('should sort mfes by appId: special char exposedModule ', () => {
     let a: WorkspaceAbstract = {
-      name: 'a'
+      name: 'a',
+      displayName: ''
     }
     let b: WorkspaceAbstract = {
-      name: 'b'
+      name: 'b',
+      displayName: ''
     }
     let c: WorkspaceAbstract = {
-      name: '$'
+      name: '$',
+      displayName: ''
     }
     const eMfes = [b, c, a]
 

@@ -13,6 +13,7 @@
 
 export interface WorkspaceAbstract { 
     name: string;
+    displayName: string;
     description?: string;
     theme?: string;
     baseUrl?: string;
