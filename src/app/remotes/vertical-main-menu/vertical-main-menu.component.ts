@@ -15,6 +15,7 @@ import {
 import {
   AppStateService,
   PortalCoreModule,
+  REMOTE_COMPONENT_ID,
   UserService,
   createRemoteComponentTranslateLoader
 } from '@onecx/portal-integration-angular'
@@ -44,12 +45,16 @@ import { environment } from 'src/environments/environment'
       provide: BASE_URL,
       useValue: new ReplaySubject<string>(1)
     },
+    {
+      provide: REMOTE_COMPONENT_ID,
+      useValue: 'ocx-vertical-main-menu-component'
+    },
     provideTranslateServiceForRoot({
       isolate: true,
       loader: {
         provide: TranslateLoader,
         useFactory: createRemoteComponentTranslateLoader,
-        deps: [HttpClient, BASE_URL]
+        deps: [HttpClient, BASE_URL, REMOTE_COMPONENT_ID]
       }
     })
   ]
