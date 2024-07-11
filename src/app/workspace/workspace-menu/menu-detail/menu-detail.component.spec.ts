@@ -282,6 +282,14 @@ describe('MenuDetailComponent', () => {
       expect(console.error).toHaveBeenCalledWith('test error message')
     })
 
+    it('should filter out items with isSpecial set to true', () => {
+      component.mfeItems = [{ isSpecial: false }, { isSpecial: true }, { isSpecial: false }, { isSpecial: true }]
+
+      component['cleanupMfeUrls']()
+
+      expect(component.mfeItems).toEqual([{ isSpecial: false }, { isSpecial: false }])
+    })
+
     /**
      * LOAD Microfrontends from registered products
      **/
@@ -321,6 +329,17 @@ describe('MenuDetailComponent', () => {
         expect(console.error).toHaveBeenCalledWith('getProductsByWorkspaceId():', new Error())
         expect((component as any).preparePanelHeight).toHaveBeenCalled()
       })
+    })
+
+    it('should return if no mfeItems are there to load', () => {
+      let controlMfeItems: MenuURL[] = []
+      controlMfeItems.push({ mfePath: '/workspace', product: 'MENU_ITEM.URL.UNKNOWN.PRODUCT', isSpecial: true })
+      controlMfeItems.push({ mfePath: '', product: 'MENU_ITEM.URL.EMPTY' })
+      component.mfeItems = controlMfeItems
+
+      component['loadMfeUrls']()
+
+      expect(wProductApiServiceSpy.getProductsByWorkspaceId).not.toHaveBeenCalled()
     })
   })
 

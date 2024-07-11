@@ -7,7 +7,7 @@ import { CommonModule } from '@angular/common'
 import { Router, RouterModule } from '@angular/router'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'
 import { TranslateService } from '@ngx-translate/core'
-import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
+import { BASE_URL, RemoteComponentConfig, SlotService } from '@onecx/angular-remote-components'
 import { AppStateService, UserService } from '@onecx/angular-integration-interface'
 import { AppConfigService } from '@onecx/angular-accelerator'
 import { TranslateTestingModule } from 'ngx-translate-testing'
@@ -16,7 +16,7 @@ import { PanelMenuModule } from 'primeng/panelmenu'
 import { AccordionModule } from 'primeng/accordion'
 import { PrimeIcons } from 'primeng/api'
 import { MenuItemAPIService } from 'src/app/shared/generated'
-import { OneCXUserSidebarMenuComponent } from './user-sidebar-menu.component'
+import { OneCXUserSidebarMenuComponent, slotInitializer } from './user-sidebar-menu.component'
 import { OneCXUserSidebarMenuHarness } from './user-sidebar-menu.harness'
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { UserProfile } from '@onecx/integration-interface'
@@ -88,6 +88,21 @@ describe('OneCXUserSidebarMenuComponent', () => {
     const { component } = setUp()
 
     expect(component).toBeTruthy()
+  })
+
+  it('should call ocxInitRemoteComponent with the correct config', () => {
+    const { component } = setUp()
+    const mockConfig: RemoteComponentConfig = {
+      appId: 'appId',
+      productName: 'prodName',
+      permissions: ['permission'],
+      baseUrl: 'base'
+    }
+    spyOn(component, 'ocxInitRemoteComponent')
+
+    component.ocxRemoteComponentConfig = mockConfig
+
+    expect(component.ocxInitRemoteComponent).toHaveBeenCalledWith(mockConfig)
   })
 
   it('should init remote component', (done: DoneFn) => {
@@ -530,6 +545,21 @@ describe('OneCXUserSidebarMenuComponent', () => {
       expect(component.eventsPublisher$.publish).toHaveBeenCalledOnceWith({
         type: 'authentication#logoutButtonClicked'
       })
+    })
+  })
+
+  describe('slotInitializer', () => {
+    let slotService: jasmine.SpyObj<SlotService>
+
+    beforeEach(() => {
+      slotService = jasmine.createSpyObj('SlotService', ['init'])
+    })
+
+    it('should call SlotService.init', () => {
+      const initializer = slotInitializer(slotService)
+      initializer()
+
+      expect(slotService.init).toHaveBeenCalled()
     })
   })
 })
