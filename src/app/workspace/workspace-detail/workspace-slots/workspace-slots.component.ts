@@ -110,8 +110,8 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     this.wSlots = []
     this.wSlots$
       .pipe(
-        mergeMap((slots) => this.wProducts$),
-        switchMap((slots) => this.psSlots$)
+        mergeMap(() => this.wProducts$),
+        switchMap(() => this.psSlots$)
       )
       .subscribe()
   }
