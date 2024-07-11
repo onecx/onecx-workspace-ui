@@ -3,14 +3,14 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 
-import { BehaviorSubject, of } from 'rxjs'
+import { BehaviorSubject, of, throwError } from 'rxjs'
 
 import { PortalMessageService, UserService } from '@onecx/portal-integration-angular'
 import { SlotAPIService } from 'src/app/shared/generated'
 import { WorkspaceSlotDetailComponent } from './workspace-slot-detail.component'
 import { CombinedSlot, ExtendedComponent } from '../workspace-slots/workspace-slots.component'
 
-fdescribe('WorkspaceSlotDetailComponent', () => {
+describe('WorkspaceSlotDetailComponent', () => {
   let component: WorkspaceSlotDetailComponent
   let fixture: ComponentFixture<WorkspaceSlotDetailComponent>
   let mockUserService: any
@@ -18,7 +18,7 @@ fdescribe('WorkspaceSlotDetailComponent', () => {
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
   const slotServiceSpy = {
     updateSlot: jasmine.createSpy('updateSlot').and.returnValue(of({})),
-    deleteSlot: jasmine.createSpy('deleteSlot').and.returnValue(of({}))
+    deleteSlotById: jasmine.createSpy('deleteSlotById').and.returnValue(of({}))
   }
 
   mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
@@ -47,7 +47,7 @@ fdescribe('WorkspaceSlotDetailComponent', () => {
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
     slotServiceSpy.updateSlot.calls.reset()
-    slotServiceSpy.deleteSlot.calls.reset()
+    slotServiceSpy.deleteSlotById.calls.reset()
   }))
 
   function initializeComponent(): void {
@@ -222,6 +222,106 @@ fdescribe('WorkspaceSlotDetailComponent', () => {
         { productName: 'slotComponentProdName2', appId: 'slotComponentAppId2', name: 'slotComponentName2' }
       ])
       expect(component['deregisterItems']).toEqual([])
+    })
+  })
+
+  it('should update displayDeregisterConfirmation and call onSaveSlot when onDeregisterConfirmation is called', () => {
+    component.displayDeregisterConfirmation = true
+    spyOn(component, 'onSaveSlot')
+
+    component.onDeregisterConfirmation()
+
+    expect(component.displayDeregisterConfirmation).toBeFalse()
+    expect(component.onSaveSlot).toHaveBeenCalled()
+  })
+
+  describe('onSaveSlot', () => {
+    beforeEach(() => {
+      component.slot = {
+        name: 'slot1',
+        new: false,
+        bucket: 'TARGET',
+        changes: false,
+        psSlots: [],
+        psComponents: [{ productName: 'slotComponentProdName', appId: 'slotComponentAppId', name: 'slotComponentName' }]
+      }
+      component.wComponents = [{ productName: 'mockProdName', appId: 'mockAppId', name: 'mockName' }]
+    })
+
+    it('should call updateSlot and handle success response', () => {
+      const slotResponse = {
+        modificationCount: 1,
+        modificationDate: 'date',
+        components: [{ productName: 'slotProdName', appId: 'mockAppId', name: 'mockName' }]
+      }
+      slotServiceSpy.updateSlot.and.returnValue(of(slotResponse))
+      component.wComponents = [{ productName: 'mockProdName', appId: 'mockAppId', name: 'mockName' }]
+      spyOn(component.changed, 'emit')
+
+      component.onSaveSlot()
+
+      expect(slotServiceSpy.updateSlot).toHaveBeenCalled()
+      if (component.slot) {
+        expect(component.slot.modificationCount).toBe(slotResponse.modificationCount)
+        expect(component.slot.modificationDate).toBe(slotResponse.modificationDate)
+        expect(component.slot.components).toEqual(slotResponse.components)
+      }
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.SLOT_OK' })
+      expect(component.changed.emit).toHaveBeenCalledWith(true)
+    })
+
+    it('should call updateSlot and handle error response', () => {
+      const err = { error: 'err' }
+      slotServiceSpy.updateSlot.and.returnValue(throwError(() => err))
+      spyOn(component.changed, 'emit')
+      spyOn(console, 'error')
+
+      component.onSaveSlot()
+
+      expect(slotServiceSpy.updateSlot).toHaveBeenCalled()
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.SLOT_NOK' })
+      expect(console.error).toHaveBeenCalledWith(err.error)
+    })
+  })
+
+  describe('onDeleteSlot', () => {
+    beforeEach(() => {
+      component.slot = {
+        name: 'slot1',
+        id: '1',
+        new: false,
+        bucket: 'TARGET',
+        changes: false,
+        psSlots: [],
+        psComponents: [{ productName: 'slotComponentProdName', appId: 'slotComponentAppId', name: 'slotComponentName' }]
+      }
+      component.wComponents = [{ productName: 'mockProdName', appId: 'mockAppId', name: 'mockName' }]
+    })
+
+    it('should call deleteSlotById and handle success response', () => {
+      slotServiceSpy.deleteSlotById.and.returnValue(of({}))
+      spyOn(component.detailClosed, 'emit')
+
+      component.onDeleteSlot()
+
+      expect(slotServiceSpy.deleteSlotById).toHaveBeenCalledWith({ id: '1' })
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.SLOT_OK' })
+      expect(component.detailClosed.emit).toHaveBeenCalledWith(true)
+    })
+
+    it('should call deleteSlotById and handle error response', () => {
+      const mockError = { error: 'mockError' }
+      slotServiceSpy.deleteSlotById.and.returnValue(throwError(() => mockError))
+
+      spyOn(component.detailClosed, 'emit')
+      spyOn(console, 'error')
+
+      component.onDeleteSlot()
+
+      expect(slotServiceSpy.deleteSlotById).toHaveBeenCalledWith({ id: '1' })
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.SLOT_NOK' })
+      expect(console.error).toHaveBeenCalledWith(mockError.error)
+      expect(component.detailClosed.emit).not.toHaveBeenCalled()
     })
   })
 })
