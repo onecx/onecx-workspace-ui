@@ -220,8 +220,13 @@
     "STREET_NO": "Hausnummer",
     "TOOLTIPS": {
       "NAME": "Eindeutiger Name der nicht mehr geändert werden kann, da er als Referenz zu diesem Workspace benutzt wird.",
-      "DISPLAY_NAME": "Angezeigter Name",
-      "THEME": "Referenz zum Theme"
+      "DISPLAY_NAME": "Angezeigter Name, der beliebig verändert werden kann",
+      "THEME": "Referenz zum Theme",
+      "HOME_PAGE": "Startseite dieses Workspace, die als erstes angezeigt wird",
+      "RSS_FEED_URL": "RSS-Feed URL für diesen Workspace",
+      "BASE_URL": "Basispfad in der Webadresse des Workspace",
+      "FOOTER_LABEL": "Text in der Fußzeile der Seite",
+      "DESCRIPTION": "Detaillierte Beschreibung des Workspace"
     }
   },
   "MENU_ITEM": {

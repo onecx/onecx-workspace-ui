@@ -59,7 +59,7 @@
           id="workspace_create_item_baseUrl"
           class="w-full pt-3 pb-2"
           formControlName="baseUrl"
-          [pTooltip]="'WORKSPACE.BASE_URL' | translate"
+          [pTooltip]="'WORKSPACE.TOOLTIPS.BASE_URL' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"
         />
@@ -81,9 +81,9 @@
           styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
           [options]="mfeRList"
           [editable]="true"
-          [pTooltip]="'WORKSPACE.HOME_PAGE' | translate"
+          [pTooltip]="'WORKSPACE.TOOLTIPS.HOME_PAGE' | translate"
           tooltipPosition="top"
-          tooltipEvent="focus"
+          tooltipEvent="hover"
         >
         </p-dropdown>
         <label for="workspace_create_form_home_page"> {{ 'WORKSPACE.HOME_PAGE' | translate }} </label>
@@ -120,7 +120,7 @@
           id="workspace_create_item_footerLabel"
           class="w-full pt-3 pb-2"
           formControlName="footerLabel"
-          [pTooltip]="'WORKSPACE.FOOTER_LABEL' | translate"
+          [pTooltip]="'WORKSPACE.TOOLTIPS.FOOTER_LABEL' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"
         />
@@ -137,7 +137,7 @@
           rows="4"
           id="workspace_create_item_description"
           formControlName="description"
-          [pTooltip]="'WORKSPACE.DESCRIPTION' | translate"
+          [pTooltip]="'WORKSPACE.TOOLTIPS.DESCRIPTION' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"
         ></textarea>
