@@ -217,7 +217,12 @@
     "PHONE_NUMBER": "Phone Number",
     "POSTAL_CODE": "Postal Code",
     "STREET": "Street",
-    "STREET_NO": "Street No"
+    "STREET_NO": "Street No",
+    "TOOLTIPS": {
+      "NAME": "Unique name that cannot be changed because it is used as a reference to this workspace.",
+      "DISPLAY_NAME": "Displayed name",
+      "THEME": "Reference to the used Theme"
+    }
   },
   "MENU_ITEM": {
     "BADGE": "Icon",
