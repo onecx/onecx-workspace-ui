@@ -8,11 +8,28 @@
           id="workspace_create_item_name"
           class="w-full pt-3 pb-2"
           formControlName="name"
-          [pTooltip]="'WORKSPACE.NAME' | translate"
+          [pTooltip]="'WORKSPACE.TOOLTIPS.NAME' | translate"
           tooltipPosition="top"
-          tooltipEvent="focus"
+          tooltipEvent="hover"
         />
         <label class="ocx-required-label" for="workspace_create_item_name"> {{ 'WORKSPACE.NAME' | translate }} </label>
+      </span>
+    </div>
+    <div>
+      <span class="p-float-label" controlErrorAnchor>
+        <input
+          pInputText
+          type="text"
+          id="workspace_create_item_display_name"
+          class="w-full pt-3 pb-2"
+          formControlName="displayName"
+          [pTooltip]="'WORKSPACE.TOOLTIPS.DISPLAY_NAME' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        />
+        <label class="ocx-required-label" for="workspace_create_item_display_name">
+          {{ 'WORKSPACE.DISPLAY_NAME' | translate }}
+        </label>
       </span>
     </div>
 
@@ -23,9 +40,9 @@
           formControlName="theme"
           styleClass="w-full"
           [options]="(themes$ | async) || []"
-          [pTooltip]="'WORKSPACE.THEME' | translate"
+          [pTooltip]="'WORKSPACE.TOOLTIPS.THEME' | translate"
           tooltipPosition="top"
-          tooltipEvent="focus"
+          tooltipEvent="hover"
         >
         </p-dropdown>
         <label class="ocx-required-label" for="workspace_create_item_theme">
@@ -44,7 +61,7 @@
           formControlName="baseUrl"
           [pTooltip]="'WORKSPACE.BASE_URL' | translate"
           tooltipPosition="top"
-          tooltipEvent="focus"
+          tooltipEvent="hover"
         />
         <label class="ocx-required-label" for="workspace_create_item_baseUrl">
           {{ 'WORKSPACE.BASE_URL' | translate }}</label
@@ -65,7 +82,7 @@
           formControlName="homePage"
           [pTooltip]="'WORKSPACE.HOME_PAGE' | translate"
           tooltipPosition="top"
-          tooltipEvent="focus"
+          tooltipEvent="hover"
         />
         <label for="workspace_create_item_homePage"> {{ 'WORKSPACE.HOME_PAGE' | translate }} </label>
       </span>
@@ -85,6 +102,9 @@
           class="w-full pt-3 pb-2"
           formControlName="logoUrl"
           (blur)="inputChange($event)"
+          [pTooltip]="'IMAGE.TOOLTIPS.URL' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
         />
         <label for="workspace_create_item_logo"> {{ 'IMAGE.LOGO_URL' | translate }} </label>
       </span>
@@ -100,7 +120,7 @@
           formControlName="footerLabel"
           [pTooltip]="'WORKSPACE.FOOTER_LABEL' | translate"
           tooltipPosition="top"
-          tooltipEvent="focus"
+          tooltipEvent="hover"
         />
         <label for="workspace_create_item_footerLabel"> {{ 'WORKSPACE.FOOTER_LABEL' | translate }} </label>
       </span>
@@ -115,6 +135,9 @@
           rows="4"
           id="workspace_create_item_description"
           formControlName="description"
+          [pTooltip]="'WORKSPACE.DESCRIPTION' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
         ></textarea>
         <label for="workspace_create_item_description"> {{ 'WORKSPACE.DESCRIPTION' | translate }} </label>
       </span>

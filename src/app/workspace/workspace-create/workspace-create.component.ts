@@ -39,6 +39,7 @@ export class WorkspaceCreateComponent {
   ) {
     this.formGroup = new FormGroup({
       name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
+      displayName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
       theme: new FormControl(null),
       homePage: new FormControl(null, [Validators.maxLength(255)]),
       logoUrl: new FormControl('', [Validators.maxLength(255)]),
