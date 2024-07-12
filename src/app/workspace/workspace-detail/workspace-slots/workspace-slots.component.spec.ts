@@ -21,6 +21,7 @@ import { CombinedSlot, ExtendedComponent, WorkspaceSlotsComponent } from './work
 
 const workspace: Workspace = {
   id: 'id',
+  displayName: 'displayName',
   name: 'name',
   theme: 'theme',
   baseUrl: '/some/base/url'
