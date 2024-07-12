@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing'
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core'
-import { ReactiveFormsModule } from '@angular/forms'
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { RouterTestingModule } from '@angular/router/testing'
 import { Router } from '@angular/router'
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router'
@@ -26,6 +26,7 @@ const workspace: Workspace = {
   name: 'name',
   theme: 'theme',
   baseUrl: '/some/base/url',
+  homePage: '/homepage',
   displayName: ''
 }
 
@@ -86,6 +87,20 @@ describe('WorkspaceCreateComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(WorkspaceCreateComponent)
     component = fixture.componentInstance
+    component.formGroup = new FormGroup({
+      name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
+      displayName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
+      theme: new FormControl(null),
+      homePage: new FormControl('homepage', [Validators.maxLength(255)]),
+      logoUrl: new FormControl('', [Validators.maxLength(255)]),
+      baseUrl: new FormControl('/some/base/url', [
+        Validators.required,
+        Validators.minLength(2),
+        Validators.pattern('^/.*')
+      ]),
+      footerLabel: new FormControl(null, [Validators.maxLength(255)]),
+      description: new FormControl(null, [Validators.maxLength(255)])
+    })
     fixture.detectChanges()
   })
 
