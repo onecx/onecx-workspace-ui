@@ -71,9 +71,11 @@ export class WorkspaceCreateComponent implements OnInit {
   }
 
   saveWorkspace() {
-    this.formGroup.controls['homePage'].setValue(
-      Location.joinWithSlash(this.formGroup.controls['baseUrl'].value, this.formGroup.controls['homePage'].value)
-    )
+    if (this.formGroup.controls['homePage'].value) {
+      this.formGroup.controls['homePage'].setValue(
+        Location.joinWithSlash(this.formGroup.controls['baseUrl'].value, this.formGroup.controls['homePage'].value)
+      )
+    }
     this.workspace = { ...this.formGroup.value }
     this.workspaceApi
       .createWorkspace({

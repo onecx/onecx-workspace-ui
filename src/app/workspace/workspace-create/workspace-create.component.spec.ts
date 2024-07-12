@@ -10,7 +10,7 @@ import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router'
 import { ConfirmationService } from 'primeng/api'
 import { DropdownModule } from 'primeng/dropdown'
 
-import { Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
+import { ProductAPIService, Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
 import { environment } from 'src/environments/environment'
 import {
   APP_CONFIG,
@@ -44,6 +44,9 @@ describe('WorkspaceCreateComponent', () => {
     getAllThemes: jasmine.createSpy('getAllThemes').and.returnValue(of(['theme1', 'theme2'])),
     createWorkspace: jasmine.createSpy('createWorkspace').and.returnValue(of({}))
   }
+  const productServiceSpy = {
+    searchAvailableProducts: jasmine.createSpy('searchAvailableProducts').and.returnValue(of({}))
+  }
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'info', 'error'])
   const mockActivatedRouteSnapshot: Partial<ActivatedRouteSnapshot> = {
     params: {
@@ -75,6 +78,7 @@ describe('WorkspaceCreateComponent', () => {
         { provide: APP_CONFIG, useValue: environment },
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: WorkspaceAPIService, useValue: wApiServiceSpy },
+        { provide: ProductAPIService, useValue: productServiceSpy },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: Router, useValue: mockRouter },
         ConfirmationService
@@ -107,6 +111,7 @@ describe('WorkspaceCreateComponent', () => {
   afterEach(() => {
     wApiServiceSpy.getAllThemes.calls.reset()
     wApiServiceSpy.createWorkspace.calls.reset()
+    productServiceSpy.searchAvailableProducts.calls.reset()
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.info.calls.reset()
     msgServiceSpy.error.calls.reset()
@@ -114,6 +119,27 @@ describe('WorkspaceCreateComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy()
+  })
+
+  describe('loadMfeUrls', () => {
+    it('should load product urls on init', () => {
+      productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [{ baseUrl: 'baseUrl' }] }))
+      component.mfeRList = []
+
+      component.ngOnInit()
+
+      expect(component.mfeRList).toContain('baseUrl')
+    })
+
+    it('should log error if api call fails', () => {
+      const err = { error: 'error' }
+      productServiceSpy.searchAvailableProducts.and.returnValue(throwError(() => err))
+      spyOn(console, 'error')
+
+      component.ngOnInit()
+
+      expect(console.error).toHaveBeenCalledWith('getProductsByWorkspaceId():', err)
+    })
   })
 
   it('should create a workspace', () => {
