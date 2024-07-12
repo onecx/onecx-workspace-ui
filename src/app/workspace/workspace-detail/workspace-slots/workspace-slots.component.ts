@@ -110,8 +110,8 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     this.wSlots = []
     this.wSlots$
       .pipe(
-        mergeMap((slots) => this.wProducts$),
-        switchMap((slots) => this.psSlots$)
+        mergeMap(() => this.wProducts$),
+        switchMap(() => this.psSlots$)
       )
       .subscribe()
   }
@@ -209,6 +209,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   private addNewSlots(): void {
     // 4. add new (not undeployed) Slots (not yet in Workspace but part of a registered product)
     this.wProductNames.forEach((pn) => {
+      console.log('PSSLOTS', this.psSlots)
       this.psSlots
         .filter((psp) => psp.productName === pn)
         .forEach((ps) => {
@@ -313,7 +314,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
         createSlotRequest: { workspaceId: this.workspace?.id, name: slot.name } as CreateSlotRequest
       })
       .subscribe({
-        next: (slot) => this.loadData(),
+        next: () => this.loadData(),
         error: () => {
           this.msgService.error({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.NOK' })
         }
