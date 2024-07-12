@@ -96,14 +96,6 @@ app:
             EXPORT: Export menu
             IMPORT: Import menu
 
-    # Keycloak
-    keycloak:
-      client:
-        enabled: true
-        spec:
-          kcConfig:
-            clientId: "onecx-workspace-ui"
-
     slot:
       enabled: true
       specs:
