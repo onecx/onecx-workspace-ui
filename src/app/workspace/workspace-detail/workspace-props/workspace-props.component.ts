@@ -1,11 +1,17 @@
 import { Component, EventEmitter, Input, OnInit, OnChanges, Output } from '@angular/core'
 import { Location } from '@angular/common'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
-import { map, Observable } from 'rxjs'
+import { catchError, map, Observable, of, Subject, takeUntil } from 'rxjs'
 
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 
-import { ImagesInternalAPIService, RefType, Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
+import {
+  ImagesInternalAPIService,
+  RefType,
+  Workspace,
+  WorkspaceAPIService,
+  WorkspaceProductAPIService
+} from 'src/app/shared/generated'
 import { copyToClipboard, bffImageUrl, sortByLocale } from 'src/app/shared/utils'
 import { getLocation } from '@onecx/accelerator'
 
@@ -19,9 +25,9 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   @Input() editMode = false
   @Output() currentLogoUrl = new EventEmitter<string>()
 
+  private readonly destroy$ = new Subject()
   public formGroup: FormGroup
-
-  public mfeRList: { label: string | undefined; value: string }[] = []
+  public mfeRList: string[] = []
   public themes$!: Observable<string[]>
   public urlPattern = '/base-path-to-workspace'
   public externUrlPattern = 'http(s)://path-to-image'
@@ -43,7 +49,8 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     private location: Location,
     private msgService: PortalMessageService,
     private imageApi: ImagesInternalAPIService,
-    private workspaceApi: WorkspaceAPIService
+    private workspaceApi: WorkspaceAPIService,
+    private wProductApi: WorkspaceProductAPIService
   ) {
     this.deploymentPath = getLocation().deploymentPath === '/' ? '' : getLocation().deploymentPath.slice(0, -1)
 
@@ -72,6 +79,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
         }
       })
     )
+    this.loadMfeUrls()
   }
 
   public ngOnChanges(): void {
@@ -202,5 +210,25 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       this.fetchingLogoUrl = bffImageUrl(this.imageApi.configuration.basePath, this.workspace?.name, RefType.Logo)
     }
     this.currentLogoUrl.emit(this.fetchingLogoUrl)
+  }
+
+  private loadMfeUrls(): void {
+    if (this.mfeRList?.length > 0) return
+    this.wProductApi
+      .getProductsByWorkspaceId({ id: this.workspace?.id! })
+      .pipe(
+        map((products) => {
+          for (let p of products) {
+            if (p.baseUrl) this.mfeRList.push(p.baseUrl)
+          }
+          this.mfeRList.sort(sortByLocale)
+        }),
+        catchError((err) => {
+          console.error('getProductsByWorkspaceId():', err)
+          return of([] as string[])
+        })
+      )
+      .pipe(takeUntil(this.destroy$))
+      .subscribe()
   }
 }
