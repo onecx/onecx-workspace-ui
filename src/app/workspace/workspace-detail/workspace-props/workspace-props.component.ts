@@ -219,7 +219,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       .pipe(
         map((products) => {
           for (let p of products) {
-            if (p.baseUrl) this.mfeRList.push(p.baseUrl)
+            if (p.baseUrl) this.mfeRList.push(Location.joinWithSlash(this.workspace?.baseUrl!, p.baseUrl))
           }
           this.mfeRList.sort(sortByLocale)
         }),
