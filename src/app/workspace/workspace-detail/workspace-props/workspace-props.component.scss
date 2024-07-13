@@ -2,6 +2,7 @@
 
 @include make-disabled-form-readable-input;
 @include make-disabled-form-readable-dropdown;
+@include make-disabled-form-readable-checkbox;
 
 :host ::ng-deep {
   .inputgroup-dropdown-with-link {

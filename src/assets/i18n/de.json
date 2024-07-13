@@ -202,6 +202,7 @@
     "ID": "ID",
     "NAME": "Name",
     "DISPLAY_NAME": "Anzeigename",
+    "DISABLED": "Deaktiviert",
     "BASE_URL": "Base URL",
     "DESCRIPTION": "Beschreibung",
     "FOOTER_LABEL": "Fußzeile",
@@ -221,6 +222,7 @@
     "TOOLTIPS": {
       "NAME": "Eindeutiger Name, der nicht mehr geändert werden kann, da er als Referenz zu diesem Workspace benutzt wird.",
       "DISPLAY_NAME": "Angezeigter Name, der beliebig verändert werden kann",
+      "DISABLED": "Wenn gesetzt dann kann der Workspace zwar konfiguerirt werden aber eine Benutzung ist nicht möglich.",
       "THEME": "Referenz zum genutzten Theme",
       "HOME_PAGE": "Startseite dieses Workspace, die als erstes angezeigt wird",
       "RSS_FEED_URL": "RSS-Feed URL für diesen Workspace",

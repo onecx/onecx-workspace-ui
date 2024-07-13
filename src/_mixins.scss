@@ -13,6 +13,14 @@
     }
   }
 }
+@mixin make-disabled-form-readable-checkbox {
+  :host ::ng-deep {
+    .p-checkbox-box.p-disabled,
+    .p-checkbox-label.p-disabled {
+      opacity: unset;
+    }
+  }
+}
 
 @mixin compact-dropdown-list-items {
   :host ::ng-deep {
