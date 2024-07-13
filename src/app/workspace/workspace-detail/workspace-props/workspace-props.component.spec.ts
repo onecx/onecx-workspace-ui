@@ -11,7 +11,12 @@ import {
   ThemeService
 } from '@onecx/portal-integration-angular'
 import { WorkspacePropsComponent } from 'src/app/workspace/workspace-detail/workspace-props/workspace-props.component'
-import { WorkspaceAPIService, ImagesInternalAPIService, Workspace } from 'src/app/shared/generated'
+import {
+  WorkspaceAPIService,
+  ImagesInternalAPIService,
+  Workspace,
+  WorkspaceProductAPIService
+} from 'src/app/shared/generated'
 import { RouterTestingModule } from '@angular/router/testing'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 
@@ -55,6 +60,9 @@ describe('WorkspacePropsComponent', () => {
     }
   }
   const themeService = jasmine.createSpyObj<ThemeService>('ThemeService', ['apply'])
+  const wProductServiceSpy = {
+    getProductsByWorkspaceId: jasmine.createSpy('getProductsByWorkspaceId').and.returnValue(of({}))
+  }
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -73,6 +81,7 @@ describe('WorkspacePropsComponent', () => {
         { provide: ConfigurationService, useValue: configServiceSpy },
         { provide: ImagesInternalAPIService, useValue: imageServiceSpy },
         { provide: WorkspaceAPIService, useValue: apiServiceSpy },
+        { provide: WorkspaceProductAPIService, useValue: wProductServiceSpy },
         { provide: AUTH_SERVICE, useValue: mockAuthService }
       ]
     }).compileComponents()
@@ -83,6 +92,7 @@ describe('WorkspacePropsComponent', () => {
     apiServiceSpy.getAllThemes.calls.reset()
     themeAPIServiceSpy.getThemes.calls.reset()
     themeAPIServiceSpy.getThemeById.calls.reset()
+    wProductServiceSpy.getProductsByWorkspaceId.calls.reset()
     themeService.apply.calls.reset()
   }))
 
@@ -107,6 +117,38 @@ describe('WorkspacePropsComponent', () => {
     apiServiceSpy.getAllThemes.and.returnValue(of(['theme1', 'theme2']))
 
     expect(component).toBeTruthy()
+  })
+
+  describe('loadMfeUrls', () => {
+    beforeEach(() => {
+      component.mfeRList = []
+    })
+
+    it('should return if urls are already loaded', () => {
+      component.mfeRList = ['url']
+
+      component.ngOnInit()
+
+      expect(true).toBeTrue()
+    })
+
+    it('should load product urls on init', () => {
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([{ baseUrl: 'baseUrl' }]))
+
+      component.ngOnInit()
+
+      expect(component.mfeRList).toContain('/some/base/url/baseUrl')
+    })
+
+    it('should log error if api call fails', () => {
+      const err = { error: 'error' }
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(throwError(() => err))
+      spyOn(console, 'error')
+
+      component.ngOnInit()
+
+      expect(console.error).toHaveBeenCalledWith('getProductsByWorkspaceId():', err)
+    })
   })
 
   describe('ngOnChanges', () => {

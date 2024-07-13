@@ -220,8 +220,13 @@
     "STREET_NO": "Street No",
     "TOOLTIPS": {
       "NAME": "Unique name that cannot be changed because it is used as a reference to this workspace.",
-      "DISPLAY_NAME": "Displayed name",
-      "THEME": "Reference to the used Theme"
+      "DISPLAY_NAME": "Displayed name of this workspace, can be changed",
+      "THEME": "Reference to the used Theme",
+      "HOME_PAGE": "First page seen when navigating to this workspace",
+      "RSS_FEED_URL": "RSS-Feed URL of this workspace",
+      "BASE_URL": "Base path in the workspace's web address",
+      "FOOTER_LABEL": "Label text displayed in the footer of the page",
+      "DESCRIPTION": "Detailed description of the workspace"
     }
   },
   "MENU_ITEM": {

@@ -11,9 +11,9 @@
               id="workspace_detail_form_name"
               class="w-full pt-3 pb-2"
               formControlName="name"
-              [pTooltip]="'WORKSPACE.NAME' | translate"
+              [pTooltip]="'WORKSPACE.TOOLTIPS.NAME' | translate"
               tooltipPosition="top"
-              tooltipEvent="focus"
+              tooltipEvent="hover"
             />
             <label class="ocx-required-label" for="workspace_detail_form_name">
               {{ 'WORKSPACE.NAME' | translate }}
@@ -29,9 +29,9 @@
               id="workspace_detail_form_display_name"
               class="w-full pt-3 pb-2"
               formControlName="displayName"
-              [pTooltip]="'WORKSPACE.DISPLAY_NAME' | translate"
+              [pTooltip]="'WORKSPACE.TOOLTIPS.DISPLAY_NAME' | translate"
               tooltipPosition="top"
-              tooltipEvent="focus"
+              tooltipEvent="hover"
             />
             <label class="ocx-required-label" for="workspace_detail_form_display_name">
               {{ 'WORKSPACE.DISPLAY_NAME' | translate }}
@@ -47,9 +47,9 @@
               formControlName="theme"
               styleClass="w-full input-field-correction"
               [options]="(themes$ | async) ?? []"
-              [pTooltip]="'WORKSPACE.THEME' | translate"
+              [pTooltip]="'WORKSPACE.TOOLTIPS.THEME' | translate"
               tooltipPosition="top"
-              tooltipEvent="focus"
+              tooltipEvent="hover"
             >
             </p-dropdown>
             <label for="workspace_detail_form_theme"> {{ 'WORKSPACE.THEME' | translate }} </label>
@@ -66,9 +66,9 @@
                 id="workspace_detail_form_baseUrl"
                 class="w-full pt-3 pb-2"
                 formControlName="baseUrl"
-                [pTooltip]="'WORKSPACE.BASE_URL' | translate"
+                [pTooltip]="'WORKSPACE.TOOLTIPS.BASE_URL' | translate"
                 tooltipPosition="top"
-                tooltipEvent="focus"
+                tooltipEvent="hover"
               />
               <label for="workspace_detail_form_baseUrl"> {{ 'WORKSPACE.BASE_URL' | translate }} </label>
             </span>
@@ -102,9 +102,9 @@
               styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
               [options]="mfeRList"
               [editable]="true"
-              [pTooltip]="'WORKSPACE.HOME_PAGE' | translate"
+              [pTooltip]="'WORKSPACE.TOOLTIPS.HOME_PAGE' | translate"
               tooltipPosition="top"
-              tooltipEvent="focus"
+              tooltipEvent="hover"
             >
             </p-dropdown>
             <label for="workspace_detail_form_home_page"> {{ 'WORKSPACE.HOME_PAGE' | translate }} </label>
@@ -136,9 +136,9 @@
               id="workspace_detail_form_rssFeedUrl"
               class="w-full pt-3 pb-2"
               formControlName="rssFeedUrl"
-              [pTooltip]="'WORKSPACE.RSS_FEED_URL' | translate"
+              [pTooltip]="'WORKSPACE.TOOLTIPS.RSS_FEED_URL' | translate"
               tooltipPosition="top"
-              tooltipEvent="focus"
+              tooltipEvent="hover"
             />
             <label for="workspace_detail_form_rssFeedUrl"> {{ 'WORKSPACE.RSS_FEED_URL' | translate }} </label>
           </span>
@@ -198,9 +198,9 @@
             id="workspace_detail_form_footerLabel"
             class="w-full pt-3 pb-2"
             formControlName="footerLabel"
-            [pTooltip]="'WORKSPACE.FOOTER_LABEL' | translate"
+            [pTooltip]="'WORKSPACE.TOOLTIPS.FOOTER_LABEL' | translate"
             tooltipPosition="top"
-            tooltipEvent="focus"
+            tooltipEvent="hover"
           />
           <label for="workspace_detail_form_footerLabel"> {{ 'WORKSPACE.FOOTER_LABEL' | translate }} </label>
         </span>
@@ -214,9 +214,9 @@
             id="workspace_detail_form_description"
             maxlength="255"
             formControlName="description"
-            [pTooltip]="'WORKSPACE.DESCRIPTION' | translate"
+            [pTooltip]="'WORKSPACE.TOOLTIPS.DESCRIPTION' | translate"
             tooltipPosition="top"
-            tooltipEvent="focus"
+            tooltipEvent="hover"
           ></textarea>
           <label for="workspace_detail_form_description"> {{ 'WORKSPACE.DESCRIPTION' | translate }} </label>
         </span>
