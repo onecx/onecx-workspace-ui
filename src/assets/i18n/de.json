@@ -224,7 +224,7 @@
       "DISPLAY_NAME": "Angezeigter Name, der beliebig verändert werden kann",
       "DISABLED": "Wenn gesetzt dann kann der Workspace zwar konfiguerirt werden aber eine Benutzung ist nicht möglich.",
       "THEME": "Referenz zum genutzten Theme",
-      "HOME_PAGE": "Startseite dieses Workspace, die als erstes angezeigt wird",
+      "HOME_PAGE": "Startseite vom Workspace, die angezeigt wird, wenn zu keiner speziellen Applikation navigiert wird.",
       "RSS_FEED_URL": "RSS-Feed URL für diesen Workspace",
       "BASE_URL": "Basispfad in der Webadresse des Workspace",
       "FOOTER_LABEL": "Text in der Fußzeile der Seite",

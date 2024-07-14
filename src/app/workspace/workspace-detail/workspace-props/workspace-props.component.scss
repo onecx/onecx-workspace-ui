@@ -3,22 +3,4 @@
 @include make-disabled-form-readable-input;
 @include make-disabled-form-readable-dropdown;
 @include make-disabled-form-readable-checkbox;
-
-:host ::ng-deep {
-  .inputgroup-dropdown-with-link {
-    border-right: none;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-  }
-  .input-field-correction .p-inputtext {
-    padding-top: 1rem !important;
-    padding-bottom: 0.5rem !important;
-  }
-  .pseudo-button:hover {
-    background: var(--button-hover-bg) !important;
-    cursor: pointer;
-    * {
-      background: var(--button-hover-bg) !important;
-    }
-  }
-}
+@include prepare-inputgroup;

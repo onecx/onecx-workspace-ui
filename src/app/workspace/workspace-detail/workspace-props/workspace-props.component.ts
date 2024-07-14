@@ -27,7 +27,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
 
   private readonly destroy$ = new Subject()
   public formGroup: FormGroup
-  public mfeRList: string[] = []
+  public productPathList: string[] = []
   public themes$!: Observable<string[]>
   public urlPattern = '/base-path-to-workspace'
   public externUrlPattern = 'http(s)://path-to-image'
@@ -79,14 +79,15 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
         }
       })
     )
-    this.loadMfeUrls()
   }
 
   public ngOnChanges(): void {
     if (this.workspace) {
       this.setFormData()
-      if (this.editMode) this.formGroup.enable()
-      else this.formGroup.disable()
+      if (this.editMode) {
+        this.formGroup.enable()
+        this.loadProductPaths()
+      } else this.formGroup.disable()
     } else {
       this.formGroup.reset()
       this.formGroup.disable()
@@ -198,16 +199,17 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     this.currentLogoUrl.emit(this.fetchingLogoUrl)
   }
 
-  private loadMfeUrls(): void {
-    if (this.mfeRList?.length > 0) return
+  public prepareProductUrl(val: string): string | undefined {
+    return val ? Location.joinWithSlash(this.workspace?.baseUrl!, val) : undefined
+  }
+  private loadProductPaths(): void {
     this.wProductApi
       .getProductsByWorkspaceId({ id: this.workspace?.id! })
       .pipe(
         map((products) => {
-          for (let p of products) {
-            if (p.baseUrl) this.mfeRList.push(Location.joinWithSlash(this.workspace?.baseUrl!, p.baseUrl))
-          }
-          this.mfeRList.sort(sortByLocale)
+          this.productPathList.push('')
+          for (let p of products) this.productPathList.push(p.baseUrl ?? '')
+          this.productPathList.sort(sortByLocale)
         }),
         catchError((err) => {
           console.error('getProductsByWorkspaceId():', err)

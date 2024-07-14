@@ -25,7 +25,8 @@ const workspace = {
   displayName: 'name',
   theme: 'theme',
   baseUrl: '/some/base/url',
-  id: 'id'
+  id: 'id',
+  disabled: false
 }
 
 const formGroup = new FormGroup({
@@ -119,25 +120,19 @@ describe('WorkspacePropsComponent', () => {
     expect(component).toBeTruthy()
   })
 
-  describe('loadMfeUrls', () => {
+  describe('loadProductPaths', () => {
     beforeEach(() => {
-      component.mfeRList = []
+      component.productPathList = []
     })
 
-    it('should return if urls are already loaded', () => {
-      component.mfeRList = ['url']
+    it('should load product urls on edit mode', () => {
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([{ baseUrl: '/baseUrl' }]))
 
       component.ngOnInit()
+      component.editMode = true
+      component.ngOnChanges()
 
-      expect(true).toBeTrue()
-    })
-
-    it('should load product urls on init', () => {
-      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([{ baseUrl: 'baseUrl' }]))
-
-      component.ngOnInit()
-
-      expect(component.mfeRList).toContain('/some/base/url/baseUrl')
+      expect(component.productPathList).toContain('/baseUrl')
     })
 
     it('should log error if api call fails', () => {
@@ -146,6 +141,8 @@ describe('WorkspacePropsComponent', () => {
       spyOn(console, 'error')
 
       component.ngOnInit()
+      component.editMode = true
+      component.ngOnChanges()
 
       expect(console.error).toHaveBeenCalledWith('getProductsByWorkspaceId():', err)
     })
