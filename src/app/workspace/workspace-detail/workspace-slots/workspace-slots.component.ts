@@ -122,7 +122,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
       .pipe(
         map((products) => {
           this.wProductNames = []
-          for (let p of products) this.wProductNames.push(p.productName!)
+          for (let p of products) this.wProductNames.push(p.productName ?? '')
           return []
         }),
         catchError((err) => {

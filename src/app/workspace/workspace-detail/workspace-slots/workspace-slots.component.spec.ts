@@ -201,8 +201,21 @@ describe('WorkspaceSlotsComponent', () => {
       )
       spyOn(component as any, 'declareWorkspaceProducts').and.callFake(() => {})
       spyOn(component as any, 'declareWorkspaceSlots').and.callFake(() => {})
+      component.psSlots = [
+        {
+          productName: 'product',
+          name: 'slotPsName',
+          new: false,
+          bucket: 'SOURCE',
+          changes: false,
+          psSlots: [],
+          psComponents: [],
+          components: []
+        }
+      ]
       component.wSlotsIntern = [
         {
+          productName: 'product',
           name: 'slotPsName',
           new: false,
           bucket: 'TARGET',
@@ -213,7 +226,7 @@ describe('WorkspaceSlotsComponent', () => {
         },
         { name: 'slot2', new: false, bucket: 'TARGET', changes: false, psSlots: [], psComponents: [] }
       ]
-      component.wProductNames = ['psItem1', 'wsProd2']
+      component.wProductNames = ['psItem1', 'wsProd2', 'product']
 
       component.loadData()
 
