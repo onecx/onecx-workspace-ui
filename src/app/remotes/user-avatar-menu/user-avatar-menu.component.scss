@@ -14,11 +14,6 @@
   .layout-topbar-action-item {
     padding-right: 1rem;
     cursor: pointer;
-    &:hover {
-      /* background-color: var(--hover-bg-color); */
-      background-color: var(--accordion-header-hover-bg);
-      transition: background-color var(--transition-duration);
-    }
     &.user-info {
       padding: 0.4rem 0rem;
       &:hover {
