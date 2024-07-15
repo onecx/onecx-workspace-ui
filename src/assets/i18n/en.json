@@ -174,7 +174,7 @@
     "MODIFICATION_DATE": "Changed on",
     "MODIFICATION_USER": "Changed by",
     "MANDATORY": "Mandatory",
-    "OPERATOR": "Created by Operator",
+    "OPERATOR": "Automated created",
     "OPERATOR_MESSAGE": "This Workspace was created by the operator. All changes will be lost on the next deployment.",
     "TOOLTIPS": {
       "CREATION_DATE": "Timestamp of the creation",

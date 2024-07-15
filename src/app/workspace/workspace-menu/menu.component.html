@@ -4,6 +4,8 @@
     [header]="workspace.displayName ? workspace.displayName + ': ' + ('DIALOG.MENU.LABEL' | translate) : ''"
     [subheader]="'DIALOG.MENU.SUBHEADER' | translate"
     [actions]="(actions$ | async) ?? []"
+    [figureImage]="currentLogoUrl"
+    [figureBackground]="!currentLogoUrl"
   >
   </ocx-page-header>
 
@@ -69,13 +71,13 @@
               />
               <label for="workspace_menu_table_filter"> {{ 'DIALOG.DATAVIEW.FILTER_PLACEHOLDER' | translate }} </label>
             </span>
-            <span
+            <a
               id="workspace_menu_table_header_filter_clear"
               class="p-inputgroup-addon bg-primary cursor-pointer pi pi-filter-slash"
               (click)="onClearFilterMenuTable()"
               [title]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
             >
-            </span>
+            </a>
           </div>
           <p-button
             styleClass="h-full button-min-height"

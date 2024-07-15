@@ -79,10 +79,8 @@
     <div class="col-12 sm:col-6 md:col-4 lg:col-4 xl:col-3 p-3">
       <a
         [id]="'workspace_detail_roles_data_item_' + item"
-        class="block card relative py-2 px-3 cursor-pointer"
-        [class.card-primary-bg-color]="role.isWorkspaceRole"
-        [class.hover:bg-gray-200]="role.isIamRole && !role.isWorkspaceRole"
-        [class.hover:text-color]="role.isIamRole && !role.isWorkspaceRole"
+        class="block card relative py-2 px-3 hover:bg-gray-200 cursor-pointer"
+        [class.card-primary-color]="role.isWorkspaceRole"
         [title]="role.description"
         (click)="onEditRole($event, role)"
       >
@@ -90,7 +88,7 @@
           *ngIf="role.isWorkspaceRole"
           [id]="'workspace_detail_roles_data_item_' + item + '_iam'"
           [title]="'DIALOG.ROLE.ORIGIN.WORKSPACE' | translate"
-          class="card-badge-left card-badge-left-text badge-2-text"
+          class="card-badge-left card-badge-left-text badge-2-text p-1"
           [class.line-through]="role.deleted"
           [class.danger-action-text]="role.deleted"
           [class.text-md]="role.deleted"
@@ -100,14 +98,14 @@
           *ngIf="role.isIamRole"
           [id]="'workspace_detail_roles_data_item_' + item + '_iam'"
           [title]="'DIALOG.ROLE.ORIGIN.IAM' | translate"
-          class="card-badge-left card-badge-left-text badge-1"
+          class="card-badge-left card-badge-left-text badge-1 p-1"
           >IAM</span
         >
         <a
           *ngIf="role.isWorkspaceRole && hasDeletePermission"
           [id]="'workspace_detail_roles_data_item_' + item + '_delete'"
           [title]="'ACTIONS.DELETE.ROLE' | translate"
-          class="card-badge-right badge-1 p-1 pi pi-trash pseudo-button-link bg-primary"
+          class="card-badge-right badge-1 p-1 pi pi-trash pseudo-button-link"
           (click)="onDeleteRole($event, role)"
         ></a>
         <a
@@ -119,7 +117,7 @@
           [class.bg-white]="role.isWorkspaceRole"
         ></a>
         <div class="h-2rem flex flex-column justify-content-center text-center">
-          <div class="font-bold" [title]="'Name: ' + role.name">{{ limitText(role.name, 30) }}</div>
+          <div class="font-bold" [title]="role.name">{{ limitText(role.name, 30) }}</div>
         </div>
       </a>
     </div>

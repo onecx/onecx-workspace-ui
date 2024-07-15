@@ -90,11 +90,11 @@
       border-radius: var(--border-radius);
       opacity: 0.7;
     }
-    .card-primary-bg-color {
-      background-color: var(--primary-color) !important;
-      color: var(--primary-color-text) !important;
+    .card-primary-color {
+      background-color: var(--primary-color);
+      color: var(--primary-color-text);
       &:hover {
-        opacity: 0.8;
+        color: unset;
       }
     }
     .card-badge-right {
@@ -108,6 +108,9 @@
       }
       &.badge-2 {
         top: 35px;
+      }
+      &.badge-4 {
+        top: 95px;
       }
     }
     .card-badge-left {
@@ -123,7 +126,7 @@
         top: 35px;
       }
       &.badge-2-text {
-        top: 29px;
+        top: 22px;
       }
     }
     .card-badge-left-text {
@@ -132,6 +135,7 @@
     }
     .pseudo-button-link {
       border-radius: var(--border-radius);
+      color: inherit;
       &:hover {
         color: var(--primary-color-text);
         background: var(--button-hover-bg);

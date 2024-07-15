@@ -47,8 +47,8 @@
     <div class="col-12 sm:col-6 md:col-4 lg:col-4 xl:col-3 p-3">
       <a
         [id]="'workspace_detail_slots_data_idx_' + idx"
-        class="block card relative py-2 px-4"
-        [ngClass]="{ 'hover:bg-gray-200  card-primary-bg-color cursor-pointer': !slot.new }"
+        class="block card relative py-2 px-4 hover:bg-gray-200"
+        [ngClass]="{ 'card-primary-color cursor-pointer': !slot.new }"
         (click)="onSlotDetail($event, slot)"
       >
         <!-- right badges -->
@@ -63,14 +63,14 @@
           *ngIf="!slot.new && hasDeletePermission && slot.components.length === 0"
           [id]="'workspace_detail_roles_data_item_' + idx + '_delete'"
           [title]="'ACTIONS.DELETE.SLOT' | translate"
-          class="card-badge-right badge-1 p-1 pi pi-trash pseudo-button-link bg-primary"
+          class="card-badge-right badge-1 p-1 pi pi-trash pseudo-button-link"
           (click)="onDeleteSlot($event, slot)"
         ></a>
         <span
           *ngIf="slot.components"
           [id]="'workspace_detail_slots_data_item_' + idx + '_components'"
           [title]="'SLOT.COMPONENTS' | translate"
-          class="card-badge-right badge-2-number p-1"
+          class="card-badge-left badge-1-number p-1"
           >{{ slot.components.length }}</span
         >
         <!-- left badges -->
@@ -87,7 +87,7 @@
           [title]="'DIALOG.SLOT.DEPRECATED' | translate"
         ></span>
         <div class="h-2-5rem flex flex-column justify-content-center text-center">
-          <div class="font-bold" [title]="'Name: ' + slot.name">{{ limitText(slot.name, 30) }}</div>
+          <div class="font-bold" [title]="slot.name">{{ limitText(slot.name, 30) }}</div>
         </div>
       </a>
     </div>
