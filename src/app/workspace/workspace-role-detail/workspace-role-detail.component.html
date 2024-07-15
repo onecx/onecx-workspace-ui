@@ -43,9 +43,11 @@
         id="workspace_role_create_button_close"
         icon="pi pi-times"
         iconPos="left"
-        [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
-        [title]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
         (click)="onClose()"
+        [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+        [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
+        tooltipPosition="right"
+        tooltipEvent="hover"
       ></button>
       <button
         *ngIf="changeMode !== 'VIEW'"
@@ -56,8 +58,11 @@
         id="workspace_role_create_button_cancel"
         icon="pi pi-times"
         iconPos="left"
-        [label]="'ACTIONS.CANCEL' | translate"
         (click)="onClose()"
+        [label]="'ACTIONS.CANCEL' | translate"
+        [pTooltip]="'ACTIONS.TOOLTIPS.CANCEL' | translate"
+        tooltipPosition="bottom"
+        tooltipEvent="hover"
       ></button>
       <button
         *ngIf="changeMode !== 'VIEW'"
@@ -67,9 +72,12 @@
         id="workspace_role_create_button_save"
         icon="pi pi-save"
         iconPos="left"
-        [label]="'ACTIONS.SAVE' | translate"
-        [disabled]="!formGroupRole.valid"
         (click)="onSaveRole()"
+        [disabled]="!formGroupRole.valid"
+        [label]="'ACTIONS.SAVE' | translate"
+        [pTooltip]="'ACTIONS.TOOLTIPS.SAVE' | translate"
+        tooltipPosition="bottom"
+        tooltipEvent="hover"
       ></button>
     </div>
   </ng-template>

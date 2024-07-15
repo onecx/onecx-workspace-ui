@@ -18,8 +18,10 @@ import {
   AssignmentPageResult,
   Assignment,
   CreateAssignmentRequest,
+  ImagesInternalAPIService,
   MenuItemAPIService,
   MenuItemStructure,
+  RefType,
   Workspace,
   WorkspaceMenuItem,
   WorkspaceRole,
@@ -28,7 +30,7 @@ import {
   WorkspaceRolePageResult,
   GetWorkspaceResponse
 } from 'src/app/shared/generated'
-import { limitText, dropDownSortItemsByLabel } from 'src/app/shared/utils'
+import { bffImageUrl, limitText, dropDownSortItemsByLabel } from 'src/app/shared/utils'
 import { MenuStateService } from './services/menu-state.service'
 
 export type ChangeMode = 'VIEW' | 'CREATE' | 'EDIT' | 'COPY' | 'DELETE'
@@ -66,6 +68,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   public menuContextItems: SelectItem[]
   public menuContextValue = 'DETAILS'
   public treeExpanded = false // off = collapsed
+  public currentLogoUrl: string | undefined = undefined
 
   // workspace
   public workspace?: Workspace
@@ -98,6 +101,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     private menuApi: MenuItemAPIService,
     private workspaceApi: WorkspaceAPIService,
     private wRoleApi: WorkspaceRolesAPIService,
+    private imageApi: ImagesInternalAPIService,
     private stateService: MenuStateService,
     private translate: TranslateService,
     private msgService: PortalMessageService,
@@ -318,6 +322,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         console.error('getWorkspaceByName():', result)
       } else if (result instanceof Object) {
         this.workspace = result.resource
+        this.currentLogoUrl = this.getLogoUrl(result.resource)
         this.loadMenu(false)
       } else {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_0.WORKSPACES'
@@ -587,5 +592,10 @@ export class MenuComponent implements OnInit, OnDestroy {
   // triggered by changes of tree structure in preview
   public onUpdateMenuStructure(changed: boolean): void {
     this.onReload()
+  }
+  public getLogoUrl(workspace: Workspace | undefined): string | undefined {
+    if (!workspace) return undefined
+    if (workspace.logoUrl) return workspace?.logoUrl
+    else return bffImageUrl(this.imageApi.configuration.basePath, workspace?.name, RefType.Logo)
   }
 }

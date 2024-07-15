@@ -17,7 +17,9 @@
           id="slot_detail_slot_name"
           class="min-w-max pt-3 pb-2"
           [value]="slot ? slot.name : ''"
-          [title]="'SLOT.NAME' | translate"
+          [pTooltip]="'SLOT.NAME' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
         />
         <label for="slot_detail_slot_name">{{ 'SLOT.NAME' | translate }}</label>
       </span>
@@ -29,7 +31,9 @@
           id="slot_detail_slot_creationDate"
           class="w-13rem pt-3 pb-2"
           [value]="slot ? (slot.creationDate | date : dateFormat) : ''"
-          [title]="'INTERNAL.TOOLTIPS.CREATION_DATE' | translate"
+          [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_DATE' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
         />
         <label for="slot_detail_slot_creationDate">{{ 'INTERNAL.CREATION_DATE' | translate }}</label>
       </span>
@@ -41,14 +45,21 @@
           id="slot_detail_slot_modifcationDate"
           class="w-13rem pt-3 pb-2"
           [value]="slot ? (slot.modificationDate | date : dateFormat) : ''"
-          [title]="'INTERNAL.TOOLTIPS.MODIFICATION_DATE' | translate"
+          [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_DATE' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
         />
         <label for="slot_detail_slot_modifcationDate">{{ 'INTERNAL.MODIFICATION_DATE' | translate }}</label>
       </span>
     </div>
 
     <p-divider align="center" styleClass="mt-3 mb-2">
-      <div class="px-3 font-bold text-base" [title]="'DIALOG.SLOT.PRODUCTS.TOOLTIP' | translate">
+      <div
+        class="px-3 font-bold text-base"
+        [pTooltip]="'DIALOG.SLOT.PRODUCTS.TOOLTIP' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      >
         {{ 'DIALOG.SLOT.PRODUCTS' | translate }}
       </div>
     </p-divider>
@@ -66,13 +77,17 @@
           <span
             *ngIf="slot?.undeployed"
             class="danger-action-text text-md pi pi-ban"
-            [title]="'DIALOG.SLOT.UNDEPLOYED' | translate"
+            [pTooltip]="'DIALOG.SLOT.UNDEPLOYED' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
           >
           </span>
           <span
             *ngIf="slot?.deprecated"
             class="danger-action-text text-md pi pi-exclamation-circle"
-            [title]="'DIALOG.SLOT.DEPRECATED' | translate"
+            [pTooltip]="'DIALOG.SLOT.DEPRECATED' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
           >
           </span>
         </div></div
@@ -112,13 +127,17 @@
           *ngIf="component?.undeployed"
           [id]="'workspace_detail_slot_picklist_' + idx + '_undeployed'"
           class="card-badge-right badge-1 danger-action-text font-bold text-lg pi pi-ban"
-          [title]="'DIALOG.SLOT.UNDEPLOYED.TOOLTIP' | translate"
+          [pTooltip]="'DIALOG.SLOT.UNDEPLOYED.TOOLTIP' | translate"
+          tooltipPosition="right"
+          tooltipEvent="hover"
         ></span>
         <span
           *ngIf="component?.deprecated && !component?.undeployed"
           [id]="'workspace_detail_slot_picklist_' + idx + '_deprecated'"
           class="card-badge-right badge-1 danger-action-text font-bold text-lg pi pi-exclamation-circle"
-          [title]="'DIALOG.SLOT.DEPRECATED.TOOLTIP' | translate"
+          [pTooltip]="'DIALOG.SLOT.DEPRECATED.TOOLTIP' | translate"
+          tooltipPosition="right"
+          tooltipEvent="hover"
         ></span>
         <div class="py-1 px-2 flex flex-column row-gap-1" (dblclick)="return($event)">
           <div *ngIf="component.bucket === 'TARGET'" class="font-semibold text-sm md:text-md">
@@ -141,9 +160,11 @@
         id="workspace_slot_detail_button_close"
         icon="pi pi-times"
         iconPos="left"
-        [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
-        [title]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
         (click)="onClose()"
+        [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+        [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
+        tooltipPosition="right"
+        tooltipEvent="hover"
       ></button>
     </div>
   </ng-template>
@@ -176,8 +197,11 @@
         id="workspace_detail_slot_delete_button_no"
         icon="pi pi-times"
         iconPos="left"
-        [label]="'ACTIONS.CONFIRMATION.NO' | translate"
         (click)="onClose()"
+        [label]="'ACTIONS.CONFIRMATION.NO' | translate"
+        [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
+        tooltipPosition="bottom"
+        tooltipEvent="hover"
       ></button>
       <button
         pButton
@@ -186,8 +210,11 @@
         id="workspace_detail_slot_delete_button_yes"
         icon="pi pi-check"
         iconPos="left"
-        [label]="'ACTIONS.CONFIRMATION.YES' | translate"
         (click)="onDeleteSlot()"
+        [label]="'ACTIONS.CONFIRMATION.YES' | translate"
+        [pTooltip]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
+        tooltipPosition="bottom"
+        tooltipEvent="hover"
       ></button>
     </div>
   </ng-template>
@@ -220,8 +247,11 @@
         id="workspace_detail_product_deregister_button_no"
         icon="pi pi-times"
         iconPos="left"
-        [label]="'ACTIONS.CONFIRMATION.NO' | translate"
         (click)="onDeregisterCancellation()"
+        [label]="'ACTIONS.CONFIRMATION.NO' | translate"
+        [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
+        tooltipPosition="bottom"
+        tooltipEvent="hover"
       ></button>
       <button
         pButton
@@ -230,8 +260,11 @@
         id="workspace_detail_product_deregister_button_yes"
         icon="pi pi-check"
         iconPos="left"
-        [label]="'ACTIONS.CONFIRMATION.YES' | translate"
         (click)="onDeregisterConfirmation()"
+        [label]="'ACTIONS.CONFIRMATION.YES' | translate"
+        [pTooltip]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
+        tooltipPosition="bottom"
+        tooltipEvent="hover"
       ></button>
     </div>
   </ng-template>

@@ -122,7 +122,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
       .pipe(
         map((products) => {
           this.wProductNames = []
-          for (let p of products) this.wProductNames.push(p.productName!)
+          for (let p of products) this.wProductNames.push(p.productName ?? '')
           return []
         }),
         catchError((err) => {
@@ -294,7 +294,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     this.showSlotDetailDialog = true
   }
 
-  // detail dialog closed - reload data on changes
+  // detail/delete dialog closed - on any changes a reload of data is required
   public onSlotDetailClosed(changed: boolean) {
     this.slot = undefined
     this.detailSlotId = undefined
@@ -303,6 +303,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     this.showSlotDeleteDialog = false
     if (changed) this.loadData()
   }
+  // on any changes within DETAIL dialog a reload of data is required
   public onSlotDetailChanged(changed: boolean) {
     if (changed) this.loadData()
   }

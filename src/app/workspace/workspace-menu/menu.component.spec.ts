@@ -781,4 +781,10 @@ describe('MenuComponent', () => {
 
     expect(component.loadMenu).toHaveBeenCalledWith(true)
   })
+
+  it('should return the logoURL on getLogoUrl', () => {
+    const result = component.getLogoUrl({ name: 'name', displayName: 'name', logoUrl: 'url' })
+
+    expect(result).toBe('url')
+  })
 })

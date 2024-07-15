@@ -67,7 +67,9 @@
           </div>
           <div
             class="col-12 sm:col-3 md:col-3 lg:col-3 xl:col-2 px-2 font-bold text-lg text-center sm:text-left"
-            [title]="('WORKSPACE.DISPLAY_NAME' | translate) + ': ' + workspace.displayName"
+            [pTooltip]="workspace.displayName.length > 40 ? workspace.displayName : ''"
+            tooltipPosition="top"
+            tooltipEvent="hover"
           >
             {{ limitText(workspace.displayName, 40) }}
           </div>
@@ -78,20 +80,28 @@
               (click)="$event.stopPropagation()"
               target="_blank"
               class="text-primary"
-              [title]="('WORKSPACE.BASE_URL' | translate) + ' - ' + ('ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate)"
+              [pTooltip]="
+                ('WORKSPACE.BASE_URL' | translate) + ' - ' + ('ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate)
+              "
+              tooltipPosition="top"
+              tooltipEvent="hover"
             >
               {{ limitText(workspace.baseUrl, 50) }}
             </a>
           </div>
           <div
             class="col-12 sm:col-3 md:col-3 lg:col-3 xl:col-2 px-2 text-center sm:text-left"
-            [title]="'WORKSPACE.THEME' | translate"
+            [pTooltip]="'WORKSPACE.THEME' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
           >
             {{ limitText(workspace.theme, 40) }}
           </div>
           <div
             class="col-12 sm:col-12 md:col-12 lg:col-12 xl:col-4 px-2 text-center sm:text-left"
-            [title]="'WORKSPACE.DESCRIPTION' | translate"
+            [pTooltip]="workspace.description > 120 ? workspace.description : ''"
+            tooltipPosition="top"
+            tooltipEvent="hover"
           >
             {{ this.getDescriptionString(workspace.description) }}
           </div>
@@ -106,20 +116,33 @@
           >
             <a
               *ngIf="workspace.name !== 'ADMIN'"
+              tabindex="0"
               [id]="'app_workspace_search_data_row_' + row + '_goto_workspace'"
               class="card-badge-right badge-1 p-1 pi pi-external-link pseudo-button-link"
-              [title]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_WORKSPACE' | translate"
               (click)="onGotoWorkspace($event, workspace)"
-              tabindex="0"
+              [pTooltip]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_WORKSPACE' | translate"
+              tooltipPosition="right"
+              tooltipEvent="hover"
             ></a>
             <a
               *ocxIfPermission="'MENU#VIEW'"
+              tabindex="0"
               [id]="'app_workspace_search_data_row_' + row + '_goto_menu'"
               class="card-badge-right badge-2 p-1 pi pi-sitemap pseudo-button-link"
-              [title]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_MENU' | translate"
               (click)="onGotoMenu($event, workspace)"
-              tabindex="0"
+              [pTooltip]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_MENU' | translate"
+              tooltipPosition="right"
+              tooltipEvent="hover"
             ></a>
+            <span
+              *ngIf="workspace.disabled"
+              [id]="'app_workspace_search_data_row_' + row + '_disabled'"
+              class="card-badge-right badge-4 p-1 pi pi-ban danger-action-text font-bold"
+              [pTooltip]="'WORKSPACE.TOOLTIPS.DISABLED' | translate"
+              tooltipPosition="right"
+              tooltipEvent="hover"
+            ></span>
+
             <div class="h-3rem md:h-4rem flex flex-column justify-content-center align-items-center text-center">
               <app-image-container
                 [id]="'app_workspace_search_data_row_' + row + '_logo'"
@@ -131,11 +154,15 @@
             <div class="h-3rem flex flex-column justify-content-between px-2 text-center gap-1">
               <div
                 class="mt-1 font-bold text-lg md:text-xl"
-                [title]="('WORKSPACE.DISPLAY_NAME' | translate) + ': ' + workspace.displayName"
+                [pTooltip]="workspace.displayName.length > 20 ? workspace.displayName : ''"
+                tooltipPosition="right"
+                tooltipEvent="hover"
               >
                 {{ limitText(workspace.displayName, 20) }}
               </div>
-              <div class="text-sm" title="Theme">{{ limitText(workspace.theme, 25) }}</div>
+              <div class="text-sm" [pTooltip]="'Theme'" tooltipPosition="top" tooltipEvent="hover">
+                {{ limitText(workspace.theme, 25) }}
+              </div>
             </div>
           </div>
         </div>
