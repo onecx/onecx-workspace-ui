@@ -331,7 +331,7 @@ export class MenuDetailComponent implements OnChanges {
     if (!this.panelDetail?.el?.nativeElement) return
     this.renderer.setStyle(this.panelDetail?.el.nativeElement, 'display', 'block')
     if (this.panelHeight === 0) this.panelHeight = this.panelDetail?.el.nativeElement.offsetHeight
-    this.renderer.setStyle(this.panelDetail?.el.nativeElement, 'height', this.panelHeight - 50 + 'px')
+    this.renderer.setStyle(this.panelDetail?.el.nativeElement, 'height', this.panelHeight - 10 + 'px')
   }
 
   /**

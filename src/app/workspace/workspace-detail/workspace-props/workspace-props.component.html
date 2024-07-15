@@ -69,7 +69,9 @@
             <span
               class="p-inputgroup-addon bg-primary pseudo-button"
               [ngClass]="!editMode && inputBaseUrl.value ? 'cursor-pointer' : 'p-disabled'"
-              [title]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
+              [pTooltip]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
+              tooltipPosition="right"
+              tooltipEvent="hover"
             >
               <a
                 target="_blank"
@@ -106,15 +108,17 @@
           <span
             class="p-inputgroup-addon bg-primary pseudo-button"
             [ngClass]="!editMode && !workspace?.disabled && workspace?.homePage ? 'cursor-pointer' : 'p-disabled'"
-            [title]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
+            [pTooltip]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
+            tooltipPosition="right"
+            tooltipEvent="hover"
           >
             <a
               tabindex="0"
               target="_blank"
-              [href]="prepareProductUrl(inputHomePage.value)"
-              (click)="$event.stopPropagation()"
               id="workspace_detail_form_homePage_link"
               class="bg-primary"
+              [href]="prepareProductUrl(inputHomePage.value)"
+              (click)="$event.stopPropagation()"
             >
               <span class="pi pi-link"></span>
             </a>
@@ -131,7 +135,7 @@
               class="w-full pt-3 pb-2"
               formControlName="rssFeedUrl"
               [pTooltip]="'WORKSPACE.TOOLTIPS.RSS_FEED_URL' | translate"
-              tooltipPosition="top"
+              tooltipPosition="right"
               tooltipEvent="hover"
             />
             <label for="workspace_detail_form_rssFeedUrl"> {{ 'WORKSPACE.RSS_FEED_URL' | translate }} </label>
@@ -142,7 +146,9 @@
             class="p-inputgroup-addon bg-primary pseudo-button"
             [ngClass]="inputRssFeedUrl.value ? 'cursor-pointer' : 'p-disabled'"
             (click)="copyToClipboard(workspace?.rssFeedUrl)"
-            [title]="'ACTIONS.COPY.CLIPBOARD' | translate"
+            [pTooltip]="'ACTIONS.COPY.CLIPBOARD' | translate"
+            tooltipPosition="right"
+            tooltipEvent="hover"
           >
             <span class="pi pi-copy"></span>
           </a>
@@ -162,8 +168,10 @@
             [disabled]="!editMode"
             class="action-button p-button-icon-only"
             [class.cursor-pointer]="editMode"
-            [title]="'IMAGE.TOOLTIPS.UPLOAD' | translate"
             (click)="selectedFileInputLogo.click()"
+            [pTooltip]="'IMAGE.TOOLTIPS.UPLOAD' | translate"
+            tooltipPosition="right"
+            tooltipEvent="hover"
           ></button>
           <div class="flex flex-column row-gap-1 w-full">
             <span class="p-float-label">
@@ -172,10 +180,12 @@
                 type="text"
                 class="w-full"
                 id="workspace_detail_form_logo_url"
-                [title]="'IMAGE.TOOLTIPS.URL' | translate"
                 formControlName="logoUrl"
                 (input)="onInputChange($event)"
                 (change)="onInputChange($event)"
+                [pTooltip]="'IMAGE.TOOLTIPS.URL' | translate"
+                tooltipPosition="right"
+                tooltipEvent="hover"
               />
               <label for="workspace_detail_form_logo_url"> {{ 'IMAGE.LOGO_URL' | translate }} </label>
             </span>
