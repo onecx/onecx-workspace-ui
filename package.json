@@ -95,7 +95,7 @@
     "@storybook/angular": "7.6.16",
     "@storybook/core-server": "7.6.16",
     "@svgr/webpack": "^7.0.0",
-    "@swc-node/register": "^1.6.5",
+    "@swc-node/register": "^1.10.3",
     "@swc/cli": "~0.1.63",
     "@swc/core": "^1.4.8",
     "@swc/helpers": "0.5.11",

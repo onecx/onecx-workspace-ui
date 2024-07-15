@@ -529,6 +529,7 @@
   },
   "REMOTES": {
     "USER_AVATAR_MENU": {
+      "ORGID": "Organisation",
       "TENANT": "Mandant",
       "LOGOUT": "Abmelden",
       "TOOLTIP": "Profil"
