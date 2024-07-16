@@ -1,10 +1,10 @@
-<p-accordion [activeIndex]="null">
+<p-accordion [activeIndex]="null" expandIcon="pi pi-chevron-right" collapseIcon="pi pi-chevron-down">
   <p-accordionTab>
     <ng-template pTemplate="header">
       <ocx-slot name="onecx-avatar-image"></ocx-slot>
       <span class="flex flex-column ml-3 row-gap-1">
         <span id="user-sidebar-display-name" class="font-bold">{{ displayName$ | async }}</span>
-        <span id="user-sidebar-display-name" class="text-sm">{{ organization$ | async }}</span>
+        <span *ngIf="organization$ | async as orgId" id="user-sidebar-orgid" class="text-sm">{{ orgId }}</span>
       </span>
     </ng-template>
     <ng-template pTemplate="content">

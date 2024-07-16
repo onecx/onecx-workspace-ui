@@ -7,13 +7,19 @@
 }
 
 ::ng-deep {
-  .p-accordion-tab {
-    box-shadow: none !important;
-  }
   .p-panelmenu-panel {
     box-shadow: none !important;
   }
-  .p-accordion-content {
-    padding: 0 !important;
+  .p-accordion {
+    .p-accordion-tab {
+      box-shadow: none !important;
+      &:not(.p-accordion-tab-active) .p-accordion-toggle-icon,
+      &.p-accordion-tab-active .p-accordion-toggle-icon {
+        transform: none;
+      }
+    }
+    .p-accordion-content {
+      padding: 0 !important;
+    }
   }
 }
