@@ -19,7 +19,6 @@ import {
   AppConfigService,
   AppStateService,
   PortalCoreModule,
-  REMOTE_COMPONENT_ID,
   UserProfile,
   UserService,
   createRemoteComponentTranslateLoader
@@ -66,16 +65,12 @@ export function slotInitializer(slotService: SlotService) {
       provide: BASE_URL,
       useValue: new ReplaySubject<string>(1)
     },
-    {
-      provide: REMOTE_COMPONENT_ID,
-      useValue: 'ocx-user-siderbar-menu-component'
-    },
     provideTranslateServiceForRoot({
       isolate: true,
       loader: {
         provide: TranslateLoader,
         useFactory: createRemoteComponentTranslateLoader,
-        deps: [HttpClient, BASE_URL, REMOTE_COMPONENT_ID]
+        deps: [HttpClient, BASE_URL]
       }
     }),
     {
