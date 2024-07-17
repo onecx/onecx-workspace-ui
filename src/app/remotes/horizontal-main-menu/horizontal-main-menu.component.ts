@@ -4,7 +4,7 @@ import { Component, Inject, Input, OnInit, ViewChild } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
-import { REMOTE_COMPONENT_ID, createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
+import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
 import {
   AngularRemoteComponentsModule,
   BASE_URL,
@@ -32,16 +32,12 @@ import { environment } from 'src/environments/environment'
       provide: BASE_URL,
       useValue: new ReplaySubject<string>(1)
     },
-    {
-      provide: REMOTE_COMPONENT_ID,
-      useValue: 'ocx-horizontal-main-menu-component'
-    },
     provideTranslateServiceForRoot({
       isolate: true,
       loader: {
         provide: TranslateLoader,
         useFactory: createRemoteComponentTranslateLoader,
-        deps: [HttpClient, BASE_URL, REMOTE_COMPONENT_ID]
+        deps: [HttpClient, BASE_URL]
       }
     })
   ]
