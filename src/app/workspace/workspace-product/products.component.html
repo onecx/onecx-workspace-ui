@@ -6,9 +6,11 @@
   ></p-message>
   <p-button
     id="workspace_detail_product_reload_button"
-    [title]="'ACTIONS.SEARCH.RELOAD' | translate"
-    (onClick)="loadData()"
     icon="pi pi-refresh"
+    (onClick)="loadData()"
+    [pTooltip]="'ACTIONS.SEARCH.RELOAD' | translate"
+    tooltipPosition="top"
+    tooltipEvent="hover"
   ></p-button>
 </div>
 
@@ -37,7 +39,9 @@
             id="workspace_detail_product_picklist_ps_load"
             class="pi pi-refresh cursor-pointer text-white"
             (click)="onLoadPsProducts()"
-            [title]="'ACTIONS.RELOAD' | translate"
+            [pTooltip]="'ACTIONS.SEARCH.RELOAD' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
           ></a>
         </div>
       </ng-template>
@@ -49,7 +53,9 @@
             id="workspace_detail_product_picklist_w_load"
             class="pi pi-refresh cursor-pointer text-white"
             (click)="onLoadWProducts()"
-            [title]="'ACTIONS.RELOAD' | translate"
+            [pTooltip]="'ACTIONS.SEARCH.RELOAD' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
           ></a>
         </div>
       </ng-template>
@@ -64,7 +70,12 @@
             (onChange)="onSourceViewModeChange($event.value)"
           >
             <ng-template let-item>
-              <i [class]="item.icon" [title]="item.titleKey | translate"></i>
+              <span
+                [class]="item.icon"
+                [pTooltip]="item.titleKey | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+              ></span>
             </ng-template>
           </p-selectButton>
           <div class="px-2 p-inputgroup p-picklist-filter">
@@ -97,7 +108,12 @@
             (onChange)="onTargetViewModeChange($event.value)"
           >
             <ng-template let-item>
-              <i [class]="item.icon" [title]="item.titleKey | translate"></i>
+              <span
+                [class]="item.icon"
+                [pTooltip]="item.titleKey | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+              ></span>
             </ng-template>
           </p-selectButton>
           <div class="px-2 p-inputgroup p-picklist-filter">
@@ -115,7 +131,9 @@
               *ngIf="targetFilterValue"
               class="px-2 p-picklist-filter-icon pi pi-times cursor-pointer"
               (click)="options.reset(); targetFilterValue = undefined"
-              [title]="'ACTIONS.SEARCH.FILTER_CLEAR' | translate"
+              [pTooltip]="'ACTIONS.SEARCH.FILTER_CLEAR' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
             ></a>
           </div>
         </div>
@@ -134,13 +152,17 @@
               *ngIf="product?.undeployed"
               [id]="'workspace_detail_product_picklist_' + product.productName + '_undeployed'"
               class="card-badge-right badge-1 tile-view-optional danger-action-text font-bold text-xl pi pi-ban"
-              [title]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
+              [pTooltip]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
             ></span>
             <span
               *ngIf="!product?.undeployed && product?.changedComponents"
               [id]="'workspace_detail_product_picklist_' + product.productName + '_changed_mfe'"
               class="card-badge-right badge-1 tile-view-optional danger-action-text font-bold text-xl pi pi-exclamation-circle"
-              [title]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
+              [pTooltip]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
             ></span>
             <app-image-container
               [id]="'workspace_detail_product_picklist_' + product.productName + '_logo'"
@@ -189,27 +211,39 @@
             *ngIf="displayedDetailItem?.undeployed"
             id="workspace_detail_product_item_header_undeployed"
             class="p-2 danger-action-text font-bold text-xl pi pi-ban"
-            [title]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
+            [pTooltip]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
           ></span>
           <span
             *ngIf="!displayedDetailItem?.undeployed && displayedDetailItem?.changedComponents"
             id="workspace_detail_product_item_header_changed_mfe"
             class="p-2 danger-action-text font-bold text-xl pi pi-exclamation-circle"
-            [title]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
+            [pTooltip]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
           ></span>
           <a
             tabindex="0"
             id="workspace_detail_product_item_header_close"
             class="p-2 pi pi-times cursor-pointer pseudo-button-link"
             (click)="onHideItemDetails()"
-            [title]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
+            [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
           ></a>
         </div>
       </ng-template>
 
       <form [formGroup]="formGroup">
         <div class="flex flex-column row-gap-4">
-          <span class="p-float-label" [title]="'PRODUCT.DISPLAY_NAME.TOOLTIP' | translate" controlErrorAnchor>
+          <span
+            controlErrorAnchor
+            class="p-float-label"
+            [pTooltip]="'PRODUCT.DISPLAY_NAME.TOOLTIP' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          >
             <input
               pInputText
               type="text"
@@ -220,7 +254,12 @@
             <label for="workspace_detail_product_item_display_name"> {{ displayedDetailItem?.productName }}</label>
           </span>
           <div>
-            <span class="p-float-label" [title]="'PRODUCT.BASE_URL.TOOLTIP' | translate">
+            <span
+              class="p-float-label"
+              [pTooltip]="'PRODUCT.BASE_URL.TOOLTIP' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            >
               <input
                 pInputText
                 type="text"
@@ -254,9 +293,11 @@
                     class="mt-3 flex flex-column"
                   >
                     <span
-                      class="p-float-label"
-                      [title]="'PRODUCT.MFE.BASE_PATH.TOOLTIP' | translate"
                       controlErrorAnchor
+                      class="p-float-label"
+                      [pTooltip]="'PRODUCT.MFE.BASE_PATH.TOOLTIP' | translate"
+                      tooltipPosition="top"
+                      tooltipEvent="hover"
                     >
                       <input
                         pInputText
@@ -274,13 +315,17 @@
                       <span
                         *ngIf="mfe.controls['undeployed'].value"
                         class="danger-action-text text-sm pi pi-ban"
-                        [title]="'DIALOG.PRODUCTS.MFES.UNDEPLOYED' | translate"
+                        [pTooltip]="'DIALOG.PRODUCTS.MFES.UNDEPLOYED' | translate"
+                        tooltipPosition="top"
+                        tooltipEvent="hover"
                       >
                       </span>
                       <span
                         *ngIf="mfe.controls['deprecated'].value"
                         class="danger-action-text text-sm pi pi-exclamation-circle"
-                        [title]="'DIALOG.PRODUCTS.MFES.DEPRECATED' | translate"
+                        [pTooltip]="'DIALOG.PRODUCTS.MFES.DEPRECATED' | translate"
+                        tooltipPosition="top"
+                        tooltipEvent="hover"
                       >
                       </span>
                     </div>
@@ -294,13 +339,17 @@
                   <span
                     *ngIf="item.undeployed"
                     class="danger-action-text pi pi-ban"
-                    [title]="'DIALOG.PRODUCTS.MFES.UNDEPLOYED' | translate"
+                    [pTooltip]="'DIALOG.PRODUCTS.MFES.UNDEPLOYED' | translate"
+                    tooltipPosition="top"
+                    tooltipEvent="hover"
                   >
                   </span>
                   <span
                     *ngIf="item.deprecated"
                     class="danger-action-text pi pi-exclamation-circle"
-                    [title]="'DIALOG.PRODUCTS.MFES.DEPRECATED' | translate"
+                    [pTooltip]="'DIALOG.PRODUCTS.MFES.DEPRECATED' | translate"
+                    tooltipPosition="top"
+                    tooltipEvent="hover"
                   >
                   </span>
                 </div>
@@ -314,13 +363,17 @@
                 <span
                   *ngIf="item.undeployed"
                   class="danger-action-text pi pi-ban"
-                  [title]="'DIALOG.PRODUCTS.MFES.UNDEPLOYED' | translate"
+                  [pTooltip]="'DIALOG.PRODUCTS.MFES.UNDEPLOYED' | translate"
+                  tooltipPosition="top"
+                  tooltipEvent="hover"
                 >
                 </span>
                 <span
                   *ngIf="item.deprecated"
                   class="danger-action-text pi pi-exclamation-circle"
-                  [title]="'DIALOG.PRODUCTS.MFES.DEPRECATED' | translate"
+                  [pTooltip]="'DIALOG.PRODUCTS.MFES.DEPRECATED' | translate"
+                  tooltipPosition="top"
+                  tooltipEvent="hover"
                 >
                 </span>
               </div>
@@ -336,13 +389,17 @@
               <span
                 *ngIf="item.undeployed"
                 class="danger-action-text pi pi-ban"
-                [title]="'DIALOG.SLOT.UNDEPLOYED' | translate"
+                [pTooltip]="'DIALOG.SLOT.UNDEPLOYED' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
               >
               </span>
               <span
                 *ngIf="item.deprecated"
                 class="danger-action-text pi pi-exclamation-circle"
-                [title]="'DIALOG.SLOT.DEPRECATED' | translate"
+                [pTooltip]="'DIALOG.SLOT.DEPRECATED' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
               >
               </span>
               <a
@@ -350,7 +407,9 @@
                 tabindex="0"
                 class="danger-action-text pi pi-plus-circle pseudo-button-link"
                 (click)="onAddSlot($event, item)"
-                [title]="'DIALOG.SLOT.NEW.TOOLTIP' | translate"
+                [pTooltip]="'DIALOG.SLOT.NEW.TOOLTIP' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
               >
               </a>
             </div>
@@ -361,11 +420,13 @@
           <p-button
             *ngIf="hasRegisterPermission && displayedDetailItem?.bucket === 'TARGET' && formGroup.valid"
             id="workspace_detail_product_header_button_save"
-            [label]="'ACTIONS.SAVE' | translate"
-            [title]="'ACTIONS.TOOLTIPS.SAVE' | translate"
-            (onClick)="onProductSave($event)"
-            icon="pi pi-save"
             class="text-right"
+            icon="pi pi-save"
+            (onClick)="onProductSave($event)"
+            [label]="'ACTIONS.SAVE' | translate"
+            [pTooltip]="'ACTIONS.TOOLTIPS.SAVE' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
           ></p-button>
         </div>
       </form>
@@ -383,7 +444,7 @@
   [dismissableMask]="true"
   [style]="{ 'max-width': '425px' }"
 >
-  <div class="my-2 flex column-gap-4 row-gap-1 justify-content-start align-items-center">
+  <div class="flex column-gap-4 row-gap-1 justify-content-start align-items-center">
     <div class="pi pi-question-circle text-3xl danger-action-text"></div>
     <div>
       <div class="font-bold">{{ 'ACTIONS.DELETE.PRODUCTS_QUESTION' | translate }}</div>
@@ -392,27 +453,33 @@
     </div>
   </div>
   <ng-template pTemplate="footer">
-    <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
+    <div class="mt-3 flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
       <button
         pButton
         autofocus
         type="button"
-        class="m-0"
         id="workspace_detail_product_deregister_button_no"
+        class="m-0"
         icon="pi pi-times"
         iconPos="left"
-        [label]="'ACTIONS.CONFIRMATION.NO' | translate"
         (click)="onDeregisterCancellation()"
+        [label]="'ACTIONS.CONFIRMATION.NO' | translate"
+        [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
       ></button>
       <button
         pButton
         type="button"
-        class="m-0"
         id="workspace_detail_product_deregister_button_yes"
+        class="m-0"
         icon="pi pi-check"
         iconPos="left"
-        [label]="'ACTIONS.CONFIRMATION.YES' | translate"
         (click)="onDeregisterConfirmation()"
+        [label]="'ACTIONS.CONFIRMATION.YES' | translate"
+        [pTooltip]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
       ></button>
     </div>
   </ng-template>

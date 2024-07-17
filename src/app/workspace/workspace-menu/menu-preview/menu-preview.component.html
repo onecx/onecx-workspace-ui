@@ -21,18 +21,22 @@
       [offLabel]="'ACTIONS.TREE.EXPAND_ALL' | translate"
       ariaLabel="Toggle Tree View"
       (onChange)="onToggleTreeViewMode($event)"
-      [title]="'ACTIONS.TREE.EXPAND_ALL.TOOLTIP' | translate"
+      [pTooltip]="'ACTIONS.TREE.EXPAND_ALL.TOOLTIP' | translate"
+      tooltipPosition="right"
+      tooltipEvent="hover"
     />
     <span class="p-float-label">
       <p-dropdown
         id="portal_menu_tree_preview_language_list"
         styleClass="reduced-field-size"
         [appendTo]="'body'"
-        [title]="'DIALOG.MENU.PREVIEW.LANG.TOOLTIP' | translate"
         [emptyMessage]="'DIALOG.MENU.PREVIEW.LANG.EMPTY' | translate"
         [options]="languagesPreview"
         [(ngModel)]="languagesPreviewValue"
         (onChange)="onLanguagesPreviewChange($event.value)"
+        [pTooltip]="'DIALOG.MENU.PREVIEW.LANG.TOOLTIP' | translate"
+        tooltipPosition="right"
+        tooltipEvent="hover"
       ></p-dropdown>
       <label for="portal_menu_tree_preview_language_list">{{ 'DIALOG.MENU.PREVIEW.LANG' | translate }}</label>
     </span>
@@ -56,8 +60,10 @@
       type="button"
       icon="pi pi-times"
       id="workspace_import_button_close"
-      [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
       (click)="onClose()"
+      [pTooltip]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+      tooltipPosition="right"
+      tooltipEvent="hover"
     ></button>
   </div>
 </p-dialog>

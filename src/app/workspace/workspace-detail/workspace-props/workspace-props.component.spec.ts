@@ -25,11 +25,12 @@ const workspace = {
   displayName: 'name',
   theme: 'theme',
   baseUrl: '/some/base/url',
-  id: 'id'
+  id: 'id',
+  disabled: false
 }
 
 const formGroup = new FormGroup({
-  name: new FormControl('name', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
+  displayName: new FormControl('displayName', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
   theme: new FormControl('theme', [Validators.required]),
   baseUrl: new FormControl('/url', [Validators.required, Validators.minLength(1), Validators.pattern('^/.*')])
 })
@@ -119,25 +120,19 @@ describe('WorkspacePropsComponent', () => {
     expect(component).toBeTruthy()
   })
 
-  describe('loadMfeUrls', () => {
+  describe('loadProductPaths', () => {
     beforeEach(() => {
-      component.mfeRList = []
+      component.productPathList = []
     })
 
-    it('should return if urls are already loaded', () => {
-      component.mfeRList = ['url']
+    it('should load product urls on edit mode', () => {
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([{ baseUrl: '/baseUrl' }]))
 
       component.ngOnInit()
+      component.editMode = true
+      component.ngOnChanges()
 
-      expect(true).toBeTrue()
-    })
-
-    it('should load product urls on init', () => {
-      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([{ baseUrl: 'baseUrl' }]))
-
-      component.ngOnInit()
-
-      expect(component.mfeRList).toContain('/some/base/url/baseUrl')
+      expect(component.productPathList).toContain('/baseUrl')
     })
 
     it('should log error if api call fails', () => {
@@ -146,6 +141,8 @@ describe('WorkspacePropsComponent', () => {
       spyOn(console, 'error')
 
       component.ngOnInit()
+      component.editMode = true
+      component.ngOnChanges()
 
       expect(console.error).toHaveBeenCalledWith('getProductsByWorkspaceId():', err)
     })
@@ -168,15 +165,6 @@ describe('WorkspacePropsComponent', () => {
       expect(component.formGroup.enabled).toBeTrue()
     })
 
-    it('should disable name form control in admin ws', () => {
-      component.editMode = true
-      workspace.name = 'ADMIN'
-
-      component.ngOnChanges()
-
-      expect(component.formGroup.controls['name'].disabled).toBeTrue()
-    })
-
     it('should reset formGroup when workspace is empty', () => {
       component.editMode = true
       workspace.name = 'ADMIN'
@@ -184,7 +172,7 @@ describe('WorkspacePropsComponent', () => {
       component.workspace = undefined
       component.ngOnChanges()
 
-      expect(component.formGroup.controls['name'].value).toBeNull()
+      expect(component.formGroup.controls['displayName'].value).toBeNull()
       expect(component.formGroup.controls['theme'].value).toBeNull()
       expect(component.formGroup.controls['baseUrl'].value).toBeNull()
       expect(component.formGroup.disabled).toBeTrue()
@@ -223,38 +211,6 @@ describe('WorkspacePropsComponent', () => {
   })
 
   describe('onFileUpload', () => {
-    it('should not upload a file if name is empty', () => {
-      const event = {
-        target: {
-          files: ['file']
-        }
-      }
-      component.formGroup.controls['name'].setValue('')
-
-      component.onFileUpload(event as any)
-
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({
-        summaryKey: 'IMAGE.CONSTRAINT_FAILED',
-        detailKey: 'IMAGE.CONSTRAINT_NAME'
-      })
-    })
-
-    it('should not upload a file if name is null', () => {
-      const event = {
-        target: {
-          files: ['file']
-        }
-      }
-      component.formGroup.controls['name'].setValue(null)
-
-      component.onFileUpload(event as any)
-
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({
-        summaryKey: 'IMAGE.CONSTRAINT_FAILED',
-        detailKey: 'IMAGE.CONSTRAINT_NAME'
-      })
-    })
-
     it('should not upload a file that is too large', () => {
       const largeBlob = new Blob(['a'.repeat(120000)], { type: 'image/png' })
       const largeFile = new File([largeBlob], 'test.png', { type: 'image/png' })
@@ -263,7 +219,7 @@ describe('WorkspacePropsComponent', () => {
           files: [largeFile]
         }
       }
-      component.formGroup.controls['name'].setValue('name')
+      //component.formGroup.controls['displayName'].setValue('name')
 
       component.onFileUpload(event as any)
 
@@ -278,8 +234,6 @@ describe('WorkspacePropsComponent', () => {
           files: [largeFile]
         }
       }
-      component.formGroup.controls['name'].setValue('name')
-
       component.onFileUpload(event as any)
 
       expect(component.formGroup.valid).toBeFalse()
@@ -289,8 +243,6 @@ describe('WorkspacePropsComponent', () => {
       const event = {
         target: {}
       }
-      component.formGroup.controls['name'].setValue('name')
-
       component.onFileUpload(event as any)
 
       expect(component.formGroup.valid).toBeFalse()
@@ -304,8 +256,6 @@ describe('WorkspacePropsComponent', () => {
           files: [largeFile]
         }
       }
-      component.formGroup.controls['name'].setValue('name')
-
       component.onFileUpload(event as any)
 
       expect(component.formGroup.valid).toBeFalse()
@@ -320,8 +270,6 @@ describe('WorkspacePropsComponent', () => {
           files: [file]
         }
       }
-
-      component.formGroup.controls['name'].setValue('name')
       component.formGroup.controls['logoUrl'].setValue('url')
 
       component.onFileUpload(event as any)
@@ -340,7 +288,6 @@ describe('WorkspacePropsComponent', () => {
           files: [file]
         }
       }
-      component.formGroup.controls['name'].setValue('name')
       component.formGroup.controls['logoUrl'].setValue('url')
 
       component.onFileUpload(event as any)
@@ -367,13 +314,12 @@ describe('WorkspacePropsComponent', () => {
     const event = {
       target: { value: '' }
     } as unknown as Event
-    component.formGroup.controls['name'].setValue('name')
 
     component.onInputChange(event)
 
     tick(1000)
 
-    expect(component.fetchingLogoUrl).toBe('basepath/images/name/logo')
+    expect(component.fetchingLogoUrl).toBe('basepath/images/ADMIN/logo')
   }))
 
   describe('getLogoUrl', () => {

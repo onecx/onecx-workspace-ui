@@ -33,5 +33,6 @@ export interface Workspace {
     address?: WorkspaceAddress;
     mandatory?: boolean;
     operator?: boolean;
+    disabled?: boolean;
 }
 

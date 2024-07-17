@@ -5,7 +5,9 @@
   [ocxSrc]="displayImageUrl"
   (error)="onImageError()"
   [alt]="'DIALOG.LOGO.LABEL' | translate"
-  [title]="title ? title : ('DIALOG.LOGO.LABEL' | translate)"
+  [pTooltip]="title ? title : ('DIALOG.LOGO.LABEL' | translate)"
+  tooltipPosition="right"
+  tooltipEvent="hover"
 />
 <img
   *ngIf="displayDefaultLogo"
@@ -13,5 +15,7 @@
   [class]="'image-object image-' + (small ? 'sm' : 'lg') + ' sm:image-lg ' + (styleClass ? styleClass : '')"
   [src]="defaultImageUrl$ | async"
   [alt]="'DIALOG.LOGO.PLACEHOLDER' | translate"
-  [title]="title ? title : ('DIALOG.LOGO.PLACEHOLDER' | translate)"
+  [pTooltip]="title ? title : ('DIALOG.LOGO.PLACEHOLDER' | translate)"
+  tooltipPosition="right"
+  tooltipEvent="hover"
 />
