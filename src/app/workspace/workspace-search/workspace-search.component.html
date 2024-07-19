@@ -26,7 +26,7 @@
       [rows]="viewMode === 'grid' ? 12 : 10"
       [layout]="viewMode"
       [emptyMessage]="'ACTIONS.SEARCH.NO_DATA' | translate"
-      filterBy="name,theme"
+      filterBy="displayName,theme"
       [sortField]="sortField"
       [sortOrder]="sortOrder"
     >
@@ -37,14 +37,14 @@
           [supportedViews]="['grid', 'list']"
           [initialViewMode]="viewMode"
           [sortingOptions]="[
-            { label: 'WORKSPACE.NAME' | translate, value: 'name' },
+            { label: 'WORKSPACE.DISPLAY_NAME' | translate, value: 'displayName' },
             { label: 'WORKSPACE.THEME' | translate, value: 'theme' }
           ]"
           [defaultSortOption]="sortField"
           [defaultSortDirection]="false"
           (dataViewChange)="onLayoutChange($event)"
           (filterChange)="onFilterChange($event)"
-          [filterColumns]="['WORKSPACE.NAME' | translate, 'WORKSPACE.THEME' | translate]"
+          [filterColumns]="['WORKSPACE.DISPLAY_NAME' | translate, 'WORKSPACE.THEME' | translate]"
           (sortChange)="onSortChange($event)"
           (sortDirectionChange)="onSortDirChange($event)"
           [translations]="dataViewControlsTranslations"

@@ -310,15 +310,15 @@ describe('sortMfesByExposedModule', () => {
   it('should sort mfes by exposedModule ', () => {
     let a: WorkspaceAbstract = {
       name: 'a',
-      displayName: ''
+      displayName: 'a'
     }
     let b: WorkspaceAbstract = {
       name: 'b',
-      displayName: ''
+      displayName: 'b'
     }
     let c: WorkspaceAbstract = {
       name: 'c',
-      displayName: ''
+      displayName: 'c'
     }
     const eMfes = [b, c, a]
 
@@ -370,15 +370,15 @@ describe('sortMfesByExposedModule', () => {
   it('should sort mfes by appId: special char exposedModule ', () => {
     let a: WorkspaceAbstract = {
       name: 'a',
-      displayName: ''
+      displayName: 'a'
     }
     let b: WorkspaceAbstract = {
       name: 'b',
-      displayName: ''
+      displayName: 'b'
     }
     let c: WorkspaceAbstract = {
       name: '$',
-      displayName: ''
+      displayName: '$'
     }
     const eMfes = [b, c, a]
 
