@@ -21,7 +21,9 @@
     [uploadLabel]="'ACTIONS.UPLOAD' | translate"
     [cancelLabel]="'ACTIONS.CANCEL' | translate"
     [chooseLabel]="'ACTIONS.CHOOSE' | translate"
-    [title]="'ACTIONS.UPLOAD' | translate"
+    [pTooltip]="'ACTIONS.UPLOAD' | translate"
+    tooltipPosition="top"
+    tooltipEvent="hover"
   ></p-fileUpload>
 
   <p-message
@@ -37,9 +39,11 @@
       type="button"
       icon="pi pi-times"
       id="menu_import_button_close"
-      [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
-      [title]="'ACTIONS.NAVIGATION.CLOSE_WITHOUT_SAVE' | translate"
       (click)="onClose()"
+      [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+      [pTooltip]="'ACTIONS.NAVIGATION.CLOSE_WITHOUT_SAVE' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
     ></button>
   </div>
 </p-dialog>

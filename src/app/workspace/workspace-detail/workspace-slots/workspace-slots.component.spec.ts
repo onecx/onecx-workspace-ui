@@ -201,8 +201,21 @@ describe('WorkspaceSlotsComponent', () => {
       )
       spyOn(component as any, 'declareWorkspaceProducts').and.callFake(() => {})
       spyOn(component as any, 'declareWorkspaceSlots').and.callFake(() => {})
+      component.psSlots = [
+        {
+          productName: 'product',
+          name: 'slotPsName',
+          new: false,
+          bucket: 'SOURCE',
+          changes: false,
+          psSlots: [],
+          psComponents: [],
+          components: []
+        }
+      ]
       component.wSlotsIntern = [
         {
+          productName: 'product',
           name: 'slotPsName',
           new: false,
           bucket: 'TARGET',
@@ -213,7 +226,7 @@ describe('WorkspaceSlotsComponent', () => {
         },
         { name: 'slot2', new: false, bucket: 'TARGET', changes: false, psSlots: [], psComponents: [] }
       ]
-      component.wProductNames = ['psItem1', 'wsProd2']
+      component.wProductNames = ['psItem1', 'wsProd2', 'product']
 
       component.loadData()
 
@@ -346,47 +359,47 @@ describe('WorkspaceSlotsComponent', () => {
     })
   })
 
-  describe('onSlotDetailClosed and Changed', () => {
+  describe('Load data depending on whether data has been changed within detail dialog', () => {
     beforeEach(() => {
       spyOn(component, 'loadData').and.callFake(() => {})
     })
 
-    it('should reset the component state and call loadData when changed is true', () => {
+    it('should reset the component state and call loadData when data was changed in detail', () => {
       component.slot = { id: '123', new: false } as any
       component.detailSlotId = '123'
       component.changeMode = 'EDIT'
       component.showSlotDetailDialog = true
-      component.showSlotDeleteDialog = true
+      component.showSlotDeleteDialog = false
 
-      component.onSlotDetailClosed(true)
+      component.onSlotDetailClosed(true) // changed data
 
       expect(component.slot).toBeUndefined()
       expect(component.detailSlotId).toBeUndefined()
       expect(component.changeMode).toBe('VIEW')
       expect(component.showSlotDetailDialog).toBeFalse()
       expect(component.showSlotDeleteDialog).toBeFalse()
-      expect(component.loadData).toHaveBeenCalled()
+      expect(component.loadData).toHaveBeenCalled() // call
     })
 
-    it('should reset the component state and not call loadData when changed is false', () => {
+    it('should reset the component state and not call loadData when data was not changed in detail', () => {
       component.slot = { id: '123', new: false } as any
       component.detailSlotId = '123'
       component.changeMode = 'EDIT'
       component.showSlotDetailDialog = true
-      component.showSlotDeleteDialog = true
+      component.showSlotDeleteDialog = false
 
-      component.onSlotDetailClosed(false)
+      component.onSlotDetailClosed(false) // no changes
 
       expect(component.slot).toBeUndefined()
       expect(component.detailSlotId).toBeUndefined()
       expect(component.changeMode).toBe('VIEW')
       expect(component.showSlotDetailDialog).toBeFalse()
       expect(component.showSlotDeleteDialog).toBeFalse()
-      expect(component.loadData).not.toHaveBeenCalled()
+      expect(component.loadData).not.toHaveBeenCalled() // NOT called
     })
 
-    it('should loadDate if detail has changed', () => {
-      component.onSlotDetailChanged(true)
+    it('should loadData if detail has changed', () => {
+      component.onSlotDetailChanged(true) // changed data
 
       expect(component.loadData).toHaveBeenCalled()
     })

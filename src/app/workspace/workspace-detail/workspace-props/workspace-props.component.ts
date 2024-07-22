@@ -1,11 +1,17 @@
 import { Component, EventEmitter, Input, OnInit, OnChanges, Output } from '@angular/core'
 import { Location } from '@angular/common'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
-import { map, Observable } from 'rxjs'
+import { catchError, map, Observable, of, Subject, takeUntil } from 'rxjs'
 
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 
-import { ImagesInternalAPIService, RefType, Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
+import {
+  ImagesInternalAPIService,
+  RefType,
+  Workspace,
+  WorkspaceAPIService,
+  WorkspaceProductAPIService
+} from 'src/app/shared/generated'
 import { copyToClipboard, bffImageUrl, sortByLocale } from 'src/app/shared/utils'
 import { getLocation } from '@onecx/accelerator'
 
@@ -19,9 +25,9 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   @Input() editMode = false
   @Output() currentLogoUrl = new EventEmitter<string>()
 
+  private readonly destroy$ = new Subject()
   public formGroup: FormGroup
-
-  public mfeRList: { label: string | undefined; value: string }[] = []
+  public productPathList: string[] = []
   public themes$!: Observable<string[]>
   public urlPattern = '/base-path-to-workspace'
   public externUrlPattern = 'http(s)://path-to-image'
@@ -36,19 +42,20 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   public minimumImageWidth = 150
   public minimumImageHeight = 150
   public fetchingLogoUrl: string | undefined = undefined
-  private oldWorkspaceName: string | undefined
   RefType = RefType
 
   constructor(
     private location: Location,
     private msgService: PortalMessageService,
     private imageApi: ImagesInternalAPIService,
-    private workspaceApi: WorkspaceAPIService
+    private workspaceApi: WorkspaceAPIService,
+    private wProductApi: WorkspaceProductAPIService
   ) {
     this.deploymentPath = getLocation().deploymentPath === '/' ? '' : getLocation().deploymentPath.slice(0, -1)
 
     this.formGroup = new FormGroup({
-      name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
+      //name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
+      disabled: new FormControl(null),
       displayName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
       theme: new FormControl(null),
       baseUrl: new FormControl(null, [Validators.required, Validators.minLength(1), Validators.pattern('^/.*')]),
@@ -77,14 +84,13 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   public ngOnChanges(): void {
     if (this.workspace) {
       this.setFormData()
-      if (this.editMode) this.formGroup.enable()
-      else this.formGroup.disable()
-      this.oldWorkspaceName = this.workspace.name
-      if (this.workspace.name === 'ADMIN') this.formGroup.controls['name'].disable()
+      if (this.editMode) {
+        this.formGroup.enable()
+        this.loadProductPaths()
+      } else this.formGroup.disable()
     } else {
       this.formGroup.reset()
       this.formGroup.disable()
-      this.oldWorkspaceName = undefined
     }
   }
 
@@ -100,9 +106,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     if (!this.workspace) return
     if (this.formGroup.valid) {
       Object.assign(this.workspace, this.getWorkspaceChangesFromForm())
-      if (this.oldWorkspaceName !== this.workspace.name) {
-        this.location.back()
-      }
     } else {
       this.msgService.error({ summaryKey: 'VALIDATION.FORM_INVALID' })
     }
@@ -122,14 +125,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   }
 
   public onFileUpload(ev: Event): void {
-    const workspaceName = this.formGroup.controls['name'].value
-    if (!workspaceName || workspaceName === '') {
-      this.msgService.error({
-        summaryKey: 'IMAGE.CONSTRAINT_FAILED',
-        detailKey: 'IMAGE.CONSTRAINT_NAME'
-      })
-      return
-    }
     if (ev.target && (ev.target as HTMLInputElement).files) {
       const files = (ev.target as HTMLInputElement).files
       if (files) {
@@ -144,7 +139,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
             detailKey: 'IMAGE.CONSTRAINT_FILE_TYPE'
           })
         } else {
-          this.saveImage(workspaceName, files) // store image
+          this.saveImage(this.workspace?.name!, files) // store image
         }
       }
     } else {
@@ -202,5 +197,26 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       this.fetchingLogoUrl = bffImageUrl(this.imageApi.configuration.basePath, this.workspace?.name, RefType.Logo)
     }
     this.currentLogoUrl.emit(this.fetchingLogoUrl)
+  }
+
+  public prepareProductUrl(val: string): string | undefined {
+    return val ? Location.joinWithSlash(this.workspace?.baseUrl!, val) : undefined
+  }
+  private loadProductPaths(): void {
+    this.wProductApi
+      .getProductsByWorkspaceId({ id: this.workspace?.id! })
+      .pipe(
+        map((products) => {
+          this.productPathList.push('')
+          for (let p of products) this.productPathList.push(p.baseUrl ?? '')
+          this.productPathList.sort(sortByLocale)
+        }),
+        catchError((err) => {
+          console.error('getProductsByWorkspaceId():', err)
+          return of([] as string[])
+        })
+      )
+      .pipe(takeUntil(this.destroy$))
+      .subscribe()
   }
 }

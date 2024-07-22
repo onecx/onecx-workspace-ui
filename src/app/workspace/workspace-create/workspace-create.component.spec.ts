@@ -3,14 +3,14 @@ import { HttpClient } from '@angular/common/http'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing'
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core'
-import { ReactiveFormsModule } from '@angular/forms'
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { RouterTestingModule } from '@angular/router/testing'
 import { Router } from '@angular/router'
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router'
 import { ConfirmationService } from 'primeng/api'
 import { DropdownModule } from 'primeng/dropdown'
 
-import { Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
+import { ProductAPIService, Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
 import { environment } from 'src/environments/environment'
 import {
   APP_CONFIG,
@@ -26,6 +26,7 @@ const workspace: Workspace = {
   name: 'name',
   theme: 'theme',
   baseUrl: '/some/base/url',
+  homePage: '/homepage',
   displayName: ''
 }
 
@@ -42,6 +43,9 @@ describe('WorkspaceCreateComponent', () => {
   const wApiServiceSpy = {
     getAllThemes: jasmine.createSpy('getAllThemes').and.returnValue(of(['theme1', 'theme2'])),
     createWorkspace: jasmine.createSpy('createWorkspace').and.returnValue(of({}))
+  }
+  const productServiceSpy = {
+    searchAvailableProducts: jasmine.createSpy('searchAvailableProducts').and.returnValue(of({}))
   }
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'info', 'error'])
   const mockActivatedRouteSnapshot: Partial<ActivatedRouteSnapshot> = {
@@ -74,6 +78,7 @@ describe('WorkspaceCreateComponent', () => {
         { provide: APP_CONFIG, useValue: environment },
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: WorkspaceAPIService, useValue: wApiServiceSpy },
+        { provide: ProductAPIService, useValue: productServiceSpy },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: Router, useValue: mockRouter },
         ConfirmationService
@@ -86,12 +91,27 @@ describe('WorkspaceCreateComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(WorkspaceCreateComponent)
     component = fixture.componentInstance
+    component.formGroup = new FormGroup({
+      name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
+      displayName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
+      theme: new FormControl(null),
+      homePage: new FormControl('homepage', [Validators.maxLength(255)]),
+      logoUrl: new FormControl('', [Validators.maxLength(255)]),
+      baseUrl: new FormControl('/some/base/url', [
+        Validators.required,
+        Validators.minLength(2),
+        Validators.pattern('^/.*')
+      ]),
+      footerLabel: new FormControl(null, [Validators.maxLength(255)]),
+      description: new FormControl(null, [Validators.maxLength(255)])
+    })
     fixture.detectChanges()
   })
 
   afterEach(() => {
     wApiServiceSpy.getAllThemes.calls.reset()
     wApiServiceSpy.createWorkspace.calls.reset()
+    productServiceSpy.searchAvailableProducts.calls.reset()
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.info.calls.reset()
     msgServiceSpy.error.calls.reset()
@@ -99,6 +119,27 @@ describe('WorkspaceCreateComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy()
+  })
+
+  describe('loadMfeUrls', () => {
+    it('should load product urls on init', () => {
+      productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [{ baseUrl: 'baseUrl' }] }))
+      component.mfeRList = []
+
+      component.ngOnInit()
+
+      expect(component.mfeRList).toContain('baseUrl')
+    })
+
+    it('should log error if api call fails', () => {
+      const err = { error: 'error' }
+      productServiceSpy.searchAvailableProducts.and.returnValue(throwError(() => err))
+      spyOn(console, 'error')
+
+      component.ngOnInit()
+
+      expect(console.error).toHaveBeenCalledWith('getProductsByWorkspaceId():', err)
+    })
   })
 
   it('should create a workspace', () => {

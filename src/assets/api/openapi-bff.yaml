@@ -1355,6 +1355,9 @@ components:
         operator:
           type: boolean
           default: false
+        disabled:
+          type: boolean
+          default: false
     WorkspaceAbstract:
       required:
         - name
@@ -1373,6 +1376,8 @@ components:
           type: string
         logoUrl:
           type: string
+        disabled:
+          type: boolean
     WorkspaceAddress:
       type: object
       properties:

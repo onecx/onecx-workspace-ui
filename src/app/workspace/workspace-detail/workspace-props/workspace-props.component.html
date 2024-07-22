@@ -2,23 +2,17 @@
   <div class="col-12 md:col-10 lg:col-10 xl:col-6">
     <form [formGroup]="formGroup">
       <div class="flex flex-wrap flex-column gap-4 justify-content-between">
-        <div *ngIf="!editMode">
-          <span class="p-float-label mb-1" controlErrorAnchor>
-            <input
-              pInputText
-              readonly
-              type="text"
-              id="workspace_detail_form_name"
-              class="w-full pt-3 pb-2"
-              formControlName="name"
-              [pTooltip]="'WORKSPACE.NAME' | translate"
-              tooltipPosition="top"
-              tooltipEvent="focus"
-            />
-            <label class="ocx-required-label" for="workspace_detail_form_name">
-              {{ 'WORKSPACE.NAME' | translate }}
-            </label>
-          </span>
+        <div class="w-12 sm:w-6 px-3 flex align-items-center">
+          <p-checkbox
+            type="text"
+            inputId="workspace_detail_item_disabled"
+            formControlName="disabled"
+            [binary]="true"
+            [label]="'WORKSPACE.DISABLED' | translate"
+            [pTooltip]="'WORKSPACE.TOOLTIPS.DISABLED' | translate"
+            tooltipPosition="bottom"
+            tooltipEvent="hover"
+          ></p-checkbox>
         </div>
 
         <div>
@@ -29,9 +23,9 @@
               id="workspace_detail_form_display_name"
               class="w-full pt-3 pb-2"
               formControlName="displayName"
-              [pTooltip]="'WORKSPACE.DISPLAY_NAME' | translate"
+              [pTooltip]="'WORKSPACE.TOOLTIPS.DISPLAY_NAME' | translate"
               tooltipPosition="top"
-              tooltipEvent="focus"
+              tooltipEvent="hover"
             />
             <label class="ocx-required-label" for="workspace_detail_form_display_name">
               {{ 'WORKSPACE.DISPLAY_NAME' | translate }}
@@ -47,9 +41,9 @@
               formControlName="theme"
               styleClass="w-full input-field-correction"
               [options]="(themes$ | async) ?? []"
-              [pTooltip]="'WORKSPACE.THEME' | translate"
+              [pTooltip]="'WORKSPACE.TOOLTIPS.THEME' | translate"
               tooltipPosition="top"
-              tooltipEvent="focus"
+              tooltipEvent="hover"
             >
             </p-dropdown>
             <label for="workspace_detail_form_theme"> {{ 'WORKSPACE.THEME' | translate }} </label>
@@ -66,16 +60,18 @@
                 id="workspace_detail_form_baseUrl"
                 class="w-full pt-3 pb-2"
                 formControlName="baseUrl"
-                [pTooltip]="'WORKSPACE.BASE_URL' | translate"
+                [pTooltip]="'WORKSPACE.TOOLTIPS.BASE_URL' | translate"
                 tooltipPosition="top"
-                tooltipEvent="focus"
+                tooltipEvent="hover"
               />
               <label for="workspace_detail_form_baseUrl"> {{ 'WORKSPACE.BASE_URL' | translate }} </label>
             </span>
             <span
               class="p-inputgroup-addon bg-primary pseudo-button"
-              [ngClass]="inputBaseUrl.value ? 'cursor-pointer' : 'p-disabled'"
-              [title]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
+              [ngClass]="!editMode && inputBaseUrl.value ? 'cursor-pointer' : 'p-disabled'"
+              [pTooltip]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
+              tooltipPosition="right"
+              tooltipEvent="hover"
             >
               <a
                 target="_blank"
@@ -100,27 +96,29 @@
               id="workspace_detail_form_home_page"
               formControlName="homePage"
               styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
-              [options]="mfeRList"
+              [options]="productPathList"
               [editable]="true"
-              [pTooltip]="'WORKSPACE.HOME_PAGE' | translate"
+              [pTooltip]="'WORKSPACE.TOOLTIPS.HOME_PAGE' | translate"
               tooltipPosition="top"
-              tooltipEvent="focus"
+              tooltipEvent="hover"
             >
             </p-dropdown>
             <label for="workspace_detail_form_home_page"> {{ 'WORKSPACE.HOME_PAGE' | translate }} </label>
           </span>
           <span
             class="p-inputgroup-addon bg-primary pseudo-button"
-            [ngClass]="inputHomePage.value ? 'cursor-pointer' : 'p-disabled'"
-            [title]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
+            [ngClass]="!editMode && !workspace?.disabled && workspace?.homePage ? 'cursor-pointer' : 'p-disabled'"
+            [pTooltip]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
+            tooltipPosition="right"
+            tooltipEvent="hover"
           >
             <a
               tabindex="0"
               target="_blank"
-              [href]="inputHomePage.value"
-              (click)="$event.stopPropagation()"
               id="workspace_detail_form_homePage_link"
               class="bg-primary"
+              [href]="prepareProductUrl(inputHomePage.value)"
+              (click)="$event.stopPropagation()"
             >
               <span class="pi pi-link"></span>
             </a>
@@ -136,9 +134,9 @@
               id="workspace_detail_form_rssFeedUrl"
               class="w-full pt-3 pb-2"
               formControlName="rssFeedUrl"
-              [pTooltip]="'WORKSPACE.RSS_FEED_URL' | translate"
-              tooltipPosition="top"
-              tooltipEvent="focus"
+              [pTooltip]="'WORKSPACE.TOOLTIPS.RSS_FEED_URL' | translate"
+              tooltipPosition="right"
+              tooltipEvent="hover"
             />
             <label for="workspace_detail_form_rssFeedUrl"> {{ 'WORKSPACE.RSS_FEED_URL' | translate }} </label>
           </span>
@@ -148,7 +146,9 @@
             class="p-inputgroup-addon bg-primary pseudo-button"
             [ngClass]="inputRssFeedUrl.value ? 'cursor-pointer' : 'p-disabled'"
             (click)="copyToClipboard(workspace?.rssFeedUrl)"
-            [title]="'ACTIONS.COPY.CLIPBOARD' | translate"
+            [pTooltip]="'ACTIONS.COPY.CLIPBOARD' | translate"
+            tooltipPosition="right"
+            tooltipEvent="hover"
           >
             <span class="pi pi-copy"></span>
           </a>
@@ -168,8 +168,10 @@
             [disabled]="!editMode"
             class="action-button p-button-icon-only"
             [class.cursor-pointer]="editMode"
-            [title]="'IMAGE.TOOLTIPS.UPLOAD' | translate"
             (click)="selectedFileInputLogo.click()"
+            [pTooltip]="'IMAGE.TOOLTIPS.UPLOAD' | translate"
+            tooltipPosition="right"
+            tooltipEvent="hover"
           ></button>
           <div class="flex flex-column row-gap-1 w-full">
             <span class="p-float-label">
@@ -178,10 +180,12 @@
                 type="text"
                 class="w-full"
                 id="workspace_detail_form_logo_url"
-                [title]="'IMAGE.TOOLTIPS.URL' | translate"
                 formControlName="logoUrl"
                 (input)="onInputChange($event)"
                 (change)="onInputChange($event)"
+                [pTooltip]="'IMAGE.TOOLTIPS.URL' | translate"
+                tooltipPosition="right"
+                tooltipEvent="hover"
               />
               <label for="workspace_detail_form_logo_url"> {{ 'IMAGE.LOGO_URL' | translate }} </label>
             </span>
@@ -198,9 +202,9 @@
             id="workspace_detail_form_footerLabel"
             class="w-full pt-3 pb-2"
             formControlName="footerLabel"
-            [pTooltip]="'WORKSPACE.FOOTER_LABEL' | translate"
+            [pTooltip]="'WORKSPACE.TOOLTIPS.FOOTER_LABEL' | translate"
             tooltipPosition="top"
-            tooltipEvent="focus"
+            tooltipEvent="hover"
           />
           <label for="workspace_detail_form_footerLabel"> {{ 'WORKSPACE.FOOTER_LABEL' | translate }} </label>
         </span>
@@ -214,9 +218,9 @@
             id="workspace_detail_form_description"
             maxlength="255"
             formControlName="description"
-            [pTooltip]="'WORKSPACE.DESCRIPTION' | translate"
+            [pTooltip]="'WORKSPACE.TOOLTIPS.DESCRIPTION' | translate"
             tooltipPosition="top"
-            tooltipEvent="focus"
+            tooltipEvent="hover"
           ></textarea>
           <label for="workspace_detail_form_description"> {{ 'WORKSPACE.DESCRIPTION' | translate }} </label>
         </span>

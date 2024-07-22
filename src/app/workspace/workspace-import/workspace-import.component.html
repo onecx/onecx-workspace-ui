@@ -24,37 +24,45 @@
     <p-button
       *ngIf="activeIndex > 0"
       id="workspace_import_button_restart"
-      [label]="'WORKSPACE_IMPORT.IMPORT_RESTART' | translate"
-      [title]="'WORKSPACE_IMPORT.IMPORT_RESTART_TOOLTIP' | translate"
-      (onClick)="reset()"
       icon="pi pi-upload"
+      (onClick)="reset()"
+      [label]="'WORKSPACE_IMPORT.IMPORT_RESTART' | translate"
+      [pTooltip]="'WORKSPACE_IMPORT.IMPORT_RESTART_TOOLTIP' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
     ></p-button>
     <p-button
       *ngIf="activeIndex > 0"
       id="workspace_import_button_back"
-      [label]="'ACTIONS.NAVIGATION.BACK' | translate"
-      [title]="'ACTIONS.NAVIGATION.BACK.TOOLTIP' | translate"
-      (onClick)="back()"
       icon="pi pi-arrow-left"
+      (onClick)="back()"
+      [label]="'ACTIONS.NAVIGATION.BACK' | translate"
+      [pTooltip]="'ACTIONS.NAVIGATION.BACK.TOOLTIP' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
     ></p-button>
     <p-button
       *ngIf="activeIndex === 1"
       id="workspace_import_button_next"
-      [label]="'ACTIONS.NAVIGATION.NEXT' | translate"
-      [title]="'ACTIONS.NAVIGATION.NEXT.TOOLTIP' | translate"
-      (onClick)="next()"
       icon="pi pi-arrow-right"
       [disabled]="!isFormValid"
+      [label]="'ACTIONS.NAVIGATION.NEXT' | translate"
+      (onClick)="next()"
+      [pTooltip]="'ACTIONS.NAVIGATION.NEXT.TOOLTIP' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
     >
     </p-button>
     <p-button
       *ngIf="activeIndex === 2"
       id="workspace_import_button_import"
-      [label]="'WORKSPACE_IMPORT.IMPORT' | translate"
-      [title]="'WORKSPACE_IMPORT.START_IMPORT' | translate"
-      (onClick)="importWorkspace()"
       [icon]="isLoading ? 'pi pi-spin pi-spinner' : 'pi pi-check'"
       [disabled]="isLoading || !isFormValid"
+      (onClick)="importWorkspace()"
+      [label]="'WORKSPACE_IMPORT.IMPORT' | translate"
+      [pTooltip]="'WORKSPACE_IMPORT.START_IMPORT' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
     ></p-button>
   </div>
 </div>
@@ -65,8 +73,10 @@
     type="button"
     icon="pi pi-times"
     id="workspace_import_button_close"
-    [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
-    [title]="'ACTIONS.NAVIGATION.CLOSE_WITHOUT_SAVE' | translate"
     (click)="onClose()"
+    [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+    [pTooltip]="'ACTIONS.NAVIGATION.CLOSE_WITHOUT_SAVE' | translate"
+    tooltipPosition="top"
+    tooltipEvent="hover"
   ></button>
 </div>

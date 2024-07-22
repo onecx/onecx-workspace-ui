@@ -70,7 +70,7 @@ export class WorkspaceSearchComponent implements OnInit {
     )
   }
   public sortWorkspacesByName(a: WorkspaceAbstract, b: WorkspaceAbstract): number {
-    return a.name.toUpperCase().localeCompare(b.name.toUpperCase())
+    return a.displayName.toUpperCase().localeCompare(b.displayName.toUpperCase())
   }
 
   /**
@@ -78,14 +78,14 @@ export class WorkspaceSearchComponent implements OnInit {
    */
   private prepareDialogTranslations() {
     this.translate
-      .get(['WORKSPACE.NAME', 'WORKSPACE.THEME', 'ACTIONS.SEARCH.SORT_BY', 'ACTIONS.SEARCH.FILTER_OF'])
+      .get(['WORKSPACE.DISPLAY_NAME', 'WORKSPACE.THEME', 'ACTIONS.SEARCH.SORT_BY', 'ACTIONS.SEARCH.FILTER_OF'])
       .pipe(
         map((data) => {
           this.dataViewControlsTranslations = {
             sortDropdownTooltip: data['ACTIONS.SEARCH.SORT_BY'],
             sortDropdownPlaceholder: data['ACTIONS.SEARCH.SORT_BY'],
             filterInputTooltip:
-              data['ACTIONS.SEARCH.FILTER_OF'] + data['WORKSPACE.NAME'] + ', ' + data['WORKSPACE.THEME']
+              data['ACTIONS.SEARCH.FILTER_OF'] + data['WORKSPACE.DISPLAY_NAME'] + ', ' + data['WORKSPACE.THEME']
           }
         })
       )

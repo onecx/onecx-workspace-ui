@@ -1,10 +1,9 @@
 import { APP_INITIALIZER, DoBootstrap, Injector, NgModule } from '@angular/core'
 import { HttpClient, HttpClientModule } from '@angular/common/http'
 import { Router, RouterModule, Routes } from '@angular/router'
-import { createCustomElement } from '@angular/elements'
 import { MissingTranslationHandler, TranslateLoader, TranslateModule } from '@ngx-translate/core'
 
-import { MFE_ID, createTranslateLoader } from '@onecx/angular-accelerator'
+import { createTranslateLoader } from '@onecx/angular-accelerator'
 import {
   PortalApiConfiguration,
   PortalCoreModule,
@@ -12,7 +11,7 @@ import {
 } from '@onecx/portal-integration-angular'
 import { addInitializeModuleGuard, AppStateService, ConfigurationService } from '@onecx/angular-integration-interface'
 import { AngularAuthModule } from '@onecx/angular-auth'
-import { initializeRouter, startsWith } from '@onecx/angular-webcomponents'
+import { createAppEntrypoint, initializeRouter, startsWith } from '@onecx/angular-webcomponents'
 import { AppEntrypointComponent } from './app-entrypoint.component'
 import { BrowserModule } from '@angular/platform-browser'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
@@ -44,7 +43,7 @@ const routes: Routes = [
       loader: {
         provide: TranslateLoader,
         useFactory: createTranslateLoader,
-        deps: [HttpClient, AppStateService, MFE_ID]
+        deps: [HttpClient, AppStateService]
       },
       missingTranslationHandler: { provide: MissingTranslationHandler, useClass: PortalMissingTranslationHandler }
     })
@@ -58,11 +57,7 @@ const routes: Routes = [
       multi: true,
       deps: [Router, AppStateService]
     },
-    { provide: Configuration, useFactory: apiConfigProvider, deps: [ConfigurationService, AppStateService] },
-    {
-      provide: MFE_ID,
-      useValue: 'onecx-workspace'
-    }
+    { provide: Configuration, useFactory: apiConfigProvider, deps: [ConfigurationService, AppStateService] }
   ],
   schemas: []
 })
@@ -72,9 +67,6 @@ export class OneCXWorkspaceModule implements DoBootstrap {
   }
 
   ngDoBootstrap(): void {
-    const appEntrypoint = createCustomElement(AppEntrypointComponent, {
-      injector: this.injector
-    })
-    customElements.define('ocx-workspace-component', appEntrypoint)
+    createAppEntrypoint(AppEntrypointComponent, 'ocx-workspace-component', this.injector)
   }
 }

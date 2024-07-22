@@ -11,7 +11,12 @@ import {
   ThemeService
 } from '@onecx/portal-integration-angular'
 import { WorkspacePropsComponent } from 'src/app/workspace/workspace-detail/workspace-props/workspace-props.component'
-import { WorkspaceAPIService, ImagesInternalAPIService, Workspace } from 'src/app/shared/generated'
+import {
+  WorkspaceAPIService,
+  ImagesInternalAPIService,
+  Workspace,
+  WorkspaceProductAPIService
+} from 'src/app/shared/generated'
 import { RouterTestingModule } from '@angular/router/testing'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 
@@ -20,11 +25,12 @@ const workspace = {
   displayName: 'name',
   theme: 'theme',
   baseUrl: '/some/base/url',
-  id: 'id'
+  id: 'id',
+  disabled: false
 }
 
 const formGroup = new FormGroup({
-  name: new FormControl('name', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
+  displayName: new FormControl('displayName', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
   theme: new FormControl('theme', [Validators.required]),
   baseUrl: new FormControl('/url', [Validators.required, Validators.minLength(1), Validators.pattern('^/.*')])
 })
@@ -55,6 +61,9 @@ describe('WorkspacePropsComponent', () => {
     }
   }
   const themeService = jasmine.createSpyObj<ThemeService>('ThemeService', ['apply'])
+  const wProductServiceSpy = {
+    getProductsByWorkspaceId: jasmine.createSpy('getProductsByWorkspaceId').and.returnValue(of({}))
+  }
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -73,6 +82,7 @@ describe('WorkspacePropsComponent', () => {
         { provide: ConfigurationService, useValue: configServiceSpy },
         { provide: ImagesInternalAPIService, useValue: imageServiceSpy },
         { provide: WorkspaceAPIService, useValue: apiServiceSpy },
+        { provide: WorkspaceProductAPIService, useValue: wProductServiceSpy },
         { provide: AUTH_SERVICE, useValue: mockAuthService }
       ]
     }).compileComponents()
@@ -83,6 +93,7 @@ describe('WorkspacePropsComponent', () => {
     apiServiceSpy.getAllThemes.calls.reset()
     themeAPIServiceSpy.getThemes.calls.reset()
     themeAPIServiceSpy.getThemeById.calls.reset()
+    wProductServiceSpy.getProductsByWorkspaceId.calls.reset()
     themeService.apply.calls.reset()
   }))
 
@@ -109,6 +120,34 @@ describe('WorkspacePropsComponent', () => {
     expect(component).toBeTruthy()
   })
 
+  describe('loadProductPaths', () => {
+    beforeEach(() => {
+      component.productPathList = []
+    })
+
+    it('should load product urls on edit mode', () => {
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([{ baseUrl: '/baseUrl' }]))
+
+      component.ngOnInit()
+      component.editMode = true
+      component.ngOnChanges()
+
+      expect(component.productPathList).toContain('/baseUrl')
+    })
+
+    it('should log error if api call fails', () => {
+      const err = { error: 'error' }
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(throwError(() => err))
+      spyOn(console, 'error')
+
+      component.ngOnInit()
+      component.editMode = true
+      component.ngOnChanges()
+
+      expect(console.error).toHaveBeenCalledWith('getProductsByWorkspaceId():', err)
+    })
+  })
+
   describe('ngOnChanges', () => {
     it('should disable formGroup in view mode', () => {
       component.editMode = false
@@ -126,15 +165,6 @@ describe('WorkspacePropsComponent', () => {
       expect(component.formGroup.enabled).toBeTrue()
     })
 
-    it('should disable name form control in admin ws', () => {
-      component.editMode = true
-      workspace.name = 'ADMIN'
-
-      component.ngOnChanges()
-
-      expect(component.formGroup.controls['name'].disabled).toBeTrue()
-    })
-
     it('should reset formGroup when workspace is empty', () => {
       component.editMode = true
       workspace.name = 'ADMIN'
@@ -142,7 +172,7 @@ describe('WorkspacePropsComponent', () => {
       component.workspace = undefined
       component.ngOnChanges()
 
-      expect(component.formGroup.controls['name'].value).toBeNull()
+      expect(component.formGroup.controls['displayName'].value).toBeNull()
       expect(component.formGroup.controls['theme'].value).toBeNull()
       expect(component.formGroup.controls['baseUrl'].value).toBeNull()
       expect(component.formGroup.disabled).toBeTrue()
@@ -181,38 +211,6 @@ describe('WorkspacePropsComponent', () => {
   })
 
   describe('onFileUpload', () => {
-    it('should not upload a file if name is empty', () => {
-      const event = {
-        target: {
-          files: ['file']
-        }
-      }
-      component.formGroup.controls['name'].setValue('')
-
-      component.onFileUpload(event as any)
-
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({
-        summaryKey: 'IMAGE.CONSTRAINT_FAILED',
-        detailKey: 'IMAGE.CONSTRAINT_NAME'
-      })
-    })
-
-    it('should not upload a file if name is null', () => {
-      const event = {
-        target: {
-          files: ['file']
-        }
-      }
-      component.formGroup.controls['name'].setValue(null)
-
-      component.onFileUpload(event as any)
-
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({
-        summaryKey: 'IMAGE.CONSTRAINT_FAILED',
-        detailKey: 'IMAGE.CONSTRAINT_NAME'
-      })
-    })
-
     it('should not upload a file that is too large', () => {
       const largeBlob = new Blob(['a'.repeat(120000)], { type: 'image/png' })
       const largeFile = new File([largeBlob], 'test.png', { type: 'image/png' })
@@ -221,7 +219,7 @@ describe('WorkspacePropsComponent', () => {
           files: [largeFile]
         }
       }
-      component.formGroup.controls['name'].setValue('name')
+      //component.formGroup.controls['displayName'].setValue('name')
 
       component.onFileUpload(event as any)
 
@@ -236,8 +234,6 @@ describe('WorkspacePropsComponent', () => {
           files: [largeFile]
         }
       }
-      component.formGroup.controls['name'].setValue('name')
-
       component.onFileUpload(event as any)
 
       expect(component.formGroup.valid).toBeFalse()
@@ -247,8 +243,6 @@ describe('WorkspacePropsComponent', () => {
       const event = {
         target: {}
       }
-      component.formGroup.controls['name'].setValue('name')
-
       component.onFileUpload(event as any)
 
       expect(component.formGroup.valid).toBeFalse()
@@ -262,8 +256,6 @@ describe('WorkspacePropsComponent', () => {
           files: [largeFile]
         }
       }
-      component.formGroup.controls['name'].setValue('name')
-
       component.onFileUpload(event as any)
 
       expect(component.formGroup.valid).toBeFalse()
@@ -278,8 +270,6 @@ describe('WorkspacePropsComponent', () => {
           files: [file]
         }
       }
-
-      component.formGroup.controls['name'].setValue('name')
       component.formGroup.controls['logoUrl'].setValue('url')
 
       component.onFileUpload(event as any)
@@ -298,7 +288,6 @@ describe('WorkspacePropsComponent', () => {
           files: [file]
         }
       }
-      component.formGroup.controls['name'].setValue('name')
       component.formGroup.controls['logoUrl'].setValue('url')
 
       component.onFileUpload(event as any)
@@ -325,13 +314,12 @@ describe('WorkspacePropsComponent', () => {
     const event = {
       target: { value: '' }
     } as unknown as Event
-    component.formGroup.controls['name'].setValue('name')
 
     component.onInputChange(event)
 
     tick(1000)
 
-    expect(component.fetchingLogoUrl).toBe('basepath/images/name/logo')
+    expect(component.fetchingLogoUrl).toBe('basepath/images/ADMIN/logo')
   }))
 
   describe('getLogoUrl', () => {
