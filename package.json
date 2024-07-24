@@ -53,7 +53,7 @@
     "@onecx/accelerator": "^4.42.0",
     "@onecx/angular-auth": "^4.42.0",
     "@onecx/angular-accelerator": "^4.42.0",
-    "@onecx/angular-webcomponents": "^4.42.0",
+    "@onecx/angular-webcomponents": "^4.44.0",
     "@onecx/angular-integration-interface": "^4.42.0",
     "@onecx/angular-remote-components": "^4.42.0",
     "@onecx/angular-testing": "^4.42.0",
