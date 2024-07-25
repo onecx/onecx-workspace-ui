@@ -29,7 +29,7 @@
             [(ngModel)]="quickFilterValue"
             (onChange)="onQuickFilterChange($event)"
           >
-            <ng-template let-item>{{ item.label | translate }}</ng-template>
+            <ng-template pTemplate="item" let-item>{{ item.label | translate }}</ng-template>
           </p-selectButton>
         </div>
       </div>
