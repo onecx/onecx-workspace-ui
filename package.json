@@ -56,7 +56,7 @@
     "@onecx/angular-webcomponents": "^4.42.0",
     "@onecx/angular-integration-interface": "^4.42.0",
     "@onecx/angular-remote-components": "^4.42.0",
-    "@onecx/angular-testing": "^4.42.0",
+    "@onecx/angular-testing": "^4.44.2",
     "@onecx/integration-interface": "^4.42.0",
     "@onecx/keycloak-auth": "^4.42.0",
     "@onecx/portal-integration-angular": "^4.42.0",
