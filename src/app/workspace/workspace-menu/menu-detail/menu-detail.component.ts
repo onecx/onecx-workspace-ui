@@ -397,9 +397,9 @@ export class MenuDetailComponent implements OnChanges {
       .getProductsByWorkspaceId({ id: this.workspaceId! })
       .pipe(
         map((products) => {
-          for (let p of products) {
+          for (const p of products) {
             if (p.microfrontends) {
-              for (let mfe of p.microfrontends) {
+              for (const mfe of p.microfrontends) {
                 this.mfeItems.push({
                   ...mfe,
                   mfePath: Location.joinWithSlash(mfe.basePath ?? '', p.baseUrl ?? ''),

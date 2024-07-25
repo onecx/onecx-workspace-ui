@@ -8,6 +8,7 @@ import { MenuImportComponent } from './menu-import.component'
 import { MenuItemAPIService, MenuSnapshot } from 'src/app/shared/generated'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { of, throwError } from 'rxjs'
+import { FileSelectEvent } from 'primeng/fileupload'
 
 const menuSnapshot: MenuSnapshot = {
   menu: {
@@ -90,7 +91,7 @@ describe('MenuImportComponent', () => {
     spyOn(mockFile, 'text').and.returnValue(Promise.resolve(validJson))
     const fileList = { 0: mockFile, length: 1, item: () => mockFile }
 
-    component.onImportMenuSelect({ files: fileList })
+    component.onImportMenuSelect({ files: fileList } as any as FileSelectEvent)
 
     expect(component.menuImportError).toBeFalse()
   })
@@ -102,7 +103,7 @@ describe('MenuImportComponent', () => {
     const fileList = { 0: mockFile, length: 1, item: () => mockFile }
     spyOn(console, 'error')
 
-    component.onImportMenuSelect({ files: fileList })
+    component.onImportMenuSelect({ files: fileList } as any as FileSelectEvent)
 
     setTimeout(() => {
       expect(component.menuImportError).toBeTrue()
@@ -118,7 +119,7 @@ describe('MenuImportComponent', () => {
     const fileList = { 0: mockFile, length: 1, item: () => mockFile }
     spyOn(console, 'error')
 
-    component.onImportMenuSelect({ files: fileList })
+    component.onImportMenuSelect({ files: fileList } as any as FileSelectEvent)
 
     setTimeout(() => {
       expect(component.menuImportError).toBeTrue()

@@ -16,11 +16,8 @@ export class MenuItemService {
 
   /** Item is never undefined when filtered out in constructMenuItems() */
   private mapMenuItem(item: UserWorkspaceMenuItem, userLang: string): MenuItem {
-    let isLocal: boolean
-    let label: string | undefined
-
-    isLocal = !item.external
-    label = item.i18n ? item.i18n[userLang] || item.name : ''
+    const isLocal: boolean = !item.external
+    const label: string | undefined = item.i18n ? item.i18n[userLang] || item.name : ''
 
     if (item.children && item.children.length > 0) {
       // separated due to sonar

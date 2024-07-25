@@ -166,7 +166,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
       .pipe(
         map((products) => {
           this.wProducts = []
-          for (let p of products) this.wProducts.push({ ...p, bucket: 'TARGET' } as ExtendedProduct)
+          for (const p of products) this.wProducts.push({ ...p, bucket: 'TARGET' } as ExtendedProduct)
           return this.wProducts.sort(this.sortProductsByDisplayName)
         }),
         catchError((err) => {
@@ -190,8 +190,8 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
           this.psProducts = []
           this.psProductsOrg = new Map()
           if (result.stream)
-            for (let p of result.stream) {
-              let psp = { ...p, bucket: 'SOURCE', changedComponents: false } as ExtendedProduct
+            for (const p of result.stream) {
+              const psp = { ...p, bucket: 'SOURCE', changedComponents: false } as ExtendedProduct
               this.prepareProductApps(psp)
               this.psProductsOrg.set(psp.productName ?? '', psp)
               // add product to SOURCE picklist only if not yet registered
@@ -318,7 +318,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
       .getProductById({ id: this.workspace?.id, productId: wProduct.id } as GetProductByIdRequestParams)
       .subscribe({
         next: (data) => {
-          let item = data as ExtendedProduct
+          const item = data as ExtendedProduct
           item.bucket = wProduct.bucket
           item.microfrontends?.sort(this.sortMfesByAppId)
           this.prepareWProduct(item)
@@ -474,10 +474,10 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
 
   public onMoveToTarget(ev: any): void {
     this.clearForm()
-    let itemCount = ev.items.length
+    const itemCount = ev.items.length
     let successCounter = 0
     let errorCounter = 0
-    for (let p of ev.items) {
+    for (const p of ev.items) {
       // register modules only
       const mfes = p.microfrontends?.filter((m: Microfrontend) => m.type === MicrofrontendType.Module) ?? []
       this.wProductApi
@@ -488,7 +488,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
             baseUrl: p.baseUrl,
             microfrontends: this.prepareMfePaths(mfes),
             slots: p.slots
-              ? p.slots.filter((s: SlotPS) => !s.undeployed).map((s: SlotPS) => ({ name: s.name } as CreateSlot))
+              ? p.slots.filter((s: SlotPS) => !s.undeployed).map((s: SlotPS) => ({ name: s.name }) as CreateSlot)
               : undefined
           } as CreateProductRequest
         })
@@ -530,7 +530,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   public onDeregisterCancellation() {
     this.displayDeregisterConfirmation = false
     // restore
-    for (let p of this.deregisterItems) {
+    for (const p of this.deregisterItems) {
       this.psProducts = this.psProducts.filter((psp) => psp.productName !== p.productName)
       this.wProducts.push(p)
     }
@@ -541,10 +541,10 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   public onDeregisterConfirmation(): void {
     this.displayDeregisterConfirmation = false
     this.clearForm()
-    let itemCount = this.deregisterItems.length
+    const itemCount = this.deregisterItems.length
     let successCounter = 0
     let errorCounter = 0
-    for (let p of this.deregisterItems) {
+    for (const p of this.deregisterItems) {
       this.wProductApi
         .deleteProductById({
           id: this.workspace?.id!,

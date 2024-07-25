@@ -408,13 +408,13 @@ describe('ProductComponent', () => {
 
   describe('sortMfesByExposedModule', () => {
     it('should sort mfes by exposedModule ', () => {
-      let a: ExtendedMicrofrontend = {
+      const a: ExtendedMicrofrontend = {
         exposedModule: 'a'
       }
-      let b: ExtendedMicrofrontend = {
+      const b: ExtendedMicrofrontend = {
         exposedModule: 'b'
       }
-      let c: ExtendedMicrofrontend = {
+      const c: ExtendedMicrofrontend = {
         exposedModule: 'c'
       }
       const eMfes = [b, c, a]
@@ -425,13 +425,13 @@ describe('ProductComponent', () => {
     })
 
     it('should sort mfes by appId: some empty exposedModule ', () => {
-      let a: ExtendedMicrofrontend = {
+      const a: ExtendedMicrofrontend = {
         exposedModule: 'a'
       }
-      let b: ExtendedMicrofrontend = {
+      const b: ExtendedMicrofrontend = {
         exposedModule: ''
       }
-      let c: ExtendedMicrofrontend = {
+      const c: ExtendedMicrofrontend = {
         exposedModule: ''
       }
       const eMfes = [b, c, a]
@@ -442,13 +442,13 @@ describe('ProductComponent', () => {
     })
 
     it('should sort mfes by appId: all empty exposedModule ', () => {
-      let a: ExtendedMicrofrontend = {
+      const a: ExtendedMicrofrontend = {
         exposedModule: ''
       }
-      let b: ExtendedMicrofrontend = {
+      const b: ExtendedMicrofrontend = {
         exposedModule: ''
       }
-      let c: ExtendedMicrofrontend = {
+      const c: ExtendedMicrofrontend = {
         exposedModule: ''
       }
       const eMfes = [b, c, a]
@@ -459,13 +459,13 @@ describe('ProductComponent', () => {
     })
 
     it('should sort mfes by appId: special char exposedModule ', () => {
-      let a: ExtendedMicrofrontend = {
+      const a: ExtendedMicrofrontend = {
         exposedModule: 'a'
       }
-      let b: ExtendedMicrofrontend = {
+      const b: ExtendedMicrofrontend = {
         exposedModule: 'b'
       }
-      let c: ExtendedMicrofrontend = {
+      const c: ExtendedMicrofrontend = {
         exposedModule: '$'
       }
       const eMfes = [b, c, a]
@@ -478,13 +478,13 @@ describe('ProductComponent', () => {
 
   describe('sortSlotsByName', () => {
     it('should sort slots by name ', () => {
-      let a: SlotPS = {
+      const a: SlotPS = {
         name: 'a'
       }
-      let b: SlotPS = {
+      const b: SlotPS = {
         name: 'b'
       }
-      let c: SlotPS = {
+      const c: SlotPS = {
         name: 'c'
       }
       const eMfes = [b, c, a]
@@ -495,13 +495,13 @@ describe('ProductComponent', () => {
     })
 
     it('should sort slots by name : some empty name ', () => {
-      let a: SlotPS = {
+      const a: SlotPS = {
         name: 'a'
       }
-      let b: SlotPS = {
+      const b: SlotPS = {
         name: ''
       }
-      let c: SlotPS = {
+      const c: SlotPS = {
         name: ''
       }
       const eMfes: SlotPS[] = [b, c, a]
@@ -512,13 +512,13 @@ describe('ProductComponent', () => {
     })
 
     it('should sort slots by name : all empty name ', () => {
-      let a: SlotPS = {
+      const a: SlotPS = {
         name: ''
       }
-      let b: SlotPS = {
+      const b: SlotPS = {
         name: ''
       }
-      let c: SlotPS = {
+      const c: SlotPS = {
         name: ''
       }
       const eMfes = [b, c, a]
@@ -529,13 +529,13 @@ describe('ProductComponent', () => {
     })
 
     it('should sort slots by name : special char name ', () => {
-      let a: SlotPS = {
+      const a: SlotPS = {
         name: 'a'
       }
-      let b: SlotPS = {
+      const b: SlotPS = {
         name: 'b'
       }
-      let c: SlotPS = {
+      const c: SlotPS = {
         name: '$'
       }
       const eMfes = [b, a, c]

@@ -18,7 +18,7 @@ describe('WorkspaceSearchComponent', () => {
   let component: WorkspaceSearchComponent
   let fixture: ComponentFixture<WorkspaceSearchComponent>
   let mockActivatedRoute: ActivatedRoute
-  let mockRouter = { navigate: jasmine.createSpy('navigate') }
+  const mockRouter = { navigate: jasmine.createSpy('navigate') }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let mockNewWorkspaceWindow: any
 
@@ -112,9 +112,9 @@ describe('WorkspaceSearchComponent', () => {
   })
 
   it('should set correct values onLayoutChange', () => {
-    component.onLayoutChange('EDIT')
+    component.onLayoutChange('list')
 
-    expect(component.viewMode).toEqual('EDIT')
+    expect(component.viewMode).toEqual('list')
   })
 
   it('should set correct values onSortChange', () => {
@@ -308,15 +308,15 @@ describe('sortMfesByExposedModule', () => {
   })
 
   it('should sort mfes by exposedModule ', () => {
-    let a: WorkspaceAbstract = {
+    const a: WorkspaceAbstract = {
       name: 'a',
       displayName: 'a'
     }
-    let b: WorkspaceAbstract = {
+    const b: WorkspaceAbstract = {
       name: 'b',
       displayName: 'b'
     }
-    let c: WorkspaceAbstract = {
+    const c: WorkspaceAbstract = {
       name: 'c',
       displayName: 'c'
     }
@@ -328,15 +328,15 @@ describe('sortMfesByExposedModule', () => {
   })
 
   it('should sort mfes by appId: some empty exposedModule ', () => {
-    let a: WorkspaceAbstract = {
+    const a: WorkspaceAbstract = {
       name: 'a',
       displayName: ''
     }
-    let b: WorkspaceAbstract = {
+    const b: WorkspaceAbstract = {
       name: '',
       displayName: ''
     }
-    let c: WorkspaceAbstract = {
+    const c: WorkspaceAbstract = {
       name: '',
       displayName: ''
     }
@@ -348,15 +348,15 @@ describe('sortMfesByExposedModule', () => {
   })
 
   it('should sort mfes by appId: all empty exposedModule ', () => {
-    let a: WorkspaceAbstract = {
+    const a: WorkspaceAbstract = {
       name: '',
       displayName: ''
     }
-    let b: WorkspaceAbstract = {
+    const b: WorkspaceAbstract = {
       name: '',
       displayName: ''
     }
-    let c: WorkspaceAbstract = {
+    const c: WorkspaceAbstract = {
       name: '',
       displayName: ''
     }
@@ -368,15 +368,15 @@ describe('sortMfesByExposedModule', () => {
   })
 
   it('should sort mfes by appId: special char exposedModule ', () => {
-    let a: WorkspaceAbstract = {
+    const a: WorkspaceAbstract = {
       name: 'a',
       displayName: 'a'
     }
-    let b: WorkspaceAbstract = {
+    const b: WorkspaceAbstract = {
       name: 'b',
       displayName: 'b'
     }
-    let c: WorkspaceAbstract = {
+    const c: WorkspaceAbstract = {
       name: '$',
       displayName: '$'
     }

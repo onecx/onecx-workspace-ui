@@ -37,7 +37,6 @@ const mfePs: MicrofrontendPS = {
 describe('WorkspaceSlotsComponent', () => {
   let component: WorkspaceSlotsComponent
   let fixture: ComponentFixture<WorkspaceSlotsComponent>
-  let mockUserService: any
 
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
   const wProductServiceSpy = {
@@ -50,7 +49,7 @@ describe('WorkspaceSlotsComponent', () => {
   const productServiceSpy = {
     searchAvailableProducts: jasmine.createSpy('searchAvailableProducts').and.returnValue(of({}))
   }
-  mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
+  const mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
   mockUserService.hasPermission.and.callFake((permission: string) => {
     return ['WORKSPACE_SLOT#EDIT', 'WORKSPACE_SLOT#CREATE', 'WORKSPACE_SLOT#DELETE'].includes(permission)
   })

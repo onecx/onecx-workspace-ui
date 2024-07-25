@@ -2,6 +2,7 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core'
 import { HttpHeaders } from '@angular/common/http'
 import { TranslateService } from '@ngx-translate/core'
 import { WorkspaceSnapshot } from 'src/app/shared/generated'
+import { FileSelectEvent } from 'primeng/fileupload'
 
 @Component({
   selector: 'app-import-choose-file',
@@ -32,7 +33,7 @@ export class ChooseFileComponent implements OnInit {
     if (this.importWorkspace) this.importFileSelected.emit(this.importWorkspace)
   }
 
-  public onSelect(event: { files: FileList }): void {
+  public onSelect(event: FileSelectEvent): void {
     event.files[0].text().then((text) => {
       this.importWorkspace = null
       this.importError = false
@@ -82,7 +83,7 @@ export class ChooseFileComponent implements OnInit {
     const dto = obj as WorkspaceSnapshot
     // CHANGE IF IMPORT OF MORE WORKSPACES IS POSSIBLE
     if (dto.workspaces) {
-      let key: string[] = Object.keys(dto.workspaces)
+      const key: string[] = Object.keys(dto.workspaces)
       if (!dto.workspaces[key[0]]) {
         this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_WORKSPACE_MISSING']
       } else if (!dto.workspaces[key[0]].name) {
@@ -99,7 +100,7 @@ export class ChooseFileComponent implements OnInit {
 
   private checkMenuItems(dto: WorkspaceSnapshot, data: any) {
     if (dto.workspaces) {
-      let key: string[] = Object.keys(dto.workspaces)
+      const key: string[] = Object.keys(dto.workspaces)
       const menuSnapshot = dto.workspaces[key[0]].menu
       if (menuSnapshot?.menu?.menuItems) {
         for (const el of menuSnapshot.menu.menuItems) {

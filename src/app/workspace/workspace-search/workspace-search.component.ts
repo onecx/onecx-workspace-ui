@@ -34,7 +34,7 @@ export class WorkspaceSearchComponent implements OnInit {
 
   public workspaces$!: Observable<SearchWorkspacesResponse>
   public workspaces: WorkspaceAbstract[] | undefined = []
-  public viewMode = 'grid'
+  public viewMode: 'list' | 'grid' = 'grid'
   public filter: string | undefined
   public sortField = 'name'
   public sortOrder = 1
@@ -139,7 +139,7 @@ export class WorkspaceSearchComponent implements OnInit {
     this.table.filter(event, 'contains')
   }
 
-  public onLayoutChange(viewMode: string) {
+  public onLayoutChange(viewMode: 'list' | 'grid') {
     this.viewMode = viewMode
   }
 
