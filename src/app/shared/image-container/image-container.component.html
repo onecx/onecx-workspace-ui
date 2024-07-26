@@ -6,7 +6,7 @@
   (error)="onImageError()"
   [alt]="'DIALOG.LOGO.LABEL' | translate"
   [pTooltip]="title ? title : ('DIALOG.LOGO.LABEL' | translate)"
-  tooltipPosition="right"
+  tooltipPosition="top"
   tooltipEvent="hover"
 />
 <img
@@ -16,6 +16,6 @@
   [src]="defaultImageUrl$ | async"
   [alt]="'DIALOG.LOGO.PLACEHOLDER' | translate"
   [pTooltip]="title ? title : ('DIALOG.LOGO.PLACEHOLDER' | translate)"
-  tooltipPosition="right"
+  tooltipPosition="top"
   tooltipEvent="hover"
 />

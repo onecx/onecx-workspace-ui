@@ -94,6 +94,7 @@
       "DETAILS.TOOLTIP": "Display details",
       "NEW.TOOLTIP": "Create new entry",
       "GOTO_MENU": "Go to Menu Management",
+      "GOTO_THEME": "Go to Theme",
       "OPEN_IN_NEW_TAB": "Open in a new TAB",
       "MOVE_UP": "Move up",
       "MOVE_DOWN": "Move down"
@@ -142,6 +143,7 @@
     "SAVE_TREE_STRUCTURE": "Save tree structure"
   },
   "GENERAL": {
+    "COMMING_SOON": "Available soon",
     "BOOLEAN": {
       "TRUE": "Yes",
       "FALSE": "No"
@@ -304,7 +306,7 @@
         "COMPONENTS.DEREGISTER": "Deregister Components"
       },
       "CHANGED": "There are important changes.",
-      "NEW.TOOLTIP": "This Slot is not registered for the Workspace. Click to register.",
+      "NEW.TOOLTIP": "Register this Slot for the Workspace.",
       "DEPRECATED": "Outdated",
       "DEPRECATED.TOOLTIP": "This Slot is outdated and will no longer be usable in the foreseeable future.",
       "UNDEPLOYED": "Unavailable",
@@ -371,7 +373,7 @@
         "POSITION.TOOLTIP": "Position path of the menu item in format [parent item.]item ",
         "I18N": "I18n",
         "I18N.TOOLTIP": "Indicator whether translations exist",
-        "I18N.ROW.TOOLTIP": "At least one translation is available",
+        "I18N.ROW.TOOLTIP": "At least one translation available",
         "URL.TOOLTIP": "The URL to be called upon activation",
         "PRODUCT.TOOLTIP": "Indicator whether the menu URL is offered by a registered Application ",
         "EXTERN.TOOLTIP": "If checked then the Workspace is exit"
