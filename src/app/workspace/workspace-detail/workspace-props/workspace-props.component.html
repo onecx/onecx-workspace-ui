@@ -10,7 +10,7 @@
             [binary]="true"
             [label]="'WORKSPACE.DISABLED' | translate"
             [pTooltip]="'WORKSPACE.TOOLTIPS.DISABLED' | translate"
-            tooltipPosition="bottom"
+            tooltipPosition="top"
             tooltipEvent="hover"
           ></p-checkbox>
         </div>
@@ -74,11 +74,11 @@
               tooltipEvent="hover"
             >
               <a
+                id="workspace_detail_form_baseUrl_link"
+                class="bg-primary"
                 target="_blank"
                 [href]="deploymentPath + inputBaseUrl.value"
                 (click)="$event.stopPropagation()"
-                id="workspace_detail_form_baseUrl_link"
-                class="bg-primary"
               >
                 <span class="pi pi-link"></span>
               </a>
@@ -135,7 +135,7 @@
               class="w-full pt-3 pb-2"
               formControlName="rssFeedUrl"
               [pTooltip]="'WORKSPACE.TOOLTIPS.RSS_FEED_URL' | translate"
-              tooltipPosition="right"
+              tooltipPosition="top"
               tooltipEvent="hover"
             />
             <label for="workspace_detail_form_rssFeedUrl"> {{ 'WORKSPACE.RSS_FEED_URL' | translate }} </label>
@@ -170,7 +170,7 @@
             [class.cursor-pointer]="editMode"
             (click)="selectedFileInputLogo.click()"
             [pTooltip]="'IMAGE.TOOLTIPS.UPLOAD' | translate"
-            tooltipPosition="right"
+            tooltipPosition="top"
             tooltipEvent="hover"
           ></button>
           <div class="flex flex-column row-gap-1 w-full">
@@ -184,7 +184,7 @@
                 (input)="onInputChange($event)"
                 (change)="onInputChange($event)"
                 [pTooltip]="'IMAGE.TOOLTIPS.URL' | translate"
-                tooltipPosition="right"
+                tooltipPosition="top"
                 tooltipEvent="hover"
               />
               <label for="workspace_detail_form_logo_url"> {{ 'IMAGE.LOGO_URL' | translate }} </label>

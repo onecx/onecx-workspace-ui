@@ -287,6 +287,7 @@
       <app-menu-intern [menuItem]="menuItem" [dateFormat]="dateFormat"></app-menu-intern>
     </p-tabPanel>
   </p-tabView>
+
   <ng-template pTemplate="footer">
     <div class="flex flex-wrap gap-2 justify-content-end">
       <button
@@ -306,7 +307,7 @@
         icon="pi pi-save"
         class="m-0"
         [disabled]="!formGroup.valid"
-        (onClick)="onMenuSave()"
+        (click)="onMenuSave()"
         [label]="'ACTIONS.SAVE' | translate"
         [pTooltip]="'ACTIONS.TOOLTIPS.SAVE' | translate"
         tooltipPosition="top"

@@ -209,7 +209,6 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   private addNewSlots(): void {
     // 4. add new (not undeployed) Slots (not yet in Workspace but part of a registered product)
     this.wProductNames.forEach((pn) => {
-      console.log('PSSLOTS', this.psSlots)
       this.psSlots
         .filter((psp) => psp.productName === pn)
         .forEach((ps) => {

@@ -304,7 +304,7 @@
         "COMPONENTS.DEREGISTER": "Komponenten abmelden"
       },
       "CHANGED": "Es gibt wichtige Änderungen.",
-      "NEW.TOOLTIP": "Dieser Slot ist nicht für den Workspace registriert. Mit Klick registrieren.",
+      "NEW.TOOLTIP": "Den Slot für den Workspace registrieren.",
       "DEPRECATED": "Veraltet",
       "DEPRECATED.TOOLTIP": "Dieser Slot ist veraltet und wird in absehbarer Zeit nicht mehr nutzbar sein.",
       "UNDEPLOYED": "Unverfügbar",
@@ -371,7 +371,7 @@
         "POSITION.TOOLTIP": "Der Position-Pfad des Menü-Eintrags im Format [Eltern-Position.]Position",
         "I18N": "I18n",
         "I18N.TOOLTIP": "Indikator ob Übersetzungen vorhanden sind",
-        "I18N.ROW.TOOLTIP": "Mindestens eine Übersetzung ist vorhanden",
+        "I18N.ROW.TOOLTIP": "Mindestens eine Übersetzung vorhanden",
         "URL.TOOLTIP": "Die URL die beim Aktivieren aufgerufen wird",
         "PRODUCT.TOOLTIP": "Indikator ob die Menü-URL durch eine registrierte Applikation angeboten wird",
         "EXTERN.TOOLTIP": "Wenn diese Option aktiviert ist, wird der Workspace verlassen"
