@@ -3,7 +3,7 @@ import { Location } from '@angular/common'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { catchError, map, Observable, of, Subject, takeUntil } from 'rxjs'
 
-import { PortalMessageService } from '@onecx/angular-integration-interface'
+import { PortalMessageService, WorkspaceService } from '@onecx/angular-integration-interface'
 
 import {
   ImagesInternalAPIService,
@@ -46,6 +46,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
 
   constructor(
     private location: Location,
+    public workspaceService: WorkspaceService,
     private msgService: PortalMessageService,
     private imageApi: ImagesInternalAPIService,
     private workspaceApi: WorkspaceAPIService,
@@ -54,7 +55,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     this.deploymentPath = getLocation().deploymentPath === '/' ? '' : getLocation().deploymentPath.slice(0, -1)
 
     this.formGroup = new FormGroup({
-      //name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
       disabled: new FormControl(null),
       displayName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
       theme: new FormControl(null),
@@ -122,6 +122,15 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       }
     })
     return changes
+  }
+
+  public onPrepareProductLink(productName: string, appId: string, endpoint?: string, param?: string) {
+    console.log(
+      'onPrepareProductLink: ' + productName + '  appId: ' + appId + '  endpoint: ' + endpoint + '  param: ' + param
+    )
+    this.workspaceService.getUrl(appId, productName, endpoint ?? '').subscribe((path) => {
+      console.log('onPrepareProductLink: ' + path)
+    })
   }
 
   public onFileUpload(ev: Event): void {

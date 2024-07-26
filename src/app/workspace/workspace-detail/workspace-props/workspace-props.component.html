@@ -34,20 +34,39 @@
         </div>
 
         <div>
-          <span class="p-float-label mb-1">
-            <p-dropdown
-              #inputTheme
-              id="workspace_detail_form_theme"
-              formControlName="theme"
-              styleClass="w-full input-field-correction"
-              [options]="(themes$ | async) ?? []"
-              [pTooltip]="'WORKSPACE.TOOLTIPS.THEME' | translate"
-              tooltipPosition="top"
+          <div class="p-inputgroup mb-1" controlErrorAnchor>
+            <span class="p-float-label">
+              <p-dropdown
+                #inputTheme
+                id="workspace_detail_form_theme"
+                formControlName="theme"
+                styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
+                [options]="(themes$ | async) ?? []"
+                [pTooltip]="'WORKSPACE.TOOLTIPS.THEME' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+              >
+              </p-dropdown>
+              <label for="workspace_detail_form_theme"> {{ 'WORKSPACE.THEME' | translate }} </label>
+            </span>
+            <span
+              class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
+              [ngClass]="!editMode && inputBaseUrl.value ? 'cursor-pointer' : 'p-disabled'"
+              [pTooltip]="'GENERAL.COMMING_SOON' | translate"
+              tooltipPosition="right"
               tooltipEvent="hover"
             >
-            </p-dropdown>
-            <label for="workspace_detail_form_theme"> {{ 'WORKSPACE.THEME' | translate }} </label>
-          </span>
+              <!--
+              [pTooltip]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
+            
+              a id="workspace_detail_form_theme_link"
+                [href]="workspaceService.getUrl('onecx-theme-ui', 'onecx-theme', '') | async"
+                (click)="$event.stopPropagation()"
+              >
+                <span class="pi pi-link"></span>
+              </a-->
+            </span>
+          </div>
         </div>
 
         <div>
@@ -67,20 +86,19 @@
               <label for="workspace_detail_form_baseUrl"> {{ 'WORKSPACE.BASE_URL' | translate }} </label>
             </span>
             <span
-              class="p-inputgroup-addon bg-primary pseudo-button"
+              class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
               [ngClass]="!editMode && inputBaseUrl.value ? 'cursor-pointer' : 'p-disabled'"
               [pTooltip]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
               tooltipPosition="right"
               tooltipEvent="hover"
             >
               <a
+                tabindex="0"
                 id="workspace_detail_form_baseUrl_link"
-                class="bg-primary"
                 target="_blank"
                 [href]="deploymentPath + inputBaseUrl.value"
                 (click)="$event.stopPropagation()"
               >
-                <span class="pi pi-link"></span>
               </a>
             </span>
           </div>
@@ -106,7 +124,7 @@
             <label for="workspace_detail_form_home_page"> {{ 'WORKSPACE.HOME_PAGE' | translate }} </label>
           </span>
           <span
-            class="p-inputgroup-addon bg-primary pseudo-button"
+            class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
             [ngClass]="!editMode && !workspace?.disabled && workspace?.homePage ? 'cursor-pointer' : 'p-disabled'"
             [pTooltip]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
             tooltipPosition="right"
@@ -116,11 +134,9 @@
               tabindex="0"
               target="_blank"
               id="workspace_detail_form_homePage_link"
-              class="bg-primary"
               [href]="prepareProductUrl(inputHomePage.value)"
               (click)="$event.stopPropagation()"
             >
-              <span class="pi pi-link"></span>
             </a>
           </span>
         </div>

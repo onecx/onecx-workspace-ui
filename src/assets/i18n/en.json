@@ -94,6 +94,7 @@
       "DETAILS.TOOLTIP": "Display details",
       "NEW.TOOLTIP": "Create new entry",
       "GOTO_MENU": "Go to Menu Management",
+      "GOTO_THEME": "Go to Theme",
       "OPEN_IN_NEW_TAB": "Open in a new TAB",
       "MOVE_UP": "Move up",
       "MOVE_DOWN": "Move down"
@@ -142,6 +143,7 @@
     "SAVE_TREE_STRUCTURE": "Save tree structure"
   },
   "GENERAL": {
+    "COMMING_SOON": "Available soon",
     "BOOLEAN": {
       "TRUE": "Yes",
       "FALSE": "No"
