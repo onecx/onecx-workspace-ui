@@ -39,8 +39,7 @@ class MockWorkspaceContactComponent {
 describe('WorkspaceDetailComponent', () => {
   let component: WorkspaceDetailComponent
   let fixture: ComponentFixture<WorkspaceDetailComponent>
-  let mockActivatedRoute: Partial<ActivatedRoute>
-  let mockRouter = new MockRouter()
+  const mockRouter = new MockRouter()
   let mockUserService: any
 
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
@@ -58,7 +57,7 @@ describe('WorkspaceDetailComponent', () => {
       id: 'mockId'
     }
   }
-  mockActivatedRoute = {
+  const mockActivatedRoute: Partial<ActivatedRoute> = {
     snapshot: mockActivatedRouteSnapshot as ActivatedRouteSnapshot
   }
 

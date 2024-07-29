@@ -60,7 +60,7 @@ export class MenuDetailComponent implements OnChanges {
   public tabIndex = 0
   public menuItem: MenuItem | undefined
   private menuItem$: Observable<MenuItem | null> = new Observable<MenuItem | null>()
-  public iconItems: SelectItem[] = [{ label: '', value: null }] // default value is empty
+  public iconItems: SelectItem[] = [] // default value is empty
   public scopeItems: SelectItem[]
   private posPattern = '[0-9]{1,9}'
   private panelHeight = 0
@@ -95,7 +95,6 @@ export class MenuDetailComponent implements OnChanges {
     this.iconItems.push(...this.icon.icons.map((i) => ({ label: i, value: i })))
     this.iconItems.sort(dropDownSortItemsByLabel)
     this.scopeItems = [
-      { label: '', value: null },
       { label: 'APP', value: 'APP' },
       { label: 'PAGE', value: 'PAGE' },
       { label: 'WORKSPACE', value: 'WORKSPACE' }
@@ -397,9 +396,9 @@ export class MenuDetailComponent implements OnChanges {
       .getProductsByWorkspaceId({ id: this.workspaceId! })
       .pipe(
         map((products) => {
-          for (let p of products) {
+          for (const p of products) {
             if (p.microfrontends) {
-              for (let mfe of p.microfrontends) {
+              for (const mfe of p.microfrontends) {
                 this.mfeItems.push({
                   ...mfe,
                   mfePath: Location.joinWithSlash(mfe.basePath ?? '', p.baseUrl ?? ''),

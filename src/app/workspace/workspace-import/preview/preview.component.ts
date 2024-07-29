@@ -79,11 +79,11 @@ export class PreviewComponent implements OnInit, OnChanges {
   // fired on each keyup/paste event
   public onModelChange(): void {
     if (this.importRequestDTO.workspaces) {
-      let key: string[] = Object.keys(this.importRequestDTO.workspaces)
+      const key: string[] = Object.keys(this.importRequestDTO.workspaces)
       // if workspace name was changed then change the also the key:
       if (key[0] !== this.formGroup.controls['workspaceName'].value) {
         // save the workspace properties to be reassigned on new key
-        let workspaceProps = Object.getOwnPropertyDescriptor(this.importRequestDTO.workspaces, key[0])
+        const workspaceProps = Object.getOwnPropertyDescriptor(this.importRequestDTO.workspaces, key[0])
         Object.defineProperty(
           this.importRequestDTO.workspaces,
           this.formGroup.controls['workspaceName'].value,
@@ -133,12 +133,12 @@ export class PreviewComponent implements OnInit, OnChanges {
 
   private extractProductNames(products?: EximProduct[]): string[] {
     const par: string[] = []
-    if (products) for (let p of products) par.push(p.productName ?? '')
+    if (products) for (const p of products) par.push(p.productName ?? '')
     return par
   }
   private extractRoleNames(roles?: EximWorkspaceRole[]): string[] {
     const par: string[] = []
-    if (roles) for (let r of roles) par.push(r.name ?? '')
+    if (roles) for (const r of roles) par.push(r.name ?? '')
     return par
   }
 }

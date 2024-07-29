@@ -4,6 +4,7 @@ import { TranslateService } from '@ngx-translate/core'
 
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { MenuItemAPIService, MenuSnapshot } from 'src/app/shared/generated'
+import { FileSelectEvent } from 'primeng/fileupload'
 
 @Component({
   selector: 'app-menu-import',
@@ -39,7 +40,7 @@ export class MenuImportComponent implements OnInit {
     this.menuItemStructure = undefined
     this.menuImportError = false
   }
-  public onImportMenuSelect(event: { files: FileList }): void {
+  public onImportMenuSelect(event: FileSelectEvent): void {
     event.files[0].text().then((text) => {
       this.menuItemStructure = undefined
       this.menuImportError = false

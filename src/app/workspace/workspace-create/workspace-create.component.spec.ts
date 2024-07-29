@@ -37,8 +37,7 @@ class MockRouter {
 describe('WorkspaceCreateComponent', () => {
   let component: WorkspaceCreateComponent
   let fixture: ComponentFixture<WorkspaceCreateComponent>
-  let mockRouter = new MockRouter()
-  let mockActivatedRoute: Partial<ActivatedRoute>
+  const mockRouter = new MockRouter()
 
   const wApiServiceSpy = {
     getAllThemes: jasmine.createSpy('getAllThemes').and.returnValue(of(['theme1', 'theme2'])),
@@ -53,7 +52,7 @@ describe('WorkspaceCreateComponent', () => {
       id: 'mockId'
     }
   }
-  mockActivatedRoute = {
+  const mockActivatedRoute: Partial<ActivatedRoute> = {
     snapshot: mockActivatedRouteSnapshot as ActivatedRouteSnapshot
   }
 

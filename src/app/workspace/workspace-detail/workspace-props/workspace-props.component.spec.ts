@@ -324,12 +324,12 @@ describe('WorkspacePropsComponent', () => {
 
   describe('getLogoUrl', () => {
     it('call with undefined workspace', () => {
-      let testWorkspace: Workspace = undefined!
+      const testWorkspace: Workspace = undefined!
       expect(component.getLogoUrl(testWorkspace)).toBeUndefined
     })
 
     it('call with undefined workspace', () => {
-      let testWorkspace: Workspace = {
+      const testWorkspace: Workspace = {
         name: 'name',
         theme: 'theme',
         baseUrl: '/some/base/url',

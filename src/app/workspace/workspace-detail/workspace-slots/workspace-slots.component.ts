@@ -122,7 +122,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
       .pipe(
         map((products) => {
           this.wProductNames = []
-          for (let p of products) this.wProductNames.push(p.productName ?? '')
+          for (const p of products) this.wProductNames.push(p.productName ?? '')
           return []
         }),
         catchError((err) => {
@@ -166,7 +166,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private extractPsData(products: ProductStoreItem[]): void {
-    for (let p of products) {
+    for (const p of products) {
       // 1. enrich wSlotsIntern with deployment information
       p.slots?.forEach((sps: SlotPS) => {
         const ps: CombinedSlot = { ...sps, productName: p.productName } as CombinedSlot

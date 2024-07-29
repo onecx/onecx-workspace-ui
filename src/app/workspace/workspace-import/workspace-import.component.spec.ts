@@ -44,7 +44,7 @@ describe('WorkspaceImportComponent', () => {
   let component: WorkspaceImportComponent
   let fixture: ComponentFixture<WorkspaceImportComponent>
   let mockActivatedRoute: ActivatedRoute
-  let mockRouter = new MockRouter()
+  const mockRouter = new MockRouter()
   const mockAuthService = jasmine.createSpyObj('IAuthService', ['hasPermission'])
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let mockWindow: any

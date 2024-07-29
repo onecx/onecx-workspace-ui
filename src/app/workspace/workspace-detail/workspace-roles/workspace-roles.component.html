@@ -29,7 +29,7 @@
             [(ngModel)]="quickFilterValue"
             (onChange)="onQuickFilterChange($event)"
           >
-            <ng-template let-item>{{ item.label | translate }}</ng-template>
+            <ng-template pTemplate="item" let-item>{{ item.label | translate }}</ng-template>
           </p-selectButton>
         </div>
       </div>
@@ -81,68 +81,70 @@
       </div>
     </div>
   </ng-template>
-  <ng-template let-role let-item="rowIndex" pTemplate="gridItem">
-    <div class="col-12 sm:col-6 md:col-4 lg:col-4 xl:col-3 p-3">
-      <a
-        [id]="'workspace_detail_roles_data_item_' + item"
-        class="block card relative py-2 px-3 hover:bg-gray-200 cursor-pointer"
-        [class.card-primary-color]="role.isWorkspaceRole"
-        (click)="onEditRole($event, role)"
-        [pTooltip]="role.description ?? ''"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      >
-        <span
-          *ngIf="role.isWorkspaceRole"
-          [id]="'workspace_detail_roles_data_item_' + item + '_iam'"
-          class="card-badge-left card-badge-left-text badge-2-text p-1"
-          [class.line-through]="role.deleted"
-          [class.danger-action-text]="role.deleted"
-          [class.text-md]="role.deleted"
-          [pTooltip]="'DIALOG.ROLE.ORIGIN.WORKSPACE' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-          >W</span
-        >
-        <span
-          *ngIf="role.isIamRole"
-          [id]="'workspace_detail_roles_data_item_' + item + '_iam'"
-          class="card-badge-left card-badge-left-text badge-1 p-1"
-          [pTooltip]="'DIALOG.ROLE.ORIGIN.IAM' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-          >IAM</span
-        >
+  <ng-template let-roles let-item="rowIndex" pTemplate="gridItem">
+    <div class="grid grid-nogutter">
+      <div *ngFor="let role of roles" class="col-12 sm:col-6 md:col-4 lg:col-4 xl:col-3 p-3">
         <a
-          *ngIf="role.isWorkspaceRole && hasDeletePermission"
-          [id]="'workspace_detail_roles_data_item_' + item + '_delete'"
-          class="card-badge-right badge-1 p-1 pi pi-trash pseudo-button-link"
-          (click)="onDeleteRole($event, role)"
-          [pTooltip]="'ACTIONS.DELETE.ROLE' | translate"
+          [id]="'workspace_detail_roles_data_item_' + item"
+          class="block card relative py-2 px-3 hover:bg-gray-200 cursor-pointer"
+          [class.card-primary-color]="role.isWorkspaceRole"
+          (click)="onEditRole($event, role)"
+          [pTooltip]="role.description ?? ''"
           tooltipPosition="top"
           tooltipEvent="hover"
-        ></a>
-        <a
-          *ngIf="!role.isWorkspaceRole && role.isIamRole && hasCreatePermission"
-          [id]="'workspace_detail_roles_data_item_' + item + '_create'"
-          class="card-badge-right badge-1 p-1 pi pi-plus hover:text-white pseudo-button-link text-color"
-          [class.bg-white]="role.isWorkspaceRole"
-          (click)="onAddRole($event, role)"
-          [pTooltip]="'ACTIONS.CREATE.WORKSPACE.ROLE' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        ></a>
-        <div class="h-2rem flex flex-column justify-content-center text-center">
-          <div
-            class="font-bold"
-            [pTooltip]="role.name.length > 30 ? role.name : ''"
+        >
+          <span
+            *ngIf="role.isWorkspaceRole"
+            [id]="'workspace_detail_roles_data_item_' + item + '_iam'"
+            class="card-badge-left card-badge-left-text badge-2-text p-1"
+            [class.line-through]="role.deleted"
+            [class.danger-action-text]="role.deleted"
+            [class.text-md]="role.deleted"
+            [pTooltip]="'DIALOG.ROLE.ORIGIN.WORKSPACE' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
+            >W</span
           >
-            {{ limitText(role.name, 30) }}
+          <span
+            *ngIf="role.isIamRole"
+            [id]="'workspace_detail_roles_data_item_' + item + '_iam'"
+            class="card-badge-left card-badge-left-text badge-1 p-1"
+            [pTooltip]="'DIALOG.ROLE.ORIGIN.IAM' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+            >IAM</span
+          >
+          <a
+            *ngIf="role.isWorkspaceRole && hasDeletePermission"
+            [id]="'workspace_detail_roles_data_item_' + item + '_delete'"
+            class="card-badge-right badge-1 p-1 pi pi-trash pseudo-button-link"
+            (click)="onDeleteRole($event, role)"
+            [pTooltip]="'ACTIONS.DELETE.ROLE' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          ></a>
+          <a
+            *ngIf="!role.isWorkspaceRole && role.isIamRole && hasCreatePermission"
+            [id]="'workspace_detail_roles_data_item_' + item + '_create'"
+            class="card-badge-right badge-1 p-1 pi pi-plus hover:text-white pseudo-button-link text-color"
+            [class.bg-white]="role.isWorkspaceRole"
+            (click)="onAddRole($event, role)"
+            [pTooltip]="'ACTIONS.CREATE.WORKSPACE.ROLE' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          ></a>
+          <div class="h-2rem flex flex-column justify-content-center text-center">
+            <div
+              class="font-bold"
+              [pTooltip]="role.name.length > 30 ? role.name : ''"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            >
+              {{ limitText(role.name, 30) }}
+            </div>
           </div>
-        </div>
-      </a>
+        </a>
+      </div>
     </div>
   </ng-template>
 </p-dataView>

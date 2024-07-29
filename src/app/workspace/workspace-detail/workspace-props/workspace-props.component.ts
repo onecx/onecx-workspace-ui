@@ -217,7 +217,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       .pipe(
         map((products) => {
           this.productPathList.push('')
-          for (let p of products) this.productPathList.push(p.baseUrl ?? '')
+          for (const p of products) this.productPathList.push(p.baseUrl ?? '')
           this.productPathList.sort(sortByLocale)
         }),
         catchError((err) => {

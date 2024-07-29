@@ -123,7 +123,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
       return
     }
     this.isLoading = true
-    let wKeys: string[] = Object.keys(this.importRequestDTO.workspaces)
+    const wKeys: string[] = Object.keys(this.importRequestDTO.workspaces)
     this.importRequestDTO.workspaces[wKeys[0]].name = this.workspaceName
     this.importRequestDTO.workspaces[wKeys[0]].displayName = this.workspaceName
     this.importRequestDTO.workspaces[wKeys[0]].theme = this.themeName
@@ -168,7 +168,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
   // NAVIGATE import step : BACK
   public back(): void {
     if (this.importRequestDTO?.workspaces) {
-      let key: string[] = Object.keys(this.importRequestDTO.workspaces)
+      const key: string[] = Object.keys(this.importRequestDTO.workspaces)
       if (this.activeIndex == 2 && this.importRequestDTO?.workspaces) {
         this.importRequestDTO.workspaces[key[0]].name = this.confirmComponent?.workspaceName ?? ''
         this.importRequestDTO.workspaces[key[0]].baseUrl = this.confirmComponent?.baseUrl ?? ''

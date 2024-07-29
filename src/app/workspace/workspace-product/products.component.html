@@ -69,7 +69,7 @@
             styleClass="w-6rem hidden md:block"
             (onChange)="onSourceViewModeChange($event.value)"
           >
-            <ng-template let-item>
+            <ng-template let-item pTemplate="item">
               <span
                 [class]="item.icon"
                 [pTooltip]="item.titleKey | translate"
@@ -107,7 +107,7 @@
             styleClass="w-6rem hidden md:block"
             (onChange)="onTargetViewModeChange($event.value)"
           >
-            <ng-template let-item>
+            <ng-template let-item pTemplate="item">
               <span
                 [class]="item.icon"
                 [pTooltip]="item.titleKey | translate"

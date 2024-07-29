@@ -127,7 +127,7 @@
                   [(ngModel)]="menuContextValue"
                   (onChange)="onMenuContextChange($event)"
                 >
-                  <ng-template let-item>
+                  <ng-template let-item pTemplate="item">
                     <span [pTooltip]="item.label + '.TOOLTIP' | translate" tooltipPosition="top" tooltipEvent="hover">
                       {{ item.label | translate }}
                     </span>

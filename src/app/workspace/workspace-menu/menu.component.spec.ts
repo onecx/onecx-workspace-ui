@@ -24,6 +24,7 @@ import {
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { HttpErrorResponse } from '@angular/common/http'
 import { TreeNode } from 'primeng/api'
+import { TreeTableNodeExpandEvent } from 'primeng/treetable'
 
 const workspace: Workspace = {
   id: 'id',
@@ -99,8 +100,6 @@ const state: MenuState = {
 describe('MenuComponent', () => {
   let component: MenuComponent
   let fixture: ComponentFixture<MenuComponent>
-  let mockActivatedRoute: Partial<ActivatedRoute>
-  let mockUserService: any
 
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
   const apiServiceSpy = {
@@ -126,7 +125,7 @@ describe('MenuComponent', () => {
   const stateServiceSpy = jasmine.createSpyObj<MenuStateService>('MenuStateService', ['getState', 'updateState'])
   const locationSpy = jasmine.createSpyObj<Location>('Location', ['back'])
 
-  mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
+  const mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
   mockUserService.hasPermission.and.callFake((permission: string) => {
     return ['MENU#EDIT', 'MENU#GRANT', 'WORKSPACE_ROLE#EDIT'].includes(permission)
   })
@@ -136,7 +135,7 @@ describe('MenuComponent', () => {
       id: 'mockId'
     }
   }
-  mockActivatedRoute = {
+  const mockActivatedRoute: Partial<ActivatedRoute> = {
     snapshot: mockActivatedRouteSnapshot as ActivatedRouteSnapshot
   }
 
@@ -502,7 +501,7 @@ describe('MenuComponent', () => {
     const event = { node: { key: 'node', expanded: true } }
     spyOn(mockExpansionState, 'set').and.callThrough()
 
-    component.onHierarchyViewChange(event)
+    component.onHierarchyViewChange(event as TreeTableNodeExpandEvent)
 
     expect(stateServiceSpy.getState().treeExpansionState.set).toHaveBeenCalledWith(event.node.key, event.node.expanded)
 
