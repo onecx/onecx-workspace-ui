@@ -10,7 +10,7 @@
           class="w-full pt-3 pb-2"
           [value]="workspace.name"
           [pTooltip]="'WORKSPACE.TOOLTIPS.NAME' | translate"
-          tooltipPosition="bottom"
+          tooltipPosition="top"
           tooltipEvent="hover"
         />
         <label for="workspace_detail_item_name">{{ 'WORKSPACE.NAME' | translate }}</label>
@@ -28,7 +28,7 @@
             class="w-full pt-3 pb-2"
             [value]="workspace.creationDate | date: dateFormat"
             [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_DATE' | translate"
-            tooltipPosition="bottom"
+            tooltipPosition="top"
             tooltipEvent="hover"
           />
           <label for="workspace_detail_item_creationDate">{{ 'INTERNAL.CREATION_DATE' | translate }}</label>
@@ -45,7 +45,7 @@
             class="w-full pt-3 pb-2"
             [value]="workspace.creationUser"
             [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_USER' | translate"
-            tooltipPosition="bottom"
+            tooltipPosition="top"
             tooltipEvent="hover"
           />
           <label for="workspace_detail_item_creationUser">{{ 'INTERNAL.CREATION_USER' | translate }}</label>
@@ -64,7 +64,7 @@
             class="w-full pt-3 pb-2"
             [value]="workspace.modificationDate | date: dateFormat"
             [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_DATE' | translate"
-            tooltipPosition="bottom"
+            tooltipPosition="top"
             tooltipEvent="hover"
           />
           <label for="workspace_detail_item_modificationDate">{{ 'INTERNAL.MODIFICATION_DATE' | translate }}</label>
@@ -81,7 +81,7 @@
             class="w-full pt-3 pb-2"
             [value]="workspace.modificationUser"
             [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_USER' | translate"
-            tooltipPosition="bottom"
+            tooltipPosition="top"
             tooltipEvent="hover"
           />
           <label for="workspace_detail_item_modificationUser">{{ 'INTERNAL.MODIFICATION_USER' | translate }}</label>
@@ -100,7 +100,7 @@
           [styleClass]="'cursor-auto shadow-none'"
           [label]="'INTERNAL.OPERATOR' | translate"
           [pTooltip]="'INTERNAL.TOOLTIPS.OPERATOR' | translate"
-          tooltipPosition="bottom"
+          tooltipPosition="top"
           tooltipEvent="hover"
         ></p-checkbox>
       </div>
@@ -114,7 +114,7 @@
           [styleClass]="'cursor-auto shadow-none'"
           [label]="'INTERNAL.MANDATORY' | translate"
           [pTooltip]="'INTERNAL.TOOLTIPS.MANDATORY' | translate"
-          tooltipPosition="bottom"
+          tooltipPosition="top"
           tooltipEvent="hover"
         ></p-checkbox>
       </div>
