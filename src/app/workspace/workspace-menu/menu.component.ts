@@ -548,7 +548,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   private initParentNodes(): void {
-    this.parentItems = [{ label: '', value: null }] // default value is empty
+    this.parentItems = [] // default value is empty
   }
   private prepareParentNodes(nodes: TreeNode[]): void {
     nodes.forEach((m) => {

@@ -70,6 +70,7 @@
                 id="workspace_menu_detail_field_parent_id"
                 styleClass="w-full input-field-correction"
                 formControlName="parentItemId"
+                [showClear]="true"
                 [options]="parentItems"
               >
               </p-dropdown>
@@ -150,12 +151,13 @@
                 id="workspace_menu_detail_field_badge"
                 styleClass="w-full min-w-min input-field-correction"
                 formControlName="badge"
+                [showClear]="true"
                 [options]="iconItems"
               >
                 <ng-template let-ico pTemplate="selectedItem">
                   <div class="flex">
                     <span class="pi pi-{{ ico.value }} mr-3"> </span>
-                    <span>{{ ico.label || 'dummy-for-renderer' }}</span>
+                    <span>{{ ico.label }}</span>
                   </div>
                 </ng-template>
                 <ng-template let-ico pTemplate="item">
@@ -180,6 +182,7 @@
                 id="workspace_menu_detail_field_scope"
                 styleClass="w-full min-w-min input-field-correction"
                 formControlName="scope"
+                [showClear]="true"
                 [options]="scopeItems"
               >
               </p-dropdown>

@@ -17,6 +17,7 @@ import { DialogModule } from 'primeng/dialog'
 import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog'
 import { DividerModule } from 'primeng/divider'
 import { DropdownModule } from 'primeng/dropdown'
+import { FloatLabelModule } from 'primeng/floatlabel'
 import { FileUploadModule } from 'primeng/fileupload'
 import { InputTextModule } from 'primeng/inputtext'
 import { InputTextareaModule } from 'primeng/inputtextarea'
@@ -57,6 +58,7 @@ import { ImageContainerComponent } from './image-container/image-container.compo
     DividerModule,
     DropdownModule,
     DynamicDialogModule,
+    FloatLabelModule,
     FileUploadModule,
     FormsModule,
     InputTextModule,
@@ -93,6 +95,7 @@ import { ImageContainerComponent } from './image-container/image-container.compo
     DividerModule,
     DropdownModule,
     DynamicDialogModule,
+    FloatLabelModule,
     FileUploadModule,
     FormsModule,
     InputTextModule,
