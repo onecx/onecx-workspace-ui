@@ -90,7 +90,7 @@
     "@commitlint/config-conventional": "^19.2.2",
     "@docusaurus/module-type-aliases": "~3.4.0",
     "@openapitools/openapi-generator-cli": "^2.13.4",
-    "@schematics/angular": "18.1.1",
+    "@schematics/angular": "18.1.2",
     "@storybook/addon-essentials": "8.2.5",
     "@storybook/angular": "8.2.5",
     "@storybook/core-server": "8.2.5  ",
