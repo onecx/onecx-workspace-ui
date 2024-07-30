@@ -34,7 +34,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   public iamRoles$!: Observable<IAMRolePageResult>
   public roles$!: Observable<Role[]>
   public roles: Role[] = []
-  public role!: Role | undefined
+  public role: Role | undefined
   public workspaceRoles: string[] = []
   public limitText = limitText
 

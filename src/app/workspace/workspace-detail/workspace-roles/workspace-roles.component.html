@@ -29,7 +29,7 @@
             [(ngModel)]="quickFilterValue"
             (onChange)="onQuickFilterChange($event)"
           >
-            <ng-template let-item>{{ item.label | translate }}</ng-template>
+            <ng-template let-item>{{ 'DIALOG.ROLE.QUICK_FILTER.LABEL' | translate }}</ng-template>
           </p-selectButton>
         </div>
       </div>
@@ -135,7 +135,7 @@
         <div class="h-2rem px-2 flex flex-column justify-content-center text-center">
           <div
             class="font-bold"
-            [pTooltip]="role.name.length > 25 ? role.name : ''"
+            [pTooltip]="role.name?.length > 25 ? role.name : ''"
             tooltipPosition="top"
             tooltipEvent="hover"
           >

@@ -281,7 +281,7 @@
                 class="text-primary font-italic cursor-pointer pr-3"
                 [href]="rowData.gotoUrl"
                 target="_blank"
-                (click)="($event.stopPropagation)"
+                (click)="$event.stopPropagation()"
                 [pTooltip]="('ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate) + ': ' + rowData.gotoUrl"
                 tooltipPosition="top"
                 tooltipEvent="hover"
