@@ -30,7 +30,7 @@
           readonly
           id="slot_detail_slot_creationDate"
           class="w-13rem pt-3 pb-2"
-          [value]="slot ? (slot.creationDate | date : dateFormat) : ''"
+          [value]="slot ? (slot.creationDate | date: dateFormat) : ''"
           [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_DATE' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"
@@ -44,7 +44,7 @@
           readonly
           id="slot_detail_slot_modifcationDate"
           class="w-13rem pt-3 pb-2"
-          [value]="slot ? (slot.modificationDate | date : dateFormat) : ''"
+          [value]="slot ? (slot.modificationDate | date: dateFormat) : ''"
           [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_DATE' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"

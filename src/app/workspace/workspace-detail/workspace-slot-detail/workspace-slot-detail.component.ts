@@ -82,7 +82,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
     if (this.deregisterItems.length === 0) return
     this.displayDeregisterConfirmation = false
     // restore
-    for (let comp of this.deregisterItems) {
+    for (const comp of this.deregisterItems) {
       this.psComponents = this.psComponents.filter((psc) => psc.name !== comp.name)
     }
     this.wComponents = this.wComponentsOrg

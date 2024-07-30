@@ -11,6 +11,7 @@ import { ToggleButtonModule } from 'primeng/togglebutton'
 import { MenuItemAPIService } from 'src/app/shared/generated'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { of, throwError } from 'rxjs'
+import { TreeTableNodeExpandEvent } from 'primeng/treetable'
 
 const state: MenuState = {
   pageSize: 0,
@@ -184,7 +185,7 @@ describe('MenuPreviewComponent', () => {
     const event = { node: { key: 'node', expanded: true } }
     spyOn(mockExpansionState, 'set').and.callThrough()
 
-    component.onHierarchyViewChange(event)
+    component.onHierarchyViewChange(event as TreeTableNodeExpandEvent)
 
     expect(stateServiceSpy.getState().treeExpansionState.set).toHaveBeenCalledWith(event.node.key, event.node.expanded)
   })

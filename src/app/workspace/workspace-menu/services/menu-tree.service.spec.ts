@@ -45,7 +45,7 @@ describe('MenuTreeService', () => {
       { key: 'root2', children: [{ key: 'child2' }] }
     ]
 
-    let result = service.calculateNewNodesPositions(undefined, undefined, mockTreeNodes)
+    const result = service.calculateNewNodesPositions(undefined, undefined, mockTreeNodes)
     expect(result).toEqual([
       { id: 'root1', position: 0 },
       { id: 'root2', position: 1 }
@@ -60,7 +60,7 @@ describe('MenuTreeService', () => {
         { key: 'newParent', children: [{ key: 'otherChild' }, { key: 'child4' }] }
       ]
 
-      let result = service['findNodeRecursively'](id, mockTreeNodes as unknown as TreeNode<any>[])
+      const result = service['findNodeRecursively'](id, mockTreeNodes as unknown as TreeNode<any>[])
 
       expect(result).toEqual({ key: 'otherChild' })
     })

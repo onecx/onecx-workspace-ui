@@ -7,6 +7,8 @@ import { dropDownSortItemsByLabel } from 'src/app/shared/utils'
 import { MenuItemAPIService, WorkspaceMenuItem } from 'src/app/shared/generated'
 import { MenuTreeService } from '../services/menu-tree.service'
 import { MenuStateService } from '../services/menu-state.service'
+import { TreeTableNodeExpandEvent } from 'primeng/treetable'
+import { TreeNodeDropEvent } from 'primeng/tree'
 
 export type I18N = { [key: string]: string }
 
@@ -129,7 +131,7 @@ export class MenuPreviewComponent implements OnChanges {
   /**
    * End of DRAG & DROP action
    */
-  public onDrop(event: { dragNode: TreeNode<WorkspaceMenuItem>; dropNode: TreeNode<WorkspaceMenuItem> }): void {
+  public onDrop(event: TreeNodeDropEvent): void {
     if (event.dragNode && event.dropNode) {
       const menuItem = event.dragNode.data
       const targetPos = event.dropNode.data?.position ?? 0
@@ -147,7 +149,7 @@ export class MenuPreviewComponent implements OnChanges {
           .subscribe({
             next: (data) => {
               this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' })
-              event.dragNode.data = data
+              if (event.dragNode) event.dragNode.data = data
               this.reorderEmitter.emit(true)
             },
             error: (err: { error: any }) =>
@@ -157,8 +159,8 @@ export class MenuPreviewComponent implements OnChanges {
     }
   }
 
-  public onHierarchyViewChange(event: { node: { key: string; expanded: boolean } }): void {
-    this.stateService.getState().treeExpansionState.set(event.node.key, event.node.expanded)
+  public onHierarchyViewChange(event: TreeTableNodeExpandEvent): void {
+    this.stateService.getState().treeExpansionState.set(event.node.key!, event.node.expanded!)
   }
 
   public onLanguagesPreviewChange(lang: string) {

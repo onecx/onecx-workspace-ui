@@ -122,7 +122,6 @@ const product: Product = {
 describe('MenuDetailComponent', () => {
   let component: MenuDetailComponent
   let fixture: ComponentFixture<MenuDetailComponent>
-  let mockActivatedRoute: Partial<ActivatedRoute>
   let mockUserService: any
 
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
@@ -145,7 +144,7 @@ describe('MenuDetailComponent', () => {
       id: 'mockId'
     }
   }
-  mockActivatedRoute = {
+  const mockActivatedRoute: Partial<ActivatedRoute> = {
     snapshot: mockActivatedRouteSnapshot as ActivatedRouteSnapshot
   }
 
@@ -306,7 +305,7 @@ describe('MenuDetailComponent', () => {
 
         component.ngOnChanges({ workspaceId: {} as SimpleChange })
 
-        let controlMfeItems: MenuURL[] = []
+        const controlMfeItems: MenuURL[] = []
         controlMfeItems.push({ mfePath: '/workspace', product: 'MENU_ITEM.URL.UNKNOWN.PRODUCT', isSpecial: true })
         controlMfeItems.push({ mfePath: '', product: 'MENU_ITEM.URL.EMPTY' })
         controlMfeItems.push({ ...microfrontend, mfePath: '/path/base', product: 'display name', isSpecial: false })
@@ -332,7 +331,7 @@ describe('MenuDetailComponent', () => {
     })
 
     it('should return if no mfeItems are there to load', () => {
-      let controlMfeItems: MenuURL[] = []
+      const controlMfeItems: MenuURL[] = []
       controlMfeItems.push({ mfePath: '/workspace', product: 'MENU_ITEM.URL.UNKNOWN.PRODUCT', isSpecial: true })
       controlMfeItems.push({ mfePath: '', product: 'MENU_ITEM.URL.EMPTY' })
       component.mfeItems = controlMfeItems
@@ -526,7 +525,7 @@ describe('MenuDetailComponent', () => {
   })
 
   it('should update tabIndex onTabPanelChange', () => {
-    let mockEvent = { index: 3 }
+    const mockEvent = { index: 3 }
     spyOn(component as any, 'preparePanelHeight')
 
     component.onTabPanelChange(mockEvent)
@@ -550,7 +549,6 @@ describe('MenuDetailComponent', () => {
       el: {
         nativeElement: nativeElement
       },
-      orientation: 'horizontal',
       style: {},
       styleClass: ''
     }
@@ -677,7 +675,7 @@ describe('MenuDetailComponent', () => {
    **************************************************************************/
 
   it('should set overlayVisible to true on field onFocusUrl', () => {
-    let mockField: any = { overlayVisible: false }
+    const mockField: any = { overlayVisible: false }
 
     component.onFocusUrl(mockField)
 
@@ -686,7 +684,7 @@ describe('MenuDetailComponent', () => {
 
   describe('onDropDownClick', () => {
     it('expect filteredMfes to equal mfeItems', () => {
-      let mockField: any = { overlayVisible: false }
+      const mockField: any = { overlayVisible: false }
 
       component.onDropdownClick(mockField)
 
@@ -694,7 +692,7 @@ describe('MenuDetailComponent', () => {
     })
 
     it('expect field.overlayVisible equal true', () => {
-      let mockField: any = { overlayVisible: false }
+      const mockField: any = { overlayVisible: false }
 
       component.onDropdownClick(mockField)
 
@@ -722,7 +720,7 @@ describe('MenuDetailComponent', () => {
   })
 
   it('onClearUrl', () => {
-    let controlMfeItems: MenuURL[] = []
+    const controlMfeItems: MenuURL[] = []
     controlMfeItems.push({ mfePath: '', product: 'MENU_ITEM.URL.EMPTY' })
     controlMfeItems.push({
       mfePath: 'http://testdomain/workspace',
@@ -756,7 +754,7 @@ describe('MenuDetailComponent', () => {
   })
 
   it('should assign filtered MenuURL items if query equals microfrontend mfePath', () => {
-    let mf: Microfrontend = {
+    const mf: Microfrontend = {
       id: 'id',
       appId: 'appId',
       basePath: '/path'

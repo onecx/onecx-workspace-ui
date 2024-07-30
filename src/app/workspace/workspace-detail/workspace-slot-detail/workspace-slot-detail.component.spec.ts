@@ -13,7 +13,6 @@ import { CombinedSlot, ExtendedComponent } from '../workspace-slots/workspace-sl
 describe('WorkspaceSlotDetailComponent', () => {
   let component: WorkspaceSlotDetailComponent
   let fixture: ComponentFixture<WorkspaceSlotDetailComponent>
-  let mockUserService: any
 
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
   const slotServiceSpy = {
@@ -21,7 +20,7 @@ describe('WorkspaceSlotDetailComponent', () => {
     deleteSlotById: jasmine.createSpy('deleteSlotById').and.returnValue(of({}))
   }
 
-  mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
+  const mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
   mockUserService.hasPermission.and.callFake((permission: string) => {
     return ['WORKSPACE_SLOT#EDIT'].includes(permission)
   })

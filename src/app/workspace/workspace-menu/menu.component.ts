@@ -5,7 +5,7 @@ import { ActivatedRoute } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 import { catchError, combineLatest, map, Observable, Subject, of } from 'rxjs'
 
-import { TreeTable } from 'primeng/treetable'
+import { TreeTable, TreeTableNodeExpandEvent } from 'primeng/treetable'
 import { Overlay } from 'primeng/overlay'
 import { SelectItem, TreeNode } from 'primeng/api'
 
@@ -300,8 +300,8 @@ export class MenuComponent implements OnInit, OnDestroy {
     })
     this.menuNodes = [...this.menuNodes]
   }
-  public onHierarchyViewChange(event: { node: { key: string; expanded: boolean } }): void {
-    this.stateService.getState().treeExpansionState.set(event.node.key, event.node.expanded)
+  public onHierarchyViewChange(event: TreeTableNodeExpandEvent): void {
+    this.stateService.getState().treeExpansionState.set(event.node.key!, event.node.expanded!)
   }
 
   /****************************************************************************
@@ -420,7 +420,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
   private findTreeNodeById(source: TreeNode[], id?: string): TreeNode | undefined {
     let treeNode: TreeNode | undefined = undefined
-    for (let node of source) {
+    for (const node of source) {
       if (node.data.id === id) treeNode = node
       else if (!treeNode && node.children && node.children.length > 0)
         treeNode = this.findTreeNodeById(node.children, id)
@@ -543,12 +543,12 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
   private prepareItemUrl(url: string | undefined): string | undefined {
     if (!(url && this.workspace?.baseUrl)) return undefined
-    let url_parts = window.location.href.split('/')
+    const url_parts = window.location.href.split('/')
     return url_parts[0] + '//' + url_parts[2] + Location.joinWithSlash(this.workspace?.baseUrl, url)
   }
 
   private initParentNodes(): void {
-    this.parentItems = [{ label: '', value: null }] // default value is empty
+    this.parentItems = [] // default value is empty
   }
   private prepareParentNodes(nodes: TreeNode[]): void {
     nodes.forEach((m) => {

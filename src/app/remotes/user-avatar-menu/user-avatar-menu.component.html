@@ -39,33 +39,39 @@
     </li>
     <ng-container *ngIf="userMenu$ | async as userMenu">
       <li class="layout-topbar-action-item" *ngFor="let item of userMenu; let i = index">
-        <a
-          *ngIf="!item.routerLink && item.url && !item.command"
-          class="flex flex-row align-items-center w-full h-full p-3 gap-2"
-          pRipple
-          [attr.href]="item.url"
-        >
-          <i *ngIf="item.icon" [ngClass]="item.icon"></i>
-          <span>{{ item.label }}</span>
-        </a>
-        <a
-          *ngIf="item.routerLink && !item.url && !item.command"
-          class="flex flex-row align-items-center w-full h-full p-3 gap-2"
-          pRipple
-          [routerLink]="item.routerLink"
-        >
-          <i *ngIf="item.icon" [ngClass]="item.icon"></i>
-          <span>{{ item.label }}</span>
-        </a>
-        <a
-          *ngIf="!item.routerLink && !item.url && item.command"
-          class="flex flex-row align-items-center w-full h-full p-3 gap-2"
-          pRipple
-          (click)="item.command()"
-        >
-          <i *ngIf="item.icon" [ngClass]="item.icon"></i>
-          <span>{{ item.label }}</span>
-        </a>
+        <div>
+          <a
+            *ngIf="!item.routerLink && item.url && !item.command"
+            class="flex flex-row align-items-center w-full h-full p-3 gap-2"
+            pRipple
+            [attr.href]="item.url"
+          >
+            <i *ngIf="item.icon" [ngClass]="item.icon"></i>
+            <span>{{ item.label }}</span>
+          </a>
+        </div>
+        <div>
+          <a
+            *ngIf="item.routerLink && !item.url && !item.command"
+            class="flex flex-row align-items-center w-full h-full p-3 gap-2"
+            pRipple
+            [routerLink]="item.routerLink"
+          >
+            <i *ngIf="item.icon" [ngClass]="item.icon"></i>
+            <span>{{ item.label }}</span>
+          </a>
+        </div>
+        <div>
+          <a
+            *ngIf="!item.routerLink && !item.url && item.command"
+            class="flex flex-row align-items-center w-full h-full p-3 gap-2"
+            pRipple
+            (click)="item.command({})"
+          >
+            <i *ngIf="item.icon" [ngClass]="item.icon"></i>
+            <span>{{ item.label }}</span>
+          </a>
+        </div>
       </li>
     </ng-container>
   </ul>

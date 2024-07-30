@@ -10,6 +10,7 @@ export class ConfirmComponent implements OnInit {
   @Input() public themeName?: string
   @Input() public hasPermission = false
   @Input() public baseUrl?: string
+  // eslint-disable-next-line @typescript-eslint/ban-types
   @Input() public importResponse: {} | undefined
   @Output() public isLoading = new EventEmitter<boolean>(true)
 

@@ -105,7 +105,7 @@ export class WorkspaceCreateComponent implements OnInit {
       .pipe(
         map((result) => {
           if (result.stream) {
-            for (let p of result.stream) {
+            for (const p of result.stream) {
               if (p.baseUrl) this.mfeRList.push(p.baseUrl)
             }
             this.mfeRList.sort(sortByLocale)

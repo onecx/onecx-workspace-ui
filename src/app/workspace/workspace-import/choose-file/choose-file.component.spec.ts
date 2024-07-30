@@ -11,6 +11,7 @@ import { ChooseFileComponent } from './choose-file.component'
 import { WorkspaceAPIService, WorkspaceSnapshot } from 'src/app/shared/generated'
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { HttpClient } from '@angular/common/http'
+import { FileSelectEvent } from 'primeng/fileupload'
 
 const snapshot: WorkspaceSnapshot = {
   workspaces: {
@@ -102,7 +103,7 @@ describe('ChooseFileComponent', () => {
     // }
     component.importWorkspace = snapshot
 
-    component.onSelect(event)
+    component.onSelect(event as any as FileSelectEvent)
 
     setTimeout(() => {
       expect(file.text).toHaveBeenCalled()
@@ -123,7 +124,7 @@ describe('ChooseFileComponent', () => {
     spyOn(file, 'text').and.returnValue(Promise.resolve('{"portal"}'))
     const event = { files: fileList }
 
-    component.onSelect(event)
+    component.onSelect(event as any as FileSelectEvent)
 
     tick()
 

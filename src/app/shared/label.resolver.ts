@@ -10,6 +10,6 @@ export class LabelResolver implements Resolve<string> {
   resolve(route: ActivatedRouteSnapshot, _state: RouterStateSnapshot): string | Observable<string> | Promise<string> {
     return route.data['breadcrumb']
       ? this.translate.get(route.data['breadcrumb']).pipe(map((t) => t.toString()))
-      : route.routeConfig?.path ?? ''
+      : (route.routeConfig?.path ?? '')
   }
 }

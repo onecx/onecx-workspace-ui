@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { ColorSketchModule } from 'ngx-color/sketch'
-import { ErrorTailorModule } from '@ngneat/error-tailor'
+import { provideErrorTailorConfig } from '@ngneat/error-tailor'
 
 import { AutoCompleteModule } from 'primeng/autocomplete'
 import { BadgeModule } from 'primeng/badge'
@@ -17,6 +17,7 @@ import { DialogModule } from 'primeng/dialog'
 import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog'
 import { DividerModule } from 'primeng/divider'
 import { DropdownModule } from 'primeng/dropdown'
+import { FloatLabelModule } from 'primeng/floatlabel'
 import { FileUploadModule } from 'primeng/fileupload'
 import { InputTextModule } from 'primeng/inputtext'
 import { InputTextareaModule } from 'primeng/inputtextarea'
@@ -57,6 +58,7 @@ import { ImageContainerComponent } from './image-container/image-container.compo
     DividerModule,
     DropdownModule,
     DynamicDialogModule,
+    FloatLabelModule,
     FileUploadModule,
     FormsModule,
     InputTextModule,
@@ -77,8 +79,52 @@ import { ImageContainerComponent } from './image-container/image-container.compo
     TreeModule,
     TreeTableModule,
     FileUploadModule,
+    TranslateModule
+  ],
+  exports: [
+    AutoCompleteModule,
+    BadgeModule,
+    CheckboxModule,
+    CalendarModule,
+    ColorSketchModule,
+    CommonModule,
+    ConfirmDialogModule,
+    ConfirmPopupModule,
+    DataViewModule,
+    DialogModule,
+    DividerModule,
+    DropdownModule,
+    DynamicDialogModule,
+    FloatLabelModule,
+    FileUploadModule,
+    FormsModule,
+    InputTextModule,
+    InputTextareaModule,
+    KeyFilterModule,
+    ListboxModule,
+    MultiSelectModule,
+    OverlayPanelModule,
+    PanelModule,
+    PickListModule,
+    ReactiveFormsModule,
+    SelectButtonModule,
+    StepsModule,
+    TabViewModule,
+    TableModule,
+    ToastModule,
+    ToggleButtonModule,
+    TreeModule,
+    TreeTableModule,
     TranslateModule,
-    ErrorTailorModule.forRoot({
+    ImageContainerComponent,
+    FileUploadModule
+  ],
+  //this is not elegant, for some reason the injection token from primeng does not work across federated module
+  providers: [
+    ConfirmationService,
+    LabelResolver,
+    { provide: DialogService, useClass: PortalDialogService },
+    provideErrorTailorConfig({
       controlErrorsOn: { async: true, blur: true, change: true },
       errors: {
         useFactory: (i18n: TranslateService) => {
@@ -100,46 +146,6 @@ import { ImageContainerComponent } from './image-container/image-container.compo
         )
       }
     })
-  ],
-  exports: [
-    AutoCompleteModule,
-    BadgeModule,
-    CheckboxModule,
-    CalendarModule,
-    ColorSketchModule,
-    CommonModule,
-    ConfirmDialogModule,
-    ConfirmPopupModule,
-    DataViewModule,
-    DialogModule,
-    DividerModule,
-    DropdownModule,
-    DynamicDialogModule,
-    FileUploadModule,
-    FormsModule,
-    InputTextModule,
-    InputTextareaModule,
-    KeyFilterModule,
-    ListboxModule,
-    MultiSelectModule,
-    OverlayPanelModule,
-    PanelModule,
-    PickListModule,
-    ReactiveFormsModule,
-    SelectButtonModule,
-    StepsModule,
-    TabViewModule,
-    TableModule,
-    ToastModule,
-    ToggleButtonModule,
-    TreeModule,
-    TreeTableModule,
-    TranslateModule,
-    ErrorTailorModule,
-    ImageContainerComponent,
-    FileUploadModule
-  ],
-  //this is not elegant, for some reason the injection token from primeng does not work across federated module
-  providers: [ConfirmationService, LabelResolver, { provide: DialogService, useClass: PortalDialogService }]
+  ]
 })
 export class SharedModule {}
