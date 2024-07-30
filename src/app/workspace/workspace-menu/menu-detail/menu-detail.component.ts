@@ -425,14 +425,11 @@ export class MenuDetailComponent implements OnChanges {
   /**
    * EVENTS on URL field
    **/
-  public onFocusUrl(field: any): void {
-    field.overlayVisible = true
+  // show all paths
+  public onDropdownClick(ev: any): void {
+    this.filteredMfes = [...this.mfeItems] // trigger change event
   }
-  // ignore url value and show all paths
-  public onDropdownClick(field: any): void {
-    field.overlayVisible = true
-    this.filteredMfes = this.mfeItems
-  }
+
   // inkremental filtering: search path with current value after key up
   public onKeyUpUrl(ev: Event): void {
     if (ev.target) {

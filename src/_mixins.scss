@@ -185,11 +185,24 @@
     }
   }
 }
+
 @mixin picklist-zebra-rows {
   :host ::ng-deep {
     .p-picklist-list li {
       &:nth-child(odd) {
         background-color: #f8f9fa;
+      }
+    }
+  }
+}
+@mixin picklist-hide-double-buttons {
+  :host ::ng-deep {
+    .p-picklist .p-picklist-buttons {
+      button[icon='pi pi-angle-double-left'],
+      button[icon='pi pi-angle-double-right'],
+      button:nth-child(2),
+      button:nth-child(4) {
+        display: none !important;
       }
     }
   }
@@ -221,6 +234,7 @@
     td button.p-button {
       &.p-button-icon-only {
         width: unset !important;
+        padding: 0.3rem;
       }
       &.p-button-rounded {
         height: unset !important;
@@ -248,6 +262,14 @@
     .p-autocomplete .p-autocomplete-loader {
       /* fix for bug in PrimeNG */
       display: none;
+    }
+    .p-autocomplete-input.p-inputtext.p-autocomplete-dd-input {
+      border-bottom-right-radius: unset;
+      border-top-right-radius: unset;
+    }
+    .p-autocomplete-dropdown.p-button-icon-only.p-button {
+      border-bottom-left-radius: unset;
+      border-top-left-radius: unset;
     }
   }
 }

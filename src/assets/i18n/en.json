@@ -302,7 +302,7 @@
         "WORKSPACE": "Role exists in Workspace",
         "IAM.VIEW": "This role only exists in Identity Access Management and therefore cannot be changed here.",
         "WORKSPACE.EDIT": "This role only exists in Workspace and not in Identity Access Management.",
-        "IAM.WORKSPACE.EDIT": "This role exists in Identity Access Management and Workspace (same name). However, a name change only affects the Workspace role."
+        "IAM.WORKSPACE.EDIT": "This role exists in Identity Access Management and Workspace (same name). However, a change only affects the Workspace role."
       }
     },
     "SLOT": {
@@ -314,9 +314,9 @@
       },
       "CHANGED": "There are important changes.",
       "NEW.TOOLTIP": "Register this Slot for the Workspace.",
-      "DEPRECATED": "Outdated",
+      "DEPRECATED": "Slot is outdated",
       "DEPRECATED.TOOLTIP": "This Slot is outdated and will no longer be usable in the foreseeable future.",
-      "UNDEPLOYED": "Unavailable",
+      "UNDEPLOYED": "Slot is unavailable",
       "UNDEPLOYED.TOOLTIP": "This Slot is no longer usable.",
       "PRODUCTS": "Registered by Applications",
       "PRODUCTS.NOT_EXIST": "Not available",

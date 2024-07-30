@@ -1,6 +1,9 @@
 @import 'src/_mixins.scss';
 
+@include card-badges;
 @include danger-action;
+@include picklist-zebra-rows;
+@include picklist-hide-double-buttons;
 
 :host ::ng-deep {
   @media (max-width: 991px) {
