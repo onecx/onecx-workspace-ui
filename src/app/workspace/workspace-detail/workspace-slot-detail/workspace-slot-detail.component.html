@@ -113,12 +113,26 @@
     >
       <ng-template pTemplate="sourceHeader">
         <div class="flex flex-row justify-content-between align-items-center column-gap-2">
-          <div class="flex-grow-1 font-semibold">{{ 'DIALOG.SLOT.COMPONENTS.NOT_USED' | translate }}</div>
+          <div
+            class="flex-grow-1 font-semibold"
+            [pTooltip]="'DIALOG.SLOT.COMPONENTS.NOT_USED.TOOLTIP' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          >
+            {{ 'DIALOG.SLOT.COMPONENTS.NOT_USED' | translate }}
+          </div>
         </div>
       </ng-template>
       <ng-template pTemplate="targetHeader">
         <div class="flex flex-row justify-content-between align-items-center column-gap-2">
-          <div class="flex-grow-1 font-semibold">{{ 'DIALOG.SLOT.COMPONENTS.USED' | translate }}</div>
+          <div
+            class="flex-grow-1 font-semibold"
+            [pTooltip]="'DIALOG.SLOT.COMPONENTS.USED.TOOLTIP' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          >
+            {{ 'DIALOG.SLOT.COMPONENTS.USED' | translate }}
+          </div>
         </div>
       </ng-template>
 
@@ -128,7 +142,7 @@
           [id]="'workspace_detail_slot_picklist_' + idx + '_undeployed'"
           class="card-badge-right badge-1 danger-action-text font-bold text-lg pi pi-ban"
           [pTooltip]="'DIALOG.SLOT.UNDEPLOYED.TOOLTIP' | translate"
-          tooltipPosition="right"
+          tooltipPosition="top"
           tooltipEvent="hover"
         ></span>
         <span
@@ -136,7 +150,7 @@
           [id]="'workspace_detail_slot_picklist_' + idx + '_deprecated'"
           class="card-badge-right badge-1 danger-action-text font-bold text-lg pi pi-exclamation-circle"
           [pTooltip]="'DIALOG.SLOT.DEPRECATED.TOOLTIP' | translate"
-          tooltipPosition="right"
+          tooltipPosition="top"
           tooltipEvent="hover"
         ></span>
         <div class="py-1 px-2 flex flex-column row-gap-1" (dblclick)="return($event)">
@@ -163,7 +177,7 @@
         (click)="onClose()"
         [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
         [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
-        tooltipPosition="right"
+        tooltipPosition="top"
         tooltipEvent="hover"
       ></button>
     </div>
@@ -200,7 +214,7 @@
         (click)="onClose()"
         [label]="'ACTIONS.CONFIRMATION.NO' | translate"
         [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
-        tooltipPosition="bottom"
+        tooltipPosition="top"
         tooltipEvent="hover"
       ></button>
       <button
@@ -213,7 +227,7 @@
         (click)="onDeleteSlot()"
         [label]="'ACTIONS.CONFIRMATION.YES' | translate"
         [pTooltip]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
-        tooltipPosition="bottom"
+        tooltipPosition="top"
         tooltipEvent="hover"
       ></button>
     </div>
@@ -250,7 +264,7 @@
         (click)="onDeregisterCancellation()"
         [label]="'ACTIONS.CONFIRMATION.NO' | translate"
         [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
-        tooltipPosition="bottom"
+        tooltipPosition="top"
         tooltipEvent="hover"
       ></button>
       <button
@@ -263,7 +277,7 @@
         (click)="onDeregisterConfirmation()"
         [label]="'ACTIONS.CONFIRMATION.YES' | translate"
         [pTooltip]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
-        tooltipPosition="bottom"
+        tooltipPosition="top"
         tooltipEvent="hover"
       ></button>
     </div>

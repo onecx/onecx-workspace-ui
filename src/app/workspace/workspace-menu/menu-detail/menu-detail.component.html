@@ -17,13 +17,7 @@
     >
       <form [formGroup]="formGroup" errorTailor>
         <div class="grid">
-          <div
-            class="col-12 md:col-12 my-1"
-            style="min-width: 15rem"
-            [pTooltip]="'MENU_ITEM.TOOLTIP.MENU_NAME' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          >
+          <div class="col-12 md:col-12 my-1" style="min-width: 15rem">
             <span class="p-float-label" controlErrorAnchor>
               <input
                 pInputText
@@ -31,6 +25,9 @@
                 id="workspace_menu_detail_field_menu_name"
                 class="w-full pt-3 pb-2"
                 formControlName="name"
+                [pTooltip]="'MENU_ITEM.TOOLTIP.MENU_NAME' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
               />
               <label class="ocx-required-label" for="workspace_menu_detail_field_menu_name">
                 {{ 'MENU_ITEM.MENU_NAME' | translate }}
@@ -38,13 +35,7 @@
             </span>
           </div>
 
-          <div
-            class="col-12 md:col-6 my-1"
-            style="min-width: 15rem"
-            [pTooltip]="'MENU_ITEM.TOOLTIP.MENU_ID' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          >
+          <div class="col-12 md:col-6 my-1" style="min-width: 15rem">
             <span class="p-float-label" controlErrorAnchor>
               <input
                 pInputText
@@ -52,19 +43,16 @@
                 id="workspace_menu_detail_field_menu_id"
                 class="w-full pt-3 pb-2"
                 formControlName="key"
+                [pTooltip]="'MENU_ITEM.TOOLTIP.MENU_ID' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
               />
               <label class="ocx-required-label" for="workspace_menu_detail_field_menu_id">
                 {{ 'MENU_ITEM.MENU_ID' | translate }}
               </label>
             </span>
           </div>
-          <div
-            class="col-12 md:col-6 my-1"
-            style="min-width: 15rem"
-            [pTooltip]="'MENU_ITEM.TOOLTIP.PARENT_ID' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          >
+          <div class="col-12 md:col-6 my-1" style="min-width: 15rem">
             <span class="p-float-label">
               <p-dropdown
                 id="workspace_menu_detail_field_parent_id"
@@ -72,28 +60,26 @@
                 formControlName="parentItemId"
                 [showClear]="true"
                 [options]="parentItems"
+                [pTooltip]="'MENU_ITEM.TOOLTIP.PARENT_ID' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
               >
               </p-dropdown>
               <label for="workspace_menu_detail_field_parent_id"> {{ 'MENU_ITEM.PARENT_ID' | translate }} </label>
             </span>
           </div>
 
-          <div
-            class="col-12 my-1"
-            [pTooltip]="'MENU_ITEM.TOOLTIP.URL' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          >
+          <div class="col-12 my-1">
             <span class="p-float-label mb-1" controlErrorAnchor>
               <p-autoComplete
                 #mfeUrl
                 formControlName="url"
                 [suggestions]="filteredMfes"
                 (completeMethod)="onFilterPaths($event)"
-                (onKeyUp)="onKeyUpUrl($event)"
-                (onFocus)="onFocusUrl(mfeUrl)"
                 (onClear)="onClearUrl()"
-                (onDropdownClick)="onDropdownClick(mfeUrl)"
+                (onKeyUp)="onKeyUpUrl($event)"
+                (onFocus)="onDropdownClick($event)"
+                (onDropdownClick)="onDropdownClick($event)"
                 [minLength]="0"
                 styleClass="w-full"
                 field="mfePath"
@@ -101,6 +87,9 @@
                 [dropdownMode]="'current'"
                 [completeOnFocus]="true"
                 [showClear]="true"
+                [pTooltip]="'MENU_ITEM.TOOLTIP.URL' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
               >
                 <ng-template let-mfe pTemplate="item">
                   <div
@@ -122,12 +111,7 @@
             </span>
           </div>
 
-          <div
-            class="col-12 md:col-2 my-1"
-            [pTooltip]="'MENU_ITEM.TOOLTIP.POSITION' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          >
+          <div class="col-12 md:col-2 my-1">
             <span class="p-float-label mb-1" controlErrorAnchor>
               <input
                 pInputText
@@ -135,17 +119,14 @@
                 id="workspace_menu_detail_field_position"
                 class="w-full pt-3 pb-2"
                 formControlName="position"
+                [pTooltip]="'MENU_ITEM.TOOLTIP.POSITION' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
               />
               <label for="workspace_menu_detail_field_position">Position</label>
             </span>
           </div>
-          <div
-            class="col-12 md:col-4 my-1"
-            style="min-width: 10rem"
-            [pTooltip]="'MENU_ITEM.TOOLTIP.BADGE' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          >
+          <div class="col-12 md:col-4 my-1" style="min-width: 10rem">
             <span class="p-float-label mb-1" controlErrorAnchor>
               <p-dropdown
                 id="workspace_menu_detail_field_badge"
@@ -153,6 +134,9 @@
                 formControlName="badge"
                 [showClear]="true"
                 [options]="iconItems"
+                [pTooltip]="'MENU_ITEM.TOOLTIP.BADGE' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
               >
                 <ng-template let-ico pTemplate="selectedItem">
                   <div class="flex">
@@ -170,13 +154,7 @@
               <label for="workspace_menu_detail_field_badge"> {{ 'MENU_ITEM.BADGE' | translate }} </label>
             </span>
           </div>
-          <div
-            class="col-12 md:col-3 my-1"
-            style="min-width: 10rem"
-            [pTooltip]="'MENU_ITEM.TOOLTIP.SCOPE' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          >
+          <div class="col-12 md:col-3 my-1" style="min-width: 10rem">
             <span class="p-float-label mb-1" controlErrorAnchor>
               <p-dropdown
                 id="workspace_menu_detail_field_scope"
@@ -184,34 +162,30 @@
                 formControlName="scope"
                 [showClear]="true"
                 [options]="scopeItems"
+                [pTooltip]="'MENU_ITEM.TOOLTIP.SCOPE' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
               >
               </p-dropdown>
               <label for="workspace_menu_detail_field_scope"> {{ 'MENU_ITEM.SCOPE' | translate }} </label>
             </span>
           </div>
 
-          <div
-            class="col-12 md:col-3 my-1 md:pl-5 flex justify-content-start"
-            [pTooltip]="'MENU_ITEM.TOOLTIP.DISABLED' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          >
+          <div class="col-12 md:col-3 my-1 md:pl-5 flex justify-content-start">
             <p-checkbox
               id="workspace_menu_detail_field_disabled"
               class="checkbox-label"
               formControlName="disabled"
               [label]="'MENU_ITEM.DISABLED' | translate"
               [binary]="true"
+              [pTooltip]="'MENU_ITEM.TOOLTIP.DISABLED' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
             >
             </p-checkbox>
           </div>
 
-          <div
-            class="col-12 md:col-9 my-1"
-            [pTooltip]="'MENU_ITEM.TOOLTIP.DESCRIPTION' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          >
+          <div class="col-12 md:col-9 my-1">
             <span class="p-float-label mb-1" controlErrorAnchor>
               <input
                 pInputText
@@ -219,22 +193,23 @@
                 id="workspace_menu_detail_field_description"
                 class="w-full pt-3 pb-2"
                 formControlName="description"
+                [pTooltip]="'MENU_ITEM.TOOLTIP.DESCRIPTION' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
               />
               <label for="workspace_menu_detail_field_description"> {{ 'MENU_ITEM.DESCRIPTION' | translate }} </label>
             </span>
           </div>
-          <div
-            class="col-12 md:col-3 my-1 md:pl-5 flex justify-content-start"
-            [pTooltip]="'MENU_ITEM.TOOLTIP.EXTERN' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          >
+          <div class="col-12 md:col-3 my-1 md:pl-5 flex justify-content-start">
             <p-checkbox
               id="workspace_menu_detail_field_workspace_exit"
               class="checkbox-label"
               formControlName="external"
               [label]="'MENU_ITEM.EXTERN' | translate"
               [binary]="true"
+              [pTooltip]="'MENU_ITEM.TOOLTIP.EXTERN' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
             >
             </p-checkbox>
           </div>
@@ -248,19 +223,16 @@
     >
       <div class="mt-3 mb-1 flex flex-column gap-4">
         <span class="p-float-label p-input-icon-right w-30rem" *ngFor="let language of languagesDisplayed; index as i">
-          <a
-            class="pi pi-times"
-            (click)="onRemoveLanguage(language.value)"
-            [pTooltip]="'DIALOG.MENU.TABS.I18N.REMOVE_LANGUAGE' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          ></a>
+          <a class="pi pi-times" (click)="onRemoveLanguage(language.value)"></a>
           <input
             pInputText
             type="text"
             [id]="'i18n_' + language.value"
             class="w-30rem pt-3 pb-2"
             [(ngModel)]="language.data"
+            [pTooltip]="'DIALOG.MENU.TABS.I18N.REMOVE_LANGUAGE' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
           />
           <label [for]="'i18n_' + language.value"> {{ getLanguageLabel(language.value) }} </label>
         </span>

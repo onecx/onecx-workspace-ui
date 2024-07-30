@@ -6,7 +6,7 @@ import { environment } from 'src/environments/environment'
 
 import { RefType, Workspace } from 'src/app/shared/generated'
 
-export function limitText(text: string | null, limit: number): string {
+export function limitText(text: string | null | undefined, limit: number): string {
   if (text) {
     return text.length < limit ? text : text.substring(0, limit) + '...'
   } else {

@@ -2,8 +2,10 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  EventEmitter,
   Renderer2,
   Input,
+  Output,
   OnDestroy,
   OnChanges,
   SimpleChanges
@@ -68,6 +70,7 @@ const ALL_VIEW_MODES = [
 })
 export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   @Input() workspace!: Workspace | undefined
+  @Output() changed = new EventEmitter()
 
   private readonly destroy$ = new Subject()
   public exceptionKey: string | undefined
@@ -117,7 +120,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     this.appState.currentMfe$.pipe(map((mfe) => (this.currentMfe = mfe))).subscribe()
     this.formGroup = this.fb.group({
       displayName: new FormControl({ value: null, disabled: true }),
-      baseUrl: new FormControl(null),
+      baseUrl: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(200)]),
       modules: this.fb.array(['a', 'b'])
     })
     this.viewingModes = ALL_VIEW_MODES
@@ -499,6 +502,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
             const wp = this.wProducts.filter((wp) => wp.productName === p.productName)[0]
             wp.id = data.resource.id
             wp.bucket = 'TARGET'
+            this.changed.emit()
             if (itemCount === successCounter + errorCounter)
               this.displayRegisterMessages('REGISTRATION', successCounter, errorCounter)
           },
@@ -555,6 +559,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
             successCounter++
             const psp = this.psProducts.filter((psp) => psp.productName === p.productName)[0]
             psp.bucket = 'SOURCE'
+            this.changed.emit()
             if (itemCount === successCounter + errorCounter)
               this.displayRegisterMessages('DEREGISTRATION', successCounter, errorCounter)
           },

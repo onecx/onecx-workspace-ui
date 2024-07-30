@@ -10,9 +10,37 @@
 >
   <form [formGroup]="formGroupRole" errorTailor>
     <div class="flex flex-wrap flex-column gap-4 justify-content-between">
+      <p-message
+        *ngIf="role?.isIamRole && !role?.isWorkspaceRole"
+        id="workspace_role_create_info"
+        severity="info"
+        [text]="'DIALOG.ROLE.ORIGIN.IAM.VIEW' | translate"
+      ></p-message>
+      <p-message
+        *ngIf="!role?.isIamRole && role?.isWorkspaceRole"
+        id="workspace_role_create_info"
+        severity="info"
+        [text]="'DIALOG.ROLE.ORIGIN.WORKSPACE.EDIT' | translate"
+      ></p-message>
+      <p-message
+        *ngIf="role?.isIamRole && role?.isWorkspaceRole"
+        id="workspace_role_create_info"
+        severity="info"
+        [text]="'DIALOG.ROLE.ORIGIN.IAM.WORKSPACE.EDIT' | translate"
+      ></p-message>
+
       <div class="mt-1">
         <span class="p-float-label" controlErrorAnchor>
-          <input pInputText type="text" class="w-full" id="workspace_role_create_field_name" formControlName="name" />
+          <input
+            pInputText
+            type="text"
+            class="w-full"
+            id="workspace_role_create_field_name"
+            formControlName="name"
+            [pTooltip]="'ROLE.NAME.TOOLTIP' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          />
           <label class="ocx-required-label" for="workspace_role_create_field_name">
             {{ 'ROLE.NAME' | translate }}
           </label>
@@ -26,6 +54,9 @@
             class="w-full"
             id="workspace_role_create_field_description"
             formControlName="description"
+            [pTooltip]="'ROLE.DESCRIPTION.TOOLTIP' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
           />
           <label for="workspace_role_create_field_description">{{ 'ROLE.DESCRIPTION' | translate }} </label>
         </span>
@@ -46,7 +77,7 @@
         (click)="onClose()"
         [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
         [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
-        tooltipPosition="right"
+        tooltipPosition="top"
         tooltipEvent="hover"
       ></button>
       <button
@@ -61,7 +92,7 @@
         (click)="onClose()"
         [label]="'ACTIONS.CANCEL' | translate"
         [pTooltip]="'ACTIONS.TOOLTIPS.CANCEL' | translate"
-        tooltipPosition="bottom"
+        tooltipPosition="top"
         tooltipEvent="hover"
       ></button>
       <button
@@ -76,7 +107,7 @@
         [disabled]="!formGroupRole.valid"
         [label]="'ACTIONS.SAVE' | translate"
         [pTooltip]="'ACTIONS.TOOLTIPS.SAVE' | translate"
-        tooltipPosition="bottom"
+        tooltipPosition="top"
         tooltipEvent="hover"
       ></button>
     </div>
@@ -112,8 +143,11 @@
         id="workspace_role_delete_button_cancel"
         icon="pi pi-times"
         iconPos="left"
-        [label]="'ACTIONS.CONFIRMATION.NO' | translate"
         (click)="onClose()"
+        [label]="'ACTIONS.CONFIRMATION.NO' | translate"
+        [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
       ></button>
       <button
         pButton
@@ -122,8 +156,11 @@
         id="workspace_role_delete_button_save"
         icon="pi pi-check"
         iconPos="left"
-        [label]="'ACTIONS.CONFIRMATION.YES' | translate"
         (click)="onDeleteRoleConfirmation()"
+        [label]="'ACTIONS.CONFIRMATION.YES' | translate"
+        [pTooltip]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
       ></button>
     </div>
   </ng-template>

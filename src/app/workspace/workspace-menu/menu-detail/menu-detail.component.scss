@@ -7,9 +7,6 @@
 @include input-clear-icon;
 
 :host ::ng-deep {
-  .menu-url-dropdown.p-dropdown .p-dropdown-label:not(.p-dropdown-label-empty) {
-    padding: 0.2rem 1rem !important;
-  }
   .empty-dropdown-list-entry {
     min-height: 1rem;
   }

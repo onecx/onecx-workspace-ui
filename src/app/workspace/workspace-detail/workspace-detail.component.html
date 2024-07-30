@@ -87,7 +87,7 @@
           [header]="'TABS.WORKSPACE.PRODUCTS' | translate"
           [tooltip]="'TABS.WORKSPACE.TOOLTIPS.PRODUCTS' | translate"
         >
-          <app-products [workspace]="workspaceForProducts"></app-products>
+          <app-products [workspace]="workspaceForProducts" (changed)="onProductChanges()"></app-products>
         </p-tabPanel>
       </p-tabView>
     </div>

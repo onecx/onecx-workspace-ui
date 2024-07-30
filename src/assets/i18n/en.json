@@ -189,8 +189,10 @@
   },
   "ROLE": {
     "NAME": "Name",
+    "NAME.TOOLTIP": "Unique Name",
     "TYPE": "Type",
     "DESCRIPTION": "Description",
+    "DESCRIPTION.TOOLTIP": "Additional Information",
     "ROLES_NOT_EXIST": "No roles defined"
   },
   "SLOT": {
@@ -295,8 +297,13 @@
         "IAM": "IAM",
         "WORKSPACE": "Workspace"
       },
-      "ORIGIN.IAM": "Role exists in Identity Access Management",
-      "ORIGIN.WORKSPACE": "Role exists in Workspace"
+      "ORIGIN": {
+        "IAM": "Role exists in Identity Access Management",
+        "WORKSPACE": "Role exists in Workspace",
+        "IAM.VIEW": "This role only exists in Identity Access Management and therefore cannot be changed here.",
+        "WORKSPACE.EDIT": "This role only exists in Workspace and not in Identity Access Management.",
+        "IAM.WORKSPACE.EDIT": "This role exists in Identity Access Management and Workspace (same name). However, a change only affects the Workspace role."
+      }
     },
     "SLOT": {
       "HEADER": {
@@ -307,9 +314,9 @@
       },
       "CHANGED": "There are important changes.",
       "NEW.TOOLTIP": "Register this Slot for the Workspace.",
-      "DEPRECATED": "Outdated",
+      "DEPRECATED": "Slot is outdated",
       "DEPRECATED.TOOLTIP": "This Slot is outdated and will no longer be usable in the foreseeable future.",
-      "UNDEPLOYED": "Unavailable",
+      "UNDEPLOYED": "Slot is unavailable",
       "UNDEPLOYED.TOOLTIP": "This Slot is no longer usable.",
       "PRODUCTS": "Registered by Applications",
       "PRODUCTS.NOT_EXIST": "Not available",
@@ -317,9 +324,9 @@
       "NO_PRODUCTS": "No Application found which has registered this Slot",
       "COMPONENTS": "Content-forming Components",
       "COMPONENTS.USED": "Used Components",
-      "COMPONENTS.USED.TOOLTIP": "Within the Slot used Components",
+      "COMPONENTS.USED.TOOLTIP": "Components used in the slot, in order from top to bottom.",
       "COMPONENTS.NOT_USED": "Available Components",
-      "COMPONENTS.NOT_USED.TOOLTIP": "List of available Components (extracted from Application Store)",
+      "COMPONENTS.NOT_USED.TOOLTIP": "List of available components declared via the registered applications.",
       "MESSAGES": {
         "CREATE_OK": "The Slot was successfully registered",
         "CREATE_NOK": "An error has occurred during Slot registration",

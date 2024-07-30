@@ -153,6 +153,7 @@ describe('WorkspaceSlotDetailComponent', () => {
         { name: 'compA', productName: 'compA', appId: 'appId', undeployed: false, deprecated: false },
         { name: 'compB', productName: 'compA', appId: 'appId', undeployed: false, deprecated: false }
       ]
+      component.wProductNames = ['compA']
 
       component.ngOnChanges()
 

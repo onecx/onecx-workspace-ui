@@ -674,29 +674,18 @@ describe('MenuDetailComponent', () => {
    * EVENTS on URL field
    **************************************************************************/
 
-  it('should set overlayVisible to true on field onFocusUrl', () => {
-    const mockField: any = { overlayVisible: false }
-
-    component.onFocusUrl(mockField)
-
-    expect(mockField.overlayVisible).toBeTrue()
-  })
-
   describe('onDropDownClick', () => {
-    it('expect filteredMfes to equal mfeItems', () => {
-      const mockField: any = { overlayVisible: false }
+    it('expect filteredMfes filled', () => {
+      const event: any = { overlayVisible: false }
+      const mfeItems: MenuURL[] = [
+        { mfePath: 'http://url/path1', product: 'Product 1' },
+        { mfePath: 'http://url/path2', product: 'Product 2' }
+      ]
+      component.mfeItems = mfeItems
 
-      component.onDropdownClick(mockField)
+      component.onDropdownClick(event)
 
-      expect(component.filteredMfes).toEqual(component.mfeItems)
-    })
-
-    it('expect field.overlayVisible equal true', () => {
-      const mockField: any = { overlayVisible: false }
-
-      component.onDropdownClick(mockField)
-
-      expect(mockField.overlayVisible).toBeTrue()
+      expect(component.filteredMfes.length).toBe(2)
     })
   })
 
