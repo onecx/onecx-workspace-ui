@@ -189,8 +189,10 @@
   },
   "ROLE": {
     "NAME": "Name",
+    "NAME.TOOLTIP": "Eindeutiger Name",
     "TYPE": "Typ",
     "DESCRIPTION": "Beschreibung",
+    "DESCRIPTION.TOOLTIP": "Zusatzinformation",
     "ROLES_NOT_EXIST": "Keine Rollen definiert"
   },
   "SLOT": {
@@ -295,8 +297,13 @@
         "IAM": "IAM",
         "WORKSPACE": "Workspace"
       },
-      "ORIGIN.IAM": "Rolle existiert im Identity Access Management",
-      "ORIGIN.WORKSPACE": "Rolle existiert im Workspace"
+      "ORIGIN": {
+        "IAM": "Rolle existiert im Identity Access Management",
+        "WORKSPACE": "Rolle existiert im Workspace",
+        "IAM.VIEW": "Diese Rolle existiert nur im Identity Access Management und kann deshalb hier nicht geändert werden.",
+        "WORKSPACE.EDIT": "Diese Rolle existiert nur Workspace und nicht im Identity Access Management.",
+        "IAM.WORKSPACE.EDIT": "Diese Rolle existiert im Identity Access Management und Workspace (gleicher Name). Eine Namensänderung betrifft allerdings nur die Workspace Rolle."
+      }
     },
     "SLOT": {
       "HEADER": {
@@ -317,9 +324,9 @@
       "NO_PRODUCTS": "Keine Applikation gefunden, die diesen Slot registriert hat",
       "COMPONENTS": "Inhaltsbildende Komponenten",
       "COMPONENTS.USED": "Verwendete Komponenten",
-      "COMPONENTS.USED.TOOLTIP": "Im Slot verwendeten Komponenten",
+      "COMPONENTS.USED.TOOLTIP": "Im Slot verwendeten Komponenten, in der Reihenfolge von oben nach unten.",
       "COMPONENTS.NOT_USED": "Verfügbare Komponenten",
-      "COMPONENTS.NOT_USED.TOOLTIP": "Liste der verfügbaren Komponenten (aus dem Application Store)",
+      "COMPONENTS.NOT_USED.TOOLTIP": "Liste der verfügbaren Komponenten, die über die registrierten Applikationen deklariert worden sind.",
       "MESSAGES": {
         "CREATE_OK": "Der Slot wurde erfolgreich registriert",
         "CREATE_NOK": "Bei der Registrierung des Slots ist ein Fehler aufgetreten",

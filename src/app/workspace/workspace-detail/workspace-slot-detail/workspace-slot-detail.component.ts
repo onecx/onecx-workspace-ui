@@ -15,6 +15,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   @Input() workspace!: Workspace | undefined
   @Input() slotOrg: CombinedSlot | undefined
   @Input() psComponentsOrg!: ExtendedComponent[]
+  @Input() wProductNames: string[] = []
 
   @Input() changeMode: ChangeMode = 'VIEW'
   @Input() displayDetailDialog = false
@@ -54,8 +55,10 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
       this.wComponents = this.slot.psComponents ?? []
       this.wComponentsOrg = [...this.wComponents]
       this.psComponents = []
+      // select available components from product store and registered workspaces
       this.psComponentsOrg.forEach((c) => {
-        if (this.wComponents.filter((wc) => wc.name === c.name).length === 0) this.psComponents.push(c)
+        if (this.wComponents.filter((wc) => wc.name === c.name).length === 0)
+          if (this.wProductNames.includes(c.productName)) this.psComponents.push(c)
       })
       this.psComponents.sort(this.sortComponentsByName)
     }

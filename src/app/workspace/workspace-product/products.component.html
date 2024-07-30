@@ -199,7 +199,7 @@
             <div class="font-semibold text-xl mb-1">{{ 'DIALOG.PRODUCTS.DETAILS' | translate }}</div>
             <div class="text-sm">{{ 'DIALOG.PRODUCTS.ORIGIN.' + displayedDetailItem?.bucket | translate }}</div>
           </div>
-          <div class="h-full pb-4 flex flex-column justify-content-around">
+          <div class="pt-1 flex flex-column justify-content-around">
             <app-image-container
               id="workspace_detail_product_detail_logo"
               [imageUrl]="getImageUrl(displayedDetailItem)"
@@ -210,7 +210,7 @@
           <span
             *ngIf="displayedDetailItem?.undeployed"
             id="workspace_detail_product_item_header_undeployed"
-            class="p-2 danger-action-text font-bold text-xl pi pi-ban"
+            class="pt-1 danger-action-text font-bold text-xl pi pi-ban"
             [pTooltip]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
@@ -218,7 +218,7 @@
           <span
             *ngIf="!displayedDetailItem?.undeployed && displayedDetailItem?.changedComponents"
             id="workspace_detail_product_item_header_changed_mfe"
-            class="p-2 danger-action-text font-bold text-xl pi pi-exclamation-circle"
+            class="pt-1 danger-action-text font-bold text-xl pi pi-exclamation-circle"
             [pTooltip]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
@@ -237,35 +237,30 @@
 
       <form [formGroup]="formGroup">
         <div class="flex flex-column row-gap-4">
-          <span
-            controlErrorAnchor
-            class="p-float-label"
-            [pTooltip]="'PRODUCT.DISPLAY_NAME.TOOLTIP' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          >
+          <span class="p-float-label">
             <input
               pInputText
               type="text"
               class="w-full"
               id="workspace_detail_product_item_display_name"
               formControlName="displayName"
+              [pTooltip]="'PRODUCT.DISPLAY_NAME.TOOLTIP' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
             />
             <label for="workspace_detail_product_item_display_name"> {{ displayedDetailItem?.productName }}</label>
           </span>
           <div>
-            <span
-              class="p-float-label"
-              [pTooltip]="'PRODUCT.BASE_URL.TOOLTIP' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            >
+            <span class="p-float-label" controlErrorAnchor>
               <input
                 pInputText
                 type="text"
                 class="w-full"
                 id="workspace_detail_product_item_baseurl"
                 formControlName="baseUrl"
+                [pTooltip]="'PRODUCT.BASE_URL.TOOLTIP' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
               />
               <label class="ocx-required-label" for="product_detail_item_baseurl">
                 {{ 'PRODUCT.BASE_URL' | translate }}</label
@@ -292,19 +287,16 @@
                     [class.mb-4]="i < moduleControls.controls.length - 2"
                     class="mt-3 flex flex-column"
                   >
-                    <span
-                      controlErrorAnchor
-                      class="p-float-label"
-                      [pTooltip]="'PRODUCT.MFE.BASE_PATH.TOOLTIP' | translate"
-                      tooltipPosition="top"
-                      tooltipEvent="hover"
-                    >
+                    <span controlErrorAnchor class="p-float-label">
                       <input
                         pInputText
                         type="text"
                         class="w-full"
                         [id]="'workspace_detail_product_item_mfe_' + i + '_basePath'"
                         formControlName="basePath"
+                        [pTooltip]="'PRODUCT.MFE.BASE_PATH.TOOLTIP' | translate"
+                        tooltipPosition="top"
+                        tooltipEvent="hover"
                       />
                       <label class="ocx-required-label" [for]="'workspace_detail_product_item_mfe_' + i + '_base_path'">
                         {{ 'PRODUCT.MFE.BASE_PATH' | translate }}</label
@@ -356,10 +348,10 @@
               </div>
             </div>
 
-            <div *ngIf="app.value.components">
-              <div class="mt-3 mb-1 ml-2 text-sm font-bold">Components</div>
-              <div *ngFor="let item of app.value.components; let i = index" class="ml-4 flex flex-row column-gap-2">
-                <span class="mr-2">{{ item.exposedModule }}</span>
+            <div *ngIf="app.value.components" class="text-sm">
+              <div class="mt-3 mb-1 ml-2 font-bold">Components</div>
+              <div *ngFor="let item of app.value.components; let i = index" class="ml-3 flex flex-row column-gap-2">
+                <span class="mr-2">{{ limitText(item.exposedModule, 25) }}</span>
                 <span
                   *ngIf="item.undeployed"
                   class="danger-action-text pi pi-ban"
@@ -381,11 +373,11 @@
           </div>
 
           <div *ngIf="displayedDetailItem?.slots">
-            <p-divider align="center" styleClass="mt-0 mb-2">
+            <p-divider align="center" styleClass="mt-0 mb-1">
               <div class="px-3 font-bold text-primary">Slots</div></p-divider
             >
             <div *ngFor="let item of displayedDetailItem?.slots" class="ml-3 flex flex-row column-gap-3">
-              <span>{{ item.name }}</span>
+              <span>{{ limitText(item.name, 25) }}</span>
               <span
                 *ngIf="item.undeployed"
                 class="danger-action-text pi pi-ban"

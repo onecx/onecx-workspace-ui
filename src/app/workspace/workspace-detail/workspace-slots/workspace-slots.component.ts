@@ -1,4 +1,4 @@
-import { Component, Input, SimpleChanges, OnChanges, OnDestroy, OnInit, ViewChild } from '@angular/core'
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core'
 import { TranslateService } from '@ngx-translate/core'
 import { Subject, catchError, finalize, map, mergeMap, of, switchMap, takeUntil, Observable } from 'rxjs'
 import { DataView } from 'primeng/dataview'
@@ -314,7 +314,9 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
         createSlotRequest: { workspaceId: this.workspace?.id, name: slot.name } as CreateSlotRequest
       })
       .subscribe({
-        next: () => this.loadData(),
+        next: () => {
+          this.loadData()
+        },
         error: () => {
           this.msgService.error({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.NOK' })
         }

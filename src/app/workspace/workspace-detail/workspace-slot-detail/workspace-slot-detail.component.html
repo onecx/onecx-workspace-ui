@@ -113,12 +113,26 @@
     >
       <ng-template pTemplate="sourceHeader">
         <div class="flex flex-row justify-content-between align-items-center column-gap-2">
-          <div class="flex-grow-1 font-semibold">{{ 'DIALOG.SLOT.COMPONENTS.NOT_USED' | translate }}</div>
+          <div
+            class="flex-grow-1 font-semibold"
+            [pTooltip]="'DIALOG.SLOT.COMPONENTS.NOT_USED.TOOLTIP' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          >
+            {{ 'DIALOG.SLOT.COMPONENTS.NOT_USED' | translate }}
+          </div>
         </div>
       </ng-template>
       <ng-template pTemplate="targetHeader">
         <div class="flex flex-row justify-content-between align-items-center column-gap-2">
-          <div class="flex-grow-1 font-semibold">{{ 'DIALOG.SLOT.COMPONENTS.USED' | translate }}</div>
+          <div
+            class="flex-grow-1 font-semibold"
+            [pTooltip]="'DIALOG.SLOT.COMPONENTS.USED.TOOLTIP' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          >
+            {{ 'DIALOG.SLOT.COMPONENTS.USED' | translate }}
+          </div>
         </div>
       </ng-template>
 
