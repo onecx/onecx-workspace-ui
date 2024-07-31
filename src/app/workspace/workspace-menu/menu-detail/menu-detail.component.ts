@@ -19,7 +19,6 @@ import {
 } from 'src/app/shared/generated'
 import { ChangeMode } from '../menu.component'
 import { IconService } from '../services/iconservice'
-import { InputText } from 'primeng/inputtext'
 
 type I18N = { [key: string]: string }
 type LanguageItem = SelectItem & { data: string }
@@ -55,7 +54,6 @@ export class MenuDetailComponent implements OnChanges {
 
   limitText = limitText
   @ViewChild('panelDetail') panelDetail: TabView | undefined
-  @ViewChild('mfeUrl') mfeUrl: InputText | undefined
   private readonly destroy$ = new Subject()
   public formGroup: FormGroup
   public dateFormat = 'short'
