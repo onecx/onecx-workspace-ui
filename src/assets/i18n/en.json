@@ -255,8 +255,8 @@
     "TOOLTIP": {
       "BADGE": "Icon from the PrimeNG library which should be displayed next to the menu name",
       "DESCRIPTION": "Additional informationen",
-      "DISABLED": "If set, then the menu item is not displayed",
-      "EXTERN": "If set, the menu item exits the Workspace context",
+      "DISABLED": "If set, then the menu item is not displayed.",
+      "EXTERN": "If set, the target will be opened in a new TAB when the menu item is used. Requires value in Path/URL.",
       "MENU_ID": "A unique identifier of the menu item",
       "MENU_NAME": "Displayed Name",
       "PARENT_ID": "The identifier of the parent menu item",

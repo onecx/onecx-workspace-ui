@@ -19,6 +19,7 @@ import {
 } from 'src/app/shared/generated'
 import { ChangeMode } from '../menu.component'
 import { IconService } from '../services/iconservice'
+import { InputText } from 'primeng/inputtext'
 
 type I18N = { [key: string]: string }
 type LanguageItem = SelectItem & { data: string }
@@ -54,6 +55,7 @@ export class MenuDetailComponent implements OnChanges {
 
   limitText = limitText
   @ViewChild('panelDetail') panelDetail: TabView | undefined
+  @ViewChild('mfeUrl') mfeUrl: InputText | undefined
   private readonly destroy$ = new Subject()
   public formGroup: FormGroup
   public dateFormat = 'short'
@@ -183,6 +185,7 @@ export class MenuDetailComponent implements OnChanges {
         url: this.prepareUrlList(this.menuItem.url),
         description: this.menuItem.description
       })
+      this.checkExternalLinkValue(this.menuItem.url)
     }
   }
 
@@ -425,9 +428,13 @@ export class MenuDetailComponent implements OnChanges {
   /**
    * EVENTS on URL field
    **/
-  // show all paths
+  // on open dropdown list: show all paths
   public onDropdownClick(ev: any): void {
     this.filteredMfes = [...this.mfeItems] // trigger change event
+  }
+  // on select item: change the url
+  public onSelect(ev: any): void {
+    this.checkExternalLinkValue(ev.value?.mfePath)
   }
 
   // inkremental filtering: search path with current value after key up
@@ -437,10 +444,19 @@ export class MenuDetailComponent implements OnChanges {
       this.onFilterPaths({ query: elem.value } as AutoCompleteCompleteEvent)
     }
   }
-  public onClearUrl(): void {
+  public onClearUrl(ev?: Event): void {
+    ev?.stopPropagation()
     this.formGroup.controls['url'].setValue(this.mfeItems[0])
+    this.checkExternalLinkValue()
   }
 
+  private checkExternalLinkValue(url?: string) {
+    if (url) this.formGroup.controls['external'].enable()
+    else {
+      this.formGroup.controls['external'].setValue(false)
+      this.formGroup.controls['external'].disable()
+    }
+  }
   /**
    * FILTER URL (query = field value)
    *   try to filter with best match with this exception:
@@ -453,6 +469,7 @@ export class MenuDetailComponent implements OnChanges {
       else query = this.formGroup.controls['url'].value
     }
     this.filteredMfes = this.filterUrl(query) // this split fixed a sonar complexity issue
+    this.checkExternalLinkValue(query)
   }
 
   private filterUrl(query: string): MenuURL[] {
