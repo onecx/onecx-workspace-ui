@@ -732,7 +732,8 @@ describe('MenuDetailComponent', () => {
   it('should filter when query is empty', () => {
     const mockEvent = { originalEvent: new Event('filter'), query: undefined! }
     component.formGroup = new FormGroup({
-      url: new FormControl('')
+      url: new FormControl(''),
+      external: new FormControl(false)
     })
     component.mfeItems = [microfrontend]
 
@@ -771,7 +772,8 @@ describe('MenuDetailComponent', () => {
   it('should filter MenuURL items based on the query', () => {
     const mockEvent = { originalEvent: new Event('filter'), query: '/pa' }
     component.formGroup = new FormGroup({
-      url: new FormControl('')
+      url: new FormControl(''),
+      external: new FormControl(false)
     })
     const microfrontendNoId: Microfrontend = {
       appId: 'appId',
