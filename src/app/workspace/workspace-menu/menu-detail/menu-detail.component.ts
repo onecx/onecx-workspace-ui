@@ -183,6 +183,7 @@ export class MenuDetailComponent implements OnChanges {
         url: this.prepareUrlList(this.menuItem.url),
         description: this.menuItem.description
       })
+      this.adjustExternalLinkCheckbox(this.menuItem.url)
     }
   }
 
@@ -425,9 +426,13 @@ export class MenuDetailComponent implements OnChanges {
   /**
    * EVENTS on URL field
    **/
-  // show all paths
+  // on open dropdown list: show all paths
   public onDropdownClick(ev: any): void {
     this.filteredMfes = [...this.mfeItems] // trigger change event
+  }
+  // on select item: change the url
+  public onSelect(ev: any): void {
+    this.adjustExternalLinkCheckbox(ev.value?.mfePath)
   }
 
   // inkremental filtering: search path with current value after key up
@@ -437,10 +442,20 @@ export class MenuDetailComponent implements OnChanges {
       this.onFilterPaths({ query: elem.value } as AutoCompleteCompleteEvent)
     }
   }
-  public onClearUrl(): void {
+  public onClearUrl(ev?: Event): void {
+    ev?.stopPropagation()
     this.formGroup.controls['url'].setValue(this.mfeItems[0])
+    this.adjustExternalLinkCheckbox()
   }
 
+  // the opening of a URL in a new TAB requires the URL - manage here if not exist:
+  private adjustExternalLinkCheckbox(url?: string) {
+    if (url) this.formGroup.controls['external'].enable()
+    else {
+      this.formGroup.controls['external'].setValue(false) // reset
+      this.formGroup.controls['external'].disable()
+    }
+  }
   /**
    * FILTER URL (query = field value)
    *   try to filter with best match with this exception:
@@ -453,6 +468,7 @@ export class MenuDetailComponent implements OnChanges {
       else query = this.formGroup.controls['url'].value
     }
     this.filteredMfes = this.filterUrl(query) // this split fixed a sonar complexity issue
+    this.adjustExternalLinkCheckbox(query)
   }
 
   private filterUrl(query: string): MenuURL[] {

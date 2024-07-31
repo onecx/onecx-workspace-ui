@@ -2,9 +2,10 @@
 
 @include invisible;
 @include danger-action;
-@include correct-data-view-control;
 @include table-inline-buttons;
 @include filter-select-button;
+@include correct-data-view-control;
+@include correct-select-button;
 
 :host ::ng-deep {
   .p-dialog .p-dialog-content {

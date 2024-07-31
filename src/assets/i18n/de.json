@@ -256,13 +256,13 @@
       "BADGE": "Icon aus der PrimeNG Bibliothek welches neben dem Menünamen angezeigt werden soll",
       "DESCRIPTION": "Zusatzinformationen",
       "DISABLED": "Wenn gesetzt, dann wird der Menüpunkt nicht angezeigt",
-      "EXTERN": "Wenn gesetzt, dann wird bei der Benutzung des Menüpunkst der Workspace-Kontext verlassen",
+      "EXTERN": "Wenn gesetzt, dann wird bei der Benutzung des Menüpunkts das Ziel in einem neuen TAB geöffnet. Erfordert einen Wert in Path/URL.",
       "MENU_ID": "Ein eindeutiger Identifikator des Menüpunkts",
       "MENU_NAME": "Angezeigter Name",
       "PARENT_ID": "Der Identifier des übergeordneten Menüpunkts",
       "PARENT_NAME": "Der Name des übergeordneten Menüpunkts",
       "WORKSPACE": "Name des Workspaces",
-      "POSITION": "Eine ganzzahlige Nummer welche die Position des Menüpunkts in der Menüstruktur festlegt",
+      "POSITION": "Eine ganzzahlige Nummer welche die Position des Menüpunkts in der Menüstruktur festlegt.",
       "SCOPE": "Aktionsradius",
       "URL": "Die durch den Menüpunkt aufgerufene URL. Auswählen aus Liste und/oder manuelle Änderungen/Erweiterungen möglich."
     }
@@ -300,9 +300,9 @@
       "ORIGIN": {
         "IAM": "Rolle existiert im Identity Access Management",
         "WORKSPACE": "Rolle existiert im Workspace",
-        "IAM.VIEW": "Diese Rolle existiert nur im Identity Access Management und kann deshalb hier nicht geändert werden.",
+        "IAM.VIEW": "Diese Rolle existiert nur im Identity Access Management (IAM) und kann deshalb hier nicht geändert werden.",
         "WORKSPACE.EDIT": "Diese Rolle existiert nur Workspace und nicht im Identity Access Management.",
-        "IAM.WORKSPACE.EDIT": "Diese Rolle existiert im Identity Access Management und im Workspace (gleicher Name). Eine Änderung betrifft allerdings nur die Rolle im Workspace."
+        "IAM.WORKSPACE.EDIT": "Diese Rolle existiert im Identity Access Management (IAM) und im Workspace (gleicher Name). Eine Änderung betrifft allerdings nur die Rolle im Workspace."
       }
     },
     "SLOT": {

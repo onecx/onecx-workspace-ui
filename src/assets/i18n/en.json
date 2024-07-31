@@ -41,7 +41,7 @@
       "MESSAGE_INFO": "This action cannot be undone!",
       "MESSAGE_NOK": "Workspace could not be deleted",
       "MESSAGE_OK": "Workspace deleted successfully",
-      "MENU_MESSAGE": "This will also delete all menu items below.",
+      "MENU_MESSAGE": "This will also delete all Menu Items below.",
       "MENU_OK": "The Menu Item was deleted successfully",
       "MENU_NOK": "An error has occurred. The Menu Item could not be deleted.",
       "ROLE_MESSAGE": "This deletes the role and its assignments for the Workspace. Does not changed anycthing in Permission Management.",
@@ -255,16 +255,16 @@
     "TOOLTIP": {
       "BADGE": "Icon from the PrimeNG library which should be displayed next to the menu name",
       "DESCRIPTION": "Additional informationen",
-      "DISABLED": "If set, then the menu item is not displayed",
-      "EXTERN": "If set, the menu item exits the Workspace context",
-      "MENU_ID": "A unique identifier of the menu item",
+      "DISABLED": "If set, then the Menu Item is not displayed.",
+      "EXTERN": "If set, the target will be opened in a new TAB when the Menu Item is used. Requires a value in Path/URL.",
+      "MENU_ID": "A unique identifier of the Menu Item",
       "MENU_NAME": "Displayed Name",
-      "PARENT_ID": "The identifier of the parent menu item",
-      "PARENT_NAME": "The name of the parent menu item",
+      "PARENT_ID": "The identifier of the parent Menu Item",
+      "PARENT_NAME": "The name of the parent Menu Item",
       "WORKSPACE": "Name of the Workspace",
-      "POSITION": "An integer number that determines the position of the menu item in the menu structure",
+      "POSITION": "An integer number that determines the position of the Menu Item in the menu structure",
       "SCOPE": "Scope",
-      "URL": "The URL accessed by the menu item. Selection from list and/or manual changes/extensions possible."
+      "URL": "The URL accessed by the Menu Item. Selection from list and/or manual changes/extensions possible."
     }
   },
   "DIALOG": {
@@ -300,9 +300,9 @@
       "ORIGIN": {
         "IAM": "Role exists in Identity Access Management",
         "WORKSPACE": "Role exists in Workspace",
-        "IAM.VIEW": "This role only exists in Identity Access Management and therefore cannot be changed here.",
-        "WORKSPACE.EDIT": "This role only exists in Workspace and not in Identity Access Management.",
-        "IAM.WORKSPACE.EDIT": "This role exists in Identity Access Management and Workspace (same name). However, a change only affects the Workspace role."
+        "IAM.VIEW": "This role only exists in Identity Access Management (IAM) and therefore cannot be changed here.",
+        "WORKSPACE.EDIT": "This role only exists in Workspace and not in Identity Access Management (IAM).",
+        "IAM.WORKSPACE.EDIT": "This role exists in Identity Access Management (IAM) and Workspace (same name). However, a change only affects the Workspace role."
       }
     },
     "SLOT": {
@@ -377,7 +377,7 @@
       },
       "TREE": {
         "POSITION": "Position",
-        "POSITION.TOOLTIP": "Position path of the menu item in format [parent item.]item ",
+        "POSITION.TOOLTIP": "Position path of the Menu Item in format [parent item.]item ",
         "I18N": "I18n",
         "I18N.TOOLTIP": "Indicator whether translations exist",
         "I18N.ROW.TOOLTIP": "At least one translation available",
@@ -506,18 +506,18 @@
     "RESPONSE.ERROR": "An error occurred, the Workspace could not be created/updated.",
     "INVALID_IMPORT_FILE": "The Workspace file is invalid",
     "MISSING": "missing.",
-    "INVALID_MENU_ITEMS": "One or more menu items are not valid",
+    "INVALID_MENU_ITEMS": "One or more Menu Items are not valid",
     "WORKSPACE_FORM_MISSING_FILES": " Workspace file is missing",
     "VALIDATION_JSON_ERROR": "JSON format error",
     "VALIDATION_WORKSPACE_MISSING": "No Workspace definition included/found",
     "VALIDATION_WORKSPACE_NAME_MISSING": "No Workspace name included/found",
     "VALIDATION_WORKSPACE_ROLES_MISSING": "No Workspace roles included/found",
     "VALIDATION_MENU_NOT_EXIST": "No menu definition included/found",
-    "VALIDATION_MENU_ITEM_KEY_MISSING": "The key is missing in a menu item",
-    "VALIDATION_MENU_ITEM_NAME_MISSING": "The name is missing in a menu item",
-    "VALIDATION_MENU_ITEM_WRONG_POSITION": "In a menu item, the value for 'position' is not a number",
-    "VALIDATION_MENU_ITEM_WRONG_DISABLED": "In a menu item, the value for 'disabled' is not a boolean",
-    "VALIDATION_MENU_ITEM_WRONG_WORKSPACEEXIT": "In a menu item, the value for 'workspaceExit' is not a boolean",
+    "VALIDATION_MENU_ITEM_KEY_MISSING": "The key is missing in a Menu Item",
+    "VALIDATION_MENU_ITEM_NAME_MISSING": "The name is missing in a Menu Item",
+    "VALIDATION_MENU_ITEM_WRONG_POSITION": "In a Menu Item, the value for 'position' is not a number",
+    "VALIDATION_MENU_ITEM_WRONG_DISABLED": "In a Menu Item, the value for 'disabled' is not a boolean",
+    "VALIDATION_MENU_ITEM_WRONG_WORKSPACEEXIT": "In a Menu Item, the value for 'workspaceExit' is not a boolean",
     "VALIDATION_RESULT": "Processing not possible: "
   },
   "IMAGE": {
