@@ -185,7 +185,7 @@ export class MenuDetailComponent implements OnChanges {
         url: this.prepareUrlList(this.menuItem.url),
         description: this.menuItem.description
       })
-      this.checkExternalLinkValue(this.menuItem.url)
+      this.adjustExternalLinkCheckbox(this.menuItem.url)
     }
   }
 
@@ -434,7 +434,7 @@ export class MenuDetailComponent implements OnChanges {
   }
   // on select item: change the url
   public onSelect(ev: any): void {
-    this.checkExternalLinkValue(ev.value?.mfePath)
+    this.adjustExternalLinkCheckbox(ev.value?.mfePath)
   }
 
   // inkremental filtering: search path with current value after key up
@@ -447,13 +447,14 @@ export class MenuDetailComponent implements OnChanges {
   public onClearUrl(ev?: Event): void {
     ev?.stopPropagation()
     this.formGroup.controls['url'].setValue(this.mfeItems[0])
-    this.checkExternalLinkValue()
+    this.adjustExternalLinkCheckbox()
   }
 
-  private checkExternalLinkValue(url?: string) {
+  // the opening of a URL in a new TAB requires the URL - manage here if not exist:
+  private adjustExternalLinkCheckbox(url?: string) {
     if (url) this.formGroup.controls['external'].enable()
     else {
-      this.formGroup.controls['external'].setValue(false)
+      this.formGroup.controls['external'].setValue(false) // reset
       this.formGroup.controls['external'].disable()
     }
   }
@@ -469,7 +470,7 @@ export class MenuDetailComponent implements OnChanges {
       else query = this.formGroup.controls['url'].value
     }
     this.filteredMfes = this.filterUrl(query) // this split fixed a sonar complexity issue
-    this.checkExternalLinkValue(query)
+    this.adjustExternalLinkCheckbox(query)
   }
 
   private filterUrl(query: string): MenuURL[] {
