@@ -14,7 +14,7 @@ import {
   ImagesInternalAPIService,
   RefType
 } from 'src/app/shared/generated'
-import { bffImageUrl } from 'src/app/shared/utils'
+import { bffImageUrl, getCurrentDateTime } from 'src/app/shared/utils'
 
 import { WorkspacePropsComponent } from './workspace-props/workspace-props.component'
 import { WorkspaceContactComponent } from './workspace-contact/workspace-contact.component'
@@ -175,7 +175,10 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
       .subscribe({
         next: (snapshot) => {
           const workspaceJson = JSON.stringify(snapshot, null, 2)
-          FileSaver.saveAs(new Blob([workspaceJson], { type: 'text/json' }), `${this.workspace?.name}.json`)
+          FileSaver.saveAs(
+            new Blob([workspaceJson], { type: 'text/json' }),
+            `onecx-workspace_${this.workspace?.name}_${getCurrentDateTime()}.json`
+          )
         },
         error: () => {
           this.msgService.error({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.NOK' })

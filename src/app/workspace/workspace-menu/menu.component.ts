@@ -30,7 +30,7 @@ import {
   WorkspaceRolePageResult,
   GetWorkspaceResponse
 } from 'src/app/shared/generated'
-import { bffImageUrl, limitText, dropDownSortItemsByLabel } from 'src/app/shared/utils'
+import { bffImageUrl, limitText, dropDownSortItemsByLabel, getCurrentDateTime } from 'src/app/shared/utils'
 import { MenuStateService } from './services/menu-state.service'
 
 export type ChangeMode = 'VIEW' | 'CREATE' | 'EDIT' | 'COPY' | 'DELETE'
@@ -566,7 +566,10 @@ export class MenuComponent implements OnInit, OnDestroy {
     if (this.workspaceName) {
       this.menuApi.exportMenuByWorkspaceName({ workspaceName: this.workspaceName }).subscribe((data) => {
         const jsonBody = JSON.stringify(data, null, 2)
-        FileSaver.saveAs(new Blob([jsonBody], { type: 'text/json' }), 'workspace_' + this.workspaceName + '_menu.json')
+        FileSaver.saveAs(
+          new Blob([jsonBody], { type: 'text/json' }),
+          'onecx-menu_' + this.workspaceName + '_' + getCurrentDateTime() + '.json'
+        )
       })
     }
   }
