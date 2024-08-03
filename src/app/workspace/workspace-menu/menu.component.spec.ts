@@ -10,6 +10,7 @@ import { PortalMessageService, UserService } from '@onecx/portal-integration-ang
 
 import { MenuStateService, MenuState } from './services/menu-state.service'
 import { MenuComponent, MenuItemNodeData } from './menu.component'
+import { getCurrentDateTime } from 'src/app/shared/utils'
 
 import {
   Workspace,
@@ -727,7 +728,7 @@ describe('MenuComponent', () => {
 
     expect(FileSaver.saveAs).toHaveBeenCalledWith(
       new Blob([], { type: 'text/json' }),
-      'workspace_' + 'name' + '_menu.json'
+      'onecx-menu_name_' + getCurrentDateTime() + '.json'
     )
   })
 
