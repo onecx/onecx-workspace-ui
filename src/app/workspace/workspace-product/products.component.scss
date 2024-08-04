@@ -1,6 +1,7 @@
 @import 'src/_mixins.scss';
 
 @include prepare-inputgroup;
+@include displaying-text-responsive;
 
 :host ::ng-deep {
   .mt-05 {
@@ -21,11 +22,13 @@
   }
   .p-picklist {
     .p-picklist-header {
+      padding: 4px; // reset here to manage distances below
       text-align: center;
       color: var(--primary-text-color);
       background-color: var(--primary-color);
     }
     .p-picklist-filter-container {
+      padding: 0; // reset here to manage distances below
       .p-buttonset .p-button {
         min-width: unset;
       }
