@@ -33,8 +33,10 @@
       (onMoveToTarget)="onMoveToTarget($event)"
     >
       <ng-template pTemplate="sourceHeader">
-        <div class="flex flex-row justify-content-between align-items-center column-gap-2">
-          <div class="flex-grow-1 font-semibold">{{ 'DIALOG.PRODUCTS.PS_PRODUCTS' | translate }}</div>
+        <div class="p-1 sm:p-2 flex flex-row justify-content-between column-gap-2">
+          <div class="flex-grow-1 sm:font-semibold text-sm sm:text-base white-space-nowrap">
+            {{ 'DIALOG.PRODUCTS.PS_PRODUCTS' | translate }}
+          </div>
           <a
             tabindex="0"
             id="workspace_detail_product_picklist_ps_load"
@@ -47,8 +49,10 @@
         </div>
       </ng-template>
       <ng-template pTemplate="targetHeader">
-        <div class="flex flex-row justify-content-between align-items-center column-gap-2">
-          <div class="flex-grow-1 font-semibold">{{ 'DIALOG.PRODUCTS.W_PRODUCTS' | translate }}</div>
+        <div class="p-1 sm:p-2 flex flex-row justify-content-between column-gap-2">
+          <div class="flex-grow-1 sm:font-semibold text-sm sm:text-base white-space-nowrap">
+            {{ 'DIALOG.PRODUCTS.W_PRODUCTS' | translate }}
+          </div>
           <a
             tabindex="0"
             id="workspace_detail_product_picklist_w_load"
@@ -62,12 +66,12 @@
       </ng-template>
 
       <ng-template pTemplate="sourceFilter" let-options="options">
-        <div class="flex flex-row align-items-center">
+        <div class="m-1 sm:m-2 flex flex-row align-items-center">
           <p-selectButton
             [options]="viewingModes"
             [(ngModel)]="sourceListViewMode"
             optionLabel="icon"
-            styleClass="w-6rem hidden md:block"
+            styleClass="w-6rem hidden sm:block"
             (onChange)="onSourceViewModeChange($event.value)"
           >
             <ng-template let-item pTemplate="item">
@@ -79,7 +83,7 @@
               ></span>
             </ng-template>
           </p-selectButton>
-          <div class="px-2 p-inputgroup p-picklist-filter">
+          <div class="p-inputgroup p-picklist-filter">
             <span class="p-inputgroup-addon data-view-control-border"><i class="pi pi-filter"></i></span>
             <input
               id="workspace_detail_product_picklist_source_filter_value"
@@ -100,12 +104,12 @@
       </ng-template>
 
       <ng-template pTemplate="targetFilter" let-options="options">
-        <div class="flex flex-row align-items-center">
+        <div class="m-1 sm:m-2 flex flex-row align-items-center">
           <p-selectButton
             [options]="viewingModes"
             [(ngModel)]="targetListViewMode"
             optionLabel="icon"
-            styleClass="w-6rem hidden md:block"
+            styleClass="w-6rem hidden sm:block"
             (onChange)="onTargetViewModeChange($event.value)"
           >
             <ng-template let-item pTemplate="item">
@@ -117,7 +121,7 @@
               ></span>
             </ng-template>
           </p-selectButton>
-          <div class="px-2 p-inputgroup p-picklist-filter">
+          <div class="p-inputgroup p-picklist-filter">
             <span class="p-inputgroup-addon data-view-control-border"><i class="pi pi-filter"></i></span>
             <input
               id="workspace_detail_product_picklist_target_filter_value"
@@ -144,7 +148,7 @@
         PRODUCT ITEM in picklist
       -->
       <ng-template let-product pTemplate="item">
-        <div class="col-12 h-2rem md:h-3rem p-0 flex flex-wrap align-items-center">
+        <div class="col-12 sm:h-2rem md:h-3rem p-0 flex flex-wrap align-items-center">
           <div
             class="col-12 md:col-9 p-0 flex flex-row column-gap-2 align-items-center tile-view-content"
             (dblclick)="return($event)"
@@ -152,7 +156,7 @@
             <span
               *ngIf="product?.undeployed"
               [id]="'workspace_detail_product_picklist_' + product.productName + '_undeployed'"
-              class="card-badge-right badge-1 tile-view-optional danger-action-text font-bold text-xl pi pi-ban"
+              class="card-badge-right badge-1 tile-view-optional danger-action-text sm:font-bold sm:text-xl pi pi-ban"
               [pTooltip]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
@@ -160,7 +164,7 @@
             <span
               *ngIf="!product?.undeployed && product?.changedComponents"
               [id]="'workspace_detail_product_picklist_' + product.productName + '_changed_mfe'"
-              class="card-badge-right badge-1 tile-view-optional danger-action-text font-bold text-xl pi pi-exclamation-circle"
+              class="card-badge-right badge-1 tile-view-optional danger-action-text sm:font-bold sm:text-xl pi pi-exclamation-circle"
               [pTooltip]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
@@ -169,11 +173,11 @@
               [id]="'workspace_detail_product_picklist_' + product.productName + '_logo'"
               [imageUrl]="getImageUrl(product)"
               [small]="true"
-              styleClass="w-2rem md:w-4rem tile-view-optional "
+              styleClass="w-1rem sm:w-2rem md:w-4rem tile-view-optional "
             ></app-image-container>
             <div class="flex flex-column row-gap-1">
               <div
-                class="tile-view-mandatory font-semibold text-sm lg:text-md"
+                class="tile-view-mandatory sm:font-semibold text-sm lg:text-md"
                 [class.danger-action-text]="product?.undeployed || product?.changedComponents"
               >
                 {{ product.displayName }}

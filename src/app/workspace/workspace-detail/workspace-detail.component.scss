@@ -4,6 +4,7 @@
 @include danger-action;
 @include picklist-zebra-rows;
 @include picklist-hide-double-buttons;
+@include correct-select-button;
 
 :host ::ng-deep {
   @media (max-width: 991px) {

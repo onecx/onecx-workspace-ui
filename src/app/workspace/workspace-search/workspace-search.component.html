@@ -116,11 +116,11 @@
         <div class="grid grid-nogutter">
           <div
             *ngFor="let workspace of workspaces"
-            class="col-12 sm:col-6 md:col-4 lg:col-4 xl:col-3 p-3"
-            [routerLink]="['./', workspace.name]"
+            class="col-12 sm:col-6 md:col-4 lg:col-4 xl:col-3 p-1 sm:p-2 md:p-3"
           >
             <div
-              class="card relative p-2 flex flex-column justify-content-center row-gap-1 md:row-gap-2 hover:bg-gray-200 cursor-pointer"
+              class="card relative px-2 p-1 sm:p-2 flex flex-column gap-1 sm:gap-2 justify-content-between text-center hover:bg-gray-200 cursor-pointer"
+              [routerLink]="['./', workspace.name]"
             >
               <a
                 *ngIf="workspace.name !== 'ADMIN'"
@@ -151,25 +151,28 @@
                 tooltipEvent="hover"
               ></span>
 
-              <div class="h-3rem md:h-4rem flex flex-column justify-content-center align-items-center text-center">
-                <app-image-container
-                  [id]="'app_workspace_search_data_row_' + row + '_logo'"
-                  [small]="false"
-                  styleClass="max-h-3rem md:max-h-4rem max-w-10rem"
-                  [imageUrl]="getLogoUrl(workspace)"
-                ></app-image-container>
-              </div>
-              <div class="h-3rem flex flex-column justify-content-between px-2 text-center gap-1">
+              <app-image-container
+                [id]="'app_workspace_search_data_row_' + row + '_logo'"
+                [small]="false"
+                styleClass="h-2rem sm:h-3rem md:h-4rem max-h-2rem sm:max-h-3rem md:max-h-4rem max-w-10rem"
+                [imageUrl]="getLogoUrl(workspace)"
+              ></app-image-container>
+              <div class="h-2rem md:h-3rem flex flex-column justify-content-between text-center gap-1">
                 <div
-                  class="mt-1 font-bold text-lg md:text-xl"
-                  [pTooltip]="workspace.displayName.length > 20 ? workspace.displayName : ''"
-                  tooltipPosition="right"
+                  class="font-bold sm:text-lg md:text-xl text-responsive"
+                  [pTooltip]="workspace.displayName.length < 20 ? '' : workspace.displayName"
+                  tooltipPosition="top"
                   tooltipEvent="hover"
                 >
-                  {{ limitText(workspace.displayName, 20) }}
+                  {{ workspace.displayName }}
                 </div>
-                <div class="text-sm" [pTooltip]="'Theme'" tooltipPosition="top" tooltipEvent="hover">
-                  {{ limitText(workspace.theme, 25) }}
+                <div
+                  class="text-xs md:text-sm text-responsive"
+                  [pTooltip]="'Theme'"
+                  tooltipPosition="top"
+                  tooltipEvent="hover"
+                >
+                  {{ workspace.theme }}
                 </div>
               </div>
             </div>
