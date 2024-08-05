@@ -5,6 +5,7 @@
 @include picklist-zebra-rows;
 @include picklist-hide-double-buttons;
 @include correct-select-button;
+@include displaying-text-responsive;
 
 :host ::ng-deep {
   @media (max-width: 991px) {

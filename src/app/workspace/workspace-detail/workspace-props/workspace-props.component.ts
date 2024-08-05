@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, OnChanges, Output } from '@angular/core'
 import { Location } from '@angular/common'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
-import { catchError, map, Observable, of, Subject, takeUntil } from 'rxjs'
+import { map, Observable, Subject } from 'rxjs'
 
 import { PortalMessageService, WorkspaceService } from '@onecx/angular-integration-interface'
 
@@ -27,6 +27,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
 
   private readonly destroy$ = new Subject()
   public formGroup: FormGroup
+  public productPaths$!: Observable<string[]>
   public productPathList: string[] = []
   public themes$!: Observable<string[]>
   public urlPattern = '/base-path-to-workspace'
@@ -56,10 +57,10 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
 
     this.formGroup = new FormGroup({
       disabled: new FormControl(null),
-      displayName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
+      displayName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(100)]),
       theme: new FormControl(null),
       baseUrl: new FormControl(null, [Validators.required, Validators.minLength(1), Validators.pattern('^/.*')]),
-      homePage: new FormControl(null, [Validators.maxLength(255)]),
+      homePage: new FormControl(null),
       logoUrl: new FormControl('', [Validators.maxLength(255)]),
       rssFeedUrl: new FormControl(null, [Validators.maxLength(255)]),
       footerLabel: new FormControl(null, [Validators.maxLength(255)]),
@@ -68,17 +69,8 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   }
 
   public ngOnInit(): void {
-    this.themes$ = this.workspaceApi.getAllThemes().pipe(
-      map((val: any[]) => {
-        if (val.length === 0) {
-          return [this.workspace?.theme]
-        } else {
-          val.sort(sortByLocale)
-          if (!val.includes(this.workspace?.theme)) val.push(this.workspace?.theme)
-          return val
-        }
-      })
-    )
+    this.loadProductPaths()
+    this.loadThemes()
   }
 
   public ngOnChanges(): void {
@@ -86,7 +78,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       this.setFormData()
       if (this.editMode) {
         this.formGroup.enable()
-        this.loadProductPaths()
       } else this.formGroup.disable()
     } else {
       this.formGroup.reset()
@@ -211,21 +202,33 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   public prepareProductUrl(val: string): string | undefined {
     return val ? Location.joinWithSlash(this.workspace?.baseUrl!, val) : undefined
   }
+
   private loadProductPaths(): void {
-    this.wProductApi
-      .getProductsByWorkspaceId({ id: this.workspace?.id! })
-      .pipe(
-        map((products) => {
-          this.productPathList.push('')
-          for (const p of products) this.productPathList.push(p.baseUrl ?? '')
-          this.productPathList.sort(sortByLocale)
-        }),
-        catchError((err) => {
-          console.error('getProductsByWorkspaceId():', err)
-          return of([] as string[])
-        })
-      )
-      .pipe(takeUntil(this.destroy$))
-      .subscribe()
+    this.productPaths$ = this.wProductApi.getProductsByWorkspaceId({ id: this.workspace?.id! }).pipe(
+      map((val: any[]) => {
+        const paths: string[] = []
+        if (val.length > 0) {
+          for (const p of val) paths.push(p.baseUrl ?? '')
+          paths.sort(sortByLocale)
+          paths.unshift('')
+        }
+        return paths
+      })
+    )
+  }
+
+  private loadThemes(): void {
+    this.themes$ = this.workspaceApi.getAllThemes().pipe(
+      map((val: any[]) => {
+        if (val.length === 0) {
+          return [this.workspace?.theme]
+        } else {
+          val.sort(sortByLocale)
+          // if not included (why ever) then add the used value to make it visible
+          if (!val.includes(this.workspace?.theme)) val.push(this.workspace?.theme)
+          return val
+        }
+      })
+    )
   }
 }

@@ -38,7 +38,7 @@
           type="text"
           readonly
           id="workspace_detail_item_name"
-          class="w-full pt-3 pb-2"
+          class="w-full pt-3 pb-2 text-responsive"
           [value]="workspace.name"
           [pTooltip]="'WORKSPACE.TOOLTIPS.NAME' | translate"
           tooltipPosition="top"
@@ -55,14 +55,14 @@
             pInputText
             type="text"
             readonly
-            id="workspace_detail_item_creationDate"
+            id="workspace_detail_item_creation-date"
             class="w-full pt-3 pb-2"
             [value]="workspace.creationDate | date: dateFormat"
             [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_DATE' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
           />
-          <label for="workspace_detail_item_creationDate">{{ 'INTERNAL.CREATION_DATE' | translate }}</label>
+          <label for="workspace_detail_item_creation-date">{{ 'INTERNAL.CREATION_DATE' | translate }}</label>
         </span>
       </div>
 
@@ -72,14 +72,14 @@
             pInputText
             type="text"
             readonly
-            id="workspace_detail_item_creationUser"
-            class="w-full pt-3 pb-2"
+            id="workspace_detail_item_creation-user"
+            class="w-full pt-3 pb-2 text-responsive"
             [value]="workspace.creationUser"
             [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_USER' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
           />
-          <label for="workspace_detail_item_creationUser">{{ 'INTERNAL.CREATION_USER' | translate }}</label>
+          <label for="workspace_detail_item_creation-user">{{ 'INTERNAL.CREATION_USER' | translate }}</label>
         </span>
       </div>
     </div>
@@ -91,14 +91,14 @@
             pInputText
             type="text"
             readonly
-            id="workspace_detail_item_modificationDate"
+            id="workspace_detail_item_modification-date"
             class="w-full pt-3 pb-2"
             [value]="workspace.modificationDate | date: dateFormat"
             [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_DATE' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
           />
-          <label for="workspace_detail_item_modificationDate">{{ 'INTERNAL.MODIFICATION_DATE' | translate }}</label>
+          <label for="workspace_detail_item_modification-date">{{ 'INTERNAL.MODIFICATION_DATE' | translate }}</label>
         </span>
       </div>
 
@@ -108,14 +108,14 @@
             pInputText
             type="text"
             readonly
-            id="workspace_detail_item_modificationUser"
-            class="w-full pt-3 pb-2"
+            id="workspace_detail_item_modification-user"
+            class="w-full pt-3 pb-2 text-responsive"
             [value]="workspace.modificationUser"
             [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_USER' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
           />
-          <label for="workspace_detail_item_modificationUser">{{ 'INTERNAL.MODIFICATION_USER' | translate }}</label>
+          <label for="workspace_detail_item_modification-user">{{ 'INTERNAL.MODIFICATION_USER' | translate }}</label>
         </span>
       </div>
     </div>

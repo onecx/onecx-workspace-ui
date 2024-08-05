@@ -21,7 +21,7 @@
               pInputText
               type="text"
               id="workspace_detail_form_display_name"
-              class="w-full pt-3 pb-2"
+              class="w-full pt-3 pb-2 text-responsive"
               formControlName="displayName"
               [pTooltip]="'WORKSPACE.TOOLTIPS.DISPLAY_NAME' | translate"
               tooltipPosition="top"
@@ -47,7 +47,9 @@
                 tooltipEvent="hover"
               >
               </p-dropdown>
-              <label for="workspace_detail_form_theme"> {{ 'WORKSPACE.THEME' | translate }} </label>
+              <label class="ocx-required-label" for="workspace_detail_form_theme">
+                {{ 'WORKSPACE.THEME' | translate }}
+              </label>
             </span>
             <span
               class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
@@ -76,14 +78,14 @@
                 #inputBaseUrl
                 pInputText
                 type="text"
-                id="workspace_detail_form_baseUrl"
-                class="w-full pt-3 pb-2"
+                id="workspace_detail_form_base-url"
+                class="w-full pt-3 pb-2 text-responsive"
                 formControlName="baseUrl"
                 [pTooltip]="'WORKSPACE.TOOLTIPS.BASE_URL' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
               />
-              <label for="workspace_detail_form_baseUrl"> {{ 'WORKSPACE.BASE_URL' | translate }} </label>
+              <label for="workspace_detail_form_base-url"> {{ 'WORKSPACE.BASE_URL' | translate }} </label>
             </span>
             <span
               class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
@@ -114,7 +116,7 @@
               id="workspace_detail_form_home_page"
               formControlName="homePage"
               styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
-              [options]="productPathList"
+              [options]="(productPaths$ | async) ?? []"
               [editable]="true"
               [pTooltip]="'WORKSPACE.TOOLTIPS.HOME_PAGE' | translate"
               tooltipPosition="top"
@@ -148,7 +150,7 @@
               pInputText
               type="text"
               id="workspace_detail_form_rssFeedUrl"
-              class="w-full pt-3 pb-2"
+              class="w-full pt-3 pb-2 text-responsive"
               formControlName="rssFeedUrl"
               [pTooltip]="'WORKSPACE.TOOLTIPS.RSS_FEED_URL' | translate"
               tooltipPosition="top"
@@ -215,14 +217,14 @@
           <input
             pInputText
             type="text"
-            id="workspace_detail_form_footerLabel"
-            class="w-full pt-3 pb-2"
+            id="workspace_detail_form_footer-label"
+            class="w-full pt-3 pb-2 text-responsive"
             formControlName="footerLabel"
             [pTooltip]="'WORKSPACE.TOOLTIPS.FOOTER_LABEL' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
           />
-          <label for="workspace_detail_form_footerLabel"> {{ 'WORKSPACE.FOOTER_LABEL' | translate }} </label>
+          <label for="workspace_detail_form_footer-label"> {{ 'WORKSPACE.FOOTER_LABEL' | translate }} </label>
         </span>
 
         <span class="p-float-label mb-1" controlErrorAnchor>
