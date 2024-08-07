@@ -270,6 +270,7 @@
         type="button"
         icon="pi pi-times"
         class="m-0"
+        id="workspace_detail_cancel"
         (click)="onCloseDetailDialog()"
         [label]="'ACTIONS.CANCEL' | translate"
         [pTooltip]="'ACTIONS.TOOLTIPS.CANCEL_WITHOUT_SAVE' | translate"
@@ -281,6 +282,7 @@
         type="button"
         icon="pi pi-save"
         class="m-0"
+        id="workspace_detail_save"
         [disabled]="!formGroup.valid"
         (click)="onMenuSave()"
         [label]="'ACTIONS.SAVE' | translate"
@@ -317,6 +319,7 @@
         pButton
         type="button"
         class="m-0"
+        id="workspace_menu_dialog_no_confirm"
         icon="pi pi-times"
         iconPos="left"
         (click)="onCloseDeleteDialog()"
@@ -329,6 +332,7 @@
         pButton
         type="button"
         class="m-0"
+        id="workspace_menu_dialog_confirm"
         icon="pi pi-check"
         iconPos="left"
         (click)="onMenuDelete()"
