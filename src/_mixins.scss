@@ -347,3 +347,28 @@
     }
   }
 }
+
+@mixin displaying-float-textbox {
+  :host {
+    // text displayed like an input field: only displaying
+    .p-float-label .onecx-float-textbox {
+      font-family: var(--font-family);
+      font-size: var(--input-text-font-size);
+      color: var(--emphasis-high);
+      background: var(--input-bg);
+      padding: var(--input-padding);
+      border: var(--input-border);
+      transition: var(--form-element-transition);
+      appearance: none;
+      border-radius: var(--border-radius);
+      ~ label {
+        top: -0.5rem !important;
+        background-color: var(--input-bg);
+        padding: 2px 4px;
+        margin-left: -4px;
+        margin-top: 0;
+        font-size: 12px;
+      }
+    }
+  }
+}

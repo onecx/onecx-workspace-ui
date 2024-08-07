@@ -26,8 +26,8 @@
       "MESSAGE": {
         "CREATE_OK": "Der Workspace wurde erfolgreich erstellt",
         "CREATE_NOK": "Ein Fehler ist aufgetreten. Der Workspace wurde nicht erstellt.",
-        "ROLE_ALREADY_EXISTS": "Eine Rolle mit diesem Namen existiert schon",
-        "MENU_ALREADY_EXIST": "Ein Menüpunkt mit diesem Namen/ID existiert schon",
+        "ROLE_ALREADY_EXISTS": "Eine Rolle mit diesem Namen existiert schon.",
+        "MENU_ALREADY_EXIST": "Ein Menüpunkt mit diesem Namen/ID existiert schon.",
         "MENU_CREATE_OK": "Der Menüpunkt wurde erfolgreich erstellt",
         "MENU_CREATE_NOK": "Ein Fehler ist aufgetreten. Der Menüpunkt wurde nicht erstellt."
       }
@@ -45,11 +45,11 @@
       "MENU_MESSAGE": "Damit werden auch alle Menupunkte unterhalb gelöscht.",
       "MENU_OK": "Der Menüpunkt wurde erfolgreich gelöscht",
       "MENU_NOK": "Ein Fehler ist aufgetreten. Der Menüpunkt wurde nicht gelöscht.",
-      "ROLE_MESSAGE": "Damit wird die Rolle und deren Zuweisungen (zu Menüpunkten) für den Workspace gelöscht. Ändert nichts im Permission Management.",
+      "ROLE_MESSAGE": "Damit wird die Rolle und deren Zuweisungen (zu Menüpunkten) für den Workspace gelöscht. Das führt zu keiner Änderung im Permission Management.",
       "ROLE_OK": "Die Rolle wurde erfolgreich gelöscht",
       "ROLE_NOK": "Ein Fehler ist aufgetreten. Die Rolle wurde nicht gelöscht.",
       "SLOT_MESSAGE": "Damit wird die Zuweisung von Slot zur Komponente für den Workspace gelöscht.",
-      "SLOT_OK": "Die Slot-Zuweisung wurde erfolgreich gelöscht",
+      "SLOT_OK": "Die Slot-Zuweisung wurde erfolgreich gelöscht.",
       "SLOT_NOK": "Ein Fehler ist aufgetreten. Die Slot-Zuweisung wurde nicht gelöscht.",
       "PRODUCTS_MESSAGE": "Die ausgewählten Applikationen und ihre Apps werden für den Arbeitsbereich abgemeldet. Menüelemente, die solche Pfade verwenden, werden nicht berührt, funktionieren aber nicht mehr.",
       "PRODUCTS_QUESTION": "Möchten Sie die ausgewählten Applikationen abmelden?",
@@ -58,14 +58,16 @@
     "EDIT": {
       "LABEL": "Bearbeiten",
       "TOOLTIP": "Die Eigenschaften bearbeiten",
+      "ROLE": "Rolle ändern",
       "ROLE_OK": "Die Rolle wurde erfolgreich geändert",
       "ROLE_NOK": "Ein Fehler ist aufgetreten. Die Rolle wurde nicht geändert.",
       "SLOT_OK": "Der Slot wurde erfolgreich geändert",
       "SLOT_NOK": "Ein Fehler ist aufgetreten. Der Slot wurde nicht geändert.",
       "MESSAGE": {
-        "CHANGE_OK": "Der Workspace wurde erfolgreich geändert",
+        "CHANGE_OK": "Der Workspace wurde erfolgreich geändert.",
         "CHANGE_NOK": "Ein Fehler ist aufgetreten. Der Workspace wurde nicht geändert.",
-        "MENU_CHANGE_OK": "Der Menüpunkt wurde erfolgreich geändert",
+        "ROLE_ALREADY_EXISTS": "Eine Rolle mit diesem Namen existiert schon.",
+        "MENU_CHANGE_OK": "Der Menüpunkt wurde erfolgreich geändert.",
         "MENU_CHANGE_NOK": "Ein Fehler ist aufgetreten. Der Menüpunkt wurde nicht geändert."
       }
     },
@@ -195,7 +197,7 @@
     "PRODUCT": "Applikation",
     "APP_ID": "App ID",
     "COMPONENT": "Komponente",
-    "COMPONENTS": "Anzahl Komponenten"
+    "COMPONENTS": "Anzahl zugewiesener Komponenten"
   },
   "WORKSPACE": {
     "ID": "ID",
@@ -299,7 +301,7 @@
         "IAM": "Rolle existiert im Identity Access Management",
         "WORKSPACE": "Rolle existiert im Workspace",
         "IAM.VIEW": "Diese Rolle existiert nur im Identity Access Management (IAM) und kann deshalb hier nicht geändert werden.",
-        "WORKSPACE.EDIT": "Diese Rolle existiert nur Workspace und nicht im Identity Access Management.",
+        "WORKSPACE.EDIT": "Diese Rolle existiert nur im Workspace und nicht im Identity Access Management.",
         "IAM.WORKSPACE.EDIT": "Diese Rolle existiert im Identity Access Management (IAM) und im Workspace (gleicher Name). Eine Änderung betrifft allerdings nur die Rolle im Workspace."
       }
     },
