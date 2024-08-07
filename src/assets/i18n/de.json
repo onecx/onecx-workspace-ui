@@ -445,7 +445,7 @@
     },
     "DATAVIEW": {
       "FILTER_PLACEHOLDER": "Filter",
-      "FILTER": "Filterfelder: ",
+      "FILTER": "Filterfelder: Name, Url",
       "FILTER_CLEAR": "Filter entfernen",
       "VIEW_MODE_GRID": "Kachelansicht",
       "VIEW_MODE_LIST": "Listenansicht",

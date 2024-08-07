@@ -27,6 +27,7 @@
       <p-message severity="info" styleClass="p-2" [text]="'DIALOG.MENU.MENU_NOT_EXIST' | translate"></p-message>
       <button
         pButton
+        id="workspace_menu_create_menu"
         icon="pi pi-plus"
         (click)="onCreateMenu($event)"
         label="{{ 'ACTIONS.CREATE.MENU' | translate }}"
@@ -69,7 +70,7 @@
                 id="workspace_menu_table_header_filter"
                 class="py-0"
                 (input)="menuTree.filterGlobal($any($event.target).value, 'contains')"
-                [pTooltip]="('DIALOG.DATAVIEW.FILTER' | translate) + ' henry'"
+                [pTooltip]="'DIALOG.DATAVIEW.FILTER' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
               />
@@ -78,6 +79,8 @@
             <a
               id="workspace_menu_table_header_filter_clear"
               class="p-inputgroup-addon bg-primary cursor-pointer pi pi-filter-slash"
+              tabindex="0"
+              (keydown.space)="onClearFilterMenuTable()"
               (click)="onClearFilterMenuTable()"
               [pTooltip]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
               tooltipPosition="top"
@@ -206,6 +209,7 @@
                   [id]="'portal_menu_table_row_' + rowData.key + '_disabled'"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                   (click)="onToggleDisable($event, rowData)"
+                  aria-label="'MENU_ITEM.' + (rowData['disabled'] ? 'DISABLED' : 'ENABLED') | translate"
                   [pTooltip]="'MENU_ITEM.' + (rowData['disabled'] ? 'DISABLED' : 'ENABLED') | translate"
                   tooltipPosition="top"
                   tooltipEvent="hover"
@@ -225,6 +229,7 @@
                   [id]="'workspace_menu_table_row_' + rowData.key + '_goto_details'"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                   (click)="onGotoDetails($event, rowData)"
+                  aria-label="'DIALOG.MENU.ACTION.DETAILS' | translate"
                   [pTooltip]="'DIALOG.MENU.ACTION.DETAILS' | translate"
                   tooltipPosition="top"
                   tooltipEvent="hover"
@@ -243,6 +248,7 @@
                   [id]="'workspace_menu_table_row_' + rowData.key + '_goto_new'"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                   (click)="onCreateMenu($event, rowData)"
+                  aria-label="'ACTIONS.CREATE.MENU.TOOLTIP' | translate"
                   [pTooltip]="'ACTIONS.CREATE.MENU.TOOLTIP' | translate"
                   tooltipPosition="top"
                   tooltipEvent="hover"
@@ -256,6 +262,7 @@
                   [id]="'workspace_menu_table_row_' + rowData.key + '_delete'"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                   (click)="onDeleteMenu($event, rowData)"
+                  aria-label="'ACTIONS.DELETE.MENU' | translate"
                   [pTooltip]="'ACTIONS.DELETE.MENU' | translate"
                   tooltipPosition="top"
                   tooltipEvent="hover"
