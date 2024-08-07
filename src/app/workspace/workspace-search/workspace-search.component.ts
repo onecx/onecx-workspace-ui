@@ -36,7 +36,7 @@ export class WorkspaceSearchComponent implements OnInit {
   public workspaces: WorkspaceAbstract[] | undefined = []
   public viewMode: 'list' | 'grid' = 'grid'
   public filter: string | undefined
-  public sortField = 'name'
+  public sortField = 'displayName'
   public sortOrder = 1
   public dataViewControlsTranslations: DataViewControlTranslations = {}
   public deploymentPath = ''
@@ -78,14 +78,13 @@ export class WorkspaceSearchComponent implements OnInit {
    */
   private prepareDialogTranslations() {
     this.translate
-      .get(['WORKSPACE.DISPLAY_NAME', 'WORKSPACE.THEME', 'ACTIONS.SEARCH.SORT_BY', 'ACTIONS.SEARCH.FILTER_OF'])
+      .get(['WORKSPACE.DISPLAY_NAME', 'WORKSPACE.THEME', 'DIALOG.DATAVIEW.SORT_BY', 'DIALOG.DATAVIEW.FILTER_BY'])
       .pipe(
         map((data) => {
           this.dataViewControlsTranslations = {
-            sortDropdownTooltip: data['ACTIONS.SEARCH.SORT_BY'],
-            sortDropdownPlaceholder: data['ACTIONS.SEARCH.SORT_BY'],
+            sortDropdownTooltip: data['DIALOG.DATAVIEW.SORT_BY'],
             filterInputTooltip:
-              data['ACTIONS.SEARCH.FILTER_OF'] + data['WORKSPACE.DISPLAY_NAME'] + ', ' + data['WORKSPACE.THEME']
+              data['DIALOG.DATAVIEW.FILTER_BY'] + data['WORKSPACE.DISPLAY_NAME'] + ', ' + data['WORKSPACE.THEME']
           }
         })
       )

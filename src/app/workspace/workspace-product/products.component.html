@@ -91,7 +91,7 @@
               [(ngModel)]="sourceFilterValue"
               (keyup)="options.filter(getFilterValue($event))"
               type="text"
-              [placeholder]="'ACTIONS.SEARCH.FILTER' | translate"
+              [placeholder]="'DIALOG.DATAVIEW.FILTER' | translate"
             />
             <a
               tabindex="0"
@@ -129,14 +129,14 @@
               [(ngModel)]="targetFilterValue"
               (keyup)="options.filter(getFilterValue($event))"
               type="text"
-              [placeholder]="'ACTIONS.SEARCH.FILTER' | translate"
+              [placeholder]="'DIALOG.DATAVIEW.FILTER' | translate"
             />
             <a
               tabindex="0"
               *ngIf="targetFilterValue"
               class="px-2 p-picklist-filter-icon pi pi-times cursor-pointer"
               (click)="options.reset(); targetFilterValue = undefined"
-              [pTooltip]="'ACTIONS.SEARCH.FILTER_CLEAR' | translate"
+              [pTooltip]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
             ></a>

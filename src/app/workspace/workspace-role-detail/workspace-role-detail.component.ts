@@ -57,7 +57,7 @@ export class WorkspaceRoleDetailComponent implements OnChanges {
    */
   public onSaveRole(): void {
     if (!this.formGroupRole.valid) {
-      console.info('form not valid')
+      console.info('form invalid')
       return
     }
     let roleExists = false
@@ -66,10 +66,10 @@ export class WorkspaceRoleDetailComponent implements OnChanges {
       if (this.changeMode !== 'CREATE') roles = roles.filter((r) => r.id === this.role?.id)
       roleExists = roles.length > 0
     }
-    if (roleExists) {
+    if (roleExists && this.changeMode === 'CREATE') {
       this.msgService.error({
         summaryKey: 'ACTIONS.' + this.changeMode + '.ROLE',
-        detailKey: 'VALIDATION.ERRORS.ROLE.' + this.changeMode + '_ALREADY_EXISTS'
+        detailKey: 'ACTIONS.' + this.changeMode + '.MESSAGE.ROLE_ALREADY_EXISTS'
       })
       return
     }

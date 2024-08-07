@@ -18,7 +18,7 @@
       "WORKSPACE": "Workspace erstellen",
       "WORKSPACE.TOOLTIP": "Einen neuen Workspace erstellen",
       "WORKSPACE.ROLE": "Rolle zum Workspace hinzufügen",
-      "ROLE": "Eine neue Rolle erstellen",
+      "ROLE": "Rolle erstellen",
       "ROLE_OK": "Die Rolle wurde erfolgreich erstellt",
       "ROLE_NOK": "Ein Fehler ist aufgetreten. Die Rolle wurde nicht erstellt.",
       "MENU": "Menüpunkt erstellen",
@@ -26,7 +26,8 @@
       "MESSAGE": {
         "CREATE_OK": "Der Workspace wurde erfolgreich erstellt",
         "CREATE_NOK": "Ein Fehler ist aufgetreten. Der Workspace wurde nicht erstellt.",
-        "MENU_ALREADY_EXIST": "Ein Menüpunkt mit diesem Namen/ID existert schon",
+        "ROLE_ALREADY_EXISTS": "Eine Rolle mit diesem Namen existiert schon",
+        "MENU_ALREADY_EXIST": "Ein Menüpunkt mit diesem Namen/ID existiert schon",
         "MENU_CREATE_OK": "Der Menüpunkt wurde erfolgreich erstellt",
         "MENU_CREATE_NOK": "Ein Fehler ist aufgetreten. Der Menüpunkt wurde nicht erstellt."
       }
@@ -101,15 +102,9 @@
     },
     "SEARCH": {
       "ERROR": "Daten nicht abrufbar",
-      "FILTER": "Filter",
-      "FILTER_OF": "Filter für ",
-      "FILTER_CLEAR": "Filterwert entfernen",
       "NO_DATA": "Keine Daten",
       "RELOAD": "Daten neu laden",
-      "RELOAD.OK": "Daten erfolgreich geladen",
-      "SORT_BY": "Sortiert nach",
-      "SORT_DIRECTION_ASC": "aufsteigend",
-      "SORT_DIRECTION_DESC": "absteigend"
+      "RELOAD.OK": "Daten erfolgreich geladen"
     },
     "TREE": {
       "COLLAPSE_ALL": "Alles zu",
@@ -294,8 +289,11 @@
         "LABEL": "Typ",
         "TOOLTIP": "Quickfilter für Rollentyp",
         "ALL": "Alle",
+        "ALL.TOOLTIP": "Filter löschen",
         "IAM": "IAM",
-        "WORKSPACE": "Workspace"
+        "IAM.TOOLTIP": "Filter: IAM Rollen",
+        "WORKSPACE": "Workspace",
+        "WORKSPACE.TOOLTIP": "Filter: Workspace Rollen"
       },
       "ORIGIN": {
         "IAM": "Rolle existiert im Identity Access Management",
@@ -444,9 +442,13 @@
       }
     },
     "DATAVIEW": {
-      "FILTER_PLACEHOLDER": "Filter",
-      "FILTER": "Filterfelder: Name, Url",
+      "FILTER": "Filter",
+      "FILTER_BY": "Filter für ",
       "FILTER_CLEAR": "Filter entfernen",
+      "FILTER_PLACEHOLDER": "Filter",
+      "SORT_BY": "Sortiert nach",
+      "SORT_DIRECTION_ASC": "aufsteigend",
+      "SORT_DIRECTION_DESC": "absteigend",
       "VIEW_MODE_GRID": "Kachelansicht",
       "VIEW_MODE_LIST": "Listenansicht",
       "VIEW_MODE_TABLE": "Tabellenansicht",

@@ -18,7 +18,7 @@
       "WORKSPACE": "Create Workspace",
       "WORKSPACE.TOOLTIP": "Create a new Workspace",
       "WORKSPACE.ROLE": "Create Workspace Role",
-      "ROLE": "Create a new Role",
+      "ROLE": "Create Role",
       "ROLE_OK": "The Role was created successfully",
       "ROLE_NOK": "An error has occurred. The Role was not created.",
       "MENU": "Create Menu Item",
@@ -26,6 +26,7 @@
       "MESSAGE": {
         "CREATE_OK": "The Workspace was created successfully",
         "CREATE_NOK": "An error has occurred. The Workspace was not created.",
+        "ROLE_ALREADY_EXISTS": "A role with this name already exists",
         "MENU_ALREADY_EXIST": "A Menu Item with that name/id already exists",
         "MENU_CREATE_OK": "The Menu Item was created successfully",
         "MENU_CREATE_NOK": "An error has occurred. The Menu Item was not created."
@@ -101,15 +102,9 @@
     },
     "SEARCH": {
       "ERROR": "Data not available",
-      "FILTER": "Filter",
-      "FILTER_OF": "Filter for ",
-      "FILTER_CLEAR": "Clear Filter",
       "NO_DATA": "No Data",
       "RELOAD": "Reload data",
-      "RELOAD.OK": "Data successfully reloaded",
-      "SORT_BY": "Sort By",
-      "SORT_DIRECTION_ASC": "ascending",
-      "SORT_DIRECTION_DESC": "descending"
+      "RELOAD.OK": "Data successfully reloaded"
     },
     "TREE": {
       "COLLAPSE_ALL": "Collapse all",
@@ -176,8 +171,8 @@
     "MODIFICATION_DATE": "Changed on",
     "MODIFICATION_USER": "Changed by",
     "MANDATORY": "Mandatory",
-    "OPERATOR": "Automated created",
-    "OPERATOR_MESSAGE": "This Workspace was created by the operator. All changes will be lost on the next deployment.",
+    "OPERATOR": "Created by automation",
+    "OPERATOR_MESSAGE": "This Workspace was created by automation. All changes will be lost on the next deployment.",
     "TOOLTIPS": {
       "CREATION_DATE": "Timestamp of the creation",
       "CREATION_USER": "ID of the user of the creation",
@@ -294,8 +289,11 @@
         "LABEL": "Type",
         "TOOLTIP": "Quickfilter for Role Type",
         "ALL": "All",
+        "ALL.TOOLTIP": "Clear filter",
         "IAM": "IAM",
-        "WORKSPACE": "Workspace"
+        "IAM.TOOLTIP": "Filter: Only IAM Roles",
+        "WORKSPACE": "Workspace",
+        "WORKSPACE.TOOLTIP": "Filter: Only Workspace Roles"
       },
       "ORIGIN": {
         "IAM": "Role exists in Identity Access Management",
@@ -444,9 +442,13 @@
       }
     },
     "DATAVIEW": {
-      "FILTER_PLACEHOLDER": "Filter",
-      "FILTER": "Filter fields: name, url",
+      "FILTER": "Filter",
+      "FILTER_BY": "Filter by ",
       "FILTER_CLEAR": "Clear Filter",
+      "FILTER_PLACEHOLDER": "Filter",
+      "SORT_BY": "Sort By",
+      "SORT_DIRECTION_ASC": "ascending",
+      "SORT_DIRECTION_DESC": "descending",
       "VIEW_MODE_GRID": "Tile view",
       "VIEW_MODE_LIST": "List view",
       "VIEW_MODE_TABLE": "Table view",
