@@ -17,8 +17,8 @@
         gap: 0;
         > div {
           width: unset;
-          &:first-child {
-            display: none;
+          &.p-fileupload-filename {
+            max-width: 25rem;
           }
         }
       }

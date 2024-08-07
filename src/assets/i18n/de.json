@@ -86,7 +86,7 @@
     "NAVIGATION": {
       "CLOSE": "Schließen",
       "CLOSE.TOOLTIP": "Dialog schließen",
-      "CLOSE_WITHOUT_SAVE": "Dialog ohne Speichern schließen",
+      "CLOSE_WITHOUT_SAVE": "Dialog ohne Änderungen schließen",
       "BACK": "Zurück",
       "NEXT": "Weiter",
       "NEXT.TOOLTIP": "Nächste Seite",
@@ -262,7 +262,7 @@
       "PARENT_ID": "Der Identifier des übergeordneten Menüpunkts",
       "PARENT_NAME": "Der Name des übergeordneten Menüpunkts",
       "WORKSPACE": "Name des Workspaces",
-      "POSITION": "Eine ganzzahlige Nummer welche die Position des Menüpunkts in der Menüstruktur festlegt.",
+      "POSITION": "Eine ganzzahlige Nummer welche die Position des Menüpunkts unterhalb des übergeordenten Menüpunkts festlegt. Wenn manuell geändert, dann bekommt der Nachfolger diese Positionsnummer um 1 erhöht ff.",
       "SCOPE": "Aktionsradius",
       "URL": "Die durch den Menüpunkt aufgerufene URL. Auswählen aus Liste und/oder manuelle Änderungen/Erweiterungen möglich."
     }

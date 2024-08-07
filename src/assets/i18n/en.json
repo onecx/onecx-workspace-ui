@@ -86,7 +86,7 @@
     "NAVIGATION": {
       "CLOSE": "Close",
       "CLOSE.TOOLTIP": "Close dialog",
-      "CLOSE_WITHOUT_SAVE": "Close dialog without saving",
+      "CLOSE_WITHOUT_SAVE": "Close dialog without changes",
       "BACK": "Back",
       "NEXT": "Next",
       "NEXT.TOOLTIP": "Next page",
@@ -262,7 +262,7 @@
       "PARENT_ID": "The identifier of the parent Menu Item",
       "PARENT_NAME": "The name of the parent Menu Item",
       "WORKSPACE": "Name of the Workspace",
-      "POSITION": "An integer number that determines the position of the Menu Item in the menu structure",
+      "POSITION": "An integer number that determines the position of the menu item below the parent menu item. If changed manually, the successor gets this position number increased by 1 and so on.",
       "SCOPE": "Scope",
       "URL": "The URL accessed by the Menu Item. Selection from list and/or manual changes/extensions possible."
     }

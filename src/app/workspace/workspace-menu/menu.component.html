@@ -70,7 +70,12 @@
                 id="workspace_menu_table_header_filter"
                 class="py-0"
                 (input)="menuTree.filterGlobal($any($event.target).value, 'contains')"
-                [pTooltip]="'DIALOG.DATAVIEW.FILTER' | translate"
+                [pTooltip]="
+                  ('DIALOG.DATAVIEW.FILTER' | translate) +
+                  ('MENU_ITEM.MENU_NAME' | translate) +
+                  ', ' +
+                  ('MENU_ITEM.URL' | translate)
+                "
                 tooltipPosition="top"
                 tooltipEvent="hover"
               />

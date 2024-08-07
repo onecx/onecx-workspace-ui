@@ -63,7 +63,6 @@ export class MenuDetailComponent implements OnChanges {
   public iconItems: SelectItem[] = [] // default value is empty
   public scopeItems: SelectItem[]
   private posPattern = '[0-9]{1,9}'
-  private panelHeight = 0
   public mfeMap: Map<string, MenuURL> = new Map()
   public mfeItems!: MenuURL[]
   public filteredMfes: MenuURL[] = []
@@ -163,7 +162,6 @@ export class MenuDetailComponent implements OnChanges {
         this.menuItem = item ?? undefined
         if (this.menuItem && this.displayDetailDialog) {
           this.fillForm()
-          this.preparePanelHeight()
         }
       }
     })
@@ -324,14 +322,6 @@ export class MenuDetailComponent implements OnChanges {
   public onTabPanelChange(e: any): void {
     this.tabIndex = e.index
     this.prepareLanguagePanel()
-    this.preparePanelHeight()
-  }
-  // use the same height on all TABs
-  private preparePanelHeight(): void {
-    if (!this.panelDetail?.el?.nativeElement) return
-    this.renderer.setStyle(this.panelDetail?.el.nativeElement, 'display', 'block')
-    if (this.panelHeight === 0) this.panelHeight = this.panelDetail?.el.nativeElement.offsetHeight
-    this.renderer.setStyle(this.panelDetail?.el.nativeElement, 'height', this.panelHeight - 10 + 'px')
   }
 
   /**

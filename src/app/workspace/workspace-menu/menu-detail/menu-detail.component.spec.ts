@@ -6,7 +6,6 @@ import { FormControl, FormGroup, FormsModule, Validators } from '@angular/forms'
 import { By } from '@angular/platform-browser'
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router'
 import { BehaviorSubject, of, throwError } from 'rxjs'
-import { TabView } from 'primeng/tabview'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 
 import { PortalMessageService, UserService } from '@onecx/portal-integration-angular'
@@ -249,13 +248,11 @@ describe('MenuDetailComponent', () => {
       component.workspaceId = 'id'
       component.menuItemId = 'menuItemId'
       component.displayDetailDialog = true
-      spyOn(component as any, 'preparePanelHeight')
       spyOn(component as any, 'loadMfeUrls')
 
       component.ngOnChanges({ workspaceId: {} as SimpleChange })
 
       expect(component.menuItem).toBe(mockMenuItems[0])
-      expect((component as any).preparePanelHeight).toHaveBeenCalled()
       expect((component as any).loadMfeUrls).toHaveBeenCalled()
     })
 
@@ -301,7 +298,6 @@ describe('MenuDetailComponent', () => {
         component.menuItemId = 'menuItemId'
         component.workspaceId = 'workspaceId'
         component.displayDetailDialog = true
-        spyOn(component as any, 'preparePanelHeight')
 
         component.ngOnChanges({ workspaceId: {} as SimpleChange })
 
@@ -310,7 +306,6 @@ describe('MenuDetailComponent', () => {
         controlMfeItems.push({ mfePath: '', product: 'MENU_ITEM.URL.EMPTY' })
         controlMfeItems.push({ ...microfrontend, mfePath: '/path/base', product: 'display name', isSpecial: false })
         expect(component.mfeItems).toEqual(controlMfeItems)
-        expect((component as any).preparePanelHeight).toHaveBeenCalled()
       })
 
       it('should display error when trying to loadMfeUrls', () => {
@@ -320,13 +315,11 @@ describe('MenuDetailComponent', () => {
         component.workspaceId = 'workspaceId'
         component.menuItemId = 'menuItemId'
         component.displayDetailDialog = true
-        spyOn(component as any, 'preparePanelHeight')
         spyOn(console, 'error')
 
         component.ngOnChanges({ workspaceId: {} as SimpleChange })
 
         expect(console.error).toHaveBeenCalledWith('getProductsByWorkspaceId():', new Error())
-        expect((component as any).preparePanelHeight).toHaveBeenCalled()
       })
     })
 
@@ -526,38 +519,10 @@ describe('MenuDetailComponent', () => {
 
   it('should update tabIndex onTabPanelChange', () => {
     const mockEvent = { index: 3 }
-    spyOn(component as any, 'preparePanelHeight')
 
     component.onTabPanelChange(mockEvent)
 
     expect(component.tabIndex).toBe(mockEvent.index)
-    expect((component as any).preparePanelHeight).toHaveBeenCalled()
-  })
-
-  it('should return when no panelDetail preparePanelHeight', () => {
-    component.panelDetail = undefined
-
-    component.onTabPanelChange({ index: 3 })
-
-    expect((component as any).panelHeight).toBe(0)
-  })
-
-  it('should preparePanelHeight', () => {
-    const nativeElement = document.createElement('div')
-    nativeElement.style.height = '100px' // cannot reach the correct value offsetHeight, this test is quite useless
-    const mockTabView: Partial<TabView> = {
-      el: {
-        nativeElement: nativeElement
-      },
-      style: {},
-      styleClass: ''
-    }
-    component.panelDetail = mockTabView as any
-    spyOn((component as any).renderer, 'setStyle').and.callThrough()
-
-    component.onTabPanelChange({ index: 3 })
-
-    expect((component as any).panelHeight).toBe(0)
   })
 
   /**
