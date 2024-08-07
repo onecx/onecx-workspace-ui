@@ -34,7 +34,7 @@ export class WorkspaceRoleDetailComponent implements OnChanges {
   ) {
     this.formGroupRole = new FormGroup({
       id: new FormControl(null),
-      name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
+      name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(100)]),
       description: new FormControl(null)
     })
   }

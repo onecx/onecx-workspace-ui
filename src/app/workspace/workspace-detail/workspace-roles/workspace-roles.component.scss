@@ -4,3 +4,27 @@
 @include danger-action;
 @include correct-data-view-control;
 @include correct-data-view-header-for-tabpanel;
+
+:host ::ng-deep {
+  .h-2-5rem {
+    height: 2.5rem !important;
+  }
+  .card-badge-right {
+    &.badge-2-1 {
+      top: 26px;
+    }
+  }
+  .card-badge-left {
+    &.badge-2-1 {
+      top: 29px;
+      left: 6px;
+    }
+    &.badge-1-number {
+      top: 3px;
+      left: 5px;
+    }
+  }
+  .word-wrap-break {
+    word-wrap: break-word;
+  }
+}
