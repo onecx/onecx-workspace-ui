@@ -18,7 +18,7 @@
         >
           {{ slot ? slot.name : '' }}
         </div>
-        <label>{{ 'SLOT.NAME' | translate }}</label>
+        <span class="ocx-float-label">{{ 'SLOT.NAME' | translate }}</span>
       </span>
       <div class="pr-2 flex flex-row flex-wrap justify-content-between gap-3">
         <span class="p-float-label">
@@ -30,7 +30,7 @@
           >
             {{ slot ? (slot.creationDate | date: dateFormat) : '' }}
           </div>
-          <label>{{ 'INTERNAL.CREATION_DATE' | translate }}</label>
+          <span class="ocx-float-label">{{ 'INTERNAL.CREATION_DATE' | translate }}</span>
         </span>
         <span class="p-float-label">
           <div
@@ -41,7 +41,7 @@
           >
             {{ slot ? (slot.modificationDate | date: dateFormat) : '' }}
           </div>
-          <label>{{ 'INTERNAL.MODIFICATION_DATE' | translate }}</label>
+          <span class="ocx-float-label">{{ 'INTERNAL.MODIFICATION_DATE' | translate }}</span>
         </span>
       </div>
     </div>

@@ -350,24 +350,36 @@
 
 @mixin float-label-textbox {
   :host {
-    // text displayed like an input field: only displaying
-    .p-float-label .ocx-float-label-textbox {
-      font-family: var(--font-family);
-      font-size: var(--input-text-font-size);
-      color: var(--emphasis-high);
-      background: var(--input-bg);
-      padding: var(--input-padding);
-      border: var(--input-border);
-      transition: var(--form-element-transition);
-      appearance: none;
-      border-radius: var(--border-radius);
-      ~ label {
+    // displaying text like an input field with floating label
+    .p-float-label {
+      display: block;
+      position: relative;
+      .ocx-float-label-textbox {
+        font-family: var(--font-family);
+        font-size: var(--input-text-font-size);
+        color: var(--emphasis-high);
+        background: var(--input-bg);
+        padding: var(--input-padding);
+        border: var(--input-border);
+        transition: var(--form-element-transition);
+        appearance: none;
+        border-radius: var(--border-radius);
+      }
+      .ocx-float-label {
+        position: absolute;
+        left: 0.75rem;
         top: -0.5rem !important;
-        background-color: var(--input-bg);
         padding: 2px 4px;
         margin-left: -4px;
         margin-top: 0;
+        line-height: 1;
         font-size: 12px;
+        pointer-events: none;
+        color: var(--emphasis-medium);
+        background-color: var(--input-bg);
+        transition-property: all;
+        transition-timing-function: ease;
+        transition-duration: var(--transition-duration);
       }
     }
   }
