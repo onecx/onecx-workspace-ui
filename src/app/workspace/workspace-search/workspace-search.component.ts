@@ -33,7 +33,7 @@ export class WorkspaceSearchComponent implements OnInit {
   public limitText = limitText
 
   public workspaces$!: Observable<SearchWorkspacesResponse>
-  public viewMode: 'list' | 'grid' = 'grid'
+  public viewMode: 'list' | 'grid' = 'list'
   public filter: string | undefined
   public sortField = 'displayName'
   public sortOrder = 1
@@ -161,15 +161,6 @@ export class WorkspaceSearchComponent implements OnInit {
   public onGotoMenu(ev: any, workspace: Workspace) {
     ev.stopPropagation()
     this.router.navigate(['./', workspace.name, 'menu'], { relativeTo: this.route })
-  }
-
-  public getDescriptionString(text: string): string {
-    if (text) {
-      const chars = window.innerWidth < 1200 ? 200 : 120
-      return text.length < chars ? text : text.substring(0, chars) + '...'
-    } else {
-      return ''
-    }
   }
 
   public getLogoUrl(workspace: Workspace | undefined): string | undefined {
