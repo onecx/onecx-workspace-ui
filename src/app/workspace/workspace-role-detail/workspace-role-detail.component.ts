@@ -26,6 +26,7 @@ export class WorkspaceRoleDetailComponent implements OnChanges {
   @Output() dataChanged: EventEmitter<boolean> = new EventEmitter()
 
   public formGroupRole: FormGroup
+  private orgRoleName: string | undefined
 
   constructor(
     private wRoleApi: WorkspaceRolesAPIService,
@@ -34,7 +35,7 @@ export class WorkspaceRoleDetailComponent implements OnChanges {
   ) {
     this.formGroupRole = new FormGroup({
       id: new FormControl(null),
-      name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
+      name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(100)]),
       description: new FormControl(null)
     })
   }
@@ -42,6 +43,7 @@ export class WorkspaceRoleDetailComponent implements OnChanges {
   public ngOnChanges(): void {
     this.formGroupRole.reset()
     if (this.role) {
+      this.orgRoleName = this.role?.name
       this.formGroupRole.controls['name'].patchValue(this.role.name)
       this.formGroupRole.controls['description'].patchValue(this.role.description)
       this.changeMode === 'VIEW' ? this.formGroupRole.disable() : this.formGroupRole.enable()
@@ -57,19 +59,21 @@ export class WorkspaceRoleDetailComponent implements OnChanges {
    */
   public onSaveRole(): void {
     if (!this.formGroupRole.valid) {
-      console.info('form not valid')
+      console.info('form invalid')
       return
     }
     let roleExists = false
     if (this.roles.length > 0) {
+      // 1. check name existence
       let roles = this.roles.filter((r) => r.name === this.formGroupRole.controls['name'].value)
-      if (this.changeMode !== 'CREATE') roles = roles.filter((r) => r.id === this.role?.id)
+      // 2. filter the current role
+      if (this.changeMode === 'EDIT') roles = roles.filter((r) => r.id !== this.role?.id)
       roleExists = roles.length > 0
     }
     if (roleExists) {
       this.msgService.error({
         summaryKey: 'ACTIONS.' + this.changeMode + '.ROLE',
-        detailKey: 'VALIDATION.ERRORS.ROLE.' + this.changeMode + '_ALREADY_EXISTS'
+        detailKey: 'ACTIONS.' + this.changeMode + '.MESSAGE.ROLE_ALREADY_EXISTS'
       })
       return
     }

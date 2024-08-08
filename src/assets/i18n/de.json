@@ -18,7 +18,7 @@
       "WORKSPACE": "Workspace erstellen",
       "WORKSPACE.TOOLTIP": "Einen neuen Workspace erstellen",
       "WORKSPACE.ROLE": "Rolle zum Workspace hinzufügen",
-      "ROLE": "Eine neue Rolle erstellen",
+      "ROLE": "Rolle erstellen",
       "ROLE_OK": "Die Rolle wurde erfolgreich erstellt",
       "ROLE_NOK": "Ein Fehler ist aufgetreten. Die Rolle wurde nicht erstellt.",
       "MENU": "Menüpunkt erstellen",
@@ -26,7 +26,8 @@
       "MESSAGE": {
         "CREATE_OK": "Der Workspace wurde erfolgreich erstellt",
         "CREATE_NOK": "Ein Fehler ist aufgetreten. Der Workspace wurde nicht erstellt.",
-        "MENU_ALREADY_EXIST": "Ein Menüpunkt mit diesem Namen/ID existert schon",
+        "ROLE_ALREADY_EXISTS": "Eine Rolle mit diesem Namen existiert schon.",
+        "MENU_ALREADY_EXIST": "Ein Menüpunkt mit diesem Namen/ID existiert schon.",
         "MENU_CREATE_OK": "Der Menüpunkt wurde erfolgreich erstellt",
         "MENU_CREATE_NOK": "Ein Fehler ist aufgetreten. Der Menüpunkt wurde nicht erstellt."
       }
@@ -44,11 +45,11 @@
       "MENU_MESSAGE": "Damit werden auch alle Menupunkte unterhalb gelöscht.",
       "MENU_OK": "Der Menüpunkt wurde erfolgreich gelöscht",
       "MENU_NOK": "Ein Fehler ist aufgetreten. Der Menüpunkt wurde nicht gelöscht.",
-      "ROLE_MESSAGE": "Damit wird die Rolle und deren Zuweisungen (zu Menüpunkten) für den Workspace gelöscht. Ändert nichts im Permission Management.",
+      "ROLE_MESSAGE": "Damit wird die Rolle und deren Zuweisungen (zu Menüpunkten) für den Workspace gelöscht. Das führt zu keiner Änderung im Permission Management.",
       "ROLE_OK": "Die Rolle wurde erfolgreich gelöscht",
       "ROLE_NOK": "Ein Fehler ist aufgetreten. Die Rolle wurde nicht gelöscht.",
       "SLOT_MESSAGE": "Damit wird die Zuweisung von Slot zur Komponente für den Workspace gelöscht.",
-      "SLOT_OK": "Die Slot-Zuweisung wurde erfolgreich gelöscht",
+      "SLOT_OK": "Die Slot-Zuweisung wurde erfolgreich gelöscht.",
       "SLOT_NOK": "Ein Fehler ist aufgetreten. Die Slot-Zuweisung wurde nicht gelöscht.",
       "PRODUCTS_MESSAGE": "Die ausgewählten Applikationen und ihre Apps werden für den Arbeitsbereich abgemeldet. Menüelemente, die solche Pfade verwenden, werden nicht berührt, funktionieren aber nicht mehr.",
       "PRODUCTS_QUESTION": "Möchten Sie die ausgewählten Applikationen abmelden?",
@@ -57,14 +58,16 @@
     "EDIT": {
       "LABEL": "Bearbeiten",
       "TOOLTIP": "Die Eigenschaften bearbeiten",
+      "ROLE": "Rolle ändern",
       "ROLE_OK": "Die Rolle wurde erfolgreich geändert",
       "ROLE_NOK": "Ein Fehler ist aufgetreten. Die Rolle wurde nicht geändert.",
       "SLOT_OK": "Der Slot wurde erfolgreich geändert",
       "SLOT_NOK": "Ein Fehler ist aufgetreten. Der Slot wurde nicht geändert.",
       "MESSAGE": {
-        "CHANGE_OK": "Der Workspace wurde erfolgreich geändert",
+        "CHANGE_OK": "Der Workspace wurde erfolgreich geändert.",
         "CHANGE_NOK": "Ein Fehler ist aufgetreten. Der Workspace wurde nicht geändert.",
-        "MENU_CHANGE_OK": "Der Menüpunkt wurde erfolgreich geändert",
+        "ROLE_ALREADY_EXISTS": "Eine Rolle mit diesem Namen existiert schon.",
+        "MENU_CHANGE_OK": "Der Menüpunkt wurde erfolgreich geändert.",
         "MENU_CHANGE_NOK": "Ein Fehler ist aufgetreten. Der Menüpunkt wurde nicht geändert."
       }
     },
@@ -86,7 +89,7 @@
     "NAVIGATION": {
       "CLOSE": "Schließen",
       "CLOSE.TOOLTIP": "Dialog schließen",
-      "CLOSE_WITHOUT_SAVE": "Dialog ohne Speichern schließen",
+      "CLOSE_WITHOUT_SAVE": "Dialog ohne Änderungen schließen",
       "BACK": "Zurück",
       "NEXT": "Weiter",
       "NEXT.TOOLTIP": "Nächste Seite",
@@ -101,15 +104,9 @@
     },
     "SEARCH": {
       "ERROR": "Daten nicht abrufbar",
-      "FILTER": "Filter",
-      "FILTER_OF": "Filter für ",
-      "FILTER_CLEAR": "Filterwert entfernen",
       "NO_DATA": "Keine Daten",
       "RELOAD": "Daten neu laden",
-      "RELOAD.OK": "Daten erfolgreich geladen",
-      "SORT_BY": "Sortiert nach",
-      "SORT_DIRECTION_ASC": "aufsteigend",
-      "SORT_DIRECTION_DESC": "absteigend"
+      "RELOAD.OK": "Daten erfolgreich geladen"
     },
     "TREE": {
       "COLLAPSE_ALL": "Alles zu",
@@ -200,7 +197,7 @@
     "PRODUCT": "Applikation",
     "APP_ID": "App ID",
     "COMPONENT": "Komponente",
-    "COMPONENTS": "Anzahl Komponenten"
+    "COMPONENTS": "Anzahl zugewiesener Komponenten"
   },
   "WORKSPACE": {
     "ID": "ID",
@@ -262,7 +259,7 @@
       "PARENT_ID": "Der Identifier des übergeordneten Menüpunkts",
       "PARENT_NAME": "Der Name des übergeordneten Menüpunkts",
       "WORKSPACE": "Name des Workspaces",
-      "POSITION": "Eine ganzzahlige Nummer welche die Position des Menüpunkts in der Menüstruktur festlegt.",
+      "POSITION": "Eine ganzzahlige Nummer welche die Position des Menüpunkts unterhalb des übergeordenten Menüpunkts festlegt. Wenn manuell geändert, dann bekommt der Nachfolger diese Positionsnummer um 1 erhöht ff.",
       "SCOPE": "Aktionsradius",
       "URL": "Die durch den Menüpunkt aufgerufene URL. Auswählen aus Liste und/oder manuelle Änderungen/Erweiterungen möglich."
     }
@@ -294,14 +291,17 @@
         "LABEL": "Typ",
         "TOOLTIP": "Quickfilter für Rollentyp",
         "ALL": "Alle",
+        "ALL.TOOLTIP": "Filter löschen",
         "IAM": "IAM",
-        "WORKSPACE": "Workspace"
+        "IAM.TOOLTIP": "Filter: IAM Rollen",
+        "WORKSPACE": "Workspace",
+        "WORKSPACE.TOOLTIP": "Filter: Workspace Rollen"
       },
       "ORIGIN": {
         "IAM": "Rolle existiert im Identity Access Management",
         "WORKSPACE": "Rolle existiert im Workspace",
         "IAM.VIEW": "Diese Rolle existiert nur im Identity Access Management (IAM) und kann deshalb hier nicht geändert werden.",
-        "WORKSPACE.EDIT": "Diese Rolle existiert nur Workspace und nicht im Identity Access Management.",
+        "WORKSPACE.EDIT": "Diese Rolle existiert nur im Workspace und nicht im Identity Access Management.",
         "IAM.WORKSPACE.EDIT": "Diese Rolle existiert im Identity Access Management (IAM) und im Workspace (gleicher Name). Eine Änderung betrifft allerdings nur die Rolle im Workspace."
       }
     },
@@ -444,9 +444,13 @@
       }
     },
     "DATAVIEW": {
-      "FILTER_PLACEHOLDER": "Filter",
-      "FILTER": "Filterfelder: Name, Url",
+      "FILTER": "Filter",
+      "FILTER_BY": "Filter für ",
       "FILTER_CLEAR": "Filter entfernen",
+      "FILTER_PLACEHOLDER": "Filter",
+      "SORT_BY": "Sortiert nach",
+      "SORT_DIRECTION_ASC": "aufsteigend",
+      "SORT_DIRECTION_DESC": "absteigend",
       "VIEW_MODE_GRID": "Kachelansicht",
       "VIEW_MODE_LIST": "Listenansicht",
       "VIEW_MODE_TABLE": "Tabellenansicht",

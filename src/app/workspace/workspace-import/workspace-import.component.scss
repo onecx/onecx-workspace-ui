@@ -1,3 +1,7 @@
+@import 'src/_mixins.scss';
+
+@include correct-file-upload;
+
 :host ::ng-deep {
   .p-steps ul {
     flex-wrap: wrap;

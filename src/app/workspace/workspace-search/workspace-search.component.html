@@ -51,67 +51,70 @@
         >
         </ocx-data-view-controls>
       </ng-template>
-      <!-- List - view -->
+
+      <!-- LIST -->
       <ng-template let-workspaces let-row="rowIndex" pTemplate="listItem">
-        <div class="grid grid-nogutter">
+        <div
+          *ngFor="let workspace of workspaces"
+          class="flex flex-row flex-nowrap justify-content-start align-items-center column-gap-3 py-1 px-3 hover:bg-gray-200 cursor-pointer"
+          [routerLink]="['./' + workspace.name]"
+        >
+          <div class="p-0 col-4 sm:col-3 md:col-2 flex justify-content-around align-items-center">
+            <app-image-container
+              [id]="'app_workspace_search_data_row_' + row + '_logo'"
+              [small]="false"
+              styleClass="h-2rem sm:h-3rem md:h-4rem max-h-2rem sm:max-h-3rem md:max-h-4rem max-w-9rem"
+              [imageUrl]="getLogoUrl(workspace)"
+            ></app-image-container>
+          </div>
           <div
-            *ngFor="let workspace of workspaces"
-            class="col-12 grid grid-nogutter row-gap-1 align-items-center p-1 hover:bg-gray-200 cursor-pointer line-height-2"
-            [routerLink]="['./' + workspace.name]"
+            class="p-0 col-8 sm:col-6 md:col-6 lg:col-5 xl:col-3 font-bold text-md sm:text-lg"
+            [pTooltip]="workspace.displayName.length > 40 ? workspace.displayName : ''"
+            tooltipPosition="top"
+            tooltipEvent="hover"
           >
-            <div class="h-3rem col-12 sm:col-2 px-2 flex justify-content-around align-items-center">
-              <app-image-container
-                [id]="'app_workspace_search_data_row_' + row + '_logo'"
-                [small]="false"
-                styleClass="max-h-3rem max-w-10rem"
-                [imageUrl]="getLogoUrl(workspace)"
-              ></app-image-container>
-            </div>
-            <div
-              class="col-12 sm:col-3 md:col-3 lg:col-3 xl:col-2 px-2 font-bold text-lg text-center sm:text-left"
-              [pTooltip]="workspace.displayName.length > 40 ? workspace.displayName : ''"
+            {{ limitText(workspace.displayName, 60) }}
+          </div>
+          <div class="p-0 hidden sm:block col-3 md:col-2">
+            <a
+              [routerLink]="workspace.baseUrl"
+              [id]="'app_workspace_search_data_row_' + row + '_goto_workspace'"
+              (click)="$event.stopPropagation()"
+              target="_blank"
+              class="text-primary"
+              [pTooltip]="
+                ('WORKSPACE.BASE_URL' | translate) +
+                ' (' +
+                workspace.baseUrl +
+                ') - ' +
+                ('ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate)
+              "
               tooltipPosition="top"
               tooltipEvent="hover"
             >
-              {{ limitText(workspace.displayName, 40) }}
-            </div>
-            <div class="col-12 sm:col-4 md:col-4 lg:col-4 xl:col-2 px-2 text-center sm:text-left">
-              <a
-                [routerLink]="workspace.baseUrl"
-                [id]="'app_workspace_search_data_row_' + row + '_goto_workspace'"
-                (click)="$event.stopPropagation()"
-                target="_blank"
-                class="text-primary"
-                [pTooltip]="
-                  ('WORKSPACE.BASE_URL' | translate) + ' - ' + ('ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate)
-                "
-                tooltipPosition="top"
-                tooltipEvent="hover"
-              >
-                {{ limitText(workspace.baseUrl, 50) }}
-              </a>
-            </div>
-            <div
-              class="col-12 sm:col-3 md:col-3 lg:col-3 xl:col-2 px-2 text-center sm:text-left"
-              [pTooltip]="'WORKSPACE.THEME' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            >
-              {{ limitText(workspace.theme, 40) }}
-            </div>
-            <div
-              class="col-12 sm:col-12 md:col-12 lg:col-12 xl:col-4 px-2 text-center sm:text-left"
-              [pTooltip]="workspace.description > 120 ? workspace.description : ''"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            >
-              {{ this.getDescriptionString(workspace.description) }}
-            </div>
+              {{ limitText(workspace.baseUrl, 30) }}
+            </a>
+          </div>
+          <div
+            class="p-0 hidden md:block col-2"
+            [pTooltip]="'WORKSPACE.THEME' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          >
+            {{ limitText(workspace.theme, 40) }}
+          </div>
+          <div
+            class="p-0 hidden xl:block col-2"
+            [pTooltip]="workspace.description > 120 ? workspace.description : ''"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          >
+            {{ limitText(workspace.description, 50) }}
           </div>
         </div>
       </ng-template>
 
-      <!-- Grid - view -->
+      <!-- GRID -->
       <ng-template let-workspaces let-row="rowIndex" pTemplate="gridItem">
         <div class="grid grid-nogutter">
           <div *ngFor="let workspace of workspaces" class="col-6 md:col-4 xl:col-3 p-1 sm:p-2 md:p-3">

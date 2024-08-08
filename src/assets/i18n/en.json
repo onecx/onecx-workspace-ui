@@ -18,7 +18,7 @@
       "WORKSPACE": "Create Workspace",
       "WORKSPACE.TOOLTIP": "Create a new Workspace",
       "WORKSPACE.ROLE": "Create Workspace Role",
-      "ROLE": "Create a new Role",
+      "ROLE": "Create Role",
       "ROLE_OK": "The Role was created successfully",
       "ROLE_NOK": "An error has occurred. The Role was not created.",
       "MENU": "Create Menu Item",
@@ -26,6 +26,7 @@
       "MESSAGE": {
         "CREATE_OK": "The Workspace was created successfully",
         "CREATE_NOK": "An error has occurred. The Workspace was not created.",
+        "ROLE_ALREADY_EXISTS": "A Role with this name already exists",
         "MENU_ALREADY_EXIST": "A Menu Item with that name/id already exists",
         "MENU_CREATE_OK": "The Menu Item was created successfully",
         "MENU_CREATE_NOK": "An error has occurred. The Menu Item was not created."
@@ -44,7 +45,7 @@
       "MENU_MESSAGE": "This will also delete all Menu Items below.",
       "MENU_OK": "The Menu Item was deleted successfully",
       "MENU_NOK": "An error has occurred. The Menu Item could not be deleted.",
-      "ROLE_MESSAGE": "This deletes the role and its assignments for the Workspace. Does not changed anycthing in Permission Management.",
+      "ROLE_MESSAGE": "This deletes the Role and its assignments for the Workspace. Does not changed anycthing in Permission Management.",
       "ROLE_OK": "The Role was deleted successfully",
       "ROLE_NOK": "An error has occurred. The Role was not deleted.",
       "SLOT_MESSAGE": "This deletes the assignment of Slot to Component for the Workspace.",
@@ -57,6 +58,7 @@
     "EDIT": {
       "LABEL": "Edit",
       "TOOLTIP": "Edit properties",
+      "ROLE": "Edit Role",
       "ROLE_OK": "The Role was changed successfully",
       "ROLE_NOK": "An error has occurred. The Role was not changed.",
       "SLOT_OK": "The Slot was changed successfully",
@@ -64,6 +66,7 @@
       "MESSAGE": {
         "CHANGE_OK": "The Workspace was changed successfully",
         "CHANGE_NOK": "An error has occurred. The Workspace was not changed.",
+        "ROLE_ALREADY_EXISTS": "A Role with this name already exists",
         "MENU_CHANGE_OK": "The Menu Item was changed successfully",
         "MENU_CHANGE_NOK": "An error has occurred. The Menu Item was not changed."
       }
@@ -86,7 +89,7 @@
     "NAVIGATION": {
       "CLOSE": "Close",
       "CLOSE.TOOLTIP": "Close dialog",
-      "CLOSE_WITHOUT_SAVE": "Close dialog without saving",
+      "CLOSE_WITHOUT_SAVE": "Close dialog without changes",
       "BACK": "Back",
       "NEXT": "Next",
       "NEXT.TOOLTIP": "Next page",
@@ -101,15 +104,9 @@
     },
     "SEARCH": {
       "ERROR": "Data not available",
-      "FILTER": "Filter",
-      "FILTER_OF": "Filter for ",
-      "FILTER_CLEAR": "Clear Filter",
       "NO_DATA": "No Data",
       "RELOAD": "Reload data",
-      "RELOAD.OK": "Data successfully reloaded",
-      "SORT_BY": "Sort By",
-      "SORT_DIRECTION_ASC": "ascending",
-      "SORT_DIRECTION_DESC": "descending"
+      "RELOAD.OK": "Data successfully reloaded"
     },
     "TREE": {
       "COLLAPSE_ALL": "Collapse all",
@@ -162,8 +159,8 @@
         "DETAILS": "Base properties of the Workspace",
         "CONTACT": "Contact information of the Workspace",
         "INTERN": "Internal properties of the Workspace",
-        "MENU": "Workspace Menu: Management of the menu structure",
-        "ROLES": "Workspace Roles: Management of the Roles usable by the Workspace (as an subset of tenant roles)",
+        "MENU": "Workspace Menu: Management of the Menu structure",
+        "ROLES": "Workspace Roles: Management of the Roles usable by the Workspace (as an subset of Tenant roles)",
         "SLOTS": "Workspace Slots: Management of the Slots usable by the Workspace.",
         "PRODUCTS": "Workspace Applications: Management of Applications usable in the Workspace"
       }
@@ -176,8 +173,8 @@
     "MODIFICATION_DATE": "Changed on",
     "MODIFICATION_USER": "Changed by",
     "MANDATORY": "Mandatory",
-    "OPERATOR": "Automated created",
-    "OPERATOR_MESSAGE": "This Workspace was created by the operator. All changes will be lost on the next deployment.",
+    "OPERATOR": "Created by automation",
+    "OPERATOR_MESSAGE": "This Workspace was created by automation. All changes will be lost on the next deployment.",
     "TOOLTIPS": {
       "CREATION_DATE": "Timestamp of the creation",
       "CREATION_USER": "ID of the user of the creation",
@@ -193,14 +190,14 @@
     "TYPE": "Type",
     "DESCRIPTION": "Description",
     "DESCRIPTION.TOOLTIP": "Additional Information",
-    "ROLES_NOT_EXIST": "No roles defined"
+    "ROLES_NOT_EXIST": "No Roles defined"
   },
   "SLOT": {
     "NAME": "Name",
     "PRODUCT": "Application",
     "APP_ID": "App ID",
     "COMPONENT": "Component",
-    "COMPONENTS": "Number of Components"
+    "COMPONENTS": "Number of assigned Components"
   },
   "WORKSPACE": {
     "ID": "ID",
@@ -253,7 +250,7 @@
     "URL.HTTP": "Web Address",
     "URL.UNKNOWN.PRODUCT": "Unknown Application",
     "TOOLTIP": {
-      "BADGE": "Icon from the PrimeNG library which should be displayed next to the menu name",
+      "BADGE": "Icon from the PrimeNG library which should be displayed next to the Menu name",
       "DESCRIPTION": "Additional informationen",
       "DISABLED": "If set, then the Menu Item is not displayed.",
       "EXTERN": "If set, the target will be opened in a new TAB when the Menu Item is used. Requires a value in Path/URL.",
@@ -262,7 +259,7 @@
       "PARENT_ID": "The identifier of the parent Menu Item",
       "PARENT_NAME": "The name of the parent Menu Item",
       "WORKSPACE": "Name of the Workspace",
-      "POSITION": "An integer number that determines the position of the Menu Item in the menu structure",
+      "POSITION": "An integer number that determines the position of the Menu Item below the parent Menu Item. If changed manually, the successor gets this position number increased by 1 and so on.",
       "SCOPE": "Scope",
       "URL": "The URL accessed by the Menu Item. Selection from list and/or manual changes/extensions possible."
     }
@@ -294,15 +291,18 @@
         "LABEL": "Type",
         "TOOLTIP": "Quickfilter for Role Type",
         "ALL": "All",
+        "ALL.TOOLTIP": "Clear filter",
         "IAM": "IAM",
-        "WORKSPACE": "Workspace"
+        "IAM.TOOLTIP": "Filter: Only IAM Roles",
+        "WORKSPACE": "Workspace",
+        "WORKSPACE.TOOLTIP": "Filter: Only Workspace Roles"
       },
       "ORIGIN": {
         "IAM": "Role exists in Identity Access Management",
         "WORKSPACE": "Role exists in Workspace",
-        "IAM.VIEW": "This role only exists in Identity Access Management (IAM) and therefore cannot be changed here.",
-        "WORKSPACE.EDIT": "This role only exists in Workspace and not in Identity Access Management (IAM).",
-        "IAM.WORKSPACE.EDIT": "This role exists in Identity Access Management (IAM) and Workspace (same name). However, a change only affects the Workspace role."
+        "IAM.VIEW": "This Role only exists in Identity Access Management (IAM) and therefore cannot be changed here.",
+        "WORKSPACE.EDIT": "This Role only exists in Workspace and not in Identity Access Management (IAM).",
+        "IAM.WORKSPACE.EDIT": "This Role exists in Identity Access Management (IAM) and Workspace (same name). However, a change only affects the Workspace role."
       }
     },
     "SLOT": {
@@ -403,9 +403,9 @@
       "MENU_NOT_EXIST": "No menu defined",
       "MENU_ITEM_NOT_FOUND": "Cannot find Menu Item with ID: ",
       "IMPORT": {
-        "UPLOAD_INFO": "Please, upload JSON file from your device. Keep in mind, that after upload whole menu structure will be overwritten.",
+        "UPLOAD_INFO": "Please, upload JSON file from your device. Keep in mind, that after upload whole Menu structure will be overwritten.",
         "UPLOAD_OK": "Menu Structure was successfully imported",
-        "UPLOAD_NOK": "An error has occurred. The menu structure wasn't overwritten"
+        "UPLOAD_NOK": "An error has occurred. The Menu structure wasn't overwritten"
       }
     },
     "PRODUCTS": {
@@ -444,9 +444,13 @@
       }
     },
     "DATAVIEW": {
-      "FILTER_PLACEHOLDER": "Filter",
-      "FILTER": "Filter fields: name, url",
+      "FILTER": "Filter",
+      "FILTER_BY": "Filter by ",
       "FILTER_CLEAR": "Clear Filter",
+      "FILTER_PLACEHOLDER": "Filter",
+      "SORT_BY": "Sort By",
+      "SORT_DIRECTION_ASC": "ascending",
+      "SORT_DIRECTION_DESC": "descending",
       "VIEW_MODE_GRID": "Tile view",
       "VIEW_MODE_LIST": "List view",
       "VIEW_MODE_TABLE": "Table view",

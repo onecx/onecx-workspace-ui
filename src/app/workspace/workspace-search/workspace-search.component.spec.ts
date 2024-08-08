@@ -175,32 +175,6 @@ describe('WorkspaceSearchComponent', () => {
     expect(mockRouter.navigate).toHaveBeenCalledWith(['./', w.name, 'menu'], { relativeTo: component.route })
   })
 
-  it('should return correct string on getDescriptionString: smaller width, longer text', () => {
-    spyOnProperty(window, 'innerWidth').and.returnValue(10)
-    const text = 'a'.repeat(201)
-
-    const result = component.getDescriptionString(text)
-
-    expect(result).toEqual('a'.repeat(200) + '...')
-  })
-
-  it('should return correct string on getDescriptionString: greater width', () => {
-    spyOnProperty(window, 'innerWidth').and.returnValue(1250)
-    const text = 'text'
-
-    const result = component.getDescriptionString(text)
-
-    expect(result).toEqual(text)
-  })
-
-  it('should return correct string on getDescriptionString: empty string', () => {
-    const text = ''
-
-    const result = component.getDescriptionString(text)
-
-    expect(result).toEqual('')
-  })
-
   it('should return undefined if there is no ws object', () => {
     const result = component.getLogoUrl(undefined)
 

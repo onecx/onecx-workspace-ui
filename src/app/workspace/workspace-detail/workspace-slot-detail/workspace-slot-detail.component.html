@@ -7,50 +7,43 @@
   [resizable]="true"
   [dismissableMask]="true"
 >
-  <div class="">
-    <div class="flex flex-wrap flex-row justify-content-start md:justify-content-evenly row-gap-1 column-gap-2">
-      <span class="p-float-label my-1">
-        <input
-          pInputText
-          type="text"
-          readonly
-          id="slot_detail_slot_name"
-          class="min-w-max pt-3 pb-2"
-          [value]="slot ? slot.name : ''"
+  <div class="mt-1 pl-2 w-full">
+    <div class="flex flex-row flex-wrap justify-content-between row-gap-3">
+      <span class="p-float-label">
+        <div
+          class="ocx-float-label-textbox pt-3 pb-2 max-w-25rem text-responsive"
           [pTooltip]="'SLOT.NAME' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"
-        />
-        <label for="slot_detail_slot_name">{{ 'SLOT.NAME' | translate }}</label>
+        >
+          {{ slot ? slot.name : '' }}
+        </div>
+        <span class="ocx-float-label">{{ 'SLOT.NAME' | translate }}</span>
       </span>
-      <span class="p-float-label my-1">
-        <input
-          pInputText
-          type="text"
-          readonly
-          id="slot_detail_slot_creationDate"
-          class="w-13rem pt-3 pb-2"
-          [value]="slot ? (slot.creationDate | date: dateFormat) : ''"
-          [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_DATE' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        />
-        <label for="slot_detail_slot_creationDate">{{ 'INTERNAL.CREATION_DATE' | translate }}</label>
-      </span>
-      <span class="p-float-label my-1">
-        <input
-          pInputText
-          type="text"
-          readonly
-          id="slot_detail_slot_modifcationDate"
-          class="w-13rem pt-3 pb-2"
-          [value]="slot ? (slot.modificationDate | date: dateFormat) : ''"
-          [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_DATE' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        />
-        <label for="slot_detail_slot_modifcationDate">{{ 'INTERNAL.MODIFICATION_DATE' | translate }}</label>
-      </span>
+      <div class="pr-2 flex flex-row flex-wrap justify-content-between gap-3">
+        <span class="p-float-label">
+          <div
+            class="ocx-float-label-textbox pt-3 pb-2"
+            [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_DATE' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          >
+            {{ slot ? (slot.creationDate | date: dateFormat) : '' }}
+          </div>
+          <span class="ocx-float-label">{{ 'INTERNAL.CREATION_DATE' | translate }}</span>
+        </span>
+        <span class="p-float-label">
+          <div
+            class="ocx-float-label-textbox pt-3 pb-2"
+            [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_DATE' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          >
+            {{ slot ? (slot.modificationDate | date: dateFormat) : '' }}
+          </div>
+          <span class="ocx-float-label">{{ 'INTERNAL.MODIFICATION_DATE' | translate }}</span>
+        </span>
+      </div>
     </div>
 
     <p-divider align="center" styleClass="mt-3 mb-2">
@@ -105,7 +98,7 @@
       [target]="wComponents"
       [showSourceControls]="false"
       [showTargetControls]="true"
-      [responsive]="false"
+      [responsive]="true"
       [metaKeySelection]="true"
       [disabled]="!hasEditPermission"
       (onTargetReorder)="onSaveSlot()"
@@ -166,7 +159,7 @@
     </p-pickList>
   </div>
   <ng-template pTemplate="footer">
-    <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
+    <div class="flex flex-row flex-wrap column-gap-2 row-gap-1 justify-content-end">
       <button
         pButton
         autofocus

@@ -14,7 +14,7 @@ import {
   ImagesInternalAPIService,
   RefType
 } from 'src/app/shared/generated'
-import { bffImageUrl, getCurrentDateTime } from 'src/app/shared/utils'
+import { bffImageUrl, getCurrentDateTime, limitText } from 'src/app/shared/utils'
 
 import { WorkspacePropsComponent } from './workspace-props/workspace-props.component'
 import { WorkspaceContactComponent } from './workspace-contact/workspace-contact.component'
@@ -46,6 +46,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
   public workspaceDeleteMessage = ''
   public workspaceDeleteVisible = false
   public currentLogoUrl: string | undefined = undefined
+  public limitText = limitText
 
   constructor(
     private user: UserService,

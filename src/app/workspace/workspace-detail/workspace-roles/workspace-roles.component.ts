@@ -21,6 +21,7 @@ export type RoleType = 'WORKSPACE' | 'IAM'
 export type RoleFilterType = 'ALL' | RoleType
 export type Role = WorkspaceRole & { isIamRole: boolean; isWorkspaceRole: boolean; type: RoleType }
 export type ChangeMode = 'VIEW' | 'CREATE' | 'EDIT' | 'COPY' | 'DELETE'
+export type ExtendedSelectItem = SelectItem & { tooltipKey?: string }
 
 @Component({
   selector: 'app-workspace-roles',
@@ -51,7 +52,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   public workspaceRolesLoaded = false
   public exceptionKey: string | undefined
   public quickFilterValue: RoleFilterType = 'WORKSPACE'
-  public quickFilterItems: SelectItem[]
+  public quickFilterItems: ExtendedSelectItem[]
   public changeMode: ChangeMode = 'VIEW'
   public hasCreatePermission = false
   public hasDeletePermission = false
@@ -71,9 +72,13 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
     this.hasDeletePermission = this.user.hasPermission('WORKSPACE_ROLE#DELETE')
     // quick filter
     this.quickFilterItems = [
-      { label: 'DIALOG.ROLE.QUICK_FILTER.ALL', value: 'ALL' },
-      { label: 'DIALOG.ROLE.QUICK_FILTER.IAM', value: 'IAM' },
-      { label: 'DIALOG.ROLE.QUICK_FILTER.WORKSPACE', value: 'WORKSPACE' }
+      { label: 'DIALOG.ROLE.QUICK_FILTER.ALL', value: 'ALL', tooltipKey: 'DIALOG.ROLE.QUICK_FILTER.ALL.TOOLTIP' },
+      { label: 'DIALOG.ROLE.QUICK_FILTER.IAM', value: 'IAM', tooltipKey: 'DIALOG.ROLE.QUICK_FILTER.IAM.TOOLTIP' },
+      {
+        label: 'DIALOG.ROLE.QUICK_FILTER.WORKSPACE',
+        value: 'WORKSPACE',
+        tooltipKey: 'DIALOG.ROLE.QUICK_FILTER.WORKSPACE.TOOLTIP'
+      }
     ]
   }
 
@@ -230,14 +235,13 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
    */
   private prepareTranslations(): void {
     this.translate
-      .get(['ROLE.NAME', 'ROLE.TYPE', 'ACTIONS.SEARCH.SORT_BY', 'ACTIONS.SEARCH.FILTER', 'ACTIONS.SEARCH.FILTER_OF'])
+      .get(['ROLE.NAME', 'ROLE.TYPE', 'DIALOG.DATAVIEW.SORT_BY', 'DIALOG.DATAVIEW.FILTER', 'DIALOG.DATAVIEW.FILTER_BY'])
       .pipe(
         map((data) => {
           this.dataViewControlsTranslations = {
-            sortDropdownTooltip: data['ACTIONS.SEARCH.SORT_BY'],
-            sortDropdownPlaceholder: data['ACTIONS.SEARCH.SORT_BY'],
-            filterInputPlaceholder: data['ACTIONS.SEARCH.FILTER'],
-            filterInputTooltip: data['ACTIONS.SEARCH.FILTER_OF'] + data['ROLE.NAME'] + ', ' + data['ROLE.TYPE']
+            sortDropdownTooltip: data['DIALOG.DATAVIEW.SORT_BY'],
+            filterInputPlaceholder: data['DIALOG.DATAVIEW.FILTER'],
+            filterInputTooltip: data['DIALOG.DATAVIEW.FILTER_BY'] + data['ROLE.NAME'] + ', ' + data['ROLE.TYPE']
           }
         })
       )

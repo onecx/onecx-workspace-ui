@@ -126,13 +126,36 @@ describe('WorkspaceRoleDetailComponent', () => {
 
     component.onSaveRole()
 
-    expect(console.info).toHaveBeenCalledWith('form not valid')
+    expect(console.info).toHaveBeenCalledWith('form invalid')
   })
 
-  it('should not create/update role onSaveRole if it already exists', () => {
+  it('should not create role onSaveRole if a role with same name already exists', () => {
     component.formGroupRole = {
       valid: true,
       controls: {
+        id: { value: 'role id' },
+        name: { value: 'role name' }
+      }
+    } as any
+    component.roles = [wRole]
+    component.changeMode = 'CREATE'
+    component.role = {
+      name: 'role name',
+      isWorkspaceRole: false,
+      isIamRole: false,
+      type: 'WORKSPACE'
+    }
+
+    component.onSaveRole()
+
+    expect(msgServiceSpy.error).toHaveBeenCalled()
+  })
+
+  it('should not update role onSaveRole if a role with same name already exists', () => {
+    component.formGroupRole = {
+      valid: true,
+      controls: {
+        id: { value: 'role id 1' },
         name: { value: 'role name' },
         description: { value: 'role description' }
       }
@@ -140,7 +163,7 @@ describe('WorkspaceRoleDetailComponent', () => {
     component.roles = [wRole]
     component.changeMode = 'EDIT'
     component.role = {
-      id: 'role id',
+      id: 'role id 2',
       name: 'role name',
       description: 'role descr',
       isWorkspaceRole: false,

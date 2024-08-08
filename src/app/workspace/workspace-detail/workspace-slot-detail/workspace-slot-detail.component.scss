@@ -2,6 +2,8 @@
 
 @include card-badges;
 @include picklist-zebra-rows;
+@include displaying-text-responsive;
+@include float-label-textbox;
 
 :host ::ng-deep {
   .p-fieldset {

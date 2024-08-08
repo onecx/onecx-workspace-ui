@@ -1,7 +1,9 @@
 <ocx-portal-page permission="MENU#VIEW" helpArticleId="PAGE_MENU_DETAIL" pageName="PAGE_MENU_DETAIL">
   <ocx-page-header
     *ngIf="workspace"
-    [header]="workspace.displayName ? workspace.displayName + ': ' + ('DIALOG.MENU.LABEL' | translate) : ''"
+    [header]="
+      workspace.displayName ? limitText(workspace.displayName, 70) + ': ' + ('DIALOG.MENU.LABEL' | translate) : ''
+    "
     [subheader]="'DIALOG.MENU.SUBHEADER' | translate"
     [actions]="(actions$ | async) ?? []"
     [figureImage]="currentLogoUrl"
@@ -68,9 +70,14 @@
                 pInputText
                 type="text"
                 id="workspace_menu_table_header_filter"
-                class="py-0"
+                class="py-0 text-responsive"
                 (input)="menuTree.filterGlobal($any($event.target).value, 'contains')"
-                [pTooltip]="'DIALOG.DATAVIEW.FILTER' | translate"
+                [pTooltip]="
+                  ('DIALOG.DATAVIEW.FILTER_BY' | translate) +
+                  ('MENU_ITEM.MENU_NAME' | translate) +
+                  ', ' +
+                  ('MENU_ITEM.URL' | translate)
+                "
                 tooltipPosition="top"
                 tooltipEvent="hover"
               />
