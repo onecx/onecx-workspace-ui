@@ -51,7 +51,8 @@
         >
         </ocx-data-view-controls>
       </ng-template>
-      <!-- List - view -->
+
+      <!-- LIST -->
       <ng-template let-workspaces let-row="rowIndex" pTemplate="listItem">
         <div class="grid grid-nogutter">
           <div
@@ -63,7 +64,7 @@
               <app-image-container
                 [id]="'app_workspace_search_data_row_' + row + '_logo'"
                 [small]="false"
-                styleClass="max-h-3rem max-w-10rem"
+                styleClass="h-2rem sm:h-3rem md:h-4rem max-h-2rem sm:max-h-3rem md:max-h-4rem max-w-10rem"
                 [imageUrl]="getLogoUrl(workspace)"
               ></app-image-container>
             </div>
@@ -111,7 +112,7 @@
         </div>
       </ng-template>
 
-      <!-- Grid - view -->
+      <!-- GRID -->
       <ng-template let-workspaces let-row="rowIndex" pTemplate="gridItem">
         <div class="grid grid-nogutter">
           <div *ngFor="let workspace of workspaces" class="col-6 md:col-4 xl:col-3 p-1 sm:p-2 md:p-3">

@@ -348,10 +348,10 @@
   }
 }
 
-@mixin displaying-float-textbox {
+@mixin float-label-textbox {
   :host {
     // text displayed like an input field: only displaying
-    .p-float-label .onecx-float-textbox {
+    .p-float-label .ocx-float-label-textbox {
       font-family: var(--font-family);
       font-size: var(--input-text-font-size);
       color: var(--emphasis-high);

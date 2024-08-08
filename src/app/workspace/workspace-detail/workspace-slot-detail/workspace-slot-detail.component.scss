@@ -3,7 +3,7 @@
 @include card-badges;
 @include picklist-zebra-rows;
 @include displaying-text-responsive;
-@include displaying-float-textbox;
+@include float-label-textbox;
 
 :host ::ng-deep {
   .p-fieldset {
