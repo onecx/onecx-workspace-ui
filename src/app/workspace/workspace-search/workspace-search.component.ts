@@ -33,7 +33,7 @@ export class WorkspaceSearchComponent implements OnInit {
   public limitText = limitText
 
   public workspaces$!: Observable<SearchWorkspacesResponse>
-  public viewMode: 'list' | 'grid' = 'list'
+  public viewMode: 'list' | 'grid' = 'grid'
   public filter: string | undefined
   public sortField = 'displayName'
   public sortOrder = 1

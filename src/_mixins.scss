@@ -338,6 +338,32 @@
   }
 }
 
+@mixin correct-file-upload {
+  :host ::ng-deep {
+    .p-fileupload {
+      .p-fileupload-buttonbar,
+      .p-fileupload-content {
+        background-color: var(--surface-100) !important;
+      }
+      .p-fileupload-content {
+        padding: 0.5rem;
+        .p-fileupload-row {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: space-between;
+          gap: 0;
+          > div {
+            width: unset;
+            &.p-fileupload-filename {
+              max-width: 25rem;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 @mixin displaying-text-responsive {
   :host ::ng-deep {
     .text-responsive {
