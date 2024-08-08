@@ -44,7 +44,7 @@
     "@angular/forms": "^18.1.2",
     "@angular/platform-browser": "^18.1.2",
     "@angular/platform-browser-dynamic": "^18.1.2",
-    "@angular/router": "^18.1.2",
+    "@angular/router": "^18.1.4",
     "@ngneat/error-tailor": "^5.0.1",
     "@ngneat/until-destroy": "^10.0.0",
     "@ngrx/effects": "^18.0.1",
