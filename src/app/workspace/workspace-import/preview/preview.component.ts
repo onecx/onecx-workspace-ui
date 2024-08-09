@@ -103,7 +103,7 @@ export class PreviewComponent implements OnInit, OnChanges {
       this.baseUrl = this.formGroup.controls['baseUrl'].value
 
       this.importRequestDTO.workspaces[this.workspaceName].name = this.workspaceName
-      this.importRequestDTO.workspaces[this.workspaceName].name = this.displayName
+      this.importRequestDTO.workspaces[this.workspaceName].displayName = this.displayName
       this.importRequestDTO.workspaces[this.workspaceName].theme = this.themeName
       this.importRequestDTO.workspaces[this.workspaceName].baseUrl = this.baseUrl
     }

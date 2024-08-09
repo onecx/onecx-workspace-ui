@@ -30,6 +30,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
   public workspaceName = ''
   public workspaceNameOrg = ''
   public displayName = ''
+  public displayNameOrg = ''
   public themeName = ''
   public baseUrl = ''
   public baseUrlOrg: string | undefined = undefined // the original
@@ -72,6 +73,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
     this.baseUrl = ''
     this.baseUrlOrg = ''
     this.workspaceNameOrg = ''
+    this.displayNameOrg = ''
     this.isFormValid = true
     this.importRequestDTO = undefined
     this.activeIndex = 0
@@ -156,6 +158,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
         keys = Object.keys(this.importRequestDTO.workspaces)
       }
       this.workspaceNameOrg = importRequestDTO.workspaces[keys[0]].name ?? ''
+      this.displayNameOrg = importRequestDTO.workspaces[keys[0]].displayName ?? ''
       this.themeName = importRequestDTO.workspaces[keys[0]].theme ?? ''
       this.baseUrlOrg = importRequestDTO.workspaces[keys[0]].baseUrl
     } else if (this.activeIndex == 1) {
@@ -173,6 +176,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
       const key: string[] = Object.keys(this.importRequestDTO.workspaces)
       if (this.activeIndex == 2 && this.importRequestDTO?.workspaces) {
         this.importRequestDTO.workspaces[key[0]].name = this.confirmComponent?.workspaceName ?? ''
+        this.importRequestDTO.workspaces[key[0]].displayName = this.confirmComponent?.displayName ?? ''
         this.importRequestDTO.workspaces[key[0]].baseUrl = this.confirmComponent?.baseUrl ?? ''
         this.importRequestDTO.workspaces[key[0]].theme = this.confirmComponent?.themeName ?? ''
       }
