@@ -495,7 +495,7 @@
     "PREVIEW_MENU": "Menu Structure",
     "CONFIRMATION": "Confirmation",
     "SUMMARY": "Summary",
-    "THEME_NAME.TOOLTIP": "Name of the used Themes. Can be changed later.",
+    "THEME_NAME.TOOLTIP": "Name of the used Theme. Can be changed later.",
     "WORKSPACE_NAME": "Name",
     "WORKSPACE_NAME.TOOLTIP": "Unique name of the new Workspace. Uniqueness is checked in next step.",
     "DISPLAY_NAME.TOOLTIP": "Display name of the new Workspace, can be changed afterwards.",
@@ -523,7 +523,9 @@
     "VALIDATION_MENU_ITEM_WRONG_POSITION": "In a Menu Item, the value for 'position' is not a number",
     "VALIDATION_MENU_ITEM_WRONG_DISABLED": "In a Menu Item, the value for 'disabled' is not a boolean",
     "VALIDATION_MENU_ITEM_WRONG_WORKSPACEEXIT": "In a Menu Item, the value for 'workspaceExit' is not a boolean",
-    "VALIDATION_RESULT": "Processing not possible: "
+    "VALIDATION_RESULT": "Processing not possible: ",
+    "WORKSPACE_IMPORT_ERROR": "An error occurred, the Workspace could not be loaded for import.",
+    "WORKSPACE_IMPORT_NOK": "An error occurred, the Workspace could not be imported."
   },
   "IMAGE": {
     "LOGO_URL": "External Logo URL",
