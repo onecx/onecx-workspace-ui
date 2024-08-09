@@ -7,6 +7,7 @@ import { WorkspaceAPIService, SearchWorkspacesResponse, WorkspaceAbstract } from
 })
 export class ConfirmComponent implements OnInit {
   @Input() public workspaceName?: string
+  @Input() public displayName?: string
   @Input() public themeName?: string
   @Input() public hasPermission = false
   @Input() public baseUrl?: string

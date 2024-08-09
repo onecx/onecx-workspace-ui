@@ -55,6 +55,24 @@
         </label>
       </span>
     </div>
+    <div>
+      <span class="p-float-label" controlErrorAnchor>
+        <input
+          pInputText
+          type="text"
+          class="w-16rem"
+          id="workspace_import_preview_display_name"
+          formControlName="displayName"
+          (keyup)="onModelChange()"
+          [pTooltip]="'WORKSPACE_IMPORT.DISPLAY_NAME.TOOLTIP' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        />
+        <label class="ocx-required-label" for="workspace_import_preview_base_url">
+          {{ 'WORKSPACE.DISPLAY_NAME' | translate }}
+        </label>
+      </span>
+    </div>
   </div>
 
   <p-tabView styleClass="mt-4 mb-2">

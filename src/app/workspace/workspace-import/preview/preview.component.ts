@@ -25,6 +25,7 @@ export class PreviewComponent implements OnInit, OnChanges {
   public formGroup!: FormGroup
   public themes$: Observable<SelectItem<string>[]>
   public workspaceName = ''
+  public displayName = ''
   public themeName!: string
   public baseUrl = ''
   public themeProperties: any = null
@@ -36,6 +37,7 @@ export class PreviewComponent implements OnInit, OnChanges {
   constructor(private workspaceApi: WorkspaceAPIService) {
     this.formGroup = new FormGroup({
       workspaceName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
+      displayName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
       theme: new FormControl(null),
       baseUrl: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(100)])
     })
@@ -47,6 +49,7 @@ export class PreviewComponent implements OnInit, OnChanges {
     if (this.importRequestDTO.workspaces) {
       key = Object.keys(this.importRequestDTO.workspaces)
       this.workspaceName = this.importRequestDTO.workspaces[key[0]].name ?? ''
+      this.displayName = this.importRequestDTO.workspaces[key[0]].displayName ?? ''
       this.themeName = this.importRequestDTO?.workspaces[key[0]].theme
         ? this.importRequestDTO?.workspaces[key[0]].theme
         : this.formGroup.controls['theme'].value || ''
@@ -71,6 +74,7 @@ export class PreviewComponent implements OnInit, OnChanges {
     }
     if (this.importRequestDTO.workspaces) {
       this.formGroup.controls['workspaceName'].setValue(this.importRequestDTO?.workspaces[key[0]].name)
+      this.formGroup.controls['displayName'].setValue(this.importRequestDTO?.workspaces[key[0]].displayName)
       this.formGroup.controls['theme'].setValue(this.importRequestDTO?.workspaces[key[0]].theme)
       this.formGroup.controls['baseUrl'].setValue(this.importRequestDTO?.workspaces[key[0]].baseUrl)
     }
@@ -94,10 +98,12 @@ export class PreviewComponent implements OnInit, OnChanges {
       } else {
         this.workspaceName = key[0]
       }
+      this.displayName = this.formGroup.controls['displayName'].value
       this.themeName = this.formGroup.controls['theme'].value
       this.baseUrl = this.formGroup.controls['baseUrl'].value
 
       this.importRequestDTO.workspaces[this.workspaceName].name = this.workspaceName
+      this.importRequestDTO.workspaces[this.workspaceName].displayName = this.displayName
       this.importRequestDTO.workspaces[this.workspaceName].theme = this.themeName
       this.importRequestDTO.workspaces[this.workspaceName].baseUrl = this.baseUrl
     }
