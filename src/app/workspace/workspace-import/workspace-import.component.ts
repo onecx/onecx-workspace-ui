@@ -29,6 +29,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
   public isLoading = false
   public workspaceName = ''
   public workspaceNameOrg = ''
+  public displayName = ''
   public themeName = ''
   public baseUrl = ''
   public baseUrlOrg: string | undefined = undefined // the original
@@ -159,6 +160,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
       this.baseUrlOrg = importRequestDTO.workspaces[keys[0]].baseUrl
     } else if (this.activeIndex == 1) {
       this.workspaceName = this.previewComponent?.workspaceName ?? ''
+      this.displayName = this.previewComponent?.displayName ?? ''
       this.themeName = this.previewComponent?.themeName ?? ''
       this.baseUrl = this.previewComponent?.baseUrl ?? ''
     }

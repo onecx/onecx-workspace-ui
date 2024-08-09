@@ -42,6 +42,20 @@
       />
       <label for="workspace_import_confirm_base_url">{{ 'WORKSPACE.BASE_URL' | translate }}</label>
     </span>
+    <span class="p-float-label">
+      <input
+        pInputText
+        type="text"
+        readonly
+        class="w-16rem"
+        id="workspace_import_confirm_display_name"
+        [(ngModel)]="displayName"
+        [pTooltip]="'WORKSPACE_IMPORT.DISPLAY_NAME.TOOLTIP' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      />
+      <label for="workspace_import_confirm_display_name">{{ 'WORKSPACE.DISPLAY_NAME' | translate }}</label>
+    </span>
   </div>
 
   <div class="flex flex-wrap align-items-center row-gap-1 my-4">
