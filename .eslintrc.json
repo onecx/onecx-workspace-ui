@@ -10,15 +10,13 @@
     "helm/**",
     "node_modules/**",
     "src/app/shared/generated/**",
-    "src/app/api/*",
-    "src/app/model/*",
+    "src/assets/api/*",
     "src/**/*.ico",
     "src/**/*.svg"
   ],
   "overrides": [
     {
       "files": ["*.ts", "*.js"],
-      "excludedFiles": ["*.spec.ts", "*spec.js"],
       "env": { "es6": true },
       "globals": {
         "__dirname": true
@@ -63,57 +61,6 @@
         "no-unused-vars": "off",
         "@typescript-eslint/no-unused-vars": ["error", { "vars": "all", "args": "none" }],
         "@typescript-eslint/no-explicit-any": "off",
-        "@typescript-eslint/no-non-null-asserted-optional-chain": "off",
-        "@typescript-eslint/no-var-requires": 0
-      }
-    },
-    {
-      "files": ["*spec.ts", "*spec.js"],
-      "env": { "es6": true },
-      "globals": {
-        "__dirname": true
-      },
-      "parserOptions": {
-        "ecmaVersion": "latest",
-        "project": "tsconfig.json",
-        "tsconfigRootDir": "",
-        "createDefaultProgram": true,
-        "EXPERIMENTAL_useProjectService": true
-      },
-      "extends": [
-        "plugin:@angular-eslint/recommended",
-        "plugin:@angular-eslint/template/process-inline-templates",
-        "plugin:prettier/recommended",
-        "plugin:@typescript-eslint/recommended"
-      ],
-      "rules": {
-        "semi": ["error", "never"],
-        "@angular-eslint/directive-selector": [
-          "error",
-          {
-            "type": "attribute",
-            "prefix": "app",
-            "style": "camelCase"
-          }
-        ],
-        "@angular-eslint/component-selector": [
-          "warn",
-          {
-            "type": "element",
-            "prefix": "app",
-            "style": "kebab-case"
-          }
-        ],
-        "prettier/prettier": [
-          "error",
-          {
-            "singleQuote": true
-          }
-        ],
-        "no-unused-vars": "off",
-        "@typescript-eslint/no-unused-vars": ["error", { "vars": "all", "args": "none" }],
-        "@typescript-eslint/no-explicit-any": "off",
-        "@typescript-eslint/no-non-null-asserted-optional-chain": "off",
         "@typescript-eslint/ban-types": [
           "error",
           {
@@ -122,7 +69,8 @@
               "{}": false
             }
           }
-        ]
+        ],
+        "@typescript-eslint/no-var-requires": 0
       }
     },
     {

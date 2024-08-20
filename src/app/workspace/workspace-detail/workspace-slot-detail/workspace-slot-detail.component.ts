@@ -96,44 +96,48 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   }
 
   public onSaveSlot() {
-    this.slotApi
-      .updateSlot({
-        id: this.slot?.id!,
-        updateSlotRequest: {
-          modificationCount: this.slot?.modificationCount!,
-          name: this.slot?.name!,
-          components: this.wComponents.map((ec) => {
-            return { productName: ec.productName, appId: ec.appId, name: ec.name } as SlotComponent
-          })
-        } as UpdateSlotRequest
-      })
-      .subscribe({
-        next: (data) => {
-          if (this.slot) {
-            this.slot.modificationCount = data.modificationCount
-            this.slot.modificationDate = data.modificationDate
-            this.slot.components = data.components
+    if (this.slot) {
+      this.slotApi
+        .updateSlot({
+          id: this.slot.id!,
+          updateSlotRequest: {
+            modificationCount: this.slot.modificationCount!,
+            name: this.slot.name!,
+            components: this.wComponents.map((ec) => {
+              return { productName: ec.productName, appId: ec.appId, name: ec.name } as SlotComponent
+            })
+          } as UpdateSlotRequest
+        })
+        .subscribe({
+          next: (data) => {
+            if (this.slot) {
+              this.slot.modificationCount = data.modificationCount
+              this.slot.modificationDate = data.modificationDate
+              this.slot.components = data.components
+            }
+            this.msgService.success({ summaryKey: 'ACTIONS.EDIT.SLOT_OK' })
+            this.changed.emit(true)
+          },
+          error: (err) => {
+            this.msgService.error({ summaryKey: 'ACTIONS.EDIT.SLOT_NOK' })
+            console.error(err.error)
           }
-          this.msgService.success({ summaryKey: 'ACTIONS.EDIT.SLOT_OK' })
-          this.changed.emit(true)
-        },
-        error: (err) => {
-          this.msgService.error({ summaryKey: 'ACTIONS.EDIT.SLOT_NOK' })
-          console.error(err.error)
-        }
-      })
+        })
+    }
   }
 
   public onDeleteSlot() {
-    this.slotApi.deleteSlotById({ id: this.slot?.id! }).subscribe({
-      next: () => {
-        this.msgService.success({ summaryKey: 'ACTIONS.DELETE.SLOT_OK' })
-        this.detailClosed.emit(true)
-      },
-      error: (err) => {
-        this.msgService.error({ summaryKey: 'ACTIONS.DELETE.SLOT_NOK' })
-        console.error(err.error)
-      }
-    })
+    if (this.slot) {
+      this.slotApi.deleteSlotById({ id: this.slot.id! }).subscribe({
+        next: () => {
+          this.msgService.success({ summaryKey: 'ACTIONS.DELETE.SLOT_OK' })
+          this.detailClosed.emit(true)
+        },
+        error: (err) => {
+          this.msgService.error({ summaryKey: 'ACTIONS.DELETE.SLOT_NOK' })
+          console.error(err.error)
+        }
+      })
+    }
   }
 }

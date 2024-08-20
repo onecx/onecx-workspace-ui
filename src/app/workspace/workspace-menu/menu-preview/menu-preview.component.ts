@@ -139,7 +139,7 @@ export class MenuPreviewComponent implements OnChanges {
       if (menuItem) {
         this.menuApi
           .updateMenuItemParent({
-            menuItemId: menuItem?.id!,
+            menuItemId: menuItem.id!,
             updateMenuItemParentRequest: {
               modificationCount: menuItem.modificationCount!,
               position: targetPos,

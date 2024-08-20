@@ -483,39 +483,41 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     for (const p of ev.items) {
       // register modules only
       const mfes = p.microfrontends?.filter((m: Microfrontend) => m.type === MicrofrontendType.Module) ?? []
-      this.wProductApi
-        .createProductInWorkspace({
-          id: this.workspace?.id!,
-          createProductRequest: {
-            productName: p.productName,
-            baseUrl: p.baseUrl,
-            microfrontends: this.prepareMfePaths(mfes),
-            slots: p.slots
-              ? p.slots.filter((s: SlotPS) => !s.undeployed).map((s: SlotPS) => ({ name: s.name }) as CreateSlot)
-              : undefined
-          } as CreateProductRequest
-        })
-        .subscribe({
-          next: (data) => {
-            successCounter++
-            // update id of the workspace item to be used on select
-            const wp = this.wProducts.filter((wp) => wp.productName === p.productName)[0]
-            wp.id = data.resource.id
-            wp.bucket = 'TARGET'
-            this.changed.emit()
-            if (itemCount === successCounter + errorCounter)
-              this.displayRegisterMessages('REGISTRATION', successCounter, errorCounter)
-          },
-          error: (err) => {
-            console.error(err)
-            errorCounter++
-            // Revert change: remove item in target + add item in source list
-            this.wProducts = this.wProducts.filter((wp) => wp.productName !== p.productName)
-            this.psProducts.push(p)
-            if (itemCount === successCounter + errorCounter)
-              this.displayRegisterMessages('REGISTRATION', successCounter, errorCounter)
-          }
-        })
+      if (this.workspace) {
+        this.wProductApi
+          .createProductInWorkspace({
+            id: this.workspace.id!,
+            createProductRequest: {
+              productName: p.productName,
+              baseUrl: p.baseUrl,
+              microfrontends: this.prepareMfePaths(mfes),
+              slots: p.slots
+                ? p.slots.filter((s: SlotPS) => !s.undeployed).map((s: SlotPS) => ({ name: s.name }) as CreateSlot)
+                : undefined
+            } as CreateProductRequest
+          })
+          .subscribe({
+            next: (data) => {
+              successCounter++
+              // update id of the workspace item to be used on select
+              const wp = this.wProducts.filter((wp) => wp.productName === p.productName)[0]
+              wp.id = data.resource.id
+              wp.bucket = 'TARGET'
+              this.changed.emit()
+              if (itemCount === successCounter + errorCounter)
+                this.displayRegisterMessages('REGISTRATION', successCounter, errorCounter)
+            },
+            error: (err) => {
+              console.error(err)
+              errorCounter++
+              // Revert change: remove item in target + add item in source list
+              this.wProducts = this.wProducts.filter((wp) => wp.productName !== p.productName)
+              this.psProducts.push(p)
+              if (itemCount === successCounter + errorCounter)
+                this.displayRegisterMessages('REGISTRATION', successCounter, errorCounter)
+            }
+          })
+      }
     }
   }
 
@@ -548,31 +550,33 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     const itemCount = this.deregisterItems.length
     let successCounter = 0
     let errorCounter = 0
-    for (const p of this.deregisterItems) {
-      this.wProductApi
-        .deleteProductById({
-          id: this.workspace?.id!,
-          productId: p.id!
-        })
-        .subscribe({
-          next: () => {
-            successCounter++
-            const psp = this.psProducts.filter((psp) => psp.productName === p.productName)[0]
-            psp.bucket = 'SOURCE'
-            this.changed.emit()
-            if (itemCount === successCounter + errorCounter)
-              this.displayRegisterMessages('DEREGISTRATION', successCounter, errorCounter)
-          },
-          error: (err) => {
-            errorCounter++
-            // Revert change: remove item in source + add item in target list
-            this.psProducts = this.psProducts.filter((psp) => psp.productName !== p.productName)
-            this.wProducts.push(p)
-            console.error(err)
-            if (itemCount === successCounter + errorCounter)
-              this.displayRegisterMessages('DEREGISTRATION', successCounter, errorCounter)
-          }
-        })
+    if (this.workspace) {
+      for (const p of this.deregisterItems) {
+        this.wProductApi
+          .deleteProductById({
+            id: this.workspace.id!,
+            productId: p.id!
+          })
+          .subscribe({
+            next: () => {
+              successCounter++
+              const psp = this.psProducts.filter((psp) => psp.productName === p.productName)[0]
+              psp.bucket = 'SOURCE'
+              this.changed.emit()
+              if (itemCount === successCounter + errorCounter)
+                this.displayRegisterMessages('DEREGISTRATION', successCounter, errorCounter)
+            },
+            error: (err) => {
+              errorCounter++
+              // Revert change: remove item in source + add item in target list
+              this.psProducts = this.psProducts.filter((psp) => psp.productName !== p.productName)
+              this.wProducts.push(p)
+              console.error(err)
+              if (itemCount === successCounter + errorCounter)
+                this.displayRegisterMessages('DEREGISTRATION', successCounter, errorCounter)
+            }
+          })
+      }
     }
   }
 

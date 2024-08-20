@@ -139,7 +139,9 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
             detailKey: 'IMAGE.CONSTRAINT_FILE_TYPE'
           })
         } else {
-          this.saveImage(this.workspace?.name!, files) // store image
+          if (this.workspace) {
+            this.saveImage(this.workspace.name, files) // store image
+          }
         }
       }
     } else {
@@ -200,21 +202,25 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   }
 
   public prepareProductUrl(val: string): string | undefined {
-    return val ? Location.joinWithSlash(this.workspace?.baseUrl!, val) : undefined
+    if (this.workspace && this.workspace.baseUrl) {
+      return val ? Location.joinWithSlash(this.workspace.baseUrl, val) : undefined
+    } else return undefined
   }
 
   private loadProductPaths(): void {
-    this.productPaths$ = this.wProductApi.getProductsByWorkspaceId({ id: this.workspace?.id! }).pipe(
-      map((val: any[]) => {
-        const paths: string[] = []
-        if (val.length > 0) {
-          for (const p of val) paths.push(p.baseUrl ?? '')
-          paths.sort(sortByLocale)
-          paths.unshift('')
-        }
-        return paths
-      })
-    )
+    if (this.workspace) {
+      this.productPaths$ = this.wProductApi.getProductsByWorkspaceId({ id: this.workspace.id! }).pipe(
+        map((val: any[]) => {
+          const paths: string[] = []
+          if (val.length > 0) {
+            for (const p of val) paths.push(p.baseUrl ?? '')
+            paths.sort(sortByLocale)
+            paths.unshift('')
+          }
+          return paths
+        })
+      )
+    }
   }
 
   private loadThemes(): void {
