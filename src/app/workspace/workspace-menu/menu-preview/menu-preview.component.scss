@@ -1,3 +1,7 @@
+@import 'src/_mixins.scss';
+
+@include dialog-footer-buttons;
+
 :host ::ng-deep {
   .p-tree {
     .p-tree-wrapper {

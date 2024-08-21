@@ -14,7 +14,7 @@
   </ul>
   <div class="mt-4 flex flex-wrap justify-content-between align-items-start gap-2">
     <p-toggleButton
-      inputId="workspace_menu_table_header_tree_toggle"
+      inputId="ws_menu_preview_tree_toggle"
       styleClass="data-view-control"
       [(ngModel)]="treeExpanded"
       [onLabel]="'ACTIONS.TREE.COLLAPSE_ALL' | translate"
@@ -27,7 +27,7 @@
     />
     <span class="p-float-label">
       <p-dropdown
-        id="portal_menu_tree_preview_language_list"
+        id="ws_menu_preview_language_list"
         styleClass="reduced-field-size"
         [appendTo]="'body'"
         [emptyMessage]="'DIALOG.MENU.PREVIEW.LANG.EMPTY' | translate"
@@ -54,17 +54,18 @@
   >
     <ng-template let-node pTemplate="default"> {{ node.label }} </ng-template>
   </p-tree>
-  <div class="flex justify-content-end my-3">
-    <button
-      pButton
-      type="button"
-      icon="pi pi-times"
-      id="workspace_import_button_close"
-      (click)="onClose()"
-      [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
-      [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
-      tooltipPosition="right"
-      tooltipEvent="hover"
-    ></button>
-  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
+      <p-button
+        id="ws_menu_preview_action_close"
+        icon="pi pi-times"
+        (click)="onClose()"
+        [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+        [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
+        tooltipPosition="right"
+        tooltipEvent="hover"
+      ></p-button>
+    </div>
+  </ng-template>
 </p-dialog>

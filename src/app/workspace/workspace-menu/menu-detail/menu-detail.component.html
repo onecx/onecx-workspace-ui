@@ -264,24 +264,18 @@
   </p-tabView>
 
   <ng-template pTemplate="footer">
-    <div class="flex flex-wrap gap-2 justify-content-end">
-      <button
-        pButton
-        type="button"
+    <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
+      <p-button
         icon="pi pi-times"
-        class="m-0"
         id="workspace_detail_cancel"
         (click)="onCloseDetailDialog()"
         [label]="'ACTIONS.CANCEL' | translate"
         [pTooltip]="'ACTIONS.TOOLTIPS.CANCEL_WITHOUT_SAVE' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
-      ></button>
-      <button
-        pButton
-        type="button"
+      ></p-button>
+      <p-button
         icon="pi pi-save"
-        class="m-0"
         id="workspace_detail_save"
         [disabled]="!formGroup.valid"
         (click)="onMenuSave()"
@@ -289,7 +283,7 @@
         [pTooltip]="'ACTIONS.TOOLTIPS.SAVE' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
-      ></button>
+      ></p-button>
     </div>
   </ng-template>
 </p-dialog>
@@ -308,39 +302,33 @@
   <div class="my-2 flex column-gap-4 row-gap-1 justify-content-start align-items-center">
     <div class="pi pi-question-circle text-3xl danger-action-text"></div>
     <div>
-      <div class="font-bold">{{ ('ACTIONS.DELETE.MESSAGE' | translate).replace('{{ITEM}}', menuItemName) }}</div>
+      <div id="ws_menu_delete_message" class="font-bold">
+        {{ ('ACTIONS.DELETE.MESSAGE' | translate).replace('{{ITEM}}', menuItemName) }}
+      </div>
       <div class="mt-2">{{ 'ACTIONS.DELETE.MENU_MESSAGE' | translate }}</div>
       <div class="mt-2">{{ 'ACTIONS.DELETE.MESSAGE_INFO' | translate }}</div>
     </div>
   </div>
   <ng-template pTemplate="footer">
     <div class="mt-3 flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
-      <button
-        pButton
-        type="button"
-        class="m-0"
-        id="workspace_menu_dialog_no_confirm"
+      <p-button
+        id="ws_menu_delete_action_no"
         icon="pi pi-times"
-        iconPos="left"
         (click)="onCloseDeleteDialog()"
         [label]="'ACTIONS.CONFIRMATION.NO' | translate"
         [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
-      ></button>
-      <button
-        pButton
-        type="button"
-        class="m-0"
-        id="workspace_menu_dialog_confirm"
+      ></p-button>
+      <p-button
+        id="ws_menu_delete_action_yes"
         icon="pi pi-check"
-        iconPos="left"
         (click)="onMenuDelete()"
         [label]="'ACTIONS.CONFIRMATION.YES' | translate"
         [pTooltip]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
-      ></button>
+      ></p-button>
     </div>
   </ng-template>
 </p-dialog>

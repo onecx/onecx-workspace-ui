@@ -1,83 +1,93 @@
-<div class="border-solid border-1 border-black-alpha-20 border-round-sm bg-gray-50 px-3">
-  <p-steps [model]="steps" [activeIndex]="activeIndex"></p-steps>
+<p-dialog
+  [header]="'WORKSPACE_IMPORT.IMPORT_WORKSPACE' | translate"
+  [(visible)]="displayDialog"
+  [baseZIndex]="1000"
+  [draggable]="true"
+  [resizable]="true"
+  [modal]="true"
+  [style]="{ width: '783px' }"
+>
+  <div class="border-solid border-1 border-black-alpha-20 border-round-sm bg-gray-50 px-3">
+    <p-steps [model]="steps" [activeIndex]="activeIndex"></p-steps>
 
-  <div [ngSwitch]="activeIndex" class="p-0 mx-0 mb-2">
-    <app-import-choose-file *ngSwitchCase="0" (importFileSelected)="next($event)"></app-import-choose-file>
-    <app-import-preview
-      *ngSwitchCase="1"
-      [importRequestDTO]="importRequestDTO!"
-      [hasPermission]="hasPermission"
-      (isFormValide)="handleFormValidation($event)"
-    ></app-import-preview>
-    <app-import-confirm
-      *ngSwitchCase="2"
-      [hasPermission]="hasPermission"
-      [workspaceName]="workspaceName"
-      [displayName]="displayName"
-      [baseUrl]="baseUrl"
-      [themeName]="themeName"
-      (isLoading)="handleIsLoading($event)"
-      [importResponse]="importResponse"
-    ></app-import-confirm>
+    <div [ngSwitch]="activeIndex" class="p-0 mx-0 mb-2">
+      <app-import-choose-file *ngSwitchCase="0" (importFileSelected)="next($event)"></app-import-choose-file>
+      <app-import-preview
+        *ngSwitchCase="1"
+        [importRequestDTO]="importRequestDTO!"
+        [hasPermission]="hasPermission"
+        (isFormValide)="handleFormValidation($event)"
+      ></app-import-preview>
+      <app-import-confirm
+        *ngSwitchCase="2"
+        [hasPermission]="hasPermission"
+        [workspaceName]="workspaceName"
+        [displayName]="displayName"
+        [baseUrl]="baseUrl"
+        [themeName]="themeName"
+        (isLoading)="handleIsLoading($event)"
+        [importResponse]="importResponse"
+      ></app-import-confirm>
+    </div>
+
+    <div class="flex flex-wrap justify-content-end gap-2 my-2">
+      <p-button
+        *ngIf="activeIndex > 0"
+        id="workspace_import_button_restart"
+        icon="pi pi-upload"
+        (onClick)="reset()"
+        [label]="'WORKSPACE_IMPORT.IMPORT_RESTART' | translate"
+        [pTooltip]="'WORKSPACE_IMPORT.IMPORT_RESTART_TOOLTIP' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      ></p-button>
+      <p-button
+        *ngIf="activeIndex > 0"
+        id="workspace_import_button_back"
+        icon="pi pi-arrow-left"
+        (onClick)="back()"
+        [label]="'ACTIONS.NAVIGATION.BACK' | translate"
+        [pTooltip]="'ACTIONS.NAVIGATION.BACK.TOOLTIP' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      ></p-button>
+      <p-button
+        *ngIf="activeIndex === 1"
+        id="workspace_import_button_next"
+        icon="pi pi-arrow-right"
+        [disabled]="!isFormValid"
+        [label]="'ACTIONS.NAVIGATION.NEXT' | translate"
+        (onClick)="next()"
+        [pTooltip]="'ACTIONS.NAVIGATION.NEXT.TOOLTIP' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      >
+      </p-button>
+      <p-button
+        *ngIf="activeIndex === 2"
+        id="workspace_import_button_import"
+        [icon]="isLoading ? 'pi pi-spin pi-spinner' : 'pi pi-check'"
+        [disabled]="isLoading || !isFormValid"
+        (onClick)="importWorkspace()"
+        [label]="'WORKSPACE_IMPORT.IMPORT' | translate"
+        [pTooltip]="'WORKSPACE_IMPORT.START_IMPORT' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      ></p-button>
+    </div>
   </div>
 
-  <div class="flex flex-wrap justify-content-end gap-2 my-2">
-    <p-button
-      *ngIf="activeIndex > 0"
-      id="workspace_import_button_restart"
-      icon="pi pi-upload"
-      (onClick)="reset()"
-      [label]="'WORKSPACE_IMPORT.IMPORT_RESTART' | translate"
-      [pTooltip]="'WORKSPACE_IMPORT.IMPORT_RESTART_TOOLTIP' | translate"
-      tooltipPosition="top"
-      tooltipEvent="hover"
-    ></p-button>
-    <p-button
-      *ngIf="activeIndex > 0"
-      id="workspace_import_button_back"
-      icon="pi pi-arrow-left"
-      (onClick)="back()"
-      [label]="'ACTIONS.NAVIGATION.BACK' | translate"
-      [pTooltip]="'ACTIONS.NAVIGATION.BACK.TOOLTIP' | translate"
-      tooltipPosition="top"
-      tooltipEvent="hover"
-    ></p-button>
-    <p-button
-      *ngIf="activeIndex === 1"
-      id="workspace_import_button_next"
-      icon="pi pi-arrow-right"
-      [disabled]="!isFormValid"
-      [label]="'ACTIONS.NAVIGATION.NEXT' | translate"
-      (onClick)="next()"
-      [pTooltip]="'ACTIONS.NAVIGATION.NEXT.TOOLTIP' | translate"
-      tooltipPosition="top"
-      tooltipEvent="hover"
-    >
-    </p-button>
-    <p-button
-      *ngIf="activeIndex === 2"
-      id="workspace_import_button_import"
-      [icon]="isLoading ? 'pi pi-spin pi-spinner' : 'pi pi-check'"
-      [disabled]="isLoading || !isFormValid"
-      (onClick)="importWorkspace()"
-      [label]="'WORKSPACE_IMPORT.IMPORT' | translate"
-      [pTooltip]="'WORKSPACE_IMPORT.START_IMPORT' | translate"
-      tooltipPosition="top"
-      tooltipEvent="hover"
-    ></p-button>
-  </div>
-</div>
-
-<div class="flex justify-content-end gap-3 pt-3">
-  <button
-    pButton
-    type="button"
-    icon="pi pi-times"
-    id="workspace_import_button_close"
-    (click)="onClose()"
-    [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
-    [pTooltip]="'ACTIONS.NAVIGATION.CLOSE_WITHOUT_SAVE' | translate"
-    tooltipPosition="top"
-    tooltipEvent="hover"
-  ></button>
-</div>
+  <ng-template pTemplate="footer">
+    <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
+      <p-button
+        id="workspace_import_button_close"
+        icon="pi pi-times"
+        (click)="onClose()"
+        [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+        [pTooltip]="'ACTIONS.NAVIGATION.CLOSE_WITHOUT_SAVE' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      ></p-button>
+    </div>
+  </ng-template>
+</p-dialog>
