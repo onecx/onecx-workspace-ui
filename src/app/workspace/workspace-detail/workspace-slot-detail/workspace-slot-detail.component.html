@@ -8,7 +8,7 @@
   [dismissableMask]="true"
 >
   <div class="mt-1 pl-2 w-full">
-    <div class="flex flex-row flex-wrap justify-content-between row-gap-3">
+    <div class="flex flex-row flex-wrap justify-content-between row-gap-3 pr-2">
       <span class="p-float-label">
         <div
           class="ocx-float-label-textbox pt-3 pb-2 max-w-25rem text-responsive"
@@ -20,8 +20,8 @@
         </div>
         <span class="ocx-float-label">{{ 'SLOT.NAME' | translate }}</span>
       </span>
-      <div class="pr-2 flex flex-row flex-wrap justify-content-between gap-3">
-        <span class="p-float-label">
+      <div class="flex flex-row flex-wrap justify-content-between gap-3">
+        <span *ngIf="slot?.creationDate" class="p-float-label">
           <div
             class="ocx-float-label-textbox pt-3 pb-2"
             [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_DATE' | translate"
@@ -32,7 +32,7 @@
           </div>
           <span class="ocx-float-label">{{ 'INTERNAL.CREATION_DATE' | translate }}</span>
         </span>
-        <span class="p-float-label">
+        <span *ngIf="slot?.modificationDate" class="p-float-label">
           <div
             class="ocx-float-label-textbox pt-3 pb-2"
             [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_DATE' | translate"
@@ -160,20 +160,15 @@
   </div>
   <ng-template pTemplate="footer">
     <div class="flex flex-row flex-wrap column-gap-2 row-gap-1 justify-content-end">
-      <button
-        pButton
-        autofocus
-        type="button"
-        class="m-0"
-        id="workspace_slot_detail_button_close"
+      <p-button
+        id="ws_slot_detail_action_close"
         icon="pi pi-times"
-        iconPos="left"
         (click)="onClose()"
         [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
         [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
-      ></button>
+      ></p-button>
     </div>
   </ng-template>
 </p-dialog>
@@ -197,33 +192,24 @@
   </div>
   <ng-template pTemplate="footer">
     <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
-      <button
-        pButton
-        autofocus
-        type="button"
-        class="m-0"
-        id="workspace_detail_slot_delete_button_no"
+      <p-button
+        id="ws_slot_delete_action_no"
         icon="pi pi-times"
-        iconPos="left"
         (click)="onClose()"
         [label]="'ACTIONS.CONFIRMATION.NO' | translate"
         [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
-      ></button>
-      <button
-        pButton
-        type="button"
-        class="m-0"
-        id="workspace_detail_slot_delete_button_yes"
+      ></p-button>
+      <p-button
+        id="ws_slot_delete_action_yes"
         icon="pi pi-check"
-        iconPos="left"
         (click)="onDeleteSlot()"
         [label]="'ACTIONS.CONFIRMATION.YES' | translate"
         [pTooltip]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
-      ></button>
+      ></p-button>
     </div>
   </ng-template>
 </p-dialog>
@@ -247,25 +233,17 @@
   </div>
   <ng-template pTemplate="footer">
     <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
-      <button
-        pButton
-        autofocus
-        type="button"
-        class="m-0"
-        id="workspace_detail_product_deregister_button_no"
+      <p-button
+        id="ws_slot_deregister_action_no"
         icon="pi pi-times"
-        iconPos="left"
         (click)="onDeregisterCancellation()"
         [label]="'ACTIONS.CONFIRMATION.NO' | translate"
         [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
-      ></button>
-      <button
-        pButton
-        type="button"
-        class="m-0"
-        id="workspace_detail_product_deregister_button_yes"
+      ></p-button>
+      <p-button
+        id="ws_slot_deregister_action_yes"
         icon="pi pi-check"
         iconPos="left"
         (click)="onDeregisterConfirmation()"
@@ -273,7 +251,7 @@
         [pTooltip]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
-      ></button>
+      ></p-button>
     </div>
   </ng-template>
 </p-dialog>

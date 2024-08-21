@@ -12,19 +12,19 @@
     <div class="flex flex-wrap flex-column gap-4 justify-content-between">
       <p-message
         *ngIf="role?.isIamRole && !role?.isWorkspaceRole"
-        id="workspace_role_create_info"
+        id="ws_role_create_info"
         severity="info"
         [text]="'DIALOG.ROLE.ORIGIN.IAM.VIEW' | translate"
       ></p-message>
       <p-message
         *ngIf="!role?.isIamRole && role?.isWorkspaceRole"
-        id="workspace_role_create_info"
+        id="ws_role_create_info"
         severity="info"
         [text]="'DIALOG.ROLE.ORIGIN.WORKSPACE.EDIT' | translate"
       ></p-message>
       <p-message
         *ngIf="role?.isIamRole && role?.isWorkspaceRole"
-        id="workspace_role_create_info"
+        id="ws_role_create_info"
         severity="info"
         [text]="'DIALOG.ROLE.ORIGIN.IAM.WORKSPACE.EDIT' | translate"
       ></p-message>
@@ -35,7 +35,7 @@
             pInputText
             type="text"
             class="w-full"
-            id="workspace_role_create_field_name"
+            id="ws_role_create_field_name"
             formControlName="name"
             [pTooltip]="'ROLE.NAME.TOOLTIP' | translate"
             tooltipPosition="top"
@@ -52,7 +52,7 @@
             pInputText
             type="text"
             class="w-full"
-            id="workspace_role_create_field_description"
+            id="ws_role_create_field_description"
             formControlName="description"
             [pTooltip]="'ROLE.DESCRIPTION.TOOLTIP' | translate"
             tooltipPosition="top"
@@ -65,51 +65,37 @@
   </form>
   <ng-template pTemplate="footer">
     <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
-      <button
+      <p-button
         *ngIf="changeMode === 'VIEW'"
-        pButton
-        autofocus
-        type="button"
-        class="m-0"
-        id="workspace_role_create_button_close"
+        id="ws_role_create_button_close"
         icon="pi pi-times"
-        iconPos="left"
         (click)="onClose()"
         [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
         [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
-      ></button>
-      <button
+      ></p-button>
+      <p-button
         *ngIf="changeMode !== 'VIEW'"
-        pButton
-        autofocus
-        type="button"
-        class="m-0"
-        id="workspace_role_create_button_cancel"
+        id="ws_role_create_button_cancel"
         icon="pi pi-times"
-        iconPos="left"
         (click)="onClose()"
         [label]="'ACTIONS.CANCEL' | translate"
         [pTooltip]="'ACTIONS.TOOLTIPS.CANCEL' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
-      ></button>
-      <button
+      ></p-button>
+      <p-button
         *ngIf="changeMode !== 'VIEW'"
-        pButton
-        type="button"
-        class="m-0"
-        id="workspace_role_create_button_save"
+        id="ws_role_create_button_save"
         icon="pi pi-save"
-        iconPos="left"
         (click)="onSaveRole()"
         [disabled]="!formGroupRole.valid"
         [label]="'ACTIONS.SAVE' | translate"
         [pTooltip]="'ACTIONS.TOOLTIPS.SAVE' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
-      ></button>
+      ></p-button>
     </div>
   </ng-template>
 </p-dialog>
@@ -128,40 +114,33 @@
   <div class="flex column-gap-4 row-gap-1 justify-content-start align-items-center">
     <div class="pi pi-question-circle text-3xl danger-action-text"></div>
     <div>
-      <div class="font-bold">{{ ('ACTIONS.DELETE.MESSAGE' | translate).replace('{{ITEM}}', role?.name) }}</div>
+      <div id="ws_role_delete_message" class="font-bold">
+        {{ ('ACTIONS.DELETE.MESSAGE' | translate).replace('{{ITEM}}', role?.name) }}
+      </div>
       <div class="mt-2">{{ 'ACTIONS.DELETE.ROLE_MESSAGE' | translate }}</div>
       <div class="mt-2">{{ 'ACTIONS.DELETE.MESSAGE_INFO' | translate }}</div>
     </div>
   </div>
   <ng-template pTemplate="footer">
     <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
-      <button
-        pButton
-        autofocus
-        type="button"
-        class="m-0"
-        id="workspace_role_delete_button_cancel"
+      <p-button
+        id="ws_role_delete_action_no"
         icon="pi pi-times"
-        iconPos="left"
         (click)="onClose()"
         [label]="'ACTIONS.CONFIRMATION.NO' | translate"
         [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
-      ></button>
-      <button
-        pButton
-        type="button"
-        class="m-0"
-        id="workspace_role_delete_button_save"
+      ></p-button>
+      <p-button
+        id="ws_role_delete_action_yes"
         icon="pi pi-check"
-        iconPos="left"
         (click)="onDeleteRoleConfirmation()"
         [label]="'ACTIONS.CONFIRMATION.YES' | translate"
         [pTooltip]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
-      ></button>
+      ></p-button>
     </div>
   </ng-template>
 </p-dialog>

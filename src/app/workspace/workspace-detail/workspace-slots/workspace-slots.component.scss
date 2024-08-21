@@ -7,19 +7,14 @@
   .h-2-5rem {
     height: 2.5rem !important;
   }
-  .card-badge-right {
-    &.badge-2-1 {
-      top: 26px;
-    }
-  }
   .card-badge-left {
-    &.badge-2-1 {
-      top: 29px;
-      left: 6px;
+    &.badge-2 {
+      top: 26px;
+      left: 1px;
     }
     &.badge-1-number {
-      top: 3px;
-      left: 5px;
+      top: 2px;
+      left: 4px;
     }
   }
 }

@@ -17,6 +17,7 @@ export type ImportResponse = { workspace: ImportResponseStatus; menu: ImportResp
   styleUrls: ['./workspace-import.component.scss']
 })
 export class WorkspaceImportComponent implements OnInit, OnChanges {
+  @Input() displayDialog = false
   @Input() resetDialog = true // provoke the onChange
   @Output() toggleImportDialogEvent = new EventEmitter<boolean>()
   @ViewChild(PreviewComponent) public previewComponent?: PreviewComponent

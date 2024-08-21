@@ -27,13 +27,12 @@
       class="px-3 card flex flex-wrap justify-content-between align-items-center"
     >
       <p-message severity="info" styleClass="p-2" [text]="'DIALOG.MENU.MENU_NOT_EXIST' | translate"></p-message>
-      <button
-        pButton
-        id="workspace_menu_create_menu"
+      <p-button
+        id="ws_menu_create_menu"
         icon="pi pi-plus"
         (click)="onCreateMenu($event)"
-        label="{{ 'ACTIONS.CREATE.MENU' | translate }}"
-      ></button>
+        [label]="'ACTIONS.CREATE.MENU' | translate"
+      ></p-button>
     </div>
 
     <!-- if menu exist -->
@@ -41,7 +40,7 @@
       *ngIf="menuNodes.length > 0"
       #menuTree
       styleClass="px-2"
-      id="workspace_menu_table"
+      id="ws_menu_table"
       [columns]="wRoles"
       [value]="menuNodes"
       [globalFilterFields]="['name', 'url']"
@@ -54,7 +53,7 @@
             <p-button
               *ocxIfPermission="'MENU#DRAG_DROP'"
               icon="pi pi-sort"
-              id="workspace_menu_table_header_reorder"
+              id="ws_menu_table_header_reorder"
               (onClick)="onDisplayMenuPreview()"
               [label]="'DIALOG.MENU.HEADER.TREE_MODAL' | translate"
               [pTooltip]="'DIALOG.MENU.HEADER.TREE_MODAL.TOOLTIP' | translate"
@@ -69,7 +68,7 @@
                 #menuTreeFilter
                 pInputText
                 type="text"
-                id="workspace_menu_table_header_filter"
+                id="ws_menu_table_header_filter"
                 class="py-0 text-responsive"
                 (input)="menuTree.filterGlobal($any($event.target).value, 'contains')"
                 [pTooltip]="
@@ -81,10 +80,10 @@
                 tooltipPosition="top"
                 tooltipEvent="hover"
               />
-              <label for="workspace_menu_table_filter"> {{ 'DIALOG.DATAVIEW.FILTER_PLACEHOLDER' | translate }} </label>
+              <label for="ws_menu_table_filter"> {{ 'DIALOG.DATAVIEW.FILTER_PLACEHOLDER' | translate }} </label>
             </span>
             <a
-              id="workspace_menu_table_header_filter_clear"
+              id="ws_menu_table_header_filter_clear"
               class="p-inputgroup-addon bg-primary cursor-pointer pi pi-filter-slash"
               tabindex="0"
               (keydown.space)="onClearFilterMenuTable()"
@@ -96,7 +95,7 @@
             </a>
           </div>
           <p-button
-            id="workspace_menu_table_reload_button"
+            id="ws_menu_table_reload_button"
             styleClass="h-full button-min-height"
             icon="pi pi-refresh"
             (onClick)="onReload()"
@@ -109,9 +108,9 @@
 
       <ng-template pTemplate="header" let-columns>
         <tr>
-          <th id="workspace_menu_table_header_dummy1" class="p-1 text-left border-transparent">
+          <th id="ws_menu_table_header_dummy1" class="p-1 text-left border-transparent">
             <p-toggleButton
-              inputId="workspace_menu_table_header_tree_toggle"
+              inputId="ws_menu_table_header_tree_toggle"
               styleClass="mb-2 data-view-control"
               [(ngModel)]="treeExpanded"
               [onLabel]="'ACTIONS.TREE.COLLAPSE_ALL' | translate"
@@ -124,14 +123,14 @@
             />
           </th>
           <th
-            id="workspace_menu_table_header"
+            id="ws_menu_table_header"
             class="p-1 border-transparent"
             [attr.colspan]="displayRoles ? 1 + wRoles.length : 5"
           >
             <div class="mb-2 flex align-items-center justify-content-start">
               <div class="slim-selectbutton filter-selectbutton">
                 <p-selectButton
-                  inputid="workspace_menu_table_header_context"
+                  inputid="ws_menu_table_header_context"
                   styleClass="data-view-control"
                   [options]="menuContextItems"
                   [(ngModel)]="menuContextValue"
@@ -148,16 +147,13 @@
           </th>
         </tr>
         <tr>
-          <th id="workspace_menu_table_header_dummy2"></th>
+          <th id="ws_menu_table_header_dummy2"></th>
           <ng-container *ngIf="!displayRoles">
-            <th
-              id="workspace_menu_table_header_actions"
-              class="text-center px-4 hidden-xs border-primary border-bottom-2"
-            >
+            <th id="ws_menu_table_header_actions" class="text-center px-4 hidden-xs border-primary border-bottom-2">
               {{ 'ACTIONS.LABEL' | translate }}
             </th>
             <th
-              id="workspace_menu_table_header_i18n"
+              id="ws_menu_table_header_i18n"
               class="text-center hidden-md border-primary border-bottom-2"
               [pTooltip]="'DIALOG.MENU.TREE.I18N.TOOLTIP' | translate"
               tooltipPosition="top"
@@ -166,7 +162,7 @@
               {{ 'DIALOG.MENU.TREE.I18N' | translate }}
             </th>
             <th
-              id="workspace_menu_table_header_url"
+              id="ws_menu_table_header_url"
               class="hidden-sm border-primary border-bottom-2"
               [pTooltip]="'DIALOG.MENU.TREE.URL.TOOLTIP' | translate"
               tooltipPosition="top"
@@ -180,14 +176,14 @@
           <ng-container *ngIf="displayRoles">
             <th
               *ngIf="wRoles.length === 0"
-              id="workspace_menu_table_header_roles_dummy"
+              id="ws_menu_table_header_roles_dummy"
               class="px-8 text-center font-italic border-primary border-bottom-2"
             >
               {{ 'DIALOG.MENU.HEADER.ROLES.NOT_EXIST' | translate }}
             </th>
             <th
               *ngFor="let role of columns"
-              id="workspace_menu_table_header_roles"
+              id="ws_menu_table_header_roles"
               class="px-2 text-center border-primary border-bottom-2"
             >
               <div class="flex flex-column justify-content-between">
@@ -200,12 +196,12 @@
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
-        <tr [id]="'workspace_menu_table_row_' + rowData.key">
+        <tr [id]="'ws_menu_table_row_' + rowData.key">
           <td class="white-space-nowrap">
             <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
             <span *ngIf="rowData.badge" class="pi pi-{{ rowData.badge }} pr-2"></span>
             <span *ngIf="!rowData.badge" class="pi pi-folder pr-2 invisible"></span>
-            <span [id]="'workspace_menu_table_row_' + rowData.key + '_name'">{{ rowData.name }}</span>
+            <span [id]="'ws_menu__table_row_' + rowData.key + '_name'">{{ rowData.name }}</span>
           </td>
           <!-- manage the item -->
           <ng-container *ngIf="!displayRoles">
@@ -233,7 +229,7 @@
                 <button
                   pbutton
                   type="button"
-                  [id]="'workspace_menu_table_row_' + rowData.key + '_goto_details'"
+                  [id]="'ws_menu__table_row_' + rowData.key + '_goto_details'"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                   (click)="onGotoDetails($event, rowData)"
                   aria-label="'DIALOG.MENU.ACTION.DETAILS' | translate"
@@ -252,7 +248,7 @@
                   *ocxIfPermission="'MENU#EDIT'"
                   pbutton
                   type="button"
-                  [id]="'workspace_menu_table_row_' + rowData.key + '_goto_new'"
+                  [id]="'ws_menu__table_row_' + rowData.key + '_goto_new'"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                   (click)="onCreateMenu($event, rowData)"
                   aria-label="'ACTIONS.CREATE.MENU.TOOLTIP' | translate"
@@ -266,7 +262,7 @@
                   *ocxIfPermission="'MENU#DELETE'"
                   pbutton
                   type="button"
-                  [id]="'workspace_menu_table_row_' + rowData.key + '_delete'"
+                  [id]="'ws_menu__table_row_' + rowData.key + '_delete'"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                   (click)="onDeleteMenu($event, rowData)"
                   aria-label="'ACTIONS.DELETE.MENU' | translate"
@@ -281,7 +277,7 @@
             <td class="text-center hidden-md">
               <span
                 *ngIf="!isObjectEmpty(rowData.i18n)"
-                [id]="'workspace_menu_table_row_' + rowData.key + '_i18n'"
+                [id]="'ws_menu__table_row_' + rowData.key + '_i18n'"
                 class="pi pi-check"
                 [pTooltip]="'DIALOG.MENU.TREE.I18N.ROW.TOOLTIP' | translate"
                 tooltipPosition="top"
@@ -291,7 +287,7 @@
             <td class="hidden-sm">
               <a
                 *ngIf="rowData.gotoUrl"
-                [id]="'workspace_menu_table_row_' + rowData.key + '_url'"
+                [id]="'ws_menu__table_row_' + rowData.key + '_url'"
                 class="text-primary font-italic cursor-pointer pr-3"
                 [href]="rowData.gotoUrl"
                 target="_blank"

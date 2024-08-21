@@ -33,17 +33,17 @@
     text="{{ 'VALIDATION.ERRORS.PARSE_ERROR' | translate }}"
   ></p-message>
 
-  <div class="flex justify-content-end gap-3 my-3">
-    <button
-      pButton
-      type="button"
-      icon="pi pi-times"
-      id="menu_import_button_close"
-      (click)="onClose()"
-      [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
-      [pTooltip]="'ACTIONS.NAVIGATION.CLOSE_WITHOUT_SAVE' | translate"
-      tooltipPosition="top"
-      tooltipEvent="hover"
-    ></button>
-  </div>
+  <ng-template pTemplate="footer">
+    <div class="flex flex-wrap justify-content-end column-gap-2 row-gap-1">
+      <p-button
+        id="ws_menu_import_button_close"
+        icon="pi pi-times"
+        (click)="onClose()"
+        [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+        [pTooltip]="'ACTIONS.NAVIGATION.CLOSE_WITHOUT_SAVE' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      ></p-button>
+    </div>
+  </ng-template>
 </p-dialog>

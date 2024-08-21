@@ -86,7 +86,7 @@
           <span
             *ngIf="slot.changes && !slot.deprecated"
             [id]="'workspace_detail_slots_' + idx + '_changed'"
-            class="card-badge-left badge-2-1 pi pi-exclamation-circle danger-action-text font-bold"
+            class="card-badge-left badge-2 pi pi-exclamation-circle danger-action-text font-bold"
             [pTooltip]="'DIALOG.SLOT.CHANGED' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
@@ -94,7 +94,7 @@
           <span
             *ngIf="slot.deprecated"
             [id]="'workspace_detail_slots_' + idx + '_deprecated'"
-            class="card-badge-left badge-2-1 pi pi-exclamation-circle danger-action-text font-bold"
+            class="card-badge-left badge-2 pi pi-exclamation-circle danger-action-text font-bold"
             [pTooltip]="'DIALOG.SLOT.DEPRECATED.TOOLTIP' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"

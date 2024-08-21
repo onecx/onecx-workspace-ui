@@ -3,8 +3,9 @@
 @include danger-action;
 @include compact-dropdown-list-items;
 @include correct-autocomplete;
-@include non-full-size-modal-dialog;
+@include dialog-non-full-size-modal;
 @include input-clear-icon;
+@include dialog-footer-buttons;
 
 :host ::ng-deep {
   .empty-dropdown-list-entry {

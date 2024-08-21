@@ -1,6 +1,4 @@
 @import '/src/_mixins.scss';
 
-@include make-disabled-form-readable-input;
-@include make-disabled-form-readable-dropdown;
-@include make-disabled-form-readable-checkbox;
+@include readable-disabled-form-controls;
 @include prepare-inputgroup;

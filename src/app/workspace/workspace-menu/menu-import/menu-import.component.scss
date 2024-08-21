@@ -1,4 +1,6 @@
 @import 'src/_mixins.scss';
 
-@include correct-modal-dialog;
+@include dialog-modal-dialog-content;
+@include dialog-non-full-size-modal;
 @include correct-file-upload;
+@include dialog-footer-buttons;

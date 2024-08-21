@@ -4,6 +4,7 @@
 @include danger-action;
 @include correct-data-view-control;
 @include correct-data-view-header-for-tabpanel;
+@include float-label-textbox;
 
 :host ::ng-deep {
   .h-2-5rem {
@@ -22,6 +23,10 @@
     &.badge-1-number {
       top: 3px;
       left: 5px;
+    }
+    &.card-badge-left-text {
+      left: 4px;
+      font-size: 0.7rem !important;
     }
   }
   .word-wrap-break {

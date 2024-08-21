@@ -112,27 +112,18 @@
   </div>
   <ng-template pTemplate="footer">
     <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
-      <button
-        pButton
-        autofocus
-        type="button"
-        class="m-0"
-        id="workspace_detail_no_confirm"
+      <p-button
+        id="ws_delete_action_no"
         icon="pi pi-times"
-        iconPos="left"
         [label]="'ACTIONS.CONFIRMATION.NO' | translate"
         (click)="workspaceDeleteVisible = false"
-      ></button>
-      <button
-        pButton
-        type="button"
-        class="m-0"
-        id="workspace_detail_confirm"
+      ></p-button>
+      <p-button
+        id="ws_delete_action_yes"
         icon="pi pi-check"
-        iconPos="left"
         [label]="'ACTIONS.CONFIRMATION.YES' | translate"
         (click)="onConfirmDeleteWorkspace()"
-      ></button>
+      ></p-button>
     </div>
   </ng-template>
 </p-dialog>
