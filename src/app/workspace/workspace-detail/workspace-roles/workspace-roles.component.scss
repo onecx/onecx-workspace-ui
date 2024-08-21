@@ -4,6 +4,7 @@
 @include danger-action;
 @include correct-data-view-control;
 @include correct-data-view-header-for-tabpanel;
+@include float-label-textbox;
 
 :host ::ng-deep {
   .h-2-5rem {

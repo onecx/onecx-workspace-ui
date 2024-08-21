@@ -1,11 +1,7 @@
 <div *ngIf="exceptionKey" class="m-3 flex flex-wrap justify-content-between align-items-center">
-  <p-message
-    id="workspace_detail_product_data_access_issue"
-    severity="error"
-    [text]="exceptionKey | translate"
-  ></p-message>
+  <p-message id="ws_product_data_access_issue" severity="error" [text]="exceptionKey | translate"></p-message>
   <p-button
-    id="workspace_detail_product_reload_button"
+    id="ws_product_reload_action"
     icon="pi pi-refresh"
     (onClick)="loadData()"
     [pTooltip]="'ACTIONS.SEARCH.RELOAD' | translate"
@@ -18,7 +14,7 @@
   <div class="col-12 md:col-8">
     <p-pickList
       #picklist
-      id="workspace_detail_product_picklist"
+      id="ws_product_picklist"
       [filterBy]="'displayName,classifications'"
       [source]="psProducts"
       [target]="wProducts"
@@ -39,7 +35,7 @@
           </div>
           <a
             tabindex="0"
-            id="workspace_detail_product_picklist_ps_load"
+            id="ws_product_picklist_ps_load"
             class="pi pi-refresh cursor-pointer text-white"
             (click)="onLoadPsProducts()"
             [pTooltip]="'ACTIONS.SEARCH.RELOAD' | translate"
@@ -55,7 +51,7 @@
           </div>
           <a
             tabindex="0"
-            id="workspace_detail_product_picklist_w_load"
+            id="ws_product_picklist_ws_load"
             class="pi pi-refresh cursor-pointer text-white"
             (click)="onLoadWProducts()"
             [pTooltip]="'ACTIONS.SEARCH.RELOAD' | translate"
@@ -68,6 +64,7 @@
       <ng-template pTemplate="sourceFilter" let-options="options">
         <div class="m-1 sm:m-2 flex flex-row align-items-center">
           <p-selectButton
+            id="ws_product_picklist_ps_filter"
             [options]="viewingModes"
             [(ngModel)]="sourceListViewMode"
             optionLabel="icon"
@@ -86,7 +83,7 @@
           <div class="p-inputgroup p-picklist-filter">
             <span class="p-inputgroup-addon data-view-control-border"><i class="pi pi-filter"></i></span>
             <input
-              id="workspace_detail_product_picklist_source_filter_value"
+              id="ws_product_picklist_ps_filter_value"
               class="p-picklist-filter-input p-inputtext p-component"
               [(ngModel)]="sourceFilterValue"
               (keyup)="options.filter(getFilterValue($event))"
@@ -94,8 +91,9 @@
               [placeholder]="'DIALOG.DATAVIEW.FILTER' | translate"
             />
             <a
-              tabindex="0"
               *ngIf="sourceFilterValue"
+              tabindex="0"
+              id="ws_product_picklist_ps_filter_reset"
               class="px-2 p-picklist-filter-icon pi pi-times cursor-pointer"
               (click)="options.reset(); sourceFilterValue = undefined"
             ></a>
@@ -106,6 +104,7 @@
       <ng-template pTemplate="targetFilter" let-options="options">
         <div class="m-1 sm:m-2 flex flex-row align-items-center">
           <p-selectButton
+            id="ws_product_picklist_ws_filter"
             [options]="viewingModes"
             [(ngModel)]="targetListViewMode"
             optionLabel="icon"
@@ -124,7 +123,7 @@
           <div class="p-inputgroup p-picklist-filter">
             <span class="p-inputgroup-addon data-view-control-border"><i class="pi pi-filter"></i></span>
             <input
-              id="workspace_detail_product_picklist_target_filter_value"
+              id="ws_product_picklist_ws_filter_value"
               class="p-picklist-filter-input p-inputtext p-component"
               [(ngModel)]="targetFilterValue"
               (keyup)="options.filter(getFilterValue($event))"
@@ -132,8 +131,9 @@
               [placeholder]="'DIALOG.DATAVIEW.FILTER' | translate"
             />
             <a
-              tabindex="0"
               *ngIf="targetFilterValue"
+              tabindex="0"
+              id="ws_product_picklist_ws_filter_reset"
               class="px-2 p-picklist-filter-icon pi pi-times cursor-pointer"
               (click)="options.reset(); targetFilterValue = undefined"
               [pTooltip]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
@@ -155,7 +155,7 @@
           >
             <span
               *ngIf="product?.undeployed"
-              [id]="'workspace_detail_product_picklist_' + product.productName + '_undeployed'"
+              [id]="'ws_product_picklist_' + product.productName + '_undeployed'"
               class="card-badge-right badge-1 tile-view-optional danger-action-text sm:font-bold sm:text-xl pi pi-ban"
               [pTooltip]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
               tooltipPosition="top"
@@ -163,29 +163,40 @@
             ></span>
             <span
               *ngIf="!product?.undeployed && product?.changedComponents"
-              [id]="'workspace_detail_product_picklist_' + product.productName + '_changed_mfe'"
+              [id]="'ws_product_picklist_' + product.productName + '_changed_mfe'"
               class="card-badge-right badge-1 tile-view-optional danger-action-text sm:font-bold sm:text-xl pi pi-exclamation-circle"
               [pTooltip]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
             ></span>
             <app-image-container
-              [id]="'workspace_detail_product_picklist_' + product.productName + '_logo'"
+              [id]="'ws_product_picklist_' + product.productName + '_logo'"
               [imageUrl]="getImageUrl(product)"
               [small]="true"
               styleClass="w-1rem sm:w-2rem md:w-4rem tile-view-optional "
             ></app-image-container>
             <div class="flex flex-column row-gap-1">
               <div
+                [id]="'ws_product_picklist_' + product.productName + '_display_name'"
                 class="tile-view-mandatory sm:font-semibold text-sm lg:text-md"
                 [class.danger-action-text]="product?.undeployed || product?.changedComponents"
               >
                 {{ product.displayName }}
               </div>
-              <div class="tile-view-optional text-xs hidden md:block">{{ product.productName }}</div>
+              <div
+                [id]="'ws_product_picklist_' + product.productName + '_product_name'"
+                class="tile-view-optional text-xs hidden md:block"
+              >
+                {{ product.productName }}
+              </div>
             </div>
           </div>
-          <div class="tile-view-optional col-3 p-0 text-sm hidden md:block">{{ limitText(product.baseUrl, 15) }}</div>
+          <div
+            [id]="'ws_product_picklist_' + product.productName + '_product_base_url'"
+            class="tile-view-optional col-3 p-0 text-sm hidden md:block"
+          >
+            {{ limitText(product.baseUrl, 15) }}
+          </div>
         </div>
       </ng-template>
     </p-pickList>
@@ -206,7 +217,7 @@
           </div>
           <div class="pt-1 flex flex-column justify-content-around">
             <app-image-container
-              id="workspace_detail_product_detail_logo"
+              id="ws_product_item_logo"
               [imageUrl]="getImageUrl(displayedDetailItem)"
               [small]="true"
               styleClass="hidden lg:block w-3rem md:w-5rem tile-view-optional "
@@ -214,7 +225,7 @@
           </div>
           <span
             *ngIf="displayedDetailItem?.undeployed"
-            id="workspace_detail_product_item_header_undeployed"
+            id="ws_product_item_header_undeployed"
             class="pt-1 danger-action-text font-bold text-xl pi pi-ban"
             [pTooltip]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
             tooltipPosition="top"
@@ -222,7 +233,7 @@
           ></span>
           <span
             *ngIf="!displayedDetailItem?.undeployed && displayedDetailItem?.changedComponents"
-            id="workspace_detail_product_item_header_changed_mfe"
+            id="ws_product_item_header_changed_mfe"
             class="pt-1 danger-action-text font-bold text-xl pi pi-exclamation-circle"
             [pTooltip]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
             tooltipPosition="top"
@@ -230,7 +241,7 @@
           ></span>
           <a
             tabindex="0"
-            id="workspace_detail_product_item_header_close"
+            id="ws_product_item_header_close"
             class="p-2 pi pi-times cursor-pointer pseudo-button-link"
             (click)="onHideItemDetails()"
             [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
@@ -247,7 +258,7 @@
               pInputText
               type="text"
               class="w-full"
-              id="workspace_detail_product_item_display_name"
+              id="ws_product_item_display_name"
               formControlName="displayName"
               [pTooltip]="'PRODUCT.DISPLAY_NAME.TOOLTIP' | translate"
               tooltipPosition="top"
@@ -261,7 +272,7 @@
                 pInputText
                 type="text"
                 class="w-full"
-                id="workspace_detail_product_item_baseurl"
+                id="ws_product_item_baseurl"
                 formControlName="baseUrl"
                 [pTooltip]="'PRODUCT.BASE_URL.TOOLTIP' | translate"
                 tooltipPosition="top"
@@ -297,20 +308,23 @@
                         pInputText
                         type="text"
                         class="w-full"
-                        [id]="'workspace_detail_product_item_mfe_' + i + '_basePath'"
+                        [id]="'ws_product_item_mfe_' + i + '_basePath'"
                         formControlName="basePath"
                         [pTooltip]="'PRODUCT.MFE.BASE_PATH.TOOLTIP' | translate"
                         tooltipPosition="top"
                         tooltipEvent="hover"
                       />
-                      <label class="ocx-required-label" [for]="'workspace_detail_product_item_mfe_' + i + '_base_path'">
+                      <label class="ocx-required-label" [for]="'ws_product_item_mfe_' + i + '_base_path'">
                         {{ 'PRODUCT.MFE.BASE_PATH' | translate }}</label
                       >
                     </span>
                     <div class="mt-05 ml-2 flex flex-row column-gap-2">
-                      <span class="mr-2 text-sm">{{ mfe.controls['exposedModule'].value }}</span>
+                      <span [id]="'ws_product_item_mfe_' + i + '_exposed_module'" class="mr-2 text-sm">
+                        {{ mfe.controls['exposedModule'].value }}</span
+                      >
                       <span
                         *ngIf="mfe.controls['undeployed'].value"
+                        [id]="'ws_product_item_mfe_' + i + '_undeployed'"
                         class="danger-action-text text-sm pi pi-ban"
                         [pTooltip]="'DIALOG.PRODUCTS.MFES.UNDEPLOYED' | translate"
                         tooltipPosition="top"
@@ -319,6 +333,7 @@
                       </span>
                       <span
                         *ngIf="mfe.controls['deprecated'].value"
+                        [id]="'ws_product_item_mfe_' + i + '_deprecated'"
                         class="danger-action-text text-sm pi pi-exclamation-circle"
                         [pTooltip]="'DIALOG.PRODUCTS.MFES.DEPRECATED' | translate"
                         tooltipPosition="top"
@@ -332,9 +347,12 @@
 
               <div *ngIf="app.value.modules && displayedDetailItem?.bucket === 'SOURCE'">
                 <div *ngFor="let item of app.value.modules; let i = index" class="ml-4 flex flex-row column-gap-2">
-                  <span class="mr-2">{{ item.exposedModule }}</span>
+                  <span [id]="'ws_product_item_component_' + i + '_exposed_module'" class="mr-2">
+                    {{ item.exposedModule }}</span
+                  >
                   <span
                     *ngIf="item.undeployed"
+                    [id]="'ws_product_item_mfe_' + i + '_deprecated'"
                     class="danger-action-text pi pi-ban"
                     [pTooltip]="'DIALOG.PRODUCTS.MFES.UNDEPLOYED' | translate"
                     tooltipPosition="top"
@@ -343,6 +361,7 @@
                   </span>
                   <span
                     *ngIf="item.deprecated"
+                    [id]="'ws_product_item_mfe_' + i + '_deprecated'"
                     class="danger-action-text pi pi-exclamation-circle"
                     [pTooltip]="'DIALOG.PRODUCTS.MFES.DEPRECATED' | translate"
                     tooltipPosition="top"
@@ -355,10 +374,16 @@
 
             <div *ngIf="app.value.components" class="text-sm">
               <div class="mt-3 mb-1 ml-2 font-bold">Components</div>
-              <div *ngFor="let item of app.value.components; let i = index" class="ml-3 flex flex-row column-gap-2">
-                <span class="mr-2">{{ limitText(item.exposedModule, 25) }}</span>
+              <div
+                *ngFor="let item of app.value.components; let i = index"
+                class="ml-3 flex flex-row align-items-center column-gap-2"
+              >
+                <span [id]="'ws_product_item_component_' + i + '_exposed_module'" class="mr-2">
+                  {{ limitText(item.exposedModule, 25) }}</span
+                >
                 <span
                   *ngIf="item.undeployed"
+                  [id]="'ws_product_item_component_' + i + '_undeployed'"
                   class="danger-action-text pi pi-ban"
                   [pTooltip]="'DIALOG.PRODUCTS.MFES.UNDEPLOYED' | translate"
                   tooltipPosition="top"
@@ -367,6 +392,7 @@
                 </span>
                 <span
                   *ngIf="item.deprecated"
+                  [id]="'ws_product_item_component_' + i + '_deprecated'"
                   class="danger-action-text pi pi-exclamation-circle"
                   [pTooltip]="'DIALOG.PRODUCTS.MFES.DEPRECATED' | translate"
                   tooltipPosition="top"
@@ -381,11 +407,15 @@
             <p-divider align="center" styleClass="mt-0 mb-1">
               <div class="px-3 font-bold text-primary">Slots</div></p-divider
             >
-            <div *ngFor="let item of displayedDetailItem?.slots" class="ml-3 flex flex-row column-gap-3">
-              <span>{{ limitText(item.name, 25) }}</span>
+            <div
+              *ngFor="let item of displayedDetailItem?.slots; let i = index"
+              class="ml-3 flex flex-row align-items-center column-gap-3"
+            >
+              <span [id]="'ws_product_item_slot_' + i + '_name'">{{ limitText(item.name, 25) }}</span>
               <span
                 *ngIf="item.undeployed"
-                class="danger-action-text pi pi-ban"
+                [id]="'ws_product_item_slot_' + i + '_undeployed'"
+                class="text-sm danger-action-text pi pi-ban"
                 [pTooltip]="'DIALOG.SLOT.UNDEPLOYED' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
@@ -393,7 +423,8 @@
               </span>
               <span
                 *ngIf="item.deprecated"
-                class="danger-action-text pi pi-exclamation-circle"
+                [id]="'ws_product_item_slot_' + i + '_deprecated'"
+                class="text-sm danger-action-text pi pi-exclamation-circle"
                 [pTooltip]="'DIALOG.SLOT.DEPRECATED' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
@@ -402,7 +433,8 @@
               <a
                 *ngIf="item.new"
                 tabindex="0"
-                class="danger-action-text pi pi-plus-circle pseudo-button-link"
+                [id]="'ws_product_item_slot_' + i + '_new'"
+                class="text-sm danger-action-text pi pi-plus-circle pseudo-button-link"
                 (click)="onAddSlot($event, item)"
                 [pTooltip]="'DIALOG.SLOT.NEW.TOOLTIP' | translate"
                 tooltipPosition="top"
@@ -416,7 +448,7 @@
         <div class="w-full text-right mt-4">
           <p-button
             *ngIf="hasRegisterPermission && displayedDetailItem?.bucket === 'TARGET' && formGroup.valid"
-            id="workspace_detail_product_header_button_save"
+            id="ws_product_item_action_save"
             class="text-right"
             icon="pi pi-save"
             (onClick)="onProductSave($event)"
@@ -444,40 +476,33 @@
   <div class="flex column-gap-4 row-gap-1 justify-content-start align-items-center">
     <div class="pi pi-question-circle text-3xl danger-action-text"></div>
     <div>
-      <div class="font-bold">{{ 'ACTIONS.DELETE.PRODUCTS_QUESTION' | translate }}</div>
+      <div id="ws_product_deregister_message" class="font-bold">
+        {{ 'ACTIONS.DELETE.PRODUCTS_QUESTION' | translate }}
+      </div>
       <div class="mt-2">{{ 'ACTIONS.DELETE.PRODUCTS_MESSAGE' | translate }}</div>
       <div class="mt-1">{{ 'ACTIONS.DELETE.MESSAGE_INFO' | translate }}</div>
     </div>
   </div>
   <ng-template pTemplate="footer">
     <div class="mt-3 flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
-      <button
-        pButton
-        autofocus
-        type="button"
-        id="workspace_detail_product_deregister_button_no"
-        class="m-0"
+      <p-button
+        id="ws_product_deregister_action_no"
         icon="pi pi-times"
-        iconPos="left"
         (click)="onDeregisterCancellation()"
         [label]="'ACTIONS.CONFIRMATION.NO' | translate"
         [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
-      ></button>
-      <button
-        pButton
-        type="button"
-        id="workspace_detail_product_deregister_button_yes"
-        class="m-0"
+      ></p-button>
+      <p-button
+        id="ws_product_deregister_action_yes"
         icon="pi pi-check"
-        iconPos="left"
         (click)="onDeregisterConfirmation()"
         [label]="'ACTIONS.CONFIRMATION.YES' | translate"
         [pTooltip]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
-      ></button>
+      ></p-button>
     </div>
   </ng-template>
 </p-dialog>
