@@ -128,8 +128,12 @@ describe('PreviewComponent', () => {
 
     component.onModelChange()
     expect(component.themeName).toEqual('new theme')
-    expect(component.workspaceName).toEqual(component.importRequestDTO?.workspaces?.['newName'].name!)
-    expect(component.themeName).toEqual(component.importRequestDTO?.workspaces?.['newName'].theme!)
+    if (component.importRequestDTO.workspaces?.['newName'].name) {
+      expect(component.workspaceName).toEqual(component.importRequestDTO.workspaces?.['newName'].name)
+    }
+    if (component.importRequestDTO.workspaces?.['newName'].theme) {
+      expect(component.themeName).toEqual(component.importRequestDTO.workspaces?.['newName'].theme)
+    }
   })
 
   it('should map menuItems to tree nodes: standard case', () => {

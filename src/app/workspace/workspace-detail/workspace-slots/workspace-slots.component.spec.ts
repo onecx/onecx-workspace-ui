@@ -146,6 +146,7 @@ describe('WorkspaceSlotsComponent', () => {
       )
       spyOn(component as any, 'declareWorkspaceSlots').and.callFake(() => {})
       spyOn(component as any, 'declarePsSlots').and.callFake(() => {})
+      component.workspace = workspace
 
       component.loadData()
 
@@ -157,6 +158,7 @@ describe('WorkspaceSlotsComponent', () => {
       wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(throwError(() => err))
       spyOn(component as any, 'declareWorkspaceSlots').and.callFake(() => {})
       spyOn(component as any, 'declarePsSlots').and.callFake(() => {})
+      component.workspace = workspace
 
       component.loadData()
 

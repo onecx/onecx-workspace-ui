@@ -117,21 +117,23 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private declareWorkspaceProducts(): void {
-    this.wProducts$ = this.wProductApi
-      .getProductsByWorkspaceId({ id: this.workspace?.id! })
-      .pipe(
-        map((products) => {
-          this.wProductNames = []
-          for (const p of products) this.wProductNames.push(p.productName ?? '')
-          return []
-        }),
-        catchError((err) => {
-          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.PRODUCTS'
-          console.error('getProductsByWorkspaceId():', err)
-          return of([] as string[])
-        })
-      )
-      .pipe(takeUntil(this.destroy$))
+    if (this.workspace) {
+      this.wProducts$ = this.wProductApi
+        .getProductsByWorkspaceId({ id: this.workspace.id! })
+        .pipe(
+          map((products) => {
+            this.wProductNames = []
+            for (const p of products) this.wProductNames.push(p.productName ?? '')
+            return []
+          }),
+          catchError((err) => {
+            this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.PRODUCTS'
+            console.error('getProductsByWorkspaceId():', err)
+            return of([] as string[])
+          })
+        )
+        .pipe(takeUntil(this.destroy$))
+    }
   }
 
   /**
