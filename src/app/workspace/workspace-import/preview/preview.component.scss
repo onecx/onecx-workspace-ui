@@ -1,6 +1,6 @@
 @import 'src/_mixins.scss';
 
-@include correct-modal-dialog;
+@include dialog-modal-dialog-content;
 
 :host ::ng-deep {
   .p-tree {
