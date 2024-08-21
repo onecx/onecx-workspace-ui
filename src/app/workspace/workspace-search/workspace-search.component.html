@@ -188,17 +188,10 @@
   </ocx-page-content>
 </ocx-portal-page>
 
-<p-dialog
-  [header]="'ACTIONS.CREATE.WORKSPACE' | translate"
-  [(visible)]="showCreateDialog"
-  [baseZIndex]="10000"
-  [draggable]="true"
-  [resizable]="true"
-  [modal]="true"
-  [style]="{ width: '700px' }"
->
-  <app-workspace-create (toggleCreationDialogEvent)="toggleShowCreateDialog()"></app-workspace-create>
-</p-dialog>
+<app-workspace-create
+  (toggleCreationDialogEvent)="toggleShowCreateDialog()"
+  [displayDialog]="showCreateDialog"
+></app-workspace-create>
 
 <p-dialog
   [header]="'WORKSPACE_IMPORT.IMPORT_WORKSPACE' | translate"

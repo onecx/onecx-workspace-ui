@@ -1,168 +1,178 @@
-<form [formGroup]="formGroup">
-  <div class="flex flex-wrap flex-column gap-4 justify-content-between">
-    <div>
-      <span class="p-float-label mt-1" controlErrorAnchor>
-        <input
-          pInputText
-          type="text"
-          id="workspace_create_item_name"
-          class="w-full pt-3 pb-2"
-          formControlName="name"
-          [pTooltip]="'WORKSPACE.TOOLTIPS.NAME' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        />
-        <label class="ocx-required-label" for="workspace_create_item_name"> {{ 'WORKSPACE.NAME' | translate }} </label>
-      </span>
-    </div>
-    <div>
-      <span class="p-float-label" controlErrorAnchor>
-        <input
-          pInputText
-          type="text"
-          id="workspace_create_item_display_name"
-          class="w-full pt-3 pb-2"
-          formControlName="displayName"
-          [pTooltip]="'WORKSPACE.TOOLTIPS.DISPLAY_NAME' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        />
-        <label class="ocx-required-label" for="workspace_create_item_display_name">
-          {{ 'WORKSPACE.DISPLAY_NAME' | translate }}
+<p-dialog
+  [header]="'ACTIONS.CREATE.WORKSPACE' | translate"
+  [(visible)]="displayDialog"
+  [baseZIndex]="10000"
+  [draggable]="true"
+  [resizable]="true"
+  [modal]="true"
+  [style]="{ width: '700px' }"
+>
+  <form [formGroup]="formGroup">
+    <div class="flex flex-wrap flex-column gap-4 justify-content-between">
+      <div>
+        <span class="p-float-label mt-1" controlErrorAnchor>
+          <input
+            pInputText
+            type="text"
+            id="ws_create_item_name"
+            class="w-full pt-3 pb-2"
+            formControlName="name"
+            [pTooltip]="'WORKSPACE.TOOLTIPS.NAME' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          />
+          <label class="ocx-required-label" for="workspace_create_item_name">
+            {{ 'WORKSPACE.NAME' | translate }}
+          </label>
+        </span>
+      </div>
+      <div>
+        <span class="p-float-label" controlErrorAnchor>
+          <input
+            pInputText
+            type="text"
+            id="ws_create_item_display_name"
+            class="w-full pt-3 pb-2"
+            formControlName="displayName"
+            [pTooltip]="'WORKSPACE.TOOLTIPS.DISPLAY_NAME' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          />
+          <label class="ocx-required-label" for="workspace_create_item_display_name">
+            {{ 'WORKSPACE.DISPLAY_NAME' | translate }}
+          </label>
+        </span>
+      </div>
+
+      <div>
+        <span class="p-float-label">
+          <p-dropdown
+            id="ws_create_item_theme"
+            formControlName="theme"
+            styleClass="w-full"
+            [options]="(themes$ | async) || []"
+            [pTooltip]="'WORKSPACE.TOOLTIPS.THEME' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          >
+          </p-dropdown>
+          <label class="ocx-required-label" for="workspace_create_item_theme">
+            {{ 'WORKSPACE.THEME' | translate }}
+          </label>
+        </span>
+      </div>
+
+      <div>
+        <span class="p-float-label" controlErrorAnchor>
+          <input
+            pInputText
+            type="text"
+            id="ws_create_item_baseUrl"
+            class="w-full pt-3 pb-2"
+            formControlName="baseUrl"
+            [pTooltip]="'WORKSPACE.TOOLTIPS.BASE_URL' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          />
+          <label class="ocx-required-label" for="workspace_create_item_baseUrl">
+            {{ 'WORKSPACE.BASE_URL' | translate }}</label
+          >
+        </span>
+        <label class="ocx-control-hint block mt-1" for="workspace_create_item_baseUrl">
+          {{ ('VALIDATION.HINTS.FORMAT_URL' | translate) + urlPattern }}
         </label>
-      </span>
-    </div>
+      </div>
 
-    <div>
-      <span class="p-float-label">
-        <p-dropdown
-          id="workspace_create_item_theme"
-          formControlName="theme"
-          styleClass="w-full"
-          [options]="(themes$ | async) || []"
-          [pTooltip]="'WORKSPACE.TOOLTIPS.THEME' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        >
-        </p-dropdown>
-        <label class="ocx-required-label" for="workspace_create_item_theme">
-          {{ 'WORKSPACE.THEME' | translate }}
-        </label>
-      </span>
-    </div>
+      <div class="p-inputgroup mb-1" controlErrorAnchor>
+        <span class="p-float-label">
+          <p-dropdown
+            #inputHomePage
+            id="ws_create_form_home_page"
+            formControlName="homePage"
+            styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
+            [options]="mfeRList"
+            [editable]="true"
+            [pTooltip]="'WORKSPACE.TOOLTIPS.HOME_PAGE' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          >
+          </p-dropdown>
+          <label for="ws_create_form_home_page"> {{ 'WORKSPACE.HOME_PAGE' | translate }} </label>
+        </span>
+      </div>
 
-    <div>
-      <span class="p-float-label" controlErrorAnchor>
-        <input
-          pInputText
-          type="text"
-          id="workspace_create_item_baseUrl"
-          class="w-full pt-3 pb-2"
-          formControlName="baseUrl"
-          [pTooltip]="'WORKSPACE.TOOLTIPS.BASE_URL' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        />
-        <label class="ocx-required-label" for="workspace_create_item_baseUrl">
-          {{ 'WORKSPACE.BASE_URL' | translate }}</label
-        >
-      </span>
-      <label class="ocx-control-hint block mt-1" for="workspace_create_item_baseUrl">
-        {{ ('VALIDATION.HINTS.FORMAT_URL' | translate) + urlPattern }}
-      </label>
-    </div>
+      <div class="flex flex-wrap sm:flex-nowrap align-items-center row-gap-2 column-gap-4">
+        <app-image-container
+          [id]="'workspace_create_item_logo_image'"
+          [imageUrl]="fetchingLogoUrl"
+          [small]="true"
+        ></app-image-container>
+        <span class="p-float-label w-full">
+          <input
+            pInputText
+            type="text"
+            id="ws_create_item_logo"
+            class="w-full pt-3 pb-2"
+            formControlName="logoUrl"
+            (blur)="inputChange($event)"
+            [pTooltip]="'IMAGE.TOOLTIPS.URL' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          />
+          <label for="ws_create_item_logo"> {{ 'IMAGE.LOGO_URL' | translate }} </label>
+        </span>
+      </div>
 
-    <div class="p-inputgroup mb-1" controlErrorAnchor>
-      <span class="p-float-label">
-        <p-dropdown
-          #inputHomePage
-          id="workspace_create_form_home_page"
-          formControlName="homePage"
-          styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
-          [options]="mfeRList"
-          [editable]="true"
-          [pTooltip]="'WORKSPACE.TOOLTIPS.HOME_PAGE' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        >
-        </p-dropdown>
-        <label for="workspace_create_form_home_page"> {{ 'WORKSPACE.HOME_PAGE' | translate }} </label>
-      </span>
-    </div>
+      <div>
+        <span class="p-float-label" controlErrorAnchor>
+          <input
+            pInputText
+            type="text"
+            id="ws_create_item_footerLabel"
+            class="w-full pt-3 pb-2"
+            formControlName="footerLabel"
+            [pTooltip]="'WORKSPACE.TOOLTIPS.FOOTER_LABEL' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          />
+          <label for="ws_create_item_footerLabel"> {{ 'WORKSPACE.FOOTER_LABEL' | translate }} </label>
+        </span>
+      </div>
 
-    <div class="flex flex-wrap sm:flex-nowrap align-items-center row-gap-2 column-gap-4">
-      <app-image-container
-        [id]="'workspace_create_item_logo_image'"
-        [imageUrl]="fetchingLogoUrl"
-        [small]="true"
-      ></app-image-container>
-      <span class="p-float-label w-full">
-        <input
-          pInputText
-          type="text"
-          id="workspace_create_item_logo"
-          class="w-full pt-3 pb-2"
-          formControlName="logoUrl"
-          (blur)="inputChange($event)"
-          [pTooltip]="'IMAGE.TOOLTIPS.URL' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        />
-        <label for="workspace_create_item_logo"> {{ 'IMAGE.LOGO_URL' | translate }} </label>
-      </span>
+      <div>
+        <span class="p-float-label" controlErrorAnchor>
+          <textarea
+            class="w-full"
+            pInputTextarea
+            autoresize="true"
+            rows="4"
+            id="ws_create_item_description"
+            formControlName="description"
+            [pTooltip]="'WORKSPACE.TOOLTIPS.DESCRIPTION' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          ></textarea>
+          <label for="ws_create_item_description"> {{ 'WORKSPACE.DESCRIPTION' | translate }} </label>
+        </span>
+      </div>
     </div>
+  </form>
 
-    <div>
-      <span class="p-float-label" controlErrorAnchor>
-        <input
-          pInputText
-          type="text"
-          id="workspace_create_item_footerLabel"
-          class="w-full pt-3 pb-2"
-          formControlName="footerLabel"
-          [pTooltip]="'WORKSPACE.TOOLTIPS.FOOTER_LABEL' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        />
-        <label for="workspace_create_item_footerLabel"> {{ 'WORKSPACE.FOOTER_LABEL' | translate }} </label>
-      </span>
+  <ng-template pTemplate="footer">
+    <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
+      <p-button
+        id="ws_create_action_cancel"
+        icon="pi pi-times"
+        [label]="'ACTIONS.CANCEL' | translate"
+        (click)="closeDialog()"
+      ></p-button>
+      <p-button
+        id="ws_create_action_save"
+        icon="pi pi-plus"
+        [disabled]="!formGroup.valid"
+        [label]="'ACTIONS.CREATE.LABEL' | translate"
+        (click)="saveWorkspace()"
+      ></p-button>
     </div>
-
-    <div>
-      <span class="p-float-label" controlErrorAnchor>
-        <textarea
-          class="w-full"
-          pInputTextarea
-          autoresize="true"
-          rows="4"
-          id="workspace_create_item_description"
-          formControlName="description"
-          [pTooltip]="'WORKSPACE.TOOLTIPS.DESCRIPTION' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        ></textarea>
-        <label for="workspace_create_item_description"> {{ 'WORKSPACE.DESCRIPTION' | translate }} </label>
-      </span>
-    </div>
-  </div>
-</form>
-
-<div class="flex flex-wrap justify-content-end gap-2 pt-3">
-  <button
-    pButton
-    id="workspace_create_cancel"
-    type="button"
-    icon="pi pi-times"
-    [label]="'ACTIONS.CANCEL' | translate"
-    (click)="closeDialog()"
-  ></button>
-  <button
-    pButton
-    id="workspace_create_save_workspace"
-    type="button"
-    icon="pi pi-plus"
-    [disabled]="!formGroup.valid"
-    [label]="'ACTIONS.CREATE.LABEL' | translate"
-    (click)="saveWorkspace()"
-  ></button>
-</div>
+  </ng-template>
+</p-dialog>

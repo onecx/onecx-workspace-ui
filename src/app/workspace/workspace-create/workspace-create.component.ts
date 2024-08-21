@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, OnInit } from '@angular/core'
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { Location } from '@angular/common'
 import { ActivatedRoute, Router } from '@angular/router'
@@ -13,9 +13,11 @@ import { WorkspaceAPIService, Workspace, ProductAPIService } from 'src/app/share
 
 @Component({
   selector: 'app-workspace-create',
-  templateUrl: './workspace-create.component.html'
+  templateUrl: './workspace-create.component.html',
+  styleUrls: ['./workspace-create.component.scss']
 })
 export class WorkspaceCreateComponent implements OnInit {
+  @Input() displayDialog = false
   @Output() toggleCreationDialogEvent = new EventEmitter()
 
   private readonly destroy$ = new Subject()
