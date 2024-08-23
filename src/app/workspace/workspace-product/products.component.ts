@@ -10,10 +10,20 @@ import {
   OnChanges,
   SimpleChanges
 } from '@angular/core'
-import { TranslateService } from '@ngx-translate/core'
-import { catchError, finalize, map, Observable, of, Subject, switchMap, takeUntil } from 'rxjs'
+import { Router } from '@angular/router'
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
+import { catchError, finalize, map, Observable, of, Subject, switchMap, takeUntil } from 'rxjs'
+import { TranslateService } from '@ngx-translate/core'
 import { ConfirmationService } from 'primeng/api'
+
+import { MfeInfo } from '@onecx/portal-integration-angular'
+import {
+  AppStateService,
+  PortalMessageService,
+  UserService,
+  WorkspaceService
+} from '@onecx/angular-integration-interface'
+
 import {
   CreateSlot,
   CreateSlotRequest,
@@ -30,10 +40,9 @@ import {
   Workspace,
   WorkspaceProductAPIService
 } from 'src/app/shared/generated'
-import { MfeInfo } from '@onecx/portal-integration-angular'
-import { AppStateService, PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+
 import { environment } from 'src/environments/environment'
-import { bffProductImageUrl, limitText, prepareUrlPath } from 'src/app/shared/utils'
+import { bffProductImageUrl, goToEndpoint, limitText, prepareUrlPath } from 'src/app/shared/utils'
 
 export type ExtendedMicrofrontend = Microfrontend & {
   exposedModule?: string // MicrofrontendPS
@@ -103,6 +112,8 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   public currentMfe!: MfeInfo
 
   constructor(
+    private router: Router,
+    private workspaceService: WorkspaceService,
     private wProductApi: WorkspaceProductAPIService,
     private psProductApi: ProductAPIService,
     private imageApi: ImagesInternalAPIService,
@@ -607,5 +618,17 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
           this.msgService.error({ summaryKey: 'DIALOG.SLOT.MESSAGES.CREATE_NOK' })
         }
       })
+  }
+
+  public onGoToProduct(name?: string): void {
+    goToEndpoint(
+      this.workspaceService,
+      this.msgService,
+      this.router,
+      'onecx-product-store',
+      'onecx-product-store-ui',
+      'product-detail',
+      { 'product-name': name }
+    )
   }
 }

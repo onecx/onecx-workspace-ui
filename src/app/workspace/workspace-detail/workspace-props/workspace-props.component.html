@@ -37,7 +37,7 @@
           <div class="p-inputgroup mb-1" controlErrorAnchor>
             <span class="p-float-label">
               <p-dropdown
-                #inputTheme
+                #wsThemeName
                 id="ws_detail_item_theme"
                 formControlName="theme"
                 styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
@@ -53,7 +53,7 @@
               tabindex="0"
               id="ws_detail_item_theme_link"
               class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
-              (click)="onGoToTheme(inputTheme.value)"
+              (click)="onGoToTheme(wsThemeName.value)"
               [ngClass]="!editMode && inputBaseUrl.value ? 'cursor-pointer' : 'p-disabled'"
               [pTooltip]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
               tooltipPosition="right"

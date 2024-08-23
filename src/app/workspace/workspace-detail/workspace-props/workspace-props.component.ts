@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, OnChanges, Output } from '@angu
 import { Location } from '@angular/common'
 import { Router } from '@angular/router'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
-import { filter, map, mergeMap, Observable, Subject, tap } from 'rxjs'
+import { map, Observable, Subject } from 'rxjs'
 
 import { PortalMessageService, WorkspaceService } from '@onecx/angular-integration-interface'
 
@@ -13,7 +13,7 @@ import {
   WorkspaceAPIService,
   WorkspaceProductAPIService
 } from 'src/app/shared/generated'
-import { copyToClipboard, bffImageUrl, sortByLocale } from 'src/app/shared/utils'
+import { bffImageUrl, copyToClipboard, goToEndpoint, sortByLocale } from 'src/app/shared/utils'
 import { getLocation } from '@onecx/accelerator'
 
 @Component({
@@ -263,24 +263,8 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   }
 
   public onGoToTheme(name?: string): void {
-    this.workspaceService
-      .doesUrlExistFor('onecx-theme', 'onecx-theme-ui', 'theme-detail')
-      .pipe(
-        tap((exists) => {
-          if (!exists) {
-            this.msgService.error({
-              summaryKey: 'EXCEPTIONS.ENDPOINT.NOT_EXIST',
-              detailKey: 'EXCEPTIONS.CONTACT_ADMIN'
-            })
-          }
-        }),
-        filter((exists) => exists), // stop on not exists
-        mergeMap(() =>
-          this.workspaceService.getUrl('onecx-theme', 'onecx-theme-ui', 'theme-detail', { 'theme-name': name })
-        )
-      )
-      .subscribe((url) => {
-        this.router.navigateByUrl(url)
-      })
+    goToEndpoint(this.workspaceService, this.msgService, this.router, 'onecx-theme', 'onecx-theme-ui', 'theme-detail', {
+      'theme-name': name
+    })
   }
 }

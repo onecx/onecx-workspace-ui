@@ -253,19 +253,31 @@
 
       <form [formGroup]="formGroup">
         <div class="flex flex-column row-gap-4">
-          <span class="p-float-label">
-            <input
-              pInputText
-              type="text"
-              class="w-full"
-              id="ws_product_item_display_name"
-              formControlName="displayName"
-              [pTooltip]="'PRODUCT.DISPLAY_NAME.TOOLTIP' | translate"
-              tooltipPosition="top"
+          <div class="p-inputgroup">
+            <span class="p-float-label">
+              <input
+                pInputText
+                type="text"
+                class="w-full"
+                id="ws_product_item_display_name"
+                formControlName="displayName"
+                [pTooltip]="'PRODUCT.DISPLAY_NAME.TOOLTIP' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+              />
+              <label for="workspace_detail_product_item_display_name"> {{ displayedDetailItem?.productName }}</label>
+            </span>
+            <a
+              tabindex="0"
+              id="ws_product_item_display_name_link"
+              class="p-inputgroup-addon bg-primary cursor-pointer pseudo-button pi pi-link"
+              (click)="onGoToProduct(displayedDetailItem?.productName)"
+              [pTooltip]="'ACTIONS.NAVIGATION.GOTO_PRODUCT' | translate"
+              tooltipPosition="right"
               tooltipEvent="hover"
-            />
-            <label for="workspace_detail_product_item_display_name"> {{ displayedDetailItem?.productName }}</label>
-          </span>
+            >
+            </a>
+          </div>
           <div>
             <span class="p-float-label" controlErrorAnchor>
               <input
