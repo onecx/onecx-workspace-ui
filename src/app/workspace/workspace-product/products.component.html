@@ -242,7 +242,7 @@
           <a
             tabindex="0"
             id="ws_product_item_header_close"
-            class="p-2 pi pi-times cursor-pointer pseudo-button-link"
+            class="p-2 pi pi-times cursor-pointer button-icon-only"
             (click)="onHideItemDetails()"
             [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
             tooltipPosition="top"
@@ -458,7 +458,7 @@
                 *ngIf="item.new"
                 tabindex="0"
                 [id]="'ws_product_item_slot_' + i + '_new'"
-                class="text-sm danger-action-text pi pi-plus-circle pseudo-button-link"
+                class="text-sm danger-action-text pi pi-plus-circle button-icon-only"
                 (click)="onAddSlot($event, item)"
                 [pTooltip]="'DIALOG.SLOT.NEW.TOOLTIP' | translate"
                 tooltipPosition="top"

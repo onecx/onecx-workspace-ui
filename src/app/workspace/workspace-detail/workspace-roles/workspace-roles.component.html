@@ -136,7 +136,8 @@
           <a
             *ngIf="role.isWorkspaceRole && hasDeletePermission"
             [id]="'workspace_detail_roles_data_item_' + item + '_delete'"
-            class="card-badge-right badge-1 p-1 pi pi-trash pseudo-button-link"
+            class="card-badge-right badge-1 p-1 pi pi-trash button-icon-only"
+            [class.card-primary-color]="role.isWorkspaceRole"
             (click)="onDeleteRole($event, role)"
             [pTooltip]="'ACTIONS.DELETE.ROLE' | translate"
             tooltipPosition="top"
@@ -145,7 +146,7 @@
           <a
             *ngIf="!role.isWorkspaceRole && role.isIamRole && hasCreatePermission"
             [id]="'workspace_detail_roles_data_item_' + item + '_create'"
-            class="card-badge-right badge-1 p-1 pi pi-plus hover:text-white pseudo-button-link text-color"
+            class="card-badge-right badge-1 p-1 pi pi-plus hover:text-white button-icon-only text-color"
             [class.bg-white]="role.isWorkspaceRole"
             (click)="onAddRole($event, role)"
             [pTooltip]="'ACTIONS.CREATE.WORKSPACE.ROLE' | translate"

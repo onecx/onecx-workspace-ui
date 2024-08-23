@@ -72,7 +72,7 @@
           <a
             *ngIf="slot.new && hasCreatePermission"
             [id]="'workspace_detail_slots_' + idx + '_new'"
-            class="card-badge-right badge-1 p-1 pi pi-plus pseudo-button-link"
+            class="card-badge-right badge-1 p-1 pi pi-plus button-icon-only"
             (click)="onAddSlot($event, slot)"
             [pTooltip]="'DIALOG.SLOT.NEW.TOOLTIP' | translate"
             tooltipPosition="top"
@@ -81,7 +81,7 @@
           <a
             *ngIf="!slot.new && hasDeletePermission && slot.components.length === 0"
             [id]="'workspace_detail_roles_data_item_' + idx + '_delete'"
-            class="card-badge-right badge-1 p-1 pi pi-trash pseudo-button-link"
+            class="card-badge-right badge-1 card-primary-color p-1 pi pi-trash button-icon-only"
             (click)="onDeleteSlot($event, slot)"
             [pTooltip]="'ACTIONS.DELETE.SLOT' | translate"
             tooltipPosition="top"

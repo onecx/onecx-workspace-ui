@@ -116,17 +116,7 @@
  * **********************************************/
 @mixin card-badges {
   :host ::ng-deep {
-    .card-badge-base {
-      border-radius: var(--border-radius);
-      opacity: 0.7;
-    }
-    .card-primary-color {
-      background-color: var(--primary-color);
-      color: var(--primary-color-text);
-      &:hover {
-        color: unset;
-      }
-    }
+    // badge basics: position
     .card-badge-right,
     .card-badge-left {
       display: inline-block;
@@ -145,7 +135,16 @@
     .card-badge-left {
       left: 1px;
     }
-    .pseudo-button-link {
+    // correct colors on clickable badges
+    .card-primary-color {
+      background-color: var(--primary-color);
+      color: var(--primary-color-text);
+      &:hover {
+        color: unset;
+      }
+    }
+    // clickable icon-only buttons
+    .button-icon-only {
       border-radius: var(--border-radius);
       &:hover {
         color: var(--primary-color-text);
