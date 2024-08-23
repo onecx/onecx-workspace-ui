@@ -108,7 +108,7 @@
     "karma-jasmine": "^5.1.0",
     "karma-jasmine-html-reporter": "^2.1.0",
     "karma-sonarqube-unit-reporter": "^0.0.23",
-    "ng-packagr": "18.1.0",
+    "ng-packagr": "18.2.1",
     "ngx-build-plus": "^18.0.0",
     "ngx-translate-testing": "^7.0.0",
     "postcss": "8.4.40",
