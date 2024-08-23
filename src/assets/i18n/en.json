@@ -570,6 +570,10 @@
     }
   },
   "EXCEPTIONS": {
+    "CONTACT_ADMIN": "Please contact your administrator.",
+    "ENDPOINT": {
+      "NOT_EXIST": "Routing not possible because target is not configured correctly."
+    },
     "HTTP_STATUS_0": {
       "WORKSPACE": "Unknown problem retrieving Workspace details - please try again.",
       "WORKSPACES": "Unknown problem retrieving Workspace data - please try again.",

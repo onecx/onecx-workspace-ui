@@ -570,6 +570,10 @@
     }
   },
   "EXCEPTIONS": {
+    "CONTACT_ADMIN": "Wenden Sie sich bitte an Ihren Administrator.",
+    "ENDPOINT": {
+      "NOT_EXIST": "Routing nicht möglich da Ziel nicht korrekt konfiguriert."
+    },
     "HTTP_STATUS_0": {
       "WORKSPACE": "Unbekanntes Problem beim Abrufen von Workspace Details - Bitte versuchen sie es noch einmal.",
       "WORKSPACES": "Unbekanntes Problem beim Abrufen von Workspace-Daten - Bitte versuchen sie es noch einmal.",
