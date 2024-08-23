@@ -19,6 +19,9 @@ app:
           technology: WEBCOMPONENTMODULE
           remoteName: onecx-workspace
           tagName: ocx-workspace-component
+          endpoints:
+            - name: workspace-detail
+              path: /workspace/{workspace-name}
         user-avatar-menu:
           exposedModule: "./OneCXUserAvatarMenuComponent"
           description: "User avatar menu component"

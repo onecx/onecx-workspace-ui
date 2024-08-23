@@ -140,7 +140,11 @@
       background-color: var(--primary-color);
       color: var(--primary-color-text);
       &:hover {
-        color: unset;
+        color: inherit;
+        * {
+          color: inherit;
+          background-color: inherit;
+        }
       }
     }
     // clickable icon-only buttons
