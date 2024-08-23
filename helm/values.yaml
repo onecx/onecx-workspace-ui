@@ -21,7 +21,7 @@ app:
           tagName: ocx-workspace-component
           endpoints:
             - name: workspace-detail
-              path: /workspace/{workspace-name}
+              path: /{workspace-name}
         user-avatar-menu:
           exposedModule: "./OneCXUserAvatarMenuComponent"
           description: "User avatar menu component"
