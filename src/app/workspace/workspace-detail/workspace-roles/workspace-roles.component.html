@@ -11,7 +11,8 @@
   [sortOrder]="sortOrder"
 >
   <ng-template pTemplate="header">
-    <div class="flex flex-row flex-wrap align-items-center column-gap-2 row-gap-1">
+    <div class="flex flex-row flex-wrap align-items-center column-gap-4 row-gap-1">
+      <!-- Quick Filter -->
       <div class="flex flex-wrap align-items-center gap-2">
         <div
           class="p-selectbutton-title data-view-control opacity-90 text-sm w-2rem text-right"
@@ -23,7 +24,7 @@
         </div>
         <div class="slim-selectbutton filter-selectbutton">
           <p-selectButton
-            inputid="app_search_quick_filter"
+            inputid="ws_roles_quick_filter"
             styleClass="data-view-control opacity-90"
             [options]="quickFilterItems"
             [(ngModel)]="quickFilterValue"
@@ -37,6 +38,7 @@
           </p-selectButton>
         </div>
       </div>
+      <!-- Filter & Sorting -->
       <ocx-data-view-controls
         class="flex-grow-1"
         [supportedViews]="['grid']"
@@ -57,11 +59,22 @@
         [translations]="dataViewControlsTranslations"
       >
       </ocx-data-view-controls>
-      <div class="ml-1 flex flex-row column-gap-2">
+      <!-- Additional Actions -->
+      <div class="flex flex-wrap align-items-center column-gap-2 row-gap-1">
+        <p-button
+          *ocxIfPermission="'WORKSPACE#GOTO_PERMISSION'"
+          id="ws_slots_header_action_slot_link"
+          styleClass="h-full"
+          icon="pi pi-cog"
+          (onClick)="onGoToPermission()"
+          [pTooltip]="'ACTIONS.NAVIGATION.GOTO_WORKSPACE_PERMISSIONS' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        >
+        </p-button>
         <p-button
           *ocxIfPermission="'WORKSPACE_ROLE#CREATE'"
-          type="button"
-          id="workspace_roles_header_create"
+          id="ws_roles_header_create"
           styleClass="h-full"
           icon="pi pi-plus"
           (onClick)="onCreateRole($event)"
@@ -72,8 +85,7 @@
         </p-button>
         <p-button
           *ocxIfPermission="'WORKSPACE_ROLE#VIEW'"
-          type="button"
-          id="workspace_roles_header_reload"
+          id="ws_roles_header_reload"
           styleClass="h-full"
           icon="pi pi-refresh"
           (onClick)="onReload()"

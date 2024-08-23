@@ -63,11 +63,12 @@ app:
             CREATE: Create workspace
             DELETE: Delete workspace
             EDIT: Edit workspace
-            SAVE: Update and save workspace
             SEARCH: Search workspace
             VIEW: View mode for workspace
             EXPORT: Export workspace
             IMPORT: Import workspace
+            GOTO_PERMISSION: Go to Permission Management
+            GOTO_APP_STORE: Go to Application Store
           WORKSPACE_CONTACT:
             VIEW: View workspace contact
           WORKSPACE_INTERNAL:
@@ -89,9 +90,8 @@ app:
             CREATE: Create menu
             DELETE: Delete menu
             EDIT: Edit menu
-            SAVE: Save menu
             VIEW: View menu
-            DRAG_DROP: Drag & drop menu tree
+            DRAG_DROP: Drag & drop menu item
             GRANT: Assign roles to menu item
             EXPORT: Export menu
             IMPORT: Import menu

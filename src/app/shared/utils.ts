@@ -154,13 +154,16 @@ export function goToEndpoint(
   productName: string,
   appId: string,
   endpointName: string,
-  params: Record<string, unknown>
+  params?: Record<string, unknown>
 ): void {
   workspaceService
     .doesUrlExistFor(productName, appId, endpointName)
     .pipe(
       tap((exists) => {
         if (!exists) {
+          console.error(
+            'Routing not possible for product: ' + productName + '  app: ' + appId + '  endpoint: ' + endpointName
+          )
           msgService.error({
             summaryKey: 'EXCEPTIONS.ENDPOINT.NOT_EXIST',
             detailKey: 'EXCEPTIONS.CONTACT_ADMIN'

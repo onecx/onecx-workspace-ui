@@ -1,11 +1,12 @@
 import { Component, Input, SimpleChanges, OnChanges, OnInit, ViewChild } from '@angular/core'
+import { Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 import { Observable, catchError, finalize, map, of } from 'rxjs'
 import { SelectItem } from 'primeng/api'
 import { DataView } from 'primeng/dataview'
 
 import { DataViewControlTranslations } from '@onecx/portal-integration-angular'
-import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+import { PortalMessageService, UserService, WorkspaceService } from '@onecx/angular-integration-interface'
 
 import {
   Workspace,
@@ -15,7 +16,7 @@ import {
   CreateWorkspaceRoleRequest,
   IAMRolePageResult
 } from 'src/app/shared/generated'
-import { limitText } from 'src/app/shared/utils'
+import { goToEndpoint, limitText } from 'src/app/shared/utils'
 
 export type RoleType = 'WORKSPACE' | 'IAM'
 export type RoleFilterType = 'ALL' | RoleType
@@ -61,6 +62,8 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   public showRoleDeleteDialog = false
 
   constructor(
+    private router: Router,
+    private workspaceService: WorkspaceService,
     private user: UserService,
     private iamRoleApi: RoleAPIService,
     private wRoleApi: WorkspaceRolesAPIService,
@@ -276,5 +279,17 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   }
   public onSortDirChange(asc: boolean): void {
     this.sortOrder = asc ? -1 : 1
+  }
+
+  public onGoToPermission(): void {
+    goToEndpoint(
+      this.workspaceService,
+      this.msgService,
+      this.router,
+      'onecx-permission',
+      'onecx-permission-ui',
+      'workspace',
+      { 'workspace-name': this.workspace?.name }
+    )
   }
 }

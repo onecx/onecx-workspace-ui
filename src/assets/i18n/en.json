@@ -99,6 +99,9 @@
       "GOTO_MENU": "Go to Menu Management",
       "GOTO_THEME": "Go to Theme",
       "GOTO_PRODUCT": "Go to Product",
+      "GOTO_PRODUCT_PERMISSIONS": "Go to Product Permissions",
+      "GOTO_PRODUCT_SLOTS": "Go to Slots within Application Store",
+      "GOTO_WORKSPACE_PERMISSIONS": "Go to Workspace Permissions",
       "OPEN_IN_NEW_TAB": "Open in a new TAB",
       "MOVE_UP": "Move up",
       "MOVE_DOWN": "Move down"

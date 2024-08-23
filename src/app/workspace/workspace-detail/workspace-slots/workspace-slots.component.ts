@@ -1,10 +1,11 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core'
+import { Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 import { Subject, catchError, finalize, map, mergeMap, of, switchMap, takeUntil, Observable } from 'rxjs'
 import { DataView } from 'primeng/dataview'
 
 import { DataViewControlTranslations } from '@onecx/portal-integration-angular'
-import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+import { PortalMessageService, UserService, WorkspaceService } from '@onecx/angular-integration-interface'
 
 import {
   CreateSlotRequest,
@@ -18,7 +19,7 @@ import {
   SlotAPIService,
   WorkspaceProductAPIService
 } from 'src/app/shared/generated'
-import { limitText } from 'src/app/shared/utils'
+import { goToEndpoint, limitText } from 'src/app/shared/utils'
 
 export type ChangeMode = 'VIEW' | 'CREATE' | 'EDIT' | 'COPY' | 'DELETE'
 export type PSSlot = SlotPS & { pName?: string; pDisplayName?: string }
@@ -76,6 +77,8 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   public showSlotDeleteDialog = false
 
   constructor(
+    private router: Router,
+    private workspaceService: WorkspaceService,
     private user: UserService,
     private slotApi: SlotAPIService,
     private psProductApi: ProductAPIService,
@@ -330,5 +333,16 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     this.detailSlotId = this.slot.id
     this.changeMode = this.hasEditPermission ? 'EDIT' : 'VIEW'
     this.showSlotDeleteDialog = true
+  }
+
+  public onGoToProductSlots(): void {
+    goToEndpoint(
+      this.workspaceService,
+      this.msgService,
+      this.router,
+      'onecx-product-store',
+      'onecx-product-store-ui',
+      'slots'
+    )
   }
 }

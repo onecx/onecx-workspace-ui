@@ -605,7 +605,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   }
 
   /**
-   * UI Events: ADD slot
+   * UI Events
    */
   public onAddSlot(ev: any, item: ExtendedSlot) {
     this.slotApi
@@ -628,6 +628,17 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
       'onecx-product-store',
       'onecx-product-store-ui',
       'product-detail',
+      { 'product-name': name }
+    )
+  }
+  public onGoToProductPremission(name?: string): void {
+    goToEndpoint(
+      this.workspaceService,
+      this.msgService,
+      this.router,
+      'onecx-permission',
+      'onecx-permission-ui',
+      'product',
       { 'product-name': name }
     )
   }
