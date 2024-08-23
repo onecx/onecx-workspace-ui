@@ -98,6 +98,10 @@
       "NEW.TOOLTIP": "Erstelle neuen Eintrag",
       "GOTO_MENU": "Zur Menüverwaltung wechseln",
       "GOTO_THEME": "Zum Theme wechseln",
+      "GOTO_PRODUCT": "Zum Produkt wechseln",
+      "GOTO_PRODUCT_PERMISSIONS": "Zu Produktberechtigungen wechseln",
+      "GOTO_PRODUCT_SLOTS": "Zu Slots im Application Store wechseln",
+      "GOTO_WORKSPACE_PERMISSIONS": "Zu Workspace-Berechtigungen wechseln",
       "OPEN_IN_NEW_TAB": "In neuem TAB öffnen",
       "MOVE_UP": "Nach oben verschieben",
       "MOVE_DOWN": "Nach unten verschieben"
@@ -570,6 +574,10 @@
     }
   },
   "EXCEPTIONS": {
+    "CONTACT_ADMIN": "Wenden Sie sich bitte an Ihren Administrator.",
+    "ENDPOINT": {
+      "NOT_EXIST": "Routing nicht möglich da Ziel nicht korrekt konfiguriert."
+    },
     "HTTP_STATUS_0": {
       "WORKSPACE": "Unbekanntes Problem beim Abrufen von Workspace Details - Bitte versuchen sie es noch einmal.",
       "WORKSPACES": "Unbekanntes Problem beim Abrufen von Workspace-Daten - Bitte versuchen sie es noch einmal.",

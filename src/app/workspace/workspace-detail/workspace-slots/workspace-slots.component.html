@@ -11,7 +11,8 @@
   [sortOrder]="sortOrder"
 >
   <ng-template pTemplate="header">
-    <div class="flex flex-wrap align-items-center column-gap-2 row-gap-1">
+    <div class="flex flex-wrap align-items-center column-gap-4 row-gap-1">
+      <!-- Filter & Sorting -->
       <ocx-data-view-controls
         class="flex-grow-1"
         [supportedViews]="['grid']"
@@ -29,18 +30,31 @@
         [translations]="dataViewControlsTranslations"
       >
       </ocx-data-view-controls>
-      <p-button
-        *ocxIfPermission="'WORKSPACE_SLOT#VIEW'"
-        type="button"
-        id="workspace_slots_header_reload"
-        styleClass="h-full ml-1"
-        icon="pi pi-refresh"
-        (onClick)="onReload()"
-        [pTooltip]="'ACTIONS.SEARCH.RELOAD' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      >
-      </p-button>
+      <!-- Additional Actions -->
+      <div class="flex flex-wrap align-items-center column-gap-2 row-gap-1">
+        <p-button
+          *ocxIfPermission="'WORKSPACE#GOTO_APP_STORE'"
+          id="ws_slots_header_action_slot_link"
+          styleClass="h-full"
+          icon="pi pi-cog"
+          (onClick)="onGoToProductSlots()"
+          [pTooltip]="'ACTIONS.NAVIGATION.GOTO_PRODUCT_SLOTS' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        >
+        </p-button>
+        <p-button
+          *ocxIfPermission="'WORKSPACE_SLOT#VIEW'"
+          id="ws_slots_header_action_reload"
+          styleClass="h-full"
+          icon="pi pi-refresh"
+          (onClick)="onReload()"
+          [pTooltip]="'ACTIONS.SEARCH.RELOAD' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        >
+        </p-button>
+      </div>
     </div>
   </ng-template>
 
@@ -58,7 +72,7 @@
           <a
             *ngIf="slot.new && hasCreatePermission"
             [id]="'workspace_detail_slots_' + idx + '_new'"
-            class="card-badge-right badge-1 p-1 pi pi-plus pseudo-button-link"
+            class="card-badge-right badge-1 p-1 pi pi-plus button-icon-only"
             (click)="onAddSlot($event, slot)"
             [pTooltip]="'DIALOG.SLOT.NEW.TOOLTIP' | translate"
             tooltipPosition="top"
@@ -67,7 +81,7 @@
           <a
             *ngIf="!slot.new && hasDeletePermission && slot.components.length === 0"
             [id]="'workspace_detail_roles_data_item_' + idx + '_delete'"
-            class="card-badge-right badge-1 p-1 pi pi-trash pseudo-button-link"
+            class="card-badge-right badge-1 card-primary-color p-1 pi pi-trash button-icon-only"
             (click)="onDeleteSlot($event, slot)"
             [pTooltip]="'ACTIONS.DELETE.SLOT' | translate"
             tooltipPosition="top"

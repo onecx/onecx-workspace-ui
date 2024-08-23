@@ -6,8 +6,7 @@ import { PortalMessageService } from '@onecx/angular-integration-interface'
 
 @Component({
   selector: 'app-workspace-contact',
-  templateUrl: './workspace-contact.component.html',
-  styleUrls: ['./workspace-contact.component.scss']
+  templateUrl: './workspace-contact.component.html'
 })
 export class WorkspaceContactComponent implements OnChanges {
   @Input() workspace!: Workspace

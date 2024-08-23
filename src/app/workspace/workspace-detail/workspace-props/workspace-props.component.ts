@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, OnChanges, Output } from '@angular/core'
 import { Location } from '@angular/common'
+import { Router } from '@angular/router'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { map, Observable, Subject } from 'rxjs'
 
@@ -12,7 +13,7 @@ import {
   WorkspaceAPIService,
   WorkspaceProductAPIService
 } from 'src/app/shared/generated'
-import { copyToClipboard, bffImageUrl, sortByLocale } from 'src/app/shared/utils'
+import { bffImageUrl, copyToClipboard, goToEndpoint, sortByLocale } from 'src/app/shared/utils'
 import { getLocation } from '@onecx/accelerator'
 
 @Component({
@@ -43,10 +44,12 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   public minimumImageWidth = 150
   public minimumImageHeight = 150
   public fetchingLogoUrl: string | undefined = undefined
+  public themeUrl: string | undefined = undefined
   RefType = RefType
 
   constructor(
     private location: Location,
+    private router: Router,
     public workspaceService: WorkspaceService,
     private msgService: PortalMessageService,
     private imageApi: ImagesInternalAPIService,
@@ -91,6 +94,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     })
     this.fetchingLogoUrl = this.getLogoUrl(this.workspace)
     this.currentLogoUrl.emit(this.fetchingLogoUrl)
+    this.prepareThemeUrl(this.workspace?.theme)
   }
 
   public onSave(): void {
@@ -236,5 +240,31 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
         }
       })
     )
+  }
+
+  private prepareThemeUrl(name?: string): void {
+    let link: string | undefined = ''
+    let endpointExists = false
+    this.workspaceService.doesUrlExistFor('onecx-theme', 'onecx-theme-ui', 'theme-detail').subscribe((exists) => {
+      endpointExists = exists
+    })
+    if (!endpointExists) {
+      this.msgService.error({
+        summaryKey: 'EXCEPTIONS.ENDPOINT.NOT_EXIST'
+      })
+    } else {
+      this.workspaceService
+        .getUrl('onecx-theme', 'onecx-theme-ui', 'theme-detail', { 'theme-name': name })
+        .subscribe((url) => {
+          link = url
+        })
+    }
+    this.themeUrl = link
+  }
+
+  public onGoToTheme(name?: string): void {
+    goToEndpoint(this.workspaceService, this.msgService, this.router, 'onecx-theme', 'onecx-theme-ui', 'theme-detail', {
+      'theme-name': name
+    })
   }
 }

@@ -1,4 +1,4 @@
-@import 'src/_mixins.scss';
+@import 'src/_ws_mixins.scss';
 
 @include card-badges;
 @include danger-action;
@@ -6,6 +6,7 @@
 @include picklist-hide-double-buttons;
 @include correct-select-button;
 @include displaying-text-responsive;
+@include readable-disabled-form-controls;
 @include dialog-footer-buttons;
 
 :host ::ng-deep {

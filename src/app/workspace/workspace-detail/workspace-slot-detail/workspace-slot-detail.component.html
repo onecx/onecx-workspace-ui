@@ -11,6 +11,7 @@
     <div class="flex flex-row flex-wrap justify-content-between row-gap-3 pr-2">
       <span class="p-float-label">
         <div
+          id="ws_slot_detail_item_slot_name"
           class="ocx-float-label-textbox pt-3 pb-2 max-w-25rem text-responsive"
           [pTooltip]="'SLOT.NAME' | translate"
           tooltipPosition="top"
@@ -23,6 +24,7 @@
       <div class="flex flex-row flex-wrap justify-content-between gap-3">
         <span *ngIf="slot?.creationDate" class="p-float-label">
           <div
+            id="ws_slot_detail_item_creation_date"
             class="ocx-float-label-textbox pt-3 pb-2"
             [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_DATE' | translate"
             tooltipPosition="top"
@@ -34,6 +36,7 @@
         </span>
         <span *ngIf="slot?.modificationDate" class="p-float-label">
           <div
+            id="ws_slot_detail_item_modification_date"
             class="ocx-float-label-textbox pt-3 pb-2"
             [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_DATE' | translate"
             tooltipPosition="top"
@@ -57,7 +60,11 @@
       </div>
     </p-divider>
 
-    <div *ngIf="slot?.psSlots?.length === 0" class="px-3 py-2 card surface-50 flex flex-row column-gap-2">
+    <div
+      *ngIf="slot?.psSlots?.length === 0"
+      id="ws_slot_detail_products_not_exist"
+      class="px-3 py-2 card surface-50 flex flex-row column-gap-2"
+    >
       {{ 'DIALOG.SLOT.NO_PRODUCTS' | translate }}
     </div>
     <ng-container *ngIf="slot?.psSlots?.length !== 0">
@@ -66,9 +73,10 @@
           *ngFor="let slot of slot?.psSlots; let i = index"
           class="px-3 py-2 card surface-50 mb-2 flex flex-row column-gap-2"
         >
-          <span class="text-md">{{ slot?.pDisplayName }}</span>
+          <span [id]="'ws_slot_detail_product_' + i + '_name'" class="text-md">{{ slot?.pDisplayName }}</span>
           <span
             *ngIf="slot?.undeployed"
+            [id]="'ws_slot_detail_product_' + i + '_undeployed'"
             class="danger-action-text text-md pi pi-ban"
             [pTooltip]="'DIALOG.SLOT.UNDEPLOYED' | translate"
             tooltipPosition="top"
@@ -77,6 +85,7 @@
           </span>
           <span
             *ngIf="slot?.deprecated"
+            [id]="'ws_slot_detail_product_' + i + '_deprecated'"
             class="danger-action-text text-md pi pi-exclamation-circle"
             [pTooltip]="'DIALOG.SLOT.DEPRECATED' | translate"
             tooltipPosition="top"
@@ -133,7 +142,7 @@
       <ng-template let-component let-idx="rowIndex" pTemplate="item">
         <span
           *ngIf="component?.undeployed"
-          [id]="'workspace_detail_slot_picklist_' + idx + '_undeployed'"
+          [id]="'ws_slot_detail_picklist_' + idx + '_undeployed'"
           class="card-badge-right badge-1 danger-action-text font-bold text-lg pi pi-ban"
           [pTooltip]="'DIALOG.SLOT.UNDEPLOYED.TOOLTIP' | translate"
           tooltipPosition="top"
@@ -141,7 +150,7 @@
         ></span>
         <span
           *ngIf="component?.deprecated && !component?.undeployed"
-          [id]="'workspace_detail_slot_picklist_' + idx + '_deprecated'"
+          [id]="'ws_slot_detail_picklist_' + idx + '_deprecated'"
           class="card-badge-right badge-1 danger-action-text font-bold text-lg pi pi-exclamation-circle"
           [pTooltip]="'DIALOG.SLOT.DEPRECATED.TOOLTIP' | translate"
           tooltipPosition="top"
@@ -151,8 +160,12 @@
           <div *ngIf="component.bucket === 'TARGET'" class="font-semibold text-sm md:text-md">
             {{ component.index }}
           </div>
-          <div class="font-semibold text-sm md:text-md">{{ component.name }}</div>
-          <div class="text-xs">{{ component.productName }}</div>
+          <div [id]="'ws_slot_detail_picklist_' + idx + '_component_name'" class="font-semibold text-sm md:text-md">
+            {{ component.name }}
+          </div>
+          <div [id]="'ws_slot_detail_picklist_' + idx + '_product_name'" class="text-xs">
+            {{ component.productName }}
+          </div>
         </div>
         <div class="relative"></div>
       </ng-template>
@@ -186,7 +199,9 @@
   <div class="my-2 flex column-gap-4 row-gap-1 justify-content-start align-items-center">
     <div class="pi pi-question-circle text-3xl danger-action-text"></div>
     <div>
-      <div class="font-bold">{{ ('ACTIONS.DELETE.MESSAGE' | translate).replace('{{ITEM}}', slot?.name) }}</div>
+      <div id="ws_slot_delete_message" class="font-bold">
+        {{ ('ACTIONS.DELETE.MESSAGE' | translate).replace('{{ITEM}}', slot?.name) }}
+      </div>
       <div class="mt-2">{{ 'ACTIONS.DELETE.MESSAGE_INFO' | translate }}</div>
     </div>
   </div>
@@ -227,7 +242,9 @@
   <div class="my-2 flex column-gap-4 row-gap-1 justify-content-start align-items-center">
     <div class="pi pi-question-circle text-3xl danger-action-text"></div>
     <div>
-      <div class="font-bold">{{ 'ACTIONS.DELETE.COMPONENTS_QUESTION' | translate }}</div>
+      <div id="ws_slot_deregister_message" class="font-bold">
+        {{ 'ACTIONS.DELETE.COMPONENTS_QUESTION' | translate }}
+      </div>
       <div class="mt-2">{{ 'ACTIONS.DELETE.MESSAGE_INFO' | translate }}</div>
     </div>
   </div>

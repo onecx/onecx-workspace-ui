@@ -37,7 +37,7 @@
           <div class="p-inputgroup mb-1" controlErrorAnchor>
             <span class="p-float-label">
               <p-dropdown
-                #inputTheme
+                #wsThemeName
                 id="ws_detail_item_theme"
                 formControlName="theme"
                 styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
@@ -49,23 +49,17 @@
               </p-dropdown>
               <label class="ocx-required-label" for="ws_detail_item_theme"> {{ 'WORKSPACE.THEME' | translate }} </label>
             </span>
-            <span
+            <a
+              tabindex="0"
+              id="ws_detail_item_theme_link"
               class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
+              (click)="onGoToTheme(wsThemeName.value)"
               [ngClass]="!editMode && inputBaseUrl.value ? 'cursor-pointer' : 'p-disabled'"
-              [pTooltip]="'GENERAL.COMMING_SOON' | translate"
+              [pTooltip]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
               tooltipPosition="right"
               tooltipEvent="hover"
             >
-              <!--
-              [pTooltip]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
-            
-              a id="ws_detail_item_theme_link"
-                [href]="workspaceService.getUrl('onecx-theme-ui', 'onecx-theme', '') | async"
-                (click)="$event.stopPropagation()"
-              >
-                <span class="pi pi-link"></span>
-              </a-->
-            </span>
+            </a>
           </div>
         </div>
 
@@ -85,22 +79,19 @@
               />
               <label for="ws_detail_item_base-url"> {{ 'WORKSPACE.BASE_URL' | translate }} </label>
             </span>
-            <span
+            <a
+              tabindex="0"
+              id="ws_detail_item_baseUrl_link"
               class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
               [ngClass]="!editMode && inputBaseUrl.value ? 'cursor-pointer' : 'p-disabled'"
+              target="_blank"
+              [href]="deploymentPath + inputBaseUrl.value"
+              (click)="$event.stopPropagation()"
               [pTooltip]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
               tooltipPosition="right"
               tooltipEvent="hover"
             >
-              <a
-                tabindex="0"
-                id="ws_detail_item_baseUrl_link"
-                target="_blank"
-                [href]="deploymentPath + inputBaseUrl.value"
-                (click)="$event.stopPropagation()"
-              >
-              </a>
-            </span>
+            </a>
           </div>
           <label *ngIf="editMode" class="ocx-control-hint block" for="ws_detail_item_baseUrl">
             {{ ('VALIDATION.HINTS.FORMAT_URL' | translate) + urlPattern }}
@@ -123,22 +114,19 @@
             </p-dropdown>
             <label for="ws_detail_item_home_page"> {{ 'WORKSPACE.HOME_PAGE' | translate }} </label>
           </span>
-          <span
+          <a
+            tabindex="0"
+            id="ws_detail_item_homePage_link"
             class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
             [ngClass]="!editMode && !workspace?.disabled && workspace?.homePage ? 'cursor-pointer' : 'p-disabled'"
+            target="_blank"
+            [href]="prepareProductUrl(inputHomePage.value)"
+            (click)="$event.stopPropagation()"
             [pTooltip]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
             tooltipPosition="right"
             tooltipEvent="hover"
           >
-            <a
-              tabindex="0"
-              target="_blank"
-              id="ws_detail_item_homePage_link"
-              [href]="prepareProductUrl(inputHomePage.value)"
-              (click)="$event.stopPropagation()"
-            >
-            </a>
-          </span>
+          </a>
         </div>
 
         <div class="p-inputgroup mb-1" controlErrorAnchor>

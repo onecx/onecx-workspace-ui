@@ -1,9 +1,13 @@
 // import { MicrofrontendDTO } from '@onecx/portal-integration-angular'
 import { AbstractControl, FormArray, FormGroup } from '@angular/forms'
-import { SelectItem } from 'primeng/api'
 import { Location } from '@angular/common'
-import { environment } from 'src/environments/environment'
+import { Router } from '@angular/router'
+import { filter, mergeMap, tap } from 'rxjs'
+import { SelectItem } from 'primeng/api'
 
+import { PortalMessageService, WorkspaceService } from '@onecx/angular-integration-interface'
+
+import { environment } from 'src/environments/environment'
 import { RefType, Workspace } from 'src/app/shared/generated'
 
 export function limitText(text: string | null | undefined, limit: number): string {
@@ -141,4 +145,35 @@ export function getCurrentDateTime(): string {
   const seconds = String(now.getSeconds()).padStart(2, '0')
 
   return `${year}-${month}-${day}_${hours}${minutes}${seconds}`
+}
+
+export function goToEndpoint(
+  workspaceService: WorkspaceService,
+  msgService: PortalMessageService,
+  router: Router,
+  productName: string,
+  appId: string,
+  endpointName: string,
+  params?: Record<string, unknown>
+): void {
+  workspaceService
+    .doesUrlExistFor(productName, appId, endpointName)
+    .pipe(
+      tap((exists) => {
+        if (!exists) {
+          console.error(
+            'Routing not possible for product: ' + productName + '  app: ' + appId + '  endpoint: ' + endpointName
+          )
+          msgService.error({
+            summaryKey: 'EXCEPTIONS.ENDPOINT.NOT_EXIST',
+            detailKey: 'EXCEPTIONS.CONTACT_ADMIN'
+          })
+        }
+      }),
+      filter((exists) => exists), // stop on not exists
+      mergeMap(() => workspaceService.getUrl(productName, appId, endpointName, params))
+    )
+    .subscribe((url) => {
+      router.navigateByUrl(url)
+    })
 }

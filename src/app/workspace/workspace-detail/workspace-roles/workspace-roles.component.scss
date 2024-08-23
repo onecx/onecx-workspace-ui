@@ -1,7 +1,5 @@
-@import 'src/_mixins.scss';
+@import 'src/_ws_mixins.scss';
 
-@include card-badges;
-@include danger-action;
 @include correct-data-view-control;
 @include correct-data-view-header-for-tabpanel;
 @include float-label-textbox;
@@ -10,13 +8,8 @@
   .h-2-5rem {
     height: 2.5rem !important;
   }
-  .card-badge-right {
-    &.badge-2-1 {
-      top: 26px;
-    }
-  }
   .card-badge-left {
-    &.badge-2-1 {
+    &.badge-2 {
       top: 29px;
       left: 6px;
     }

@@ -264,7 +264,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
               actionCallback: () => this.updateWorkspace(),
               icon: 'pi pi-save',
               show: 'always',
-              permission: 'WORKSPACE#SAVE',
+              permission: 'WORKSPACE#EDIT',
               conditional: true,
               showCondition: this.editMode
             },
