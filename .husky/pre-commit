@@ -1,5 +1,10 @@
+# .husky/pre-commit
 
-echo "[Husky] Running lint check:"
-npm run lint
-echo "[Husky] Running prettier check:"
-npx prettier --cache -c .
+bash << EOF
+
+echo "[Husky] Running lint check on changed files:"
+ng lint --cache=true
+echo "[Husky] Running prettier check on changed files:"
+npx prettier -c --cache .
+
+EOF
