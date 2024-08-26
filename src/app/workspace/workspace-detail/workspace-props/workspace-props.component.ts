@@ -142,10 +142,8 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
             summaryKey: 'IMAGE.CONSTRAINT_FAILED',
             detailKey: 'IMAGE.CONSTRAINT_FILE_TYPE'
           })
-        } else {
-          if (this.workspace) {
-            this.saveImage(this.workspace.name, files) // store image
-          }
+        } else if (this.workspace) {
+          this.saveImage(this.workspace.name, files) // store image
         }
       }
     } else {
@@ -206,7 +204,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   }
 
   public prepareProductUrl(val: string): string | undefined {
-    if (this.workspace && this.workspace.baseUrl) {
+    if (this.workspace?.baseUrl) {
       return val ? Location.joinWithSlash(this.workspace.baseUrl, val) : undefined
     } else return undefined
   }

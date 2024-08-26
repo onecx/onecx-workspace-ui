@@ -6,8 +6,7 @@ import { FileSelectEvent } from 'primeng/fileupload'
 
 @Component({
   selector: 'app-import-choose-file',
-  templateUrl: './choose-file.component.html',
-  styleUrls: ['./choose-file.component.scss']
+  templateUrl: './choose-file.component.html'
 })
 export class ChooseFileComponent implements OnInit {
   @Output() public importFileSelected = new EventEmitter<WorkspaceSnapshot>()
