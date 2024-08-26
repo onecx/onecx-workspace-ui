@@ -176,7 +176,7 @@
       <p-button
         id="ws_slot_detail_action_close"
         icon="pi pi-times"
-        (click)="onClose()"
+        (onClick)="onClose()"
         [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
         [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
         tooltipPosition="top"
@@ -210,7 +210,7 @@
       <p-button
         id="ws_slot_delete_action_no"
         icon="pi pi-times"
-        (click)="onClose()"
+        (onClick)="onClose()"
         [label]="'ACTIONS.CONFIRMATION.NO' | translate"
         [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
         tooltipPosition="top"
@@ -219,7 +219,7 @@
       <p-button
         id="ws_slot_delete_action_yes"
         icon="pi pi-check"
-        (click)="onDeleteSlot()"
+        (onClick)="onDeleteSlot()"
         [label]="'ACTIONS.CONFIRMATION.YES' | translate"
         [pTooltip]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
         tooltipPosition="top"
@@ -253,7 +253,7 @@
       <p-button
         id="ws_slot_deregister_action_no"
         icon="pi pi-times"
-        (click)="onDeregisterCancellation()"
+        (onClick)="onDeregisterCancellation()"
         [label]="'ACTIONS.CONFIRMATION.NO' | translate"
         [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
         tooltipPosition="top"
@@ -263,7 +263,7 @@
         id="ws_slot_deregister_action_yes"
         icon="pi pi-check"
         iconPos="left"
-        (click)="onDeregisterConfirmation()"
+        (onClick)="onDeregisterConfirmation()"
         [label]="'ACTIONS.CONFIRMATION.YES' | translate"
         [pTooltip]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
         tooltipPosition="top"

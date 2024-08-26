@@ -116,13 +116,13 @@
         id="ws_delete_action_no"
         icon="pi pi-times"
         [label]="'ACTIONS.CONFIRMATION.NO' | translate"
-        (click)="workspaceDeleteVisible = false"
+        (onClick)="workspaceDeleteVisible = false"
       ></p-button>
       <p-button
         id="ws_delete_action_yes"
         icon="pi pi-check"
         [label]="'ACTIONS.CONFIRMATION.YES' | translate"
-        (click)="onConfirmDeleteWorkspace()"
+        (onClick)="onConfirmDeleteWorkspace()"
       ></p-button>
     </div>
   </ng-template>
