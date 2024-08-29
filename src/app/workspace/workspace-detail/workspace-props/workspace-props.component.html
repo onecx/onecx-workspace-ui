@@ -9,6 +9,7 @@
             formControlName="disabled"
             [binary]="true"
             [label]="'WORKSPACE.DISABLED' | translate"
+            aria-label="'WORKSPACE.TOOLTIPS.DISABLED' | translate"
             [pTooltip]="'WORKSPACE.TOOLTIPS.DISABLED' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
@@ -42,6 +43,7 @@
                 formControlName="theme"
                 styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
                 [options]="(themes$ | async) ?? []"
+                aria-label="'WORKSPACE.TOOLTIPS.THEME' | translate"
                 [pTooltip]="'WORKSPACE.TOOLTIPS.THEME' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
@@ -55,6 +57,7 @@
               class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
               (click)="onGoToTheme(wsThemeName.value)"
               [ngClass]="!editMode && inputBaseUrl.value ? 'cursor-pointer' : 'p-disabled'"
+              aria-label="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
               [pTooltip]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
               tooltipPosition="right"
               tooltipEvent="hover"
@@ -70,30 +73,31 @@
                 #inputBaseUrl
                 pInputText
                 type="text"
-                id="ws_detail_item_base-url"
+                id="ws_detail_item_base_url"
                 class="w-full pt-3 pb-2 text-responsive"
                 formControlName="baseUrl"
                 [pTooltip]="'WORKSPACE.TOOLTIPS.BASE_URL' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
               />
-              <label for="ws_detail_item_base-url"> {{ 'WORKSPACE.BASE_URL' | translate }} </label>
+              <label for="ws_detail_item_base_url"> {{ 'WORKSPACE.BASE_URL' | translate }} </label>
             </span>
             <a
               tabindex="0"
-              id="ws_detail_item_baseUrl_link"
+              id="ws_detail_item_base_url_link"
               class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
               [ngClass]="!editMode && inputBaseUrl.value ? 'cursor-pointer' : 'p-disabled'"
               target="_blank"
               [href]="deploymentPath + inputBaseUrl.value"
               (click)="$event.stopPropagation()"
+              aria-label="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
               [pTooltip]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
               tooltipPosition="right"
               tooltipEvent="hover"
             >
             </a>
           </div>
-          <label *ngIf="editMode" class="ocx-control-hint block" for="ws_detail_item_baseUrl">
+          <label *ngIf="editMode" class="ocx-control-hint block" for="ws_detail_item_base_url_link">
             {{ ('VALIDATION.HINTS.FORMAT_URL' | translate) + urlPattern }}
           </label>
         </div>
@@ -107,6 +111,7 @@
               styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
               [options]="(productPaths$ | async) ?? []"
               [editable]="true"
+              aria-label="'WORKSPACE.TOOLTIPS.HOME_PAGE' | translate"
               [pTooltip]="'WORKSPACE.TOOLTIPS.HOME_PAGE' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
@@ -122,6 +127,7 @@
             target="_blank"
             [href]="prepareProductUrl(inputHomePage.value)"
             (click)="$event.stopPropagation()"
+            aria-label="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
             [pTooltip]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
             tooltipPosition="right"
             tooltipEvent="hover"
@@ -150,6 +156,7 @@
             class="p-inputgroup-addon bg-primary pseudo-button"
             [ngClass]="inputRssFeedUrl.value ? 'cursor-pointer' : 'p-disabled'"
             (click)="copyToClipboard(workspace?.rssFeedUrl)"
+            aria-label="'ACTIONS.COPY.CLIPBOARD' | translate"
             [pTooltip]="'ACTIONS.COPY.CLIPBOARD' | translate"
             tooltipPosition="right"
             tooltipEvent="hover"
@@ -173,6 +180,7 @@
             class="action-button p-button-icon-only"
             [class.cursor-pointer]="editMode"
             (click)="selectedFileInputLogo.click()"
+            aria-label="'IMAGE.TOOLTIPS.UPLOAD' | translate"
             [pTooltip]="'IMAGE.TOOLTIPS.UPLOAD' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
@@ -210,7 +218,7 @@
             tooltipPosition="top"
             tooltipEvent="hover"
           />
-          <label for="ws_detail_item_footer-label"> {{ 'WORKSPACE.FOOTER_LABEL' | translate }} </label>
+          <label for="ws_detail_item_footer_label"> {{ 'WORKSPACE.FOOTER_LABEL' | translate }} </label>
         </span>
 
         <span class="p-float-label mb-1" controlErrorAnchor>

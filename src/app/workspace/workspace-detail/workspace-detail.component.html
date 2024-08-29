@@ -29,7 +29,10 @@
           *ocxIfPermission="'WORKSPACE#VIEW'"
           id="workspace_detail_details"
           [header]="'TABS.WORKSPACE.DETAILS' | translate"
-          [tooltip]="'TABS.WORKSPACE.TOOLTIPS.DETAILS' | translate"
+          aria-label="'TABS.WORKSPACE.TOOLTIPS.DETAILS' | translate"
+          [pTooltip]="'TABS.WORKSPACE.TOOLTIPS.DETAILS' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
         >
           <app-workspace-props
             [workspace]="workspace"
@@ -42,7 +45,10 @@
           *ocxIfPermission="'WORKSPACE_CONTACT#VIEW'"
           id="workspace_detail_contact"
           [header]="'TABS.WORKSPACE.CONTACT' | translate"
-          [tooltip]="'TABS.WORKSPACE.TOOLTIPS.CONTACT' | translate"
+          aria-label="'TABS.WORKSPACE.TOOLTIPS.CONTACT' | translate"
+          [pTooltip]="'TABS.WORKSPACE.TOOLTIPS.CONTACT' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
         >
           <app-workspace-contact [workspace]="workspace" [editMode]="editMode"></app-workspace-contact>
         </p-tabPanel>
@@ -52,7 +58,10 @@
           id="workspace_detail_intern"
           [disabled]="editMode"
           [header]="'TABS.WORKSPACE.INTERN' | translate"
-          [tooltip]="'TABS.WORKSPACE.TOOLTIPS.INTERN' | translate"
+          aria-label="'TABS.WORKSPACE.TOOLTIPS.INTERN' | translate"
+          [pTooltip]="'TABS.WORKSPACE.TOOLTIPS.INTERN' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
         >
           <app-workspace-intern [workspace]="workspace" [dateFormat]="dateFormat"></app-workspace-intern>
         </p-tabPanel>
@@ -63,7 +72,10 @@
           [disabled]="editMode"
           class="p-0"
           [header]="'TABS.WORKSPACE.ROLES' | translate"
-          [tooltip]="'TABS.WORKSPACE.TOOLTIPS.ROLES' | translate"
+          aria-label="'TABS.WORKSPACE.TOOLTIPS.ROLES' | translate"
+          [pTooltip]="'TABS.WORKSPACE.TOOLTIPS.ROLES' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
         >
           <app-workspace-roles [workspace]="workspaceForRoles"></app-workspace-roles>
         </p-tabPanel>
@@ -74,7 +86,10 @@
           [disabled]="editMode"
           class="p-0"
           [header]="'TABS.WORKSPACE.SLOTS' | translate"
-          [tooltip]="'TABS.WORKSPACE.TOOLTIPS.SLOTS' | translate"
+          aria-label="'TABS.WORKSPACE.TOOLTIPS.SLOTS' | translate"
+          [pTooltip]="'TABS.WORKSPACE.TOOLTIPS.SLOTS' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
         >
           <app-workspace-slots [workspace]="workspaceForSlots"></app-workspace-slots>
         </p-tabPanel>
@@ -85,7 +100,10 @@
           class="p-0"
           [disabled]="editMode"
           [header]="'TABS.WORKSPACE.PRODUCTS' | translate"
-          [tooltip]="'TABS.WORKSPACE.TOOLTIPS.PRODUCTS' | translate"
+          aria-label="'TABS.WORKSPACE.TOOLTIPS.PRODUCTS' | translate"
+          [pTooltip]="'TABS.WORKSPACE.TOOLTIPS.PRODUCTS' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
         >
           <app-products [workspace]="workspaceForProducts" (changed)="onProductChanges()"></app-products>
         </p-tabPanel>

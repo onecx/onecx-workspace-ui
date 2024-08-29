@@ -13,6 +13,7 @@
         <div
           id="ws_slot_detail_item_slot_name"
           class="ocx-float-label-textbox pt-3 pb-2 max-w-25rem text-responsive"
+          aria-label="'SLOT.NAME' | translate"
           [pTooltip]="'SLOT.NAME' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"
@@ -26,6 +27,7 @@
           <div
             id="ws_slot_detail_item_creation_date"
             class="ocx-float-label-textbox pt-3 pb-2"
+            aria-label="'INTERNAL.TOOLTIPS.CREATION_DATE' | translate"
             [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_DATE' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
@@ -38,6 +40,7 @@
           <div
             id="ws_slot_detail_item_modification_date"
             class="ocx-float-label-textbox pt-3 pb-2"
+            aria-label="'INTERNAL.TOOLTIPS.MODIFICATION_DATE' | translate"
             [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_DATE' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
@@ -52,6 +55,7 @@
     <p-divider align="center" styleClass="mt-3 mb-2">
       <div
         class="px-3 font-bold text-base"
+        aria-label="'DIALOG.SLOT.PRODUCTS.TOOLTIP' | translate"
         [pTooltip]="'DIALOG.SLOT.PRODUCTS.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
@@ -78,6 +82,7 @@
             *ngIf="slot?.undeployed"
             [id]="'ws_slot_detail_product_' + i + '_undeployed'"
             class="danger-action-text text-md pi pi-ban"
+            aria-label="'DIALOG.SLOT.UNDEPLOYED' | translate"
             [pTooltip]="'DIALOG.SLOT.UNDEPLOYED' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
@@ -87,6 +92,7 @@
             *ngIf="slot?.deprecated"
             [id]="'ws_slot_detail_product_' + i + '_deprecated'"
             class="danger-action-text text-md pi pi-exclamation-circle"
+            aria-label="'DIALOG.SLOT.DEPRECATED' | translate"
             [pTooltip]="'DIALOG.SLOT.DEPRECATED' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
@@ -118,6 +124,7 @@
         <div class="flex flex-row justify-content-between align-items-center column-gap-2">
           <div
             class="flex-grow-1 font-semibold"
+            aria-label="'DIALOG.SLOT.COMPONENTS.NOT_USED.TOOLTIP' | translate"
             [pTooltip]="'DIALOG.SLOT.COMPONENTS.NOT_USED.TOOLTIP' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
@@ -130,6 +137,7 @@
         <div class="flex flex-row justify-content-between align-items-center column-gap-2">
           <div
             class="flex-grow-1 font-semibold"
+            aria-label="'DIALOG.SLOT.COMPONENTS.USED.TOOLTIP' | translate"
             [pTooltip]="'DIALOG.SLOT.COMPONENTS.USED.TOOLTIP' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
@@ -144,6 +152,7 @@
           *ngIf="component?.undeployed"
           [id]="'ws_slot_detail_picklist_' + idx + '_undeployed'"
           class="card-badge-right badge-1 danger-action-text font-bold text-lg pi pi-ban"
+          aria-label="'DIALOG.SLOT.UNDEPLOYED.TOOLTIP' | translate"
           [pTooltip]="'DIALOG.SLOT.UNDEPLOYED.TOOLTIP' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"
@@ -152,6 +161,7 @@
           *ngIf="component?.deprecated && !component?.undeployed"
           [id]="'ws_slot_detail_picklist_' + idx + '_deprecated'"
           class="card-badge-right badge-1 danger-action-text font-bold text-lg pi pi-exclamation-circle"
+          aria-label="'DIALOG.SLOT.DEPRECATED.TOOLTIP' | translate"
           [pTooltip]="'DIALOG.SLOT.DEPRECATED.TOOLTIP' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"
@@ -178,6 +188,7 @@
         icon="pi pi-times"
         (onClick)="onClose()"
         [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+        aria-label="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
         [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
@@ -212,6 +223,7 @@
         icon="pi pi-times"
         (onClick)="onClose()"
         [label]="'ACTIONS.CONFIRMATION.NO' | translate"
+        aria-label="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
         [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
@@ -221,6 +233,7 @@
         icon="pi pi-check"
         (onClick)="onDeleteSlot()"
         [label]="'ACTIONS.CONFIRMATION.YES' | translate"
+        aria-label="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
         [pTooltip]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
@@ -255,6 +268,7 @@
         icon="pi pi-times"
         (onClick)="onDeregisterCancellation()"
         [label]="'ACTIONS.CONFIRMATION.NO' | translate"
+        aria-label="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
         [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
@@ -265,6 +279,7 @@
         iconPos="left"
         (onClick)="onDeregisterConfirmation()"
         [label]="'ACTIONS.CONFIRMATION.YES' | translate"
+        aria-label="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
         [pTooltip]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
