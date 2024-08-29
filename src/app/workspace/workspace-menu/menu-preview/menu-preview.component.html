@@ -21,6 +21,7 @@
       [offLabel]="'ACTIONS.TREE.EXPAND_ALL' | translate"
       ariaLabel="Toggle Tree View"
       (onChange)="onToggleTreeViewMode($event)"
+      aria-label="'ACTIONS.TREE.EXPAND_ALL.TOOLTIP' | translate"
       [pTooltip]="'ACTIONS.TREE.EXPAND_ALL.TOOLTIP' | translate"
       tooltipPosition="right"
       tooltipEvent="hover"
@@ -34,11 +35,12 @@
         [options]="languagesPreview"
         [(ngModel)]="languagesPreviewValue"
         (onChange)="onLanguagesPreviewChange($event.value)"
+        aria-label="'DIALOG.MENU.PREVIEW.LANG.TOOLTIP' | translate"
         [pTooltip]="'DIALOG.MENU.PREVIEW.LANG.TOOLTIP' | translate"
         tooltipPosition="right"
         tooltipEvent="hover"
       ></p-dropdown>
-      <label for="portal_menu_tree_preview_language_list">{{ 'DIALOG.MENU.PREVIEW.LANG' | translate }}</label>
+      <label for="ws_menu_preview_language_list">{{ 'DIALOG.MENU.PREVIEW.LANG' | translate }}</label>
     </span>
   </div>
 
@@ -62,6 +64,7 @@
         icon="pi pi-times"
         (onClick)="onClose()"
         [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+        aria-label="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
         [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
         tooltipPosition="right"
         tooltipEvent="hover"

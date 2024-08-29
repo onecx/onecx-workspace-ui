@@ -449,6 +449,7 @@
     },
     "DATAVIEW": {
       "FILTER": "Filter",
+      "FILTER_TOOLTIP": "Applikationen filtern",
       "FILTER_BY": "Filter für ",
       "FILTER_CLEAR": "Filter entfernen",
       "FILTER_PLACEHOLDER": "Filter",
