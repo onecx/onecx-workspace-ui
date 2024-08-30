@@ -70,7 +70,7 @@
           <div
             [id]="'theme_search_data_row_' + row + '_display_name'"
             class="p-0 col-8 sm:col-6 md:col-6 lg:col-5 xl:col-3 sm:font-bold text-base sm:text-md md:text-lg"
-            aria-label="workspace.displayName"
+            [attr.aria-label]="workspace.displayName"
             [pTooltip]="workspace.displayName"
             tooltipPosition="top"
             tooltipEvent="hover"
@@ -85,7 +85,7 @@
               target="_blank"
               class="text-primary"
               role="navigation"
-              aria-label="
+              [attr.aria-label]="
                 ('WORKSPACE.BASE_URL' | translate) +
                 ' (' +
                 workspace.baseUrl +
@@ -108,7 +108,7 @@
           <div
             [id]="'app_workspace_search_data_row_' + row + '_theme'"
             class="p-0 hidden md:block col-2"
-            aria-label="('WORKSPACE.THEME' | translate) + ': ' + workspace.theme"
+            [attr.aria-label]="('WORKSPACE.THEME' | translate) + ': ' + workspace.theme"
             [pTooltip]="('WORKSPACE.THEME' | translate) + (workspace.theme.length < 40 ? '' : ' ' + workspace.theme)"
             tooltipPosition="top"
             tooltipEvent="hover"
@@ -118,7 +118,7 @@
           <div
             [id]="'app_workspace_search_data_row_' + row + '_description'"
             class="p-0 hidden xl:block col-2"
-            aria-label="workspace.description"
+            [attr.aria-label]="workspace.description"
             [pTooltip]="workspace.description < 50 ? '' : workspace.description"
             tooltipPosition="top"
             tooltipEvent="hover"
@@ -143,7 +143,7 @@
                 class="card-badge-right badge-1 p-1 pi pi-external-link button-icon-only"
                 (click)="onGotoWorkspace($event, workspace)"
                 role="navigation"
-                aria-label="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_WORKSPACE' | translate"
+                [attr.aria-label]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_WORKSPACE' | translate"
                 [pTooltip]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_WORKSPACE' | translate"
                 tooltipPosition="right"
                 tooltipEvent="hover"
@@ -155,7 +155,7 @@
                 class="card-badge-right badge-2 p-1 pi pi-sitemap button-icon-only"
                 (click)="onGotoMenu($event, workspace)"
                 role="navigation"
-                aria-label="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_MENU' | translate"
+                [attr.aria-label]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_MENU' | translate"
                 [pTooltip]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_MENU' | translate"
                 tooltipPosition="right"
                 tooltipEvent="hover"
@@ -165,7 +165,7 @@
                 [id]="'app_workspace_search_data_row_' + row + '_disabled'"
                 class="card-badge-right badge-4 p-1 pi pi-ban danger-action-text font-bold"
                 role="navigation"
-                aria-label="'WORKSPACE.TOOLTIPS.DISABLED' | translate"
+                [attr.aria-label]="'WORKSPACE.DISABLED' | translate"
                 [pTooltip]="'WORKSPACE.TOOLTIPS.DISABLED' | translate"
                 tooltipPosition="right"
                 tooltipEvent="hover"
@@ -181,7 +181,7 @@
                 <div
                   [id]="'app_workspace_search_data_row_' + row + '_display_name'"
                   class="font-bold sm:text-lg md:text-xl text-responsive"
-                  aria-label="workspace.displayName"
+                  [attr.aria-label]="workspace.displayName"
                   [pTooltip]="workspace.displayName.length < 20 ? '' : workspace.displayName"
                   tooltipPosition="top"
                   tooltipEvent="hover"
@@ -191,7 +191,7 @@
                 <div
                   [id]="'app_workspace_search_data_row_' + row + '_theme'"
                   class="text-xs md:text-sm text-responsive"
-                  aria-label="'WORKSPACE.THEME' | translate"
+                  [attr.aria-label]="'WORKSPACE.THEME' | translate"
                   [pTooltip]="'WORKSPACE.THEME' | translate"
                   tooltipPosition="top"
                   tooltipEvent="hover"
