@@ -80,6 +80,7 @@
             [id]="'ws_detail_slots_' + idx + '_action_new'"
             class="card-badge-right badge-1 p-1 pi pi-plus button-icon-only"
             (click)="onAddSlot($event, slot)"
+            role="navigation"
             aria-label="'DIALOG.SLOT.NEW.TOOLTIP' | translate"
             [pTooltip]="'DIALOG.SLOT.NEW.TOOLTIP' | translate"
             tooltipPosition="top"
@@ -90,6 +91,7 @@
             [id]="'ws_detail_slots_data_idx_' + idx + '_action_delete'"
             class="card-badge-right badge-1 card-primary-color p-1 pi pi-trash button-icon-only"
             (click)="onDeleteSlot($event, slot)"
+            role="navigation"
             aria-label="'ACTIONS.DELETE.SLOT' | translate"
             [pTooltip]="'ACTIONS.DELETE.SLOT' | translate"
             tooltipPosition="top"
@@ -119,7 +121,7 @@
             *ngIf="slot.deprecated"
             [id]="'ws_detail_slots_idx_' + idx + '_deprecated'"
             class="card-badge-left badge-2 pi pi-exclamation-circle danger-action-text font-bold"
-            aria-label="'DIALOG.SLOT.DEPRECATED.TOOLTIP' | translate"
+            aria-label="'DIALOG.SLOT.DEPRECATED' | translate"
             [pTooltip]="'DIALOG.SLOT.DEPRECATED.TOOLTIP' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
@@ -127,7 +129,7 @@
           <div class="h-2-5rem flex flex-column justify-content-center text-center">
             <div
               [id]="'ws_detail_slots_idx_' + idx + '_slot_name'"
-              aria-label="slot.name.length < 40 ? '' : slot.name"
+              aria-label="slot.name"
               [pTooltip]="slot.name.length < 40 ? '' : slot.name"
               tooltipPosition="top"
               tooltipEvent="hover"

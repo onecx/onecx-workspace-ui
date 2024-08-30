@@ -17,14 +17,11 @@
             id="ws_create_item_name"
             class="w-full pt-3 pb-2"
             formControlName="name"
-            aria-label="'WORKSPACE.TOOLTIPS.NAME' | translate"
             [pTooltip]="'WORKSPACE.TOOLTIPS.NAME' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
           />
-          <label class="ocx-required-label" for="workspace_create_item_name">
-            {{ 'WORKSPACE.NAME' | translate }}
-          </label>
+          <label class="ocx-required-label" for="ws_create_item_name"> {{ 'WORKSPACE.NAME' | translate }} </label>
         </span>
       </div>
       <div>
@@ -35,12 +32,11 @@
             id="ws_create_item_display_name"
             class="w-full pt-3 pb-2"
             formControlName="displayName"
-            aria-label="'WORKSPACE.TOOLTIPS.DISPLAY_NAME' | translate"
             [pTooltip]="'WORKSPACE.TOOLTIPS.DISPLAY_NAME' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
           />
-          <label class="ocx-required-label" for="workspace_create_item_display_name">
+          <label class="ocx-required-label" for="ws_create_item_display_name">
             {{ 'WORKSPACE.DISPLAY_NAME' | translate }}
           </label>
         </span>
@@ -53,15 +49,12 @@
             formControlName="theme"
             styleClass="w-full"
             [options]="(themes$ | async) || []"
-            aria-label="'WORKSPACE.TOOLTIPS.THEME' | translate"
             [pTooltip]="'WORKSPACE.TOOLTIPS.THEME' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
           >
           </p-dropdown>
-          <label class="ocx-required-label" for="workspace_create_item_theme">
-            {{ 'WORKSPACE.THEME' | translate }}
-          </label>
+          <label class="ocx-required-label" for="ws_create_item_theme"> {{ 'WORKSPACE.THEME' | translate }} </label>
         </span>
       </div>
 
@@ -73,16 +66,13 @@
             id="ws_create_item_baseUrl"
             class="w-full pt-3 pb-2"
             formControlName="baseUrl"
-            aria-label="'WORKSPACE.TOOLTIPS.BASE_URL' | translate"
             [pTooltip]="'WORKSPACE.TOOLTIPS.BASE_URL' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
           />
-          <label class="ocx-required-label" for="workspace_create_item_baseUrl">
-            {{ 'WORKSPACE.BASE_URL' | translate }}</label
-          >
+          <label class="ocx-required-label" for="ws_create_item_baseUrl"> {{ 'WORKSPACE.BASE_URL' | translate }}</label>
         </span>
-        <label class="ocx-control-hint block mt-1" for="workspace_create_item_baseUrl">
+        <label class="ocx-control-hint block mt-1" for="ws_create_item_baseUrl">
           {{ ('VALIDATION.HINTS.FORMAT_URL' | translate) + urlPattern }}
         </label>
       </div>
@@ -96,7 +86,7 @@
             styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
             [options]="mfeRList"
             [editable]="true"
-            aria-label="'WORKSPACE.TOOLTIPS.HOME_PAGE' | translate"
+            aria-label="'WORKSPACE.HOME_PAGE' | translate"
             [pTooltip]="'WORKSPACE.TOOLTIPS.HOME_PAGE' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
@@ -108,7 +98,7 @@
 
       <div class="flex flex-wrap sm:flex-nowrap align-items-center row-gap-2 column-gap-4">
         <app-image-container
-          [id]="'workspace_create_item_logo_image'"
+          [id]="'ws_create_item_logo_image'"
           [imageUrl]="fetchingLogoUrl"
           [small]="true"
         ></app-image-container>
@@ -120,7 +110,6 @@
             class="w-full pt-3 pb-2"
             formControlName="logoUrl"
             (blur)="inputChange($event)"
-            aria-label="'IMAGE.TOOLTIPS.URL' | translate"
             [pTooltip]="'IMAGE.TOOLTIPS.URL' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
@@ -137,7 +126,6 @@
             id="ws_create_item_footerLabel"
             class="w-full pt-3 pb-2"
             formControlName="footerLabel"
-            aria-label="'WORKSPACE.TOOLTIPS.FOOTER_LABEL' | translate"
             [pTooltip]="'WORKSPACE.TOOLTIPS.FOOTER_LABEL' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
@@ -155,7 +143,6 @@
             rows="4"
             id="ws_create_item_description"
             formControlName="description"
-            aria-label="'WORKSPACE.TOOLTIPS.DESCRIPTION' | translate"
             [pTooltip]="'WORKSPACE.TOOLTIPS.DESCRIPTION' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
@@ -171,15 +158,21 @@
       <p-button
         id="ws_create_action_cancel"
         icon="pi pi-times"
-        [label]="'ACTIONS.CANCEL' | translate"
         (onClick)="closeDialog()"
+        [label]="'ACTIONS.CANCEL' | translate"
+        [pTooltip]="'ACTIONS.TOOLTIPS.CANCEL' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
       ></p-button>
       <p-button
         id="ws_create_action_save"
         icon="pi pi-plus"
         [disabled]="!formGroup.valid"
-        [label]="'ACTIONS.CREATE.LABEL' | translate"
         (onClick)="saveWorkspace()"
+        [label]="'ACTIONS.CREATE.LABEL' | translate"
+        [pTooltip]="'ACTIONS.CREATE.WORKSPACE.TOOLTIP' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
       ></p-button>
     </div>
   </ng-template>

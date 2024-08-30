@@ -84,6 +84,7 @@
               (click)="$event.stopPropagation()"
               target="_blank"
               class="text-primary"
+              role="navigation"
               aria-label="
                 ('WORKSPACE.BASE_URL' | translate) +
                 ' (' +
@@ -107,7 +108,7 @@
           <div
             [id]="'app_workspace_search_data_row_' + row + '_theme'"
             class="p-0 hidden md:block col-2"
-            aria-label="('WORKSPACE.THEME' | translate) + (workspace.theme.length < 40 ? '' : ' ' + workspace.theme)"
+            aria-label="('WORKSPACE.THEME' | translate) + ': ' + workspace.theme"
             [pTooltip]="('WORKSPACE.THEME' | translate) + (workspace.theme.length < 40 ? '' : ' ' + workspace.theme)"
             tooltipPosition="top"
             tooltipEvent="hover"
@@ -141,6 +142,7 @@
                 [id]="'app_workspace_search_data_row_' + row + '_goto_workspace'"
                 class="card-badge-right badge-1 p-1 pi pi-external-link button-icon-only"
                 (click)="onGotoWorkspace($event, workspace)"
+                role="navigation"
                 aria-label="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_WORKSPACE' | translate"
                 [pTooltip]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_WORKSPACE' | translate"
                 tooltipPosition="right"
@@ -152,6 +154,7 @@
                 [id]="'app_workspace_search_data_row_' + row + '_goto_menu'"
                 class="card-badge-right badge-2 p-1 pi pi-sitemap button-icon-only"
                 (click)="onGotoMenu($event, workspace)"
+                role="navigation"
                 aria-label="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_MENU' | translate"
                 [pTooltip]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_MENU' | translate"
                 tooltipPosition="right"
@@ -161,6 +164,7 @@
                 *ngIf="workspace.disabled"
                 [id]="'app_workspace_search_data_row_' + row + '_disabled'"
                 class="card-badge-right badge-4 p-1 pi pi-ban danger-action-text font-bold"
+                role="navigation"
                 aria-label="'WORKSPACE.TOOLTIPS.DISABLED' | translate"
                 [pTooltip]="'WORKSPACE.TOOLTIPS.DISABLED' | translate"
                 tooltipPosition="right"
@@ -177,7 +181,7 @@
                 <div
                   [id]="'app_workspace_search_data_row_' + row + '_display_name'"
                   class="font-bold sm:text-lg md:text-xl text-responsive"
-                  aria-label="workspace.displayName.length < 20 ? '' : workspace.displayName"
+                  aria-label="workspace.displayName"
                   [pTooltip]="workspace.displayName.length < 20 ? '' : workspace.displayName"
                   tooltipPosition="top"
                   tooltipEvent="hover"
@@ -187,8 +191,8 @@
                 <div
                   [id]="'app_workspace_search_data_row_' + row + '_theme'"
                   class="text-xs md:text-sm text-responsive"
-                  aria-label="'Theme'"
-                  [pTooltip]="'Theme'"
+                  aria-label="'WORKSPACE.THEME' | translate"
+                  [pTooltip]="'WORKSPACE.THEME' | translate"
                   tooltipPosition="top"
                   tooltipEvent="hover"
                 >

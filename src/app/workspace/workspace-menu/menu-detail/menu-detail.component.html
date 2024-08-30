@@ -260,7 +260,7 @@
           styleClass="data-view-control opacity-90"
           [options]="languagesAvailable"
           (onOptionClick)="onAddLanguage($event.option.value)"
-          aria-label="'DIALOG.MENU.TABS.I18N.ADD_LANGUAGE' | translate"
+          [attr.aria-label]="'DIALOG.MENU.TABS.I18N.ADD_LANGUAGE' | translate"
           [pTooltip]="'DIALOG.MENU.TABS.I18N.ADD_LANGUAGE' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"
