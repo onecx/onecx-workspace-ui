@@ -449,6 +449,7 @@
     },
     "DATAVIEW": {
       "FILTER": "Filter",
+      "FILTER_TOOLTIP": "Filter Applications",
       "FILTER_BY": "Filter by ",
       "FILTER_CLEAR": "Clear Filter",
       "FILTER_PLACEHOLDER": "Filter",

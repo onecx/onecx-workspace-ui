@@ -41,9 +41,7 @@
             tooltipPosition="top"
             tooltipEvent="hover"
           />
-          <label class="ocx-required-label" for="workspace_role_create_field_name">
-            {{ 'ROLE.NAME' | translate }}
-          </label>
+          <label class="ocx-required-label" for="ws_role_create_field_name"> {{ 'ROLE.NAME' | translate }} </label>
         </span>
       </div>
       <div>
@@ -58,7 +56,7 @@
             tooltipPosition="top"
             tooltipEvent="hover"
           />
-          <label for="workspace_role_create_field_description">{{ 'ROLE.DESCRIPTION' | translate }} </label>
+          <label for="ws_role_create_field_description">{{ 'ROLE.DESCRIPTION' | translate }} </label>
         </span>
       </div>
     </div>
@@ -71,6 +69,7 @@
         icon="pi pi-times"
         (onClick)="onClose()"
         [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+        [attr.aria-label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
         [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
@@ -81,6 +80,7 @@
         icon="pi pi-times"
         (onClick)="onClose()"
         [label]="'ACTIONS.CANCEL' | translate"
+        [attr.aria-label]="'ACTIONS.CANCEL' | translate"
         [pTooltip]="'ACTIONS.TOOLTIPS.CANCEL' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
@@ -92,6 +92,7 @@
         (onClick)="onSaveRole()"
         [disabled]="!formGroupRole.valid"
         [label]="'ACTIONS.SAVE' | translate"
+        [attr.aria-label]="'ACTIONS.SAVE' | translate"
         [pTooltip]="'ACTIONS.TOOLTIPS.SAVE' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
@@ -128,6 +129,7 @@
         icon="pi pi-times"
         (onClick)="onClose()"
         [label]="'ACTIONS.CONFIRMATION.NO' | translate"
+        [attr.aria-label]="'ACTIONS.CONFIRMATION.NO' | translate"
         [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
@@ -137,6 +139,7 @@
         icon="pi pi-check"
         (onClick)="onDeleteRoleConfirmation()"
         [label]="'ACTIONS.CONFIRMATION.YES' | translate"
+        [attr.aria-label]="'ACTIONS.CONFIRMATION.YES' | translate"
         [pTooltip]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"

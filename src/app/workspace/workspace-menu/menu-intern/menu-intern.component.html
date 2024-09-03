@@ -6,14 +6,14 @@
           pInputText
           type="text"
           readonly
-          id="portal_detail_internal_field_creationDate"
+          id="ws_detail_internal_field_creationDate"
           class="w-full pt-3 pb-2 text-responsive"
           [value]="menuItem?.creationDate | date: dateFormat"
           [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_DATE' | translate"
           tooltipPosition="top"
           tooltipEvent="focus"
         />
-        <label for="portal_detail_internal_field_creationDate">{{ 'INTERNAL.CREATION_DATE' | translate }}</label>
+        <label for="ws_detail_internal_field_creationDate">{{ 'INTERNAL.CREATION_DATE' | translate }}</label>
       </span>
     </div>
     <div class="w-12 sm:w-7">
@@ -22,14 +22,14 @@
           pInputText
           type="text"
           readonly
-          id="portal_detail_internal_field_creationUser"
+          id="ws_detail_internal_field_creationUser"
           class="w-full pt-3 pb-2 text-responsive"
           [value]="menuItem?.creationUser"
           [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_USER' | translate"
           tooltipPosition="top"
           tooltipEvent="focus"
         />
-        <label for="portal_detail_internal_field_creationUser">{{ 'INTERNAL.CREATION_USER' | translate }}</label>
+        <label for="ws_detail_internal_field_creationUser">{{ 'INTERNAL.CREATION_USER' | translate }}</label>
       </span>
     </div>
   </div>
@@ -41,16 +41,14 @@
           pInputText
           type="text"
           readonly
-          id="portal_detail_internal_field_modificationDate"
+          id="ws_detail_internal_field_modificationDate"
           class="w-full pt-3 pb-2 text-responsive"
           [value]="menuItem?.modificationDate | date: dateFormat"
           [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_DATE' | translate"
           tooltipPosition="top"
           tooltipEvent="focus"
         />
-        <label for="portal_detail_internal_field_modificationDate">
-          {{ 'INTERNAL.MODIFICATION_DATE' | translate }}</label
-        >
+        <label for="ws_detail_internal_field_modificationDate"> {{ 'INTERNAL.MODIFICATION_DATE' | translate }}</label>
       </span>
     </div>
 
@@ -60,16 +58,14 @@
           pInputText
           type="text"
           readonly
-          id="portal_detail_internal_field_modificationUser"
+          id="ws_detail_internal_field_modificationUser"
           class="w-full pt-3 pb-2 text-responsive"
           [value]="menuItem?.modificationUser"
           [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_USER' | translate"
           tooltipPosition="top"
           tooltipEvent="focus"
         />
-        <label for="portal_detail_internal_field_modificationUser">
-          {{ 'INTERNAL.MODIFICATION_USER' | translate }}</label
-        >
+        <label for="ws_detail_internal_field_modificationUser"> {{ 'INTERNAL.MODIFICATION_USER' | translate }}</label>
       </span>
     </div>
   </div>
