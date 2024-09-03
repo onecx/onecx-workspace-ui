@@ -27,6 +27,7 @@
           styleClass="w-16rem inputgroup-dropdown-with-link input-field-correction"
           [options]="(themes$ | async)?.sort(sortByLocale) || [themeName]"
           (onChange)="onModelChange()"
+          [attr.aria-label]="'WORKSPACE_IMPORT.THEME_NAME.TOOLTIP' | translate"
           [pTooltip]="'WORKSPACE_IMPORT.THEME_NAME.TOOLTIP' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"
@@ -68,7 +69,7 @@
           tooltipPosition="top"
           tooltipEvent="hover"
         />
-        <label class="ocx-required-label" for="workspace_import_preview_base_url">
+        <label class="ocx-required-label" for="workspace_import_preview_display_name">
           {{ 'WORKSPACE.DISPLAY_NAME' | translate }}
         </label>
       </span>

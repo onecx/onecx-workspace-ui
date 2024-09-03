@@ -29,7 +29,7 @@
                 tooltipPosition="top"
                 tooltipEvent="hover"
               />
-              <label class="ocx-required-label" for="workspace_menu_detail_field_menu_name">
+              <label class="ocx-required-label" for="ws_menu_detail_field_menu_name">
                 {{ 'MENU_ITEM.MENU_NAME' | translate }}
               </label>
             </span>
@@ -47,7 +47,7 @@
                 tooltipPosition="top"
                 tooltipEvent="hover"
               />
-              <label class="ocx-required-label" for="workspace_menu_detail_field_menu_id">
+              <label class="ocx-required-label" for="ws_menu_detail_field_menu_id">
                 {{ 'MENU_ITEM.MENU_ID' | translate }}
               </label>
             </span>
@@ -60,18 +60,20 @@
                 formControlName="parentItemId"
                 [showClear]="true"
                 [options]="parentItems"
+                [attr.aria-label]="'MENU_ITEM.TOOLTIP.PARENT_ID' | translate"
                 [pTooltip]="'MENU_ITEM.TOOLTIP.PARENT_ID' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
               >
               </p-dropdown>
-              <label for="workspace_menu_detail_field_parent_id"> {{ 'MENU_ITEM.PARENT_ID' | translate }} </label>
+              <label for="ws_menu_detail_field_parent_id"> {{ 'MENU_ITEM.PARENT_ID' | translate }} </label>
             </span>
           </div>
 
           <div class="col-12 my-1">
             <span class="p-float-label mb-1" controlErrorAnchor>
               <p-autoComplete
+                id="ws_menu_detail_field_url"
                 formControlName="url"
                 [suggestions]="filteredMfes"
                 (completeMethod)="onFilterPaths($event)"
@@ -87,6 +89,7 @@
                 [dropdownMode]="'current'"
                 [completeOnFocus]="true"
                 [showClear]="true"
+                [attr.aria-label]="'MENU_ITEM.URL' | translate"
                 [pTooltip]="'MENU_ITEM.TOOLTIP.URL' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
@@ -107,7 +110,7 @@
                   </div>
                 </ng-template>
               </p-autoComplete>
-              <label for="workspace_menu_detail_field_url"> {{ 'MENU_ITEM.URL' | translate }} </label>
+              <label for="ws_menu_detail_field_url"> {{ 'MENU_ITEM.URL' | translate }} </label>
             </span>
           </div>
 
@@ -119,11 +122,12 @@
                 id="ws_menu_detail_field_position"
                 class="w-full pt-3 pb-2"
                 formControlName="position"
+                [attr.aria-label]="'MENU_ITEM.POSITION' | translate"
                 [pTooltip]="'MENU_ITEM.TOOLTIP.POSITION' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
               />
-              <label for="workspace_menu_detail_field_position">Position</label>
+              <label for="ws_menu_detail_field_position">Position</label>
             </span>
           </div>
           <div class="col-12 md:col-4 my-1" style="min-width: 10rem">
@@ -134,6 +138,7 @@
                 formControlName="badge"
                 [showClear]="true"
                 [options]="iconItems"
+                [attr.aria-label]="'MENU_ITEM.BADGE' | translate"
                 [pTooltip]="'MENU_ITEM.TOOLTIP.BADGE' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
@@ -151,7 +156,7 @@
                   </div>
                 </ng-template>
               </p-dropdown>
-              <label for="workspace_menu_detail_field_badge"> {{ 'MENU_ITEM.BADGE' | translate }} </label>
+              <label for="ws_menu_detail_field_badge"> {{ 'MENU_ITEM.BADGE' | translate }} </label>
             </span>
           </div>
           <div class="col-12 md:col-3 my-1" style="min-width: 10rem">
@@ -162,12 +167,13 @@
                 formControlName="scope"
                 [showClear]="true"
                 [options]="scopeItems"
+                [attr.aria-label]="'MENU_ITEM.SCOPE' | translate"
                 [pTooltip]="'MENU_ITEM.TOOLTIP.SCOPE' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
               >
               </p-dropdown>
-              <label for="workspace_menu_detail_field_scope"> {{ 'MENU_ITEM.SCOPE' | translate }} </label>
+              <label for="ws_menu_detail_field_scope"> {{ 'MENU_ITEM.SCOPE' | translate }} </label>
             </span>
           </div>
 
@@ -178,6 +184,7 @@
               formControlName="disabled"
               [binary]="true"
               [label]="'MENU_ITEM.DISABLED' | translate"
+              [attr.aria-label]="'MENU_ITEM.DISABLED' | translate"
               [pTooltip]="'MENU_ITEM.TOOLTIP.DISABLED' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
@@ -193,20 +200,22 @@
                 id="ws_menu_detail_field_description"
                 class="w-full pt-3 pb-2"
                 formControlName="description"
+                [attr.aria-label]="'MENU_ITEM.DESCRIPTION' | translate"
                 [pTooltip]="'MENU_ITEM.TOOLTIP.DESCRIPTION' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
               />
-              <label for="workspace_menu_detail_field_description"> {{ 'MENU_ITEM.DESCRIPTION' | translate }} </label>
+              <label for="ws_menu_detail_field_description"> {{ 'MENU_ITEM.DESCRIPTION' | translate }} </label>
             </span>
           </div>
           <div class="col-12 md:col-3 my-1 md:pl-5 flex justify-content-start">
             <p-checkbox
-              id="ws_menu_detail_field_workspace_exit"
+              id="ws_menu_detail_field_ws_exit"
               class="checkbox-label"
               formControlName="external"
               [binary]="true"
               [label]="'MENU_ITEM.EXTERN' | translate"
+              [attr.aria-label]="'MENU_ITEM.EXTERN' | translate"
               [pTooltip]="'MENU_ITEM.TOOLTIP.EXTERN' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
@@ -234,6 +243,7 @@
             [id]="'ws_menu_detail_i18n_lang_' + i + '_value'"
             class="w-30rem pt-3 pb-2"
             [(ngModel)]="language.data"
+            [attr.aria-label]="'DIALOG.MENU.TABS.I18N.REMOVE_LANGUAGE' | translate"
             [pTooltip]="'DIALOG.MENU.TABS.I18N.REMOVE_LANGUAGE' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
@@ -250,6 +260,7 @@
           styleClass="data-view-control opacity-90"
           [options]="languagesAvailable"
           (onOptionClick)="onAddLanguage($event.option.value)"
+          [attr.[attr.aria-label]]="'DIALOG.MENU.TABS.I18N.ADD_LANGUAGE' | translate"
           [pTooltip]="'DIALOG.MENU.TABS.I18N.ADD_LANGUAGE' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"
@@ -274,6 +285,7 @@
         icon="pi pi-times"
         (onClick)="onCloseDetailDialog()"
         [label]="'ACTIONS.CANCEL' | translate"
+        [attr.[attr.aria-label]]="'ACTIONS.CANCEL_WITHOUT_SAVE' | translate"
         [pTooltip]="'ACTIONS.TOOLTIPS.CANCEL_WITHOUT_SAVE' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
@@ -284,6 +296,7 @@
         [disabled]="!formGroup.valid"
         (onClick)="onMenuSave()"
         [label]="'ACTIONS.SAVE' | translate"
+        [attr.[attr.aria-label]]="'ACTIONS.SAVE' | translate"
         [pTooltip]="'ACTIONS.TOOLTIPS.SAVE' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
@@ -320,6 +333,7 @@
         icon="pi pi-times"
         (onClick)="onCloseDeleteDialog()"
         [label]="'ACTIONS.CONFIRMATION.NO' | translate"
+        [attr.aria-label]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
         [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
@@ -329,6 +343,7 @@
         icon="pi pi-check"
         (onClick)="onMenuDelete()"
         [label]="'ACTIONS.CONFIRMATION.YES' | translate"
+        [attr.aria-label]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
         [pTooltip]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"

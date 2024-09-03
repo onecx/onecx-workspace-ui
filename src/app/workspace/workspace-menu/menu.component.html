@@ -56,6 +56,7 @@
               id="ws_menu_table_header_reorder"
               (onClick)="onDisplayMenuPreview()"
               [label]="'DIALOG.MENU.HEADER.TREE_MODAL' | translate"
+              [attr.aria-label]="'DIALOG.MENU.HEADER.TREE_MODAL' | translate"
               [pTooltip]="'DIALOG.MENU.HEADER.TREE_MODAL.TOOLTIP' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
@@ -80,7 +81,7 @@
                 tooltipPosition="top"
                 tooltipEvent="hover"
               />
-              <label for="ws_menu_table_filter"> {{ 'DIALOG.DATAVIEW.FILTER_PLACEHOLDER' | translate }} </label>
+              <label for="ws_menu_table_header_filter"> {{ 'DIALOG.DATAVIEW.FILTER_PLACEHOLDER' | translate }} </label>
             </span>
             <a
               id="ws_menu_table_header_filter_clear"
@@ -88,6 +89,8 @@
               tabindex="0"
               (keydown.space)="onClearFilterMenuTable()"
               (click)="onClearFilterMenuTable()"
+              role="navigation"
+              [attr.aria-label]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
               [pTooltip]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
@@ -99,6 +102,7 @@
             styleClass="h-full button-min-height"
             icon="pi pi-refresh"
             (onClick)="onReload()"
+            [attr.aria-label]="'ACTIONS.SEARCH.RELOAD' | translate"
             [pTooltip]="'ACTIONS.SEARCH.RELOAD' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
@@ -117,6 +121,7 @@
               [offLabel]="'ACTIONS.TREE.EXPAND_ALL' | translate"
               ariaLabel="Toggle Tree View"
               (onChange)="onToggleTreeViewMode($event)"
+              [attr.aria-label]="'ACTIONS.TREE.EXPAND_ALL.TOOLTIP' | translate"
               [pTooltip]="'ACTIONS.TREE.EXPAND_ALL.TOOLTIP' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
@@ -212,7 +217,7 @@
                   [id]="'portal_menu_table_row_' + rowData.key + '_disabled'"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                   (click)="onToggleDisable($event, rowData)"
-                  aria-label="'MENU_ITEM.' + (rowData['disabled'] ? 'DISABLED' : 'ENABLED') | translate"
+                  [attr.aria-label]="'MENU_ITEM.' + (rowData['disabled'] ? 'DISABLED' : 'ENABLED') | translate"
                   [pTooltip]="'MENU_ITEM.' + (rowData['disabled'] ? 'DISABLED' : 'ENABLED') | translate"
                   tooltipPosition="top"
                   tooltipEvent="hover"
@@ -232,7 +237,7 @@
                   [id]="'ws_menu__table_row_' + rowData.key + '_goto_details'"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                   (click)="onGotoDetails($event, rowData)"
-                  aria-label="'DIALOG.MENU.ACTION.DETAILS' | translate"
+                  [attr.aria-label]="'DIALOG.MENU.ACTION.DETAILS' | translate"
                   [pTooltip]="'DIALOG.MENU.ACTION.DETAILS' | translate"
                   tooltipPosition="top"
                   tooltipEvent="hover"
@@ -251,7 +256,7 @@
                   [id]="'ws_menu__table_row_' + rowData.key + '_goto_new'"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                   (click)="onCreateMenu($event, rowData)"
-                  aria-label="'ACTIONS.CREATE.MENU.TOOLTIP' | translate"
+                  [attr.aria-label]="'ACTIONS.CREATE.MENU' | translate"
                   [pTooltip]="'ACTIONS.CREATE.MENU.TOOLTIP' | translate"
                   tooltipPosition="top"
                   tooltipEvent="hover"
@@ -265,8 +270,8 @@
                   [id]="'ws_menu__table_row_' + rowData.key + '_delete'"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                   (click)="onDeleteMenu($event, rowData)"
-                  aria-label="'ACTIONS.DELETE.MENU' | translate"
-                  [pTooltip]="'ACTIONS.DELETE.MENU' | translate"
+                  [attr.aria-label]="'ACTIONS.DELETE.MENU' | translate"
+                  [pTooltip]="'ACTIONS.DELETE.MENU.TOOLTIP' | translate"
                   tooltipPosition="top"
                   tooltipEvent="hover"
                 >
@@ -292,6 +297,8 @@
                 [href]="rowData.gotoUrl"
                 target="_blank"
                 (click)="$event.stopPropagation()"
+                role="navigation"
+                [attr.aria-label]="('ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate) + ': ' + rowData.gotoUrl"
                 [pTooltip]="('ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate) + ': ' + rowData.gotoUrl"
                 tooltipPosition="top"
                 tooltipEvent="hover"
@@ -341,6 +348,12 @@
                   tabindex="0"
                   class="pi pi-circle-fill text-primary text-lg cursor-pointer"
                   (click)="onRevokePermission(rowData, role.id, rowData.roles[role.id])"
+                  role="navigation"
+                  [attr.aria-label]="
+                    ('DIALOG.MENU.ASSIGNMENT.OK' | translate) +
+                    ' - ' +
+                    ('DIALOG.MENU.ASSIGNMENT.CHANGEABLE' | translate)
+                  "
                   [pTooltip]="
                     ('DIALOG.MENU.ASSIGNMENT.OK' | translate) +
                     ' - ' +
@@ -355,6 +368,12 @@
                   tabindex="0"
                   class="pi pi-circle text-primary text-lg cursor-pointer"
                   (click)="onGrantPermission(rowData, role.id)"
+                  role="navigation"
+                  [attr.aria-label]="
+                    ('DIALOG.MENU.ASSIGNMENT.NOK' | translate) +
+                    ' - ' +
+                    ('DIALOG.MENU.ASSIGNMENT.CHANGEABLE' | translate)
+                  "
                   [pTooltip]="
                     ('DIALOG.MENU.ASSIGNMENT.NOK' | translate) +
                     ' - ' +

@@ -29,6 +29,8 @@
           *ocxIfPermission="'WORKSPACE#VIEW'"
           id="workspace_detail_details"
           [header]="'TABS.WORKSPACE.DETAILS' | translate"
+          role="navigation"
+          [attr.aria-label]="'TABS.WORKSPACE.DETAILS' | translate"
           [tooltip]="'TABS.WORKSPACE.TOOLTIPS.DETAILS' | translate"
         >
           <app-workspace-props
@@ -42,7 +44,11 @@
           *ocxIfPermission="'WORKSPACE_CONTACT#VIEW'"
           id="workspace_detail_contact"
           [header]="'TABS.WORKSPACE.CONTACT' | translate"
+          role="navigation"
+          [attr.aria-label]="'TABS.WORKSPACE.CONTACT' | translate"
           [tooltip]="'TABS.WORKSPACE.TOOLTIPS.CONTACT' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
         >
           <app-workspace-contact [workspace]="workspace" [editMode]="editMode"></app-workspace-contact>
         </p-tabPanel>
@@ -52,7 +58,11 @@
           id="workspace_detail_intern"
           [disabled]="editMode"
           [header]="'TABS.WORKSPACE.INTERN' | translate"
+          role="navigation"
+          [attr.aria-label]="'TABS.WORKSPACE.INTERN' | translate"
           [tooltip]="'TABS.WORKSPACE.TOOLTIPS.INTERN' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
         >
           <app-workspace-intern [workspace]="workspace" [dateFormat]="dateFormat"></app-workspace-intern>
         </p-tabPanel>
@@ -63,7 +73,11 @@
           [disabled]="editMode"
           class="p-0"
           [header]="'TABS.WORKSPACE.ROLES' | translate"
+          role="navigation"
+          [attr.aria-label]="'TABS.WORKSPACE.ROLES' | translate"
           [tooltip]="'TABS.WORKSPACE.TOOLTIPS.ROLES' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
         >
           <app-workspace-roles [workspace]="workspaceForRoles"></app-workspace-roles>
         </p-tabPanel>
@@ -74,7 +88,11 @@
           [disabled]="editMode"
           class="p-0"
           [header]="'TABS.WORKSPACE.SLOTS' | translate"
+          role="navigation"
+          [attr.aria-label]="'TABS.WORKSPACE.SLOTS' | translate"
           [tooltip]="'TABS.WORKSPACE.TOOLTIPS.SLOTS' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
         >
           <app-workspace-slots [workspace]="workspaceForSlots"></app-workspace-slots>
         </p-tabPanel>
@@ -85,7 +103,11 @@
           class="p-0"
           [disabled]="editMode"
           [header]="'TABS.WORKSPACE.PRODUCTS' | translate"
+          role="navigation"
+          [attr.aria-label]="'TABS.WORKSPACE.PRODUCTS' | translate"
           [tooltip]="'TABS.WORKSPACE.TOOLTIPS.PRODUCTS' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
         >
           <app-products [workspace]="workspaceForProducts" (changed)="onProductChanges()"></app-products>
         </p-tabPanel>
@@ -115,14 +137,22 @@
       <p-button
         id="ws_delete_action_no"
         icon="pi pi-times"
-        [label]="'ACTIONS.CONFIRMATION.NO' | translate"
         (onClick)="workspaceDeleteVisible = false"
+        [label]="'ACTIONS.CONFIRMATION.NO' | translate"
+        [attr.aria-label]="'ACTIONS.CONFIRMATION.NO' | translate"
+        [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
       ></p-button>
       <p-button
         id="ws_delete_action_yes"
         icon="pi pi-check"
-        [label]="'ACTIONS.CONFIRMATION.YES' | translate"
         (onClick)="onConfirmDeleteWorkspace()"
+        [label]="'ACTIONS.CONFIRMATION.YES' | translate"
+        [attr.aria-label]="'ACTIONS.CONFIRMATION.YES' | translate"
+        [pTooltip]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
       ></p-button>
     </div>
   </ng-template>
