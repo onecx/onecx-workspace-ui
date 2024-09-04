@@ -5,13 +5,12 @@ const config = withModuleFederationPlugin({
   name: 'onecx-workspace-ui',
   filename: 'remoteEntry.js',
   exposes: {
-    './OneCXWorkspaceModule': 'src/bootstrap.ts',
-    './OneCXUserAvatarMenuComponent': 'src/app/remotes/user-avatar-menu/user-avatar-menu.component.bootstrap.ts',
-    './OneCXUserSidebarMenuComponent': 'src/app/remotes/user-sidebar-menu/user-sidebar-menu.component.bootstrap.ts',
-    './OneCXVerticalMainMenuComponent': 'src/app/remotes/vertical-main-menu/vertical-main-menu.component.bootstrap.ts',
-    './OneCXHorizontalMainMenuComponent':
-      'src/app/remotes/horizontal-main-menu/horizontal-main-menu.component.bootstrap.ts',
-    './OneCXFooterMenuComponent': 'src/app/remotes/footer-menu/footer-menu.component.bootstrap.ts'
+    './OneCXWorkspaceModule': 'src/main.ts',
+    './OneCXUserAvatarMenuComponent': 'src/app/remotes/user-avatar-menu/user-avatar-menu.component.main.ts',
+    './OneCXUserSidebarMenuComponent': 'src/app/remotes/user-sidebar-menu/user-sidebar-menu.component.main.ts',
+    './OneCXVerticalMainMenuComponent': 'src/app/remotes/vertical-main-menu/vertical-main-menu.component.main.ts',
+    './OneCXHorizontalMainMenuComponent': 'src/app/remotes/horizontal-main-menu/horizontal-main-menu.component.main.ts',
+    './OneCXFooterMenuComponent': 'src/app/remotes/footer-menu/footer-menu.component.main.ts'
   },
   shared: share({
     '@angular/core': { requiredVersion: 'auto', includeSecondaries: true },
