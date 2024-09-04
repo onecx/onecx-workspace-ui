@@ -13,8 +13,10 @@
     "src/app/onecx-workspace-remote.module.ts",
     "src/app/remotes/user-avatar-menu/user-avatar-menu.component.ts",
     "src/app/remotes/user-sidebar-menu/user-sidebar-menu.component.ts",
-    "src/app/remotes/footer-menu/footer-menu.component.ts"
+    "src/app/remotes/footer-menu/footer-menu.component.ts",
+    "src/app/remotes/vertical-main-menu/vertical-main-menu.component.ts",
+    "src/app/remotes/horizontal-main-menu/horizontal-main-menu.component.ts"
   ],
-  "include": ["src/**/*.ts", "src/**/*.d.ts"],
-  "exclude": ["src/test.ts", "src/test-setup.ts", "src/**/*.spec.ts", "src/**/*.stories.ts", "src/**/*.stories.js"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/test.ts", "src/**/*.spec.ts"]
 }
