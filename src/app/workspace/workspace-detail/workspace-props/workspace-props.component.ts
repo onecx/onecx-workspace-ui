@@ -120,15 +120,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     return changes
   }
 
-  // public onPrepareProductLink(productName: string, appId: string, endpoint?: string, param?: string) {
-  //   console.log(
-  //     'onPrepareProductLink: ' + productName + '  appId: ' + appId + '  endpoint: ' + endpoint + '  param: ' + param
-  //   )
-  //   this.workspaceService.getUrl(appId, productName, endpoint ?? '').subscribe((path) => {
-  //     console.log('onPrepareProductLink: ' + path)
-  //   })
-  // }
-
   public onFileUpload(ev: Event): void {
     if (ev.target && (ev.target as HTMLInputElement).files) {
       const files = (ev.target as HTMLInputElement).files
