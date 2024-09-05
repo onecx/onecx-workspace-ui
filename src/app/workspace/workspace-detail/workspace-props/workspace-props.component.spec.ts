@@ -36,7 +36,7 @@ const formGroup = new FormGroup({
   baseUrl: new FormControl('/url', [Validators.required, Validators.minLength(1), Validators.pattern('^/.*')])
 })
 
-fdescribe('WorkspacePropsComponent', () => {
+describe('WorkspacePropsComponent', () => {
   let component: WorkspacePropsComponent
   let fixture: ComponentFixture<WorkspacePropsComponent>
   const mockAuthService = jasmine.createSpyObj('IAuthService', ['hasPermission'])
