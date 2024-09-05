@@ -29,7 +29,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   private readonly destroy$ = new Subject()
   public formGroup: FormGroup
   public productPaths$!: Observable<string[]>
-  public productPathList: string[] = []
   public themes$!: Observable<string[]>
   public urlPattern = '/base-path-to-workspace'
   public externUrlPattern = 'http(s)://path-to-image'
@@ -46,6 +45,8 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   public fetchingLogoUrl: string | undefined = undefined
   public themeUrl: string | undefined = undefined
   RefType = RefType
+
+  goToEndpoint = goToEndpoint
 
   constructor(
     private location: Location,
@@ -119,15 +120,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     return changes
   }
 
-  public onPrepareProductLink(productName: string, appId: string, endpoint?: string, param?: string) {
-    console.log(
-      'onPrepareProductLink: ' + productName + '  appId: ' + appId + '  endpoint: ' + endpoint + '  param: ' + param
-    )
-    this.workspaceService.getUrl(appId, productName, endpoint ?? '').subscribe((path) => {
-      console.log('onPrepareProductLink: ' + path)
-    })
-  }
-
   public onFileUpload(ev: Event): void {
     if (ev.target && (ev.target as HTMLInputElement).files) {
       const files = (ev.target as HTMLInputElement).files
@@ -170,7 +162,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
           this.prepareImageResponse(name)
         })
       },
-      (err) => {
+      () => {
         this.imageApi.uploadImage(saveRequestParameter).subscribe(() => {
           this.prepareImageResponse(name)
         })
