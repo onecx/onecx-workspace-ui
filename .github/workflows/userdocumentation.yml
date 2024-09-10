@@ -13,5 +13,5 @@ jobs:
         uses: peter-evans/repository-dispatch@v1
         with:
           token: ${{ secrets.CI_PAT }}
-          repository: onecx/userdocs
+          repository: onecx/onecx-userdocs
           event-type: dispatch-build-website
