@@ -1,0 +1,4 @@
+
+== onecx-workspace-ui
+
+include::onecx-workspace-ui-docs.adoc[opts=optional]

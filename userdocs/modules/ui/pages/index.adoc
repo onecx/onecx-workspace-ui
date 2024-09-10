@@ -1,1 +1,3 @@
-== OneCX Worksapce-Management-User-Interface
+== onecx-workspace-ui
+
+include::onecx-workspace-ui-userdocs.adoc[opts=optional]
