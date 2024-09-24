@@ -1,5 +1,5 @@
 <p-dataView
-  id="workspace_detail_roles_dataview"
+  id="ws_roles_dataview"
   [value]="roles"
   [paginator]="true"
   [alwaysShowPaginator]="true"
@@ -107,7 +107,7 @@
     <div class="grid grid-nogutter">
       <div *ngFor="let role of roles" class="col-12 sm:col-6 md:col-4 lg:col-4 xl:col-3 p-2 sm:p-3">
         <a
-          [id]="'workspace_detail_roles_data_item_' + item"
+          [id]="'ws_roles_data_item_' + item"
           class="block card relative py-2 px-3 hover:bg-gray-200 cursor-pointer"
           [class.card-primary-color]="role.isWorkspaceRole"
           (click)="onEditRole($event, role)"
@@ -119,7 +119,7 @@
         >
           <span
             *ngIf="role.isWorkspaceRole"
-            [id]="'workspace_detail_roles_data_item_' + item + '_iam'"
+            [id]="'ws_roles_data_item_' + item + '_iam'"
             class="card-badge-left card-badge-left-text badge-2 p-1"
             [class.line-through]="role.deleted"
             [class.danger-action-text]="role.deleted"
@@ -132,7 +132,7 @@
           >
           <span
             *ngIf="role.isIamRole"
-            [id]="'workspace_detail_roles_data_item_' + item + '_iam'"
+            [id]="'ws_roles_data_item_' + item + '_iam'"
             class="card-badge-left card-badge-left-text badge-1 p-1"
             [attr.aria-label]="'DIALOG.ROLE.ORIGIN.IAM' | translate"
             [pTooltip]="'DIALOG.ROLE.ORIGIN.IAM' | translate"
@@ -142,7 +142,7 @@
           >
           <a
             *ngIf="role.isWorkspaceRole && hasDeletePermission"
-            [id]="'workspace_detail_roles_data_item_' + item + '_delete'"
+            [id]="'ws_roles_data_item_' + item + '_delete'"
             class="card-badge-right badge-1 p-1 pi pi-trash button-icon-only"
             [class.card-primary-color]="role.isWorkspaceRole"
             (click)="onDeleteRole($event, role)"
@@ -154,7 +154,7 @@
           ></a>
           <a
             *ngIf="!role.isWorkspaceRole && role.isIamRole && hasCreatePermission"
-            [id]="'workspace_detail_roles_data_item_' + item + '_create'"
+            [id]="'ws_roles_data_item_' + item + '_create'"
             class="card-badge-right badge-1 p-1 pi pi-plus hover:text-white button-icon-only text-color"
             [class.bg-white]="role.isWorkspaceRole"
             (click)="onAddRole($event, role)"
