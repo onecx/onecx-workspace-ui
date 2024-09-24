@@ -6,13 +6,13 @@
         type="text"
         readonly
         class="w-16rem"
-        id="workspace_import_confirm_workspace_name"
+        id="ws_import_confirm_workspace_name"
         [(ngModel)]="workspaceName"
         [pTooltip]="'WORKSPACE_IMPORT.WORKSPACE_NAME.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       />
-      <label for="workspace_import_confirm_workspace_name">{{ 'WORKSPACE_IMPORT.WORKSPACE_NAME' | translate }}</label>
+      <label for="ws_import_confirm_workspace_name">{{ 'WORKSPACE_IMPORT.WORKSPACE_NAME' | translate }}</label>
     </span>
     <span class="p-float-label">
       <input
@@ -20,13 +20,13 @@
         type="text"
         readonly
         class="w-16rem"
-        id="workspace_import_confirm_theme_name"
+        id="ws_import_confirm_theme_name"
         [(ngModel)]="themeName"
         [pTooltip]="'WORKSPACE_IMPORT.THEME_NAME.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       />
-      <label for="workspace_import_confirm_theme_name">{{ 'WORKSPACE.THEME' | translate }}</label>
+      <label for="ws_import_confirm_theme_name">{{ 'WORKSPACE.THEME' | translate }}</label>
     </span>
     <span class="p-float-label">
       <input
@@ -34,13 +34,13 @@
         type="text"
         readonly
         class="w-16rem"
-        id="workspace_import_confirm_base_url"
+        id="ws_import_confirm_base_url"
         [(ngModel)]="baseUrl"
         [pTooltip]="'WORKSPACE_IMPORT.BASE_URL.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       />
-      <label for="workspace_import_confirm_base_url">{{ 'WORKSPACE.BASE_URL' | translate }}</label>
+      <label for="ws_import_confirm_base_url">{{ 'WORKSPACE.BASE_URL' | translate }}</label>
     </span>
     <span class="p-float-label">
       <input
@@ -48,38 +48,38 @@
         type="text"
         readonly
         class="w-16rem"
-        id="workspace_import_confirm_display_name"
+        id="ws_import_confirm_display_name"
         [(ngModel)]="displayName"
         [pTooltip]="'WORKSPACE_IMPORT.DISPLAY_NAME.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       />
-      <label for="workspace_import_confirm_display_name">{{ 'WORKSPACE.DISPLAY_NAME' | translate }}</label>
+      <label for="ws_import_confirm_display_name">{{ 'WORKSPACE.DISPLAY_NAME' | translate }}</label>
     </span>
   </div>
 
   <div class="flex flex-wrap align-items-center row-gap-1 my-4">
     <p-message
       *ngIf="workspaceNameExists"
-      id="workspace_import_confirm_message_workspace_exists"
+      id="ws_import_confirm_message_workspace_exists"
       severity="warn"
       [text]="'WORKSPACE_IMPORT.WORKSPACE_EXISTS_MESSAGE' | translate"
     ></p-message>
     <p-message
       *ngIf="baseUrlExists"
-      id="workspace_import_confirm_message_base_url_exists"
+      id="ws_import_confirm_message_base_url_exists"
       severity="warn"
       [text]="'WORKSPACE_IMPORT.BASE_URL_EXISTS_MESSAGE' | translate"
     ></p-message>
     <p-message
       *ngIf="baseUrlIsMissing"
-      id="workspace_import_confirm_message_base_url_missing"
+      id="ws_import_confirm_message_base_url_missing"
       severity="error"
       [text]="'WORKSPACE_IMPORT.BASE_URL_MISSING' | translate"
     ></p-message>
     <p-message
       *ngIf="importResponse"
-      id="workspace_import_confirm_message_import_error"
+      id="ws_import_confirm_message_import_error"
       severity="error"
       [text]="'WORKSPACE_IMPORT.RESPONSE.ERROR' | translate"
     ></p-message>

@@ -6,14 +6,14 @@
           pInputText
           type="text"
           class="w-16rem"
-          id="workspace_import_preview_workspace_name"
+          id="ws_import_preview_workspace_name"
           formControlName="workspaceName"
           (keyup)="onModelChange()"
           [pTooltip]="'WORKSPACE_IMPORT.WORKSPACE_NAME.TOOLTIP' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"
         />
-        <label class="ocx-required-label" for="workspace_import_preview_workspace_name">
+        <label class="ocx-required-label" for="ws_import_preview_workspace_name">
           {{ 'WORKSPACE_IMPORT.WORKSPACE_NAME' | translate }}
         </label>
       </span>
@@ -22,7 +22,7 @@
       <span class="p-float-label aw-16rem" controlErrorAnchor>
         <p-dropdown
           #inputThemeName
-          id="workspace_import_preview_theme"
+          id="ws_import_preview_theme"
           formControlName="theme"
           styleClass="w-16rem inputgroup-dropdown-with-link input-field-correction"
           [options]="(themes$ | async)?.sort(sortByLocale) || [themeName]"
@@ -33,9 +33,7 @@
           tooltipEvent="hover"
         >
         </p-dropdown>
-        <label class="ocx-required-label" for="workspace_import_preview_theme">
-          {{ 'WORKSPACE.THEME' | translate }}
-        </label>
+        <label class="ocx-required-label" for="ws_import_preview_theme"> {{ 'WORKSPACE.THEME' | translate }} </label>
       </span>
     </div>
     <div>
@@ -44,14 +42,14 @@
           pInputText
           type="text"
           class="w-16rem"
-          id="workspace_import_preview_base_url"
+          id="ws_import_preview_base_url"
           formControlName="baseUrl"
           (keyup)="onModelChange()"
           [pTooltip]="'WORKSPACE_IMPORT.BASE_URL.TOOLTIP' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"
         />
-        <label class="ocx-required-label" for="workspace_import_preview_base_url">
+        <label class="ocx-required-label" for="ws_import_preview_base_url">
           {{ 'WORKSPACE.BASE_URL' | translate }}
         </label>
       </span>
@@ -62,14 +60,14 @@
           pInputText
           type="text"
           class="w-16rem"
-          id="workspace_import_preview_display_name"
+          id="ws_import_preview_display_name"
           formControlName="displayName"
           (keyup)="onModelChange()"
           [pTooltip]="'WORKSPACE_IMPORT.DISPLAY_NAME.TOOLTIP' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"
         />
-        <label class="ocx-required-label" for="workspace_import_preview_display_name">
+        <label class="ocx-required-label" for="ws_import_preview_display_name">
           {{ 'WORKSPACE.DISPLAY_NAME' | translate }}
         </label>
       </span>
@@ -86,7 +84,7 @@
       <div class="mb-1 mx-3">
         <p-tree
           styleClass="py-1 px-0 max-h-25rem overflow-y-auto"
-          id="workspace_import_preview_menu"
+          id="ws_import_preview_menu"
           [value]="menuItems"
           [emptyMessage]="'DIALOG.MENU.MENU_NOT_EXIST' | translate"
         ></p-tree>

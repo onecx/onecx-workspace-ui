@@ -5,7 +5,7 @@
         <div class="w-12 sm:w-6 px-3 flex align-items-center">
           <p-checkbox
             type="text"
-            inputId="ws_detail_item_disabled"
+            inputId="ws_props_item_disabled"
             formControlName="disabled"
             [binary]="true"
             [label]="'WORKSPACE.DISABLED' | translate"
@@ -21,14 +21,14 @@
             <input
               pInputText
               type="text"
-              id="ws_detail_item_display_name"
+              id="ws_props_item_display_name"
               class="w-full pt-3 pb-2 text-responsive"
               formControlName="displayName"
               [pTooltip]="'WORKSPACE.TOOLTIPS.DISPLAY_NAME' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
             />
-            <label class="ocx-required-label" for="ws_detail_item_display_name">
+            <label class="ocx-required-label" for="ws_props_item_display_name">
               {{ 'WORKSPACE.DISPLAY_NAME' | translate }}
             </label>
           </span>
@@ -39,7 +39,7 @@
             <span class="p-float-label">
               <p-dropdown
                 #wsThemeName
-                id="ws_detail_item_theme"
+                id="ws_props_item_theme"
                 formControlName="theme"
                 styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
                 [options]="(themes$ | async) ?? []"
@@ -49,11 +49,11 @@
                 tooltipEvent="hover"
               >
               </p-dropdown>
-              <label class="ocx-required-label" for="ws_detail_item_theme"> {{ 'WORKSPACE.THEME' | translate }} </label>
+              <label class="ocx-required-label" for="ws_props_item_theme"> {{ 'WORKSPACE.THEME' | translate }} </label>
             </span>
             <a
               tabindex="0"
-              id="ws_detail_item_theme_link"
+              id="ws_props_item_theme_link"
               class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
               (click)="onGoToTheme(wsThemeName.value)"
               [ngClass]="!editMode && inputBaseUrl.value ? 'cursor-pointer' : 'p-disabled'"
@@ -74,18 +74,18 @@
                 #inputBaseUrl
                 pInputText
                 type="text"
-                id="ws_detail_item_base_url"
+                id="ws_props_item_base_url"
                 class="w-full pt-3 pb-2 text-responsive"
                 formControlName="baseUrl"
                 [pTooltip]="'WORKSPACE.TOOLTIPS.BASE_URL' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
               />
-              <label for="ws_detail_item_base_url"> {{ 'WORKSPACE.BASE_URL' | translate }} </label>
+              <label for="ws_props_item_base_url"> {{ 'WORKSPACE.BASE_URL' | translate }} </label>
             </span>
             <a
               tabindex="0"
-              id="ws_detail_item_base_url_link"
+              id="ws_props_item_base_url_link"
               class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
               [ngClass]="!editMode && inputBaseUrl.value ? 'cursor-pointer' : 'p-disabled'"
               target="_blank"
@@ -99,7 +99,7 @@
             >
             </a>
           </div>
-          <label *ngIf="editMode" class="ocx-control-hint block" for="ws_detail_item_base_url_link">
+          <label *ngIf="editMode" class="ocx-control-hint block" for="ws_props_item_base_url_link">
             {{ ('VALIDATION.HINTS.FORMAT_URL' | translate) + urlPattern }}
           </label>
         </div>
@@ -108,7 +108,7 @@
           <span class="p-float-label">
             <p-dropdown
               #inputHomePage
-              id="ws_detail_item_home_page"
+              id="ws_props_item_home_page"
               formControlName="homePage"
               styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
               [options]="(productPaths$ | async) ?? []"
@@ -119,11 +119,11 @@
               tooltipEvent="hover"
             >
             </p-dropdown>
-            <label for="ws_detail_item_home_page"> {{ 'WORKSPACE.HOME_PAGE' | translate }} </label>
+            <label for="ws_props_item_home_page"> {{ 'WORKSPACE.HOME_PAGE' | translate }} </label>
           </span>
           <a
             tabindex="0"
-            id="ws_detail_item_homePage_link"
+            id="ws_props_item_homePage_link"
             class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
             [ngClass]="!editMode && !workspace?.disabled && workspace?.homePage ? 'cursor-pointer' : 'p-disabled'"
             target="_blank"
@@ -144,18 +144,18 @@
               #inputRssFeedUrl
               pInputText
               type="text"
-              id="ws_detail_item_rssFeedUrl"
+              id="ws_props_item_rssFeedUrl"
               class="w-full pt-3 pb-2 text-responsive"
               formControlName="rssFeedUrl"
               [pTooltip]="'WORKSPACE.TOOLTIPS.RSS_FEED_URL' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
             />
-            <label for="ws_detail_item_rssFeedUrl"> {{ 'WORKSPACE.RSS_FEED_URL' | translate }} </label>
+            <label for="ws_props_item_rssFeedUrl"> {{ 'WORKSPACE.RSS_FEED_URL' | translate }} </label>
           </span>
           <a
             tabindex="0"
-            id="ws_detail_item_rssFeedUrl_link"
+            id="ws_props_item_rssFeedUrl_link"
             class="p-inputgroup-addon bg-primary pseudo-button"
             [ngClass]="inputRssFeedUrl.value ? 'cursor-pointer' : 'p-disabled'"
             (click)="copyToClipboard(workspace?.rssFeedUrl)"
@@ -172,13 +172,13 @@
         <div class="flex flex-wrap sm:flex-nowrap align-items-center mb-1 row-gap-2 column-gap-4">
           <input hidden type="file" accept="image/*" #selectedFileInputLogo (change)="onFileUpload($event)" />
           <app-image-container
-            id="ws_detail_form_logo_image"
+            id="ws_props_form_logo_image"
             [imageUrl]="fetchingLogoUrl"
             [small]="true"
           ></app-image-container>
           <button
             pButton
-            id="ws_detail_item_upload_logo2"
+            id="ws_props_item_upload_logo2"
             icon="pi pi-upload"
             [disabled]="!editMode"
             class="action-button p-button-icon-only"
@@ -195,7 +195,7 @@
                 pInputText
                 type="text"
                 class="w-full"
-                id="ws_detail_item_logo_url"
+                id="ws_props_item_logo_url"
                 formControlName="logoUrl"
                 (input)="onInputChange($event)"
                 (change)="onInputChange($event)"
@@ -203,9 +203,9 @@
                 tooltipPosition="top"
                 tooltipEvent="hover"
               />
-              <label for="ws_detail_item_logo_url"> {{ 'IMAGE.LOGO_URL' | translate }} </label>
+              <label for="ws_props_item_logo_url"> {{ 'IMAGE.LOGO_URL' | translate }} </label>
             </span>
-            <label *ngIf="editMode" class="ocx-control-hint block" for="ws_detail_item_logo_url">
+            <label *ngIf="editMode" class="ocx-control-hint block" for="ws_props_item_logo_url">
               {{ ('VALIDATION.HINTS.FORMAT_URL' | translate) + externUrlPattern }}
             </label>
           </div>
@@ -215,14 +215,14 @@
           <input
             pInputText
             type="text"
-            id="ws_detail_item_footer-label"
+            id="ws_props_item_footer-label"
             class="w-full pt-3 pb-2 text-responsive"
             formControlName="footerLabel"
             [pTooltip]="'WORKSPACE.TOOLTIPS.FOOTER_LABEL' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
           />
-          <label for="ws_detail_item_footer_label"> {{ 'WORKSPACE.FOOTER_LABEL' | translate }} </label>
+          <label for="ws_props_item_footer_label"> {{ 'WORKSPACE.FOOTER_LABEL' | translate }} </label>
         </span>
 
         <span class="p-float-label mb-1" controlErrorAnchor>
@@ -231,14 +231,14 @@
             pInputTextarea
             autoresize="true"
             rows="4"
-            id="ws_detail_item_description"
+            id="ws_props_item_description"
             maxlength="255"
             formControlName="description"
             [pTooltip]="'WORKSPACE.TOOLTIPS.DESCRIPTION' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
           ></textarea>
-          <label for="ws_detail_item_description"> {{ 'WORKSPACE.DESCRIPTION' | translate }} </label>
+          <label for="ws_props_item_description"> {{ 'WORKSPACE.DESCRIPTION' | translate }} </label>
         </span>
       </div>
     </form>
