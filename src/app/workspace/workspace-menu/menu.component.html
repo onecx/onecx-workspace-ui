@@ -89,7 +89,6 @@
               tabindex="0"
               (keydown.space)="onClearFilterMenuTable()"
               (click)="onClearFilterMenuTable()"
-              role="navigation"
               [attr.aria-label]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
               [pTooltip]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
               tooltipPosition="top"
@@ -297,7 +296,6 @@
                 [href]="rowData.gotoUrl"
                 target="_blank"
                 (click)="$event.stopPropagation()"
-                role="navigation"
                 [attr.aria-label]="('ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate) + ': ' + rowData.gotoUrl"
                 [pTooltip]="('ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate) + ': ' + rowData.gotoUrl"
                 tooltipPosition="top"
@@ -348,7 +346,6 @@
                   tabindex="0"
                   class="pi pi-circle-fill text-primary text-lg cursor-pointer"
                   (click)="onRevokePermission(rowData, role.id, rowData.roles[role.id])"
-                  role="navigation"
                   [attr.aria-label]="
                     ('DIALOG.MENU.ASSIGNMENT.OK' | translate) +
                     ' - ' +
@@ -368,7 +365,6 @@
                   tabindex="0"
                   class="pi pi-circle text-primary text-lg cursor-pointer"
                   (click)="onGrantPermission(rowData, role.id)"
-                  role="navigation"
                   [attr.aria-label]="
                     ('DIALOG.MENU.ASSIGNMENT.NOK' | translate) +
                     ' - ' +

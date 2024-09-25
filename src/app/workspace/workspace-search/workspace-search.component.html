@@ -80,26 +80,13 @@
           </div>
           <div class="p-0 hidden sm:block col-3 md:col-2">
             <a
-              role="navigation"
               target="_blank"
               [routerLink]="workspace.baseUrl"
               [id]="'ws_search_data_list_row_' + i + '_goto_workspace'"
               (click)="$event.stopPropagation()"
               class="text-primary"
-              [attr.aria-label]="
-                ('WORKSPACE.BASE_URL' | translate) +
-                ' (' +
-                workspace.baseUrl +
-                ') - ' +
-                ('ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate)
-              "
-              [pTooltip]="
-                ('WORKSPACE.BASE_URL' | translate) +
-                ' (' +
-                workspace.baseUrl +
-                ') - ' +
-                ('ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate)
-              "
+              [attr.aria-label]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
+              [pTooltip]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
             >
@@ -142,7 +129,6 @@
               <a
                 *ngIf="workspace.name !== 'ADMIN'"
                 tabindex="0"
-                role="navigation"
                 [id]="'ws_search_data_grid_row_' + i + '_goto_workspace'"
                 class="card-badge-right badge-1 p-1 pi pi-external-link button-icon-only"
                 (click)="onGotoWorkspace($event, workspace)"
@@ -154,7 +140,6 @@
               <a
                 *ocxIfPermission="'MENU#VIEW'"
                 tabindex="0"
-                role="navigation"
                 [id]="'ws_search_data_grid_row_' + i + '_goto_menu'"
                 class="card-badge-right badge-2 p-1 pi pi-sitemap button-icon-only"
                 (click)="onGotoMenu($event, workspace)"
