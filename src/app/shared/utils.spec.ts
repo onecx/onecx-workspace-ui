@@ -23,11 +23,14 @@ describe('util functions', () => {
     it('should correctly sort SelectItems by labels', () => {
       const items: SelectItem[] = [
         { label: 'a', value: 2 },
-        { label: 'b', value: 1 }
+        { label: 'b', value: 1 },
+        { label: undefined, value: 0 }
       ]
 
       expect(dropDownSortItemsByLabel(items[0], items[1])).toBeLessThan(0)
       expect(dropDownSortItemsByLabel(items[1], items[0])).toBeGreaterThan(0)
+      expect(dropDownSortItemsByLabel(items[2], items[0])).toBeLessThan(0)
+      expect(dropDownSortItemsByLabel(items[0], items[2])).toBeGreaterThan(0)
     })
   })
 
