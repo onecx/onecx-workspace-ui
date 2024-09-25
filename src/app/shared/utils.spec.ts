@@ -14,9 +14,11 @@ import {
   filterObject,
   filterObjectTree,
   sortByLocale,
-  dropDownSortItemsByLabel
+  dropDownSortItemsByLabel,
+  goToEndpoint
 } from './utils'
 import { RefType } from './generated'
+import { of } from 'rxjs'
 
 describe('util functions', () => {
   describe('dropDownSortItemsByLabel', () => {
@@ -303,6 +305,94 @@ describe('util functions', () => {
     it('should construct the correct product image URL if basePath and name are provided', () => {
       const result = bffProductImageUrl('http://example.com', 'productName')
       expect(result).toBe('http://example.com/images/product/productName')
+    })
+  })
+
+  describe('goToEndpoint', () => {
+    let workspaceServiceMock: any
+    let msgServiceMock: any
+    let routerMock: any
+
+    beforeEach(() => {
+      workspaceServiceMock = {
+        doesUrlExistFor: jasmine.createSpy('doesUrlExistFor'),
+        getUrl: jasmine.createSpy('getUrl')
+      }
+
+      msgServiceMock = {
+        error: jasmine.createSpy('error')
+      }
+
+      routerMock = {
+        navigateByUrl: jasmine.createSpy('navigateByUrl')
+      }
+
+      spyOn(console, 'error')
+    })
+
+    it('should navigate to the URL when it exists', (done) => {
+      const productName = 'testProduct'
+      const appId = 'testApp'
+      const endpointName = 'testEndpoint'
+      const params = { param1: 'value1' }
+      const expectedUrl = '/test/url'
+
+      workspaceServiceMock.doesUrlExistFor.and.returnValue(of(true))
+      workspaceServiceMock.getUrl.and.returnValue(of(expectedUrl))
+
+      goToEndpoint(workspaceServiceMock, msgServiceMock, routerMock, productName, appId, endpointName, params)
+
+      setTimeout(() => {
+        expect(workspaceServiceMock.doesUrlExistFor).toHaveBeenCalledWith(productName, appId, endpointName)
+        expect(workspaceServiceMock.getUrl).toHaveBeenCalledWith(productName, appId, endpointName, params)
+        expect(routerMock.navigateByUrl).toHaveBeenCalledWith(expectedUrl)
+        expect(console.error).not.toHaveBeenCalled()
+        expect(msgServiceMock.error).not.toHaveBeenCalled()
+        done()
+      })
+    })
+
+    it('should show an error message when the URL does not exist', (done) => {
+      const productName = 'testProduct'
+      const appId = 'testApp'
+      const endpointName = 'testEndpoint'
+
+      workspaceServiceMock.doesUrlExistFor.and.returnValue(of(false))
+
+      goToEndpoint(workspaceServiceMock, msgServiceMock, routerMock, productName, appId, endpointName)
+
+      setTimeout(() => {
+        expect(workspaceServiceMock.doesUrlExistFor).toHaveBeenCalledWith(productName, appId, endpointName)
+        expect(workspaceServiceMock.getUrl).not.toHaveBeenCalled()
+        expect(routerMock.navigateByUrl).not.toHaveBeenCalled()
+        expect(console.error).toHaveBeenCalledWith(
+          'Routing not possible for product: testProduct  app: testApp  endpoint: testEndpoint'
+        )
+        expect(msgServiceMock.error).toHaveBeenCalledWith({
+          summaryKey: 'EXCEPTIONS.ENDPOINT.NOT_EXIST',
+          detailKey: 'EXCEPTIONS.CONTACT_ADMIN'
+        })
+        done()
+      })
+    })
+
+    it('should handle the case when params are not provided', (done) => {
+      const productName = 'testProduct'
+      const appId = 'testApp'
+      const endpointName = 'testEndpoint'
+      const expectedUrl = '/test/url'
+
+      workspaceServiceMock.doesUrlExistFor.and.returnValue(of(true))
+      workspaceServiceMock.getUrl.and.returnValue(of(expectedUrl))
+
+      goToEndpoint(workspaceServiceMock, msgServiceMock, routerMock, productName, appId, endpointName)
+
+      setTimeout(() => {
+        expect(workspaceServiceMock.doesUrlExistFor).toHaveBeenCalledWith(productName, appId, endpointName)
+        expect(workspaceServiceMock.getUrl).toHaveBeenCalledWith(productName, appId, endpointName, undefined)
+        expect(routerMock.navigateByUrl).toHaveBeenCalledWith(expectedUrl)
+        done()
+      })
     })
   })
 })
