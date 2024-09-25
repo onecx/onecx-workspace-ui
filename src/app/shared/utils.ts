@@ -18,21 +18,6 @@ export function limitText(text: string | null | undefined, limit: number): strin
   }
 }
 
-/**
- * Clones a given workspace and converts its microfrontends Set to an array.
- *
- * Used to avoid serialization issues caused by Sets when sending a workspace to the backend.
- * @param workspace Workspace that should be cloned
- * @returns Clone of the workspace which contains the workspace microfrontends as an array.
- */
-export function cloneWorkspaceWithMicrofrontendsArray(workspace: Workspace): Workspace {
-  const updatedPortal: Workspace = { ...workspace }
-  // updatedPortal.microfrontendRegistrations = Array.from(
-  //   workspace.microfrontendRegistrations ?? []
-  // ) as unknown as Set<MicrofrontendDTO>
-  return updatedPortal
-}
-
 export function setFetchUrls(apiPrefix: string, url: string): string {
   if (url && !url.match(/^(http|https)/g)) {
     return apiPrefix + url
