@@ -8,7 +8,7 @@ import { SelectItem } from 'primeng/api'
 import { PortalMessageService, WorkspaceService } from '@onecx/angular-integration-interface'
 
 import { environment } from 'src/environments/environment'
-import { RefType, Workspace } from 'src/app/shared/generated'
+import { RefType } from 'src/app/shared/generated'
 
 export function limitText(text: string | null | undefined, limit: number): string {
   if (text) {
