@@ -17,10 +17,10 @@ speed-measure-plugin*.json
 .idea
 .project
 .classpath
-.vscode
 .history
-*.launch
 .settings
+.vscode
+*.launch
 
 # misc
 .angular

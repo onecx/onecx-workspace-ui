@@ -13,32 +13,21 @@ import {
   bffProductImageUrl,
   filterObject,
   filterObjectTree,
-  cloneWorkspaceWithMicrofrontendsArray,
-  sortByLocale
+  sortByLocale,
+  dropDownSortItemsByLabel
 } from './utils'
-import { RefType, Workspace } from './generated'
+import { RefType } from './generated'
 
 describe('util functions', () => {
-  describe('cloneWorkspaceWithMicrofrontendsArray', () => {
-    it('should test with empty workspace', () => {
-      const updatedPortal: Workspace = {
-        name: '',
-        displayName: ''
-      }
-      expect(cloneWorkspaceWithMicrofrontendsArray(updatedPortal)).toEqual(updatedPortal)
-    })
+  describe('dropDownSortItemsByLabel', () => {
+    it('should correctly sort SelectItems by labels', () => {
+      const items: SelectItem[] = [
+        { label: 'a', value: 2 },
+        { label: 'b', value: 1 }
+      ]
 
-    it('should test with empty workspace', () => {
-      const updatedPortal: Workspace = {
-        id: 'testId',
-        name: 'testName',
-        phoneNumber: 'string',
-        rssFeedUrl: 'string',
-        footerLabel: 'string',
-        logoUrl: 'string',
-        displayName: 'testName'
-      }
-      expect(cloneWorkspaceWithMicrofrontendsArray(updatedPortal)).toEqual(updatedPortal)
+      expect(dropDownSortItemsByLabel(items[0], items[1])).toBeLessThan(0)
+      expect(dropDownSortItemsByLabel(items[1], items[0])).toBeGreaterThan(0)
     })
   })
 

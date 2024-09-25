@@ -33,7 +33,7 @@
     <div class="flex flex-wrap justify-content-end gap-2 my-2">
       <p-button
         *ngIf="activeIndex > 0"
-        id="workspace_import_button_restart"
+        id="ws_import_button_restart"
         icon="pi pi-upload"
         (onClick)="reset()"
         [label]="'WORKSPACE_IMPORT.IMPORT_RESTART' | translate"
@@ -44,7 +44,7 @@
       ></p-button>
       <p-button
         *ngIf="activeIndex > 0"
-        id="workspace_import_button_back"
+        id="ws_import_button_back"
         icon="pi pi-arrow-left"
         (onClick)="back()"
         [label]="'ACTIONS.NAVIGATION.BACK' | translate"
@@ -55,7 +55,7 @@
       ></p-button>
       <p-button
         *ngIf="activeIndex === 1"
-        id="workspace_import_button_next"
+        id="ws_import_button_next"
         icon="pi pi-arrow-right"
         [disabled]="!isFormValid"
         [label]="'ACTIONS.NAVIGATION.NEXT' | translate"
@@ -68,7 +68,7 @@
       </p-button>
       <p-button
         *ngIf="activeIndex === 2"
-        id="workspace_import_button_import"
+        id="ws_import_button_import"
         [icon]="isLoading ? 'pi pi-spin pi-spinner' : 'pi pi-check'"
         [disabled]="isLoading || !isFormValid"
         (onClick)="importWorkspace()"
@@ -84,7 +84,7 @@
   <ng-template pTemplate="footer">
     <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
       <p-button
-        id="workspace_import_button_close"
+        id="ws_import_button_close"
         icon="pi pi-times"
         (onClick)="onClose()"
         [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"

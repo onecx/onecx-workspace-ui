@@ -61,11 +61,11 @@
   </ng-template>
 
   <!-- GRID -->
-  <ng-template let-slots let-idx="rowIndex" pTemplate="gridItem">
+  <ng-template let-slots pTemplate="gridItem">
     <div class="grid grid-nogutter">
-      <div *ngFor="let slot of slots" class="col-12 sm:col-6 md:col-4 lg:col-4 xl:col-3 p-2 sm:p-3">
+      <div *ngFor="let slot of slots; index as i" class="col-12 sm:col-6 md:col-4 lg:col-4 xl:col-3 p-2 sm:p-3">
         <a
-          [id]="'ws_detail_slots_data_idx_' + idx + '_action_detail'"
+          [id]="'ws_slots_grid_data_row_' + i + '_action_detail'"
           class="block card relative py-2 px-4"
           [ngClass]="{ 'card-primary-color hover:bg-gray-200 cursor-pointer': !slot.new }"
           (click)="onSlotDetail($event, slot)"
@@ -77,10 +77,9 @@
           <!-- right badges -->
           <a
             *ngIf="slot.new && hasCreatePermission"
-            [id]="'ws_detail_slots_' + idx + '_action_new'"
+            [id]="'ws_slots_grid_data_row_' + i + '_action_new'"
             class="card-badge-right badge-1 p-1 pi pi-plus button-icon-only"
             (click)="onAddSlot($event, slot)"
-            role="navigation"
             [attr.aria-label]="'DIALOG.SLOT.NEW.TOOLTIP' | translate"
             [pTooltip]="'DIALOG.SLOT.NEW.TOOLTIP' | translate"
             tooltipPosition="top"
@@ -88,10 +87,9 @@
           ></a>
           <a
             *ngIf="!slot.new && hasDeletePermission && slot.components.length === 0"
-            [id]="'ws_detail_slots_data_idx_' + idx + '_action_delete'"
+            [id]="'ws_slots_grid_data_row_' + i + '_action_delete'"
             class="card-badge-right badge-1 card-primary-color p-1 pi pi-trash button-icon-only"
             (click)="onDeleteSlot($event, slot)"
-            role="navigation"
             [attr.aria-label]="'ACTIONS.DELETE.SLOT' | translate"
             [pTooltip]="'ACTIONS.DELETE.SLOT' | translate"
             tooltipPosition="top"
@@ -99,7 +97,7 @@
           ></a>
           <span
             *ngIf="slot.components"
-            [id]="'ws_detail_slots_data_idx_' + idx + '_components'"
+            [id]="'ws_slots_grid_data_row_' + i + '_components'"
             class="card-badge-left badge-1-number p-1"
             [attr.aria-label]="'SLOT.COMPONENTS' | translate"
             [pTooltip]="'SLOT.COMPONENTS' | translate"
@@ -110,7 +108,7 @@
           <!-- left badges -->
           <span
             *ngIf="slot.changes && !slot.deprecated"
-            [id]="'ws_detail_slots_idx_' + idx + '_changed'"
+            [id]="'ws_slots_grid_data_row_' + i + '_changed'"
             class="card-badge-left badge-2 pi pi-exclamation-circle danger-action-text font-bold"
             [attr.aria-label]="'DIALOG.SLOT.CHANGED' | translate"
             [pTooltip]="'DIALOG.SLOT.CHANGED' | translate"
@@ -119,7 +117,7 @@
           ></span>
           <span
             *ngIf="slot.deprecated"
-            [id]="'ws_detail_slots_idx_' + idx + '_deprecated'"
+            [id]="'ws_slots_grid_data_row_' + i + '_deprecated'"
             class="card-badge-left badge-2 pi pi-exclamation-circle danger-action-text font-bold"
             [attr.aria-label]="'DIALOG.SLOT.DEPRECATED' | translate"
             [pTooltip]="'DIALOG.SLOT.DEPRECATED.TOOLTIP' | translate"
@@ -128,7 +126,7 @@
           ></span>
           <div class="h-2-5rem flex flex-column justify-content-center text-center">
             <div
-              [id]="'ws_detail_slots_idx_' + idx + '_slot_name'"
+              [id]="'ws_slots_grid_data_row_' + i + '_slot_name'"
               [attr.aria-label]="slot.name"
               [pTooltip]="slot.name.length < 40 ? '' : slot.name"
               tooltipPosition="top"

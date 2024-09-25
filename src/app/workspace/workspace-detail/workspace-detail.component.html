@@ -8,16 +8,16 @@
   >
     <p-message
       *ngIf="workspace?.operator"
-      id="workspace_detail_operator_message"
+      id="ws_detail_operator_message"
       severity="warn"
       [text]="'INTERNAL.OPERATOR_MESSAGE' | translate"
     ></p-message>
   </ocx-page-header>
 
   <ocx-page-content *ngIf="(workspace$ | async)?.resource as workspace">
-    <div *ngIf="exceptionKey" id="workspace_detail_error" class="card px-3 align-items-center">
+    <div *ngIf="exceptionKey" id="ws_detail_error" class="card px-3 align-items-center">
       <p-message
-        id="workspace_detail_error_message"
+        id="ws_detail_error_message"
         severity="error"
         styleClass="p-2"
         [text]="exceptionKey | translate"
@@ -27,9 +27,8 @@
       <p-tabView (onChange)="onTabChange($event, workspace)" [activeIndex]="selectedTabIndex">
         <p-tabPanel
           *ocxIfPermission="'WORKSPACE#VIEW'"
-          id="workspace_detail_details"
+          id="ws_detail_details"
           [header]="'TABS.WORKSPACE.DETAILS' | translate"
-          role="navigation"
           [attr.aria-label]="'TABS.WORKSPACE.DETAILS' | translate"
           [tooltip]="'TABS.WORKSPACE.TOOLTIPS.DETAILS' | translate"
         >
@@ -42,9 +41,8 @@
 
         <p-tabPanel
           *ocxIfPermission="'WORKSPACE_CONTACT#VIEW'"
-          id="workspace_detail_contact"
+          id="ws_detail_contact"
           [header]="'TABS.WORKSPACE.CONTACT' | translate"
-          role="navigation"
           [attr.aria-label]="'TABS.WORKSPACE.CONTACT' | translate"
           [tooltip]="'TABS.WORKSPACE.TOOLTIPS.CONTACT' | translate"
           tooltipPosition="top"
@@ -55,10 +53,9 @@
 
         <p-tabPanel
           *ocxIfPermission="'WORKSPACE_INTERNAL#VIEW'"
-          id="workspace_detail_intern"
+          id="ws_detail_intern"
           [disabled]="editMode"
           [header]="'TABS.WORKSPACE.INTERN' | translate"
-          role="navigation"
           [attr.aria-label]="'TABS.WORKSPACE.INTERN' | translate"
           [tooltip]="'TABS.WORKSPACE.TOOLTIPS.INTERN' | translate"
           tooltipPosition="top"
@@ -69,11 +66,10 @@
 
         <p-tabPanel
           *ocxIfPermission="'WORKSPACE_ROLE#VIEW'"
-          id="workspace_detail_roles"
+          id="ws_detail_roles"
           [disabled]="editMode"
           class="p-0"
           [header]="'TABS.WORKSPACE.ROLES' | translate"
-          role="navigation"
           [attr.aria-label]="'TABS.WORKSPACE.ROLES' | translate"
           [tooltip]="'TABS.WORKSPACE.TOOLTIPS.ROLES' | translate"
           tooltipPosition="top"
@@ -84,11 +80,10 @@
 
         <p-tabPanel
           *ocxIfPermission="'WORKSPACE_SLOT#VIEW'"
-          id="workspace_detail_slots"
+          id="ws_detail_slots"
           [disabled]="editMode"
           class="p-0"
           [header]="'TABS.WORKSPACE.SLOTS' | translate"
-          role="navigation"
           [attr.aria-label]="'TABS.WORKSPACE.SLOTS' | translate"
           [tooltip]="'TABS.WORKSPACE.TOOLTIPS.SLOTS' | translate"
           tooltipPosition="top"
@@ -99,11 +94,10 @@
 
         <p-tabPanel
           *ocxIfPermission="'WORKSPACE_PRODUCTS#VIEW'"
-          id="workspace_detail_products"
+          id="ws_detail_products"
           class="p-0"
           [disabled]="editMode"
           [header]="'TABS.WORKSPACE.PRODUCTS' | translate"
-          role="navigation"
           [attr.aria-label]="'TABS.WORKSPACE.PRODUCTS' | translate"
           [tooltip]="'TABS.WORKSPACE.TOOLTIPS.PRODUCTS' | translate"
           tooltipPosition="top"
