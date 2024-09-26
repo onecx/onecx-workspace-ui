@@ -1,9 +1,10 @@
-@import 'src/_ws_mixins.scss';
+@import 'src/app/_ws-mixins.scss';
 
 @include card-badges;
 @include danger-action;
 @include displaying-text-responsive;
-@include dataview-list-zebra-rows;
+@include dataview-list-flex-zebra-rows;
 @include dialog-modal-dialog-content;
 @include correct-data-view-control;
+@include correct-dataview-header;
 @include correct-select-button;

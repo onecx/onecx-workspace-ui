@@ -27,7 +27,7 @@
       <p-tabView (onChange)="onTabChange($event, workspace)" [activeIndex]="selectedTabIndex">
         <p-tabPanel
           *ocxIfPermission="'WORKSPACE#VIEW'"
-          id="ws_detail_details"
+          id="ws_detail_props"
           [header]="'TABS.WORKSPACE.DETAILS' | translate"
           [attr.aria-label]="'TABS.WORKSPACE.DETAILS' | translate"
           [tooltip]="'TABS.WORKSPACE.TOOLTIPS.DETAILS' | translate"
