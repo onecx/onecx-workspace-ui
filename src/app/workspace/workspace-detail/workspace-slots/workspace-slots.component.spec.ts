@@ -18,6 +18,7 @@ import {
   MicrofrontendType
 } from 'src/app/shared/generated'
 import { CombinedSlot, ExtendedComponent, WorkspaceSlotsComponent } from './workspace-slots.component'
+import * as utils from 'src/app/shared/utils'
 
 const workspace: Workspace = {
   id: 'id',
@@ -252,6 +253,112 @@ describe('WorkspaceSlotsComponent', () => {
       component.loadData()
 
       expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + err.status + '.SLOTS')
+    })
+  })
+
+  describe('addNewSlots', () => {
+    it('should add new slots', () => {
+      component.wProductNames = ['Product1', 'Product2']
+      component.psSlots = [
+        { name: 'Slot1', productName: 'Product1', undeployed: false },
+        { name: 'Slot2', productName: 'Product1', undeployed: true },
+        { name: 'Slot3', productName: 'Product2', undeployed: false },
+        { name: 'Slot4', productName: 'Product3', undeployed: false }
+      ] as CombinedSlot[]
+      component.wSlotsIntern = [] as CombinedSlot[]
+
+      component['addNewSlots']()
+
+      expect(component.wSlotsIntern.length).toBe(2)
+      expect(component.wSlotsIntern[0].name).toBe('Slot1')
+      expect(component.wSlotsIntern[0].new).toBe(true)
+      expect(component.wSlotsIntern[1].name).toBe('Slot3')
+      expect(component.wSlotsIntern[1].new).toBe(true)
+    })
+
+    it('should not add slots that are already in workspace', () => {
+      component.wProductNames = ['Product1']
+      component.psSlots = [{ name: 'Slot1', productName: 'Product1', undeployed: false }] as CombinedSlot[]
+      component.wSlotsIntern = [{ name: 'Slot1', productName: 'Product1' }] as CombinedSlot[]
+
+      component['addNewSlots']()
+
+      expect(component.wSlotsIntern.length).toBe(1)
+      expect(component.wSlotsIntern[0].new).toBeUndefined()
+    })
+
+    it('should not add undeployed slots', () => {
+      component.wProductNames = ['Product1']
+      component.psSlots = [{ name: 'Slot1', productName: 'Product1', undeployed: true }] as CombinedSlot[]
+      component.wSlotsIntern = [] as CombinedSlot[]
+
+      component['addNewSlots']()
+
+      expect(component.wSlotsIntern.length).toBe(0)
+    })
+
+    describe('addLostSlotComponents', () => {
+      it('should add lost slot components and mark slots as changed', () => {
+        component.wSlotsIntern = [
+          {
+            name: 'Slot1',
+            components: [
+              { name: 'Component1', productName: 'Product1', appId: 'App1' },
+              { name: 'Component2', productName: 'Product1', appId: 'App1' }
+            ],
+            psComponents: [{ name: 'Component1', productName: 'Product1', appId: 'App1' }],
+            changes: false
+          },
+          {
+            name: 'Slot2',
+            components: [{ name: 'Component3', productName: 'Product2', appId: 'App2' }],
+            psComponents: [],
+            changes: false
+          }
+        ] as CombinedSlot[]
+
+        component['addLostSlotComponents']()
+
+        expect(component.wSlotsIntern[0].psComponents?.length).toBe(2)
+        expect(component.wSlotsIntern[0].psComponents?.[1].name).toBe('Component2')
+        expect(component.wSlotsIntern[0].psComponents?.[1].undeployed).toBe(true)
+        expect(component.wSlotsIntern[0].changes).toBe(true)
+
+        expect(component.wSlotsIntern[1].psComponents?.length).toBe(1)
+        expect(component.wSlotsIntern[1].psComponents?.[0].name).toBe('Component3')
+        expect(component.wSlotsIntern[1].psComponents?.[0].undeployed).toBe(true)
+        expect(component.wSlotsIntern[1].changes).toBe(true)
+      })
+
+      it('should not add components that already exist in psComponents', () => {
+        component.wSlotsIntern = [
+          {
+            name: 'Slot1',
+            components: [{ name: 'Component1', productName: 'Product1', appId: 'App1' }],
+            psComponents: [{ name: 'Component1', productName: 'Product1', appId: 'App1' }],
+            changes: false
+          }
+        ] as CombinedSlot[]
+
+        component['addLostSlotComponents']()
+
+        expect(component.wSlotsIntern[0].psComponents?.length).toBe(1)
+        expect(component.wSlotsIntern[0].changes).toBe(false)
+      })
+
+      it('should handle slots without components or psComponents', () => {
+        component.wSlotsIntern = [
+          {
+            name: 'Slot1',
+            changes: false
+          }
+        ] as CombinedSlot[]
+
+        component['addLostSlotComponents']()
+
+        expect(component.wSlotsIntern[0].psComponents).toBeUndefined()
+        expect(component.wSlotsIntern[0].changes).toBe(false)
+      })
     })
   })
 
@@ -491,5 +598,13 @@ describe('WorkspaceSlotsComponent', () => {
       expect(component.changeMode).toBe('VIEW')
       expect(component.showSlotDeleteDialog).toBeTrue()
     })
+  })
+
+  it('should go to product slots', () => {
+    spyOn(utils, 'goToEndpoint')
+
+    component.onGoToProductSlots()
+
+    expect(utils.goToEndpoint).toHaveBeenCalled()
   })
 })
