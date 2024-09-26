@@ -1,7 +1,9 @@
-@import 'src/_ws_mixins.scss';
+@import 'src/app/_ws-mixins.scss';
 
 @include correct-data-view-control;
 @include correct-data-view-header-for-tabpanel;
+@include search-criteria-select-button-slim;
+@include search-criteria-select-button-filter;
 @include float-label-textbox;
 
 :host ::ng-deep {

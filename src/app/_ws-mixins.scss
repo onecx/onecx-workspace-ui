@@ -2,7 +2,7 @@
  *  FORM - Control Improvements
  * **********************************************/
 
-// displaying text like an input field with floating label
+/* displaying text like an input field with floating label */
 @mixin float-label-textbox {
   :host {
     .p-float-label {
@@ -49,7 +49,7 @@
   }
 }
 
-// disable preset of opacity in form: not readable
+/* disable preset of opacity in form: not readable */
 @mixin readable-disabled-form-controls {
   :host ::ng-deep {
     .p-inputtext.p-component:disabled,
@@ -77,7 +77,7 @@
   }
 }
 
-// highlight
+/* highlight */
 @mixin danger-action {
   :host ::ng-deep {
     .danger-action-text {
@@ -116,7 +116,7 @@
  * **********************************************/
 @mixin card-badges {
   :host ::ng-deep {
-    // badge basics: position
+    /* badge basics: position */
     .card-badge-right,
     .card-badge-left {
       display: inline-block;
@@ -135,7 +135,7 @@
     .card-badge-left {
       left: 1px;
     }
-    // correct colors on clickable badges
+    /* correct colors on clickable badges */
     .card-primary-color {
       background-color: var(--primary-color);
       color: var(--primary-color-text);
@@ -147,7 +147,7 @@
         }
       }
     }
-    // clickable icon-only buttons
+    /* clickable icon-only buttons */
     .button-icon-only {
       border-radius: var(--border-radius);
       &:hover {
@@ -203,6 +203,16 @@
   }
 }
 
+/* DATA VIEW */
+@mixin correct-dataview-header {
+  :host ::ng-deep {
+    .p-dataview .p-dataview-header {
+      border-top-left-radius: 0.25rem; // value taken from .content-wrap
+      border-top-right-radius: 0.25rem;
+    }
+  }
+}
+
 @mixin correct-data-view-header-for-tabpanel {
   :host ::ng-deep {
     .p-dataview .p-dataview-header,
@@ -218,7 +228,7 @@
     .data-view-control * {
       color: var(--emphasis-medium);
     }
-    // correction for data-view-control component
+    /* correction for data-view-control component */
     .data-view-control-border {
       border: var(--toggle-button-border);
       &.p-dropdown {
@@ -239,7 +249,7 @@
   }
 }
 
-// File Upload
+/* File Upload */
 @mixin correct-file-upload {
   :host ::ng-deep {
     .p-fileupload {
@@ -373,10 +383,19 @@
   }
 }
 
-// ZEBRA rows
+/* ZEBRA rows */
 @mixin dataview-list-zebra-rows {
   :host ::ng-deep {
     .p-dataview-list .p-dataview-content .p-grid > div {
+      &:nth-child(odd) {
+        background-color: #f8f9fa;
+      }
+    }
+  }
+}
+@mixin dataview-list-flex-zebra-rows {
+  :host ::ng-deep {
+    .p-dataview-list .p-dataview-content > div {
       &:nth-child(odd) {
         background-color: #f8f9fa;
       }
@@ -416,7 +435,7 @@
   }
 }
 
-// PICKLIST
+/* PICKLIST */
 @mixin picklist-hide-double-buttons {
   :host ::ng-deep {
     .p-picklist .p-picklist-buttons {
@@ -476,7 +495,7 @@
  * **********************************************/
 @mixin table-inline-buttons {
   :host ::ng-deep {
-    // reduce the size of buttons used inside a table row
+    /* reduce the size of buttons used inside a table row */
     th button.p-button,
     td button.p-button {
       &.p-button-icon-only {
@@ -503,7 +522,7 @@
 }
 @mixin table-responsive-columns {
   :host ::ng-deep {
-    // responsive table result view
+    /* responsive table result view */
     @media screen and (min-width: 576px) {
       .sm\:table-cell {
         display: table-cell !important;
@@ -522,6 +541,26 @@
     @media screen and (min-width: 1200px) {
       .xl\:table-cell {
         display: table-cell !important;
+      }
+    }
+  }
+}
+
+@mixin media-queries {
+  :host ::ng-deep {
+    @media screen and (min-width: 768px) {
+      .md\:h-2-5rem {
+        height: 2.5rem !important;
+      }
+      .md\:h-3-5rem {
+        height: 3.5rem !important;
+      }
+    }
+    @media screen and (min-width: 576px) {
+      .card-badge-right {
+        &.sm\:badge-2-2 {
+          top: 33px !important;
+        }
       }
     }
   }
