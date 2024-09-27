@@ -51,7 +51,7 @@
       >
         <div>
           <a
-            id="{{item.label}}"
+            id="{{ item.label }}"
             *ngIf="!item.routerLink && item.url && !item.command"
             class="user-menu-item flex flex-row align-items-center w-full h-full p-3 gap-2"
             pRipple
@@ -64,7 +64,7 @@
         </div>
         <div>
           <a
-            id="{{item.label}}"
+            id="{{ item.label }}"
             *ngIf="item.routerLink && !item.url && !item.command"
             class="user-menu-item flex flex-row align-items-center w-full h-full p-3 gap-2"
             pRipple
@@ -77,7 +77,7 @@
         </div>
         <div>
           <a
-            id="{{item.label}}"
+            id="{{ item.label }}"
             tabindex="0"
             *ngIf="!item.routerLink && !item.url && item.command"
             class="user-menu-item flex flex-row align-items-center w-full h-full p-3 gap-2"
