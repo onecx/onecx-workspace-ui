@@ -1,9 +1,14 @@
 <div class="flex relative">
   <a
+    #userAvatarMenuButton
     id="user-avatar-menu-button"
+    tabindex="0"
     pRipple
     class="p-2 rounded-circle cursor-pointer user-avatar-menu-button"
     (click)="handleAvatarClick($event)"
+    (keydown.enter)="onAvatarEnter()"
+    (keydown.space)="onAvatarEnter()"
+    (keydown.escape)="onAvatarEscape()"
     [pTooltip]="'REMOTES.USER_AVATAR_MENU.TOOLTIP' | translate"
     tooltipPosition="bottom"
     tooltipEvent="hover"
@@ -11,6 +16,7 @@
     <ocx-slot name="onecx-avatar-image"></ocx-slot>
   </a>
   <ul
+    id="user-avatar-menu-item-list"
     class="layout-topbar-action-panel shadow-6 sm:m-2 fixed sm:absolute mt-2 sm:top-100 w-screen sm:w-auto"
     [ngClass]="menuAnchorPosition + '-0'"
     [hidden]="!menuOpen"
@@ -38,13 +44,19 @@
       </div>
     </li>
     <ng-container *ngIf="userMenu$ | async as userMenu">
-      <li class="layout-topbar-action-item" *ngFor="let item of userMenu; let i = index">
+      <li
+        id="user-avatar-user-menu-item"
+        class="layout-topbar-action-item"
+        *ngFor="let item of userMenu; let i = index"
+      >
         <div>
           <a
+            id="{{item.label}}"
             *ngIf="!item.routerLink && item.url && !item.command"
-            class="flex flex-row align-items-center w-full h-full p-3 gap-2"
+            class="user-menu-item flex flex-row align-items-center w-full h-full p-3 gap-2"
             pRipple
             [attr.href]="item.url"
+            (keydown.escape)="onItemEscape(userAvatarMenuButton)"
           >
             <i *ngIf="item.icon" [ngClass]="item.icon"></i>
             <span>{{ item.label }}</span>
@@ -52,10 +64,12 @@
         </div>
         <div>
           <a
+            id="{{item.label}}"
             *ngIf="item.routerLink && !item.url && !item.command"
-            class="flex flex-row align-items-center w-full h-full p-3 gap-2"
+            class="user-menu-item flex flex-row align-items-center w-full h-full p-3 gap-2"
             pRipple
             [routerLink]="item.routerLink"
+            (keydown.escape)="onItemEscape(userAvatarMenuButton)"
           >
             <i *ngIf="item.icon" [ngClass]="item.icon"></i>
             <span>{{ item.label }}</span>
@@ -63,10 +77,14 @@
         </div>
         <div>
           <a
+            id="{{item.label}}"
+            tabindex="0"
             *ngIf="!item.routerLink && !item.url && item.command"
-            class="flex flex-row align-items-center w-full h-full p-3 gap-2"
+            class="user-menu-item flex flex-row align-items-center w-full h-full p-3 gap-2"
             pRipple
             (click)="item.command({})"
+            (keydown.enter)="item.command({})"
+            (keydown.escape)="onItemEscape(userAvatarMenuButton)"
           >
             <i *ngIf="item.icon" [ngClass]="item.icon"></i>
             <span>{{ item.label }}</span>

@@ -1,6 +1,15 @@
 import { Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { APP_INITIALIZER, AfterViewInit, Component, Inject, Input, OnDestroy, Renderer2 } from '@angular/core'
+import {
+  APP_INITIALIZER,
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Inject,
+  Input,
+  OnDestroy,
+  Renderer2
+} from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
@@ -112,7 +121,8 @@ export class OneCXUserAvatarMenuComponent
     private appConfigService: AppConfigService,
     @Inject(BASE_URL) private baseUrl: ReplaySubject<string>,
     private translateService: TranslateService,
-    private menuItemService: MenuItemService
+    private menuItemService: MenuItemService,
+    private elementRef: ElementRef
   ) {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
 
@@ -190,7 +200,20 @@ export class OneCXUserAvatarMenuComponent
     })
   }
 
-  handleAvatarClick(event: MouseEvent) {
+  onAvatarEnter() {
+    this.menuOpen = true
+  }
+
+  onAvatarEscape() {
+    this.menuOpen = false
+  }
+
+  onItemEscape(userAvatarMenuButton: HTMLAnchorElement) {
+    this.menuOpen = false
+    userAvatarMenuButton.focus()
+  }
+
+  handleAvatarClick(event: Event) {
     event.preventDefault()
     event.stopPropagation()
     this.menuOpen = !this.menuOpen
