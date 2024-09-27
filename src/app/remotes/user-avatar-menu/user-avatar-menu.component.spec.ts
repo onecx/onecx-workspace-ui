@@ -473,6 +473,35 @@ describe('OneCXUserAvatarMenuComponent', () => {
     expect(spyRemoveFunction).toHaveBeenCalledTimes(1)
   })
 
+  it('should open menu on avatar button enter key', () => {
+    const { component } = setUp()
+
+    component.menuOpen = false
+    component.onAvatarEnter()
+
+    expect(component.menuOpen).toBeTrue()
+  })
+
+  it('should close menu on avatar button escape key', () => {
+    const { component } = setUp()
+
+    component.menuOpen = true
+    component.onAvatarEscape()
+    expect(component.menuOpen).toBeFalse()
+  })
+
+  it('should close menu and focus on avatar button when escape clicked on menu item', async () => {
+    const { avatarMenuHarness, fixture, component } = await setUpWithHarnessAndInit([])
+
+    component.menuOpen = true
+    fixture.nativeElement.focus()
+
+    component.onItemEscape((await avatarMenuHarness.getUserAvatarButton()) as any)
+
+    expect(component.menuOpen).toBeFalse()
+    expect(await (await avatarMenuHarness.getUserAvatarButton()).isFocused()).toBeTrue()
+  })
+
   describe('slotInitializer', () => {
     let slotService: jasmine.SpyObj<SlotService>
 

@@ -1,15 +1,6 @@
 import { Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import {
-  APP_INITIALIZER,
-  AfterViewInit,
-  Component,
-  ElementRef,
-  Inject,
-  Input,
-  OnDestroy,
-  Renderer2
-} from '@angular/core'
+import { APP_INITIALIZER, AfterViewInit, Component, Inject, Input, OnDestroy, Renderer2 } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
@@ -121,8 +112,7 @@ export class OneCXUserAvatarMenuComponent
     private appConfigService: AppConfigService,
     @Inject(BASE_URL) private baseUrl: ReplaySubject<string>,
     private translateService: TranslateService,
-    private menuItemService: MenuItemService,
-    private elementRef: ElementRef
+    private menuItemService: MenuItemService
   ) {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
 
