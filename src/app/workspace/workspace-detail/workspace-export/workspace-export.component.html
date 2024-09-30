@@ -1,0 +1,52 @@
+<p-dialog
+  [(visible)]="workspaceExportVisible"
+  [header]="'DIALOG.WORKSPACE.HEADER.EXPORT' | translate"
+  [modal]="true"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [style]="{ 'max-width': '425px' }"
+>
+  <div class="flex column-gap-3 row-gap-1 justify-content-start align-items-center">
+    <div class="pi pi-download text-3xl"></div>
+    <div class="mt-2">{{ 'ACTIONS.EXPORT.WORKSPACE' | translate }}</div>
+    <div class="w-12 sm:w-5 px-3">
+      <p-checkbox
+        type="text"
+        [readonly]="false"
+        inputId="ws_detail_export_menu"
+        [(ngModel)]="exportMenu"
+        [binary]="true"
+        [styleClass]="'cursor-auto shadow-none'"
+        [label]="'WORKSPACE_EXPORT.MENU' | translate"
+        [attr.aria-label]="'WORKSPACE_EXPORT.MENU' | translate"
+        [pTooltip]="'WORKSPACE_EXPORT.MENU_TOOLTIP' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      ></p-checkbox>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
+      <p-button
+        id="ws_export_action_no"
+        icon="pi pi-times"
+        (onClick)="onClose()"
+        [label]="'ACTIONS.CONFIRMATION.NO' | translate"
+        [attr.aria-label]="'ACTIONS.CONFIRMATION.NO' | translate"
+        [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      ></p-button>
+      <p-button
+        id="ws_export_action_yes"
+        icon="pi pi-check"
+        (onClick)="onConfirmExportWorkspace()"
+        [label]="'ACTIONS.CONFIRMATION.YES' | translate"
+        [attr.aria-label]="'ACTIONS.CONFIRMATION.YES' | translate"
+        [pTooltip]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      ></p-button>
+    </div>
+  </ng-template>
+</p-dialog>

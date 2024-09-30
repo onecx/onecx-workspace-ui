@@ -483,7 +483,9 @@
     "THEME_CHECKBOX_HEADER": "Export Workspace Definition",
     "THEME_CHECKBOX_MESSAGE": "Die aktuelle Workspace Definition im JSON Format herunterladen.",
     "THEME_LOADING": "...lädt",
-    "THEME_NOT_AVALIABLE": "keine verfügbaren Themes "
+    "THEME_NOT_AVALIABLE": "keine verfügbaren Themes ",
+    "MENU": "Menü aufnehmen",
+    "MENU_TOOLTIP": "Menü in die Definition des Workspace aufnehmen"
   },
   "WORKSPACE_IMPORT": {
     "IMPORT_WORKSPACE": "Workspace Import",

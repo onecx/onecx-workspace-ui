@@ -10,6 +10,7 @@ import { SharedModule } from 'src/app/shared/shared.module'
 import { LabelResolver } from 'src/app/shared/label.resolver'
 
 import { WorkspaceDetailComponent } from './workspace-detail.component'
+import { WorkspaceExportComponent } from './workspace-export/workspace-export.component'
 import { WorkspacePropsComponent } from './workspace-props/workspace-props.component'
 import { WorkspaceInternComponent } from './workspace-intern/workspace-intern.component'
 import { WorkspaceContactComponent } from './workspace-contact/workspace-contact.component'
@@ -39,6 +40,7 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     WorkspaceDetailComponent,
+    WorkspaceExportComponent,
     WorkspacePropsComponent,
     WorkspaceContactComponent,
     WorkspaceInternComponent,
