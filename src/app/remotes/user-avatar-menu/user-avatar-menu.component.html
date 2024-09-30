@@ -1,7 +1,7 @@
 <div class="flex relative">
   <a
     #userAvatarMenuButton
-    id="user-avatar-menu-button"
+    id="ws_user_avatar_menu_button"
     tabindex="0"
     pRipple
     class="p-2 rounded-circle cursor-pointer user-avatar-menu-button"
@@ -16,15 +16,15 @@
     <ocx-slot name="onecx-avatar-image"></ocx-slot>
   </a>
   <ul
-    id="user-avatar-menu-item-list"
+    id="ws_user_avatar_menu_item_list"
     class="layout-topbar-action-panel shadow-6 sm:m-2 fixed sm:absolute mt-2 sm:top-100 w-screen sm:w-auto"
     [ngClass]="menuAnchorPosition + '-0'"
     [hidden]="!menuOpen"
   >
-    <li id="user-avatar-profile-item" class="layout-topbar-action-item cursor-auto user-info">
+    <li id="ws_user_avatar_menu_profile_item" class="layout-topbar-action-item cursor-auto user-info">
       <div *ngIf="currentUser$ | async as user" class="my-1 flex flex-column justify-content-evenly row-gap-1">
         <div
-          id="user-avatar-profile-item-name"
+          id="ws_user_avatar_menu_profile_item_name"
           class="font-bold text-center text-lg text-color-secondary"
           [pTooltip]="user.person.email ?? ''"
           tooltipPosition="bottom"
@@ -34,7 +34,7 @@
         </div>
         <span
           *ngIf="user.organization"
-          id="user-avatar-profile-item-tenant"
+          id="ws_user_avatar_menu_profile_item_tenant"
           class="my-1 text-center text-sm text-color-secondary"
           [pTooltip]="'REMOTES.USER_AVATAR_MENU.ORGID' | translate"
           tooltipPosition="bottom"

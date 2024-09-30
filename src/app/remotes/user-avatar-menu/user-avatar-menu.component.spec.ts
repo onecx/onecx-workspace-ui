@@ -152,7 +152,7 @@ describe('OneCXUserAvatarMenuComponent', () => {
 
     const { avatarMenuHarness } = await setUpWithHarness()
 
-    expect(await avatarMenuHarness.getUserAvatarButtonId()).toEqual('user-avatar-menu-button')
+    expect(await avatarMenuHarness.getUserAvatarButtonId()).toEqual('ws_user_avatar_menu_button')
   })
 
   it('should not show profile info if permissions not met', async () => {
