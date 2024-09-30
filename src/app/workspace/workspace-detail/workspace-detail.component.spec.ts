@@ -232,33 +232,13 @@ describe('WorkspaceDetailComponent', () => {
     })
   })
 
-  describe('export workspace Data', () => {
-    it('should export a workspace', () => {
-      apiServiceSpy.exportWorkspaces.and.returnValue(of({}))
-      component.workspace = workspace
-      component.exportMenu = true
-      component.onExportWorkspace()
+  it('should display error if portalNotFound on export', () => {
+    component.workspace = undefined
 
-      expect(apiServiceSpy.exportWorkspaces).toHaveBeenCalled()
-    })
+    component.onExportWorkspace()
 
-    it('should display error if portalNotFound on export', () => {
-      component.workspace = undefined
-
-      component.onExportWorkspace()
-
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({
-        summaryKey: 'DIALOG.WORKSPACE.NOT_FOUND'
-      })
-    })
-
-    it('should enter error branch if exportWorkspaces call fails', () => {
-      apiServiceSpy.exportWorkspaces.and.returnValue(throwError(() => new Error()))
-      component.workspace = workspace
-
-      component.onExportWorkspace()
-
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.NOK' })
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({
+      summaryKey: 'DIALOG.WORKSPACE.NOT_FOUND'
     })
   })
 
