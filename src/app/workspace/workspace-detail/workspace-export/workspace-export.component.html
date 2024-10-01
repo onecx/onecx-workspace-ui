@@ -2,21 +2,21 @@
   [(visible)]="workspaceExportVisible"
   [header]="'DIALOG.WORKSPACE.HEADER.EXPORT' | translate"
   [modal]="true"
-  [resizable]="false"
+  [resizable]="true"
+  [draggable]="true"
   [dismissableMask]="true"
-  [style]="{ 'max-width': '425px' }"
 >
-  <div class="flex column-gap-3 row-gap-1 justify-content-start align-items-center">
+  <div class="flex flex-row flex-wrap column-gap-4 row-gap-1 justify-content-start align-items-center">
     <div class="pi pi-download text-3xl"></div>
-    <div class="mt-2">{{ 'ACTIONS.EXPORT.WORKSPACE' | translate }}</div>
-    <div class="w-12 sm:w-5 px-3">
+    <div class="flex flex-column row-gap-3 mt-2">
+      <div>{{ 'ACTIONS.EXPORT.WORKSPACE' | translate }}</div>
       <p-checkbox
         type="text"
         [readonly]="false"
         inputId="ws_detail_export_menu"
         [(ngModel)]="exportMenu"
         [binary]="true"
-        [styleClass]="'cursor-auto shadow-none'"
+        styleClass="cursor-auto shadow-none ml-3"
         [label]="'WORKSPACE_EXPORT.MENU' | translate"
         [attr.aria-label]="'WORKSPACE_EXPORT.MENU' | translate"
         [pTooltip]="'WORKSPACE_EXPORT.MENU_TOOLTIP' | translate"
