@@ -1,9 +1,14 @@
 <div class="flex relative">
   <a
-    id="user-avatar-menu-button"
+    #userAvatarMenuButton
+    id="ws_user_avatar_menu_button"
+    tabindex="0"
     pRipple
     class="p-2 rounded-circle cursor-pointer user-avatar-menu-button"
     (click)="handleAvatarClick($event)"
+    (keydown.enter)="onAvatarEnter()"
+    (keydown.space)="onAvatarEnter()"
+    (keydown.escape)="onAvatarEscape()"
     [pTooltip]="'REMOTES.USER_AVATAR_MENU.TOOLTIP' | translate"
     tooltipPosition="bottom"
     tooltipEvent="hover"
@@ -11,14 +16,15 @@
     <ocx-slot name="onecx-avatar-image"></ocx-slot>
   </a>
   <ul
+    id="ws_user_avatar_menu_item_list"
     class="layout-topbar-action-panel shadow-6 sm:m-2 fixed sm:absolute mt-2 sm:top-100 w-screen sm:w-auto"
     [ngClass]="menuAnchorPosition + '-0'"
     [hidden]="!menuOpen"
   >
-    <li id="user-avatar-profile-item" class="layout-topbar-action-item cursor-auto user-info">
+    <li id="ws_user_avatar_menu_profile_item" class="layout-topbar-action-item cursor-auto user-info">
       <div *ngIf="currentUser$ | async as user" class="my-1 flex flex-column justify-content-evenly row-gap-1">
         <div
-          id="user-avatar-profile-item-name"
+          id="ws_user_avatar_menu_profile_item_name"
           class="font-bold text-center text-lg text-color-secondary"
           [pTooltip]="user.person.email ?? ''"
           tooltipPosition="bottom"
@@ -28,7 +34,7 @@
         </div>
         <span
           *ngIf="user.organization"
-          id="user-avatar-profile-item-tenant"
+          id="ws_user_avatar_menu_profile_item_tenant"
           class="my-1 text-center text-sm text-color-secondary"
           [pTooltip]="'REMOTES.USER_AVATAR_MENU.ORGID' | translate"
           tooltipPosition="bottom"
@@ -45,6 +51,7 @@
             class="flex flex-row align-items-center w-full h-full p-3 gap-2"
             pRipple
             [attr.href]="item.url"
+            (keydown.escape)="onItemEscape(userAvatarMenuButton)"
           >
             <i *ngIf="item.icon" [ngClass]="item.icon"></i>
             <span>{{ item.label }}</span>
@@ -56,6 +63,7 @@
             class="flex flex-row align-items-center w-full h-full p-3 gap-2"
             pRipple
             [routerLink]="item.routerLink"
+            (keydown.escape)="onItemEscape(userAvatarMenuButton)"
           >
             <i *ngIf="item.icon" [ngClass]="item.icon"></i>
             <span>{{ item.label }}</span>
@@ -63,10 +71,13 @@
         </div>
         <div>
           <a
+            tabindex="0"
             *ngIf="!item.routerLink && !item.url && item.command"
             class="flex flex-row align-items-center w-full h-full p-3 gap-2"
             pRipple
             (click)="item.command({})"
+            (keydown.enter)="item.command({})"
+            (keydown.escape)="onItemEscape(userAvatarMenuButton)"
           >
             <i *ngIf="item.icon" [ngClass]="item.icon"></i>
             <span>{{ item.label }}</span>

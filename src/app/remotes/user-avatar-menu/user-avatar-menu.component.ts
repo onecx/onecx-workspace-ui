@@ -190,7 +190,20 @@ export class OneCXUserAvatarMenuComponent
     })
   }
 
-  handleAvatarClick(event: MouseEvent) {
+  onAvatarEnter() {
+    this.menuOpen = true
+  }
+
+  onAvatarEscape() {
+    this.menuOpen = false
+  }
+
+  onItemEscape(userAvatarMenuButton: HTMLAnchorElement) {
+    this.menuOpen = false
+    userAvatarMenuButton.focus()
+  }
+
+  handleAvatarClick(event: Event) {
     event.preventDefault()
     event.stopPropagation()
     this.menuOpen = !this.menuOpen

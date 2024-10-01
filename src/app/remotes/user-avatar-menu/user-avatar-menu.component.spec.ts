@@ -152,7 +152,7 @@ describe('OneCXUserAvatarMenuComponent', () => {
 
     const { avatarMenuHarness } = await setUpWithHarness()
 
-    expect(await avatarMenuHarness.getUserAvatarButtonId()).toEqual('user-avatar-menu-button')
+    expect(await avatarMenuHarness.getUserAvatarButtonId()).toEqual('ws_user_avatar_menu_button')
   })
 
   it('should not show profile info if permissions not met', async () => {
@@ -471,6 +471,35 @@ describe('OneCXUserAvatarMenuComponent', () => {
 
     component.ngOnDestroy()
     expect(spyRemoveFunction).toHaveBeenCalledTimes(1)
+  })
+
+  it('should open menu on avatar button enter key', () => {
+    const { component } = setUp()
+
+    component.menuOpen = false
+    component.onAvatarEnter()
+
+    expect(component.menuOpen).toBeTrue()
+  })
+
+  it('should close menu on avatar button escape key', () => {
+    const { component } = setUp()
+
+    component.menuOpen = true
+    component.onAvatarEscape()
+    expect(component.menuOpen).toBeFalse()
+  })
+
+  it('should close menu and focus on avatar button when escape clicked on menu item', async () => {
+    const { avatarMenuHarness, fixture, component } = await setUpWithHarnessAndInit([])
+
+    component.menuOpen = true
+    fixture.nativeElement.focus()
+
+    component.onItemEscape((await avatarMenuHarness.getUserAvatarButton()) as any)
+
+    expect(component.menuOpen).toBeFalse()
+    expect(await (await avatarMenuHarness.getUserAvatarButton()).isFocused()).toBeTrue()
   })
 
   describe('slotInitializer', () => {
