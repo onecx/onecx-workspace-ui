@@ -144,7 +144,8 @@
     "SAVE_TREE_STRUCTURE": "Save tree structure"
   },
   "GENERAL": {
-    "COMMING_SOON": "Available soon",
+    "COMING_SOON": "Available soon",
+    "OF": "of",
     "BOOLEAN": {
       "TRUE": "Yes",
       "FALSE": "No"

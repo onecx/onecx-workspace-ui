@@ -144,7 +144,8 @@
     "SAVE_TREE_STRUCTURE": "Baumstruktur speichern"
   },
   "GENERAL": {
-    "COMMING_SOON": "Demnächst verfügbar",
+    "COMING_SOON": "Demnächst verfügbar",
+    "OF": "von",
     "BOOLEAN": {
       "TRUE": "Ja",
       "FALSE": "Nein"

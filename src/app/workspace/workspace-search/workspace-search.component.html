@@ -29,6 +29,8 @@
       filterBy="displayName,theme"
       [sortField]="sortField"
       [sortOrder]="sortOrder"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="{first} - {last} {{ 'GENERAL.OF' | translate }} {totalRecords}"
     >
       <ng-template pTemplate="header">
         <ocx-data-view-controls
