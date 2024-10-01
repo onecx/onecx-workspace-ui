@@ -2,7 +2,6 @@ import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '
 import { Location } from '@angular/common'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
-import FileSaver from 'file-saver'
 import { catchError, finalize, map, Observable, of } from 'rxjs'
 
 import { Action, ObjectDetailItem } from '@onecx/angular-accelerator'
@@ -14,7 +13,7 @@ import {
   ImagesInternalAPIService,
   RefType
 } from 'src/app/shared/generated'
-import { bffImageUrl, getCurrentDateTime, limitText } from 'src/app/shared/utils'
+import { bffImageUrl, limitText } from 'src/app/shared/utils'
 
 import { WorkspacePropsComponent } from './workspace-props/workspace-props.component'
 import { WorkspaceContactComponent } from './workspace-contact/workspace-contact.component'
@@ -30,7 +29,6 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
 
   public actions$: Observable<Action[]> | undefined
   public editMode = false
-  public exportMenu = true
   public isLoading = false
   public exceptionKey: string | undefined = undefined
   public headerImageUrl?: string
@@ -45,19 +43,20 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
   public workspaceName = this.route.snapshot.params['name']
   public workspaceDeleteMessage = ''
   public workspaceDeleteVisible = false
+  public workspaceExportVisible = false
   public currentLogoUrl: string | undefined = undefined
   public limitText = limitText
 
   constructor(
-    private user: UserService,
-    public route: ActivatedRoute,
-    private router: Router,
-    private location: Location,
-    private translate: TranslateService,
-    private msgService: PortalMessageService,
-    private workspaceApi: WorkspaceAPIService,
-    private imageApi: ImagesInternalAPIService,
-    private cd: ChangeDetectorRef
+    public readonly route: ActivatedRoute,
+    private readonly user: UserService,
+    private readonly router: Router,
+    private readonly location: Location,
+    private readonly translate: TranslateService,
+    private readonly msgService: PortalMessageService,
+    private readonly workspaceApi: WorkspaceAPIService,
+    private readonly imageApi: ImagesInternalAPIService,
+    private readonly cd: ChangeDetectorRef
   ) {
     this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm' : 'medium'
   }
@@ -169,22 +168,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
       this.msgService.error({ summaryKey: 'DIALOG.WORKSPACE.NOT_FOUND' })
       return
     }
-    this.workspaceApi
-      .exportWorkspaces({
-        exportWorkspacesRequest: { includeMenus: this.exportMenu, names: [this.workspace.name] }
-      })
-      .subscribe({
-        next: (snapshot) => {
-          const workspaceJson = JSON.stringify(snapshot, null, 2)
-          FileSaver.saveAs(
-            new Blob([workspaceJson], { type: 'text/json' }),
-            `onecx-workspace_${this.workspace?.name}_${getCurrentDateTime()}.json`
-          )
-        },
-        error: () => {
-          this.msgService.error({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.NOK' })
-        }
-      })
+    this.workspaceExportVisible = true
   }
 
   private toggleEditMode(forcedMode?: 'edit' | 'view'): void {

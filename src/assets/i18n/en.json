@@ -110,7 +110,8 @@
       "ERROR": "Data not available",
       "NO_DATA": "No Data",
       "RELOAD": "Reload data",
-      "RELOAD.OK": "Data successfully reloaded"
+      "RELOAD.OK": "Data successfully reloaded",
+      "OF": "of"
     },
     "TREE": {
       "COLLAPSE_ALL": "Collapse all",
@@ -143,13 +144,6 @@
     "ENABLE_DRAG_DROP": "Enable drag&drop",
     "SAVE_TREE_STRUCTURE": "Save tree structure"
   },
-  "GENERAL": {
-    "COMMING_SOON": "Available soon",
-    "BOOLEAN": {
-      "TRUE": "Yes",
-      "FALSE": "No"
-    }
-  },
   "TABS": {
     "WORKSPACE": {
       "DETAILS": "Properties",
@@ -168,8 +162,7 @@
         "SLOTS": "Workspace Slots: Management of the Slots usable by the Workspace.",
         "PRODUCTS": "Workspace Applications: Management of Applications usable in the Workspace"
       }
-    },
-    "MENU": {}
+    }
   },
   "INTERNAL": {
     "CREATION_DATE": "Created on",
@@ -480,10 +473,12 @@
     }
   },
   "WORKSPACE_EXPORT": {
-    "THEME_CHECKBOX_HEADER": "Export Workspace Definition",
-    "THEME_CHECKBOX_MESSAGE": "Download the current Workspace definition as JSON file.",
+    "THEME_CHECKBOX_HEADER": "Export Workspace definition",
+    "THEME_CHECKBOX_MESSAGE": "Download the Workspace definition as JSON file.",
     "THEME_LOADING": "...is loading",
-    "THEME_NOT_AVALIABLE": "no available themes"
+    "THEME_NOT_AVALIABLE": "no available themes",
+    "MENU": "Include the Menu definition",
+    "MENU_TOOLTIP": "Include menu in Workspace definition"
   },
   "WORKSPACE_IMPORT": {
     "IMPORT_WORKSPACE": "Import Workspace",

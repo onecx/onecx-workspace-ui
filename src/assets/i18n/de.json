@@ -110,7 +110,8 @@
       "ERROR": "Daten nicht abrufbar",
       "NO_DATA": "Keine Daten",
       "RELOAD": "Daten neu laden",
-      "RELOAD.OK": "Daten erfolgreich geladen"
+      "RELOAD.OK": "Daten erfolgreich geladen",
+      "OF": "von"
     },
     "TREE": {
       "COLLAPSE_ALL": "Alles zu",
@@ -143,13 +144,6 @@
     "ENABLE_DRAG_DROP": "Drag&Drop aktivieren",
     "SAVE_TREE_STRUCTURE": "Baumstruktur speichern"
   },
-  "GENERAL": {
-    "COMMING_SOON": "Demnächst verfügbar",
-    "BOOLEAN": {
-      "TRUE": "Ja",
-      "FALSE": "Nein"
-    }
-  },
   "TABS": {
     "WORKSPACE": {
       "DETAILS": "Eigenschaften",
@@ -168,8 +162,7 @@
         "SLOTS": "Workspace Slots: die für die Benutzung des Workspaces von Bedeutung sind.",
         "PRODUCTS": "Registrierte Applikationen: Verwalten der für den Workspace registrierten Applikationen"
       }
-    },
-    "MENU": {}
+    }
   },
   "INTERNAL": {
     "CREATION_DATE": "Erstellt am",
@@ -480,10 +473,12 @@
     }
   },
   "WORKSPACE_EXPORT": {
-    "THEME_CHECKBOX_HEADER": "Export Workspace Definition",
-    "THEME_CHECKBOX_MESSAGE": "Die aktuelle Workspace Definition im JSON Format herunterladen.",
+    "THEME_CHECKBOX_HEADER": "Export Workspace-Definition",
+    "THEME_CHECKBOX_MESSAGE": "Die Workspace-Definition im JSON Format herunterladen.",
     "THEME_LOADING": "...lädt",
-    "THEME_NOT_AVALIABLE": "keine verfügbaren Themes "
+    "THEME_NOT_AVALIABLE": "keine verfügbaren Themes ",
+    "MENU": "Menü-Definition aufnehmen",
+    "MENU_TOOLTIP": "Menü in die Definition des Workspace aufnehmen"
   },
   "WORKSPACE_IMPORT": {
     "IMPORT_WORKSPACE": "Workspace Import",
