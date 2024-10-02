@@ -10,7 +10,9 @@ const config = withModuleFederationPlugin({
     './OneCXUserSidebarMenuComponent': 'src/app/remotes/user-sidebar-menu/user-sidebar-menu.component.main.ts',
     './OneCXVerticalMainMenuComponent': 'src/app/remotes/vertical-main-menu/vertical-main-menu.component.main.ts',
     './OneCXHorizontalMainMenuComponent': 'src/app/remotes/horizontal-main-menu/horizontal-main-menu.component.main.ts',
-    './OneCXFooterMenuComponent': 'src/app/remotes/footer-menu/footer-menu.component.main.ts'
+    './OneCXFooterMenuComponent': 'src/app/remotes/footer-menu/footer-menu.component.main.ts',
+    './OneCXListWorkspacesUsingThemeComponent':
+      'src/app/remotes/list-workspaces-using-theme/list-workspaces-using-theme.component.main.ts'
   },
   shared: share({
     '@angular/core': { requiredVersion: 'auto', includeSecondaries: true },
