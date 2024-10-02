@@ -24,11 +24,13 @@ import { getLocation } from '@onecx/accelerator'
 export class WorkspacePropsComponent implements OnInit, OnChanges {
   @Input() workspace: Workspace | undefined
   @Input() editMode = false
+  @Input() isLoading = false
   @Output() currentLogoUrl = new EventEmitter<string>()
 
   private readonly destroy$ = new Subject()
   public formGroup: FormGroup
   public productPaths$!: Observable<string[]>
+  public themeProductRegistered$!: Observable<boolean>
   public themes$!: Observable<string[]>
   public urlPattern = '/base-path-to-workspace'
   public externUrlPattern = 'http(s)://path-to-image'
@@ -46,8 +48,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   public themeUrl: string | undefined = undefined
   RefType = RefType
 
-  goToEndpoint = goToEndpoint
-
   constructor(
     private location: Location,
     private router: Router,
@@ -58,6 +58,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     private wProductApi: WorkspaceProductAPIService
   ) {
     this.deploymentPath = getLocation().deploymentPath === '/' ? '' : getLocation().deploymentPath.slice(0, -1)
+    this.themeProductRegistered$ = workspaceService.doesUrlExistFor('onecx-theme', 'onecx-theme-ui', 'theme-detail')
 
     this.formGroup = new FormGroup({
       disabled: new FormControl(null),
@@ -73,8 +74,10 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   }
 
   public ngOnInit(): void {
-    this.loadProductPaths()
-    this.loadThemes()
+    if (!this.isLoading) {
+      this.loadProductPaths()
+      this.loadThemes()
+    }
   }
 
   public ngOnChanges(): void {
@@ -253,8 +256,15 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   }
 
   public onGoToTheme(name?: string): void {
-    goToEndpoint(this.workspaceService, this.msgService, this.router, 'onecx-theme', 'onecx-theme-ui', 'theme-detail', {
-      'theme-name': name
-    })
+    if (!this.isLoading)
+      goToEndpoint(
+        this.workspaceService,
+        this.msgService,
+        this.router,
+        'onecx-theme',
+        'onecx-theme-ui',
+        'theme-detail',
+        { 'theme-name': name }
+      )
   }
 }

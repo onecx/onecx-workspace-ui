@@ -6,12 +6,6 @@
     [figureImage]="currentLogoUrl"
     [figureBackground]="!currentLogoUrl"
   >
-    <p-message
-      *ngIf="workspace?.operator"
-      id="ws_detail_operator_message"
-      severity="warn"
-      [text]="'INTERNAL.OPERATOR_MESSAGE' | translate"
-    ></p-message>
   </ocx-page-header>
 
   <ocx-page-content *ngIf="(workspace$ | async)?.resource as workspace">
@@ -32,9 +26,17 @@
           [attr.aria-label]="'TABS.WORKSPACE.DETAILS' | translate"
           [tooltip]="'TABS.WORKSPACE.TOOLTIPS.DETAILS' | translate"
         >
+          <p-message
+            *ngIf="workspace?.operator"
+            id="ws_detail_operator_message"
+            styleClass="mb-2"
+            severity="warn"
+            [text]="'INTERNAL.OPERATOR_MESSAGE' | translate"
+          ></p-message>
           <app-workspace-props
             [workspace]="workspace"
             [editMode]="editMode"
+            [isLoading]="isLoading"
             (currentLogoUrl)="onUpdateLogoUrl($event)"
           ></app-workspace-props>
         </p-tabPanel>
@@ -48,6 +50,13 @@
           tooltipPosition="top"
           tooltipEvent="hover"
         >
+          <p-message
+            *ngIf="workspace?.operator"
+            id="ws_detail_operator_message"
+            styleClass="mb-2"
+            severity="warn"
+            [text]="'INTERNAL.OPERATOR_MESSAGE' | translate"
+          ></p-message>
           <app-workspace-contact [workspace]="workspace" [editMode]="editMode"></app-workspace-contact>
         </p-tabPanel>
 
@@ -61,6 +70,13 @@
           tooltipPosition="top"
           tooltipEvent="hover"
         >
+          <p-message
+            *ngIf="workspace?.operator"
+            id="ws_detail_operator_message"
+            styleClass="mb-2"
+            severity="warn"
+            [text]="'INTERNAL.OPERATOR_MESSAGE' | translate"
+          ></p-message>
           <app-workspace-intern [workspace]="workspace" [dateFormat]="dateFormat"></app-workspace-intern>
         </p-tabPanel>
 
@@ -151,8 +167,3 @@
     </div>
   </ng-template>
 </p-dialog>
-
-<app-workspace-export
-  [workspace]="workspace!"
-  [(workspaceExportVisible)]="workspaceExportVisible"
-></app-workspace-export>

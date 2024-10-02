@@ -12,9 +12,14 @@
 >
   <ng-template pTemplate="header">
     <div class="ml-1 flex flex-wrap align-items-center column-gap-4 row-gap-1">
-      <!--div class="flex flex-row flex-wrap align-is-center column-gap-4 row-gap-1"-->
       <!-- Quick Filter -->
-      <div class="slim-selectbutton filter-selectbutton">
+      <div
+        class="slim-selectbutton filter-selectbutton"
+        [attr.aria-label]="'DIALOG.ROLE.QUICK_FILTER.TOOLTIP' | translate"
+        [pTooltip]="'DIALOG.ROLE.QUICK_FILTER.TOOLTIP' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      >
         <p-selectButton
           inputid="ws_roles_quick_filter"
           styleClass="data-view-control"
@@ -22,20 +27,11 @@
           [(ngModel)]="quickFilterValue"
           (onChange)="onQuickFilterChange($event)"
         >
-          <ng-template let-i pTemplate>
-            <span [pTooltip]="i.tooltipKey | translate" tooltipPosition="top" tooltipEvent="hover">
-              {{ i.label | translate }}
-            </span></ng-template
-          >
+          <ng-template let-i pTemplate>{{ i.label | translate }}</ng-template>
         </p-selectButton>
-        <div
-          class="p-selectbutton-subtitle flex flex-row flex-nowrap column-gap-3 opacity-80"
-          [attr.aria-label]="'DIALOG.ROLE.QUICK_FILTER.TOOLTIP' | translate"
-          [pTooltip]="'DIALOG.ROLE.QUICK_FILTER.TOOLTIP' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        >
-          {{ 'DIALOG.ROLE.QUICK_FILTER.LABEL' | translate }}
+        <div class="p-selectbutton-subtitle flex flex-row flex-nowrap column-gap-3 opacity-90">
+          <span> {{ 'DIALOG.ROLE.QUICK_FILTER.LABEL' | translate }}: </span>
+          <span> {{ 'DIALOG.ROLE.QUICK_FILTER.' + quickFilterValue | translate }}</span>
         </div>
       </div>
       <!-- Filter & Sorting -->
@@ -104,10 +100,10 @@
   <!-- GRID -->
   <ng-template let-roles pTemplate="gridItem">
     <div class="grid grid-nogutter">
-      <div *ngFor="let role of roles; index as i" class="col-12 sm:col-6 md:col-4 lg:col-4 xl:col-3 p-2 sm:p-3">
+      <div *ngFor="let role of roles; index as i" class="col-12 sm:col-6 md:col-4 lg:col-4 xl:col-3 p-2 sm:px-3">
         <a
           [id]="'ws_roles_grid_data_row_' + i"
-          class="block card relative py-2 px-3 hover:bg-gray-200 cursor-pointer"
+          class="block card relative py-2 px-4 hover:bg-gray-200 cursor-pointer"
           [class.card-primary-color]="role.isWorkspaceRole"
           (click)="onEditRole($event, role)"
           [attr.aria-label]="role.description ?? ''"
@@ -117,7 +113,7 @@
         >
           <span
             *ngIf="role.isWorkspaceRole"
-            [id]="'ws_roles_grid_data_row_' + i + '_iam'"
+            [id]="'ws_roles_grid_data_row_' + i + '_is_workspace'"
             class="card-badge-left card-badge-left-text badge-2 p-1"
             [class.line-through]="role.deleted"
             [class.danger-action-text]="role.deleted"
@@ -130,7 +126,7 @@
           >
           <span
             *ngIf="role.isIamRole"
-            [id]="'ws_roles_grid_data_row_' + i + '_iam'"
+            [id]="'ws_roles_grid_data_row_' + i + '_is_iam'"
             class="card-badge-left card-badge-left-text badge-1 p-1"
             [attr.aria-label]="'DIALOG.ROLE.ORIGIN.IAM' | translate"
             [pTooltip]="'DIALOG.ROLE.ORIGIN.IAM' | translate"
@@ -162,13 +158,13 @@
           ></a>
           <div
             [id]="'ws_roles_grid_data_row_' + i + '_role_name'"
-            class="h-2-5rem px-2 flex flex-column justify-content-center text-center word-wrap-break"
+            class="h-2-5rem flex flex-column justify-content-center text-center word-wrap-break"
             [attr.aria-label]="role.name?.length > 40 ? role.name : ''"
             [pTooltip]="role.name?.length > 40 ? role.name : ''"
             tooltipPosition="top"
             tooltipEvent="hover"
           >
-            {{ limitText(role.name, 60) }}
+            {{ limitText(role.name, 50) }}
           </div>
         </a>
       </div>

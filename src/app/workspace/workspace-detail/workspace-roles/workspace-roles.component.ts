@@ -98,7 +98,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
    */
   private searchWorkspaceRoles(): Observable<Role[]> {
     return this.wRoleApi
-      .searchWorkspaceRoles({ workspaceRoleSearchCriteria: { workspaceId: this.workspace?.id } })
+      .searchWorkspaceRoles({ workspaceRoleSearchCriteria: { workspaceId: this.workspace?.id, pageSize: 1000 } })
       .pipe(
         map((result) => {
           return result.stream
@@ -116,7 +116,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
       )
   }
   private searchIamRoles(): Observable<Role[]> {
-    return this.iamRoleApi.searchAvailableRoles({ iAMRoleSearchCriteria: {} }).pipe(
+    return this.iamRoleApi.searchAvailableRoles({ iAMRoleSearchCriteria: { pageSize: 1000 } }).pipe(
       map((result) => {
         return result.stream
           ? result.stream?.map((role) => {
@@ -198,6 +198,8 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
         next: (data) => {
           this.msgService.success({ summaryKey: 'ACTIONS.CREATE.ROLE_OK' })
           role.id = data.id
+          role.modificationCount = data.modificationCount
+          role.modificationDate = data.modificationDate
           role.isWorkspaceRole = true
         },
         error: () => {
@@ -255,6 +257,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
    * UI Events
    */
   public onQuickFilterChange(ev: any): void {
+    if (ev.value) this.quickFilterValue = ev.value
     if (ev.value === 'ALL') {
       this.filterBy = this.filterValueDefault
       this.filterValue = ''

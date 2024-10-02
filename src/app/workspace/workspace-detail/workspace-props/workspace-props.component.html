@@ -59,7 +59,9 @@
             id="ws_props_item_theme_link"
             class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
             (click)="onGoToTheme(wsThemeName.value)"
-            [ngClass]="!editMode && inputBaseUrl.value ? 'cursor-pointer' : 'p-disabled'"
+            [ngClass]="
+              !editMode && inputBaseUrl.value && (themeProductRegistered$ | async) ? 'cursor-pointer' : 'p-disabled'
+            "
             [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
             [pTooltip]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
             tooltipPosition="right"

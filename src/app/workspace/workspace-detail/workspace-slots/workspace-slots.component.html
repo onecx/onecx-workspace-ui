@@ -63,7 +63,7 @@
   <!-- GRID -->
   <ng-template let-slots pTemplate="gridItem">
     <div class="grid grid-nogutter">
-      <div *ngFor="let slot of slots; index as i" class="col-12 sm:col-6 md:col-4 lg:col-4 xl:col-3 p-2 sm:p-3">
+      <div *ngFor="let slot of slots; index as i" class="col-12 sm:col-6 md:col-4 lg:col-4 xl:col-3 p-2 sm:px-3">
         <a
           [id]="'ws_slots_grid_data_row_' + i + '_action_detail'"
           class="block card relative py-2 px-4"

@@ -285,14 +285,14 @@
       },
       "EDIT.TOOLTIP": "Role Type",
       "QUICK_FILTER": {
-        "LABEL": "Type",
-        "TOOLTIP": "Quickfilter for Role Type",
+        "LABEL": "Role Type",
+        "TOOLTIP": "Load & Filter for Role Type",
         "ALL": "All",
-        "ALL.TOOLTIP": "Clear filter",
+        "ALL.TOOLTIP": "IAM and Workspace Roles",
         "IAM": "IAM",
-        "IAM.TOOLTIP": "Filter: Only IAM Roles",
+        "IAM.TOOLTIP": "IAM Roles",
         "WORKSPACE": "Workspace",
-        "WORKSPACE.TOOLTIP": "Filter: Only Workspace Roles"
+        "WORKSPACE.TOOLTIP": "Workspace Roles"
       },
       "ORIGIN": {
         "IAM": "Role exists in Identity Access Management",
