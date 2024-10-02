@@ -59,7 +59,7 @@ app:
           tagName: ocx-footer-menu-component
         list-workspaces-using-theme:
           exposedModule: "./OneCXListWorkspacesUsingThemeComponent"
-          description: "List of Workspaces which using the given Theme"
+          description: "List of Workspaces using the given Theme"
           type: COMPONENT
           technology: WEBCOMPONENTMODULE
           remoteName: onecx-workspace

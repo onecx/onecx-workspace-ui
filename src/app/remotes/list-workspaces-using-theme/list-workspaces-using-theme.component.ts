@@ -1,6 +1,6 @@
 import { CommonModule, Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { Component, Inject, Input, OnInit } from '@angular/core'
+import { Component, Inject, Input, OnChanges } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy } from '@ngneat/until-destroy'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
@@ -18,11 +18,14 @@ import {
   UserService,
   createRemoteComponentTranslateLoader
 } from '@onecx/portal-integration-angular'
-import { MenuItem } from 'primeng/api'
 import { PanelMenuModule } from 'primeng/panelmenu'
-import { Observable, ReplaySubject } from 'rxjs'
-import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
-import { MenuItemService } from 'src/app/shared/services/menu-item.service'
+import { catchError, map, Observable, of, ReplaySubject } from 'rxjs'
+import {
+  Configuration,
+  MenuItemAPIService,
+  SearchWorkspacesResponse,
+  WorkspaceAPIService
+} from 'src/app/shared/generated'
 import { SharedModule } from 'src/app/shared/shared.module'
 import { environment } from 'src/environments/environment'
 
@@ -55,16 +58,17 @@ import { environment } from 'src/environments/environment'
   ]
 })
 @UntilDestroy()
-export class OneCXListWorkspacesUsingThemeComponent implements ocxRemoteComponent, ocxRemoteWebcomponent, OnInit {
-  menuItems$: Observable<MenuItem[]> | undefined
+export class OneCXListWorkspacesUsingThemeComponent implements ocxRemoteComponent, ocxRemoteWebcomponent, OnChanges {
+  @Input() themeName = ''
+  public workspacesUsingTheme: Observable<string[]> | undefined
 
   constructor(
-    @Inject(BASE_URL) private baseUrl: ReplaySubject<string>,
-    private userService: UserService,
-    private translateService: TranslateService,
-    private appStateService: AppStateService,
-    private menuItemApiService: MenuItemAPIService,
-    private menuItemService: MenuItemService
+    @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
+    private readonly userService: UserService,
+    private readonly translateService: TranslateService,
+    private readonly appStateService: AppStateService,
+    private readonly menuItemApiService: MenuItemAPIService,
+    private readonly workspaceApi: WorkspaceAPIService
   ) {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
   }
@@ -75,12 +79,30 @@ export class OneCXListWorkspacesUsingThemeComponent implements ocxRemoteComponen
 
   ocxInitRemoteComponent(remoteComponentConfig: RemoteComponentConfig) {
     this.baseUrl.next(remoteComponentConfig.baseUrl)
-    this.menuItemApiService.configuration = new Configuration({
+    this.workspaceApi.configuration = new Configuration({
       basePath: Location.joinWithSlash(remoteComponentConfig.baseUrl, environment.apiPrefix)
     })
   }
 
-  ngOnInit(): void {
-    console.log('INIT')
+  ngOnChanges(): void {
+    this.findWorkspacesUsingTheme(this.themeName)
+  }
+
+  private findWorkspacesUsingTheme(theme: string) {
+    this.workspacesUsingTheme = this.workspaceApi.searchWorkspaces({ searchWorkspacesRequest: {} }).pipe(
+      catchError((err) => {
+        console.error('searchWorkspaces():', err)
+        return of({ stream: [] } as SearchWorkspacesResponse)
+      }),
+      map((data) => {
+        const workspaces: string[] = []
+        if (data.stream) {
+          data.stream.forEach((ws) => {
+            if (ws.theme === theme) workspaces.push(ws.displayName)
+          })
+        }
+        return workspaces
+      })
+    )
   }
 }
