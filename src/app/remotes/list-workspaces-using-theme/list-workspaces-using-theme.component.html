@@ -1,17 +1,4 @@
-<p>{{ workspacesUsingTheme | async }}</p>
-
-<!-- <div>
-  <ng-template #loading>
-    <ocx-loading></ocx-loading>
-  </ng-template>
-
-  <ng-template pTemplate="header">
-    <span
-      [pTooltip]="'USER_ROLE_PERMISSIONS.TAB_NAME_PERMISSIONS.TOOLTIP' | translate"
-      tooltipPosition="top"
-      tooltipEvent="hover"
-    >
-      {{ 'USER_ROLE_PERMISSIONS.TAB_NAME_PERMISSIONS' | translate }}
-    </span>
-  </ng-template>
-</div> -->
+<div>
+  <div class="font-bold">{{ 'REMOTES.LIST_WORKSPACES' | translate }}</div>
+  <div *ngFor="let workspace of workspacesUsingTheme | async" class="m-3">{{ workspace }}</div>
+</div>
