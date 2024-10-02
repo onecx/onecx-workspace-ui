@@ -12,20 +12,10 @@ import {
   ocxRemoteWebcomponent,
   provideTranslateServiceForRoot
 } from '@onecx/angular-remote-components'
-import {
-  AppStateService,
-  PortalCoreModule,
-  UserService,
-  createRemoteComponentTranslateLoader
-} from '@onecx/portal-integration-angular'
+import { PortalCoreModule, UserService, createRemoteComponentTranslateLoader } from '@onecx/portal-integration-angular'
 import { PanelMenuModule } from 'primeng/panelmenu'
 import { catchError, map, Observable, of, ReplaySubject } from 'rxjs'
-import {
-  Configuration,
-  MenuItemAPIService,
-  SearchWorkspacesResponse,
-  WorkspaceAPIService
-} from 'src/app/shared/generated'
+import { Configuration, SearchWorkspacesResponse, WorkspaceAPIService } from 'src/app/shared/generated'
 import { SharedModule } from 'src/app/shared/shared.module'
 import { environment } from 'src/environments/environment'
 
@@ -66,8 +56,6 @@ export class OneCXListWorkspacesUsingThemeComponent implements ocxRemoteComponen
     @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
     private readonly userService: UserService,
     private readonly translateService: TranslateService,
-    private readonly appStateService: AppStateService,
-    private readonly menuItemApiService: MenuItemAPIService,
     private readonly workspaceApi: WorkspaceAPIService
   ) {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
