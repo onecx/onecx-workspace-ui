@@ -1,0 +1,4 @@
+<div>
+  <div class="font-bold">{{ 'REMOTES.LIST_WORKSPACES' | translate }}</div>
+  <div *ngFor="let workspace of workspacesUsingTheme | async" class="m-3">{{ workspace }}</div>
+</div>

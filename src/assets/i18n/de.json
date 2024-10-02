@@ -552,7 +552,8 @@
     },
     "USER_SIDEBAR_MENU": {
       "LOGOUT": "Abmelden"
-    }
+    },
+    "LIST_WORKSPACES": "This Theme is used by the following Workspaces: "
   },
   "VALIDATION": {
     "FORM_INVALID": "Das Formular enthält ungültige Werte.",
