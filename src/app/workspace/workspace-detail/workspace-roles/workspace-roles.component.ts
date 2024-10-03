@@ -283,7 +283,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
       case 'WORKSPACE':
         return '' + this.wRoleCount
       default:
-        return '' + this.iamRoleCount + ' + ' + this.wRoleCount + ' = ' + (this.iamRoleCount + this.wRoleCount)
+        return '' + (this.iamRoleCount + this.wRoleCount)
     }
     return ''
   }
