@@ -18,7 +18,7 @@ import {
 } from 'src/app/shared/generated'
 import { goToEndpoint, limitText } from 'src/app/shared/utils'
 
-export type RoleType = 'WORKSPACE' | 'IAM'
+export type RoleType = 'WORKSPACE' | 'IAM' | 'WORKSPACE,IAM'
 export type RoleFilterType = 'ALL' | RoleType
 export type Role = WorkspaceRole & { isIamRole: boolean; isWorkspaceRole: boolean; type: RoleType }
 export type ChangeMode = 'VIEW' | 'CREATE' | 'EDIT' | 'COPY' | 'DELETE'
@@ -37,23 +37,27 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   public roles$!: Observable<Role[]>
   public roles: Role[] = []
   public role: Role | undefined
-  public workspaceRoles: string[] = []
+  public wRoles: string[] = []
+  public wRoleCount = 0
+  public iamRoleCount = 0
   public limitText = limitText
 
   // dialog
   @ViewChild(DataView) dv: DataView | undefined
   public dataViewControlsTranslations: DataViewControlTranslations = {}
-  public filterValue: string | undefined
-  public filterValueDefault = 'name,type'
-  public filterBy = this.filterValueDefault
+  public filterValue = 'WORKSPACE'
+  public filterByDefault = 'name,type'
+  public filterBy = 'name,type'
   public sortField = 'type'
   public sortOrder = -1
   public loading = false
   public iamRolesLoaded = false
-  public workspaceRolesLoaded = false
+  public wRolesLoaded = false
   public exceptionKey: string | undefined
   public quickFilterValue: RoleFilterType = 'WORKSPACE'
+  public quickFilterValue2: RoleFilterType = 'WORKSPACE'
   public quickFilterItems: ExtendedSelectItem[]
+  public quickFilterCount = ''
   public changeMode: ChangeMode = 'VIEW'
   public hasCreatePermission = false
   public hasDeletePermission = false
@@ -138,9 +142,10 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
     this.searchWorkspaceRoles().subscribe({
       next: (data) => data.forEach((r) => result.push(r)),
       complete: () => {
-        this.workspaceRolesLoaded = true
+        this.wRolesLoaded = true
         this.roles = [...result]
-        this.workspaceRoles = this.roles.map((r) => r.name ?? '')
+        this.wRoles = this.roles.map((r) => r.name ?? '')
+        this.wRoleCount = this.wRoles.length
       }
     })
   }
@@ -153,19 +158,21 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
         // combine role results and prevent duplicates
         result.forEach((iam) => {
           if (iam.name) {
-            if (this.workspaceRoles.length === 0 || !this.workspaceRoles.includes(iam.name)) this.roles.push(iam)
+            if (this.wRoles.length === 0 || !this.wRoles.includes(iam.name)) this.roles.push(iam)
             else {
               const role = this.roles.filter((r) => r.name === iam.name)
               role[0].isIamRole = true
+              role[0].type = 'WORKSPACE,IAM'
             }
           }
         })
         this.roles = [...this.roles]
+        this.iamRoleCount = result.length
       }
     })
   }
   private searchRoles(force: boolean = false): void {
-    if (['WORKSPACE', 'ALL'].includes(this.quickFilterValue) && (force || !this.workspaceRolesLoaded)) {
+    if (['WORKSPACE', 'ALL'].includes(this.quickFilterValue) && (force || !this.wRolesLoaded)) {
       this.loading = true
       this.exceptionKey = undefined
       this.getWorkspaceRoles()
@@ -176,10 +183,9 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
       this.getIamRoles()
     }
   }
-
   public onReload() {
     this.roles = []
-    this.workspaceRolesLoaded = false
+    this.wRolesLoaded = false
     this.iamRolesLoaded = false
     this.searchRoles()
   }
@@ -257,25 +263,35 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
    * UI Events
    */
   public onQuickFilterChange(ev: any): void {
-    if (ev.value) this.quickFilterValue = ev.value
-    if (ev.value === 'ALL') {
-      this.filterBy = this.filterValueDefault
-      this.filterValue = ''
-      this.dv?.filter(this.filterValue, 'contains')
-    } else {
-      this.filterBy = 'type'
-      if (ev.value) {
-        this.filterValue = ev.value
-        this.dv?.filter(ev.value, 'equals')
+    if (ev.value) {
+      this.quickFilterValue = ev.value
+      this.quickFilterValue2 = this.quickFilterValue // bug in select button on click active button again
+      this.searchRoles()
+      if (ev.value === 'ALL') {
+        this.filterBy = this.filterByDefault
+        this.dv?.filter('', 'contains')
+      } else {
+        this.filterBy = 'type'
+        this.dv?.filter(ev.value, 'contains')
       }
+    } else this.quickFilterValue = this.quickFilterValue2 // remember, prevent null because bug
+  }
+  public onGetQuickFilterCount(roleType: RoleFilterType): string {
+    switch (roleType) {
+      case 'IAM':
+        return '' + this.iamRoleCount
+      case 'WORKSPACE':
+        return '' + this.wRoleCount
+      default:
+        return '' + this.iamRoleCount + ' + ' + this.wRoleCount + ' = ' + (this.iamRoleCount + this.wRoleCount)
     }
+    return ''
   }
   public onFilterChange(filter: string): void {
     if (filter === '') {
       this.filterBy = 'name,type'
     }
     this.dv?.filter(filter, 'contains')
-    this.searchRoles()
   }
   public onSortChange(field: string): void {
     this.sortField = field
