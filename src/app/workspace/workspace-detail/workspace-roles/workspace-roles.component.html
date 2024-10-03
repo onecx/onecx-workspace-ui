@@ -9,6 +9,8 @@
   [filterBy]="filterBy"
   [sortField]="sortField"
   [sortOrder]="sortOrder"
+  [showCurrentPageReport]="true"
+  currentPageReportTemplate="{first} - {last} {{ 'ACTIONS.SEARCH.OF' | translate }} {totalRecords}"
 >
   <ng-template pTemplate="header">
     <div class="ml-1 flex flex-wrap align-items-center column-gap-4 row-gap-1">

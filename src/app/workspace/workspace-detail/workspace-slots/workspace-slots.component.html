@@ -9,6 +9,8 @@
   [filterBy]="filterBy"
   [sortField]="sortField"
   [sortOrder]="sortOrder"
+  [showCurrentPageReport]="true"
+  currentPageReportTemplate="{first} - {last} {{ 'ACTIONS.SEARCH.OF' | translate }} {totalRecords}"
 >
   <ng-template pTemplate="header">
     <div class="flex flex-wrap align-items-center column-gap-4 row-gap-1">
@@ -69,8 +71,8 @@
           class="block card relative py-2 px-4"
           [ngClass]="{ 'card-primary-color hover:bg-gray-200 cursor-pointer': !slot.new }"
           (click)="onSlotDetail($event, slot)"
-          [attr.aria-label]="slot.description ?? '' | translate"
-          [pTooltip]="slot.description ?? '' | translate"
+          [attr.aria-label]="slot.description ?? ''"
+          [pTooltip]="slot.description ?? ''"
           tooltipPosition="top"
           tooltipEvent="hover"
         >
