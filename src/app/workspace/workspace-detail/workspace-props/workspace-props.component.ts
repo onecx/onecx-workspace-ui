@@ -256,15 +256,8 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   }
 
   public onGoToTheme(name?: string): void {
-    if (!this.isLoading)
-      goToEndpoint(
-        this.workspaceService,
-        this.msgService,
-        this.router,
-        'onecx-theme',
-        'onecx-theme-ui',
-        'theme-detail',
-        { 'theme-name': name }
-      )
+    goToEndpoint(this.workspaceService, this.msgService, this.router, 'onecx-theme', 'onecx-theme-ui', 'theme-detail', {
+      'theme-name': name
+    })
   }
 }
