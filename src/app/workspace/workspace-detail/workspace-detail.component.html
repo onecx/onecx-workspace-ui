@@ -26,10 +26,11 @@
           [attr.aria-label]="'TABS.WORKSPACE.DETAILS' | translate"
           [tooltip]="'TABS.WORKSPACE.TOOLTIPS.DETAILS' | translate"
         >
+          <!-- showOperatorMessage -->
           <p-message
-            *ngIf="workspace?.operator"
+            *ngIf="workspace?.operator && showOperatorMessage"
             id="ws_detail_operator_message"
-            styleClass="mb-2"
+            styleClass="absolute z-1 fadeout animation-duration-1000 animation-delay-3000 animation-iteration-1 animation-fill-forwards"
             severity="warn"
             [text]="'INTERNAL.OPERATOR_MESSAGE' | translate"
           ></p-message>
@@ -50,13 +51,6 @@
           tooltipPosition="top"
           tooltipEvent="hover"
         >
-          <p-message
-            *ngIf="workspace?.operator"
-            id="ws_detail_operator_message"
-            styleClass="mb-2"
-            severity="warn"
-            [text]="'INTERNAL.OPERATOR_MESSAGE' | translate"
-          ></p-message>
           <app-workspace-contact [workspace]="workspace" [editMode]="editMode"></app-workspace-contact>
         </p-tabPanel>
 
@@ -70,13 +64,6 @@
           tooltipPosition="top"
           tooltipEvent="hover"
         >
-          <p-message
-            *ngIf="workspace?.operator"
-            id="ws_detail_operator_message"
-            styleClass="mb-2"
-            severity="warn"
-            [text]="'INTERNAL.OPERATOR_MESSAGE' | translate"
-          ></p-message>
           <app-workspace-intern [workspace]="workspace" [dateFormat]="dateFormat"></app-workspace-intern>
         </p-tabPanel>
 
