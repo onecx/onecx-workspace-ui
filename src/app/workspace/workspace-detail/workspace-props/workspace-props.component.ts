@@ -98,7 +98,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     })
     this.fetchingLogoUrl = this.getLogoUrl(this.workspace)
     this.currentLogoUrl.emit(this.fetchingLogoUrl)
-    this.prepareThemeUrl(this.workspace?.theme)
   }
 
   public onSave(): void {
@@ -233,26 +232,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
         }
       })
     )
-  }
-
-  private prepareThemeUrl(name?: string): void {
-    let link: string | undefined = ''
-    let endpointExists = false
-    this.workspaceService.doesUrlExistFor('onecx-theme', 'onecx-theme-ui', 'theme-detail').subscribe((exists) => {
-      endpointExists = exists
-    })
-    if (!endpointExists) {
-      this.msgService.error({
-        summaryKey: 'EXCEPTIONS.ENDPOINT.NOT_EXIST'
-      })
-    } else {
-      this.workspaceService
-        .getUrl('onecx-theme', 'onecx-theme-ui', 'theme-detail', { 'theme-name': name })
-        .subscribe((url) => {
-          link = url
-        })
-    }
-    this.themeUrl = link
   }
 
   public onGoToTheme(name?: string): void {

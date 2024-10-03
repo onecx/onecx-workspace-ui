@@ -30,7 +30,7 @@
           <p-message
             *ngIf="workspace?.operator && showOperatorMessage"
             id="ws_detail_operator_message"
-            styleClass="absolute z-1 fadeout animation-duration-1000 animation-delay-3000 animation-iteration-1 animation-fill-forwards"
+            styleClass="absolute z-1 max-w-11 fadeout animation-duration-1000 animation-delay-3000 animation-iteration-1 animation-fill-forwards"
             severity="warn"
             [text]="'INTERNAL.OPERATOR_MESSAGE' | translate"
           ></p-message>

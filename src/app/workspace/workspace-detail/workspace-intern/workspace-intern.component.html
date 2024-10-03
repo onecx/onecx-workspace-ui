@@ -1,35 +1,31 @@
 <div class="surface-section my-1 mx-3">
-  <div class="w-12 md:w-10 lg:w-8 xl:w-6 flex flex-wrap align-items-center row-gap-2 mb-4">
-    <div class="w-12 sm:w-5 px-3">
-      <p-checkbox
-        type="text"
-        [readonly]="true"
-        inputId="ws_detail_item_operator"
-        [(ngModel)]="operator"
-        [binary]="true"
-        [styleClass]="'cursor-auto shadow-none'"
-        [label]="'INTERNAL.OPERATOR' | translate"
-        [attr.aria-label]="'INTERNAL.OPERATOR' | translate"
-        [pTooltip]="'INTERNAL.TOOLTIPS.OPERATOR' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      ></p-checkbox>
-    </div>
-    <div class="w-12 sm:w-7 px-3">
-      <p-checkbox
-        type="text"
-        [readonly]="true"
-        inputId="ws_detail_item_mandatory"
-        [(ngModel)]="mandatory"
-        [binary]="true"
-        [styleClass]="'cursor-auto shadow-none'"
-        [label]="'INTERNAL.MANDATORY' | translate"
-        [attr.aria-label]="'INTERNAL.MANDATORY' | translate"
-        [pTooltip]="'INTERNAL.TOOLTIPS.MANDATORY' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      ></p-checkbox>
-    </div>
+  <div class="ml-3 flex flex-row flex-wrap justify-content-start align-items-center column-gap-8 row-gap-2 mb-4">
+    <p-checkbox
+      type="text"
+      inputId="ws_detail_item_operator"
+      styleClass="cursor-auto shadow-none"
+      [(ngModel)]="operator"
+      [binary]="true"
+      [readonly]="true"
+      [label]="'INTERNAL.OPERATOR' | translate"
+      [attr.aria-label]="'INTERNAL.OPERATOR' | translate"
+      [pTooltip]="'INTERNAL.TOOLTIPS.OPERATOR' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
+    ></p-checkbox>
+    <p-checkbox
+      type="text"
+      inputId="ws_detail_item_mandatory"
+      styleClass="cursor-auto shadow-none"
+      [(ngModel)]="mandatory"
+      [binary]="true"
+      [readonly]="true"
+      [label]="'INTERNAL.MANDATORY' | translate"
+      [attr.aria-label]="'INTERNAL.MANDATORY' | translate"
+      [pTooltip]="'INTERNAL.TOOLTIPS.MANDATORY' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
+    ></p-checkbox>
   </div>
 
   <div class="flex flex-wrap flex-column row-gap-4 w-12 md:w-10 lg:w-8 xl:w-6">
