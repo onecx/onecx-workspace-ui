@@ -44,8 +44,6 @@ fdescribe('WorkspacePropsComponent', () => {
     'doesUrlExistFor',
     'getUrl'
   ])
-  const routerMock = jasmine.createSpyObj('Router', ['navigateByUrl'])
-
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'info', 'error'])
   const apiServiceSpy = {
     updateWorkspace: jasmine.createSpy('updateWorkspace').and.returnValue(of([])),
