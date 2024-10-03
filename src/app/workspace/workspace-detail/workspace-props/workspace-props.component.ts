@@ -24,11 +24,13 @@ import { getLocation } from '@onecx/accelerator'
 export class WorkspacePropsComponent implements OnInit, OnChanges {
   @Input() workspace: Workspace | undefined
   @Input() editMode = false
+  @Input() isLoading = false
   @Output() currentLogoUrl = new EventEmitter<string>()
 
   private readonly destroy$ = new Subject()
   public formGroup: FormGroup
   public productPaths$!: Observable<string[]>
+  public themeProductRegistered$!: Observable<boolean>
   public themes$!: Observable<string[]>
   public urlPattern = '/base-path-to-workspace'
   public externUrlPattern = 'http(s)://path-to-image'
@@ -46,8 +48,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   public themeUrl: string | undefined = undefined
   RefType = RefType
 
-  goToEndpoint = goToEndpoint
-
   constructor(
     private location: Location,
     private router: Router,
@@ -58,6 +58,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     private wProductApi: WorkspaceProductAPIService
   ) {
     this.deploymentPath = getLocation().deploymentPath === '/' ? '' : getLocation().deploymentPath.slice(0, -1)
+    this.themeProductRegistered$ = workspaceService.doesUrlExistFor('onecx-theme', 'onecx-theme-ui', 'theme-detail')
 
     this.formGroup = new FormGroup({
       disabled: new FormControl(null),
@@ -73,8 +74,10 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   }
 
   public ngOnInit(): void {
-    this.loadProductPaths()
-    this.loadThemes()
+    if (!this.isLoading) {
+      this.loadProductPaths()
+      this.loadThemes()
+    }
   }
 
   public ngOnChanges(): void {
@@ -95,7 +98,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     })
     this.fetchingLogoUrl = this.getLogoUrl(this.workspace)
     this.currentLogoUrl.emit(this.fetchingLogoUrl)
-    this.prepareThemeUrl(this.workspace?.theme)
   }
 
   public onSave(): void {
@@ -230,26 +232,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
         }
       })
     )
-  }
-
-  private prepareThemeUrl(name?: string): void {
-    let link: string | undefined = ''
-    let endpointExists = false
-    this.workspaceService.doesUrlExistFor('onecx-theme', 'onecx-theme-ui', 'theme-detail').subscribe((exists) => {
-      endpointExists = exists
-    })
-    if (!endpointExists) {
-      this.msgService.error({
-        summaryKey: 'EXCEPTIONS.ENDPOINT.NOT_EXIST'
-      })
-    } else {
-      this.workspaceService
-        .getUrl('onecx-theme', 'onecx-theme-ui', 'theme-detail', { 'theme-name': name })
-        .subscribe((url) => {
-          link = url
-        })
-    }
-    this.themeUrl = link
   }
 
   public onGoToTheme(name?: string): void {

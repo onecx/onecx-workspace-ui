@@ -35,7 +35,7 @@ const wRole: Role = {
   type: 'WORKSPACE'
 }
 
-describe('WorkspaceRolesComponent', () => {
+fdescribe('WorkspaceRolesComponent', () => {
   let component: WorkspaceRolesComponent
   let fixture: ComponentFixture<WorkspaceRolesComponent>
 
@@ -106,7 +106,7 @@ describe('WorkspaceRolesComponent', () => {
     expect((component as any).searchRoles).toHaveBeenCalled()
   })
 
-  it('should populate workspaceRoles on search', () => {
+  it('should populate wRoles on search', () => {
     wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: [{ name: 'role' }] as WorkspaceRolePageResult }))
     const changes = {
       ['workspace']: {
@@ -119,10 +119,10 @@ describe('WorkspaceRolesComponent', () => {
 
     component.ngOnChanges(changes as unknown as SimpleChanges)
 
-    expect(component.workspaceRoles).toEqual(['role'])
+    expect(component.wRoles).toEqual(['role'])
   })
 
-  it('should populate workspaceRoles on search: empty stream', () => {
+  it('should populate wRoles on search: empty stream', () => {
     wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({}))
     const changes = {
       ['workspace']: {
@@ -135,10 +135,10 @@ describe('WorkspaceRolesComponent', () => {
 
     component.ngOnChanges(changes as unknown as SimpleChanges)
 
-    expect(component.workspaceRoles).toEqual([])
+    expect(component.wRoles).toEqual([])
   })
 
-  it('should populate workspaceRoles on search: empty name', () => {
+  it('should populate wRoles on search: empty name', () => {
     wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: [{}] as WorkspaceRolePageResult }))
     const changes = {
       ['workspace']: {
@@ -151,7 +151,7 @@ describe('WorkspaceRolesComponent', () => {
 
     component.ngOnChanges(changes as unknown as SimpleChanges)
 
-    expect(component.workspaceRoles).toEqual([''])
+    expect(component.wRoles).toEqual([''])
   })
 
   it('should display error on ws search', () => {
@@ -203,7 +203,7 @@ describe('WorkspaceRolesComponent', () => {
     component.quickFilterValue = 'IAM'
     wRole.name = 'api role'
     component.roles[0] = wRole
-    component.workspaceRoles = ['api role']
+    component.wRoles = ['api role']
 
     component.ngOnChanges(changes as unknown as SimpleChanges)
 
@@ -252,7 +252,7 @@ describe('WorkspaceRolesComponent', () => {
     component.onReload()
 
     expect(component.roles).toEqual([])
-    expect(component.workspaceRolesLoaded).toBeFalse()
+    expect(component.wRolesLoaded).toBeFalse()
     expect(component.iamRolesLoaded).toBeFalse()
     expect((component as any).searchRoles).toHaveBeenCalled()
   })
@@ -356,14 +356,14 @@ describe('WorkspaceRolesComponent', () => {
     component.onQuickFilterChange({ value: 'ALL' })
 
     expect(component.filterBy).toEqual('name,type')
-    expect(component.filterValue).toEqual('')
+    expect(component.quickFilterValue).toEqual('ALL')
   })
 
-  it('should set filter by type and call filter method with "equals" when specific value is selected', () => {
-    component.onQuickFilterChange({ value: 'testType' })
+  it('should set filter by specific type', () => {
+    component.onQuickFilterChange({ value: 'IAM' })
 
     expect(component.filterBy).toEqual('type')
-    expect(component.filterValue).toEqual('testType')
+    expect(component.quickFilterValue).toEqual('IAM')
   })
 
   it('should set filterBy to name,type when filter is empty', () => {

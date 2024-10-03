@@ -6,12 +6,6 @@
     [figureImage]="currentLogoUrl"
     [figureBackground]="!currentLogoUrl"
   >
-    <p-message
-      *ngIf="workspace?.operator"
-      id="ws_detail_operator_message"
-      severity="warn"
-      [text]="'INTERNAL.OPERATOR_MESSAGE' | translate"
-    ></p-message>
   </ocx-page-header>
 
   <ocx-page-content *ngIf="(workspace$ | async)?.resource as workspace">
@@ -32,9 +26,18 @@
           [attr.aria-label]="'TABS.WORKSPACE.DETAILS' | translate"
           [tooltip]="'TABS.WORKSPACE.TOOLTIPS.DETAILS' | translate"
         >
+          <!-- showOperatorMessage -->
+          <p-message
+            *ngIf="workspace?.operator && showOperatorMessage"
+            id="ws_detail_operator_message"
+            styleClass="absolute z-1 max-w-11 fadeout animation-duration-1000 animation-delay-3000 animation-iteration-1 animation-fill-forwards"
+            severity="warn"
+            [text]="'INTERNAL.OPERATOR_MESSAGE' | translate"
+          ></p-message>
           <app-workspace-props
             [workspace]="workspace"
             [editMode]="editMode"
+            [isLoading]="isLoading"
             (currentLogoUrl)="onUpdateLogoUrl($event)"
           ></app-workspace-props>
         </p-tabPanel>
@@ -151,8 +154,3 @@
     </div>
   </ng-template>
 </p-dialog>
-
-<app-workspace-export
-  [workspace]="workspace!"
-  [(workspaceExportVisible)]="workspaceExportVisible"
-></app-workspace-export>

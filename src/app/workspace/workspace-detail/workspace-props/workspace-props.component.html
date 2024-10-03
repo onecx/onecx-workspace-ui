@@ -1,23 +1,21 @@
 <div class="surface-section my-1 mx-3">
   <form [formGroup]="formGroup">
     <div class="flex flex-wrap flex-column row-gap-4 w-12 md:w-10 lg:w-8 xl:w-6">
-      <div class="flex flex-wrap align-items-center row-gap-2">
-        <div class="w-12 sm:w-5 px-3">
-          <p-checkbox
-            type="text"
-            [readonly]="true"
-            inputId="ws_props_item_disabled"
-            formControlName="disabled"
-            [binary]="true"
-            [styleClass]="'cursor-auto shadow-none'"
-            [label]="'WORKSPACE.DISABLED' | translate"
-            [attr.aria-label]="'WORKSPACE.DISABLED' | translate"
-            [pTooltip]="'WORKSPACE.TOOLTIPS.DISABLED' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          ></p-checkbox>
-        </div>
-        <div class="w-12 sm:w-7 px-3"></div>
+      <div class="ml-3 flex flex-row flex-wrap justify-content-start align-items-center column-gap-8 row-gap-2">
+        <p-checkbox
+          type="text"
+          inputId="ws_props_item_disabled"
+          formControlName="disabled"
+          styleClass="cursor-auto shadow-none"
+          [binary]="true"
+          [readonly]="true"
+          [label]="'WORKSPACE.DISABLED' | translate"
+          [attr.aria-label]="'WORKSPACE.DISABLED' | translate"
+          [pTooltip]="'WORKSPACE.TOOLTIPS.DISABLED' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        ></p-checkbox>
+        <div></div>
       </div>
       <div class="w-12">
         <span class="p-float-label mb-1" controlErrorAnchor>
@@ -59,7 +57,9 @@
             id="ws_props_item_theme_link"
             class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
             (click)="onGoToTheme(wsThemeName.value)"
-            [ngClass]="!editMode && inputBaseUrl.value ? 'cursor-pointer' : 'p-disabled'"
+            [ngClass]="
+              !editMode && inputBaseUrl.value && (themeProductRegistered$ | async) ? 'cursor-pointer' : 'p-disabled'
+            "
             [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
             [pTooltip]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
             tooltipPosition="right"

@@ -45,6 +45,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
   public workspaceDeleteVisible = false
   public workspaceExportVisible = false
   public currentLogoUrl: string | undefined = undefined
+  public showOperatorMessage = true // display initially only
   public limitText = limitText
 
   constructor(
@@ -146,6 +147,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
    */
   public onTabChange($event: any, workspace: Workspace | undefined) {
     if (workspace) {
+      this.showOperatorMessage = false
       this.selectedTabIndex = $event.index
       if (this.selectedTabIndex === 3) this.workspaceForRoles = workspace
       if (this.selectedTabIndex === 4) this.workspaceForSlots = workspace

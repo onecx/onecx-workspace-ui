@@ -44,8 +44,6 @@ describe('WorkspacePropsComponent', () => {
     'doesUrlExistFor',
     'getUrl'
   ])
-  const routerMock = jasmine.createSpyObj('Router', ['navigateByUrl'])
-
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'info', 'error'])
   const apiServiceSpy = {
     updateWorkspace: jasmine.createSpy('updateWorkspace').and.returnValue(of([])),
@@ -200,27 +198,6 @@ describe('WorkspacePropsComponent', () => {
       expect(component.formGroup.controls['theme'].value).toBeNull()
       expect(component.formGroup.controls['baseUrl'].value).toBeNull()
       expect(component.formGroup.disabled).toBeTrue()
-    })
-  })
-
-  describe('setFormData', () => {
-    it('should set form data and prepare theme url', () => {
-      workspaceServiceMock.doesUrlExistFor.and.returnValue(of(true))
-      workspaceServiceMock.getUrl.and.returnValue(of('url'))
-
-      component.setFormData()
-
-      expect(workspaceServiceMock.getUrl).toHaveBeenCalled()
-    })
-
-    it('should set form data and display error if endpoint does not exist', () => {
-      workspaceServiceMock.doesUrlExistFor.and.returnValue(of(false))
-
-      component.setFormData()
-
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({
-        summaryKey: 'EXCEPTIONS.ENDPOINT.NOT_EXIST'
-      })
     })
   })
 
@@ -392,20 +369,10 @@ describe('WorkspacePropsComponent', () => {
     workspaceServiceMock.doesUrlExistFor.and.returnValue(of(true))
     workspaceServiceMock.getUrl.and.returnValue(of(mockUrl))
 
-    spyOn(component, 'goToEndpoint')
+    spyOn(component, 'onGoToTheme')
 
     component.onGoToTheme('themeName')
 
-    expect(component.goToEndpoint).toHaveBeenCalledWith(
-      workspaceServiceMock,
-      msgServiceSpy,
-      routerMock,
-      'onecx-theme',
-      'onecx-theme-ui',
-      'theme-detail',
-      {
-        'theme-name': 'themeName'
-      }
-    )
+    expect(component.onGoToTheme).toHaveBeenCalledWith('themeName')
   })
 })

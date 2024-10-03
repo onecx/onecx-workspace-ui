@@ -283,16 +283,16 @@
         "EDIT": "Rolle ändern",
         "VIEW": "Rolle ansehen"
       },
-      "EDIT.TOOLTIP": "Role Typ",
+      "EDIT.TOOLTIP": "Rollentyp",
       "QUICK_FILTER": {
-        "LABEL": "Typ",
-        "TOOLTIP": "Quickfilter für Rollentyp",
+        "LABEL": "Rollentyp",
+        "TOOLTIP": "Laden & Filter für Rollentyp",
         "ALL": "Alle",
-        "ALL.TOOLTIP": "Filter löschen",
+        "ALL.TOOLTIP": "IAM und Workspace-Rollen",
         "IAM": "IAM",
-        "IAM.TOOLTIP": "Filter: IAM Rollen",
+        "IAM.TOOLTIP": "IAM-Rollen",
         "WORKSPACE": "Workspace",
-        "WORKSPACE.TOOLTIP": "Filter: Workspace Rollen"
+        "WORKSPACE.TOOLTIP": "Workspace-Rollen"
       },
       "ORIGIN": {
         "IAM": "Rolle existiert im Identity Access Management",
