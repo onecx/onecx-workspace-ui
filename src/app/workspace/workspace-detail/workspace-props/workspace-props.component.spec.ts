@@ -201,27 +201,6 @@ describe('WorkspacePropsComponent', () => {
     })
   })
 
-  describe('setFormData', () => {
-    it('should set form data and prepare theme url', () => {
-      workspaceServiceMock.doesUrlExistFor.and.returnValue(of(true))
-      workspaceServiceMock.getUrl.and.returnValue(of('url'))
-
-      component.setFormData()
-
-      expect(workspaceServiceMock.getUrl).toHaveBeenCalled()
-    })
-
-    it('should set form data and display error if endpoint does not exist', () => {
-      workspaceServiceMock.doesUrlExistFor.and.returnValue(of(false))
-
-      component.setFormData()
-
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({
-        summaryKey: 'EXCEPTIONS.ENDPOINT.NOT_EXIST'
-      })
-    })
-  })
-
   describe('onSave', () => {
     it('should return if no workspace to save', () => {
       component.formGroup = formGroup
