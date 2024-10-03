@@ -38,7 +38,6 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   public roles: Role[] = []
   public role: Role | undefined
   public wRoles: string[] = []
-  public wRoleCount = 0
   public iamRoleCount = 0
   public limitText = limitText
 
@@ -145,7 +144,6 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
         this.wRolesLoaded = true
         this.roles = [...result]
         this.wRoles = this.roles.map((r) => r.name ?? '')
-        this.wRoleCount = this.wRoles.length
       }
     })
   }
@@ -281,9 +279,9 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
       case 'IAM':
         return '' + this.iamRoleCount
       case 'WORKSPACE':
-        return '' + this.wRoleCount
+        return '' + this.wRoles.length
       default:
-        return '' + (this.iamRoleCount + this.wRoleCount)
+        return '' + this.roles.length
     }
     return ''
   }
