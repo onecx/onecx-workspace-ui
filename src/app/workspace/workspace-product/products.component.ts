@@ -105,8 +105,8 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
 
   // data
   public wProducts$!: Observable<ExtendedProduct[]>
-  public wProducts!: ExtendedProduct[] // registered products
-  public psProducts!: ExtendedProduct[] // not registered product store products
+  public wProducts: ExtendedProduct[] = [] // registered products
+  public psProducts: ExtendedProduct[] = [] // not registered product store products
   public psProducts$!: Observable<ExtendedProduct[]>
   public psProductsOrg!: Map<string, ExtendedProduct> // all products in product store (not undeployed)
   public currentMfe!: MfeInfo
