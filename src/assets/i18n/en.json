@@ -552,7 +552,8 @@
     },
     "USER_SIDEBAR_MENU": {
       "LOGOUT": "Log out"
-    }
+    },
+    "LIST_WORKSPACES": "This Theme is used by the following Workspaces: "
   },
   "VALIDATION": {
     "FORM_INVALID": "The form contains invalid values.",

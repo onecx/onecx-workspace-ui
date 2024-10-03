@@ -32,10 +32,10 @@ const routes: Routes = [
 @NgModule({
   declarations: [AppEntrypointComponent],
   imports: [
+    AngularAuthModule,
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
-    AngularAuthModule,
     PortalCoreModule.forMicroFrontend(),
     RouterModule.forRoot(addInitializeModuleGuard(routes)),
     TranslateModule.forRoot({
