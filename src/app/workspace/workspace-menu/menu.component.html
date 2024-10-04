@@ -270,7 +270,7 @@
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                   (click)="onDeleteMenu($event, rowData)"
                   [attr.aria-label]="'ACTIONS.DELETE.MENU' | translate"
-                  [pTooltip]="'ACTIONS.DELETE.MENU.TOOLTIP' | translate"
+                  [pTooltip]="'ACTIONS.DELETE.MENU' | translate"
                   tooltipPosition="top"
                   tooltipEvent="hover"
                 >
@@ -392,9 +392,8 @@
 -->
 <app-menu-detail
   [workspaceId]="workspace?.id"
+  [menuItemOrg]="menuItem"
   [menuItems]="menuItems"
-  [menuItemId]="menuItem?.id"
-  [menuItemName]="menuItem?.name"
   [parentItems]="parentItems"
   [changeMode]="changeMode"
   [displayDetailDialog]="displayMenuDetail"

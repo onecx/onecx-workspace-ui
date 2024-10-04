@@ -43,9 +43,9 @@ DefaultValueAccessor.prototype.registerOnChange = function (fn) {
 })
 export class MenuDetailComponent implements OnChanges {
   @Input() public workspaceId: string | undefined
+  @Input() public menuItemOrg: WorkspaceMenuItem | undefined
   @Input() public menuItems: WorkspaceMenuItem[] | undefined
-  @Input() public menuItemId: string | undefined
-  @Input() public menuItemName: string | undefined
+  //@Input() public menuItemId: string | undefined
   @Input() public parentItems!: SelectItem[]
   @Input() changeMode: ChangeMode = 'VIEW'
   @Input() displayDetailDialog = false
@@ -118,7 +118,7 @@ export class MenuDetailComponent implements OnChanges {
 
   public ngOnChanges(changes: SimpleChanges): void {
     // prepare detail dialog (not used on deletion)
-    if (!this.menuItemId) {
+    if (!this.menuItemOrg?.id) {
       this.dataChanged.emit(false)
       return
     }
@@ -131,17 +131,20 @@ export class MenuDetailComponent implements OnChanges {
       if (this.changeMode === 'CREATE') {
         this.formGroup.reset()
         this.menuItem = {
-          parentItemId: this.menuItemId,
-          position: 0,
+          parentItemId: this.menuItemOrg?.id,
+          position: this.menuItemOrg ? this.getMaxChildrenPosition(this.menuItemOrg) : 0,
           external: false,
           disabled: false
         } as MenuItem
         this.formGroup.patchValue(this.menuItem)
         this.prepareUrlList()
-      } else if (this.menuItemId) this.getMenu() // edit
+      } else if (this.menuItemOrg?.id) this.getMenu() // edit
     }
   }
-
+  private getMaxChildrenPosition(item: WorkspaceMenuItem): number {
+    if (!item.children || item.children?.length === 0) return 0
+    else return (item.children[item.children.length - 1].position ?? 0) + 1
+  }
   public onCloseDetailDialog(): void {
     this.dataChanged.emit(false)
   }
@@ -150,7 +153,7 @@ export class MenuDetailComponent implements OnChanges {
   }
 
   private getMenu() {
-    this.menuItem$ = this.menuApi.getMenuItemById({ menuItemId: this.menuItemId! }).pipe(
+    this.menuItem$ = this.menuApi.getMenuItemById({ menuItemId: this.menuItemOrg?.id ?? '' }).pipe(
       catchError((err) => {
         this.msgService.error({ summaryKey: 'DIALOG.MENU.MENU_ITEM_NOT_FOUND' })
         console.error(err.error)
@@ -283,10 +286,10 @@ export class MenuDetailComponent implements OnChanges {
           }
         })
     }
-    if (this.changeMode === 'EDIT' && this.menuItemId) {
+    if (this.changeMode === 'EDIT' && this.menuItemOrg?.id) {
       this.menuApi
         .updateMenuItem({
-          menuItemId: this.menuItemId,
+          menuItemId: this.menuItemOrg?.id,
           updateMenuItemRequest: this.menuItem as UpdateMenuItemRequest
         })
         .subscribe({
@@ -307,7 +310,7 @@ export class MenuDetailComponent implements OnChanges {
    */
   public onMenuDelete(): void {
     this.displayDeleteDialog = false
-    this.menuApi.deleteMenuItemById({ menuItemId: this.menuItemId! }).subscribe({
+    this.menuApi.deleteMenuItemById({ menuItemId: this.menuItemOrg?.id ?? '' }).subscribe({
       next: () => {
         this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MENU_OK' })
         this.dataChanged.emit(true)
