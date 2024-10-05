@@ -356,10 +356,14 @@ export class MenuDetailComponent implements OnChanges {
     }
   }
   public onRemoveLanguage(val: string) {
-    this.languagesAvailable.push(this.languagesDisplayed.filter((l) => l.value === val)[0])
-    this.languagesAvailable.filter((l) => l.value === val)[0].data = ''
-    this.languagesAvailable = this.languagesAvailable.filter((l) => l).sort(dropDownSortItemsByLabel)
-    this.languagesDisplayed = this.languagesDisplayed.filter((l) => l.value !== val)
+    if (['de', 'en'].includes(this.languagesDisplayed.filter((l) => l.value === val)[0].value)) {
+      this.languagesDisplayed.filter((l) => l.value === val)[0].data = ''
+    } else {
+      this.languagesAvailable.push(this.languagesDisplayed.filter((l) => l.value === val)[0])
+      this.languagesAvailable.filter((l) => l.value === val)[0].data = ''
+      this.languagesAvailable = this.languagesAvailable.filter((l) => l).sort(dropDownSortItemsByLabel)
+      this.languagesDisplayed = this.languagesDisplayed.filter((l) => l.value !== val)
+    }
   }
   public onAddLanguage2(ev: any): void {
     this.languagesDisplayed.push(this.languagesAvailable.filter((l) => l.value === ev.option.value)[0])

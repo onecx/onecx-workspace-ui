@@ -260,7 +260,7 @@
           styleClass="data-view-control opacity-90"
           [options]="languagesAvailable"
           (onOptionClick)="onAddLanguage($event.option.value)"
-          [attr.[attr.aria-label]]="'DIALOG.MENU.TABS.I18N.ADD_LANGUAGE' | translate"
+          [attr.aria-label]="'DIALOG.MENU.TABS.I18N.ADD_LANGUAGE' | translate"
           [pTooltip]="'DIALOG.MENU.TABS.I18N.ADD_LANGUAGE' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"
@@ -322,7 +322,9 @@
       <div id="ws_menu_delete_message" class="font-bold">
         {{ ('ACTIONS.DELETE.MESSAGE' | translate).replace('{{ITEM}}', menuItemOrg?.name) }}
       </div>
-      <div class="mt-2">{{ 'ACTIONS.DELETE.MENU_MESSAGE' | translate }}</div>
+      <div *ngIf="menuItemOrg && menuItemOrg.children && menuItemOrg.children[0]" class="mt-2">
+        {{ 'ACTIONS.DELETE.MENU_MESSAGE' | translate }}
+      </div>
       <div class="mt-2">{{ 'ACTIONS.DELETE.MESSAGE_INFO' | translate }}</div>
     </div>
   </div>
