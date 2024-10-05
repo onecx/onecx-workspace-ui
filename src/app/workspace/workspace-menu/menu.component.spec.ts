@@ -249,7 +249,7 @@ describe('MenuComponent', () => {
 
   it('should change the display of roles', () => {
     component.displayRoles = false
-    const event = { value: 'ROLES' }
+    const event = { checked: true }
 
     component.onMenuContextChange(event)
 
