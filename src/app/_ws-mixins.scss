@@ -333,6 +333,7 @@
         font-weight: var(--font-weight);
         padding: 0.3rem 0.8rem;
         border: var(--input-border);
+        min-width: unset;
       }
       .p-selectbutton-subtitle {
         font-size: 0.8rem;
