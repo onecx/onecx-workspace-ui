@@ -45,7 +45,6 @@ export class MenuDetailComponent implements OnChanges {
   @Input() public workspaceId: string | undefined
   @Input() public menuItemOrg: WorkspaceMenuItem | undefined
   @Input() public menuItems: WorkspaceMenuItem[] | undefined
-  //@Input() public menuItemId: string | undefined
   @Input() public parentItems!: SelectItem[]
   @Input() changeMode: ChangeMode = 'VIEW'
   @Input() displayDetailDialog = false
@@ -102,7 +101,7 @@ export class MenuDetailComponent implements OnChanges {
       parentItemId: new FormControl(null),
       key: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(100)]),
       name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(100)]),
-      badge: new FormControl(undefined),
+      badge: new FormControl(null),
       scope: new FormControl(null),
       position: new FormControl(null, [
         Validators.required,
@@ -144,12 +143,6 @@ export class MenuDetailComponent implements OnChanges {
   private getMaxChildrenPosition(item: WorkspaceMenuItem): number {
     if (!item.children || item.children?.length === 0) return 0
     else return (item.children[item.children.length - 1].position ?? 0) + 1
-  }
-  public onCloseDetailDialog(): void {
-    this.dataChanged.emit(false)
-  }
-  public onCloseDeleteDialog(): void {
-    this.dataChanged.emit(false)
   }
 
   private getMenu() {
@@ -239,6 +232,16 @@ export class MenuDetailComponent implements OnChanges {
       itemCreated = true
     }
     return [item, itemCreated]
+  }
+
+  /***************************************************************************
+   * CLOSE
+   **************************************************************************/
+  public onCloseDetailDialog(): void {
+    this.dataChanged.emit(false)
+  }
+  public onCloseDeleteDialog(): void {
+    this.dataChanged.emit(false)
   }
 
   /***************************************************************************
