@@ -344,7 +344,7 @@
         "CREATE": "Menüpunkt erstellen",
         "DELETE": "Menüpunkt löschen",
         "IMPORT": "Menü importieren",
-        "TREE_MODAL": "Umordnen & Voransicht",
+        "TREE_MODAL": "Umordnen",
         "TREE_MODAL.TOOLTIP": "Menüeinträge per Drag & Drop umordnen und Ansicht in den konfigurierten Sprachen",
         "DETAILS": "Details",
         "ROLES": "Rollen",

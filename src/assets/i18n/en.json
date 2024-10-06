@@ -344,7 +344,7 @@
         "CREATE": "Create Menu Item",
         "DELETE": "Delete Menu Item",
         "IMPORT": "Import Menu",
-        "TREE_MODAL": "Reorder & Preview",
+        "TREE_MODAL": "Reorder",
         "TREE_MODAL.TOOLTIP": "Reorder of Menu Items via Drag & Drop and Preview in configured languages",
         "DETAILS": "Details",
         "ROLES": "Roles",

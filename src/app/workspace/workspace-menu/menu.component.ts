@@ -197,10 +197,12 @@ export class MenuComponent implements OnInit, OnDestroy {
     for (const node of nodes) {
       if (this.treeNodeLabelSwitchValue === 'ID') node.label = node.data.key
       else if (this.treeNodeLabelSwitchValue === 'NAME') node.label = node.data.name
-      else if (node.data.i18n && Object.keys(node.data.i18n).length > 0) {
-        if (node.data.i18n[this.treeNodeLabelSwitchValue]) node.label = node.data.i18n[this.treeNodeLabelSwitchValue]
-        else node.label = node.data.name
-      }
+      else if (this.usedLanguages.has(this.treeNodeLabelSwitchValue)) {
+        if (node.data.i18n && Object.keys(node.data.i18n).length > 0) {
+          if (node.data.i18n[this.treeNodeLabelSwitchValue]) node.label = node.data.i18n[this.treeNodeLabelSwitchValue]
+          else node.label = node.data.name
+        } else node.label = node.data.name
+      } else node.label = node.data.name
       if (node.children && node.children[0]) this.applyTreeNodeLabelSwitch(node.children)
     }
   }
