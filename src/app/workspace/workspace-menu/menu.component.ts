@@ -65,9 +65,8 @@ export class MenuComponent implements OnInit, OnDestroy {
   public loading = true
   public exceptionKey = ''
   public myPermissions = new Array<string>() // permissions of the user
-  public menuContextItems: SelectItem[]
-  public menuContextValue = 'DETAILS'
-  public treeExpanded = false // off = collapsed
+  public menuContextValue = false // off => details
+  public treeExpanded = false // off => collapsed
   public currentLogoUrl: string | undefined = undefined
 
   // workspace
@@ -113,11 +112,6 @@ export class MenuComponent implements OnInit, OnDestroy {
     if (userService.hasPermission('MENU#EDIT')) this.myPermissions.push('MENU#EDIT')
     if (userService.hasPermission('MENU#GRANT')) this.myPermissions.push('MENU#GRANT')
     if (userService.hasPermission('WORKSPACE_ROLE#EDIT')) this.myPermissions.push('WORKSPACE_ROLE#EDIT')
-    // switch context
-    this.menuContextItems = [
-      { label: 'DIALOG.MENU.HEADER.DETAILS', value: 'DETAILS' },
-      { label: 'DIALOG.MENU.HEADER.ROLES', value: 'ROLES' }
-    ]
   }
 
   public ngOnInit(): void {
@@ -182,7 +176,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.loadMenu(true)
   }
   public onMenuContextChange(ev: any): void {
-    this.displayRoles = ev.value === 'ROLES'
+    this.displayRoles = ev.checked
   }
   public isObjectEmpty(obj: object) {
     return Object.keys(obj).length === 0

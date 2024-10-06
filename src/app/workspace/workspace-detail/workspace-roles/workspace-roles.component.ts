@@ -283,7 +283,6 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
       default:
         return '' + this.roles.length
     }
-    return ''
   }
   public onFilterChange(filter: string): void {
     if (filter === '') {
@@ -291,6 +290,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
     }
     this.dv?.filter(filter, 'contains')
   }
+
   public onSortChange(field: string): void {
     this.sortField = field
   }

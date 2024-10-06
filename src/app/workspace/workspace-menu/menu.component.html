@@ -111,14 +111,13 @@
 
       <ng-template pTemplate="header" let-columns>
         <tr>
-          <th id="ws_menu_table_header_dummy1" class="p-1 text-left border-transparent">
+          <th id="ws_menu_table_header_dummy1" class="text-left border-transparent">
             <p-toggleButton
               inputId="ws_menu_table_header_tree_toggle"
-              styleClass="mb-2 data-view-control"
+              styleClass="data-view-control"
               [(ngModel)]="treeExpanded"
               [onLabel]="'ACTIONS.TREE.COLLAPSE_ALL' | translate"
               [offLabel]="'ACTIONS.TREE.EXPAND_ALL' | translate"
-              ariaLabel="Toggle Tree View"
               (onChange)="onToggleTreeViewMode($event)"
               [attr.aria-label]="'ACTIONS.TREE.EXPAND_ALL.TOOLTIP' | translate"
               [pTooltip]="'ACTIONS.TREE.EXPAND_ALL.TOOLTIP' | translate"
@@ -127,12 +126,23 @@
             />
           </th>
           <th
-            id="ws_menu_table_header"
-            class="p-1 border-transparent"
+            id="ws_menu_table_header_dummy2"
+            class="text-left border-transparent"
             [attr.colspan]="displayRoles ? 1 + wRoles.length : 5"
           >
-            <div class="mb-2 flex align-items-center justify-content-start">
-              <div class="slim-selectbutton filter-selectbutton">
+            <p-toggleButton
+              inputid="ws_menu_table_header_context"
+              styleClass="data-view-control"
+              [onLabel]="'DIALOG.MENU.HEADER.DETAILS' | translate"
+              [offLabel]="'DIALOG.MENU.HEADER.ROLES' | translate"
+              [(ngModel)]="menuContextValue"
+              (onChange)="onMenuContextChange($event)"
+              [attr.aria-label]="'DIALOG.MENU.HEADER.DETAILS_N_ROLES.TOOLTIP' | translate"
+              [pTooltip]="'DIALOG.MENU.HEADER.DETAILS_N_ROLES.TOOLTIP' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            />
+            <!--div class="slim-selectbutton filter-selectbutton">
                 <p-selectButton
                   inputid="ws_menu_table_header_context"
                   styleClass="data-view-control"
@@ -146,8 +156,7 @@
                     </span>
                   </ng-template>
                 </p-selectButton>
-              </div>
-            </div>
+              </div-->
           </th>
         </tr>
         <tr>
@@ -270,7 +279,7 @@
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                   (click)="onDeleteMenu($event, rowData)"
                   [attr.aria-label]="'ACTIONS.DELETE.MENU' | translate"
-                  [pTooltip]="'ACTIONS.DELETE.MENU.TOOLTIP' | translate"
+                  [pTooltip]="'ACTIONS.DELETE.MENU' | translate"
                   tooltipPosition="top"
                   tooltipEvent="hover"
                 >
@@ -301,7 +310,7 @@
                 tooltipPosition="top"
                 tooltipEvent="hover"
               >
-                {{ limitText(rowData.url, 40) }}
+                {{ rowData.url }}
               </a>
             </td>
           </ng-container>
@@ -392,9 +401,8 @@
 -->
 <app-menu-detail
   [workspaceId]="workspace?.id"
+  [menuItemOrg]="menuItem"
   [menuItems]="menuItems"
-  [menuItemId]="menuItem?.id"
-  [menuItemName]="menuItem?.name"
   [parentItems]="parentItems"
   [changeMode]="changeMode"
   [displayDetailDialog]="displayMenuDetail"

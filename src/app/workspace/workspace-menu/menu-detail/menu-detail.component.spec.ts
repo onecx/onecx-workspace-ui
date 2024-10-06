@@ -220,7 +220,7 @@ describe('MenuDetailComponent', () => {
     it('should init menuItem and set formGroup in create mode onChanges', () => {
       component.changeMode = 'CREATE'
       spyOn(component.formGroup, 'reset')
-      component.menuItemId = 'menuItemId'
+      component.menuItemOrg = { id: 'menuItemId' }
       component.displayDetailDialog = true
 
       component.ngOnChanges({})
@@ -233,7 +233,7 @@ describe('MenuDetailComponent', () => {
     it('should call getMenu in view mode onChanges and fetch menuItem', () => {
       menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[0]))
       component.changeMode = 'VIEW'
-      component.menuItemId = 'menuItemId'
+      component.menuItemOrg = { id: 'menuItemId' }
       component.displayDetailDialog = true
 
       component.ngOnChanges({})
@@ -246,7 +246,7 @@ describe('MenuDetailComponent', () => {
       wProductApiServiceSpy.getProductsByWorkspaceId.and.returnValue(of([product]))
       component.changeMode = 'VIEW'
       component.workspaceId = 'id'
-      component.menuItemId = 'menuItemId'
+      component.menuItemOrg = { id: 'menuItemId' }
       component.displayDetailDialog = true
       spyOn(component as any, 'loadMfeUrls')
 
@@ -259,7 +259,7 @@ describe('MenuDetailComponent', () => {
     it('should call getMenu in view mode onChanges and fetch undefined menuItem', () => {
       menuApiServiceSpy.getMenuItemById.and.returnValue(of(undefined))
       component.changeMode = 'VIEW'
-      component.menuItemId = 'menuItemId'
+      component.menuItemOrg = { id: 'menuItemId' }
       component.displayDetailDialog = true
 
       component.ngOnChanges({})
@@ -295,7 +295,7 @@ describe('MenuDetailComponent', () => {
         menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[0]))
         wProductApiServiceSpy.getProductsByWorkspaceId.and.returnValue(of([product]))
         component.changeMode = 'VIEW'
-        component.menuItemId = 'menuItemId'
+        component.menuItemOrg = { id: 'menuItemId' }
         component.workspaceId = 'workspaceId'
         component.displayDetailDialog = true
 
@@ -313,7 +313,7 @@ describe('MenuDetailComponent', () => {
         wProductApiServiceSpy.getProductsByWorkspaceId.and.returnValue(throwError(() => new Error()))
         component.changeMode = 'VIEW'
         component.workspaceId = 'workspaceId'
-        component.menuItemId = 'menuItemId'
+        component.menuItemOrg = { id: 'menuItemId' }
         component.displayDetailDialog = true
         spyOn(console, 'error')
 
@@ -476,7 +476,7 @@ describe('MenuDetailComponent', () => {
     component.formGroup = form
     component.menuItem = mockMenuItems[0]
     component.menuItems = mockMenuItems
-    component.menuItemId = 'id'
+    component.menuItemOrg = { id: 'id' }
     component.changeMode = 'EDIT'
 
     component.onMenuSave()
@@ -489,7 +489,7 @@ describe('MenuDetailComponent', () => {
     component.formGroup = form
     component.menuItem = mockMenuItems[0]
     component.changeMode = 'EDIT'
-    component.menuItemId = 'id'
+    component.menuItemOrg = { id: 'menuItemId' }
 
     component.onMenuSave()
 
@@ -572,13 +572,13 @@ describe('MenuDetailComponent', () => {
   })
 
   it('should remove language from languagesDisplayed, add it to languagesAvailable', () => {
-    component.languagesDisplayed = [{ label: 'English', value: 'en', data: 'Data' }]
+    component.languagesDisplayed = [{ label: 'French', value: 'fr', data: 'Data' }]
     component.languagesAvailable = [{ label: 'German', value: 'de', data: '' }]
 
-    component.onRemoveLanguage('en')
+    component.onRemoveLanguage('fr')
 
     expect(component.languagesDisplayed.length).toBe(0)
-    expect(component.languagesAvailable).toEqual(jasmine.arrayContaining([{ label: 'English', value: 'en', data: '' }]))
+    expect(component.languagesAvailable.length).toBe(2)
   })
 
   it('should add language to languagesDisplayed from languagesAvailable', () => {

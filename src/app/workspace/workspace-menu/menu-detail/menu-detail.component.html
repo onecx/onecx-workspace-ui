@@ -260,7 +260,7 @@
           styleClass="data-view-control opacity-90"
           [options]="languagesAvailable"
           (onOptionClick)="onAddLanguage($event.option.value)"
-          [attr.[attr.aria-label]]="'DIALOG.MENU.TABS.I18N.ADD_LANGUAGE' | translate"
+          [attr.aria-label]="'DIALOG.MENU.TABS.I18N.ADD_LANGUAGE' | translate"
           [pTooltip]="'DIALOG.MENU.TABS.I18N.ADD_LANGUAGE' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"
@@ -285,7 +285,7 @@
         icon="pi pi-times"
         (onClick)="onCloseDetailDialog()"
         [label]="'ACTIONS.CANCEL' | translate"
-        [attr.[attr.aria-label]]="'ACTIONS.CANCEL_WITHOUT_SAVE' | translate"
+        [attr.aria-label]="'ACTIONS.TOOLTIPS.CANCEL_WITHOUT_SAVE' | translate"
         [pTooltip]="'ACTIONS.TOOLTIPS.CANCEL_WITHOUT_SAVE' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
@@ -296,7 +296,7 @@
         [disabled]="!formGroup.valid"
         (onClick)="onMenuSave()"
         [label]="'ACTIONS.SAVE' | translate"
-        [attr.[attr.aria-label]]="'ACTIONS.SAVE' | translate"
+        [attr.aria-label]="'ACTIONS.SAVE' | translate"
         [pTooltip]="'ACTIONS.TOOLTIPS.SAVE' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
@@ -320,9 +320,11 @@
     <div class="pi pi-question-circle text-3xl danger-action-text"></div>
     <div>
       <div id="ws_menu_delete_message" class="font-bold">
-        {{ ('ACTIONS.DELETE.MESSAGE' | translate).replace('{{ITEM}}', menuItemName) }}
+        {{ ('ACTIONS.DELETE.MESSAGE' | translate).replace('{{ITEM}}', menuItemOrg?.name) }}
       </div>
-      <div class="mt-2">{{ 'ACTIONS.DELETE.MENU_MESSAGE' | translate }}</div>
+      <div *ngIf="menuItemOrg && menuItemOrg.children && menuItemOrg.children[0]" class="mt-2">
+        {{ 'ACTIONS.DELETE.MENU_MESSAGE' | translate }}
+      </div>
       <div class="mt-2">{{ 'ACTIONS.DELETE.MESSAGE_INFO' | translate }}</div>
     </div>
   </div>
