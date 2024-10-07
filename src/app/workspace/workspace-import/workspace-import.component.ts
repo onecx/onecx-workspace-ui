@@ -123,7 +123,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
 
   public importWorkspace(): void {
     if (!this.importRequestDTO?.workspaces) {
-      this.msgService.error({ summaryKey: 'WORKSPACE_IMPORT.WORKSPACE_IMPORT_ERROR' })
+      this.msgService.error({ summaryKey: 'WORKSPACE_IMPORT.IMPORT_ERROR' })
       return
     }
     this.isLoading = true
