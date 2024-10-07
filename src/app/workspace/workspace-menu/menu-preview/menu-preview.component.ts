@@ -1,4 +1,14 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core'
+import {
+  Component,
+  AfterViewInit,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+  ViewChild
+} from '@angular/core'
 import { SelectItem, TreeNode } from 'primeng/api'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
@@ -17,11 +27,13 @@ export type I18N = { [key: string]: string }
   templateUrl: './menu-preview.component.html',
   styleUrls: ['./menu-preview.component.scss']
 })
-export class MenuPreviewComponent implements OnChanges {
+export class MenuPreviewComponent implements AfterViewInit, OnChanges {
   @Input() public menuItems!: WorkspaceMenuItem[]
   @Input() public displayDialog = false
   @Output() public hideDialog = new EventEmitter()
   @Output() public reorderEmitter = new EventEmitter<boolean>()
+
+  @ViewChild('previewTree') previewTree!: ElementRef
 
   public menuNodes!: TreeNode<WorkspaceMenuItem>[]
   public treeExpanded = false
@@ -40,6 +52,7 @@ export class MenuPreviewComponent implements OnChanges {
   }
 
   constructor(
+    private elementRef: ElementRef,
     private stateService: MenuStateService,
     private treeService: MenuTreeService,
     private userService: UserService,
@@ -49,6 +62,9 @@ export class MenuPreviewComponent implements OnChanges {
     this.languagesPreviewValue = this.userService.lang$.getValue()
   }
 
+  public ngAfterViewInit() {
+    console.log(this.previewTree.nativeElement)
+  }
   public ngOnChanges(changes: SimpleChanges): void {
     if (changes['menuItems'] || this.displayDialog) {
       this.menuNodes = this.mapToTree(this.menuItems, this.languagesPreviewValue)
@@ -171,11 +187,12 @@ export class MenuPreviewComponent implements OnChanges {
   public onClose() {
     this.hideDialog.emit()
   }
+
   public onStartResizeTree(ev: MouseEvent) {
-    // console.log('start:', ev)
+    //console.log('start:', ev)
   }
   public onEndResizeTree(ev: MouseEvent) {
-    // console.log('end:', ev)
+    //console.log('end:', ev)
     this.treeHeight = ev.clientY
   }
 }

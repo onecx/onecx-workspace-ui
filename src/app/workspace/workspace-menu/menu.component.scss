@@ -23,21 +23,22 @@
     }
     table {
       width: unset;
-      .p-treetable-tbody > tr {
-        > td {
-          padding: 0 0.15rem;
-          align-items: center !important;
-          .p-treetable-toggler {
-            margin-right: unset;
+      .p-treetable-tbody {
+        tr:last-of-type td {
+          border-bottom: none !important;
+        }
+        tr {
+          td {
+            .p-treetable-toggler {
+              margin-right: unset;
+              height: unset;
+              width: unset;
+              padding: 0.5rem; // must be the same size like table-inline-buttons!
+            }
           }
-        }
-        > td:first-of-type {
-          padding: 0.1rem 2rem 0.1rem 0.1rem;
-          display: flex !important;
-          border-style: dotted;
-        }
-        > td:nth-of-type(2) {
-          padding: 0 0.5rem;
+          td:nth-of-type(2) {
+            padding: 0 0.3rem;
+          }
         }
       }
     }

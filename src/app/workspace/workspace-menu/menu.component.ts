@@ -195,16 +195,26 @@ export class MenuComponent implements OnInit, OnDestroy {
     }
   }
   private applyTreeNodeLabelSwitch(nodes: TreeNode[]) {
+    let label = ''
     for (const node of nodes) {
-      if (this.treeNodeLabelSwitchValue === 'ID') node.label = node.data.key
-      else if (this.treeNodeLabelSwitchValue === 'NAME') node.label = node.data.name
-      else if (this.usedLanguages.has(this.treeNodeLabelSwitchValue)) {
-        if (node.data.i18n && Object.keys(node.data.i18n).length > 0) {
-          if (node.data.i18n[this.treeNodeLabelSwitchValue]) node.label = node.data.i18n[this.treeNodeLabelSwitchValue]
-          else node.label = node.data.name
-        } else node.label = node.data.name
-      } else node.label = node.data.name
-      if (node.children && node.children[0]) this.applyTreeNodeLabelSwitch(node.children)
+      label = node.data.name // reset (required e.g. if a translation not exist)
+      switch (this.treeNodeLabelSwitchValue) {
+        case 'ID':
+          label = node.data.key
+          break
+        case 'NAME':
+          label = node.data.name
+          break
+        default:
+          if (this.usedLanguages.has(this.treeNodeLabelSwitchValue)) {
+            if (node.data.i18n && Object.keys(node.data.i18n).length > 0)
+              if (node.data.i18n[this.treeNodeLabelSwitchValue]) {
+                label = node.data.i18n[this.treeNodeLabelSwitchValue]
+              }
+          }
+      }
+      node.label = label // set
+      if (node.children && node.children.length > 0) this.applyTreeNodeLabelSwitch(node.children)
     }
   }
 
