@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core'
+import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core'
 import { SelectItem, TreeNode } from 'primeng/api'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
@@ -23,6 +23,8 @@ export class MenuPreviewComponent implements OnChanges {
   @Output() public hideDialog = new EventEmitter()
   @Output() public reorderEmitter = new EventEmitter<boolean>()
 
+  @ViewChild('previewTree') previewTree!: ElementRef
+
   public menuNodes!: TreeNode<WorkspaceMenuItem>[]
   public treeExpanded = false
   private treeHeight = 0
@@ -40,6 +42,7 @@ export class MenuPreviewComponent implements OnChanges {
   }
 
   constructor(
+    private readonly elementRef: ElementRef,
     private stateService: MenuStateService,
     private treeService: MenuTreeService,
     private userService: UserService,
@@ -171,11 +174,12 @@ export class MenuPreviewComponent implements OnChanges {
   public onClose() {
     this.hideDialog.emit()
   }
+
   public onStartResizeTree(ev: MouseEvent) {
-    // console.log('start:', ev)
+    //console.log('start:', ev)
   }
   public onEndResizeTree(ev: MouseEvent) {
-    // console.log('end:', ev)
+    //console.log('end:', ev)
     this.treeHeight = ev.clientY
   }
 }
