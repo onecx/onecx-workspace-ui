@@ -16,12 +16,15 @@ import { FileSelectEvent } from 'primeng/fileupload'
 const snapshot: WorkspaceSnapshot = {
   workspaces: {
     workspace: {
-      name: 'name'
+      name: 'name',
+      displayName: 'dName',
+      baseUrl: 'url',
+      theme: 'theme'
     }
   }
 }
 
-describe('ChooseFileComponent', () => {
+fdescribe('ChooseFileComponent', () => {
   let component: ChooseFileComponent
   let fixture: ComponentFixture<ChooseFileComponent>
 
@@ -92,15 +95,6 @@ describe('ChooseFileComponent', () => {
       )
     )
     const event = { files: fileList }
-    // const portal = {
-    //   portal: {
-    //     portalName: 'name',
-    //     portalRoles: ['role'],
-    //     tenantId: 'id',
-    //     microfrontendRegistrations: new Set([{ version: 1 }])
-    //   },
-    //   menuItems: [{ name: 'menu', key: 'key', position: 1, disabled: true, portalExit: true }]
-    // }
     component.importWorkspace = snapshot
 
     component.onSelect(event as any as FileSelectEvent)
@@ -140,208 +134,159 @@ describe('ChooseFileComponent', () => {
   })
 
   describe('isWorkspaceImportValid', () => {
-    const workspaceSnapshot: WorkspaceSnapshot = {
-      id: 'testString1',
-      workspaces: {},
-      created: 'true'
-    }
-
-    it('should validate a request DTO: missing portal error', () => {
-      const data = {
-        'WORKSPACE_IMPORT.VALIDATION_RESULT': 'Processing not possible: ',
-        'WORKSPACE_IMPORT.VALIDATION_WORKSPACE_MISSING': 'Missing'
+    let mockData: any
+    beforeEach(() => {
+      mockData = {
+        'WORKSPACE_IMPORT.VALIDATION_WORKSPACE_MISSING': 'Workspace missing',
+        'WORKSPACE_IMPORT.VALIDATION_WORKSPACE_NAME_MISSING': 'Workspace name missing',
+        'WORKSPACE_IMPORT.VALIDATION_WORKSPACE_DISPLAY_NAME_MISSING': 'Workspace display name missing',
+        'WORKSPACE_IMPORT.VALIDATION_WORKSPACE_THEME_MISSING': 'Workspace theme missing',
+        'WORKSPACE_IMPORT.VALIDATION_WORKSPACE_URL_MISSING': 'Workspace URL missing',
+        'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_KEY_MISSING': 'Menu item key missing',
+        'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_NAME_MISSING': 'Menu item name missing',
+        'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_WRONG_POSITION': 'Invalid menu item position',
+        'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_WRONG_DISABLED': 'Invalid menu item disabled state',
+        'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_WRONG_WORKSPACEEXIT': 'Invalid menu item external state',
+        'WORKSPACE_IMPORT.VALIDATION_RESULT': 'Validation failed: '
       }
-
-      ;(component as any).isWorkspaceImportValid(workspaceSnapshot, data)
-      expect(component.validationErrorCause).toEqual('Processing not possible: Missing')
     })
 
-    it('should validate a request DTO: missing portal name error', () => {
-      const workspaceSnapshot: WorkspaceSnapshot = {
-        id: 'testString1',
-        workspaces: {
-          testId: {
-            description: 'noName'
-          }
-        },
-        created: 'true'
-      }
-      const data = {
-        'WORKSPACE_IMPORT.VALIDATION_RESULT': 'Processing not possible: ',
-        'WORKSPACE_IMPORT.VALIDATION_WORKSPACE_NAME_MISSING': 'name missing'
-      }
-
-      ;(component as any).isWorkspaceImportValid(workspaceSnapshot, data)
-
-      expect(component.validationErrorCause).toEqual('Processing not possible: name missing')
+    it('should return false when workspaces is missing', () => {
+      const obj = {}
+      expect(component.isWorkspaceImportValid(obj, mockData)).toBeFalse()
+      expect(component.validationErrorCause).toContain('Workspace missing')
     })
 
-    it('should validate a request DTO: missing menu item key error', () => {
-      const workspaceSnapshot: WorkspaceSnapshot = {
-        id: 'testString1',
+    it('should return false when there is no workspace', () => {
+      const obj = { workspaces: {} }
+      expect(component.isWorkspaceImportValid(obj, mockData)).toBeFalse()
+      expect(component.validationErrorCause).toContain('Workspace missing')
+    })
+
+    it('should return false when workspace name is missing', () => {
+      const obj = { workspaces: { key1: {} } }
+      expect(component.isWorkspaceImportValid(obj, mockData)).toBeFalse()
+      expect(component.validationErrorCause).toContain('Workspace name missing')
+    })
+
+    it('should return false when workspace display name is missing', () => {
+      const obj = { workspaces: { key1: { name: 'Name' } } }
+      expect(component.isWorkspaceImportValid(obj, mockData)).toBeFalse()
+      expect(component.validationErrorCause).toContain('Workspace display name missing')
+    })
+
+    it('should return false when workspace theme is missing', () => {
+      const obj = { workspaces: { key1: { name: 'Name', displayName: 'Name Display' } } }
+      expect(component.isWorkspaceImportValid(obj, mockData)).toBeFalse()
+      expect(component.validationErrorCause).toContain('Workspace theme missing')
+    })
+
+    it('should return false when workspace baseUrl is missing', () => {
+      const obj = { workspaces: { key1: { name: 'Name', displayName: 'Name Display', theme: 'theme' } } }
+      expect(component.isWorkspaceImportValid(obj, mockData)).toBeFalse()
+      expect(component.validationErrorCause).toContain('Workspace URL missing')
+    })
+
+    it('should return true for a valid workspace object', () => {
+      const obj = {
         workspaces: {
-          testId: {
-            name: 'testname',
-            description: 'testDesc',
+          key1: {
+            name: 'Name',
+            displayName: 'Name Display',
+            theme: 'theme',
+            baseUrl: '/url',
             menu: {
               menu: {
-                menuItems: [
-                  {
-                    name: 'string',
-                    description: 'string',
-                    url: 'string',
-                    applicationId: 'string'
-                  }
-                ]
+                menuItems: [{ key: 'item1', name: 'Item 1', position: 0, disabled: false, external: false }]
               }
             }
           }
-        },
-        created: 'true'
+        }
       }
-      const data = {
-        'WORKSPACE_IMPORT.VALIDATION_RESULT': 'Processing not possible: ',
-        'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_KEY_MISSING': 'menu item key missing'
-      }
-
-      ;(component as any).isWorkspaceImportValid(workspaceSnapshot, data)
-
-      expect(component.validationErrorCause).toEqual('Processing not possible: menu item key missing')
+      expect(component.isWorkspaceImportValid(obj, mockData)).toBeTrue()
+      expect(component.validationErrorCause).toBe('')
     })
 
-    it('should validate a request DTO: missing menu item name error', () => {
-      const workspaceSnapshot: WorkspaceSnapshot = {
-        id: 'testString1',
+    it('should return false when a menu item is missing a key', () => {
+      const obj = {
         workspaces: {
-          testId: {
-            name: 'testname',
-            description: 'testDesc',
+          key1: {
+            name: 'Name',
+            displayName: 'Name Display',
+            theme: 'theme',
+            baseUrl: '/url',
             menu: {
               menu: {
-                menuItems: [
-                  {
-                    key: 'testkey',
-                    description: 'string',
-                    url: 'string',
-                    applicationId: 'string'
-                  }
-                ]
+                menuItems: [{ name: 'Item 1', position: 0, disabled: false, external: false }]
               }
             }
           }
-        },
-        created: 'true'
+        }
       }
-
-      const data = {
-        'WORKSPACE_IMPORT.VALIDATION_RESULT': 'Processing not possible: ',
-        'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_NAME_MISSING': 'menu item name missing'
-      }
-
-      ;(component as any).isWorkspaceImportValid(workspaceSnapshot, data)
-
-      expect(component.validationErrorCause).toEqual('Processing not possible: menu item name missing')
+      expect(component.isWorkspaceImportValid(obj, mockData)).toBeFalse()
+      expect(component.validationErrorCause).toContain('Menu item key missing')
     })
 
-    it('should validate a request DTO: wrong position error', () => {
-      const workspaceSnapshot: WorkspaceSnapshot = {
-        id: 'testString1',
+    it('should return false when a menu item has an invalid position', () => {
+      const obj = {
         workspaces: {
-          testId: {
-            name: 'testname',
-            description: 'testDesc',
+          key1: {
+            name: 'Name',
+            displayName: 'Name Display',
+            theme: 'theme',
+            baseUrl: '/url',
             menu: {
               menu: {
-                menuItems: [
-                  {
-                    key: 'testkey',
-                    name: 'testName',
-                    position: undefined
-                  }
-                ]
+                menuItems: [{ key: 'item1', name: 'Item 1', position: '0', disabled: false, external: false }]
               }
             }
           }
-        },
-        created: 'true'
+        }
       }
-      const data = {
-        'WORKSPACE_IMPORT.VALIDATION_RESULT': 'Processing not possible: ',
-        'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_WRONG_POSITION': 'wrong position'
-      }
-
-      ;(component as any).isWorkspaceImportValid(workspaceSnapshot, data)
-
-      expect(component.validationErrorCause).toEqual('Processing not possible: wrong position')
+      expect(component.isWorkspaceImportValid(obj, mockData)).toBeFalse()
+      expect(component.validationErrorCause).toContain('Invalid menu item position')
     })
 
-    it('should validate a request DTO: wrong disabled error', () => {
-      const workspaceSnapshot: WorkspaceSnapshot = {
-        id: 'testString1',
+    it('should return false when a menu item has an invalid disabled state', () => {
+      const obj = {
         workspaces: {
-          testId: {
-            name: 'testname',
-            description: 'testDesc',
+          key1: {
+            name: 'Name',
+            displayName: 'Name Display',
+            theme: 'theme',
+            baseUrl: '/url',
             menu: {
               menu: {
-                menuItems: [
-                  {
-                    key: 'testkey',
-                    name: 'testName',
-                    position: 1,
-                    disabled: undefined
-                  }
-                ]
+                menuItems: [{ key: 'item1', name: 'Item 1', position: 0, disabled: 'false', external: false }]
               }
             }
           }
-        },
-        created: 'true'
+        }
       }
-      const data = {
-        'WORKSPACE_IMPORT.VALIDATION_RESULT': 'Processing not possible: ',
-        'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_WRONG_DISABLED': 'wrong disabled'
-      }
-
-      ;(component as any).isWorkspaceImportValid(workspaceSnapshot, data)
-
-      expect(component.validationErrorCause).toEqual('Processing not possible: wrong disabled')
+      expect(component.isWorkspaceImportValid(obj, mockData)).toBeFalse()
+      expect(component.validationErrorCause).toContain('Invalid menu item disabled state')
     })
 
-    it('should validate a request DTO: wrong portal exit error', () => {
-      const workspaceSnapshot: WorkspaceSnapshot = {
-        id: 'testString1',
+    it('should return false when a menu item has an invalid external state', () => {
+      const obj = {
         workspaces: {
-          testId: {
-            name: 'testname',
-            description: 'testDesc',
+          key1: {
+            name: 'Name',
+            displayName: 'Name Display',
+            theme: 'theme',
+            baseUrl: '/url',
             menu: {
               menu: {
-                menuItems: [
-                  {
-                    key: 'testkey',
-                    name: 'testName',
-                    position: 1,
-                    disabled: false,
-                    external: undefined
-                  }
-                ]
+                menuItems: [{ key: 'item1', name: 'Item 1', position: 0, disabled: false, external: 'false' }]
               }
             }
           }
-        },
-        created: 'true'
+        }
       }
-      const data = {
-        'WORKSPACE_IMPORT.VALIDATION_RESULT': 'Processing not possible: ',
-        'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_WRONG_WORKSPACEEXIT': 'wrong portal exit'
-      }
-
-      ;(component as any).isWorkspaceImportValid(workspaceSnapshot, data)
-
-      expect(component.validationErrorCause).toEqual('Processing not possible: wrong portal exit')
+      expect(component.isWorkspaceImportValid(obj, mockData)).toBeFalse()
+      expect(component.validationErrorCause).toContain('Invalid menu item external state')
     })
+
+    it('should validate a request DTO: menu absent error', () => {})
   })
-
-  it('should validate a request DTO: menu absent error', () => {})
 })
