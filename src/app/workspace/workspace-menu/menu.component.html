@@ -320,24 +320,15 @@
           <ng-container *ngIf="displayRoles">
             <td
               *ngFor="let role of columns"
-              class="hidden-xs text-center"
+              class="p-0 hidden-xs text-center"
               [id]="'ws_menu_table_role_' + role.name + '_' + rowData.key"
             >
               <!-- display only -->
-              <span
-                *ngIf="!rowData.roles[role.id] && rowData.rolesInherited[role.id]"
-                [id]="'ws_menu_table_role_' + role.name + '_' + rowData.key + '_inherited'"
-                class="pi pi-circle-fill text-primary opacity-40 text-lg"
-                [pTooltip]="'DIALOG.MENU.ASSIGNMENT.OK_INHERITED' | translate"
-                tooltipPosition="top"
-                tooltipEvent="hover"
-              >
-              </span>
               <div *ngIf="!myPermissions.includes('MENU#GRANT')">
                 <span
                   *ngIf="rowData.roles[role.id]"
                   [id]="'ws_menu_table_role_' + role.name + '_' + rowData.key + '_assigned'"
-                  class="pi pi-circle-fill text-primary text-lg"
+                  class="p-2 pi pi-circle-fill text-primary text-lg"
                   [pTooltip]="'DIALOG.MENU.ASSIGNMENT.OK' | translate"
                   tooltipPosition="top"
                   tooltipEvent="hover"
@@ -346,7 +337,7 @@
                 <span
                   *ngIf="!rowData.roles[role.id] && !rowData.rolesInherited[role.id]"
                   [id]="'ws_menu_table_role_' + role.name + '_' + rowData.key + '_not_assigned'"
-                  class="pi pi-circle text-primary text-lg"
+                  class="p-2 pi pi-circle text-primary text-lg"
                   [pTooltip]="'DIALOG.MENU.ASSIGNMENT.NOK' | translate"
                   tooltipPosition="top"
                   tooltipEvent="hover"
@@ -359,7 +350,7 @@
                   *ngIf="rowData.roles[role.id]"
                   tabindex="0"
                   [id]="'ws_menu_table_role_' + role.name + '_' + rowData.key + '_action_revoke'"
-                  class="pi pi-circle-fill text-primary text-lg cursor-pointer"
+                  class="p-2 pi pi-circle-fill font-medium text-primary text-lg cursor-pointer"
                   (click)="onRevokePermission(rowData, role.id, rowData.roles[role.id])"
                   [attr.aria-label]="
                     ('DIALOG.MENU.ASSIGNMENT.OK' | translate) +
@@ -376,11 +367,11 @@
                 >
                 </a>
                 <a
-                  *ngIf="!rowData.roles[role.id] && !rowData.rolesInherited[role.id]"
+                  *ngIf="!rowData.roles[role.id]"
                   tabindex="0"
                   [id]="'ws_menu_table_role_' + role.name + '_' + rowData.key + '_action_grant'"
-                  class="pi pi-circle text-primary text-lg cursor-pointer"
-                  (click)="onGrantPermission(rowData, role.id)"
+                  class="p-2 pi pi-circle font-medium text-primary text-lg cursor-pointer"
+                  (click)="onGrantPermission(rowNode, rowData, role.id)"
                   [attr.aria-label]="
                     ('DIALOG.MENU.ASSIGNMENT.NOK' | translate) +
                     ' - ' +
