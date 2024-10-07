@@ -84,7 +84,7 @@
       "LABEL": "Import",
       "TOOLTIP": "Upload definition in JSON format",
       "MENU": "Import Menu",
-      "WORKSPACE": "Import Workspace definition in JSON format."
+      "WORKSPACE": "Import Workspace"
     },
     "NAVIGATION": {
       "CLOSE": "Close",

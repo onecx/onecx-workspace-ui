@@ -247,11 +247,11 @@ describe('MenuComponent', () => {
     expect(component.loadMenu).toHaveBeenCalledWith(true)
   })
 
-  it('should change the display of roles', () => {
+  it('should change the tree table content: display of roles', () => {
     component.displayRoles = false
     const event = { checked: true }
 
-    component.onMenuContextChange(event)
+    component.onToggleTreeTableContent(event)
 
     expect(component.displayRoles).toBeTrue()
   })

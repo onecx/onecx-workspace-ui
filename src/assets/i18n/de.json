@@ -84,7 +84,7 @@
       "LABEL": "Import",
       "TOOLTIP": "Definition als JSON hochladen",
       "MENU": "Menü importieren",
-      "WORKSPACE": "Die Workspace-Definition im JSON Format importieren."
+      "WORKSPACE": "Workspace importieren"
     },
     "NAVIGATION": {
       "CLOSE": "Schließen",

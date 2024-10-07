@@ -72,9 +72,9 @@ export class MenuComponent implements OnInit, OnDestroy {
   public loading = true
   public exceptionKey = ''
   public myPermissions = new Array<string>() // permissions of the user
-  public menuContextValue = false // off => details
+  public treeTableContentValue = false // off => details
   public treeExpanded = false // off => collapsed
-  public treeNodeLabelSwitchItem: SelectItem[] = []
+  public treeNodeLabelSwitchItems: SelectItem[] = []
   public treeNodeLabelSwitchValue = 'NAME'
   public treeNodeLabelSwitchValueOrg = '' // prevent bug in PrimeNG SelectButton
   public currentLogoUrl: string | undefined = undefined
@@ -186,7 +186,8 @@ export class MenuComponent implements OnInit, OnDestroy {
   public onReload(): void {
     this.loadMenu(true)
   }
-  public treeNodeLabelSwitchChange(ev: any): void {
+
+  public onTreeNodeLabelSwitchChange(ev: any): void {
     if (ev.value && this.treeNodeLabelSwitchValueOrg !== this.treeNodeLabelSwitchValue) {
       this.treeNodeLabelSwitchValueOrg = this.treeNodeLabelSwitchValue
       this.applyTreeNodeLabelSwitch(this.menuNodes)
@@ -207,7 +208,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     }
   }
 
-  public onMenuContextChange(ev: any): void {
+  public onToggleTreeTableContent(ev: any): void {
     this.displayRoles = ev.checked
   }
   public isObjectEmpty(obj: object) {
@@ -580,6 +581,8 @@ export class MenuComponent implements OnInit, OnDestroy {
     // fill
     this.prepareTreeNodeHelperRecursively(this.menuNodes)
     this.prepareTreeNodeLabelSwitch()
+    this.treeNodeLabelSwitchValueOrg = '' // reset
+    this.onTreeNodeLabelSwitchChange({ value: this.treeNodeLabelSwitchValue })
   }
   private prepareTreeNodeHelperRecursively(nodes: TreeNode[]): void {
     nodes.forEach((m) => {
@@ -600,13 +603,13 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
   // prepare the node label switcher: add the used languages at the end
   private prepareTreeNodeLabelSwitch(): void {
-    this.treeNodeLabelSwitchItem = [
+    this.treeNodeLabelSwitchItems = [
       { label: 'Name', value: 'NAME' },
       { label: 'ID', value: 'ID' }
     ]
     const langs = Array.from(this.usedLanguages.keys())
     langs.sort(sortByLocale)
-    langs.forEach((l) => this.treeNodeLabelSwitchItem.push({ label: l, value: l }))
+    langs.forEach((l) => this.treeNodeLabelSwitchItems.push({ label: l, value: l }))
   }
 
   /****************************************************************************
