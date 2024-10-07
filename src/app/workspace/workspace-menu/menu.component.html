@@ -346,11 +346,12 @@
               </div>
               <!-- manipulation -->
               <div *ngIf="myPermissions.includes('MENU#GRANT')">
-                <a
+                <button
                   *ngIf="rowData.roles[role.id]"
-                  tabindex="0"
+                  pbutton
+                  type="button"
                   [id]="'ws_menu_table_role_' + role.name + '_' + rowData.key + '_action_revoke'"
-                  class="p-2 pi pi-circle-fill font-medium text-primary text-lg cursor-pointer"
+                  class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                   (click)="onRevokePermission(rowData, role.id, rowData.roles[role.id])"
                   [attr.aria-label]="
                     ('DIALOG.MENU.ASSIGNMENT.OK' | translate) +
@@ -365,12 +366,14 @@
                   tooltipPosition="top"
                   tooltipEvent="hover"
                 >
-                </a>
-                <a
+                  <span class="text-primary font-medium p-button-icon pi pi-circle-fill" aria-hidden="true"></span>
+                </button>
+                <button
                   *ngIf="!rowData.roles[role.id]"
-                  tabindex="0"
+                  pbutton
+                  type="button"
                   [id]="'ws_menu_table_role_' + role.name + '_' + rowData.key + '_action_grant'"
-                  class="p-2 pi pi-circle font-medium text-primary text-lg cursor-pointer"
+                  class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                   (click)="onGrantPermission(rowNode, rowData, role.id)"
                   [attr.aria-label]="
                     ('DIALOG.MENU.ASSIGNMENT.NOK' | translate) +
@@ -385,9 +388,11 @@
                   tooltipPosition="top"
                   tooltipEvent="hover"
                 >
-                </a>
-              </div></td
-          ></ng-container>
+                  <span class="text-primary font-medium p-button-icon pi pi-circle" aria-hidden="true"></span>
+                </button>
+              </div>
+            </td>
+          </ng-container>
         </tr>
       </ng-template>
     </p-treeTable>
