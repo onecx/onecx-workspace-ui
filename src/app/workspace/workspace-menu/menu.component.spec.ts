@@ -63,25 +63,23 @@ const rootNodeData: MenuItemNodeData = {
   positionPath: '0',
   appConnected: true,
   roles: { ['role']: 'role' },
-  rolesInherited: { ['inhRole']: 'inhRole' },
-  node: { key: 'nodeKey' }
+  node: { key: 'rootKey' }
 }
 const nodeData: MenuItemNodeData = {
   id: 'id',
   first: true,
-  last: false,
+  last: true,
   prevId: 'prev',
   gotoUrl: 'goToUrl',
   positionPath: '0.1',
   appConnected: true,
   roles: { ['role']: 'role' },
-  rolesInherited: { ['inhRole']: 'inhRole' },
   node: { key: 'nodeKey' }
 }
 
 const tree: TreeNode = {
   key: '1',
-  children: [{ key: '1.1', children: [] }],
+  children: [{ key: '1.1', children: [nodeData] }],
   data: rootNodeData
 }
 

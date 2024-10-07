@@ -49,7 +49,6 @@ export type MenuItemNodeData = WorkspaceMenuItem & {
   positionPath: string
   appConnected: boolean
   roles: RoleAssignments
-  rolesInherited: RoleAssignments
   node: TreeNode
 }
 export type UsedLanguage = { lang: string; count: number }
@@ -446,7 +445,6 @@ export class MenuComponent implements OnInit, OnDestroy {
         const assignedNode = this.findTreeNodeById(this.menuNodes, ass.menuItemId)
         if (assignedNode) {
           assignedNode.data.roles[ass.roleId!] = ass.id
-          //this.inheritRoleAssignment(assignedNode, ass.roleId!, ass.id)
         }
       })
     })
@@ -460,18 +458,8 @@ export class MenuComponent implements OnInit, OnDestroy {
     }
     return treeNode
   }
-  // inherit assignment settings for all menu item children => rejected func. by Trian
-  private inheritRoleAssignment(node: TreeNode, roleId: string, assId: string | undefined): void {
-    if (node?.children && node.children.length > 0)
-      node.children.forEach((n) => {
-        n.data.rolesInherited[roleId] = assId
-        this.inheritRoleAssignment(n, roleId, assId)
-      })
-  }
 
   public onGrantPermission(rowNode: TreeNode, rowData: MenuItemNodeData, roleId: string): void {
-    console.log(rowNode)
-    console.log(rowData)
     if (!rowData.roles || !rowData.roles[roleId]) {
       this.assApi
         .createAssignment({
@@ -484,7 +472,6 @@ export class MenuComponent implements OnInit, OnDestroy {
             if (rowNode.parent) {
               this.onGrantPermission(rowNode.parent, rowNode.parent.data, roleId)
             }
-            //this.inheritRoleAssignment(rowData.node, roleId, data.id) // excluded by Trian
           },
           error: (err: { error: any }) => {
             this.msgService.error({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.GRANT_NOK' })
@@ -498,7 +485,6 @@ export class MenuComponent implements OnInit, OnDestroy {
       next: () => {
         this.msgService.success({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.REVOKE_OK' })
         rowData.roles[roleId] = undefined
-        //this.inheritRoleAssignment(rowData.node, roleId, undefined) // excluded by Trian
       },
       error: (err: { error: any }) => {
         this.msgService.error({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.REVOKE_NOK' })
@@ -563,8 +549,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         positionPath: parent ? parent.position + '.' + item.position : item.position,
         // true if path is a mfe base path
         appConnected: item.url && !item.url.startsWith('http') && !item.external ? this.urlMatch(item.url) : false,
-        roles: {},
-        rolesInherited: {}
+        roles: {}
       } as MenuItemNodeData
       const newNode: TreeNode = this.createTreeNode(nodeData)
       if (item.children && item.children.length > 0 && item.children != null && item.children.toLocaleString() != '') {

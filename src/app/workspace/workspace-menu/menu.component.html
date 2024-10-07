@@ -324,15 +324,6 @@
               [id]="'ws_menu_table_role_' + role.name + '_' + rowData.key"
             >
               <!-- display only -->
-              <span
-                *ngIf="!rowData.roles[role.id] && rowData.rolesInherited[role.id]"
-                [id]="'ws_menu_table_role_' + role.name + '_' + rowData.key + '_inherited'"
-                class="p-2 pi pi-circle-fill text-primary opacity-40 text-lg"
-                [pTooltip]="'DIALOG.MENU.ASSIGNMENT.OK_INHERITED' | translate"
-                tooltipPosition="top"
-                tooltipEvent="hover"
-              >
-              </span>
               <div *ngIf="!myPermissions.includes('MENU#GRANT')">
                 <span
                   *ngIf="rowData.roles[role.id]"
@@ -376,7 +367,7 @@
                 >
                 </a>
                 <a
-                  *ngIf="!rowData.roles[role.id] && !rowData.rolesInherited[role.id]"
+                  *ngIf="!rowData.roles[role.id]"
                   tabindex="0"
                   [id]="'ws_menu_table_role_' + role.name + '_' + rowData.key + '_action_grant'"
                   class="p-2 pi pi-circle font-medium text-primary text-lg cursor-pointer"
