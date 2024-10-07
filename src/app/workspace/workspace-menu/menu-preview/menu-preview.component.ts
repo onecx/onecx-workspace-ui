@@ -63,7 +63,7 @@ export class MenuPreviewComponent implements AfterViewInit, OnChanges {
   }
 
   public ngAfterViewInit() {
-    console.log(this.previewTree.nativeElement)
+    //console.log(this.previewTree.nativeElement)
   }
   public ngOnChanges(changes: SimpleChanges): void {
     if (changes['menuItems'] || this.displayDialog) {
@@ -189,10 +189,10 @@ export class MenuPreviewComponent implements AfterViewInit, OnChanges {
   }
 
   public onStartResizeTree(ev: MouseEvent) {
-    console.log('start:', ev)
+    //console.log('start:', ev)
   }
   public onEndResizeTree(ev: MouseEvent) {
-    console.log('end:', ev)
+    //console.log('end:', ev)
     this.treeHeight = ev.clientY
   }
 }
