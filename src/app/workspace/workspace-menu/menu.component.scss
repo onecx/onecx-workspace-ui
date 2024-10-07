@@ -4,6 +4,7 @@
 @include danger-action;
 @include displaying-text-responsive;
 @include correct-select-button;
+@include search-criteria-select-button-slim;
 @include correct-data-view-control;
 @include table-inline-buttons;
 
@@ -20,24 +21,8 @@
     .p-treetable-header {
       padding: 1rem; // var(--table-header-padding);
     }
-    .p-treetable-wrapper {
-      padding: var(--data-view-content-padding);
-    }
     table {
       width: unset;
-      .p-treetable-thead > tr {
-        > th {
-          padding: 0.5rem 0.7rem;
-          font-weight: var(--table-header-cell-font-weight);
-        }
-        > th:first-of-type {
-          background-color: var(--table-body-row-bg);
-          border-color: transparent;
-          .p-button-text {
-            width: unset !important;
-          }
-        }
-      }
       .p-treetable-tbody > tr {
         > td {
           padding: 0 0.15rem;

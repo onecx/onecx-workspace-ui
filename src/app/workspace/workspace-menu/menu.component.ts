@@ -30,7 +30,13 @@ import {
   WorkspaceRolePageResult,
   GetWorkspaceResponse
 } from 'src/app/shared/generated'
-import { bffImageUrl, limitText, dropDownSortItemsByLabel, getCurrentDateTime } from 'src/app/shared/utils'
+import {
+  bffImageUrl,
+  limitText,
+  dropDownSortItemsByLabel,
+  getCurrentDateTime,
+  sortByLocale
+} from 'src/app/shared/utils'
 import { MenuStateService } from './services/menu-state.service'
 
 export type ChangeMode = 'VIEW' | 'CREATE' | 'EDIT' | 'COPY' | 'DELETE'
@@ -46,6 +52,7 @@ export type MenuItemNodeData = WorkspaceMenuItem & {
   rolesInherited: RoleAssignments
   node: TreeNode
 }
+export type UsedLanguage = { lang: string; count: number }
 
 @Component({
   selector: 'app-menu',
@@ -65,8 +72,11 @@ export class MenuComponent implements OnInit, OnDestroy {
   public loading = true
   public exceptionKey = ''
   public myPermissions = new Array<string>() // permissions of the user
-  public menuContextValue = false // off => details
+  public treeTableContentValue = false // off => details
   public treeExpanded = false // off => collapsed
+  public treeNodeLabelSwitchItems: SelectItem[] = []
+  public treeNodeLabelSwitchValue = 'NAME'
+  public treeNodeLabelSwitchValueOrg = '' // prevent bug in PrimeNG SelectButton
   public currentLogoUrl: string | undefined = undefined
 
   // workspace
@@ -84,6 +94,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   public menuItems: WorkspaceMenuItem[] | undefined
   public menuItem: WorkspaceMenuItem | undefined
   public parentItems!: SelectItem[]
+  public usedLanguages: Map<string, number> = new Map()
   // detail
   public changeMode: ChangeMode = 'EDIT'
   public displayMenuDetail = false
@@ -175,7 +186,29 @@ export class MenuComponent implements OnInit, OnDestroy {
   public onReload(): void {
     this.loadMenu(true)
   }
-  public onMenuContextChange(ev: any): void {
+
+  public onTreeNodeLabelSwitchChange(ev: any): void {
+    if (ev.value && this.treeNodeLabelSwitchValueOrg !== this.treeNodeLabelSwitchValue) {
+      this.treeNodeLabelSwitchValueOrg = this.treeNodeLabelSwitchValue
+      this.applyTreeNodeLabelSwitch(this.menuNodes)
+      this.menuNodes = [...this.menuNodes] // refresh UI
+    }
+  }
+  private applyTreeNodeLabelSwitch(nodes: TreeNode[]) {
+    for (const node of nodes) {
+      if (this.treeNodeLabelSwitchValue === 'ID') node.label = node.data.key
+      else if (this.treeNodeLabelSwitchValue === 'NAME') node.label = node.data.name
+      else if (this.usedLanguages.has(this.treeNodeLabelSwitchValue)) {
+        if (node.data.i18n && Object.keys(node.data.i18n).length > 0) {
+          if (node.data.i18n[this.treeNodeLabelSwitchValue]) node.label = node.data.i18n[this.treeNodeLabelSwitchValue]
+          else node.label = node.data.name
+        } else node.label = node.data.name
+      } else node.label = node.data.name
+      if (node.children && node.children[0]) this.applyTreeNodeLabelSwitch(node.children)
+    }
+  }
+
+  public onToggleTreeTableContent(ev: any): void {
     this.displayRoles = ev.checked
   }
   public isObjectEmpty(obj: object) {
@@ -236,6 +269,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.menuItem = parent
     this.displayMenuDetail = true
   }
+  // triggered by change event in menu detail dialog
   public onMenuItemChanged(changed: boolean): void {
     if (changed) {
       if (this.displayMenuDelete) {
@@ -310,7 +344,6 @@ export class MenuComponent implements OnInit, OnDestroy {
       .getWorkspaceByName({ workspaceName: this.workspaceName })
       .pipe(catchError((error) => of(error)))
     this.workspace$.subscribe((result) => {
-      this.loading = true
       if (result instanceof HttpErrorResponse) {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + result.status + '.WORKSPACES'
         console.error('getWorkspaceByName():', result)
@@ -321,7 +354,6 @@ export class MenuComponent implements OnInit, OnDestroy {
       } else {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_0.WORKSPACES'
       }
-      this.loading = false
     })
   }
 
@@ -338,8 +370,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       } else if (result.menuItems instanceof Array) {
         this.menuItems = result.menuItems
         this.menuNodes = this.mapToTreeNodes(this.menuItems)
-        this.initParentNodes()
-        this.prepareParentNodes(this.menuNodes)
+        this.prepareTreeNodeHelper()
         this.loadRolesAndAssignments()
         if (restore) {
           this.restoreTree()
@@ -395,11 +426,9 @@ export class MenuComponent implements OnInit, OnDestroy {
     return (a.name ? a.name.toUpperCase() : '').localeCompare(b.name ? b.name.toUpperCase() : '')
   }
   private loadRolesAndAssignments() {
-    this.loading = true
     this.wRoles = []
     this.wAssignments = []
     combineLatest([this.searchRoles(), this.searchAssignments()]).subscribe(([roles, ass]) => {
-      this.loading = false
       this.wRoles.sort(this.sortRoleByName)
       // assignments(role.id, menu.id) => node.roles[role.id] = ass.id
       ass.forEach((ass: Assignment) => {
@@ -541,15 +570,42 @@ export class MenuComponent implements OnInit, OnDestroy {
     return url_parts[0] + '//' + url_parts[2] + Location.joinWithSlash(this.workspace?.baseUrl, url)
   }
 
-  private initParentNodes(): void {
+  private prepareTreeNodeHelper(): void {
+    // init stores
     this.parentItems = [] // default value is empty
+    this.usedLanguages = new Map()
+    // fill
+    this.prepareTreeNodeHelperRecursively(this.menuNodes)
+    this.prepareTreeNodeLabelSwitch()
+    this.treeNodeLabelSwitchValueOrg = '' // reset
+    this.onTreeNodeLabelSwitchChange({ value: this.treeNodeLabelSwitchValue })
   }
-  private prepareParentNodes(nodes: TreeNode[]): void {
+  private prepareTreeNodeHelperRecursively(nodes: TreeNode[]): void {
     nodes.forEach((m) => {
+      // 1. collect all parent items to build a drop down list
       this.parentItems.push({ label: m.key, value: m.data.id } as SelectItem)
-      if (m.children && m.children.length > 0) this.prepareParentNodes(m.children)
+      // 2. collect all languages to be used in label switcher
+      if (m.data.i18n && Object.keys(m.data.i18n).length > 0) {
+        for (const k in m.data.i18n) {
+          let n = 1
+          if (this.usedLanguages.has(k)) n = (this.usedLanguages.get(k) ?? 0) + 1
+          this.usedLanguages.set(k, n)
+        }
+      }
+      // children
+      if (m.children && m.children.length > 0) this.prepareTreeNodeHelperRecursively(m.children)
     })
     this.parentItems.sort(dropDownSortItemsByLabel)
+  }
+  // prepare the node label switcher: add the used languages at the end
+  private prepareTreeNodeLabelSwitch(): void {
+    this.treeNodeLabelSwitchItems = [
+      { label: 'Name', value: 'NAME' },
+      { label: 'ID', value: 'ID' }
+    ]
+    const langs = Array.from(this.usedLanguages.keys())
+    langs.sort(sortByLocale)
+    langs.forEach((l) => this.treeNodeLabelSwitchItems.push({ label: l, value: l }))
   }
 
   /****************************************************************************

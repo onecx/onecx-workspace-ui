@@ -12,14 +12,9 @@
   </ocx-page-header>
 
   <ocx-page-content>
-    <!-- on loading and preparing data -->
+    <!-- on loading and preparing menu -->
     <div *ngIf="loading" class="card flex flex-wrap justify-content-start align-items-center">
-      <p-message
-        severity="info"
-        styleClass="p-2"
-        icon="pi pi-spin pi-spinner"
-        [text]="'ACTIONS.LOADING' | translate"
-      ></p-message>
+      <p-message severity="info" styleClass="p-2" [text]="'ACTIONS.LOADING' | translate"></p-message>
     </div>
     <!-- if menu does NOT exist -->
     <div
@@ -39,7 +34,7 @@
     <p-treeTable
       *ngIf="menuNodes.length > 0"
       #menuTree
-      styleClass="px-2"
+      styleClass="px-2 sm:px-3"
       id="ws_menu_table"
       [columns]="wRoles"
       [value]="menuNodes"
@@ -111,10 +106,13 @@
 
       <ng-template pTemplate="header" let-columns>
         <tr>
-          <th id="ws_menu_table_header_dummy1" class="text-left border-transparent">
+          <th
+            id="ws_menu_table_header_dummy1"
+            class="p-2 vertical-align-top text-left border-transparent flex flex-row flex-wrap row-gap-2 justify-content-start align-items-start column-gap-3"
+          >
             <p-toggleButton
               inputId="ws_menu_table_header_tree_toggle"
-              styleClass="data-view-control"
+              styleClass="data-view-control white-space-nowrap"
               [(ngModel)]="treeExpanded"
               [onLabel]="'ACTIONS.TREE.COLLAPSE_ALL' | translate"
               [offLabel]="'ACTIONS.TREE.EXPAND_ALL' | translate"
@@ -124,50 +122,49 @@
               tooltipPosition="top"
               tooltipEvent="hover"
             />
+            <div class="slim-selectbutton filter-selectbutton">
+              <p-selectButton
+                inputid="ws_menu_table_header_display_tree_item_name"
+                styleClass="data-view-control"
+                [options]="treeNodeLabelSwitchItems"
+                [(ngModel)]="treeNodeLabelSwitchValue"
+                (onChange)="onTreeNodeLabelSwitchChange($event)"
+                [pTooltip]="'DIALOG.MENU.HEADER.DISPLAYED_ITEM' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+              >
+                <ng-template let-item pTemplate="item"> {{ item.label }} </ng-template>
+              </p-selectButton>
+            </div>
           </th>
           <th
             id="ws_menu_table_header_dummy2"
-            class="text-left border-transparent"
+            class="pl-4 py-2 vertical-align-top text-left border-transparent"
             [attr.colspan]="displayRoles ? 1 + wRoles.length : 5"
           >
             <p-toggleButton
               inputid="ws_menu_table_header_context"
-              styleClass="data-view-control"
+              styleClass="data-view-control hidden-xs"
               [onLabel]="'DIALOG.MENU.HEADER.DETAILS' | translate"
               [offLabel]="'DIALOG.MENU.HEADER.ROLES' | translate"
-              [(ngModel)]="menuContextValue"
-              (onChange)="onMenuContextChange($event)"
+              [(ngModel)]="treeTableContentValue"
+              (onChange)="onToggleTreeTableContent($event)"
               [attr.aria-label]="'DIALOG.MENU.HEADER.DETAILS_N_ROLES.TOOLTIP' | translate"
               [pTooltip]="'DIALOG.MENU.HEADER.DETAILS_N_ROLES.TOOLTIP' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
             />
-            <!--div class="slim-selectbutton filter-selectbutton">
-                <p-selectButton
-                  inputid="ws_menu_table_header_context"
-                  styleClass="data-view-control"
-                  [options]="menuContextItems"
-                  [(ngModel)]="menuContextValue"
-                  (onChange)="onMenuContextChange($event)"
-                >
-                  <ng-template let-item pTemplate="item">
-                    <span [pTooltip]="item.label + '.TOOLTIP' | translate" tooltipPosition="top" tooltipEvent="hover">
-                      {{ item.label | translate }}
-                    </span>
-                  </ng-template>
-                </p-selectButton>
-              </div-->
           </th>
         </tr>
         <tr>
-          <th id="ws_menu_table_header_dummy2"></th>
+          <th id="ws_menu_table_header_dummy2" class="p-2 border-transparent"></th>
           <ng-container *ngIf="!displayRoles">
-            <th id="ws_menu_table_header_actions" class="text-center px-4 hidden-xs border-primary border-bottom-2">
+            <th id="ws_menu_table_header_actions" class="p-2 text-center hidden-xs border-primary border-bottom-2">
               {{ 'ACTIONS.LABEL' | translate }}
             </th>
             <th
               id="ws_menu_table_header_i18n"
-              class="text-center hidden-md border-primary border-bottom-2"
+              class="p-2 text-center hidden-md border-primary border-bottom-2"
               [pTooltip]="'DIALOG.MENU.TREE.I18N.TOOLTIP' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
@@ -176,7 +173,7 @@
             </th>
             <th
               id="ws_menu_table_header_url"
-              class="hidden-sm border-primary border-bottom-2"
+              class="p-2 hidden-sm white-space-nowrap border-primary border-bottom-2"
               [pTooltip]="'DIALOG.MENU.TREE.URL.TOOLTIP' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
@@ -190,31 +187,32 @@
             <th
               *ngIf="wRoles.length === 0"
               id="ws_menu_table_header_roles_dummy"
-              class="px-8 text-center font-italic border-primary border-bottom-2"
+              class="py-2 px-8 hidden-xs text-center font-italic border-primary border-bottom-2"
             >
               {{ 'DIALOG.MENU.HEADER.ROLES.NOT_EXIST' | translate }}
             </th>
             <th
               *ngFor="let role of columns"
               id="ws_menu_table_header_roles"
-              class="px-2 text-center border-primary border-bottom-2"
+              class="p-2 hidden-xs text-center border-primary border-bottom-2"
+              [pTooltip]="role.description ? role.description : ''"
+              tooltipPosition="top"
+              tooltipEvent="hover"
             >
-              <div class="flex flex-column justify-content-between">
-                <div [pTooltip]="role.description ? role.description : ''" tooltipPosition="top" tooltipEvent="hover">
-                  {{ role.name }}
-                </div>
-              </div>
+              {{ role.name }}
             </th>
           </ng-container>
         </tr>
       </ng-template>
+
+      <!-- BODY -->
       <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
         <tr [id]="'ws_menu_table_row_' + rowData.key">
           <td class="white-space-nowrap">
             <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
             <span *ngIf="rowData.badge" class="pi pi-{{ rowData.badge }} pr-2"></span>
             <span *ngIf="!rowData.badge" class="pi pi-folder pr-2 invisible"></span>
-            <span [id]="'ws_menu__table_row_' + rowData.key + '_name'">{{ rowData.name }}</span>
+            <span [id]="'ws_menu_table_row_' + rowData.key + '_name'">{{ rowNode.node.label }}</span>
           </td>
           <!-- manage the item -->
           <ng-container *ngIf="!displayRoles">
@@ -222,7 +220,7 @@
               <div class="flex gap-1">
                 <button
                   pbutton
-                  [id]="'portal_menu_table_row_' + rowData.key + '_disabled'"
+                  [id]="'ws_menu_table_row_' + rowData.key + '_disabled'"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                   (click)="onToggleDisable($event, rowData)"
                   [attr.aria-label]="'MENU_ITEM.' + (rowData['disabled'] ? 'DISABLED' : 'ENABLED') | translate"
@@ -242,7 +240,7 @@
                 <button
                   pbutton
                   type="button"
-                  [id]="'ws_menu__table_row_' + rowData.key + '_goto_details'"
+                  [id]="'ws_menu_table_row_' + rowData.key + '_goto_details'"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                   (click)="onGotoDetails($event, rowData)"
                   [attr.aria-label]="'DIALOG.MENU.ACTION.DETAILS' | translate"
@@ -261,7 +259,7 @@
                   *ocxIfPermission="'MENU#EDIT'"
                   pbutton
                   type="button"
-                  [id]="'ws_menu__table_row_' + rowData.key + '_goto_new'"
+                  [id]="'ws_menu_table_row_' + rowData.key + '_goto_new'"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                   (click)="onCreateMenu($event, rowData)"
                   [attr.aria-label]="'ACTIONS.CREATE.MENU' | translate"
@@ -275,7 +273,7 @@
                   *ocxIfPermission="'MENU#DELETE'"
                   pbutton
                   type="button"
-                  [id]="'ws_menu__table_row_' + rowData.key + '_delete'"
+                  [id]="'ws_menu_table_row_' + rowData.key + '_delete'"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                   (click)="onDeleteMenu($event, rowData)"
                   [attr.aria-label]="'ACTIONS.DELETE.MENU' | translate"
@@ -290,7 +288,7 @@
             <td class="text-center hidden-md">
               <span
                 *ngIf="!isObjectEmpty(rowData.i18n)"
-                [id]="'ws_menu__table_row_' + rowData.key + '_i18n'"
+                [id]="'ws_menu_table_row_' + rowData.key + '_i18n'"
                 class="pi pi-check"
                 [pTooltip]="'DIALOG.MENU.TREE.I18N.ROW.TOOLTIP' | translate"
                 tooltipPosition="top"
@@ -300,7 +298,7 @@
             <td class="hidden-sm">
               <a
                 *ngIf="rowData.gotoUrl"
-                [id]="'ws_menu__table_row_' + rowData.key + '_url'"
+                [id]="'ws_menu_table_row_' + rowData.key + '_url'"
                 class="text-primary font-italic cursor-pointer pr-3"
                 [href]="rowData.gotoUrl"
                 target="_blank"
@@ -314,16 +312,18 @@
               </a>
             </td>
           </ng-container>
-          <!-- ASSIGNMENTS -->
+
+          <!-- ROLE ASSIGNMENTS -->
           <ng-container *ngIf="displayRoles">
             <td
               *ngFor="let role of columns"
-              class="text-center"
-              [id]="'menu_detail_tree_table_data_' + role.name + '_' + rowData.key"
+              class="hidden-xs text-center"
+              [id]="'ws_menu_table_role_' + role.name + '_' + rowData.key"
             >
               <!-- display only -->
               <span
                 *ngIf="!rowData.roles[role.id] && rowData.rolesInherited[role.id]"
+                [id]="'ws_menu_table_role_' + role.name + '_' + rowData.key + '_inherited'"
                 class="pi pi-circle-fill text-primary opacity-40 text-lg"
                 [pTooltip]="'DIALOG.MENU.ASSIGNMENT.OK_INHERITED' | translate"
                 tooltipPosition="top"
@@ -333,6 +333,7 @@
               <div *ngIf="!myPermissions.includes('MENU#GRANT')">
                 <span
                   *ngIf="rowData.roles[role.id]"
+                  [id]="'ws_menu_table_role_' + role.name + '_' + rowData.key + '_assigned'"
                   class="pi pi-circle-fill text-primary text-lg"
                   [pTooltip]="'DIALOG.MENU.ASSIGNMENT.OK' | translate"
                   tooltipPosition="top"
@@ -341,6 +342,7 @@
                 </span>
                 <span
                   *ngIf="!rowData.roles[role.id] && !rowData.rolesInherited[role.id]"
+                  [id]="'ws_menu_table_role_' + role.name + '_' + rowData.key + '_not_assigned'"
                   class="pi pi-circle text-primary text-lg"
                   [pTooltip]="'DIALOG.MENU.ASSIGNMENT.NOK' | translate"
                   tooltipPosition="top"
@@ -353,6 +355,7 @@
                 <a
                   *ngIf="rowData.roles[role.id]"
                   tabindex="0"
+                  [id]="'ws_menu_table_role_' + role.name + '_' + rowData.key + '_action_revoke'"
                   class="pi pi-circle-fill text-primary text-lg cursor-pointer"
                   (click)="onRevokePermission(rowData, role.id, rowData.roles[role.id])"
                   [attr.aria-label]="
@@ -372,6 +375,7 @@
                 <a
                   *ngIf="!rowData.roles[role.id] && !rowData.rolesInherited[role.id]"
                   tabindex="0"
+                  [id]="'ws_menu_table_role_' + role.name + '_' + rowData.key + '_action_grant'"
                   class="pi pi-circle text-primary text-lg cursor-pointer"
                   (click)="onGrantPermission(rowData, role.id)"
                   [attr.aria-label]="

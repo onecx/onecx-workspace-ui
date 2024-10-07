@@ -7,6 +7,7 @@
   (onHide)="onClose()"
 >
   <p-fileUpload
+    id="ws_menu_import_file_upload"
     mode="advanced"
     name="file"
     accept=".json"
@@ -31,6 +32,7 @@
     *ngIf="menuImportError"
     severity="error"
     styleClass="mt-3"
+    id="ws_menu_import_parse_error"
     text="{{ 'VALIDATION.ERRORS.PARSE_ERROR' | translate }}"
   ></p-message>
 

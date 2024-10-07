@@ -84,7 +84,7 @@
       "LABEL": "Import",
       "TOOLTIP": "Upload definition in JSON format",
       "MENU": "Import Menu",
-      "WORKSPACE": "Import Workspace definition in JSON format."
+      "WORKSPACE": "Import Workspace"
     },
     "NAVIGATION": {
       "CLOSE": "Close",
@@ -344,11 +344,14 @@
         "CREATE": "Create Menu Item",
         "DELETE": "Delete Menu Item",
         "IMPORT": "Import Menu",
-        "TREE_MODAL": "Reorder & Preview",
+        "TREE_MODAL": "Reorder",
         "TREE_MODAL.TOOLTIP": "Reorder of Menu Items via Drag & Drop and Preview in configured languages",
         "DETAILS": "Details",
         "ROLES": "Roles",
         "DETAILS_N_ROLES.TOOLTIP": "Change display: Details / Roles and Permissions",
+        "DISPLAYED_ITEM": "Change node label: Menu Item Name / ID / Language",
+        "DISPLAYED_ITEM.NAME": "Name",
+        "DISPLAYED_ITEM.ID": "ID",
         "ROLES.MANAGE": "Manage Roles",
         "ROLES.NOT_EXIST": "No Workspace Roles",
         "PREVIEW.TOOLTIP": "Preview in configured languages",
