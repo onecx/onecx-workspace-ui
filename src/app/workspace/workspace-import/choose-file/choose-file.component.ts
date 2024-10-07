@@ -42,6 +42,9 @@ export class ChooseFileComponent implements OnInit {
         .get([
           'WORKSPACE_IMPORT.VALIDATION_WORKSPACE_MISSING',
           'WORKSPACE_IMPORT.VALIDATION_WORKSPACE_NAME_MISSING',
+          'WORKSPACE_IMPORT.VALIDATION_WORKSPACE_DISPLAY_NAME_MISSING',
+          'WORKSPACE_IMPORT.VALIDATION_WORKSPACE_URL_MISSING',
+          'WORKSPACE_IMPORT.VALIDATION_WORKSPACE_THEME_MISSING',
           'WORKSPACE_IMPORT.VALIDATION_WORKSPACE_ROLES_MISSING',
           'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_KEY_MISSING',
           'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_NAME_MISSING',
@@ -87,7 +90,15 @@ export class ChooseFileComponent implements OnInit {
         this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_WORKSPACE_MISSING']
       } else if (!dto.workspaces[key[0]].name) {
         this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_WORKSPACE_NAME_MISSING']
+      } else if (!dto.workspaces[key[0]].displayName) {
+        this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_WORKSPACE_DISPLAY_NAME_MISSING']
+      } else if (!dto.workspaces[key[0]].theme) {
+        this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_WORKSPACE_THEME_MISSING']
+      } else if (!dto.workspaces[key[0]].baseUrl) {
+        this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_WORKSPACE_URL_MISSING']
       } else this.checkMenuItems(dto, data)
+    } else {
+      this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_WORKSPACE_MISSING']
     }
     if (this.validationErrorCause !== '') {
       this.importError = true

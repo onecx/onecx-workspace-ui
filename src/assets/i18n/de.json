@@ -501,7 +501,7 @@
     "WORKSPACE_NAME": "Name",
     "WORKSPACE_NAME.TOOLTIP": "Eindeutiger Name des neuen Workspaces. Die Eindeutigkeit wird im nächsten Schritt geprüft.",
     "DISPLAY_NAME.TOOLTIP": "Anzeigename des neuen Workspace, der nachträglich geändert werden kann.",
-    "WORKSPACE_IMPORT_OK": "Die Workspace-Definition wurde geprüft und kann importiert werden.",
+    "IMPORT_OK": "Die Workspace-Definition wurde geprüft und kann importiert werden.",
     "WORKSPACE_EXISTS_MESSAGE": "Ein Workspace mit diesem Namen existiert bereits. Dessen Definition wird überschrieben.",
     "BASE_URL.TOOLTIP": "Base URL des Workspaces. Muss eindeutig sein weil sie für den Zugriff auf den Workspace benutzt wird. Das wird im nächsten Schritt geprüft.",
     "BASE_URL_EXISTS_MESSAGE": "Ein Workspace mit dieser Base URL existiert bereits. Eine erneute Verwendung wird wahrscheinlich zu Problemen führen.",
@@ -518,6 +518,9 @@
     "VALIDATION_JSON_ERROR": "JSON Formatfehler",
     "VALIDATION_WORKSPACE_MISSING": "Keine Workspace-Definition enthalten/gefunden",
     "VALIDATION_WORKSPACE_NAME_MISSING": "Kein Workspace-Name enthalten/gefunden",
+    "VALIDATION_WORKSPACE_DISPLAY_NAME_MISSING": "Kein Workspace-Display Name enthalten/gefunden",
+    "VALIDATION_WORKSPACE_THEME_MISSING": "Kein Workspace-Theme enthalten/gefunden",
+    "VALIDATION_WORKSPACE_URL_MISSING": "Keine Workspace-Url enthalten/gefunden",
     "VALIDATION_WORKSPACE_ROLES_MISSING": "Keine Workspace-Rollen enthalten/gefunden",
     "VALIDATION_MENU_NOT_EXIST": "Keine Menü-Definition enthalten",
     "VALIDATION_MENU_ITEM_KEY_MISSING": "In einem Menüpunkt fehlt der Key",
@@ -526,8 +529,8 @@
     "VALIDATION_MENU_ITEM_WRONG_DISABLED": "In einem Menüpunkt ist der Wert für 'disabled' kein Boolean",
     "VALIDATION_MENU_ITEM_WRONG_WORKSPACEEXIT": "In einem Menüpunkt ist der Wert für 'workspaceExit' kein Boolean",
     "VALIDATION_RESULT": "Verarbeitung nicht möglich: ",
-    "WORKSPACE_IMPORT_ERROR": "Ein Fehler ist aufgetreten. Workspace für den Import konnte nicht geladen werden.",
-    "WORKSPACE_IMPORT_NOK": "Ein Fehler ist aufgetreten. Workspace konnte nicht importiert werden."
+    "IMPORT_ERROR": "Ein Fehler ist aufgetreten. Workspace für den Import konnte nicht geladen werden.",
+    "IMPORT_NOK": "Ein Fehler ist aufgetreten. Workspace konnte nicht importiert werden."
   },
   "IMAGE": {
     "LOGO_URL": "Externe Logo URL",
