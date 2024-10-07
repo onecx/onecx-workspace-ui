@@ -1,14 +1,4 @@
-import {
-  Component,
-  AfterViewInit,
-  ElementRef,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
-  SimpleChanges,
-  ViewChild
-} from '@angular/core'
+import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core'
 import { SelectItem, TreeNode } from 'primeng/api'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
@@ -27,7 +17,7 @@ export type I18N = { [key: string]: string }
   templateUrl: './menu-preview.component.html',
   styleUrls: ['./menu-preview.component.scss']
 })
-export class MenuPreviewComponent implements AfterViewInit, OnChanges {
+export class MenuPreviewComponent implements OnChanges {
   @Input() public menuItems!: WorkspaceMenuItem[]
   @Input() public displayDialog = false
   @Output() public hideDialog = new EventEmitter()
@@ -62,9 +52,6 @@ export class MenuPreviewComponent implements AfterViewInit, OnChanges {
     this.languagesPreviewValue = this.userService.lang$.getValue()
   }
 
-  public ngAfterViewInit() {
-    console.log(this.previewTree.nativeElement)
-  }
   public ngOnChanges(changes: SimpleChanges): void {
     if (changes['menuItems'] || this.displayDialog) {
       this.menuNodes = this.mapToTree(this.menuItems, this.languagesPreviewValue)
