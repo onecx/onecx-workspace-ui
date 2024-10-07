@@ -344,7 +344,6 @@ export class MenuComponent implements OnInit, OnDestroy {
       .getWorkspaceByName({ workspaceName: this.workspaceName })
       .pipe(catchError((error) => of(error)))
     this.workspace$.subscribe((result) => {
-      this.loading = true
       if (result instanceof HttpErrorResponse) {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + result.status + '.WORKSPACES'
         console.error('getWorkspaceByName():', result)
@@ -355,7 +354,6 @@ export class MenuComponent implements OnInit, OnDestroy {
       } else {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_0.WORKSPACES'
       }
-      this.loading = false
     })
   }
 
@@ -428,11 +426,9 @@ export class MenuComponent implements OnInit, OnDestroy {
     return (a.name ? a.name.toUpperCase() : '').localeCompare(b.name ? b.name.toUpperCase() : '')
   }
   private loadRolesAndAssignments() {
-    this.loading = true
     this.wRoles = []
     this.wAssignments = []
     combineLatest([this.searchRoles(), this.searchAssignments()]).subscribe(([roles, ass]) => {
-      this.loading = false
       this.wRoles.sort(this.sortRoleByName)
       // assignments(role.id, menu.id) => node.roles[role.id] = ass.id
       ass.forEach((ass: Assignment) => {
