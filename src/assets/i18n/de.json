@@ -558,7 +558,10 @@
     "USER_SIDEBAR_MENU": {
       "LOGOUT": "Abmelden"
     },
-    "LIST_WORKSPACES": "This Theme is used by the following Workspaces: "
+    "LIST_WORKSPACES": {
+      "USED": "Theme wird in diesen Workspaces verwendet: ",
+      "UNUSED": "Theme wird von keinem Workspace verwendet."
+    }
   },
   "VALIDATION": {
     "FORM_INVALID": "Das Formular enthält ungültige Werte.",
