@@ -52,7 +52,7 @@ export class MenuPreviewComponent implements AfterViewInit, OnChanges {
   }
 
   constructor(
-    private elementRef: ElementRef,
+    private readonly elementRef: ElementRef,
     private stateService: MenuStateService,
     private treeService: MenuTreeService,
     private userService: UserService,

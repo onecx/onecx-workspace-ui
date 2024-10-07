@@ -446,7 +446,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         const assignedNode = this.findTreeNodeById(this.menuNodes, ass.menuItemId)
         if (assignedNode) {
           assignedNode.data.roles[ass.roleId!] = ass.id
-          this.inheritRoleAssignment(assignedNode, ass.roleId!, ass.id)
+          //this.inheritRoleAssignment(assignedNode, ass.roleId!, ass.id)
         }
       })
     })
@@ -460,6 +460,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     }
     return treeNode
   }
+  // inherit assignment settings for all menu item children => rejected func. by Trian
   private inheritRoleAssignment(node: TreeNode, roleId: string, assId: string | undefined): void {
     if (node?.children && node.children.length > 0)
       node.children.forEach((n) => {
@@ -467,30 +468,41 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.inheritRoleAssignment(n, roleId, assId)
       })
   }
+  // Assign parent menu items (the complete path to top) after assignment of a child item
+  private ensureAssignmentsOfPathToMenuItem(node: TreeNode, roleId: string): void {
+    console.log()
+  }
 
-  public onGrantPermission(rowData: MenuItemNodeData, roleId: string): void {
-    this.assApi
-      .createAssignment({
-        createAssignmentRequest: { roleId: roleId, menuItemId: rowData.id } as CreateAssignmentRequest
-      })
-      .subscribe({
-        next: (data) => {
-          this.msgService.success({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.GRANT_OK' })
-          rowData.roles[roleId] = data.id
-          this.inheritRoleAssignment(rowData.node, roleId, data.id)
-        },
-        error: (err: { error: any }) => {
-          this.msgService.error({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.GRANT_NOK' })
-          console.error(err.error)
-        }
-      })
+  public onGrantPermission(rowNode: TreeNode, rowData: MenuItemNodeData, roleId: string): void {
+    console.log(rowNode)
+    console.log(rowData)
+    if (!rowData.roles || !rowData.roles[roleId]) {
+      this.assApi
+        .createAssignment({
+          createAssignmentRequest: { roleId: roleId, menuItemId: rowData.id } as CreateAssignmentRequest
+        })
+        .subscribe({
+          next: (data) => {
+            this.msgService.success({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.GRANT_OK' })
+            rowData.roles[roleId] = data.id
+            if (rowNode.parent) {
+              this.onGrantPermission(rowNode.parent, rowNode.parent.data, roleId)
+            }
+            //this.inheritRoleAssignment(rowData.node, roleId, data.id) // excluded by Trian
+          },
+          error: (err: { error: any }) => {
+            this.msgService.error({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.GRANT_NOK' })
+            console.error(err.error)
+          }
+        })
+    } else if (rowNode.parent) this.onGrantPermission(rowNode.parent, rowNode.parent.data, roleId)
   }
   public onRevokePermission(rowData: MenuItemNodeData, roleId: string, assId: string): void {
     this.assApi.deleteAssignment({ id: assId }).subscribe({
       next: () => {
         this.msgService.success({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.REVOKE_OK' })
         rowData.roles[roleId] = undefined
-        this.inheritRoleAssignment(rowData.node, roleId, undefined)
+        //this.inheritRoleAssignment(rowData.node, roleId, undefined) // excluded by Trian
       },
       error: (err: { error: any }) => {
         this.msgService.error({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.REVOKE_NOK' })
