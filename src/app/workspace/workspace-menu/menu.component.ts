@@ -468,10 +468,6 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.inheritRoleAssignment(n, roleId, assId)
       })
   }
-  // Assign parent menu items (the complete path to top) after assignment of a child item
-  private ensureAssignmentsOfPathToMenuItem(node: TreeNode, roleId: string): void {
-    console.log()
-  }
 
   public onGrantPermission(rowNode: TreeNode, rowData: MenuItemNodeData, roleId: string): void {
     console.log(rowNode)
