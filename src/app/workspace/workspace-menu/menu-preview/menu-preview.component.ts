@@ -63,7 +63,7 @@ export class MenuPreviewComponent implements AfterViewInit, OnChanges {
   }
 
   public ngAfterViewInit() {
-    //console.log(this.previewTree.nativeElement)
+    console.log(this.previewTree.nativeElement)
   }
   public ngOnChanges(changes: SimpleChanges): void {
     if (changes['menuItems'] || this.displayDialog) {
