@@ -1,7 +1,6 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core'
 import { HttpHeaders } from '@angular/common/http'
 import { TranslateService } from '@ngx-translate/core'
-import { WorkspaceSnapshot } from 'src/app/shared/generated'
 import { FileSelectEvent } from 'primeng/fileupload'
 
 @Component({
@@ -9,9 +8,9 @@ import { FileSelectEvent } from 'primeng/fileupload'
   templateUrl: './choose-file.component.html'
 })
 export class ChooseFileComponent implements OnInit {
-  @Output() public importFileSelected = new EventEmitter<WorkspaceSnapshot>()
+  @Output() public importFileSelected = new EventEmitter<any>()
 
-  importWorkspace: WorkspaceSnapshot | null = null
+  importWorkspace = null
 
   public httpHeaders!: HttpHeaders
   public reader = new FileReader()
@@ -81,9 +80,8 @@ export class ChooseFileComponent implements OnInit {
     return !this.importError && !!this.importWorkspace
   }
 
-  public isWorkspaceImportValid(obj: unknown, data: any): obj is WorkspaceSnapshot {
-    const dto = obj as WorkspaceSnapshot
-    // CHANGE IF IMPORT OF MORE WORKSPACES IS POSSIBLE
+  public isWorkspaceImportValid(obj: unknown, data: any): boolean {
+    const dto: any = obj
     if (dto.workspaces) {
       const key: string[] = Object.keys(dto.workspaces)
       if (!dto.workspaces[key[0]]) {
@@ -108,7 +106,7 @@ export class ChooseFileComponent implements OnInit {
     return true
   }
 
-  private checkMenuItems(dto: WorkspaceSnapshot, data: any) {
+  private checkMenuItems(dto: any, data: any) {
     if (dto.workspaces) {
       const key: string[] = Object.keys(dto.workspaces)
       const menuSnapshot = dto.workspaces[key[0]].menu

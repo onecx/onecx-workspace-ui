@@ -6,10 +6,10 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { of } from 'rxjs'
 
 import { AppStateService, createTranslateLoader } from '@onecx/portal-integration-angular'
-import { WorkspaceSnapshot, WorkspaceAPIService } from 'src/app/shared/generated'
+import { WorkspaceAPIService } from 'src/app/shared/generated'
 import { PreviewComponent } from './preview.component'
 
-const snapshot: WorkspaceSnapshot = {
+const snapshot: any = {
   workspaces: {
     workspace: {
       name: 'name',

@@ -4,7 +4,7 @@ import { TranslateService } from '@ngx-translate/core'
 import { MenuItem } from 'primeng/api'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
-import { ImportResponseStatus, WorkspaceAPIService, WorkspaceSnapshot } from 'src/app/shared/generated'
+import { ImportResponseStatus, WorkspaceAPIService } from 'src/app/shared/generated'
 
 import { PreviewComponent } from './preview/preview.component'
 import { ConfirmComponent } from './confirm/confirm.component'
@@ -35,7 +35,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
   public themeName = ''
   public baseUrl = ''
   public baseUrlOrg: string | undefined = undefined // the original
-  public importRequestDTO?: WorkspaceSnapshot
+  public importRequestDTO?: any
   public activeThemeCheckboxInFirstStep = true
   public hasPermission = false
   public importResponse: ImportResponse | undefined = undefined
@@ -134,7 +134,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
     this.importRequestDTO.workspaces[wKeys[0]].baseUrl = this.baseUrl
     this.workspaceApi
       .importWorkspaces({
-        workspaceSnapshot: this.importRequestDTO
+        body: this.importRequestDTO
       })
       .subscribe({
         next: (response) => {
@@ -151,7 +151,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
   }
 
   // NAVIGATE import step : NEXT
-  public next(importRequestDTO?: WorkspaceSnapshot): void {
+  public next(importRequestDTO?: any): void {
     if (this.activeIndex == 0 && importRequestDTO?.workspaces) {
       this.importRequestDTO = importRequestDTO
       let keys: string[] = []

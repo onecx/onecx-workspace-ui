@@ -13,6 +13,6 @@
 
 export interface ExportWorkspacesRequest { 
     names?: Array<string>;
-    includeMenus?: boolean;
+    includeMenus: boolean;
 }
 
