@@ -7,10 +7,7 @@ const storageMock = (initialStorage: { [key: string]: string }) => {
   let storage: { [key: string]: string } = initialStorage
   return {
     getItem: (key: string) => (key in storage ? storage[key] : null),
-    setItem: (key: string, value: string) => {
-      console.log('Setting item ', value, key)
-      storage[key] = value || ''
-    },
+    setItem: (key: string, value: string) => (storage[key] = value || ''),
     removeItem: (key: string) => delete storage[key],
     clear: () => (storage = {})
   }
