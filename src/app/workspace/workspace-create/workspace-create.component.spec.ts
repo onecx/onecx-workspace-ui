@@ -1,14 +1,14 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
-import { HttpClient } from '@angular/common/http'
-import { HttpClientTestingModule } from '@angular/common/http/testing'
+import { HttpClient, provideHttpClient } from '@angular/common/http'
 import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
-import { RouterTestingModule } from '@angular/router/testing'
-import { Router } from '@angular/router'
+import { provideRouter, Router } from '@angular/router'
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router'
 import { ConfirmationService } from 'primeng/api'
 import { DropdownModule } from 'primeng/dropdown'
+import { of, throwError } from 'rxjs'
 
 import { ProductAPIService, Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
 import { environment } from 'src/environments/environment'
@@ -19,7 +19,6 @@ import {
   PortalMessageService
 } from '@onecx/portal-integration-angular'
 import { WorkspaceCreateComponent } from './workspace-create.component'
-import { of, throwError } from 'rxjs'
 
 const workspace: Workspace = {
   id: 'id',
@@ -60,8 +59,6 @@ describe('WorkspaceCreateComponent', () => {
     TestBed.configureTestingModule({
       declarations: [WorkspaceCreateComponent],
       imports: [
-        HttpClientTestingModule,
-        RouterTestingModule,
         ReactiveFormsModule,
         DropdownModule,
         TranslateModule.forRoot({
@@ -74,6 +71,9 @@ describe('WorkspaceCreateComponent', () => {
         })
       ],
       providers: [
+        provideHttpClientTesting(),
+        provideHttpClient(),
+        provideRouter([{ path: '', component: WorkspaceCreateComponent }]),
         { provide: APP_CONFIG, useValue: environment },
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: WorkspaceAPIService, useValue: wApiServiceSpy },

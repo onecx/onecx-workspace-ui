@@ -1,13 +1,14 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
+import { provideHttpClient } from '@angular/common/http'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { provideRouter } from '@angular/router'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { FormControl, FormGroup } from '@angular/forms'
+import { TranslateTestingModule } from 'ngx-translate-testing'
 
 import { PortalMessageService } from '@onecx/portal-integration-angular'
 import { Workspace } from 'src/app/shared/generated'
 import { WorkspaceContactComponent } from './workspace-contact.component'
-import { RouterTestingModule } from '@angular/router/testing'
-import { TranslateTestingModule } from 'ngx-translate-testing'
 
 const portal: Workspace = {
   name: 'name',
@@ -35,15 +36,18 @@ describe('WorkspaceContactComponent', () => {
     TestBed.configureTestingModule({
       declarations: [WorkspaceContactComponent],
       imports: [
-        RouterTestingModule,
-        HttpClientTestingModule,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
       schemas: [NO_ERRORS_SCHEMA],
-      providers: [{ provide: PortalMessageService, useValue: msgServiceSpy }]
+      providers: [
+        provideHttpClientTesting(),
+        provideHttpClient(),
+        provideRouter([{ path: '', component: WorkspaceContactComponent }]),
+        { provide: PortalMessageService, useValue: msgServiceSpy }
+      ]
     }).compileComponents()
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()

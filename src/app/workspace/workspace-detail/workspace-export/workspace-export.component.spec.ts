@@ -1,12 +1,12 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { HttpClient } from '@angular/common/http'
-import { HttpClientTestingModule } from '@angular/common/http/testing'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { HttpClient, provideHttpClient } from '@angular/common/http'
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
+import { of, throwError } from 'rxjs'
 
 import { AppStateService, createTranslateLoader, PortalMessageService } from '@onecx/portal-integration-angular'
 import { WorkspaceExportComponent } from './workspace-export.component'
-import { of, throwError } from 'rxjs'
 import { WorkspaceAPIService } from 'src/app/shared/generated'
 
 describe('WorkspaceExportComponent', () => {
@@ -25,7 +25,6 @@ describe('WorkspaceExportComponent', () => {
     TestBed.configureTestingModule({
       declarations: [WorkspaceExportComponent],
       imports: [
-        HttpClientTestingModule,
         TranslateModule.forRoot({
           loader: {
             provide: TranslateLoader,
@@ -35,6 +34,8 @@ describe('WorkspaceExportComponent', () => {
         })
       ],
       providers: [
+        provideHttpClientTesting(),
+        provideHttpClient(),
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: WorkspaceAPIService, useValue: apiServiceSpy }
       ],
