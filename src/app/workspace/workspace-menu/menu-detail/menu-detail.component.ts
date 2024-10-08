@@ -267,11 +267,14 @@ export class MenuDetailComponent implements OnChanges {
       this.menuItem.disabled = this.formGroup.controls['disabled'].value
       this.menuItem.external = this.formGroup.controls['external'].value
       this.menuItem.description = this.formGroup.controls['description'].value
-      const i18n: I18N = {}
-      for (const l of this.languagesDisplayed) {
-        if (l.data !== '') i18n[l.value] = l.data
+      // if language panell was initialized then take over content
+      if (this.languagesDisplayed.length > 0) {
+        const i18n: I18N = {}
+        for (const l of this.languagesDisplayed) {
+          if (l.data !== '') i18n[l.value] = l.data
+        }
+        this.menuItem.i18n = i18n
       }
-      this.menuItem.i18n = i18n
     }
     if (this.changeMode === 'CREATE') {
       this.menuApi
