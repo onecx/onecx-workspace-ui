@@ -1,6 +1,6 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
-import { HttpClient } from '@angular/common/http'
-import { HttpClientTestingModule } from '@angular/common/http/testing'
+import { HttpClient, provideHttpClient } from '@angular/common/http'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { of } from 'rxjs'
@@ -55,7 +55,6 @@ describe('PreviewComponent', () => {
     TestBed.configureTestingModule({
       declarations: [PreviewComponent],
       imports: [
-        HttpClientTestingModule,
         TranslateModule.forRoot({
           loader: {
             provide: TranslateLoader,
@@ -64,7 +63,11 @@ describe('PreviewComponent', () => {
           }
         })
       ],
-      providers: [{ provide: WorkspaceAPIService, useValue: wsServiceSpy }],
+      providers: [
+        provideHttpClientTesting(),
+        provideHttpClient(),
+        { provide: WorkspaceAPIService, useValue: wsServiceSpy }
+      ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents()
     wsServiceSpy.getAllThemes.calls.reset()

@@ -1,7 +1,6 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { HttpClient } from '@angular/common/http'
-import { HttpClientTestingModule } from '@angular/common/http/testing'
+import { HttpClient, provideHttpClient } from '@angular/common/http'
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 
 import { AppStateService, createTranslateLoader, PortalMessageService } from '@onecx/portal-integration-angular'
@@ -9,6 +8,7 @@ import { WorkspaceRoleDetailComponent } from './workspace-role-detail.component'
 import { Role } from '../workspace-detail/workspace-roles/workspace-roles.component'
 import { Workspace, WorkspaceRolesAPIService } from 'src/app/shared/generated'
 import { of, throwError } from 'rxjs'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
 
 const workspace: Workspace = {
   id: 'id',
@@ -42,7 +42,6 @@ describe('WorkspaceRoleDetailComponent', () => {
     TestBed.configureTestingModule({
       declarations: [WorkspaceRoleDetailComponent],
       imports: [
-        HttpClientTestingModule,
         TranslateModule.forRoot({
           isolate: true,
           loader: {
@@ -54,6 +53,8 @@ describe('WorkspaceRoleDetailComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
+        provideHttpClientTesting(),
+        provideHttpClient(),
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: WorkspaceRolesAPIService, useValue: wRoleServiceSpy }
       ]

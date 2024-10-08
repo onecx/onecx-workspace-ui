@@ -1,11 +1,9 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { Router } from '@angular/router'
+import { provideRouter, Router } from '@angular/router'
 import { of, throwError } from 'rxjs'
 import { ActivatedRoute } from '@angular/router'
-import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { TranslateTestingModule } from 'ngx-translate-testing'
-import { RouterTestingModule } from '@angular/router/testing'
 
 import { PortalMessageService } from '@onecx/portal-integration-angular'
 import { Workspace, WorkspaceAbstract, WorkspaceAPIService, SearchWorkspacesResponse } from 'src/app/shared/generated'
@@ -13,6 +11,9 @@ import { Workspace, WorkspaceAbstract, WorkspaceAPIService, SearchWorkspacesResp
 import { WorkspaceSearchComponent } from './workspace-search.component'
 import { getLocation } from '@onecx/accelerator'
 import { Location } from '@angular/common'
+import { provideHttpClient } from '@angular/common/http'
+import { provideHttpClientTesting, HttpClientTestingModule } from '@angular/common/http/testing'
+import { RouterTestingModule } from '@angular/router/testing'
 
 describe('WorkspaceSearchComponent', () => {
   let component: WorkspaceSearchComponent
@@ -32,8 +33,6 @@ describe('WorkspaceSearchComponent', () => {
     TestBed.configureTestingModule({
       declarations: [WorkspaceSearchComponent],
       imports: [
-        RouterTestingModule,
-        HttpClientTestingModule,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
@@ -41,6 +40,9 @@ describe('WorkspaceSearchComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
+        provideHttpClientTesting(),
+        provideHttpClient(),
+        provideRouter([{ path: '', component: WorkspaceSearchComponent }]),
         { provide: Router, useValue: mockRouter },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: PortalMessageService, useValue: msgServiceSpy },
