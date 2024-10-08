@@ -46,7 +46,7 @@ export class MenuItemService {
     if (!url) {
       return
     }
-    return url.replace(/\[\[(.*?)\]\]/, (match) => {
+    return url.replaceAll(/\[\[(.+?)\]\]/g, (match) => {
       match = match.trim().substring(2, match.length - 2)
       return sessionStorage.getItem(match) ?? localStorage.getItem(match) ?? ''
     })

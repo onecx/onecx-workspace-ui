@@ -15,10 +15,12 @@ const storageMock = (initialStorage: { [key: string]: string }) => {
 
 function mockStorage() {
   const mockLocalStorage = storageMock({
-    id: '1'
+    id: '1',
+    key: 'my-localstorage-key'
   })
   const mockSessionStorage = storageMock({
-    id: '2'
+    id: '2',
+    key: 'my-sessionstorage-key'
   })
 
   spyOn(window.localStorage, 'getItem').and.callFake(mockLocalStorage.getItem)
@@ -102,7 +104,7 @@ describe('MenuItemService', () => {
     expect(result).toEqual(expected)
   })
 
-  it('should correctly replace external menuItem variables using sessionStorage', () => {
+  it('should correctly replace external menuItem variable using sessionStorage', () => {
     const input: UserWorkspaceMenuItem[] = [
       {
         key: '1',
@@ -151,7 +153,7 @@ describe('MenuItemService', () => {
     expect(result).toEqual(expected)
   })
 
-  it('should correctly replace external menuItem variables using localStorage as a fallback for sessionStorage', () => {
+  it('should correctly replace external menuItem variable using localStorage as a fallback for sessionStorage', () => {
     const input: UserWorkspaceMenuItem[] = [
       {
         key: '1',
@@ -201,7 +203,7 @@ describe('MenuItemService', () => {
     expect(result).toEqual(expected)
   })
 
-  it("should correctly replace external menuItem variables using '' as a fallback for localStorage and sessionStorage", () => {
+  it("should correctly replace external menuItem variable using '' as a fallback for localStorage and sessionStorage", () => {
     const input: UserWorkspaceMenuItem[] = [
       {
         key: '1',
@@ -249,6 +251,55 @@ describe('MenuItemService', () => {
     const result = service.constructMenuItems(input, 'en')
     expect(sessionStorage.getItem).toHaveBeenCalledTimes(1)
     expect(localStorage.getItem).toHaveBeenCalledTimes(1)
+    expect(result).toEqual(expected)
+  })
+
+  it('should correctly replace multiple external menuItem variables using sessionStorage', () => {
+    const input: UserWorkspaceMenuItem[] = [
+      {
+        key: '1',
+        name: 'Item 1',
+        position: 1,
+        disabled: false,
+        external: false,
+        url: '/item1?param=[[DONTREPLACEME]]',
+        badge: 'star',
+        children: [],
+        i18n: { en: 'Item 1 EN' }
+      },
+      {
+        key: '2',
+        name: 'Item 2',
+        position: 2,
+        disabled: false,
+        external: true,
+        url: 'http://external.com?id=[[id]]&mykey=[[key]]',
+        badge: 'check',
+        children: [],
+        i18n: { en: 'Item 2 EN' }
+      }
+    ]
+    const expected: MenuItem[] = [
+      {
+        id: '1',
+        label: 'Item 1 EN',
+        icon: 'pi pi-star',
+        routerLink: '/item1?param=[[DONTREPLACEME]]',
+        items: undefined,
+        url: undefined
+      },
+      {
+        id: '2',
+        label: 'Item 2 EN',
+        icon: 'pi pi-check',
+        routerLink: undefined,
+        items: undefined,
+        url: 'http://external.com?id=2&mykey=my-sessionstorage-key'
+      }
+    ]
+    const result = service.constructMenuItems(input, 'en')
+    expect(sessionStorage.getItem).toHaveBeenCalledTimes(2)
+    expect(localStorage.getItem).toHaveBeenCalledTimes(0)
     expect(result).toEqual(expected)
   })
 
