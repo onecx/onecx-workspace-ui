@@ -13,7 +13,7 @@ import {
   createTranslateLoader,
   PortalMessageService
 } from '@onecx/portal-integration-angular'
-import { ImportResponseStatus, WorkspaceAPIService, WorkspaceSnapshot } from 'src/app/shared/generated'
+import { ImportResponseStatus, WorkspaceAPIService } from 'src/app/shared/generated'
 
 import { WorkspaceImportComponent } from './workspace-import.component'
 import { ConfirmComponent } from './confirm/confirm.component'
@@ -124,7 +124,7 @@ describe('WorkspaceImportComponent', () => {
 
     component.importWorkspace()
 
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'WORKSPACE_IMPORT.WORKSPACE_IMPORT_ERROR' })
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'WORKSPACE_IMPORT.IMPORT_ERROR' })
   })
 
   it('should import a portal', () => {
@@ -284,7 +284,7 @@ describe('WorkspaceImportComponent', () => {
 
   describe('next', () => {
     it('should set importRequestDTO on next when activeIndex is 0 (upload), and themeImportData valid', () => {
-      const workspaceSnap: WorkspaceSnapshot = {
+      const workspaceSnap: any = {
         workspaces: {
           workspace: {
             name: 'name',

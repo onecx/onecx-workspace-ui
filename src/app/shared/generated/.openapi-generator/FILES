@@ -29,16 +29,9 @@ model/createUpdateProductResponse.ts
 model/createWorkspaceRequest.ts
 model/createWorkspaceResponse.ts
 model/createWorkspaceRoleRequest.ts
-model/eximComponent.ts
 model/eximMenuStructure.ts
-model/eximMicrofrontend.ts
-model/eximProduct.ts
 model/eximScope.ts
-model/eximSlot.ts
-model/eximWorkspace.ts
-model/eximWorkspaceAddress.ts
 model/eximWorkspaceMenuItem.ts
-model/eximWorkspaceRole.ts
 model/exportWorkspacesRequest.ts
 model/getMenuItemsRequest.ts
 model/getMenuItemsResponse.ts
@@ -46,7 +39,6 @@ model/getWorkspaceResponse.ts
 model/iAMRole.ts
 model/iAMRolePageResult.ts
 model/iAMRoleSearchCriteria.ts
-model/image.ts
 model/imageInfo.ts
 model/importMenuResponse.ts
 model/importResponseStatus.ts
@@ -94,6 +86,5 @@ model/workspaceRole.ts
 model/workspaceRolePageResult.ts
 model/workspaceRoleSearchCriteria.ts
 model/workspaceSlots.ts
-model/workspaceSnapshot.ts
 param.ts
 variables.ts

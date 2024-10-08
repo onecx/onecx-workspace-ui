@@ -1,19 +1,16 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, tick, waitForAsync, fakeAsync } from '@angular/core/testing'
-// import { HttpClient } from '@angular/common/http'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
-// import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { of, throwError } from 'rxjs'
 
 import { AppStateService, PortalMessageService, createTranslateLoader } from '@onecx/portal-integration-angular'
-// import { HttpLoaderFactory } from 'src/app/shared/shared.module'
 import { ChooseFileComponent } from './choose-file.component'
-import { WorkspaceAPIService, WorkspaceSnapshot } from 'src/app/shared/generated'
+import { WorkspaceAPIService } from 'src/app/shared/generated'
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { HttpClient } from '@angular/common/http'
 import { FileSelectEvent } from 'primeng/fileupload'
 
-const snapshot: WorkspaceSnapshot = {
+const snapshot: any = {
   workspaces: {
     workspace: {
       name: 'name',
@@ -24,7 +21,7 @@ const snapshot: WorkspaceSnapshot = {
   }
 }
 
-fdescribe('ChooseFileComponent', () => {
+describe('ChooseFileComponent', () => {
   let component: ChooseFileComponent
   let fixture: ComponentFixture<ChooseFileComponent>
 

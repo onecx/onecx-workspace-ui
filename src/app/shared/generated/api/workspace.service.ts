@@ -38,8 +38,6 @@ import { SearchWorkspacesResponse } from '../model/searchWorkspacesResponse';
 import { UpdateWorkspaceRequest } from '../model/updateWorkspaceRequest';
 // @ts-ignore
 import { Workspace } from '../model/workspace';
-// @ts-ignore
-import { WorkspaceSnapshot } from '../model/workspaceSnapshot';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
@@ -67,7 +65,7 @@ export interface GetWorkspaceByNameRequestParams {
 }
 
 export interface ImportWorkspacesRequestParams {
-    workspaceSnapshot: WorkspaceSnapshot;
+    body: object;
 }
 
 export interface SearchWorkspacesRequestParams {
@@ -278,9 +276,9 @@ export class WorkspaceAPIService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public exportWorkspaces(requestParameters: ExportWorkspacesRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<WorkspaceSnapshot>;
-    public exportWorkspaces(requestParameters: ExportWorkspacesRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<WorkspaceSnapshot>>;
-    public exportWorkspaces(requestParameters: ExportWorkspacesRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<WorkspaceSnapshot>>;
+    public exportWorkspaces(requestParameters: ExportWorkspacesRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<object>;
+    public exportWorkspaces(requestParameters: ExportWorkspacesRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<object>>;
+    public exportWorkspaces(requestParameters: ExportWorkspacesRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<object>>;
     public exportWorkspaces(requestParameters: ExportWorkspacesRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
         const exportWorkspacesRequest = requestParameters.exportWorkspacesRequest;
         if (exportWorkspacesRequest === null || exportWorkspacesRequest === undefined) {
@@ -328,7 +326,7 @@ export class WorkspaceAPIService {
         }
 
         let localVarPath = `/workspaces/export`;
-        return this.httpClient.request<WorkspaceSnapshot>('post', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<object>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: exportWorkspacesRequest,
@@ -523,9 +521,9 @@ export class WorkspaceAPIService {
     public importWorkspaces(requestParameters: ImportWorkspacesRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<ImportWorkspaceResponse>>;
     public importWorkspaces(requestParameters: ImportWorkspacesRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<ImportWorkspaceResponse>>;
     public importWorkspaces(requestParameters: ImportWorkspacesRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
-        const workspaceSnapshot = requestParameters.workspaceSnapshot;
-        if (workspaceSnapshot === null || workspaceSnapshot === undefined) {
-            throw new Error('Required parameter workspaceSnapshot was null or undefined when calling importWorkspaces.');
+        const body = requestParameters.body;
+        if (body === null || body === undefined) {
+            throw new Error('Required parameter body was null or undefined when calling importWorkspaces.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -572,7 +570,7 @@ export class WorkspaceAPIService {
         return this.httpClient.request<ImportWorkspaceResponse>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: workspaceSnapshot,
+                body: body,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

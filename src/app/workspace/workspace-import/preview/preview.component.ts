@@ -3,13 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { TreeNode, SelectItem } from 'primeng/api'
 import { Observable, map } from 'rxjs'
 
-import {
-  EximProduct,
-  EximWorkspaceMenuItem,
-  EximWorkspaceRole,
-  WorkspaceSnapshot,
-  WorkspaceAPIService
-} from 'src/app/shared/generated'
+import { EximWorkspaceMenuItem, Product, WorkspaceAPIService } from 'src/app/shared/generated'
 import { forceFormValidation, sortByLocale } from 'src/app/shared/utils'
 
 @Component({
@@ -18,7 +12,7 @@ import { forceFormValidation, sortByLocale } from 'src/app/shared/utils'
   styleUrls: ['./preview.component.scss']
 })
 export class PreviewComponent implements OnInit, OnChanges {
-  @Input() public importRequestDTO!: WorkspaceSnapshot
+  @Input() public importRequestDTO!: any
   @Input() public hasPermission = false
   @Output() public isFormValide = new EventEmitter<boolean>()
 
@@ -137,12 +131,12 @@ export class PreviewComponent implements OnInit, OnChanges {
     }
   }
 
-  private extractProductNames(products?: EximProduct[]): string[] {
+  private extractProductNames(products?: Product[]): string[] {
     const par: string[] = []
     if (products) for (const p of products) par.push(p.productName ?? '')
     return par
   }
-  private extractRoleNames(roles?: EximWorkspaceRole[]): string[] {
+  private extractRoleNames(roles?: any[]): string[] {
     const par: string[] = []
     if (roles) for (const r of roles) par.push(r.name ?? '')
     return par
