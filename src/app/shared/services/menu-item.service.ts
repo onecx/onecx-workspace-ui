@@ -32,7 +32,7 @@ export class MenuItemService {
       label,
       icon: item.badge ? 'pi pi-' + item.badge : undefined,
       routerLink: isLocal ? this.stripBaseHref(item.url) : undefined,
-      url: isLocal ? undefined : item.url
+      url: isLocal ? undefined : this.replaceUrlVariables(item.url)
     }
   }
 
@@ -40,5 +40,15 @@ export class MenuItemService {
     const basePath = document.getElementsByTagName('base')[0]?.href
     const baseUrl = new URL(basePath, window.location.origin).toString()
     return url?.replace(baseUrl, '')
+  }
+
+  private replaceUrlVariables(url: string | undefined): string | undefined {
+    if (!url) {
+      return
+    }
+    return url.replace(/\[\[.+\]\]/, (match) => {
+      match = match.trim().substring(2, match.length - 2)
+      return sessionStorage.getItem(match) ?? localStorage.getItem(match) ?? ''
+    })
   }
 }
