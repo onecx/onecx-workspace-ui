@@ -1,6 +1,6 @@
 import { CommonModule, Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { Component, Inject, Input, OnInit } from '@angular/core'
+import { AfterViewInit, Component, Inject, Input, OnInit, ViewChild } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
@@ -19,7 +19,7 @@ import {
   createRemoteComponentTranslateLoader
 } from '@onecx/portal-integration-angular'
 import { MenuItem } from 'primeng/api'
-import { PanelMenuModule } from 'primeng/panelmenu'
+import { PanelMenu, PanelMenuModule } from 'primeng/panelmenu'
 import { Observable, ReplaySubject, map, mergeMap, shareReplay, withLatestFrom } from 'rxjs'
 import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
@@ -29,6 +29,7 @@ import { environment } from 'src/environments/environment'
 @Component({
   selector: 'app-vertical-main-menu',
   templateUrl: './vertical-main-menu.component.html',
+  styleUrl: './vertical-main-manu.component.scss',
   standalone: true,
   imports: [
     AngularRemoteComponentsModule,
@@ -55,8 +56,12 @@ import { environment } from 'src/environments/environment'
   ]
 })
 @UntilDestroy()
-export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRemoteWebcomponent, OnInit {
+export class OneCXVerticalMainMenuComponent
+  implements ocxRemoteComponent, ocxRemoteWebcomponent, OnInit, AfterViewInit
+{
   menuItems$: Observable<MenuItem[]> | undefined
+
+  @ViewChild(PanelMenu) panelMenu: PanelMenu | undefined
 
   constructor(
     @Inject(BASE_URL) private baseUrl: ReplaySubject<string>,
@@ -67,6 +72,9 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRe
     private menuItemService: MenuItemService
   ) {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
+  }
+  ngAfterViewInit(): void {
+    if (!this.panelMenu) return
   }
 
   @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
