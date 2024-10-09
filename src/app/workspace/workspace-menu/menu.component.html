@@ -31,11 +31,16 @@
     </div>
 
     <!-- Menu exist -->
+    <!--
+      [style]="{ height: '600px' }"
+      [scrollable]="true"
+      scrollHeight="flex"
+    -->
     <p-treeTable
       *ngIf="menuNodes.length > 0"
       #menuTree
-      styleClass="px-2 sm:px-3 mb-3"
       id="ws_menu_table"
+      styleClass="px-2 sm:px-3 mb-3"
       [columns]="wRoles"
       [value]="menuNodes"
       [globalFilterFields]="['name', 'url']"
@@ -141,7 +146,7 @@
           <th
             id="ws_menu_table_header_dummy2"
             class="pl-4 py-2 vertical-align-top text-left border-transparent"
-            [attr.colspan]="displayRoles ? 1 + wRoles.length : 5"
+            [attr.colspan]="displayRoles ? 1 + wRoles.length : 6"
           >
             <p-toggleButton
               inputid="ws_menu_table_header_context"
@@ -171,6 +176,15 @@
               tooltipEvent="hover"
             >
               {{ 'DIALOG.MENU.TREE.I18N' | translate }}
+            </th>
+            <th
+              id="ws_menu_table_header_extern"
+              class="p-2 hidden-sm white-space-nowrap border-primary border-bottom-2"
+              [pTooltip]="('MENU_ITEM.EXTERN' | translate) + '?'"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            >
+              X
             </th>
             <th
               id="ws_menu_table_header_url"
@@ -288,21 +302,32 @@
                 </button>
               </div>
             </td>
-            <td class="p-0 text-center hidden-md">
+            <td class="p-2 text-center hidden-md">
               <span
                 *ngIf="!isObjectEmpty(rowData.i18n)"
                 [id]="'ws_menu_table_row_' + rowData.key + '_i18n'"
-                class="pi pi-check"
                 [pTooltip]="'DIALOG.MENU.TREE.I18N.ROW.TOOLTIP' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+                >{{ Object.keys(rowData.i18n).join(', ') }}</span
+              >
+            </td>
+            <td class="p-2 text-center hidden-md">
+              <span
+                *ngIf="rowData.external"
+                [id]="'ws_menu_table_row_' + rowData.key + '_extern'"
+                class="pi pi-sign-out"
+                [attr.aria-label]="'MENU_ITEM.EXTERN' | translate"
+                [pTooltip]="'MENU_ITEM.EXTERN' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
               ></span>
             </td>
-            <td class="p-0 hidden-sm">
+            <td class="p-2 hidden-sm">
               <a
                 *ngIf="rowData.gotoUrl"
                 [id]="'ws_menu_table_row_' + rowData.key + '_url'"
-                class="text-primary font-italic cursor-pointer pr-3"
+                class="pr-3 text-primary font-italic cursor-pointer"
                 [href]="rowData.gotoUrl"
                 target="_blank"
                 (click)="$event.stopPropagation()"
@@ -329,16 +354,18 @@
                   *ngIf="rowData.roles[role.id]"
                   [id]="'ws_menu_table_role_' + role.name + '_' + rowData.key + '_assigned'"
                   class="p-2 pi pi-circle-fill text-primary text-lg"
-                  [pTooltip]="'DIALOG.MENU.ASSIGNMENT.OK' | translate"
+                  [attr.aria-label]="('DIALOG.MENU.ASSIGNMENT.OK' | translate) + role.name + ' + ' + rowData.key"
+                  [pTooltip]="('DIALOG.MENU.ASSIGNMENT.OK' | translate) + role.name + ' + ' + rowData.key"
                   tooltipPosition="top"
                   tooltipEvent="hover"
                 >
                 </span>
                 <span
-                  *ngIf="!rowData.roles[role.id] && !rowData.rolesInherited[role.id]"
+                  *ngIf="!rowData.roles[role.id]"
                   [id]="'ws_menu_table_role_' + role.name + '_' + rowData.key + '_not_assigned'"
                   class="p-2 pi pi-circle text-primary text-lg"
-                  [pTooltip]="'DIALOG.MENU.ASSIGNMENT.NOK' | translate"
+                  [attr.aria-label]="('DIALOG.MENU.ASSIGNMENT.NOK' | translate) + role.name + ' + ' + rowData.key"
+                  [pTooltip]="('DIALOG.MENU.ASSIGNMENT.NOK' | translate) + role.name + ' + ' + rowData.key"
                   tooltipPosition="top"
                   tooltipEvent="hover"
                 >
@@ -353,16 +380,8 @@
                   [id]="'ws_menu_table_role_' + role.name + '_' + rowData.key + '_action_revoke'"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                   (click)="onRevokePermission(rowData, role.id, rowData.roles[role.id])"
-                  [attr.aria-label]="
-                    ('DIALOG.MENU.ASSIGNMENT.OK' | translate) +
-                    ' - ' +
-                    ('DIALOG.MENU.ASSIGNMENT.CHANGEABLE' | translate)
-                  "
-                  [pTooltip]="
-                    ('DIALOG.MENU.ASSIGNMENT.OK' | translate) +
-                    ' - ' +
-                    ('DIALOG.MENU.ASSIGNMENT.CHANGEABLE' | translate)
-                  "
+                  [attr.aria-label]="('DIALOG.MENU.ASSIGNMENT.REVOKE_ROLE' | translate) + role.name"
+                  [pTooltip]="('DIALOG.MENU.ASSIGNMENT.REVOKE_ROLE' | translate) + role.name"
                   tooltipPosition="top"
                   tooltipEvent="hover"
                 >
@@ -375,16 +394,8 @@
                   [id]="'ws_menu_table_role_' + role.name + '_' + rowData.key + '_action_grant'"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                   (click)="onGrantPermission(rowNode, rowData, role.id)"
-                  [attr.aria-label]="
-                    ('DIALOG.MENU.ASSIGNMENT.NOK' | translate) +
-                    ' - ' +
-                    ('DIALOG.MENU.ASSIGNMENT.CHANGEABLE' | translate)
-                  "
-                  [pTooltip]="
-                    ('DIALOG.MENU.ASSIGNMENT.NOK' | translate) +
-                    ' - ' +
-                    ('DIALOG.MENU.ASSIGNMENT.CHANGEABLE' | translate)
-                  "
+                  [attr.aria-label]="('DIALOG.MENU.ASSIGNMENT.GRANT_ROLE' | translate) + role.name"
+                  [pTooltip]="('DIALOG.MENU.ASSIGNMENT.GRANT_ROLE' | translate) + role.name"
                   tooltipPosition="top"
                   tooltipEvent="hover"
                 >

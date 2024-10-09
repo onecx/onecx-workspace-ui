@@ -63,6 +63,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   @ViewChild('menuTreeFilter') menuTreeFilter: ElementRef<HTMLInputElement> = {} as ElementRef
   @ViewChild('treeOverlay') treeOverlay: Overlay | undefined
 
+  Object = Object
   private readonly destroy$ = new Subject()
   private readonly debug = false // to be removed after finalization
   // dialog control
@@ -262,8 +263,9 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   /****************************************************************************
+   * ROW ACTIONS
    ****************************************************************************
-   * CREATE + EDIT + DELETE
+   * CREATE + EDIT + DELETE + GO TO EXTERN
    */
   public onGotoDetails($event: MouseEvent, item: WorkspaceMenuItem): void {
     $event.stopPropagation()
@@ -298,6 +300,13 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.changeMode = 'DELETE'
     this.menuItem = item
     this.displayMenuDelete = true
+  }
+  public onGotoUrl($event: MouseEvent, url: string): void {
+    $event.stopPropagation()
+  }
+  public onDisplayI18n(i18n: object): string {
+    //if (Object.keys(i18n).length > 0) return ''
+    return Object.keys(i18n).toString()
   }
 
   /****************************************************************************
