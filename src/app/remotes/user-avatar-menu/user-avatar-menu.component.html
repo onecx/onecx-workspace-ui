@@ -16,73 +16,78 @@
     <ocx-slot name="onecx-avatar-image"></ocx-slot>
   </a>
   <ul
-    id="ws_user_avatar_menu_item_list"
+    id="ws_user_avatar_menu_list"
     class="layout-topbar-action-panel shadow-6 sm:m-2 fixed sm:absolute mt-2 sm:top-100 w-screen sm:w-auto"
     [ngClass]="menuAnchorPosition + '-0'"
     [hidden]="!menuOpen"
   >
-    <li id="ws_user_avatar_menu_profile_item" class="layout-topbar-action-item cursor-auto user-info">
-      <div *ngIf="currentUser$ | async as user" class="my-1 flex flex-column justify-content-evenly row-gap-1">
+    <li id="ws_user_avatar_menu_list_user_info" class="layout-topbar-action-item cursor-auto user-info">
+      <div
+        *ngIf="currentUser$ | async as user"
+        class="my-1 flex flex-column flex-wrap justify-content-evenly row-gap-1"
+      >
         <div
-          id="ws_user_avatar_menu_profile_item_name"
-          class="font-bold text-center text-lg text-color-secondary"
+          id="ws_user_avatar_menu_list_user_name"
+          class="font-bold text-center text-lg text-color-secondary white-space-nowrap"
           [pTooltip]="user.person.email ?? ''"
           tooltipPosition="bottom"
           tooltipEvent="hover"
         >
           {{ user.person.displayName }}
         </div>
-        <span
+        <div
           *ngIf="user.organization"
-          id="ws_user_avatar_menu_profile_item_tenant"
+          id="ws_user_avatar_menu_list_user_organization"
           class="my-1 text-center text-sm text-color-secondary"
           [pTooltip]="'REMOTES.USER_AVATAR_MENU.ORGID' | translate"
           tooltipPosition="bottom"
           tooltipEvent="hover"
-          >{{ user.organization }}</span
         >
+          {{ user.organization }}
+        </div>
       </div>
     </li>
     <ng-container *ngIf="userMenu$ | async as userMenu">
-      <li class="layout-topbar-action-item" *ngFor="let item of userMenu; let i = index">
-        <div>
-          <a
-            *ngIf="!item.routerLink && item.url && !item.command"
-            class="flex flex-row align-items-center w-full h-full p-3 gap-2"
-            pRipple
-            [attr.href]="item.url"
-            (keydown.escape)="onItemEscape(userAvatarMenuButton)"
-          >
-            <i *ngIf="item.icon" [ngClass]="item.icon"></i>
-            <span>{{ item.label }}</span>
-          </a>
-        </div>
-        <div>
-          <a
-            *ngIf="item.routerLink && !item.url && !item.command"
-            class="flex flex-row align-items-center w-full h-full p-3 gap-2"
-            pRipple
-            [routerLink]="item.routerLink"
-            (keydown.escape)="onItemEscape(userAvatarMenuButton)"
-          >
-            <i *ngIf="item.icon" [ngClass]="item.icon"></i>
-            <span>{{ item.label }}</span>
-          </a>
-        </div>
-        <div>
-          <a
-            tabindex="0"
-            *ngIf="!item.routerLink && !item.url && item.command"
-            class="flex flex-row align-items-center w-full h-full p-3 gap-2"
-            pRipple
-            (click)="item.command({})"
-            (keydown.enter)="item.command({})"
-            (keydown.escape)="onItemEscape(userAvatarMenuButton)"
-          >
-            <i *ngIf="item.icon" [ngClass]="item.icon"></i>
-            <span>{{ item.label }}</span>
-          </a>
-        </div>
+      <li
+        *ngFor="let item of userMenu; let i = index"
+        [id]="'ws_user_avatar_menu_list_item_' + i"
+        class="layout-topbar-action-item"
+      >
+        <a
+          *ngIf="!item.routerLink && item.url && !item.command"
+          [id]="'ws_user_avatar_menu_list_item_' + i + '_link'"
+          class="p-3 flex flex-row flex-nowrap align-items-center gap-2"
+          pRipple
+          [attr.href]="item.url"
+          (keydown.escape)="onItemEscape(userAvatarMenuButton)"
+        >
+          <i *ngIf="item.icon" [ngClass]="item.icon"></i>
+          <span [id]="'ws_user_avatar_menu_list_item_' + i + '_text'" class="white-space-nowrap">{{ item.label }}</span>
+        </a>
+        <a
+          *ngIf="item.routerLink && !item.url && !item.command"
+          [id]="'ws_user_avatar_menu_list_item_' + i + '_link'"
+          class="p-3 flex flex-row flex-nowrap align-items-center gap-2"
+          pRipple
+          [routerLink]="item.routerLink"
+          (keydown.escape)="onItemEscape(userAvatarMenuButton)"
+        >
+          <i *ngIf="item.icon" [ngClass]="item.icon"></i>
+          <span [id]="'ws_user_avatar_menu_list_item_' + i + '_text'" class="white-space-nowrap">{{ item.label }}</span>
+        </a>
+        <a
+          tabindex="0"
+          *ngIf="!item.routerLink && !item.url && item.command"
+          [id]="'ws_user_avatar_menu_list_item_' + i + '_link'"
+          class="p-3 flex flex-row flex-nowrap align-items-center gap-2"
+          pRipple
+          (click)="item.command({})"
+          (keydown.enter)="item.command({})"
+          (keydown.escape)="onItemEscape(userAvatarMenuButton)"
+        >
+          <i *ngIf="item.icon" [ngClass]="item.icon"></i>
+          <span [id]="'ws_user_avatar_menu_list_item_' + i + '_text'" class="white-space-nowrap">{{ item.label }}</span>
+        </a>
       </li>
     </ng-container>
   </ul>
