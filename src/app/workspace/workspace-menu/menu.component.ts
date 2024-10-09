@@ -407,7 +407,7 @@ export class MenuComponent implements OnInit, OnDestroy {
    */
   private searchRoles(): Observable<WorkspaceRole[]> {
     return this.wRoleApi
-      .searchWorkspaceRoles({ workspaceRoleSearchCriteria: { workspaceId: this.workspace?.id } })
+      .searchWorkspaceRoles({ workspaceRoleSearchCriteria: { workspaceId: this.workspace?.id, pageSize: 1000 } })
       .pipe(
         map((result) => {
           return result.stream
@@ -425,20 +425,22 @@ export class MenuComponent implements OnInit, OnDestroy {
       )
   }
   private searchAssignments(): Observable<Assignment[]> {
-    return this.assApi.searchAssignments({ assignmentSearchCriteria: { workspaceId: this.workspace?.id } }).pipe(
-      map((result) => {
-        return result.stream
-          ? result.stream?.map((ass) => {
-              this.wAssignments.push(ass)
-              return this.wAssignments[this.wAssignments.length - 1]
-            })
-          : []
-      }),
-      catchError((err) => {
-        console.error('searchAssignments():', err)
-        return of([])
-      })
-    )
+    return this.assApi
+      .searchAssignments({ assignmentSearchCriteria: { workspaceId: this.workspace?.id, pageSize: 1000 } })
+      .pipe(
+        map((result) => {
+          return result.stream
+            ? result.stream?.map((ass) => {
+                this.wAssignments.push(ass)
+                return this.wAssignments[this.wAssignments.length - 1]
+              })
+            : []
+        }),
+        catchError((err) => {
+          console.error('searchAssignments():', err)
+          return of([])
+        })
+      )
   }
   private sortRoleByName(a: WorkspaceRole, b: WorkspaceRole): number {
     return (a.name ? a.name.toUpperCase() : '').localeCompare(b.name ? b.name.toUpperCase() : '')

@@ -209,7 +209,7 @@
             <th
               *ngFor="let role of columns"
               id="ws_menu_table_header_roles"
-              class="p-2 hidden-xs text-center border-primary border-bottom-2"
+              class="p-2 hidden-xs text-center border-primary border-bottom-2 border-right-1"
               [pTooltip]="role.description ? role.description : ''"
               tooltipPosition="top"
               tooltipEvent="hover"
@@ -345,7 +345,7 @@
           <ng-container *ngIf="displayRoles">
             <td
               *ngFor="let role of columns"
-              class="p-0 hidden-xs text-center"
+              class="p-0 hidden-xs text-center border-right-1"
               [id]="'ws_menu_table_role_' + role.name + '_' + rowData.key"
             >
               <!-- display only -->
@@ -380,8 +380,10 @@
                   [id]="'ws_menu_table_role_' + role.name + '_' + rowData.key + '_action_revoke'"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                   (click)="onRevokePermission(rowData, role.id, rowData.roles[role.id])"
-                  [attr.aria-label]="('DIALOG.MENU.ASSIGNMENT.REVOKE_ROLE' | translate) + role.name"
-                  [pTooltip]="('DIALOG.MENU.ASSIGNMENT.REVOKE_ROLE' | translate) + role.name"
+                  [attr.aria-label]="
+                    ('DIALOG.MENU.ASSIGNMENT.REVOKE_ROLE' | translate) + role.name + ' + ' + rowData.key
+                  "
+                  [pTooltip]="('DIALOG.MENU.ASSIGNMENT.REVOKE_ROLE' | translate) + role.name + ' + ' + rowData.key"
                   tooltipPosition="top"
                   tooltipEvent="hover"
                 >
@@ -394,8 +396,10 @@
                   [id]="'ws_menu_table_role_' + role.name + '_' + rowData.key + '_action_grant'"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                   (click)="onGrantPermission(rowNode, rowData, role.id)"
-                  [attr.aria-label]="('DIALOG.MENU.ASSIGNMENT.GRANT_ROLE' | translate) + role.name"
-                  [pTooltip]="('DIALOG.MENU.ASSIGNMENT.GRANT_ROLE' | translate) + role.name"
+                  [attr.aria-label]="
+                    ('DIALOG.MENU.ASSIGNMENT.GRANT_ROLE' | translate) + role.name + ' + ' + rowData.key
+                  "
+                  [pTooltip]="('DIALOG.MENU.ASSIGNMENT.GRANT_ROLE' | translate) + role.name + ' + ' + rowData.key"
                   tooltipPosition="top"
                   tooltipEvent="hover"
                 >
