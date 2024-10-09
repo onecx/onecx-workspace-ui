@@ -46,9 +46,8 @@ export class MenuItemService {
     if (!url) {
       return
     }
-    return url.replaceAll(/\[\[(.+?)\]\]/g, (match) => {
-      match = match.trim().substring(2, match.length - 2)
-      return sessionStorage.getItem(match) ?? localStorage.getItem(match) ?? ''
+    return url.replaceAll(/\[\[(.+?)\]\]/g, (_match, $1) => {
+      return sessionStorage.getItem($1) ?? localStorage.getItem($1) ?? ''
     })
   }
 }
