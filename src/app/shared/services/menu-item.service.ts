@@ -4,11 +4,18 @@ import { MenuItem } from 'primeng/api'
 
 @Injectable({ providedIn: 'root' })
 export class MenuItemService {
-  public constructMenuItems(userWorkspaceMenuItem: UserWorkspaceMenuItem[] | undefined, userLang: string): MenuItem[] {
-    const menuItems = userWorkspaceMenuItem?.filter((i) => i) // exclude undefined
-    if (menuItems) {
-      menuItems.sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
-      return menuItems.filter((i) => !i.disabled).map((item) => this.mapMenuItem(item, userLang))
+  public constructMenuItems(
+    userWorkspaceMenuItem: UserWorkspaceMenuItem[] | undefined,
+    userLang: string,
+    currentMfePath?: string
+  ): MenuItem[] {
+    const workspaceMenuItems = userWorkspaceMenuItem?.filter((i) => i) // exclude undefined
+    if (workspaceMenuItems) {
+      workspaceMenuItems.sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+      const menuItems = workspaceMenuItems.filter((i) => !i.disabled).map((item) => this.mapMenuItem(item, userLang))
+      const mfePath = this.stripPath(currentMfePath)
+      mfePath && this.expandCurrentMfeMenuItems(menuItems, mfePath)
+      return menuItems
     } else {
       return []
     }
@@ -40,5 +47,21 @@ export class MenuItemService {
     const basePath = document.getElementsByTagName('base')[0]?.href
     const baseUrl = new URL(basePath, window.location.origin).toString()
     return url?.replace(baseUrl, '')
+  }
+
+  private stripPath(path: string | undefined): string | undefined {
+    return path?.slice(path.at(0) === '/' ? 1 : 0, path.at(-1) === '/' ? -1 : path.length)
+  }
+
+  private expandCurrentMfeMenuItems(items: MenuItem[], currentMfePath: string): boolean {
+    for (var item of items) {
+      if (this.stripPath(item.routerLink) === currentMfePath) return true
+      else if (item.items && this.expandCurrentMfeMenuItems(item.items, currentMfePath)) {
+        item.expanded = true
+        return true
+      }
+    }
+
+    return false
   }
 }

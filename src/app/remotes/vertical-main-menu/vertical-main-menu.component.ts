@@ -4,6 +4,7 @@ import { AfterViewInit, Component, Inject, Input, OnInit, ViewChild } from '@ang
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
+import { getLocation } from '@onecx/accelerator'
 import {
   AngularRemoteComponentsModule,
   BASE_URL,
@@ -19,7 +20,7 @@ import {
   createRemoteComponentTranslateLoader
 } from '@onecx/portal-integration-angular'
 import { MenuItem } from 'primeng/api'
-import { PanelMenu, PanelMenuModule } from 'primeng/panelmenu'
+import { PanelMenuModule } from 'primeng/panelmenu'
 import { Observable, ReplaySubject, map, mergeMap, shareReplay, withLatestFrom } from 'rxjs'
 import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
@@ -56,12 +57,8 @@ import { environment } from 'src/environments/environment'
   ]
 })
 @UntilDestroy()
-export class OneCXVerticalMainMenuComponent
-  implements ocxRemoteComponent, ocxRemoteWebcomponent, OnInit, AfterViewInit
-{
+export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRemoteWebcomponent, OnInit {
   menuItems$: Observable<MenuItem[]> | undefined
-
-  @ViewChild(PanelMenu) panelMenu: PanelMenu | undefined
 
   constructor(
     @Inject(BASE_URL) private baseUrl: ReplaySubject<string>,
@@ -72,9 +69,6 @@ export class OneCXVerticalMainMenuComponent
     private menuItemService: MenuItemService
   ) {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
-  }
-  ngAfterViewInit(): void {
-    if (!this.panelMenu) return
   }
 
   @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
@@ -102,8 +96,10 @@ export class OneCXVerticalMainMenuComponent
           }
         })
       ),
-      withLatestFrom(this.userService.lang$),
-      map(([data, userLang]) => this.menuItemService.constructMenuItems(data?.menu?.[0]?.children, userLang)),
+      withLatestFrom(this.userService.lang$, this.appStateService.currentMfe$.asObservable()),
+      map(([data, userLang, mfeInfo]) =>
+        this.menuItemService.constructMenuItems(data?.menu?.[0]?.children, userLang, mfeInfo.baseHref)
+      ),
       shareReplay(),
       untilDestroyed(this)
     )
