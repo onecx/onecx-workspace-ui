@@ -39,7 +39,7 @@ export class MenuItemService {
       label,
       icon: item.badge ? 'pi pi-' + item.badge : undefined,
       routerLink: isLocal ? this.stripBaseHref(item.url) : undefined,
-      url: isLocal ? undefined : item.url
+      url: isLocal ? undefined : this.replaceUrlVariables(item.url)
     }
   }
 
@@ -63,5 +63,17 @@ export class MenuItemService {
     }
 
     return false
+  }
+
+  private replaceUrlVariables(url: string | undefined): string | undefined {
+    if (!url) {
+      return
+    }
+    return url.replaceAll(
+      /\[\[(.+?)\]\]/g, //NOSONAR
+      (_match, $1) => {
+        return sessionStorage.getItem($1) ?? localStorage.getItem($1) ?? ''
+      }
+    )
   }
 }

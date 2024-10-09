@@ -1,16 +1,13 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
+import { provideHttpClient } from '@angular/common/http'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { provideRouter } from '@angular/router'
 import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing'
-import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of, throwError } from 'rxjs'
 
-import {
-  AUTH_SERVICE,
-  ConfigurationService,
-  PortalMessageService,
-  ThemeService
-} from '@onecx/portal-integration-angular'
+import { ConfigurationService, PortalMessageService, ThemeService } from '@onecx/portal-integration-angular'
 import { WorkspaceService } from '@onecx/angular-integration-interface'
 import { WorkspacePropsComponent } from 'src/app/workspace/workspace-detail/workspace-props/workspace-props.component'
 import {
@@ -19,7 +16,6 @@ import {
   Workspace,
   WorkspaceProductAPIService
 } from 'src/app/shared/generated'
-import { RouterTestingModule } from '@angular/router/testing'
 
 const workspace = {
   name: 'name',
@@ -39,7 +35,6 @@ const formGroup = new FormGroup({
 describe('WorkspacePropsComponent', () => {
   let component: WorkspacePropsComponent
   let fixture: ComponentFixture<WorkspacePropsComponent>
-  const mockAuthService = jasmine.createSpyObj('IAuthService', ['hasPermission'])
   const workspaceServiceMock: jasmine.SpyObj<WorkspaceService> = jasmine.createSpyObj('WorkspaceService', [
     'doesUrlExistFor',
     'getUrl'
@@ -73,8 +68,6 @@ describe('WorkspacePropsComponent', () => {
     TestBed.configureTestingModule({
       declarations: [WorkspacePropsComponent],
       imports: [
-        RouterTestingModule,
-        HttpClientTestingModule,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
@@ -82,13 +75,15 @@ describe('WorkspacePropsComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
+        provideHttpClientTesting(),
+        provideHttpClient(),
+        provideRouter([{ path: '', component: WorkspacePropsComponent }]),
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: ConfigurationService, useValue: configServiceSpy },
         { provide: ImagesInternalAPIService, useValue: imageServiceSpy },
         { provide: WorkspaceAPIService, useValue: apiServiceSpy },
         { provide: WorkspaceProductAPIService, useValue: wProductServiceSpy },
-        { provide: WorkspaceService, useValue: workspaceServiceMock },
-        { provide: AUTH_SERVICE, useValue: mockAuthService }
+        { provide: WorkspaceService, useValue: workspaceServiceMock }
       ]
     }).compileComponents()
     msgServiceSpy.success.calls.reset()

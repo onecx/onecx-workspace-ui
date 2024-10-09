@@ -2,9 +2,8 @@ import { TestBed } from '@angular/core/testing'
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { RouterTestingModule } from '@angular/router/testing'
 import { CommonModule } from '@angular/common'
-import { Router, RouterModule } from '@angular/router'
+import { provideRouter, Router, RouterModule } from '@angular/router'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'
 import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
 import { PPanelMenuHarness } from '@onecx/angular-testing'
@@ -36,12 +35,6 @@ describe('OneCXVerticalMainMenuComponent', () => {
         TranslateTestingModule.withTranslations({
           en: require('../../../assets/i18n/en.json')
         }).withDefaultLanguage('en'),
-        RouterTestingModule.withRoutes([
-          {
-            path: 'admin/welcome',
-            component: {} as any
-          }
-        ]),
         NoopAnimationsModule
       ],
       providers: [
@@ -50,7 +43,8 @@ describe('OneCXVerticalMainMenuComponent', () => {
         {
           provide: BASE_URL,
           useValue: baseUrlSubject
-        }
+        },
+        provideRouter([{ path: 'admin/welcome', component: OneCXVerticalMainMenuComponent }])
       ]
     })
       .overrideComponent(OneCXVerticalMainMenuComponent, {

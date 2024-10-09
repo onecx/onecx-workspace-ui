@@ -1,14 +1,14 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { HttpClient } from '@angular/common/http'
-import { HttpClientTestingModule } from '@angular/common/http/testing'
+import { createTranslateLoader } from '@onecx/angular-accelerator'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { HttpClient, provideHttpClient } from '@angular/common/http'
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { of } from 'rxjs'
 
 import { WorkspaceAPIService, WorkspaceAbstract } from 'src/app/shared/generated'
 import { ConfirmComponent } from './confirm.component'
 import { AppStateService } from '@onecx/angular-integration-interface'
-import { createTranslateLoader } from '@onecx/angular-accelerator'
 
 const workspace: WorkspaceAbstract = {
   theme: 'theme',
@@ -30,7 +30,6 @@ describe('ConfirmComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ConfirmComponent],
       imports: [
-        HttpClientTestingModule,
         TranslateModule.forRoot({
           loader: {
             provide: TranslateLoader,
@@ -40,7 +39,11 @@ describe('ConfirmComponent', () => {
         })
       ],
       schemas: [NO_ERRORS_SCHEMA],
-      providers: [{ provide: WorkspaceAPIService, useValue: apiServiceSpy }]
+      providers: [
+        provideHttpClientTesting(),
+        provideHttpClient(),
+        { provide: WorkspaceAPIService, useValue: apiServiceSpy }
+      ]
     }).compileComponents()
 
     apiServiceSpy.searchWorkspaces.calls.reset()
