@@ -10,6 +10,12 @@
 
           &:hover {
             background: var(--menu-item-hover-bg-color);
+            color: var(--menu-item-text-color);
+          }
+
+          &.p-menuitem-link-active:not(:hover) {
+            background-color: var(--menu-active-item-bg-color);
+            color: var(--menu-active-item-text-color);
           }
         }
       }
@@ -19,6 +25,11 @@
           .p-panelmenu-header-content {
             .p-panelmenu-header-action {
               background: var(--menu-item-hover-bg-color);
+
+              &.p-menuitem-link-active {
+                background: var(--menu-item-hover-bg-color);
+                color: var(--menu-item-text-color);
+              }
             }
           }
         }
@@ -34,6 +45,11 @@
         .p-panelmenu-header-content {
           color: var(--menu-item-text-color);
           background: var(--menu-item-hover-bg-color);
+
+          &.p-menuitem-link-active {
+            color: var(--menu-item-text-color);
+            background: var(--menu-item-hover-bg-color);
+          }
         }
       }
 
@@ -61,21 +77,21 @@
 
           .p-menuitem-link {
             color: var(--menu-item-text-color);
-            .p-menuitem-text {
-              color: var(--menu-item-text-color);
-            }
-
-            .p-menuitem-icon {
-              color: var(--menu-item-text-color);
-            }
-
+            .p-menuitem-text,
+            .p-menuitem-icon,
             .p-submenu-icon {
               color: var(--menu-item-text-color);
             }
 
             &.p-menuitem-link-active {
-              background-color: var(--menu-active-item-bg-color);
+              background: var(--menu-active-item-bg-color);
               color: var(--menu-active-item-text-color);
+
+              .p-menuitem-text,
+              .p-menuitem-icon,
+              .p-submenu-icon {
+                color: var(--menu-active-item-text-color);
+              }
             }
           }
         }
@@ -86,10 +102,7 @@
             background: var(--menu-item-hover-bg-color);
 
             .p-menuitem-link {
-              .p-menuitem-text {
-                color: var(--menu-item-text-color);
-              }
-
+              .p-menuitem-text,
               .p-menuitem-icon,
               .p-submenu-icon {
                 color: var(--menu-item-text-color);
@@ -98,6 +111,12 @@
               &.p-menuitem-link-active {
                 background: var(--menu-item-hover-bg-color);
                 color: var(--menu-item-text-color);
+
+                .p-menuitem-text,
+                .p-menuitem-icon,
+                .p-submenu-icon {
+                  color: var(--menu-item-text-color);
+                }
               }
             }
           }
@@ -114,20 +133,13 @@
             > .p-menuitem-content {
               color: var(--menu-item-text-color);
               background: var(--menu-item-hover-bg-color);
-
               .p-menuitem-link {
-                .p-menuitem-text {
-                  color: var(--menu-item-text-color);
-                }
-
-                .p-menuitem-icon,
-                .p-submenu-icon {
-                  color: var(--menu-item-text-color);
-                }
-
-                &.p-menuitem-link-active {
-                  background-color: var(--menu-item-hover-bg-color);
-                  color: var(--menu-item-text-color);
+                &:not(.p-menuitem-link-active) {
+                  .p-menuitem-text,
+                  .p-menuitem-icon,
+                  .p-submenu-icon {
+                    color: var(--menu-item-text-color);
+                  }
                 }
               }
             }
@@ -139,10 +151,7 @@
               background: var(--menu-item-hover-bg-color);
 
               .p-menuitem-link {
-                .p-menuitem-text {
-                  color: var(--menu-item-text-color);
-                }
-
+                .p-menuitem-text,
                 .p-menuitem-icon,
                 .p-submenu-icon {
                   color: var(--menu-item-text-color);
@@ -151,6 +160,12 @@
                 &.p-menuitem-link-active {
                   background: var(--menu-item-hover-bg-color);
                   color: var(--menu-item-text-color);
+
+                  .p-menuitem-text,
+                  .p-menuitem-icon,
+                  .p-submenu-icon {
+                    color: var(--menu-item-text-color);
+                  }
                 }
               }
             }
