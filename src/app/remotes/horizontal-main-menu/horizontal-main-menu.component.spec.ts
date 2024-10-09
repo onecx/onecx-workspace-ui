@@ -2,9 +2,8 @@ import { TestBed } from '@angular/core/testing'
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { RouterTestingModule } from '@angular/router/testing'
 import { CommonModule } from '@angular/common'
-import { Router, RouterModule } from '@angular/router'
+import { provideRouter, Router, RouterModule } from '@angular/router'
 import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
 import { AppStateService } from '@onecx/angular-integration-interface'
 import { PMenuBarHarness } from '@onecx/angular-testing'
@@ -34,17 +33,7 @@ describe('OneCXHorizontalMainMenuComponent', () => {
       imports: [
         TranslateTestingModule.withTranslations({
           en: require('../../../assets/i18n/en.json')
-        }).withDefaultLanguage('en'),
-        RouterTestingModule.withRoutes([
-          {
-            path: 'admin/welcome',
-            component: {} as any
-          },
-          {
-            path: '',
-            component: {} as any
-          }
-        ])
+        }).withDefaultLanguage('en')
       ],
       providers: [
         provideHttpClient(),
@@ -52,7 +41,8 @@ describe('OneCXHorizontalMainMenuComponent', () => {
         {
           provide: BASE_URL,
           useValue: baseUrlSubject
-        }
+        },
+        provideRouter([{ path: 'admin/welcome', component: OneCXHorizontalMainMenuComponent }])
       ]
     })
       .overrideComponent(OneCXHorizontalMainMenuComponent, {
