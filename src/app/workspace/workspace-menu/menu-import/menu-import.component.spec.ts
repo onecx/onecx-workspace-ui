@@ -1,14 +1,15 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { HttpClientTestingModule } from '@angular/common/http/testing'
-import { RouterTestingModule } from '@angular/router/testing'
 import { TranslateTestingModule } from 'ngx-translate-testing'
+import { provideHttpClient } from '@angular/common/http'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { provideRouter } from '@angular/router'
+import { of, throwError } from 'rxjs'
+import { FileSelectEvent } from 'primeng/fileupload'
 
 import { MenuImportComponent } from './menu-import.component'
 import { MenuItemAPIService, MenuSnapshot } from 'src/app/shared/generated'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
-import { of, throwError } from 'rxjs'
-import { FileSelectEvent } from 'primeng/fileupload'
 
 const menuSnapshot: MenuSnapshot = {
   menu: {
@@ -34,8 +35,6 @@ describe('MenuImportComponent', () => {
     TestBed.configureTestingModule({
       declarations: [MenuImportComponent],
       imports: [
-        RouterTestingModule,
-        HttpClientTestingModule,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
@@ -43,6 +42,9 @@ describe('MenuImportComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
+        provideHttpClientTesting(),
+        provideHttpClient(),
+        provideRouter([{ path: '', component: MenuImportComponent }]),
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: MenuItemAPIService, useValue: menuApiServiceSpy }
       ]

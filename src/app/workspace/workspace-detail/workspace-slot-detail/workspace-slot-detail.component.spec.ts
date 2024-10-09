@@ -1,6 +1,7 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
+import { provideHttpClient } from '@angular/common/http'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 
 import { BehaviorSubject, of, throwError } from 'rxjs'
@@ -30,7 +31,6 @@ describe('WorkspaceSlotDetailComponent', () => {
     TestBed.configureTestingModule({
       declarations: [WorkspaceSlotDetailComponent],
       imports: [
-        HttpClientTestingModule,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
@@ -38,6 +38,8 @@ describe('WorkspaceSlotDetailComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
+        provideHttpClientTesting(),
+        provideHttpClient(),
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: SlotAPIService, useValue: slotServiceSpy },
         { provide: UserService, useValue: mockUserService }

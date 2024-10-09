@@ -1,17 +1,18 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { provideHttpClient } from '@angular/common/http'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { HttpClientTestingModule } from '@angular/common/http/testing'
+import { provideRouter } from '@angular/router'
+import { TranslateTestingModule } from 'ngx-translate-testing'
+import { ToggleButtonModule } from 'primeng/togglebutton'
+import { TreeTableNodeExpandEvent } from 'primeng/treetable'
 
+import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { MenuPreviewComponent } from './menu-preview.component'
 import { MenuTreeService } from '../services/menu-tree.service'
 import { MenuStateService, MenuState } from '../services/menu-state.service'
-import { RouterTestingModule } from '@angular/router/testing'
-import { TranslateTestingModule } from 'ngx-translate-testing'
-import { ToggleButtonModule } from 'primeng/togglebutton'
 import { MenuItemAPIService } from 'src/app/shared/generated'
-import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { of, throwError } from 'rxjs'
-import { TreeTableNodeExpandEvent } from 'primeng/treetable'
 
 const state: MenuState = {
   pageSize: 0,
@@ -41,8 +42,6 @@ describe('MenuPreviewComponent', () => {
     TestBed.configureTestingModule({
       declarations: [MenuPreviewComponent],
       imports: [
-        RouterTestingModule,
-        HttpClientTestingModule,
         ToggleButtonModule,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
@@ -51,6 +50,9 @@ describe('MenuPreviewComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
+        provideHttpClientTesting(),
+        provideHttpClient(),
+        provideRouter([{ path: '', component: MenuPreviewComponent }]),
         { provide: MenuTreeService, useValue: treeServiceSpy },
         { provide: MenuStateService, useValue: stateServiceSpy },
         { provide: MenuItemAPIService, useValue: menuApiService },

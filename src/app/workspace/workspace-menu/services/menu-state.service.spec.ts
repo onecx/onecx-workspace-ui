@@ -1,15 +1,16 @@
 import { TestBed } from '@angular/core/testing'
-import { HttpClientTestingModule } from '@angular/common/http/testing'
 
 import { MenuStateService } from './menu-state.service'
+import { provideHttpClient } from '@angular/common/http'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
 
 describe('MenuStateService', () => {
   let service: MenuStateService
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [MenuStateService]
+      imports: [],
+      providers: [provideHttpClientTesting(), provideHttpClient(), MenuStateService]
     })
 
     service = TestBed.inject(MenuStateService)
