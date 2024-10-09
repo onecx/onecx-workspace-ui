@@ -385,8 +385,10 @@
         "EXTERN.TOOLTIP": "Wenn diese Option aktiviert ist, wird der Workspace verlassen"
       },
       "ASSIGNMENT": {
-        "OK": "Menüpunkt zugeordnet",
-        "NOK": "Menüpunkt nicht zugeordnet",
+        "OK": "Zugeordnet: ",
+        "NOK": "Nicht zugeordnet: ",
+        "GRANT_ROLE": "Zuordnen: ",
+        "REVOKE_ROLE": "Entziehen: ",
         "OK_INHERITED": "Durch Vererbung zugewiesener Menüpunkt",
         "CHANGEABLE": "Ändern durch klick",
         "GRANT_OK": "Berechtigung erteilt",

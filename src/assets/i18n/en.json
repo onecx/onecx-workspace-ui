@@ -385,8 +385,10 @@
         "EXTERN.TOOLTIP": "If checked then the Workspace is exit"
       },
       "ASSIGNMENT": {
-        "OK": "Menu Item assigned",
-        "NOK": "Menu Item not assigned",
+        "OK": "Assigned: ",
+        "NOK": "Not assigned: ",
+        "GRANT_ROLE": "Grant: ",
+        "REVOKE_ROLE": "Revoke: ",
         "OK_INHERITED": "Menu Item assigned by inheritance",
         "CHANGEABLE": "Change by click",
         "GRANT_OK": "Permission granted",

@@ -63,6 +63,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   @ViewChild('menuTreeFilter') menuTreeFilter: ElementRef<HTMLInputElement> = {} as ElementRef
   @ViewChild('treeOverlay') treeOverlay: Overlay | undefined
 
+  Object = Object
   private readonly destroy$ = new Subject()
   private readonly debug = false // to be removed after finalization
   // dialog control
@@ -262,8 +263,9 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   /****************************************************************************
+   * ROW ACTIONS
    ****************************************************************************
-   * CREATE + EDIT + DELETE
+   * CREATE + EDIT + DELETE + GO TO EXTERN
    */
   public onGotoDetails($event: MouseEvent, item: WorkspaceMenuItem): void {
     $event.stopPropagation()
@@ -298,6 +300,13 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.changeMode = 'DELETE'
     this.menuItem = item
     this.displayMenuDelete = true
+  }
+  public onGotoUrl($event: MouseEvent, url: string): void {
+    $event.stopPropagation()
+  }
+  public onDisplayI18n(i18n: object): string {
+    //if (Object.keys(i18n).length > 0) return ''
+    return Object.keys(i18n).toString()
   }
 
   /****************************************************************************
@@ -398,7 +407,7 @@ export class MenuComponent implements OnInit, OnDestroy {
    */
   private searchRoles(): Observable<WorkspaceRole[]> {
     return this.wRoleApi
-      .searchWorkspaceRoles({ workspaceRoleSearchCriteria: { workspaceId: this.workspace?.id } })
+      .searchWorkspaceRoles({ workspaceRoleSearchCriteria: { workspaceId: this.workspace?.id, pageSize: 1000 } })
       .pipe(
         map((result) => {
           return result.stream
@@ -416,20 +425,22 @@ export class MenuComponent implements OnInit, OnDestroy {
       )
   }
   private searchAssignments(): Observable<Assignment[]> {
-    return this.assApi.searchAssignments({ assignmentSearchCriteria: { workspaceId: this.workspace?.id } }).pipe(
-      map((result) => {
-        return result.stream
-          ? result.stream?.map((ass) => {
-              this.wAssignments.push(ass)
-              return this.wAssignments[this.wAssignments.length - 1]
-            })
-          : []
-      }),
-      catchError((err) => {
-        console.error('searchAssignments():', err)
-        return of([])
-      })
-    )
+    return this.assApi
+      .searchAssignments({ assignmentSearchCriteria: { workspaceId: this.workspace?.id, pageSize: 1000 } })
+      .pipe(
+        map((result) => {
+          return result.stream
+            ? result.stream?.map((ass) => {
+                this.wAssignments.push(ass)
+                return this.wAssignments[this.wAssignments.length - 1]
+              })
+            : []
+        }),
+        catchError((err) => {
+          console.error('searchAssignments():', err)
+          return of([])
+        })
+      )
   }
   private sortRoleByName(a: WorkspaceRole, b: WorkspaceRole): number {
     return (a.name ? a.name.toUpperCase() : '').localeCompare(b.name ? b.name.toUpperCase() : '')
