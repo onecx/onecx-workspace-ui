@@ -47,7 +47,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   public filterValue = 'WORKSPACE'
   public filterByDefault = 'name,type'
   public filterBy = 'name,type'
-  public sortField = 'type'
+  public sortField = 'name'
   public sortOrder = -1
   public loading = false
   public iamRolesLoaded = false

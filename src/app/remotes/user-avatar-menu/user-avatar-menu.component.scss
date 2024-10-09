@@ -8,14 +8,13 @@
   background-color: var(--overlay-content-bg-color);
   color: var(--text-color);
   z-index: 1000;
-  min-width: max-content;
   list-style: none;
 
   .layout-topbar-action-item {
     padding-right: 1rem;
     cursor: pointer;
     &.user-info {
-      padding: 0.4rem 0rem;
+      padding: 0.4rem 1rem;
       &:hover {
         background-color: inherit !important;
       }
