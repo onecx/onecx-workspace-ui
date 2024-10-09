@@ -1,10 +1,9 @@
 import { CommonModule, Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { AfterViewInit, Component, Inject, Input, OnInit, ViewChild } from '@angular/core'
+import { Component, Inject, Input, OnInit } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
-import { getLocation } from '@onecx/accelerator'
 import {
   AngularRemoteComponentsModule,
   BASE_URL,

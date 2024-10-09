@@ -54,7 +54,7 @@ export class MenuItemService {
   }
 
   private expandCurrentMfeMenuItems(items: MenuItem[], currentMfePath: string): boolean {
-    for (var item of items) {
+    for (const item of items) {
       if (this.stripPath(item.routerLink) === currentMfePath) return true
       else if (item.items && this.expandCurrentMfeMenuItems(item.items, currentMfePath)) {
         item.expanded = true
