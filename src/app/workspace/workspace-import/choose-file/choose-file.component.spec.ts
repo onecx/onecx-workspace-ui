@@ -1,14 +1,15 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
+import { HttpClient, provideHttpClient } from '@angular/common/http'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { ComponentFixture, TestBed, tick, waitForAsync, fakeAsync } from '@angular/core/testing'
-import { HttpClientTestingModule } from '@angular/common/http/testing'
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { of, throwError } from 'rxjs'
+import { FileSelectEvent } from 'primeng/fileupload'
 
 import { AppStateService, PortalMessageService, createTranslateLoader } from '@onecx/portal-integration-angular'
+
 import { ChooseFileComponent } from './choose-file.component'
 import { WorkspaceAPIService } from 'src/app/shared/generated'
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
-import { HttpClient } from '@angular/common/http'
-import { FileSelectEvent } from 'primeng/fileupload'
 
 const snapshot: any = {
   workspaces: {
@@ -35,7 +36,6 @@ describe('ChooseFileComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ChooseFileComponent],
       imports: [
-        HttpClientTestingModule,
         TranslateModule.forRoot({
           loader: {
             provide: TranslateLoader,
@@ -46,6 +46,8 @@ describe('ChooseFileComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
+        provideHttpClientTesting(),
+        provideHttpClient(),
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: WorkspaceAPIService, useValue: apiServiceSpy }
       ]

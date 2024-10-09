@@ -1,7 +1,7 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
+import { HttpClient, provideHttpClient } from '@angular/common/http'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { HttpClient } from '@angular/common/http'
-import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { Router } from '@angular/router'
 import { ActivatedRoute } from '@angular/router'
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
@@ -58,7 +58,6 @@ describe('WorkspaceImportComponent', () => {
     TestBed.configureTestingModule({
       declarations: [WorkspaceImportComponent],
       imports: [
-        HttpClientTestingModule,
         TranslateModule.forRoot({
           loader: {
             provide: TranslateLoader,
@@ -69,6 +68,8 @@ describe('WorkspaceImportComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
+        provideHttpClientTesting(),
+        provideHttpClient(),
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: Router, useValue: mockRouter },
         { provide: PortalMessageService, useValue: msgServiceSpy },

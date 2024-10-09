@@ -1,7 +1,7 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { Location } from '@angular/common'
-import { HttpClientTestingModule } from '@angular/common/http/testing'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router'
 import { of, throwError } from 'rxjs'
 import FileSaver from 'file-saver'
@@ -23,7 +23,7 @@ import {
   WorkspaceRole
 } from 'src/app/shared/generated'
 import { TranslateTestingModule } from 'ngx-translate-testing'
-import { HttpErrorResponse } from '@angular/common/http'
+import { HttpErrorResponse, provideHttpClient } from '@angular/common/http'
 import { TreeNode } from 'primeng/api'
 import { TreeTableNodeExpandEvent } from 'primeng/treetable'
 
@@ -54,17 +54,6 @@ const mockMenuItems: WorkspaceMenuItem[] = [
   }
 ]
 
-const rootNodeData: MenuItemNodeData = {
-  id: 'root',
-  first: true,
-  last: false,
-  prevId: '',
-  gotoUrl: 'goToUrl',
-  positionPath: '0',
-  appConnected: true,
-  roles: { ['role']: 'role' },
-  node: { key: 'rootKey' }
-}
 const nodeData: MenuItemNodeData = {
   id: 'id',
   first: true,
@@ -75,12 +64,6 @@ const nodeData: MenuItemNodeData = {
   appConnected: true,
   roles: { ['role']: 'role' },
   node: { key: 'nodeKey' }
-}
-
-const tree: TreeNode = {
-  key: '1',
-  children: [{ key: '1.1', children: [nodeData] }],
-  data: rootNodeData
 }
 
 const treeNodes: TreeNode = {
@@ -160,7 +143,6 @@ describe('MenuComponent', () => {
     TestBed.configureTestingModule({
       declarations: [MenuComponent],
       imports: [
-        HttpClientTestingModule,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
@@ -168,6 +150,8 @@ describe('MenuComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
+        provideHttpClientTesting(),
+        provideHttpClient(),
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: WorkspaceAPIService, useValue: apiServiceSpy },
@@ -303,6 +287,105 @@ describe('MenuComponent', () => {
 
     expect(event.stopPropagation).toHaveBeenCalled()
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
+  })
+
+  describe('TreeNodeLabelSwitch', () => {
+    beforeEach(() => {
+      component.menuNodes = [
+        {
+          data: { key: '1', name: 'Node 1', i18n: { es: 'Nodo 1', fr: 'Nœud 1' } },
+          label: 'Node 1',
+          children: [
+            { data: { key: '1.1', name: 'Child 1', i18n: { es: 'Hijo 1', fr: 'Enfant 1' } }, label: 'Child 1' }
+          ]
+        },
+        {
+          data: { key: '2', name: 'Node 2', i18n: { es: 'Nodo 2', fr: 'Nœud 2' } },
+          label: 'Node 2',
+          children: []
+        }
+      ]
+      component.usedLanguages = new Map([
+        ['es', 1],
+        ['fr', 2]
+      ])
+    })
+
+    describe('onTreeNodeLabelSwitchChange', () => {
+      it('should not apply changes if ev.value is false', () => {
+        const originalNodes = [...component.menuNodes]
+
+        component.onTreeNodeLabelSwitchChange({ value: false })
+
+        expect(component.menuNodes).toEqual(originalNodes)
+      })
+
+      it('should apply changes and refresh UI', () => {
+        component.treeNodeLabelSwitchValue = 'ID'
+        component.treeNodeLabelSwitchValueOrg = 'NAME'
+        spyOn(component as any, 'applyTreeNodeLabelSwitch')
+        component.onTreeNodeLabelSwitchChange({ value: true })
+        expect(component['applyTreeNodeLabelSwitch']).toHaveBeenCalledWith(component.menuNodes)
+        expect(component.treeNodeLabelSwitchValueOrg).toBe('ID')
+      })
+
+      it('should not apply changes if switch value has not changed', () => {
+        component.treeNodeLabelSwitchValue = 'NAME'
+        component.treeNodeLabelSwitchValueOrg = 'NAME'
+        spyOn(component as any, 'applyTreeNodeLabelSwitch')
+
+        component.onTreeNodeLabelSwitchChange({ value: true })
+
+        expect(component['applyTreeNodeLabelSwitch']).not.toHaveBeenCalled()
+      })
+    })
+
+    describe('applyTreeNodeLabelSwitch', () => {
+      it('should set labels to node keys when switch value is ID', () => {
+        component.treeNodeLabelSwitchValue = 'ID'
+
+        component['applyTreeNodeLabelSwitch'](component.menuNodes)
+
+        expect(component.menuNodes[0].label).toBe('1')
+        expect(component.menuNodes[1].label).toBe('2')
+      })
+
+      it('should set labels to node names when switch value is NAME', () => {
+        component.treeNodeLabelSwitchValue = 'NAME'
+
+        component['applyTreeNodeLabelSwitch'](component.menuNodes)
+
+        expect(component.menuNodes[0].label).toBe('Node 1')
+        expect(component.menuNodes[1].label).toBe('Node 2')
+      })
+
+      it('should set labels to Spanish translations when switch value is es', () => {
+        component.treeNodeLabelSwitchValue = 'es'
+
+        component['applyTreeNodeLabelSwitch'](component.menuNodes)
+
+        expect(component.menuNodes[0].label).toBe('Nodo 1')
+        expect(component.menuNodes[1].label).toBe('Nodo 2')
+      })
+
+      it('should set labels to French translations when switch value is fr', () => {
+        component.treeNodeLabelSwitchValue = 'fr'
+
+        component['applyTreeNodeLabelSwitch'](component.menuNodes)
+
+        expect(component.menuNodes[0].label).toBe('Nœud 1')
+        expect(component.menuNodes[1].label).toBe('Nœud 2')
+      })
+
+      it('should set labels to names when switch value is an unsupported language', () => {
+        component.treeNodeLabelSwitchValue = 'de'
+
+        component['applyTreeNodeLabelSwitch'](component.menuNodes)
+
+        expect(component.menuNodes[0].label).toBe('Node 1')
+        expect(component.menuNodes[1].label).toBe('Node 2')
+      })
+    })
   })
 
   /****************************************************************************
@@ -684,22 +767,157 @@ describe('MenuComponent', () => {
     expect(console.error).toHaveBeenCalledWith('searchAssignments():', err)
   })
 
-  xit('should handle successful assignment creation onGrantPermission', () => {
-    assgmtApiServiceSpy.createAssignment.and.returnValue(of(assgmt))
+  describe('onGrantPermission', () => {
+    it('should create assignment when role is not assigned', () => {
+      const roleId = 'role1'
+      const menuItemId = 'menu1'
+      const assignmentId = 'assignment1'
 
-    component.onGrantPermission(tree, nodeData, 'role')
+      const rowData: MenuItemNodeData = {
+        id: menuItemId,
+        roles: {}
+      } as MenuItemNodeData
 
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.GRANT_OK' })
-    expect(nodeData.roles['role']).toBe('assgnmt id')
+      const rowNode: TreeNode = {
+        data: rowData,
+        parent: undefined
+      }
+      assgmtApiServiceSpy.createAssignment.and.returnValue(of({ id: assignmentId }))
+
+      component.onGrantPermission(rowNode, rowData, roleId)
+
+      expect(assgmtApiServiceSpy.createAssignment).toHaveBeenCalledWith({
+        createAssignmentRequest: { roleId: roleId, menuItemId: menuItemId }
+      })
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.GRANT_OK' })
+      expect(rowData.roles[roleId]).toBe(assignmentId)
+    })
+
+    it('should propagate permission to parent when role is already assigned', () => {
+      const roleId = 'role1'
+      const menuItemId = 'menu1'
+      const parentMenuItemId = 'parentMenu1'
+
+      const parentRowData: MenuItemNodeData = {
+        id: parentMenuItemId,
+        roles: {}
+      } as MenuItemNodeData
+
+      const parentRowNode: TreeNode = {
+        data: parentRowData,
+        parent: undefined
+      }
+
+      const rowData: MenuItemNodeData = {
+        id: menuItemId,
+        roles: {},
+        first: false,
+        last: false,
+        prevId: '',
+        gotoUrl: '',
+        positionPath: '',
+        appConnected: false,
+        node: {} as TreeNode
+      }
+
+      const rowNode: TreeNode = {
+        data: rowData,
+        parent: parentRowNode
+      }
+      spyOn(component, 'onGrantPermission').and.callThrough()
+
+      component.onGrantPermission(rowNode, rowData, roleId)
+
+      expect(component.onGrantPermission).toHaveBeenCalledWith(parentRowNode, parentRowData, roleId)
+    })
+
+    it('should not create assgnmt and propagate permission to parent when role is already assigned', () => {
+      const roleId = 'role1'
+      const menuItemId = 'menu1'
+      const parentMenuItemId = 'parentMenu1'
+
+      const parentRowData: MenuItemNodeData = {
+        id: parentMenuItemId,
+        roles: {},
+        first: false,
+        last: false,
+        prevId: '',
+        gotoUrl: '',
+        positionPath: '',
+        appConnected: false,
+        node: {} as TreeNode
+      }
+
+      const parentRowNode: TreeNode = {
+        data: parentRowData,
+        parent: undefined
+      }
+
+      const rowData: MenuItemNodeData = {
+        id: menuItemId,
+        roles: { [roleId]: 'existingAssignment' },
+        first: false,
+        last: false,
+        prevId: '',
+        gotoUrl: '',
+        positionPath: '',
+        appConnected: false,
+        node: {} as TreeNode
+      }
+
+      const rowNode: TreeNode = {
+        data: rowData,
+        parent: parentRowNode
+      }
+      spyOn(component, 'onGrantPermission').and.callThrough()
+
+      component.onGrantPermission(rowNode, rowData, roleId)
+
+      expect(component.onGrantPermission).toHaveBeenCalledWith(parentRowNode, parentRowData, roleId)
+    })
+
+    it('should handle error when creating assignment', () => {
+      const roleId = 'role1'
+      const menuItemId = 'menu1'
+
+      const rowData: MenuItemNodeData = {
+        id: menuItemId,
+        roles: {}
+      } as MenuItemNodeData
+
+      const rowNode: TreeNode = {
+        data: rowData,
+        parent: undefined
+      }
+
+      const error = new Error('API Error')
+      assgmtApiServiceSpy.createAssignment.and.returnValue(throwError(() => ({ error })))
+      spyOn(console, 'error')
+
+      component.onGrantPermission(rowNode, rowData, roleId)
+
+      expect(assgmtApiServiceSpy.createAssignment).toHaveBeenCalled()
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.GRANT_NOK' })
+      expect(console.error).toHaveBeenCalledWith(error)
+      expect(rowData.roles[roleId]).toBeUndefined()
+    })
   })
+  // xit('should handle successful assignment creation onGrantPermission', () => {
+  //   assgmtApiServiceSpy.createAssignment.and.returnValue(of(assgmt))
 
-  xit('should display error onGrantPermission', () => {
-    assgmtApiServiceSpy.createAssignment.and.returnValue(throwError(() => new Error()))
+  //   component.onGrantPermission(tree, nodeData, 'role')
 
-    component.onGrantPermission(tree, nodeData, 'role')
+  //   expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.GRANT_OK' })
+  //   expect(nodeData.roles['role']).toBe('assgnmt id')
+  // })
 
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.GRANT_NOK' })
-  })
+  // xit('should display error onGrantPermission', () => {
+  //   assgmtApiServiceSpy.createAssignment.and.returnValue(throwError(() => new Error()))
+
+  //   component.onGrantPermission(tree, nodeData, 'role')
+
+  //   expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.GRANT_NOK' })
+  // })
 
   it('should deletel assignment onRevokePermission', () => {
     assgmtApiServiceSpy.deleteAssignment.and.returnValue(of(assgmt))

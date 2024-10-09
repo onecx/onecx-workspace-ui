@@ -1,17 +1,18 @@
 import { TestBed } from '@angular/core/testing'
-import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { TreeNode } from 'primeng/api'
 
 import { MenuTreeService } from './menu-tree.service'
 import { WorkspaceMenuItem } from 'src/app/shared/generated'
+import { provideHttpClient } from '@angular/common/http'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
 
 describe('MenuTreeService', () => {
   let service: MenuTreeService
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [MenuTreeService]
+      imports: [],
+      providers: [provideHttpClientTesting(), provideHttpClient(), MenuTreeService]
     })
 
     service = TestBed.inject(MenuTreeService)

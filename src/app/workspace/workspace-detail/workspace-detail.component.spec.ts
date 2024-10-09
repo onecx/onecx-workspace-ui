@@ -1,11 +1,11 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { Location } from '@angular/common'
-import { Router } from '@angular/router'
+import { provideHttpClient } from '@angular/common/http'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
+import { provideRouter, Router } from '@angular/router'
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router'
-import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { TranslateTestingModule } from 'ngx-translate-testing'
-import { RouterTestingModule } from '@angular/router/testing'
 
 import { of, BehaviorSubject, throwError } from 'rxjs'
 
@@ -66,8 +66,6 @@ describe('WorkspaceDetailComponent', () => {
     TestBed.configureTestingModule({
       declarations: [WorkspaceDetailComponent],
       imports: [
-        RouterTestingModule,
-        HttpClientTestingModule,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
@@ -75,6 +73,9 @@ describe('WorkspaceDetailComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
+        provideHttpClientTesting(),
+        provideHttpClient(),
+        provideRouter([{ path: '', component: WorkspaceDetailComponent }]),
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: Router, useValue: mockRouter },
         { provide: PortalMessageService, useValue: msgServiceSpy },

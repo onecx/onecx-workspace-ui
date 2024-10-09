@@ -1,10 +1,9 @@
 import { NO_ERRORS_SCHEMA, Renderer2, SimpleChanges } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { of, throwError } from 'rxjs'
-import { ActivatedRoute } from '@angular/router'
-import { HttpClientTestingModule } from '@angular/common/http/testing'
+import { ActivatedRoute, provideRouter } from '@angular/router'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { TranslateTestingModule } from 'ngx-translate-testing'
-import { RouterTestingModule } from '@angular/router/testing'
 import { ReactiveFormsModule, FormBuilder, FormArray, FormControl } from '@angular/forms'
 
 import { MfeInfo, PortalMessageService, AppStateService } from '@onecx/portal-integration-angular'
@@ -20,6 +19,7 @@ import {
 } from 'src/app/shared/generated'
 
 import { ExtendedMicrofrontend, ExtendedProduct, ExtendedSlot, ProductComponent } from './products.component'
+import { provideHttpClient } from '@angular/common/http'
 
 const workspace: Workspace = {
   id: 'id',
@@ -126,8 +126,6 @@ describe('ProductComponent', () => {
       declarations: [ProductComponent],
       imports: [
         ReactiveFormsModule,
-        RouterTestingModule,
-        HttpClientTestingModule,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
@@ -135,6 +133,9 @@ describe('ProductComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
+        provideHttpClientTesting(),
+        provideHttpClient(),
+        provideRouter([{ path: '', component: ProductComponent }]),
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: WorkspaceProductAPIService, useValue: wProductServiceSpy },
