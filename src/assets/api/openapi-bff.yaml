@@ -1,3 +1,4 @@
+---
 openapi: 3.0.3
 info:
   title: onecx-workspace-bff
@@ -1743,6 +1744,8 @@ components:
           type: string
         displayName:
           type: string
+        version:
+          type: string
         baseUrl:
           type: string
         imageUrl:
@@ -1772,6 +1775,8 @@ components:
           type: string
         appName:
           type: string
+        appVersion:
+          type: string
         basePath:
           type: string
         deprecated:
@@ -1782,6 +1787,11 @@ components:
           default: false
         type:
           $ref: '#/components/schemas/MicrofrontendType'
+        endpoints:
+          type: array
+          items:
+            $ref: '#/components/schemas/UIEndpoint'
+
     CreateProductRequest:
       required:
         - productName
@@ -2014,6 +2024,8 @@ components:
           type: string
         baseUrl:
           type: string
+        version:
+          type: string
         classifications:
           type: string
         undeployed:
@@ -2048,6 +2060,8 @@ components:
           type: string
         appName:
           type: string
+        appVersion:
+          type: string
         deprecated:
           type: boolean
           default: false
@@ -2057,6 +2071,17 @@ components:
         type:
           $ref: '#/components/schemas/MicrofrontendType'
         exposedModule:
+          type: string
+        endpoints:
+          type: array
+          items:
+            $ref: '#/components/schemas/UIEndpoint'
+    UIEndpoint:
+      type: object
+      properties:
+        path:
+          type: string
+        name:
           type: string
     MicrofrontendType:
       type: string
