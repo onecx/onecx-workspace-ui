@@ -1,6 +1,7 @@
 {
   "ACTIONS": {
     "LABEL": "Actions",
+    "TOOLTIP": "Actions for the data of the table row",
     "CONFIRMATION": {
       "NO": "No",
       "YES": "Yes",
@@ -353,7 +354,7 @@
         "DISPLAYED_ITEM.NAME": "Name",
         "DISPLAYED_ITEM.ID": "ID",
         "ROLES.MANAGE": "Manage Roles",
-        "ROLES.NOT_EXIST": "No Workspace Roles",
+        "ROLES.NOT_EXIST": "No Workspace Roles defined",
         "PREVIEW.TOOLTIP": "Preview in configured languages",
         "PREVIEW2.TOOLTIP": "Red = no translation",
         "REORDER.TOOLTIP": "Reorder via Drag & Drop"
@@ -382,6 +383,7 @@
         "I18N.ROW.TOOLTIP": "At least one translation available",
         "URL.TOOLTIP": "The URL to be called upon activation",
         "PRODUCT.TOOLTIP": "Indicator whether the menu URL is offered by a registered Application ",
+        "EXTERN": "X",
         "EXTERN.TOOLTIP": "If checked then the Workspace is exit"
       },
       "ASSIGNMENT": {

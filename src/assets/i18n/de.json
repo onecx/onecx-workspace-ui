@@ -1,6 +1,7 @@
 {
   "ACTIONS": {
     "LABEL": "Aktionen",
+    "TOOLTIP": "Aktionen für die Daten der Taellenzeile",
     "CONFIRMATION": {
       "NO": "Nein",
       "YES": "Ja",
@@ -349,11 +350,11 @@
         "DETAILS": "Details",
         "ROLES": "Rollen",
         "DETAILS_N_ROLES.TOOLTIP": "Anzeigewechsel: Details / Rollen und Berechtigungen",
-        "DISPLAYED_ITEM": "Anzeigewechsel: Menüitem Name / ID / Sprache",
+        "DISPLAYED_ITEM": "Anzeigewechsel: Menüpunkt Name / ID / Sprache",
         "DISPLAYED_ITEM.NAME": "Name",
         "DISPLAYED_ITEM.ID": "ID",
         "ROLES.MANAGE": "Rollen verwalten",
-        "ROLES.NOT_EXIST": "Keine Workspace Rollen",
+        "ROLES.NOT_EXIST": "Keine Rollen für den Workspace definiert",
         "PREVIEW.TOOLTIP": "Ansicht in den konfigurierten Sprachen",
         "PREVIEW2.TOOLTIP": "Rot = keine Übersetzungen",
         "REORDER.TOOLTIP": "Umordnen mit Drag & Drop"
@@ -382,6 +383,7 @@
         "I18N.ROW.TOOLTIP": "Mindestens eine Übersetzung vorhanden",
         "URL.TOOLTIP": "Die URL die beim Aktivieren aufgerufen wird",
         "PRODUCT.TOOLTIP": "Indikator ob die Menü-URL durch eine registrierte Applikation angeboten wird",
+        "EXTERN": "X",
         "EXTERN.TOOLTIP": "Wenn diese Option aktiviert ist, wird der Workspace verlassen"
       },
       "ASSIGNMENT": {

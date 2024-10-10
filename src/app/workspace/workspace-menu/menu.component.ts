@@ -52,6 +52,7 @@ export type MenuItemNodeData = WorkspaceMenuItem & {
   node: TreeNode
 }
 export type UsedLanguage = { lang: string; count: number }
+type Column = { name: string; headerKey: string; tooltipKey: string; css?: string }
 
 @Component({
   selector: 'app-menu',
@@ -64,6 +65,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   @ViewChild('treeOverlay') treeOverlay: Overlay | undefined
 
   Object = Object
+  limitText = limitText // utils declarations
   private readonly destroy$ = new Subject()
   private readonly debug = false // to be removed after finalization
   // dialog control
@@ -74,6 +76,8 @@ export class MenuComponent implements OnInit, OnDestroy {
   public myPermissions = new Array<string>() // permissions of the user
   public treeTableContentValue = false // off => details
   public treeExpanded = false // off => collapsed
+  public treeFrozenColumns: Column[]
+  public treeDetailColumns: Column[]
   public treeNodeLabelSwitchItems: SelectItem[] = []
   public treeNodeLabelSwitchValue = 'NAME'
   public treeNodeLabelSwitchValueOrg = '' // prevent bug in PrimeNG SelectButton
@@ -102,7 +106,6 @@ export class MenuComponent implements OnInit, OnDestroy {
   public displayMenuDelete = false
   public displayMenuPreview = false
   public displayRoles = false
-  limitText = limitText // utils declarations
 
   constructor(
     private route: ActivatedRoute,
@@ -123,6 +126,13 @@ export class MenuComponent implements OnInit, OnDestroy {
     if (userService.hasPermission('MENU#EDIT')) this.myPermissions.push('MENU#EDIT')
     if (userService.hasPermission('MENU#GRANT')) this.myPermissions.push('MENU#GRANT')
     if (userService.hasPermission('WORKSPACE_ROLE#EDIT')) this.myPermissions.push('WORKSPACE_ROLE#EDIT')
+    this.treeFrozenColumns = [{ name: 'node label', headerKey: '', tooltipKey: '' }]
+    this.treeDetailColumns = [
+      { name: 'actions', headerKey: 'ACTIONS.LABEL', tooltipKey: 'ACTIONS.TOOLTIP' },
+      { name: 'i18n', headerKey: 'DIALOG.MENU.TREE.I18N', tooltipKey: 'DIALOG.MENU.TREE.I18N.TOOLTIP' },
+      { name: 'extern', headerKey: 'DIALOG.MENU.TREE.EXTERN', tooltipKey: 'DIALOG.MENU.TREE.EXTERN.TOOLTIP' },
+      { name: 'url', headerKey: 'MENU_ITEM.URL', tooltipKey: 'DIALOG.MENU.TREE.URL.TOOLTIP', css: 'text-left' }
+    ]
   }
 
   public ngOnInit(): void {
@@ -410,12 +420,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       .searchWorkspaceRoles({ workspaceRoleSearchCriteria: { workspaceId: this.workspace?.id, pageSize: 1000 } })
       .pipe(
         map((result) => {
-          return result.stream
-            ? result.stream?.map((role) => {
-                this.wRoles.push(role)
-                return this.wRoles[this.wRoles.length - 1]
-              })
-            : []
+          return result.stream ? result.stream : []
         }),
         catchError((err) => {
           this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.ROLES'
@@ -449,7 +454,9 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.wRoles = []
     this.wAssignments = []
     combineLatest([this.searchRoles(), this.searchAssignments()]).subscribe(([roles, ass]) => {
-      this.wRoles.sort(this.sortRoleByName)
+      roles.sort(this.sortRoleByName)
+      this.wRoles = roles
+      //this.wRoles.unshift({})
       // assignments(role.id, menu.id) => node.roles[role.id] = ass.id
       ass.forEach((ass: Assignment) => {
         // find affected node ... assign role and inherit
