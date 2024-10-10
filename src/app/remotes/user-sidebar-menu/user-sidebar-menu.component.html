@@ -3,8 +3,8 @@
     <ng-template pTemplate="header">
       <ocx-slot name="onecx-avatar-image"></ocx-slot>
       <span class="flex flex-column ml-3 row-gap-1">
-        <span id="user-sidebar-display-name" class="font-bold">{{ displayName$ | async }}</span>
-        <span *ngIf="organization$ | async as orgId" id="user-sidebar-orgid" class="text-sm">{{ orgId }}</span>
+        <span id="ws_user_sidebar_display_name" class="font-bold">{{ displayName$ | async }}</span>
+        <span *ngIf="organization$ | async as orgId" id="ws_user_sidebar_orgid" class="text-sm">{{ orgId }}</span>
       </span>
     </ng-template>
     <ng-template pTemplate="content">
