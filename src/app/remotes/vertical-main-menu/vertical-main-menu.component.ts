@@ -29,6 +29,7 @@ import { environment } from 'src/environments/environment'
 @Component({
   selector: 'app-vertical-main-menu',
   templateUrl: './vertical-main-menu.component.html',
+  styleUrl: './vertical-main-manu.component.scss',
   standalone: true,
   imports: [
     AngularRemoteComponentsModule,
@@ -94,8 +95,10 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRe
           }
         })
       ),
-      withLatestFrom(this.userService.lang$),
-      map(([data, userLang]) => this.menuItemService.constructMenuItems(data?.menu?.[0]?.children, userLang)),
+      withLatestFrom(this.userService.lang$, this.appStateService.currentMfe$.asObservable()),
+      map(([data, userLang, mfeInfo]) =>
+        this.menuItemService.constructMenuItems(data?.menu?.[0]?.children, userLang, mfeInfo.baseHref)
+      ),
       shareReplay(),
       untilDestroyed(this)
     )
