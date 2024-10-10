@@ -19,10 +19,15 @@
 
   .p-treetable {
     .p-treetable-header {
-      padding: 1rem; // var(--table-header-padding);
+      padding: 1rem 0.5rem; // var(--table-header-padding);
     }
     table {
       width: unset;
+      .p-treetable-thead {
+        tr th:last-of-type {
+          border-right: none !important;
+        }
+      }
       .p-treetable-tbody {
         tr:last-of-type td {
           border-bottom: none !important;
@@ -35,9 +40,12 @@
               width: unset;
               padding: 0.5rem; // must be the same size like table-inline-buttons!
             }
-          }
-          td:nth-of-type(2) {
-            padding: 0 0.3rem;
+            &:nth-of-type(2) {
+              padding: 0 0.3rem;
+            }
+            &:last-of-type {
+              border-right: none !important;
+            }
           }
         }
       }

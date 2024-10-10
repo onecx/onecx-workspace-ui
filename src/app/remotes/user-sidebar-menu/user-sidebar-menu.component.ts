@@ -131,7 +131,7 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent, ocxRem
           .getMenuItems({
             getMenuItemsRequest: {
               workspaceName: currentWorkspace.workspaceName,
-              menuKeys: ['user-profile-menu']
+              menuKeys: ['user-profile-menu'] // USER_PROFILE_MENU
             }
           })
           .pipe(
@@ -151,6 +151,7 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent, ocxRem
           }),
           map((translatedLabel) => {
             const newMenuItem: MenuItem = {
+              id: 'ws_user_sidebar_logout',
               label: translatedLabel,
               icon: PrimeIcons.POWER_OFF,
               command: () => this.logout()

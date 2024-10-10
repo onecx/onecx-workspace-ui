@@ -8,7 +8,7 @@ export class OneCXUserSidebarMenuHarness extends ComponentHarness {
   getAccordion = this.locatorFor(PAccordionHarness)
 
   async getDisplayName() {
-    return await (await this.locatorFor('#user-sidebar-display-name')()).text()
+    return await (await this.locatorFor('#ws_user_sidebar_display_name')()).text()
   }
 
   async expandAccordion() {

@@ -112,22 +112,7 @@
       <!-- TABLE HEADER -->
       <ng-template pTemplate="header" let-columns>
         <tr>
-          <th
-            id="ws_menu_table_header_dummy1"
-            class="p-2 vertical-align-top text-left border-transparent flex flex-row flex-wrap sm:flex-nowrap row-gap-2 justify-content-start align-items-start column-gap-3"
-          >
-            <p-toggleButton
-              inputId="ws_menu_table_header_tree_toggle"
-              styleClass="data-view-control white-space-nowrap"
-              [(ngModel)]="treeExpanded"
-              [onLabel]="'ACTIONS.TREE.COLLAPSE_ALL' | translate"
-              [offLabel]="'ACTIONS.TREE.EXPAND_ALL' | translate"
-              (onChange)="onToggleTreeViewMode($event)"
-              [attr.aria-label]="'ACTIONS.TREE.EXPAND_ALL.TOOLTIP' | translate"
-              [pTooltip]="'ACTIONS.TREE.EXPAND_ALL.TOOLTIP' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            />
+          <th id="ws_menu_table_header_dummy1" class="pt-2 pb-0 px-2 vertical-align-top text-left border-transparent">
             <div class="slim-selectbutton filter-selectbutton">
               <p-selectButton
                 inputid="ws_menu_table_header_display_tree_item_name"
@@ -145,7 +130,7 @@
           </th>
           <th
             id="ws_menu_table_header_dummy2"
-            class="pl-4 py-2 vertical-align-top text-left border-transparent"
+            class="pl-4 pt-2 pb-0 px-2 vertical-align-top text-left border-transparent"
             [attr.colspan]="displayRoles ? 1 + wRoles.length : 6"
           >
             <p-toggleButton
@@ -163,14 +148,30 @@
           </th>
         </tr>
         <tr>
-          <th id="ws_menu_table_header_dummy2" class="p-2 border-transparent border-bottom-2"></th>
+          <th id="ws_menu_table_header_dummy2" class="p-2 vertical-align-bottom border-transparent border-bottom-2">
+            <p-toggleButton
+              inputId="ws_menu_table_header_tree_toggle"
+              styleClass="data-view-control white-space-nowrap"
+              [(ngModel)]="treeExpanded"
+              [onLabel]="'ACTIONS.TREE.COLLAPSE_ALL' | translate"
+              [offLabel]="'ACTIONS.TREE.EXPAND_ALL' | translate"
+              (onChange)="onToggleTreeViewMode($event)"
+              [attr.aria-label]="'ACTIONS.TREE.EXPAND_ALL.TOOLTIP' | translate"
+              [pTooltip]="'ACTIONS.TREE.EXPAND_ALL.TOOLTIP' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            />
+          </th>
           <ng-container *ngIf="!displayRoles">
-            <th id="ws_menu_table_header_actions" class="p-2 text-center hidden-xs border-primary border-bottom-2">
+            <th
+              id="ws_menu_table_header_actions"
+              class="p-2 text-center vertical-align-bottom hidden-xs aborder-primary border-bottom-2"
+            >
               {{ 'ACTIONS.LABEL' | translate }}
             </th>
             <th
               id="ws_menu_table_header_i18n"
-              class="p-2 text-center hidden-md border-primary border-bottom-2"
+              class="p-2 text-center vertical-align-bottom hidden-md aborder-primary border-bottom-2"
               [pTooltip]="'DIALOG.MENU.TREE.I18N.TOOLTIP' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
@@ -179,7 +180,7 @@
             </th>
             <th
               id="ws_menu_table_header_extern"
-              class="p-2 hidden-sm white-space-nowrap border-primary border-bottom-2"
+              class="p-2 text-center vertical-align-bottom hidden-sm white-space-nowrap aborder-primary border-bottom-2"
               [pTooltip]="('MENU_ITEM.EXTERN' | translate) + '?'"
               tooltipPosition="top"
               tooltipEvent="hover"
@@ -188,7 +189,7 @@
             </th>
             <th
               id="ws_menu_table_header_url"
-              class="p-2 hidden-sm white-space-nowrap border-primary border-bottom-2"
+              class="p-2 vertical-align-bottom hidden-sm white-space-nowrap aborder-primary border-bottom-2"
               [pTooltip]="'DIALOG.MENU.TREE.URL.TOOLTIP' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
@@ -197,19 +198,19 @@
             </th>
           </ng-container>
 
-          <!-- ROLES (actually managed by IDM) -->
+          <!-- ROLES (actually managed by IAM) -->
           <ng-container *ngIf="displayRoles">
             <th
               *ngIf="wRoles.length === 0"
               id="ws_menu_table_header_roles_dummy"
-              class="py-2 px-8 hidden-xs text-center font-italic border-primary border-bottom-2"
+              class="py-2 px-8 vertical-align-bottom hidden-xs text-center font-italic aborder-primary border-bottom-2"
             >
               {{ 'DIALOG.MENU.HEADER.ROLES.NOT_EXIST' | translate }}
             </th>
             <th
               *ngFor="let role of columns"
               id="ws_menu_table_header_roles"
-              class="p-2 hidden-xs text-center border-primary border-bottom-2 border-right-1"
+              class="p-2 vertical-align-bottom hidden-xs text-center aborder-primary border-bottom-2 border-right-1"
               [pTooltip]="role.description ? role.description : ''"
               tooltipPosition="top"
               tooltipEvent="hover"
@@ -306,6 +307,7 @@
               <span
                 *ngIf="!isObjectEmpty(rowData.i18n)"
                 [id]="'ws_menu_table_row_' + rowData.key + '_i18n'"
+                class="white-space-nowrap"
                 [pTooltip]="'DIALOG.MENU.TREE.I18N.ROW.TOOLTIP' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
