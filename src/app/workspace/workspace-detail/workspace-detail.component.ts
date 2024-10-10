@@ -41,6 +41,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
   public workspaceForSlots: Workspace | undefined
   public workspaceForProducts: Workspace | undefined
   public workspaceName = this.route.snapshot.params['name']
+  private uriFragment = this.route.snapshot.fragment // #fragment to address a certain TAB
   public workspaceDeleteMessage = ''
   public workspaceDeleteVisible = false
   public workspaceExportVisible = false
@@ -77,6 +78,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
       map((data) => {
         if (data.resource) this.workspace = data.resource
         this.currentLogoUrl = this.getLogoUrl(data.resource)
+        this.goToTab(data.resource)
         return data
       }),
       catchError((err) => {
@@ -145,6 +147,18 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
   /**
    * UI EVENTS
    */
+  // triggered by URI
+  private goToTab(workspace: Workspace | undefined) {
+    if (workspace && this.uriFragment) {
+      const tabMap = new Map([
+        ['roles', 3],
+        ['slots', 4],
+        ['products', 5]
+      ])
+      this.onTabChange({ index: tabMap.get(this.uriFragment) }, workspace)
+    }
+  }
+  // activate TAB
   public onTabChange($event: any, workspace: Workspace | undefined) {
     if (workspace) {
       this.showOperatorMessage = false
