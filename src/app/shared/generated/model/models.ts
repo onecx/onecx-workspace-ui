@@ -50,6 +50,7 @@ export * from './searchWorkspacesResponse';
 export * from './slot';
 export * from './slotComponent';
 export * from './slotPS';
+export * from './uIEndpoint';
 export * from './updateMenuItemParentRequest';
 export * from './updateMenuItemRequest';
 export * from './updateProductRequest';

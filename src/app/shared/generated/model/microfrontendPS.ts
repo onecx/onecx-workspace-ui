@@ -10,15 +10,18 @@
  * Do not edit the class manually.
  */
 import { MicrofrontendType } from './microfrontendType';
+import { UIEndpoint } from './uIEndpoint';
 
 
 export interface MicrofrontendPS { 
     appId?: string;
     appName?: string;
+    appVersion?: string;
     deprecated?: boolean;
     undeployed?: boolean;
     type?: MicrofrontendType;
     exposedModule?: string;
+    endpoints?: Array<UIEndpoint>;
 }
 
 
