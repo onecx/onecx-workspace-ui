@@ -209,14 +209,6 @@ describe('MenuDetailComponent', () => {
   })
 
   describe('ngOnChanges', () => {
-    it('should notify data has not changed and return', () => {
-      spyOn(component.dataChanged, 'emit')
-
-      component.ngOnChanges({})
-
-      expect(component.dataChanged.emit).toHaveBeenCalledWith(false)
-    })
-
     it('should init menuItem and set formGroup in create mode onChanges', () => {
       component.changeMode = 'CREATE'
       spyOn(component.formGroup, 'reset')

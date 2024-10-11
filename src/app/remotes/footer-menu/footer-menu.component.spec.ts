@@ -146,13 +146,13 @@ describe('OneCXFooterMenuComponent', () => {
     const menuItems = await oneCXFooterMenuHarness.getMenuItems()
     expect(menuItems.length).toEqual(2)
 
-    const translatedItem = await oneCXFooterMenuHarness.getMenuItem('footer-FOOTER_CONTACT-router')
+    const translatedItem = await oneCXFooterMenuHarness.getMenuItem('ws_footer_footer_contact_router')
     expect(translatedItem).toBeTruthy()
     expect(await translatedItem?.text()).toEqual('English Contact value')
     await translatedItem?.click()
     expect(router.url).toBe('/contact')
 
-    const nameItem = await oneCXFooterMenuHarness.getMenuItem('footer-FOOTER_CONTACT_ONLY_NAME-router')
+    const nameItem = await oneCXFooterMenuHarness.getMenuItem('ws_footer_footer_contact_only_name_router')
     expect(nameItem).toBeTruthy()
     expect(await nameItem?.text()).toEqual('Contact')
     await nameItem?.click()
