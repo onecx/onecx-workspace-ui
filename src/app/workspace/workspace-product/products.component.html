@@ -274,11 +274,11 @@
               <label for="ws_product_item_product_name"> {{ displayedDetailItem?.productName }}</label>
             </span>
             <a
-              ocxIfPermission="WORKSPACE#GOTO_PERMISSION"
+              *ocxIfPermission="'WORKSPACE#GOTO_PERMISSION'"
               tabindex="0"
               id="ws_product_item_product_name_link"
               class="p-inputgroup-addon bg-primary cursor-pointer pseudo-button pi pi-lock"
-              (click)="onGoToProductPremission(displayedDetailItem?.productName)"
+              (click)="onGoToProductPermission(displayedDetailItem?.productName)"
               [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_PRODUCT_PERMISSIONS' | translate"
               [pTooltip]="'ACTIONS.NAVIGATION.GOTO_PRODUCT_PERMISSIONS' | translate"
               tooltipPosition="top"
@@ -286,7 +286,7 @@
             >
             </a>
             <a
-              ocxIfPermission="WORKSPACE#GOTO_APP_STORE"
+              *ocxIfPermission="'WORKSPACE#GOTO_APP_STORE'"
               tabindex="0"
               id="ws_product_item_product_name_link"
               class="p-inputgroup-addon bg-primary cursor-pointer pseudo-button pi pi-link"

@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild, OnDestroy } from '@angular/core'
 import { HttpErrorResponse } from '@angular/common/http'
 import { Location } from '@angular/common'
-import { ActivatedRoute } from '@angular/router'
+import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 import { catchError, combineLatest, map, Observable, Subject, of } from 'rxjs'
 
@@ -12,7 +12,7 @@ import { SelectItem, TreeNode } from 'primeng/api'
 import FileSaver from 'file-saver'
 
 import { Action } from '@onecx/angular-accelerator'
-import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+import { PortalMessageService, UserService, WorkspaceService } from '@onecx/angular-integration-interface'
 import {
   AssignmentAPIService,
   AssignmentPageResult,
@@ -35,6 +35,7 @@ import {
   limitText,
   dropDownSortItemsByLabel,
   getCurrentDateTime,
+  goToEndpoint,
   sortByLocale
 } from 'src/app/shared/utils'
 import { MenuStateService } from './services/menu-state.service'
@@ -109,12 +110,14 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private location: Location,
     private assApi: AssignmentAPIService,
     private menuApi: MenuItemAPIService,
     private workspaceApi: WorkspaceAPIService,
     private wRoleApi: WorkspaceRolesAPIService,
     private imageApi: ImagesInternalAPIService,
+    private workspaceService: WorkspaceService,
     private stateService: MenuStateService,
     private translate: TranslateService,
     private msgService: PortalMessageService,
@@ -172,7 +175,9 @@ export class MenuComponent implements OnInit, OnDestroy {
               actionCallback: () => this.onExportMenu(),
               icon: 'pi pi-download',
               show: 'always',
-              permission: 'MENU#EXPORT'
+              permission: 'MENU#EXPORT',
+              conditional: true,
+              showCondition: this.menuItems ? this.menuItems?.length > 0 : false
             },
             {
               label: data['ACTIONS.IMPORT.LABEL'],
@@ -195,6 +200,17 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
   public onReload(): void {
     this.loadMenu(true)
+  }
+  public onGoToWorkspacePermission(): void {
+    goToEndpoint(
+      this.workspaceService,
+      this.msgService,
+      this.router,
+      'onecx-permission',
+      'onecx-permission-ui',
+      'workspace',
+      { 'workspace-name': this.workspace?.name }
+    )
   }
 
   public onTreeNodeLabelSwitchChange(ev: any): void {
@@ -310,13 +326,6 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.changeMode = 'DELETE'
     this.menuItem = item
     this.displayMenuDelete = true
-  }
-  public onGotoUrl($event: MouseEvent, url: string): void {
-    $event.stopPropagation()
-  }
-  public onDisplayI18n(i18n: object): string {
-    //if (Object.keys(i18n).length > 0) return ''
-    return Object.keys(i18n).toString()
   }
 
   /****************************************************************************

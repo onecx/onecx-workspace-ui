@@ -99,16 +99,41 @@
             >
             </a>
           </div>
-          <p-button
-            id="ws_menu_table_reload_button"
-            styleClass="h-full button-min-height"
-            icon="pi pi-refresh"
-            (onClick)="onReload()"
-            [attr.aria-label]="'ACTIONS.SEARCH.RELOAD' | translate"
-            [pTooltip]="'ACTIONS.SEARCH.RELOAD' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          ></p-button>
+          <div class="flex flex-wrap justify-content-between align-items-center gap-2">
+            <p-button
+              *ocxIfPermission="'WORKSPACE_ROLE#VIEW'"
+              id="ws_menu_table_action_goto_roles"
+              styleClass="h-full button-min-height"
+              icon="pi pi-cog"
+              [routerLink]="['../']"
+              fragment="roles"
+              [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_WORKSPACE_ROLES' | translate"
+              [pTooltip]="'ACTIONS.NAVIGATION.GOTO_WORKSPACE_ROLES' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            ></p-button>
+            <p-button
+              *ocxIfPermission="'WORKSPACE#GOTO_PERMISSION'"
+              id="ws_menu_table_action_goto_permissions"
+              styleClass="h-full button-min-height"
+              icon="pi pi-lock"
+              (onClick)="onGoToWorkspacePermission()"
+              [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_WORKSPACE_PERMISSIONS' | translate"
+              [pTooltip]="'ACTIONS.NAVIGATION.GOTO_WORKSPACE_PERMISSIONS' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            ></p-button>
+            <p-button
+              id="ws_menu_table_action_reload"
+              styleClass="h-full button-min-height"
+              icon="pi pi-refresh"
+              (onClick)="onReload()"
+              [attr.aria-label]="'ACTIONS.SEARCH.RELOAD' | translate"
+              [pTooltip]="'ACTIONS.SEARCH.RELOAD' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            ></p-button>
+          </div>
         </div>
       </ng-template>
 
