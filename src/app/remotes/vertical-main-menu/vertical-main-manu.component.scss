@@ -24,11 +24,8 @@
         &:focus-visible {
           .p-panelmenu-header-content {
             .p-panelmenu-header-action {
-              background: var(--menu-item-hover-bg-color);
-
-              &.p-menuitem-link-active {
+              &:not(.p-menuitem-link-active) {
                 background: var(--menu-item-hover-bg-color);
-                color: var(--menu-item-text-color);
               }
             }
           }
@@ -37,7 +34,9 @@
 
       &:not(.p-highlight):not(.p-disabled) {
         .p-panelmenu-header-action:focus {
-          background: var(--menu-item-hover-bg-color);
+          &:not(.p-menuitem-link-active) {
+            background: var(--menu-item-hover-bg-color);
+          }
         }
       }
 
@@ -77,6 +76,7 @@
 
           .p-menuitem-link {
             color: var(--menu-item-text-color);
+
             .p-menuitem-text,
             .p-menuitem-icon,
             .p-submenu-icon {
@@ -97,7 +97,7 @@
         }
 
         &.p-highlight {
-          > .p-menuitem-content {
+          > .p-menuitem-content:not(:has(.p-menuitem-link-active)) {
             color: var(--menu-item-text-color);
             background: var(--menu-item-hover-bg-color);
 
@@ -107,21 +107,10 @@
               .p-submenu-icon {
                 color: var(--menu-item-text-color);
               }
-
-              &.p-menuitem-link-active {
-                background: var(--menu-item-hover-bg-color);
-                color: var(--menu-item-text-color);
-
-                .p-menuitem-text,
-                .p-menuitem-icon,
-                .p-submenu-icon {
-                  color: var(--menu-item-text-color);
-                }
-              }
             }
           }
 
-          &.p-focus {
+          &.p-focus:not(:has(.p-menuitem-link-active)) {
             > .p-menuitem-content {
               background: var(--menu-item-hover-bg-color);
             }
@@ -129,18 +118,14 @@
         }
 
         &:not(.p-highlight):not(.p-disabled) {
-          &.p-focus {
+          &.p-focus:not(:has(.p-menuitem-link-active)) {
             > .p-menuitem-content {
               color: var(--menu-item-text-color);
               background: var(--menu-item-hover-bg-color);
-              .p-menuitem-link {
-                &:not(.p-menuitem-link-active) {
-                  .p-menuitem-text,
-                  .p-menuitem-icon,
-                  .p-submenu-icon {
-                    color: var(--menu-item-text-color);
-                  }
-                }
+              .p-menuitem-text,
+              .p-menuitem-icon,
+              .p-submenu-icon {
+                color: var(--menu-item-text-color);
               }
             }
           }
