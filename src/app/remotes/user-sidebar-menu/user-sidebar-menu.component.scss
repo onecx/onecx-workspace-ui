@@ -1,11 +1,3 @@
-.user-sidebar-menu-item {
-  cursor: pointer;
-  &:hover {
-    background-color: var(--hover-bg-color);
-    transition: background-color var(--transition-duration);
-  }
-}
-
 ::ng-deep {
   .p-panelmenu-panel {
     box-shadow: none !important;
@@ -24,3 +16,43 @@
     }
   }
 }
+
+:host ::ng-deep {
+  .p-accordion {
+    .p-accordion-header {
+      .p-accordion-header-link {
+        color: var(--menu-item-text-color);
+      }
+
+      &:not(.p-disabled) {
+        .p-accordion-header-link {
+          &:focus-visible {
+            background: var(--menu-item-hover-bg-color);
+          }
+        }
+      }
+
+      &:not(.p-highlight):not(.p-disabled):hover {
+        .p-accordion-header-link {
+          background: var(--menu-item-hover-bg-color);
+          color: var(--menu-item-text-color);
+        }
+      }
+
+      &:not(.p-disabled).p-highlight {
+        .p-accordion-header-link {
+          color: var(--menu-item-text-color);
+        }
+
+        &:hover {
+          .p-accordion-header-link {
+            color: var(--menu-item-text-color);
+            background: var(--menu-item-hover-bg-color);
+          }
+        }
+      }
+    }
+  }
+}
+
+@import './../../shared/sidebar-panelmenu.scss';
