@@ -23,7 +23,7 @@
     >
       <p-message severity="info" styleClass="p-2" [text]="'DIALOG.MENU.MENU_NOT_EXIST' | translate"></p-message>
       <p-button
-        id="ws_menu_create_menu"
+        id="ws_menu_action_create"
         icon="pi pi-plus"
         (onClick)="onCreateMenu($event)"
         [label]="'ACTIONS.CREATE.MENU' | translate"
@@ -35,6 +35,8 @@
       [style]="{ height: '600px' }"
       [scrollable]="true"
       scrollHeight="flex"
+      [tableStyle]="{ 'min-width': '70vw' }"
+      [frozenColumns]="treeFrozenColumns"
     -->
     <p-treeTable
       *ngIf="menuNodes.length > 0"
@@ -47,6 +49,7 @@
       (onNodeCollapse)="onHierarchyViewChange($event)"
       (onNodeExpand)="onHierarchyViewChange($event)"
     >
+      <!-- TABLE FILTER + SORT -->
       <ng-template pTemplate="caption" class="p-0">
         <div class="flex flex-wrap justify-content-between align-items-center gap-2">
           <div *ngIf="menuItems">
@@ -96,16 +99,41 @@
             >
             </a>
           </div>
-          <p-button
-            id="ws_menu_table_reload_button"
-            styleClass="h-full button-min-height"
-            icon="pi pi-refresh"
-            (onClick)="onReload()"
-            [attr.aria-label]="'ACTIONS.SEARCH.RELOAD' | translate"
-            [pTooltip]="'ACTIONS.SEARCH.RELOAD' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          ></p-button>
+          <div class="flex flex-wrap justify-content-between align-items-center gap-2">
+            <p-button
+              *ocxIfPermission="'WORKSPACE_ROLE#VIEW'"
+              id="ws_menu_table_action_goto_roles"
+              styleClass="h-full button-min-height"
+              icon="pi pi-cog"
+              [routerLink]="['../']"
+              fragment="roles"
+              [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_WORKSPACE_ROLES' | translate"
+              [pTooltip]="'ACTIONS.NAVIGATION.GOTO_WORKSPACE_ROLES' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            ></p-button>
+            <p-button
+              *ocxIfPermission="'WORKSPACE#GOTO_PERMISSION'"
+              id="ws_menu_table_action_goto_permissions"
+              styleClass="h-full button-min-height"
+              icon="pi pi-lock"
+              (onClick)="onGoToWorkspacePermission()"
+              [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_WORKSPACE_PERMISSIONS' | translate"
+              [pTooltip]="'ACTIONS.NAVIGATION.GOTO_WORKSPACE_PERMISSIONS' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            ></p-button>
+            <p-button
+              id="ws_menu_table_action_reload"
+              styleClass="h-full button-min-height"
+              icon="pi pi-refresh"
+              (onClick)="onReload()"
+              [attr.aria-label]="'ACTIONS.SEARCH.RELOAD' | translate"
+              [pTooltip]="'ACTIONS.SEARCH.RELOAD' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            ></p-button>
+          </div>
         </div>
       </ng-template>
 
@@ -130,7 +158,7 @@
           </th>
           <th
             class="py-2 px-2 pl-4 vertical-align-top text-left border-transparent"
-            [attr.colspan]="displayRoles ? 1 + wRoles.length : 6"
+            [attr.colspan]="displayRoles ? 1 + columns.length : 6"
           >
             <p-toggleButton
               inputid="ws_menu_table_header_row_1_switch_details_n_roles"
@@ -163,48 +191,30 @@
           </th>
           <ng-container *ngIf="!displayRoles">
             <th
+              *ngFor="let col of treeDetailColumns"
               id="ws_menu_table_header_actions"
-              class="px-2 py-1 text-center vertical-align-bottom hidden-xs border-bottom-2"
-            >
-              {{ 'ACTIONS.LABEL' | translate }}
-            </th>
-            <th
-              id="ws_menu_table_header_i18n"
-              class="px-2 py-1 text-center vertical-align-bottom hidden-md border-bottom-2"
-              [pTooltip]="'DIALOG.MENU.TREE.I18N.TOOLTIP' | translate"
+              class="px-2 py-1 text-center vertical-align-bottom white-space-nowrap border-bottom-2"
+              [ngClass]="col.css"
+              [pTooltip]="col.tooltipKey | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
             >
-              {{ 'DIALOG.MENU.TREE.I18N' | translate }}
-            </th>
-            <th
-              id="ws_menu_table_header_extern"
-              class="px-2 py-1 text-center vertical-align-bottom hidden-sm white-space-nowrap border-bottom-2"
-              [pTooltip]="('MENU_ITEM.EXTERN' | translate) + '?'"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            >
-              X
-            </th>
-            <th
-              id="ws_menu_table_header_url"
-              class="px-2 py-1 vertical-align-bottom hidden-sm white-space-nowrap border-bottom-2"
-              [pTooltip]="'DIALOG.MENU.TREE.URL.TOOLTIP' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            >
-              {{ 'MENU_ITEM.URL' | translate }}
+              {{ col.headerKey | translate }}
             </th>
           </ng-container>
 
-          <!-- ROLES (actually managed by IAM) -->
+          <!-- ROLES (workspace roles) -->
           <ng-container *ngIf="displayRoles">
             <th
-              *ngIf="wRoles.length === 0"
+              *ngIf="columns.length === 0"
               id="ws_menu_table_header_roles_dummy"
-              class="py-2 px-8 vertical-align-bottom hidden-xs text-center font-italic border-bottom-2"
+              class="pt-2 pb-0 px-2 vertical-align-bottom border-transparent"
             >
-              {{ 'DIALOG.MENU.HEADER.ROLES.NOT_EXIST' | translate }}
+              <p-message
+                severity="info"
+                styleClass="p-2"
+                [text]="'DIALOG.MENU.HEADER.ROLES.NOT_EXIST' | translate"
+              ></p-message>
             </th>
             <th
               *ngFor="let role of columns"
@@ -221,14 +231,30 @@
       </ng-template>
 
       <!-- BODY -->
-      <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
-        <tr [id]="'ws_menu_table_row_' + rowData.key">
+      <ng-template pTemplate="frozenbody" let-rowNode let-rowData="rowData">
+        <tr [ttRow]="rowNode" [id]="'ws_menu_table_row_' + rowData.key">
           <td class="p-0 pr-4">
             <div class="flex flex-row flex-nowrap column-gap-1 align-items-center">
               <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
               <span *ngIf="rowData.badge" class="pi pi-{{ rowData.badge }} pr-2"></span>
               <span *ngIf="!rowData.badge" class="pi pi-folder pr-2 invisible"></span>
-              <span [id]="'ws_menu_table_row_' + rowData.key + '_name'">{{ rowNode.node.label }}</span>
+              <span [id]="'ws_menu_table_row_' + rowData.key + '_name'" class="white-space-nowrap">
+                {{ rowNode.node.label }}</span
+              >
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
+        <tr [ttRow]="rowNode" [id]="'ws_menu_table_row_' + rowData.key">
+          <td class="p-0 pr-4">
+            <div class="flex flex-row flex-nowrap column-gap-1 align-items-center">
+              <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
+              <span *ngIf="rowData.badge" class="pi pi-{{ rowData.badge }} pr-2"></span>
+              <span *ngIf="!rowData.badge" class="pi pi-folder pr-2 invisible"></span>
+              <span [id]="'ws_menu_table_row_' + rowData.key + '_name'" class="white-space-nowrap">
+                {{ rowNode.node.label }}</span
+              >
             </div>
           </td>
           <!-- menu item actions -->

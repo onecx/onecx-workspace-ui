@@ -1,6 +1,7 @@
 {
   "ACTIONS": {
     "LABEL": "Actions",
+    "TOOLTIP": "Actions for the data of the table row",
     "CONFIRMATION": {
       "NO": "No",
       "YES": "Yes",
@@ -102,6 +103,7 @@
       "GOTO_PRODUCT_PERMISSIONS": "Go to Product Permissions",
       "GOTO_PRODUCT_SLOTS": "Go to Slots within Application Store",
       "GOTO_WORKSPACE_PERMISSIONS": "Go to Workspace Permissions",
+      "GOTO_WORKSPACE_ROLES": "Go to Workspace Roles",
       "OPEN_IN_NEW_TAB": "Open in a new TAB",
       "MOVE_UP": "Move up",
       "MOVE_DOWN": "Move down"
@@ -353,7 +355,7 @@
         "DISPLAYED_ITEM.NAME": "Name",
         "DISPLAYED_ITEM.ID": "ID",
         "ROLES.MANAGE": "Manage Roles",
-        "ROLES.NOT_EXIST": "No Workspace Roles",
+        "ROLES.NOT_EXIST": "No Workspace Roles defined",
         "PREVIEW.TOOLTIP": "Preview in configured languages",
         "PREVIEW2.TOOLTIP": "Red = no translation",
         "REORDER.TOOLTIP": "Reorder via Drag & Drop"
@@ -382,6 +384,7 @@
         "I18N.ROW.TOOLTIP": "At least one translation available",
         "URL.TOOLTIP": "The URL to be called upon activation",
         "PRODUCT.TOOLTIP": "Indicator whether the menu URL is offered by a registered Application ",
+        "EXTERN": "X",
         "EXTERN.TOOLTIP": "If checked then the Workspace is exit"
       },
       "ASSIGNMENT": {
