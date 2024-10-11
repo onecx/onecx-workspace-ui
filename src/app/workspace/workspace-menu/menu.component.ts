@@ -132,9 +132,24 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.treeFrozenColumns = [{ name: 'node label', headerKey: '', tooltipKey: '' }]
     this.treeDetailColumns = [
       { name: 'actions', headerKey: 'ACTIONS.LABEL', tooltipKey: 'ACTIONS.TOOLTIP' },
-      { name: 'i18n', headerKey: 'DIALOG.MENU.TREE.I18N', tooltipKey: 'DIALOG.MENU.TREE.I18N.TOOLTIP' },
-      { name: 'extern', headerKey: 'DIALOG.MENU.TREE.EXTERN', tooltipKey: 'DIALOG.MENU.TREE.EXTERN.TOOLTIP' },
-      { name: 'url', headerKey: 'MENU_ITEM.URL', tooltipKey: 'DIALOG.MENU.TREE.URL.TOOLTIP', css: 'text-left' }
+      {
+        name: 'i18n',
+        headerKey: 'DIALOG.MENU.TREE.I18N',
+        tooltipKey: 'DIALOG.MENU.TREE.I18N.TOOLTIP',
+        css: 'hidden-xs'
+      },
+      {
+        name: 'extern',
+        headerKey: 'DIALOG.MENU.TREE.EXTERN',
+        tooltipKey: 'DIALOG.MENU.TREE.EXTERN.TOOLTIP',
+        css: 'hidden-sm'
+      },
+      {
+        name: 'url',
+        headerKey: 'MENU_ITEM.URL',
+        tooltipKey: 'DIALOG.MENU.TREE.URL.TOOLTIP',
+        css: 'text-left, hidden-md'
+      }
     ]
   }
 

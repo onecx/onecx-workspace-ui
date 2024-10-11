@@ -1,6 +1,17 @@
-<ul class="ml-0 sm:ml-6 list-none flex flex-row gap-4 text-xs m-0 p-0" *ngIf="menuItems$ | async as menuItems">
-  <li *ngFor="let item of menuItems; let i = index">
-    <a id="footer-{{ item.id }}-href" *ngIf="!item.routerLink && item.url" [attr.href]="item.url"> {{ item.label }} </a>
-    <a id="footer-{{ item.id }}-router" *ngIf="item.routerLink" [routerLink]="item.routerLink"> {{ item.label }} </a>
+<ul
+  *ngIf="menuItems$ | async as menuItems"
+  class="m-0 p-0 ml-2 sm:ml-6 text-xs list-none flex flex-row column-gap-3 row-gap-2"
+>
+  <li *ngFor="let item of menuItems">
+    <a
+      id="ws_footer_{{ item.id?.toLocaleLowerCase() }}_href"
+      *ngIf="!item.routerLink && item.url"
+      [attr.href]="item.url"
+    >
+      {{ item.label }}
+    </a>
+    <a id="ws_footer_{{ item.id?.toLocaleLowerCase() }}_link" *ngIf="item.routerLink" [routerLink]="item.routerLink">
+      {{ item.label }}
+    </a>
   </li>
 </ul>

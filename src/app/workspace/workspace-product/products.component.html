@@ -1,7 +1,7 @@
 <div *ngIf="exceptionKey" class="m-3 flex flex-wrap justify-content-between align-items-center">
   <p-message id="ws_product_data_access_issue" severity="error" [text]="exceptionKey | translate"></p-message>
   <p-button
-    id="ws_product_reload_action"
+    id="ws_product_action_reload"
     icon="pi pi-refresh"
     (onClick)="loadData()"
     [attr.aria-label]="'ACTIONS.SEARCH.RELOAD' | translate"
