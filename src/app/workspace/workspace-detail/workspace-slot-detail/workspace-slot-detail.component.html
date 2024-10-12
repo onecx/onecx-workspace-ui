@@ -129,7 +129,7 @@
             tooltipPosition="top"
             tooltipEvent="hover"
           >
-            {{ 'DIALOG.SLOT.COMPONENTS.NOT_USED' | translate }}
+            {{ 'DIALOG.SLOT.COMPONENTS.NOT_USED' | translate }}: {{ psComponents.length }}
           </div>
         </div>
       </ng-template>
@@ -142,15 +142,15 @@
             tooltipPosition="top"
             tooltipEvent="hover"
           >
-            {{ 'DIALOG.SLOT.COMPONENTS.USED' | translate }}
+            {{ 'DIALOG.SLOT.COMPONENTS.USED' | translate }}: {{ wComponents.length }}
           </div>
         </div>
       </ng-template>
 
-      <ng-template let-component let-idx="rowIndex" pTemplate="item">
+      <ng-template let-component let-i="rowIndex" pTemplate="item">
         <span
           *ngIf="component?.undeployed"
-          [id]="'ws_slot_detail_picklist_' + idx + '_undeployed'"
+          [id]="'ws_slot_detail_picklist_' + i + '_undeployed'"
           class="card-badge-right badge-1 danger-action-text font-bold text-lg pi pi-ban"
           aria-label="'DIALOG.SLOT.UNDEPLOYED' | translate"
           [pTooltip]="'DIALOG.SLOT.UNDEPLOYED.TOOLTIP' | translate"
@@ -159,28 +159,27 @@
         ></span>
         <span
           *ngIf="component?.deprecated && !component?.undeployed"
-          [id]="'ws_slot_detail_picklist_' + idx + '_deprecated'"
+          [id]="'ws_slot_detail_picklist_' + i + '_deprecated'"
           class="card-badge-right badge-1 danger-action-text font-bold text-lg pi pi-exclamation-circle"
           aria-label="'DIALOG.SLOT.DEPRECATED' | translate"
           [pTooltip]="'DIALOG.SLOT.DEPRECATED.TOOLTIP' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"
         ></span>
-        <div class="py-1 px-2 flex flex-column row-gap-1" (dblclick)="return($event)">
-          <div *ngIf="component.bucket === 'TARGET'" class="font-semibold text-sm md:text-md">
-            {{ component.index }}
-          </div>
-          <div [id]="'ws_slot_detail_picklist_' + idx + '_component_name'" class="font-semibold text-sm md:text-md">
+        <div class="py-0 sm:py-1 px-2 flex flex-column row-gap-0 sm:row-gap-1" (dblclick)="return($event)">
+          <div
+            [id]="'ws_slot_detail_picklist_' + i + '_component_name'"
+            class="font-semibold text-sm md:text-md text-responsive"
+          >
             {{ component.name }}
           </div>
-          <div [id]="'ws_slot_detail_picklist_' + idx + '_product_name'" class="text-xs">
-            {{ component.productName }}
-          </div>
+          <div [id]="'ws_slot_detail_picklist_' + i + '_product_name'" class="text-xs">{{ component.productName }}</div>
         </div>
         <div class="relative"></div>
       </ng-template>
     </p-pickList>
   </div>
+
   <ng-template pTemplate="footer">
     <div class="flex flex-row flex-wrap column-gap-2 row-gap-1 justify-content-end">
       <p-button

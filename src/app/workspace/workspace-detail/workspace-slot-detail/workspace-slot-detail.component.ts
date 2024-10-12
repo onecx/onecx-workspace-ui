@@ -26,8 +26,8 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   public dateFormat = 'medium'
   public slot: CombinedSlot | undefined
   public slotName!: string
-  public wComponents!: ExtendedComponent[]
-  public psComponents!: ExtendedComponent[] // org ps components reduced by used in slot
+  public wComponents: ExtendedComponent[] = []
+  public psComponents: ExtendedComponent[] = [] // org ps components reduced by used in slot
   public hasEditPermission = false
   public displayDeregisterConfirmation = false
   private deregisterItems: ExtendedComponent[] = []

@@ -264,7 +264,7 @@
               <input
                 pInputText
                 type="text"
-                class="w-full"
+                class="w-full text-responsive"
                 id="ws_product_item_product_name"
                 formControlName="displayName"
                 [pTooltip]="'PRODUCT.DISPLAY_NAME.TOOLTIP' | translate"
@@ -303,7 +303,7 @@
               <input
                 pInputText
                 type="text"
-                class="w-full"
+                class="w-full text-responsive"
                 id="ws_product_item_baseurl"
                 formControlName="baseUrl"
                 [pTooltip]="'PRODUCT.BASE_URL.TOOLTIP' | translate"
@@ -318,7 +318,7 @@
 
           <div *ngFor="let app of displayedDetailItem?.apps | keyvalue; let i = index">
             <p-divider align="center" styleClass="mt-0 mb-1">
-              <div class="px-3 font-bold text-primary">{{ app.key }}</div>
+              <div class="px-3 font-bold text-primary text-responsive">{{ app.key }}</div>
               <div class="px-3 text-xs">Microfrontend</div>
             </p-divider>
 
@@ -339,7 +339,7 @@
                       <input
                         pInputText
                         type="text"
-                        class="w-full"
+                        class="w-full text-responsive"
                         [id]="'ws_product_item_mfe_' + i + '_base_path'"
                         formControlName="basePath"
                         [pTooltip]="'PRODUCT.MFE.BASE_PATH.TOOLTIP' | translate"
@@ -410,8 +410,8 @@
                 *ngFor="let item of app.value.components; let i = index"
                 class="ml-3 flex flex-row align-items-center column-gap-2"
               >
-                <span [id]="'ws_product_item_component_' + i + '_exposed_module'" class="mr-2">
-                  {{ limitText(item.exposedModule, 25) }}</span
+                <span [id]="'ws_product_item_component_' + i + '_exposed_module'" class="mr-2 text-responsive">
+                  {{ item.exposedModule }}</span
                 >
                 <span
                   *ngIf="item.undeployed"
@@ -443,7 +443,7 @@
               *ngFor="let item of displayedDetailItem?.slots; let i = index"
               class="ml-3 flex flex-row align-items-center column-gap-3"
             >
-              <span [id]="'ws_product_item_slot_' + i + '_name'">{{ limitText(item.name, 25) }}</span>
+              <span [id]="'ws_product_item_slot_' + i + '_name'" class="text-responsive">{{ item.name }}</span>
               <span
                 *ngIf="item.undeployed"
                 [id]="'ws_product_item_slot_' + i + '_undeployed'"

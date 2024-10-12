@@ -52,7 +52,7 @@
       "SLOT_MESSAGE": "Damit wird die Zuweisung von Slot zur Komponente für den Workspace gelöscht.",
       "SLOT_OK": "Die Slot-Zuweisung wurde erfolgreich gelöscht.",
       "SLOT_NOK": "Ein Fehler ist aufgetreten. Die Slot-Zuweisung wurde nicht gelöscht.",
-      "PRODUCTS_MESSAGE": "Die ausgewählten Applikationen und ihre Apps werden für den Arbeitsbereich abgemeldet. Menüelemente, die solche Pfade verwenden, werden nicht berührt, funktionieren aber nicht mehr.",
+      "PRODUCTS_MESSAGE": "Die ausgewählten Applikationen und ihre Komponenten werden für den Arbeitsbereich abgemeldet. Menüelemente, die solche Pfade verwenden, werden nicht berührt, funktionieren aber nicht mehr.",
       "PRODUCTS_QUESTION": "Möchten Sie die ausgewählten Applikationen abmelden?",
       "COMPONENTS_QUESTION": "Möchten Sie die ausgewählten Komponenten abmelden?"
     },
@@ -471,7 +471,7 @@
     "DISPLAY_NAME.TOOLTIP": "Name der Applikation",
     "DESCRIPTION": "Description",
     "BASE_URL": "Application Base Path",
-    "BASE_URL.TOOLTIP": "Basispfad für alle Apps der Applikation. Muss eindeutig sein über alle Applikationen im Workspace.",
+    "BASE_URL.TOOLTIP": "Basispfad für alle Module der Applikation. Muss eindeutig sein über alle Applikationen im Workspace.",
     "MFE": {
       "APP_ID": "UI Service ID",
       "APP_ID.TOOLTIP": "Eindeutige ID des spezifischen UI-Dienstes, der verwendet werden soll.",
