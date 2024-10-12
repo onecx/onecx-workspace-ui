@@ -311,6 +311,16 @@
         "VIEW": "Slot Details",
         "COMPONENTS.DEREGISTER": "Deregister Components"
       },
+      "TABS": {
+        "COMPONENTS": "Components",
+        "PRODUCTS": "Applications",
+        "INTERN": "Intern",
+        "TOOLTIPS": {
+          "COMPONENTS": "Manage assignments of components to the Slot",
+          "PRODUCTS": "Applications, which have declared this Slot",
+          "INTERN": "Internal properties of the Slots"
+        }
+      },
       "CHANGED": "There are important changes.",
       "NEW.TOOLTIP": "Register this Slot for the Workspace.",
       "DEPRECATED": "Slot is outdated",

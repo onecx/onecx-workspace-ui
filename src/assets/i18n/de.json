@@ -311,6 +311,16 @@
         "VIEW": "Slot Details",
         "COMPONENTS.DEREGISTER": "Komponenten abmelden"
       },
+      "TABS": {
+        "COMPONENTS": "Komponenten",
+        "PRODUCTS": "Applikationen",
+        "INTERN": "Intern",
+        "TOOLTIPS": {
+          "COMPONENTS": "Verwalten von Zuweisungen von Komponenten zum Slot",
+          "PRODUCTS": "Applikationen, die diesen Slot registriert haben",
+          "INTERN": "Interne Eigenschaften des Slots"
+        }
+      },
       "CHANGED": "Es gibt wichtige Änderungen.",
       "NEW.TOOLTIP": "Slot für den Workspace registrieren.",
       "DEPRECATED": "Slot ist veraltet",
