@@ -264,7 +264,7 @@
               <input
                 pInputText
                 type="text"
-                class="w-full"
+                class="w-full text-responsive"
                 id="ws_product_item_product_name"
                 formControlName="displayName"
                 [pTooltip]="'PRODUCT.DISPLAY_NAME.TOOLTIP' | translate"
@@ -303,7 +303,7 @@
               <input
                 pInputText
                 type="text"
-                class="w-full"
+                class="w-full text-responsive"
                 id="ws_product_item_baseurl"
                 formControlName="baseUrl"
                 [pTooltip]="'PRODUCT.BASE_URL.TOOLTIP' | translate"
@@ -318,28 +318,47 @@
 
           <div *ngFor="let app of displayedDetailItem?.apps | keyvalue; let i = index">
             <p-divider align="center" styleClass="mt-0 mb-1">
-              <div class="px-3 font-bold text-primary">{{ app.key }}</div>
+              <div class="px-3 font-bold text-primary text-responsive">{{ app.key }}</div>
               <div class="px-3 text-xs">Microfrontend</div>
             </p-divider>
 
-            <div *ngIf="app.value.modules">
-              <div class="ml-2 mb-1 text-sm font-bold">Modules</div>
-              <div
-                *ngIf="app.value.modules && displayedDetailItem?.bucket === 'TARGET'"
-                formArrayName="modules"
-                class="ml-2"
-              >
+            <div *ngIf="app.value.modules" class="ml-2 text-sm">
+              <div class="mb-1 font-bold">Modules</div>
+              <div *ngIf="app.value.modules && displayedDetailItem?.bucket === 'TARGET'" formArrayName="modules">
                 <div *ngFor="let mfe of moduleControls.controls; let i = index">
                   <div
                     [formGroupName]="i"
                     [class.mb-4]="i < moduleControls.controls.length - 2"
-                    class="mt-3 flex flex-column"
+                    class="ml-2 flex flex-column"
                   >
-                    <span controlErrorAnchor class="p-float-label">
+                    <div class="mb-1 flex flex-row column-gap-2">
+                      <span [id]="'ws_product_item_mfe_' + i + '_exposed_module'" class="mr-2">
+                        {{ mfe.controls['exposedModule'].value }}</span
+                      >
+                      <span
+                        *ngIf="mfe.controls['undeployed'].value"
+                        [id]="'ws_product_item_mfe_' + i + '_undeployed'"
+                        class="danger-action-text pi pi-ban"
+                        [pTooltip]="'DIALOG.PRODUCTS.MFES.UNDEPLOYED' | translate"
+                        tooltipPosition="top"
+                        tooltipEvent="hover"
+                      >
+                      </span>
+                      <span
+                        *ngIf="mfe.controls['deprecated'].value"
+                        [id]="'ws_product_item_mfe_' + i + '_deprecated'"
+                        class="danger-action-text pi pi-exclamation-circle"
+                        [pTooltip]="'DIALOG.PRODUCTS.MFES.DEPRECATED' | translate"
+                        tooltipPosition="top"
+                        tooltipEvent="hover"
+                      >
+                      </span>
+                    </div>
+                    <span controlErrorAnchor class="mt-2 p-float-label">
                       <input
                         pInputText
                         type="text"
-                        class="w-full"
+                        class="w-full text-responsive"
                         [id]="'ws_product_item_mfe_' + i + '_base_path'"
                         formControlName="basePath"
                         [pTooltip]="'PRODUCT.MFE.BASE_PATH.TOOLTIP' | translate"
@@ -350,56 +369,47 @@
                         {{ 'PRODUCT.MFE.BASE_PATH' | translate }}</label
                       >
                     </span>
-                    <div class="mt-05 ml-2 flex flex-row column-gap-2">
-                      <span [id]="'ws_product_item_mfe_' + i + '_exposed_module'" class="mr-2 text-sm">
-                        {{ mfe.controls['exposedModule'].value }}</span
-                      >
-                      <span
-                        *ngIf="mfe.controls['undeployed'].value"
-                        [id]="'ws_product_item_mfe_' + i + '_undeployed'"
-                        class="danger-action-text text-sm pi pi-ban"
-                        [pTooltip]="'DIALOG.PRODUCTS.MFES.UNDEPLOYED' | translate"
-                        tooltipPosition="top"
-                        tooltipEvent="hover"
-                      >
-                      </span>
-                      <span
-                        *ngIf="mfe.controls['deprecated'].value"
-                        [id]="'ws_product_item_mfe_' + i + '_deprecated'"
-                        class="danger-action-text text-sm pi pi-exclamation-circle"
-                        [pTooltip]="'DIALOG.PRODUCTS.MFES.DEPRECATED' | translate"
-                        tooltipPosition="top"
-                        tooltipEvent="hover"
-                      >
-                      </span>
+                  </div>
+                  <div *ngIf="mfe.endpoints && mfe.endpoints.length > 0">
+                    <div class="mb-1 font-bold">Endpoints</div>
+                    <div *ngFor="let end of mfe.endpoints; let j = index" class="ml-2">
+                      <div [id]="'ws_product_item_mfe_' + i + '_endpoint_' + j">{{ end.name }}: {{ end.path }}</div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div *ngIf="app.value.modules && displayedDetailItem?.bucket === 'SOURCE'">
-                <div *ngFor="let item of app.value.modules; let i = index" class="ml-4 flex flex-row column-gap-2">
-                  <span [id]="'ws_product_item_component_' + i + '_exposed_module'" class="mr-2">
-                    {{ item.exposedModule }}</span
-                  >
-                  <span
-                    *ngIf="item.undeployed"
-                    [id]="'ws_product_item_mfe_' + i + '_deprecated'"
-                    class="danger-action-text pi pi-ban"
-                    [pTooltip]="'DIALOG.PRODUCTS.MFES.UNDEPLOYED' | translate"
-                    tooltipPosition="top"
-                    tooltipEvent="hover"
-                  >
-                  </span>
-                  <span
-                    *ngIf="item.deprecated"
-                    [id]="'ws_product_item_mfe_' + i + '_deprecated'"
-                    class="danger-action-text pi pi-exclamation-circle"
-                    [pTooltip]="'DIALOG.PRODUCTS.MFES.DEPRECATED' | translate"
-                    tooltipPosition="top"
-                    tooltipEvent="hover"
-                  >
-                  </span>
+              <div *ngIf="app.value.modules && displayedDetailItem?.bucket === 'SOURCE'" class="ml-2">
+                <div *ngFor="let smfe of app.value.modules; let i = index" class="flex flex-column row-gap-2">
+                  <div class="flex flex-row flex-nowrap column-gap-2">
+                    <span [id]="'ws_product_item_component_' + i + '_exposed_module'" class="mr-2">
+                      {{ smfe.exposedModule }}</span
+                    >
+                    <span
+                      *ngIf="smfe.undeployed"
+                      [id]="'ws_product_item_mfe_' + i + '_deprecated'"
+                      class="danger-action-text pi pi-ban"
+                      [pTooltip]="'DIALOG.PRODUCTS.MFES.UNDEPLOYED' | translate"
+                      tooltipPosition="top"
+                      tooltipEvent="hover"
+                    >
+                    </span>
+                    <span
+                      *ngIf="smfe.deprecated"
+                      [id]="'ws_product_item_mfe_' + i + '_deprecated'"
+                      class="danger-action-text pi pi-exclamation-circle"
+                      [pTooltip]="'DIALOG.PRODUCTS.MFES.DEPRECATED' | translate"
+                      tooltipPosition="top"
+                      tooltipEvent="hover"
+                    >
+                    </span>
+                  </div>
+                  <div *ngIf="smfe.endpoints && smfe.endpoints.length > 0">
+                    <div class="mb-1 font-bold">Endpoints {{ smfe.endpoints.length }}</div>
+                    <div *ngFor="let send of smfe.endpoints; let j = index" class="ml-2">
+                      <div [id]="'ws_product_item_mfe_' + i + '_endpoint_' + j">{{ send.name }}: {{ send.path }}</div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -410,8 +420,8 @@
                 *ngFor="let item of app.value.components; let i = index"
                 class="ml-3 flex flex-row align-items-center column-gap-2"
               >
-                <span [id]="'ws_product_item_component_' + i + '_exposed_module'" class="mr-2">
-                  {{ limitText(item.exposedModule, 25) }}</span
+                <span [id]="'ws_product_item_component_' + i + '_exposed_module'" class="mr-2 text-responsive">
+                  {{ item.exposedModule }}</span
                 >
                 <span
                   *ngIf="item.undeployed"
@@ -443,7 +453,7 @@
               *ngFor="let item of displayedDetailItem?.slots; let i = index"
               class="ml-3 flex flex-row align-items-center column-gap-3"
             >
-              <span [id]="'ws_product_item_slot_' + i + '_name'">{{ limitText(item.name, 25) }}</span>
+              <span [id]="'ws_product_item_slot_' + i + '_name'" class="text-responsive">{{ item.name }}</span>
               <span
                 *ngIf="item.undeployed"
                 [id]="'ws_product_item_slot_' + i + '_undeployed'"

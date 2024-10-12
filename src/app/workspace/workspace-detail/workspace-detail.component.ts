@@ -41,7 +41,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
   public workspaceForSlots: Workspace | undefined
   public workspaceForProducts: Workspace | undefined
   public workspaceName = this.route.snapshot.params['name']
-  private uriFragment = this.route.snapshot.fragment // #fragment to address a certain TAB
+  private readonly uriFragment = this.route.snapshot.fragment // #fragment to address a certain TAB
   public workspaceDeleteMessage = ''
   public workspaceDeleteVisible = false
   public workspaceExportVisible = false

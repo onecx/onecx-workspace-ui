@@ -7,27 +7,168 @@
   [resizable]="true"
   [dismissableMask]="true"
 >
-  <div class="mt-1 pl-2 w-full">
-    <div class="flex flex-row flex-wrap justify-content-between row-gap-3 pr-2">
-      <span class="p-float-label">
-        <div
-          id="ws_slot_detail_item_slot_name"
-          class="ocx-float-label-textbox pt-3 pb-2 max-w-25rem text-responsive"
-          aria-label="'SLOT.NAME' | translate"
-          [pTooltip]="'SLOT.NAME' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        >
-          {{ slot ? slot.name : '' }}
-        </div>
-        <span class="ocx-float-label">{{ 'SLOT.NAME' | translate }}</span>
-      </span>
-      <div class="flex flex-row flex-wrap justify-content-between gap-3">
+  <span class="mt-1 mb-3 p-float-label flex-1">
+    <input
+      pInputText
+      type="text"
+      readonly
+      id="ws_slot_detail_item_slot_name"
+      class="pt-3 pb-2 text-responsive"
+      [value]="slot?.name"
+      [attr.aria-label]="'SLOT.NAME' | translate"
+      [pTooltip]="'SLOT.NAME' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
+    />
+    <label for="ws_slot_detail_item_slot_name">{{ 'SLOT.NAME' | translate }}</label>
+  </span>
+
+  <p-tabView>
+    <p-tabPanel
+      id="ws_slot_detail_components"
+      [header]="'DIALOG.SLOT.TABS.COMPONENTS' | translate"
+      [attr.aria-label]="'DIALOG.SLOT.TABS.COMPONENTS' | translate"
+      [tooltip]="'DIALOG.SLOT.TABS.TOOLTIPS.COMPONENTS' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
+    >
+      <p-pickList
+        #picklist
+        id="ws_slot_detail_component_picklist"
+        [filterBy]="'name'"
+        [source]="psComponents"
+        [target]="wComponents"
+        [showSourceControls]="false"
+        [showTargetControls]="true"
+        [responsive]="true"
+        [metaKeySelection]="true"
+        [disabled]="!hasEditPermission"
+        (onTargetReorder)="onSaveSlot()"
+        (onMoveToTarget)="onSaveSlot()"
+        (onMoveToSource)="onMoveToSource($event)"
+      >
+        <ng-template pTemplate="sourceHeader">
+          <div class="flex flex-row justify-content-between align-items-center column-gap-2">
+            <div
+              class="flex-grow-1 font-semibold"
+              [attr.aria-label]="'DIALOG.SLOT.COMPONENTS.NOT_USED' | translate"
+              [pTooltip]="'DIALOG.SLOT.COMPONENTS.NOT_USED.TOOLTIP' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            >
+              {{ 'DIALOG.SLOT.COMPONENTS.NOT_USED' | translate }}: {{ psComponents.length }}
+            </div>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="targetHeader">
+          <div class="flex flex-row justify-content-between align-items-center column-gap-2">
+            <div
+              class="flex-grow-1 font-semibold"
+              [attr.aria-label]="'DIALOG.SLOT.COMPONENTS.USED' | translate"
+              [pTooltip]="'DIALOG.SLOT.COMPONENTS.USED.TOOLTIP' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            >
+              {{ 'DIALOG.SLOT.COMPONENTS.USED' | translate }}: {{ wComponents.length }}
+            </div>
+          </div>
+        </ng-template>
+
+        <ng-template let-component let-i="rowIndex" pTemplate="item">
+          <span
+            *ngIf="component?.undeployed"
+            [id]="'ws_slot_detail_picklist_' + i + '_undeployed'"
+            class="card-badge-right badge-1 danger-action-text font-bold text-lg pi pi-ban"
+            [attr.aria-label]="'DIALOG.SLOT.UNDEPLOYED' | translate"
+            [pTooltip]="'DIALOG.SLOT.UNDEPLOYED.TOOLTIP' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          ></span>
+          <span
+            *ngIf="component?.deprecated && !component?.undeployed"
+            [id]="'ws_slot_detail_picklist_' + i + '_deprecated'"
+            class="card-badge-right badge-1 danger-action-text font-bold text-lg pi pi-exclamation-circle"
+            [attr.aria-label]="'DIALOG.SLOT.DEPRECATED' | translate"
+            [pTooltip]="'DIALOG.SLOT.DEPRECATED.TOOLTIP' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          ></span>
+          <div class="py-0 sm:py-1 px-2 flex flex-column row-gap-0 sm:row-gap-1" (dblclick)="return($event)">
+            <div
+              [id]="'ws_slot_detail_picklist_' + i + '_component_name'"
+              class="font-semibold text-sm md:text-md text-responsive"
+            >
+              {{ component.name }}
+            </div>
+            <div [id]="'ws_slot_detail_picklist_' + i + '_product_name'" class="text-xs">
+              {{ component.productName }}
+            </div>
+          </div>
+          <div class="relative"></div>
+        </ng-template>
+      </p-pickList>
+    </p-tabPanel>
+
+    <p-tabPanel
+      id="ws_slot_detail_products"
+      [header]="'DIALOG.SLOT.TABS.PRODUCTS' | translate"
+      [attr.aria-label]="'DIALOG.SLOT.TABS.PRODUCTS' | translate"
+      [tooltip]="'DIALOG.SLOT.TABS.TOOLTIPS.PRODUCTS' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
+    >
+      <div *ngIf="slot?.psSlots?.length === 0" id="ws_slot_detail_no_products" class="mt-3 px-3 py-2">
+        <p-message
+          id="ws_slot_detail_no_products_message"
+          severity="info"
+          [text]="'DIALOG.SLOT.NO_PRODUCTS' | translate"
+        ></p-message>
+      </div>
+      <ng-container *ngIf="slot?.psSlots?.length !== 0">
+        <div class="mt-3 flex flex-wrap flex-row gap-3">
+          <div
+            *ngFor="let slot of slot?.psSlots; let i = index"
+            class="px-3 py-2 card surface-50 flex flex-row column-gap-2"
+          >
+            <span [id]="'ws_slot_detail_product_' + i + '_name'" class="text-md">{{ slot?.pDisplayName }}</span>
+            <span
+              *ngIf="slot?.undeployed"
+              [id]="'ws_slot_detail_product_' + i + '_undeployed'"
+              class="danger-action-text text-md pi pi-ban"
+              [attr.aria-label]="'DIALOG.SLOT.UNDEPLOYED' | translate"
+              [pTooltip]="'DIALOG.SLOT.UNDEPLOYED' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            >
+            </span>
+            <span
+              *ngIf="slot?.deprecated"
+              [id]="'ws_slot_detail_product_' + i + '_deprecated'"
+              class="danger-action-text text-md pi pi-exclamation-circle"
+              [attr.aria-label]="'DIALOG.SLOT.DEPRECATED' | translate"
+              [pTooltip]="'DIALOG.SLOT.DEPRECATED' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            >
+            </span>
+          </div></div
+      ></ng-container>
+    </p-tabPanel>
+
+    <p-tabPanel
+      id="ws_slot_detail_intern"
+      [header]="'DIALOG.SLOT.TABS.INTERN' | translate"
+      [attr.aria-label]="'DIALOG.SLOT.TABS.INTERN' | translate"
+      [tooltip]="'DIALOG.SLOT.TABS.TOOLTIPS.INTERN' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
+    >
+      <div class="mt-3 flex flex-row flex-wrap justify-content-between gap-3">
         <span *ngIf="slot?.creationDate" class="p-float-label">
           <div
             id="ws_slot_detail_item_creation_date"
             class="ocx-float-label-textbox pt-3 pb-2"
-            aria-label="'INTERNAL.CREATION_DATE' | translate"
+            [attr.aria-label]="'INTERNAL.CREATION_DATE' | translate"
             [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_DATE' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
@@ -40,7 +181,7 @@
           <div
             id="ws_slot_detail_item_modification_date"
             class="ocx-float-label-textbox pt-3 pb-2"
-            aria-label="'INTERNAL.MODIFICATION_DATE' | translate"
+            [attr.aria-label]="'INTERNAL.MODIFICATION_DATE' | translate"
             [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_DATE' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
@@ -50,137 +191,9 @@
           <span class="ocx-float-label">{{ 'INTERNAL.MODIFICATION_DATE' | translate }}</span>
         </span>
       </div>
-    </div>
+    </p-tabPanel>
+  </p-tabView>
 
-    <p-divider align="center" styleClass="mt-3 mb-2">
-      <div
-        class="px-3 font-bold text-base"
-        aria-label="'DIALOG.SLOT.PRODUCTS' | translate"
-        [pTooltip]="'DIALOG.SLOT.PRODUCTS.TOOLTIP' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      >
-        {{ 'DIALOG.SLOT.PRODUCTS' | translate }}
-      </div>
-    </p-divider>
-
-    <div
-      *ngIf="slot?.psSlots?.length === 0"
-      id="ws_slot_detail_products_not_exist"
-      class="px-3 py-2 card surface-50 flex flex-row column-gap-2"
-    >
-      {{ 'DIALOG.SLOT.NO_PRODUCTS' | translate }}
-    </div>
-    <ng-container *ngIf="slot?.psSlots?.length !== 0">
-      <div class="flex flex-wrap flex-row column-gap-3">
-        <div
-          *ngFor="let slot of slot?.psSlots; let i = index"
-          class="px-3 py-2 card surface-50 mb-2 flex flex-row column-gap-2"
-        >
-          <span [id]="'ws_slot_detail_product_' + i + '_name'" class="text-md">{{ slot?.pDisplayName }}</span>
-          <span
-            *ngIf="slot?.undeployed"
-            [id]="'ws_slot_detail_product_' + i + '_undeployed'"
-            class="danger-action-text text-md pi pi-ban"
-            aria-label="'DIALOG.SLOT.UNDEPLOYED' | translate"
-            [pTooltip]="'DIALOG.SLOT.UNDEPLOYED' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          >
-          </span>
-          <span
-            *ngIf="slot?.deprecated"
-            [id]="'ws_slot_detail_product_' + i + '_deprecated'"
-            class="danger-action-text text-md pi pi-exclamation-circle"
-            aria-label="'DIALOG.SLOT.DEPRECATED' | translate"
-            [pTooltip]="'DIALOG.SLOT.DEPRECATED' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          >
-          </span>
-        </div></div
-    ></ng-container>
-
-    <p-divider align="center" styleClass="my-3">
-      <div class="px-3 font-bold text-base">{{ 'DIALOG.SLOT.COMPONENTS' | translate }}</div>
-    </p-divider>
-
-    <p-pickList
-      #picklist
-      id="ws_slot_detail_component_picklist"
-      [filterBy]="'name'"
-      [source]="psComponents"
-      [target]="wComponents"
-      [showSourceControls]="false"
-      [showTargetControls]="true"
-      [responsive]="true"
-      [metaKeySelection]="true"
-      [disabled]="!hasEditPermission"
-      (onTargetReorder)="onSaveSlot()"
-      (onMoveToTarget)="onSaveSlot()"
-      (onMoveToSource)="onMoveToSource($event)"
-    >
-      <ng-template pTemplate="sourceHeader">
-        <div class="flex flex-row justify-content-between align-items-center column-gap-2">
-          <div
-            class="flex-grow-1 font-semibold"
-            aria-label="'DIALOG.SLOT.COMPONENTS.NOT_USED' | translate"
-            [pTooltip]="'DIALOG.SLOT.COMPONENTS.NOT_USED.TOOLTIP' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          >
-            {{ 'DIALOG.SLOT.COMPONENTS.NOT_USED' | translate }}
-          </div>
-        </div>
-      </ng-template>
-      <ng-template pTemplate="targetHeader">
-        <div class="flex flex-row justify-content-between align-items-center column-gap-2">
-          <div
-            class="flex-grow-1 font-semibold"
-            aria-label="'DIALOG.SLOT.COMPONENTS.USED' | translate"
-            [pTooltip]="'DIALOG.SLOT.COMPONENTS.USED.TOOLTIP' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          >
-            {{ 'DIALOG.SLOT.COMPONENTS.USED' | translate }}
-          </div>
-        </div>
-      </ng-template>
-
-      <ng-template let-component let-idx="rowIndex" pTemplate="item">
-        <span
-          *ngIf="component?.undeployed"
-          [id]="'ws_slot_detail_picklist_' + idx + '_undeployed'"
-          class="card-badge-right badge-1 danger-action-text font-bold text-lg pi pi-ban"
-          aria-label="'DIALOG.SLOT.UNDEPLOYED' | translate"
-          [pTooltip]="'DIALOG.SLOT.UNDEPLOYED.TOOLTIP' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        ></span>
-        <span
-          *ngIf="component?.deprecated && !component?.undeployed"
-          [id]="'ws_slot_detail_picklist_' + idx + '_deprecated'"
-          class="card-badge-right badge-1 danger-action-text font-bold text-lg pi pi-exclamation-circle"
-          aria-label="'DIALOG.SLOT.DEPRECATED' | translate"
-          [pTooltip]="'DIALOG.SLOT.DEPRECATED.TOOLTIP' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        ></span>
-        <div class="py-1 px-2 flex flex-column row-gap-1" (dblclick)="return($event)">
-          <div *ngIf="component.bucket === 'TARGET'" class="font-semibold text-sm md:text-md">
-            {{ component.index }}
-          </div>
-          <div [id]="'ws_slot_detail_picklist_' + idx + '_component_name'" class="font-semibold text-sm md:text-md">
-            {{ component.name }}
-          </div>
-          <div [id]="'ws_slot_detail_picklist_' + idx + '_product_name'" class="text-xs">
-            {{ component.productName }}
-          </div>
-        </div>
-        <div class="relative"></div>
-      </ng-template>
-    </p-pickList>
-  </div>
   <ng-template pTemplate="footer">
     <div class="flex flex-row flex-wrap column-gap-2 row-gap-1 justify-content-end">
       <p-button
@@ -188,7 +201,7 @@
         icon="pi pi-times"
         (onClick)="onClose()"
         [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
-        aria-label="'ACTIONS.NAVIGATION.CLOSE' | translate"
+        [attr.aria-label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
         [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
@@ -197,6 +210,7 @@
   </ng-template>
 </p-dialog>
 
+<!-- DELETE -->
 <p-dialog
   [(visible)]="displayDeleteDialog"
   [header]="'DIALOG.SLOT.HEADER.DELETE' | translate"
@@ -223,7 +237,7 @@
         icon="pi pi-times"
         (onClick)="onClose()"
         [label]="'ACTIONS.CONFIRMATION.NO' | translate"
-        aria-label="'ACTIONS.CONFIRMATION.NO' | translate"
+        [attr.aria-label]="'ACTIONS.CONFIRMATION.NO' | translate"
         [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
@@ -233,7 +247,7 @@
         icon="pi pi-check"
         (onClick)="onDeleteSlot()"
         [label]="'ACTIONS.CONFIRMATION.YES' | translate"
-        aria-label="'ACTIONS.CONFIRMATION.YES' | translate"
+        [attr.aria-label]="'ACTIONS.CONFIRMATION.YES' | translate"
         [pTooltip]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
@@ -242,6 +256,7 @@
   </ng-template>
 </p-dialog>
 
+<!-- DEREGISTER COMPONENT -->
 <p-dialog
   [(visible)]="displayDeregisterConfirmation"
   [header]="'DIALOG.SLOT.HEADER.COMPONENTS.DEREGISTER' | translate"

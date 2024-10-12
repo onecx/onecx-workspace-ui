@@ -311,6 +311,16 @@
         "VIEW": "Slot Details",
         "COMPONENTS.DEREGISTER": "Deregister Components"
       },
+      "TABS": {
+        "COMPONENTS": "Components",
+        "PRODUCTS": "Applications",
+        "INTERN": "Intern",
+        "TOOLTIPS": {
+          "COMPONENTS": "Manage assignments of components to the Slot",
+          "PRODUCTS": "Applications, which have declared this Slot",
+          "INTERN": "Internal properties of the Slots"
+        }
+      },
       "CHANGED": "There are important changes.",
       "NEW.TOOLTIP": "Register this Slot for the Workspace.",
       "DEPRECATED": "Slot is outdated",
@@ -471,7 +481,7 @@
     "DISPLAY_NAME.TOOLTIP": "Displayed name of the Application",
     "DESCRIPTION": "Description",
     "BASE_URL": "Application Base Path",
-    "BASE_URL.TOOLTIP": "Base path for all Apps in the Application. Must be unique for all Applications in the Workspace.",
+    "BASE_URL.TOOLTIP": "Base path for all Modules in the Application. Must be unique for all Applications in the Workspace.",
     "MFE": {
       "APP_ID": "UI Service ID",
       "APP_ID.TOOLTIP": "Unique ID of the specific UI service to be used.",
