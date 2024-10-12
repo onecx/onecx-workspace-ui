@@ -110,14 +110,14 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
+    private readonly router: Router,
     private location: Location,
     private assApi: AssignmentAPIService,
     private menuApi: MenuItemAPIService,
     private workspaceApi: WorkspaceAPIService,
     private wRoleApi: WorkspaceRolesAPIService,
     private imageApi: ImagesInternalAPIService,
-    private workspaceService: WorkspaceService,
+    private readonly workspaceService: WorkspaceService,
     private stateService: MenuStateService,
     private translate: TranslateService,
     private msgService: PortalMessageService,

@@ -122,7 +122,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     private msgService: PortalMessageService,
     private fb: FormBuilder,
     private renderer: Renderer2,
-    private elem: ElementRef
+    private readonly elem: ElementRef
   ) {
     this.hasRegisterPermission = this.user.hasPermission('WORKSPACE_PRODUCTS#REGISTER')
     this.appState.currentMfe$.pipe(map((mfe) => (this.currentMfe = mfe))).subscribe()
