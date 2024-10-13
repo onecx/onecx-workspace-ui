@@ -1,10 +1,12 @@
 <p-dialog
   [header]="'DIALOG.MENU.HEADER.IMPORT' | translate"
   [(visible)]="displayDialog"
+  [resizable]="true"
   [draggable]="true"
   [closable]="true"
   [modal]="true"
   (onHide)="onClose()"
+  styleClass="disable-max-height-preset"
 >
   <p-fileUpload
     id="ws_menu_import_file_upload"

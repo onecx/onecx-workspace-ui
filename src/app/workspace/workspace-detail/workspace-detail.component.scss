@@ -8,14 +8,10 @@
 @include displaying-text-responsive;
 @include readable-disabled-form-controls;
 @include dialog-footer-buttons;
+@include dialog-modal-disable-full-height;
+@include tabview-fix-color-selected-tab;
 
 :host ::ng-deep {
-  @media (max-width: 991px) {
-    .p-dialog.p-dialog {
-      max-height: unset !important;
-      height: unset !important;
-    }
-  }
   .max-w-11 {
     max-width: 90%;
   }

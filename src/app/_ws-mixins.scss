@@ -460,16 +460,16 @@
     }
   }
 }
-@mixin dialog-non-full-size-modal {
+@mixin dialog-modal-disable-full-height {
   :host ::ng-deep {
     @media (max-width: 991px) {
-      .p-dialog.p-dialog {
+      .p-dialog.disable-max-height-preset.p-dialog {
         max-height: unset !important;
         height: unset !important;
       }
     }
     @media (max-width: 576px) {
-      .p-dialog.p-dialog {
+      .p-dialog.disable-max-height-preset.p-dialog {
         max-height: inherit !important;
         height: inherit !important;
       }
@@ -491,6 +491,15 @@
     }
   }
 }
+@mixin tabview-fix-color-selected-tab {
+  :host ::ng-deep {
+    // correct the background color on inital selected tab
+    .p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link[aria-selected='true'] {
+      background-color: rgba(var(--primary-color-rgb), 0.12);
+    }
+  }
+}
+
 /* **********************************************
  *  TABLE
  * **********************************************/
@@ -562,6 +571,24 @@
         &.sm\:badge-2-2 {
           top: 33px !important;
         }
+      }
+    }
+  }
+}
+
+/* flex content side-by-side requires a bit smaller width
+*/
+@mixin flex-width-media-queries {
+  :host ::ng-deep {
+    @media screen and (min-width: 768px) {
+      .sm\:w-5x {
+        width: 40% !important; // org: 41.6667%
+      }
+      .sm\:w-6x {
+        width: 48% !important; // org: 50%
+      }
+      .sm\:w-7x {
+        width: 56% !important; // org: 58.3333%
       }
     }
   }

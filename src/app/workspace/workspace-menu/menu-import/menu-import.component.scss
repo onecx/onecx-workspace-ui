@@ -1,6 +1,6 @@
 @import 'src/app/_ws-mixins.scss';
 
 @include dialog-modal-dialog-content;
-@include dialog-non-full-size-modal;
+@include dialog-modal-disable-full-height;
 @include correct-file-upload;
 @include dialog-footer-buttons;

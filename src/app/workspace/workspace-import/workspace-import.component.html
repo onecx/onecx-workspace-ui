@@ -1,11 +1,12 @@
 <p-dialog
   [header]="'WORKSPACE_IMPORT.IMPORT_WORKSPACE' | translate"
   [(visible)]="displayDialog"
-  [baseZIndex]="1000"
+  [modal]="true"
+  [closable]="true"
   [draggable]="true"
   [resizable]="true"
-  [modal]="true"
   [style]="{ width: '783px' }"
+  styleClass="disable-max-height-preset"
 >
   <div class="border-solid border-1 border-black-alpha-20 border-round-sm bg-gray-50 px-3">
     <p-steps [model]="steps" [activeIndex]="activeIndex"></p-steps>
