@@ -140,7 +140,7 @@
       <!-- TABLE HEADER -->
       <ng-template pTemplate="header" let-columns>
         <tr id="ws_menu_table_header_row_1">
-          <th class="py-2 px-2 vertical-align-top text-left border-transparent">
+          <th id="ws_menu_table_header_row_1_1" class="py-2 px-2 vertical-align-top text-left border-transparent">
             <div class="slim-selectbutton filter-selectbutton">
               <p-selectButton
                 inputid="ws_menu_table_header_row_1_switch_tree_label"
@@ -157,6 +157,7 @@
             </div>
           </th>
           <th
+            id="ws_menu_table_header_row_1_2"
             class="py-2 px-2 pl-4 vertical-align-top text-left border-transparent"
             [attr.colspan]="displayRoles ? 1 + columns.length : 6"
           >
@@ -175,7 +176,10 @@
           </th>
         </tr>
         <tr id="ws_menu_table_header_row_2">
-          <th class="p-2 pt-0 vertical-align-bottom border-transparent border-bottom-2">
+          <th
+            id="ws_menu_table_header_row_2_1"
+            class="p-2 pt-0 vertical-align-bottom border-transparent border-bottom-2"
+          >
             <p-toggleButton
               inputId="ws_menu_table_header_tree_toggle"
               styleClass="data-view-control white-space-nowrap"
