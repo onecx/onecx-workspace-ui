@@ -2,16 +2,17 @@
 
 @include correct-file-upload;
 @include dialog-footer-buttons;
+@include dialog-modal-disable-full-height;
 
 :host ::ng-deep {
-  .p-steps ul {
-    flex-wrap: wrap;
-    gap: 0.2rem;
-  }
   .p-fileupload-buttonbar {
     display: flex;
     flex-wrap: wrap;
     row-gap: 0.5rem;
+  }
+  .p-steps ul {
+    flex-wrap: wrap;
+    gap: 0.2rem;
   }
   @media only screen and (max-width: 400px) {
     .p-steps .p-steps-item {

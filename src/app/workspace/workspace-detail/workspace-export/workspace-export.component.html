@@ -5,8 +5,10 @@
   [resizable]="true"
   [draggable]="true"
   [dismissableMask]="true"
+  [style]="{ width: '400px' }"
+  styleClass="disable-max-height-preset"
 >
-  <div class="flex flex-row flex-wrap column-gap-4 row-gap-1 justify-content-start align-items-center">
+  <div class="flex flex-row flex-nowrap column-gap-4 row-gap-1 justify-content-start align-items-center">
     <div class="pi pi-download text-3xl"></div>
     <div class="flex flex-column row-gap-3 mt-2">
       <div>{{ 'ACTIONS.EXPORT.WORKSPACE' | translate }}</div>

@@ -329,7 +329,7 @@
       "UNDEPLOYED.TOOLTIP": "This Slot is no longer usable.",
       "PRODUCTS": "Registered by Applications",
       "PRODUCTS.NOT_EXIST": "Not available",
-      "PRODUCTS.TOOLTIP": "Applications that have registered this Slot",
+      "PRODUCTS.TOOLTIP": "Applications that have registered this Slot:",
       "NO_PRODUCTS": "No Application found which has registered this Slot",
       "COMPONENTS": "Content-forming Components",
       "COMPONENTS.USED": "Used Components",

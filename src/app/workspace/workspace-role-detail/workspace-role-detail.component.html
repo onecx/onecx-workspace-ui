@@ -1,12 +1,13 @@
 <p-dialog
-  [(visible)]="displayDetailDialog"
   [header]="'DIALOG.ROLE.HEADER.' + changeMode | translate"
+  [(visible)]="displayDetailDialog"
   (onHide)="onClose()"
   [modal]="true"
   [closable]="true"
-  [resizable]="true"
+  [resizable]="false"
   [dismissableMask]="true"
-  [style]="{ width: '400px' }"
+  [style]="{ width: '450px' }"
+  styleClass="disable-max-height-preset"
 >
   <form [formGroup]="formGroupRole" errorTailor>
     <div class="flex flex-wrap flex-column gap-4 justify-content-between">
@@ -103,14 +104,16 @@
 
 <!-- DELETE ROLE -->
 <p-dialog
-  [(visible)]="displayDeleteDialog"
   [header]="'DIALOG.ROLE.HEADER.DELETE' | translate"
+  [(visible)]="displayDeleteDialog"
   (onHide)="onClose()"
   [modal]="true"
   [closable]="true"
+  [draggable]="true"
   [resizable]="false"
   [dismissableMask]="true"
-  [style]="{ 'max-width': '425px' }"
+  [style]="{ width: '450px' }"
+  styleClass="disable-max-height-preset"
 >
   <div class="flex column-gap-4 row-gap-1 justify-content-start align-items-center">
     <div class="pi pi-question-circle text-3xl danger-action-text"></div>

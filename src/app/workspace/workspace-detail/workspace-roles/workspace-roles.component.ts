@@ -53,7 +53,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   public iamRolesLoaded = false
   public wRolesLoaded = false
   public exceptionKey: string | undefined
-  public quickFilterValue: RoleFilterType = 'WORKSPACE'
+  public quickFilterValue: RoleFilterType = 'ALL'
   public quickFilterValue2: RoleFilterType = 'WORKSPACE'
   public quickFilterItems: ExtendedSelectItem[]
   public quickFilterCount = ''
@@ -93,7 +93,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
-    if (this.workspace && changes['workspace']) this.searchRoles()
+    if (this.workspace && changes['workspace']) this.searchRoles(true)
   }
 
   /**
@@ -185,7 +185,8 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
     this.roles = []
     this.wRolesLoaded = false
     this.iamRolesLoaded = false
-    this.searchRoles()
+    this.quickFilterValue = 'ALL'
+    this.searchRoles(true)
   }
 
   public onAddRole(ev: MouseEvent, role: Role): void {
