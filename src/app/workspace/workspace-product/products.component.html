@@ -404,12 +404,6 @@
                     >
                     </span>
                   </div>
-                  <div *ngIf="smfe.endpoints && smfe.endpoints.length > 0">
-                    <div class="mb-1 font-bold">Endpoints {{ smfe.endpoints.length }}</div>
-                    <div *ngFor="let send of smfe.endpoints; let j = index" class="ml-2">
-                      <div [id]="'ws_product_item_mfe_' + i + '_endpoint_' + j">{{ send.name }}: {{ send.path }}</div>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
