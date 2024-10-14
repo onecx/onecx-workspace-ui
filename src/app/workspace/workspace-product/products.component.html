@@ -214,9 +214,7 @@
   <div class="col-3 md:col-4 hidden md:block">
     <p-panel *ngIf="displayDetails" [showHeader]="true" styleClass="hidden sm:block">
       <ng-template pTemplate="header">
-        <div
-          class="h-3rem lg:h-4rem flex flex-row flex-wrap row-gap-2 justify-content-between align-items-start w-full"
-        >
+        <div class="h-3rem mb-1 flex flex-row flex-wrap row-gap-2 justify-content-between align-items-start w-full">
           <div class="flex flex-column text-primary">
             <div class="font-semibold text-xl mb-1">{{ 'DIALOG.PRODUCTS.DETAILS' | translate }}</div>
             <div class="text-sm">{{ 'DIALOG.PRODUCTS.ORIGIN.' + displayedDetailItem?.bucket | translate }}</div>
@@ -258,7 +256,7 @@
       </ng-template>
 
       <form [formGroup]="formGroup">
-        <div class="flex flex-column row-gap-4">
+        <div class="flex flex-column row-gap-3">
           <div class="p-inputgroup">
             <span class="p-float-label">
               <input
@@ -298,28 +296,26 @@
             >
             </a>
           </div>
-          <div>
-            <span class="p-float-label" controlErrorAnchor>
-              <input
-                pInputText
-                type="text"
-                class="w-full text-responsive"
-                id="ws_product_item_baseurl"
-                formControlName="baseUrl"
-                [pTooltip]="'PRODUCT.BASE_URL.TOOLTIP' | translate"
-                tooltipPosition="top"
-                tooltipEvent="hover"
-              />
-              <label class="ocx-required-label" for="ws_product_item_baseurl">
-                {{ 'PRODUCT.BASE_URL' | translate }}</label
-              >
-            </span>
-          </div>
+          <span class="mt-1 p-float-label" controlErrorAnchor>
+            <input
+              pInputText
+              type="text"
+              class="w-full text-responsive"
+              id="ws_product_item_baseurl"
+              formControlName="baseUrl"
+              [pTooltip]="'PRODUCT.BASE_URL.TOOLTIP' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            />
+            <label class="ocx-required-label" for="ws_product_item_baseurl">
+              {{ 'PRODUCT.BASE_URL' | translate }}</label
+            >
+          </span>
 
           <div *ngFor="let app of displayedDetailItem?.apps | keyvalue; let i = index">
-            <p-divider align="center" styleClass="mt-0 mb-1">
-              <div class="px-3 font-bold text-primary text-responsive">{{ app.key }}</div>
-              <div class="px-3 text-xs">Microfrontend</div>
+            <p-divider align="center" styleClass="m-0 p-0">
+              <div class="font-bold text-primary text-responsive">{{ app.key }}</div>
+              <div class="text-xs">Microfrontend</div>
             </p-divider>
 
             <div *ngIf="app.value.modules" class="ml-2 text-sm">
