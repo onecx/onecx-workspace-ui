@@ -37,7 +37,8 @@ import {
   SlotPS,
   SlotAPIService,
   Workspace,
-  WorkspaceProductAPIService
+  WorkspaceProductAPIService,
+  UIEndpoint
 } from 'src/app/shared/generated'
 
 import { environment } from 'src/environments/environment'
@@ -399,7 +400,8 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
           basePath: new FormControl(null, [Validators.required, Validators.maxLength(255)]),
           deprecated: new FormControl(null),
           undeployed: new FormControl(null),
-          exposedModule: new FormControl(null)
+          exposedModule: new FormControl(null),
+          endpoints: new FormControl(null)
         })
       )
       modules.at(i).patchValue({
@@ -408,9 +410,13 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
         basePath: mfe.basePath,
         deprecated: psMfeModule?.deprecated,
         undeployed: psMfeModule?.undeployed,
-        exposedModule: psMfeModule?.exposedModule
+        exposedModule: psMfeModule?.exposedModule,
+        endpoints: mfe.endpoints?.sort(this.sortEndpointsByName)
       })
     })
+  }
+  private sortEndpointsByName(a: UIEndpoint, b: UIEndpoint): number {
+    return (a.name ? a.name.toUpperCase() : '').localeCompare(b.name ? b.name.toUpperCase() : '')
   }
   private getProductStoreMfeData(item: ExtendedProduct, appId: string): ExtendedMicrofrontend | undefined {
     let module: ExtendedMicrofrontend | undefined

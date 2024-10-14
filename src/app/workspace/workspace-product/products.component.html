@@ -214,9 +214,7 @@
   <div class="col-3 md:col-4 hidden md:block">
     <p-panel *ngIf="displayDetails" [showHeader]="true" styleClass="hidden sm:block">
       <ng-template pTemplate="header">
-        <div
-          class="h-3rem lg:h-4rem flex flex-row flex-wrap row-gap-2 justify-content-between align-items-start w-full"
-        >
+        <div class="h-3rem mb-1 flex flex-row flex-wrap row-gap-2 justify-content-between align-items-start w-full">
           <div class="flex flex-column text-primary">
             <div class="font-semibold text-xl mb-1">{{ 'DIALOG.PRODUCTS.DETAILS' | translate }}</div>
             <div class="text-sm">{{ 'DIALOG.PRODUCTS.ORIGIN.' + displayedDetailItem?.bucket | translate }}</div>
@@ -258,7 +256,7 @@
       </ng-template>
 
       <form [formGroup]="formGroup">
-        <div class="flex flex-column row-gap-4">
+        <div class="flex flex-column row-gap-3">
           <div class="p-inputgroup">
             <span class="p-float-label">
               <input
@@ -298,28 +296,26 @@
             >
             </a>
           </div>
-          <div>
-            <span class="p-float-label" controlErrorAnchor>
-              <input
-                pInputText
-                type="text"
-                class="w-full text-responsive"
-                id="ws_product_item_baseurl"
-                formControlName="baseUrl"
-                [pTooltip]="'PRODUCT.BASE_URL.TOOLTIP' | translate"
-                tooltipPosition="top"
-                tooltipEvent="hover"
-              />
-              <label class="ocx-required-label" for="ws_product_item_baseurl">
-                {{ 'PRODUCT.BASE_URL' | translate }}</label
-              >
-            </span>
-          </div>
+          <span class="mt-1 p-float-label" controlErrorAnchor>
+            <input
+              pInputText
+              type="text"
+              class="w-full text-responsive"
+              id="ws_product_item_baseurl"
+              formControlName="baseUrl"
+              [pTooltip]="'PRODUCT.BASE_URL.TOOLTIP' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            />
+            <label class="ocx-required-label" for="ws_product_item_baseurl">
+              {{ 'PRODUCT.BASE_URL' | translate }}</label
+            >
+          </span>
 
           <div *ngFor="let app of displayedDetailItem?.apps | keyvalue; let i = index">
-            <p-divider align="center" styleClass="mt-0 mb-1">
-              <div class="px-3 font-bold text-primary text-responsive">{{ app.key }}</div>
-              <div class="px-3 text-xs">Microfrontend</div>
+            <p-divider align="center" styleClass="m-0 p-0">
+              <div class="font-bold text-primary text-responsive">{{ app.key }}</div>
+              <div class="text-xs">Microfrontend</div>
             </p-divider>
 
             <div *ngIf="app.value.modules" class="ml-2 text-sm">
@@ -329,7 +325,7 @@
                   <div
                     [formGroupName]="i"
                     [class.mb-4]="i < moduleControls.controls.length - 2"
-                    class="ml-2 flex flex-column"
+                    class="ml-2 flex flex-column row-gap-0"
                   >
                     <div class="mb-1 flex flex-row column-gap-2">
                       <span [id]="'ws_product_item_mfe_' + i + '_exposed_module'" class="mr-2">
@@ -369,11 +365,15 @@
                         {{ 'PRODUCT.MFE.BASE_PATH' | translate }}</label
                       >
                     </span>
-                  </div>
-                  <div *ngIf="mfe.endpoints && mfe.endpoints.length > 0">
-                    <div class="mb-1 font-bold">Endpoints</div>
-                    <div *ngFor="let end of mfe.endpoints; let j = index" class="ml-2">
-                      <div [id]="'ws_product_item_mfe_' + i + '_endpoint_' + j">{{ end.name }}: {{ end.path }}</div>
+                    <div *ngIf="mfe.controls['endpoints'] && mfe.controls['endpoints'].value.length > 0">
+                      <div class="mt-2 font-bold">UI Endpoints</div>
+                      <div
+                        *ngFor="let ep of mfe.controls['endpoints'].value; let j = index"
+                        [id]="'ws_product_item_mfe_' + i + '_endpoint_' + j"
+                        class="ml-2 text-responsive"
+                      >
+                        {{ ep.name }} => {{ ep.path }}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -403,12 +403,6 @@
                       tooltipEvent="hover"
                     >
                     </span>
-                  </div>
-                  <div *ngIf="smfe.endpoints && smfe.endpoints.length > 0">
-                    <div class="mb-1 font-bold">Endpoints {{ smfe.endpoints.length }}</div>
-                    <div *ngFor="let send of smfe.endpoints; let j = index" class="ml-2">
-                      <div [id]="'ws_product_item_mfe_' + i + '_endpoint_' + j">{{ send.name }}: {{ send.path }}</div>
-                    </div>
                   </div>
                 </div>
               </div>
