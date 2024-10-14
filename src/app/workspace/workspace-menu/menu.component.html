@@ -43,7 +43,7 @@
       #menuTree
       id="ws_menu_table"
       styleClass="px-2 sm:px-3 mb-3"
-      [columns]="wRoles"
+      [columns]="wRolesFiltered"
       [value]="menuNodes"
       [globalFilterFields]="['name', 'url']"
       (onNodeCollapse)="onHierarchyViewChange($event)"
@@ -161,18 +161,35 @@
             class="py-2 px-2 pl-4 vertical-align-top text-left border-transparent"
             [attr.colspan]="displayRoles ? 1 + columns.length : 6"
           >
-            <p-toggleButton
-              inputid="ws_menu_table_header_row_1_switch_details_n_roles"
-              styleClass="data-view-control hidden-xs"
-              [onLabel]="'DIALOG.MENU.HEADER.DETAILS' | translate"
-              [offLabel]="'DIALOG.MENU.HEADER.ROLES' | translate"
-              [(ngModel)]="treeTableContentValue"
-              (onChange)="onToggleTreeTableContent($event)"
-              [attr.aria-label]="'DIALOG.MENU.HEADER.DETAILS_N_ROLES.TOOLTIP' | translate"
-              [pTooltip]="'DIALOG.MENU.HEADER.DETAILS_N_ROLES.TOOLTIP' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            />
+            <div class="flex flex-row justify-content-start align-items-center column-gap-4">
+              <p-toggleButton
+                inputid="ws_menu_table_header_row_1_switch_details_n_roles"
+                styleClass="data-view-control hidden-xs"
+                [onLabel]="'DIALOG.MENU.HEADER.DETAILS' | translate"
+                [offLabel]="'DIALOG.MENU.HEADER.ROLES' | translate"
+                [(ngModel)]="treeTableContentValue"
+                (onChange)="onToggleTreeTableContent($event)"
+                [ariaLabel]="'DIALOG.MENU.HEADER.DETAILS_N_ROLES.TOOLTIP' | translate"
+                [pTooltip]="'DIALOG.MENU.HEADER.DETAILS_N_ROLES.TOOLTIP' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+              />
+              <div *ngIf="displayRoles && wRoles.length > 5" class="p-inputgroup h-2rem w-11rem">
+                <span class="p-inputgroup-addon pi pi-filter p-2 text-sm min-w-min"> </span>
+                <input
+                  #roleFilter
+                  pInputText
+                  type="search"
+                  id="ws_menu_table_header_role_filter"
+                  class="py-0 h-2rem text-responsive"
+                  (input)="roleFilterChange(roleFilter.value)"
+                  [placeholder]="'DIALOG.MENU.HEADER.ROLES.FILTER' | translate"
+                  [pTooltip]="'DIALOG.MENU.HEADER.ROLES.FILTER.TOOLTIP' | translate"
+                  tooltipPosition="top"
+                  tooltipEvent="hover"
+                />
+              </div>
+            </div>
           </th>
         </tr>
         <tr id="ws_menu_table_header_row_2">
@@ -187,7 +204,7 @@
               [onLabel]="'ACTIONS.TREE.COLLAPSE_ALL' | translate"
               [offLabel]="'ACTIONS.TREE.EXPAND_ALL' | translate"
               (onChange)="onToggleTreeViewMode($event)"
-              [attr.aria-label]="'ACTIONS.TREE.EXPAND_ALL.TOOLTIP' | translate"
+              [ariaLabel]="'ACTIONS.TREE.EXPAND_ALL.TOOLTIP' | translate"
               [pTooltip]="'ACTIONS.TREE.EXPAND_ALL.TOOLTIP' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"

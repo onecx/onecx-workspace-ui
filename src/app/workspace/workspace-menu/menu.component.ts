@@ -64,6 +64,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   @ViewChild('menuTree') menuTree: TreeTable | undefined
   @ViewChild('menuTreeFilter') menuTreeFilter: ElementRef<HTMLInputElement> = {} as ElementRef
   @ViewChild('treeOverlay') treeOverlay: Overlay | undefined
+  @ViewChild('roleFilter') roleFilter: HTMLInputElement | undefined
 
   Object = Object
   limitText = limitText // utils declarations
@@ -83,6 +84,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   public treeNodeLabelSwitchValue = 'NAME'
   public treeNodeLabelSwitchValueOrg = '' // prevent bug in PrimeNG SelectButton
   public currentLogoUrl: string | undefined = undefined
+  public roleFilterValue = ''
 
   // workspace
   public workspace?: Workspace
@@ -91,6 +93,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   private mfeRUrls: Array<string> = []
   public wRoles$!: Observable<WorkspaceRolePageResult>
   public wRoles: WorkspaceRole[] = []
+  public wRolesFiltered: WorkspaceRole[] = []
   public wAssignments$!: Observable<AssignmentPageResult>
   public wAssignments: Assignment[] = []
   // menu
@@ -214,6 +217,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.location.back()
   }
   public onReload(): void {
+    this.wRoles = []
     this.loadMenu(true)
   }
   public onGoToWorkspacePermission(): void {
@@ -261,6 +265,7 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   public onToggleTreeTableContent(ev: any): void {
     this.displayRoles = ev.checked
+    this.loadRolesAndAssignments()
   }
   public isObjectEmpty(obj: object) {
     return Object.keys(obj).length === 0
@@ -343,6 +348,9 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.displayMenuDelete = true
   }
 
+  public roleFilterChange(val: string): void {
+    this.wRolesFiltered = this.wRoles.filter((r) => r.name!.indexOf(val) >= 0)
+  }
   /****************************************************************************
    ****************************************************************************
    * TREE + DIALOG
@@ -475,15 +483,16 @@ export class MenuComponent implements OnInit, OnDestroy {
     return (a.name ? a.name.toUpperCase() : '').localeCompare(b.name ? b.name.toUpperCase() : '')
   }
   private loadRolesAndAssignments() {
-    this.wRoles = []
+    if (!this.displayRoles || this.wRoles.length > 0) return
+    this.wRoles = this.wRolesFiltered = []
     this.wAssignments = []
     combineLatest([this.searchRoles(), this.searchAssignments()]).subscribe(([roles, ass]) => {
       roles.sort(this.sortRoleByName)
       this.wRoles = roles
-      //this.wRoles.unshift({})
-      // assignments(role.id, menu.id) => node.roles[role.id] = ass.id
+      this.wRolesFiltered = roles
+      // principle: assignments(role.id, menu.id) => node.roles[role.id] = ass.id
       ass.forEach((ass: Assignment) => {
-        // find affected node ... assign role and inherit
+        // find affected node and assign role
         const assignedNode = this.findTreeNodeById(this.menuNodes, ass.menuItemId)
         if (assignedNode) {
           assignedNode.data.roles[ass.roleId!] = ass.id
@@ -689,7 +698,7 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   // triggered by changes of tree structure in preview
   public onUpdateMenuStructure(changed: boolean): void {
-    this.onReload()
+    this.loadMenu(true)
   }
   public getLogoUrl(workspace: Workspace | undefined): string | undefined {
     if (!workspace) return undefined
