@@ -7,7 +7,7 @@ import { provideRouter, Router, RouterModule } from '@angular/router'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'
 import { TranslateService } from '@ngx-translate/core'
 import { BASE_URL, RemoteComponentConfig, SlotService } from '@onecx/angular-remote-components'
-import { AppConfigService, AppStateService, UserService } from '@onecx/angular-integration-interface'
+import { AppStateService, UserService } from '@onecx/angular-integration-interface'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { ReplaySubject, of, throwError } from 'rxjs'
 import { PanelMenuModule } from 'primeng/panelmenu'
@@ -18,6 +18,7 @@ import { OneCXUserSidebarMenuComponent, slotInitializer } from './user-sidebar-m
 import { OneCXUserSidebarMenuHarness } from './user-sidebar-menu.harness'
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { UserProfile } from '@onecx/integration-interface'
+import { AppConfigService } from '@onecx/angular-accelerator'
 
 describe('OneCXUserSidebarMenuComponent', () => {
   const menuItemApiSpy = jasmine.createSpyObj<MenuItemAPIService>('MenuItemAPIService', ['getMenuItems'])
