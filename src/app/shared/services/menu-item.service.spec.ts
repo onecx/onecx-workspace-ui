@@ -89,7 +89,8 @@ describe('MenuItemService', () => {
         icon: 'pi pi-star',
         routerLink: '/item1',
         items: undefined,
-        url: undefined
+        url: undefined,
+        routerLinkActiveOptions: { exact: true }
       },
       {
         id: '2',
@@ -97,7 +98,8 @@ describe('MenuItemService', () => {
         icon: 'pi pi-check',
         routerLink: undefined,
         items: undefined,
-        url: 'http://external.com'
+        url: 'http://external.com',
+        routerLinkActiveOptions: { exact: true }
       }
     ]
     const result = service.constructMenuItems(input, 'en')
@@ -136,7 +138,8 @@ describe('MenuItemService', () => {
         icon: 'pi pi-star',
         routerLink: '/item1?param=[[DONTREPLACEME]]',
         items: undefined,
-        url: undefined
+        url: undefined,
+        routerLinkActiveOptions: { exact: true }
       },
       {
         id: '2',
@@ -144,7 +147,8 @@ describe('MenuItemService', () => {
         icon: 'pi pi-check',
         routerLink: undefined,
         items: undefined,
-        url: 'http://external.com?id=2'
+        url: 'http://external.com?id=2',
+        routerLinkActiveOptions: { exact: true }
       }
     ]
     const result = service.constructMenuItems(input, 'en')
@@ -185,7 +189,8 @@ describe('MenuItemService', () => {
         icon: 'pi pi-star',
         routerLink: '/item1?param=[[DONTREPLACEME]]',
         items: undefined,
-        url: undefined
+        url: undefined,
+        routerLinkActiveOptions: { exact: true }
       },
       {
         id: '2',
@@ -193,7 +198,8 @@ describe('MenuItemService', () => {
         icon: 'pi pi-check',
         routerLink: undefined,
         items: undefined,
-        url: 'http://external.com?id=1'
+        url: 'http://external.com?id=1',
+        routerLinkActiveOptions: { exact: true }
       }
     ]
     sessionStorage.clear()
@@ -235,7 +241,8 @@ describe('MenuItemService', () => {
         icon: 'pi pi-star',
         routerLink: '/item1?param=[[DONTREPLACEME]]',
         items: undefined,
-        url: undefined
+        url: undefined,
+        routerLinkActiveOptions: { exact: true }
       },
       {
         id: '2',
@@ -243,7 +250,8 @@ describe('MenuItemService', () => {
         icon: 'pi pi-check',
         routerLink: undefined,
         items: undefined,
-        url: 'http://external.com?id='
+        url: 'http://external.com?id=',
+        routerLinkActiveOptions: { exact: true }
       }
     ]
     sessionStorage.clear()
@@ -286,7 +294,8 @@ describe('MenuItemService', () => {
         icon: 'pi pi-star',
         routerLink: '/item1?param=[[DONTREPLACEME]]',
         items: undefined,
-        url: undefined
+        url: undefined,
+        routerLinkActiveOptions: { exact: true }
       },
       {
         id: '2',
@@ -294,7 +303,8 @@ describe('MenuItemService', () => {
         icon: 'pi pi-check',
         routerLink: undefined,
         items: undefined,
-        url: 'http://external.com?id=2&mykey=my-sessionstorage-key'
+        url: 'http://external.com?id=2&mykey=my-sessionstorage-key',
+        routerLinkActiveOptions: { exact: true }
       }
     ]
     const result = service.constructMenuItems(input, 'en')
@@ -473,10 +483,12 @@ describe('MenuItemService', () => {
             icon: 'pi pi-child',
             routerLink: '/child',
             items: undefined,
-            url: undefined
+            url: undefined,
+            routerLinkActiveOptions: { exact: true }
           }
         ],
-        url: undefined
+        url: undefined,
+        routerLinkActiveOptions: { exact: true }
       }
     ]
     const result = service.constructMenuItems(input, 'en')
@@ -507,6 +519,15 @@ describe('MenuItemService', () => {
                 external: false,
                 url: '/admin/mfe',
                 children: []
+              },
+              {
+                key: '1.1.2',
+                name: 'Second Child Item',
+                position: 2,
+                disabled: false,
+                external: false,
+                url: 'admin/otherMfe/',
+                children: []
               }
             ]
           }
@@ -521,6 +542,7 @@ describe('MenuItemService', () => {
         icon: undefined,
         routerLink: undefined,
         url: undefined,
+        routerLinkActiveOptions: { exact: true },
         items: [
           {
             id: '1.1',
@@ -529,6 +551,7 @@ describe('MenuItemService', () => {
             icon: undefined,
             routerLink: undefined,
             url: undefined,
+            routerLinkActiveOptions: { exact: true },
             items: [
               {
                 id: '1.1.1',
@@ -536,7 +559,17 @@ describe('MenuItemService', () => {
                 items: undefined,
                 routerLink: '/admin/mfe',
                 url: undefined,
-                icon: undefined
+                icon: undefined,
+                routerLinkActiveOptions: { exact: true }
+              },
+              {
+                id: '1.1.2',
+                label: '',
+                items: undefined,
+                routerLink: '/admin/otherMfe',
+                url: undefined,
+                icon: undefined,
+                routerLinkActiveOptions: { exact: true }
               }
             ]
           }
