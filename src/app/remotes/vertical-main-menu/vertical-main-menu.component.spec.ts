@@ -102,6 +102,7 @@ describe('OneCXVerticalMainMenuComponent', () => {
         workspaceName: 'test-workspace'
       }) as any
     )
+    spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(of({} as any))
     menuItemApiSpy.getMenuItems.and.returnValue(
       of({
         workspaceName: 'test-workspace',
@@ -152,6 +153,7 @@ describe('OneCXVerticalMainMenuComponent', () => {
         workspaceName: 'test-workspace'
       }) as any
     )
+    spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(of({} as any))
     menuItemApiSpy.getMenuItems.and.returnValue(
       of({
         workspaceName: 'test-workspace',
@@ -195,6 +197,7 @@ describe('OneCXVerticalMainMenuComponent', () => {
         workspaceName: 'test-workspace'
       }) as any
     )
+    spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(of({} as any))
     menuItemApiSpy.getMenuItems.and.returnValue(
       of({
         workspaceName: 'test-workspace',
@@ -235,6 +238,7 @@ describe('OneCXVerticalMainMenuComponent', () => {
         workspaceName: 'test-workspace'
       }) as any
     )
+    spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(of({} as any))
     menuItemApiSpy.getMenuItems.and.returnValue(
       of({
         workspaceName: 'test-workspace',
@@ -275,6 +279,7 @@ describe('OneCXVerticalMainMenuComponent', () => {
         workspaceName: 'test-workspace'
       }) as any
     )
+    spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(of({} as any))
     menuItemApiSpy.getMenuItems.and.returnValue(
       of({
         workspaceName: 'test-workspace',
@@ -313,6 +318,7 @@ describe('OneCXVerticalMainMenuComponent', () => {
         workspaceName: 'test-workspace'
       }) as any
     )
+    spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(of({} as any))
     menuItemApiSpy.getMenuItems.and.returnValue(
       of({
         workspaceName: 'test-workspace',

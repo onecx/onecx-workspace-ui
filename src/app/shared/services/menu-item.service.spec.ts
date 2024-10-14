@@ -483,6 +483,70 @@ describe('MenuItemService', () => {
     expect(result).toEqual(expected)
   })
 
+  it('should expand parents of current mfe item', () => {
+    const input: UserWorkspaceMenuItem[] = [
+      {
+        key: '1',
+        name: 'Parent Item',
+        position: 1,
+        disabled: false,
+        external: false,
+        children: [
+          {
+            key: '1.1',
+            name: 'Second parent Item',
+            position: 1,
+            disabled: false,
+            external: false,
+            children: [
+              {
+                key: '1.1.1',
+                name: 'Child Item',
+                position: 1,
+                disabled: false,
+                external: false,
+                url: '/admin/mfe',
+                children: []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+    const expected: MenuItem[] = [
+      {
+        id: '1',
+        label: '',
+        expanded: true,
+        icon: undefined,
+        routerLink: undefined,
+        url: undefined,
+        items: [
+          {
+            id: '1.1',
+            label: '',
+            expanded: true,
+            icon: undefined,
+            routerLink: undefined,
+            url: undefined,
+            items: [
+              {
+                id: '1.1.1',
+                label: '',
+                items: undefined,
+                routerLink: '/admin/mfe',
+                url: undefined,
+                icon: undefined
+              }
+            ]
+          }
+        ]
+      }
+    ]
+    const result = service.constructMenuItems(input, 'en', '/admin/mfe')
+    expect(result).toEqual(expected)
+  })
+
   it('should handle different languages', () => {
     const input: UserWorkspaceMenuItem[] = [
       {
