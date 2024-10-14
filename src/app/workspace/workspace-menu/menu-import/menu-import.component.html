@@ -1,10 +1,12 @@
 <p-dialog
-  header="{{ 'DIALOG.MENU.HEADER.IMPORT' | translate }}"
+  [header]="'DIALOG.MENU.HEADER.IMPORT' | translate"
   [(visible)]="displayDialog"
+  [resizable]="true"
   [draggable]="true"
   [closable]="true"
   [modal]="true"
   (onHide)="onClose()"
+  styleClass="disable-max-height-preset"
 >
   <p-fileUpload
     id="ws_menu_import_file_upload"
@@ -33,13 +35,13 @@
     severity="error"
     styleClass="mt-3"
     id="ws_menu_import_parse_error"
-    text="{{ 'VALIDATION.ERRORS.PARSE_ERROR' | translate }}"
+    [text]="'VALIDATION.ERRORS.PARSE_ERROR' | translate"
   ></p-message>
 
   <ng-template pTemplate="footer">
     <div class="flex flex-wrap justify-content-end column-gap-2 row-gap-1">
       <p-button
-        id="ws_menu_import_button_close"
+        id="ws_menu_import_action_close"
         icon="pi pi-times"
         (onClick)="onClose()"
         [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"

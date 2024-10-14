@@ -19,6 +19,7 @@ export interface ProductStoreItem {
     description?: string;
     imageUrl?: string;
     baseUrl?: string;
+    version?: string;
     classifications?: string;
     undeployed?: boolean;
     microfrontends?: Array<MicrofrontendPS>;

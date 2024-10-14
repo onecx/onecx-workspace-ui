@@ -1,7 +1,6 @@
 @import 'src/app/_ws-mixins.scss';
 
 @include prepare-inputgroup;
-@include displaying-text-responsive;
 
 :host ::ng-deep {
   .mt-05 {

@@ -1,6 +1,7 @@
 {
   "ACTIONS": {
     "LABEL": "Actions",
+    "TOOLTIP": "Actions for the data of the table row",
     "CONFIRMATION": {
       "NO": "No",
       "YES": "Yes",
@@ -102,6 +103,7 @@
       "GOTO_PRODUCT_PERMISSIONS": "Go to Product Permissions",
       "GOTO_PRODUCT_SLOTS": "Go to Slots within Application Store",
       "GOTO_WORKSPACE_PERMISSIONS": "Go to Workspace Permissions",
+      "GOTO_WORKSPACE_ROLES": "Go to Workspace Roles",
       "OPEN_IN_NEW_TAB": "Open in a new TAB",
       "MOVE_UP": "Move up",
       "MOVE_DOWN": "Move down"
@@ -309,6 +311,16 @@
         "VIEW": "Slot Details",
         "COMPONENTS.DEREGISTER": "Deregister Components"
       },
+      "TABS": {
+        "COMPONENTS": "Components",
+        "PRODUCTS": "Applications",
+        "INTERN": "Intern",
+        "TOOLTIPS": {
+          "COMPONENTS": "Manage assignments of components to the Slot",
+          "PRODUCTS": "Applications, which have declared this Slot",
+          "INTERN": "Internal properties of the Slots"
+        }
+      },
       "CHANGED": "There are important changes.",
       "NEW.TOOLTIP": "Register this Slot for the Workspace.",
       "DEPRECATED": "Slot is outdated",
@@ -317,7 +329,7 @@
       "UNDEPLOYED.TOOLTIP": "This Slot is no longer usable.",
       "PRODUCTS": "Registered by Applications",
       "PRODUCTS.NOT_EXIST": "Not available",
-      "PRODUCTS.TOOLTIP": "Applications that have registered this Slot",
+      "PRODUCTS.TOOLTIP": "Applications that have registered this Slot:",
       "NO_PRODUCTS": "No Application found which has registered this Slot",
       "COMPONENTS": "Content-forming Components",
       "COMPONENTS.USED": "Used Components",
@@ -353,7 +365,7 @@
         "DISPLAYED_ITEM.NAME": "Name",
         "DISPLAYED_ITEM.ID": "ID",
         "ROLES.MANAGE": "Manage Roles",
-        "ROLES.NOT_EXIST": "No Workspace Roles",
+        "ROLES.NOT_EXIST": "No Workspace Roles defined",
         "PREVIEW.TOOLTIP": "Preview in configured languages",
         "PREVIEW2.TOOLTIP": "Red = no translation",
         "REORDER.TOOLTIP": "Reorder via Drag & Drop"
@@ -382,6 +394,7 @@
         "I18N.ROW.TOOLTIP": "At least one translation available",
         "URL.TOOLTIP": "The URL to be called upon activation",
         "PRODUCT.TOOLTIP": "Indicator whether the menu URL is offered by a registered Application ",
+        "EXTERN": "X",
         "EXTERN.TOOLTIP": "If checked then the Workspace is exit"
       },
       "ASSIGNMENT": {
@@ -468,7 +481,7 @@
     "DISPLAY_NAME.TOOLTIP": "Displayed name of the Application",
     "DESCRIPTION": "Description",
     "BASE_URL": "Application Base Path",
-    "BASE_URL.TOOLTIP": "Base path for all Apps in the Application. Must be unique for all Applications in the Workspace.",
+    "BASE_URL.TOOLTIP": "Base path for all Modules in the Application. Must be unique for all Applications in the Workspace.",
     "MFE": {
       "APP_ID": "UI Service ID",
       "APP_ID.TOOLTIP": "Unique ID of the specific UI service to be used.",

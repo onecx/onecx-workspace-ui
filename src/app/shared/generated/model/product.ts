@@ -22,6 +22,7 @@ export interface Product {
     id?: string;
     productName?: string;
     displayName?: string;
+    version?: string;
     baseUrl?: string;
     imageUrl?: string;
     classifications?: string;

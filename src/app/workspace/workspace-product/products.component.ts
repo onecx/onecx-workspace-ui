@@ -14,7 +14,6 @@ import { Router } from '@angular/router'
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { catchError, finalize, map, Observable, of, Subject, switchMap, takeUntil } from 'rxjs'
 import { TranslateService } from '@ngx-translate/core'
-import { ConfirmationService } from 'primeng/api'
 
 import { MfeInfo } from '@onecx/portal-integration-angular'
 import {
@@ -74,8 +73,7 @@ const ALL_VIEW_MODES = [
 @Component({
   selector: 'app-products',
   templateUrl: './products.component.html',
-  styleUrls: ['./products.component.scss'],
-  providers: [ConfirmationService]
+  styleUrls: ['./products.component.scss']
 })
 export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   @Input() workspace!: Workspace | undefined
@@ -124,8 +122,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     private msgService: PortalMessageService,
     private fb: FormBuilder,
     private renderer: Renderer2,
-    private elem: ElementRef,
-    private confirmationService: ConfirmationService
+    private readonly elem: ElementRef
   ) {
     this.hasRegisterPermission = this.user.hasPermission('WORKSPACE_PRODUCTS#REGISTER')
     this.appState.currentMfe$.pipe(map((mfe) => (this.currentMfe = mfe))).subscribe()
@@ -631,7 +628,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
       { 'product-name': name }
     )
   }
-  public onGoToProductPremission(name?: string): void {
+  public onGoToProductPermission(name?: string): void {
     goToEndpoint(
       this.workspaceService,
       this.msgService,

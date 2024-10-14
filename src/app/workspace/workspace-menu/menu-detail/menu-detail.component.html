@@ -2,13 +2,14 @@
   [header]="'DIALOG.MENU.HEADER.' + changeMode | translate"
   [(visible)]="displayDetailDialog"
   (onHide)="onCloseDetailDialog()"
-  [breakpoints]="{ '1330px': '60vw', '1230px': '70vw', '1130px': '80vw', '930px': '90vw', '830px': '100vw' }"
-  styleClass="overflow-auto"
-  [style]="{ width: '52vw' }"
   [modal]="true"
+  [closable]="true"
   [draggable]="true"
   [resizable]="true"
-  [contentStyle]="{ overflow: 'visible' }"
+  [dismissableMask]="true"
+  [contentStyle]="{ overflow: 'auto' }"
+  [style]="{ width: '650px' }"
+  [breakpoints]="{ '1330px': '60vw', '1230px': '70vw', '1130px': '80vw', '930px': '90vw', '830px': '100vw' }"
 >
   <p-tabView #panelDetail [(activeIndex)]="tabIndex" (onChange)="onTabPanelChange($event)">
     <p-tabPanel
@@ -312,9 +313,11 @@
   (onHide)="onCloseDetailDialog()"
   [modal]="true"
   [closable]="true"
+  [draggable]="true"
   [resizable]="false"
   [dismissableMask]="true"
-  [style]="{ 'max-width': '425px' }"
+  [style]="{ width: '425px' }"
+  styleClass="disable-max-height-preset"
 >
   <div class="my-2 flex column-gap-4 row-gap-1 justify-content-start align-items-center">
     <div class="pi pi-question-circle text-3xl danger-action-text"></div>

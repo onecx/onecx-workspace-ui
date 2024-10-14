@@ -1,8 +1,25 @@
 ::ng-deep {
+  // sub menu
+  .p-panelmenu .p-panelmenu-header .p-panelmenu-header-action {
+    padding: 1rem;
+    &:hover {
+      background-color: var(--menu-item-hover-bg-color);
+      transition: background-color var(--transition-duration);
+    }
+  }
   .p-panelmenu-panel {
     box-shadow: none !important;
   }
+  .p-panelmenu .p-panelmenu-content {
+    padding-top: 0rem;
+  }
+
+  // header
   .p-accordion {
+    .p-accordion-header:not(.p-highlight):not(.p-disabled):hover .p-accordion-header-link {
+      background-color: var(--menu-item-hover-bg-color);
+      transition: background-color var(--transition-duration);
+    }
     .p-accordion-tab {
       box-shadow: none !important;
       &:not(.p-accordion-tab-active) .p-accordion-toggle-icon,

@@ -1,6 +1,7 @@
 {
   "ACTIONS": {
     "LABEL": "Aktionen",
+    "TOOLTIP": "Aktionen für die Daten der Taellenzeile",
     "CONFIRMATION": {
       "NO": "Nein",
       "YES": "Ja",
@@ -51,7 +52,7 @@
       "SLOT_MESSAGE": "Damit wird die Zuweisung von Slot zur Komponente für den Workspace gelöscht.",
       "SLOT_OK": "Die Slot-Zuweisung wurde erfolgreich gelöscht.",
       "SLOT_NOK": "Ein Fehler ist aufgetreten. Die Slot-Zuweisung wurde nicht gelöscht.",
-      "PRODUCTS_MESSAGE": "Die ausgewählten Applikationen und ihre Apps werden für den Arbeitsbereich abgemeldet. Menüelemente, die solche Pfade verwenden, werden nicht berührt, funktionieren aber nicht mehr.",
+      "PRODUCTS_MESSAGE": "Die ausgewählten Applikationen und ihre Komponenten werden für den Arbeitsbereich abgemeldet. Menüelemente, die solche Pfade verwenden, werden nicht berührt, funktionieren aber nicht mehr.",
       "PRODUCTS_QUESTION": "Möchten Sie die ausgewählten Applikationen abmelden?",
       "COMPONENTS_QUESTION": "Möchten Sie die ausgewählten Komponenten abmelden?"
     },
@@ -73,7 +74,7 @@
     },
     "EXPORT": {
       "LABEL": "Export",
-      "TOOLTIP": "Definition als JSON herunterladen",
+      "TOOLTIP": "Definition im JSON Format herunterladen",
       "MENU": "Die Menü-Definition im JSON Format herunterladen",
       "WORKSPACE": "Die Workspace-Definition im JSON Format herunterladen",
       "MESSAGE": {
@@ -82,7 +83,7 @@
     },
     "IMPORT": {
       "LABEL": "Import",
-      "TOOLTIP": "Definition als JSON hochladen",
+      "TOOLTIP": "Definition im JSON Format hochladen",
       "MENU": "Menü importieren",
       "WORKSPACE": "Workspace importieren"
     },
@@ -102,6 +103,7 @@
       "GOTO_PRODUCT_PERMISSIONS": "Zu Produktberechtigungen wechseln",
       "GOTO_PRODUCT_SLOTS": "Zu Slots im Application Store wechseln",
       "GOTO_WORKSPACE_PERMISSIONS": "Zu Workspace-Berechtigungen wechseln",
+      "GOTO_WORKSPACE_ROLES": "Zu Workspace-Rollen wechseln",
       "OPEN_IN_NEW_TAB": "In neuem TAB öffnen",
       "MOVE_UP": "Nach oben verschieben",
       "MOVE_DOWN": "Nach unten verschieben"
@@ -309,6 +311,16 @@
         "VIEW": "Slot Details",
         "COMPONENTS.DEREGISTER": "Komponenten abmelden"
       },
+      "TABS": {
+        "COMPONENTS": "Komponenten",
+        "PRODUCTS": "Applikationen",
+        "INTERN": "Intern",
+        "TOOLTIPS": {
+          "COMPONENTS": "Verwalten von Zuweisungen von Komponenten zum Slot",
+          "PRODUCTS": "Applikationen die den Slot registriert haben",
+          "INTERN": "Interne Eigenschaften des Slots"
+        }
+      },
       "CHANGED": "Es gibt wichtige Änderungen.",
       "NEW.TOOLTIP": "Slot für den Workspace registrieren.",
       "DEPRECATED": "Slot ist veraltet",
@@ -317,8 +329,8 @@
       "UNDEPLOYED.TOOLTIP": "Dieser Slot ist nicht länger nutzbar.",
       "PRODUCTS": "Registrierende Applikationen",
       "PRODUCTS.NOT_EXIST": "Keine",
-      "PRODUCTS.TOOLTIP": "Applikationen, die diesen Slot registriert haben",
-      "NO_PRODUCTS": "Keine Applikation gefunden, die diesen Slot registriert hat",
+      "PRODUCTS.TOOLTIP": "Applikationen die den Slot registriert haben:",
+      "NO_PRODUCTS": "Keine Applikation gefunden, die den Slot registriert hat",
       "COMPONENTS": "Inhaltsbildende Komponenten",
       "COMPONENTS.USED": "Verwendete Komponenten",
       "COMPONENTS.USED.TOOLTIP": "Im Slot verwendeten Komponenten, in der Reihenfolge von oben nach unten.",
@@ -349,11 +361,11 @@
         "DETAILS": "Details",
         "ROLES": "Rollen",
         "DETAILS_N_ROLES.TOOLTIP": "Anzeigewechsel: Details / Rollen und Berechtigungen",
-        "DISPLAYED_ITEM": "Anzeigewechsel: Menüitem Name / ID / Sprache",
+        "DISPLAYED_ITEM": "Anzeigewechsel: Menüpunkt Name / ID / Sprache",
         "DISPLAYED_ITEM.NAME": "Name",
         "DISPLAYED_ITEM.ID": "ID",
         "ROLES.MANAGE": "Rollen verwalten",
-        "ROLES.NOT_EXIST": "Keine Workspace Rollen",
+        "ROLES.NOT_EXIST": "Keine Rollen für den Workspace definiert",
         "PREVIEW.TOOLTIP": "Ansicht in den konfigurierten Sprachen",
         "PREVIEW2.TOOLTIP": "Rot = keine Übersetzungen",
         "REORDER.TOOLTIP": "Umordnen mit Drag & Drop"
@@ -382,6 +394,7 @@
         "I18N.ROW.TOOLTIP": "Mindestens eine Übersetzung vorhanden",
         "URL.TOOLTIP": "Die URL die beim Aktivieren aufgerufen wird",
         "PRODUCT.TOOLTIP": "Indikator ob die Menü-URL durch eine registrierte Applikation angeboten wird",
+        "EXTERN": "X",
         "EXTERN.TOOLTIP": "Wenn diese Option aktiviert ist, wird der Workspace verlassen"
       },
       "ASSIGNMENT": {
@@ -468,7 +481,7 @@
     "DISPLAY_NAME.TOOLTIP": "Name der Applikation",
     "DESCRIPTION": "Description",
     "BASE_URL": "Application Base Path",
-    "BASE_URL.TOOLTIP": "Basispfad für alle Apps der Applikation. Muss eindeutig sein über alle Applikationen im Workspace.",
+    "BASE_URL.TOOLTIP": "Basispfad für alle Module der Applikation. Muss eindeutig sein über alle Applikationen im Workspace.",
     "MFE": {
       "APP_ID": "UI Service ID",
       "APP_ID.TOOLTIP": "Eindeutige ID des spezifischen UI-Dienstes, der verwendet werden soll.",

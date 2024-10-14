@@ -118,14 +118,16 @@
   [(visible)]="workspaceDeleteVisible"
   [header]="'DIALOG.WORKSPACE.HEADER.DELETE' | translate"
   [modal]="true"
+  [closable]="true"
+  [draggable]="true"
   [resizable]="false"
   [dismissableMask]="true"
-  [style]="{ 'max-width': '425px' }"
+  styleClass="disable-max-height-preset"
 >
   <div class="flex column-gap-3 row-gap-1 justify-content-start align-items-center">
     <div class="pi pi-question-circle text-3xl danger-action-text"></div>
     <div>
-      <div>{{ this.workspaceDeleteMessage }}</div>
+      <div class="font-bold" id="ws_delete_message">{{ this.workspaceDeleteMessage }}</div>
       <div class="mt-2">{{ 'ACTIONS.DELETE.MESSAGE_INFO' | translate }}</div>
     </div>
   </div>

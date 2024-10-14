@@ -45,7 +45,7 @@ export class MenuDetailComponent implements OnChanges {
   @Input() public workspaceId: string | undefined
   @Input() public menuItemOrg: WorkspaceMenuItem | undefined
   @Input() public menuItems: WorkspaceMenuItem[] | undefined
-  @Input() public parentItems!: SelectItem[]
+  @Input() public parentItems: SelectItem[] = []
   @Input() changeMode: ChangeMode = 'VIEW'
   @Input() displayDetailDialog = false
   @Input() displayDeleteDialog = false
@@ -116,11 +116,6 @@ export class MenuDetailComponent implements OnChanges {
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
-    // prepare detail dialog (not used on deletion)
-    if (!this.menuItemOrg?.id) {
-      this.dataChanged.emit(false)
-      return
-    }
     if (this.displayDetailDialog) {
       this.cleanupMfeUrls() // remove special entries
       this.loadMfeUrls() // load first time only

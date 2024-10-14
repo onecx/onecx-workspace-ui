@@ -5,6 +5,7 @@
 @include search-criteria-select-button-slim;
 @include search-criteria-select-button-filter;
 @include float-label-textbox;
+@include dialog-modal-disable-full-height;
 
 :host ::ng-deep {
   .h-2-5rem {

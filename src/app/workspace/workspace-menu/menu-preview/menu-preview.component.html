@@ -1,12 +1,14 @@
 <p-dialog
-  header="{{ 'DIALOG.MENU.HEADER.TREE_MODAL' | translate }}"
+  [header]="'DIALOG.MENU.HEADER.TREE_MODAL' | translate"
   [(visible)]="displayDialog"
-  [draggable]="true"
-  [closable]="true"
   [modal]="true"
+  [closable]="true"
+  [resizable]="true"
+  [draggable]="true"
   (onHide)="onClose()"
   (onResizeInit)="onStartResizeTree($event)"
   (onResizeEnd)="onEndResizeTree($event)"
+  styleClass="disable-max-height-preset"
 >
   <ul class="mt-1 px-5">
     <li>{{ 'DIALOG.MENU.HEADER.REORDER.TOOLTIP' | translate }}</li>
@@ -46,14 +48,14 @@
 
   <p-tree
     #previewTree
-    styleClass="my-2 pl-2 pt-1 p-0 amax-h-25rem"
-    scrollHeight="flex"
     [value]="menuNodes"
     [draggableNodes]="true"
     [droppableNodes]="true"
     (onNodeDrop)="onDrop($event)"
     (onNodeCollapse)="onHierarchyViewChange($event)"
     (onNodeExpand)="onHierarchyViewChange($event)"
+    scrollHeight="300px"
+    styleClass="my-2 pl-2 pt-1 p-0"
   >
     <ng-template let-node pTemplate="default"> {{ node.label }} </ng-template>
   </p-tree>

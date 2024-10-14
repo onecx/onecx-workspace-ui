@@ -181,5 +181,6 @@ export class MenuPreviewComponent implements OnChanges {
   public onEndResizeTree(ev: MouseEvent) {
     //console.log('end:', ev)
     this.treeHeight = ev.clientY
+    // .p-tree-wrapper => max-height: 300px;
   }
 }

@@ -2,7 +2,7 @@
   <div class="ml-3 flex flex-row flex-wrap justify-content-start align-items-center column-gap-8 row-gap-2 mb-4">
     <p-checkbox
       type="text"
-      inputId="ws_detail_item_operator"
+      inputId="ws_detail_intern_item_operator"
       styleClass="cursor-auto shadow-none"
       [(ngModel)]="operator"
       [binary]="true"
@@ -15,7 +15,7 @@
     ></p-checkbox>
     <p-checkbox
       type="text"
-      inputId="ws_detail_item_mandatory"
+      inputId="ws_detail_intern_item_mandatory"
       styleClass="cursor-auto shadow-none"
       [(ngModel)]="mandatory"
       [binary]="true"
@@ -35,14 +35,14 @@
           pInputText
           type="text"
           readonly
-          id="ws_detail_item_name"
+          id="ws_detail_intern_item_name"
           class="w-full pt-3 pb-2 text-responsive"
           [value]="workspace.name"
           [pTooltip]="'WORKSPACE.TOOLTIPS.NAME' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"
         />
-        <label for="ws_detail_item_name">{{ 'WORKSPACE.NAME' | translate }}</label>
+        <label for="ws_detail_intern_item_name">{{ 'WORKSPACE.NAME' | translate }}</label>
       </span>
     </div>
 
@@ -53,14 +53,14 @@
             pInputText
             type="text"
             readonly
-            id="ws_detail_item_creation-date"
+            id="ws_detail_intern_item_creation-date"
             class="w-full pt-3 pb-2 text-responsive"
             [value]="workspace.creationDate | date: dateFormat"
             [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_DATE' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
           />
-          <label for="ws_detail_item_creation-date">{{ 'INTERNAL.CREATION_DATE' | translate }}</label>
+          <label for="ws_detail_intern_item_creation-date">{{ 'INTERNAL.CREATION_DATE' | translate }}</label>
         </span>
       </div>
 
@@ -70,14 +70,14 @@
             pInputText
             type="text"
             readonly
-            id="ws_detail_item_creation-user"
+            id="ws_detail_intern_item_creation-user"
             class="w-full pt-3 pb-2 text-responsive"
             [value]="workspace.creationUser"
             [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_USER' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
           />
-          <label for="ws_detail_item_creation-user">{{ 'INTERNAL.CREATION_USER' | translate }}</label>
+          <label for="ws_detail_intern_item_creation-user">{{ 'INTERNAL.CREATION_USER' | translate }}</label>
         </span>
       </div>
     </div>
@@ -89,14 +89,14 @@
             pInputText
             type="text"
             readonly
-            id="ws_detail_item_modification-date"
+            id="ws_detail_intern_item_modification-date"
             class="w-full pt-3 pb-2 text-responsive"
             [value]="workspace.modificationDate | date: dateFormat"
             [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_DATE' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
           />
-          <label for="ws_detail_item_modification-date">{{ 'INTERNAL.MODIFICATION_DATE' | translate }}</label>
+          <label for="ws_detail_intern_item_modification-date">{{ 'INTERNAL.MODIFICATION_DATE' | translate }}</label>
         </span>
       </div>
 
@@ -106,14 +106,14 @@
             pInputText
             type="text"
             readonly
-            id="ws_detail_item_modification-user"
+            id="ws_detail_intern_item_modification-user"
             class="w-full pt-3 pb-2 text-responsive"
             [value]="workspace.modificationUser"
             [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_USER' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
           />
-          <label for="ws_detail_item_modification-user">{{ 'INTERNAL.MODIFICATION_USER' | translate }}</label>
+          <label for="ws_detail_intern_item_modification-user">{{ 'INTERNAL.MODIFICATION_USER' | translate }}</label>
         </span>
       </div>
     </div>
