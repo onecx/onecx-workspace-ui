@@ -566,7 +566,7 @@ describe('MenuItemService', () => {
                 id: '1.1.2',
                 label: '',
                 items: undefined,
-                routerLink: '/admin/otherMfe',
+                routerLink: 'admin/otherMfe/',
                 url: undefined,
                 icon: undefined,
                 routerLinkActiveOptions: { exact: true }
