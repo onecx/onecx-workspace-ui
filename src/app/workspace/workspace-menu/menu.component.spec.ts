@@ -692,7 +692,7 @@ describe('MenuComponent', () => {
    * ROLES + ASSIGNMENTS
    */
 
-  it('should loadRolesandAssignments -> searchRoles and searchAssignments on loadMenu', () => {
+  it('should loadRolesAndAssignments -> searchRoles and searchAssignments on loadMenu', () => {
     const wRole2: WorkspaceRole = {
       name: 'role name2',
       id: 'role id2',
@@ -702,6 +702,7 @@ describe('MenuComponent', () => {
     wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: [wRole, wRole2] }))
     assgmtApiServiceSpy.searchAssignments.and.returnValue(of({ stream: [assgmt] }))
 
+    component.displayRoles = true
     component.loadMenu(true)
 
     expect(component.wRoles).toEqual([wRole, wRole2])
@@ -721,6 +722,7 @@ describe('MenuComponent', () => {
     wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: [wRole3, wRole2] }))
     assgmtApiServiceSpy.searchAssignments.and.returnValue(of({ stream: [assgmt] }))
 
+    component.displayRoles = true
     component.loadMenu(true)
 
     expect(component.wRoles).toEqual([wRole3, wRole2])
@@ -732,6 +734,7 @@ describe('MenuComponent', () => {
     wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: [wRole] }))
     assgmtApiServiceSpy.searchAssignments.and.returnValue(of({ stream: [assgmt] }))
 
+    component.displayRoles = true
     component.loadMenu(true)
 
     expect(component.wAssignments).toEqual([assgmt])
@@ -748,6 +751,7 @@ describe('MenuComponent', () => {
     wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: [wRole] }))
     assgmtApiServiceSpy.searchAssignments.and.returnValue(of({ stream: [assgmt2] }))
 
+    component.displayRoles = true
     component.loadMenu(true)
 
     expect(component.wAssignments).toEqual([assgmt2])
@@ -760,6 +764,7 @@ describe('MenuComponent', () => {
     menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
     spyOn(console, 'error')
 
+    component.displayRoles = true
     component.loadMenu(true)
 
     expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + '404' + '.ROLES')

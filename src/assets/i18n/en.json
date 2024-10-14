@@ -364,6 +364,8 @@
         "DISPLAYED_ITEM": "Change node label: Menu Item Name / ID / Language",
         "DISPLAYED_ITEM.NAME": "Name",
         "DISPLAYED_ITEM.ID": "ID",
+        "ROLES.FILTER": "Role filter",
+        "ROLES.FILTER.TOOLTIP": "Filter for Role name",
         "ROLES.MANAGE": "Manage Roles",
         "ROLES.NOT_EXIST": "No Workspace Roles defined",
         "PREVIEW.TOOLTIP": "Preview in configured languages",
