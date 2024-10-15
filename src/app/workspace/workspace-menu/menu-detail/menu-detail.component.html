@@ -8,8 +8,8 @@
   [resizable]="true"
   [dismissableMask]="true"
   [contentStyle]="{ overflow: 'auto' }"
-  [style]="{ width: '650px' }"
-  [breakpoints]="{ '1330px': '60vw', '1230px': '70vw', '1130px': '80vw', '930px': '90vw', '830px': '100vw' }"
+  [style]="{ width: '750px' }"
+  styleClass="disable-max-height-preset"
 >
   <p-tabView #panelDetail [(activeIndex)]="tabIndex" (onChange)="onTabPanelChange($event)">
     <p-tabPanel
@@ -61,7 +61,7 @@
                 formControlName="parentItemId"
                 [showClear]="true"
                 [options]="parentItems"
-                [attr.aria-label]="'MENU_ITEM.TOOLTIP.PARENT_ID' | translate"
+                [ariaLabel]="'MENU_ITEM.TOOLTIP.PARENT_ID' | translate"
                 [pTooltip]="'MENU_ITEM.TOOLTIP.PARENT_ID' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
@@ -84,24 +84,21 @@
                 (onDropdownClick)="onDropdownClick($event)"
                 (onSelect)="onSelect($event)"
                 [minLength]="0"
-                styleClass="w-full"
+                styleClass="w-full limitInputText"
                 field="mfePath"
+                [showClear]="true"
                 [dropdown]="true"
                 [dropdownMode]="'current'"
                 [completeOnFocus]="true"
-                [showClear]="true"
                 [attr.aria-label]="'MENU_ITEM.URL' | translate"
                 [pTooltip]="'MENU_ITEM.TOOLTIP.URL' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
               >
                 <ng-template let-mfe pTemplate="item">
-                  <div
-                    class="flex flex-row column-gap-2 align-items-center"
-                    [class.empty-dropdown-list-entry]="mfe.appId === '$$$-empty'"
-                  >
-                    <div class="hidden md:block w-35rem">{{ limitText(mfe.mfePath, 80) }}</div>
-                    <div class="block md:hidden w-25rem">{{ limitText(mfe.mfePath, 50) }}</div>
+                  <div class="flex flex-row column-gap-2 align-items-center">
+                    <div class="hidden md:block w-35rem text-responsive">{{ mfe.mfePath }}</div>
+                    <div class="block md:hidden w-25rem text-responsive">{{ mfe.mfePath }}</div>
                     <div class="flex flex-column">
                       <div class="text-sm font-bold" [class.danger-action-text]="!mfe.id">
                         {{ mfe.id ? mfe.product : (mfe.product | translate) }}
@@ -139,7 +136,8 @@
                 formControlName="badge"
                 [showClear]="true"
                 [options]="iconItems"
-                [attr.aria-label]="'MENU_ITEM.BADGE' | translate"
+                scrollHeight="150px"
+                [ariaLabel]="'MENU_ITEM.BADGE' | translate"
                 [pTooltip]="'MENU_ITEM.TOOLTIP.BADGE' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
@@ -168,7 +166,7 @@
                 formControlName="scope"
                 [showClear]="true"
                 [options]="scopeItems"
-                [attr.aria-label]="'MENU_ITEM.SCOPE' | translate"
+                [ariaLabel]="'MENU_ITEM.SCOPE' | translate"
                 [pTooltip]="'MENU_ITEM.TOOLTIP.SCOPE' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"

@@ -74,6 +74,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   public actions: Action[] = []
   public actions$: Observable<Action[]> | undefined
   public loading = true
+  public loadingRoles = false
   public exceptionKey = ''
   public myPermissions = new Array<string>() // permissions of the user
   public treeTableContentValue = false // off => details
@@ -484,20 +485,24 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
   private loadRolesAndAssignments() {
     if (!this.displayRoles || this.wRoles.length > 0) return
+    this.loadingRoles = true
     this.wRoles = this.wRolesFiltered = []
     this.wAssignments = []
     combineLatest([this.searchRoles(), this.searchAssignments()]).subscribe(([roles, ass]) => {
-      roles.sort(this.sortRoleByName)
-      this.wRoles = roles
-      this.wRolesFiltered = roles
-      // principle: assignments(role.id, menu.id) => node.roles[role.id] = ass.id
-      ass.forEach((ass: Assignment) => {
-        // find affected node and assign role
-        const assignedNode = this.findTreeNodeById(this.menuNodes, ass.menuItemId)
-        if (assignedNode) {
-          assignedNode.data.roles[ass.roleId!] = ass.id
-        }
-      })
+      if (roles.length > 0) {
+        roles.sort(this.sortRoleByName)
+        this.wRoles = roles
+        this.wRolesFiltered = roles
+        // principle: assignments(role.id, menu.id) => node.roles[role.id] = ass.id
+        ass.forEach((ass: Assignment) => {
+          // find affected node and assign role
+          const assignedNode = this.findTreeNodeById(this.menuNodes, ass.menuItemId)
+          if (assignedNode) {
+            assignedNode.data.roles[ass.roleId!] = ass.id
+          }
+        })
+      }
+      this.loadingRoles = false
     })
   }
   private findTreeNodeById(source: TreeNode[], id?: string): TreeNode | undefined {

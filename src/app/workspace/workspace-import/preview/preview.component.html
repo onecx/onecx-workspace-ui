@@ -27,7 +27,7 @@
           styleClass="w-16rem inputgroup-dropdown-with-link input-field-correction"
           [options]="(themes$ | async)?.sort(sortByLocale) || [themeName]"
           (onChange)="onModelChange()"
-          [attr.aria-label]="'WORKSPACE_IMPORT.THEME_NAME.TOOLTIP' | translate"
+          [ariaLabel]="'WORKSPACE_IMPORT.THEME_NAME.TOOLTIP' | translate"
           [pTooltip]="'WORKSPACE_IMPORT.THEME_NAME.TOOLTIP' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"

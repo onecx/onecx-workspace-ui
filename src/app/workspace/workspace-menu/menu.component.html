@@ -232,6 +232,13 @@
               class="pt-2 pb-0 px-2 vertical-align-bottom border-transparent"
             >
               <p-message
+                *ngIf="loadingRoles"
+                severity="info"
+                styleClass="p-2"
+                [text]="'DIALOG.MENU.HEADER.ROLES.LOADING' | translate"
+              ></p-message>
+              <p-message
+                *ngIf="!loadingRoles"
                 severity="info"
                 styleClass="p-2"
                 [text]="'DIALOG.MENU.HEADER.ROLES.NOT_EXIST' | translate"
