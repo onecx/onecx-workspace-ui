@@ -28,6 +28,10 @@
           [options]="quickFilterItems"
           [(ngModel)]="quickFilterValue"
           (onChange)="onQuickFilterChange($event)"
+          [ariaLabel]="'DIALOG.ROLE.QUICK_FILTER.LABEL' | translate"
+          [pTooltip]="'DIALOG.ROLE.QUICK_FILTER.TOOLTIP' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
         >
           <ng-template let-i pTemplate>{{ i.label | translate }}</ng-template>
         </p-selectButton>
