@@ -3,16 +3,20 @@
 @include danger-action;
 @include compact-dropdown-list-items;
 @include correct-autocomplete;
+@include displaying-text-responsive;
 @include input-clear-icon;
 @include dialog-footer-buttons;
 @include dialog-modal-disable-full-height;
 @include tabview-fix-color-selected-tab;
 
 :host ::ng-deep {
-  .empty-dropdown-list-entry {
-    min-height: 1rem;
-  }
   .w-35rem {
     width: 35rem !important;
+  }
+  .p-autocomplete .p-autocomplete-input {
+    padding-right: 2.2rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
