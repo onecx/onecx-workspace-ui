@@ -516,7 +516,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   public onGrantPermission(rowNode: TreeNode, rowData: MenuItemNodeData, roleId: string): void {
-    if (!rowData.roles || !rowData.roles[roleId]) {
+    if (!rowData?.roles[roleId]) {
       this.assApi
         .createAssignment({
           createAssignmentRequest: { roleId: roleId, menuItemId: rowData.id } as CreateAssignmentRequest

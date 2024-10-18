@@ -252,16 +252,8 @@ export class MenuDetailComponent implements OnChanges {
         this.menuItem.url = this.formGroup.controls['url'].value.mfePath
       else this.menuItem.url = this.formGroup.controls['url'].value
 
-      // get form values
-      this.menuItem.parentItemId = this.formGroup.controls['parentItemId'].value
-      this.menuItem.key = this.formGroup.controls['key'].value
-      this.menuItem.name = this.formGroup.controls['name'].value
-      this.menuItem.badge = this.formGroup.controls['badge'].value
-      this.menuItem.scope = this.formGroup.controls['scope'].value
-      this.menuItem.position = this.formGroup.controls['position'].value
-      this.menuItem.disabled = this.formGroup.controls['disabled'].value
-      this.menuItem.external = this.formGroup.controls['external'].value
-      this.menuItem.description = this.formGroup.controls['description'].value
+      this.getFormValues()
+
       // if language panell was initialized then take over content
       if (this.languagesDisplayed.length > 0) {
         const i18n: I18N = {}
@@ -303,6 +295,19 @@ export class MenuDetailComponent implements OnChanges {
             console.error(err.error)
           }
         })
+    }
+  }
+  private getFormValues() {
+    if (this.menuItem) {
+      this.menuItem.parentItemId = this.formGroup.controls['parentItemId'].value
+      this.menuItem.key = this.formGroup.controls['key'].value
+      this.menuItem.name = this.formGroup.controls['name'].value
+      this.menuItem.badge = this.formGroup.controls['badge'].value
+      this.menuItem.scope = this.formGroup.controls['scope'].value
+      this.menuItem.position = this.formGroup.controls['position'].value
+      this.menuItem.disabled = this.formGroup.controls['disabled'].value
+      this.menuItem.external = this.formGroup.controls['external'].value
+      this.menuItem.description = this.formGroup.controls['description'].value
     }
   }
 
