@@ -34,10 +34,10 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   private wComponentsOrg: ExtendedComponent[] = []
 
   constructor(
-    private slotApi: SlotAPIService,
-    private user: UserService,
-    private translate: TranslateService,
-    private msgService: PortalMessageService
+    private readonly slotApi: SlotAPIService,
+    private readonly user: UserService,
+    private readonly translate: TranslateService,
+    private readonly msgService: PortalMessageService
   ) {
     this.hasEditPermission = this.user.hasPermission('WORKSPACE_SLOT#EDIT')
     this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm' : 'medium'

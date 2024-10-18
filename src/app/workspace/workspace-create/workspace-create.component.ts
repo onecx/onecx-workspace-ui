@@ -36,12 +36,12 @@ export class WorkspaceCreateComponent implements OnInit {
   public mfeRList: string[] = []
 
   constructor(
-    private router: Router,
-    private route: ActivatedRoute,
-    private workspaceApi: WorkspaceAPIService,
-    private message: PortalMessageService,
-    private translate: TranslateService,
-    private productApi: ProductAPIService
+    private readonly router: Router,
+    private readonly route: ActivatedRoute,
+    private readonly workspaceApi: WorkspaceAPIService,
+    private readonly message: PortalMessageService,
+    private readonly translate: TranslateService,
+    private readonly productApi: ProductAPIService
   ) {
     this.formGroup = new FormGroup({
       name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),

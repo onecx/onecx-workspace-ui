@@ -111,17 +111,17 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   public currentMfe!: MfeInfo
 
   constructor(
-    private router: Router,
-    private workspaceService: WorkspaceService,
-    private wProductApi: WorkspaceProductAPIService,
-    private psProductApi: ProductAPIService,
-    private imageApi: ImagesInternalAPIService,
-    private slotApi: SlotAPIService,
-    private user: UserService,
-    private appState: AppStateService,
-    private translate: TranslateService,
-    private msgService: PortalMessageService,
-    private fb: FormBuilder,
+    private readonly router: Router,
+    private readonly workspaceService: WorkspaceService,
+    private readonly wProductApi: WorkspaceProductAPIService,
+    private readonly psProductApi: ProductAPIService,
+    private readonly imageApi: ImagesInternalAPIService,
+    private readonly slotApi: SlotAPIService,
+    private readonly user: UserService,
+    private readonly appState: AppStateService,
+    private readonly translate: TranslateService,
+    private readonly msgService: PortalMessageService,
+    private readonly fb: FormBuilder,
     private renderer: Renderer2,
     private readonly elem: ElementRef
   ) {

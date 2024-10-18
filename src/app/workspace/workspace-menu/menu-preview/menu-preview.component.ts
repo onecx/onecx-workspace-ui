@@ -43,11 +43,11 @@ export class MenuPreviewComponent implements OnChanges {
 
   constructor(
     private readonly elementRef: ElementRef,
-    private stateService: MenuStateService,
-    private treeService: MenuTreeService,
-    private userService: UserService,
-    private msgService: PortalMessageService,
-    private menuApi: MenuItemAPIService
+    private readonly stateService: MenuStateService,
+    private readonly treeService: MenuTreeService,
+    private readonly userService: UserService,
+    private readonly msgService: PortalMessageService,
+    private readonly menuApi: MenuItemAPIService
   ) {
     this.languagesPreviewValue = this.userService.lang$.getValue()
   }

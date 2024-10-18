@@ -78,14 +78,14 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   public showSlotDeleteDialog = false
 
   constructor(
-    private router: Router,
-    private workspaceService: WorkspaceService,
-    private user: UserService,
-    private slotApi: SlotAPIService,
-    private psProductApi: ProductAPIService,
-    private wProductApi: WorkspaceProductAPIService,
-    private translate: TranslateService,
-    private msgService: PortalMessageService
+    private readonly router: Router,
+    private readonly workspaceService: WorkspaceService,
+    private readonly user: UserService,
+    private readonly slotApi: SlotAPIService,
+    private readonly psProductApi: ProductAPIService,
+    private readonly wProductApi: WorkspaceProductAPIService,
+    private readonly translate: TranslateService,
+    private readonly msgService: PortalMessageService
   ) {
     this.hasEditPermission = this.user.hasPermission('WORKSPACE_SLOT#EDIT')
     this.hasCreatePermission = this.user.hasPermission('WORKSPACE_SLOT#CREATE')

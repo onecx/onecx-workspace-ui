@@ -28,7 +28,7 @@ export class PreviewComponent implements OnInit, OnChanges {
   public workspaceProducts!: string[]
   public sortByLocale = sortByLocale
 
-  constructor(private workspaceApi: WorkspaceAPIService) {
+  constructor(private readonly workspaceApi: WorkspaceAPIService) {
     this.formGroup = new FormGroup({
       workspaceName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
       displayName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),

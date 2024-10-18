@@ -46,12 +46,12 @@ export class OneCXFooterMenuComponent implements OnInit, ocxRemoteComponent, ocx
   menuItems$: Observable<MenuItem[]> | undefined
 
   constructor(
-    @Inject(BASE_URL) private baseUrl: ReplaySubject<string>,
-    private userService: UserService,
-    private translateService: TranslateService,
-    private appStateService: AppStateService,
-    private menuItemApiService: MenuItemAPIService,
-    private menuItemService: MenuItemService
+    @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
+    private readonly userService: UserService,
+    private readonly translateService: TranslateService,
+    private readonly appStateService: AppStateService,
+    private readonly menuItemApiService: MenuItemAPIService,
+    private readonly menuItemService: MenuItemService
   ) {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
   }
