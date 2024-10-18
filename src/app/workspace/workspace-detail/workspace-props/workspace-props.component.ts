@@ -49,13 +49,13 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   RefType = RefType
 
   constructor(
-    private location: Location,
-    private router: Router,
+    private readonly location: Location,
+    private readonly router: Router,
     public workspaceService: WorkspaceService,
-    private msgService: PortalMessageService,
-    private imageApi: ImagesInternalAPIService,
-    private workspaceApi: WorkspaceAPIService,
-    private wProductApi: WorkspaceProductAPIService
+    private readonly msgService: PortalMessageService,
+    private readonly imageApi: ImagesInternalAPIService,
+    private readonly workspaceApi: WorkspaceAPIService,
+    private readonly wProductApi: WorkspaceProductAPIService
   ) {
     this.deploymentPath = getLocation().deploymentPath === '/' ? '' : getLocation().deploymentPath.slice(0, -1)
     this.themeProductRegistered$ = workspaceService.doesUrlExistFor('onecx-theme', 'onecx-theme-ui', 'theme-detail')

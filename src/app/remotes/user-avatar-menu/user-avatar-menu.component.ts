@@ -105,14 +105,14 @@ export class OneCXUserAvatarMenuComponent
   menuAnchorPosition: MenuAnchorPositionConfig = 'right'
 
   constructor(
-    private renderer: Renderer2,
-    private userService: UserService,
-    private menuItemApiService: MenuItemAPIService,
-    private appStateService: AppStateService,
-    private appConfigService: AppConfigService,
-    @Inject(BASE_URL) private baseUrl: ReplaySubject<string>,
-    private translateService: TranslateService,
-    private menuItemService: MenuItemService
+    private readonly renderer: Renderer2,
+    private readonly userService: UserService,
+    private readonly menuItemApiService: MenuItemAPIService,
+    private readonly appStateService: AppStateService,
+    private readonly appConfigService: AppConfigService,
+    @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
+    private readonly translateService: TranslateService,
+    private readonly menuItemService: MenuItemService
   ) {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
 

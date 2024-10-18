@@ -22,9 +22,9 @@ export class MenuImportComponent implements OnInit {
   private menuItemStructure: MenuSnapshot | undefined
 
   constructor(
-    private menuApi: MenuItemAPIService,
-    private translate: TranslateService,
-    private msgService: PortalMessageService
+    private readonly menuApi: MenuItemAPIService,
+    private readonly translate: TranslateService,
+    private readonly msgService: PortalMessageService
   ) {}
 
   public ngOnInit(): void {

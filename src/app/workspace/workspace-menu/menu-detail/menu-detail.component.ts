@@ -81,13 +81,13 @@ export class MenuDetailComponent implements OnChanges {
   }
 
   constructor(
-    private user: UserService,
-    private icon: IconService,
-    private menuApi: MenuItemAPIService,
-    private wProductApi: WorkspaceProductAPIService,
-    private renderer: Renderer2,
-    private translate: TranslateService,
-    private msgService: PortalMessageService
+    private readonly user: UserService,
+    private readonly icon: IconService,
+    private readonly menuApi: MenuItemAPIService,
+    private readonly wProductApi: WorkspaceProductAPIService,
+    private readonly renderer: Renderer2,
+    private readonly translate: TranslateService,
+    private readonly msgService: PortalMessageService
   ) {
     this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm' : 'short'
     this.iconItems.push(...this.icon.icons.map((i) => ({ label: i, value: i })))
