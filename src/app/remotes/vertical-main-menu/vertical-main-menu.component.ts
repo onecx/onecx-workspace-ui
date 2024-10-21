@@ -4,6 +4,7 @@ import { Component, Inject, Input, OnInit } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
+import { getLocation } from '@onecx/accelerator'
 import {
   AngularRemoteComponentsModule,
   BASE_URL,
@@ -12,6 +13,7 @@ import {
   ocxRemoteWebcomponent,
   provideTranslateServiceForRoot
 } from '@onecx/angular-remote-components'
+import { EventsTopic } from '@onecx/integration-interface'
 import {
   AppStateService,
   PortalCoreModule,
@@ -20,7 +22,7 @@ import {
 } from '@onecx/portal-integration-angular'
 import { MenuItem } from 'primeng/api'
 import { PanelMenuModule } from 'primeng/panelmenu'
-import { Observable, ReplaySubject, map, mergeMap, shareReplay, withLatestFrom } from 'rxjs'
+import { BehaviorSubject, ReplaySubject, map, mergeMap, shareReplay, withLatestFrom } from 'rxjs'
 import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
 import { SharedModule } from 'src/app/shared/shared.module'
@@ -57,7 +59,11 @@ import { environment } from 'src/environments/environment'
 })
 @UntilDestroy()
 export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRemoteWebcomponent, OnInit {
-  menuItems$: Observable<MenuItem[]> | undefined
+  eventsTopic$ = new EventsTopic()
+
+  menuItems$: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>([])
+
+  activeItemClass = 'ocx-vertical-menu-active-item'
 
   constructor(
     @Inject(BASE_URL) private baseUrl: ReplaySubject<string>,
@@ -86,21 +92,59 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRe
   }
 
   getMenuItems() {
-    this.menuItems$ = this.appStateService.currentWorkspace$.pipe(
-      mergeMap((currentWorkspace) =>
-        this.menuItemApiService.getMenuItems({
-          getMenuItemsRequest: {
-            workspaceName: currentWorkspace.workspaceName,
-            menuKeys: ['main-menu']
+    this.appStateService.currentWorkspace$
+      .pipe(
+        mergeMap((currentWorkspace) =>
+          this.menuItemApiService.getMenuItems({
+            getMenuItemsRequest: {
+              workspaceName: currentWorkspace.workspaceName,
+              menuKeys: ['main-menu']
+            }
+          })
+        ),
+        withLatestFrom(this.userService.lang$),
+        map(([data, userLang]) => this.menuItemService.constructMenuItems(data?.menu?.[0]?.children, userLang)),
+        map((menuItems) => {
+          const bestMatch = this.menuItemService.findActiveItemBestMatch(menuItems, getLocation().applicationPath)
+          if (bestMatch) {
+            bestMatch.item.styleClass = this.activeItemClass
+            for (const item of bestMatch.parents) {
+              item.expanded = true
+            }
           }
-        })
-      ),
-      withLatestFrom(this.userService.lang$, this.appStateService.currentMfe$.asObservable()),
-      map(([data, userLang, mfeInfo]) =>
-        this.menuItemService.constructMenuItems(data?.menu?.[0]?.children, userLang, mfeInfo.baseHref)
-      ),
-      shareReplay(),
-      untilDestroyed(this)
-    )
+          return menuItems
+        }),
+        map((items) => {
+          this.menuItemService.flatMenuItems(items).forEach((item) => {
+            if (item.routerLink) {
+              item.command = (event) => this.changeActiveItem(event.item)
+            }
+          })
+
+          return items
+        }),
+        shareReplay(),
+        untilDestroyed(this)
+      )
+      .subscribe(this.menuItems$)
+  }
+
+  private updateItemsByActiveItem(item: MenuItem, activeItem: MenuItem | undefined): MenuItem {
+    return {
+      styleClass: item.id === activeItem?.id ? this.activeItemClass : '',
+      items: item.items?.map((i) => this.updateItemsByActiveItem(i, activeItem)),
+      command: item.routerLink ? (event) => this.changeActiveItem(event.item) : undefined,
+      label: item.label,
+      id: item.id,
+      icon: item.icon,
+      routerLink: item.routerLink,
+      url: item.url,
+      expanded: item.expanded
+    }
+  }
+
+  private changeActiveItem(itemToActivate: MenuItem | undefined) {
+    const items = this.menuItems$.getValue().map((i) => this.updateItemsByActiveItem(i, itemToActivate))
+    this.menuItems$.next(items)
   }
 }

@@ -4,21 +4,59 @@ import { MenuItem } from 'primeng/api'
 
 @Injectable({ providedIn: 'root' })
 export class MenuItemService {
-  public constructMenuItems(
-    userWorkspaceMenuItem: UserWorkspaceMenuItem[] | undefined,
-    userLang: string,
-    currentMfePath?: string
-  ): MenuItem[] {
+  public constructMenuItems(userWorkspaceMenuItem: UserWorkspaceMenuItem[] | undefined, userLang: string): MenuItem[] {
     const workspaceMenuItems = userWorkspaceMenuItem?.filter((i) => i) // exclude undefined
     if (workspaceMenuItems) {
       workspaceMenuItems.sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
       const menuItems = workspaceMenuItems.filter((i) => !i.disabled).map((item) => this.mapMenuItem(item, userLang))
-      const mfePath = this.stripPath(currentMfePath)
-      mfePath && this.expandCurrentMfeMenuItems(menuItems, mfePath)
       return menuItems
     } else {
       return []
     }
+  }
+
+  findActiveItemBestMatch(
+    items: MenuItem[],
+    path: string
+  ): { item: MenuItem; parents: MenuItem[]; matchedSegments: number } | undefined {
+    const pathToMatch = this.stripPath(path)
+    let bestMatch: { item: MenuItem; parents: MenuItem[]; matchedSegments: number } | undefined = undefined
+
+    for (const item of items) {
+      if (item.routerLink) {
+        const itemPath = this.stripPath(item.routerLink)
+        if (itemPath === pathToMatch) {
+          return { item: item, parents: [], matchedSegments: this.countSegments(this.stripPath(pathToMatch)) }
+        } else if (itemPath && pathToMatch.includes(itemPath)) {
+          const matchedSegments =
+            this.countSegments(pathToMatch) + this.countSegments(this.stripPath(pathToMatch.replace(itemPath, '')))
+          if ((bestMatch?.matchedSegments || 0) < matchedSegments) {
+            bestMatch = {
+              item: item,
+              parents: [],
+              matchedSegments: matchedSegments
+            }
+          }
+        }
+      }
+
+      if (item.items) {
+        const bestChildMatch = this.findActiveItemBestMatch(item.items, pathToMatch)
+        if (bestChildMatch && bestChildMatch.matchedSegments > (bestMatch?.matchedSegments || 0)) {
+          bestMatch = {
+            item: bestChildMatch.item,
+            parents: [...bestChildMatch.parents, item],
+            matchedSegments: bestChildMatch.matchedSegments
+          }
+        }
+      }
+    }
+
+    return bestMatch
+  }
+
+  flatMenuItems(items: MenuItem[]): MenuItem[] {
+    return items.flatMap((item) => ([] as MenuItem[]).concat(item, this.flatMenuItems(item.items ?? [])))
   }
 
   /** Item is never undefined when filtered out in constructMenuItems() */
@@ -40,7 +78,7 @@ export class MenuItemService {
       icon: item.badge ? 'pi pi-' + item.badge : undefined,
       routerLink: isLocal ? this.stripBaseHref(item.url) : undefined,
       url: isLocal ? undefined : this.replaceUrlVariables(item.url),
-      routerLinkActiveOptions: { exact: true }
+      styleClass: ''
     }
   }
 
@@ -50,20 +88,12 @@ export class MenuItemService {
     return url?.replace(baseUrl, '')
   }
 
-  private stripPath(path: string | undefined): string | undefined {
-    return path?.slice(path.at(0) === '/' ? 1 : 0, path.at(-1) === '/' ? -1 : path.length)
+  private stripPath(path: string): string {
+    return path.slice(path.at(0) === '/' ? 1 : 0, path.at(-1) === '/' ? -1 : path.length)
   }
 
-  private expandCurrentMfeMenuItems(items: MenuItem[], currentMfePath: string): boolean {
-    for (const item of items) {
-      if (this.stripPath(item.routerLink) === currentMfePath) return true
-      else if (item.items && this.expandCurrentMfeMenuItems(item.items, currentMfePath)) {
-        item.expanded = true
-        return true
-      }
-    }
-
-    return false
+  private countSegments(path: string): number {
+    return path.split('/').length
   }
 
   private replaceUrlVariables(url: string | undefined): string | undefined {
