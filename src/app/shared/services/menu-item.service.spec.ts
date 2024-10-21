@@ -340,7 +340,6 @@ describe('MenuItemService', () => {
           {
             key: '3',
             name: 'Item 3',
-            position: 1,
             disabled: false,
             external: true,
             badge: 'check',
@@ -551,7 +550,7 @@ describe('MenuItemService', () => {
           },
           {
             label: 'User search',
-            routerLink: 'admin/user/search'
+            routerLink: 'admin/user/search/'
           },
           {
             label: 'Help',
