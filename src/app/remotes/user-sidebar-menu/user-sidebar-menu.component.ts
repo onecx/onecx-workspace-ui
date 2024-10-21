@@ -98,13 +98,13 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent, ocxRem
   inlineProfileActive = false
 
   constructor(
-    @Inject(BASE_URL) private baseUrl: ReplaySubject<string>,
-    private translateService: TranslateService,
-    private appConfigService: AppConfigService,
-    private appStateService: AppStateService,
-    private menuItemApiService: MenuItemAPIService,
-    private userService: UserService,
-    private menuItemService: MenuItemService
+    @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
+    private readonly translateService: TranslateService,
+    private readonly appConfigService: AppConfigService,
+    private readonly appStateService: AppStateService,
+    private readonly menuItemApiService: MenuItemAPIService,
+    private readonly userService: UserService,
+    private readonly menuItemService: MenuItemService
   ) {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
 

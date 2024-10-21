@@ -113,26 +113,26 @@ export class MenuComponent implements OnInit, OnDestroy {
   public displayRoles = false
 
   constructor(
-    private route: ActivatedRoute,
+    private readonly route: ActivatedRoute,
     private readonly router: Router,
-    private location: Location,
-    private assApi: AssignmentAPIService,
-    private menuApi: MenuItemAPIService,
-    private workspaceApi: WorkspaceAPIService,
-    private wRoleApi: WorkspaceRolesAPIService,
-    private imageApi: ImagesInternalAPIService,
+    private readonly location: Location,
+    private readonly assApi: AssignmentAPIService,
+    private readonly menuApi: MenuItemAPIService,
+    private readonly workspaceApi: WorkspaceAPIService,
+    private readonly wRoleApi: WorkspaceRolesAPIService,
+    private readonly imageApi: ImagesInternalAPIService,
     private readonly workspaceService: WorkspaceService,
-    private stateService: MenuStateService,
-    private translate: TranslateService,
-    private msgService: PortalMessageService,
-    private userService: UserService
+    private readonly stateService: MenuStateService,
+    private readonly translate: TranslateService,
+    private readonly msgService: PortalMessageService,
+    private readonly userService: UserService
   ) {
     const state = this.stateService.getState()
     this.menuItems = state.workspaceMenuItems
     // simplify permission checks
-    if (userService.hasPermission('MENU#EDIT')) this.myPermissions.push('MENU#EDIT')
-    if (userService.hasPermission('MENU#GRANT')) this.myPermissions.push('MENU#GRANT')
-    if (userService.hasPermission('WORKSPACE_ROLE#EDIT')) this.myPermissions.push('WORKSPACE_ROLE#EDIT')
+    if (this.userService.hasPermission('MENU#EDIT')) this.myPermissions.push('MENU#EDIT')
+    if (this.userService.hasPermission('MENU#GRANT')) this.myPermissions.push('MENU#GRANT')
+    if (this.userService.hasPermission('WORKSPACE_ROLE#EDIT')) this.myPermissions.push('WORKSPACE_ROLE#EDIT')
     this.treeFrozenColumns = [{ name: 'node label', headerKey: '', tooltipKey: '' }]
     this.treeDetailColumns = [
       { name: 'actions', headerKey: 'ACTIONS.LABEL', tooltipKey: 'ACTIONS.TOOLTIP', css: 'hidden-xs' },
@@ -516,7 +516,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   public onGrantPermission(rowNode: TreeNode, rowData: MenuItemNodeData, roleId: string): void {
-    if (!rowData.roles || !rowData.roles[roleId]) {
+    if (!rowData?.roles[roleId]) {
       this.assApi
         .createAssignment({
           createAssignmentRequest: { roleId: roleId, menuItemId: rowData.id } as CreateAssignmentRequest

@@ -11,5 +11,5 @@ export class MenuInternComponent {
   @Input() menuItem: WorkspaceMenuItem | undefined
   @Input() dateFormat = 'medium'
 
-  constructor(private translate: TranslateService) {}
+  constructor(private readonly translate: TranslateService) {}
 }

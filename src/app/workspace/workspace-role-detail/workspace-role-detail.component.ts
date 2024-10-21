@@ -29,9 +29,9 @@ export class WorkspaceRoleDetailComponent implements OnChanges {
   private orgRoleName: string | undefined
 
   constructor(
-    private wRoleApi: WorkspaceRolesAPIService,
-    private translate: TranslateService,
-    private msgService: PortalMessageService
+    private readonly wRoleApi: WorkspaceRolesAPIService,
+    private readonly translate: TranslateService,
+    private readonly msgService: PortalMessageService
   ) {
     this.formGroupRole = new FormGroup({
       id: new FormControl(null),

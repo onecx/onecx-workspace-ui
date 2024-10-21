@@ -65,13 +65,13 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   public showRoleDeleteDialog = false
 
   constructor(
-    private router: Router,
-    private workspaceService: WorkspaceService,
-    private user: UserService,
-    private iamRoleApi: RoleAPIService,
-    private wRoleApi: WorkspaceRolesAPIService,
-    private translate: TranslateService,
-    private msgService: PortalMessageService
+    private readonly router: Router,
+    private readonly workspaceService: WorkspaceService,
+    private readonly user: UserService,
+    private readonly iamRoleApi: RoleAPIService,
+    private readonly wRoleApi: WorkspaceRolesAPIService,
+    private readonly translate: TranslateService,
+    private readonly msgService: PortalMessageService
   ) {
     this.hasEditPermission = this.user.hasPermission('WORKSPACE_ROLE#EDIT')
     this.hasCreatePermission = this.user.hasPermission('WORKSPACE_ROLE#CREATE')

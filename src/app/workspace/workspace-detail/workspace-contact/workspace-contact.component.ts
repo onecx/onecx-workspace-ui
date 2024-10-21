@@ -2,7 +2,6 @@ import { Component, Input, OnChanges } from '@angular/core'
 import { FormControl, FormGroup } from '@angular/forms'
 
 import { Workspace } from 'src/app/shared/generated'
-import { PortalMessageService } from '@onecx/angular-integration-interface'
 
 @Component({
   selector: 'app-workspace-contact',
@@ -14,7 +13,7 @@ export class WorkspaceContactComponent implements OnChanges {
 
   public formGroup: FormGroup
 
-  constructor(private msgService: PortalMessageService) {
+  constructor() {
     this.formGroup = new FormGroup({
       companyName: new FormControl(null),
       phoneNumber: new FormControl(null),

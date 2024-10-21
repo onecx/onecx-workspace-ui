@@ -4,7 +4,6 @@ import { TranslateService } from '@ngx-translate/core'
 import { Observable, catchError, finalize, map, of } from 'rxjs'
 
 import { Action } from '@onecx/angular-accelerator'
-import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { DataViewControlTranslations } from '@onecx/portal-integration-angular'
 
 import { Location } from '@angular/common'
@@ -43,12 +42,11 @@ export class WorkspaceSearchComponent implements OnInit {
   @ViewChild('table', { static: false }) table!: any
 
   constructor(
-    private workspaceApi: WorkspaceAPIService,
-    public route: ActivatedRoute,
-    private router: Router,
-    private translate: TranslateService,
-    private msgService: PortalMessageService,
-    private imageApi: ImagesInternalAPIService
+    private readonly workspaceApi: WorkspaceAPIService,
+    public readonly route: ActivatedRoute,
+    private readonly router: Router,
+    private readonly translate: TranslateService,
+    private readonly imageApi: ImagesInternalAPIService
   ) {}
 
   ngOnInit() {
