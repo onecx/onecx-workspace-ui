@@ -12,7 +12,7 @@ import {
   ocxRemoteWebcomponent,
   provideTranslateServiceForRoot
 } from '@onecx/angular-remote-components'
-import { EventsTopic } from '@onecx/integration-interface'
+import { EventsTopic, NavigatedEventPayload } from '@onecx/integration-interface'
 import {
   AppStateService,
   PortalCoreModule,
@@ -107,7 +107,8 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRe
     combineLatest([
       this.eventsTopic$.asObservable().pipe(
         filter((e) => e.type === 'navigated'),
-        map((e) => (e.payload as any).url),
+        map((e) => (e.payload as NavigatedEventPayload).url),
+        filter((url): url is string => !!url),
         distinctUntilChanged()
       ),
       this.getMenuItems()

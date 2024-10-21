@@ -140,7 +140,7 @@ describe('OneCXVerticalMainMenuComponent', () => {
       of({
         type: 'navigated',
         payload: {
-          url: ''
+          url: 'page-url'
         }
       })
     )
@@ -193,7 +193,7 @@ describe('OneCXVerticalMainMenuComponent', () => {
       of({
         type: 'navigated',
         payload: {
-          url: ''
+          url: 'page-url'
         }
       })
     )
@@ -242,7 +242,7 @@ describe('OneCXVerticalMainMenuComponent', () => {
       of({
         type: 'navigated',
         payload: {
-          url: ''
+          url: 'page-url'
         }
       })
     )
@@ -291,7 +291,7 @@ describe('OneCXVerticalMainMenuComponent', () => {
       of({
         type: 'navigated',
         payload: {
-          url: ''
+          url: 'page-url'
         }
       })
     )
@@ -339,7 +339,7 @@ describe('OneCXVerticalMainMenuComponent', () => {
       of({
         type: 'navigated',
         payload: {
-          url: ''
+          url: 'page-url'
         }
       })
     )
@@ -379,7 +379,7 @@ describe('OneCXVerticalMainMenuComponent', () => {
               {
                 key: 'CORE_AH_MGMT',
                 name: 'Announcement & Help',
-                url: '',
+                url: 'page-url',
                 position: 1,
                 external: false,
                 i18n: {},
@@ -415,7 +415,7 @@ describe('OneCXVerticalMainMenuComponent', () => {
       of({
         type: 'navigated',
         payload: {
-          url: ''
+          url: 'page-url'
         }
       })
     )
@@ -452,7 +452,7 @@ describe('OneCXVerticalMainMenuComponent', () => {
           {
             key: 'CORE_AH_MGMT',
             name: 'Announcement & Help',
-            url: '',
+            url: 'page-url',
             position: 1,
             external: false,
             i18n: {},

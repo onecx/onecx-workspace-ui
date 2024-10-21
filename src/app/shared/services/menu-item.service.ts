@@ -23,19 +23,12 @@ export class MenuItemService {
     let bestMatch: { item: MenuItem; parents: MenuItem[]; matchedSegments: number } | undefined = undefined
 
     for (const item of items) {
-      if (item.routerLink) {
-        const itemPath = this.stripPath(item.routerLink)
-        if (itemPath === pathToMatch) {
-          return { item: item, parents: [], matchedSegments: this.countSegments(this.stripPath(pathToMatch)) }
-        } else if (itemPath && pathToMatch.includes(itemPath)) {
-          const matchedSegments = this.countSegments(itemPath)
-          if ((bestMatch?.matchedSegments || 0) < matchedSegments) {
-            bestMatch = {
-              item: item,
-              parents: [],
-              matchedSegments: matchedSegments
-            }
-          }
+      const segments = this.getMatchedSegments(item, pathToMatch)
+      if (segments > (bestMatch?.matchedSegments || 0)) {
+        bestMatch = {
+          item: item,
+          parents: [],
+          matchedSegments: segments
         }
       }
 
@@ -52,6 +45,18 @@ export class MenuItemService {
     }
 
     return bestMatch
+  }
+
+  private getMatchedSegments(item: MenuItem, strippedPath: string): number {
+    const itemStrippedPath = item.routerLink ? this.stripPath(item.routerLink) : undefined
+    if (itemStrippedPath && itemStrippedPath === strippedPath) {
+      return this.countSegments(this.stripPath(strippedPath))
+    } else if (itemStrippedPath && strippedPath.includes(itemStrippedPath)) {
+      const matchedSegments = this.countSegments(itemStrippedPath)
+      return matchedSegments
+    }
+
+    return 0
   }
 
   /** Item is never undefined when filtered out in constructMenuItems() */
