@@ -23,7 +23,6 @@ import { MenuItem } from 'primeng/api'
 import { PanelMenuModule } from 'primeng/panelmenu'
 import {
   BehaviorSubject,
-  Observable,
   ReplaySubject,
   combineLatest,
   distinctUntilChanged,
