@@ -77,8 +77,7 @@ export class MenuItemService {
       label,
       icon: item.badge ? 'pi pi-' + item.badge : undefined,
       routerLink: isLocal ? this.stripBaseHref(item.url) : undefined,
-      url: isLocal ? undefined : this.replaceUrlVariables(item.url),
-      styleClass: ''
+      url: isLocal ? undefined : this.replaceUrlVariables(item.url)
     }
   }
 
