@@ -324,12 +324,49 @@ describe('MenuItemService', () => {
         external: false,
         url: '/item1',
         badge: 'star',
-        children: [],
-        i18n: { en: 'Item 1 EN' }
+        i18n: { en: 'Item 1 EN' },
+        children: [
+          {
+            key: '5',
+            name: 'Item 5',
+            position: 3,
+            disabled: false,
+            external: false,
+            url: '/item5',
+            badge: 'check',
+            children: [],
+            i18n: { en: 'Item 5 EN' }
+          },
+          {
+            key: '3',
+            name: 'Item 3',
+            position: 1,
+            disabled: false,
+            external: true,
+            badge: 'check',
+            children: [],
+            i18n: { en: 'Item 3 EN' }
+          },
+          {
+            key: '4',
+            name: 'Item 4',
+            position: 2,
+            disabled: false,
+            external: false,
+            url: '/item4',
+            badge: 'check',
+            children: [],
+            i18n: { en: 'Item 4 EN' }
+          }
+        ]
       }
     ]
     const result = service.constructMenuItems(input, 'en')
     expect(result[0].id).toBe('1')
+    expect(result[0].items?.length).toBe(3)
+    expect(result[0].items?.at(0)?.id).toBe('3')
+    expect(result[0].items?.at(1)?.id).toBe('4')
+    expect(result[0].items?.at(2)?.id).toBe('5')
     expect(result[1].id).toBe('2')
   })
 
@@ -501,5 +538,48 @@ describe('MenuItemService', () => {
     const resultFr = service.constructMenuItems(input, 'fr')
     expect(resultEn[0].label).toBe('Item 1 EN')
     expect(resultFr[0].label).toBe('Item 1 FR')
+  })
+
+  it('should select closest item as best match', () => {
+    const items: MenuItem[] = [
+      {
+        label: 'Parent1',
+        items: [
+          {
+            label: 'Workspace',
+            routerLink: 'admin/workspace'
+          },
+          {
+            label: 'User search',
+            routerLink: 'admin/user/search'
+          },
+          {
+            label: 'Help',
+            routerLink: 'admin/help'
+          }
+        ]
+      },
+      {
+        label: 'Parent2',
+        items: [
+          {
+            label: 'Tenant',
+            routerLink: 'admin/tenant'
+          },
+          {
+            label: 'MyPage',
+            routerLink: 'admin/help/my-page'
+          }
+        ]
+      }
+    ]
+
+    const result = service.findActiveItemBestMatch(items, '/admin/help/my-page')
+
+    expect(result).toBeDefined()
+    expect(result?.item.label).toBe('MyPage')
+    expect(result?.matchedSegments).toEqual(3)
+    expect(result?.parents.length).toBe(1)
+    expect(result?.parents[0].label).toBe('Parent2')
   })
 })

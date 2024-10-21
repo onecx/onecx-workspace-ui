@@ -28,8 +28,7 @@ export class MenuItemService {
         if (itemPath === pathToMatch) {
           return { item: item, parents: [], matchedSegments: this.countSegments(this.stripPath(pathToMatch)) }
         } else if (itemPath && pathToMatch.includes(itemPath)) {
-          const matchedSegments =
-            this.countSegments(pathToMatch) + this.countSegments(this.stripPath(pathToMatch.replace(itemPath, '')))
+          const matchedSegments = this.countSegments(itemPath)
           if ((bestMatch?.matchedSegments || 0) < matchedSegments) {
             bestMatch = {
               item: item,
@@ -53,10 +52,6 @@ export class MenuItemService {
     }
 
     return bestMatch
-  }
-
-  flatMenuItems(items: MenuItem[]): MenuItem[] {
-    return items.flatMap((item) => ([] as MenuItem[]).concat(item, this.flatMenuItems(item.items ?? [])))
   }
 
   /** Item is never undefined when filtered out in constructMenuItems() */
