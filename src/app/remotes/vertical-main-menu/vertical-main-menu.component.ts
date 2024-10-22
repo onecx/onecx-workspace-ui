@@ -1,6 +1,6 @@
 import { CommonModule, Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { Component, Inject, Input, OnInit } from '@angular/core'
+import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
@@ -72,7 +72,7 @@ export interface WorkspaceMenuItems {
   ]
 })
 @UntilDestroy()
-export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRemoteWebcomponent, OnInit {
+export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRemoteWebcomponent, OnInit, OnDestroy {
   eventsTopic$ = new EventsTopic()
 
   menuItems$: BehaviorSubject<WorkspaceMenuItems | undefined> = new BehaviorSubject<WorkspaceMenuItems | undefined>(
@@ -90,6 +90,9 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRe
     private readonly menuItemService: MenuItemService
   ) {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
+  }
+  ngOnDestroy(): void {
+    this.eventsTopic$.destroy()
   }
 
   @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
