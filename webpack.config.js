@@ -16,6 +16,7 @@ const config = withModuleFederationPlugin({
   },
   shared: share({
     '@angular/core': { requiredVersion: 'auto', includeSecondaries: true },
+    '@angular/platform-browser': { requiredVersion: 'auto', includeSecondaries: true },
     '@angular/forms': {
       requiredVersion: 'auto',
       includeSecondaries: true
