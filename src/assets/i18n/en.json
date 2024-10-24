@@ -369,6 +369,7 @@
         "ROLES.FILTER.TOOLTIP": "Filter for Role name",
         "ROLES.MANAGE": "Manage Roles",
         "ROLES.NOT_EXIST": "No Workspace Roles defined",
+        "ROLES.NOT_MATCHING": "No Roles according to filter",
         "PREVIEW.TOOLTIP": "Preview in configured languages",
         "PREVIEW2.TOOLTIP": "Red = no translation",
         "REORDER.TOOLTIP": "Reorder via Drag & Drop"
