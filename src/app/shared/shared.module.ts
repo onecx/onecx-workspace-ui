@@ -36,9 +36,9 @@ import { ToggleButtonModule } from 'primeng/togglebutton'
 import { TreeModule } from 'primeng/tree'
 import { TreeTableModule } from 'primeng/treetable'
 
-import { PortalDialogService, PortalCoreModule } from '@onecx/portal-integration-angular'
-import { LabelResolver } from 'src/app/shared/label.resolver'
+import { PortalCoreModule, PortalDialogService } from '@onecx/portal-integration-angular'
 
+import { LabelResolver } from './label.resolver'
 import { ImageContainerComponent } from './image-container/image-container.component'
 
 @NgModule({
