@@ -180,8 +180,8 @@
     .p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item {
       padding-top: 0.4rem;
       padding-bottom: 0.4rem;
-      &:nth-child(odd) {
-        background-color: #f8f9fa;
+      &:nth-child(even) {
+        background-color: var(--table-body-row-even-bg);
       }
     }
     .p-autocomplete-clear-icon {
@@ -388,8 +388,8 @@
 @mixin dataview-list-zebra-rows {
   :host ::ng-deep {
     .p-dataview-list .p-dataview-content .p-grid > div {
-      &:nth-child(odd) {
-        background-color: #f8f9fa;
+      &:nth-child(even) {
+        background-color: var(--table-body-row-even-bg);
       }
     }
   }
@@ -397,24 +397,24 @@
 @mixin dataview-list-flex-zebra-rows {
   :host ::ng-deep {
     .p-dataview-list .p-dataview-content > div {
-      &:nth-child(odd) {
-        background-color: #f8f9fa;
+      &:nth-child(even) {
+        background-color: var(--table-body-row-even-bg);
       }
     }
   }
 }
 @mixin dropdown-zebra-rows {
   :host ::ng-deep {
-    .p-dropdown-panel .p-dropdown-items *:nth-child(odd) .p-dropdown-item {
-      background-color: #f8f9fa;
+    .p-dropdown-panel .p-dropdown-items *:nth-child(even) .p-dropdown-item {
+      background-color: var(--table-body-row-even-bg);
     }
   }
 }
 @mixin listbox-zebra-rows {
   :host ::ng-deep {
     .p-listbox:not(.p-disabled) .p-listbox-item:not(.p-highlight):not(.p-disabled) {
-      &:nth-child(odd) {
-        background-color: #f8f9fa;
+      &:nth-child(even) {
+        background-color: var(--table-body-row-even-bg);
       }
     }
   }
@@ -422,16 +422,16 @@
 @mixin picklist-zebra-rows {
   :host ::ng-deep {
     .p-picklist-list li {
-      &:nth-child(odd) {
-        background-color: #f8f9fa;
+      &:nth-child(even) {
+        background-color: var(--table-body-row-even-bg);
       }
     }
   }
 }
 @mixin table-zebra-rows {
   :host ::ng-deep {
-    .p-datatable .p-datatable-tbody > tr:nth-child(odd) > td {
-      background-color: #f8f9fa;
+    .p-datatable .p-datatable-tbody > tr:nth-child(even) > td {
+      background-color: var(--table-body-row-even-bg);
     }
   }
 }
