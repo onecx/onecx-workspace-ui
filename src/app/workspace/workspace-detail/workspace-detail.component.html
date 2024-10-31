@@ -8,15 +8,23 @@
   >
   </ocx-page-header>
 
+  <div *ngIf="exceptionKey" id="ws_detail_error" class="card px-3 align-items-center">
+    <p-message
+      id="ws_detail_error_message"
+      severity="error"
+      styleClass="p-2"
+      [text]="exceptionKey | translate"
+    ></p-message>
+  </div>
+  <div *ngIf="isLoading" id="ws_detail_loading" class="card px-3 align-items-center">
+    <p-message
+      id="ws_detail_loading_message"
+      severity="info"
+      styleClass="p-2"
+      [text]="'ACTIONS.LOADING' | translate"
+    ></p-message>
+  </div>
   <ocx-page-content *ngIf="(workspace$ | async)?.resource as workspace">
-    <div *ngIf="exceptionKey" id="ws_detail_error" class="card px-3 align-items-center">
-      <p-message
-        id="ws_detail_error_message"
-        severity="error"
-        styleClass="p-2"
-        [text]="exceptionKey | translate"
-      ></p-message>
-    </div>
     <div *ngIf="!exceptionKey">
       <p-tabView (onChange)="onTabChange($event, workspace)" [activeIndex]="selectedTabIndex">
         <p-tabPanel
