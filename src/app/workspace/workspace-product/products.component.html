@@ -212,7 +212,11 @@
     PRODUCT DETAIL
   -->
   <div class="col-3 md:col-4 hidden md:block">
-    <p-panel *ngIf="displayDetails" [showHeader]="true" styleClass="hidden sm:block">
+    <p-panel *ngIf="displayDetails && displayedDetailItem" [showHeader]="true" styleClass="hidden sm:block">
+      <!-- 
+           Product Header
+           Displaying of some meta data: origin (workspace/products store), logo, state
+      -->
       <ng-template pTemplate="header">
         <div class="h-3rem mb-1 flex flex-row flex-wrap row-gap-2 justify-content-between align-items-start w-full">
           <div class="flex flex-column text-primary">
@@ -227,6 +231,7 @@
               styleClass="hidden lg:block w-3rem md:w-5rem tile-view-optional "
             ></app-image-container>
           </div>
+          <!-- version -->
           <span
             *ngIf="displayedDetailItem?.undeployed"
             id="ws_product_item_header_undeployed"
@@ -255,6 +260,9 @@
         </div>
       </ng-template>
 
+      <!-- 
+           Product Config: Displaying details and Editing access pathes
+      -->
       <form [formGroup]="formGroup">
         <div class="flex flex-column row-gap-3">
           <div class="p-inputgroup">
@@ -296,6 +304,7 @@
             >
             </a>
           </div>
+          <!-- Editing the product base URL/Path -->
           <span class="mt-1 p-float-label" controlErrorAnchor>
             <input
               pInputText
@@ -312,6 +321,10 @@
             >
           </span>
 
+          <!-- Loop over all Microfrontends
+               Some of the displayed data are not available in Workspace database.
+               Such data are picked up from product store product.
+          -->
           <div *ngFor="let app of displayedDetailItem?.apps | keyvalue; let i = index">
             <p-divider align="center" styleClass="m-0 p-0">
               <div class="font-bold text-primary text-responsive">{{ app.key }}</div>
@@ -331,6 +344,7 @@
                       <span [id]="'ws_product_item_mfe_' + i + '_exposed_module'" class="mr-2">
                         {{ mfe.controls['exposedModule'].value }}</span
                       >
+                      <!-- mfe state -->
                       <span
                         *ngIf="mfe.controls['undeployed'].value"
                         [id]="'ws_product_item_mfe_' + i + '_undeployed'"
@@ -350,6 +364,7 @@
                       >
                       </span>
                     </div>
+                    <!-- mfe path - used as suffix ot the product base URL -->
                     <span controlErrorAnchor class="mt-2 p-float-label">
                       <input
                         pInputText
@@ -365,6 +380,7 @@
                         {{ 'PRODUCT.MFE.BASE_PATH' | translate }}</label
                       >
                     </span>
+                    <!-- mfe end points -->
                     <div *ngIf="mfe.controls['endpoints'] && mfe.controls['endpoints'].value.length > 0">
                       <div class="mt-2 font-bold">UI Endpoints</div>
                       <div
@@ -501,6 +517,7 @@
   </div>
 </div>
 
+<!-- PRODUCT DEREGISTRATION -->
 <p-dialog
   [(visible)]="displayDeregisterConfirmation"
   [header]="'DIALOG.PRODUCTS.DEREGISTER' | translate"
