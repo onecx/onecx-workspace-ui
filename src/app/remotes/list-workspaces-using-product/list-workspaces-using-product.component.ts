@@ -77,21 +77,22 @@ export class OneCXListWorkspacesUsingProductComponent implements ocxRemoteCompon
   }
 
   private findWorkspacesUsingProduct(product: string) {
-    this.workspacesUsingProduct = this.workspaceApi.searchWorkspaces({ searchWorkspacesRequest: {} }).pipe(
-      catchError((err) => {
-        console.error('searchWorkspaces():', err)
-        return of({ stream: [] } as SearchWorkspacesResponse)
-      }),
-      map((data) => {
-        const workspaces: string[] = []
-        if (data.stream) {
-          console.log('STREAM', data.stream)
-          // data.stream.forEach((ws) => {
-          //   if (ws.product === product) workspaces.push(ws.displayName)
-          // })
-        }
-        return workspaces
-      })
-    )
+    this.workspacesUsingProduct = this.workspaceApi
+      .searchWorkspaces({ searchWorkspacesRequest: { productName: product } })
+      .pipe(
+        catchError((err) => {
+          console.error('searchWorkspaces():', err)
+          return of({ stream: [] } as SearchWorkspacesResponse)
+        }),
+        map((data) => {
+          const workspaces: string[] = []
+          if (data.stream) {
+            data.stream.forEach((ws) => {
+              workspaces.push(ws.displayName)
+            })
+          }
+          return workspaces
+        })
+      )
   }
 }

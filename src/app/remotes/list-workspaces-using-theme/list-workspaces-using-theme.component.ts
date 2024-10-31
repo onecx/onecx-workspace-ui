@@ -73,24 +73,26 @@ export class OneCXListWorkspacesUsingThemeComponent implements ocxRemoteComponen
   }
 
   ngOnChanges(): void {
-    this.findWorkspacesUsingTheme(this.themeName)
+    this.findWorkspacesUsingTheme()
   }
 
-  private findWorkspacesUsingTheme(theme: string) {
-    this.workspacesUsingTheme = this.workspaceApi.searchWorkspaces({ searchWorkspacesRequest: {} }).pipe(
-      catchError((err) => {
-        console.error('searchWorkspaces():', err)
-        return of({ stream: [] } as SearchWorkspacesResponse)
-      }),
-      map((data) => {
-        const workspaces: string[] = []
-        if (data.stream) {
-          data.stream.forEach((ws) => {
-            if (ws.theme === theme) workspaces.push(ws.displayName)
-          })
-        }
-        return workspaces
-      })
-    )
+  private findWorkspacesUsingTheme() {
+    this.workspacesUsingTheme = this.workspaceApi
+      .searchWorkspaces({ searchWorkspacesRequest: { themeName: this.themeName } })
+      .pipe(
+        catchError((err) => {
+          console.error('searchWorkspaces():', err)
+          return of({ stream: [] } as SearchWorkspacesResponse)
+        }),
+        map((data) => {
+          const workspaces: string[] = []
+          if (data.stream) {
+            data.stream.forEach((ws) => {
+              workspaces.push(ws.displayName)
+            })
+          }
+          return workspaces
+        })
+      )
   }
 }

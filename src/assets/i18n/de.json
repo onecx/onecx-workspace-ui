@@ -577,9 +577,13 @@
     "USER_SIDEBAR_MENU": {
       "LOGOUT": "Abmelden"
     },
-    "LIST_WORKSPACES": {
+    "LIST_WORKSPACES_THEME": {
       "USED": "Theme wird in diesen Workspaces verwendet: ",
       "UNUSED": "Theme wird von keinem Workspace verwendet."
+    },
+    "LIST_WORKSPACES_PRODUCT": {
+      "USED": "Applikation wird in diesen Workspaces verwendet: ",
+      "UNUSED": "Applikation wird von keinem Workspace verwendet."
     }
   },
   "VALIDATION": {

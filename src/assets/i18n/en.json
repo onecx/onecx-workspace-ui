@@ -577,9 +577,13 @@
     "USER_SIDEBAR_MENU": {
       "LOGOUT": "Log out"
     },
-    "LIST_WORKSPACES": {
+    "LIST_WORKSPACES_THEME": {
       "USED": "Theme is used by the following Workspaces: ",
-      "UNUSED": "Theme is not used by a Workspace."
+      "UNUSED": "Theme is not used by any Workspace."
+    },
+    "LIST_WORKSPACES_PRODUCT": {
+      "USED": "Application is used by the following Workspaces: ",
+      "UNUSED": "Application is not used by any Workspace."
     }
   },
   "VALIDATION": {
