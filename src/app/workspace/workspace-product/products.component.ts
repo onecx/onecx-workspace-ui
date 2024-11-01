@@ -337,6 +337,8 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
           this.fillForm(item)
         },
         error: (err) => {
+          this.displayedDetailItem = undefined
+          this.displayDetails = false
           console.error(err)
           this.msgService.error({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.LOAD_ERROR' })
         },
