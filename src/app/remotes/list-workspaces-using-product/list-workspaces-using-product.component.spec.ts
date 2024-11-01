@@ -11,7 +11,7 @@ import { PanelMenuModule } from 'primeng/panelmenu'
 import { SearchWorkspacesResponse, WorkspaceAPIService } from 'src/app/shared/generated'
 import { OneCXListWorkspacesUsingProductComponent } from './list-workspaces-using-product.component'
 
-fdescribe('OneCXListWorkspacesUsingProductComponent', () => {
+describe('OneCXListWorkspacesUsingProductComponent', () => {
   const wsApiSpy = {
     searchWorkspaces: jasmine.createSpy('searchWorkspaces').and.returnValue(of({}))
   }
