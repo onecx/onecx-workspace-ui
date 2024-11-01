@@ -49,7 +49,7 @@ import { environment } from 'src/environments/environment'
 })
 @UntilDestroy()
 export class OneCXListWorkspacesUsingProductComponent implements ocxRemoteComponent, ocxRemoteWebcomponent, OnChanges {
-  @Input() productName = ''
+  @Input() productName: string | undefined = undefined
   public workspacesUsingProduct: Observable<string[]> | undefined
 
   constructor(

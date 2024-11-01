@@ -61,7 +61,7 @@ export class MenuDetailComponent implements OnChanges {
   private menuItem$: Observable<MenuItem | null> = new Observable<MenuItem | null>()
   public iconItems: SelectItem[] = [] // default value is empty
   public scopeItems: SelectItem[]
-  private posPattern = '[0-9]{1,9}'
+  private readonly posPattern = '[0-9]{1,9}'
   public mfeMap: Map<string, MenuURL> = new Map()
   public mfeItems!: MenuURL[]
   public filteredMfes: MenuURL[] = []

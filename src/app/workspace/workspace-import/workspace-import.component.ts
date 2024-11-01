@@ -46,7 +46,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
     private readonly route: ActivatedRoute,
     private readonly translate: TranslateService,
     private readonly workspaceApi: WorkspaceAPIService,
-    private msgService: PortalMessageService
+    private readonly msgService: PortalMessageService
   ) {
     this.hasPermission = this.user.hasPermission('WORKSPACE#IMPORT')
 
