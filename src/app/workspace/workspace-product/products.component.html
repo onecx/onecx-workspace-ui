@@ -11,8 +11,8 @@
   ></p-button>
 </div>
 
-<div *ngIf="!exceptionKey" class="col-12 p-0 flex flex-row column-gap-2 align-items-start">
-  <div class="col-12 md:col-8 pt-0">
+<div *ngIf="!exceptionKey" class="acol-12 p-0 flex flex-row column-gap-2 align-items-start">
+  <div class="acol-12 amd:col-8 pt-1">
     <p-pickList
       #picklist
       id="ws_product_picklist"
@@ -211,7 +211,7 @@
   <!--
     PRODUCT DETAIL
   -->
-  <div *ngIf="displayDetails && displayedDetailItem" class="col-3 md:col-4 hidden md:block card">
+  <div *ngIf="displayDetails && displayedDetailItem" class="mt-1 ml-3 pt-2 w-4 hidden md:block card">
     <!-- 
            Product Header
            Displaying of some meta data: origin (workspace/products store), logo, state
@@ -242,39 +242,41 @@
           ></span>
         </div>
       </div>
-      <div class="pt-1 flex flex-column justify-content-around">
+      <div class="hidden xl:block">
         <app-image-container
           id="ws_product_detail_logo"
           [imageUrl]="getImageUrl(displayedDetailItem)"
           [small]="true"
-          styleClass="hidden lg:block w-3rem md:w-5rem tile-view-optional "
+          styleClass="pt-1 w-3rem md:w-5rem"
         ></app-image-container>
       </div>
-      <div class="flex flex-column align-items-end">
-        <a
-          *ocxIfPermission="'WORKSPACE#GOTO_PERMISSION'"
-          tabindex="0"
-          id="ws_product_detail_product_name_link"
-          class="p-2 pi pi-lock cursor-pointer button-icon-only"
-          (click)="onGoToProductPermission(displayedDetailItem?.productName)"
-          [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_PRODUCT_PERMISSIONS' | translate"
-          [pTooltip]="'ACTIONS.NAVIGATION.GOTO_PRODUCT_PERMISSIONS' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        >
-        </a>
-        <a
-          *ocxIfPermission="'WORKSPACE#GOTO_APP_STORE'"
-          tabindex="0"
-          id="ws_product_detail_product_name_link"
-          class="p-2 pi pi-link cursor-pointer button-icon-only"
-          (click)="onGoToProduct(displayedDetailItem?.productName)"
-          [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_PRODUCT' | translate"
-          [pTooltip]="'ACTIONS.NAVIGATION.GOTO_PRODUCT' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        >
-        </a>
+      <div class="hidden xl:block">
+        <div class="flex flex-column">
+          <a
+            *ocxIfPermission="'WORKSPACE#GOTO_PERMISSION'"
+            tabindex="0"
+            id="ws_product_detail_product_name_link"
+            class="p-2 pi pi-lock cursor-pointer button-icon-only"
+            (click)="onGoToProductPermission(displayedDetailItem?.productName)"
+            [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_PRODUCT_PERMISSIONS' | translate"
+            [pTooltip]="'ACTIONS.NAVIGATION.GOTO_PRODUCT_PERMISSIONS' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          >
+          </a>
+          <a
+            *ocxIfPermission="'WORKSPACE#GOTO_APP_STORE'"
+            tabindex="0"
+            id="ws_product_detail_product_name_link"
+            class="p-2 pi pi-link cursor-pointer button-icon-only"
+            (click)="onGoToProduct(displayedDetailItem?.productName)"
+            [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_PRODUCT' | translate"
+            [pTooltip]="'ACTIONS.NAVIGATION.GOTO_PRODUCT' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          >
+          </a>
+        </div>
       </div>
     </div>
 
