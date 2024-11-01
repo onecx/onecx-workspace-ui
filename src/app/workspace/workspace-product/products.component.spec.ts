@@ -48,6 +48,7 @@ const product: ExtendedProduct = {
   productName: 'prod name',
   displayName: 'display name',
   description: 'description',
+  version: '1.0',
   microfrontends: [microfrontend],
   modificationCount: 1,
   bucket: 'SOURCE',
@@ -61,6 +62,7 @@ const prodStoreItem: ExtendedProduct = {
   productName: 'prodStoreItemName',
   displayName: 'display name2',
   description: 'description2',
+  version: '1.0',
   microfrontends: [microfrontend],
   bucket: 'SOURCE',
   undeployed: false,
@@ -72,6 +74,7 @@ const prodStoreItemTarget: ExtendedProduct = {
   productName: 'prodStoreItemName',
   displayName: 'display name2',
   description: 'description2',
+  version: '1.0',
   microfrontends: [microfrontend],
   bucket: 'TARGET',
   undeployed: false,
@@ -83,6 +86,7 @@ const prodStoreItemEmptyMicrofrontends: ExtendedProduct = {
   productName: 'prodStoreItemName',
   displayName: 'display name2',
   description: 'description2',
+  version: '1.0',
   microfrontends: [],
   bucket: 'TARGET',
   undeployed: false,
@@ -726,14 +730,15 @@ describe('ProductComponent', () => {
       expect(component.displayDetails).toBeTrue()
     })
 
-    it('should call getWProduct when an item is selected: display error', () => {
+    it('should call getWProduct when an item is selected: display error and hide detail panel', () => {
       wProductServiceSpy.getProductById.and.returnValue(throwError(() => new Error()))
       const event = { items: [{ id: 1 }] }
       component.displayDetails = true
 
       component.onTargetSelect(event)
 
-      expect(component.displayDetails).toBeTrue()
+      expect(component.displayDetails).toBeFalse()
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.LOAD_ERROR' })
     })
 
     it('should set displayDetails to false when no item is selected', () => {
