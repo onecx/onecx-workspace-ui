@@ -91,7 +91,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   public workspace?: Workspace
   private workspace$!: Observable<GetWorkspaceResponse>
   public workspaceName: string = this.route.snapshot.params['name']
-  private readonly mfeRUrls: Array<string> = []
+  private mfeRUrls: Array<string> = []
   public wRoles$!: Observable<WorkspaceRolePageResult>
   public wRoles: WorkspaceRole[] = []
   public wRolesFiltered: WorkspaceRole[] = []
