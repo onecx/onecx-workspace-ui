@@ -1,6 +1,6 @@
 <div *ngIf="workspacesUsingTheme | async as workspaces">
-  <div *ngIf="workspaces.length === 0">{{ 'REMOTES.LIST_WORKSPACES.UNUSED' | translate }}</div>
-  <div *ngIf="workspaces.length > 0">{{ 'REMOTES.LIST_WORKSPACES.USED' | translate }}</div>
+  <div *ngIf="workspaces.length === 0">{{ 'REMOTES.LIST_WORKSPACES_THEME.UNUSED' | translate }}</div>
+  <div *ngIf="workspaces.length > 0">{{ 'REMOTES.LIST_WORKSPACES_THEME.USED' | translate }}</div>
   <ul class="ml-0 mt-2">
     <li *ngFor="let workspace of workspaces" class="mb-1">{{ workspace }}</li>
   </ul>

@@ -20,8 +20,8 @@ import { SharedModule } from 'src/app/shared/shared.module'
 import { environment } from 'src/environments/environment'
 
 @Component({
-  selector: 'app-list-workspaces-using-theme',
-  templateUrl: './list-workspaces-using-theme.component.html',
+  selector: 'app-list-workspaces-using-product',
+  templateUrl: './list-workspaces-using-product.component.html',
   standalone: true,
   imports: [
     AngularRemoteComponentsModule,
@@ -48,9 +48,9 @@ import { environment } from 'src/environments/environment'
   ]
 })
 @UntilDestroy()
-export class OneCXListWorkspacesUsingThemeComponent implements ocxRemoteComponent, ocxRemoteWebcomponent, OnChanges {
-  @Input() themeName = ''
-  public workspacesUsingTheme: Observable<string[]> | undefined
+export class OneCXListWorkspacesUsingProductComponent implements ocxRemoteComponent, ocxRemoteWebcomponent, OnChanges {
+  @Input() productName: string | undefined = undefined
+  public workspacesUsingProduct: Observable<string[]> | undefined
 
   constructor(
     @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
@@ -73,12 +73,12 @@ export class OneCXListWorkspacesUsingThemeComponent implements ocxRemoteComponen
   }
 
   ngOnChanges(): void {
-    this.findWorkspacesUsingTheme()
+    this.findWorkspacesUsingProduct()
   }
 
-  private findWorkspacesUsingTheme() {
-    this.workspacesUsingTheme = this.workspaceApi
-      .searchWorkspaces({ searchWorkspacesRequest: { themeName: this.themeName } })
+  private findWorkspacesUsingProduct() {
+    this.workspacesUsingProduct = this.workspaceApi
+      .searchWorkspaces({ searchWorkspacesRequest: { productName: this.productName } })
       .pipe(
         catchError((err) => {
           console.error('searchWorkspaces():', err)

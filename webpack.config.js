@@ -12,7 +12,9 @@ const config = withModuleFederationPlugin({
     './OneCXHorizontalMainMenuComponent': 'src/app/remotes/horizontal-main-menu/horizontal-main-menu.component.main.ts',
     './OneCXFooterMenuComponent': 'src/app/remotes/footer-menu/footer-menu.component.main.ts',
     './OneCXListWorkspacesUsingThemeComponent':
-      'src/app/remotes/list-workspaces-using-theme/list-workspaces-using-theme.component.main.ts'
+      'src/app/remotes/list-workspaces-using-theme/list-workspaces-using-theme.component.main.ts',
+    './OneCXListWorkspacesUsingProductComponent':
+      'src/app/remotes/list-workspaces-using-product/list-workspaces-using-product.component.main.ts'
   },
   shared: share({
     '@angular/core': { requiredVersion: 'auto', includeSecondaries: true },

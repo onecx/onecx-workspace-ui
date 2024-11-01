@@ -14,6 +14,7 @@
 export interface SearchWorkspacesRequest { 
     name?: string;
     themeName?: string;
+    productName?: string;
     /**
      * The number of page.
      */

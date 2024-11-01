@@ -17,7 +17,7 @@ export interface MenuState {
   providedIn: 'root'
 })
 export class MenuStateService {
-  private state: MenuState = {
+  private readonly state: MenuState = {
     pageSize: 0,
     showDetails: false,
     rootFilter: true,
