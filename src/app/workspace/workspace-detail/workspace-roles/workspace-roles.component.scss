@@ -8,6 +8,10 @@
 @include dialog-modal-disable-full-height;
 
 :host ::ng-deep {
+  .p-dataview .p-dataview-content {
+    padding-left: 0;
+    padding-right: 0;
+  }
   .h-2-5rem {
     height: 2.5rem !important;
   }
