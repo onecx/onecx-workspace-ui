@@ -218,10 +218,31 @@
            Displaying of some meta data: origin (workspace/products store), logo, state
       -->
       <ng-template pTemplate="header">
-        <div class="h-3rem mb-1 flex flex-row flex-wrap row-gap-2 justify-content-between align-items-start w-full">
-          <div class="flex flex-column text-primary">
-            <div class="font-semibold text-xl mb-1">{{ 'DIALOG.PRODUCTS.DETAILS' | translate }}</div>
-            <div class="text-sm">{{ 'DIALOG.PRODUCTS.ORIGIN.' + displayedDetailItem?.bucket | translate }}</div>
+        <div class="mb-3 w-full flex flex-row flex-wrap gap-2 justify-content-between align-items-start">
+          <div class="flex flex-column">
+            <div class="font-semibold text-primary text-xl">{{ displayedDetailItem.displayName }}</div>
+            <div class="flex flex-row column-gap-3">
+              <div class="flex flex-column">
+                <div class="text-sm">{{ displayedDetailItem?.productName }}</div>
+                <div class="text-sm">{{ displayedDetailItem?.version }}</div>
+              </div>
+              <span
+                *ngIf="displayedDetailItem?.undeployed"
+                id="ws_product_item_header_undeployed"
+                class="p-2 danger-action-text font-bold pi pi-ban"
+                [pTooltip]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+              ></span>
+              <span
+                *ngIf="!displayedDetailItem?.undeployed && displayedDetailItem?.changedComponents"
+                id="ws_product_item_header_changed_mfe"
+                class="p-2 danger-action-text font-bold pi pi-exclamation-circle"
+                [pTooltip]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+              ></span>
+            </div>
           </div>
           <div class="pt-1 flex flex-column justify-content-around">
             <app-image-container
@@ -231,32 +252,43 @@
               styleClass="hidden lg:block w-3rem md:w-5rem tile-view-optional "
             ></app-image-container>
           </div>
-          <!-- version -->
-          <span
-            *ngIf="displayedDetailItem?.undeployed"
-            id="ws_product_item_header_undeployed"
-            class="pt-1 danger-action-text font-bold text-xl pi pi-ban"
-            [pTooltip]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          ></span>
-          <span
-            *ngIf="!displayedDetailItem?.undeployed && displayedDetailItem?.changedComponents"
-            id="ws_product_item_header_changed_mfe"
-            class="pt-1 danger-action-text font-bold text-xl pi pi-exclamation-circle"
-            [pTooltip]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          ></span>
-          <a
-            tabindex="0"
-            id="ws_product_item_header_close"
-            class="p-2 pi pi-times cursor-pointer button-icon-only"
-            (click)="onHideItemDetails()"
-            [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          ></a>
+          <div class="flex flex-column align-items-end row-gap-2">
+            <a
+              tabindex="0"
+              id="ws_product_item_header_close"
+              class="p-2 pi pi-times cursor-pointer button-icon-only"
+              (click)="onHideItemDetails()"
+              [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            ></a>
+            <div class="flex flex-row">
+              <a
+                *ocxIfPermission="'WORKSPACE#GOTO_PERMISSION'"
+                tabindex="0"
+                id="ws_product_item_product_name_link"
+                class="p-2 pi pi-lock cursor-pointer button-icon-only"
+                (click)="onGoToProductPermission(displayedDetailItem?.productName)"
+                [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_PRODUCT_PERMISSIONS' | translate"
+                [pTooltip]="'ACTIONS.NAVIGATION.GOTO_PRODUCT_PERMISSIONS' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+              >
+              </a>
+              <a
+                *ocxIfPermission="'WORKSPACE#GOTO_APP_STORE'"
+                tabindex="0"
+                id="ws_product_item_product_name_link"
+                class="p-2 pi pi-link cursor-pointer button-icon-only"
+                (click)="onGoToProduct(displayedDetailItem?.productName)"
+                [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_PRODUCT' | translate"
+                [pTooltip]="'ACTIONS.NAVIGATION.GOTO_PRODUCT' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+              >
+              </a>
+            </div>
+          </div>
         </div>
       </ng-template>
 
@@ -264,54 +296,16 @@
            Product Config: Displaying details and Editing access pathes
       -->
       <form [formGroup]="formGroup">
-        <div class="flex flex-column row-gap-3">
-          <div class="p-inputgroup">
-            <span class="p-float-label">
-              <input
-                pInputText
-                type="text"
-                class="w-full text-responsive"
-                id="ws_product_item_product_name"
-                formControlName="displayName"
-                [pTooltip]="'PRODUCT.DISPLAY_NAME.TOOLTIP' | translate"
-                tooltipPosition="top"
-                tooltipEvent="hover"
-              />
-              <label for="ws_product_item_product_name"> {{ displayedDetailItem?.productName }}</label>
-            </span>
-            <a
-              *ocxIfPermission="'WORKSPACE#GOTO_PERMISSION'"
-              tabindex="0"
-              id="ws_product_item_product_name_link"
-              class="p-inputgroup-addon bg-primary cursor-pointer pseudo-button pi pi-lock"
-              (click)="onGoToProductPermission(displayedDetailItem?.productName)"
-              [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_PRODUCT_PERMISSIONS' | translate"
-              [pTooltip]="'ACTIONS.NAVIGATION.GOTO_PRODUCT_PERMISSIONS' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            >
-            </a>
-            <a
-              *ocxIfPermission="'WORKSPACE#GOTO_APP_STORE'"
-              tabindex="0"
-              id="ws_product_item_product_name_link"
-              class="p-inputgroup-addon bg-primary cursor-pointer pseudo-button pi pi-link"
-              (click)="onGoToProduct(displayedDetailItem?.productName)"
-              [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_PRODUCT' | translate"
-              [pTooltip]="'ACTIONS.NAVIGATION.GOTO_PRODUCT' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            >
-            </a>
-          </div>
+        <div class="flex flex-column row-gap-4">
           <!-- Editing the product base URL/Path -->
-          <span class="mt-1 p-float-label" controlErrorAnchor>
+          <span class="p-float-label" controlErrorAnchor>
             <input
               pInputText
               type="text"
               class="w-full text-responsive"
               id="ws_product_item_baseurl"
               formControlName="baseUrl"
+              [readonly]="displayedDetailItem?.bucket === 'SOURCE'"
               [pTooltip]="'PRODUCT.BASE_URL.TOOLTIP' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
