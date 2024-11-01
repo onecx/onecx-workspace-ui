@@ -73,12 +73,12 @@ export class OneCXListWorkspacesUsingProductComponent implements ocxRemoteCompon
   }
 
   ngOnChanges(): void {
-    this.findWorkspacesUsingProduct(this.productName)
+    this.findWorkspacesUsingProduct()
   }
 
-  private findWorkspacesUsingProduct(product: string) {
+  private findWorkspacesUsingProduct() {
     this.workspacesUsingProduct = this.workspaceApi
-      .searchWorkspaces({ searchWorkspacesRequest: { productName: product } })
+      .searchWorkspaces({ searchWorkspacesRequest: { productName: this.productName } })
       .pipe(
         catchError((err) => {
           console.error('searchWorkspaces():', err)

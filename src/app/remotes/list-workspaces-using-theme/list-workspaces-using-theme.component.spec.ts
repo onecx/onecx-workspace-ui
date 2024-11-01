@@ -99,7 +99,7 @@ describe('OneCXListWorkspacesUsingThemeComponent', () => {
 
     component.ngOnChanges()
 
-    expect(component['findWorkspacesUsingTheme']).toHaveBeenCalledWith('testTheme')
+    expect(component['findWorkspacesUsingTheme']).toHaveBeenCalled()
   })
 
   describe('findWorkspacesUsingTheme', () => {
@@ -114,10 +114,10 @@ describe('OneCXListWorkspacesUsingThemeComponent', () => {
       }
       wsApiSpy.searchWorkspaces.and.returnValue(of(mockResponse))
 
-      component['findWorkspacesUsingTheme']('theme1')
+      component['findWorkspacesUsingTheme']()
 
       component.workspacesUsingTheme?.subscribe((result) => {
-        expect(result).toEqual(['Workspace 1', 'Workspace 3'])
+        expect(result).toEqual(['Workspace 1', 'Workspace 2', 'Workspace 3'])
         done()
       })
     })
@@ -127,7 +127,7 @@ describe('OneCXListWorkspacesUsingThemeComponent', () => {
       const mockResponse: SearchWorkspacesResponse = { stream: [] }
       wsApiSpy.searchWorkspaces.and.returnValue(of(mockResponse))
 
-      component['findWorkspacesUsingTheme']('theme1')
+      component['findWorkspacesUsingTheme']()
 
       component.workspacesUsingTheme?.subscribe((result) => {
         expect(result).toEqual([])
@@ -139,7 +139,7 @@ describe('OneCXListWorkspacesUsingThemeComponent', () => {
       const { component } = setUp()
       wsApiSpy.searchWorkspaces.and.returnValue(throwError('Error'))
 
-      component['findWorkspacesUsingTheme']('theme1')
+      component['findWorkspacesUsingTheme']()
 
       component.workspacesUsingTheme?.subscribe((result) => {
         expect(result).toEqual([])
