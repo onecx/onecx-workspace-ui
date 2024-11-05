@@ -130,6 +130,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     const state = this.stateService.getState()
     this.menuItems = state.workspaceMenuItems
     // simplify permission checks
+    if (this.userService.hasPermission('MENU#VIEW')) this.myPermissions.push('MENU#VIEW')
     if (this.userService.hasPermission('MENU#EDIT')) this.myPermissions.push('MENU#EDIT')
     if (this.userService.hasPermission('MENU#GRANT')) this.myPermissions.push('MENU#GRANT')
     if (this.userService.hasPermission('WORKSPACE_ROLE#EDIT')) this.myPermissions.push('WORKSPACE_ROLE#EDIT')

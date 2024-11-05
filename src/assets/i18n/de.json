@@ -355,6 +355,7 @@
         "EDIT": "Menüpunkt Details",
         "CREATE": "Menüpunkt erstellen",
         "DELETE": "Menüpunkt löschen",
+        "VIEW": "Menüpunkt Details",
         "IMPORT": "Menü importieren",
         "TREE_MODAL": "Umordnen",
         "TREE_MODAL.TOOLTIP": "Menüeinträge per Drag & Drop umordnen und Ansicht in den konfigurierten Sprachen",

@@ -299,6 +299,7 @@
             <td class="p-0 hidden-xs">
               <div class="flex flex-row flex-nowrap column-gap-0 align-items-center">
                 <button
+                  *ocxIfPermission="'MENU#EDIT'"
                   pbutton
                   [id]="'ws_menu_table_row_' + rowData.key + '_disabled'"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
@@ -329,8 +330,8 @@
                   tooltipEvent="hover"
                 >
                   <span
-                    class="text-primary font-medium p-button-icon pi pi-eye"
-                    [class.pi-eye]="!myPermissions.includes('MENU#EDIT')"
+                    class="text-primary font-medium p-button-icon pi"
+                    [class.pi-eye]="myPermissions.includes('MENU#VIEW') && !myPermissions.includes('MENU#EDIT')"
                     [class.pi-pencil]="myPermissions.includes('MENU#EDIT')"
                     aria-hidden="true"
                   ></span>

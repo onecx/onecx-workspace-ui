@@ -281,6 +281,18 @@
   <ng-template pTemplate="footer">
     <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
       <p-button
+        *ngIf="changeMode === 'VIEW'"
+        id="ws_menu_detail_action_close"
+        icon="pi pi-times"
+        (onClick)="onCloseDetailDialog()"
+        [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+        [ariaLabel]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+        [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      ></p-button>
+      <p-button
+        *ngIf="changeMode !== 'VIEW'"
         id="ws_menu_detail_action_cancel"
         icon="pi pi-times"
         (onClick)="onCloseDetailDialog()"
@@ -291,6 +303,7 @@
         tooltipEvent="hover"
       ></p-button>
       <p-button
+        *ngIf="changeMode !== 'VIEW'"
         id="ws_menu_detail_action_save"
         icon="pi pi-save"
         [disabled]="!formGroup.valid"

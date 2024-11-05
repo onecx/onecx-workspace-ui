@@ -36,7 +36,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   public externUrlPattern = 'http(s)://path-to-image'
   public copyToClipboard = copyToClipboard
   public sortByLocale = sortByLocale
-  public deploymentPath: string = ''
+  public deploymentPath: string | undefined = undefined
 
   //Logo
   public preview = false

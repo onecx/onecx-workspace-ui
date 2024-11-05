@@ -35,13 +35,15 @@
           [tooltip]="'TABS.WORKSPACE.TOOLTIPS.DETAILS' | translate"
         >
           <!-- showOperatorMessage -->
-          <p-message
-            *ngIf="workspace?.operator && showOperatorMessage"
-            id="ws_detail_operator_message"
-            styleClass="absolute z-1 max-w-11 fadeout animation-duration-1000 animation-delay-3000 animation-iteration-1 animation-fill-forwards"
-            severity="warn"
-            [text]="'INTERNAL.OPERATOR_MESSAGE' | translate"
-          ></p-message>
+          <ng-container *ocxIfPermission="'WORKSPACE#EDIT'">
+            <p-message
+              *ngIf="workspace?.operator && showOperatorMessage"
+              id="ws_detail_operator_message"
+              styleClass="absolute z-1 max-w-11 fadeout animation-duration-1000 animation-delay-3000 animation-iteration-1 animation-fill-forwards"
+              severity="warn"
+              [text]="'INTERNAL.OPERATOR_MESSAGE' | translate"
+            ></p-message>
+          </ng-container>
           <app-workspace-props
             [workspace]="workspace"
             [editMode]="editMode"
