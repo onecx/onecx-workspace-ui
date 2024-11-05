@@ -68,7 +68,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   public filterBy = this.filterValueDefault
   public sortField = 'name'
   public sortOrder = -1
-  public exceptionKey: string | undefined
+  public exceptionKey: string | undefined = undefined
   public loading = false
   public changeMode: ChangeMode = 'VIEW'
   public hasCreatePermission = false

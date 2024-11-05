@@ -81,7 +81,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   @Output() changed = new EventEmitter()
 
   private readonly destroy$ = new Subject()
-  public exceptionKey: string | undefined
+  public exceptionKey: string | undefined = undefined
   public loading = true
   public editMode = false
   public hasRegisterPermission = false

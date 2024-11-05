@@ -52,7 +52,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   public loading = false
   public iamRolesLoaded = false
   public wRolesLoaded = false
-  public exceptionKey: string | undefined
+  public exceptionKey: string | undefined = undefined
   public quickFilterValue: RoleFilterType = 'ALL'
   public quickFilterValue2: RoleFilterType = 'WORKSPACE'
   public quickFilterItems: ExtendedSelectItem[]

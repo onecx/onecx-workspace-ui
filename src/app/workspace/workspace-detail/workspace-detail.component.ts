@@ -29,13 +29,13 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
 
   public actions$: Observable<Action[]> | undefined
   public editMode = false
-  public isLoading = false
+  public loading = false
   public exceptionKey: string | undefined = undefined
   public headerImageUrl?: string
   public selectedTabIndex = 0
   public dateFormat = 'medium'
   public objectDetails!: ObjectDetailItem[]
-  public workspace$!: Observable<GetWorkspaceResponse>
+  public workspace$!: Observable<Workspace>
   public workspace: Workspace | undefined
   public workspaceForRoles: Workspace | undefined
   public workspaceForSlots: Workspace | undefined
@@ -73,21 +73,22 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
 
   // prepare Observable - trigger request in HTML with async
   public getWorkspace() {
-    this.isLoading = true
+    this.loading = true
+    this.exceptionKey = undefined
     this.workspace$ = this.workspaceApi.getWorkspaceByName({ workspaceName: this.workspaceName }).pipe(
-      map((data) => {
+      map((data: GetWorkspaceResponse) => {
         if (data.resource) this.workspace = data.resource
         this.currentLogoUrl = this.getLogoUrl(data.resource)
         this.goToTab(data.resource)
-        return data
+        return data.resource ?? ({} as Workspace)
       }),
       catchError((err) => {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.WORKSPACE'
         console.error('getWorkspaceByName():', err)
-        return of({} as GetWorkspaceResponse)
+        return of({} as Workspace)
       }),
       finalize(() => {
-        this.isLoading = false
+        this.loading = false
         this.prepareActionButtons()
       })
     )
@@ -122,7 +123,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
           this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_OK' })
           this.toggleEditMode('view')
           // update observable with response data
-          this.workspace$ = new Observable((sub) => sub.next({ resource: data } as GetWorkspaceResponse))
+          this.workspace$ = new Observable((sub) => sub.next(data))
         },
         error: (err) => {
           console.error('update workspace', err)

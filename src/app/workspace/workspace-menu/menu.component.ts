@@ -75,7 +75,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   public actions$: Observable<Action[]> | undefined
   public loading = true
   public loadingRoles = false
-  public exceptionKey = ''
+  public exceptionKey: string | undefined = undefined
   public myPermissions = new Array<string>() // permissions of the user
   public treeTableContentValue = false // off => details
   public treeExpanded = false // off => collapsed
@@ -399,8 +399,8 @@ export class MenuComponent implements OnInit, OnDestroy {
    * DATA
    */
   public loadData(): void {
-    this.exceptionKey = ''
     this.loading = true
+    this.exceptionKey = undefined
 
     this.workspace$ = this.workspaceApi
       .getWorkspaceByName({ workspaceName: this.workspaceName })
