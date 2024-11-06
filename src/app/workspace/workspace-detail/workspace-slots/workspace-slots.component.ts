@@ -69,7 +69,8 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   public sortField = 'name'
   public sortOrder = -1
   public exceptionKey: string | undefined = undefined
-  public loading = false
+  public sLoading = false
+  public wpLoading = false
   public changeMode: ChangeMode = 'VIEW'
   public hasCreatePermission = false
   public hasDeletePermission = false
@@ -106,7 +107,6 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     this.loadData()
   }
   public loadData(): void {
-    this.loading = true
     this.exceptionKey = undefined
     this.declareWorkspaceProducts()
     this.declareWorkspaceSlots()
@@ -122,6 +122,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
 
   private declareWorkspaceProducts(): void {
     if (this.workspace) {
+      this.wpLoading = true
       this.wProducts$ = this.wProductApi
         .getProductsByWorkspaceId({ id: this.workspace.id! })
         .pipe(
@@ -134,7 +135,8 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
             this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.PRODUCTS'
             console.error('getProductsByWorkspaceId():', err)
             return of([] as string[])
-          })
+          }),
+          finalize(() => (this.wpLoading = false))
         )
         .pipe(takeUntil(this.destroy$))
     }
@@ -245,6 +247,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
 
   // All declared Slots of Product store Products: containing deployment information
   private declarePsSlots(): void {
+    this.sLoading = true
     this.psSlots$ = this.psProductApi.searchAvailableProducts({ productStoreSearchCriteria: {} }).pipe(
       map((res) => {
         this.psSlots = []
@@ -263,7 +266,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
         console.error('searchAvailableProducts():', err)
         return of([])
       }),
-      finalize(() => (this.loading = false))
+      finalize(() => (this.sLoading = false))
     )
   }
 
