@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, OnChanges, Output } from '@angu
 import { Location } from '@angular/common'
 import { Router } from '@angular/router'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
-import { map, Observable, Subject } from 'rxjs'
+import { map, Observable, of, Subject } from 'rxjs'
 
 import { PortalMessageService, WorkspaceService } from '@onecx/angular-integration-interface'
 
@@ -29,7 +29,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
 
   private readonly destroy$ = new Subject()
   public formGroup: FormGroup
-  public productPaths$!: Observable<string[]>
+  public productPaths$: Observable<string[]> = of([])
   public themeProductRegistered$!: Observable<boolean>
   public themes$!: Observable<string[]>
   public urlPattern = '/base-path-to-workspace'
@@ -75,7 +75,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
 
   public ngOnInit(): void {
     if (!this.isLoading) {
-      this.loadProductPaths()
       this.loadThemes()
     }
   }
@@ -83,9 +82,10 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   public ngOnChanges(): void {
     if (this.workspace) {
       this.setFormData()
-      if (this.editMode) {
-        this.formGroup.enable()
-      } else this.formGroup.disable()
+      if (this.editMode) this.formGroup.enable()
+      else this.formGroup.disable()
+      // if a home page value exists then fill it into drop down list for displaying
+      if (this.workspace.homePage) this.productPaths$ = of([this.workspace.homePage])
     } else {
       this.formGroup.reset()
       this.formGroup.disable()
@@ -203,7 +203,10 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     } else return undefined
   }
 
-  private loadProductPaths(): void {
+  public onOpenProductPathes(ev: any, paths: string[]) {
+    ev.stopPropagation()
+    // if paths already filled then prevent doing twice
+    if (paths.length > (this.workspace?.homePage ? 1 : 0)) return
     if (this.workspace) {
       this.productPaths$ = this.wProductApi.getProductsByWorkspaceId({ id: this.workspace.id! }).pipe(
         map((val: any[]) => {
@@ -211,12 +214,14 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
           if (val.length > 0) {
             for (const p of val) paths.push(p.baseUrl ?? '')
             paths.sort(sortByLocale)
-            paths.unshift('')
           }
           return paths
         })
       )
     }
+  }
+  public onGoToHomePage(ev: any) {
+    ev.stopPropagation()
   }
 
   private loadThemes(): void {

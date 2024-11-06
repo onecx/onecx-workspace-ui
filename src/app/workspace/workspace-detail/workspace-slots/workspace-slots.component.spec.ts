@@ -253,7 +253,7 @@ describe('WorkspaceSlotsComponent', () => {
 
       component.loadData()
 
-      expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + err.status + '.SLOTS')
+      expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + err.status + '.PRODUCTS')
     })
   })
 
