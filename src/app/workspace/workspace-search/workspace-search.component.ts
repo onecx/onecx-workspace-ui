@@ -23,7 +23,7 @@ import { bffImageUrl, limitText } from 'src/app/shared/utils'
   styleUrls: ['./workspace-search.component.scss']
 })
 export class WorkspaceSearchComponent implements OnInit {
-  public searchInProgress = false
+  public loading = false
   public exceptionKey: string | undefined = undefined
   public actions$: Observable<Action[]> | undefined
   public showCreateDialog = false
@@ -55,7 +55,7 @@ export class WorkspaceSearchComponent implements OnInit {
   }
 
   public search(): void {
-    this.searchInProgress = true
+    this.loading = true
     this.workspaces$ = this.workspaceApi.searchWorkspaces({ searchWorkspacesRequest: {} }).pipe(
       map((data) => (data?.stream ? data.stream.sort(this.sortWorkspacesByName) : [])),
       catchError((err) => {
@@ -63,7 +63,7 @@ export class WorkspaceSearchComponent implements OnInit {
         console.error('searchWorkspaces():', err)
         return of([] as Workspace[])
       }),
-      finalize(() => (this.searchInProgress = false))
+      finalize(() => (this.loading = false))
     )
   }
   public sortWorkspacesByName(a: WorkspaceAbstract, b: WorkspaceAbstract): number {

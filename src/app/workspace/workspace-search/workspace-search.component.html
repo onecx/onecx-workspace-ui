@@ -7,14 +7,20 @@
   >
   </ocx-page-header>
   <ocx-page-content *ngIf="workspaces$ | async as workspaces">
-    <div *ngIf="exceptionKey" id="ws_search_criteria_error" class="card px-3 align-items-center">
-      <p-message
-        id="ws_search_criteria_error_message"
-        severity="error"
-        styleClass="p-2"
-        [text]="exceptionKey | translate"
-      ></p-message>
-    </div>
+    <p-message
+      *ngIf="loading"
+      id="ws_search_message_loading"
+      severity="info"
+      styleClass="m-3 p-2"
+      [text]="'ACTIONS.LOADING' | translate"
+    ></p-message>
+    <p-message
+      *ngIf="exceptionKey"
+      id="ws_search_message_error"
+      severity="error"
+      styleClass="m-3 p-2"
+      [text]="exceptionKey | translate"
+    ></p-message>
     <p-dataView
       *ngIf="!exceptionKey"
       #table
