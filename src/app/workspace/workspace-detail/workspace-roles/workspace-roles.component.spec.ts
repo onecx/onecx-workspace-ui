@@ -171,7 +171,7 @@ describe('WorkspaceRolesComponent', () => {
 
     component.ngOnChanges(changes as unknown as SimpleChanges)
 
-    expect(component.exceptionKey).toEqual('EXCEPTIONS.HTTP_STATUS_' + '404' + '.ROLES')
+    expect(component.exceptionKey).toEqual('EXCEPTIONS.HTTP_STATUS_' + '404' + '.WS_ROLES')
   })
 
   it('should populate iamRoles on search', () => {
@@ -243,7 +243,7 @@ describe('WorkspaceRolesComponent', () => {
 
     component.ngOnChanges(changes as unknown as SimpleChanges)
 
-    expect(component.exceptionKey).toEqual('EXCEPTIONS.HTTP_STATUS_' + '404' + '.ROLES')
+    expect(component.exceptionKey).toEqual('EXCEPTIONS.HTTP_STATUS_' + '404' + '.IAM_ROLES')
   })
 
   it('should behave correctly onReload', () => {

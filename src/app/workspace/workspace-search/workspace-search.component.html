@@ -6,20 +6,26 @@
     [manualBreadcrumbs]="false"
   >
   </ocx-page-header>
-  <ocx-page-content>
-    <div *ngIf="exceptionKey" id="ws_search_criteria_error" class="card px-3 align-items-center">
-      <p-message
-        id="ws_search_criteria_error_message"
-        severity="error"
-        styleClass="p-2"
-        [text]="exceptionKey | translate"
-      ></p-message>
-    </div>
+  <ocx-page-content *ngIf="workspaces$ | async as workspaces">
+    <p-message
+      *ngIf="loading"
+      id="ws_search_message_loading"
+      severity="info"
+      styleClass="m-3 p-2"
+      [text]="'ACTIONS.LOADING' | translate"
+    ></p-message>
+    <p-message
+      *ngIf="exceptionKey"
+      id="ws_search_message_error"
+      severity="error"
+      styleClass="m-3 p-2"
+      [text]="exceptionKey | translate"
+    ></p-message>
     <p-dataView
       *ngIf="!exceptionKey"
       #table
       id="ws_search_dataview"
-      [value]="((workspaces$ | async)?.stream ?? []).sort(sortWorkspacesByName)"
+      [value]="workspaces"
       [paginator]="true"
       [alwaysShowPaginator]="true"
       [rowsPerPageOptions]="viewMode === 'grid' ? [12, 24, 60] : [10, 20, 50]"
@@ -58,7 +64,7 @@
       <ng-template let-workspaces pTemplate="listItem">
         <div
           *ngFor="let workspace of workspaces; index as i"
-          class="flex flex-row flex-nowrap justify-content-start align-items-center column-gap-3 py-1 px-3 hover:bg-gray-200 cursor-pointer"
+          class="sm:mx-3 py-1 px-3 flex flex-row flex-nowrap justify-content-start align-items-center column-gap-3 hover:bg-gray-200 cursor-pointer"
           [id]="'ws_search_data_list_row_' + i"
           [routerLink]="['./' + workspace.name]"
         >

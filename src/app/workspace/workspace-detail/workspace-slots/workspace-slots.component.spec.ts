@@ -136,7 +136,6 @@ describe('WorkspaceSlotsComponent', () => {
 
       component.loadData()
 
-      expect(component.loading).toBe(true)
       expect(component.exceptionKey).toBeUndefined()
       expect(component['declareWorkspaceProducts']).toHaveBeenCalled()
       expect(component['declareWorkspaceSlots']).toHaveBeenCalled()

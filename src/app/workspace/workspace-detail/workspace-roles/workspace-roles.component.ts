@@ -49,10 +49,11 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   public filterBy = 'name,type'
   public sortField = 'name'
   public sortOrder = -1
-  public loading = false
+  public iamLoading = false
+  public wsLoading = false
   public iamRolesLoaded = false
   public wRolesLoaded = false
-  public exceptionKey: string | undefined
+  public exceptionKey: string | undefined = undefined
   public quickFilterValue: RoleFilterType = 'ALL'
   public quickFilterValue2: RoleFilterType = 'WORKSPACE'
   public quickFilterItems: ExtendedSelectItem[]
@@ -111,11 +112,11 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
             : []
         }),
         catchError((err) => {
-          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.ROLES'
+          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.WS_ROLES'
           console.error('searchAvailableRoles():', err)
           return of([])
         }),
-        finalize(() => (this.loading = false))
+        finalize(() => (this.wsLoading = false))
       )
   }
   private searchIamRoles(): Observable<Role[]> {
@@ -128,15 +129,17 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
           : []
       }),
       catchError((err) => {
-        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.ROLES'
+        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.IAM_ROLES'
         console.error('searchAvailableRoles():', err)
         return of([])
       }),
-      finalize(() => (this.loading = false))
+      finalize(() => (this.iamLoading = false))
     )
   }
 
   private getWorkspaceRoles(): void {
+    this.wsLoading = true
+    this.exceptionKey = undefined
     const result: Role[] = []
     this.searchWorkspaceRoles().subscribe({
       next: (data) => data.forEach((r) => result.push(r)),
@@ -148,6 +151,8 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
     })
   }
   private getIamRoles(): void {
+    this.iamLoading = true
+    this.exceptionKey = undefined
     const result: Role[] = []
     this.searchIamRoles().subscribe({
       next: (data) => data.forEach((r) => result.push(r)),
@@ -171,13 +176,9 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   }
   private searchRoles(force: boolean = false): void {
     if (['WORKSPACE', 'ALL'].includes(this.quickFilterValue) && (force || !this.wRolesLoaded)) {
-      this.loading = true
-      this.exceptionKey = undefined
       this.getWorkspaceRoles()
     }
     if (['IAM', 'ALL'].includes(this.quickFilterValue) && (force || !this.iamRolesLoaded)) {
-      this.loading = true
-      this.exceptionKey = undefined
       this.getIamRoles()
     }
   }

@@ -81,8 +81,9 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   @Output() changed = new EventEmitter()
 
   private readonly destroy$ = new Subject()
-  public exceptionKey: string | undefined
-  public loading = true
+  public exceptionKey: string | undefined = undefined
+  public psLoading = false
+  public wpLoading = false
   public editMode = false
   public hasRegisterPermission = false
   public displayDetails = false
@@ -150,11 +151,10 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   }
 
   public loadData(): void {
-    this.loading = true
     this.exceptionKey = undefined
-    this.searchWProducts()
-    this.searchPsProducts()
     this.onHideItemDetails()
+    this.searchPsProducts()
+    this.searchWProducts()
     this.wProducts$
       .pipe(
         switchMap((wProducts) => {
@@ -173,6 +173,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     this.wProducts$.subscribe()
   }
   private searchWProducts(): void {
+    this.wpLoading = true
     this.wProducts$ = this.wProductApi
       .getProductsByWorkspaceId({ id: this.workspace?.id ?? '' })
       .pipe(
@@ -185,7 +186,8 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
           this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.PRODUCTS'
           console.error('getProductsByWorkspaceId():', err)
           return of([] as ExtendedProduct[])
-        })
+        }),
+        finalize(() => (this.wpLoading = false))
       )
       .pipe(takeUntil(this.destroy$))
   }
@@ -194,6 +196,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
    * GET all (!) Product Store products (which are not yet registered)
    */
   private searchPsProducts(): void {
+    this.psLoading = true
     this.psProducts$ = this.psProductApi
       .searchAvailableProducts({ productStoreSearchCriteria: {} })
       .pipe(
@@ -221,7 +224,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
           console.error('searchAvailableProducts():', err)
           return of([] as ExtendedProduct[])
         }),
-        finalize(() => (this.loading = false))
+        finalize(() => (this.psLoading = false))
       )
       .pipe(takeUntil(this.destroy$))
   }

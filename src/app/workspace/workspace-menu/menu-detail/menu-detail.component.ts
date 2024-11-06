@@ -119,11 +119,11 @@ export class MenuDetailComponent implements OnChanges {
     if (this.displayDetailDialog) {
       this.cleanupMfeUrls() // remove special entries
       this.loadMfeUrls() // load first time only
-      this.formGroup.reset()
       this.tabIndex = 0
       this.languagesDisplayed = []
+      this.formGroup.reset()
+      if (this.changeMode === 'VIEW') this.formGroup.disable()
       if (this.changeMode === 'CREATE') {
-        this.formGroup.reset()
         this.menuItem = {
           parentItemId: this.menuItemOrg?.id,
           position: this.menuItemOrg ? this.getMaxChildrenPosition(this.menuItemOrg) : 0,
@@ -135,6 +135,7 @@ export class MenuDetailComponent implements OnChanges {
       } else if (this.menuItemOrg?.id) this.getMenu() // edit
     }
   }
+
   private getMaxChildrenPosition(item: WorkspaceMenuItem): number {
     if (!item.children || item.children?.length === 0) return 0
     else return (item.children[item.children.length - 1].position ?? 0) + 1

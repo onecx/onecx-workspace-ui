@@ -75,7 +75,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   public actions$: Observable<Action[]> | undefined
   public loading = true
   public loadingRoles = false
-  public exceptionKey = ''
+  public exceptionKey: string | undefined = undefined
   public myPermissions = new Array<string>() // permissions of the user
   public treeTableContentValue = false // off => details
   public treeExpanded = false // off => collapsed
@@ -130,6 +130,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     const state = this.stateService.getState()
     this.menuItems = state.workspaceMenuItems
     // simplify permission checks
+    if (this.userService.hasPermission('MENU#VIEW')) this.myPermissions.push('MENU#VIEW')
     if (this.userService.hasPermission('MENU#EDIT')) this.myPermissions.push('MENU#EDIT')
     if (this.userService.hasPermission('MENU#GRANT')) this.myPermissions.push('MENU#GRANT')
     if (this.userService.hasPermission('WORKSPACE_ROLE#EDIT')) this.myPermissions.push('WORKSPACE_ROLE#EDIT')
@@ -398,30 +399,33 @@ export class MenuComponent implements OnInit, OnDestroy {
    * DATA
    */
   public loadData(): void {
-    this.exceptionKey = ''
     this.loading = true
+    this.exceptionKey = undefined
 
     this.workspace$ = this.workspaceApi
       .getWorkspaceByName({ workspaceName: this.workspaceName })
       .pipe(catchError((error) => of(error)))
     this.workspace$.subscribe((result) => {
       if (result instanceof HttpErrorResponse) {
+        this.loading = false
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + result.status + '.WORKSPACES'
         console.error('getWorkspaceByName():', result)
       } else if (result instanceof Object) {
         this.workspace = result.resource
-        this.currentLogoUrl = this.getLogoUrl(result.resource)
+        this.currentLogoUrl = this.getLogoUrl(this.workspace)
         this.loadMenu(false)
       } else {
+        this.loading = false
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_0.WORKSPACES'
       }
     })
   }
 
   public loadMenu(restore: boolean): void {
+    if (!this.workspace) return
     this.menuItem = undefined
     this.menu$ = this.menuApi
-      .getMenuStructure({ menuStructureSearchCriteria: { workspaceId: this.workspace?.id ?? '' } })
+      .getMenuStructure({ menuStructureSearchCriteria: { workspaceId: this.workspace.id ?? '' } })
       .pipe(catchError((error) => of(error)))
     this.menu$.subscribe((result) => {
       this.loading = true

@@ -123,7 +123,7 @@ describe('WorkspaceDetailComponent', () => {
 
         component.workspace$.subscribe({
           next: (data) => {
-            expect(data.resource).toEqual(workspace)
+            expect(data).toEqual(workspace)
             done()
           },
           error: done.fail
@@ -176,12 +176,12 @@ describe('WorkspaceDetailComponent', () => {
 
       component.workspace$.subscribe({
         next: (data) => {
-          expect(data.resource).toEqual(workspace)
+          expect(data).toEqual(workspace)
           done()
         },
         error: done.fail
       })
-      expect(component.isLoading).toBeFalsy()
+      expect(component.loading).toBeFalsy()
       expect(component.prepareActionButtons).toHaveBeenCalled()
     })
 
@@ -385,7 +385,7 @@ describe('WorkspaceDetailComponent', () => {
 
       expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_OK' })
       component.workspace$.subscribe((data) => {
-        expect(data).toEqual({ resource: workspace })
+        expect(data).toEqual(workspace)
         done()
       })
     })
