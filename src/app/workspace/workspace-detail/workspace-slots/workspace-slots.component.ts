@@ -49,7 +49,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   // data
   private readonly destroy$ = new Subject()
   public wProducts$!: Observable<string[]>
-  public wProductNames!: string[]
+  public wProductNames: string[] = []
   public wSlots$!: Observable<string[]>
   public wSlots!: CombinedSlot[] // registered workspace slots
   public wSlotsIntern!: CombinedSlot[] // temporary used ws slot array, final assigned to wSlots
@@ -262,7 +262,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
         return []
       }),
       catchError((err) => {
-        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.SLOTS'
+        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.PRODUCTS'
         console.error('searchAvailableProducts():', err)
         return of([])
       }),
