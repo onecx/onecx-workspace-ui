@@ -412,7 +412,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         console.error('getWorkspaceByName():', result)
       } else if (result instanceof Object) {
         this.workspace = result.resource
-        this.currentLogoUrl = this.getLogoUrl(result.resource)
+        this.currentLogoUrl = this.getLogoUrl(this.workspace)
         this.loadMenu(false)
       } else {
         this.loading = false

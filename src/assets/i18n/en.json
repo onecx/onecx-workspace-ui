@@ -611,6 +611,8 @@
       "WORKSPACE": "Unknown problem retrieving Workspace details - please try again.",
       "WORKSPACES": "Unknown problem retrieving Workspace data - please try again.",
       "PRODUCTS": "Unknown problem retrieving Application data - please try again.",
+      "IAM_ROLES": "Unknown problem retrieving IAM Roles - please try again.",
+      "WS_ROLES": "Unknown problem retrieving Workspace Role data - please try again.",
       "SLOTS": "Unknown problem retrieving Slot data - please try again.",
       "MENUS": "Unknown problem retrieving Menu data - please try again."
     },
@@ -618,6 +620,8 @@
       "WORKSPACE": "You are not authorized to see Workspace details.",
       "WORKSPACES": "You are not authorized to see Workspaces.",
       "PRODUCTS": "You are not authorized to see Applications.",
+      "IAM_ROLES": "You are not authorized to see IAM Roles.",
+      "WS_ROLES": "You are not authorized to see Workspace Roles.",
       "SLOTS": "You are not authorized to see Slots.",
       "MENUS": "You are not authorized to see Menus."
     },
@@ -625,6 +629,8 @@
       "WORKSPACE": "You have no permissions to see Workspace details.",
       "WORKSPACES": "You have no permissions to see Workspaces.",
       "PRODUCTS": "You have no permissions to see Applications.",
+      "IAM_ROLES": "You have no permissions to see IAM Roles.",
+      "WS_ROLES": "You have no permissions to see Workspace Roles.",
       "SLOTS": "You have no permissions to see Slots.",
       "MENUS": "You have no permissions to see Menus."
     },
@@ -632,6 +638,8 @@
       "WORKSPACE": "The Workspace could not be found.",
       "WORKSPACES": "No Workspaces could be found.",
       "PRODUCTS": "No Applications could be load.",
+      "IAM_ROLES": "No IAM Roles could be load.",
+      "WS_ROLES": "No Workspace Roles could be load.",
       "SLOTS": "No Slots could be load.",
       "MENUS": "No Menus could be found."
     },
@@ -639,6 +647,8 @@
       "WORKSPACE": "Unknown server problem retrieving Workspace details - please try again.",
       "WORKSPACES": "Unknown server problem retrieving Workspace data - please try again.",
       "PRODUCTS": "Unknown server problem retrieving Application data - please try again.",
+      "IAM_ROLES": "Unknown server problem retrieving IAM Role data - please try again.",
+      "WS_ROLES": "Unknown server problem retrieving Workspace Role data - please try again.",
       "SLOTS": "Unknown server problem retrieving Slot data - please try again.",
       "MENUS": "Unknown server problem retrieving Menu data - please try again."
     }

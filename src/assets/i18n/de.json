@@ -611,6 +611,8 @@
       "WORKSPACE": "Unbekanntes Problem beim Abrufen von Workspace Details - Bitte versuchen sie es noch einmal.",
       "WORKSPACES": "Unbekanntes Problem beim Abrufen von Workspace-Daten - Bitte versuchen sie es noch einmal.",
       "PRODUCTS": "Unbekanntes Problem beim Abrufen von Applikation-Daten - Bitte versuchen sie es noch einmal.",
+      "IAM_ROLES": "Unbekanntes Problem beim Abrufen von Rollen aus dem IAM - Bitte versuchen sie es noch einmal.",
+      "WS_ROLES": "Unbekanntes Problem beim Abrufen von Workspace-Rollen - Bitte versuchen sie es noch einmal.",
       "SLOTS": "Unbekanntes Problem beim Abrufen von Slot-Daten - Bitte versuchen sie es noch einmal.",
       "MENUS": "Unbekanntes Problem beim Abrufen von Menü-Daten - Bitte versuchen sie es noch einmal."
     },
@@ -618,6 +620,8 @@
       "WORKSPACE": "Sie sind nicht autorisiert um Workspace Details zu sehen.",
       "WORKSPACES": "Sie sind nicht autorisiert um Workspaces zu sehen.",
       "PRODUCTS": "Sie sind nicht autorisiert um Applikationen zu sehen.",
+      "IAM_ROLES": "Sie sind nicht autorisiert um Rollen aus dem IAM zu sehen.",
+      "WS_ROLES": "Sie sind nicht autorisiert um Workspace-Rollen zu sehen.",
       "SLOTS": "Sie sind nicht autorisiert um Slots zu sehen.",
       "MENUS": "Sie sind nicht autorisiert um Menüs zu sehen."
     },
@@ -625,22 +629,28 @@
       "WORKSPACE": "Sie haben keine Rechte um Workspace Details zu sehen.",
       "WORKSPACES": "Sie haben keine Rechte um Workspaces zu sehen.",
       "PRODUCTS": "Sie haben keine Rechte um Applikationen zu sehen.",
+      "IAM_ROLES": "Sie haben keine Rechte um Rollen aus dem IAM zu sehen.",
+      "WS_ROLES": "Sie haben keine Rechte um Workspace-Rollen zu sehen.",
       "SLOTS": "Sie haben keine Rechte um Slots zu sehen.",
       "MENUS": "Sie haben keine Rechte um Menüs zu sehen."
     },
     "HTTP_STATUS_404": {
       "WORKSPACE": "Der Workspace wurde nicht gefunden.",
       "WORKSPACES": "Es konnten keine Workspaces gefunden werden.",
-      "PRODUCTS": "Es konnten keine Applikationen geladen werden.",
-      "SLOTS": "Es konnten keine Slots geladen werden.",
+      "PRODUCTS": "Es konnten keine Applikationen gefunden werden.",
+      "IAM_ROLES": "Es konnten keine Rollen aus dem IAM gefunden werden.",
+      "WS_ROLES": "Es konnten keine Workspace-Rollen gefunden werden.",
+      "SLOTS": "Es konnten keine Slots gefunden werden.",
       "MENUS": "Es konnten keine Menüs gefunden werden."
     },
     "HTTP_STATUS_500": {
       "WORKSPACE": "Unbekanntes Server-Problem beim Abrufen von Workspace-Details - Bitte versuchen sie es noch einmal.",
       "WORKSPACES": "Unbekanntes Server-Problem beim Abrufen von Workspace-Daten - Bitte versuchen sie es noch einmal.",
       "PRODUCTS": "Unbekanntes Server-Problem beim Abrufen von Applikation-Daten - Bitte versuchen sie es noch einmal.",
-      "SLOTS": "Unbekanntes Server-Problem beim Abrufen von Slot-Daten - Bitte versuchen sie es noch einmal.",
-      "MENUS": "Unbekanntes Server-Problem beim Abrufen von Menü-Daten - Bitte versuchen sie es noch einmal."
+      "IAM_ROLES": "Unbekanntes Server-Problem beim Abrufen von Rollen aus dem IAM - Bitte versuchen sie es noch einmal.",
+      "WS_ROLES": "Unbekanntes Server-Problem beim Abrufen von Workspace-Rollen - Bitte versuchen sie es noch einmal.",
+      "SLOTS": "Unbekanntes Server-Problem beim Abrufen von Slots - Bitte versuchen sie es noch einmal.",
+      "MENUS": "Unbekanntes Server-Problem beim Abrufen von Menüdaten - Bitte versuchen sie es noch einmal."
     }
   }
 }

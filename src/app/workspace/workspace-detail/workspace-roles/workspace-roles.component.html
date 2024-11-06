@@ -1,3 +1,11 @@
+<p-message
+  *ngIf="iamLoading || wsLoading"
+  severity="info"
+  styleClass="m-2 p-2"
+  [text]="'ACTIONS.LOADING' | translate"
+></p-message>
+<p-message *ngIf="exceptionKey" severity="error" styleClass="m-2 p-2" [text]="exceptionKey | translate"></p-message>
+
 <p-dataView
   id="ws_roles_dataview"
   [value]="roles"
