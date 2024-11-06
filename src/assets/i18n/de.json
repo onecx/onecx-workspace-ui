@@ -283,7 +283,7 @@
         "CREATE": "Rolle erstellen",
         "DELETE": "Rolle löschen",
         "EDIT": "Rolle ändern",
-        "VIEW": "Rolle ansehen"
+        "VIEW": "Rollendetails"
       },
       "EDIT.TOOLTIP": "Rollentyp",
       "QUICK_FILTER": {

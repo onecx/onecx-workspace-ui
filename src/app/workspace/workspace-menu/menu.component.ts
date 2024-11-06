@@ -407,6 +407,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       .pipe(catchError((error) => of(error)))
     this.workspace$.subscribe((result) => {
       if (result instanceof HttpErrorResponse) {
+        this.loading = false
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + result.status + '.WORKSPACES'
         console.error('getWorkspaceByName():', result)
       } else if (result instanceof Object) {
@@ -414,15 +415,17 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.currentLogoUrl = this.getLogoUrl(result.resource)
         this.loadMenu(false)
       } else {
+        this.loading = false
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_0.WORKSPACES'
       }
     })
   }
 
   public loadMenu(restore: boolean): void {
+    if (!this.workspace) return
     this.menuItem = undefined
     this.menu$ = this.menuApi
-      .getMenuStructure({ menuStructureSearchCriteria: { workspaceId: this.workspace?.id ?? '' } })
+      .getMenuStructure({ menuStructureSearchCriteria: { workspaceId: this.workspace.id ?? '' } })
       .pipe(catchError((error) => of(error)))
     this.menu$.subscribe((result) => {
       this.loading = true

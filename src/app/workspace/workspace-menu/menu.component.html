@@ -10,16 +10,14 @@
     [figureBackground]="!currentLogoUrl"
   >
   </ocx-page-header>
+  <ocx-page-header *ngIf="!workspace" [subheader]="'DIALOG.MENU.SUBHEADER' | translate"> </ocx-page-header>
 
   <ocx-page-content>
-    <!-- Loading and preparing menu -->
-    <div *ngIf="loading" class="card">
-      <p-message severity="info" styleClass="p-2" [text]="'ACTIONS.LOADING' | translate"></p-message>
-    </div>
-    <!-- Menu does NOT exist -->
+    <p-message *ngIf="exceptionKey" severity="error" styleClass="m-3 p-2" [text]="exceptionKey | translate"></p-message>
+    <p-message *ngIf="loading" severity="info" styleClass="m-3 p-2" [text]="'ACTIONS.LOADING' | translate"></p-message>
     <div
-      *ngIf="!loading && menuNodes.length === 0"
-      class="px-3 card flex flex-wrap justify-content-between align-items-center"
+      *ngIf="!loading && !exceptionKey && menuNodes.length === 0"
+      class="m-3 flex flex-wrap justify-content-between align-items-center"
     >
       <p-message severity="info" styleClass="p-2" [text]="'DIALOG.MENU.MENU_NOT_EXIST' | translate"></p-message>
       <p-button
@@ -39,7 +37,7 @@
       [frozenColumns]="treeFrozenColumns"
     -->
     <p-treeTable
-      *ngIf="menuNodes.length > 0"
+      *ngIf="!loading && !exceptionKey && menuNodes.length > 0"
       #menuTree
       id="ws_menu_table"
       styleClass="px-2 sm:px-3 mb-3"
