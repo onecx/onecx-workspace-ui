@@ -20,8 +20,6 @@ describe('WorkspaceSearchComponent', () => {
   let fixture: ComponentFixture<WorkspaceSearchComponent>
   let mockActivatedRoute: ActivatedRoute
   const mockRouter = { navigate: jasmine.createSpy('navigate') }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let mockNewWorkspaceWindow: any
 
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['info', 'error'])
   const wApiServiceSpy = {
@@ -77,9 +75,9 @@ describe('WorkspaceSearchComponent', () => {
 
     component.workspaces$.subscribe({
       next: (result) => {
-        if (result.stream) {
-          expect(result.stream.length).toBe(1)
-          result.stream.forEach((w) => {
+        if (result) {
+          expect(result.length).toBe(1)
+          result.forEach((w) => {
             expect(w.name).toEqual('name')
           })
         }
@@ -96,8 +94,8 @@ describe('WorkspaceSearchComponent', () => {
 
     component.workspaces$.subscribe({
       next: (result) => {
-        if (result.stream) {
-          expect(result.stream.length).toBe(0)
+        if (result) {
+          expect(result.length).toBe(0)
         }
         done()
       },
@@ -138,7 +136,8 @@ describe('WorkspaceSearchComponent', () => {
   })
 
   it('should behave correctly onGotoWorkspace', () => {
-    mockNewWorkspaceWindow = spyOn(window, 'open')
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const mockNewWorkspaceWindow = spyOn(window, 'open')
     const mockEvent = {
       stopPropagation: jasmine.createSpy()
     }
@@ -247,8 +246,8 @@ describe('WorkspaceSearchComponent', () => {
 
     component.workspaces$.subscribe({
       next: (result) => {
-        if (result.stream) {
-          expect(result.stream.length).toBe(0)
+        if (result) {
+          expect(result.length).toBe(0)
           expect(component.exceptionKey).toEqual('EXCEPTIONS.HTTP_STATUS_403.WORKSPACES')
         }
         done()

@@ -6,7 +6,7 @@
     [manualBreadcrumbs]="false"
   >
   </ocx-page-header>
-  <ocx-page-content>
+  <ocx-page-content *ngIf="workspaces$ | async as workspaces">
     <div *ngIf="exceptionKey" id="ws_search_criteria_error" class="card px-3 align-items-center">
       <p-message
         id="ws_search_criteria_error_message"
@@ -19,7 +19,7 @@
       *ngIf="!exceptionKey"
       #table
       id="ws_search_dataview"
-      [value]="((workspaces$ | async)?.stream ?? []).sort(sortWorkspacesByName)"
+      [value]="workspaces"
       [paginator]="true"
       [alwaysShowPaginator]="true"
       [rowsPerPageOptions]="viewMode === 'grid' ? [12, 24, 60] : [10, 20, 50]"

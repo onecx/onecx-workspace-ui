@@ -11,7 +11,6 @@ import { getLocation } from '@onecx/accelerator'
 import {
   ImagesInternalAPIService,
   RefType,
-  SearchWorkspacesResponse,
   Workspace,
   WorkspaceAPIService,
   WorkspaceAbstract
@@ -31,7 +30,7 @@ export class WorkspaceSearchComponent implements OnInit {
   public showImportDialog = false
   public limitText = limitText
 
-  public workspaces$!: Observable<SearchWorkspacesResponse>
+  public workspaces$!: Observable<Workspace[]>
   public viewMode: 'list' | 'grid' = 'grid'
   public filter: string | undefined
   public sortField = 'displayName'
@@ -58,10 +57,11 @@ export class WorkspaceSearchComponent implements OnInit {
   public search(): void {
     this.searchInProgress = true
     this.workspaces$ = this.workspaceApi.searchWorkspaces({ searchWorkspacesRequest: {} }).pipe(
+      map((data) => (data?.stream ? data.stream.sort(this.sortWorkspacesByName) : [])),
       catchError((err) => {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.WORKSPACES'
         console.error('searchWorkspaces():', err)
-        return of({ stream: [] } as SearchWorkspacesResponse)
+        return of([] as Workspace[])
       }),
       finalize(() => (this.searchInProgress = false))
     )
