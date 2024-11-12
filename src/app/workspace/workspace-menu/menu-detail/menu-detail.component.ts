@@ -255,7 +255,7 @@ export class MenuDetailComponent implements OnChanges {
 
       this.getFormValues()
 
-      // if language panell was initialized then take over content
+      // if language panel was initialized then take over content
       if (this.languagesDisplayed.length > 0) {
         const i18n: I18N = {}
         for (const l of this.languagesDisplayed) {
