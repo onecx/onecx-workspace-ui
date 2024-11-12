@@ -223,11 +223,11 @@
         <div class="font-semibold text-primary text-xl">{{ displayedDetailItem.displayName }}</div>
         <div class="flex flex-row column-gap-3">
           <div class="flex flex-column">
-            <div class="text-sm">{{ displayedDetailItem?.productName }}</div>
-            <div class="text-sm">{{ displayedDetailItem?.version }}</div>
+            <div class="text-sm">{{ displayedDetailItem.productName }}</div>
+            <div class="text-sm">{{ displayedDetailItem.version }}</div>
           </div>
           <span
-            *ngIf="displayedDetailItem?.undeployed"
+            *ngIf="displayedDetailItem.undeployed"
             id="ws_products_detail_header_undeployed"
             class="p-2 danger-action-text font-bold pi pi-ban"
             [pTooltip]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
@@ -235,7 +235,7 @@
             tooltipEvent="hover"
           ></span>
           <span
-            *ngIf="!displayedDetailItem?.undeployed && displayedDetailItem?.changedComponents"
+            *ngIf="!displayedDetailItem.undeployed && displayedDetailItem.changedComponents"
             id="ws_products_detail_header_changed_mfe"
             class="p-2 danger-action-text font-bold pi pi-exclamation-circle"
             [pTooltip]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
@@ -259,7 +259,7 @@
             tabindex="0"
             id="ws_products_detail_product_name_link"
             class="p-2 pi pi-lock cursor-pointer button-icon-only"
-            (click)="onGoToProductPermission(displayedDetailItem?.productName)"
+            (click)="onGoToProductPermission(displayedDetailItem.productName)"
             [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_PRODUCT_PERMISSIONS' | translate"
             [pTooltip]="'ACTIONS.NAVIGATION.GOTO_PRODUCT_PERMISSIONS' | translate"
             tooltipPosition="top"
@@ -271,7 +271,7 @@
             tabindex="0"
             id="ws_products_detail_product_name_link"
             class="p-2 pi pi-link cursor-pointer button-icon-only"
-            (click)="onGoToProduct(displayedDetailItem?.productName)"
+            (click)="onGoToProduct(displayedDetailItem.productName)"
             [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_PRODUCT' | translate"
             [pTooltip]="'ACTIONS.NAVIGATION.GOTO_PRODUCT' | translate"
             tooltipPosition="top"
@@ -295,7 +295,7 @@
             class="w-full text-responsive"
             id="ws_products_detail_baseurl"
             formControlName="baseUrl"
-            [readonly]="displayedDetailItem?.bucket === 'SOURCE'"
+            [readonly]="displayedDetailItem.bucket === 'SOURCE'"
             [pTooltip]="'PRODUCT.BASE_URL.TOOLTIP' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
@@ -309,7 +309,7 @@
                Some of the displayed data are not available in Workspace database.
                Such data are picked up from product store product.
           -->
-        <div *ngFor="let app of displayedDetailItem?.apps | keyvalue; let i = index">
+        <div *ngFor="let app of displayedDetailItem.apps | keyvalue; let i = index">
           <p-divider align="center" styleClass="m-0 p-0">
             <div class="font-bold text-primary text-responsive">{{ app.key }}</div>
             <div class="text-xs">Microfrontend</div>
@@ -317,7 +317,7 @@
 
           <div *ngIf="app.value.modules" class="text-sm">
             <div class="mb-1 font-bold">Modules</div>
-            <div *ngIf="app.value.modules && displayedDetailItem?.bucket === 'TARGET'" formArrayName="modules">
+            <div *ngIf="app.value.modules && displayedDetailItem.bucket === 'TARGET'" formArrayName="modules">
               <div *ngFor="let mfe of moduleControls.controls; let i = index">
                 <div
                   [formGroupName]="i"
@@ -379,7 +379,7 @@
               </div>
             </div>
 
-            <div *ngIf="app.value.modules && displayedDetailItem?.bucket === 'SOURCE'">
+            <div *ngIf="app.value.modules && displayedDetailItem.bucket === 'SOURCE'">
               <div *ngFor="let smfe of app.value.modules; let i = index" class="flex flex-column row-gap-2">
                 <div class="flex flex-row flex-nowrap column-gap-2">
                   <span [id]="'ws_products_detail_component_' + i + '_exposed_module'" class="mr-2">
@@ -439,12 +439,12 @@
           </div>
         </div>
 
-        <div *ngIf="displayedDetailItem?.slots">
+        <div *ngIf="displayedDetailItem.slots">
           <p-divider align="center" styleClass="mt-0 mb-1">
             <div class="px-3 font-bold text-primary">Slots</div></p-divider
           >
           <div
-            *ngFor="let item of displayedDetailItem?.slots; let i = index"
+            *ngFor="let item of displayedDetailItem.slots; let i = index"
             class="ml-2 flex flex-row align-items-center column-gap-3"
           >
             <span [id]="'ws_products_detail_slot_' + i + '_name'" class="text-responsive">{{ item.name }}</span>
@@ -494,7 +494,7 @@
           tooltipEvent="hover"
         ></p-button>
         <p-button
-          *ngIf="hasRegisterPermission && displayedDetailItem?.bucket === 'TARGET' && formGroup.valid"
+          *ngIf="hasRegisterPermission && displayedDetailItem.bucket === 'TARGET' && formGroup.valid"
           id="ws_products_detail_action_save"
           icon="pi pi-save"
           (onClick)="onProductSave($event)"
