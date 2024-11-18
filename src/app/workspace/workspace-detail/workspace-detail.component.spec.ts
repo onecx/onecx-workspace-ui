@@ -113,9 +113,7 @@ describe('WorkspaceDetailComponent', () => {
 
     describe('onTabChange', () => {
       it('should set selectedTabIndex onChange', (done) => {
-        const event = {
-          index: 1
-        }
+        const event = { index: 1 }
         apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
         component.workspaceName = 'name'
 
@@ -135,9 +133,7 @@ describe('WorkspaceDetailComponent', () => {
       })
 
       it('should set workspace for roles', () => {
-        const event = {
-          index: 3
-        }
+        const event = { index: 3 }
 
         component.onTabChange(event, component.workspace)
 
@@ -166,11 +162,13 @@ describe('WorkspaceDetailComponent', () => {
     })
   })
 
-  describe('search workspace Data', () => {
+  describe('search workspace Data and go to roles', () => {
     it('should getWorkspaceData onInit', (done) => {
       apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
       spyOn(component, 'prepareActionButtons')
+      spyOn(component, 'onTabChange')
       component.workspaceName = 'name'
+      component.uriFragment = 'roles'
 
       component.getWorkspace()
 
@@ -183,6 +181,7 @@ describe('WorkspaceDetailComponent', () => {
       })
       expect(component.loading).toBeFalsy()
       expect(component.prepareActionButtons).toHaveBeenCalled()
+      expect(component.onTabChange).toHaveBeenCalled()
     })
 
     it('should display error msg if get api call fails', (done) => {
