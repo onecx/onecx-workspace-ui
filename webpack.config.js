@@ -39,7 +39,7 @@ const config = withModuleFederationPlugin({
     '@onecx/portal-integration-angular': { requiredVersion: 'auto', includeSecondaries: true },
     '@onecx/portal-layout-styles': { requiredVersion: 'auto', includeSecondaries: true }
   }),
-  sharedMappings: ['@onecx/portal-integration-angular', '@ngneat/error-tailor']
+  sharedMappings: ['@onecx/portal-integration-angular']
 })
 config.devServer = { allowedHosts: 'all' }
 

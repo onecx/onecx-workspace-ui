@@ -9,9 +9,31 @@
 @include table-inline-buttons;
 
 :host ::ng-deep {
+  .p-treetable-tbody {
+    tr[aria-level='2'],
+    tr[aria-level='4'],
+    tr[aria-level='6'] {
+      td {
+        background-color: var(--table-body-row-even-bg);
+      }
+    }
+  }
+
   .p-dialog .p-dialog-content {
     padding-bottom: 0;
     overflow-y: hidden;
+  }
+
+  .small-toggle-button.p-togglebutton.p-button:not(.p-disabled) {
+    background: var(--primary-color);
+    &:hover {
+      background: var(--button-hover-bg);
+    }
+    .p-button-label,
+    .p-button-icon-left,
+    .p-button-icon-right {
+      color: var(--primary-text-color);
+    }
   }
 
   .p-treetable {
@@ -21,6 +43,9 @@
     table {
       width: unset;
       .p-treetable-thead {
+        tr th.role-name {
+          word-break: break-all;
+        }
         tr th:last-of-type {
           border-right: none !important;
         }

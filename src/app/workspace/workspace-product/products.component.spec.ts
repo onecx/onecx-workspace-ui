@@ -165,7 +165,7 @@ describe('ProductComponent', () => {
     component = fixture.componentInstance
     component.workspace = workspace
     fb = TestBed.inject(FormBuilder)
-    component['renderer'] = mockRenderer
+    component.renderer = mockRenderer
     fixture.detectChanges()
   })
 
