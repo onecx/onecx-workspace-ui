@@ -181,11 +181,8 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
   }
 
   public onExportWorkspace() {
-    if (!this.workspace) {
-      this.msgService.error({ summaryKey: 'DIALOG.WORKSPACE.NOT_FOUND' })
-      return
-    }
-    this.workspaceExportVisible = true
+    if (this.workspace) this.workspaceExportVisible = true
+    else this.msgService.error({ summaryKey: 'DIALOG.WORKSPACE.NOT_FOUND' })
   }
 
   private toggleEditMode(forcedMode?: 'edit' | 'view'): void {

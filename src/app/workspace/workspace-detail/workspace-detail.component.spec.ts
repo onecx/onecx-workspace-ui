@@ -233,7 +233,7 @@ describe('WorkspaceDetailComponent', () => {
     })
   })
 
-  it('should display error if portalNotFound on export', () => {
+  it('should display error if workspaceNotFound on export', () => {
     component.workspace = undefined
 
     component.onExportWorkspace()
@@ -241,6 +241,22 @@ describe('WorkspaceDetailComponent', () => {
     expect(msgServiceSpy.error).toHaveBeenCalledWith({
       summaryKey: 'DIALOG.WORKSPACE.NOT_FOUND'
     })
+  })
+
+  it('should open export dialog', () => {
+    component.workspace = workspace
+
+    component.onExportWorkspace()
+
+    expect(component.workspaceExportVisible).toBeTrue()
+  })
+
+  it('should on product changes', () => {
+    component.workspace = workspace
+
+    component.onProductChanges()
+
+    expect(component.workspaceForSlots).toEqual(workspace)
   })
 
   describe('get logoUrl', () => {
@@ -261,7 +277,7 @@ describe('WorkspaceDetailComponent', () => {
 
   describe('test action buttons', () => {
     it('should have prepared action buttons onInit: close', () => {
-      apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))
+      apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
       component.ngOnInit()
       let actions: any = []
       component.actions$!.subscribe((act) => (actions = act))
@@ -286,7 +302,7 @@ describe('WorkspaceDetailComponent', () => {
     })
 
     it('should have prepared action buttons onInit: toggleEditMode', () => {
-      apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))
+      apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
       component.editMode = false
       component.ngOnInit()
       let actions: any = []
@@ -298,7 +314,7 @@ describe('WorkspaceDetailComponent', () => {
     })
 
     it('should have prepared action buttons onInit: update workspace props', () => {
-      apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))
+      apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
       component.workspacePropsComponent = new MockWorkspacePropsComponent() as unknown as WorkspacePropsComponent
       component.selectedTabIndex = 0
       component.ngOnInit()
@@ -311,7 +327,7 @@ describe('WorkspaceDetailComponent', () => {
     })
 
     it('should have prepared action buttons onInit: update workspace contact', () => {
-      apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))
+      apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
       component.workspaceContactComponent = new MockWorkspaceContactComponent() as unknown as WorkspaceContactComponent
       component.selectedTabIndex = 1
       component.ngOnInit()
@@ -324,7 +340,7 @@ describe('WorkspaceDetailComponent', () => {
     })
 
     it('should have prepared action buttons onInit: update workspace: default', () => {
-      apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))
+      apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
       component.selectedTabIndex = 99
       spyOn(console, 'error')
       component.ngOnInit()
@@ -337,7 +353,7 @@ describe('WorkspaceDetailComponent', () => {
     })
 
     it('should have prepared action buttons onInit: workspaceExportVisible', () => {
-      apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))
+      apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
       spyOn(component, 'onExportWorkspace')
 
       component.ngOnInit()
@@ -346,11 +362,12 @@ describe('WorkspaceDetailComponent', () => {
 
       actions[4].actionCallback()
 
+      expect(actions[4].icon).toEqual('pi pi-download')
       expect(component.onExportWorkspace).toHaveBeenCalled()
     })
 
     it('should have prepared action buttons onInit: toggleEditMode', () => {
-      apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))
+      apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
       const toggleEditModeSpy = spyOn<any>(component, 'toggleEditMode').and.callThrough()
       component.ngOnInit()
       let actions: any = []
@@ -362,7 +379,7 @@ describe('WorkspaceDetailComponent', () => {
     })
 
     it('should have prepared action buttons onInit: workspaceDeleteVisible', () => {
-      apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))
+      apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
       component.ngOnInit()
       let actions: any = []
       component.actions$!.subscribe((act) => (actions = act))
