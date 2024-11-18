@@ -46,7 +46,7 @@
     "@angular/platform-browser": "^18.2.6",
     "@angular/platform-browser-dynamic": "^18.2.6",
     "@angular/router": "^18.2.6",
-    "@ngneat/error-tailor": "^5.0.1",
+    "@ngneat/error-tailor": "5.0.1",
     "@ngneat/until-destroy": "^10.0.0",
     "@ngrx/effects": "^18.0.1",
     "@ngrx/router-store": "^18.0.1",

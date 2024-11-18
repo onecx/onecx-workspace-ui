@@ -125,9 +125,9 @@ import { ImageContainerComponent } from './image-container/image-container.compo
     LabelResolver,
     { provide: DialogService, useClass: PortalDialogService },
     provideErrorTailorConfig({
-      controlErrorsOn: { async: true, blur: true, change: true },
       errors: {
         useFactory: (i18n: TranslateService) => {
+          console.log('error tailor')
           return {
             required: () => i18n.instant('VALIDATION.ERRORS.EMPTY_REQUIRED_FIELD'),
             maxlength: ({ requiredLength }) =>
@@ -144,7 +144,8 @@ import { ImageContainerComponent } from './image-container/image-container.compo
         return ['INPUT', 'TEXTAREA', 'SELECT', 'CUSTOM-DATE', 'P-CALENDAR', 'P-DROPDOWN'].some(
           (selector) => element.tagName === selector
         )
-      }
+      },
+      controlErrorsOn: { async: true, blur: true, change: true }
     })
   ]
 })
