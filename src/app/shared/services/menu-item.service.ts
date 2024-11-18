@@ -51,7 +51,7 @@ export class MenuItemService {
   }
 
   private stripPath(path: string | undefined): string | undefined {
-    return path?.slice(path.at(0) === '/' ? 1 : 0, path.at(-1) === '/' ? -1 : path.length)
+    return path?.slice(path[0] === '/' ? 1 : 0, path[-1] === '/' ? -1 : path.length)
   }
 
   private expandCurrentMfeMenuItems(items: MenuItem[], currentMfePath: string): boolean {

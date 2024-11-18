@@ -99,7 +99,7 @@ const state: MenuState = {
   workspaceMenuItems: []
 }
 
-fdescribe('MenuComponent', () => {
+describe('MenuComponent', () => {
   let component: MenuComponent
   let fixture: ComponentFixture<MenuComponent>
 
@@ -714,16 +714,16 @@ fdescribe('MenuComponent', () => {
     })
 
     it('should handle roles without name in sortRoleName function', () => {
-      const wRole2: WorkspaceRole = { id: 'role id2', name: 'role name2', description: 'role descr2' }
-      const wRole3: WorkspaceRole = { id: 'role id3', name: 'role name3', description: 'role descr3' }
+      const wRole1: WorkspaceRole = { id: 'role id1', name: 'role name1', description: 'descr1' }
+      const wRole2: WorkspaceRole = { id: 'role id2', name: 'role name2', description: 'descr2' }
       menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
-      wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: [wRole3, wRole2] }))
+      wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: [wRole1, wRole2] }))
       assgmtApiServiceSpy.searchAssignments.and.returnValue(of({ stream: [assgmt] }))
 
       component.displayRoles = true
       component.loadMenu(true)
 
-      expect(component.wRoles).toEqual([wRole3, wRole2])
+      expect(component.wRoles).toEqual([wRole1, wRole2])
 
       component.onRoleFilterChange('2')
 
