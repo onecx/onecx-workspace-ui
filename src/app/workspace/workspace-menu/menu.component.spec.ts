@@ -26,6 +26,7 @@ import { TranslateTestingModule } from 'ngx-translate-testing'
 import { HttpErrorResponse, provideHttpClient } from '@angular/common/http'
 import { TreeNode } from 'primeng/api'
 import { TreeTableNodeExpandEvent } from 'primeng/treetable'
+import * as utils from 'src/app/shared/utils'
 
 const workspace: Workspace = {
   id: 'id',
@@ -98,7 +99,7 @@ const state: MenuState = {
   workspaceMenuItems: []
 }
 
-describe('MenuComponent', () => {
+fdescribe('MenuComponent', () => {
   let component: MenuComponent
   let fixture: ComponentFixture<MenuComponent>
 
@@ -239,54 +240,56 @@ describe('MenuComponent', () => {
   /**
    * UI ACTIONS
    */
-  it('should call loadMenu onReload', () => {
-    spyOn(component, 'loadMenu')
+  describe('on UI events', () => {
+    it('should call loadMenu onReload', () => {
+      spyOn(component, 'loadMenu')
 
-    component.onReload()
+      component.onReload()
 
-    expect(component.loadMenu).toHaveBeenCalledWith(true)
-  })
+      expect(component.loadMenu).toHaveBeenCalledWith(true)
+    })
 
-  it('should change the tree table content: display of roles', () => {
-    component.displayRoles = false
-    const event = { checked: true }
+    it('should change the tree table content: display of roles', () => {
+      component.displayRoles = false
+      const event = { checked: true }
 
-    component.onToggleTreeTableContent(event)
+      component.onToggleTreeTableContent(event)
 
-    expect(component.displayRoles).toBeTrue()
-  })
+      expect(component.displayRoles).toBeTrue()
+    })
 
-  it('should return true if an object is empty', () => {
-    expect(component.isObjectEmpty({})).toBeTrue()
-    expect(component.isObjectEmpty({ key: 'value' })).toBeFalse()
-  })
+    it('should return true if an object is empty', () => {
+      expect(component.isObjectEmpty({})).toBeTrue()
+      expect(component.isObjectEmpty({ key: 'value' })).toBeFalse()
+    })
 
-  it('should toggle item.disabled and call updateMenuItem with success', () => {
-    const event = { stopPropagation: jasmine.createSpy('stopPropagation') } as any
-    const updatedItem = { ...mockMenuItems[0], modificationCount: 1, modificationDate: new Date(), disabled: true }
+    it('should toggle item.disabled and call updateMenuItem with success', () => {
+      const event = { stopPropagation: jasmine.createSpy('stopPropagation') } as any
+      const updatedItem = { ...mockMenuItems[0], modificationCount: 1, modificationDate: new Date(), disabled: true }
 
-    menuApiServiceSpy.updateMenuItem.and.returnValue(of(updatedItem))
+      menuApiServiceSpy.updateMenuItem.and.returnValue(of(updatedItem))
 
-    component.onToggleDisable(event, mockMenuItems[0])
+      component.onToggleDisable(event, mockMenuItems[0])
 
-    expect(event.stopPropagation).toHaveBeenCalled()
-    expect(component.displayMenuDetail).toBe(false)
-    expect(component.displayMenuDelete).toBe(false)
-    expect(mockMenuItems[0].disabled).toBe(true)
-    expect(mockMenuItems[0].modificationCount).toBe(updatedItem.modificationCount)
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' })
-  })
+      expect(event.stopPropagation).toHaveBeenCalled()
+      expect(component.displayMenuDetail).toBe(false)
+      expect(component.displayMenuDelete).toBe(false)
+      expect(mockMenuItems[0].disabled).toBe(true)
+      expect(mockMenuItems[0].modificationCount).toBe(updatedItem.modificationCount)
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' })
+    })
 
-  it('should call updateMenuItem and handle error', () => {
-    const event = { stopPropagation: jasmine.createSpy('stopPropagation') } as any
-    const errorResponse = { error: 'error' }
+    it('should call updateMenuItem and handle error', () => {
+      const event = { stopPropagation: jasmine.createSpy('stopPropagation') } as any
+      const errorResponse = { error: 'error' }
 
-    menuApiServiceSpy.updateMenuItem.and.returnValue(throwError(() => errorResponse))
+      menuApiServiceSpy.updateMenuItem.and.returnValue(throwError(() => errorResponse))
 
-    component.onToggleDisable(event, mockMenuItems[0])
+      component.onToggleDisable(event, mockMenuItems[0])
 
-    expect(event.stopPropagation).toHaveBeenCalled()
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
+      expect(event.stopPropagation).toHaveBeenCalled()
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
+    })
   })
 
   describe('TreeNodeLabelSwitch', () => {
@@ -692,84 +695,83 @@ describe('MenuComponent', () => {
    * ROLES + ASSIGNMENTS
    */
 
-  it('should loadRolesAndAssignments -> searchRoles and searchAssignments on loadMenu', () => {
-    const wRole2: WorkspaceRole = {
-      name: 'role name2',
-      id: 'role id2',
-      description: 'role descr2'
-    }
-    menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
-    wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: [wRole, wRole2] }))
-    assgmtApiServiceSpy.searchAssignments.and.returnValue(of({ stream: [assgmt] }))
+  describe('load roles and assignments', () => {
+    it('should loadRolesAndAssignments -> searchRoles and searchAssignments on loadMenu', () => {
+      const wRole2: WorkspaceRole = {
+        name: 'role name2',
+        id: 'role id2',
+        description: 'role descr2'
+      }
+      menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
+      wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: [wRole, wRole2] }))
+      assgmtApiServiceSpy.searchAssignments.and.returnValue(of({ stream: [assgmt] }))
 
-    component.displayRoles = true
-    component.loadMenu(true)
+      component.displayRoles = true
+      component.loadMenu(true)
 
-    expect(component.wRoles).toEqual([wRole, wRole2])
-    expect(component.wAssignments).toEqual([assgmt])
-  })
+      expect(component.wRoles).toEqual([wRole, wRole2])
+      expect(component.wAssignments).toEqual([assgmt])
+    })
 
-  it('should handle roles without name in sortRoleName function', () => {
-    const wRole2: WorkspaceRole = {
-      id: 'role id2',
-      description: 'role descr2'
-    }
-    const wRole3: WorkspaceRole = {
-      id: 'role id3',
-      description: 'role descr3'
-    }
-    menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
-    wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: [wRole3, wRole2] }))
-    assgmtApiServiceSpy.searchAssignments.and.returnValue(of({ stream: [assgmt] }))
+    it('should handle roles without name in sortRoleName function', () => {
+      const wRole2: WorkspaceRole = { id: 'role id2', name: 'role name2', description: 'role descr2' }
+      const wRole3: WorkspaceRole = { id: 'role id3', name: 'role name3', description: 'role descr3' }
+      menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
+      wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: [wRole3, wRole2] }))
+      assgmtApiServiceSpy.searchAssignments.and.returnValue(of({ stream: [assgmt] }))
 
-    component.displayRoles = true
-    component.loadMenu(true)
+      component.displayRoles = true
+      component.loadMenu(true)
 
-    expect(component.wRoles).toEqual([wRole3, wRole2])
-    expect(component.wAssignments).toEqual([assgmt])
-  })
+      expect(component.wRoles).toEqual([wRole3, wRole2])
 
-  it('should have found a tree node by id and used the assigned node in inheritRoleAssignment', () => {
-    menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
-    wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: [wRole] }))
-    assgmtApiServiceSpy.searchAssignments.and.returnValue(of({ stream: [assgmt] }))
+      component.onRoleFilterChange('2')
 
-    component.displayRoles = true
-    component.loadMenu(true)
+      expect(component.wRolesFiltered).toEqual([wRole2])
+    })
 
-    expect(component.wAssignments).toEqual([assgmt])
-  })
+    it('should have found a tree node by id and used the assigned node in inheritRoleAssignment', () => {
+      menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
+      wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: [wRole] }))
+      assgmtApiServiceSpy.searchAssignments.and.returnValue(of({ stream: [assgmt] }))
 
-  it('should have looked at children nodes to find a tree node by id', () => {
-    const assgmt2: Assignment = {
-      id: 'assgnmt id',
-      roleId: 'roleId',
-      menuItemId: 'other id',
-      workspaceId: 'id'
-    }
-    menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
-    wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: [wRole] }))
-    assgmtApiServiceSpy.searchAssignments.and.returnValue(of({ stream: [assgmt2] }))
+      component.displayRoles = true
+      component.loadMenu(true)
 
-    component.displayRoles = true
-    component.loadMenu(true)
+      expect(component.wAssignments).toEqual([assgmt])
+    })
 
-    expect(component.wAssignments).toEqual([assgmt2])
-  })
+    it('should have looked at children nodes to find a tree node by id', () => {
+      const assgmt2: Assignment = {
+        id: 'assgnmt id',
+        roleId: 'roleId',
+        menuItemId: 'other id',
+        workspaceId: 'id'
+      }
+      menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
+      wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: [wRole] }))
+      assgmtApiServiceSpy.searchAssignments.and.returnValue(of({ stream: [assgmt2] }))
 
-  it('should throw errors for seachRoles and searchAssignments on loadMenu', () => {
-    const err = { status: '404' }
-    wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(throwError(() => err))
-    assgmtApiServiceSpy.searchAssignments.and.returnValue(throwError(() => err))
-    menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
-    spyOn(console, 'error')
+      component.displayRoles = true
+      component.loadMenu(true)
 
-    component.displayRoles = true
-    component.loadMenu(true)
+      expect(component.wAssignments).toEqual([assgmt2])
+    })
 
-    expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + '404' + '.ROLES')
-    expect(console.error).toHaveBeenCalledWith('searchRoles():', err)
-    expect(console.error).toHaveBeenCalledWith('searchAssignments():', err)
+    it('should throw errors for seachRoles and searchAssignments on loadMenu', () => {
+      const err = { status: '404' }
+      wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(throwError(() => err))
+      assgmtApiServiceSpy.searchAssignments.and.returnValue(throwError(() => err))
+      menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
+      spyOn(console, 'error')
+
+      component.displayRoles = true
+      component.loadMenu(true)
+
+      expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + '404' + '.ROLES')
+      expect(console.error).toHaveBeenCalledWith('searchRoles():', err)
+      expect(console.error).toHaveBeenCalledWith('searchAssignments():', err)
+    })
   })
 
   describe('onGrantPermission', () => {
@@ -1028,5 +1030,13 @@ describe('MenuComponent', () => {
     const result = component.getLogoUrl({ name: 'name', displayName: 'name', logoUrl: 'url' })
 
     expect(result).toBe('url')
+  })
+
+  it('should go to workspace permissions', () => {
+    spyOn(utils, 'goToEndpoint')
+
+    component.onGoToWorkspacePermission()
+
+    expect(utils.goToEndpoint).toHaveBeenCalled()
   })
 })

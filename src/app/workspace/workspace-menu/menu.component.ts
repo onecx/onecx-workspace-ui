@@ -355,7 +355,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.displayMenuDelete = true
   }
 
-  public roleFilterChange(val: string): void {
+  public onRoleFilterChange(val: string): void {
     this.wRolesFiltered = this.wRoles.filter((r) => r.name!.indexOf(val) >= 0)
   }
   /****************************************************************************
@@ -430,7 +430,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     if (!this.workspace) return
     this.menuItem = undefined
     this.menu$ = this.menuApi
-      .getMenuStructure({ menuStructureSearchCriteria: { workspaceId: this.workspace.id ?? '' } })
+      .getMenuStructure({ menuStructureSearchCriteria: { workspaceId: this.workspace.id! } })
       .pipe(catchError((error) => of(error)))
     this.menu$.subscribe((result) => {
       this.loading = true

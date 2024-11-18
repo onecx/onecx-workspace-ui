@@ -24,7 +24,6 @@ const config = withModuleFederationPlugin({
     '@angular/platform-browser': { requiredVersion: 'auto', includeSecondaries: true },
     '@angular/router': { requiredVersion: 'auto', includeSecondaries: true },
     '@ngx-translate/core': { requiredVersion: 'auto' },
-    '@ngneat/error-tailor': { requiredVersion: 'auto', includeSecondaries: true },
     primeng: { requiredVersion: 'auto', includeSecondaries: true },
     rxjs: { requiredVersion: 'auto', includeSecondaries: true },
     '@onecx/accelerator': { requiredVersion: 'auto', includeSecondaries: true },

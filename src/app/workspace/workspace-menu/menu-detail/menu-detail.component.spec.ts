@@ -520,119 +520,124 @@ describe('MenuDetailComponent', () => {
   /**
    * LANGUAGE
    */
+  describe('language related', () => {
+    it('should return if no languagesDisplayed on prepareLanguagePanel', () => {
+      const languagesDisplayed = [
+        { label: component.languageNames['de'], value: 'de', data: '' },
+        { label: component.languageNames['en'], value: 'en', data: '' }
+      ]
+      component.languagesDisplayed = languagesDisplayed
 
-  it('should return if no languagesDisplayed on prepareLanguagePanel', () => {
-    const languagesDisplayed = [
-      { label: component.languageNames['de'], value: 'de', data: '' },
-      { label: component.languageNames['en'], value: 'en', data: '' }
-    ]
-    component.languagesDisplayed = languagesDisplayed
+      component.prepareLanguagePanel()
 
-    component.prepareLanguagePanel()
+      expect(component.languagesDisplayed).toBe(languagesDisplayed)
+    })
 
-    expect(component.languagesDisplayed).toBe(languagesDisplayed)
-  })
+    it('should prepareLanguagePanel: language of menuItem is added', () => {
+      const languagesDisplayed: any = []
+      component.languagesDisplayed = languagesDisplayed
+      component.menuItem = mockMenuItems[1]
+      spyOn(component, 'onAddLanguage')
 
-  it('should prepareLanguagePanel: language of menuItem is added', () => {
-    const languagesDisplayed: any = []
-    component.languagesDisplayed = languagesDisplayed
-    component.menuItem = mockMenuItems[1]
-    spyOn(component, 'onAddLanguage')
+      component.prepareLanguagePanel()
 
-    component.prepareLanguagePanel()
+      expect(component.onAddLanguage).toHaveBeenCalled()
+    })
 
-    expect(component.onAddLanguage).toHaveBeenCalled()
-  })
+    it('should prepareLanguagePanel: language of menuItem exists', () => {
+      const languagesDisplayed: any = []
+      component.languagesDisplayed = languagesDisplayed
+      const mockMenuItem: MenuItem = {
+        id: 'id2',
+        parentItemId: 'parentId',
+        key: 'key2',
+        name: 'menu2 name',
+        i18n: { ['en']: 'en' },
+        url: '/workspace',
+        modificationCount: 0
+      }
+      component.menuItem = mockMenuItem
 
-  it('should prepareLanguagePanel: language of menuItem exists', () => {
-    const languagesDisplayed: any = []
-    component.languagesDisplayed = languagesDisplayed
-    const mockMenuItem: MenuItem = {
-      id: 'id2',
-      parentItemId: 'parentId',
-      key: 'key2',
-      name: 'menu2 name',
-      i18n: { ['en']: 'en' },
-      url: '/workspace',
-      modificationCount: 0
-    }
-    component.menuItem = mockMenuItem
+      component.prepareLanguagePanel()
 
-    component.prepareLanguagePanel()
+      expect(component.languagesDisplayed[1].value).toBe('en')
+    })
 
-    expect(component.languagesDisplayed[1].value).toBe('en')
-  })
+    it('should remove language from languagesDisplayed, add it to languagesAvailable', () => {
+      component.languagesDisplayed = [{ label: 'French', value: 'fr', data: 'Data' }]
+      component.languagesAvailable = [{ label: 'German', value: 'de', data: '' }]
 
-  it('should remove language from languagesDisplayed, add it to languagesAvailable', () => {
-    component.languagesDisplayed = [{ label: 'French', value: 'fr', data: 'Data' }]
-    component.languagesAvailable = [{ label: 'German', value: 'de', data: '' }]
+      component.onRemoveLanguage('fr')
 
-    component.onRemoveLanguage('fr')
+      expect(component.languagesDisplayed.length).toBe(0)
+      expect(component.languagesAvailable.length).toBe(2)
+    })
 
-    expect(component.languagesDisplayed.length).toBe(0)
-    expect(component.languagesAvailable.length).toBe(2)
-  })
+    it('should add language to languagesDisplayed from languagesAvailable', () => {
+      component.languagesDisplayed = []
+      component.languagesAvailable = [{ label: 'English', value: 'en', data: '' }]
 
-  it('should add language to languagesDisplayed from languagesAvailable', () => {
-    component.languagesDisplayed = []
-    component.languagesAvailable = [{ label: 'English', value: 'en', data: '' }]
+      component.onAddLanguage2({ option: { value: 'en' } })
 
-    component.onAddLanguage2({ option: { value: 'en' } })
+      expect(component.languagesDisplayed).toEqual(
+        jasmine.arrayContaining([{ label: 'English', value: 'en', data: '' }])
+      )
+      expect(component.languagesAvailable.length).toBe(0)
+    })
 
-    expect(component.languagesDisplayed).toEqual(jasmine.arrayContaining([{ label: 'English', value: 'en', data: '' }]))
-    expect(component.languagesAvailable.length).toBe(0)
-  })
+    it('should add language to languagesDisplayed from languagesAvailable using string value', () => {
+      component.languagesDisplayed = []
+      component.languagesAvailable = [{ label: 'English', value: 'en', data: '' }]
 
-  it('should add language to languagesDisplayed from languagesAvailable using string value', () => {
-    component.languagesDisplayed = []
-    component.languagesAvailable = [{ label: 'English', value: 'en', data: '' }]
+      component.onAddLanguage('en')
 
-    component.onAddLanguage('en')
+      expect(component.languagesDisplayed).toEqual(
+        jasmine.arrayContaining([{ label: 'English', value: 'en', data: '' }])
+      )
+      expect(component.languagesAvailable.length).toBe(0)
+    })
 
-    expect(component.languagesDisplayed).toEqual(jasmine.arrayContaining([{ label: 'English', value: 'en', data: '' }]))
-    expect(component.languagesAvailable.length).toBe(0)
-  })
+    it('should return label of language if in languagesDisplayed', () => {
+      component.languagesDisplayed = [{ label: 'English', value: 'en', data: '' }]
 
-  it('should return label of language if in languagesDisplayed', () => {
-    component.languagesDisplayed = [{ label: 'English', value: 'en', data: '' }]
+      const label = component.getLanguageLabel('en')
 
-    const label = component.getLanguageLabel('en')
+      expect(label).toBe('English')
+    })
 
-    expect(label).toBe('English')
-  })
+    it('should return undefined if not exactly one match with languagesDisplayed', () => {
+      component.languagesDisplayed = [
+        { label: 'English', value: 'en1', data: '' },
+        { label: 'English2', value: 'en2', data: '' }
+      ]
 
-  it('should return undefined if not exactly one match with languagesDisplayed', () => {
-    component.languagesDisplayed = [
-      { label: 'English', value: 'en1', data: '' },
-      { label: 'English2', value: 'en2', data: '' }
-    ]
+      const label = component.getLanguageLabel('en')
 
-    const label = component.getLanguageLabel('en')
+      expect(label).toBeUndefined()
+    })
 
-    expect(label).toBeUndefined()
-  })
+    it('if not in languagesDisplayed: return undefined on getLanguageLabel', () => {
+      component.languagesDisplayed = []
 
-  it('if not in languagesDisplayed: return undefined on getLanguageLabel', () => {
-    component.languagesDisplayed = []
+      const label = component.getLanguageLabel('en')
 
-    const label = component.getLanguageLabel('en')
+      expect(label).toBeUndefined()
+    })
 
-    expect(label).toBeUndefined()
-  })
+    it('should return true if language not in languagesDisplayed', () => {
+      component.languagesDisplayed = [{ label: 'English', value: 'en', data: '' }]
 
-  it('should return true if language not in languagesDisplayed', () => {
-    component.languagesDisplayed = [{ label: 'English', value: 'en', data: '' }]
-
-    expect(component.displayLanguageField('de')).toBeTrue()
-    expect(component.displayLanguageField('en')).toBeFalse()
+      expect(component.displayLanguageField('de')).toBeTrue()
+      expect(component.displayLanguageField('en')).toBeFalse()
+    })
   })
 
   /***************************************************************************
-   * EVENTS on URL field
+   * UI EVENTS
    **************************************************************************/
 
-  describe('onDropDownClick', () => {
-    it('expect filteredMfes filled', () => {
+  describe('on UI events', () => {
+    it('onDropDownClick: expect filteredMfes filled', () => {
       const event: any = { overlayVisible: false }
       const mfeItems: MenuURL[] = [
         { mfePath: 'http://url/path1', product: 'Product 1' },
