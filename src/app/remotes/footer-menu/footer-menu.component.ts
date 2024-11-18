@@ -15,7 +15,7 @@ import {
 } from '@onecx/angular-remote-components'
 import { AppStateService, PortalCoreModule, UserService } from '@onecx/portal-integration-angular'
 import { MenuItem } from 'primeng/api'
-import { Observable, ReplaySubject, map, mergeMap, shareReplay, withLatestFrom } from 'rxjs'
+import { Observable, ReplaySubject, catchError, map, mergeMap, of, retry, shareReplay, withLatestFrom } from 'rxjs'
 import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
 import { SharedModule } from 'src/app/shared/shared.module'
@@ -74,12 +74,20 @@ export class OneCXFooterMenuComponent implements OnInit, ocxRemoteComponent, ocx
   getMenuItems() {
     this.menuItems$ = this.appStateService.currentWorkspace$.pipe(
       mergeMap((currentWorkspace) =>
-        this.menuItemApiService.getMenuItems({
-          getMenuItemsRequest: {
-            workspaceName: currentWorkspace.workspaceName,
-            menuKeys: ['footer-menu']
-          }
-        })
+        this.menuItemApiService
+          .getMenuItems({
+            getMenuItemsRequest: {
+              workspaceName: currentWorkspace.workspaceName,
+              menuKeys: ['footer-menu']
+            }
+          })
+          .pipe(
+            retry({ delay: 500, count: 3 }),
+            catchError(() => {
+              console.error('Unable to load menu items for footer menu.')
+              return of(undefined)
+            })
+          )
       ),
       withLatestFrom(this.userService.lang$),
       map(([data, userLang]) => this.menuItemService.constructMenuItems(data?.menu?.[0]?.children, userLang)),
