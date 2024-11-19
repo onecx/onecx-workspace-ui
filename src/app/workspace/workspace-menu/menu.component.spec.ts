@@ -223,6 +223,16 @@ describe('MenuComponent', () => {
     }
   })
 
+  it('should have exclude some actions', () => {
+    component.prepareActionButtons()
+
+    if (component.actions$) {
+      component.actions$.subscribe((actions) => {
+        expect(actions[1].showCondition).toBeFalse()
+      })
+    }
+  })
+
   it('should have prepared action buttons onInit: onImportMenu', () => {
     spyOn(component, 'onImportMenu')
 
