@@ -5,7 +5,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { CommonModule } from '@angular/common'
 import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
 import { AppStateService } from '@onecx/angular-integration-interface'
-import { ReplaySubject, of } from 'rxjs'
+import { ReplaySubject, of, throwError } from 'rxjs'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { MenuItemAPIService } from 'src/app/shared/generated'
 import { OneCXFooterMenuComponent } from './footer-menu.component'
@@ -198,5 +198,22 @@ describe('OneCXFooterMenuComponent', () => {
     expect(item).toBeTruthy()
     expect(await item?.text()).toEqual('Browser')
     expect(await item?.getAttribute('href')).toEqual('https://www.google.com/')
+  })
+
+  it('should return 0 menu items when unable to load them', async () => {
+    const appStateService = TestBed.inject(AppStateService)
+    spyOn(appStateService.currentWorkspace$, 'asObservable').and.returnValue(
+      of({
+        workspaceName: 'test-workspace'
+      }) as any
+    )
+    menuItemApiSpy.getMenuItems.and.returnValue(throwError(() => {}))
+
+    const { fixture, component } = setUp()
+    await component.ngOnInit()
+
+    const oneCXFooterMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXFooterMenuHarness)
+    const menuItems = await oneCXFooterMenuHarness.getMenuItems()
+    expect(menuItems.length).toEqual(0)
   })
 })

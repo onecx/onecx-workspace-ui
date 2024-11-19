@@ -7,7 +7,7 @@ import { provideRouter, Router, RouterModule } from '@angular/router'
 import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
 import { AppStateService } from '@onecx/angular-integration-interface'
 import { PMenuBarHarness } from '@onecx/angular-testing'
-import { ReplaySubject, of } from 'rxjs'
+import { ReplaySubject, of, throwError } from 'rxjs'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { MenubarModule } from 'primeng/menubar'
 import { PrimeIcons } from 'primeng/api'
@@ -375,5 +375,22 @@ describe('OneCXHorizontalMainMenuComponent', () => {
     expect((await secondItemChildren[0].getChildren()).length).toBe(0)
     expect(await secondItemChildren[1].getText()).toEqual('Help Items')
     expect((await secondItemChildren[1].getChildren()).length).toBe(0)
+  })
+
+  it('should return 0 menu items when unable to load them', async () => {
+    const appStateService = TestBed.inject(AppStateService)
+    spyOn(appStateService.currentWorkspace$, 'asObservable').and.returnValue(
+      of({
+        workspaceName: 'test-workspace'
+      }) as any
+    )
+    menuItemApiSpy.getMenuItems.and.returnValue(throwError(() => {}))
+
+    const { fixture, component } = setUp()
+    await component.ngOnInit()
+
+    const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PMenuBarHarness)
+    const menuItems = await menu.getAllMenuItems()
+    expect(menuItems.length).toEqual(0)
   })
 })
