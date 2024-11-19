@@ -30,7 +30,9 @@
   <ng-template pTemplate="header">
     <div class="sm:ml-1 flex flex-wrap align-items-center column-gap-4 row-gap-1">
       <!-- Quick Filter -->
+      <div *ngIf="!iamRolesAvailable" id="ws_roles_quick_filter_placeholder"></div>
       <div
+        *ngIf="iamRolesAvailable"
         class="slim-selectbutton filter-selectbutton"
         [attr.aria-label]="'DIALOG.ROLE.QUICK_FILTER.TOOLTIP' | translate"
         [pTooltip]="'DIALOG.ROLE.QUICK_FILTER.TOOLTIP' | translate"

@@ -643,6 +643,9 @@
       "SLOTS": "Es konnten keine Slots gefunden werden.",
       "MENUS": "Es konnten keine Menüs gefunden werden."
     },
+    "HTTP_STATUS_418": {
+      "IAM_ROLES": "Es konnten keine Rollen aus dem IAM geholt werden."
+    },
     "HTTP_STATUS_500": {
       "WORKSPACE": "Unbekanntes Server-Problem beim Abrufen von Workspace-Details - Bitte versuchen sie es noch einmal.",
       "WORKSPACES": "Unbekanntes Server-Problem beim Abrufen von Workspace-Daten - Bitte versuchen sie es noch einmal.",

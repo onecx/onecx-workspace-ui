@@ -52,6 +52,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   public iamLoading = false
   public wsLoading = false
   public iamRolesLoaded = false
+  public iamRolesAvailable = false
   public wRolesLoaded = false
   public exceptionKey: string | undefined = undefined
   public quickFilterValue: RoleFilterType = 'ALL'
@@ -122,6 +123,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   private searchIamRoles(): Observable<Role[]> {
     return this.iamRoleApi.searchAvailableRoles({ iAMRoleSearchCriteria: { pageSize: 1000 } }).pipe(
       map((result) => {
+        this.iamRolesAvailable = true
         return result.stream
           ? result.stream?.map((role) => {
               return { ...role, isIamRole: true, isWorkspaceRole: false, type: 'IAM' } as Role
@@ -129,8 +131,12 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
           : []
       }),
       catchError((err) => {
-        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.IAM_ROLES'
-        console.error('searchAvailableRoles():', err)
+        if (err.status === 418) {
+          this.iamRolesAvailable = false
+        } else {
+          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.IAM_ROLES'
+          console.error('searchAvailableRoles():', err)
+        }
         return of([])
       }),
       finalize(() => (this.iamLoading = false))
