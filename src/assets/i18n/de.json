@@ -35,8 +35,6 @@
     },
     "DELETE": {
       "LABEL": "Löschen",
-      "ROLE": "Rolle löschen",
-      "SLOT": "Slot löschen",
       "INFO": "Diese Aktion kann nicht rückgängig gemacht werden!",
       "WORKSPACE": {
         "HEADER": "Workspace löschen",
@@ -51,12 +49,21 @@
         "MESSAGE_OK": "Der Menüpunkt wurde erfolgreich gelöscht",
         "MESSAGE_NOK": "Ein Fehler ist aufgetreten. Der Menüpunkt wurde nicht gelöscht."
       },
-      "ROLE_MESSAGE": "Damit wird die Rolle und deren Zuweisungen (zu Menüpunkten) für den Workspace gelöscht. Das führt zu keiner Änderung im Permission Management.",
-      "ROLE_OK": "Die Rolle wurde erfolgreich gelöscht",
-      "ROLE_NOK": "Ein Fehler ist aufgetreten. Die Rolle wurde nicht gelöscht.",
-      "SLOT_MESSAGE": "Damit wird die Zuweisung von Slot zur Komponente für den Workspace gelöscht.",
-      "SLOT_OK": "Die Slot-Zuweisung wurde erfolgreich gelöscht.",
-      "SLOT_NOK": "Ein Fehler ist aufgetreten. Die Slot-Zuweisung wurde nicht gelöscht.",
+      "ROLE": {
+        "HEADER": "Rolle löschen",
+        "MESSAGE": "Möchten Sie diese Rolle löschen?",
+        "MESSAGE_INFO": "Damit wird die Rolle und deren Zuweisungen (zu Menüpunkten) für den Workspace gelöscht. Das führt zu keiner Änderung im Permission Management.",
+        "MESSAGE_OK": "Die Rolle wurde erfolgreich gelöscht",
+        "MESSAGE_NOK": "Ein Fehler ist aufgetreten. Die Rolle wurde nicht gelöscht."
+      },
+      "SLOT": {
+        "HEADER": "Slot löschen",
+        "MESSAGE": "Damit wird die Zuweisung von Slot zur Komponente für den Workspace gelöscht.",
+        "SLOT_OK": "Die Slot-Zuweisung wurde erfolgreich gelöscht.",
+        "SLOT_NOK": "Ein Fehler ist aufgetreten. Die Slot-Zuweisung wurde nicht gelöscht.",
+        "MESSAGE_OK": "Die Rolle wurde erfolgreich gelöscht",
+        "MESSAGE_NOK": "Ein Fehler ist aufgetreten. Die Rolle wurde nicht gelöscht."
+      },
       "PRODUCTS_MESSAGE": "Die ausgewählten Applikationen und ihre Komponenten werden für den Arbeitsbereich abgemeldet. Menüelemente, die solche Pfade verwenden, werden nicht berührt, funktionieren aber nicht mehr.",
       "PRODUCTS_QUESTION": "Möchten Sie die ausgewählten Applikationen abmelden?",
       "COMPONENTS_QUESTION": "Möchten Sie die ausgewählten Komponenten abmelden?"
