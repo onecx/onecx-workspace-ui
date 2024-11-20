@@ -396,7 +396,8 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.menuNodes = [...this.menuNodes]
   }
   public onHierarchyViewChange(event: TreeTableNodeExpandEvent): void {
-    this.stateService.getState().treeExpansionState.set(event.node.key!, event.node.expanded!)
+    if (event.node.key)
+      this.stateService.getState().treeExpansionState.set(event.node.key, event.node.expanded ?? false)
   }
 
   /****************************************************************************
