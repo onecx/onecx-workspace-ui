@@ -234,7 +234,9 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
               actionCallback: () => this.onClose(),
               icon: 'pi pi-arrow-left',
               show: 'always',
-              permission: 'WORKSPACE#SEARCH'
+              permission: 'WORKSPACE#SEARCH',
+              conditional: true,
+              showCondition: !this.editMode
             },
             {
               label: data['DIALOG.MENU.LABEL'],
