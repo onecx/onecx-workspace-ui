@@ -258,7 +258,9 @@
             <th
               *ngFor="let role of columns"
               id="ws_menu_table_header_roles"
-              class="px-2 py-1 hidden-xs vertical-align-bottom text-center border-bottom-2 border-right-1 role-name"
+              class="px-2 py-1 hidden-xs text-center border-bottom-2 border-right-1 role-name"
+              [class.vertical-align-bottom]="columns.length <= 5"
+              [class.vertical-align-top]="columns.length > 5"
               [pTooltip]="role.description ? role.description : ''"
               tooltipPosition="top"
               tooltipEvent="hover"
