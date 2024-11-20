@@ -57,17 +57,18 @@
         "MESSAGE_NOK": "An error has occurred. The Role was not deleted."
       },
       "SLOT": {
-        "HEADER": "Delete Slot assignment",
-        "MESSAGE": "This deletes the assignment of Slot to Component for the Workspace.",
-        "MESSAGE_OK": "The Role was deleted successfully",
-        "MESSAGE_NOK": "An error has occurred. The Role was not deleted.",
-        "SLOT_OK": "The assignment of Slot to Component was deleted successfully",
-        "SLOT_NOK": "An error has occurred. The Slot was not deleted."
+        "LABEL": "Delete Slot",
+        "LABEL.COMPONENTS": "Deleting slot not possible because components are still assigned.",
+        "MESSAGE": "Do you want to delete this Slot?",
+        "MESSAGE_OK": "The Slot was deleted successfully",
+        "MESSAGE_NOK": "An error has occurred. The Slot was not deleted.",
+        "DEREGISTER_COMPONENTS": "Do you want to deregister selected Components from Slot?",
+        "DEREGISTER_OK": "The assignment of Slot to Components were deleted successfully",
+        "DEREGISTER_NOK": "An error has occurred. The assignment of Slot to Components were not deleted."
       },
       "MESSAGE": "Do you want to delete \"{{ITEM}}\"?",
       "PRODUCTS_MESSAGE": "The selected Applications and their apps are deregistered from the Workspace. Menu items that use such paths are not touched but no longer work.",
-      "PRODUCTS_QUESTION": "Do you want to deregister selected Applications?",
-      "COMPONENTS_QUESTION": "Do you want to deregister selected Components?"
+      "PRODUCTS_QUESTION": "Do you want to deregister selected Applications?"
     },
     "EDIT": {
       "LABEL": "Edit",

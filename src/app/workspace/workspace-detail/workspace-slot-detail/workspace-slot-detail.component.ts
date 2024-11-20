@@ -130,11 +130,11 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
     if (this.slot) {
       this.slotApi.deleteSlotById({ id: this.slot.id! }).subscribe({
         next: () => {
-          this.msgService.success({ summaryKey: 'ACTIONS.DELETE.SLOT_OK' })
+          this.msgService.success({ summaryKey: 'ACTIONS.DELETE.SLOT.MESSAGE_OK' })
           this.detailClosed.emit(true)
         },
         error: (err) => {
-          this.msgService.error({ summaryKey: 'ACTIONS.DELETE.SLOT_NOK' })
+          this.msgService.error({ summaryKey: 'ACTIONS.DELETE.SLOT.MESSAGE_NOK' })
           console.error(err.error)
         }
       })

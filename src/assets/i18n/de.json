@@ -57,16 +57,17 @@
         "MESSAGE_NOK": "Ein Fehler ist aufgetreten. Die Rolle wurde nicht gelöscht."
       },
       "SLOT": {
-        "HEADER": "Slot löschen",
-        "MESSAGE": "Damit wird die Zuweisung von Slot zur Komponente für den Workspace gelöscht.",
-        "SLOT_OK": "Die Slot-Zuweisung wurde erfolgreich gelöscht.",
-        "SLOT_NOK": "Ein Fehler ist aufgetreten. Die Slot-Zuweisung wurde nicht gelöscht.",
-        "MESSAGE_OK": "Die Rolle wurde erfolgreich gelöscht",
-        "MESSAGE_NOK": "Ein Fehler ist aufgetreten. Die Rolle wurde nicht gelöscht."
+        "LABEL": "Slot löschen",
+        "LABEL.COMPONENTS": "Slot löschen nicht möglich da noch Komponenten zugeordnet sind",
+        "MESSAGE": "Möchten Sie diesen Slot löschen?",
+        "MESSAGE_OK": "Der Slot wurde erfolgreich gelöscht",
+        "MESSAGE_NOK": "Ein Fehler ist aufgetreten. Der Slot wurde nicht gelöscht.",
+        "DEREGISTER_COMPONENTS": "Möchten Sie die ausgewählten Komponenten vom Slot entfernen?",
+        "DEREGISTER_OK": "Die Slot-Zuweisungen wurden erfolgreich gelöscht.",
+        "DEREGISTER_NOK": "Ein Fehler ist aufgetreten. Die Slot-Zuweisungen wurden nicht gelöscht."
       },
       "PRODUCTS_MESSAGE": "Die ausgewählten Applikationen und ihre Komponenten werden für den Arbeitsbereich abgemeldet. Menüelemente, die solche Pfade verwenden, werden nicht berührt, funktionieren aber nicht mehr.",
-      "PRODUCTS_QUESTION": "Möchten Sie die ausgewählten Applikationen abmelden?",
-      "COMPONENTS_QUESTION": "Möchten Sie die ausgewählten Komponenten abmelden?"
+      "PRODUCTS_QUESTION": "Möchten Sie die ausgewählten Applikationen abmelden?"
     },
     "EDIT": {
       "LABEL": "Bearbeiten",
