@@ -42,7 +42,6 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
   public workspaceForProducts: Workspace | undefined
   public workspaceName = this.route.snapshot.params['name']
   public uriFragment = this.route.snapshot.fragment // #fragment to address a certain TAB
-  public workspaceDeleteMessage = ''
   public workspaceDeleteVisible = false
   public workspaceExportVisible = false
   public currentLogoUrl: string | undefined = undefined
@@ -135,12 +134,12 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
   public onConfirmDeleteWorkspace(): void {
     this.workspaceApi.deleteWorkspace({ id: this.workspace?.id ?? '' }).subscribe(
       () => {
-        this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MESSAGE_OK' })
+        this.msgService.success({ summaryKey: 'ACTIONS.DELETE.WORKSPACE.MESSAGE_OK' })
         this.onClose()
       },
       (err) => {
         console.error('delete workspace', err)
-        this.msgService.error({ summaryKey: 'ACTIONS.DELETE.MESSAGE_NOK' })
+        this.msgService.error({ summaryKey: 'ACTIONS.DELETE.WORKSPACE.MESSAGE_NOK' })
       }
     )
   }
@@ -293,7 +292,6 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
               title: data['ACTIONS.DELETE.WORKSPACE'],
               actionCallback: () => {
                 this.workspaceDeleteVisible = true
-                this.workspaceDeleteMessage = data['ACTIONS.DELETE.MESSAGE'].replace('{{ITEM}}', this.workspace?.name)
               },
               icon: 'pi pi-trash',
               show: 'asOverflow',

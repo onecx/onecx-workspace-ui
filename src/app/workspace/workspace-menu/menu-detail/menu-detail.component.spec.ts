@@ -498,7 +498,7 @@ describe('MenuDetailComponent', () => {
 
     component.onMenuDelete()
 
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MENU_OK' })
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MENU.MESSAGE_OK' })
   })
 
   it('should display error message on delete menu item', () => {
@@ -506,7 +506,7 @@ describe('MenuDetailComponent', () => {
 
     component.onMenuDelete()
 
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MENU_NOK' })
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MENU.MESSAGE_NOK' })
   })
 
   it('should update tabIndex onTabPanelChange', () => {

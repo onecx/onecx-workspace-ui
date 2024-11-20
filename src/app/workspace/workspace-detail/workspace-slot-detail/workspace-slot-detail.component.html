@@ -263,11 +263,10 @@
 >
   <div class="my-2 flex column-gap-4 row-gap-1 justify-content-start align-items-center">
     <div class="pi pi-question-circle text-3xl danger-action-text"></div>
-    <div>
-      <div id="ws_slot_delete_message" class="font-bold">
-        {{ ('ACTIONS.DELETE.MESSAGE' | translate).replace('{{ITEM}}', slot?.name) }}
-      </div>
-      <div class="mt-2">{{ 'ACTIONS.DELETE.MESSAGE_INFO' | translate }}</div>
+    <div class="flex flex-column row-gap-2">
+      <div id="ws_slot_delete_message" class="font-bold">{{ 'ACTIONS.DELETE.SLOT.MESSAGE' | translate }}</div>
+      <div id="ws_slot_delete_slot_name" class="font-bold text-center danger-action-text">{{ slot?.name }}</div>
+      <div>{{ 'ACTIONS.DELETE.INFO' | translate }}</div>
     </div>
   </div>
   <ng-template pTemplate="footer">
@@ -310,11 +309,11 @@
 >
   <div class="my-2 flex column-gap-4 row-gap-1 justify-content-start align-items-center">
     <div class="pi pi-question-circle text-3xl danger-action-text"></div>
-    <div>
-      <div id="ws_slot_deregister_message" class="font-bold">
-        {{ 'ACTIONS.DELETE.COMPONENTS_QUESTION' | translate }}
+    <div class="flex flex-column row-gap-2">
+      <div id="ws_slot_delete_message" class="font-bold">
+        {{ 'ACTIONS.DELETE.SLOT.DEREGISTER_COMPONENTS' | translate }}
       </div>
-      <div class="mt-2">{{ 'ACTIONS.DELETE.MESSAGE_INFO' | translate }}</div>
+      <div>{{ 'ACTIONS.DELETE.INFO' | translate }}</div>
     </div>
   </div>
   <ng-template pTemplate="footer">

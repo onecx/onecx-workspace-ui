@@ -358,6 +358,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   public onRoleFilterChange(val: string): void {
     this.wRolesFiltered = this.wRoles.filter((r) => r.name!.indexOf(val) >= 0)
   }
+
   /****************************************************************************
    ****************************************************************************
    * TREE + DIALOG

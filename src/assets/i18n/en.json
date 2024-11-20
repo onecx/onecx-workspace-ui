@@ -35,26 +35,41 @@
     },
     "DELETE": {
       "LABEL": "Delete",
-      "ROLE": "Delete Role",
-      "SLOT": "Delete Slot assignment",
-      "WORKSPACE": "Delete Workspace",
-      "MENU": "Delete Menu Item",
-      "MESSAGE": "Do you want to delete \"{{ITEM}}\"?",
-      "MESSAGE_INFO": "This action cannot be undone!",
-      "MESSAGE_NOK": "Workspace could not be deleted",
-      "MESSAGE_OK": "Workspace deleted successfully",
-      "MENU_MESSAGE": "This will also delete all Menu Items below.",
-      "MENU_OK": "The Menu Item was deleted successfully",
-      "MENU_NOK": "An error has occurred. The Menu Item could not be deleted.",
-      "ROLE_MESSAGE": "This deletes the Role and its assignments for the Workspace. Does not changed anycthing in Permission Management.",
-      "ROLE_OK": "The Role was deleted successfully",
-      "ROLE_NOK": "An error has occurred. The Role was not deleted.",
-      "SLOT_MESSAGE": "This deletes the assignment of Slot to Component for the Workspace.",
-      "SLOT_OK": "The assignment of Slot to Component was deleted successfully",
-      "SLOT_NOK": "An error has occurred. The Slot was not deleted.",
-      "PRODUCTS_MESSAGE": "The selected Applications and their apps are deregistered from the Workspace. Menu items that use such paths are not touched but no longer work.",
-      "PRODUCTS_QUESTION": "Do you want to deregister selected Applications?",
-      "COMPONENTS_QUESTION": "Do you want to deregister selected Components?"
+      "INFO": "This action cannot be undone!",
+      "WORKSPACE": {
+        "HEADER": "Delete Workspace",
+        "MESSAGE": "Do you want to delete this Workspace?",
+        "MESSAGE_OK": "The Workspace was deleted successfully",
+        "MESSAGE_NOK": "An error has occurred. The Workspace could not be deleted."
+      },
+      "MENU": {
+        "HEADER": "Delete Menu Item",
+        "MESSAGE": "Do you want to delete this Menu Item?",
+        "MESSAGE_CHILDREN": "This will also delete all Menu Items below.",
+        "MESSAGE_OK": "The Menu Item was deleted successfully",
+        "MESSAGE_NOK": "An error has occurred. The Menu Item could not be deleted."
+      },
+      "ROLE": {
+        "HEADER": "Delete Role",
+        "MESSAGE": "Do you want to delete this Role?",
+        "MESSAGE_INFO": "This deletes the Role and its assignments for the Workspace. Does not changed anycthing in Permission Management.",
+        "MESSAGE_OK": "The Role was deleted successfully",
+        "MESSAGE_NOK": "An error has occurred. The Role was not deleted."
+      },
+      "SLOT": {
+        "LABEL": "Delete Slot",
+        "LABEL.COMPONENTS": "Deleting slot not possible because components are still assigned.",
+        "MESSAGE": "Do you want to delete this Slot?",
+        "MESSAGE_OK": "The Slot was deleted successfully",
+        "MESSAGE_NOK": "An error has occurred. The Slot was not deleted.",
+        "DEREGISTER_COMPONENTS": "Do you want to deregister selected Components from Slot?",
+        "DEREGISTER_OK": "The assignment of Slot to Components were deleted successfully",
+        "DEREGISTER_NOK": "An error has occurred. The assignment of Slot to Components were not deleted."
+      },
+      "PRODUCT": {
+        "MESSAGE": "Do you want to deregister selected Applications?",
+        "MESSAGE_INFO": "The selected Applications and their apps are deregistered from the Workspace. Menu items that use such paths are not touched but no longer work."
+      }
     },
     "EDIT": {
       "LABEL": "Edit",
