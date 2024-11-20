@@ -22,7 +22,7 @@ const menuSnapshot: MenuSnapshot = {
   }
 }
 
-fdescribe('MenuImportComponent', () => {
+describe('MenuImportComponent', () => {
   let component: MenuImportComponent
   let fixture: ComponentFixture<MenuImportComponent>
 

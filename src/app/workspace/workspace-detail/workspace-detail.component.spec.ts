@@ -36,7 +36,7 @@ class MockWorkspaceContactComponent {
   public onSave(): void {}
 }
 
-fdescribe('WorkspaceDetailComponent', () => {
+describe('WorkspaceDetailComponent', () => {
   let component: WorkspaceDetailComponent
   let fixture: ComponentFixture<WorkspaceDetailComponent>
   const mockRouter = new MockRouter()
