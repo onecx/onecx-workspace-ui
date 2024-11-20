@@ -209,7 +209,7 @@ describe('WorkspaceDetailComponent', () => {
 
       component.onConfirmDeleteWorkspace()
 
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MESSAGE_OK' })
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.WORKSPACE.MESSAGE_OK' })
     })
 
     it('should delete workspace on onConfirmDeleteWorkspace: no workspace', () => {
@@ -218,7 +218,7 @@ describe('WorkspaceDetailComponent', () => {
 
       component.onConfirmDeleteWorkspace()
 
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MESSAGE_OK' })
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.WORKSPACE.MESSAGE_OK' })
     })
 
     it('should display error msg if delete api call fails', () => {
@@ -227,7 +227,7 @@ describe('WorkspaceDetailComponent', () => {
       component.onConfirmDeleteWorkspace()
 
       expect(msgServiceSpy.error).toHaveBeenCalledWith({
-        summaryKey: 'ACTIONS.DELETE.MESSAGE_NOK'
+        summaryKey: 'ACTIONS.DELETE.WORKSPACE.MESSAGE_NOK'
       })
     })
   })
