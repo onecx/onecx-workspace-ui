@@ -643,6 +643,9 @@
       "SLOTS": "No Slots could be load.",
       "MENUS": "No Menus could be found."
     },
+    "HTTP_STATUS_418": {
+      "IAM_ROLES": "No IAM Roles could be load."
+    },
     "HTTP_STATUS_500": {
       "WORKSPACE": "Unknown server problem retrieving Workspace details - please try again.",
       "WORKSPACES": "Unknown server problem retrieving Workspace data - please try again.",

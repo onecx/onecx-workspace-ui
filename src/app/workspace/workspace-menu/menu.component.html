@@ -163,7 +163,9 @@
             <div class="flex flex-row justify-content-start align-items-center column-gap-4">
               <p-toggleButton
                 inputid="ws_menu_table_header_row_1_switch_details_n_roles"
-                styleClass="data-view-control hidden-xs"
+                styleClass="small-toggle-button  white-space-nowrap hidden-xs"
+                [onIcon]="'pi pi-search-plus'"
+                [offIcon]="'pi pi-lock'"
                 [onLabel]="'DIALOG.MENU.HEADER.DETAILS' | translate"
                 [offLabel]="'DIALOG.MENU.HEADER.ROLES' | translate"
                 [(ngModel)]="treeTableContentValue"
@@ -181,7 +183,7 @@
                   type="search"
                   id="ws_menu_table_header_role_filter"
                   class="py-0 px-2 max-w-20rem h-2rem text-responsive"
-                  (input)="roleFilterChange(roleFilter.value)"
+                  (input)="onRoleFilterChange(roleFilter.value)"
                   [placeholder]="'DIALOG.MENU.HEADER.ROLES.FILTER' | translate"
                   [pTooltip]="'DIALOG.MENU.HEADER.ROLES.FILTER.TOOLTIP' | translate"
                   tooltipPosition="top"
@@ -198,8 +200,10 @@
           >
             <p-toggleButton
               inputId="ws_menu_table_header_tree_toggle"
-              styleClass="data-view-control white-space-nowrap"
+              styleClass="small-toggle-button white-space-nowrap"
               [(ngModel)]="treeExpanded"
+              [onIcon]="'pi pi-arrow-down-left-and-arrow-up-right-to-center'"
+              [offIcon]="'pi pi-arrow-up-right-and-arrow-down-left-from-center'"
               [onLabel]="'ACTIONS.TREE.COLLAPSE_ALL' | translate"
               [offLabel]="'ACTIONS.TREE.EXPAND_ALL' | translate"
               (onChange)="onToggleTreeViewMode($event)"
@@ -225,7 +229,7 @@
 
           <!-- ROLES (workspace roles) -->
           <ng-container *ngIf="displayRoles">
-            <!-- no filtered columns, on reasons => loading, no roles, no filter macht -->
+            <!-- no filtered columns while loading and no roles => no filter -->
             <th
               *ngIf="columns.length === 0"
               id="ws_menu_table_header_roles_dummy"
@@ -254,7 +258,7 @@
             <th
               *ngFor="let role of columns"
               id="ws_menu_table_header_roles"
-              class="px-2 py-1 vertical-align-bottom hidden-xs text-center border-bottom-2 border-right-1"
+              class="px-2 py-1 hidden-xs vertical-align-bottom text-center border-bottom-2 border-right-1 role-name"
               [pTooltip]="role.description ? role.description : ''"
               tooltipPosition="top"
               tooltipEvent="hover"
@@ -267,7 +271,7 @@
 
       <!-- BODY -->
       <ng-template pTemplate="frozenbody" let-rowNode let-rowData="rowData">
-        <tr [ttRow]="rowNode" [id]="'ws_menu_table_row_' + rowData.key">
+        <tr [ttRow]="rowNode" [id]="'ws_menu_table_row_' + rowData.key" [attr.level]="rowData.level">
           <td class="p-0 pr-4">
             <div class="flex flex-row flex-nowrap column-gap-1 align-items-center">
               <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>

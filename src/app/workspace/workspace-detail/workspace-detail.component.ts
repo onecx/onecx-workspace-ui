@@ -41,7 +41,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
   public workspaceForSlots: Workspace | undefined
   public workspaceForProducts: Workspace | undefined
   public workspaceName = this.route.snapshot.params['name']
-  private readonly uriFragment = this.route.snapshot.fragment // #fragment to address a certain TAB
+  public uriFragment = this.route.snapshot.fragment // #fragment to address a certain TAB
   public workspaceDeleteMessage = ''
   public workspaceDeleteVisible = false
   public workspaceExportVisible = false
@@ -181,11 +181,8 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
   }
 
   public onExportWorkspace() {
-    if (!this.workspace) {
-      this.msgService.error({ summaryKey: 'DIALOG.WORKSPACE.NOT_FOUND' })
-      return
-    }
-    this.workspaceExportVisible = true
+    if (this.workspace) this.workspaceExportVisible = true
+    else this.msgService.error({ summaryKey: 'DIALOG.WORKSPACE.NOT_FOUND' })
   }
 
   private toggleEditMode(forcedMode?: 'edit' | 'view'): void {

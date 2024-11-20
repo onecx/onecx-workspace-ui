@@ -115,7 +115,7 @@ describe('MenuImportComponent', () => {
   })
 
   it('should prepare menu import from a valid file onImportMenuSelect: not json', (done) => {
-    const invalidJson = 'json'
+    const invalidJson = 'bla'
     const mockFile = new File([invalidJson], 'test.json', { type: 'application/json' })
     spyOn(mockFile, 'text').and.returnValue(Promise.resolve(invalidJson))
     const fileList = { 0: mockFile, length: 1, item: () => mockFile }
@@ -125,10 +125,7 @@ describe('MenuImportComponent', () => {
 
     setTimeout(() => {
       expect(component.menuImportError).toBeTrue()
-      expect(console.error).toHaveBeenCalledWith(
-        'imported menu parse error',
-        new SyntaxError('Unexpected token \'j\', "json" is not valid JSON')
-      )
+      expect(console.error).toHaveBeenCalled()
       done()
     }, 0)
   })

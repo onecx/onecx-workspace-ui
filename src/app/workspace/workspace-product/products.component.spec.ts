@@ -165,7 +165,7 @@ describe('ProductComponent', () => {
     component = fixture.componentInstance
     component.workspace = workspace
     fb = TestBed.inject(FormBuilder)
-    component['renderer'] = mockRenderer
+    component.renderer = mockRenderer
     fixture.detectChanges()
   })
 
@@ -238,9 +238,13 @@ describe('ProductComponent', () => {
       component.ngOnChanges(changes as unknown as SimpleChanges)
 
       expect(component.psProducts).toEqual([{ ...prodStoreItem }])
-      expect(component.wProducts?.at(0)).toEqual(
-        [{ ...product, bucket: 'TARGET', undeployed: false, changedComponents: false }]?.at(0) as ExtendedProduct
-      )
+      const a: ExtendedProduct = component.wProducts.length > 0 ? component.wProducts[0] : ({} as ExtendedProduct)
+      expect(a).toEqual({
+        ...product,
+        bucket: 'TARGET',
+        undeployed: false,
+        changedComponents: false
+      } as ExtendedProduct)
       expect(component.psProductsOrg.get(prodStoreItem.productName!)!).toEqual({ ...prodStoreItem })
     })
 

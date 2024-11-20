@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { ColorSketchModule } from 'ngx-color/sketch'
-import { provideErrorTailorConfig } from '@ngneat/error-tailor'
+import { provideErrorTailorConfig, errorTailorImports } from '@ngneat/error-tailor'
 
 import { AutoCompleteModule } from 'primeng/autocomplete'
 import { BadgeModule } from 'primeng/badge'
@@ -79,7 +79,8 @@ import { ImageContainerComponent } from './image-container/image-container.compo
     TreeModule,
     TreeTableModule,
     FileUploadModule,
-    TranslateModule
+    TranslateModule,
+    errorTailorImports
   ],
   exports: [
     AutoCompleteModule,
@@ -117,7 +118,8 @@ import { ImageContainerComponent } from './image-container/image-container.compo
     TreeTableModule,
     TranslateModule,
     ImageContainerComponent,
-    FileUploadModule
+    FileUploadModule,
+    errorTailorImports
   ],
   //this is not elegant, for some reason the injection token from primeng does not work across federated module
   providers: [

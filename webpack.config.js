@@ -24,7 +24,6 @@ const config = withModuleFederationPlugin({
     '@angular/platform-browser': { requiredVersion: 'auto', includeSecondaries: true },
     '@angular/router': { requiredVersion: 'auto', includeSecondaries: true },
     '@ngx-translate/core': { requiredVersion: 'auto' },
-    '@ngneat/error-tailor': { requiredVersion: 'auto', includeSecondaries: true },
     primeng: { requiredVersion: 'auto', includeSecondaries: true },
     rxjs: { requiredVersion: 'auto', includeSecondaries: true },
     '@onecx/accelerator': { requiredVersion: 'auto', includeSecondaries: true },
@@ -39,7 +38,7 @@ const config = withModuleFederationPlugin({
     '@onecx/portal-integration-angular': { requiredVersion: 'auto', includeSecondaries: true },
     '@onecx/portal-layout-styles': { requiredVersion: 'auto', includeSecondaries: true }
   }),
-  sharedMappings: ['@onecx/portal-integration-angular', '@ngneat/error-tailor']
+  sharedMappings: ['@onecx/portal-integration-angular']
 })
 config.devServer = { allowedHosts: 'all' }
 

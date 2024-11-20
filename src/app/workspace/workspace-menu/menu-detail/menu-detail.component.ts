@@ -252,17 +252,8 @@ export class MenuDetailComponent implements OnChanges {
       if (this.formGroup.controls['url'].value instanceof Object)
         this.menuItem.url = this.formGroup.controls['url'].value.mfePath
       else this.menuItem.url = this.formGroup.controls['url'].value
-
       this.getFormValues()
-
-      // if language panel was initialized then take over content
-      if (this.languagesDisplayed.length > 0) {
-        const i18n: I18N = {}
-        for (const l of this.languagesDisplayed) {
-          if (l.data !== '') i18n[l.value] = l.data
-        }
-        this.menuItem.i18n = i18n
-      }
+      this.getI18nValues()
     }
     if (this.changeMode === 'CREATE') {
       this.menuApi
@@ -296,6 +287,15 @@ export class MenuDetailComponent implements OnChanges {
             console.error(err.error)
           }
         })
+    }
+  }
+  private getI18nValues() {
+    if (this.menuItem && this.languagesDisplayed.length > 0) {
+      const i18n: I18N = {}
+      for (const l of this.languagesDisplayed) {
+        if (l.data !== '') i18n[l.value] = l.data
+      }
+      this.menuItem.i18n = i18n
     }
   }
   private getFormValues() {

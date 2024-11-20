@@ -45,6 +45,7 @@ export type RoleAssignments = { [key: string]: string | undefined } // assignmen
 export type MenuItemNodeData = WorkspaceMenuItem & {
   first: boolean
   last: boolean
+  level: number
   prevId: string
   gotoUrl: string
   positionPath: string
@@ -253,16 +254,20 @@ export class MenuComponent implements OnInit, OnDestroy {
           label = node.data.name
           break
         default:
-          if (this.usedLanguages.has(this.treeNodeLabelSwitchValue)) {
-            if (node.data.i18n && Object.keys(node.data.i18n).length > 0)
-              if (node.data.i18n[this.treeNodeLabelSwitchValue]) {
-                label = node.data.i18n[this.treeNodeLabelSwitchValue]
-              }
-          }
+          label = this.setI18nLabel(node, label)
       }
       node.label = label // set
       if (node.children && node.children.length > 0) this.applyTreeNodeLabelSwitch(node.children)
     }
+  }
+  private setI18nLabel(node: TreeNode, label: string): string {
+    if (this.usedLanguages.has(this.treeNodeLabelSwitchValue)) {
+      if (node.data.i18n && Object.keys(node.data.i18n).length > 0)
+        if (node.data.i18n[this.treeNodeLabelSwitchValue]) {
+          return node.data.i18n[this.treeNodeLabelSwitchValue]
+        }
+    }
+    return label
   }
 
   public onToggleTreeTableContent(ev: any): void {
@@ -350,7 +355,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.displayMenuDelete = true
   }
 
-  public roleFilterChange(val: string): void {
+  public onRoleFilterChange(val: string): void {
     this.wRolesFiltered = this.wRoles.filter((r) => r.name!.indexOf(val) >= 0)
   }
   /****************************************************************************
@@ -391,7 +396,8 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.menuNodes = [...this.menuNodes]
   }
   public onHierarchyViewChange(event: TreeTableNodeExpandEvent): void {
-    this.stateService.getState().treeExpansionState.set(event.node.key ?? '', event.node.expanded ?? false)
+    if (event.node.key)
+      this.stateService.getState().treeExpansionState.set(event.node.key, event.node.expanded ?? false)
   }
 
   /****************************************************************************
@@ -425,7 +431,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     if (!this.workspace) return
     this.menuItem = undefined
     this.menu$ = this.menuApi
-      .getMenuStructure({ menuStructureSearchCriteria: { workspaceId: this.workspace.id ?? '' } })
+      .getMenuStructure({ menuStructureSearchCriteria: { workspaceId: this.workspace.id! } })
       .pipe(catchError((error) => of(error)))
     this.menu$.subscribe((result) => {
       this.loading = true
@@ -435,7 +441,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       } else if (result.menuItems instanceof Array) {
         this.menuItems = result.menuItems
         this.menuNodes = this.mapToTreeNodes(this.menuItems)
-        this.prepareTreeNodeHelper()
+        this.prepareTreeNodeHelper(restore)
         this.loadRolesAndAssignments()
         if (restore) {
           this.restoreTree()
@@ -603,6 +609,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         ...item,
         first: pos === 1,
         last: pos === items.length,
+        level: (parent?.level ?? 0) + 1,
         prevId: prevId,
         gotoUrl: this.prepareItemUrl(item.url),
         // concat the positions
@@ -633,7 +640,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     return url_parts[0] + '//' + url_parts[2] + Location.joinWithSlash(this.workspace?.baseUrl, url)
   }
 
-  private prepareTreeNodeHelper(): void {
+  private prepareTreeNodeHelper(restore: boolean): void {
     // init stores
     this.parentItems = [] // default value is empty
     this.usedLanguages = new Map()
@@ -642,6 +649,11 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.prepareTreeNodeLabelSwitch()
     this.treeNodeLabelSwitchValueOrg = '' // reset
     this.onTreeNodeLabelSwitchChange({ value: this.treeNodeLabelSwitchValue })
+    // initially open the first menu item if exists
+    if (!restore && this.menuNodes.length > 1) {
+      this.menuNodes[0].expanded = true
+      this.stateService.getState().treeExpansionState.set(this.menuNodes[0].key || '', true)
+    }
   }
   private prepareTreeNodeHelperRecursively(nodes: TreeNode[]): void {
     nodes.forEach((m) => {
