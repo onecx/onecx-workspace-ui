@@ -66,8 +66,10 @@
         "DEREGISTER_OK": "Die Slot-Zuweisungen wurden erfolgreich gelöscht.",
         "DEREGISTER_NOK": "Ein Fehler ist aufgetreten. Die Slot-Zuweisungen wurden nicht gelöscht."
       },
-      "PRODUCTS_MESSAGE": "Die ausgewählten Applikationen und ihre Komponenten werden für den Arbeitsbereich abgemeldet. Menüelemente, die solche Pfade verwenden, werden nicht berührt, funktionieren aber nicht mehr.",
-      "PRODUCTS_QUESTION": "Möchten Sie die ausgewählten Applikationen abmelden?"
+      "PRODUCT": {
+        "MESSAGE": "Möchten Sie die ausgewählten Applikationen abmelden?",
+        "MESSAGE_INFO": "Die ausgewählten Applikationen und ihre Komponenten werden für den Arbeitsbereich abgemeldet. Menüelemente, die solche Pfade verwenden, werden nicht berührt, funktionieren aber nicht mehr."
+      }
     },
     "EDIT": {
       "LABEL": "Bearbeiten",

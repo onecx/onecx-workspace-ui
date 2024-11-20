@@ -523,12 +523,12 @@
 >
   <div class="flex column-gap-4 row-gap-1 justify-content-start align-items-center">
     <div class="pi pi-question-circle text-3xl danger-action-text"></div>
-    <div>
+    <div class="flex flex-column row-gap-2">
       <div id="ws_products_deregister_message" class="font-bold">
-        {{ 'ACTIONS.DELETE.PRODUCTS_QUESTION' | translate }}
+        {{ 'ACTIONS.DELETE.PRODUCT.MESSAGE' | translate }}
       </div>
-      <div class="mt-2">{{ 'ACTIONS.DELETE.PRODUCTS_MESSAGE' | translate }}</div>
-      <div class="mt-1">{{ 'ACTIONS.DELETE.MESSAGE_INFO' | translate }}</div>
+      <div id="ws_products_deregister_message_info">{{ 'ACTIONS.DELETE.PRODUCT.MESSAGE_INFO' | translate }}</div>
+      <div>{{ 'ACTIONS.DELETE.INFO' | translate }}</div>
     </div>
   </div>
   <ng-template pTemplate="footer">

@@ -66,9 +66,10 @@
         "DEREGISTER_OK": "The assignment of Slot to Components were deleted successfully",
         "DEREGISTER_NOK": "An error has occurred. The assignment of Slot to Components were not deleted."
       },
-      "MESSAGE": "Do you want to delete \"{{ITEM}}\"?",
-      "PRODUCTS_MESSAGE": "The selected Applications and their apps are deregistered from the Workspace. Menu items that use such paths are not touched but no longer work.",
-      "PRODUCTS_QUESTION": "Do you want to deregister selected Applications?"
+      "PRODUCT": {
+        "MESSAGE": "Do you want to deregister selected Applications?",
+        "MESSAGE_INFO": "The selected Applications and their apps are deregistered from the Workspace. Menu items that use such paths are not touched but no longer work."
+      }
     },
     "EDIT": {
       "LABEL": "Edit",
