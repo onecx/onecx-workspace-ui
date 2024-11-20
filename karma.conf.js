@@ -5,7 +5,7 @@
 module.exports = function (config) {
   config.set({
     basePath: '',
-    logLevel: config.LOG_DEBUG,
+    logLevel: config.LOG_INFO,
     frameworks: ['jasmine', '@angular-devkit/build-angular'],
     plugins: [
       require('karma-chrome-launcher'),
