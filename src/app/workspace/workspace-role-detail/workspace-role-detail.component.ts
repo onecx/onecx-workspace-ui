@@ -123,11 +123,11 @@ export class WorkspaceRoleDetailComponent implements OnChanges {
   public onDeleteRoleConfirmation() {
     this.wRoleApi.deleteWorkspaceRole({ id: this.role?.id ?? '' }).subscribe({
       next: () => {
-        this.msgService.success({ summaryKey: 'ACTIONS.DELETE.ROLE_OK' })
+        this.msgService.success({ summaryKey: 'ACTIONS.DELETE.ROLE.MESSAGE_OK' })
         this.dataChanged.emit(true)
       },
       error: (err) => {
-        this.msgService.error({ summaryKey: 'ACTIONS.DELETE.ROLE_NOK' })
+        this.msgService.error({ summaryKey: 'ACTIONS.DELETE.ROLE.MESSAGE_NOK' })
         console.error(err.error)
       }
     })

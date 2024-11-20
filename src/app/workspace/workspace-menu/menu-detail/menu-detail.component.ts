@@ -319,11 +319,11 @@ export class MenuDetailComponent implements OnChanges {
     this.displayDeleteDialog = false
     this.menuApi.deleteMenuItemById({ menuItemId: this.menuItemOrg?.id ?? '' }).subscribe({
       next: () => {
-        this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MENU_OK' })
+        this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MENU.MESSAGE_OK' })
         this.dataChanged.emit(true)
       },
       error: (err: { error: any }) => {
-        this.msgService.error({ summaryKey: 'ACTIONS.DELETE.MENU_NOK' })
+        this.msgService.error({ summaryKey: 'ACTIONS.DELETE.MENU.MESSAGE_NOK' })
         console.error(err.error)
       }
     })

@@ -333,14 +333,15 @@
 >
   <div class="my-2 flex column-gap-4 row-gap-1 justify-content-start align-items-center">
     <div class="pi pi-question-circle text-3xl danger-action-text"></div>
-    <div>
-      <div id="ws_menu_delete_message" class="font-bold">
-        {{ ('ACTIONS.DELETE.MESSAGE' | translate).replace('{{ITEM}}', menuItemOrg?.name) }}
+    <div class="flex flex-column row-gap-2">
+      <div id="ws_menu_delete_message" class="font-bold">{{ 'ACTIONS.DELETE.MENU.MESSAGE' | translate }}</div>
+      <div id="ws_menu_delete_menu_item_name" class="font-bold text-center danger-action-text">
+        {{ menuItemOrg?.name }}
       </div>
-      <div *ngIf="menuItemOrg && menuItemOrg.children && menuItemOrg.children[0]" class="mt-2">
-        {{ 'ACTIONS.DELETE.MENU_MESSAGE' | translate }}
+      <div *ngIf="menuItemOrg && menuItemOrg.children && menuItemOrg.children[0]">
+        {{ 'ACTIONS.DELETE.MENU.MESSAGE_CHILDREN' | translate }}
       </div>
-      <div class="mt-2">{{ 'ACTIONS.DELETE.MESSAGE_INFO' | translate }}</div>
+      <div>{{ 'ACTIONS.DELETE.INFO' | translate }}</div>
     </div>
   </div>
   <ng-template pTemplate="footer">

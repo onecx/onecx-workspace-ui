@@ -270,7 +270,7 @@ describe('WorkspaceRolesComponent', () => {
 
     component.onAddRole(mockEvent, wRole)
 
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.ROLE_OK' })
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.ROLE.MESSAGE_OK' })
   })
 
   it('should display error when creating a role onAddRole', () => {
@@ -279,7 +279,7 @@ describe('WorkspaceRolesComponent', () => {
 
     component.onAddRole(mockEvent, wRole)
 
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.ROLE_NOK' })
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.ROLE.MESSAGE_NOK' })
   })
 
   it('should set properties for creating a new role', () => {
