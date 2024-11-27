@@ -13,7 +13,7 @@ import { PortalMessageService } from '@onecx/portal-integration-angular'
 import { Workspace, WorkspaceAbstract, WorkspaceAPIService, SearchWorkspacesResponse } from 'src/app/shared/generated'
 import { WorkspaceSearchComponent } from './workspace-search.component'
 
-fdescribe('WorkspaceSearchComponent', () => {
+describe('WorkspaceSearchComponent', () => {
   let component: WorkspaceSearchComponent
   let fixture: ComponentFixture<WorkspaceSearchComponent>
   let mockActivatedRoute: ActivatedRoute
