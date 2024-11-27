@@ -21,8 +21,8 @@ describe('MenuInternComponent', () => {
         }).withDefaultLanguage('en')
       ],
       providers: [
-        provideHttpClientTesting(),
         provideHttpClient(),
+        provideHttpClientTesting(),
         provideRouter([{ path: '', component: MenuInternComponent }])
       ],
       schemas: [NO_ERRORS_SCHEMA]

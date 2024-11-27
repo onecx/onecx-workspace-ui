@@ -43,8 +43,8 @@ describe('MenuImportComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
-        provideHttpClientTesting(),
         provideHttpClient(),
+        provideHttpClientTesting(),
         provideRouter([{ path: '', component: MenuImportComponent }]),
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: MenuItemAPIService, useValue: menuApiServiceSpy }
