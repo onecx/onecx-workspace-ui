@@ -1,7 +1,6 @@
 import { NO_ERRORS_SCHEMA, Component, SimpleChange } from '@angular/core'
-import { Location } from '@angular/common'
-import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
+import { Location } from '@angular/common'
 import { FormControl, FormGroup, FormsModule, Validators } from '@angular/forms'
 import { By } from '@angular/platform-browser'
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router'
@@ -152,7 +151,6 @@ describe('MenuDetailComponent', () => {
     TestBed.configureTestingModule({
       declarations: [MenuDetailComponent],
       imports: [
-        HttpClientTestingModule,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
@@ -260,14 +258,14 @@ describe('MenuDetailComponent', () => {
     })
 
     it('should call getMenu in view mode onChanges and catch error if api call fails', () => {
-      const testError = { error: 'test error message' }
-      menuApiServiceSpy.getMenuItemById.and.returnValue(throwError(() => testError))
+      const errorResponse = { status: 400, statusText: 'Error on getting menu items' }
+      menuApiServiceSpy.getMenuItemById.and.returnValue(throwError(() => errorResponse))
       spyOn(console, 'error')
 
-      component['getMenu']()
+      component.getMenu()
 
       expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.MENU.MENU_ITEM_NOT_FOUND' })
-      expect(console.error).toHaveBeenCalledWith('test error message')
+      expect(console.error).toHaveBeenCalledWith('getMenuItemById', errorResponse)
     })
 
     it('should filter out items with isSpecial set to true', () => {
@@ -301,8 +299,9 @@ describe('MenuDetailComponent', () => {
       })
 
       it('should display error when trying to loadMfeUrls', () => {
+        const errorResponse = { status: 400, statusText: 'Error on getting workspace products' }
         menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[0]))
-        wProductApiServiceSpy.getProductsByWorkspaceId.and.returnValue(throwError(() => new Error()))
+        wProductApiServiceSpy.getProductsByWorkspaceId.and.returnValue(throwError(() => errorResponse))
         component.changeMode = 'VIEW'
         component.workspaceId = 'workspaceId'
         component.menuItemOrg = { id: 'menuItemId' }
@@ -311,7 +310,7 @@ describe('MenuDetailComponent', () => {
 
         component.ngOnChanges({ workspaceId: {} as SimpleChange })
 
-        expect(console.error).toHaveBeenCalledWith('getProductsByWorkspaceId():', new Error())
+        expect(console.error).toHaveBeenCalledWith('getProductsByWorkspaceId', errorResponse)
       })
     })
 
@@ -453,14 +452,17 @@ describe('MenuDetailComponent', () => {
   })
 
   it('should display error message on save menu: create', () => {
-    menuApiServiceSpy.createMenuItemForWorkspace.and.returnValue(throwError(() => new Error()))
+    const errorResponse = { status: 400, statusText: 'Error on creating a menu item' }
+    menuApiServiceSpy.createMenuItemForWorkspace.and.returnValue(throwError(() => errorResponse))
     component.formGroup = form
     component.menuItem = mockMenuItems[0]
     component.changeMode = 'CREATE'
+    spyOn(console, 'error')
 
     component.onMenuSave()
 
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.MESSAGE.MENU_CREATE_NOK' })
+    expect(console.error).toHaveBeenCalledWith('createMenuItemForWorkspace', errorResponse)
   })
 
   it('should save a menu: edit', () => {
@@ -477,7 +479,9 @@ describe('MenuDetailComponent', () => {
   })
 
   it('should display error message on save menu: edit', () => {
-    menuApiServiceSpy.updateMenuItem.and.returnValue(throwError(() => new Error()))
+    const errorResponse = { status: 400, statusText: 'Error on creating a menu item' }
+    menuApiServiceSpy.updateMenuItem.and.returnValue(throwError(() => errorResponse))
+    spyOn(console, 'error')
     component.formGroup = form
     component.menuItem = mockMenuItems[0]
     component.changeMode = 'EDIT'
@@ -486,6 +490,7 @@ describe('MenuDetailComponent', () => {
     component.onMenuSave()
 
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
+    expect(console.error).toHaveBeenCalledWith('updateMenuItem', errorResponse)
   })
 
   /**
@@ -502,11 +507,14 @@ describe('MenuDetailComponent', () => {
   })
 
   it('should display error message on delete menu item', () => {
-    menuApiServiceSpy.deleteMenuItemById.and.returnValue(throwError(() => new Error()))
+    const errorResponse = { status: 400, statusText: 'Error on import menu items' }
+    menuApiServiceSpy.deleteMenuItemById.and.returnValue(throwError(() => errorResponse))
+    spyOn(console, 'error')
 
     component.onMenuDelete()
 
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MENU.MESSAGE_NOK' })
+    expect(console.error).toHaveBeenCalledWith('deleteMenuItemById', errorResponse)
   })
 
   it('should update tabIndex onTabPanelChange', () => {

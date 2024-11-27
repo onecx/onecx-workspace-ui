@@ -36,8 +36,9 @@ export class WorkspaceExportComponent {
             `onecx-workspace_${this.workspace?.name}_${getCurrentDateTime()}.json`
           )
         },
-        error: () => {
+        error: (err) => {
           this.msgService.error({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.NOK' })
+          console.error('exportWorkspaces', err)
         }
       })
     this.workspaceExportVisibleChange.emit(false)

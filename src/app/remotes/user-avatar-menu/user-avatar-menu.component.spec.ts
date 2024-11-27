@@ -1,9 +1,9 @@
+import { NgModule, Renderer2 } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
-import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
+import { CommonModule } from '@angular/common'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { NgModule, Renderer2 } from '@angular/core'
-import { CommonModule } from '@angular/common'
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { provideRouter, Router, RouterModule } from '@angular/router'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'
 import { TranslateTestingModule } from 'ngx-translate-testing'
@@ -18,9 +18,10 @@ import { BASE_URL, RemoteComponentConfig, SlotService } from '@onecx/angular-rem
 import { AppStateService, UserService } from '@onecx/angular-integration-interface'
 import { IfPermissionDirective } from '@onecx/angular-accelerator'
 import { AppConfigService } from '@onecx/portal-integration-angular'
+
 import { MenuItemAPIService } from 'src/app/shared/generated'
-import { OneCXUserAvatarMenuComponent, slotInitializer } from './user-avatar-menu.component'
 import { OneCXUserAvatarMenuHarness } from './user-avatar-menu.harness'
+import { OneCXUserAvatarMenuComponent, slotInitializer } from './user-avatar-menu.component'
 
 @NgModule({
   imports: [],

@@ -143,9 +143,10 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
           this.importParseAndExtract(response)
           this.importCheckAndRoute(wKeys)
         },
-        error: () => {
+        error: (err) => {
           this.isLoading = false
           this.msgService.error({ summaryKey: 'WORKSPACE_IMPORT.IMPORT_NOK' })
+          console.error('importWorkspaces', err)
         }
       })
   }

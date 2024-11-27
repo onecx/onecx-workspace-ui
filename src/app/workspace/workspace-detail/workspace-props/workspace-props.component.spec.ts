@@ -299,7 +299,8 @@ describe('WorkspacePropsComponent', () => {
     })
 
     it('should display error if upload fails', () => {
-      imageServiceSpy.getImage.and.returnValue(throwError(() => new Error()))
+      const errorResponse = { status: 400, statusText: 'Error on getting image' }
+      imageServiceSpy.getImage.and.returnValue(throwError(() => errorResponse))
       const blob = new Blob(['a'.repeat(10)], { type: 'image/png' })
       const file = new File([blob], 'test.png', { type: 'image/png' })
       const event = {
@@ -311,9 +312,7 @@ describe('WorkspacePropsComponent', () => {
 
       component.onFileUpload(event as any)
 
-      expect(msgServiceSpy.info).toHaveBeenCalledWith({
-        summaryKey: 'IMAGE.UPLOAD_SUCCESS'
-      })
+      expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'IMAGE.UPLOAD_SUCCESS' })
     })
   })
 
@@ -346,7 +345,7 @@ describe('WorkspacePropsComponent', () => {
   describe('getLogoUrl', () => {
     it('call with undefined workspace', () => {
       const testWorkspace: Workspace = undefined!
-      expect(component.getLogoUrl(testWorkspace)).toBeUndefined
+      expect(component.getLogoUrl(testWorkspace)).toBeUndefined()
     })
 
     it('call with undefined workspace', () => {

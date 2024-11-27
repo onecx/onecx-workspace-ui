@@ -185,10 +185,9 @@ describe('WorkspaceDetailComponent', () => {
     })
 
     it('should display error msg if get api call fails', (done) => {
-      const err = {
-        status: '404'
-      }
-      apiServiceSpy.getWorkspaceByName.and.returnValue(throwError(() => err))
+      const errorResponse = { status: 404, statusText: 'Workspace not found' }
+      apiServiceSpy.getWorkspaceByName.and.returnValue(throwError(() => errorResponse))
+      spyOn(console, 'error')
 
       component.getWorkspace()
 
@@ -199,7 +198,8 @@ describe('WorkspaceDetailComponent', () => {
         error: done.fail
       })
 
-      expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + err.status + '.WORKSPACE')
+      expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + errorResponse.status + '.WORKSPACE')
+      expect(console.error).toHaveBeenCalledWith('getWorkspaceByName', errorResponse)
     })
   })
 
@@ -222,13 +222,14 @@ describe('WorkspaceDetailComponent', () => {
     })
 
     it('should display error msg if delete api call fails', () => {
-      apiServiceSpy.deleteWorkspace.and.returnValue(throwError(() => new Error()))
+      const errorResponse = { status: 400, statusText: 'Error on deleting a workspace' }
+      apiServiceSpy.deleteWorkspace.and.returnValue(throwError(() => errorResponse))
+      spyOn(console, 'error')
 
       component.onConfirmDeleteWorkspace()
 
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({
-        summaryKey: 'ACTIONS.DELETE.WORKSPACE.MESSAGE_NOK'
-      })
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.WORKSPACE.MESSAGE_NOK' })
+      expect(console.error).toHaveBeenCalledWith('deleteWorkspace', errorResponse)
     })
   })
 
@@ -407,7 +408,8 @@ describe('WorkspaceDetailComponent', () => {
     })
 
     it('it should display error on update workspace', () => {
-      apiServiceSpy.updateWorkspace.and.returnValue(throwError(() => new Error()))
+      const errorResponse = { status: 400, statusText: 'Error on updating a workspace' }
+      apiServiceSpy.updateWorkspace.and.returnValue(throwError(() => errorResponse))
       component.selectedTabIndex = 99
       spyOn(console, 'error')
       component.ngOnInit()
@@ -417,6 +419,7 @@ describe('WorkspaceDetailComponent', () => {
       actions[3].actionCallback()
 
       expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_NOK' })
+      expect(console.error).toHaveBeenCalledWith('updateWorkspace', errorResponse)
     })
   })
 

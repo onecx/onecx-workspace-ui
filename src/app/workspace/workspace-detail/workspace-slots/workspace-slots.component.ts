@@ -344,8 +344,9 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
         next: () => {
           this.loadData()
         },
-        error: () => {
-          this.msgService.error({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.NOK' })
+        error: (err) => {
+          this.msgService.error({ summaryKey: 'ACTIONS.CREATE.SLOT.MESSAGE_NOK' })
+          console.error('createSlot', err)
         }
       })
   }

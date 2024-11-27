@@ -1,9 +1,12 @@
+import { Component, Inject, Input, OnChanges } from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { Component, Inject, Input, OnChanges } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy } from '@ngneat/until-destroy'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
+import { catchError, map, Observable, of, ReplaySubject } from 'rxjs'
+import { PanelMenuModule } from 'primeng/panelmenu'
+
 import {
   AngularRemoteComponentsModule,
   BASE_URL,
@@ -13,8 +16,7 @@ import {
   provideTranslateServiceForRoot
 } from '@onecx/angular-remote-components'
 import { PortalCoreModule, UserService, createRemoteComponentTranslateLoader } from '@onecx/portal-integration-angular'
-import { PanelMenuModule } from 'primeng/panelmenu'
-import { catchError, map, Observable, of, ReplaySubject } from 'rxjs'
+
 import { Configuration, SearchWorkspacesResponse, WorkspaceAPIService } from 'src/app/shared/generated'
 import { SharedModule } from 'src/app/shared/shared.module'
 import { environment } from 'src/environments/environment'
@@ -81,7 +83,7 @@ export class OneCXListWorkspacesUsingProductComponent implements ocxRemoteCompon
       .searchWorkspaces({ searchWorkspacesRequest: { productName: this.productName } })
       .pipe(
         catchError((err) => {
-          console.error('searchWorkspaces():', err)
+          console.error('searchWorkspaces', err)
           return of({ stream: [] } as SearchWorkspacesResponse)
         }),
         map((data) => {

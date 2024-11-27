@@ -120,7 +120,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
           },
           error: (err) => {
             this.msgService.error({ summaryKey: 'ACTIONS.EDIT.SLOT_NOK' })
-            console.error(err.error)
+            console.error('updateSlot', err)
           }
         })
     }
@@ -135,7 +135,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
         },
         error: (err) => {
           this.msgService.error({ summaryKey: 'ACTIONS.DELETE.SLOT.MESSAGE_NOK' })
-          console.error(err.error)
+          console.error('deleteSlotById', err)
         }
       })
     }

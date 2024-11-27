@@ -2,11 +2,12 @@ import { NO_ERRORS_SCHEMA, Renderer2, SimpleChanges } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { of, throwError } from 'rxjs'
 import { ActivatedRoute, provideRouter } from '@angular/router'
+import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { ReactiveFormsModule, FormBuilder, FormArray, FormControl } from '@angular/forms'
 
-import { MfeInfo, PortalMessageService, AppStateService } from '@onecx/portal-integration-angular'
+import { AppStateService, MfeInfo, PortalMessageService, UserService } from '@onecx/portal-integration-angular'
 import {
   Product,
   WorkspaceProductAPIService,
@@ -19,7 +20,6 @@ import {
 } from 'src/app/shared/generated'
 
 import { ExtendedMicrofrontend, ExtendedProduct, ExtendedSlot, ProductComponent } from './products.component'
-import { provideHttpClient } from '@angular/common/http'
 
 const workspace: Workspace = {
   id: 'id',
@@ -123,6 +123,10 @@ describe('ProductComponent', () => {
     searchAvailableProducts: jasmine.createSpy('searchAvailableProducts').and.returnValue(of({}))
   }
   const slotApiServiceSpy = { createSlot: jasmine.createSpy('createSlot').and.returnValue(of({})) }
+  const mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
+  mockUserService.hasPermission.and.callFake((permission: string) => {
+    return ['WORKSPACE_PRODUCTS#REGISTER'].includes(permission)
+  })
 
   beforeEach(waitForAsync(() => {
     mockAppState = { currentMfe$: of(mfeInfo) }
@@ -137,15 +141,16 @@ describe('ProductComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
-        provideHttpClientTesting(),
         provideHttpClient(),
+        provideHttpClientTesting(),
         provideRouter([{ path: '', component: ProductComponent }]),
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: WorkspaceProductAPIService, useValue: wProductServiceSpy },
         { provide: ProductAPIService, useValue: productServiceSpy },
         { provide: AppStateService, useValue: mockAppState },
-        { provide: SlotAPIService, useValue: slotApiServiceSpy }
+        { provide: SlotAPIService, useValue: slotApiServiceSpy },
+        { provide: UserService, useValue: mockUserService }
       ]
     }).compileComponents()
     msgServiceSpy.success.calls.reset()

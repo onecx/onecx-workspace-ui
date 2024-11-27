@@ -9,7 +9,7 @@ import { SelectItem } from 'primeng/api/selectitem'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 
 import { sortByLocale } from 'src/app/shared/utils'
-import { WorkspaceAPIService, Workspace, ProductAPIService } from 'src/app/shared/generated'
+import { WorkspaceAPIService, ProductAPIService } from 'src/app/shared/generated'
 
 @Component({
   selector: 'app-workspace-create',
@@ -21,9 +21,8 @@ export class WorkspaceCreateComponent implements OnInit {
   @Output() toggleCreationDialogEvent = new EventEmitter()
 
   private readonly destroy$ = new Subject()
-  public themes$: Observable<SelectItem<string>[]>
+  public themes$!: Observable<SelectItem<string>[]>
   public formGroup: FormGroup
-  private workspace!: Workspace
   public hasPermission = false
   public selectedLogoFile: File | undefined
   public preview = false
@@ -53,15 +52,15 @@ export class WorkspaceCreateComponent implements OnInit {
       footerLabel: new FormControl(null, [Validators.maxLength(255)]),
       description: new FormControl(null, [Validators.maxLength(255)])
     })
+  }
+
+  ngOnInit(): void {
     this.themes$ = this.workspaceApi.getAllThemes().pipe(
       map((val: any[]) => {
         val.sort(sortByLocale)
         return val
       })
     )
-  }
-
-  ngOnInit(): void {
     this.loadMfeUrls()
   }
 
@@ -78,7 +77,6 @@ export class WorkspaceCreateComponent implements OnInit {
         Location.joinWithSlash(this.formGroup.controls['baseUrl'].value, this.formGroup.controls['homePage'].value)
       )
     }
-    this.workspace = { ...this.formGroup.value }
     this.workspaceApi
       .createWorkspace({
         createWorkspaceRequest: { resource: this.formGroup.value }
@@ -91,8 +89,9 @@ export class WorkspaceCreateComponent implements OnInit {
           this.closeDialog()
           this.router.navigate(['./' + fetchedWorkspace.resource?.name], { relativeTo: this.route })
         },
-        error: (err: { error: { message: any } }) => {
+        error: (err) => {
           this.message.error({ summaryKey: 'ACTIONS.CREATE.MESSAGE.CREATE_NOK' })
+          console.error('createWorkspace', err)
         }
       })
   }
@@ -114,7 +113,7 @@ export class WorkspaceCreateComponent implements OnInit {
           }
         }),
         catchError((err) => {
-          console.error('getProductsByWorkspaceId():', err)
+          console.error('getProductsByWorkspaceId', err)
           return of([] as string[])
         })
       )

@@ -98,7 +98,7 @@ const state: MenuState = {
   workspaceMenuItems: []
 }
 
-fdescribe('MenuComponent', () => {
+describe('MenuComponent', () => {
   let component: MenuComponent
   let fixture: ComponentFixture<MenuComponent>
 

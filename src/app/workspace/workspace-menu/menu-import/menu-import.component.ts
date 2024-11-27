@@ -77,9 +77,9 @@ export class MenuImportComponent implements OnInit {
             this.msgService.success({ summaryKey: 'DIALOG.MENU.IMPORT.UPLOAD_OK' })
             this.onClose(true)
           },
-          error: (err: any) => {
+          error: (err) => {
             this.msgService.error({ summaryKey: 'DIALOG.MENU.IMPORT.UPLOAD_NOK' })
-            console.error(err)
+            console.error('importMenuByWorkspaceName', err)
           }
         })
     }

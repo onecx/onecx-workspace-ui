@@ -24,6 +24,10 @@
       "ROLE_NOK": "Ein Fehler ist aufgetreten. Die Rolle wurde nicht erstellt.",
       "MENU": "Menüpunkt erstellen",
       "MENU.TOOLTIP": "Ein neuen Menüpunkt unterhalb erstellen",
+      "SLOT": {
+        "MESSAGE_OK": "Der Slot wurde erfolgreich erstellt",
+        "MESSAGE_NOK": "Ein Fehler ist aufgetreten. Der Slot wurde nicht erstellt."
+      },
       "MESSAGE": {
         "CREATE_OK": "Der Workspace wurde erfolgreich erstellt",
         "CREATE_NOK": "Ein Fehler ist aufgetreten. Der Workspace wurde nicht erstellt.",

@@ -1,11 +1,16 @@
 import { NO_ERRORS_SCHEMA, SimpleChanges } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
+import { provideHttpClient, HttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { HttpClient, provideHttpClient } from '@angular/common/http'
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { of, throwError } from 'rxjs'
 
-import { AppStateService, createTranslateLoader, PortalMessageService } from '@onecx/portal-integration-angular'
+import {
+  AppStateService,
+  createTranslateLoader,
+  PortalMessageService,
+  UserService
+} from '@onecx/portal-integration-angular'
 import {
   Role,
   WorkspaceRolesComponent
@@ -48,6 +53,10 @@ describe('WorkspaceRolesComponent', () => {
   const iamRoleServiceSpy = {
     searchAvailableRoles: jasmine.createSpy('searchAvailableRoles').and.returnValue(of({}))
   }
+  const mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
+  mockUserService.hasPermission.and.callFake((permission: string) => {
+    return ['WORKSPACE_ROLE#EDIT', 'WORKSPACE_ROLE#CREATE', 'WORKSPACE_ROLE#DELETE'].includes(permission)
+  })
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -64,11 +73,12 @@ describe('WorkspaceRolesComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
-        provideHttpClientTesting(),
         provideHttpClient(),
+        provideHttpClientTesting(),
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: WorkspaceRolesAPIService, useValue: wRoleServiceSpy },
-        { provide: RoleAPIService, useValue: iamRoleServiceSpy }
+        { provide: RoleAPIService, useValue: iamRoleServiceSpy },
+        { provide: UserService, useValue: mockUserService }
       ]
     }).compileComponents()
     msgServiceSpy.success.calls.reset()
@@ -156,10 +166,8 @@ describe('WorkspaceRolesComponent', () => {
   })
 
   it('should display error on ws search', () => {
-    const err = {
-      status: '404'
-    }
-    wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(throwError(() => err))
+    const errorResponse = { status: 404, statusText: 'Workspace roles not found' }
+    wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(throwError(() => errorResponse))
     const changes = {
       ['workspace']: {
         previousValue: 'ws0',
@@ -171,7 +179,7 @@ describe('WorkspaceRolesComponent', () => {
 
     component.ngOnChanges(changes as unknown as SimpleChanges)
 
-    expect(component.exceptionKey).toEqual('EXCEPTIONS.HTTP_STATUS_' + '404' + '.WS_ROLES')
+    expect(component.exceptionKey).toEqual('EXCEPTIONS.HTTP_STATUS_' + errorResponse.status + '.WS_ROLES')
   })
 
   it('should populate iamRoles on search', () => {
@@ -228,10 +236,8 @@ describe('WorkspaceRolesComponent', () => {
   })
 
   it('should display error on iam search', () => {
-    const err = {
-      status: '404'
-    }
-    iamRoleServiceSpy.searchAvailableRoles.and.returnValue(throwError(() => err))
+    const errorResponse = { status: 404, statusText: 'IAM roles not found' }
+    iamRoleServiceSpy.searchAvailableRoles.and.returnValue(throwError(() => errorResponse))
     const changes = {
       ['workspace']: {
         previousValue: 'ws0',
@@ -243,7 +249,7 @@ describe('WorkspaceRolesComponent', () => {
 
     component.ngOnChanges(changes as unknown as SimpleChanges)
 
-    expect(component.exceptionKey).toEqual('EXCEPTIONS.HTTP_STATUS_' + '404' + '.IAM_ROLES')
+    expect(component.exceptionKey).toEqual('EXCEPTIONS.HTTP_STATUS_' + errorResponse.status + '.IAM_ROLES')
   })
 
   it('should behave correctly onReload', () => {
@@ -274,12 +280,15 @@ describe('WorkspaceRolesComponent', () => {
   })
 
   it('should display error when creating a role onAddRole', () => {
-    wRoleServiceSpy.createWorkspaceRole.and.returnValue(throwError(() => new Error()))
+    const errorResponse = { status: 400, statusText: 'Error on creating a workspace role' }
+    wRoleServiceSpy.createWorkspaceRole.and.returnValue(throwError(() => errorResponse))
     const mockEvent = new MouseEvent('click')
+    spyOn(console, 'error')
 
     component.onAddRole(mockEvent, wRole)
 
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.ROLE.MESSAGE_NOK' })
+    expect(console.error).toHaveBeenCalledWith('createWorkspaceRole', errorResponse)
   })
 
   it('should set properties for creating a new role', () => {

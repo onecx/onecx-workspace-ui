@@ -14,7 +14,7 @@ import { translateServiceInitializer, PortalCoreModule } from '@onecx/portal-int
 import { environment } from 'src/environments/environment'
 import { AppComponent } from './app.component'
 
-const routes: Routes = [
+export const routes: Routes = [
   {
     path: '',
     loadChildren: () => import('./workspace/workspace.module').then((m) => m.WorkspaceModule)
