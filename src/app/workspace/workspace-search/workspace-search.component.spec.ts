@@ -253,73 +253,50 @@ describe('WorkspaceSearchComponent', () => {
       error: done.fail
     })
   })
-})
 
-xdescribe('sort Workspaces by display name', () => {
-  let component: WorkspaceSearchComponent
-  let fixture: ComponentFixture<WorkspaceSearchComponent>
+  describe('sort Workspaces by display name', () => {
+    it('should sort workspaces by display name 1 - non-empty', () => {
+      const a: WorkspaceAbstract = { name: 'a', displayName: 'a' }
+      const b: WorkspaceAbstract = { name: 'b', displayName: 'b' }
+      const c: WorkspaceAbstract = { name: 'c', displayName: 'c' }
+      const workspaces = [b, c, a]
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [WorkspaceSearchComponent],
-      imports: [
-        TranslateTestingModule.withTranslations({
-          de: require('src/assets/i18n/de.json'),
-          en: require('src/assets/i18n/en.json')
-        }).withDefaultLanguage('en')
-      ],
-      schemas: [NO_ERRORS_SCHEMA],
-      providers: [provideHttpClient(), provideHttpClientTesting()]
-    }).compileComponents()
-  }))
+      workspaces.sort((x, y) => component.sortWorkspacesByName(x, y))
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(WorkspaceSearchComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
-  })
+      expect(workspaces).toEqual([a, b, c])
+    })
 
-  it('should sort workspaces by display name 1 - non-empty', () => {
-    const a: WorkspaceAbstract = { name: 'a', displayName: 'a' }
-    const b: WorkspaceAbstract = { name: 'b', displayName: 'b' }
-    const c: WorkspaceAbstract = { name: 'c', displayName: 'c' }
-    const workspaces = [b, c, a]
+    it('should sort workspaces by display name 2 - empty and non-empty', () => {
+      const a: WorkspaceAbstract = { name: 'a', displayName: '' }
+      const b: WorkspaceAbstract = { name: '', displayName: '' }
+      const c: WorkspaceAbstract = { name: '', displayName: '' }
+      const workspaces = [b, c, a]
 
-    workspaces.sort((x, y) => component.sortWorkspacesByName(x, y))
+      workspaces.sort((x, y) => component.sortWorkspacesByName(x, y))
 
-    expect(workspaces).toEqual([a, b, c])
-  })
+      expect(workspaces).toEqual([b, c, a])
+    })
 
-  it('should sort workspaces by display name 2 - empty and non-empty', () => {
-    const a: WorkspaceAbstract = { name: 'a', displayName: '' }
-    const b: WorkspaceAbstract = { name: '', displayName: '' }
-    const c: WorkspaceAbstract = { name: '', displayName: '' }
-    const workspaces = [b, c, a]
+    it('should sort workspaces by display name 3 - empty display names', () => {
+      const a: WorkspaceAbstract = { name: '', displayName: '' }
+      const b: WorkspaceAbstract = { name: '', displayName: '' }
+      const c: WorkspaceAbstract = { name: '', displayName: '' }
+      const workspaces = [b, c, a]
 
-    workspaces.sort((x, y) => component.sortWorkspacesByName(x, y))
+      workspaces.sort((x, y) => component.sortWorkspacesByName(x, y))
 
-    expect(workspaces).toEqual([b, c, a])
-  })
+      expect(workspaces).toEqual([b, c, a])
+    })
 
-  it('should sort workspaces by display name 3 - empty display names', () => {
-    const a: WorkspaceAbstract = { name: '', displayName: '' }
-    const b: WorkspaceAbstract = { name: '', displayName: '' }
-    const c: WorkspaceAbstract = { name: '', displayName: '' }
-    const workspaces = [b, c, a]
+    it('should sort workspaces by display name 4 - special characters', () => {
+      const a: WorkspaceAbstract = { name: 'a', displayName: 'a' }
+      const b: WorkspaceAbstract = { name: 'b', displayName: 'b' }
+      const c: WorkspaceAbstract = { name: '$', displayName: '$' }
+      const workspaces = [b, c, a]
 
-    workspaces.sort((x, y) => component.sortWorkspacesByName(x, y))
+      workspaces.sort((x, y) => component.sortWorkspacesByName(x, y))
 
-    expect(workspaces).toEqual([b, c, a])
-  })
-
-  it('should sort workspaces by display name 4 - special characters', () => {
-    const a: WorkspaceAbstract = { name: 'a', displayName: 'a' }
-    const b: WorkspaceAbstract = { name: 'b', displayName: 'b' }
-    const c: WorkspaceAbstract = { name: '$', displayName: '$' }
-    const workspaces = [b, c, a]
-
-    workspaces.sort((x, y) => component.sortWorkspacesByName(x, y))
-
-    expect(workspaces).toEqual([c, a, b])
+      expect(workspaces).toEqual([c, a, b])
+    })
   })
 })
