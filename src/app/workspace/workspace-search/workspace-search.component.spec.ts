@@ -1,19 +1,18 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
+import { Location } from '@angular/common'
+import { provideHttpClient } from '@angular/common/http'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { provideRouter, Router } from '@angular/router'
 import { of, throwError } from 'rxjs'
 import { ActivatedRoute } from '@angular/router'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 
-import { PortalMessageService } from '@onecx/portal-integration-angular'
-import { Workspace, WorkspaceAbstract, WorkspaceAPIService, SearchWorkspacesResponse } from 'src/app/shared/generated'
-
-import { WorkspaceSearchComponent } from './workspace-search.component'
 import { getLocation } from '@onecx/accelerator'
-import { Location } from '@angular/common'
-import { provideHttpClient } from '@angular/common/http'
-import { provideHttpClientTesting, HttpClientTestingModule } from '@angular/common/http/testing'
-import { RouterTestingModule } from '@angular/router/testing'
+import { PortalMessageService } from '@onecx/portal-integration-angular'
+
+import { Workspace, WorkspaceAbstract, WorkspaceAPIService, SearchWorkspacesResponse } from 'src/app/shared/generated'
+import { WorkspaceSearchComponent } from './workspace-search.component'
 
 describe('WorkspaceSearchComponent', () => {
   let component: WorkspaceSearchComponent
@@ -239,8 +238,8 @@ describe('WorkspaceSearchComponent', () => {
   })
 
   it('should search workspaces but display error if API call fails', (done) => {
-    const err = { status: 403 }
-    wApiServiceSpy.searchWorkspaces.and.returnValue(throwError(() => err))
+    const errorResponse = { status: 403, statusText: 'not authorized' }
+    wApiServiceSpy.searchWorkspaces.and.returnValue(throwError(() => errorResponse))
 
     component.search()
 
@@ -248,7 +247,7 @@ describe('WorkspaceSearchComponent', () => {
       next: (result) => {
         if (result) {
           expect(result.length).toBe(0)
-          expect(component.exceptionKey).toEqual('EXCEPTIONS.HTTP_STATUS_403.WORKSPACES')
+          expect(component.exceptionKey).toEqual('EXCEPTIONS.HTTP_STATUS_' + errorResponse.status + '.WORKSPACES')
         }
         done()
       },
@@ -265,8 +264,6 @@ describe('sortMfesByExposedModule', () => {
     TestBed.configureTestingModule({
       declarations: [WorkspaceSearchComponent],
       imports: [
-        RouterTestingModule,
-        HttpClientTestingModule,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')

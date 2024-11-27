@@ -206,10 +206,8 @@ describe('ProductComponent', () => {
   })
 
   it('should log error if getProductsByWorkspaceId call fails', () => {
-    const err = {
-      status: '404'
-    }
-    wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(throwError(() => err))
+    const errorResponse = { status: 404, statusText: 'products not found for workspace' }
+    wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(throwError(() => errorResponse))
     const changes = {
       ['workspace']: {
         previousValue: 'ws0',
@@ -221,7 +219,7 @@ describe('ProductComponent', () => {
 
     component.ngOnChanges(changes as unknown as SimpleChanges)
 
-    expect(console.error).toHaveBeenCalledWith('getProductsByWorkspaceId():', err)
+    expect(console.error).toHaveBeenCalledWith('getProductsByWorkspaceId():', errorResponse)
   })
 
   describe('searchPsProducts', () => {
@@ -267,10 +265,8 @@ describe('ProductComponent', () => {
     })
 
     it('should loadData onChanges: searchPsProducts call error', () => {
-      const err = {
-        status: '404'
-      }
-      productServiceSpy.searchAvailableProducts.and.returnValue(throwError(() => err))
+      const errorResponse = { status: 404, statusText: 'product store products not found' }
+      productServiceSpy.searchAvailableProducts.and.returnValue(throwError(() => errorResponse))
       const changes = {
         ['workspace']: {
           previousValue: 'ws0',
@@ -282,26 +278,7 @@ describe('ProductComponent', () => {
 
       component.ngOnChanges(changes as unknown as SimpleChanges)
 
-      expect(console.error).toHaveBeenCalledWith('searchAvailableProducts():', err)
-    })
-
-    it('should loadData onChanges: searchPsProducts call error', () => {
-      const err = {
-        status: '404'
-      }
-      productServiceSpy.searchAvailableProducts.and.returnValue(throwError(() => err))
-      const changes = {
-        ['workspace']: {
-          previousValue: 'ws0',
-          currentValue: 'ws1',
-          firstChange: true
-        }
-      }
-      spyOn(console, 'error')
-
-      component.ngOnChanges(changes as unknown as SimpleChanges)
-
-      expect(console.error).toHaveBeenCalledWith('searchAvailableProducts():', err)
+      expect(console.error).toHaveBeenCalledWith('searchAvailableProducts():', errorResponse)
     })
 
     it('prepare product app parts: mfe type is component', () => {
@@ -735,7 +712,8 @@ describe('ProductComponent', () => {
     })
 
     it('should call getWProduct when an item is selected: display error and hide detail panel', () => {
-      wProductServiceSpy.getProductById.and.returnValue(throwError(() => new Error()))
+      const errorResponse = { status: 404, statusText: 'workspace product not found' }
+      wProductServiceSpy.getProductById.and.returnValue(throwError(() => errorResponse))
       const event = { items: [{ id: 1 }] }
       component.displayDetails = true
 
@@ -866,7 +844,8 @@ describe('ProductComponent', () => {
   })
 
   it('should display error when trying to update a product by id', () => {
-    wProductServiceSpy.updateProductById.and.returnValue(throwError(() => new Error()))
+    const errorResponse = { status: 400, statusText: 'workspace product not updated' }
+    wProductServiceSpy.updateProductById.and.returnValue(throwError(() => errorResponse))
     const event: any = { items: [product] }
     component.formGroup = fb.group({
       displayName: new FormControl(''),
@@ -977,7 +956,8 @@ describe('ProductComponent', () => {
   })
 
   it('should display error when trying to createProductInWorkspace onMoveToTarget', () => {
-    wProductServiceSpy.createProductInWorkspace.and.returnValue(throwError(() => new Error()))
+    const errorResponse = { status: 400, statusText: 'workspace product not created' }
+    wProductServiceSpy.createProductInWorkspace.and.returnValue(throwError(() => errorResponse))
     const event: any = { items: [product] }
     component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
     component.psProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
@@ -988,7 +968,8 @@ describe('ProductComponent', () => {
   })
 
   it('should display error when trying to createProductInWorkspace onMoveToTarget', () => {
-    wProductServiceSpy.createProductInWorkspace.and.returnValue(throwError(() => new Error()))
+    const errorResponse = { status: 400, statusText: 'workspace product not created' }
+    wProductServiceSpy.createProductInWorkspace.and.returnValue(throwError(() => errorResponse))
     component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
     component.psProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
     const product2: Product = {
@@ -1043,7 +1024,8 @@ describe('ProductComponent', () => {
   })
 
   it('should handle failed deregistration', () => {
-    wProductServiceSpy.deleteProductById.and.returnValue(throwError(() => new Error('Failed to deregister')))
+    const errorResponse = { status: 400, statusText: 'workspace product could not be deregistered' }
+    wProductServiceSpy.deleteProductById.and.returnValue(throwError(() => errorResponse))
     component['deregisterItems'] = [product]
     component.psProducts = [prodStoreItem]
     component.wProducts = []
@@ -1077,7 +1059,8 @@ describe('ProductComponent', () => {
   })
 
   it('should handle failed slot creation', () => {
-    slotApiServiceSpy.createSlot.and.returnValue(throwError(() => new Error('Failed to create slot')))
+    const errorResponse = { status: 400, statusText: 'workspace slot could not be created' }
+    slotApiServiceSpy.createSlot.and.returnValue(throwError(() => errorResponse))
     const extendedSlot: ExtendedSlot = { name: 'Test Slot' }
 
     component.onAddSlot({}, extendedSlot)

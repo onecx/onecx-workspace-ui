@@ -128,7 +128,7 @@ export class WorkspaceRoleDetailComponent implements OnChanges {
       },
       error: (err) => {
         this.msgService.error({ summaryKey: 'ACTIONS.DELETE.ROLE.MESSAGE_NOK' })
-        console.error(err.error)
+        console.error(err)
       }
     })
   }
