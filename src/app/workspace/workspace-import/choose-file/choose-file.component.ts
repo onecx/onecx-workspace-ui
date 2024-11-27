@@ -31,7 +31,7 @@ export class ChooseFileComponent implements OnInit {
     if (this.importWorkspace) this.importFileSelected.emit(this.importWorkspace)
   }
 
-  public onSelect(event: FileSelectEvent): void {
+  public onFileSelect(event: FileSelectEvent): void {
     event.files[0].text().then((text) => {
       this.importWorkspace = null
       this.importError = false
@@ -61,7 +61,7 @@ export class ChooseFileComponent implements OnInit {
               this.importWorkspace = importWorkspace
             }
           } catch (err) {
-            console.error('Import Error', err)
+            console.error('Parse Error', err)
             this.importError = true
             this.validationErrorCause =
               data['WORKSPACE_IMPORT.VALIDATION_RESULT'] + data['WORKSPACE_IMPORT.VALIDATION_JSON_ERROR']

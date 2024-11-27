@@ -1,13 +1,15 @@
 import { TestBed } from '@angular/core/testing'
+import { CommonModule } from '@angular/common'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { CommonModule } from '@angular/common'
 import { provideRouter, RouterModule } from '@angular/router'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'
-import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of, ReplaySubject, throwError } from 'rxjs'
 import { PanelMenuModule } from 'primeng/panelmenu'
+
+import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
+
 import { SearchWorkspacesResponse, WorkspaceAPIService } from 'src/app/shared/generated'
 import { OneCXListWorkspacesUsingProductComponent } from './list-workspaces-using-product.component'
 
@@ -136,8 +138,10 @@ describe('OneCXListWorkspacesUsingProductComponent', () => {
     })
 
     it('should handle error and return empty array', (done) => {
+      const errorResponse = { status: 400, statusText: 'Error on searching workspaces' }
       const { component } = setUp()
-      wsApiSpy.searchWorkspaces.and.returnValue(throwError('Error'))
+      wsApiSpy.searchWorkspaces.and.returnValue(throwError(() => errorResponse))
+      spyOn(console, 'error')
 
       component['findWorkspacesUsingProduct']()
 
@@ -145,6 +149,7 @@ describe('OneCXListWorkspacesUsingProductComponent', () => {
         expect(result).toEqual([])
         done()
       })
+      expect(console.error).toHaveBeenCalledWith('searchWorkspaces', errorResponse)
     })
   })
 })

@@ -78,7 +78,7 @@ describe('ChooseFileComponent', () => {
     expect(component.importFileSelected.emit).toHaveBeenCalledOnceWith(component.importWorkspace)
   })
 
-  it('should select a file onSelect, get translations and set importDTO', (done) => {
+  it('should select a file, get translations and set importDTO', (done) => {
     translateServiceSpy.get.and.returnValue(of({}))
     const file = new File(['file content'], 'test.txt', { type: 'text/plain' })
     const fileList: FileList = {
@@ -96,7 +96,7 @@ describe('ChooseFileComponent', () => {
     const event = { files: fileList }
     component.importWorkspace = snapshot
 
-    component.onSelect(event as any as FileSelectEvent)
+    component.onFileSelect(event as any as FileSelectEvent)
 
     setTimeout(() => {
       expect(file.text).toHaveBeenCalled()
@@ -106,7 +106,8 @@ describe('ChooseFileComponent', () => {
   })
 
   it('should catch an import error', fakeAsync(() => {
-    translateServiceSpy.get.and.returnValue(throwError(() => new Error()))
+    const errorResponse = { status: 400, statusText: 'Error on parsing file to be imported' }
+    translateServiceSpy.get.and.returnValue(throwError(() => errorResponse))
 
     const file = new File(['file content'], 'test.txt', { type: 'text/plain' })
     const fileList: FileList = {
@@ -114,14 +115,16 @@ describe('ChooseFileComponent', () => {
       length: 1,
       item: (index: number) => file
     }
+    spyOn(console, 'error')
     spyOn(file, 'text').and.returnValue(Promise.resolve('{"portal"}'))
     const event = { files: fileList }
 
-    component.onSelect(event as any as FileSelectEvent)
+    component.onFileSelect(event as any as FileSelectEvent)
 
     tick()
 
     expect(component.importError).toBeTrue()
+    expect(console.error).toHaveBeenCalled()
   }))
 
   it('should behave correctly onClear', () => {

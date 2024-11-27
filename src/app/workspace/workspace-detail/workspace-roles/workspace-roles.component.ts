@@ -114,7 +114,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
         }),
         catchError((err) => {
           this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.WS_ROLES'
-          console.error('searchAvailableRoles():', err)
+          console.error('searchAvailableRoles', err)
           return of([])
         }),
         finalize(() => (this.wsLoading = false))
@@ -135,7 +135,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
           this.iamAvailable = false
         } else {
           this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.IAM_ROLES'
-          console.error('searchAvailableRoles():', err)
+          console.error('searchAvailableRoles', err)
         }
         return of([])
       }),
@@ -214,8 +214,9 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
           role.modificationDate = data.modificationDate
           role.isWorkspaceRole = true
         },
-        error: () => {
+        error: (err) => {
           this.msgService.error({ summaryKey: 'ACTIONS.CREATE.ROLE.MESSAGE_NOK' })
+          console.error('createWorkspaceRole', err)
         }
       })
   }

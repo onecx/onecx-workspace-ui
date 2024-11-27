@@ -308,9 +308,9 @@ export class MenuComponent implements OnInit, OnDestroy {
           item.modificationDate = data.modificationDate
           this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' })
         },
-        error: (err: { error: any }) => {
-          console.error(err)
+        error: (err) => {
           this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
+          console.error('updateMenuItem', err)
         }
       })
   }
@@ -375,7 +375,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
   private expandRecursive(node: TreeNode, isExpand: boolean) {
     node.expanded = isExpand
-    this.stateService.getState().treeExpansionState.set(node.key || '', node.expanded)
+    this.stateService.getState().treeExpansionState.set(node.key!, node.expanded)
     if (node.children) {
       node.children.forEach((childNode) => {
         this.expandRecursive(childNode, isExpand)
@@ -383,7 +383,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     }
   }
   private restoreRecursive(node: TreeNode) {
-    node.expanded = this.stateService.getState().treeExpansionState.get(node.key || '')
+    node.expanded = this.stateService.getState().treeExpansionState.get(node.key!)
     if (node.children) {
       node.children.forEach((childNode) => {
         this.restoreRecursive(childNode)
@@ -397,8 +397,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.menuNodes = [...this.menuNodes]
   }
   public onHierarchyViewChange(event: TreeTableNodeExpandEvent): void {
-    if (event.node.key)
-      this.stateService.getState().treeExpansionState.set(event.node.key, event.node.expanded ?? false)
+    if (event.node.key) this.stateService.getState().treeExpansionState.set(event.node.key, event.node.expanded!)
   }
 
   /****************************************************************************
@@ -416,7 +415,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       if (result instanceof HttpErrorResponse) {
         this.loading = false
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + result.status + '.WORKSPACES'
-        console.error('getWorkspaceByName():', result)
+        console.error('getWorkspaceByName', result)
       } else if (result instanceof Object) {
         this.workspace = result.resource
         this.currentLogoUrl = this.getLogoUrl(this.workspace)
@@ -438,7 +437,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       this.loading = true
       if (result instanceof HttpErrorResponse) {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + result.status + '.MENUS'
-        console.error('getMenuStructure():', result)
+        console.error('getMenuStructure', result)
       } else if (result.menuItems instanceof Array) {
         this.menuItems = result.menuItems
         this.menuNodes = this.mapToTreeNodes(this.menuItems)
@@ -450,7 +449,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         }
       } else {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_0.MENUS'
-        console.error('getMenuStructure() => unknown response:', result)
+        console.error('getMenuStructure', result)
       }
       this.loading = false
     })
@@ -468,7 +467,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         }),
         catchError((err) => {
           this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.ROLES'
-          console.error('searchRoles():', err)
+          console.error('searchRoles', err)
           return of([])
         })
       )
@@ -486,14 +485,15 @@ export class MenuComponent implements OnInit, OnDestroy {
             : []
         }),
         catchError((err) => {
-          console.error('searchAssignments():', err)
+          console.error('searchAssignments', err)
           return of([])
         })
       )
   }
   private sortRoleByName(a: WorkspaceRole, b: WorkspaceRole): number {
-    return (a.name ? a.name.toUpperCase() : '').localeCompare(b.name ? b.name.toUpperCase() : '')
+    return a.name!.toUpperCase().localeCompare(b.name!.toUpperCase())
   }
+
   private loadRolesAndAssignments() {
     if (!this.displayRoles || this.wRoles.length > 0) return
     this.loadingRoles = true
@@ -540,9 +540,9 @@ export class MenuComponent implements OnInit, OnDestroy {
               this.onGrantPermission(rowNode.parent, rowNode.parent.data, roleId)
             }
           },
-          error: (err: { error: any }) => {
+          error: (err) => {
             this.msgService.error({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.GRANT_NOK' })
-            console.error(err.error)
+            console.error('createAssignmentRequest', err)
           }
         })
     } else if (rowNode.parent) this.onGrantPermission(rowNode.parent, rowNode.parent.data, roleId)
@@ -553,9 +553,9 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.msgService.success({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.REVOKE_OK' })
         rowData.roles[roleId] = undefined
       },
-      error: (err: { error: any }) => {
+      error: (err) => {
         this.msgService.error({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.REVOKE_NOK' })
-        console.error(err.error)
+        console.error('deleteAssignment', err)
       }
     })
   }
@@ -637,6 +637,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
   private prepareItemUrl(url: string | undefined): string | undefined {
     if (!(url && this.workspace?.baseUrl)) return undefined
+    if (url.startsWith('http')) return url
     const url_parts = window.location.href.split('/')
     return url_parts[0] + '//' + url_parts[2] + Location.joinWithSlash(this.workspace?.baseUrl, url)
   }

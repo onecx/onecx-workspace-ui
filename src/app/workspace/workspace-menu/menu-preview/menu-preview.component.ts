@@ -155,8 +155,10 @@ export class MenuPreviewComponent implements OnChanges {
               if (event.dragNode) event.dragNode.data = data
               this.reorderEmitter.emit(true)
             },
-            error: (err: { error: any }) =>
+            error: (err) => {
               this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
+              console.error('updateMenuItemParent', err)
+            }
           })
       }
     }

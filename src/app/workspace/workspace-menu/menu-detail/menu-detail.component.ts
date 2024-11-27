@@ -1,12 +1,13 @@
 import { Component, EventEmitter, Input, OnChanges, Output, Renderer2, SimpleChanges, ViewChild } from '@angular/core'
 import { Location } from '@angular/common'
-import { TranslateService } from '@ngx-translate/core'
 import { DefaultValueAccessor, FormControl, FormGroup, Validators } from '@angular/forms'
+import { TranslateService } from '@ngx-translate/core'
 import { Observable, Subject, catchError, map, of, takeUntil } from 'rxjs'
 import { TabView } from 'primeng/tabview'
 import { SelectItem } from 'primeng/api'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+
 import { dropDownSortItemsByLabel, limitText } from 'src/app/shared/utils'
 import {
   CreateMenuItem,
@@ -141,11 +142,11 @@ export class MenuDetailComponent implements OnChanges {
     else return (item.children[item.children.length - 1].position ?? 0) + 1
   }
 
-  private getMenu() {
+  public getMenu() {
     this.menuItem$ = this.menuApi.getMenuItemById({ menuItemId: this.menuItemOrg?.id ?? '' }).pipe(
       catchError((err) => {
         this.msgService.error({ summaryKey: 'DIALOG.MENU.MENU_ITEM_NOT_FOUND' })
-        console.error(err.error)
+        console.error('getMenuItemById', err)
         return of(err)
       })
     )
@@ -265,9 +266,9 @@ export class MenuDetailComponent implements OnChanges {
             this.msgService.success({ summaryKey: 'ACTIONS.CREATE.MESSAGE.MENU_CREATE_OK' })
             this.dataChanged.emit(true)
           },
-          error: (err: { error: any }) => {
+          error: (err) => {
             this.msgService.error({ summaryKey: 'ACTIONS.CREATE.MESSAGE.MENU_CREATE_NOK' })
-            console.error(err.error)
+            console.error('createMenuItemForWorkspace', err)
           }
         })
     }
@@ -278,13 +279,13 @@ export class MenuDetailComponent implements OnChanges {
           updateMenuItemRequest: this.menuItem as UpdateMenuItemRequest
         })
         .subscribe({
-          next: (data) => {
+          next: () => {
             this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' })
             this.dataChanged.emit(true)
           },
-          error: (err: { error: any }) => {
+          error: (err) => {
             this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
-            console.error(err.error)
+            console.error('updateMenuItem', err)
           }
         })
     }
@@ -322,9 +323,9 @@ export class MenuDetailComponent implements OnChanges {
         this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MENU.MESSAGE_OK' })
         this.dataChanged.emit(true)
       },
-      error: (err: { error: any }) => {
+      error: (err) => {
         this.msgService.error({ summaryKey: 'ACTIONS.DELETE.MENU.MESSAGE_NOK' })
-        console.error(err.error)
+        console.error('deleteMenuItemById', err)
       }
     })
   }
@@ -401,22 +402,24 @@ export class MenuDetailComponent implements OnChanges {
       .getProductsByWorkspaceId({ id: this.workspaceId! })
       .pipe(
         map((products) => {
-          for (const p of products) {
-            if (p.microfrontends) {
-              for (const mfe of p.microfrontends) {
-                this.mfeItems.push({
-                  ...mfe,
-                  mfePath: Location.joinWithSlash(mfe.basePath ?? '', p.baseUrl ?? ''),
-                  product: p.displayName!,
-                  isSpecial: false
-                })
+          if (products?.length > 0) {
+            for (const p of products) {
+              if (p.microfrontends) {
+                for (const mfe of p.microfrontends) {
+                  this.mfeItems.push({
+                    ...mfe,
+                    mfePath: Location.joinWithSlash(mfe.basePath ?? '', p.baseUrl ?? ''),
+                    product: p.displayName!,
+                    isSpecial: false
+                  })
+                }
               }
             }
+            this.mfeItems.sort(this.sortMfesByPath)
           }
-          this.mfeItems.sort(this.sortMfesByPath)
         }),
         catchError((err) => {
-          console.error('getProductsByWorkspaceId():', err)
+          console.error('getProductsByWorkspaceId', err)
           return of([] as SelectItem[])
         })
       )

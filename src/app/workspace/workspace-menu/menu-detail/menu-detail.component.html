@@ -251,21 +251,21 @@
           <label [for]="'ws_menu_detail_i18n_lang_' + i + '_value'"> {{ getLanguageLabel(language.value) }} </label>
         </span>
       </div>
-      <div class="flex align-items-center column-gap-4 row-gap-2 mt-4" *ngIf="languagesAvailable.length > 0">
-        <div class="data-view-control opacity-90 text-sm w-4rem">
-          {{ 'DIALOG.MENU.TABS.I18N.ADD_LANGUAGE' | translate }}
+      <div class="mt-5 flex flex-row align-items-center column-gap-4 row-gap-2" *ngIf="languagesAvailable.length > 0">
+        <div class="text-sm w-4rem">{{ 'DIALOG.MENU.TABS.I18N.ADD_LANGUAGE' | translate }}</div>
+        <div class="slim-selectbutton filter-selectbutton">
+          <p-selectButton
+            inputid="ws_menu_detail_i18n_language_selector"
+            styleClass="data-view-control flex flex-nowrap"
+            [options]="languagesAvailable"
+            (onOptionClick)="onAddLanguage($event.option.value)"
+            [ariaLabel]="'DIALOG.MENU.TABS.I18N.ADD_LANGUAGE' | translate"
+            [pTooltip]="'DIALOG.MENU.TABS.I18N.ADD_LANGUAGE' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          >
+          </p-selectButton>
         </div>
-        <p-selectButton
-          inputid="ws_menu_detail_i18n_language_selector"
-          styleClass="data-view-control opacity-90"
-          [options]="languagesAvailable"
-          (onOptionClick)="onAddLanguage($event.option.value)"
-          [ariaLabel]="'DIALOG.MENU.TABS.I18N.ADD_LANGUAGE' | translate"
-          [pTooltip]="'DIALOG.MENU.TABS.I18N.ADD_LANGUAGE' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        >
-        </p-selectButton>
       </div>
     </p-tabPanel>
 

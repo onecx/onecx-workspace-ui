@@ -83,7 +83,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
       }),
       catchError((err) => {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.WORKSPACE'
-        console.error('getWorkspaceByName():', err)
+        console.error('getWorkspaceByName', err)
         return of({} as Workspace)
       }),
       finalize(() => {
@@ -125,23 +125,23 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
           this.workspace$ = new Observable((sub) => sub.next(data))
         },
         error: (err) => {
-          console.error('update workspace', err)
+          console.error('updateWorkspace', err)
           this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_NOK' })
         }
       })
   }
 
   public onConfirmDeleteWorkspace(): void {
-    this.workspaceApi.deleteWorkspace({ id: this.workspace?.id ?? '' }).subscribe(
-      () => {
+    this.workspaceApi.deleteWorkspace({ id: this.workspace?.id ?? '' }).subscribe({
+      next: () => {
         this.msgService.success({ summaryKey: 'ACTIONS.DELETE.WORKSPACE.MESSAGE_OK' })
         this.onClose()
       },
-      (err) => {
-        console.error('delete workspace', err)
+      error: (err) => {
+        console.error('deleteWorkspace', err)
         this.msgService.error({ summaryKey: 'ACTIONS.DELETE.WORKSPACE.MESSAGE_NOK' })
       }
-    )
+    })
   }
 
   /**

@@ -76,12 +76,12 @@ export class OneCXListWorkspacesUsingThemeComponent implements ocxRemoteComponen
     this.findWorkspacesUsingTheme()
   }
 
-  private findWorkspacesUsingTheme() {
+  public findWorkspacesUsingTheme() {
     this.workspacesUsingTheme = this.workspaceApi
       .searchWorkspaces({ searchWorkspacesRequest: { themeName: this.themeName } })
       .pipe(
         catchError((err) => {
-          console.error('searchWorkspaces():', err)
+          console.error('searchWorkspaces', err)
           return of({ stream: [] } as SearchWorkspacesResponse)
         }),
         map((data) => {

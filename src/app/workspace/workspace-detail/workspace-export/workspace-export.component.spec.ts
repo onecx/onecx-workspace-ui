@@ -46,7 +46,6 @@ describe('WorkspaceExportComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(WorkspaceExportComponent)
     component = fixture.componentInstance
-
     component.workspace = {
       name: 'name',
       displayName: 'name',
@@ -71,11 +70,14 @@ describe('WorkspaceExportComponent', () => {
     })
 
     it('should enter error branch if exportWorkspaces call fails', () => {
-      apiServiceSpy.exportWorkspaces.and.returnValue(throwError(() => new Error()))
+      const errorResponse = { status: 400, statusText: 'Error on import menu items' }
+      apiServiceSpy.exportWorkspaces.and.returnValue(throwError(() => errorResponse))
+      spyOn(console, 'error')
 
       component.onConfirmExportWorkspace()
 
       expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.NOK' })
+      expect(console.error).toHaveBeenCalledWith('exportWorkspaces', errorResponse)
     })
   })
 

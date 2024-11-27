@@ -273,8 +273,8 @@ describe('WorkspaceSlotDetailComponent', () => {
     })
 
     it('should call updateSlot and handle error response', () => {
-      const err = { error: 'err' }
-      slotServiceSpy.updateSlot.and.returnValue(throwError(() => err))
+      const errorResponse = { status: 400, statusText: 'Error on import menu items' }
+      slotServiceSpy.updateSlot.and.returnValue(throwError(() => errorResponse))
       spyOn(component.changed, 'emit')
       spyOn(console, 'error')
 
@@ -282,7 +282,7 @@ describe('WorkspaceSlotDetailComponent', () => {
 
       expect(slotServiceSpy.updateSlot).toHaveBeenCalled()
       expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.SLOT_NOK' })
-      expect(console.error).toHaveBeenCalledWith(err.error)
+      expect(console.error).toHaveBeenCalledWith('updateSlot', errorResponse)
     })
   })
 
@@ -312,8 +312,8 @@ describe('WorkspaceSlotDetailComponent', () => {
     })
 
     it('should call deleteSlotById and handle error response', () => {
-      const mockError = { error: 'mockError' }
-      slotServiceSpy.deleteSlotById.and.returnValue(throwError(() => mockError))
+      const errorResponse = { status: 400, statusText: 'Error on deleting a slot' }
+      slotServiceSpy.deleteSlotById.and.returnValue(throwError(() => errorResponse))
 
       spyOn(component.detailClosed, 'emit')
       spyOn(console, 'error')
@@ -322,7 +322,7 @@ describe('WorkspaceSlotDetailComponent', () => {
 
       expect(slotServiceSpy.deleteSlotById).toHaveBeenCalledWith({ id: '1' })
       expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.SLOT.MESSAGE_NOK' })
-      expect(console.error).toHaveBeenCalledWith(mockError.error)
+      expect(console.error).toHaveBeenCalledWith('deleteSlotById', errorResponse)
       expect(component.detailClosed.emit).not.toHaveBeenCalled()
     })
   })

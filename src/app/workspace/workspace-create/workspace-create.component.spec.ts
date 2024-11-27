@@ -1,23 +1,23 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
-import { HttpClient, provideHttpClient } from '@angular/common/http'
 import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing'
+import { HttpClient, provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { TranslateModule, TranslateLoader } from '@ngx-translate/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
-import { provideRouter, Router } from '@angular/router'
-import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router'
+import { ActivatedRoute, ActivatedRouteSnapshot, provideRouter, Router } from '@angular/router'
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core'
 import { ConfirmationService } from 'primeng/api'
 import { DropdownModule } from 'primeng/dropdown'
 import { of, throwError } from 'rxjs'
 
-import { ProductAPIService, Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
-import { environment } from 'src/environments/environment'
 import {
   APP_CONFIG,
   AppStateService,
   createTranslateLoader,
   PortalMessageService
 } from '@onecx/portal-integration-angular'
+
+import { ProductAPIService, Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
+import { environment } from 'src/environments/environment'
 import { WorkspaceCreateComponent } from './workspace-create.component'
 
 const workspace: Workspace = {
@@ -131,13 +131,13 @@ describe('WorkspaceCreateComponent', () => {
     })
 
     it('should log error if api call fails', () => {
-      const err = { error: 'error' }
-      productServiceSpy.searchAvailableProducts.and.returnValue(throwError(() => err))
+      const errorResponse = { status: 400, statusText: 'Error on searching products' }
+      productServiceSpy.searchAvailableProducts.and.returnValue(throwError(() => errorResponse))
       spyOn(console, 'error')
 
       component.ngOnInit()
 
-      expect(console.error).toHaveBeenCalledWith('getProductsByWorkspaceId():', err)
+      expect(console.error).toHaveBeenCalledWith('getProductsByWorkspaceId', errorResponse)
     })
   })
 
@@ -151,11 +151,14 @@ describe('WorkspaceCreateComponent', () => {
   })
 
   it('should display error when workspace creation fails', () => {
-    wApiServiceSpy.createWorkspace.and.returnValue(throwError(() => new Error()))
+    const errorResponse = { status: 400, statusText: 'Error on creationg a workspace' }
+    wApiServiceSpy.createWorkspace.and.returnValue(throwError(() => errorResponse))
+    spyOn(console, 'error')
 
     component.saveWorkspace()
 
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.MESSAGE.CREATE_NOK' })
+    expect(console.error).toHaveBeenCalledWith('createWorkspace', errorResponse)
   })
 
   it('should change fetchingLogoUrl on inputChange: valid value', fakeAsync(() => {

@@ -2,11 +2,12 @@ import { NO_ERRORS_SCHEMA, Renderer2, SimpleChanges } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { of, throwError } from 'rxjs'
 import { ActivatedRoute, provideRouter } from '@angular/router'
+import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { ReactiveFormsModule, FormBuilder, FormArray, FormControl } from '@angular/forms'
 
-import { MfeInfo, PortalMessageService, AppStateService } from '@onecx/portal-integration-angular'
+import { AppStateService, MfeInfo, PortalMessageService, UserService } from '@onecx/portal-integration-angular'
 import {
   Product,
   WorkspaceProductAPIService,
@@ -19,7 +20,6 @@ import {
 } from 'src/app/shared/generated'
 
 import { ExtendedMicrofrontend, ExtendedProduct, ExtendedSlot, ProductComponent } from './products.component'
-import { provideHttpClient } from '@angular/common/http'
 
 const workspace: Workspace = {
   id: 'id',
@@ -123,6 +123,10 @@ describe('ProductComponent', () => {
     searchAvailableProducts: jasmine.createSpy('searchAvailableProducts').and.returnValue(of({}))
   }
   const slotApiServiceSpy = { createSlot: jasmine.createSpy('createSlot').and.returnValue(of({})) }
+  const mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
+  mockUserService.hasPermission.and.callFake((permission: string) => {
+    return ['WORKSPACE_PRODUCTS#REGISTER'].includes(permission)
+  })
 
   beforeEach(waitForAsync(() => {
     mockAppState = { currentMfe$: of(mfeInfo) }
@@ -137,15 +141,16 @@ describe('ProductComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
-        provideHttpClientTesting(),
         provideHttpClient(),
+        provideHttpClientTesting(),
         provideRouter([{ path: '', component: ProductComponent }]),
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: WorkspaceProductAPIService, useValue: wProductServiceSpy },
         { provide: ProductAPIService, useValue: productServiceSpy },
         { provide: AppStateService, useValue: mockAppState },
-        { provide: SlotAPIService, useValue: slotApiServiceSpy }
+        { provide: SlotAPIService, useValue: slotApiServiceSpy },
+        { provide: UserService, useValue: mockUserService }
       ]
     }).compileComponents()
     msgServiceSpy.success.calls.reset()
@@ -206,10 +211,8 @@ describe('ProductComponent', () => {
   })
 
   it('should log error if getProductsByWorkspaceId call fails', () => {
-    const err = {
-      status: '404'
-    }
-    wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(throwError(() => err))
+    const errorResponse = { status: 404, statusText: 'products not found for workspace' }
+    wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(throwError(() => errorResponse))
     const changes = {
       ['workspace']: {
         previousValue: 'ws0',
@@ -221,7 +224,7 @@ describe('ProductComponent', () => {
 
     component.ngOnChanges(changes as unknown as SimpleChanges)
 
-    expect(console.error).toHaveBeenCalledWith('getProductsByWorkspaceId():', err)
+    expect(console.error).toHaveBeenCalledWith('getProductsByWorkspaceId():', errorResponse)
   })
 
   describe('searchPsProducts', () => {
@@ -267,10 +270,8 @@ describe('ProductComponent', () => {
     })
 
     it('should loadData onChanges: searchPsProducts call error', () => {
-      const err = {
-        status: '404'
-      }
-      productServiceSpy.searchAvailableProducts.and.returnValue(throwError(() => err))
+      const errorResponse = { status: 404, statusText: 'product store products not found' }
+      productServiceSpy.searchAvailableProducts.and.returnValue(throwError(() => errorResponse))
       const changes = {
         ['workspace']: {
           previousValue: 'ws0',
@@ -282,26 +283,7 @@ describe('ProductComponent', () => {
 
       component.ngOnChanges(changes as unknown as SimpleChanges)
 
-      expect(console.error).toHaveBeenCalledWith('searchAvailableProducts():', err)
-    })
-
-    it('should loadData onChanges: searchPsProducts call error', () => {
-      const err = {
-        status: '404'
-      }
-      productServiceSpy.searchAvailableProducts.and.returnValue(throwError(() => err))
-      const changes = {
-        ['workspace']: {
-          previousValue: 'ws0',
-          currentValue: 'ws1',
-          firstChange: true
-        }
-      }
-      spyOn(console, 'error')
-
-      component.ngOnChanges(changes as unknown as SimpleChanges)
-
-      expect(console.error).toHaveBeenCalledWith('searchAvailableProducts():', err)
+      expect(console.error).toHaveBeenCalledWith('searchAvailableProducts():', errorResponse)
     })
 
     it('prepare product app parts: mfe type is component', () => {
@@ -735,7 +717,8 @@ describe('ProductComponent', () => {
     })
 
     it('should call getWProduct when an item is selected: display error and hide detail panel', () => {
-      wProductServiceSpy.getProductById.and.returnValue(throwError(() => new Error()))
+      const errorResponse = { status: 404, statusText: 'workspace product not found' }
+      wProductServiceSpy.getProductById.and.returnValue(throwError(() => errorResponse))
       const event = { items: [{ id: 1 }] }
       component.displayDetails = true
 
@@ -866,7 +849,8 @@ describe('ProductComponent', () => {
   })
 
   it('should display error when trying to update a product by id', () => {
-    wProductServiceSpy.updateProductById.and.returnValue(throwError(() => new Error()))
+    const errorResponse = { status: 400, statusText: 'workspace product not updated' }
+    wProductServiceSpy.updateProductById.and.returnValue(throwError(() => errorResponse))
     const event: any = { items: [product] }
     component.formGroup = fb.group({
       displayName: new FormControl(''),
@@ -977,7 +961,8 @@ describe('ProductComponent', () => {
   })
 
   it('should display error when trying to createProductInWorkspace onMoveToTarget', () => {
-    wProductServiceSpy.createProductInWorkspace.and.returnValue(throwError(() => new Error()))
+    const errorResponse = { status: 400, statusText: 'workspace product not created' }
+    wProductServiceSpy.createProductInWorkspace.and.returnValue(throwError(() => errorResponse))
     const event: any = { items: [product] }
     component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
     component.psProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
@@ -988,7 +973,8 @@ describe('ProductComponent', () => {
   })
 
   it('should display error when trying to createProductInWorkspace onMoveToTarget', () => {
-    wProductServiceSpy.createProductInWorkspace.and.returnValue(throwError(() => new Error()))
+    const errorResponse = { status: 400, statusText: 'workspace product not created' }
+    wProductServiceSpy.createProductInWorkspace.and.returnValue(throwError(() => errorResponse))
     component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
     component.psProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
     const product2: Product = {
@@ -1043,7 +1029,8 @@ describe('ProductComponent', () => {
   })
 
   it('should handle failed deregistration', () => {
-    wProductServiceSpy.deleteProductById.and.returnValue(throwError(() => new Error('Failed to deregister')))
+    const errorResponse = { status: 400, statusText: 'workspace product could not be deregistered' }
+    wProductServiceSpy.deleteProductById.and.returnValue(throwError(() => errorResponse))
     component['deregisterItems'] = [product]
     component.psProducts = [prodStoreItem]
     component.wProducts = []
@@ -1077,7 +1064,8 @@ describe('ProductComponent', () => {
   })
 
   it('should handle failed slot creation', () => {
-    slotApiServiceSpy.createSlot.and.returnValue(throwError(() => new Error('Failed to create slot')))
+    const errorResponse = { status: 400, statusText: 'workspace slot could not be created' }
+    slotApiServiceSpy.createSlot.and.returnValue(throwError(() => errorResponse))
     const extendedSlot: ExtendedSlot = { name: 'Test Slot' }
 
     component.onAddSlot({}, extendedSlot)

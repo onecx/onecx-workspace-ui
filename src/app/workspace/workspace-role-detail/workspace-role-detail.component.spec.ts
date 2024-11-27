@@ -1,14 +1,15 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { HttpClient, provideHttpClient } from '@angular/common/http'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
+import { of, throwError } from 'rxjs'
 
 import { AppStateService, createTranslateLoader, PortalMessageService } from '@onecx/portal-integration-angular'
-import { WorkspaceRoleDetailComponent } from './workspace-role-detail.component'
-import { Role } from '../workspace-detail/workspace-roles/workspace-roles.component'
+
 import { Workspace, WorkspaceRolesAPIService } from 'src/app/shared/generated'
-import { of, throwError } from 'rxjs'
-import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { Role } from '../workspace-detail/workspace-roles/workspace-roles.component'
+import { WorkspaceRoleDetailComponent } from './workspace-role-detail.component'
 
 const workspace: Workspace = {
   id: 'id',
@@ -218,7 +219,8 @@ describe('WorkspaceRoleDetailComponent', () => {
   })
 
   it('should display error if create role fails', () => {
-    wRoleServiceSpy.createWorkspaceRole.and.returnValue(throwError(() => new Error()))
+    const errorResponse = { status: 400, statusText: 'error on creating a role' }
+    wRoleServiceSpy.createWorkspaceRole.and.returnValue(throwError(() => errorResponse))
     component.formGroupRole = {
       valid: true,
       controls: {
@@ -279,7 +281,8 @@ describe('WorkspaceRoleDetailComponent', () => {
   })
 
   it('should update the role successfully', () => {
-    wRoleServiceSpy.updateWorkspaceRole.and.returnValue(throwError(() => new Error()))
+    const errorResponse = { status: 400, statusText: 'error on updating a role' }
+    wRoleServiceSpy.updateWorkspaceRole.and.returnValue(throwError(() => errorResponse))
     component.formGroupRole = {
       valid: true,
       controls: {
@@ -298,7 +301,8 @@ describe('WorkspaceRoleDetailComponent', () => {
   })
 
   it('should display error message if delete api call fails', () => {
-    wRoleServiceSpy.deleteWorkspaceRole.and.returnValue(throwError(() => new Error()))
+    const errorResponse = { status: 400, statusText: 'error on deleting a role' }
+    wRoleServiceSpy.deleteWorkspaceRole.and.returnValue(throwError(() => errorResponse))
 
     component.onDeleteRoleConfirmation()
 

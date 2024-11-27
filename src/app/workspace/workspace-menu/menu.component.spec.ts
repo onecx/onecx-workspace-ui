@@ -1,16 +1,16 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { Location } from '@angular/common'
+import { HttpErrorResponse, provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router'
 import { of, throwError } from 'rxjs'
 import FileSaver from 'file-saver'
+import { TranslateTestingModule } from 'ngx-translate-testing'
+import { TreeNode } from 'primeng/api'
+import { TreeTableNodeExpandEvent } from 'primeng/treetable'
 
 import { PortalMessageService, UserService } from '@onecx/portal-integration-angular'
-
-import { MenuStateService, MenuState } from './services/menu-state.service'
-import { MenuComponent, MenuItemNodeData } from './menu.component'
-import { getCurrentDateTime } from 'src/app/shared/utils'
 
 import {
   Workspace,
@@ -22,11 +22,10 @@ import {
   Assignment,
   WorkspaceRole
 } from 'src/app/shared/generated'
-import { TranslateTestingModule } from 'ngx-translate-testing'
-import { HttpErrorResponse, provideHttpClient } from '@angular/common/http'
-import { TreeNode } from 'primeng/api'
-import { TreeTableNodeExpandEvent } from 'primeng/treetable'
 import * as utils from 'src/app/shared/utils'
+import { getCurrentDateTime } from 'src/app/shared/utils'
+import { MenuStateService, MenuState } from './services/menu-state.service'
+import { MenuComponent, MenuItemNodeData } from './menu.component'
 
 const workspace: Workspace = {
   id: 'id',
@@ -291,7 +290,7 @@ describe('MenuComponent', () => {
 
     it('should call updateMenuItem and handle error', () => {
       const event = { stopPropagation: jasmine.createSpy('stopPropagation') } as any
-      const errorResponse = { error: 'error' }
+      const errorResponse = { status: 400, statusText: 'error on updating a menu item' }
 
       menuApiServiceSpy.updateMenuItem.and.returnValue(throwError(() => errorResponse))
 
@@ -582,10 +581,10 @@ describe('MenuComponent', () => {
     })
 
     component.menuNodes.forEach((node) => {
-      expect(stateServiceSpy.getState().treeExpansionState.get(node.key || '')).toBe(true)
+      expect(stateServiceSpy.getState().treeExpansionState.get(node.key!)).toBe(true)
       if (node.children) {
         node.children.forEach((child) => {
-          expect(stateServiceSpy.getState().treeExpansionState.get(child.key || '')).toBe(true)
+          expect(stateServiceSpy.getState().treeExpansionState.get(child.key!)).toBe(true)
         })
       }
     })
@@ -769,18 +768,19 @@ describe('MenuComponent', () => {
     })
 
     it('should throw errors for seachRoles and searchAssignments on loadMenu', () => {
-      const err = { status: '404' }
-      wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(throwError(() => err))
-      assgmtApiServiceSpy.searchAssignments.and.returnValue(throwError(() => err))
+      const errorResponse1 = { status: 404, statusText: 'Roles not found' }
+      const errorResponse2 = { status: 404, statusText: 'Assignments not found' }
+      wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(throwError(() => errorResponse1))
+      assgmtApiServiceSpy.searchAssignments.and.returnValue(throwError(() => errorResponse2))
       menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
       spyOn(console, 'error')
 
       component.displayRoles = true
       component.loadMenu(true)
 
-      expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + '404' + '.ROLES')
-      expect(console.error).toHaveBeenCalledWith('searchRoles():', err)
-      expect(console.error).toHaveBeenCalledWith('searchAssignments():', err)
+      expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + errorResponse1.status + '.ROLES')
+      expect(console.error).toHaveBeenCalledWith('searchRoles', errorResponse1)
+      expect(console.error).toHaveBeenCalledWith('searchAssignments', errorResponse2)
     })
   })
 
@@ -910,15 +910,15 @@ describe('MenuComponent', () => {
         parent: undefined
       }
 
-      const error = new Error('API Error')
-      assgmtApiServiceSpy.createAssignment.and.returnValue(throwError(() => ({ error })))
+      const errorResponse = { status: 400, statusText: 'Cannot create assignment' }
+      assgmtApiServiceSpy.createAssignment.and.returnValue(throwError(() => errorResponse))
       spyOn(console, 'error')
 
       component.onGrantPermission(rowNode, rowData, roleId)
 
       expect(assgmtApiServiceSpy.createAssignment).toHaveBeenCalled()
       expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.GRANT_NOK' })
-      expect(console.error).toHaveBeenCalledWith(error)
+      expect(console.error).toHaveBeenCalledWith('createAssignmentRequest', errorResponse)
       expect(rowData.roles[roleId]).toBeUndefined()
     })
   })
@@ -949,7 +949,8 @@ describe('MenuComponent', () => {
   })
 
   it('should display error onRevokePermission', () => {
-    assgmtApiServiceSpy.deleteAssignment.and.returnValue(throwError(() => new Error()))
+    const errorResponse = { status: 400, statusText: 'Error on delete assignment' }
+    assgmtApiServiceSpy.deleteAssignment.and.returnValue(throwError(() => errorResponse))
 
     component.onRevokePermission(nodeData, 'role', assgmt.id!)
 

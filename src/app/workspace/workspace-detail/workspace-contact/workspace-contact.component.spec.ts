@@ -7,6 +7,7 @@ import { FormControl, FormGroup } from '@angular/forms'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 
 import { PortalMessageService } from '@onecx/portal-integration-angular'
+
 import { Workspace } from 'src/app/shared/generated'
 import { WorkspaceContactComponent } from './workspace-contact.component'
 

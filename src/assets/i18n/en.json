@@ -24,6 +24,10 @@
       "ROLE_NOK": "An error has occurred. The Role was not created.",
       "MENU": "Create Menu Item",
       "MENU.TOOLTIP": "Create a new Menu Item below",
+      "SLOT": {
+        "MESSAGE_OK": "The Slot was created successfully",
+        "MESSAGE_NOK": "An error has occurred. The Slot was not created."
+      },
       "MESSAGE": {
         "CREATE_OK": "The Workspace was created successfully",
         "CREATE_NOK": "An error has occurred. The Workspace was not created.",
@@ -392,7 +396,8 @@
       },
       "SUBHEADER": "Manage the Menu",
       "ACTION": {
-        "DETAILS": "Display details"
+        "VIEW": "Display details",
+        "EDIT": "Edit details"
       },
       "TABS": {
         "DETAILS": "Details",

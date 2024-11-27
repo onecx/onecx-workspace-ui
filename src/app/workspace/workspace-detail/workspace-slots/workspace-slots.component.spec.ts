@@ -546,8 +546,10 @@ describe('WorkspaceSlotsComponent', () => {
       expect(component.loadData).toHaveBeenCalled()
     })
 
-    it('should display error if call fails', () => {
-      slotServiceSpy.createSlot.and.returnValue(throwError('Error'))
+    it('should display error if slot creation fails', () => {
+      const errorResponse = { status: 400, statusText: 'Error on creating a slot' }
+      slotServiceSpy.createSlot.and.returnValue(throwError(() => errorResponse))
+      spyOn(console, 'error')
 
       component.onAddSlot(mockEvent, mockSlot)
 
@@ -555,8 +557,8 @@ describe('WorkspaceSlotsComponent', () => {
       expect(slotServiceSpy.createSlot).toHaveBeenCalledWith({
         createSlotRequest: { workspaceId: component.workspace?.id, name: mockSlot.name }
       })
-      expect(component.loadData).not.toHaveBeenCalled()
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.NOK' })
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.SLOT.MESSAGE_NOK' })
+      expect(console.error).toHaveBeenCalledWith('createSlot', errorResponse)
     })
   })
 

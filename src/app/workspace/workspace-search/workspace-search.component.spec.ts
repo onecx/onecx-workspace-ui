@@ -1,19 +1,17 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { provideRouter, Router } from '@angular/router'
-import { of, throwError } from 'rxjs'
-import { ActivatedRoute } from '@angular/router'
-import { TranslateTestingModule } from 'ngx-translate-testing'
-
-import { PortalMessageService } from '@onecx/portal-integration-angular'
-import { Workspace, WorkspaceAbstract, WorkspaceAPIService, SearchWorkspacesResponse } from 'src/app/shared/generated'
-
-import { WorkspaceSearchComponent } from './workspace-search.component'
-import { getLocation } from '@onecx/accelerator'
 import { Location } from '@angular/common'
 import { provideHttpClient } from '@angular/common/http'
-import { provideHttpClientTesting, HttpClientTestingModule } from '@angular/common/http/testing'
-import { RouterTestingModule } from '@angular/router/testing'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { ActivatedRoute, provideRouter, Router } from '@angular/router'
+import { of, throwError } from 'rxjs'
+import { TranslateTestingModule } from 'ngx-translate-testing'
+
+import { getLocation } from '@onecx/accelerator'
+import { PortalMessageService } from '@onecx/portal-integration-angular'
+
+import { Workspace, WorkspaceAbstract, WorkspaceAPIService, SearchWorkspacesResponse } from 'src/app/shared/generated'
+import { WorkspaceSearchComponent } from './workspace-search.component'
 
 describe('WorkspaceSearchComponent', () => {
   let component: WorkspaceSearchComponent
@@ -38,8 +36,8 @@ describe('WorkspaceSearchComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
-        provideHttpClientTesting(),
         provideHttpClient(),
+        provideHttpClientTesting(),
         provideRouter([{ path: '', component: WorkspaceSearchComponent }]),
         { provide: Router, useValue: mockRouter },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
@@ -239,8 +237,8 @@ describe('WorkspaceSearchComponent', () => {
   })
 
   it('should search workspaces but display error if API call fails', (done) => {
-    const err = { status: 403 }
-    wApiServiceSpy.searchWorkspaces.and.returnValue(throwError(() => err))
+    const errorResponse = { status: 403, statusText: 'not authorized' }
+    wApiServiceSpy.searchWorkspaces.and.returnValue(throwError(() => errorResponse))
 
     component.search()
 
@@ -248,117 +246,57 @@ describe('WorkspaceSearchComponent', () => {
       next: (result) => {
         if (result) {
           expect(result.length).toBe(0)
-          expect(component.exceptionKey).toEqual('EXCEPTIONS.HTTP_STATUS_403.WORKSPACES')
+          expect(component.exceptionKey).toEqual('EXCEPTIONS.HTTP_STATUS_' + errorResponse.status + '.WORKSPACES')
         }
         done()
       },
       error: done.fail
     })
   })
-})
 
-describe('sortMfesByExposedModule', () => {
-  let component: WorkspaceSearchComponent
-  let fixture: ComponentFixture<WorkspaceSearchComponent>
+  describe('sort Workspaces by display name', () => {
+    it('should sort workspaces by display name 1 - non-empty', () => {
+      const a: WorkspaceAbstract = { name: 'a', displayName: 'a' }
+      const b: WorkspaceAbstract = { name: 'b', displayName: 'b' }
+      const c: WorkspaceAbstract = { name: 'c', displayName: 'c' }
+      const workspaces = [b, c, a]
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [WorkspaceSearchComponent],
-      imports: [
-        RouterTestingModule,
-        HttpClientTestingModule,
-        TranslateTestingModule.withTranslations({
-          de: require('src/assets/i18n/de.json'),
-          en: require('src/assets/i18n/en.json')
-        }).withDefaultLanguage('en')
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
-    }).compileComponents()
-  }))
+      workspaces.sort((x, y) => component.sortWorkspacesByName(x, y))
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(WorkspaceSearchComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
-  })
+      expect(workspaces).toEqual([a, b, c])
+    })
 
-  it('should sort mfes by exposedModule ', () => {
-    const a: WorkspaceAbstract = {
-      name: 'a',
-      displayName: 'a'
-    }
-    const b: WorkspaceAbstract = {
-      name: 'b',
-      displayName: 'b'
-    }
-    const c: WorkspaceAbstract = {
-      name: 'c',
-      displayName: 'c'
-    }
-    const eMfes = [b, c, a]
+    it('should sort workspaces by display name 2 - empty and non-empty', () => {
+      const a: WorkspaceAbstract = { name: 'a', displayName: '' }
+      const b: WorkspaceAbstract = { name: '', displayName: '' }
+      const c: WorkspaceAbstract = { name: '', displayName: '' }
+      const workspaces = [b, c, a]
 
-    eMfes.sort((x, y) => component.sortWorkspacesByName(x, y))
+      workspaces.sort((x, y) => component.sortWorkspacesByName(x, y))
 
-    expect(eMfes).toEqual([a, b, c])
-  })
+      expect(workspaces).toEqual([b, c, a])
+    })
 
-  it('should sort mfes by appId: some empty exposedModule ', () => {
-    const a: WorkspaceAbstract = {
-      name: 'a',
-      displayName: ''
-    }
-    const b: WorkspaceAbstract = {
-      name: '',
-      displayName: ''
-    }
-    const c: WorkspaceAbstract = {
-      name: '',
-      displayName: ''
-    }
-    const eMfes = [b, c, a]
+    it('should sort workspaces by display name 3 - empty display names', () => {
+      const a: WorkspaceAbstract = { name: '', displayName: '' }
+      const b: WorkspaceAbstract = { name: '', displayName: '' }
+      const c: WorkspaceAbstract = { name: '', displayName: '' }
+      const workspaces = [b, c, a]
 
-    eMfes.sort((x, y) => component.sortWorkspacesByName(x, y))
+      workspaces.sort((x, y) => component.sortWorkspacesByName(x, y))
 
-    expect(eMfes).toEqual([b, c, a])
-  })
+      expect(workspaces).toEqual([b, c, a])
+    })
 
-  it('should sort mfes by appId: all empty exposedModule ', () => {
-    const a: WorkspaceAbstract = {
-      name: '',
-      displayName: ''
-    }
-    const b: WorkspaceAbstract = {
-      name: '',
-      displayName: ''
-    }
-    const c: WorkspaceAbstract = {
-      name: '',
-      displayName: ''
-    }
-    const eMfes = [b, c, a]
+    it('should sort workspaces by display name 4 - special characters', () => {
+      const a: WorkspaceAbstract = { name: 'a', displayName: 'a' }
+      const b: WorkspaceAbstract = { name: 'b', displayName: 'b' }
+      const c: WorkspaceAbstract = { name: '$', displayName: '$' }
+      const workspaces = [b, c, a]
 
-    eMfes.sort((x, y) => component.sortWorkspacesByName(x, y))
+      workspaces.sort((x, y) => component.sortWorkspacesByName(x, y))
 
-    expect(eMfes).toEqual([b, c, a])
-  })
-
-  it('should sort mfes by appId: special char exposedModule ', () => {
-    const a: WorkspaceAbstract = {
-      name: 'a',
-      displayName: 'a'
-    }
-    const b: WorkspaceAbstract = {
-      name: 'b',
-      displayName: 'b'
-    }
-    const c: WorkspaceAbstract = {
-      name: '$',
-      displayName: '$'
-    }
-    const eMfes = [b, c, a]
-
-    eMfes.sort((x, y) => component.sortWorkspacesByName(x, y))
-
-    expect(eMfes).toEqual([c, a, b])
+      expect(workspaces).toEqual([c, a, b])
+    })
   })
 })

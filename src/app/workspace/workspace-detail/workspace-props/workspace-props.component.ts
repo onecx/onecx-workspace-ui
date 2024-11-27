@@ -127,24 +127,15 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       const files = (ev.target as HTMLInputElement).files
       if (files) {
         if (files[0].size > 100000) {
-          this.msgService.error({
-            summaryKey: 'IMAGE.CONSTRAINT_FAILED',
-            detailKey: 'IMAGE.CONSTRAINT_SIZE'
-          })
+          this.msgService.error({ summaryKey: 'IMAGE.CONSTRAINT_FAILED', detailKey: 'IMAGE.CONSTRAINT_SIZE' })
         } else if (!/^.*.(jpg|jpeg|png)$/.exec(files[0].name)) {
-          this.msgService.error({
-            summaryKey: 'IMAGE.CONSTRAINT_FAILED',
-            detailKey: 'IMAGE.CONSTRAINT_FILE_TYPE'
-          })
+          this.msgService.error({ summaryKey: 'IMAGE.CONSTRAINT_FAILED', detailKey: 'IMAGE.CONSTRAINT_FILE_TYPE' })
         } else if (this.workspace) {
           this.saveImage(this.workspace.name, files) // store image
         }
       }
     } else {
-      this.msgService.error({
-        summaryKey: 'IMAGE.CONSTRAINT_FAILED',
-        detailKey: 'IMAGE.CONSTRAINT_FILE_MISSING'
-      })
+      this.msgService.error({ summaryKey: 'IMAGE.CONSTRAINT_FAILED', detailKey: 'IMAGE.CONSTRAINT_FILE_MISSING' })
     }
   }
 
@@ -158,18 +149,18 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       refType: RefType.Logo,
       body: blob
     }
-    this.imageApi.getImage({ refId: name, refType: RefType.Logo }).subscribe(
-      () => {
+    this.imageApi.getImage({ refId: name, refType: RefType.Logo }).subscribe({
+      next: () => {
         this.imageApi.updateImage(saveRequestParameter).subscribe(() => {
           this.prepareImageResponse(name)
         })
       },
-      () => {
+      error: (err) => {
         this.imageApi.uploadImage(saveRequestParameter).subscribe(() => {
           this.prepareImageResponse(name)
         })
       }
-    )
+    })
   }
   private prepareImageResponse(name: string): void {
     this.fetchingLogoUrl = bffImageUrl(this.imageApi.configuration.basePath, name, RefType.Logo)

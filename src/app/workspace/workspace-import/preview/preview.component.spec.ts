@@ -15,26 +15,11 @@ const snapshot: any = {
       name: 'name',
       menu: {
         menu: {
-          menuItems: [
-            {
-              name: 'name'
-            },
-            {
-              name: 'name2'
-            }
-          ]
+          menuItems: [{ name: 'name' }, { name: 'name2' }]
         }
       },
-      products: [
-        {
-          productName: 'productTestName'
-        }
-      ],
-      roles: [
-        {
-          name: 'roleTestName'
-        }
-      ]
+      products: [{ productName: 'productTestName' }],
+      roles: [{ name: 'roleTestName' }]
     }
   }
 }
