@@ -110,7 +110,7 @@
       "NEXT": "Weiter",
       "NEXT.TOOLTIP": "Nächste Seite",
       "BACK.TOOLTIP": "Vorherige Seite",
-      "DETAILS.TOOLTIP": "Anzeige Details",
+      "DETAILS.TOOLTIP": "Details anzeigen",
       "NEW.TOOLTIP": "Erstelle neuen Eintrag",
       "GOTO_MENU": "Zur Menüverwaltung wechseln",
       "GOTO_THEME": "Zum Theme wechseln",
@@ -392,7 +392,8 @@
       },
       "SUBHEADER": "Menü verwalten",
       "ACTION": {
-        "DETAILS": "Anzeige Details"
+        "VIEW": "Details anzeigen",
+        "EDIT": "Details bearbeiten"
       },
       "TABS": {
         "DETAILS": "Details",

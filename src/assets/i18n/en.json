@@ -392,7 +392,8 @@
       },
       "SUBHEADER": "Manage the Menu",
       "ACTION": {
-        "DETAILS": "Display details"
+        "VIEW": "Display details",
+        "EDIT": "Edit details"
       },
       "TABS": {
         "DETAILS": "Details",

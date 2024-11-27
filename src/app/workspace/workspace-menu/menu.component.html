@@ -163,7 +163,7 @@
             <div class="flex flex-row justify-content-start align-items-center column-gap-4">
               <p-toggleButton
                 inputid="ws_menu_table_header_row_1_switch_details_n_roles"
-                styleClass="small-toggle-button  white-space-nowrap hidden-xs"
+                styleClass="small-toggle-button white-space-nowrap hidden-xs"
                 [onIcon]="'pi pi-search-plus'"
                 [offIcon]="'pi pi-lock'"
                 [onLabel]="'DIALOG.MENU.HEADER.DETAILS' | translate"
@@ -328,8 +328,12 @@
                   [id]="'ws_menu_table_row_' + rowData.key + '_goto_details'"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                   (click)="onGotoDetails($event, rowData)"
-                  [attr.aria-label]="'DIALOG.MENU.ACTION.DETAILS' | translate"
-                  [pTooltip]="'DIALOG.MENU.ACTION.DETAILS' | translate"
+                  [attr.aria-label]="
+                    'DIALOG.MENU.ACTION.' + (myPermissions.includes('MENU#EDIT') ? 'EDIT' : 'VIEW') | translate
+                  "
+                  [pTooltip]="
+                    'DIALOG.MENU.ACTION.' + (myPermissions.includes('MENU#EDIT') ? 'EDIT' : 'VIEW') | translate
+                  "
                   tooltipPosition="top"
                   tooltipEvent="hover"
                 >
@@ -361,8 +365,8 @@
                   [id]="'ws_menu_table_row_' + rowData.key + '_delete'"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                   (click)="onDeleteMenu($event, rowData)"
-                  [ariaLabel]="'ACTIONS.DELETE.MENU' | translate"
-                  [pTooltip]="'ACTIONS.DELETE.MENU' | translate"
+                  [ariaLabel]="'ACTIONS.DELETE.MENU.HEADER' | translate"
+                  [pTooltip]="'ACTIONS.DELETE.MENU.HEADER' | translate"
                   tooltipPosition="top"
                   tooltipEvent="hover"
                 >

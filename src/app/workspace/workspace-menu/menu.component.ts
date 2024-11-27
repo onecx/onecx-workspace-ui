@@ -637,6 +637,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
   private prepareItemUrl(url: string | undefined): string | undefined {
     if (!(url && this.workspace?.baseUrl)) return undefined
+    if (url.startsWith('http')) return url
     const url_parts = window.location.href.split('/')
     return url_parts[0] + '//' + url_parts[2] + Location.joinWithSlash(this.workspace?.baseUrl, url)
   }
