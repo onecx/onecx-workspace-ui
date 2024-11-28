@@ -114,7 +114,7 @@
             id="ws_detail_props_item_home_page"
             formControlName="homePage"
             styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
-            (onClick)="onOpenProductPathes($event, paths)"
+            (onClick)="onOpenProductPathes(paths); $event.stopPropagation()"
             [options]="paths"
             [editable]="true"
             [showClear]="true"

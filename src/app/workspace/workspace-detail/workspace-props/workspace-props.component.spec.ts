@@ -16,6 +16,7 @@ import {
   Workspace,
   WorkspaceProductAPIService
 } from 'src/app/shared/generated'
+import * as utils from 'src/app/shared/utils'
 
 const workspace = {
   id: 'id',
@@ -24,7 +25,8 @@ const workspace = {
   displayName: 'name',
   theme: 'theme',
   baseUrl: '/some/base/url',
-  homePage: '/welcome'
+  homePage: '/welcome',
+  logoUrl: 'https://host:port/site/logo.png'
 }
 
 const formGroup = new FormGroup({
@@ -85,7 +87,8 @@ describe('WorkspacePropsComponent', () => {
         { provide: WorkspaceAPIService, useValue: apiServiceSpy },
         { provide: WorkspaceProductAPIService, useValue: wProductServiceSpy },
         { provide: WorkspaceService, useValue: workspaceServiceMock }
-      ]
+      ],
+      teardown: { destroyAfterEach: false }
     }).compileComponents()
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.info.calls.reset()
@@ -120,24 +123,27 @@ describe('WorkspacePropsComponent', () => {
 
     expect(component).toBeTruthy()
   })
-  /*
-  fdescribe('loadProductPaths', () => {
-    beforeEach(() => {
-      spyOn(component as any, 'loadThemes')
-    })
 
-    it('should load product urls', () => {
-      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(
-        of([{ baseUrl: '/baseUrl' }, { baseUrl: '/baseUrl2' }])
-      )
+  describe('loadProductPaths', () => {
+    it('should load product urls initially', () => {
+      const products = [{ baseUrl: '/productBaseUrl-1' }, { baseUrl: '/productBaseUrl-2' }]
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of(products))
 
-      component.ngOnInit()
+      component.workspace = workspace
+      component.onOpenProductPathes([])
 
       component.productPaths$.subscribe((paths) => {
-        expect(paths).toContain(workspace.homePage)
+        expect(paths).toEqual([products[0].baseUrl, products[1].baseUrl])
       })
     })
-  })*/
+
+    it('should prevent loading product urls again', () => {
+      const paths = ['/productBaseUrl-1', '/productBaseUrl-2']
+
+      component.workspace = { ...workspace, homePage: undefined }
+      component.onOpenProductPathes(paths)
+    })
+  })
 
   describe('prepareProductUrl', () => {
     it('should return a joined URL when workspace.baseUrl and val are valid', () => {
@@ -169,7 +175,6 @@ describe('WorkspacePropsComponent', () => {
   describe('ngOnChanges', () => {
     it('should disable formGroup in view mode', () => {
       component.editMode = false
-      spyOn(component, 'setFormData')
 
       component.ngOnChanges()
 
@@ -178,11 +183,12 @@ describe('WorkspacePropsComponent', () => {
 
     it('should enable formGroup in edit mode', () => {
       component.editMode = true
-      spyOn(component, 'setFormData')
 
       component.ngOnChanges()
 
+      expect(component.workspace).toEqual(workspace)
       expect(component.formGroup.enabled).toBeTrue()
+      expect(component.fetchingLogoUrl).toEqual(workspace.logoUrl)
     })
 
     it('should reset formGroup when workspace is empty', () => {
@@ -348,7 +354,7 @@ describe('WorkspacePropsComponent', () => {
       expect(component.getLogoUrl(testWorkspace)).toBeUndefined()
     })
 
-    it('call with undefined workspace', () => {
+    it('call with workspace logo URL', () => {
       const testWorkspace: Workspace = {
         name: 'name',
         theme: 'theme',
@@ -359,17 +365,28 @@ describe('WorkspacePropsComponent', () => {
       }
       expect(component.getLogoUrl(testWorkspace)).toBe(testWorkspace.logoUrl)
     })
+
+    it('call with workspace but no logo URL', () => {
+      const testWorkspace: Workspace = {
+        name: 'name',
+        theme: 'theme',
+        baseUrl: '/some/base/url',
+        id: 'id',
+        displayName: ''
+      }
+      spyOn(utils, 'bffImageUrl')
+
+      component.getLogoUrl(testWorkspace)
+
+      expect(utils.bffImageUrl).toHaveBeenCalled()
+    })
   })
 
-  xit('should follow link to current theme', () => {
-    const mockUrl = 'http://example.com/test-url'
-    workspaceServiceMock.doesUrlExistFor.and.returnValue(of(true))
-    workspaceServiceMock.getUrl.and.returnValue(of(mockUrl))
-
-    spyOn(component, 'onGoToTheme')
+  it('should follow link to current theme', () => {
+    spyOn(utils, 'goToEndpoint')
 
     component.onGoToTheme('themeName')
 
-    expect(component.onGoToTheme).toHaveBeenCalledWith('themeName')
+    expect(utils.goToEndpoint).toHaveBeenCalled()
   })
 })

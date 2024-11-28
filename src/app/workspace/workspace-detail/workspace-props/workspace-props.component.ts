@@ -49,7 +49,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   RefType = RefType
 
   constructor(
-    private readonly location: Location,
     private readonly router: Router,
     public workspaceService: WorkspaceService,
     private readonly msgService: PortalMessageService,
@@ -81,7 +80,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
 
   public ngOnChanges(): void {
     if (this.workspace) {
-      this.setFormData()
+      this.fillForm()
       if (this.editMode) this.formGroup.enable()
       else this.formGroup.disable()
       // if a home page value exists then fill it into drop down list for displaying
@@ -92,7 +91,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     }
   }
 
-  public setFormData(): void {
+  public fillForm(): void {
     Object.keys(this.formGroup.controls).forEach((element) => {
       this.formGroup.controls[element].setValue((this.workspace as any)[element])
     })
@@ -194,8 +193,8 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     } else return undefined
   }
 
-  public onOpenProductPathes(ev: any, paths: string[]) {
-    ev.stopPropagation()
+  public onOpenProductPathes(paths: string[]) {
+    console.log('onOpenProductPathes')
     // if paths already filled then prevent doing twice
     if (paths.length > (this.workspace?.homePage ? 1 : 0)) return
     if (this.workspace) {
@@ -203,16 +202,13 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
         map((val: any[]) => {
           const paths: string[] = []
           if (val.length > 0) {
-            for (const p of val) paths.push(p.baseUrl ?? '')
+            for (const p of val) paths.push(p.baseUrl!)
             paths.sort(sortByLocale)
           }
           return paths
         })
       )
     }
-  }
-  public onGoToHomePage(ev: any) {
-    ev.stopPropagation()
   }
 
   private loadThemes(): void {
@@ -231,6 +227,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   }
 
   public onGoToTheme(name?: string): void {
+    console.log('onGoToTheme')
     goToEndpoint(this.workspaceService, this.msgService, this.router, 'onecx-theme', 'onecx-theme-ui', 'theme-detail', {
       'theme-name': name
     })

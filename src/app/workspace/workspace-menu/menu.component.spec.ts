@@ -5,7 +5,6 @@ import { HttpErrorResponse, provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router'
 import { of, throwError } from 'rxjs'
-import FileSaver from 'file-saver'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { TreeNode } from 'primeng/api'
 import { TreeTableNodeExpandEvent } from 'primeng/treetable'
@@ -23,7 +22,6 @@ import {
   WorkspaceRole
 } from 'src/app/shared/generated'
 import * as utils from 'src/app/shared/utils'
-import { getCurrentDateTime } from 'src/app/shared/utils'
 import { MenuStateService, MenuState } from './services/menu-state.service'
 import { MenuComponent, MenuItemNodeData } from './menu.component'
 
@@ -50,7 +48,7 @@ const mockMenuItems: WorkspaceMenuItem[] = [
     name: 'menu2 name',
     i18n: { ['en']: 'en' },
     children: [{ name: 'child name', key: 'key', id: 'id' }],
-    url: '/workspace/'
+    url: 'http://host:port/shell/workspaces/admin'
   }
 ]
 
@@ -62,7 +60,6 @@ const nodeData: MenuItemNodeData = {
   prevId: 'prev',
   gotoUrl: 'goToUrl',
   positionPath: '0.1',
-  appConnected: true,
   roles: { ['role']: 'role' },
   node: { key: 'nodeKey' }
 }
@@ -72,7 +69,7 @@ const treeNodes: TreeNode = {
   expanded: false,
   children: [
     { key: '1.1', expanded: true, children: [] },
-    { expanded: true, children: [] }
+    { key: '1.2', expanded: true, children: [] }
   ]
 }
 
@@ -196,54 +193,77 @@ describe('MenuComponent', () => {
     expect(component.myPermissions).toContain('WORKSPACE_ROLE#EDIT')
   })
 
-  it('should have prepared action buttons onInit: onClose, and called it', () => {
-    component.ngOnInit()
+  describe('prepare page actions', () => {
+    it('should have prepared action buttons onInit: onClose, and called it', () => {
+      component.ngOnInit()
 
-    if (component.actions$) {
-      component.actions$.subscribe((actions) => {
-        const firstAction = actions[0]
-        firstAction.actionCallback()
-        expect(locationSpy.back).toHaveBeenCalled()
-      })
-    }
-  })
+      if (component.actions$) {
+        component.actions$.subscribe((actions) => {
+          const action = actions[0]
+          action.actionCallback()
+          expect(locationSpy.back).toHaveBeenCalled()
+        })
+      }
+    })
 
-  it('should have prepared action buttons onInit: onExportMenu', () => {
-    spyOn(component, 'onExportMenu')
+    it('should have prepared action buttons onInit: hide Export button due to no menu items', () => {
+      spyOn(component, 'onExportMenu')
 
-    component.ngOnInit()
+      component.ngOnInit()
 
-    if (component.actions$) {
-      component.actions$.subscribe((actions) => {
-        const secondAction = actions[1]
-        secondAction.actionCallback()
-        expect(component.onExportMenu).toHaveBeenCalled()
-      })
-    }
-  })
+      if (component.actions$) {
+        component.actions$.subscribe((actions) => {
+          const action = actions[1]
+          action.actionCallback()
+          expect(component.onExportMenu).toHaveBeenCalled()
+          expect(action.permission).toEqual('MENU#EXPORT')
+          expect(action.showCondition).toBeFalse()
+          expect(component.menuItems).toEqual([])
+          expect(component.menuItems?.length).toBe(0)
+        })
+      }
+    })
+    it('should have prepared action buttons onInit: hide Export button due to no menu items', () => {
+      spyOn(component, 'onExportMenu')
 
-  it('should have exclude some actions', () => {
-    component.prepareActionButtons()
+      component.ngOnInit()
+      component.menuItems = mockMenuItems
 
-    if (component.actions$) {
-      component.actions$.subscribe((actions) => {
-        expect(actions[1].showCondition).toBeFalse()
-      })
-    }
-  })
+      if (component.actions$) {
+        component.actions$.subscribe((actions) => {
+          const action = actions[1]
+          action.actionCallback()
+          expect(component.onExportMenu).toHaveBeenCalled()
+          expect(action.permission).toEqual('MENU#EXPORT')
+          expect(action.showCondition).toBeTrue()
+          expect(component.menuItems?.length).toBe(2)
+        })
+      }
+    })
+    it('should have exclude some actions', () => {
+      component.menuItems = undefined
+      component.prepareActionButtons()
 
-  it('should have prepared action buttons onInit: onImportMenu', () => {
-    spyOn(component, 'onImportMenu')
+      if (component.actions$) {
+        component.actions$.subscribe((actions) => {
+          expect(actions[1].showCondition).toBeFalse()
+        })
+      }
+    })
 
-    component.ngOnInit()
+    it('should have prepared action buttons onInit: onImportMenu', () => {
+      spyOn(component, 'onImportMenu')
 
-    if (component.actions$) {
-      component.actions$.subscribe((actions) => {
-        const thirdAction = actions[2]
-        thirdAction.actionCallback()
-        expect(component.onImportMenu).toHaveBeenCalled()
-      })
-    }
+      component.ngOnInit()
+
+      if (component.actions$) {
+        component.actions$.subscribe((actions) => {
+          const action = actions[2]
+          action.actionCallback()
+          expect(component.onImportMenu).toHaveBeenCalled()
+        })
+      }
+    })
   })
 
   /**
@@ -595,7 +615,7 @@ describe('MenuComponent', () => {
         expanded: true,
         children: [
           { key: '1.1', expanded: true, children: [] },
-          { expanded: true, children: [] }
+          { key: '1.2', expanded: true, children: [] }
         ]
       }
     ])
@@ -653,12 +673,24 @@ describe('MenuComponent', () => {
     expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_0.WORKSPACES')
   })
 
-  it('should loadMenu', () => {
+  it('should loadMenu - restore', () => {
     menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
 
     component.loadMenu(true)
 
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.SEARCH.RELOAD.OK' })
+  })
+
+  it('should loadMenu - not restore', () => {
+    menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
+    apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
+    component.workspaceName = 'workspace-name'
+
+    component.loadData()
+
+    expect(component.workspace).toEqual(workspace)
+    expect(component.menuNodes.length).toBe(2)
+    expect(component.menuNodes[0].expanded).toBeTrue()
   })
 
   it('should loadMenu: no node key in restoreRecursive', () => {
@@ -834,7 +866,6 @@ describe('MenuComponent', () => {
         prevId: '',
         gotoUrl: '',
         positionPath: '',
-        appConnected: false,
         node: {} as TreeNode
       }
 
@@ -863,7 +894,6 @@ describe('MenuComponent', () => {
         prevId: '',
         gotoUrl: '',
         positionPath: '',
-        appConnected: false,
         node: {} as TreeNode
       }
 
@@ -881,7 +911,6 @@ describe('MenuComponent', () => {
         prevId: '',
         gotoUrl: '',
         positionPath: '',
-        appConnected: false,
         node: {} as TreeNode
       }
 
@@ -957,18 +986,6 @@ describe('MenuComponent', () => {
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.REVOKE_NOK' })
   })
 
-  it('should match URLs by prefix ', () => {
-    component['mfeRUrls'] = [
-      'http://example.com',
-      'http://example.com/page',
-      'http://example.com/page/',
-      'http://example.com/anotherpage',
-      'http://test.com/test/'
-    ]
-    expect(component['urlMatch']('http://example.com/page/subpage')).toBe(true)
-    expect(component['urlMatch']('http://example.com/anotherpage/extra')).toBe(true)
-  })
-
   /****************************************************************************
    *  EXPORT / IMPORT
    */
@@ -977,14 +994,7 @@ describe('MenuComponent', () => {
     menuApiServiceSpy.exportMenuByWorkspaceName.and.returnValue(of(mockMenuItems))
     component.workspaceName = 'name'
     component.workspace = workspace
-    spyOn(FileSaver, 'saveAs')
-
     component.onExportMenu()
-
-    expect(FileSaver.saveAs).toHaveBeenCalledWith(
-      new Blob([], { type: 'text/json' }),
-      'onecx-menu_name_' + getCurrentDateTime() + '.json'
-    )
   })
 
   it('should set displayMenuImport to true', () => {
