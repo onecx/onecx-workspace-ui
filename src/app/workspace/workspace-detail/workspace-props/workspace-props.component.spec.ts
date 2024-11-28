@@ -9,6 +9,8 @@ import { of, throwError } from 'rxjs'
 
 import { ConfigurationService, PortalMessageService, ThemeService } from '@onecx/portal-integration-angular'
 import { WorkspaceService } from '@onecx/angular-integration-interface'
+import * as Accelerator from '@onecx/accelerator'
+
 import { WorkspacePropsComponent } from 'src/app/workspace/workspace-detail/workspace-props/workspace-props.component'
 import {
   WorkspaceAPIService,
@@ -54,6 +56,9 @@ describe('WorkspacePropsComponent', () => {
   const configServiceSpy = {
     getProperty: jasmine.createSpy('getProperty').and.returnValue('123')
   }
+  const accSpy = {
+    getLocation: jasmine.createSpy('getLocation').and.returnValue({ deploymentPath: '/path' })
+  }
   const imageServiceSpy = {
     getImage: jasmine.createSpy('getImage').and.returnValue(of({})),
     updateImage: jasmine.createSpy('updateImage').and.returnValue(of({})),
@@ -86,7 +91,8 @@ describe('WorkspacePropsComponent', () => {
         { provide: ImagesInternalAPIService, useValue: imageServiceSpy },
         { provide: WorkspaceAPIService, useValue: apiServiceSpy },
         { provide: WorkspaceProductAPIService, useValue: wProductServiceSpy },
-        { provide: WorkspaceService, useValue: workspaceServiceMock }
+        { provide: WorkspaceService, useValue: workspaceServiceMock },
+        { provide: Accelerator, useValue: accSpy }
       ],
       teardown: { destroyAfterEach: false }
     }).compileComponents()
@@ -103,6 +109,7 @@ describe('WorkspacePropsComponent', () => {
 
   beforeEach(() => {
     fixture = TestBed.createComponent(WorkspacePropsComponent)
+    accSpy.getLocation()
     component = fixture.componentInstance
     component.workspace = workspace
     fixture.detectChanges()
