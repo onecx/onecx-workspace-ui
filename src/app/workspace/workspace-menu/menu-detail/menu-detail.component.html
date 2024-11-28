@@ -231,7 +231,7 @@
       [tooltip]="'DIALOG.MENU.TABS.I18N.TOOLTIP' | translate"
     >
       <div class="mt-3 mb-1 flex flex-column gap-4">
-        <span class="p-float-label p-input-icon-right w-30rem" *ngFor="let language of languagesDisplayed; index as i">
+        <span *ngFor="let language of languagesDisplayed; index as i" class="p-float-label p-input-icon-right w-30rem">
           <a
             [id]="'ws_menu_detail_i18n_lang_' + i + '_action_remove'"
             class="pi pi-times"

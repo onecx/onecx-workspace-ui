@@ -11,6 +11,7 @@ import { PortalMessageService, UserService } from '@onecx/portal-integration-ang
 
 import { MenuDetailComponent } from './menu-detail.component'
 import {
+  WorkspaceMenuItem,
   WorkspaceProductAPIService,
   MenuItemAPIService,
   MenuItem,
@@ -220,6 +221,37 @@ describe('MenuDetailComponent', () => {
       expect(component.formGroup.controls['parentItemId'].value).toBe('menuItemId')
     })
 
+    it('should init menuItem and set formGroup in create mode onChanges - no parent', () => {
+      component.changeMode = 'CREATE'
+      component.menuItemOrg = undefined
+      component.displayDetailDialog = true
+      spyOn(component, 'getMaxChildrenPosition')
+
+      component.ngOnChanges({})
+
+      expect(component.menuItem?.parentItemId).toBeUndefined()
+      expect(component.menuItem?.position).toEqual(0)
+      expect(component.getMaxChildrenPosition).toHaveBeenCalledTimes(0)
+    })
+
+    it('should init menuItem and set formGroup in create mode onChanges - no children', () => {
+      const item: WorkspaceMenuItem = {
+        id: 'id',
+        position: 0,
+        children: []
+      }
+      expect(component.getMaxChildrenPosition(item)).toEqual(0)
+    })
+
+    it('should init menuItem and set formGroup in create mode onChanges - 1 children', () => {
+      const item: WorkspaceMenuItem = {
+        id: 'id',
+        position: 0,
+        children: [{ id: 'id2' }]
+      }
+      expect(component.getMaxChildrenPosition(item)).toEqual(1)
+    })
+
     it('should call getMenu in view mode onChanges and fetch menuItem', () => {
       menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[0]))
       component.changeMode = 'VIEW'
@@ -244,6 +276,46 @@ describe('MenuDetailComponent', () => {
 
       expect(component.menuItem).toBe(mockMenuItems[0])
       expect((component as any).loadMfeUrls).toHaveBeenCalled()
+    })
+
+    it('should prepare mfe paths for menu items - empty product path', () => {
+      component.changeMode = 'VIEW'
+      component.workspaceId = 'wId'
+      component.displayDetailDialog = true
+      component.menuItems = mockMenuItems
+      menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[0]))
+      const mfe: Microfrontend = { id: 'id', appId: 'appId', basePath: '/mfePath' }
+      const prod: Product = {
+        baseUrl: undefined,
+        productName: 'prod name',
+        displayName: 'display name',
+        microfrontends: [mfe]
+      }
+      wProductApiServiceSpy.getProductsByWorkspaceId.and.returnValue(of([prod]))
+
+      component.ngOnChanges({})
+
+      expect(component.menuItems?.length).toEqual(5)
+    })
+
+    it('should prepare mfe paths for menu items - empty mfe path', () => {
+      component.changeMode = 'VIEW'
+      component.workspaceId = 'wId'
+      component.displayDetailDialog = true
+      component.menuItems = mockMenuItems
+      menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[0]))
+      const mfe: Microfrontend = { id: 'id', appId: 'appId', basePath: undefined }
+      const prod: Product = {
+        baseUrl: '/prod-base',
+        productName: 'prod name',
+        displayName: 'display name',
+        microfrontends: [mfe]
+      }
+      wProductApiServiceSpy.getProductsByWorkspaceId.and.returnValue(of([prod]))
+
+      component.ngOnChanges({})
+
+      expect(component.menuItems?.length).toEqual(5)
     })
 
     it('should call getMenu in view mode onChanges and fetch undefined menuItem', () => {
@@ -323,6 +395,30 @@ describe('MenuDetailComponent', () => {
       component['loadMfeUrls']()
 
       expect(wProductApiServiceSpy.getProductsByWorkspaceId).not.toHaveBeenCalled()
+    })
+
+    it('should sort urls by path 1 - non-empty', () => {
+      const a: MenuURL = { mfePath: 'a' }
+      const b: MenuURL = { mfePath: 'b' }
+      const urls: MenuURL[] = [b, a]
+
+      urls.sort((x, y) => component.sortMfesByPath(x, y))
+
+      expect(urls).toEqual([a, b])
+    })
+
+    it('should sort urls by path 1 - empty', () => {
+      const a: MenuURL = { mfePath: undefined }
+      const b: MenuURL = { mfePath: 'b' }
+      const urls: MenuURL[] = [b, a]
+
+      urls.sort((x, y) => component.sortMfesByPath(x, y))
+
+      expect(urls).toEqual([a, b])
+
+      urls.sort((x, y) => component.sortMfesByPath(y, x))
+
+      expect(urls).toEqual([b, a])
     })
   })
 
@@ -428,41 +524,43 @@ describe('MenuDetailComponent', () => {
     expect(component.menuItem.url).toBe('url mfePath')
   })
 
-  it('should save a menu: create', () => {
-    menuApiServiceSpy.createMenuItemForWorkspace.and.returnValue(of({}))
-    component.formGroup = new FormGroup({
-      parentItemId: new FormControl('some parent id'),
-      key: new FormControl('key', Validators.minLength(2)),
-      name: new FormControl('name'),
-      position: new FormControl('1'),
-      disabled: new FormControl<boolean>(false),
-      external: new FormControl<boolean>(false),
-      url: new FormControl('url'),
-      badge: new FormControl('badge'),
-      scope: new FormControl('scope'),
-      description: new FormControl('description')
+  describe('create menu item', () => {
+    it('should save a menu: create', () => {
+      menuApiServiceSpy.createMenuItemForWorkspace.and.returnValue(of({}))
+      component.formGroup = new FormGroup({
+        parentItemId: new FormControl('some parent id'),
+        key: new FormControl('key', Validators.minLength(2)),
+        name: new FormControl('name'),
+        position: new FormControl('1'),
+        disabled: new FormControl<boolean>(false),
+        external: new FormControl<boolean>(false),
+        url: new FormControl('url'),
+        badge: new FormControl('badge'),
+        scope: new FormControl('scope'),
+        description: new FormControl('description')
+      })
+      component.menuItem = mockMenuItems[0]
+      component.changeMode = 'CREATE'
+      component.languagesDisplayed = [{ label: 'English', value: 'en', data: 'data' }]
+
+      component.onMenuSave()
+
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.MESSAGE.MENU_CREATE_OK' })
     })
-    component.menuItem = mockMenuItems[0]
-    component.changeMode = 'CREATE'
-    component.languagesDisplayed = [{ label: 'English', value: 'en', data: 'data' }]
 
-    component.onMenuSave()
+    it('should display error message on save menu: create', () => {
+      const errorResponse = { status: 400, statusText: 'Error on creating a menu item' }
+      menuApiServiceSpy.createMenuItemForWorkspace.and.returnValue(throwError(() => errorResponse))
+      component.formGroup = form
+      component.menuItem = mockMenuItems[0]
+      component.changeMode = 'CREATE'
+      spyOn(console, 'error')
 
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.MESSAGE.MENU_CREATE_OK' })
-  })
+      component.onMenuSave()
 
-  it('should display error message on save menu: create', () => {
-    const errorResponse = { status: 400, statusText: 'Error on creating a menu item' }
-    menuApiServiceSpy.createMenuItemForWorkspace.and.returnValue(throwError(() => errorResponse))
-    component.formGroup = form
-    component.menuItem = mockMenuItems[0]
-    component.changeMode = 'CREATE'
-    spyOn(console, 'error')
-
-    component.onMenuSave()
-
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.MESSAGE.MENU_CREATE_NOK' })
-    expect(console.error).toHaveBeenCalledWith('createMenuItemForWorkspace', errorResponse)
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.MESSAGE.MENU_CREATE_NOK' })
+      expect(console.error).toHaveBeenCalledWith('createMenuItemForWorkspace', errorResponse)
+    })
   })
 
   it('should save a menu: edit', () => {
@@ -573,24 +671,22 @@ describe('MenuDetailComponent', () => {
 
     it('should remove language from languagesDisplayed, add it to languagesAvailable', () => {
       component.languagesDisplayed = [{ label: 'French', value: 'fr', data: 'Data' }]
-      component.languagesAvailable = [{ label: 'German', value: 'de', data: '' }]
+      component.languagesAvailable = [{ label: 'German', value: 'de', data: 'Data' }]
 
       component.onRemoveLanguage('fr')
 
       expect(component.languagesDisplayed.length).toBe(0)
       expect(component.languagesAvailable.length).toBe(2)
-    })
 
-    it('should add language to languagesDisplayed from languagesAvailable', () => {
+      component.languagesDisplayed = [{ label: 'German', value: 'de', data: 'Data' }]
+
+      component.onRemoveLanguage('de')
+
+      expect(component.languagesDisplayed.length).toBe(1)
+
       component.languagesDisplayed = []
-      component.languagesAvailable = [{ label: 'English', value: 'en', data: '' }]
 
-      component.onAddLanguage2({ option: { value: 'en' } })
-
-      expect(component.languagesDisplayed).toEqual(
-        jasmine.arrayContaining([{ label: 'English', value: 'en', data: '' }])
-      )
-      expect(component.languagesAvailable.length).toBe(0)
+      component.onRemoveLanguage('de')
     })
 
     it('should add language to languagesDisplayed from languagesAvailable using string value', () => {
@@ -758,6 +854,15 @@ describe('MenuDetailComponent', () => {
 
     expect(component.filteredMfes.length).toBe(2)
     expect(component.filteredMfes[0].id).toBeUndefined()
+  })
+
+  it('should adjust extern checkbox', () => {
+    const ev: any = { value: { mfePath: 'path' } }
+    spyOn(component, 'adjustExternalLinkCheckbox').withArgs(ev.value.mfePath)
+
+    component.onSelect(ev)
+
+    expect(component['adjustExternalLinkCheckbox']).toHaveBeenCalledWith(ev.value.mfePath)
   })
 })
 

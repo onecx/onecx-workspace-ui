@@ -137,7 +137,7 @@ export class MenuDetailComponent implements OnChanges {
     }
   }
 
-  private getMaxChildrenPosition(item: WorkspaceMenuItem): number {
+  public getMaxChildrenPosition(item: WorkspaceMenuItem): number {
     if (!item.children || item.children?.length === 0) return 0
     else return (item.children[item.children.length - 1].position ?? 0) + 1
   }
@@ -364,6 +364,7 @@ export class MenuDetailComponent implements OnChanges {
     }
   }
   public onRemoveLanguage(val: string) {
+    if (this.languagesDisplayed.length === 0) return
     if (['de', 'en'].includes(this.languagesDisplayed.filter((l) => l.value === val)[0].value)) {
       this.languagesDisplayed.filter((l) => l.value === val)[0].data = ''
     } else {
@@ -372,10 +373,6 @@ export class MenuDetailComponent implements OnChanges {
       this.languagesAvailable = this.languagesAvailable.filter((l) => l).sort(dropDownSortItemsByLabel)
       this.languagesDisplayed = this.languagesDisplayed.filter((l) => l.value !== val)
     }
-  }
-  public onAddLanguage2(ev: any): void {
-    this.languagesDisplayed.push(this.languagesAvailable.filter((l) => l.value === ev.option.value)[0])
-    this.languagesAvailable = this.languagesAvailable.filter((l) => l.value !== ev.option.value)
   }
   public onAddLanguage(val: string): void {
     this.languagesDisplayed.push(this.languagesAvailable.filter((l) => l.value === val)[0])
@@ -456,7 +453,7 @@ export class MenuDetailComponent implements OnChanges {
   }
 
   // the opening of a URL in a new TAB requires the URL - manage here if not exist:
-  private adjustExternalLinkCheckbox(url?: string) {
+  public adjustExternalLinkCheckbox(url?: string) {
     if (url) this.formGroup.controls['external'].enable()
     else {
       this.formGroup.controls['external'].setValue(false) // reset
