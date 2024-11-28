@@ -208,7 +208,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
             for (const p of result.stream) {
               const psp = { ...p, bucket: 'SOURCE', changedComponents: false } as ExtendedProduct
               this.prepareProductApps(psp)
-              this.psProductsOrg.set(psp.productName ?? '', psp)
+              this.psProductsOrg.set(psp.productName!, psp)
               // add product to SOURCE picklist only if not yet registered
               const wp = this.wProducts.filter((wp) => wp.productName === psp.productName)
               if (wp.length === 0 && !psp.undeployed) this.psProducts.push(psp)

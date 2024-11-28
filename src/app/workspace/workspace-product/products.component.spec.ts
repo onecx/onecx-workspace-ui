@@ -16,7 +16,8 @@ import {
   Microfrontend,
   MicrofrontendType,
   SlotPS,
-  SlotAPIService
+  SlotAPIService,
+  UIEndpoint
 } from 'src/app/shared/generated'
 
 import { ExtendedMicrofrontend, ExtendedProduct, ExtendedSlot, ProductComponent } from './products.component'
@@ -228,15 +229,11 @@ describe('ProductComponent', () => {
   })
 
   describe('searchPsProducts', () => {
-    it('should loadData onChanges: searchPsProducts call success: prod deployed', () => {
+    it('should loadData onChanges: searchPsProducts call success: prod deployed and only mfes', () => {
       wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([product]))
       productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [prodStoreItem] }))
       const changes = {
-        ['workspace']: {
-          previousValue: 'ws0',
-          currentValue: 'ws1',
-          firstChange: true
-        }
+        ['workspace']: { previousValue: 'ws0', currentValue: 'ws1', firstChange: true }
       }
       component.ngOnChanges(changes as unknown as SimpleChanges)
 
@@ -251,16 +248,33 @@ describe('ProductComponent', () => {
       expect(component.psProductsOrg.get(prodStoreItem.productName!)!).toEqual({ ...prodStoreItem })
     })
 
+    it('should loadData onChanges: searchPsProducts call success: prod deployed and only slots', () => {
+      const pspItem: ExtendedProduct = {
+        productName: 'pspItemName',
+        displayName: 'display name',
+        description: 'description',
+        bucket: 'SOURCE',
+        version: '1.0',
+        slots: [{ name: 'slot' }],
+        changedComponents: false,
+        apps: new Map().set('appId', { appId: 'appId', modules: [microfrontend] })
+      }
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([product]))
+      productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [pspItem] }))
+      const changes = {
+        ['workspace']: { previousValue: 'ws0', currentValue: 'ws1', firstChange: true }
+      }
+      component.ngOnChanges(changes as unknown as SimpleChanges)
+
+      expect(component.psProducts).toEqual([{ ...pspItem }])
+    })
+
     it('should loadData onChanges: searchPsProducts call success: prod undeployed', () => {
       prodStoreItem.productName = 'prod name'
       wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([product]))
       productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [prodStoreItem] }))
       const changes = {
-        ['workspace']: {
-          previousValue: 'ws0',
-          currentValue: 'ws1',
-          firstChange: true
-        }
+        ['workspace']: { previousValue: 'ws0', currentValue: 'ws1', firstChange: true }
       }
       component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
 
@@ -273,11 +287,7 @@ describe('ProductComponent', () => {
       const errorResponse = { status: 404, statusText: 'product store products not found' }
       productServiceSpy.searchAvailableProducts.and.returnValue(throwError(() => errorResponse))
       const changes = {
-        ['workspace']: {
-          previousValue: 'ws0',
-          currentValue: 'ws1',
-          firstChange: true
-        }
+        ['workspace']: { previousValue: 'ws0', currentValue: 'ws1', firstChange: true }
       }
       spyOn(console, 'error')
 
@@ -296,7 +306,8 @@ describe('ProductComponent', () => {
         apps: new Map<string, any>([
           ['app1', {}],
           ['app2', {}]
-        ])
+        ]),
+        slots: [{ name: 'slot1', undeployed: true }, { name: 'slot2', deprecated: true }, { name: 'slot3' }]
       } as ExtendedProduct
       spyOn<any>(component, 'prepareProductAppParts').and.callThrough()
 
@@ -469,15 +480,9 @@ describe('ProductComponent', () => {
 
   describe('sortSlotsByName', () => {
     it('should sort slots by name ', () => {
-      const a: SlotPS = {
-        name: 'a'
-      }
-      const b: SlotPS = {
-        name: 'b'
-      }
-      const c: SlotPS = {
-        name: 'c'
-      }
+      const a: SlotPS = { name: 'a' }
+      const b: SlotPS = { name: 'b' }
+      const c: SlotPS = { name: 'c' }
       const eMfes = [b, c, a]
 
       eMfes.sort((x, y) => component.sortSlotsByName(x, y))
@@ -486,15 +491,9 @@ describe('ProductComponent', () => {
     })
 
     it('should sort slots by name : some empty name ', () => {
-      const a: SlotPS = {
-        name: 'a'
-      }
-      const b: SlotPS = {
-        name: ''
-      }
-      const c: SlotPS = {
-        name: ''
-      }
+      const a: SlotPS = { name: 'a' }
+      const b: SlotPS = { name: '' }
+      const c: SlotPS = { name: '' }
       const eMfes: SlotPS[] = [b, c, a]
 
       eMfes.sort((x, y) => component.sortSlotsByName(x, y))
@@ -503,15 +502,9 @@ describe('ProductComponent', () => {
     })
 
     it('should sort slots by name : all empty name ', () => {
-      const a: SlotPS = {
-        name: ''
-      }
-      const b: SlotPS = {
-        name: ''
-      }
-      const c: SlotPS = {
-        name: ''
-      }
+      const a: SlotPS = { name: '' }
+      const b: SlotPS = { name: '' }
+      const c: SlotPS = { name: '' }
       const eMfes = [b, c, a]
 
       eMfes.sort((x, y) => component.sortSlotsByName(x, y))
@@ -520,20 +513,40 @@ describe('ProductComponent', () => {
     })
 
     it('should sort slots by name : special char name ', () => {
-      const a: SlotPS = {
-        name: 'a'
-      }
-      const b: SlotPS = {
-        name: 'b'
-      }
-      const c: SlotPS = {
-        name: '$'
-      }
+      const a: SlotPS = { name: 'a' }
+      const b: SlotPS = { name: 'b' }
+      const c: SlotPS = { name: '$' }
       const eMfes = [b, a, c]
 
       eMfes.sort((x, y) => component.sortSlotsByName(x, y))
 
       expect(eMfes).toEqual([c, a, b])
+    })
+  })
+
+  describe('sort endpoints by name', () => {
+    it('should sort slots by name ', () => {
+      const a: UIEndpoint = { name: 'a' }
+      const b: UIEndpoint = { name: 'b' }
+      const arr = [b, a]
+
+      arr.sort((x, y) => component['sortEndpointsByName'](x, y))
+
+      expect(arr).toEqual([a, b])
+    })
+
+    it('should sort slots by name : some empty name ', () => {
+      const a: UIEndpoint = { name: '' }
+      const b: UIEndpoint = { name: 'b' }
+      const arr = [b, a]
+
+      arr.sort((x, y) => component['sortEndpointsByName'](x, y))
+
+      expect(arr).toEqual([a, b])
+
+      arr.sort((x, y) => component['sortEndpointsByName'](y, x))
+
+      expect(arr).toEqual([b, a])
     })
   })
 
@@ -703,11 +716,7 @@ describe('ProductComponent', () => {
       wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([prodStoreItem]))
       productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [prodStoreItem] }))
       const changes = {
-        ['workspace']: {
-          previousValue: 'ws0',
-          currentValue: 'ws1',
-          firstChange: true
-        }
+        ['workspace']: { previousValue: 'ws0', currentValue: 'ws1', firstChange: true }
       }
 
       component.ngOnChanges(changes as unknown as SimpleChanges)

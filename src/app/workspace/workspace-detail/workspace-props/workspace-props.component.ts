@@ -202,7 +202,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
         map((val: any[]) => {
           const paths: string[] = []
           if (val.length > 0) {
-            for (const p of val) paths.push(p.baseUrl!)
+            for (const p of val) paths.push(p.baseUrl)
             paths.sort(sortByLocale)
           }
           return paths
