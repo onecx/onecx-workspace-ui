@@ -93,7 +93,10 @@
             class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
             [ngClass]="!editMode && inputBaseUrl.value ? 'cursor-pointer' : 'p-disabled'"
             target="_blank"
-            [href]="deploymentPath + inputBaseUrl.value"
+            [href]="
+              (getLocation().deploymentPath === '/' ? '' : getLocation().deploymentPath.slice(0, -1)) +
+              inputBaseUrl.value
+            "
             (click)="$event.stopPropagation()"
             [attr.aria-label]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
             [pTooltip]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
@@ -114,7 +117,7 @@
             id="ws_detail_props_item_home_page"
             formControlName="homePage"
             styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
-            (onClick)="onOpenProductPathes($event, paths)"
+            (onClick)="onOpenProductPathes(paths); $event.stopPropagation()"
             [options]="paths"
             [editable]="true"
             [showClear]="true"

@@ -27,6 +27,11 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   @Input() isLoading = false
   @Output() currentLogoUrl = new EventEmitter<string>()
 
+  public getLocation = getLocation
+  public copyToClipboard = copyToClipboard
+  public sortByLocale = sortByLocale
+  public RefType = RefType
+
   private readonly destroy$ = new Subject()
   public formGroup: FormGroup
   public productPaths$: Observable<string[]> = of([])
@@ -34,8 +39,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   public themes$!: Observable<string[]>
   public urlPattern = '/base-path-to-workspace'
   public externUrlPattern = 'http(s)://path-to-image'
-  public copyToClipboard = copyToClipboard
-  public sortByLocale = sortByLocale
   public deploymentPath: string | undefined = undefined
 
   //Logo
@@ -46,10 +49,8 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   public minimumImageHeight = 150
   public fetchingLogoUrl: string | undefined = undefined
   public themeUrl: string | undefined = undefined
-  RefType = RefType
 
   constructor(
-    private readonly location: Location,
     private readonly router: Router,
     public workspaceService: WorkspaceService,
     private readonly msgService: PortalMessageService,
@@ -57,7 +58,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     private readonly workspaceApi: WorkspaceAPIService,
     private readonly wProductApi: WorkspaceProductAPIService
   ) {
-    this.deploymentPath = getLocation().deploymentPath === '/' ? '' : getLocation().deploymentPath.slice(0, -1)
     this.themeProductRegistered$ = workspaceService.doesUrlExistFor('onecx-theme', 'onecx-theme-ui', 'theme-detail')
 
     this.formGroup = new FormGroup({
@@ -81,7 +81,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
 
   public ngOnChanges(): void {
     if (this.workspace) {
-      this.setFormData()
+      this.fillForm()
       if (this.editMode) this.formGroup.enable()
       else this.formGroup.disable()
       // if a home page value exists then fill it into drop down list for displaying
@@ -92,7 +92,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     }
   }
 
-  public setFormData(): void {
+  public fillForm(): void {
     Object.keys(this.formGroup.controls).forEach((element) => {
       this.formGroup.controls[element].setValue((this.workspace as any)[element])
     })
@@ -194,8 +194,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     } else return undefined
   }
 
-  public onOpenProductPathes(ev: any, paths: string[]) {
-    ev.stopPropagation()
+  public onOpenProductPathes(paths: string[]) {
     // if paths already filled then prevent doing twice
     if (paths.length > (this.workspace?.homePage ? 1 : 0)) return
     if (this.workspace) {
@@ -203,16 +202,13 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
         map((val: any[]) => {
           const paths: string[] = []
           if (val.length > 0) {
-            for (const p of val) paths.push(p.baseUrl ?? '')
+            for (const p of val) paths.push(p.baseUrl)
             paths.sort(sortByLocale)
           }
           return paths
         })
       )
     }
-  }
-  public onGoToHomePage(ev: any) {
-    ev.stopPropagation()
   }
 
   private loadThemes(): void {

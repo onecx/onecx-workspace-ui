@@ -4,9 +4,9 @@ import { MenuItemWithIconHarness } from '@onecx/angular-testing'
 export class OneCXUserAvatarMenuHarness extends ComponentHarness {
   static readonly hostSelector = 'app-user-avatar-menu'
 
-  getUserAvatarButton = this.locatorFor('#ws_user_avatar_menu_button')
+  public getUserAvatarButton = this.locatorFor('#ws_user_avatar_menu_action')
 
-  getMenuItems = this.locatorForAll(MenuItemWithIconHarness)
+  public getMenuItems = this.locatorForAll(MenuItemWithIconHarness)
 
   async getUserAvatarButtonId(): Promise<string | null> {
     return await (await this.getUserAvatarButton()).getAttribute('id')
@@ -16,16 +16,12 @@ export class OneCXUserAvatarMenuHarness extends ComponentHarness {
     await (await this.getUserAvatarButton()).click()
   }
 
+  async getOrganization() {
+    return (await this.locatorForOptional('#ws_user_avatar_menu_list_user_organization')())?.text()
+  }
+
   async getUserName() {
-    return (await this.locatorForOptional('#ws_user_avatar_menu_profile_item_name')())?.text()
-  }
-
-  async getUserEmail() {
-    return (await this.locatorForOptional('#ws_user_avatar_menu_profile_item_email')())?.text()
-  }
-
-  async getUserTenant() {
-    return (await this.locatorForOptional('#ws_user_avatar_menu_profile_item_tenant')())?.text()
+    return (await this.locatorForOptional('#ws_user_avatar_menu_list_user_name')())?.text()
   }
 
   async isMenuHidden() {

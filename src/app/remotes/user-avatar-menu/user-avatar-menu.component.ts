@@ -1,3 +1,4 @@
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'
 import { Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import { APP_INITIALIZER, AfterViewInit, Component, Inject, Input, OnDestroy, Renderer2 } from '@angular/core'
@@ -53,6 +54,8 @@ export function slotInitializer(slotService: SlotService) {
 
 @Component({
   selector: 'app-user-avatar-menu',
+  templateUrl: './user-avatar-menu.component.html',
+  styleUrls: ['./user-avatar-menu.component.scss'],
   standalone: true,
   imports: [
     AngularRemoteComponentsModule,
@@ -65,11 +68,11 @@ export function slotInitializer(slotService: SlotService) {
     RouterModule,
     TranslateModule
   ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [
-    {
-      provide: BASE_URL,
-      useValue: new ReplaySubject<string>(1)
-    },
+    { provide: BASE_URL, useValue: new ReplaySubject<string>(1) },
+    { provide: APP_INITIALIZER, useFactory: slotInitializer, deps: [SLOT_SERVICE], multi: true },
+    { provide: SLOT_SERVICE, useExisting: SlotService },
     provideTranslateServiceForRoot({
       isolate: true,
       loader: {
@@ -77,20 +80,8 @@ export function slotInitializer(slotService: SlotService) {
         useFactory: createRemoteComponentTranslateLoader,
         deps: [HttpClient, BASE_URL]
       }
-    }),
-    {
-      provide: APP_INITIALIZER,
-      useFactory: slotInitializer,
-      deps: [SLOT_SERVICE],
-      multi: true
-    },
-    {
-      provide: SLOT_SERVICE,
-      useExisting: SlotService
-    }
-  ],
-  templateUrl: './user-avatar-menu.component.html',
-  styleUrls: ['./user-avatar-menu.component.scss']
+    })
+  ]
 })
 @UntilDestroy()
 export class OneCXUserAvatarMenuComponent
@@ -149,7 +140,7 @@ export class OneCXUserAvatarMenuComponent
             const newMenuItem: MenuItem = {
               label: translatedLabel,
               icon: PrimeIcons.POWER_OFF,
-              command: () => this.logout()
+              command: () => this.onLogout()
             }
             return [...currentMenu, newMenuItem]
           })
@@ -203,13 +194,13 @@ export class OneCXUserAvatarMenuComponent
     userAvatarMenuButton.focus()
   }
 
-  handleAvatarClick(event: Event) {
+  public handleAvatarClick(event: Event): void {
     event.preventDefault()
     event.stopPropagation()
     this.menuOpen = !this.menuOpen
   }
 
-  logout() {
+  public onLogout(): void {
     this.eventsPublisher$.publish({ type: 'authentication#logoutButtonClicked' })
   }
 }

@@ -4,12 +4,11 @@ import { Location } from '@angular/common'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 import { catchError, combineLatest, map, Observable, Subject, of } from 'rxjs'
+import { saveAs } from 'file-saver'
 
 import { TreeTable, TreeTableNodeExpandEvent } from 'primeng/treetable'
 import { Overlay } from 'primeng/overlay'
 import { SelectItem, TreeNode } from 'primeng/api'
-
-import FileSaver from 'file-saver'
 
 import { Action } from '@onecx/angular-accelerator'
 import { PortalMessageService, UserService, WorkspaceService } from '@onecx/angular-integration-interface'
@@ -49,7 +48,6 @@ export type MenuItemNodeData = WorkspaceMenuItem & {
   prevId: string
   gotoUrl: string
   positionPath: string
-  appConnected: boolean
   roles: RoleAssignments
   node: TreeNode
 }
@@ -375,7 +373,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
   private expandRecursive(node: TreeNode, isExpand: boolean) {
     node.expanded = isExpand
-    this.stateService.getState().treeExpansionState.set(node.key!, node.expanded)
+    if (node.key) this.stateService.getState().treeExpansionState.set(node.key, node.expanded)
     if (node.children) {
       node.children.forEach((childNode) => {
         this.expandRecursive(childNode, isExpand)
@@ -383,7 +381,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     }
   }
   private restoreRecursive(node: TreeNode) {
-    node.expanded = this.stateService.getState().treeExpansionState.get(node.key!)
+    if (node.key) node.expanded = this.stateService.getState().treeExpansionState.get(node.key)
     if (node.children) {
       node.children.forEach((childNode) => {
         this.restoreRecursive(childNode)
@@ -443,6 +441,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.menuNodes = this.mapToTreeNodes(this.menuItems)
         this.prepareTreeNodeHelper(restore)
         this.loadRolesAndAssignments()
+        this.prepareActionButtons()
         if (restore) {
           this.restoreTree()
           this.msgService.success({ summaryKey: 'ACTIONS.SEARCH.RELOAD.OK' })
@@ -577,20 +576,6 @@ export class MenuComponent implements OnInit, OnDestroy {
     return stop
   }
 
-  // is a menu item (url) supported by reg. MFE ?
-  private urlMatch(url: string): boolean {
-    const url2 = /^.*\/$/.exec(url) ? url.substring(0, url.length - 1) : url
-    // direct match
-    let match = this.mfeRUrls.includes(url) || this.mfeRUrls.includes(url + '/') || this.mfeRUrls.includes(url2)
-    if (!match) {
-      for (const i in this.mfeRUrls) {
-        match = this.mfeRUrls[i].startsWith(url2) || url2.startsWith(this.mfeRUrls[i])
-        if (match) break
-      }
-    }
-    return match
-  }
-
   /****************************************************************************
    ****************************************************************************
    *  MENU TREE POPUP - outsourced for reordering and preview
@@ -615,8 +600,6 @@ export class MenuComponent implements OnInit, OnDestroy {
         gotoUrl: this.prepareItemUrl(item.url),
         // concat the positions
         positionPath: parent ? parent.position + '.' + item.position : item.position,
-        // true if path is a mfe base path
-        appConnected: item.url && !item.url.startsWith('http') && !item.external ? this.urlMatch(item.url) : false,
         roles: {}
       } as MenuItemNodeData
       const newNode: TreeNode = this.createTreeNode(nodeData)
@@ -654,7 +637,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     // initially open the first menu item if exists
     if (!restore && this.menuNodes.length > 1) {
       this.menuNodes[0].expanded = true
-      this.stateService.getState().treeExpansionState.set(this.menuNodes[0].key || '', true)
+      this.stateService.getState().treeExpansionState.set(this.menuNodes[0].key!, true)
     }
   }
   private prepareTreeNodeHelperRecursively(nodes: TreeNode[]): void {
@@ -665,7 +648,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       if (m.data.i18n && Object.keys(m.data.i18n).length > 0) {
         for (const k in m.data.i18n) {
           let n = 1
-          if (this.usedLanguages.has(k)) n = (this.usedLanguages.get(k) ?? 0) + 1
+          if (this.usedLanguages.has(k)) n = this.usedLanguages.get(k)! + 1
           this.usedLanguages.set(k, n)
         }
       }
@@ -693,9 +676,10 @@ export class MenuComponent implements OnInit, OnDestroy {
     if (this.workspaceName) {
       this.menuApi.exportMenuByWorkspaceName({ workspaceName: this.workspaceName }).subscribe((data) => {
         const jsonBody = JSON.stringify(data, null, 2)
-        FileSaver.saveAs(
+        saveAs(
           new Blob([jsonBody], { type: 'text/json' }),
-          'onecx-menu_' + this.workspaceName + '_' + getCurrentDateTime() + '.json'
+          'onecx-menu_' + this.workspaceName + '_' + getCurrentDateTime() + '.json',
+          { autoBom: false }
         )
       })
     }

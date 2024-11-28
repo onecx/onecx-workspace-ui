@@ -79,30 +79,22 @@ describe('ChooseFileComponent', () => {
   })
 
   it('should select a file, get translations and set importDTO', (done) => {
+    const validJson = JSON.stringify(snapshot)
+    const mockFile = new File([validJson], 'test.json', { type: 'application/json' })
+    spyOn(mockFile, 'text').and.returnValue(Promise.resolve(validJson))
+    const fileList = { 0: mockFile, length: 1, item: () => mockFile }
     translateServiceSpy.get.and.returnValue(of({}))
-    const file = new File(['file content'], 'test.txt', { type: 'text/plain' })
-    const fileList: FileList = {
-      0: file,
-      length: 1,
-      item: (index: number) => file
-    }
-    spyOn(file, 'text').and.returnValue(
-      Promise.resolve(
-        '{"portal": {"portalName": "name", "portalRoles": ["role"], "tenantId": "id",\
-        "microfrontendRegistrations": [{"version": "1"}]},\
-        "menuItems": [{"name": "menu", "key": "key", "position": 1, "disabled": true, "portalExit": true}]}'
-      )
-    )
-    const event = { files: fileList }
+
+    component.onFileSelect({ files: fileList } as any as FileSelectEvent)
     component.importWorkspace = snapshot
 
-    component.onFileSelect(event as any as FileSelectEvent)
-
     setTimeout(() => {
-      expect(file.text).toHaveBeenCalled()
+      expect(mockFile.text).toHaveBeenCalled()
       done()
     })
     expect(component.importWorkspace).toEqual(snapshot)
+    expect(component.importError).toBeFalse()
+    expect(component.validationErrorCause).toBeUndefined()
   })
 
   it('should catch an import error', fakeAsync(() => {
@@ -132,7 +124,7 @@ describe('ChooseFileComponent', () => {
 
     expect(component.importWorkspace).toBeNull()
     expect(component.importError).toBeFalse()
-    expect(component.validationErrorCause).toEqual('')
+    expect(component.validationErrorCause).toBeUndefined()
   })
 
   describe('isWorkspaceImportValid', () => {
@@ -206,7 +198,7 @@ describe('ChooseFileComponent', () => {
         }
       }
       expect(component.isWorkspaceImportValid(obj, mockData)).toBeTrue()
-      expect(component.validationErrorCause).toBe('')
+      expect(component.validationErrorCause).toBeUndefined()
     })
 
     it('should return false when a menu item is missing a key', () => {
@@ -227,6 +219,26 @@ describe('ChooseFileComponent', () => {
       }
       expect(component.isWorkspaceImportValid(obj, mockData)).toBeFalse()
       expect(component.validationErrorCause).toContain('Menu item key missing')
+    })
+
+    it('should return false when a menu item is missing a name', () => {
+      const obj = {
+        workspaces: {
+          key1: {
+            name: 'Name',
+            displayName: 'Name Display',
+            theme: 'theme',
+            baseUrl: '/url',
+            menu: {
+              menu: {
+                menuItems: [{ key: 'Key 1', position: 0, disabled: false, external: false }]
+              }
+            }
+          }
+        }
+      }
+      expect(component.isWorkspaceImportValid(obj, mockData)).toBeFalse()
+      expect(component.validationErrorCause).toContain('Menu item name missing')
     })
 
     it('should return false when a menu item has an invalid position', () => {
