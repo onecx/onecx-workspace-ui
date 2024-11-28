@@ -50,7 +50,7 @@
     "@ngneat/until-destroy": "^10.0.0",
     "@ngrx/effects": "^18.0.1",
     "@ngrx/router-store": "^18.0.1",
-    "@ngx-translate/core": "^15.0.0",
+    "@ngx-translate/core": "^16.0.3",
     "@ngx-translate/http-loader": "^8.0.0",
     "@onecx/accelerator": "^5.27.1",
     "@onecx/angular-accelerator": "^5.27.1",
