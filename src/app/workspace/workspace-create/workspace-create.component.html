@@ -18,65 +18,65 @@
           <input
             pInputText
             type="text"
-            id="ws_create_item_name"
+            id="ws_create_form_name"
             class="w-full pt-3 pb-2"
             formControlName="name"
             [pTooltip]="'WORKSPACE.TOOLTIPS.NAME' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
           />
-          <label class="ocx-required-label" for="ws_create_item_name"> {{ 'WORKSPACE.NAME' | translate }} </label>
+          <label class="ocx-required-label" for="ws_create_form_name"> {{ 'WORKSPACE.NAME' | translate }} </label>
         </span>
         <span class="p-float-label w-12 sm:w-7x" controlErrorAnchor>
           <input
             pInputText
             type="text"
-            id="ws_create_item_display_name"
+            id="ws_create_form_display_name"
             class="w-full pt-3 pb-2"
             formControlName="displayName"
             [pTooltip]="'WORKSPACE.TOOLTIPS.DISPLAY_NAME' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
           />
-          <label class="ocx-required-label" for="ws_create_item_display_name">
+          <label class="ocx-required-label" for="ws_create_form_display_name">
             {{ 'WORKSPACE.DISPLAY_NAME' | translate }}
           </label>
         </span>
       </div>
 
-      <div class="flex flex-row flex-wrap gap-3 justify-content-between align-items-center">
+      <div class="w-12 flex flex-row flex-wrap gap-3 justify-content-between">
         <span class="p-float-label w-12 sm:w-5x">
           <p-dropdown
-            id="ws_create_item_theme"
+            *ngIf="(themes$ | async) ?? [] as themes"
+            id="ws_create_form_theme"
             formControlName="theme"
-            styleClass="w-full"
-            [options]="(themes$ | async) || []"
+            styleClass="w-full input-field-correction"
+            (onClick)="onOpenThemes(themes)"
+            [options]="themes"
             [ariaLabel]="'WORKSPACE.THEME' | translate"
             [pTooltip]="'WORKSPACE.TOOLTIPS.THEME' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
           >
           </p-dropdown>
-          <label class="ocx-required-label" for="ws_create_item_theme"> {{ 'WORKSPACE.THEME' | translate }} </label>
+          <label class="ocx-required-label" for="ws_create_form_theme"> {{ 'WORKSPACE.THEME' | translate }} </label>
         </span>
-        <div class="p-inputgroup w-12 sm:w-7x" controlErrorAnchor>
-          <span class="p-float-label">
-            <p-dropdown
-              #inputHomePage
-              id="ws_create_form_home_page"
-              formControlName="homePage"
-              styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
-              [options]="mfeRList"
-              [editable]="true"
-              [ariaLabel]="'WORKSPACE.HOME_PAGE' | translate"
-              [pTooltip]="'WORKSPACE.TOOLTIPS.HOME_PAGE' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            >
-            </p-dropdown>
-            <label for="ws_create_form_home_page"> {{ 'WORKSPACE.HOME_PAGE' | translate }} </label>
-          </span>
-        </div>
+        <span class="p-float-label w-12 sm:w-7x">
+          <p-dropdown
+            *ngIf="(productPaths$ | async) ?? [] as paths"
+            id="ws_create_form_home_page"
+            formControlName="homePage"
+            styleClass="w-full input-field-correction"
+            (onClick)="onOpenProductPathes(paths)"
+            [options]="paths"
+            [ariaLabel]="'WORKSPACE.HOME_PAGE' | translate"
+            [pTooltip]="'WORKSPACE.TOOLTIPS.HOME_PAGE' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          >
+          </p-dropdown>
+          <label for="ws_create_form_home_page"> {{ 'WORKSPACE.HOME_PAGE' | translate }} </label>
+        </span>
       </div>
 
       <div>
@@ -84,23 +84,23 @@
           <input
             pInputText
             type="text"
-            id="ws_create_item_baseUrl"
+            id="ws_create_form_baseUrl"
             class="w-full pt-3 pb-2"
             formControlName="baseUrl"
             [pTooltip]="'WORKSPACE.TOOLTIPS.BASE_URL' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
           />
-          <label class="ocx-required-label" for="ws_create_item_baseUrl"> {{ 'WORKSPACE.BASE_URL' | translate }}</label>
+          <label class="ocx-required-label" for="ws_create_form_baseUrl"> {{ 'WORKSPACE.BASE_URL' | translate }}</label>
         </span>
-        <label class="ocx-control-hint block mt-1" for="ws_create_item_baseUrl">
-          {{ ('VALIDATION.HINTS.FORMAT_URL' | translate) + urlPattern }}
+        <label class="ocx-control-hint block mt-1" for="ws_create_form_baseUrl">
+          {{ ('VALIDATION.HINTS.FORMAT_URL' | translate) + '/base-path-to-workspace' }}
         </label>
       </div>
 
       <div class="flex flex-wrap sm:flex-nowrap align-items-center row-gap-2 column-gap-4">
         <app-image-container
-          [id]="'ws_create_item_logo_image'"
+          [id]="'ws_create_form_logo_image'"
           [imageUrl]="fetchingLogoUrl"
           [small]="true"
         ></app-image-container>
@@ -108,7 +108,7 @@
           <input
             pInputText
             type="text"
-            id="ws_create_item_logo"
+            id="ws_create_form_logo"
             class="w-full pt-3 pb-2"
             formControlName="logoUrl"
             (blur)="inputChange($event)"
@@ -116,7 +116,7 @@
             tooltipPosition="top"
             tooltipEvent="hover"
           />
-          <label for="ws_create_item_logo"> {{ 'IMAGE.LOGO_URL' | translate }} </label>
+          <label for="ws_create_form_logo"> {{ 'IMAGE.LOGO_URL' | translate }} </label>
         </span>
       </div>
 
@@ -125,14 +125,14 @@
           <input
             pInputText
             type="text"
-            id="ws_create_item_footerLabel"
+            id="ws_create_form_footerLabel"
             class="w-full pt-3 pb-2"
             formControlName="footerLabel"
             [pTooltip]="'WORKSPACE.TOOLTIPS.FOOTER_LABEL' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
           />
-          <label for="ws_create_item_footerLabel"> {{ 'WORKSPACE.FOOTER_LABEL' | translate }} </label>
+          <label for="ws_create_form_footerLabel"> {{ 'WORKSPACE.FOOTER_LABEL' | translate }} </label>
         </span>
       </div>
 
@@ -143,13 +143,13 @@
             pInputTextarea
             autoresize="true"
             rows="4"
-            id="ws_create_item_description"
+            id="ws_create_form_description"
             formControlName="description"
             [pTooltip]="'WORKSPACE.TOOLTIPS.DESCRIPTION' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
           ></textarea>
-          <label for="ws_create_item_description"> {{ 'WORKSPACE.DESCRIPTION' | translate }} </label>
+          <label for="ws_create_form_description"> {{ 'WORKSPACE.DESCRIPTION' | translate }} </label>
         </span>
       </div>
     </div>

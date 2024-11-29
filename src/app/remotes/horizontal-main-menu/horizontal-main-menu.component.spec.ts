@@ -23,7 +23,6 @@ describe('OneCXHorizontalMainMenuComponent', () => {
     const fixture = TestBed.createComponent(OneCXHorizontalMainMenuComponent)
     const component = fixture.componentInstance
     fixture.detectChanges()
-
     return { fixture, component }
   }
 
@@ -40,11 +39,8 @@ describe('OneCXHorizontalMainMenuComponent', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        {
-          provide: BASE_URL,
-          useValue: baseUrlSubject
-        },
-        provideRouter([{ path: 'admin/welcome', component: OneCXHorizontalMainMenuComponent }])
+        provideRouter([{ path: 'admin/welcome', component: OneCXHorizontalMainMenuComponent }]),
+        { provide: BASE_URL, useValue: baseUrlSubject }
       ]
     })
       .overrideComponent(OneCXHorizontalMainMenuComponent, {
