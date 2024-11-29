@@ -2,7 +2,7 @@ import { ComponentHarness } from '@angular/cdk/testing'
 import { MenuItemWithIconHarness } from '@onecx/angular-testing'
 
 class AvatarMenuItemHarness extends MenuItemWithIconHarness {
-  static override hostSelector = 'li>a'
+  static override readonly hostSelector = 'li>a'
 }
 
 export class OneCXUserAvatarMenuHarness extends ComponentHarness {
