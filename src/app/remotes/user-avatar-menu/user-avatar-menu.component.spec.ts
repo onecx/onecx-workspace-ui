@@ -216,7 +216,7 @@ describe('OneCXUserAvatarMenuComponent', () => {
       )
     })
 
-    xit('should render menu in correct positions', async () => {
+    it('should render menu in correct positions', async () => {
       const userProfileMenu = {
         workspaceName: 'test-workspace',
         menu: [
@@ -258,7 +258,7 @@ describe('OneCXUserAvatarMenuComponent', () => {
       expect(await menuItems[2].getText()).toEqual('Log out')
     })
 
-    xit('should use translations whenever i18n translation is provided', async () => {
+    it('should use translations whenever i18n translation is provided', async () => {
       menuItemApiSpy.getMenuItems.and.returnValue(
         of({
           workspaceName: 'test-workspace',
@@ -291,7 +291,7 @@ describe('OneCXUserAvatarMenuComponent', () => {
       expect(await menuItems[0].getText()).toEqual('English personal info')
     })
 
-    xit('should display icon if provided', async () => {
+    it('should display icon if provided', async () => {
       menuItemApiSpy.getMenuItems.and.returnValue(
         of({
           workspaceName: 'test-workspace',
@@ -322,7 +322,7 @@ describe('OneCXUserAvatarMenuComponent', () => {
       expect(await menuItems[0].hasIcon(PrimeIcons.HOME)).toBeTrue()
     })
 
-    xit('should use routerLink for local urls', async () => {
+    it('should use routerLink for local urls', async () => {
       menuItemApiSpy.getMenuItems.and.returnValue(
         of({
           workspaceName: 'test-workspace',
@@ -354,7 +354,7 @@ describe('OneCXUserAvatarMenuComponent', () => {
       expect(router.url).toBe('/admin/user-profile')
     })
 
-    xit('should use href for external urls', async () => {
+    it('should use href for external urls', async () => {
       menuItemApiSpy.getMenuItems.and.returnValue(
         of({
           workspaceName: 'test-workspace',
@@ -383,7 +383,7 @@ describe('OneCXUserAvatarMenuComponent', () => {
       expect(await menuItems[0].getLink()).toBe('https://www.google.com/')
     })
 
-    xit('should only show logout on failed menu fetch call', async () => {
+    it('should only show logout on failed menu fetch call', async () => {
       menuItemApiSpy.getMenuItems.and.returnValue(throwError(() => {}))
 
       const { avatarMenuHarness } = await setUpWithHarnessAndInit([])
@@ -392,7 +392,7 @@ describe('OneCXUserAvatarMenuComponent', () => {
       expect(await menuItems[0].getText()).toEqual('Log out')
     })
 
-    xit('should have correct icon for logout', async () => {
+    it('should have correct icon for logout', async () => {
       menuItemApiSpy.getMenuItems.and.returnValue(of({ workspaceName: 'workspace', menu: [] } as any))
       const { avatarMenuHarness } = await setUpWithHarness()
       const menuItems = await avatarMenuHarness.getMenuItems()

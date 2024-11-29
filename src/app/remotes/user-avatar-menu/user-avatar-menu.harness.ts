@@ -1,12 +1,16 @@
 import { ComponentHarness } from '@angular/cdk/testing'
 import { MenuItemWithIconHarness } from '@onecx/angular-testing'
 
+class AvatarMenuItemHarness extends MenuItemWithIconHarness {
+  static override hostSelector = 'li>a'
+}
+
 export class OneCXUserAvatarMenuHarness extends ComponentHarness {
   static readonly hostSelector = 'app-user-avatar-menu'
 
   public getUserAvatarButton = this.locatorFor('#ws_user_avatar_menu_action')
 
-  public getMenuItems = this.locatorForAll(MenuItemWithIconHarness)
+  public getMenuItems = this.locatorForAll(AvatarMenuItemHarness)
 
   async getUserAvatarButtonId(): Promise<string | null> {
     return await (await this.getUserAvatarButton()).getAttribute('id')
