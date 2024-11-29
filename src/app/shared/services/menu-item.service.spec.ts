@@ -89,8 +89,7 @@ describe('MenuItemService', () => {
         icon: 'pi pi-star',
         routerLink: '/item1',
         items: undefined,
-        url: undefined,
-        routerLinkActiveOptions: { exact: true }
+        url: undefined
       },
       {
         id: '2',
@@ -98,8 +97,7 @@ describe('MenuItemService', () => {
         icon: 'pi pi-check',
         routerLink: undefined,
         items: undefined,
-        url: 'http://external.com',
-        routerLinkActiveOptions: { exact: true }
+        url: 'http://external.com'
       }
     ]
     const result = service.constructMenuItems(input, 'en')
@@ -138,8 +136,7 @@ describe('MenuItemService', () => {
         icon: 'pi pi-star',
         routerLink: '/item1?param=[[DONTREPLACEME]]',
         items: undefined,
-        url: undefined,
-        routerLinkActiveOptions: { exact: true }
+        url: undefined
       },
       {
         id: '2',
@@ -147,8 +144,7 @@ describe('MenuItemService', () => {
         icon: 'pi pi-check',
         routerLink: undefined,
         items: undefined,
-        url: 'http://external.com?id=2',
-        routerLinkActiveOptions: { exact: true }
+        url: 'http://external.com?id=2'
       }
     ]
     const result = service.constructMenuItems(input, 'en')
@@ -189,8 +185,7 @@ describe('MenuItemService', () => {
         icon: 'pi pi-star',
         routerLink: '/item1?param=[[DONTREPLACEME]]',
         items: undefined,
-        url: undefined,
-        routerLinkActiveOptions: { exact: true }
+        url: undefined
       },
       {
         id: '2',
@@ -198,8 +193,7 @@ describe('MenuItemService', () => {
         icon: 'pi pi-check',
         routerLink: undefined,
         items: undefined,
-        url: 'http://external.com?id=1',
-        routerLinkActiveOptions: { exact: true }
+        url: 'http://external.com?id=1'
       }
     ]
     sessionStorage.clear()
@@ -241,8 +235,7 @@ describe('MenuItemService', () => {
         icon: 'pi pi-star',
         routerLink: '/item1?param=[[DONTREPLACEME]]',
         items: undefined,
-        url: undefined,
-        routerLinkActiveOptions: { exact: true }
+        url: undefined
       },
       {
         id: '2',
@@ -250,8 +243,7 @@ describe('MenuItemService', () => {
         icon: 'pi pi-check',
         routerLink: undefined,
         items: undefined,
-        url: 'http://external.com?id=',
-        routerLinkActiveOptions: { exact: true }
+        url: 'http://external.com?id='
       }
     ]
     sessionStorage.clear()
@@ -294,8 +286,7 @@ describe('MenuItemService', () => {
         icon: 'pi pi-star',
         routerLink: '/item1?param=[[DONTREPLACEME]]',
         items: undefined,
-        url: undefined,
-        routerLinkActiveOptions: { exact: true }
+        url: undefined
       },
       {
         id: '2',
@@ -303,8 +294,7 @@ describe('MenuItemService', () => {
         icon: 'pi pi-check',
         routerLink: undefined,
         items: undefined,
-        url: 'http://external.com?id=2&mykey=my-sessionstorage-key',
-        routerLinkActiveOptions: { exact: true }
+        url: 'http://external.com?id=2&mykey=my-sessionstorage-key'
       }
     ]
     const result = service.constructMenuItems(input, 'en')
@@ -334,12 +324,48 @@ describe('MenuItemService', () => {
         external: false,
         url: '/item1',
         badge: 'star',
-        children: [],
-        i18n: { en: 'Item 1 EN' }
+        i18n: { en: 'Item 1 EN' },
+        children: [
+          {
+            key: '5',
+            name: 'Item 5',
+            position: 3,
+            disabled: false,
+            external: false,
+            url: '/item5',
+            badge: 'check',
+            children: [],
+            i18n: { en: 'Item 5 EN' }
+          },
+          {
+            key: '3',
+            name: 'Item 3',
+            disabled: false,
+            external: true,
+            badge: 'check',
+            children: [],
+            i18n: { en: 'Item 3 EN' }
+          },
+          {
+            key: '4',
+            name: 'Item 4',
+            position: 2,
+            disabled: false,
+            external: false,
+            url: '/item4',
+            badge: 'check',
+            children: [],
+            i18n: { en: 'Item 4 EN' }
+          }
+        ]
       }
     ]
     const result = service.constructMenuItems(input, 'en')
     expect(result[0].id).toBe('1')
+    expect(result[0].items?.length).toBe(3)
+    expect(result[0].items?.at(0)?.id).toBe('3')
+    expect(result[0].items?.at(1)?.id).toBe('4')
+    expect(result[0].items?.at(2)?.id).toBe('5')
     expect(result[1].id).toBe('2')
   })
 
@@ -483,100 +509,13 @@ describe('MenuItemService', () => {
             icon: 'pi pi-child',
             routerLink: '/child',
             items: undefined,
-            url: undefined,
-            routerLinkActiveOptions: { exact: true }
+            url: undefined
           }
         ],
-        url: undefined,
-        routerLinkActiveOptions: { exact: true }
+        url: undefined
       }
     ]
     const result = service.constructMenuItems(input, 'en')
-    expect(result).toEqual(expected)
-  })
-
-  it('should expand parents of current mfe item', () => {
-    const input: UserWorkspaceMenuItem[] = [
-      {
-        key: '1',
-        name: 'Parent Item',
-        position: 1,
-        disabled: false,
-        external: false,
-        children: [
-          {
-            key: '1.1',
-            name: 'Second parent Item',
-            position: 1,
-            disabled: false,
-            external: false,
-            children: [
-              {
-                key: '1.1.1',
-                name: 'Child Item',
-                position: 1,
-                disabled: false,
-                external: false,
-                url: '/admin/mfe',
-                children: []
-              },
-              {
-                key: '1.1.2',
-                name: 'Second Child Item',
-                position: 2,
-                disabled: false,
-                external: false,
-                url: 'admin/otherMfe/',
-                children: []
-              }
-            ]
-          }
-        ]
-      }
-    ]
-    const expected: MenuItem[] = [
-      {
-        id: '1',
-        label: '',
-        expanded: true,
-        icon: undefined,
-        routerLink: undefined,
-        url: undefined,
-        routerLinkActiveOptions: { exact: true },
-        items: [
-          {
-            id: '1.1',
-            label: '',
-            expanded: true,
-            icon: undefined,
-            routerLink: undefined,
-            url: undefined,
-            routerLinkActiveOptions: { exact: true },
-            items: [
-              {
-                id: '1.1.1',
-                label: '',
-                items: undefined,
-                routerLink: '/admin/mfe',
-                url: undefined,
-                icon: undefined,
-                routerLinkActiveOptions: { exact: true }
-              },
-              {
-                id: '1.1.2',
-                label: '',
-                items: undefined,
-                routerLink: 'admin/otherMfe/',
-                url: undefined,
-                icon: undefined,
-                routerLinkActiveOptions: { exact: true }
-              }
-            ]
-          }
-        ]
-      }
-    ]
-    const result = service.constructMenuItems(input, 'en', '/admin/mfe')
     expect(result).toEqual(expected)
   })
 
@@ -598,5 +537,48 @@ describe('MenuItemService', () => {
     const resultFr = service.constructMenuItems(input, 'fr')
     expect(resultEn[0].label).toBe('Item 1 EN')
     expect(resultFr[0].label).toBe('Item 1 FR')
+  })
+
+  it('should select closest item as best match', () => {
+    const items: MenuItem[] = [
+      {
+        label: 'Parent1',
+        items: [
+          {
+            label: 'Workspace',
+            routerLink: 'admin/workspace'
+          },
+          {
+            label: 'User search',
+            routerLink: 'admin/user/search/'
+          },
+          {
+            label: 'Help',
+            routerLink: 'admin/help'
+          }
+        ]
+      },
+      {
+        label: 'Parent2',
+        items: [
+          {
+            label: 'Tenant',
+            routerLink: 'admin/tenant'
+          },
+          {
+            label: 'MyPage',
+            routerLink: 'admin/help/my-page'
+          }
+        ]
+      }
+    ]
+
+    const result = service.findActiveItemBestMatch(items, '/admin/help/my-page')
+
+    expect(result).toBeDefined()
+    expect(result?.item.label).toBe('MyPage')
+    expect(result?.matchedSegments).toEqual(3)
+    expect(result?.parents.length).toBe(1)
+    expect(result?.parents[0].label).toBe('Parent2')
   })
 })
