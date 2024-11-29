@@ -1,17 +1,18 @@
 import { TestBed } from '@angular/core/testing'
-import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
+import { CommonModule } from '@angular/common'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { CommonModule } from '@angular/common'
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
+import { provideRouter, Router, RouterModule } from '@angular/router'
+import { ReplaySubject, of, throwError } from 'rxjs'
+import { TranslateTestingModule } from 'ngx-translate-testing'
+
 import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
 import { AppStateService } from '@onecx/angular-integration-interface'
-import { ReplaySubject, of } from 'rxjs'
-import { TranslateTestingModule } from 'ngx-translate-testing'
+
 import { MenuItemAPIService } from 'src/app/shared/generated'
 import { OneCXFooterMenuComponent } from './footer-menu.component'
 import { OneCXFooterMenuHarness } from './footer-menu.harness'
-import { RouterTestingModule } from '@angular/router/testing'
-import { Router, RouterModule } from '@angular/router'
 
 describe('OneCXFooterMenuComponent', () => {
   const menuItemApiSpy = jasmine.createSpyObj<MenuItemAPIService>('MenuItemAPIService', ['getMenuItems'])
@@ -31,25 +32,16 @@ describe('OneCXFooterMenuComponent', () => {
       imports: [
         TranslateTestingModule.withTranslations({
           en: require('../../../assets/i18n/en.json')
-        }).withDefaultLanguage('en'),
-        RouterTestingModule.withRoutes([
-          {
-            path: 'contact',
-            component: {} as any
-          },
-          {
-            path: 'contact2',
-            component: {} as any
-          }
-        ])
+        }).withDefaultLanguage('en')
       ],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        {
-          provide: BASE_URL,
-          useValue: baseUrlSubject
-        }
+        { provide: BASE_URL, useValue: baseUrlSubject },
+        provideRouter([
+          { path: 'contact', component: {} as any },
+          { path: 'contact2', component: {} as any }
+        ])
       ]
     })
       .overrideComponent(OneCXFooterMenuComponent, {
@@ -198,5 +190,22 @@ describe('OneCXFooterMenuComponent', () => {
     expect(item).toBeTruthy()
     expect(await item?.text()).toEqual('Browser')
     expect(await item?.getAttribute('href')).toEqual('https://www.google.com/')
+  })
+
+  it('should return 0 menu items when unable to load them', async () => {
+    const appStateService = TestBed.inject(AppStateService)
+    spyOn(appStateService.currentWorkspace$, 'asObservable').and.returnValue(
+      of({
+        workspaceName: 'test-workspace'
+      }) as any
+    )
+    menuItemApiSpy.getMenuItems.and.returnValue(throwError(() => {}))
+
+    const { fixture, component } = setUp()
+    await component.ngOnInit()
+
+    const oneCXFooterMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXFooterMenuHarness)
+    const menuItems = await oneCXFooterMenuHarness.getMenuItems()
+    expect(menuItems.length).toEqual(0)
   })
 })

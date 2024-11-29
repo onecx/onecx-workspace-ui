@@ -113,9 +113,7 @@ describe('WorkspaceDetailComponent', () => {
 
     describe('onTabChange', () => {
       it('should set selectedTabIndex onChange', (done) => {
-        const event = {
-          index: 1
-        }
+        const event = { index: 1 }
         apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
         component.workspaceName = 'name'
 
@@ -123,7 +121,7 @@ describe('WorkspaceDetailComponent', () => {
 
         component.workspace$.subscribe({
           next: (data) => {
-            expect(data.resource).toEqual(workspace)
+            expect(data).toEqual(workspace)
             done()
           },
           error: done.fail
@@ -135,9 +133,7 @@ describe('WorkspaceDetailComponent', () => {
       })
 
       it('should set workspace for roles', () => {
-        const event = {
-          index: 3
-        }
+        const event = { index: 3 }
 
         component.onTabChange(event, component.workspace)
 
@@ -166,30 +162,32 @@ describe('WorkspaceDetailComponent', () => {
     })
   })
 
-  describe('search workspace Data', () => {
+  describe('search workspace Data and go to roles', () => {
     it('should getWorkspaceData onInit', (done) => {
       apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
       spyOn(component, 'prepareActionButtons')
+      spyOn(component, 'onTabChange')
       component.workspaceName = 'name'
+      component.uriFragment = 'roles'
 
       component.getWorkspace()
 
       component.workspace$.subscribe({
         next: (data) => {
-          expect(data.resource).toEqual(workspace)
+          expect(data).toEqual(workspace)
           done()
         },
         error: done.fail
       })
-      expect(component.isLoading).toBeFalsy()
+      expect(component.loading).toBeFalsy()
       expect(component.prepareActionButtons).toHaveBeenCalled()
+      expect(component.onTabChange).toHaveBeenCalled()
     })
 
     it('should display error msg if get api call fails', (done) => {
-      const err = {
-        status: '404'
-      }
-      apiServiceSpy.getWorkspaceByName.and.returnValue(throwError(() => err))
+      const errorResponse = { status: 404, statusText: 'Workspace not found' }
+      apiServiceSpy.getWorkspaceByName.and.returnValue(throwError(() => errorResponse))
+      spyOn(console, 'error')
 
       component.getWorkspace()
 
@@ -200,7 +198,8 @@ describe('WorkspaceDetailComponent', () => {
         error: done.fail
       })
 
-      expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + err.status + '.WORKSPACE')
+      expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + errorResponse.status + '.WORKSPACE')
+      expect(console.error).toHaveBeenCalledWith('getWorkspaceByName', errorResponse)
     })
   })
 
@@ -210,7 +209,7 @@ describe('WorkspaceDetailComponent', () => {
 
       component.onConfirmDeleteWorkspace()
 
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MESSAGE_OK' })
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.WORKSPACE.MESSAGE_OK' })
     })
 
     it('should delete workspace on onConfirmDeleteWorkspace: no workspace', () => {
@@ -219,21 +218,22 @@ describe('WorkspaceDetailComponent', () => {
 
       component.onConfirmDeleteWorkspace()
 
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MESSAGE_OK' })
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.WORKSPACE.MESSAGE_OK' })
     })
 
     it('should display error msg if delete api call fails', () => {
-      apiServiceSpy.deleteWorkspace.and.returnValue(throwError(() => new Error()))
+      const errorResponse = { status: 400, statusText: 'Error on deleting a workspace' }
+      apiServiceSpy.deleteWorkspace.and.returnValue(throwError(() => errorResponse))
+      spyOn(console, 'error')
 
       component.onConfirmDeleteWorkspace()
 
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({
-        summaryKey: 'ACTIONS.DELETE.MESSAGE_NOK'
-      })
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.WORKSPACE.MESSAGE_NOK' })
+      expect(console.error).toHaveBeenCalledWith('deleteWorkspace', errorResponse)
     })
   })
 
-  it('should display error if portalNotFound on export', () => {
+  it('should display error if workspaceNotFound on export', () => {
     component.workspace = undefined
 
     component.onExportWorkspace()
@@ -241,6 +241,22 @@ describe('WorkspaceDetailComponent', () => {
     expect(msgServiceSpy.error).toHaveBeenCalledWith({
       summaryKey: 'DIALOG.WORKSPACE.NOT_FOUND'
     })
+  })
+
+  it('should open export dialog', () => {
+    component.workspace = workspace
+
+    component.onExportWorkspace()
+
+    expect(component.workspaceExportVisible).toBeTrue()
+  })
+
+  it('should on product changes', () => {
+    component.workspace = workspace
+
+    component.onProductChanges()
+
+    expect(component.workspaceForSlots).toEqual(workspace)
   })
 
   describe('get logoUrl', () => {
@@ -261,7 +277,7 @@ describe('WorkspaceDetailComponent', () => {
 
   describe('test action buttons', () => {
     it('should have prepared action buttons onInit: close', () => {
-      apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))
+      apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
       component.ngOnInit()
       let actions: any = []
       component.actions$!.subscribe((act) => (actions = act))
@@ -286,7 +302,7 @@ describe('WorkspaceDetailComponent', () => {
     })
 
     it('should have prepared action buttons onInit: toggleEditMode', () => {
-      apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))
+      apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
       component.editMode = false
       component.ngOnInit()
       let actions: any = []
@@ -298,7 +314,7 @@ describe('WorkspaceDetailComponent', () => {
     })
 
     it('should have prepared action buttons onInit: update workspace props', () => {
-      apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))
+      apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
       component.workspacePropsComponent = new MockWorkspacePropsComponent() as unknown as WorkspacePropsComponent
       component.selectedTabIndex = 0
       component.ngOnInit()
@@ -311,7 +327,7 @@ describe('WorkspaceDetailComponent', () => {
     })
 
     it('should have prepared action buttons onInit: update workspace contact', () => {
-      apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))
+      apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
       component.workspaceContactComponent = new MockWorkspaceContactComponent() as unknown as WorkspaceContactComponent
       component.selectedTabIndex = 1
       component.ngOnInit()
@@ -324,7 +340,7 @@ describe('WorkspaceDetailComponent', () => {
     })
 
     it('should have prepared action buttons onInit: update workspace: default', () => {
-      apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))
+      apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
       component.selectedTabIndex = 99
       spyOn(console, 'error')
       component.ngOnInit()
@@ -337,7 +353,7 @@ describe('WorkspaceDetailComponent', () => {
     })
 
     it('should have prepared action buttons onInit: workspaceExportVisible', () => {
-      apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))
+      apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
       spyOn(component, 'onExportWorkspace')
 
       component.ngOnInit()
@@ -346,11 +362,12 @@ describe('WorkspaceDetailComponent', () => {
 
       actions[4].actionCallback()
 
+      expect(actions[4].icon).toEqual('pi pi-download')
       expect(component.onExportWorkspace).toHaveBeenCalled()
     })
 
     it('should have prepared action buttons onInit: toggleEditMode', () => {
-      apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))
+      apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
       const toggleEditModeSpy = spyOn<any>(component, 'toggleEditMode').and.callThrough()
       component.ngOnInit()
       let actions: any = []
@@ -362,7 +379,7 @@ describe('WorkspaceDetailComponent', () => {
     })
 
     it('should have prepared action buttons onInit: workspaceDeleteVisible', () => {
-      apiServiceSpy.getWorkspaceByName.and.returnValue(of([workspace]))
+      apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
       component.ngOnInit()
       let actions: any = []
       component.actions$!.subscribe((act) => (actions = act))
@@ -385,13 +402,14 @@ describe('WorkspaceDetailComponent', () => {
 
       expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_OK' })
       component.workspace$.subscribe((data) => {
-        expect(data).toEqual({ resource: workspace })
+        expect(data).toEqual(workspace)
         done()
       })
     })
 
     it('it should display error on update workspace', () => {
-      apiServiceSpy.updateWorkspace.and.returnValue(throwError(() => new Error()))
+      const errorResponse = { status: 400, statusText: 'Error on updating a workspace' }
+      apiServiceSpy.updateWorkspace.and.returnValue(throwError(() => errorResponse))
       component.selectedTabIndex = 99
       spyOn(console, 'error')
       component.ngOnInit()
@@ -401,6 +419,7 @@ describe('WorkspaceDetailComponent', () => {
       actions[3].actionCallback()
 
       expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_NOK' })
+      expect(console.error).toHaveBeenCalledWith('updateWorkspace', errorResponse)
     })
   })
 

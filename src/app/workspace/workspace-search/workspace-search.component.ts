@@ -11,7 +11,6 @@ import { getLocation } from '@onecx/accelerator'
 import {
   ImagesInternalAPIService,
   RefType,
-  SearchWorkspacesResponse,
   Workspace,
   WorkspaceAPIService,
   WorkspaceAbstract
@@ -24,14 +23,14 @@ import { bffImageUrl, limitText } from 'src/app/shared/utils'
   styleUrls: ['./workspace-search.component.scss']
 })
 export class WorkspaceSearchComponent implements OnInit {
-  public searchInProgress = false
+  public loading = false
   public exceptionKey: string | undefined = undefined
   public actions$: Observable<Action[]> | undefined
   public showCreateDialog = false
   public showImportDialog = false
   public limitText = limitText
 
-  public workspaces$!: Observable<SearchWorkspacesResponse>
+  public workspaces$!: Observable<Workspace[]>
   public viewMode: 'list' | 'grid' = 'grid'
   public filter: string | undefined
   public sortField = 'displayName'
@@ -56,14 +55,15 @@ export class WorkspaceSearchComponent implements OnInit {
   }
 
   public search(): void {
-    this.searchInProgress = true
+    this.loading = true
     this.workspaces$ = this.workspaceApi.searchWorkspaces({ searchWorkspacesRequest: {} }).pipe(
+      map((data) => (data?.stream ? data.stream.sort(this.sortWorkspacesByName) : [])),
       catchError((err) => {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.WORKSPACES'
         console.error('searchWorkspaces():', err)
-        return of({ stream: [] } as SearchWorkspacesResponse)
+        return of([] as Workspace[])
       }),
-      finalize(() => (this.searchInProgress = false))
+      finalize(() => (this.loading = false))
     )
   }
   public sortWorkspacesByName(a: WorkspaceAbstract, b: WorkspaceAbstract): number {

@@ -8,10 +8,10 @@ import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { of, throwError } from 'rxjs'
 
 import {
-  AUTH_SERVICE,
   AppStateService,
   createTranslateLoader,
-  PortalMessageService
+  PortalMessageService,
+  UserService
 } from '@onecx/portal-integration-angular'
 import { ImportResponseStatus, WorkspaceAPIService } from 'src/app/shared/generated'
 
@@ -45,7 +45,7 @@ describe('WorkspaceImportComponent', () => {
   let fixture: ComponentFixture<WorkspaceImportComponent>
   let mockActivatedRoute: ActivatedRoute
   const mockRouter = new MockRouter()
-  const mockAuthService = jasmine.createSpyObj('IAuthService', ['hasPermission'])
+  const mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let mockWindow: any
 
@@ -68,13 +68,13 @@ describe('WorkspaceImportComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
-        provideHttpClientTesting(),
         provideHttpClient(),
+        provideHttpClientTesting(),
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: Router, useValue: mockRouter },
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: WorkspaceAPIService, useValue: apiServiceSpy },
-        { provide: AUTH_SERVICE, useValue: mockAuthService }
+        { provide: UserService, useValue: mockUserService }
       ]
     }).compileComponents()
     msgServiceSpy.success.calls.reset()
@@ -131,22 +131,12 @@ describe('WorkspaceImportComponent', () => {
   it('should import a portal', () => {
     const response = {
       id: 'testString1',
-      workspaces: {
-        Updated: ImportResponseStatus.Updated
-      },
-      menus: {
-        Updated: ImportResponseStatus.Updated
-      }
+      workspaces: { Updated: ImportResponseStatus.Updated },
+      menus: { Updated: ImportResponseStatus.Updated }
     }
 
     apiServiceSpy.importWorkspaces.and.returnValue(of(response))
-    const workspaceSnap = {
-      workspaces: {
-        workspace: {
-          name: 'name'
-        }
-      }
-    }
+    const workspaceSnap = { workspaces: { workspace: { name: 'name' } } }
     component.importRequestDTO = workspaceSnap
     component.hasPermission = true
     component.confirmComponent = new MockConfirmComponent() as unknown as ConfirmComponent
@@ -165,22 +155,12 @@ describe('WorkspaceImportComponent', () => {
   it('should update a portal', () => {
     const response = {
       id: 'testString1',
-      workspaces: {
-        Updated: ImportResponseStatus.Updated
-      },
-      menus: {
-        Updated: ImportResponseStatus.Updated
-      }
+      workspaces: { Updated: ImportResponseStatus.Updated },
+      menus: { Updated: ImportResponseStatus.Updated }
     }
 
     apiServiceSpy.importWorkspaces.and.returnValue(of(response))
-    const workspaceSnap = {
-      workspaces: {
-        workspace: {
-          name: 'name'
-        }
-      }
-    }
+    const workspaceSnap = { workspaces: { workspace: { name: 'name' } } }
     component.importRequestDTO = workspaceSnap
     component.hasPermission = true
     component.confirmComponent = new MockConfirmComponent() as unknown as ConfirmComponent
@@ -198,12 +178,8 @@ describe('WorkspaceImportComponent', () => {
   it('should update a portal with new base url', () => {
     const response = {
       id: 'testString1',
-      workspaces: {
-        Updated: ImportResponseStatus.Updated
-      },
-      menus: {
-        Updated: ImportResponseStatus.Updated
-      }
+      workspaces: { Updated: ImportResponseStatus.Updated },
+      menus: { Updated: ImportResponseStatus.Updated }
     }
 
     apiServiceSpy.importWorkspaces.and.returnValue(of(response))
@@ -241,40 +217,27 @@ describe('WorkspaceImportComponent', () => {
   })
 
   it('should display error msg if api call fails', () => {
-    const workspaceSnap = {
-      workspaces: {
-        workspace: {
-          name: 'name'
-        }
-      }
-    }
+    const errorResponse = { status: 400, statusText: 'Error on import workspaces' }
+    const workspaceSnap = { workspaces: { workspace: { name: 'name' } } }
     component.importRequestDTO = workspaceSnap
-    apiServiceSpy.importWorkspaces.and.returnValue(throwError(() => new Error()))
+    apiServiceSpy.importWorkspaces.and.returnValue(throwError(() => errorResponse))
     component.hasPermission = true
+    spyOn(console, 'error')
 
     component.importWorkspace()
 
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'WORKSPACE_IMPORT.IMPORT_NOK' })
+    expect(console.error).toHaveBeenCalledWith('importWorkspaces', errorResponse)
   })
 
   it('should display error msg if response status is error', () => {
     const response = {
       id: 'testString1',
-      workspaces: {
-        Updated: ImportResponseStatus.Error
-      },
-      menus: {
-        Updated: ImportResponseStatus.Updated
-      }
+      workspaces: { Updated: ImportResponseStatus.Error },
+      menus: { Updated: ImportResponseStatus.Updated }
     }
     apiServiceSpy.importWorkspaces.and.returnValue(of(response))
-    const workspaceSnap = {
-      workspaces: {
-        workspace: {
-          name: 'name'
-        }
-      }
-    }
+    const workspaceSnap = { workspaces: { workspace: { name: 'name' } } }
     component.importRequestDTO = workspaceSnap
     component.hasPermission = true
 
@@ -285,14 +248,7 @@ describe('WorkspaceImportComponent', () => {
 
   describe('next', () => {
     it('should set importRequestDTO on next when activeIndex is 0 (upload), and themeImportData valid', () => {
-      const workspaceSnap: any = {
-        workspaces: {
-          workspace: {
-            name: 'name',
-            baseUrl: 'url'
-          }
-        }
-      }
+      const workspaceSnap: any = { workspaces: { workspace: { name: 'name', baseUrl: 'url' } } }
       component.importRequestDTO = workspaceSnap
       component.activeIndex = 0
 

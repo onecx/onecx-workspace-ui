@@ -1,4 +1,20 @@
+<p-message
+  *ngIf="wpLoading || sLoading"
+  id="ws_slots_message_loading"
+  severity="info"
+  styleClass="m-2 p-2"
+  [text]="'ACTIONS.LOADING' | translate"
+></p-message>
+<p-message
+  *ngIf="exceptionKey"
+  id="ws_slots_message_error"
+  severity="error"
+  styleClass="m-2 p-2"
+  [text]="exceptionKey | translate"
+></p-message>
+
 <p-dataView
+  *ngIf="!exceptionKey"
   id="ws_slots_dataview"
   [value]="wSlots"
   [paginator]="true"
@@ -92,11 +108,21 @@
             [id]="'ws_slots_grid_data_row_' + i + '_action_delete'"
             class="card-badge-right badge-1 card-primary-color p-1 pi pi-trash button-icon-only"
             (click)="onDeleteSlot($event, slot)"
-            [attr.aria-label]="'ACTIONS.DELETE.SLOT' | translate"
-            [pTooltip]="'ACTIONS.DELETE.SLOT' | translate"
+            [attr.aria-label]="'ACTIONS.DELETE.SLOT.LABEL' | translate"
+            [pTooltip]="'ACTIONS.DELETE.SLOT.LABEL' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
           ></a>
+          <span
+            *ngIf="!slot.new && hasDeletePermission && slot.components.length > 0"
+            [id]="'ws_slots_grid_data_row_' + i + '_action_delete_blocked'"
+            class="card-badge-right badge-1 card-primary-color p-1 pi pi-trash cursor-auto"
+            [attr.aria-label]="'ACTIONS.DELETE.SLOT.LABEL.COMPONENTS' | translate"
+            [pTooltip]="'ACTIONS.DELETE.SLOT.LABEL.COMPONENTS' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          ></span>
+          <!-- left badges -->
           <span
             *ngIf="slot.components"
             [id]="'ws_slots_grid_data_row_' + i + '_components'"
@@ -107,7 +133,6 @@
             tooltipEvent="hover"
             >{{ slot.components.length }}</span
           >
-          <!-- left badges -->
           <span
             *ngIf="slot.changes && !slot.deprecated"
             [id]="'ws_slots_grid_data_row_' + i + '_changed'"

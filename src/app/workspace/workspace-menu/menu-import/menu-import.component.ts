@@ -48,7 +48,6 @@ export class MenuImportComponent implements OnInit {
         const menuItemStructure: MenuSnapshot = JSON.parse(text) as MenuSnapshot
         if (this.isMenuImportRequestDTO2(menuItemStructure)) {
           this.menuItemStructure = menuItemStructure
-          console.info('imported menu structure', this.menuItemStructure)
         } else {
           console.error('imported menu parse error', menuItemStructure)
           this.menuItemStructure = undefined
@@ -78,9 +77,9 @@ export class MenuImportComponent implements OnInit {
             this.msgService.success({ summaryKey: 'DIALOG.MENU.IMPORT.UPLOAD_OK' })
             this.onClose(true)
           },
-          error: (err: any) => {
+          error: (err) => {
             this.msgService.error({ summaryKey: 'DIALOG.MENU.IMPORT.UPLOAD_NOK' })
-            console.error(err)
+            console.error('importMenuByWorkspaceName', err)
           }
         })
     }

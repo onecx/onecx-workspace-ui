@@ -1,6 +1,6 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
-import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { provideHttpClient } from '@angular/common/http'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { provideRouter } from '@angular/router'
 import { TranslateTestingModule } from 'ngx-translate-testing'
@@ -50,8 +50,8 @@ describe('MenuPreviewComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
-        provideHttpClientTesting(),
         provideHttpClient(),
+        provideHttpClientTesting(),
         provideRouter([{ path: '', component: MenuPreviewComponent }]),
         { provide: MenuTreeService, useValue: treeServiceSpy },
         { provide: MenuStateService, useValue: stateServiceSpy },
@@ -164,15 +164,18 @@ describe('MenuPreviewComponent', () => {
   })
 
   it('should update menu items onDrop: return before pushing items', () => {
+    const errorResponse = { status: 400, statusText: 'Error on change parent' }
     const event = {
       dragNode: { key: 'draggedNodeId', parent: { key: 'oldParentNodeId' }, data: items[0] },
       dropNode: { key: 'newParentNodeId', children: [{ key: 'draggedNodeId' }], parent: { key: 'parent key' } }
     }
-    menuApiService.updateMenuItemParent.and.returnValue(throwError(() => new Error()))
+    menuApiService.updateMenuItemParent.and.returnValue(throwError(() => errorResponse))
+    spyOn(console, 'error')
 
     component.onDrop(event)
 
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
+    expect(console.error).toHaveBeenCalledWith('updateMenuItemParent', errorResponse)
   })
 
   it('should set treeExpansionState onHierarchyViewChange', () => {

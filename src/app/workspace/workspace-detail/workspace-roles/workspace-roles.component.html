@@ -1,3 +1,18 @@
+<p-message
+  *ngIf="iamLoading || wsLoading"
+  id="ws_roles_message_loading"
+  severity="info"
+  styleClass="m-2 p-2"
+  [text]="'ACTIONS.LOADING' | translate"
+></p-message>
+<p-message
+  *ngIf="exceptionKey"
+  id="ws_roles_message_error"
+  severity="error"
+  styleClass="m-2 p-2"
+  [text]="exceptionKey | translate"
+></p-message>
+
 <p-dataView
   id="ws_roles_dataview"
   [value]="roles"
@@ -15,7 +30,9 @@
   <ng-template pTemplate="header">
     <div class="sm:ml-1 flex flex-wrap align-items-center column-gap-4 row-gap-1">
       <!-- Quick Filter -->
+      <div *ngIf="!iamAvailable" id="ws_roles_quick_filter_placeholder"></div>
       <div
+        *ngIf="iamAvailable"
         class="slim-selectbutton filter-selectbutton"
         [attr.aria-label]="'DIALOG.ROLE.QUICK_FILTER.TOOLTIP' | translate"
         [pTooltip]="'DIALOG.ROLE.QUICK_FILTER.TOOLTIP' | translate"
@@ -147,8 +164,8 @@
             class="card-badge-right badge-1 p-1 pi pi-trash button-icon-only"
             [class.card-primary-color]="role.isWorkspaceRole"
             (click)="onDeleteRole($event, role)"
-            [attr.aria-label]="'ACTIONS.DELETE.ROLE' | translate"
-            [pTooltip]="'ACTIONS.DELETE.ROLE' | translate"
+            [attr.aria-label]="'ACTIONS.DELETE.ROLE.HEADER' | translate"
+            [pTooltip]="'ACTIONS.DELETE.ROLE.HEADER' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
           ></a>

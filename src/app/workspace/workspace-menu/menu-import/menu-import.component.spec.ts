@@ -1,15 +1,16 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { TranslateTestingModule } from 'ngx-translate-testing'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { provideRouter } from '@angular/router'
 import { of, throwError } from 'rxjs'
+import { TranslateTestingModule } from 'ngx-translate-testing'
 import { FileSelectEvent } from 'primeng/fileupload'
 
-import { MenuImportComponent } from './menu-import.component'
-import { MenuItemAPIService, MenuSnapshot } from 'src/app/shared/generated'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
+
+import { MenuItemAPIService, MenuSnapshot } from 'src/app/shared/generated'
+import { MenuImportComponent } from './menu-import.component'
 
 const menuSnapshot: MenuSnapshot = {
   menu: {
@@ -42,8 +43,8 @@ describe('MenuImportComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
-        provideHttpClientTesting(),
         provideHttpClient(),
+        provideHttpClientTesting(),
         provideRouter([{ path: '', component: MenuImportComponent }]),
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: MenuItemAPIService, useValue: menuApiServiceSpy }
@@ -115,7 +116,7 @@ describe('MenuImportComponent', () => {
   })
 
   it('should prepare menu import from a valid file onImportMenuSelect: not json', (done) => {
-    const invalidJson = 'json'
+    const invalidJson = 'bla'
     const mockFile = new File([invalidJson], 'test.json', { type: 'application/json' })
     spyOn(mockFile, 'text').and.returnValue(Promise.resolve(invalidJson))
     const fileList = { 0: mockFile, length: 1, item: () => mockFile }
@@ -125,10 +126,7 @@ describe('MenuImportComponent', () => {
 
     setTimeout(() => {
       expect(component.menuImportError).toBeTrue()
-      expect(console.error).toHaveBeenCalledWith(
-        'imported menu parse error',
-        new SyntaxError('Unexpected token \'j\', "json" is not valid JSON')
-      )
+      expect(console.error).toHaveBeenCalled()
       done()
     }, 0)
   })
@@ -148,8 +146,10 @@ describe('MenuImportComponent', () => {
   })
 
   it('should display error if import api call fails', () => {
-    menuApiServiceSpy.importMenuByWorkspaceName.and.returnValue(throwError(() => new Error()))
+    const errorResponse = { status: 400, statusText: 'Error on import menu items' }
+    menuApiServiceSpy.importMenuByWorkspaceName.and.returnValue(throwError(() => errorResponse))
     spyOn(component.importEmitter, 'emit')
+    spyOn(console, 'error')
     component.workspaceName = 'wsName'
     component['menuItemStructure'] = menuSnapshot
 
@@ -157,5 +157,6 @@ describe('MenuImportComponent', () => {
 
     expect(component.importEmitter.emit).toHaveBeenCalled()
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.MENU.IMPORT.UPLOAD_NOK' })
+    expect(console.error).toHaveBeenCalledWith('importMenuByWorkspaceName', errorResponse)
   })
 })

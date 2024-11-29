@@ -2,11 +2,12 @@ import { NO_ERRORS_SCHEMA, Renderer2, SimpleChanges } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { of, throwError } from 'rxjs'
 import { ActivatedRoute, provideRouter } from '@angular/router'
+import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { ReactiveFormsModule, FormBuilder, FormArray, FormControl } from '@angular/forms'
 
-import { MfeInfo, PortalMessageService, AppStateService } from '@onecx/portal-integration-angular'
+import { AppStateService, MfeInfo, PortalMessageService, UserService } from '@onecx/portal-integration-angular'
 import {
   Product,
   WorkspaceProductAPIService,
@@ -15,11 +16,11 @@ import {
   Microfrontend,
   MicrofrontendType,
   SlotPS,
-  SlotAPIService
+  SlotAPIService,
+  UIEndpoint
 } from 'src/app/shared/generated'
 
 import { ExtendedMicrofrontend, ExtendedProduct, ExtendedSlot, ProductComponent } from './products.component'
-import { provideHttpClient } from '@angular/common/http'
 
 const workspace: Workspace = {
   id: 'id',
@@ -48,6 +49,7 @@ const product: ExtendedProduct = {
   productName: 'prod name',
   displayName: 'display name',
   description: 'description',
+  version: '1.0',
   microfrontends: [microfrontend],
   modificationCount: 1,
   bucket: 'SOURCE',
@@ -61,6 +63,7 @@ const prodStoreItem: ExtendedProduct = {
   productName: 'prodStoreItemName',
   displayName: 'display name2',
   description: 'description2',
+  version: '1.0',
   microfrontends: [microfrontend],
   bucket: 'SOURCE',
   undeployed: false,
@@ -72,6 +75,7 @@ const prodStoreItemTarget: ExtendedProduct = {
   productName: 'prodStoreItemName',
   displayName: 'display name2',
   description: 'description2',
+  version: '1.0',
   microfrontends: [microfrontend],
   bucket: 'TARGET',
   undeployed: false,
@@ -83,6 +87,7 @@ const prodStoreItemEmptyMicrofrontends: ExtendedProduct = {
   productName: 'prodStoreItemName',
   displayName: 'display name2',
   description: 'description2',
+  version: '1.0',
   microfrontends: [],
   bucket: 'TARGET',
   undeployed: false,
@@ -119,6 +124,10 @@ describe('ProductComponent', () => {
     searchAvailableProducts: jasmine.createSpy('searchAvailableProducts').and.returnValue(of({}))
   }
   const slotApiServiceSpy = { createSlot: jasmine.createSpy('createSlot').and.returnValue(of({})) }
+  const mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
+  mockUserService.hasPermission.and.callFake((permission: string) => {
+    return ['WORKSPACE_PRODUCTS#REGISTER'].includes(permission)
+  })
 
   beforeEach(waitForAsync(() => {
     mockAppState = { currentMfe$: of(mfeInfo) }
@@ -133,15 +142,16 @@ describe('ProductComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
-        provideHttpClientTesting(),
         provideHttpClient(),
+        provideHttpClientTesting(),
         provideRouter([{ path: '', component: ProductComponent }]),
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: WorkspaceProductAPIService, useValue: wProductServiceSpy },
         { provide: ProductAPIService, useValue: productServiceSpy },
         { provide: AppStateService, useValue: mockAppState },
-        { provide: SlotAPIService, useValue: slotApiServiceSpy }
+        { provide: SlotAPIService, useValue: slotApiServiceSpy },
+        { provide: UserService, useValue: mockUserService }
       ]
     }).compileComponents()
     msgServiceSpy.success.calls.reset()
@@ -161,7 +171,7 @@ describe('ProductComponent', () => {
     component = fixture.componentInstance
     component.workspace = workspace
     fb = TestBed.inject(FormBuilder)
-    component['renderer'] = mockRenderer
+    component.renderer = mockRenderer
     fixture.detectChanges()
   })
 
@@ -202,10 +212,8 @@ describe('ProductComponent', () => {
   })
 
   it('should log error if getProductsByWorkspaceId call fails', () => {
-    const err = {
-      status: '404'
-    }
-    wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(throwError(() => err))
+    const errorResponse = { status: 404, statusText: 'products not found for workspace' }
+    wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(throwError(() => errorResponse))
     const changes = {
       ['workspace']: {
         previousValue: 'ws0',
@@ -217,27 +225,48 @@ describe('ProductComponent', () => {
 
     component.ngOnChanges(changes as unknown as SimpleChanges)
 
-    expect(console.error).toHaveBeenCalledWith('getProductsByWorkspaceId():', err)
+    expect(console.error).toHaveBeenCalledWith('getProductsByWorkspaceId():', errorResponse)
   })
 
   describe('searchPsProducts', () => {
-    it('should loadData onChanges: searchPsProducts call success: prod deployed', () => {
+    it('should loadData onChanges: searchPsProducts call success: prod deployed and only mfes', () => {
       wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([product]))
       productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [prodStoreItem] }))
       const changes = {
-        ['workspace']: {
-          previousValue: 'ws0',
-          currentValue: 'ws1',
-          firstChange: true
-        }
+        ['workspace']: { previousValue: 'ws0', currentValue: 'ws1', firstChange: true }
       }
       component.ngOnChanges(changes as unknown as SimpleChanges)
 
       expect(component.psProducts).toEqual([{ ...prodStoreItem }])
-      expect(component.wProducts?.at(0)).toEqual(
-        [{ ...product, bucket: 'TARGET', undeployed: false, changedComponents: false }]?.at(0) as ExtendedProduct
-      )
+      const a: ExtendedProduct = component.wProducts.length > 0 ? component.wProducts[0] : ({} as ExtendedProduct)
+      expect(a).toEqual({
+        ...product,
+        bucket: 'TARGET',
+        undeployed: false,
+        changedComponents: false
+      } as ExtendedProduct)
       expect(component.psProductsOrg.get(prodStoreItem.productName!)!).toEqual({ ...prodStoreItem })
+    })
+
+    it('should loadData onChanges: searchPsProducts call success: prod deployed and only slots', () => {
+      const pspItem: ExtendedProduct = {
+        productName: 'pspItemName',
+        displayName: 'display name',
+        description: 'description',
+        bucket: 'SOURCE',
+        version: '1.0',
+        slots: [{ name: 'slot' }],
+        changedComponents: false,
+        apps: new Map().set('appId', { appId: 'appId', modules: [microfrontend] })
+      }
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([product]))
+      productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [pspItem] }))
+      const changes = {
+        ['workspace']: { previousValue: 'ws0', currentValue: 'ws1', firstChange: true }
+      }
+      component.ngOnChanges(changes as unknown as SimpleChanges)
+
+      expect(component.psProducts).toEqual([{ ...pspItem }])
     })
 
     it('should loadData onChanges: searchPsProducts call success: prod undeployed', () => {
@@ -245,11 +274,7 @@ describe('ProductComponent', () => {
       wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([product]))
       productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [prodStoreItem] }))
       const changes = {
-        ['workspace']: {
-          previousValue: 'ws0',
-          currentValue: 'ws1',
-          firstChange: true
-        }
+        ['workspace']: { previousValue: 'ws0', currentValue: 'ws1', firstChange: true }
       }
       component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
 
@@ -259,41 +284,16 @@ describe('ProductComponent', () => {
     })
 
     it('should loadData onChanges: searchPsProducts call error', () => {
-      const err = {
-        status: '404'
-      }
-      productServiceSpy.searchAvailableProducts.and.returnValue(throwError(() => err))
+      const errorResponse = { status: 404, statusText: 'product store products not found' }
+      productServiceSpy.searchAvailableProducts.and.returnValue(throwError(() => errorResponse))
       const changes = {
-        ['workspace']: {
-          previousValue: 'ws0',
-          currentValue: 'ws1',
-          firstChange: true
-        }
+        ['workspace']: { previousValue: 'ws0', currentValue: 'ws1', firstChange: true }
       }
       spyOn(console, 'error')
 
       component.ngOnChanges(changes as unknown as SimpleChanges)
 
-      expect(console.error).toHaveBeenCalledWith('searchAvailableProducts():', err)
-    })
-
-    it('should loadData onChanges: searchPsProducts call error', () => {
-      const err = {
-        status: '404'
-      }
-      productServiceSpy.searchAvailableProducts.and.returnValue(throwError(() => err))
-      const changes = {
-        ['workspace']: {
-          previousValue: 'ws0',
-          currentValue: 'ws1',
-          firstChange: true
-        }
-      }
-      spyOn(console, 'error')
-
-      component.ngOnChanges(changes as unknown as SimpleChanges)
-
-      expect(console.error).toHaveBeenCalledWith('searchAvailableProducts():', err)
+      expect(console.error).toHaveBeenCalledWith('searchAvailableProducts():', errorResponse)
     })
 
     it('prepare product app parts: mfe type is component', () => {
@@ -306,7 +306,8 @@ describe('ProductComponent', () => {
         apps: new Map<string, any>([
           ['app1', {}],
           ['app2', {}]
-        ])
+        ]),
+        slots: [{ name: 'slot1', undeployed: true }, { name: 'slot2', deprecated: true }, { name: 'slot3' }]
       } as ExtendedProduct
       spyOn<any>(component, 'prepareProductAppParts').and.callThrough()
 
@@ -479,15 +480,9 @@ describe('ProductComponent', () => {
 
   describe('sortSlotsByName', () => {
     it('should sort slots by name ', () => {
-      const a: SlotPS = {
-        name: 'a'
-      }
-      const b: SlotPS = {
-        name: 'b'
-      }
-      const c: SlotPS = {
-        name: 'c'
-      }
+      const a: SlotPS = { name: 'a' }
+      const b: SlotPS = { name: 'b' }
+      const c: SlotPS = { name: 'c' }
       const eMfes = [b, c, a]
 
       eMfes.sort((x, y) => component.sortSlotsByName(x, y))
@@ -496,15 +491,9 @@ describe('ProductComponent', () => {
     })
 
     it('should sort slots by name : some empty name ', () => {
-      const a: SlotPS = {
-        name: 'a'
-      }
-      const b: SlotPS = {
-        name: ''
-      }
-      const c: SlotPS = {
-        name: ''
-      }
+      const a: SlotPS = { name: 'a' }
+      const b: SlotPS = { name: '' }
+      const c: SlotPS = { name: '' }
       const eMfes: SlotPS[] = [b, c, a]
 
       eMfes.sort((x, y) => component.sortSlotsByName(x, y))
@@ -513,15 +502,9 @@ describe('ProductComponent', () => {
     })
 
     it('should sort slots by name : all empty name ', () => {
-      const a: SlotPS = {
-        name: ''
-      }
-      const b: SlotPS = {
-        name: ''
-      }
-      const c: SlotPS = {
-        name: ''
-      }
+      const a: SlotPS = { name: '' }
+      const b: SlotPS = { name: '' }
+      const c: SlotPS = { name: '' }
       const eMfes = [b, c, a]
 
       eMfes.sort((x, y) => component.sortSlotsByName(x, y))
@@ -530,20 +513,40 @@ describe('ProductComponent', () => {
     })
 
     it('should sort slots by name : special char name ', () => {
-      const a: SlotPS = {
-        name: 'a'
-      }
-      const b: SlotPS = {
-        name: 'b'
-      }
-      const c: SlotPS = {
-        name: '$'
-      }
+      const a: SlotPS = { name: 'a' }
+      const b: SlotPS = { name: 'b' }
+      const c: SlotPS = { name: '$' }
       const eMfes = [b, a, c]
 
       eMfes.sort((x, y) => component.sortSlotsByName(x, y))
 
       expect(eMfes).toEqual([c, a, b])
+    })
+  })
+
+  describe('sort endpoints by name', () => {
+    it('should sort slots by name ', () => {
+      const a: UIEndpoint = { name: 'a' }
+      const b: UIEndpoint = { name: 'b' }
+      const arr = [b, a]
+
+      arr.sort((x, y) => component['sortEndpointsByName'](x, y))
+
+      expect(arr).toEqual([a, b])
+    })
+
+    it('should sort slots by name : some empty name ', () => {
+      const a: UIEndpoint = { name: '' }
+      const b: UIEndpoint = { name: 'b' }
+      const arr = [b, a]
+
+      arr.sort((x, y) => component['sortEndpointsByName'](x, y))
+
+      expect(arr).toEqual([a, b])
+
+      arr.sort((x, y) => component['sortEndpointsByName'](y, x))
+
+      expect(arr).toEqual([b, a])
     })
   })
 
@@ -713,11 +716,7 @@ describe('ProductComponent', () => {
       wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([prodStoreItem]))
       productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [prodStoreItem] }))
       const changes = {
-        ['workspace']: {
-          previousValue: 'ws0',
-          currentValue: 'ws1',
-          firstChange: true
-        }
+        ['workspace']: { previousValue: 'ws0', currentValue: 'ws1', firstChange: true }
       }
 
       component.ngOnChanges(changes as unknown as SimpleChanges)
@@ -726,14 +725,16 @@ describe('ProductComponent', () => {
       expect(component.displayDetails).toBeTrue()
     })
 
-    it('should call getWProduct when an item is selected: display error', () => {
-      wProductServiceSpy.getProductById.and.returnValue(throwError(() => new Error()))
+    it('should call getWProduct when an item is selected: display error and hide detail panel', () => {
+      const errorResponse = { status: 404, statusText: 'workspace product not found' }
+      wProductServiceSpy.getProductById.and.returnValue(throwError(() => errorResponse))
       const event = { items: [{ id: 1 }] }
       component.displayDetails = true
 
       component.onTargetSelect(event)
 
-      expect(component.displayDetails).toBeTrue()
+      expect(component.displayDetails).toBeFalse()
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.LOAD_ERROR' })
     })
 
     it('should set displayDetails to false when no item is selected', () => {
@@ -857,7 +858,8 @@ describe('ProductComponent', () => {
   })
 
   it('should display error when trying to update a product by id', () => {
-    wProductServiceSpy.updateProductById.and.returnValue(throwError(() => new Error()))
+    const errorResponse = { status: 400, statusText: 'workspace product not updated' }
+    wProductServiceSpy.updateProductById.and.returnValue(throwError(() => errorResponse))
     const event: any = { items: [product] }
     component.formGroup = fb.group({
       displayName: new FormControl(''),
@@ -968,7 +970,8 @@ describe('ProductComponent', () => {
   })
 
   it('should display error when trying to createProductInWorkspace onMoveToTarget', () => {
-    wProductServiceSpy.createProductInWorkspace.and.returnValue(throwError(() => new Error()))
+    const errorResponse = { status: 400, statusText: 'workspace product not created' }
+    wProductServiceSpy.createProductInWorkspace.and.returnValue(throwError(() => errorResponse))
     const event: any = { items: [product] }
     component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
     component.psProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
@@ -979,7 +982,8 @@ describe('ProductComponent', () => {
   })
 
   it('should display error when trying to createProductInWorkspace onMoveToTarget', () => {
-    wProductServiceSpy.createProductInWorkspace.and.returnValue(throwError(() => new Error()))
+    const errorResponse = { status: 400, statusText: 'workspace product not created' }
+    wProductServiceSpy.createProductInWorkspace.and.returnValue(throwError(() => errorResponse))
     component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
     component.psProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
     const product2: Product = {
@@ -1034,7 +1038,8 @@ describe('ProductComponent', () => {
   })
 
   it('should handle failed deregistration', () => {
-    wProductServiceSpy.deleteProductById.and.returnValue(throwError(() => new Error('Failed to deregister')))
+    const errorResponse = { status: 400, statusText: 'workspace product could not be deregistered' }
+    wProductServiceSpy.deleteProductById.and.returnValue(throwError(() => errorResponse))
     component['deregisterItems'] = [product]
     component.psProducts = [prodStoreItem]
     component.wProducts = []
@@ -1068,7 +1073,8 @@ describe('ProductComponent', () => {
   })
 
   it('should handle failed slot creation', () => {
-    slotApiServiceSpy.createSlot.and.returnValue(throwError(() => new Error('Failed to create slot')))
+    const errorResponse = { status: 400, statusText: 'workspace slot could not be created' }
+    slotApiServiceSpy.createSlot.and.returnValue(throwError(() => errorResponse))
     const extendedSlot: ExtendedSlot = { name: 'Test Slot' }
 
     component.onAddSlot({}, extendedSlot)

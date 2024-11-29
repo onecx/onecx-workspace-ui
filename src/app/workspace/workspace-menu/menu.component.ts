@@ -4,12 +4,11 @@ import { Location } from '@angular/common'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 import { catchError, combineLatest, map, Observable, Subject, of } from 'rxjs'
+import { saveAs } from 'file-saver'
 
 import { TreeTable, TreeTableNodeExpandEvent } from 'primeng/treetable'
 import { Overlay } from 'primeng/overlay'
 import { SelectItem, TreeNode } from 'primeng/api'
-
-import FileSaver from 'file-saver'
 
 import { Action } from '@onecx/angular-accelerator'
 import { PortalMessageService, UserService, WorkspaceService } from '@onecx/angular-integration-interface'
@@ -45,10 +44,10 @@ export type RoleAssignments = { [key: string]: string | undefined } // assignmen
 export type MenuItemNodeData = WorkspaceMenuItem & {
   first: boolean
   last: boolean
+  level: number
   prevId: string
   gotoUrl: string
   positionPath: string
-  appConnected: boolean
   roles: RoleAssignments
   node: TreeNode
 }
@@ -75,7 +74,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   public actions$: Observable<Action[]> | undefined
   public loading = true
   public loadingRoles = false
-  public exceptionKey = ''
+  public exceptionKey: string | undefined = undefined
   public myPermissions = new Array<string>() // permissions of the user
   public treeTableContentValue = false // off => details
   public treeExpanded = false // off => collapsed
@@ -130,6 +129,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     const state = this.stateService.getState()
     this.menuItems = state.workspaceMenuItems
     // simplify permission checks
+    if (this.userService.hasPermission('MENU#VIEW')) this.myPermissions.push('MENU#VIEW')
     if (this.userService.hasPermission('MENU#EDIT')) this.myPermissions.push('MENU#EDIT')
     if (this.userService.hasPermission('MENU#GRANT')) this.myPermissions.push('MENU#GRANT')
     if (this.userService.hasPermission('WORKSPACE_ROLE#EDIT')) this.myPermissions.push('WORKSPACE_ROLE#EDIT')
@@ -252,16 +252,20 @@ export class MenuComponent implements OnInit, OnDestroy {
           label = node.data.name
           break
         default:
-          if (this.usedLanguages.has(this.treeNodeLabelSwitchValue)) {
-            if (node.data.i18n && Object.keys(node.data.i18n).length > 0)
-              if (node.data.i18n[this.treeNodeLabelSwitchValue]) {
-                label = node.data.i18n[this.treeNodeLabelSwitchValue]
-              }
-          }
+          label = this.setI18nLabel(node, label)
       }
       node.label = label // set
       if (node.children && node.children.length > 0) this.applyTreeNodeLabelSwitch(node.children)
     }
+  }
+  private setI18nLabel(node: TreeNode, label: string): string {
+    if (this.usedLanguages.has(this.treeNodeLabelSwitchValue)) {
+      if (node.data.i18n && Object.keys(node.data.i18n).length > 0)
+        if (node.data.i18n[this.treeNodeLabelSwitchValue]) {
+          return node.data.i18n[this.treeNodeLabelSwitchValue]
+        }
+    }
+    return label
   }
 
   public onToggleTreeTableContent(ev: any): void {
@@ -302,9 +306,9 @@ export class MenuComponent implements OnInit, OnDestroy {
           item.modificationDate = data.modificationDate
           this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' })
         },
-        error: (err: { error: any }) => {
-          console.error(err)
+        error: (err) => {
           this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
+          console.error('updateMenuItem', err)
         }
       })
   }
@@ -349,9 +353,10 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.displayMenuDelete = true
   }
 
-  public roleFilterChange(val: string): void {
+  public onRoleFilterChange(val: string): void {
     this.wRolesFiltered = this.wRoles.filter((r) => r.name!.indexOf(val) >= 0)
   }
+
   /****************************************************************************
    ****************************************************************************
    * TREE + DIALOG
@@ -368,7 +373,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
   private expandRecursive(node: TreeNode, isExpand: boolean) {
     node.expanded = isExpand
-    this.stateService.getState().treeExpansionState.set(node.key || '', node.expanded)
+    if (node.key) this.stateService.getState().treeExpansionState.set(node.key, node.expanded)
     if (node.children) {
       node.children.forEach((childNode) => {
         this.expandRecursive(childNode, isExpand)
@@ -376,7 +381,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     }
   }
   private restoreRecursive(node: TreeNode) {
-    node.expanded = this.stateService.getState().treeExpansionState.get(node.key || '')
+    if (node.key) node.expanded = this.stateService.getState().treeExpansionState.get(node.key)
     if (node.children) {
       node.children.forEach((childNode) => {
         this.restoreRecursive(childNode)
@@ -390,7 +395,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.menuNodes = [...this.menuNodes]
   }
   public onHierarchyViewChange(event: TreeTableNodeExpandEvent): void {
-    this.stateService.getState().treeExpansionState.set(event.node.key ?? '', event.node.expanded ?? false)
+    if (event.node.key) this.stateService.getState().treeExpansionState.set(event.node.key, event.node.expanded!)
   }
 
   /****************************************************************************
@@ -398,48 +403,52 @@ export class MenuComponent implements OnInit, OnDestroy {
    * DATA
    */
   public loadData(): void {
-    this.exceptionKey = ''
     this.loading = true
+    this.exceptionKey = undefined
 
     this.workspace$ = this.workspaceApi
       .getWorkspaceByName({ workspaceName: this.workspaceName })
       .pipe(catchError((error) => of(error)))
     this.workspace$.subscribe((result) => {
       if (result instanceof HttpErrorResponse) {
+        this.loading = false
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + result.status + '.WORKSPACES'
-        console.error('getWorkspaceByName():', result)
+        console.error('getWorkspaceByName', result)
       } else if (result instanceof Object) {
         this.workspace = result.resource
-        this.currentLogoUrl = this.getLogoUrl(result.resource)
+        this.currentLogoUrl = this.getLogoUrl(this.workspace)
         this.loadMenu(false)
       } else {
+        this.loading = false
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_0.WORKSPACES'
       }
     })
   }
 
   public loadMenu(restore: boolean): void {
+    if (!this.workspace) return
     this.menuItem = undefined
     this.menu$ = this.menuApi
-      .getMenuStructure({ menuStructureSearchCriteria: { workspaceId: this.workspace?.id ?? '' } })
+      .getMenuStructure({ menuStructureSearchCriteria: { workspaceId: this.workspace.id! } })
       .pipe(catchError((error) => of(error)))
     this.menu$.subscribe((result) => {
       this.loading = true
       if (result instanceof HttpErrorResponse) {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + result.status + '.MENUS'
-        console.error('getMenuStructure():', result)
+        console.error('getMenuStructure', result)
       } else if (result.menuItems instanceof Array) {
         this.menuItems = result.menuItems
         this.menuNodes = this.mapToTreeNodes(this.menuItems)
-        this.prepareTreeNodeHelper()
+        this.prepareTreeNodeHelper(restore)
         this.loadRolesAndAssignments()
+        this.prepareActionButtons()
         if (restore) {
           this.restoreTree()
           this.msgService.success({ summaryKey: 'ACTIONS.SEARCH.RELOAD.OK' })
         }
       } else {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_0.MENUS'
-        console.error('getMenuStructure() => unknown response:', result)
+        console.error('getMenuStructure', result)
       }
       this.loading = false
     })
@@ -457,7 +466,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         }),
         catchError((err) => {
           this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.ROLES'
-          console.error('searchRoles():', err)
+          console.error('searchRoles', err)
           return of([])
         })
       )
@@ -475,14 +484,15 @@ export class MenuComponent implements OnInit, OnDestroy {
             : []
         }),
         catchError((err) => {
-          console.error('searchAssignments():', err)
+          console.error('searchAssignments', err)
           return of([])
         })
       )
   }
   private sortRoleByName(a: WorkspaceRole, b: WorkspaceRole): number {
-    return (a.name ? a.name.toUpperCase() : '').localeCompare(b.name ? b.name.toUpperCase() : '')
+    return a.name!.toUpperCase().localeCompare(b.name!.toUpperCase())
   }
+
   private loadRolesAndAssignments() {
     if (!this.displayRoles || this.wRoles.length > 0) return
     this.loadingRoles = true
@@ -529,9 +539,9 @@ export class MenuComponent implements OnInit, OnDestroy {
               this.onGrantPermission(rowNode.parent, rowNode.parent.data, roleId)
             }
           },
-          error: (err: { error: any }) => {
+          error: (err) => {
             this.msgService.error({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.GRANT_NOK' })
-            console.error(err.error)
+            console.error('createAssignmentRequest', err)
           }
         })
     } else if (rowNode.parent) this.onGrantPermission(rowNode.parent, rowNode.parent.data, roleId)
@@ -542,9 +552,9 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.msgService.success({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.REVOKE_OK' })
         rowData.roles[roleId] = undefined
       },
-      error: (err: { error: any }) => {
+      error: (err) => {
         this.msgService.error({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.REVOKE_NOK' })
-        console.error(err.error)
+        console.error('deleteAssignment', err)
       }
     })
   }
@@ -566,20 +576,6 @@ export class MenuComponent implements OnInit, OnDestroy {
     return stop
   }
 
-  // is a menu item (url) supported by reg. MFE ?
-  private urlMatch(url: string): boolean {
-    const url2 = /^.*\/$/.exec(url) ? url.substring(0, url.length - 1) : url
-    // direct match
-    let match = this.mfeRUrls.includes(url) || this.mfeRUrls.includes(url + '/') || this.mfeRUrls.includes(url2)
-    if (!match) {
-      for (const i in this.mfeRUrls) {
-        match = this.mfeRUrls[i].startsWith(url2) || url2.startsWith(this.mfeRUrls[i])
-        if (match) break
-      }
-    }
-    return match
-  }
-
   /****************************************************************************
    ****************************************************************************
    *  MENU TREE POPUP - outsourced for reordering and preview
@@ -599,12 +595,11 @@ export class MenuComponent implements OnInit, OnDestroy {
         ...item,
         first: pos === 1,
         last: pos === items.length,
+        level: (parent?.level ?? 0) + 1,
         prevId: prevId,
         gotoUrl: this.prepareItemUrl(item.url),
         // concat the positions
         positionPath: parent ? parent.position + '.' + item.position : item.position,
-        // true if path is a mfe base path
-        appConnected: item.url && !item.url.startsWith('http') && !item.external ? this.urlMatch(item.url) : false,
         roles: {}
       } as MenuItemNodeData
       const newNode: TreeNode = this.createTreeNode(nodeData)
@@ -625,11 +620,12 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
   private prepareItemUrl(url: string | undefined): string | undefined {
     if (!(url && this.workspace?.baseUrl)) return undefined
+    if (url.startsWith('http')) return url
     const url_parts = window.location.href.split('/')
     return url_parts[0] + '//' + url_parts[2] + Location.joinWithSlash(this.workspace?.baseUrl, url)
   }
 
-  private prepareTreeNodeHelper(): void {
+  private prepareTreeNodeHelper(restore: boolean): void {
     // init stores
     this.parentItems = [] // default value is empty
     this.usedLanguages = new Map()
@@ -638,6 +634,11 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.prepareTreeNodeLabelSwitch()
     this.treeNodeLabelSwitchValueOrg = '' // reset
     this.onTreeNodeLabelSwitchChange({ value: this.treeNodeLabelSwitchValue })
+    // initially open the first menu item if exists
+    if (!restore && this.menuNodes.length > 1) {
+      this.menuNodes[0].expanded = true
+      this.stateService.getState().treeExpansionState.set(this.menuNodes[0].key!, true)
+    }
   }
   private prepareTreeNodeHelperRecursively(nodes: TreeNode[]): void {
     nodes.forEach((m) => {
@@ -647,7 +648,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       if (m.data.i18n && Object.keys(m.data.i18n).length > 0) {
         for (const k in m.data.i18n) {
           let n = 1
-          if (this.usedLanguages.has(k)) n = (this.usedLanguages.get(k) ?? 0) + 1
+          if (this.usedLanguages.has(k)) n = this.usedLanguages.get(k)! + 1
           this.usedLanguages.set(k, n)
         }
       }
@@ -675,9 +676,10 @@ export class MenuComponent implements OnInit, OnDestroy {
     if (this.workspaceName) {
       this.menuApi.exportMenuByWorkspaceName({ workspaceName: this.workspaceName }).subscribe((data) => {
         const jsonBody = JSON.stringify(data, null, 2)
-        FileSaver.saveAs(
+        saveAs(
           new Blob([jsonBody], { type: 'text/json' }),
-          'onecx-menu_' + this.workspaceName + '_' + getCurrentDateTime() + '.json'
+          'onecx-menu_' + this.workspaceName + '_' + getCurrentDateTime() + '.json',
+          { autoBom: false }
         )
       })
     }

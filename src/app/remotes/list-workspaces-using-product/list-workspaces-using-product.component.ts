@@ -1,9 +1,12 @@
+import { Component, Inject, Input, OnChanges } from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { Component, Inject, Input, OnChanges } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy } from '@ngneat/until-destroy'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
+import { catchError, map, Observable, of, ReplaySubject } from 'rxjs'
+import { PanelMenuModule } from 'primeng/panelmenu'
+
 import {
   AngularRemoteComponentsModule,
   BASE_URL,
@@ -13,15 +16,14 @@ import {
   provideTranslateServiceForRoot
 } from '@onecx/angular-remote-components'
 import { PortalCoreModule, UserService, createRemoteComponentTranslateLoader } from '@onecx/portal-integration-angular'
-import { PanelMenuModule } from 'primeng/panelmenu'
-import { catchError, map, Observable, of, ReplaySubject } from 'rxjs'
+
 import { Configuration, SearchWorkspacesResponse, WorkspaceAPIService } from 'src/app/shared/generated'
 import { SharedModule } from 'src/app/shared/shared.module'
 import { environment } from 'src/environments/environment'
 
 @Component({
-  selector: 'app-list-workspaces-using-theme',
-  templateUrl: './list-workspaces-using-theme.component.html',
+  selector: 'app-list-workspaces-using-product',
+  templateUrl: './list-workspaces-using-product.component.html',
   standalone: true,
   imports: [
     AngularRemoteComponentsModule,
@@ -48,9 +50,9 @@ import { environment } from 'src/environments/environment'
   ]
 })
 @UntilDestroy()
-export class OneCXListWorkspacesUsingThemeComponent implements ocxRemoteComponent, ocxRemoteWebcomponent, OnChanges {
-  @Input() themeName = ''
-  public workspacesUsingTheme: Observable<string[]> | undefined
+export class OneCXListWorkspacesUsingProductComponent implements ocxRemoteComponent, ocxRemoteWebcomponent, OnChanges {
+  @Input() productName: string | undefined = undefined
+  public workspacesUsingProduct: Observable<string[]> | undefined
 
   constructor(
     @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
@@ -73,12 +75,12 @@ export class OneCXListWorkspacesUsingThemeComponent implements ocxRemoteComponen
   }
 
   ngOnChanges(): void {
-    this.findWorkspacesUsingTheme()
+    this.findWorkspacesUsingProduct()
   }
 
-  public findWorkspacesUsingTheme() {
-    this.workspacesUsingTheme = this.workspaceApi
-      .searchWorkspaces({ searchWorkspacesRequest: { themeName: this.themeName } })
+  private findWorkspacesUsingProduct() {
+    this.workspacesUsingProduct = this.workspaceApi
+      .searchWorkspaces({ searchWorkspacesRequest: { productName: this.productName } })
       .pipe(
         catchError((err) => {
           console.error('searchWorkspaces', err)

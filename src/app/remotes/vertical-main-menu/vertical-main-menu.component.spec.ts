@@ -1,17 +1,19 @@
 import { TestBed } from '@angular/core/testing'
-import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
+import { CommonModule } from '@angular/common'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { CommonModule } from '@angular/common'
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { provideRouter, Router, RouterModule } from '@angular/router'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'
-import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
-import { PPanelMenuHarness } from '@onecx/angular-testing'
-import { AppStateService } from '@onecx/angular-integration-interface'
 import { TranslateTestingModule } from 'ngx-translate-testing'
-import { ReplaySubject, of } from 'rxjs'
+import { ReplaySubject, of, throwError } from 'rxjs'
 import { PanelMenuModule } from 'primeng/panelmenu'
 import { PrimeIcons } from 'primeng/api'
+
+import { PPanelMenuHarness } from '@onecx/angular-testing'
+import { AppStateService } from '@onecx/angular-integration-interface'
+import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
+
 import { MenuItemAPIService } from 'src/app/shared/generated'
 import { OneCXVerticalMainMenuComponent } from './vertical-main-menu.component'
 
@@ -634,5 +636,22 @@ describe('OneCXVerticalMainMenuComponent', () => {
       expect(menuItems?.items.length).toBe(1)
       expect(menuItems?.items[0].label).toBe('item-name-1')
     })
+  })
+
+  it('should return 0 panels when unable to load them', async () => {
+    const appStateService = TestBed.inject(AppStateService)
+    spyOn(appStateService.currentWorkspace$, 'asObservable').and.returnValue(
+      of({
+        workspaceName: 'test-workspace'
+      }) as any
+    )
+    menuItemApiSpy.getMenuItems.and.returnValue(throwError(() => {}))
+
+    const { fixture, component } = setUp()
+    await component.ngOnInit()
+
+    const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PPanelMenuHarness)
+    const panels = await menu.getAllPanels()
+    expect(panels.length).toEqual(0)
   })
 })

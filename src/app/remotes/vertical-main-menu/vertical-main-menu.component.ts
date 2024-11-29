@@ -24,11 +24,14 @@ import { PanelMenuModule } from 'primeng/panelmenu'
 import {
   BehaviorSubject,
   ReplaySubject,
+  catchError,
   combineLatest,
   distinctUntilChanged,
   filter,
   map,
   mergeMap,
+  of,
+  retry,
   shareReplay,
   withLatestFrom
 } from 'rxjs'
@@ -145,13 +148,20 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRe
               menuKeys: ['main-menu']
             }
           })
-          .pipe(map((response) => ({ data: response, workspaceName: currentWorkspace.workspaceName })))
+          .pipe(
+            map((response) => ({ data: response, workspaceName: currentWorkspace.workspaceName })),
+            retry({ delay: 500, count: 3 }),
+            catchError(() => {
+              console.error('Unable to load menu items for vertical main menu.')
+              return of(undefined)
+            })
+          )
       ),
       withLatestFrom(this.userService.lang$),
       map(
-        ([{ data, workspaceName }, userLang]): WorkspaceMenuItems => ({
-          workspaceName: workspaceName,
-          items: this.menuItemService.constructMenuItems(data?.menu?.[0]?.children, userLang)
+        ([workspaceItems, userLang]): WorkspaceMenuItems => ({
+          workspaceName: workspaceItems?.workspaceName ?? '',
+          items: this.menuItemService.constructMenuItems(workspaceItems?.data?.menu?.[0]?.children, userLang)
         })
       ),
       shareReplay(),

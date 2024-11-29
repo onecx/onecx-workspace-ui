@@ -9,6 +9,8 @@ import { of, throwError } from 'rxjs'
 
 import { ConfigurationService, PortalMessageService, ThemeService } from '@onecx/portal-integration-angular'
 import { WorkspaceService } from '@onecx/angular-integration-interface'
+import * as Accelerator from '@onecx/accelerator'
+
 import { WorkspacePropsComponent } from 'src/app/workspace/workspace-detail/workspace-props/workspace-props.component'
 import {
   WorkspaceAPIService,
@@ -16,14 +18,17 @@ import {
   Workspace,
   WorkspaceProductAPIService
 } from 'src/app/shared/generated'
+import * as utils from 'src/app/shared/utils'
 
 const workspace = {
+  id: 'id',
+  disabled: false,
   name: 'name',
   displayName: 'name',
   theme: 'theme',
   baseUrl: '/some/base/url',
-  id: 'id',
-  disabled: false
+  homePage: '/welcome',
+  logoUrl: 'https://host:port/site/logo.png'
 }
 
 const formGroup = new FormGroup({
@@ -50,6 +55,9 @@ describe('WorkspacePropsComponent', () => {
   }
   const configServiceSpy = {
     getProperty: jasmine.createSpy('getProperty').and.returnValue('123')
+  }
+  const accSpy = {
+    getLocation: jasmine.createSpy('getLocation').and.returnValue({ deploymentPath: '/path' })
   }
   const imageServiceSpy = {
     getImage: jasmine.createSpy('getImage').and.returnValue(of({})),
@@ -83,8 +91,10 @@ describe('WorkspacePropsComponent', () => {
         { provide: ImagesInternalAPIService, useValue: imageServiceSpy },
         { provide: WorkspaceAPIService, useValue: apiServiceSpy },
         { provide: WorkspaceProductAPIService, useValue: wProductServiceSpy },
-        { provide: WorkspaceService, useValue: workspaceServiceMock }
-      ]
+        { provide: WorkspaceService, useValue: workspaceServiceMock },
+        { provide: Accelerator, useValue: accSpy }
+      ],
+      teardown: { destroyAfterEach: false }
     }).compileComponents()
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.info.calls.reset()
@@ -99,6 +109,7 @@ describe('WorkspacePropsComponent', () => {
 
   beforeEach(() => {
     fixture = TestBed.createComponent(WorkspacePropsComponent)
+    accSpy.getLocation()
     component = fixture.componentInstance
     component.workspace = workspace
     fixture.detectChanges()
@@ -121,18 +132,23 @@ describe('WorkspacePropsComponent', () => {
   })
 
   describe('loadProductPaths', () => {
-    beforeEach(() => {
-      spyOn(component as any, 'loadThemes')
-    })
+    it('should load product urls initially', () => {
+      const products = [{ baseUrl: '/productBaseUrl-1' }, { baseUrl: '/productBaseUrl-2' }]
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of(products))
 
-    it('should load product urls', () => {
-      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([{ baseUrl: '/baseUrl' }, { baseUrl: undefined }]))
-
-      component.ngOnInit()
+      component.workspace = workspace
+      component.onOpenProductPathes([])
 
       component.productPaths$.subscribe((paths) => {
-        expect(paths).toContain('/baseUrl')
+        expect(paths).toEqual([products[0].baseUrl, products[1].baseUrl])
       })
+    })
+
+    it('should prevent loading product urls again', () => {
+      const paths = ['/productBaseUrl-1', '/productBaseUrl-2']
+
+      component.workspace = { ...workspace, homePage: undefined }
+      component.onOpenProductPathes(paths)
     })
   })
 
@@ -166,7 +182,6 @@ describe('WorkspacePropsComponent', () => {
   describe('ngOnChanges', () => {
     it('should disable formGroup in view mode', () => {
       component.editMode = false
-      spyOn(component, 'setFormData')
 
       component.ngOnChanges()
 
@@ -175,11 +190,12 @@ describe('WorkspacePropsComponent', () => {
 
     it('should enable formGroup in edit mode', () => {
       component.editMode = true
-      spyOn(component, 'setFormData')
 
       component.ngOnChanges()
 
+      expect(component.workspace).toEqual(workspace)
       expect(component.formGroup.enabled).toBeTrue()
+      expect(component.fetchingLogoUrl).toEqual(workspace.logoUrl)
     })
 
     it('should reset formGroup when workspace is empty', () => {
@@ -296,7 +312,8 @@ describe('WorkspacePropsComponent', () => {
     })
 
     it('should display error if upload fails', () => {
-      imageServiceSpy.getImage.and.returnValue(throwError(() => new Error()))
+      const errorResponse = { status: 400, statusText: 'Error on getting image' }
+      imageServiceSpy.getImage.and.returnValue(throwError(() => errorResponse))
       const blob = new Blob(['a'.repeat(10)], { type: 'image/png' })
       const file = new File([blob], 'test.png', { type: 'image/png' })
       const event = {
@@ -308,9 +325,7 @@ describe('WorkspacePropsComponent', () => {
 
       component.onFileUpload(event as any)
 
-      expect(msgServiceSpy.info).toHaveBeenCalledWith({
-        summaryKey: 'IMAGE.UPLOAD_SUCCESS'
-      })
+      expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'IMAGE.UPLOAD_SUCCESS' })
     })
   })
 
@@ -343,10 +358,10 @@ describe('WorkspacePropsComponent', () => {
   describe('getLogoUrl', () => {
     it('call with undefined workspace', () => {
       const testWorkspace: Workspace = undefined!
-      expect(component.getLogoUrl(testWorkspace)).toBeUndefined
+      expect(component.getLogoUrl(testWorkspace)).toBeUndefined()
     })
 
-    it('call with undefined workspace', () => {
+    it('call with workspace logo URL', () => {
       const testWorkspace: Workspace = {
         name: 'name',
         theme: 'theme',
@@ -357,17 +372,28 @@ describe('WorkspacePropsComponent', () => {
       }
       expect(component.getLogoUrl(testWorkspace)).toBe(testWorkspace.logoUrl)
     })
+
+    it('call with workspace but no logo URL', () => {
+      const testWorkspace: Workspace = {
+        name: 'name',
+        theme: 'theme',
+        baseUrl: '/some/base/url',
+        id: 'id',
+        displayName: ''
+      }
+      spyOn(utils, 'bffImageUrl')
+
+      component.getLogoUrl(testWorkspace)
+
+      expect(utils.bffImageUrl).toHaveBeenCalled()
+    })
   })
 
-  xit('should follow link to current theme', () => {
-    const mockUrl = 'http://example.com/test-url'
-    workspaceServiceMock.doesUrlExistFor.and.returnValue(of(true))
-    workspaceServiceMock.getUrl.and.returnValue(of(mockUrl))
-
-    spyOn(component, 'onGoToTheme')
+  it('should follow link to current theme', () => {
+    spyOn(utils, 'goToEndpoint')
 
     component.onGoToTheme('themeName')
 
-    expect(component.onGoToTheme).toHaveBeenCalledWith('themeName')
+    expect(utils.goToEndpoint).toHaveBeenCalled()
   })
 })

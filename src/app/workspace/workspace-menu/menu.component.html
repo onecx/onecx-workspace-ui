@@ -10,16 +10,14 @@
     [figureBackground]="!currentLogoUrl"
   >
   </ocx-page-header>
+  <ocx-page-header *ngIf="!workspace" [subheader]="'DIALOG.MENU.SUBHEADER' | translate"> </ocx-page-header>
 
   <ocx-page-content>
-    <!-- Loading and preparing menu -->
-    <div *ngIf="loading" class="card">
-      <p-message severity="info" styleClass="p-2" [text]="'ACTIONS.LOADING' | translate"></p-message>
-    </div>
-    <!-- Menu does NOT exist -->
+    <p-message *ngIf="exceptionKey" severity="error" styleClass="m-3 p-2" [text]="exceptionKey | translate"></p-message>
+    <p-message *ngIf="loading" severity="info" styleClass="m-3 p-2" [text]="'ACTIONS.LOADING' | translate"></p-message>
     <div
-      *ngIf="!loading && menuNodes.length === 0"
-      class="px-3 card flex flex-wrap justify-content-between align-items-center"
+      *ngIf="!loading && !exceptionKey && menuNodes.length === 0"
+      class="m-3 flex flex-wrap justify-content-between align-items-center"
     >
       <p-message severity="info" styleClass="p-2" [text]="'DIALOG.MENU.MENU_NOT_EXIST' | translate"></p-message>
       <p-button
@@ -39,7 +37,7 @@
       [frozenColumns]="treeFrozenColumns"
     -->
     <p-treeTable
-      *ngIf="menuNodes.length > 0"
+      *ngIf="!loading && !exceptionKey && menuNodes.length > 0"
       #menuTree
       id="ws_menu_table"
       styleClass="px-2 sm:px-3 mb-3"
@@ -165,7 +163,9 @@
             <div class="flex flex-row justify-content-start align-items-center column-gap-4">
               <p-toggleButton
                 inputid="ws_menu_table_header_row_1_switch_details_n_roles"
-                styleClass="data-view-control hidden-xs"
+                styleClass="small-toggle-button white-space-nowrap hidden-xs"
+                [onIcon]="'pi pi-search-plus'"
+                [offIcon]="'pi pi-lock'"
                 [onLabel]="'DIALOG.MENU.HEADER.DETAILS' | translate"
                 [offLabel]="'DIALOG.MENU.HEADER.ROLES' | translate"
                 [(ngModel)]="treeTableContentValue"
@@ -183,7 +183,7 @@
                   type="search"
                   id="ws_menu_table_header_role_filter"
                   class="py-0 px-2 max-w-20rem h-2rem text-responsive"
-                  (input)="roleFilterChange(roleFilter.value)"
+                  (input)="onRoleFilterChange(roleFilter.value)"
                   [placeholder]="'DIALOG.MENU.HEADER.ROLES.FILTER' | translate"
                   [pTooltip]="'DIALOG.MENU.HEADER.ROLES.FILTER.TOOLTIP' | translate"
                   tooltipPosition="top"
@@ -200,8 +200,10 @@
           >
             <p-toggleButton
               inputId="ws_menu_table_header_tree_toggle"
-              styleClass="data-view-control white-space-nowrap"
+              styleClass="small-toggle-button white-space-nowrap"
               [(ngModel)]="treeExpanded"
+              [onIcon]="'pi pi-arrow-down-left-and-arrow-up-right-to-center'"
+              [offIcon]="'pi pi-arrow-up-right-and-arrow-down-left-from-center'"
               [onLabel]="'ACTIONS.TREE.COLLAPSE_ALL' | translate"
               [offLabel]="'ACTIONS.TREE.EXPAND_ALL' | translate"
               (onChange)="onToggleTreeViewMode($event)"
@@ -227,7 +229,7 @@
 
           <!-- ROLES (workspace roles) -->
           <ng-container *ngIf="displayRoles">
-            <!-- no filtered columns, on reasons => loading, no roles, no filter macht -->
+            <!-- no filtered columns while loading and no roles => no filter -->
             <th
               *ngIf="columns.length === 0"
               id="ws_menu_table_header_roles_dummy"
@@ -256,7 +258,9 @@
             <th
               *ngFor="let role of columns"
               id="ws_menu_table_header_roles"
-              class="px-2 py-1 vertical-align-bottom hidden-xs text-center border-bottom-2 border-right-1"
+              class="px-2 py-1 hidden-xs text-center border-bottom-2 border-right-1 role-name"
+              [class.vertical-align-bottom]="columns.length <= 5"
+              [class.vertical-align-top]="columns.length > 5"
               [pTooltip]="role.description ? role.description : ''"
               tooltipPosition="top"
               tooltipEvent="hover"
@@ -269,7 +273,7 @@
 
       <!-- BODY -->
       <ng-template pTemplate="frozenbody" let-rowNode let-rowData="rowData">
-        <tr [ttRow]="rowNode" [id]="'ws_menu_table_row_' + rowData.key">
+        <tr [ttRow]="rowNode" [id]="'ws_menu_table_row_' + rowData.key" [attr.level]="rowData.level">
           <td class="p-0 pr-4">
             <div class="flex flex-row flex-nowrap column-gap-1 align-items-center">
               <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
@@ -299,6 +303,7 @@
             <td class="p-0 hidden-xs">
               <div class="flex flex-row flex-nowrap column-gap-0 align-items-center">
                 <button
+                  *ocxIfPermission="'MENU#EDIT'"
                   pbutton
                   [id]="'ws_menu_table_row_' + rowData.key + '_disabled'"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
@@ -323,14 +328,18 @@
                   [id]="'ws_menu_table_row_' + rowData.key + '_goto_details'"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                   (click)="onGotoDetails($event, rowData)"
-                  [attr.aria-label]="'DIALOG.MENU.ACTION.DETAILS' | translate"
-                  [pTooltip]="'DIALOG.MENU.ACTION.DETAILS' | translate"
+                  [attr.aria-label]="
+                    'DIALOG.MENU.ACTION.' + (myPermissions.includes('MENU#EDIT') ? 'EDIT' : 'VIEW') | translate
+                  "
+                  [pTooltip]="
+                    'DIALOG.MENU.ACTION.' + (myPermissions.includes('MENU#EDIT') ? 'EDIT' : 'VIEW') | translate
+                  "
                   tooltipPosition="top"
                   tooltipEvent="hover"
                 >
                   <span
-                    class="text-primary font-medium p-button-icon pi pi-eye"
-                    [class.pi-eye]="!myPermissions.includes('MENU#EDIT')"
+                    class="text-primary font-medium p-button-icon pi"
+                    [class.pi-eye]="myPermissions.includes('MENU#VIEW') && !myPermissions.includes('MENU#EDIT')"
                     [class.pi-pencil]="myPermissions.includes('MENU#EDIT')"
                     aria-hidden="true"
                   ></span>
@@ -356,8 +365,8 @@
                   [id]="'ws_menu_table_row_' + rowData.key + '_delete'"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                   (click)="onDeleteMenu($event, rowData)"
-                  [ariaLabel]="'ACTIONS.DELETE.MENU' | translate"
-                  [pTooltip]="'ACTIONS.DELETE.MENU' | translate"
+                  [ariaLabel]="'ACTIONS.DELETE.MENU.HEADER' | translate"
+                  [pTooltip]="'ACTIONS.DELETE.MENU.HEADER' | translate"
                   tooltipPosition="top"
                   tooltipEvent="hover"
                 >

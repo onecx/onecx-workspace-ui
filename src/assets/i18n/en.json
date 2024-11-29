@@ -24,6 +24,10 @@
       "ROLE_NOK": "An error has occurred. The Role was not created.",
       "MENU": "Create Menu Item",
       "MENU.TOOLTIP": "Create a new Menu Item below",
+      "SLOT": {
+        "MESSAGE_OK": "The Slot was created successfully",
+        "MESSAGE_NOK": "An error has occurred. The Slot was not created."
+      },
       "MESSAGE": {
         "CREATE_OK": "The Workspace was created successfully",
         "CREATE_NOK": "An error has occurred. The Workspace was not created.",
@@ -35,26 +39,41 @@
     },
     "DELETE": {
       "LABEL": "Delete",
-      "ROLE": "Delete Role",
-      "SLOT": "Delete Slot assignment",
-      "WORKSPACE": "Delete Workspace",
-      "MENU": "Delete Menu Item",
-      "MESSAGE": "Do you want to delete \"{{ITEM}}\"?",
-      "MESSAGE_INFO": "This action cannot be undone!",
-      "MESSAGE_NOK": "Workspace could not be deleted",
-      "MESSAGE_OK": "Workspace deleted successfully",
-      "MENU_MESSAGE": "This will also delete all Menu Items below.",
-      "MENU_OK": "The Menu Item was deleted successfully",
-      "MENU_NOK": "An error has occurred. The Menu Item could not be deleted.",
-      "ROLE_MESSAGE": "This deletes the Role and its assignments for the Workspace. Does not changed anycthing in Permission Management.",
-      "ROLE_OK": "The Role was deleted successfully",
-      "ROLE_NOK": "An error has occurred. The Role was not deleted.",
-      "SLOT_MESSAGE": "This deletes the assignment of Slot to Component for the Workspace.",
-      "SLOT_OK": "The assignment of Slot to Component was deleted successfully",
-      "SLOT_NOK": "An error has occurred. The Slot was not deleted.",
-      "PRODUCTS_MESSAGE": "The selected Applications and their apps are deregistered from the Workspace. Menu items that use such paths are not touched but no longer work.",
-      "PRODUCTS_QUESTION": "Do you want to deregister selected Applications?",
-      "COMPONENTS_QUESTION": "Do you want to deregister selected Components?"
+      "INFO": "This action cannot be undone!",
+      "WORKSPACE": {
+        "HEADER": "Delete Workspace",
+        "MESSAGE": "Do you want to delete this Workspace?",
+        "MESSAGE_OK": "The Workspace was deleted successfully",
+        "MESSAGE_NOK": "An error has occurred. The Workspace could not be deleted."
+      },
+      "MENU": {
+        "HEADER": "Delete Menu Item",
+        "MESSAGE": "Do you want to delete this Menu Item?",
+        "MESSAGE_CHILDREN": "This will also delete all Menu Items below.",
+        "MESSAGE_OK": "The Menu Item was deleted successfully",
+        "MESSAGE_NOK": "An error has occurred. The Menu Item could not be deleted."
+      },
+      "ROLE": {
+        "HEADER": "Delete Role",
+        "MESSAGE": "Do you want to delete this Role?",
+        "MESSAGE_INFO": "This deletes the Role and its assignments for the Workspace. Does not changed anycthing in Permission Management.",
+        "MESSAGE_OK": "The Role was deleted successfully",
+        "MESSAGE_NOK": "An error has occurred. The Role was not deleted."
+      },
+      "SLOT": {
+        "LABEL": "Delete Slot",
+        "LABEL.COMPONENTS": "Deleting slot not possible because components are still assigned.",
+        "MESSAGE": "Do you want to delete this Slot?",
+        "MESSAGE_OK": "The Slot was deleted successfully",
+        "MESSAGE_NOK": "An error has occurred. The Slot was not deleted.",
+        "DEREGISTER_COMPONENTS": "Do you want to deregister selected Components from Slot?",
+        "DEREGISTER_OK": "The assignment of Slot to Components were deleted successfully",
+        "DEREGISTER_NOK": "An error has occurred. The assignment of Slot to Components were not deleted."
+      },
+      "PRODUCT": {
+        "MESSAGE": "Do you want to deregister selected Applications?",
+        "MESSAGE_INFO": "The selected Applications and their apps are deregistered from the Workspace. Menu items that use such paths are not touched but no longer work."
+      }
     },
     "EDIT": {
       "LABEL": "Edit",
@@ -355,6 +374,7 @@
         "EDIT": "Menu Item Details",
         "CREATE": "Create Menu Item",
         "DELETE": "Delete Menu Item",
+        "VIEW": "Menu Details",
         "IMPORT": "Import Menu",
         "TREE_MODAL": "Reorder",
         "TREE_MODAL.TOOLTIP": "Reorder of Menu Items via Drag & Drop and Preview in configured languages",
@@ -376,7 +396,8 @@
       },
       "SUBHEADER": "Manage the Menu",
       "ACTION": {
-        "DETAILS": "Display details"
+        "VIEW": "Display details",
+        "EDIT": "Edit details"
       },
       "TABS": {
         "DETAILS": "Details",
@@ -577,9 +598,13 @@
     "USER_SIDEBAR_MENU": {
       "LOGOUT": "Log out"
     },
-    "LIST_WORKSPACES": {
-      "USED": "Theme is used by the following Workspaces: ",
-      "UNUSED": "Theme is not used by a Workspace."
+    "LIST_WORKSPACES_THEME": {
+      "USED": "The Theme is used by the following Workspaces: ",
+      "UNUSED": "The Theme is not used by any Workspace."
+    },
+    "LIST_WORKSPACES_PRODUCT": {
+      "USED": "The Application is used by the following Workspaces: ",
+      "UNUSED": "The Application is not used by any Workspace."
     }
   },
   "VALIDATION": {
@@ -606,6 +631,8 @@
       "WORKSPACE": "Unknown problem retrieving Workspace details - please try again.",
       "WORKSPACES": "Unknown problem retrieving Workspace data - please try again.",
       "PRODUCTS": "Unknown problem retrieving Application data - please try again.",
+      "IAM_ROLES": "Unknown problem retrieving IAM Roles - please try again.",
+      "WS_ROLES": "Unknown problem retrieving Workspace Role data - please try again.",
       "SLOTS": "Unknown problem retrieving Slot data - please try again.",
       "MENUS": "Unknown problem retrieving Menu data - please try again."
     },
@@ -613,6 +640,8 @@
       "WORKSPACE": "You are not authorized to see Workspace details.",
       "WORKSPACES": "You are not authorized to see Workspaces.",
       "PRODUCTS": "You are not authorized to see Applications.",
+      "IAM_ROLES": "You are not authorized to see IAM Roles.",
+      "WS_ROLES": "You are not authorized to see Workspace Roles.",
       "SLOTS": "You are not authorized to see Slots.",
       "MENUS": "You are not authorized to see Menus."
     },
@@ -620,6 +649,8 @@
       "WORKSPACE": "You have no permissions to see Workspace details.",
       "WORKSPACES": "You have no permissions to see Workspaces.",
       "PRODUCTS": "You have no permissions to see Applications.",
+      "IAM_ROLES": "You have no permissions to see IAM Roles.",
+      "WS_ROLES": "You have no permissions to see Workspace Roles.",
       "SLOTS": "You have no permissions to see Slots.",
       "MENUS": "You have no permissions to see Menus."
     },
@@ -627,13 +658,20 @@
       "WORKSPACE": "The Workspace could not be found.",
       "WORKSPACES": "No Workspaces could be found.",
       "PRODUCTS": "No Applications could be load.",
+      "IAM_ROLES": "No IAM Roles could be load.",
+      "WS_ROLES": "No Workspace Roles could be load.",
       "SLOTS": "No Slots could be load.",
       "MENUS": "No Menus could be found."
+    },
+    "HTTP_STATUS_418": {
+      "IAM_ROLES": "No IAM Roles could be load."
     },
     "HTTP_STATUS_500": {
       "WORKSPACE": "Unknown server problem retrieving Workspace details - please try again.",
       "WORKSPACES": "Unknown server problem retrieving Workspace data - please try again.",
       "PRODUCTS": "Unknown server problem retrieving Application data - please try again.",
+      "IAM_ROLES": "Unknown server problem retrieving IAM Role data - please try again.",
+      "WS_ROLES": "Unknown server problem retrieving Workspace Role data - please try again.",
       "SLOTS": "Unknown server problem retrieving Slot data - please try again.",
       "MENUS": "Unknown server problem retrieving Menu data - please try again."
     }

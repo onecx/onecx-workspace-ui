@@ -64,6 +64,13 @@ app:
           technology: WEBCOMPONENTMODULE
           remoteName: onecx-workspace
           tagName: ocx-list-workspaces-using-theme-component
+        list-workspaces-using-product:
+          exposedModule: "./OneCXListWorkspacesUsingProductComponent"
+          description: "List of Workspaces using the given Product"
+          type: COMPONENT
+          technology: WEBCOMPONENTMODULE
+          remoteName: onecx-workspace
+          tagName: ocx-list-workspaces-using-product-component
     # Permission
     permission:
       enabled: true

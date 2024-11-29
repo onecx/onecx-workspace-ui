@@ -1,12 +1,13 @@
 import { Component, EventEmitter, Input, OnChanges, Output, Renderer2, SimpleChanges, ViewChild } from '@angular/core'
 import { Location } from '@angular/common'
-import { TranslateService } from '@ngx-translate/core'
 import { DefaultValueAccessor, FormControl, FormGroup, Validators } from '@angular/forms'
+import { TranslateService } from '@ngx-translate/core'
 import { Observable, Subject, catchError, map, of, takeUntil } from 'rxjs'
 import { TabView } from 'primeng/tabview'
 import { SelectItem } from 'primeng/api'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+
 import { dropDownSortItemsByLabel, limitText } from 'src/app/shared/utils'
 import {
   CreateMenuItem,
@@ -61,7 +62,7 @@ export class MenuDetailComponent implements OnChanges {
   private menuItem$: Observable<MenuItem | null> = new Observable<MenuItem | null>()
   public iconItems: SelectItem[] = [] // default value is empty
   public scopeItems: SelectItem[]
-  private posPattern = '[0-9]{1,9}'
+  private readonly posPattern = '[0-9]{1,9}'
   public mfeMap: Map<string, MenuURL> = new Map()
   public mfeItems!: MenuURL[]
   public filteredMfes: MenuURL[] = []
@@ -119,11 +120,11 @@ export class MenuDetailComponent implements OnChanges {
     if (this.displayDetailDialog) {
       this.cleanupMfeUrls() // remove special entries
       this.loadMfeUrls() // load first time only
-      this.formGroup.reset()
       this.tabIndex = 0
       this.languagesDisplayed = []
+      this.formGroup.reset()
+      if (this.changeMode === 'VIEW') this.formGroup.disable()
       if (this.changeMode === 'CREATE') {
-        this.formGroup.reset()
         this.menuItem = {
           parentItemId: this.menuItemOrg?.id,
           position: this.menuItemOrg ? this.getMaxChildrenPosition(this.menuItemOrg) : 0,
@@ -135,16 +136,17 @@ export class MenuDetailComponent implements OnChanges {
       } else if (this.menuItemOrg?.id) this.getMenu() // edit
     }
   }
-  private getMaxChildrenPosition(item: WorkspaceMenuItem): number {
+
+  public getMaxChildrenPosition(item: WorkspaceMenuItem): number {
     if (!item.children || item.children?.length === 0) return 0
     else return (item.children[item.children.length - 1].position ?? 0) + 1
   }
 
-  private getMenu() {
+  public getMenu() {
     this.menuItem$ = this.menuApi.getMenuItemById({ menuItemId: this.menuItemOrg?.id ?? '' }).pipe(
       catchError((err) => {
         this.msgService.error({ summaryKey: 'DIALOG.MENU.MENU_ITEM_NOT_FOUND' })
-        console.error(err.error)
+        console.error('getMenuItemById', err)
         return of(err)
       })
     )
@@ -251,17 +253,8 @@ export class MenuDetailComponent implements OnChanges {
       if (this.formGroup.controls['url'].value instanceof Object)
         this.menuItem.url = this.formGroup.controls['url'].value.mfePath
       else this.menuItem.url = this.formGroup.controls['url'].value
-
       this.getFormValues()
-
-      // if language panell was initialized then take over content
-      if (this.languagesDisplayed.length > 0) {
-        const i18n: I18N = {}
-        for (const l of this.languagesDisplayed) {
-          if (l.data !== '') i18n[l.value] = l.data
-        }
-        this.menuItem.i18n = i18n
-      }
+      this.getI18nValues()
     }
     if (this.changeMode === 'CREATE') {
       this.menuApi
@@ -273,9 +266,9 @@ export class MenuDetailComponent implements OnChanges {
             this.msgService.success({ summaryKey: 'ACTIONS.CREATE.MESSAGE.MENU_CREATE_OK' })
             this.dataChanged.emit(true)
           },
-          error: (err: { error: any }) => {
+          error: (err) => {
             this.msgService.error({ summaryKey: 'ACTIONS.CREATE.MESSAGE.MENU_CREATE_NOK' })
-            console.error(err.error)
+            console.error('createMenuItemForWorkspace', err)
           }
         })
     }
@@ -286,15 +279,24 @@ export class MenuDetailComponent implements OnChanges {
           updateMenuItemRequest: this.menuItem as UpdateMenuItemRequest
         })
         .subscribe({
-          next: (data) => {
+          next: () => {
             this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' })
             this.dataChanged.emit(true)
           },
-          error: (err: { error: any }) => {
+          error: (err) => {
             this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
-            console.error(err.error)
+            console.error('updateMenuItem', err)
           }
         })
+    }
+  }
+  private getI18nValues() {
+    if (this.menuItem && this.languagesDisplayed.length > 0) {
+      const i18n: I18N = {}
+      for (const l of this.languagesDisplayed) {
+        if (l.data !== '') i18n[l.value] = l.data
+      }
+      this.menuItem.i18n = i18n
     }
   }
   private getFormValues() {
@@ -318,12 +320,12 @@ export class MenuDetailComponent implements OnChanges {
     this.displayDeleteDialog = false
     this.menuApi.deleteMenuItemById({ menuItemId: this.menuItemOrg?.id ?? '' }).subscribe({
       next: () => {
-        this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MENU_OK' })
+        this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MENU.MESSAGE_OK' })
         this.dataChanged.emit(true)
       },
-      error: (err: { error: any }) => {
-        this.msgService.error({ summaryKey: 'ACTIONS.DELETE.MENU_NOK' })
-        console.error(err.error)
+      error: (err) => {
+        this.msgService.error({ summaryKey: 'ACTIONS.DELETE.MENU.MESSAGE_NOK' })
+        console.error('deleteMenuItemById', err)
       }
     })
   }
@@ -362,6 +364,7 @@ export class MenuDetailComponent implements OnChanges {
     }
   }
   public onRemoveLanguage(val: string) {
+    if (this.languagesDisplayed.length === 0) return
     if (['de', 'en'].includes(this.languagesDisplayed.filter((l) => l.value === val)[0].value)) {
       this.languagesDisplayed.filter((l) => l.value === val)[0].data = ''
     } else {
@@ -370,10 +373,6 @@ export class MenuDetailComponent implements OnChanges {
       this.languagesAvailable = this.languagesAvailable.filter((l) => l).sort(dropDownSortItemsByLabel)
       this.languagesDisplayed = this.languagesDisplayed.filter((l) => l.value !== val)
     }
-  }
-  public onAddLanguage2(ev: any): void {
-    this.languagesDisplayed.push(this.languagesAvailable.filter((l) => l.value === ev.option.value)[0])
-    this.languagesAvailable = this.languagesAvailable.filter((l) => l.value !== ev.option.value)
   }
   public onAddLanguage(val: string): void {
     this.languagesDisplayed.push(this.languagesAvailable.filter((l) => l.value === val)[0])
@@ -400,22 +399,24 @@ export class MenuDetailComponent implements OnChanges {
       .getProductsByWorkspaceId({ id: this.workspaceId! })
       .pipe(
         map((products) => {
-          for (const p of products) {
-            if (p.microfrontends) {
-              for (const mfe of p.microfrontends) {
-                this.mfeItems.push({
-                  ...mfe,
-                  mfePath: Location.joinWithSlash(mfe.basePath ?? '', p.baseUrl ?? ''),
-                  product: p.displayName!,
-                  isSpecial: false
-                })
+          if (products?.length > 0) {
+            for (const p of products) {
+              if (p.microfrontends) {
+                for (const mfe of p.microfrontends) {
+                  this.mfeItems.push({
+                    ...mfe,
+                    mfePath: Location.joinWithSlash(mfe.basePath ?? '', p.baseUrl ?? ''),
+                    product: p.displayName!,
+                    isSpecial: false
+                  })
+                }
               }
             }
+            this.mfeItems.sort(this.sortMfesByPath)
           }
-          this.mfeItems.sort(this.sortMfesByPath)
         }),
         catchError((err) => {
-          console.error('getProductsByWorkspaceId():', err)
+          console.error('getProductsByWorkspaceId', err)
           return of([] as SelectItem[])
         })
       )
@@ -452,7 +453,7 @@ export class MenuDetailComponent implements OnChanges {
   }
 
   // the opening of a URL in a new TAB requires the URL - manage here if not exist:
-  private adjustExternalLinkCheckbox(url?: string) {
+  public adjustExternalLinkCheckbox(url?: string) {
     if (url) this.formGroup.controls['external'].enable()
     else {
       this.formGroup.controls['external'].setValue(false) // reset

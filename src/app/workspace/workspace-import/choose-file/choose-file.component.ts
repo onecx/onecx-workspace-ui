@@ -15,14 +15,11 @@ export class ChooseFileComponent implements OnInit {
   public httpHeaders!: HttpHeaders
   public reader = new FileReader()
   public importError = false
-  public validationErrorCause: string
+  public validationErrorCause: string | undefined = undefined
 
-  constructor(private readonly translate: TranslateService) {
-    this.validationErrorCause = ''
-  }
+  constructor(private readonly translate: TranslateService) {}
 
   public ngOnInit(): void {
-    this.validationErrorCause = ''
     this.httpHeaders = new HttpHeaders()
     this.httpHeaders.set('Content-Type', 'application/json')
   }
@@ -31,11 +28,11 @@ export class ChooseFileComponent implements OnInit {
     if (this.importWorkspace) this.importFileSelected.emit(this.importWorkspace)
   }
 
-  public onSelect(event: FileSelectEvent): void {
+  public onFileSelect(event: FileSelectEvent): void {
     event.files[0].text().then((text) => {
       this.importWorkspace = null
       this.importError = false
-      this.validationErrorCause = ''
+      this.validationErrorCause = undefined
 
       this.translate
         .get([
@@ -61,7 +58,7 @@ export class ChooseFileComponent implements OnInit {
               this.importWorkspace = importWorkspace
             }
           } catch (err) {
-            console.error('Import Error', err)
+            console.error('Parse Error', err)
             this.importError = true
             this.validationErrorCause =
               data['WORKSPACE_IMPORT.VALIDATION_RESULT'] + data['WORKSPACE_IMPORT.VALIDATION_JSON_ERROR']
@@ -73,7 +70,7 @@ export class ChooseFileComponent implements OnInit {
   public onClear(): void {
     this.importWorkspace = null
     this.importError = false
-    this.validationErrorCause = ''
+    this.validationErrorCause = undefined
   }
 
   public isFileValid(): boolean {
@@ -98,7 +95,7 @@ export class ChooseFileComponent implements OnInit {
     } else {
       this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_WORKSPACE_MISSING']
     }
-    if (this.validationErrorCause !== '') {
+    if (this.validationErrorCause) {
       this.importError = true
       this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_RESULT'] + this.validationErrorCause
       return false

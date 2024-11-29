@@ -49,10 +49,12 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   public filterBy = 'name,type'
   public sortField = 'name'
   public sortOrder = -1
-  public loading = false
+  public iamLoading = false
+  public wsLoading = false
   public iamRolesLoaded = false
+  public iamAvailable = false
   public wRolesLoaded = false
-  public exceptionKey: string | undefined
+  public exceptionKey: string | undefined = undefined
   public quickFilterValue: RoleFilterType = 'ALL'
   public quickFilterValue2: RoleFilterType = 'WORKSPACE'
   public quickFilterItems: ExtendedSelectItem[]
@@ -111,16 +113,17 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
             : []
         }),
         catchError((err) => {
-          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.ROLES'
-          console.error('searchAvailableRoles():', err)
+          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.WS_ROLES'
+          console.error('searchAvailableRoles', err)
           return of([])
         }),
-        finalize(() => (this.loading = false))
+        finalize(() => (this.wsLoading = false))
       )
   }
   private searchIamRoles(): Observable<Role[]> {
     return this.iamRoleApi.searchAvailableRoles({ iAMRoleSearchCriteria: { pageSize: 1000 } }).pipe(
       map((result) => {
+        this.iamAvailable = true
         return result.stream
           ? result.stream?.map((role) => {
               return { ...role, isIamRole: true, isWorkspaceRole: false, type: 'IAM' } as Role
@@ -128,15 +131,21 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
           : []
       }),
       catchError((err) => {
-        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.ROLES'
-        console.error('searchAvailableRoles():', err)
+        if (err.status === 418) {
+          this.iamAvailable = false
+        } else {
+          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.IAM_ROLES'
+          console.error('searchAvailableRoles', err)
+        }
         return of([])
       }),
-      finalize(() => (this.loading = false))
+      finalize(() => (this.iamLoading = false))
     )
   }
 
   private getWorkspaceRoles(): void {
+    this.wsLoading = true
+    this.exceptionKey = undefined
     const result: Role[] = []
     this.searchWorkspaceRoles().subscribe({
       next: (data) => data.forEach((r) => result.push(r)),
@@ -148,6 +157,8 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
     })
   }
   private getIamRoles(): void {
+    this.iamLoading = true
+    this.exceptionKey = undefined
     const result: Role[] = []
     this.searchIamRoles().subscribe({
       next: (data) => data.forEach((r) => result.push(r)),
@@ -171,13 +182,9 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   }
   private searchRoles(force: boolean = false): void {
     if (['WORKSPACE', 'ALL'].includes(this.quickFilterValue) && (force || !this.wRolesLoaded)) {
-      this.loading = true
-      this.exceptionKey = undefined
       this.getWorkspaceRoles()
     }
     if (['IAM', 'ALL'].includes(this.quickFilterValue) && (force || !this.iamRolesLoaded)) {
-      this.loading = true
-      this.exceptionKey = undefined
       this.getIamRoles()
     }
   }
@@ -201,14 +208,15 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
       })
       .subscribe({
         next: (data) => {
-          this.msgService.success({ summaryKey: 'ACTIONS.CREATE.ROLE_OK' })
+          this.msgService.success({ summaryKey: 'ACTIONS.CREATE.ROLE.MESSAGE_OK' })
           role.id = data.id
           role.modificationCount = data.modificationCount
           role.modificationDate = data.modificationDate
           role.isWorkspaceRole = true
         },
-        error: () => {
-          this.msgService.error({ summaryKey: 'ACTIONS.CREATE.ROLE_NOK' })
+        error: (err) => {
+          this.msgService.error({ summaryKey: 'ACTIONS.CREATE.ROLE.MESSAGE_NOK' })
+          console.error('createWorkspaceRole', err)
         }
       })
   }

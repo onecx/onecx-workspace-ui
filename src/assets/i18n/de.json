@@ -24,6 +24,10 @@
       "ROLE_NOK": "Ein Fehler ist aufgetreten. Die Rolle wurde nicht erstellt.",
       "MENU": "Menüpunkt erstellen",
       "MENU.TOOLTIP": "Ein neuen Menüpunkt unterhalb erstellen",
+      "SLOT": {
+        "MESSAGE_OK": "Der Slot wurde erfolgreich erstellt",
+        "MESSAGE_NOK": "Ein Fehler ist aufgetreten. Der Slot wurde nicht erstellt."
+      },
       "MESSAGE": {
         "CREATE_OK": "Der Workspace wurde erfolgreich erstellt",
         "CREATE_NOK": "Ein Fehler ist aufgetreten. Der Workspace wurde nicht erstellt.",
@@ -35,26 +39,41 @@
     },
     "DELETE": {
       "LABEL": "Löschen",
-      "ROLE": "Rolle löschen",
-      "SLOT": "Slot löschen",
-      "WORKSPACE": "Workspace löschen",
-      "MENU": "Menüpunkt löschen",
-      "MESSAGE": "Möchten Sie \"{{ITEM}}\" löschen?",
-      "MESSAGE_INFO": "Diese Aktion kann nicht rückgängig gemacht werden!",
-      "MESSAGE_NOK": "Workspace konnte nicht gelöscht werden",
-      "MESSAGE_OK": "Workspace erfolgreich gelöscht",
-      "MENU_MESSAGE": "Damit werden auch alle Menupunkte unterhalb gelöscht.",
-      "MENU_OK": "Der Menüpunkt wurde erfolgreich gelöscht",
-      "MENU_NOK": "Ein Fehler ist aufgetreten. Der Menüpunkt wurde nicht gelöscht.",
-      "ROLE_MESSAGE": "Damit wird die Rolle und deren Zuweisungen (zu Menüpunkten) für den Workspace gelöscht. Das führt zu keiner Änderung im Permission Management.",
-      "ROLE_OK": "Die Rolle wurde erfolgreich gelöscht",
-      "ROLE_NOK": "Ein Fehler ist aufgetreten. Die Rolle wurde nicht gelöscht.",
-      "SLOT_MESSAGE": "Damit wird die Zuweisung von Slot zur Komponente für den Workspace gelöscht.",
-      "SLOT_OK": "Die Slot-Zuweisung wurde erfolgreich gelöscht.",
-      "SLOT_NOK": "Ein Fehler ist aufgetreten. Die Slot-Zuweisung wurde nicht gelöscht.",
-      "PRODUCTS_MESSAGE": "Die ausgewählten Applikationen und ihre Komponenten werden für den Arbeitsbereich abgemeldet. Menüelemente, die solche Pfade verwenden, werden nicht berührt, funktionieren aber nicht mehr.",
-      "PRODUCTS_QUESTION": "Möchten Sie die ausgewählten Applikationen abmelden?",
-      "COMPONENTS_QUESTION": "Möchten Sie die ausgewählten Komponenten abmelden?"
+      "INFO": "Diese Aktion kann nicht rückgängig gemacht werden!",
+      "WORKSPACE": {
+        "HEADER": "Workspace löschen",
+        "MESSAGE": "Möchten Sie diesen Workspace löschen?",
+        "MESSAGE_OK": "Workspace erfolgreich gelöscht",
+        "MESSAGE_NOK": "Workspace konnte nicht gelöscht werden"
+      },
+      "MENU": {
+        "HEADER": "Menüpunkt löschen",
+        "MESSAGE": "Möchten Sie diesen Menüpunkt löschen?",
+        "MESSAGE_CHILDREN": "Damit werden auch alle Menupunkte unterhalb gelöscht.",
+        "MESSAGE_OK": "Der Menüpunkt wurde erfolgreich gelöscht",
+        "MESSAGE_NOK": "Ein Fehler ist aufgetreten. Der Menüpunkt wurde nicht gelöscht."
+      },
+      "ROLE": {
+        "HEADER": "Rolle löschen",
+        "MESSAGE": "Möchten Sie diese Rolle löschen?",
+        "MESSAGE_INFO": "Damit wird die Rolle und deren Zuweisungen (zu Menüpunkten) für den Workspace gelöscht. Das führt zu keiner Änderung im Permission Management.",
+        "MESSAGE_OK": "Die Rolle wurde erfolgreich gelöscht",
+        "MESSAGE_NOK": "Ein Fehler ist aufgetreten. Die Rolle wurde nicht gelöscht."
+      },
+      "SLOT": {
+        "LABEL": "Slot löschen",
+        "LABEL.COMPONENTS": "Slot löschen nicht möglich da noch Komponenten zugeordnet sind",
+        "MESSAGE": "Möchten Sie diesen Slot löschen?",
+        "MESSAGE_OK": "Der Slot wurde erfolgreich gelöscht",
+        "MESSAGE_NOK": "Ein Fehler ist aufgetreten. Der Slot wurde nicht gelöscht.",
+        "DEREGISTER_COMPONENTS": "Möchten Sie die ausgewählten Komponenten vom Slot entfernen?",
+        "DEREGISTER_OK": "Die Slot-Zuweisungen wurden erfolgreich gelöscht.",
+        "DEREGISTER_NOK": "Ein Fehler ist aufgetreten. Die Slot-Zuweisungen wurden nicht gelöscht."
+      },
+      "PRODUCT": {
+        "MESSAGE": "Möchten Sie die ausgewählten Applikationen abmelden?",
+        "MESSAGE_INFO": "Die ausgewählten Applikationen und ihre Komponenten werden für den Arbeitsbereich abgemeldet. Menüelemente, die solche Pfade verwenden, werden nicht berührt, funktionieren aber nicht mehr."
+      }
     },
     "EDIT": {
       "LABEL": "Bearbeiten",
@@ -95,7 +114,7 @@
       "NEXT": "Weiter",
       "NEXT.TOOLTIP": "Nächste Seite",
       "BACK.TOOLTIP": "Vorherige Seite",
-      "DETAILS.TOOLTIP": "Anzeige Details",
+      "DETAILS.TOOLTIP": "Details anzeigen",
       "NEW.TOOLTIP": "Erstelle neuen Eintrag",
       "GOTO_MENU": "Zur Menüverwaltung wechseln",
       "GOTO_THEME": "Zum Theme wechseln",
@@ -283,7 +302,7 @@
         "CREATE": "Rolle erstellen",
         "DELETE": "Rolle löschen",
         "EDIT": "Rolle ändern",
-        "VIEW": "Rolle ansehen"
+        "VIEW": "Rollendetails"
       },
       "EDIT.TOOLTIP": "Rollentyp",
       "QUICK_FILTER": {
@@ -355,6 +374,7 @@
         "EDIT": "Menüpunkt Details",
         "CREATE": "Menüpunkt erstellen",
         "DELETE": "Menüpunkt löschen",
+        "VIEW": "Menüpunkt Details",
         "IMPORT": "Menü importieren",
         "TREE_MODAL": "Umordnen",
         "TREE_MODAL.TOOLTIP": "Menüeinträge per Drag & Drop umordnen und Ansicht in den konfigurierten Sprachen",
@@ -376,7 +396,8 @@
       },
       "SUBHEADER": "Menü verwalten",
       "ACTION": {
-        "DETAILS": "Anzeige Details"
+        "VIEW": "Details anzeigen",
+        "EDIT": "Details bearbeiten"
       },
       "TABS": {
         "DETAILS": "Details",
@@ -577,9 +598,13 @@
     "USER_SIDEBAR_MENU": {
       "LOGOUT": "Abmelden"
     },
-    "LIST_WORKSPACES": {
-      "USED": "Theme wird in diesen Workspaces verwendet: ",
-      "UNUSED": "Theme wird von keinem Workspace verwendet."
+    "LIST_WORKSPACES_THEME": {
+      "USED": "Das Theme wird in diesen Workspaces verwendet: ",
+      "UNUSED": "Das Theme wird von keinem Workspace verwendet."
+    },
+    "LIST_WORKSPACES_PRODUCT": {
+      "USED": "Die Applikation wird in diesen Workspaces verwendet: ",
+      "UNUSED": "Die Applikation wird von keinem Workspace verwendet."
     }
   },
   "VALIDATION": {
@@ -606,6 +631,8 @@
       "WORKSPACE": "Unbekanntes Problem beim Abrufen von Workspace Details - Bitte versuchen sie es noch einmal.",
       "WORKSPACES": "Unbekanntes Problem beim Abrufen von Workspace-Daten - Bitte versuchen sie es noch einmal.",
       "PRODUCTS": "Unbekanntes Problem beim Abrufen von Applikation-Daten - Bitte versuchen sie es noch einmal.",
+      "IAM_ROLES": "Unbekanntes Problem beim Abrufen von Rollen aus dem IAM - Bitte versuchen sie es noch einmal.",
+      "WS_ROLES": "Unbekanntes Problem beim Abrufen von Workspace-Rollen - Bitte versuchen sie es noch einmal.",
       "SLOTS": "Unbekanntes Problem beim Abrufen von Slot-Daten - Bitte versuchen sie es noch einmal.",
       "MENUS": "Unbekanntes Problem beim Abrufen von Menü-Daten - Bitte versuchen sie es noch einmal."
     },
@@ -613,6 +640,8 @@
       "WORKSPACE": "Sie sind nicht autorisiert um Workspace Details zu sehen.",
       "WORKSPACES": "Sie sind nicht autorisiert um Workspaces zu sehen.",
       "PRODUCTS": "Sie sind nicht autorisiert um Applikationen zu sehen.",
+      "IAM_ROLES": "Sie sind nicht autorisiert um Rollen aus dem IAM zu sehen.",
+      "WS_ROLES": "Sie sind nicht autorisiert um Workspace-Rollen zu sehen.",
       "SLOTS": "Sie sind nicht autorisiert um Slots zu sehen.",
       "MENUS": "Sie sind nicht autorisiert um Menüs zu sehen."
     },
@@ -620,22 +649,31 @@
       "WORKSPACE": "Sie haben keine Rechte um Workspace Details zu sehen.",
       "WORKSPACES": "Sie haben keine Rechte um Workspaces zu sehen.",
       "PRODUCTS": "Sie haben keine Rechte um Applikationen zu sehen.",
+      "IAM_ROLES": "Sie haben keine Rechte um Rollen aus dem IAM zu sehen.",
+      "WS_ROLES": "Sie haben keine Rechte um Workspace-Rollen zu sehen.",
       "SLOTS": "Sie haben keine Rechte um Slots zu sehen.",
       "MENUS": "Sie haben keine Rechte um Menüs zu sehen."
     },
     "HTTP_STATUS_404": {
       "WORKSPACE": "Der Workspace wurde nicht gefunden.",
       "WORKSPACES": "Es konnten keine Workspaces gefunden werden.",
-      "PRODUCTS": "Es konnten keine Applikationen geladen werden.",
-      "SLOTS": "Es konnten keine Slots geladen werden.",
+      "PRODUCTS": "Es konnten keine Applikationen gefunden werden.",
+      "IAM_ROLES": "Es konnten keine Rollen aus dem IAM gefunden werden.",
+      "WS_ROLES": "Es konnten keine Workspace-Rollen gefunden werden.",
+      "SLOTS": "Es konnten keine Slots gefunden werden.",
       "MENUS": "Es konnten keine Menüs gefunden werden."
+    },
+    "HTTP_STATUS_418": {
+      "IAM_ROLES": "Es konnten keine Rollen aus dem IAM geholt werden."
     },
     "HTTP_STATUS_500": {
       "WORKSPACE": "Unbekanntes Server-Problem beim Abrufen von Workspace-Details - Bitte versuchen sie es noch einmal.",
       "WORKSPACES": "Unbekanntes Server-Problem beim Abrufen von Workspace-Daten - Bitte versuchen sie es noch einmal.",
       "PRODUCTS": "Unbekanntes Server-Problem beim Abrufen von Applikation-Daten - Bitte versuchen sie es noch einmal.",
-      "SLOTS": "Unbekanntes Server-Problem beim Abrufen von Slot-Daten - Bitte versuchen sie es noch einmal.",
-      "MENUS": "Unbekanntes Server-Problem beim Abrufen von Menü-Daten - Bitte versuchen sie es noch einmal."
+      "IAM_ROLES": "Unbekanntes Server-Problem beim Abrufen von Rollen aus dem IAM - Bitte versuchen sie es noch einmal.",
+      "WS_ROLES": "Unbekanntes Server-Problem beim Abrufen von Workspace-Rollen - Bitte versuchen sie es noch einmal.",
+      "SLOTS": "Unbekanntes Server-Problem beim Abrufen von Slots - Bitte versuchen sie es noch einmal.",
+      "MENUS": "Unbekanntes Server-Problem beim Abrufen von Menüdaten - Bitte versuchen sie es noch einmal."
     }
   }
 }

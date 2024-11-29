@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, OnChanges, Output } from '@angu
 import { Location } from '@angular/common'
 import { Router } from '@angular/router'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
-import { map, Observable, Subject } from 'rxjs'
+import { map, Observable, of, Subject } from 'rxjs'
 
 import { PortalMessageService, WorkspaceService } from '@onecx/angular-integration-interface'
 
@@ -27,16 +27,19 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   @Input() isLoading = false
   @Output() currentLogoUrl = new EventEmitter<string>()
 
+  public getLocation = getLocation
+  public copyToClipboard = copyToClipboard
+  public sortByLocale = sortByLocale
+  public RefType = RefType
+
   private readonly destroy$ = new Subject()
   public formGroup: FormGroup
-  public productPaths$!: Observable<string[]>
+  public productPaths$: Observable<string[]> = of([])
   public themeProductRegistered$!: Observable<boolean>
   public themes$!: Observable<string[]>
   public urlPattern = '/base-path-to-workspace'
   public externUrlPattern = 'http(s)://path-to-image'
-  public copyToClipboard = copyToClipboard
-  public sortByLocale = sortByLocale
-  public deploymentPath: string = ''
+  public deploymentPath: string | undefined = undefined
 
   //Logo
   public preview = false
@@ -46,10 +49,8 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   public minimumImageHeight = 150
   public fetchingLogoUrl: string | undefined = undefined
   public themeUrl: string | undefined = undefined
-  RefType = RefType
 
   constructor(
-    private readonly location: Location,
     private readonly router: Router,
     public workspaceService: WorkspaceService,
     private readonly msgService: PortalMessageService,
@@ -57,7 +58,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     private readonly workspaceApi: WorkspaceAPIService,
     private readonly wProductApi: WorkspaceProductAPIService
   ) {
-    this.deploymentPath = getLocation().deploymentPath === '/' ? '' : getLocation().deploymentPath.slice(0, -1)
     this.themeProductRegistered$ = workspaceService.doesUrlExistFor('onecx-theme', 'onecx-theme-ui', 'theme-detail')
 
     this.formGroup = new FormGroup({
@@ -75,24 +75,24 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
 
   public ngOnInit(): void {
     if (!this.isLoading) {
-      this.loadProductPaths()
       this.loadThemes()
     }
   }
 
   public ngOnChanges(): void {
     if (this.workspace) {
-      this.setFormData()
-      if (this.editMode) {
-        this.formGroup.enable()
-      } else this.formGroup.disable()
+      this.fillForm()
+      if (this.editMode) this.formGroup.enable()
+      else this.formGroup.disable()
+      // if a home page value exists then fill it into drop down list for displaying
+      if (this.workspace.homePage) this.productPaths$ = of([this.workspace.homePage])
     } else {
       this.formGroup.reset()
       this.formGroup.disable()
     }
   }
 
-  public setFormData(): void {
+  public fillForm(): void {
     Object.keys(this.formGroup.controls).forEach((element) => {
       this.formGroup.controls[element].setValue((this.workspace as any)[element])
     })
@@ -127,24 +127,15 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       const files = (ev.target as HTMLInputElement).files
       if (files) {
         if (files[0].size > 100000) {
-          this.msgService.error({
-            summaryKey: 'IMAGE.CONSTRAINT_FAILED',
-            detailKey: 'IMAGE.CONSTRAINT_SIZE'
-          })
+          this.msgService.error({ summaryKey: 'IMAGE.CONSTRAINT_FAILED', detailKey: 'IMAGE.CONSTRAINT_SIZE' })
         } else if (!/^.*.(jpg|jpeg|png)$/.exec(files[0].name)) {
-          this.msgService.error({
-            summaryKey: 'IMAGE.CONSTRAINT_FAILED',
-            detailKey: 'IMAGE.CONSTRAINT_FILE_TYPE'
-          })
+          this.msgService.error({ summaryKey: 'IMAGE.CONSTRAINT_FAILED', detailKey: 'IMAGE.CONSTRAINT_FILE_TYPE' })
         } else if (this.workspace) {
           this.saveImage(this.workspace.name, files) // store image
         }
       }
     } else {
-      this.msgService.error({
-        summaryKey: 'IMAGE.CONSTRAINT_FAILED',
-        detailKey: 'IMAGE.CONSTRAINT_FILE_MISSING'
-      })
+      this.msgService.error({ summaryKey: 'IMAGE.CONSTRAINT_FAILED', detailKey: 'IMAGE.CONSTRAINT_FILE_MISSING' })
     }
   }
 
@@ -158,18 +149,18 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       refType: RefType.Logo,
       body: blob
     }
-    this.imageApi.getImage({ refId: name, refType: RefType.Logo }).subscribe(
-      () => {
+    this.imageApi.getImage({ refId: name, refType: RefType.Logo }).subscribe({
+      next: () => {
         this.imageApi.updateImage(saveRequestParameter).subscribe(() => {
           this.prepareImageResponse(name)
         })
       },
-      () => {
+      error: (err) => {
         this.imageApi.uploadImage(saveRequestParameter).subscribe(() => {
           this.prepareImageResponse(name)
         })
       }
-    )
+    })
   }
   private prepareImageResponse(name: string): void {
     this.fetchingLogoUrl = bffImageUrl(this.imageApi.configuration.basePath, name, RefType.Logo)
@@ -203,15 +194,16 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     } else return undefined
   }
 
-  private loadProductPaths(): void {
+  public onOpenProductPathes(paths: string[]) {
+    // if paths already filled then prevent doing twice
+    if (paths.length > (this.workspace?.homePage ? 1 : 0)) return
     if (this.workspace) {
       this.productPaths$ = this.wProductApi.getProductsByWorkspaceId({ id: this.workspace.id! }).pipe(
         map((val: any[]) => {
           const paths: string[] = []
           if (val.length > 0) {
-            for (const p of val) paths.push(p.baseUrl ?? '')
+            for (const p of val) paths.push(p.baseUrl)
             paths.sort(sortByLocale)
-            paths.unshift('')
           }
           return paths
         })

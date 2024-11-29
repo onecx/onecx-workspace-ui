@@ -14,7 +14,7 @@ export class WorkspaceInternComponent implements OnChanges {
   public mandatory = false
   public operator = false
 
-  constructor(private translate: TranslateService) {}
+  constructor(private readonly translate: TranslateService) {}
 
   public ngOnChanges(): void {
     this.mandatory = this.workspace?.mandatory ?? false

@@ -46,7 +46,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
     private readonly route: ActivatedRoute,
     private readonly translate: TranslateService,
     private readonly workspaceApi: WorkspaceAPIService,
-    private msgService: PortalMessageService
+    private readonly msgService: PortalMessageService
   ) {
     this.hasPermission = this.user.hasPermission('WORKSPACE#IMPORT')
 
@@ -143,9 +143,10 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
           this.importParseAndExtract(response)
           this.importCheckAndRoute(wKeys)
         },
-        error: () => {
+        error: (err) => {
           this.isLoading = false
           this.msgService.error({ summaryKey: 'WORKSPACE_IMPORT.IMPORT_NOK' })
+          console.error('importWorkspaces', err)
         }
       })
   }

@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges } from '@angular/core'
-import { FormControl, FormGroup } from '@angular/forms'
+import { FormControl, FormGroup, Validators } from '@angular/forms'
 
 import { Workspace } from 'src/app/shared/generated'
 
@@ -15,13 +15,13 @@ export class WorkspaceContactComponent implements OnChanges {
 
   constructor() {
     this.formGroup = new FormGroup({
-      companyName: new FormControl(null),
-      phoneNumber: new FormControl(null),
-      country: new FormControl(null),
-      city: new FormControl(null),
-      postalCode: new FormControl(null),
-      street: new FormControl(null),
-      streetNo: new FormControl(null)
+      companyName: new FormControl(null, [Validators.maxLength(255)]),
+      phoneNumber: new FormControl(null, [Validators.maxLength(255)]),
+      country: new FormControl(null, [Validators.maxLength(255)]),
+      city: new FormControl(null, [Validators.maxLength(255)]),
+      postalCode: new FormControl(null, [Validators.maxLength(255)]),
+      street: new FormControl(null, [Validators.maxLength(255)]),
+      streetNo: new FormControl(null, [Validators.maxLength(255)])
     })
   }
 

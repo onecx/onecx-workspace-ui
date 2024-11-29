@@ -49,7 +49,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   // data
   private readonly destroy$ = new Subject()
   public wProducts$!: Observable<string[]>
-  public wProductNames!: string[]
+  public wProductNames: string[] = []
   public wSlots$!: Observable<string[]>
   public wSlots!: CombinedSlot[] // registered workspace slots
   public wSlotsIntern!: CombinedSlot[] // temporary used ws slot array, final assigned to wSlots
@@ -68,8 +68,9 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   public filterBy = this.filterValueDefault
   public sortField = 'name'
   public sortOrder = -1
-  public exceptionKey: string | undefined
-  public loading = false
+  public exceptionKey: string | undefined = undefined
+  public sLoading = false
+  public wpLoading = false
   public changeMode: ChangeMode = 'VIEW'
   public hasCreatePermission = false
   public hasDeletePermission = false
@@ -106,7 +107,6 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     this.loadData()
   }
   public loadData(): void {
-    this.loading = true
     this.exceptionKey = undefined
     this.declareWorkspaceProducts()
     this.declareWorkspaceSlots()
@@ -122,6 +122,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
 
   private declareWorkspaceProducts(): void {
     if (this.workspace) {
+      this.wpLoading = true
       this.wProducts$ = this.wProductApi
         .getProductsByWorkspaceId({ id: this.workspace.id! })
         .pipe(
@@ -134,7 +135,8 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
             this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.PRODUCTS'
             console.error('getProductsByWorkspaceId():', err)
             return of([] as string[])
-          })
+          }),
+          finalize(() => (this.wpLoading = false))
         )
         .pipe(takeUntil(this.destroy$))
     }
@@ -245,6 +247,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
 
   // All declared Slots of Product store Products: containing deployment information
   private declarePsSlots(): void {
+    this.sLoading = true
     this.psSlots$ = this.psProductApi.searchAvailableProducts({ productStoreSearchCriteria: {} }).pipe(
       map((res) => {
         this.psSlots = []
@@ -259,11 +262,11 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
         return []
       }),
       catchError((err) => {
-        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.SLOTS'
+        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.PRODUCTS'
         console.error('searchAvailableProducts():', err)
         return of([])
       }),
-      finalize(() => (this.loading = false))
+      finalize(() => (this.sLoading = false))
     )
   }
 
@@ -341,8 +344,9 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
         next: () => {
           this.loadData()
         },
-        error: () => {
-          this.msgService.error({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.NOK' })
+        error: (err) => {
+          this.msgService.error({ summaryKey: 'ACTIONS.CREATE.SLOT.MESSAGE_NOK' })
+          console.error('createSlot', err)
         }
       })
   }

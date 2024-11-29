@@ -1,5 +1,5 @@
 <div class="surface-section my-1 mx-3">
-  <form [formGroup]="formGroup">
+  <form [formGroup]="formGroup" errorTailor>
     <div class="flex flex-wrap flex-column row-gap-4 w-12 md:w-10 lg:w-8 xl:w-6">
       <div class="ml-3 flex flex-row flex-wrap justify-content-start align-items-center column-gap-8 row-gap-2">
         <p-checkbox
@@ -93,7 +93,10 @@
             class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
             [ngClass]="!editMode && inputBaseUrl.value ? 'cursor-pointer' : 'p-disabled'"
             target="_blank"
-            [href]="deploymentPath + inputBaseUrl.value"
+            [href]="
+              (getLocation().deploymentPath === '/' ? '' : getLocation().deploymentPath.slice(0, -1)) +
+              inputBaseUrl.value
+            "
             (click)="$event.stopPropagation()"
             [attr.aria-label]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
             [pTooltip]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
@@ -107,15 +110,17 @@
         </label>
       </div>
 
-      <div class="p-inputgroup mb-1" controlErrorAnchor>
+      <div *ngIf="(productPaths$ | async) ?? [] as paths" class="p-inputgroup mb-1" controlErrorAnchor>
         <span class="p-float-label">
           <p-dropdown
             #inputHomePage
             id="ws_detail_props_item_home_page"
             formControlName="homePage"
             styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
-            [options]="(productPaths$ | async) ?? []"
+            (onClick)="onOpenProductPathes(paths); $event.stopPropagation()"
+            [options]="paths"
             [editable]="true"
+            [showClear]="true"
             [ariaLabel]="'WORKSPACE.HOME_PAGE' | translate"
             [pTooltip]="'WORKSPACE.TOOLTIPS.HOME_PAGE' | translate"
             tooltipPosition="top"
@@ -128,7 +133,7 @@
           tabindex="0"
           id="ws_detail_props_item_homePage_link"
           class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
-          [ngClass]="!editMode && !workspace?.disabled && workspace?.homePage ? 'cursor-pointer' : 'p-disabled'"
+          [ngClass]="!editMode && !workspace?.disabled && inputHomePage.value ? 'cursor-pointer' : 'p-disabled'"
           target="_blank"
           [href]="prepareProductUrl(inputHomePage.value)"
           (click)="$event.stopPropagation()"

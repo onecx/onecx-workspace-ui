@@ -2,8 +2,8 @@ import { TestBed } from '@angular/core/testing'
 import { CommonModule } from '@angular/common'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { NoopAnimationsModule } from '@angular/platform-browser/animations'
 import { provideRouter, RouterModule } from '@angular/router'
+import { NoopAnimationsModule } from '@angular/platform-browser/animations'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of, ReplaySubject, throwError } from 'rxjs'
 import { PanelMenuModule } from 'primeng/panelmenu'
@@ -11,15 +11,15 @@ import { PanelMenuModule } from 'primeng/panelmenu'
 import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
 
 import { SearchWorkspacesResponse, WorkspaceAPIService } from 'src/app/shared/generated'
-import { OneCXListWorkspacesUsingThemeComponent } from './list-workspaces-using-theme.component'
+import { OneCXListWorkspacesUsingProductComponent } from './list-workspaces-using-product.component'
 
-describe('OneCXListWorkspacesUsingThemeComponent', () => {
+describe('OneCXListWorkspacesUsingProductComponent', () => {
   const wsApiSpy = {
     searchWorkspaces: jasmine.createSpy('searchWorkspaces').and.returnValue(of({}))
   }
 
   function setUp() {
-    const fixture = TestBed.createComponent(OneCXListWorkspacesUsingThemeComponent)
+    const fixture = TestBed.createComponent(OneCXListWorkspacesUsingProductComponent)
     const component = fixture.componentInstance
     fixture.detectChanges()
 
@@ -40,14 +40,14 @@ describe('OneCXListWorkspacesUsingThemeComponent', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
+        provideRouter([{ path: 'admincomponent: OneCXListWorkspacesUsingProductComponent' }]),
         {
           provide: BASE_URL,
           useValue: baseUrlSubject
-        },
-        provideRouter([{ path: 'admin/theme', component: OneCXListWorkspacesUsingThemeComponent }])
+        }
       ]
     })
-      .overrideComponent(OneCXListWorkspacesUsingThemeComponent, {
+      .overrideComponent(OneCXListWorkspacesUsingProductComponent, {
         set: {
           imports: [TranslateTestingModule, CommonModule, RouterModule, PanelMenuModule],
           providers: [{ provide: WorkspaceAPIService, useValue: wsApiSpy }]
@@ -94,31 +94,31 @@ describe('OneCXListWorkspacesUsingThemeComponent', () => {
     })
   })
 
-  it('should call findWorkspacesUsingTheme with the current themeName', () => {
+  it('should call findWorkspacesUsingProduct with the current productName', () => {
     const { component } = setUp()
-    spyOn(component as any, 'findWorkspacesUsingTheme')
-    component.themeName = 'testTheme'
+    spyOn(component as any, 'findWorkspacesUsingProduct')
+    component.productName = 'testProduct'
 
     component.ngOnChanges()
 
-    expect(component['findWorkspacesUsingTheme']).toHaveBeenCalled()
+    expect(component['findWorkspacesUsingProduct']).toHaveBeenCalled()
   })
 
-  describe('findWorkspacesUsingTheme', () => {
-    it('should filter workspaces by theme and return display names', (done) => {
+  describe('findWorkspacesUsingProduct', () => {
+    it('should filter workspaces byd return display names', (done) => {
       const { component } = setUp()
       const mockResponse: SearchWorkspacesResponse = {
         stream: [
-          { name: 'ws1', theme: 'theme1', displayName: 'Workspace 1' },
-          { name: 'ws2', theme: 'theme2', displayName: 'Workspace 2' },
-          { name: 'ws3', theme: 'theme1', displayName: 'Workspace 3' }
+          { name: 'ws1', displayName: 'Workspace 1' },
+          { name: 'ws2', displayName: 'Workspace 2' },
+          { name: 'ws3', displayName: 'Workspace 3' }
         ]
       }
       wsApiSpy.searchWorkspaces.and.returnValue(of(mockResponse))
 
-      component['findWorkspacesUsingTheme']()
+      component['findWorkspacesUsingProduct']()
 
-      component.workspacesUsingTheme?.subscribe((result) => {
+      component.workspacesUsingProduct?.subscribe((result) => {
         expect(result).toEqual(['Workspace 1', 'Workspace 2', 'Workspace 3'])
         done()
       })
@@ -129,9 +129,9 @@ describe('OneCXListWorkspacesUsingThemeComponent', () => {
       const mockResponse: SearchWorkspacesResponse = { stream: [] }
       wsApiSpy.searchWorkspaces.and.returnValue(of(mockResponse))
 
-      component['findWorkspacesUsingTheme']()
+      component['findWorkspacesUsingProduct']()
 
-      component.workspacesUsingTheme?.subscribe((result) => {
+      component.workspacesUsingProduct?.subscribe((result) => {
         expect(result).toEqual([])
         done()
       })
@@ -143,9 +143,9 @@ describe('OneCXListWorkspacesUsingThemeComponent', () => {
       wsApiSpy.searchWorkspaces.and.returnValue(throwError(() => errorResponse))
       spyOn(console, 'error')
 
-      component.findWorkspacesUsingTheme()
+      component['findWorkspacesUsingProduct']()
 
-      component.workspacesUsingTheme?.subscribe((result) => {
+      component.workspacesUsingProduct?.subscribe((result) => {
         expect(result).toEqual([])
         done()
       })
