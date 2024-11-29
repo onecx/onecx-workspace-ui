@@ -105,7 +105,7 @@ export class WorkspaceCreateComponent {
         return data ? data.sort(sortByLocale) : []
       }),
       catchError((err) => {
-        console.error('searchAvailableProducts', err)
+        console.error('getAllThemes', err)
         return of([] as string[])
       })
     )

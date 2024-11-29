@@ -166,8 +166,8 @@ describe('WorkspaceCreateComponent', () => {
     expect(component.fetchingLogoUrl).toBe(url)
   }))
 
-  describe('loadProductPaths', () => {
-    it('should load product urls initially', () => {
+  describe('onOpenProductPathes', () => {
+    it('should load product urls', () => {
       const products = [{ baseUrl: '/productBaseUrl-1' }, { baseUrl: '/productBaseUrl-2' }]
       productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: products }))
 
@@ -183,18 +183,50 @@ describe('WorkspaceCreateComponent', () => {
 
       component.onOpenProductPathes(paths)
     })
+
+    it('should load product paths failed', () => {
+      const errorResponse = { status: 400, statusText: 'Error on loading product paths' }
+      productServiceSpy.searchAvailableProducts.and.returnValue(throwError(() => errorResponse))
+      spyOn(console, 'error')
+
+      component.onOpenProductPathes([])
+
+      component.productPaths$.subscribe((paths) => {
+        expect(paths).toEqual([])
+        expect(console.error).toHaveBeenCalledWith('searchAvailableProducts', errorResponse)
+      })
+    })
   })
 
-  it('should load product failed', () => {
-    const errorResponse = { status: 400, statusText: 'Error on creationg a workspace' }
-    productServiceSpy.searchAvailableProducts.and.returnValue(throwError(() => errorResponse))
-    spyOn(console, 'error')
+  describe('onOpenThemes', () => {
+    it('should load themes', () => {
+      const themes = ['theme-1', 'theme-2']
+      wApiServiceSpy.getAllThemes.and.returnValue(of(themes))
 
-    component.onOpenProductPathes([])
+      component.onOpenThemes([])
 
-    component.productPaths$.subscribe((paths) => {
-      expect(paths).toEqual([])
-      expect(console.error).toHaveBeenCalledWith('searchAvailableProducts', errorResponse)
+      component.themes$.subscribe((data) => {
+        expect(data).toEqual(themes)
+      })
+    })
+
+    it('should prevent loading product URLs again', () => {
+      const themes = ['theme-1', 'theme-2']
+
+      component.onOpenThemes(themes)
+    })
+
+    it('should load themes failed', () => {
+      const errorResponse = { status: 400, statusText: 'Error on loading themes' }
+      wApiServiceSpy.getAllThemes.and.returnValue(throwError(() => errorResponse))
+      spyOn(console, 'error')
+
+      component.onOpenThemes([])
+
+      component.themes$.subscribe((data) => {
+        expect(data).toEqual([])
+        expect(console.error).toHaveBeenCalledWith('getAllThemes', errorResponse)
+      })
     })
   })
 })
