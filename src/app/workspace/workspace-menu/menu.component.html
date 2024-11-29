@@ -29,13 +29,6 @@
     </div>
 
     <!-- Menu exist -->
-    <!--
-      [style]="{ height: '600px' }"
-      [scrollable]="true"
-      scrollHeight="flex"
-      [tableStyle]="{ 'min-width': '70vw' }"
-      [frozenColumns]="treeFrozenColumns"
-    -->
     <p-treeTable
       *ngIf="!loading && !exceptionKey && menuNodes.length > 0"
       #menuTree

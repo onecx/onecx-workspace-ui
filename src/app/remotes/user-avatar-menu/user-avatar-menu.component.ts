@@ -1,7 +1,15 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'
+import {
+  APP_INITIALIZER,
+  AfterViewInit,
+  Component,
+  CUSTOM_ELEMENTS_SCHEMA,
+  Inject,
+  Input,
+  OnDestroy,
+  Renderer2
+} from '@angular/core'
 import { Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { APP_INITIALIZER, AfterViewInit, Component, Inject, Input, OnDestroy, Renderer2 } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'

@@ -120,27 +120,6 @@ describe('WorkspaceCreateComponent', () => {
     expect(component).toBeTruthy()
   })
 
-  describe('loadMfeUrls', () => {
-    it('should load product urls on init', () => {
-      productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [{ baseUrl: 'baseUrl' }] }))
-      component.mfeRList = []
-
-      component.ngOnInit()
-
-      expect(component.mfeRList).toContain('baseUrl')
-    })
-
-    it('should log error if api call fails', () => {
-      const errorResponse = { status: 400, statusText: 'Error on searching products' }
-      productServiceSpy.searchAvailableProducts.and.returnValue(throwError(() => errorResponse))
-      spyOn(console, 'error')
-
-      component.ngOnInit()
-
-      expect(console.error).toHaveBeenCalledWith('getProductsByWorkspaceId', errorResponse)
-    })
-  })
-
   it('should create a workspace', () => {
     wApiServiceSpy.createWorkspace.and.returnValue(of({ resource: workspace }))
 
@@ -186,4 +165,36 @@ describe('WorkspaceCreateComponent', () => {
 
     expect(component.fetchingLogoUrl).toBe(url)
   }))
+
+  describe('loadProductPaths', () => {
+    it('should load product urls initially', () => {
+      const products = [{ baseUrl: '/productBaseUrl-1' }, { baseUrl: '/productBaseUrl-2' }]
+      productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: products }))
+
+      component.onOpenProductPathes([])
+
+      component.productPaths$.subscribe((paths) => {
+        expect(paths).toEqual([products[0].baseUrl, products[1].baseUrl])
+      })
+    })
+
+    it('should prevent loading product URLs again', () => {
+      const paths = ['/productBaseUrl-1', '/productBaseUrl-2']
+
+      component.onOpenProductPathes(paths)
+    })
+  })
+
+  it('should load product failed', () => {
+    const errorResponse = { status: 400, statusText: 'Error on creationg a workspace' }
+    productServiceSpy.searchAvailableProducts.and.returnValue(throwError(() => errorResponse))
+    spyOn(console, 'error')
+
+    component.onOpenProductPathes([])
+
+    component.productPaths$.subscribe((paths) => {
+      expect(paths).toEqual([])
+      expect(console.error).toHaveBeenCalledWith('searchAvailableProducts', errorResponse)
+    })
+  })
 })
