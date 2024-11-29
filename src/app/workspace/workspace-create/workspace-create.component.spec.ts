@@ -26,7 +26,7 @@ const workspace: Workspace = {
   theme: 'theme',
   baseUrl: '/some/base/url',
   homePage: '/homepage',
-  displayName: ''
+  displayName: 'displayName'
 }
 
 class MockRouter {

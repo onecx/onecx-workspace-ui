@@ -221,7 +221,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
         'ACTIONS.EDIT.LABEL',
         'ACTIONS.EDIT.TOOLTIP',
         'ACTIONS.DELETE.LABEL',
-        'ACTIONS.DELETE.WORKSPACE'
+        'ACTIONS.DELETE.WORKSPACE.HEADER'
       ])
       .pipe(
         map((data) => {
@@ -288,7 +288,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
             },
             {
               label: data['ACTIONS.DELETE.LABEL'],
-              title: data['ACTIONS.DELETE.WORKSPACE'],
+              title: data['ACTIONS.DELETE.WORKSPACE.HEADER'],
               actionCallback: () => {
                 this.workspaceDeleteVisible = true
               },
