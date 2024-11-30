@@ -58,6 +58,40 @@ describe('MenuItemService', () => {
   })
 
   it('should correctly construct menu items from input data', () => {
+    const childrenItem = [
+      { key: '2', name: '2', external: false, disabled: false, badge: 'cog' },
+      { key: '3', name: '3', external: false, disabled: false, badge: 'bar', url: 'r', position: 2 },
+      { key: '4', name: '4', external: false, disabled: false, badge: 'box', url: 'l' }
+    ]
+    const childrenMenuItem = [
+      {
+        id: '2',
+        label: '2',
+        items: undefined,
+        icon: 'pi pi-cog',
+        routerLink: undefined,
+        url: undefined,
+        routerLinkActiveOptions: Object({ exact: true })
+      },
+      {
+        id: '4',
+        label: '4',
+        items: undefined,
+        icon: 'pi pi-box',
+        routerLink: 'l',
+        url: undefined,
+        routerLinkActiveOptions: Object({ exact: true })
+      },
+      {
+        id: '3',
+        label: '3',
+        items: undefined,
+        icon: 'pi pi-bar',
+        routerLink: 'r',
+        url: undefined,
+        routerLinkActiveOptions: Object({ exact: true })
+      }
+    ]
     const input: UserWorkspaceMenuItem[] = [
       {
         key: '1',
@@ -67,7 +101,7 @@ describe('MenuItemService', () => {
         external: false,
         url: '/item1',
         badge: 'star',
-        children: [],
+        children: childrenItem,
         i18n: { en: 'Item 1 EN' }
       },
       {
@@ -86,18 +120,18 @@ describe('MenuItemService', () => {
       {
         id: '1',
         label: 'Item 1 EN',
+        items: childrenMenuItem,
         icon: 'pi pi-star',
         routerLink: '/item1',
-        items: undefined,
         url: undefined,
         routerLinkActiveOptions: { exact: true }
       },
       {
         id: '2',
         label: 'Item 2 EN',
+        items: undefined,
         icon: 'pi pi-check',
         routerLink: undefined,
-        items: undefined,
         url: 'http://external.com',
         routerLinkActiveOptions: { exact: true }
       }
@@ -111,7 +145,7 @@ describe('MenuItemService', () => {
       {
         key: '1',
         name: 'Item 1',
-        position: 1,
+        position: undefined,
         disabled: false,
         external: false,
         url: '/item1?param=[[DONTREPLACEME]]',
@@ -537,7 +571,7 @@ describe('MenuItemService', () => {
     const expected: MenuItem[] = [
       {
         id: '1',
-        label: '',
+        label: 'Parent Item',
         expanded: true,
         icon: undefined,
         routerLink: undefined,
@@ -546,7 +580,7 @@ describe('MenuItemService', () => {
         items: [
           {
             id: '1.1',
-            label: '',
+            label: 'Second parent Item',
             expanded: true,
             icon: undefined,
             routerLink: undefined,
@@ -555,7 +589,7 @@ describe('MenuItemService', () => {
             items: [
               {
                 id: '1.1.1',
-                label: '',
+                label: 'Child Item',
                 items: undefined,
                 routerLink: '/admin/mfe',
                 url: undefined,
@@ -564,7 +598,7 @@ describe('MenuItemService', () => {
               },
               {
                 id: '1.1.2',
-                label: '',
+                label: 'Second Child Item',
                 items: undefined,
                 routerLink: 'admin/otherMfe/',
                 url: undefined,
@@ -578,6 +612,8 @@ describe('MenuItemService', () => {
     ]
     const result = service.constructMenuItems(input, 'en', '/admin/mfe')
     expect(result).toEqual(expected)
+    const result1 = service.constructMenuItems(input, 'en', 'admin/mfe')
+    expect(result1).toEqual(expected)
   })
 
   it('should handle different languages', () => {

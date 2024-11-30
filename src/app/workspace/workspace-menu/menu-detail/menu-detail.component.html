@@ -26,6 +26,7 @@
                 id="ws_menu_detail_field_menu_name"
                 class="w-full pt-3 pb-2"
                 formControlName="name"
+                aria-labelledby="ws_menu_detail_field_menu_name"
                 [pTooltip]="'MENU_ITEM.TOOLTIP.MENU_NAME' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
@@ -44,6 +45,7 @@
                 id="ws_menu_detail_field_menu_id"
                 class="w-full pt-3 pb-2"
                 formControlName="key"
+                aria-labelledby="ws_menu_detail_field_menu_id"
                 [pTooltip]="'MENU_ITEM.TOOLTIP.MENU_ID' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
@@ -59,8 +61,8 @@
                 id="ws_menu_detail_field_parent_id"
                 styleClass="w-full input-field-correction"
                 formControlName="parentItemId"
-                [showClear]="true"
                 [options]="parentItems"
+                [showClear]="true"
                 [ariaLabel]="'MENU_ITEM.TOOLTIP.PARENT_ID' | translate"
                 [pTooltip]="'MENU_ITEM.TOOLTIP.PARENT_ID' | translate"
                 tooltipPosition="top"
@@ -121,12 +123,12 @@
                 id="ws_menu_detail_field_position"
                 class="w-full pt-3 pb-2"
                 formControlName="position"
-                [ariaLabel]="'MENU_ITEM.POSITION' | translate"
+                aria-labelledby="ws_menu_detail_field_position"
                 [pTooltip]="'MENU_ITEM.TOOLTIP.POSITION' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
               />
-              <label for="ws_menu_detail_field_position">Position</label>
+              <label for="ws_menu_detail_field_position">{{ 'MENU_ITEM.POSITION' | translate }}</label>
             </span>
           </div>
           <div class="col-12 md:col-4 my-1" style="min-width: 10rem">
@@ -138,6 +140,7 @@
                 [showClear]="true"
                 [options]="iconItems"
                 scrollHeight="150px"
+                [showClear]="true"
                 [ariaLabel]="'MENU_ITEM.BADGE' | translate"
                 [pTooltip]="'MENU_ITEM.TOOLTIP.BADGE' | translate"
                 tooltipPosition="top"
@@ -200,7 +203,7 @@
                 id="ws_menu_detail_field_description"
                 class="w-full pt-3 pb-2"
                 formControlName="description"
-                [ariaLabel]="'MENU_ITEM.DESCRIPTION' | translate"
+                aria-labelledby="ws_menu_detail_field_description"
                 [pTooltip]="'MENU_ITEM.TOOLTIP.DESCRIPTION' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
@@ -243,7 +246,7 @@
             [id]="'ws_menu_detail_i18n_lang_' + i + '_value'"
             class="w-30rem pt-3 pb-2"
             [(ngModel)]="language.data"
-            [ariaLabel]="'DIALOG.MENU.TABS.I18N.REMOVE_LANGUAGE' | translate"
+            [attr.aria-label]="'ws_menu_detail_i18n_lang_' + i + '_value'"
             [pTooltip]="'DIALOG.MENU.TABS.I18N.REMOVE_LANGUAGE' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
