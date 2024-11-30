@@ -586,7 +586,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       return []
     }
     const nodes: TreeNode[] = []
-    items.map((mi) => (mi.position = mi.position ?? 0)) // set default
+    items.forEach((i) => (i.position = i.position ?? 0)) // set default
     items.sort((a, b) => a.position! - b.position!)
     let pos = 1
     let prevId: string | undefined
