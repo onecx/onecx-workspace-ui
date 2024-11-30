@@ -24,7 +24,7 @@ export class MenuItemService {
   /** Item is never undefined when filtered out in constructMenuItems() */
   private mapMenuItem(item: UserWorkspaceMenuItem, userLang: string): MenuItem {
     const isLocal: boolean = !item.external
-    const label: string | undefined = item.i18n ? item.i18n[userLang] || item.name : ''
+    const label: string | undefined = item.i18n ? (item.i18n[userLang] ?? item.name) : item.name
 
     if (item.children && item.children.length > 0) {
       // separated due to sonar
@@ -32,11 +32,11 @@ export class MenuItemService {
     }
     return {
       id: item.key,
+      label: label,
       items:
         item.children && item.children.length > 0
           ? item.children.filter((i) => !i.disabled).map((i) => this.mapMenuItem(i, userLang))
           : undefined,
-      label,
       icon: item.badge ? 'pi pi-' + item.badge : undefined,
       routerLink: isLocal ? this.stripBaseHref(item.url) : undefined,
       url: isLocal ? undefined : this.replaceUrlVariables(item.url),
@@ -62,7 +62,6 @@ export class MenuItemService {
         return true
       }
     }
-
     return false
   }
 
