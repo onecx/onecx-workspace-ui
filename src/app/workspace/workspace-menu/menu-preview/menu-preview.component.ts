@@ -56,9 +56,9 @@ export class MenuPreviewComponent implements OnChanges {
     if (changes['menuItems'] || this.displayDialog) {
       this.menuNodes = this.mapToTree(this.menuItems, this.languagesPreviewValue)
       this.treeExpanded = false
-      if (this.menuNodes.length > 1) {
+      if (this.menuNodes.length > 1 && this.menuNodes[0].key) {
         this.menuNodes[0].expanded = true
-        this.stateService.getState().treeExpansionState.set(this.menuNodes[0].key!, true)
+        this.stateService.getState().treeExpansionState.set(this.menuNodes[0].key, true)
       }
       this.preparePreviewLanguages()
     }
