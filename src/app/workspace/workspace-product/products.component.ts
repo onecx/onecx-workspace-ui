@@ -423,6 +423,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   private sortEndpointsByName(a: UIEndpoint, b: UIEndpoint): number {
     return (a.name ? a.name.toUpperCase() : '').localeCompare(b.name ? b.name.toUpperCase() : '')
   }
+
   private getProductStoreMfeData(item: ExtendedProduct, appId: string): ExtendedMicrofrontend | undefined {
     let module: ExtendedMicrofrontend | undefined
     if (item.apps.has(appId)) {

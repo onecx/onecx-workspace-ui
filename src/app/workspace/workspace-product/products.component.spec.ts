@@ -19,6 +19,7 @@ import {
   SlotAPIService,
   UIEndpoint
 } from 'src/app/shared/generated'
+import * as utils from 'src/app/shared/utils'
 
 import { ExtendedMicrofrontend, ExtendedProduct, ExtendedSlot, ProductComponent } from './products.component'
 
@@ -535,10 +536,10 @@ describe('ProductComponent', () => {
       expect(arr).toEqual([a, b])
     })
 
-    it('should sort slots by name : some empty name ', () => {
-      const a: UIEndpoint = { name: '' }
+    it('should sort endpoints by name : some empty name ', () => {
+      const a: UIEndpoint = { name: undefined }
       const b: UIEndpoint = { name: 'b' }
-      const arr = [b, a]
+      const arr = [a, b]
 
       arr.sort((x, y) => component['sortEndpointsByName'](x, y))
 
@@ -876,213 +877,262 @@ describe('ProductComponent', () => {
   /**
    * REGISTER
    */
-  it('should createProductInWorkspace onMoveToTarget: one product', () => {
-    wProductServiceSpy.createProductInWorkspace.and.returnValue(of({ resource: product }))
-    const event: any = { items: [product] }
-    component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
-    component.psProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
+  describe('register a product => move from source to target picklist', () => {
+    it('should createProductInWorkspace onMoveToTarget: one product', () => {
+      wProductServiceSpy.createProductInWorkspace.and.returnValue(of({ resource: product }))
+      const event: any = { items: [product] }
+      component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
+      component.psProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
 
-    component.onMoveToTarget(event)
+      component.onMoveToTarget(event)
 
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.REGISTRATION_OK' })
-  })
-
-  it('should createProductInWorkspace onMoveToTarget: multiple products', () => {
-    wProductServiceSpy.createProductInWorkspace.and.returnValue(of({ resource: product }))
-    const product2: Product = {
-      productName: 'prod name',
-      displayName: 'display name',
-      description: 'description',
-      microfrontends: [microfrontend],
-      modificationCount: 1
-    }
-    const event: any = { items: [product, product2] }
-    component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
-    component.psProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
-
-    component.onMoveToTarget(event)
-
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.REGISTRATIONS_OK' })
-  })
-
-  it('should createProductInWorkspace onMoveToTarget: no ws id', () => {
-    wProductServiceSpy.createProductInWorkspace.and.returnValue(of({ resource: product }))
-    const event: any = { items: [product] }
-    component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
-    component.psProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
-    const workspace2: Workspace = {
-      name: 'name',
-      theme: 'theme',
-      baseUrl: '/some/base/url',
-      displayName: ''
-    }
-    component.workspace = workspace2
-
-    component.onMoveToTarget(event)
-
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.REGISTRATION_OK' })
-  })
-
-  it('should createProductInWorkspace onMoveToTarget: no modules', () => {
-    wProductServiceSpy.createProductInWorkspace.and.returnValue(of({ resource: product }))
-    component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
-    component.psProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
-    const productNoMfes: Product = {
-      id: 'prod id',
-      productName: 'prod name',
-      displayName: 'display name',
-      description: 'description',
-      modificationCount: 1
-    }
-    const event: any = { items: [productNoMfes] }
-
-    component.onMoveToTarget(event)
-
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.REGISTRATION_OK' })
-  })
-
-  it('should createProductInWorkspace onMoveToTarget: multiple mfes', () => {
-    const microfrontend2: Microfrontend = {
-      id: 'id',
-      appId: 'appId',
-      basePath: 'path'
-    }
-    const productMfes: Product = {
-      id: 'prod id',
-      productName: 'prod name',
-      displayName: 'display name',
-      description: 'description',
-      microfrontends: [microfrontend, microfrontend2],
-      modificationCount: 1
-    }
-    wProductServiceSpy.createProductInWorkspace.and.returnValue(of({ resource: productMfes }))
-    component.wProducts = [
-      { ...productMfes, bucket: 'SOURCE', undeployed: false, changedComponents: false, apps: new Map() }
-    ]
-    component.psProducts = [
-      { ...productMfes, bucket: 'SOURCE', undeployed: false, changedComponents: false, apps: new Map() }
-    ]
-    const event: any = { items: [productMfes] }
-
-    component.onMoveToTarget(event)
-
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.REGISTRATION_OK' })
-  })
-
-  it('should display error when trying to createProductInWorkspace onMoveToTarget', () => {
-    const errorResponse = { status: 400, statusText: 'workspace product not created' }
-    wProductServiceSpy.createProductInWorkspace.and.returnValue(throwError(() => errorResponse))
-    const event: any = { items: [product] }
-    component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
-    component.psProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
-
-    component.onMoveToTarget(event)
-
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.REGISTRATION_NOK' })
-  })
-
-  it('should display error when trying to createProductInWorkspace onMoveToTarget', () => {
-    const errorResponse = { status: 400, statusText: 'workspace product not created' }
-    wProductServiceSpy.createProductInWorkspace.and.returnValue(throwError(() => errorResponse))
-    component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
-    component.psProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
-    const product2: Product = {
-      productName: 'prod name',
-      displayName: 'display name',
-      description: 'description',
-      microfrontends: [microfrontend],
-      modificationCount: 1
-    }
-    const event: any = { items: [product, product2] }
-
-    component.onMoveToTarget(event)
-
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.REGISTRATIONS_NOK' })
-  })
-
-  it('should deleteProductById onMoveToSource', () => {
-    const event: any = { items: [product] }
-    component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
-    component.psProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
-
-    component.onMoveToSource(event)
-
-    expect(component.displayDeregisterConfirmation).toBeTrue()
-  })
-
-  it('should restore items on deregister cancellation', () => {
-    component['deregisterItems'] = [product]
-    component.displayDeregisterConfirmation = true
-    component.psProducts = [prodStoreItem]
-    component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
-
-    component.onDeregisterCancellation()
-
-    expect(component.displayDeregisterConfirmation).toBeFalse()
-    expect(component['deregisterItems']).toEqual([])
-  })
-
-  it('should handle successful deregistration', () => {
-    component['deregisterItems'] = [product]
-    component.psProducts = [prodStoreItem]
-    spyOn(component as any, 'displayRegisterMessages')
-
-    component.onDeregisterConfirmation()
-
-    expect(component.displayDeregisterConfirmation).toBeFalse()
-    expect(wProductServiceSpy.deleteProductById).toHaveBeenCalledWith({
-      id: 'id',
-      productId: 'prod id'
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.REGISTRATION_OK' })
     })
-    expect(component.psProducts[0].bucket).toBe('SOURCE')
+
+    it('should createProductInWorkspace onMoveToTarget: multiple products', () => {
+      wProductServiceSpy.createProductInWorkspace.and.returnValue(of({ resource: product }))
+      const product2: Product = {
+        productName: 'prod name',
+        displayName: 'display name',
+        description: 'description',
+        microfrontends: [microfrontend],
+        modificationCount: 1
+      }
+      const event: any = { items: [product, product2] }
+      component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
+      component.psProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
+
+      component.onMoveToTarget(event)
+
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.REGISTRATIONS_OK' })
+    })
+
+    it('should createProductInWorkspace onMoveToTarget: no ws id', () => {
+      wProductServiceSpy.createProductInWorkspace.and.returnValue(of({ resource: product }))
+      const event: any = { items: [product] }
+      component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
+      component.psProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
+      const workspace2: Workspace = {
+        name: 'name',
+        theme: 'theme',
+        baseUrl: '/some/base/url',
+        displayName: ''
+      }
+      component.workspace = workspace2
+
+      component.onMoveToTarget(event)
+
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.REGISTRATION_OK' })
+    })
+
+    it('should createProductInWorkspace onMoveToTarget: no modules', () => {
+      wProductServiceSpy.createProductInWorkspace.and.returnValue(of({ resource: product }))
+      component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
+      component.psProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
+      const productNoMfes: Product = {
+        id: 'prod id',
+        productName: 'prod name',
+        displayName: 'display name',
+        description: 'description',
+        modificationCount: 1
+      }
+      const event: any = { items: [productNoMfes] }
+
+      component.onMoveToTarget(event)
+
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.REGISTRATION_OK' })
+    })
+
+    it('should createProductInWorkspace onMoveToTarget: one mfe', () => {
+      const product: Product = {
+        id: 'prod id',
+        productName: 'prod name',
+        displayName: 'display name',
+        description: 'description',
+        microfrontends: [microfrontend],
+        modificationCount: 1
+      }
+      wProductServiceSpy.createProductInWorkspace.and.returnValue(of({ resource: product }))
+      component.wProducts = [
+        { ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false, apps: new Map() }
+      ]
+      component.psProducts = [
+        { ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false, apps: new Map() }
+      ]
+      const event: any = { items: [product] }
+
+      component.onMoveToTarget(event)
+
+      expect(component.workspace).toEqual(workspace)
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.REGISTRATION_OK' })
+    })
+
+    it('should createProductInWorkspace onMoveToTarget: multiple mfes', () => {
+      const microfrontend2: Microfrontend = {
+        id: 'id2',
+        appId: 'appId2',
+        basePath: 'path2',
+        type: MicrofrontendType.Module
+      }
+      const product2: Product = {
+        id: 'prod id',
+        productName: 'prod name',
+        displayName: 'display name',
+        description: 'description',
+        microfrontends: [microfrontend, microfrontend2],
+        modificationCount: 1
+      }
+      wProductServiceSpy.createProductInWorkspace.and.returnValue(of({ resource: product2 }))
+      component.wProducts = [
+        { ...product2, bucket: 'SOURCE', undeployed: false, changedComponents: false, apps: new Map() }
+      ]
+      component.psProducts = [
+        { ...product2, bucket: 'SOURCE', undeployed: false, changedComponents: false, apps: new Map() }
+      ]
+      const event: any = { items: [product2] }
+
+      component.onMoveToTarget(event)
+
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.REGISTRATION_OK' })
+    })
+
+    it('should display error when trying to createProductInWorkspace onMoveToTarget', () => {
+      const errorResponse = { status: 400, statusText: 'workspace product not created' }
+      wProductServiceSpy.createProductInWorkspace.and.returnValue(throwError(() => errorResponse))
+      const event: any = { items: [product] }
+      component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
+      component.psProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
+
+      component.onMoveToTarget(event)
+
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.REGISTRATION_NOK' })
+    })
+
+    it('should display error when trying to createProductInWorkspace onMoveToTarget', () => {
+      const errorResponse = { status: 400, statusText: 'workspace product not created' }
+      wProductServiceSpy.createProductInWorkspace.and.returnValue(throwError(() => errorResponse))
+      component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
+      component.psProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
+      const product2: Product = {
+        productName: 'prod name',
+        displayName: 'display name',
+        description: 'description',
+        microfrontends: [microfrontend],
+        modificationCount: 1
+      }
+      const event: any = { items: [product, product2] }
+
+      component.onMoveToTarget(event)
+
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.REGISTRATIONS_NOK' })
+    })
   })
 
-  it('should handle failed deregistration', () => {
-    const errorResponse = { status: 400, statusText: 'workspace product could not be deregistered' }
-    wProductServiceSpy.deleteProductById.and.returnValue(throwError(() => errorResponse))
-    component['deregisterItems'] = [product]
-    component.psProducts = [prodStoreItem]
-    component.wProducts = []
-    spyOn(component as any, 'displayRegisterMessages')
+  describe('deregister a product', () => {
+    it('should deleteProductById onMoveToSource', () => {
+      const event: any = { items: [product] }
+      component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
+      component.psProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
 
-    component.onDeregisterConfirmation()
+      component.onMoveToSource(event)
 
-    expect(component.displayDeregisterConfirmation).toBeFalse()
-    expect(wProductServiceSpy.deleteProductById).toHaveBeenCalledWith({
-      id: 'id',
-      productId: 'prod id'
+      expect(component.displayDeregisterConfirmation).toBeTrue()
     })
-    expect(component.psProducts.length).toBe(0)
-    expect(component.wProducts.length).toBe(1)
-    expect(component.wProducts[0].productName).toBe('prod name')
+
+    it('should restore items on deregister cancellation', () => {
+      component['deregisterItems'] = [product]
+      component.displayDeregisterConfirmation = true
+      component.psProducts = [prodStoreItem]
+      component.wProducts = [{ ...product, bucket: 'SOURCE', undeployed: false, changedComponents: false }]
+
+      component.onDeregisterCancellation()
+
+      expect(component.displayDeregisterConfirmation).toBeFalse()
+      expect(component['deregisterItems']).toEqual([])
+    })
+
+    it('should handle successful deregistration', () => {
+      component['deregisterItems'] = [product]
+      component.psProducts = [prodStoreItem]
+      spyOn(component as any, 'displayRegisterMessages')
+
+      component.onDeregisterConfirmation()
+
+      expect(component.displayDeregisterConfirmation).toBeFalse()
+      expect(wProductServiceSpy.deleteProductById).toHaveBeenCalledWith({
+        id: 'id',
+        productId: 'prod id'
+      })
+      expect(component.psProducts[0].bucket).toBe('SOURCE')
+    })
+
+    it('should handle failed deregistration', () => {
+      const errorResponse = { status: 400, statusText: 'workspace product could not be deregistered' }
+      wProductServiceSpy.deleteProductById.and.returnValue(throwError(() => errorResponse))
+      component['deregisterItems'] = [product]
+      component.psProducts = [prodStoreItem]
+      component.wProducts = []
+      spyOn(component as any, 'displayRegisterMessages')
+
+      component.onDeregisterConfirmation()
+
+      expect(component.displayDeregisterConfirmation).toBeFalse()
+      expect(wProductServiceSpy.deleteProductById).toHaveBeenCalledWith({
+        id: 'id',
+        productId: 'prod id'
+      })
+      expect(component.psProducts.length).toBe(0)
+      expect(component.wProducts.length).toBe(1)
+      expect(component.wProducts[0].productName).toBe('prod name')
+    })
   })
 
   /**
    * UI Events: ADD slot
    */
-  it('should handle successful slot creation', () => {
-    const extendedSlot: ExtendedSlot = { name: 'Test Slot' }
+  describe('slot creation', () => {
+    it('should handle successful slot creation', () => {
+      const extendedSlot: ExtendedSlot = { name: 'Test Slot' }
 
-    component.onAddSlot({}, extendedSlot)
+      component.onAddSlot({}, extendedSlot)
 
-    expect(slotApiServiceSpy.createSlot).toHaveBeenCalledWith({
-      createSlotRequest: { workspaceId: '', name: extendedSlot.name }
+      expect(slotApiServiceSpy.createSlot).toHaveBeenCalledWith({
+        createSlotRequest: { workspaceId: '', name: extendedSlot.name }
+      })
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.SLOT.MESSAGES.CREATE_OK' })
+      expect(msgServiceSpy.error).not.toHaveBeenCalled()
     })
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.SLOT.MESSAGES.CREATE_OK' })
-    expect(msgServiceSpy.error).not.toHaveBeenCalled()
+
+    it('should handle failed slot creation', () => {
+      const errorResponse = { status: 400, statusText: 'workspace slot could not be created' }
+      slotApiServiceSpy.createSlot.and.returnValue(throwError(() => errorResponse))
+      const extendedSlot: ExtendedSlot = { name: 'Test Slot' }
+
+      component.onAddSlot({}, extendedSlot)
+
+      expect(slotApiServiceSpy.createSlot).toHaveBeenCalledWith({
+        createSlotRequest: { workspaceId: '', name: extendedSlot.name }
+      })
+      expect(msgServiceSpy.success).not.toHaveBeenCalled()
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.SLOT.MESSAGES.CREATE_NOK' })
+    })
   })
 
-  it('should handle failed slot creation', () => {
-    const errorResponse = { status: 400, statusText: 'workspace slot could not be created' }
-    slotApiServiceSpy.createSlot.and.returnValue(throwError(() => errorResponse))
-    const extendedSlot: ExtendedSlot = { name: 'Test Slot' }
+  describe('on go to other pages', () => {
+    it('should follow link to current product detail in product store', () => {
+      spyOn(utils, 'goToEndpoint')
 
-    component.onAddSlot({}, extendedSlot)
+      component.onGoToProduct('name')
 
-    expect(slotApiServiceSpy.createSlot).toHaveBeenCalledWith({
-      createSlotRequest: { workspaceId: '', name: extendedSlot.name }
+      expect(utils.goToEndpoint).toHaveBeenCalled()
     })
-    expect(msgServiceSpy.success).not.toHaveBeenCalled()
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.SLOT.MESSAGES.CREATE_NOK' })
+
+    it('should follow link to current product detail in permission UI', () => {
+      spyOn(utils, 'goToEndpoint')
+
+      component.onGoToProductPermission('name')
+
+      expect(utils.goToEndpoint).toHaveBeenCalled()
+    })
   })
 })
