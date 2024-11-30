@@ -1,10 +1,8 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core'
+import { Component, Input, Output, EventEmitter } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
-import { Location } from '@angular/common'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
-import { Observable, Subject, catchError, map, of, takeUntil } from 'rxjs'
-import { SelectItem } from 'primeng/api/selectitem'
+import { Observable, catchError, map, of } from 'rxjs'
 
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 
@@ -16,23 +14,17 @@ import { WorkspaceAPIService, ProductAPIService } from 'src/app/shared/generated
   templateUrl: './workspace-create.component.html',
   styleUrls: ['./workspace-create.component.scss']
 })
-export class WorkspaceCreateComponent implements OnInit {
+export class WorkspaceCreateComponent {
   @Input() displayDialog = false
   @Output() toggleCreationDialogEvent = new EventEmitter()
 
-  private readonly destroy$ = new Subject()
-  public themes$!: Observable<SelectItem<string>[]>
+  public themes$: Observable<string[]> = of([])
+  public productPaths$: Observable<string[]> = of([])
   public formGroup: FormGroup
-  public hasPermission = false
   public selectedLogoFile: File | undefined
-  public preview = false
-  public previewSrc: string | undefined
   public minimumImageWidth = 150
   public minimumImageHeight = 150
-  public workspaceCreationValidationMsg = false
   public fetchingLogoUrl?: string
-  public urlPattern = '/base-path-to-workspace'
-  public mfeRList: string[] = []
 
   constructor(
     private readonly router: Router,
@@ -54,29 +46,14 @@ export class WorkspaceCreateComponent implements OnInit {
     })
   }
 
-  ngOnInit(): void {
-    this.themes$ = this.workspaceApi.getAllThemes().pipe(
-      map((val: any[]) => {
-        val.sort(sortByLocale)
-        return val
-      })
-    )
-    this.loadMfeUrls()
-  }
-
-  closeDialog() {
+  public closeDialog(): void {
     this.formGroup.reset()
     this.fetchingLogoUrl = undefined
     this.selectedLogoFile = undefined
     this.toggleCreationDialogEvent.emit()
   }
 
-  saveWorkspace() {
-    if (this.formGroup.controls['homePage'].value) {
-      this.formGroup.controls['homePage'].setValue(
-        Location.joinWithSlash(this.formGroup.controls['baseUrl'].value, this.formGroup.controls['homePage'].value)
-      )
-    }
+  public saveWorkspace(): void {
     this.workspaceApi
       .createWorkspace({
         createWorkspaceRequest: { resource: this.formGroup.value }
@@ -85,7 +62,6 @@ export class WorkspaceCreateComponent implements OnInit {
       .subscribe({
         next: (fetchedWorkspace) => {
           this.message.success({ summaryKey: 'ACTIONS.CREATE.MESSAGE.CREATE_OK' })
-          this.workspaceCreationValidationMsg = false
           this.closeDialog()
           this.router.navigate(['./' + fetchedWorkspace.resource?.name], { relativeTo: this.route })
         },
@@ -100,24 +76,38 @@ export class WorkspaceCreateComponent implements OnInit {
     this.fetchingLogoUrl = (event.target as HTMLInputElement).value
   }
 
-  private loadMfeUrls(): void {
-    this.productApi
-      .searchAvailableProducts({ productStoreSearchCriteria: {} })
-      .pipe(
-        map((result) => {
-          if (result.stream) {
-            for (const p of result.stream) {
-              if (p.baseUrl) this.mfeRList.push(p.baseUrl)
-            }
-            this.mfeRList.sort(sortByLocale)
+  public onOpenProductPathes(paths: string[]) {
+    // if paths already filled then prevent doing twice
+    if (paths.length > 0) return
+    this.productPaths$ = this.productApi.searchAvailableProducts({ productStoreSearchCriteria: {} }).pipe(
+      map((result) => {
+        const paths: string[] = []
+        if (result.stream) {
+          for (const p of result.stream) {
+            if (p.baseUrl) paths.push(p.baseUrl)
           }
-        }),
-        catchError((err) => {
-          console.error('getProductsByWorkspaceId', err)
-          return of([] as string[])
-        })
-      )
-      .pipe(takeUntil(this.destroy$))
-      .subscribe()
+          paths.sort(sortByLocale)
+        }
+        return paths
+      }),
+      catchError((err) => {
+        console.error('searchAvailableProducts', err)
+        return of([] as string[])
+      })
+    )
+  }
+
+  public onOpenThemes(themes: string[]) {
+    // if paths already filled then prevent doing twice
+    if (themes.length > 0) return
+    this.themes$ = this.workspaceApi.getAllThemes().pipe(
+      map((data: string[]) => {
+        return data ? data.sort(sortByLocale) : []
+      }),
+      catchError((err) => {
+        console.error('getAllThemes', err)
+        return of([] as string[])
+      })
+    )
   }
 }

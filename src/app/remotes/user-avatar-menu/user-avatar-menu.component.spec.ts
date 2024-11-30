@@ -94,7 +94,7 @@ describe('OneCXUserAvatarMenuComponent', () => {
       })
       .compileComponents()
 
-    baseUrlSubject.next('base_url')
+    baseUrlSubject.next('base_url_mock')
 
     menuItemApiSpy.getMenuItems.calls.reset()
     appConfigSpy.init.and.returnValue(Promise.resolve())
@@ -210,9 +210,7 @@ describe('OneCXUserAvatarMenuComponent', () => {
       spyOn(userService.profile$, 'asObservable').and.returnValue(of(profile) as any)
       const appStateService = TestBed.inject(AppStateService)
       spyOn(appStateService.currentWorkspace$, 'asObservable').and.returnValue(
-        of({
-          workspaceName: 'test-workspace'
-        }) as any
+        of({ workspaceName: 'test-workspace' }) as any
       )
     })
 
