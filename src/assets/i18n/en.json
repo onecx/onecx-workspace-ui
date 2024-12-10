@@ -416,7 +416,7 @@
         "POSITION.TOOLTIP": "Position path of the Menu Item in format [parent item.]item ",
         "I18N": "I18n",
         "I18N.TOOLTIP": "Indicator whether translations exist",
-        "I18N.ROW.TOOLTIP": "At least one translation available",
+        "I18N.ROW.TOOLTIP": "Translation available",
         "URL.TOOLTIP": "The URL to be called upon activation",
         "PRODUCT.TOOLTIP": "Indicator whether the menu URL is offered by a registered Application ",
         "EXTERN": "X",
