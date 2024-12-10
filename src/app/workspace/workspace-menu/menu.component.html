@@ -135,7 +135,7 @@
             <div class="slim-selectbutton filter-selectbutton">
               <p-selectButton
                 inputid="ws_menu_table_header_row_1_switch_tree_label"
-                styleClass="data-view-control flex flex-nowrap"
+                styleClass="data-view-control max-w-15rem flex flex flex-wrap row-gap-1"
                 [options]="treeNodeLabelSwitchItems"
                 [(ngModel)]="treeNodeLabelSwitchValue"
                 (onChange)="onTreeNodeLabelSwitchChange($event)"
@@ -368,15 +368,16 @@
               </div>
             </td>
             <td class="p-2 text-center hidden-md">
-              <span
+              <div
                 *ngIf="!isObjectEmpty(rowData.i18n)"
                 [id]="'ws_menu_table_row_' + rowData.key + '_i18n'"
-                class="white-space-nowrap"
+                class="white-space-nowrap text-responsive max-w-4rem"
                 [pTooltip]="'DIALOG.MENU.TREE.I18N.ROW.TOOLTIP' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
-                >{{ Object.keys(rowData.i18n).join(', ') }}</span
               >
+                {{ Object.keys(rowData.i18n).sort(sortByLocale).join(', ') }}
+              </div>
             </td>
             <td class="p-2 text-center hidden-md">
               <span

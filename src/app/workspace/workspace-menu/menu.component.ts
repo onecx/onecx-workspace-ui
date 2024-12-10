@@ -66,9 +66,9 @@ export class MenuComponent implements OnInit, OnDestroy {
   @ViewChild('roleFilter') roleFilter: HTMLInputElement | undefined
 
   Object = Object
-  limitText = limitText // utils declarations
+  public limitText = limitText // utils declarations
+  public sortByLocale = sortByLocale
   private readonly destroy$ = new Subject()
-  private readonly debug = false // to be removed after finalization
   // dialog control
   public actions: Action[] = []
   public actions$: Observable<Action[]> | undefined
@@ -428,7 +428,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     if (!this.workspace) return
     this.menuItem = undefined
     this.menu$ = this.menuApi
-      .getMenuStructure({ menuStructureSearchCriteria: { workspaceId: this.workspace.id! } })
+      .getMenuStructure({ menuStructureSearchCriteria: { workspaceId: this.workspace.id!, roles: [] } })
       .pipe(catchError((error) => of(error)))
     this.menu$.subscribe((result) => {
       this.loading = true
@@ -635,7 +635,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.treeNodeLabelSwitchValueOrg = '' // reset
     this.onTreeNodeLabelSwitchChange({ value: this.treeNodeLabelSwitchValue })
     // initially open the first menu item if exists
-    if (!restore && this.menuNodes.length > 1) {
+    if (!restore && this.menuNodes.length >= 1) {
       this.menuNodes[0].expanded = true
       this.stateService.getState().treeExpansionState.set(this.menuNodes[0].key!, true)
     }

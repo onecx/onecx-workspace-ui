@@ -416,7 +416,7 @@
         "POSITION.TOOLTIP": "Der Position-Pfad des Menü-Eintrags im Format [Eltern-Position.]Position",
         "I18N": "I18n",
         "I18N.TOOLTIP": "Indikator ob Übersetzungen vorhanden sind",
-        "I18N.ROW.TOOLTIP": "Mindestens eine Übersetzung vorhanden",
+        "I18N.ROW.TOOLTIP": "Übersetzung vorhanden",
         "URL.TOOLTIP": "Die URL die beim Aktivieren aufgerufen wird",
         "PRODUCT.TOOLTIP": "Indikator ob die Menü-URL durch eine registrierte Applikation angeboten wird",
         "EXTERN": "X",
