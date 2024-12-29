@@ -84,7 +84,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   public treeNodeLabelSwitchValue = 'NAME'
   public treeNodeLabelSwitchValueOrg = '' // prevent bug in PrimeNG SelectButton
   public currentLogoUrl: string | undefined = undefined
-  public roleFilterValue = ''
+  public roleFilterValue: string[] = []
 
   // workspace
   public workspace?: Workspace
@@ -218,6 +218,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
   public onReload(): void {
     this.wRoles = []
+    this.wAssignments = []
     this.loadMenu(true)
   }
   public onGoToWorkspacePermission(): void {
@@ -428,7 +429,12 @@ export class MenuComponent implements OnInit, OnDestroy {
     if (!this.workspace) return
     this.menuItem = undefined
     this.menu$ = this.menuApi
-      .getMenuStructure({ menuStructureSearchCriteria: { workspaceId: this.workspace.id!, roles: [] } })
+      .getMenuStructure({
+        menuStructureSearchCriteria: {
+          workspaceId: this.workspace.id!,
+          roles: this.roleFilterValue
+        }
+      })
       .pipe(catchError((error) => of(error)))
     this.menu$.subscribe((result) => {
       this.loading = true
@@ -439,7 +445,8 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.menuItems = result.menuItems
         this.menuNodes = this.mapToTreeNodes(this.menuItems)
         this.prepareTreeNodeHelper(restore)
-        this.loadRolesAndAssignments()
+        if (this.wRoles.length > 0) this.assignNode2Role(this.wAssignments)
+        else this.loadRolesAndAssignments()
         this.prepareActionButtons()
         if (restore) {
           this.restoreTree()
@@ -493,6 +500,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   private loadRolesAndAssignments() {
+    console.log('loadRolesAndAssignments ' + this.displayRoles)
     if (!this.displayRoles || this.wRoles.length > 0) return
     this.loadingRoles = true
     this.wRoles = this.wRolesFiltered = []
@@ -502,18 +510,22 @@ export class MenuComponent implements OnInit, OnDestroy {
         roles.sort(this.sortRoleByName)
         this.wRoles = roles
         this.wRolesFiltered = roles
-        // principle: assignments(role.id, menu.id) => node.roles[role.id] = ass.id
-        ass.forEach((ass: Assignment) => {
-          // find affected node and assign role
-          const assignedNode = this.findTreeNodeById(this.menuNodes, ass.menuItemId)
-          if (assignedNode) {
-            assignedNode.data.roles[ass.roleId!] = ass.id
-          }
-        })
+        this.assignNode2Role(ass)
       }
       this.loadingRoles = false
     })
   }
+  private assignNode2Role(ass: Assignment[]) {
+    // principle: assignments(role.id, menu.id) => node.roles[role.id] = ass.id
+    ass.forEach((ass: Assignment) => {
+      // find affected node and assign role
+      const assignedNode = this.findTreeNodeById(this.menuNodes, ass.menuItemId)
+      if (assignedNode) {
+        assignedNode.data.roles[ass.roleId!] = ass.id
+      }
+    })
+  }
+
   private findTreeNodeById(source: TreeNode[], id?: string): TreeNode | undefined {
     let treeNode: TreeNode | undefined = undefined
     for (const node of source) {
@@ -687,19 +699,31 @@ export class MenuComponent implements OnInit, OnDestroy {
   public onImportMenu(): void {
     this.displayMenuImport = true
   }
-  public onHideMenuImport() {
+  public onHideMenuImport(): void {
     this.displayMenuImport = false
   }
-  public onDisplayRoles() {
+
+  public onToggleRoleFilter(): void {
+    if (this.roleFilterValue.length > 0) {
+      this.roleFilterValue = []
+      this.loadMenu(false)
+    }
+  }
+  public onChangeRoleFilter(role: string): void {
+    if (this.roleFilterValue.includes(role)) this.roleFilterValue = this.roleFilterValue.filter((r) => r !== role)
+    else this.roleFilterValue.push(role)
+    this.loadMenu(false)
+  }
+  public onDisplayRoles(): void {
     if (!this.displayRoles && this.wRoles.length === 0) {
       this.loadRolesAndAssignments()
     }
     this.displayRoles = !this.displayRoles
   }
-  public onDisplayMenuPreview() {
+  public onDisplayMenuPreview(): void {
     this.displayMenuPreview = true
   }
-  public onHideMenuPreview() {
+  public onHideMenuPreview(): void {
     this.displayMenuPreview = false
   }
 

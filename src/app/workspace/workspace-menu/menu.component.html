@@ -16,7 +16,7 @@
     <p-message *ngIf="exceptionKey" severity="error" styleClass="m-3 p-2" [text]="exceptionKey | translate"></p-message>
     <p-message *ngIf="loading" severity="info" styleClass="m-3 p-2" [text]="'ACTIONS.LOADING' | translate"></p-message>
     <div
-      *ngIf="!loading && !exceptionKey && menuNodes.length === 0"
+      *ngIf="!loading && !exceptionKey && menuNodes.length === 0 && wRoles.length === 0"
       class="m-3 flex flex-wrap justify-content-between align-items-center"
     >
       <p-message severity="info" styleClass="p-2" [text]="'DIALOG.MENU.MENU_NOT_EXIST' | translate"></p-message>
@@ -30,7 +30,7 @@
 
     <!-- If menu exist -->
     <p-treeTable
-      *ngIf="!loading && !exceptionKey && menuNodes.length > 0"
+      *ngIf="!loading && !exceptionKey"
       #menuTree
       id="ws_menu_table"
       styleClass="px-2 sm:px-3 mb-3"
@@ -131,7 +131,7 @@
       <!-- TABLE HEADER -->
       <ng-template pTemplate="header" let-columns>
         <tr id="ws_menu_table_header_row_1">
-          <th id="ws_menu_table_header_row_1_1" class="py-2 px-2 vertical-align-top text-left border-transparent">
+          <th id="ws_menu_table_header_row_1_1" class="vertical-align-top text-left border-transparent">
             <div class="slim-selectbutton filter-selectbutton">
               <p-selectButton
                 inputid="ws_menu_table_header_row_1_switch_tree_label"
@@ -150,7 +150,7 @@
           </th>
           <th
             id="ws_menu_table_header_row_1_2"
-            class="py-2 px-2 pl-4 vertical-align-top text-left border-transparent"
+            class="pl-4 vertical-align-top text-left border-transparent"
             [attr.colspan]="displayRoles ? 1 + columns.length : 6"
           >
             <div class="flex flex-row justify-content-start align-items-center column-gap-4">
@@ -189,10 +189,7 @@
 
         <!-- DETAIL Columns -->
         <tr id="ws_menu_table_header_row_2">
-          <th
-            id="ws_menu_table_header_row_2_1"
-            class="p-2 pt-0 vertical-align-bottom border-transparent border-bottom-2"
-          >
+          <th id="ws_menu_table_header_row_2_1" class="vertical-align-bottom border-transparent border-bottom-2">
             <p-toggleButton
               inputId="ws_menu_table_header_tree_toggle"
               styleClass="small-toggle-button white-space-nowrap"
@@ -212,7 +209,7 @@
             <th
               *ngFor="let col of treeDetailColumns"
               [id]="'ws_menu_table_header_detail_' + col.name"
-              class="px-2 py-1 text-center vertical-align-bottom white-space-nowrap border-bottom-2"
+              class="text-center vertical-align-bottom white-space-nowrap border-bottom-2"
               [ngClass]="col.css"
               [pTooltip]="col.tooltipKey | translate"
               tooltipPosition="top"
@@ -228,7 +225,7 @@
             <th
               *ngIf="columns.length === 0"
               id="ws_menu_table_header_roles_messages"
-              class="pt-2 pb-0 px-2 vertical-align-bottom border-transparent"
+              class="pb-0 vertical-align-bottom border-transparent"
             >
               <p-message
                 *ngIf="loadingRoles"
@@ -250,12 +247,40 @@
               ></p-message>
             </th>
             <!-- filtered columns => no match = no columns-->
+            <th class="p-0 hidden-xs border-bottom-none vertical-align-bottom">
+              <span
+                *ngIf="roleFilterValue.length === 0"
+                [id]="'ws_menu_table_header_roles_action_filter'"
+                class="p-2 text-primary font-medium p-button-icon pi pi-filter"
+                aria-hidden="true"
+                [pTooltip]="'DIALOG.MENU.ROLE.FILTER' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+              ></span>
+              <button
+                *ngIf="roleFilterValue.length > 0"
+                pbutton
+                type="button"
+                [id]="'ws_menu_table_header_roles_action_filter_clear'"
+                class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
+                (click)="onToggleRoleFilter()"
+                aria-hidden="true"
+                [attr.aria-label]="'DIALOG.MENU.ROLE.FILTER.CLEAR' | translate"
+                [pTooltip]="'DIALOG.MENU.ROLE.FILTER.CLEAR' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+              >
+                <span class="text-primary font-medium p-button-icon pi pi-filter-slash" aria-hidden="true"></span>
+              </button>
+            </th>
             <th
               *ngFor="let role of columns"
               [id]="'ws_menu_table_header_roles_' + role.name"
-              class="px-2 py-1 hidden-xs text-center border-bottom-2 border-right-1 role-name"
+              class="hidden-xs text-center border-bottom-2 border-right-1 role-name cursor-pointer"
               [class.vertical-align-bottom]="columns.length <= 5"
               [class.vertical-align-top]="columns.length > 5"
+              [class.bg-primary]="roleFilterValue.includes(role.name)"
+              (click)="onChangeRoleFilter(role.name)"
               [pTooltip]="role.description ? role.description : ''"
               tooltipPosition="top"
               tooltipEvent="hover"
@@ -398,6 +423,7 @@
 
           <!-- ROLE ASSIGNMENTS -->
           <ng-container *ngIf="displayRoles">
+            <td></td>
             <td
               *ngFor="let role of columns"
               class="p-0 hidden-xs text-center border-right-1"

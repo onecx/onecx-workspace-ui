@@ -50,8 +50,12 @@
     .p-treetable-header {
       padding: 1rem 0.5rem; // var(--table-header-padding);
     }
+    .p-treetable-thead > tr > th {
+      padding: 0 0.3rem 0.3rem 0.3rem;
+    }
     table {
       width: unset;
+      margin-top: 0.75rem;
       .p-treetable-thead {
         tr th.role-name {
           word-break: break-all;
