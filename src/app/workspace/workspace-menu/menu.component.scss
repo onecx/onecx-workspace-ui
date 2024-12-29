@@ -24,14 +24,11 @@
     overflow-y: hidden;
   }
 
-  .p-togglebutton {
+  .p-togglebutton.p-button:not(.p-disabled):not(.p-highlight) {
     text-align: center;
-    display: inline-block;
-    color: var(--emphasis-medium);
+    padding: 0.5rem 0.8rem;
     font-weight: var(--font-weight);
-    padding: 0.3rem 0.8rem;
-  }
-  .small-toggle-button.p-togglebutton.p-button:not(.p-disabled) {
+    color: var(--primary-text-color);
     background: var(--primary-color);
     &:hover {
       background: var(--button-hover-bg);
