@@ -19,6 +19,6 @@
     "src/app/remotes/list-workspaces-using-theme/list-workspaces-using-theme.component.main.ts",
     "src/app/remotes/list-workspaces-using-product/list-workspaces-using-product.component.main.ts"
   ],
-  "include": ["src/**/*.d.ts"],
+  "include": ["src/**/*.ts"],
   "exclude": ["src/test.ts", "src/**/*.spec.ts"]
 }

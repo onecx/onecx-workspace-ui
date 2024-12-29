@@ -52,6 +52,7 @@
       .p-treetable-thead {
         tr th.role-name {
           word-break: break-all;
+          min-width: 60px;
         }
         tr th:last-of-type {
           border-right: none !important;

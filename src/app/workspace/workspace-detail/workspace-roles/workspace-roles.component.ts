@@ -208,14 +208,14 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
       })
       .subscribe({
         next: (data) => {
-          this.msgService.success({ summaryKey: 'ACTIONS.CREATE.ROLE.MESSAGE_OK' })
+          this.msgService.success({ summaryKey: 'ACTIONS.CREATE.ROLE_OK' })
           role.id = data.id
           role.modificationCount = data.modificationCount
           role.modificationDate = data.modificationDate
           role.isWorkspaceRole = true
         },
         error: (err) => {
-          this.msgService.error({ summaryKey: 'ACTIONS.CREATE.ROLE.MESSAGE_NOK' })
+          this.msgService.error({ summaryKey: 'ACTIONS.CREATE.ROLE_NOK' })
           console.error('createWorkspaceRole', err)
         }
       })
