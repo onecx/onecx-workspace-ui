@@ -411,7 +411,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.workspace$.subscribe((result) => {
       if (result instanceof HttpErrorResponse) {
         this.loading = false
-        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + result.status + '.WORKSPACES'
+        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + result.status + '.WORKSPACE'
         console.error('getWorkspaceByName', result)
       } else if (result instanceof Object) {
         this.workspace = result.resource
@@ -419,7 +419,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.loadMenu(false)
       } else {
         this.loading = false
-        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_0.WORKSPACES'
+        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_0.WORKSPACE'
       }
     })
   }

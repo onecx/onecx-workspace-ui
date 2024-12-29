@@ -24,7 +24,7 @@
     overflow-y: hidden;
   }
 
-  .p-togglebutton.p-button:not(.p-disabled):not(.p-highlight) {
+  .p-togglebutton.p-button:not(.p-disabled) {
     text-align: center;
     padding: 0.5rem 0.8rem;
     font-weight: var(--font-weight);
@@ -37,6 +37,12 @@
     .p-button-icon-left,
     .p-button-icon-right {
       color: var(--primary-text-color);
+    }
+    &:not(.p-highlight):hover {
+      .p-button-icon-left,
+      .p-button-icon-right {
+        color: var(--primary-text-color);
+      }
     }
   }
 
