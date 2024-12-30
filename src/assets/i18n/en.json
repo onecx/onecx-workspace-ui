@@ -394,7 +394,7 @@
         "PREVIEW2.TOOLTIP": "Red = no translation",
         "REORDER.TOOLTIP": "Reorder via Drag & Drop"
       },
-      "SUBHEADER": "Manage the Menu",
+      "SUBHEADER": "Manage details and Role assignments of the Workspace Menu",
       "ACTION": {
         "VIEW": "Display details",
         "EDIT": "Edit details"

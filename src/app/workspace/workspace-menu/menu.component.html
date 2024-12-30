@@ -39,6 +39,7 @@
               icon="pi pi-sort"
               id="ws_menu_table_header_reorder"
               (onClick)="onDisplayMenuPreview()"
+              [disabled]="menuNodes.length === 0"
               [label]="'DIALOG.MENU.HEADER.TREE_MODAL' | translate"
               [ariaLabel]="'DIALOG.MENU.HEADER.TREE_MODAL' | translate"
               [pTooltip]="'DIALOG.MENU.HEADER.TREE_MODAL.TOOLTIP' | translate"

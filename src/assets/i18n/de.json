@@ -394,7 +394,7 @@
         "PREVIEW2.TOOLTIP": "Rot = keine Übersetzungen",
         "REORDER.TOOLTIP": "Umordnen mit Drag & Drop"
       },
-      "SUBHEADER": "Menü verwalten",
+      "SUBHEADER": "Die Details und Rollenberechtigungen des Workspace Menüs verwalten",
       "ACTION": {
         "VIEW": "Details anzeigen",
         "EDIT": "Details bearbeiten"
