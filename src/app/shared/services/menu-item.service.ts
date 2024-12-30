@@ -55,21 +55,20 @@ export class MenuItemService {
   }
 
   private expandCurrentMfeMenuItems(items: MenuItem[], currentMfePath: string): boolean {
+    let expanded = false
     for (const item of items) {
-      if (this.stripPath(item.routerLink) === currentMfePath) return true
-      else if (item.items && this.expandCurrentMfeMenuItems(item.items, currentMfePath)) {
-        item.expanded = true
-        return true
-      }
+      if (!expanded)
+        if (this.stripPath(item.routerLink) === currentMfePath) expanded = true
+        else if (item.items && this.expandCurrentMfeMenuItems(item.items, currentMfePath)) {
+          item.expanded = true
+          expanded = true
+        }
     }
-    return false
+    return expanded
   }
 
   private replaceUrlVariables(url: string | undefined): string | undefined {
-    if (!url) {
-      return
-    }
-    return url.replaceAll(
+    return url?.replaceAll(
       /\[\[(.+?)\]\]/g, //NOSONAR
       (_match, $1) => {
         return sessionStorage.getItem($1) ?? localStorage.getItem($1) ?? ''

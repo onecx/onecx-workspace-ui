@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core'
 import { TreeNode } from 'primeng/api'
+
 import { WorkspaceMenuItem } from 'src/app/shared/generated'
 
 export interface NewPosition {

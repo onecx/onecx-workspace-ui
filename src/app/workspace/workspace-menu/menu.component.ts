@@ -167,6 +167,8 @@ export class MenuComponent implements OnInit, OnDestroy {
       .get([
         'ACTIONS.NAVIGATION.BACK',
         'ACTIONS.NAVIGATION.BACK.TOOLTIP',
+        'ACTIONS.CREATE.LABEL',
+        'ACTIONS.CREATE.MENU',
         'ACTIONS.EXPORT.LABEL',
         'ACTIONS.EXPORT.MENU',
         'ACTIONS.IMPORT.LABEL',
@@ -181,6 +183,14 @@ export class MenuComponent implements OnInit, OnDestroy {
               actionCallback: () => this.onClose(),
               icon: 'pi pi-arrow-left',
               show: 'always'
+            },
+            {
+              label: data['ACTIONS.CREATE.LABEL'],
+              title: data['ACTIONS.CREATE.MENU'],
+              actionCallback: () => this.onCreateMenu(),
+              icon: 'pi pi-plus',
+              show: 'always',
+              permission: 'MENU#CREATE'
             },
             {
               label: data['ACTIONS.EXPORT.LABEL'],
@@ -212,6 +222,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.location.back()
   }
   public onReload(): void {
+    if (this.loading) return
     this.wRoles = []
     this.wAssignments = []
     this.loadMenu(true)
@@ -320,8 +331,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.menuItem = item
     this.displayMenuDetail = true
   }
-  public onCreateMenu($event: MouseEvent, parent?: WorkspaceMenuItem): void {
-    $event.stopPropagation()
+  public onCreateMenu(parent?: WorkspaceMenuItem): void {
     this.changeMode = 'CREATE'
     this.menuItem = parent
     this.displayMenuDetail = true

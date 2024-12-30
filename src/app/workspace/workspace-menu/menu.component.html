@@ -14,23 +14,16 @@
 
   <ocx-page-content>
     <p-message *ngIf="exceptionKey" severity="error" styleClass="m-3 p-2" [text]="exceptionKey | translate"></p-message>
-    <p-message *ngIf="loading" severity="info" styleClass="m-3 p-2" [text]="'ACTIONS.LOADING' | translate"></p-message>
-    <div
-      *ngIf="!loading && !exceptionKey && menuNodes.length === 0 && wRoles.length === 0"
-      class="m-3 flex flex-wrap justify-content-between align-items-center"
-    >
-      <p-message severity="info" styleClass="p-2" [text]="'DIALOG.MENU.MENU_NOT_EXIST' | translate"></p-message>
-      <p-button
-        id="ws_menu_action_create"
-        icon="pi pi-plus"
-        (onClick)="onCreateMenu($event)"
-        [label]="'ACTIONS.CREATE.MENU' | translate"
-      ></p-button>
-    </div>
+    <p-message
+      *ngIf="menuNodes.length === 0 && roleFilterValue.length === 0"
+      severity="info"
+      styleClass="m-3 p-2"
+      [text]="'DIALOG.MENU.MENU_NOT_EXIST' | translate"
+    ></p-message>
 
     <!-- If menu exist -->
     <p-treeTable
-      *ngIf="!loading && !exceptionKey"
+      *ngIf="!(exceptionKey && menuNodes.length === 0 && roleFilterValue.length === 0)"
       #menuTree
       id="ws_menu_table"
       styleClass="px-2 sm:px-3 mb-3"
@@ -117,7 +110,7 @@
             <p-button
               id="ws_menu_table_action_reload"
               styleClass="h-full button-min-height"
-              icon="pi pi-refresh"
+              [icon]="'pi ' + (loading ? 'pi-spin pi-spinner' : 'pi-refresh')"
               (onClick)="onReload()"
               [ariaLabel]="'ACTIONS.SEARCH.RELOAD' | translate"
               [pTooltip]="'ACTIONS.SEARCH.RELOAD' | translate"
@@ -189,7 +182,7 @@
 
         <!-- DETAIL Columns -->
         <tr id="ws_menu_table_header_row_2">
-          <th id="ws_menu_table_header_row_2_1" class="vertical-align-bottom border-transparent border-bottom-2">
+          <th id="ws_menu_table_header_row_2_1" class="pr-4 vertical-align-bottom border-transparent border-bottom-2">
             <p-toggleButton
               inputId="ws_menu_table_header_tree_toggle"
               styleClass="small-toggle-button white-space-nowrap"
@@ -264,7 +257,6 @@
                 [id]="'ws_menu_table_header_roles_action_filter_clear'"
                 class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
                 (click)="onResetRoleFilter()"
-                aria-hidden="true"
                 [attr.aria-label]="'DIALOG.MENU.ROLE.FILTER.CLEAR' | translate"
                 [pTooltip]="'DIALOG.MENU.ROLE.FILTER.CLEAR' | translate"
                 tooltipPosition="top"
@@ -275,17 +267,24 @@
             </th>
             <th
               *ngFor="let role of columns"
-              [id]="'ws_menu_table_header_roles_' + role.name"
-              class="hidden-xs text-center border-bottom-2 border-right-1 role-name cursor-pointer"
+              class="hidden-xs text-center border-bottom-2 border-right-1 role-name"
               [class.vertical-align-bottom]="columns.length <= 5"
               [class.vertical-align-top]="columns.length > 5"
               [class.bg-primary]="roleFilterValue.includes(role.name)"
+              (keydown.space)="onChangeRoleFilter(role.name)"
               (click)="onChangeRoleFilter(role.name)"
-              [pTooltip]="role.description ? role.description : ''"
-              tooltipPosition="top"
-              tooltipEvent="hover"
             >
-              {{ role.name }}
+              <a
+                [id]="'ws_menu_table_header_roles_' + role.name"
+                class="cursor-pointer"
+                tabindex="0"
+                [attr.aria-label]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
+                [pTooltip]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+              >
+                {{ role.name }}
+              </a>
             </th>
           </ng-container>
         </tr>
@@ -357,7 +356,7 @@
                   type="button"
                   [id]="'ws_menu_table_row_' + rowData.key + '_goto_new'"
                   class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
-                  (click)="onCreateMenu($event, rowData)"
+                  (click)="onCreateMenu(rowData)"
                   [attr.aria-label]="'ACTIONS.CREATE.MENU' | translate"
                   [pTooltip]="'ACTIONS.CREATE.MENU.TOOLTIP' | translate"
                   tooltipPosition="top"
@@ -493,6 +492,12 @@
         </tr>
       </ng-template>
     </p-treeTable>
+    <p-message
+      *ngIf="menuNodes.length === 0 && roleFilterValue.length > 0"
+      severity="info"
+      styleClass="m-3 p-2"
+      [text]="'ACTIONS.SEARCH.NO_DATA' | translate"
+    ></p-message>
   </ocx-page-content>
 </ocx-portal-page>
 
