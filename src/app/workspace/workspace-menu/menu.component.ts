@@ -98,7 +98,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   public parentItems!: SelectItem[]
   public usedLanguages: Map<string, number> = new Map()
   // detail
-  public changeMode: ChangeMode = 'EDIT'
+  public changeMode: ChangeMode = 'VIEW'
   public displayMenuDetail = false
   public displayMenuImport = false
   public displayMenuDelete = false
@@ -124,6 +124,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.menuItems = state.workspaceMenuItems
     // simplify permission checks
     if (this.userService.hasPermission('MENU#VIEW')) this.myPermissions.push('MENU#VIEW')
+    if (this.userService.hasPermission('MENU#VIEW')) this.myPermissions.push('MENU#CREATE')
     if (this.userService.hasPermission('MENU#EDIT')) this.myPermissions.push('MENU#EDIT')
     if (this.userService.hasPermission('MENU#GRANT')) this.myPermissions.push('MENU#GRANT')
     if (this.userService.hasPermission('WORKSPACE_ROLE#EDIT')) this.myPermissions.push('WORKSPACE_ROLE#EDIT')
@@ -276,6 +277,7 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   public onToggleTreeTableContent(ev: any): void {
     this.displayRoles = ev.checked
+    if (!this.displayRoles) this.onResetRoleFilter()
     this.loadRolesAndAssignments()
   }
   public isObjectEmpty(obj: object) {
@@ -336,6 +338,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.menuItem = parent
     this.displayMenuDetail = true
   }
+
   // triggered by change event in menu detail dialog
   public onMenuItemChanged(changed: boolean): void {
     if (changed) {

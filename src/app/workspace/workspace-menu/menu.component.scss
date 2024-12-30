@@ -3,6 +3,7 @@
 @include invisible;
 @include danger-action;
 @include displaying-text-responsive;
+@include readable-disabled-components;
 @include correct-select-button;
 @include search-criteria-select-button-slim;
 @include correct-data-view-control;
@@ -23,27 +24,33 @@
     padding-bottom: 0;
     overflow-y: hidden;
   }
-
-  .p-togglebutton.p-button:not(.p-disabled) {
+  /* togglebuttons should look like buttons */
+  .p-togglebutton.p-button:not(.p-highlight),
+  .p-togglebutton.p-button.p-highlight {
+    &:not(.p-disabled) {
+      background: var(--primary-color);
+      color: var(--primary-text-color);
+      &:hover {
+        background: var(--button-hover-bg);
+      }
+      .p-button-label,
+      .p-button-icon-left,
+      .p-button-icon-right {
+        color: inherit;
+      }
+    }
+    &.p-disabled {
+      background: var(--emphasis-lower);
+      color: var(--emphasis-low);
+      .p-button-label,
+      .p-button-icon-left,
+      .p-button-icon-right {
+        color: inherit;
+      }
+    }
     text-align: center;
     padding: 0.5rem 0.8rem;
     font-weight: var(--font-weight);
-    color: var(--primary-text-color);
-    background: var(--primary-color);
-    &:hover {
-      background: var(--button-hover-bg);
-    }
-    .p-button-label,
-    .p-button-icon-left,
-    .p-button-icon-right {
-      color: var(--primary-text-color);
-    }
-    &:not(.p-highlight):hover {
-      .p-button-icon-left,
-      .p-button-icon-right {
-        color: var(--primary-text-color);
-      }
-    }
   }
 
   .p-treetable {

@@ -16,9 +16,9 @@ import { WorkspaceSearchComponent } from './workspace-search.component'
 describe('WorkspaceSearchComponent', () => {
   let component: WorkspaceSearchComponent
   let fixture: ComponentFixture<WorkspaceSearchComponent>
+
   let mockActivatedRoute: ActivatedRoute
   const mockRouter = { navigate: jasmine.createSpy('navigate') }
-
   const accSpy = {
     getLocation: jasmine.createSpy('getLocation').and.returnValue({ deploymentPath: '/path' })
   }
@@ -49,12 +49,6 @@ describe('WorkspaceSearchComponent', () => {
         { provide: Accelerator.getLocation, useValue: accSpy.getLocation }
       ]
     }).compileComponents()
-    // to spy data: reset
-    msgServiceSpy.info.calls.reset()
-    msgServiceSpy.error.calls.reset()
-    wApiServiceSpy.searchWorkspaces.calls.reset()
-    // to spy data: refill with neutral data
-    wApiServiceSpy.searchWorkspaces.and.returnValue(of({}))
   }))
 
   beforeEach(() => {
@@ -62,6 +56,12 @@ describe('WorkspaceSearchComponent', () => {
     accSpy.getLocation()
     component = fixture.componentInstance
     fixture.detectChanges()
+    // to spy data: reset
+    msgServiceSpy.info.calls.reset()
+    msgServiceSpy.error.calls.reset()
+    wApiServiceSpy.searchWorkspaces.calls.reset()
+    // to spy data: refill with neutral data
+    wApiServiceSpy.searchWorkspaces.and.returnValue(of({}))
   })
 
   describe('initialize', () => {
@@ -208,8 +208,8 @@ describe('WorkspaceSearchComponent', () => {
 
     if (component.actions$) {
       component.actions$.subscribe((actions) => {
-        const firstAction = actions[0]
-        firstAction.actionCallback()
+        const action = actions[0]
+        action.actionCallback()
         expect(component.toggleShowCreateDialog).toHaveBeenCalled()
       })
     }
@@ -222,8 +222,8 @@ describe('WorkspaceSearchComponent', () => {
 
     if (component.actions$) {
       component.actions$.subscribe((actions) => {
-        const firstAction = actions[1]
-        firstAction.actionCallback()
+        const action = actions[1]
+        action.actionCallback()
         expect(component.toggleShowImportDialog).toHaveBeenCalled()
       })
     }

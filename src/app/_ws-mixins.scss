@@ -60,6 +60,14 @@
     }
   }
 }
+@mixin readable-disabled-components {
+  :host ::ng-deep {
+    .p-component:disabled,
+    .p-disabled {
+      opacity: unset;
+    }
+  }
+}
 
 @mixin compact-dropdown-list-items {
   :host ::ng-deep {

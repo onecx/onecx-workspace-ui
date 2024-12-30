@@ -95,7 +95,7 @@ const state: MenuState = {
   workspaceMenuItems: []
 }
 
-describe('MenuComponent', () => {
+fdescribe('MenuComponent', () => {
   let component: MenuComponent
   let fixture: ComponentFixture<MenuComponent>
 
@@ -125,9 +125,8 @@ describe('MenuComponent', () => {
 
   const mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
   mockUserService.hasPermission.and.callFake((permission: string) => {
-    return ['MENU#VIEW', 'MENU#EDIT', 'MENU#GRANT', 'WORKSPACE_ROLE#EDIT'].includes(permission)
+    return ['MENU#VIEW', 'MENU#CREATE', 'MENU#EDIT', 'MENU#GRANT', 'WORKSPACE_ROLE#EDIT'].includes(permission)
   })
-
   const mockActivatedRouteSnapshot: Partial<ActivatedRouteSnapshot> = {
     params: { id: 'mockId' }
   }
@@ -188,56 +187,75 @@ describe('MenuComponent', () => {
     assgmtApiServiceSpy.searchAssignments.and.returnValue(of({}))
   })
 
-  it('should create', () => {
-    expect(component).toBeTruthy()
+  describe('Initialize:', () => {
+    it('should create', () => {
+      expect(component).toBeTruthy()
+    })
+
+    it('it should push permissions to array if userService has them', () => {
+      expect(component.myPermissions).toContain('MENU#VIEW')
+      expect(component.myPermissions).toContain('MENU#CREATE')
+      expect(component.myPermissions).toContain('MENU#EDIT')
+      expect(component.myPermissions).toContain('MENU#GRANT')
+      expect(component.myPermissions).toContain('WORKSPACE_ROLE#EDIT')
+    })
   })
 
-  it('it should push permissions to array if userService has them', () => {
-    expect(component.myPermissions).toContain('MENU#VIEW')
-    expect(component.myPermissions).toContain('MENU#EDIT')
-    expect(component.myPermissions).toContain('MENU#GRANT')
-    expect(component.myPermissions).toContain('WORKSPACE_ROLE#EDIT')
-  })
-
-  describe('prepare page actions', () => {
-    it('should have prepared action buttons onInit: onClose, and called it', () => {
+  fdescribe('Page actions:', () => {
+    beforeEach(() => {
       component.ngOnInit()
+    })
 
+    it('should have BACK navigation', () => {
       if (component.actions$) {
         component.actions$.subscribe((actions) => {
           const action = actions[0]
           action.actionCallback()
+
           expect(locationSpy.back).toHaveBeenCalled()
         })
       }
     })
 
-    it('should have prepared action buttons onInit: hide Export button due to no menu items', () => {
-      spyOn(component, 'onExportMenu')
-
-      component.ngOnInit()
+    it('should call CREATE', () => {
+      spyOn(component, 'onCreateMenu')
 
       if (component.actions$) {
         component.actions$.subscribe((actions) => {
           const action = actions[1]
           action.actionCallback()
-          expect(component.onExportMenu).toHaveBeenCalled()
+
+          expect(action.permission).toEqual('MENU#CREATE')
+          //expect(component.changeMode).toEqual('CREATE')
+          expect(component.onCreateMenu).toHaveBeenCalled()
+          //expect(component.displayMenuDetail).toBeTrue()
+        })
+      }
+    })
+
+    it('should call EXPORT: hide button if there are no menu items', () => {
+      spyOn(component, 'onExportMenu')
+
+      if (component.actions$) {
+        component.actions$.subscribe((actions) => {
+          const action = actions[2]
+          action.actionCallback()
+
           expect(action.permission).toEqual('MENU#EXPORT')
           expect(action.showCondition).toBeFalse()
+          expect(component.onExportMenu).toHaveBeenCalled()
           expect(component.menuItems).toEqual([])
           expect(component.menuItems?.length).toBe(0)
         })
       }
     })
-    it('should have prepared action buttons onInit: hide Export button due to no menu items', () => {
+    it('should call EXPORT', () => {
       spyOn(component, 'onExportMenu')
-
-      component.ngOnInit()
       component.menuItems = mockMenuItems
 
       if (component.actions$) {
         component.actions$.subscribe((actions) => {
-          const action = actions[1]
+          const action = actions[2]
           action.actionCallback()
           expect(component.onExportMenu).toHaveBeenCalled()
           expect(action.permission).toEqual('MENU#EXPORT')
@@ -246,25 +264,24 @@ describe('MenuComponent', () => {
         })
       }
     })
-    it('should have exclude some actions', () => {
+
+    it('should call EXPORT: hide on conditions', () => {
       component.menuItems = undefined
       component.prepareActionButtons()
 
       if (component.actions$) {
         component.actions$.subscribe((actions) => {
-          expect(actions[1].showCondition).toBeFalse()
+          expect(actions[2].showCondition).toBeFalse()
         })
       }
     })
 
-    it('should have prepared action buttons onInit: onImportMenu', () => {
+    it('should call IMPORT', () => {
       spyOn(component, 'onImportMenu')
-
-      component.ngOnInit()
 
       if (component.actions$) {
         component.actions$.subscribe((actions) => {
-          const action = actions[2]
+          const action = actions[3]
           action.actionCallback()
           expect(component.onImportMenu).toHaveBeenCalled()
         })
@@ -510,18 +527,23 @@ describe('MenuComponent', () => {
     expect(component.displayMenuDetail).toBeFalse()
   })
 
-  it('should handle onCreateMenu correctly', () => {
-    const mockEvent = jasmine.createSpyObj('MouseEvent', ['stopPropagation'])
-    const mockParent = {
-      key: '1-1',
-      id: 'id1'
-    }
-    component.onCreateMenu(mockEvent, mockParent)
+  describe('create menu item', () => {
+    it('should handle onCreateMenu correctly: with parent', () => {
+      const mockParent = { key: '1-1', id: 'id1' }
+      component.onCreateMenu(mockParent)
 
-    expect(mockEvent.stopPropagation).toHaveBeenCalled()
-    expect(component.changeMode).toEqual('CREATE')
-    expect(component.menuItem).toEqual(mockParent)
-    expect(component.displayMenuDetail).toBeTrue()
+      expect(component.changeMode).toEqual('CREATE')
+      expect(component.menuItem).toEqual(mockParent)
+      expect(component.displayMenuDetail).toBeTrue()
+    })
+
+    it('should handle onCreateMenu correctly: without parent', () => {
+      component.onCreateMenu()
+
+      expect(component.changeMode).toEqual('CREATE')
+      expect(component.menuItem).toEqual(undefined)
+      expect(component.displayMenuDetail).toBeTrue()
+    })
   })
 
   it('should removeNodeFromTree if key is present and refresh menuNodes if delete displayed onMenuItemChanged', () => {

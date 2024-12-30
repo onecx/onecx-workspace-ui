@@ -23,7 +23,7 @@
 
     <!-- If menu exist -->
     <p-treeTable
-      *ngIf="!(exceptionKey && menuNodes.length === 0 && roleFilterValue.length === 0)"
+      *ngIf="(!exceptionKey && menuNodes.length > 0) || (menuNodes.length === 0 && roleFilterValue.length > 0)"
       #menuTree
       id="ws_menu_table"
       styleClass="px-2 sm:px-3 mb-3"
@@ -143,13 +143,13 @@
           </th>
           <th
             id="ws_menu_table_header_row_1_2"
-            class="pl-4 vertical-align-top text-left border-transparent"
+            class="pl-5 vertical-align-top text-left border-transparent"
             [attr.colspan]="displayRoles ? 1 + columns.length : 6"
           >
-            <div class="flex flex-row justify-content-start align-items-center column-gap-4">
+            <div class="flex flex-row justify-content-start align-items-center column-gap-5">
               <p-toggleButton
                 inputid="ws_menu_table_header_row_1_switch_details_n_roles"
-                styleClass="small-toggle-button white-space-nowrap hidden-xs"
+                styleClass="white-space-nowrap hidden-xs"
                 [onIcon]="'pi pi-search-plus'"
                 [offIcon]="'pi pi-lock'"
                 [onLabel]="'DIALOG.MENU.HEADER.DETAILS' | translate"
@@ -180,17 +180,18 @@
           </th>
         </tr>
 
-        <!-- DETAIL Columns -->
+        <!-- ROW 2 -->
         <tr id="ws_menu_table_header_row_2">
           <th id="ws_menu_table_header_row_2_1" class="pr-4 vertical-align-bottom border-transparent border-bottom-2">
             <p-toggleButton
               inputId="ws_menu_table_header_tree_toggle"
-              styleClass="small-toggle-button white-space-nowrap"
+              styleClass="white-space-nowrap"
               [onIcon]="'pi pi-arrow-down-left-and-arrow-up-right-to-center'"
               [offIcon]="'pi pi-arrow-up-right-and-arrow-down-left-from-center'"
               [onLabel]="'ACTIONS.TREE.COLLAPSE_ALL' | translate"
               [offLabel]="'ACTIONS.TREE.EXPAND_ALL' | translate"
               [(ngModel)]="treeExpanded"
+              [disabled]="menuNodes.length === 0"
               (onChange)="onToggleTreeViewMode($event)"
               [ariaLabel]="'ACTIONS.TREE.EXPAND_ALL.TOOLTIP' | translate"
               [pTooltip]="'ACTIONS.TREE.EXPAND_ALL.TOOLTIP' | translate"
@@ -198,6 +199,7 @@
               tooltipEvent="hover"
             />
           </th>
+          <!-- ROW 2: DETAIL Columns -->
           <ng-container *ngIf="!displayRoles">
             <th
               *ngFor="let col of treeDetailColumns"
@@ -212,9 +214,9 @@
             </th>
           </ng-container>
 
-          <!-- ROLES Columns -->
+          <!-- ROW 2: ROLE Columns -->
           <ng-container *ngIf="displayRoles">
-            <!-- no filtered columns while loading and no roles => no filter -->
+            <!-- no filtered columns while loading and if no roles => no filter -->
             <th
               *ngIf="columns.length === 0"
               id="ws_menu_table_header_roles_messages"
@@ -239,7 +241,7 @@
                 [text]="'DIALOG.MENU.HEADER.ROLES.NOT_MATCHING' | translate"
               ></p-message>
             </th>
-            <!-- filtered columns => no match = no columns-->
+            <!-- role filter -->
             <th class="p-0 hidden-xs border-bottom-none vertical-align-bottom">
               <span
                 *ngIf="roleFilterValue.length === 0"
@@ -265,19 +267,20 @@
                 <span class="text-primary font-medium p-button-icon pi pi-filter-slash" aria-hidden="true"></span>
               </button>
             </th>
+            <!-- filtered columns => no match = no columns-->
             <th
               *ngFor="let role of columns"
-              class="hidden-xs text-center border-bottom-2 border-right-1 role-name"
+              class="p-1 hidden-xs text-center border-bottom-2 border-right-1 role-name"
               [class.vertical-align-bottom]="columns.length <= 5"
-              [class.vertical-align-top]="columns.length > 5"
-              [class.bg-primary]="roleFilterValue.includes(role.name)"
-              (keydown.space)="onChangeRoleFilter(role.name)"
-              (click)="onChangeRoleFilter(role.name)"
+              [class.vertical-align-bottom]="columns.length > 5"
             >
               <a
                 [id]="'ws_menu_table_header_roles_' + role.name"
-                class="cursor-pointer"
+                class="p-1 cursor-pointer"
+                [class.bg-primary]="roleFilterValue.includes(role.name)"
                 tabindex="0"
+                (keydown.space)="onChangeRoleFilter(role.name)"
+                (click)="onChangeRoleFilter(role.name)"
                 [attr.aria-label]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
                 [pTooltip]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
                 tooltipPosition="top"
