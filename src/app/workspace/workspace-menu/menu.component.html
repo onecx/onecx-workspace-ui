@@ -14,17 +14,14 @@
 
   <ocx-page-content>
     <p-message *ngIf="exceptionKey" severity="error" styleClass="m-3 p-2" [text]="exceptionKey | translate"></p-message>
-    <p-message
-      *ngIf="menuNodes.length === 0 && roleFilterValue.length === 0"
-      severity="info"
-      styleClass="m-3 p-2"
-      [text]="'DIALOG.MENU.MENU_NOT_EXIST' | translate"
-    ></p-message>
 
     <!-- If menu exist -->
-    <p-treeTable
+    <!-- 
       *ngIf="(!exceptionKey && menuNodes.length > 0) || (menuNodes.length === 0 && roleFilterValue.length > 0)"
+    -->
+    <p-treeTable
       #menuTree
+      *ngIf="!exceptionKey"
       id="ws_menu_table"
       styleClass="px-2 sm:px-3 mb-3"
       [value]="menuNodes"
@@ -131,6 +128,7 @@
                 styleClass="data-view-control max-w-15rem flex flex flex-wrap row-gap-1"
                 [options]="treeNodeLabelSwitchItems"
                 [(ngModel)]="treeNodeLabelSwitchValue"
+                [disabled]="menuNodes.length === 0"
                 (onChange)="onTreeNodeLabelSwitchChange($event)"
                 [ariaLabel]="'DIALOG.MENU.HEADER.DISPLAYED_ITEM' | translate"
                 [pTooltip]="'DIALOG.MENU.HEADER.DISPLAYED_ITEM' | translate"
@@ -155,6 +153,7 @@
                 [onLabel]="'DIALOG.MENU.HEADER.DETAILS' | translate"
                 [offLabel]="'DIALOG.MENU.HEADER.ROLES' | translate"
                 [(ngModel)]="treeTableContentValue"
+                [disabled]="menuNodes.length === 0"
                 (onChange)="onToggleTreeTableContent($event)"
                 [ariaLabel]="'DIALOG.MENU.HEADER.DETAILS_N_ROLES.TOOLTIP' | translate"
                 [pTooltip]="'DIALOG.MENU.HEADER.DETAILS_N_ROLES.TOOLTIP' | translate"
@@ -270,19 +269,17 @@
             <!-- filtered columns => no match = no columns-->
             <th
               *ngFor="let role of columns"
-              class="p-1 hidden-xs text-center border-bottom-2 border-right-1 role-name"
-              [class.vertical-align-bottom]="columns.length <= 5"
-              [class.vertical-align-bottom]="columns.length > 5"
+              class="p-1 hidden-xs text-center vertical-align-bottom border-bottom-2 border-right-1 role-name"
             >
               <a
                 [id]="'ws_menu_table_header_roles_' + role.name"
-                class="p-1 cursor-pointer"
+                class="p-1 cursor-pointer border-round-sm"
                 [class.bg-primary]="roleFilterValue.includes(role.name)"
                 tabindex="0"
                 (keydown.space)="onChangeRoleFilter(role.name)"
                 (click)="onChangeRoleFilter(role.name)"
-                [attr.aria-label]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
-                [pTooltip]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
+                [attr.aria-label]="'DIALOG.MENU.ROLE.FILTER.NAME' | translate"
+                [pTooltip]="'DIALOG.MENU.ROLE.FILTER.NAME' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
               >
@@ -495,6 +492,13 @@
         </tr>
       </ng-template>
     </p-treeTable>
+    <!-- IF no data exist: -->
+    <p-message
+      *ngIf="!loading && menuNodes.length === 0 && roleFilterValue.length === 0"
+      severity="info"
+      styleClass="m-3 p-2"
+      [text]="'DIALOG.MENU.MENU_NOT_EXIST' | translate"
+    ></p-message>
     <p-message
       *ngIf="menuNodes.length === 0 && roleFilterValue.length > 0"
       severity="info"
