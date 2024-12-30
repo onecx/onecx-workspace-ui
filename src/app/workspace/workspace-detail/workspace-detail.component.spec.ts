@@ -84,13 +84,16 @@ describe('WorkspaceDetailComponent', () => {
         { provide: UserService, useValue: mockUserService }
       ]
     }).compileComponents()
+    // to spy data: reset
+    locationSpy.back.calls.reset()
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
     apiServiceSpy.getWorkspaceByName.calls.reset()
     apiServiceSpy.deleteWorkspace.calls.reset()
     apiServiceSpy.exportWorkspaces.calls.reset()
     apiServiceSpy.updateWorkspace.calls.reset()
-    locationSpy.back.calls.reset()
+    // to spy data: refill with neutral data
+    apiServiceSpy.getWorkspaceByName.and.returnValue(of({}))
   }))
 
   function initializeComponent(): void {
@@ -128,35 +131,15 @@ describe('WorkspaceDetailComponent', () => {
         })
 
         component.onTabChange(event, component.workspace)
-
         expect(component.selectedTabIndex).toEqual(1)
-      })
 
-      it('should set workspace for roles', () => {
-        const event = { index: 3 }
-
-        component.onTabChange(event, component.workspace)
-
+        component.onTabChange({ index: 3 }, component.workspace)
         expect(component.workspaceForRoles).toBe(workspace)
-      })
 
-      it('should set workspace for slots', () => {
-        const event = {
-          index: 4
-        }
-
-        component.onTabChange(event, component.workspace)
-
+        component.onTabChange({ index: 4 }, component.workspace)
         expect(component.workspaceForSlots).toBe(workspace)
-      })
 
-      it('should set workspace for products', () => {
-        const event = {
-          index: 5
-        }
-
-        component.onTabChange(event, component.workspace)
-
+        component.onTabChange({ index: 5 }, component.workspace)
         expect(component.workspaceForProducts).toBe(workspace)
       })
     })
@@ -391,8 +374,9 @@ describe('WorkspaceDetailComponent', () => {
   })
 
   describe('update workspace data', () => {
-    it('it should display error on update workspace', (done) => {
+    it('it should display success on update workspace', (done) => {
       apiServiceSpy.updateWorkspace.and.returnValue(of(workspace))
+      spyOn(console, 'error')
       component.selectedTabIndex = 99
       component.ngOnInit()
       let actions: any = []
@@ -400,6 +384,7 @@ describe('WorkspaceDetailComponent', () => {
 
       actions[3].actionCallback()
 
+      expect(console.error).toHaveBeenCalledWith("Couldn't assign tab to component")
       expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_OK' })
       component.workspace$.subscribe((data) => {
         expect(data).toEqual(workspace)
@@ -412,10 +397,10 @@ describe('WorkspaceDetailComponent', () => {
       apiServiceSpy.updateWorkspace.and.returnValue(throwError(() => errorResponse))
       component.selectedTabIndex = 99
       spyOn(console, 'error')
+
       component.ngOnInit()
       let actions: any = []
       component.actions$!.subscribe((act) => (actions = act))
-
       actions[3].actionCallback()
 
       expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_NOK' })

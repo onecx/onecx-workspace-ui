@@ -1,9 +1,8 @@
 import { Component, ElementRef, OnInit, ViewChild, OnDestroy } from '@angular/core'
-import { HttpErrorResponse } from '@angular/common/http'
 import { Location } from '@angular/common'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
-import { catchError, combineLatest, map, Observable, Subject, of } from 'rxjs'
+import { catchError, combineLatest, finalize, map, Observable, Subject, of } from 'rxjs'
 import { saveAs } from 'file-saver'
 
 import { TreeTable, TreeTableNodeExpandEvent } from 'primeng/treetable'
@@ -19,15 +18,13 @@ import {
   CreateAssignmentRequest,
   ImagesInternalAPIService,
   MenuItemAPIService,
-  MenuItemStructure,
   RefType,
   Workspace,
   WorkspaceMenuItem,
   WorkspaceRole,
   WorkspaceAPIService,
   WorkspaceRolesAPIService,
-  WorkspaceRolePageResult,
-  GetWorkspaceResponse
+  WorkspaceRolePageResult
 } from 'src/app/shared/generated'
 import {
   bffImageUrl,
@@ -88,7 +85,6 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   // workspace
   public workspace?: Workspace
-  private workspace$!: Observable<GetWorkspaceResponse>
   public workspaceName: string = this.route.snapshot.params['name']
   public wRoles$!: Observable<WorkspaceRolePageResult>
   public wRoles: WorkspaceRole[] = []
@@ -96,7 +92,6 @@ export class MenuComponent implements OnInit, OnDestroy {
   public wAssignments$!: Observable<AssignmentPageResult>
   public wAssignments: Assignment[] = []
   // menu
-  private menu$!: Observable<MenuItemStructure>
   public menuNodes: TreeNode[] = []
   public menuItems: WorkspaceMenuItem[] | undefined
   public menuItem: WorkspaceMenuItem | undefined
@@ -405,59 +400,64 @@ export class MenuComponent implements OnInit, OnDestroy {
   public loadData(): void {
     this.loading = true
     this.exceptionKey = undefined
+    this.workspace = undefined
 
-    this.workspace$ = this.workspaceApi
+    this.workspaceApi
       .getWorkspaceByName({ workspaceName: this.workspaceName })
-      .pipe(catchError((error) => of(error)))
-    this.workspace$.subscribe((result) => {
-      if (result instanceof HttpErrorResponse) {
-        this.loading = false
-        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + result.status + '.WORKSPACE'
-        console.error('getWorkspaceByName', result)
-      } else if (result instanceof Object) {
-        this.workspace = result.resource
-        this.currentLogoUrl = this.getLogoUrl(this.workspace)
-        this.loadMenu(false)
-      } else {
-        this.loading = false
-        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_0.WORKSPACE'
-      }
-    })
+      .pipe(
+        map((result) => result.resource),
+        catchError((err) => {
+          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.WORKSPACE'
+          console.error('getWorkspaceByName', err)
+          return of(null)
+        }),
+        finalize(() => (this.loading = false))
+      )
+      .subscribe({
+        next: (data) => {
+          if (data) {
+            this.workspace = data
+            this.currentLogoUrl = this.getLogoUrl(data)
+            this.loadMenu(false)
+          }
+        }
+      })
   }
 
   public loadMenu(restore: boolean): void {
     if (!this.workspace) return
     this.menuItem = undefined
-    this.menu$ = this.menuApi
+    this.loading = true
+
+    this.menuApi
       .getMenuStructure({
-        menuStructureSearchCriteria: {
-          workspaceId: this.workspace.id!,
-          roles: this.roleFilterValue
+        menuStructureSearchCriteria: { workspaceId: this.workspace.id!, roles: this.roleFilterValue }
+      })
+      .pipe(
+        map((result) => result.menuItems),
+        catchError((err) => {
+          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.MENUS'
+          console.error('getMenuStructure', err)
+          return of(null)
+        }),
+        finalize(() => (this.loading = false))
+      )
+      .subscribe({
+        next: (data) => {
+          if (data) {
+            this.menuItems = data
+            this.menuNodes = this.mapToTreeNodes(this.menuItems)
+            this.prepareTreeNodeHelper(restore)
+            if (this.wRoles.length > 0) this.assignNode2Role(this.wAssignments)
+            else this.loadRolesAndAssignments()
+            this.prepareActionButtons()
+            if (restore) {
+              this.restoreTree()
+              this.msgService.success({ summaryKey: 'ACTIONS.SEARCH.RELOAD.OK' })
+            }
+          }
         }
       })
-      .pipe(catchError((error) => of(error)))
-    this.menu$.subscribe((result) => {
-      this.loading = true
-      if (result instanceof HttpErrorResponse) {
-        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + result.status + '.MENUS'
-        console.error('getMenuStructure', result)
-      } else if (result.menuItems instanceof Array) {
-        this.menuItems = result.menuItems
-        this.menuNodes = this.mapToTreeNodes(this.menuItems)
-        this.prepareTreeNodeHelper(restore)
-        if (this.wRoles.length > 0) this.assignNode2Role(this.wAssignments)
-        else this.loadRolesAndAssignments()
-        this.prepareActionButtons()
-        if (restore) {
-          this.restoreTree()
-          this.msgService.success({ summaryKey: 'ACTIONS.SEARCH.RELOAD.OK' })
-        }
-      } else {
-        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_0.MENUS'
-        console.error('getMenuStructure', result)
-      }
-      this.loading = false
-    })
   }
 
   /****************************************************************************
@@ -500,7 +500,6 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   private loadRolesAndAssignments() {
-    console.log('loadRolesAndAssignments ' + this.displayRoles)
     if (!this.displayRoles || this.wRoles.length > 0) return
     this.loadingRoles = true
     this.wRoles = this.wRolesFiltered = []
@@ -703,7 +702,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.displayMenuImport = false
   }
 
-  public onToggleRoleFilter(): void {
+  public onResetRoleFilter(): void {
     if (this.roleFilterValue.length > 0) {
       this.roleFilterValue = []
       this.loadMenu(false)
@@ -727,13 +726,13 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.displayMenuPreview = false
   }
 
-  // triggered by changes of tree structure in preview
+  // triggered by changes of tree structure in preview dialog
   public onUpdateMenuStructure(changed: boolean): void {
     this.loadMenu(true)
   }
-  public getLogoUrl(workspace: Workspace | undefined): string | undefined {
-    if (!workspace) return undefined
-    if (workspace.logoUrl) return workspace?.logoUrl
-    else return bffImageUrl(this.imageApi.configuration.basePath, workspace?.name, RefType.Logo)
+
+  private getLogoUrl(workspace: Workspace): string | undefined {
+    if (workspace.logoUrl) return workspace.logoUrl
+    else return bffImageUrl(this.imageApi.configuration.basePath, workspace.name, RefType.Logo)
   }
 }

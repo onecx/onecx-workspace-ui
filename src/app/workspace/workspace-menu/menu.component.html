@@ -263,7 +263,7 @@
                 type="button"
                 [id]="'ws_menu_table_header_roles_action_filter_clear'"
                 class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
-                (click)="onToggleRoleFilter()"
+                (click)="onResetRoleFilter()"
                 aria-hidden="true"
                 [attr.aria-label]="'DIALOG.MENU.ROLE.FILTER.CLEAR' | translate"
                 [pTooltip]="'DIALOG.MENU.ROLE.FILTER.CLEAR' | translate"
@@ -294,6 +294,7 @@
       <!-- BODY -->
       <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
         <tr [ttRow]="rowNode" [id]="'ws_menu_table_row_' + rowData.key" [attr.level]="rowData.level">
+          <!-- menu item -->
           <td class="p-0 pr-4">
             <div class="flex flex-row flex-nowrap column-gap-1 align-items-center">
               <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>

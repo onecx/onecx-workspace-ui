@@ -184,7 +184,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
         }),
         catchError((err) => {
           this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.PRODUCTS'
-          console.error('getProductsByWorkspaceId():', err)
+          console.error('getProductsByWorkspaceId', err)
           return of([] as ExtendedProduct[])
         }),
         finalize(() => (this.wpLoading = false))
@@ -221,7 +221,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
         }),
         catchError((err) => {
           this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.PRODUCTS'
-          console.error('searchAvailableProducts():', err)
+          console.error('searchAvailableProducts', err)
           return of([] as ExtendedProduct[])
         }),
         finalize(() => (this.psLoading = false))
@@ -342,7 +342,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
         error: (err) => {
           this.displayedDetailItem = undefined
           this.displayDetails = false
-          console.error(err)
+          console.error('getProductById', err)
           this.msgService.error({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.LOAD_ERROR' })
         },
         complete() {}
@@ -472,7 +472,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
             this.msgService.success({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.UPDATE_OK' })
           },
           error: (err) => {
-            console.error(err)
+            console.error('updateProductById', err)
             this.msgService.error({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.UPDATE_NOK' })
           },
           complete() {}
@@ -528,7 +528,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
                 this.displayRegisterMessages('REGISTRATION', successCounter, errorCounter)
             },
             error: (err) => {
-              console.error(err)
+              console.error('createProductInWorkspace', err)
               errorCounter++
               // Revert change: remove item in target + add item in source list
               this.wProducts = this.wProducts.filter((wp) => wp.productName !== p.productName)
@@ -591,7 +591,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
               // Revert change: remove item in source + add item in target list
               this.psProducts = this.psProducts.filter((psp) => psp.productName !== p.productName)
               this.wProducts.push(p)
-              console.error(err)
+              console.error('deleteProductById', err)
               if (itemCount === successCounter + errorCounter)
                 this.displayRegisterMessages('DEREGISTRATION', successCounter, errorCounter)
             }

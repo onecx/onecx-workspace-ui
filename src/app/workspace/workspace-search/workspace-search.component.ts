@@ -7,7 +7,8 @@ import { Action } from '@onecx/angular-accelerator'
 import { DataViewControlTranslations } from '@onecx/portal-integration-angular'
 
 import { Location } from '@angular/common'
-import { getLocation } from '@onecx/accelerator'
+import * as Accelerator from '@onecx/accelerator'
+//import { getLocation } from '@onecx/accelerator'
 import {
   ImagesInternalAPIService,
   RefType,
@@ -36,7 +37,7 @@ export class WorkspaceSearchComponent implements OnInit {
   public sortField = 'displayName'
   public sortOrder = 1
   public dataViewControlsTranslations: DataViewControlTranslations = {}
-  public deploymentPath = ''
+  public deploymentPath: string
 
   @ViewChild('table', { static: false }) table!: any
 
@@ -46,7 +47,10 @@ export class WorkspaceSearchComponent implements OnInit {
     private readonly router: Router,
     private readonly translate: TranslateService,
     private readonly imageApi: ImagesInternalAPIService
-  ) {}
+  ) {
+    this.deploymentPath =
+      Accelerator.getLocation().deploymentPath === '/' ? '' : Accelerator.getLocation().deploymentPath
+  }
 
   ngOnInit() {
     this.prepareDialogTranslations()
@@ -60,7 +64,7 @@ export class WorkspaceSearchComponent implements OnInit {
       map((data) => (data?.stream ? data.stream.sort(this.sortWorkspacesByName) : [])),
       catchError((err) => {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.WORKSPACES'
-        console.error('searchWorkspaces():', err)
+        console.error('searchWorkspaces', err)
         return of([] as Workspace[])
       }),
       finalize(() => (this.loading = false))
@@ -147,7 +151,6 @@ export class WorkspaceSearchComponent implements OnInit {
   }
   public onGotoWorkspace(ev: any, workspace: Workspace) {
     ev.stopPropagation()
-    this.deploymentPath = getLocation().deploymentPath === '/' ? '' : getLocation().deploymentPath
     window.open(
       Location.joinWithSlash(
         Location.joinWithSlash(window.document.location.origin, this.deploymentPath),
