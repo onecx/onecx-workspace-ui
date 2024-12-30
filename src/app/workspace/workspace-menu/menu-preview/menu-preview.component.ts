@@ -169,7 +169,8 @@ export class MenuPreviewComponent implements OnChanges {
   }
 
   public onHierarchyViewChange(event: TreeTableNodeExpandEvent): void {
-    this.stateService.getState().treeExpansionState.set(event.node.key ?? '', event.node.expanded ?? false)
+    if (event.node.key)
+      this.stateService.getState().treeExpansionState.set(event.node.key, event.node.expanded === true)
   }
 
   public onLanguagesPreviewChange(lang: string) {

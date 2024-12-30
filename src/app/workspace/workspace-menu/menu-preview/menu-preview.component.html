@@ -17,7 +17,7 @@
   <div class="mt-4 flex flex-wrap justify-content-between align-items-start gap-2">
     <p-toggleButton
       inputId="ws_menu_preview_tree_toggle"
-      styleClass="small-toggle-button white-space-nowrap"
+      styleClass="white-space-nowrap"
       [onIcon]="'pi pi-arrow-down-left-and-arrow-up-right-to-center'"
       [offIcon]="'pi pi-arrow-up-right-and-arrow-down-left-from-center'"
       [onLabel]="'ACTIONS.TREE.COLLAPSE_ALL' | translate"
@@ -58,7 +58,7 @@
     scrollHeight="300px"
     styleClass="my-2 pl-2 pt-1 p-0"
   >
-    <ng-template let-node pTemplate="default"> {{ node.label }} </ng-template>
+    <ng-template let-node pTemplate="default">{{ node.label }} </ng-template>
   </p-tree>
 
   <ng-template pTemplate="footer">

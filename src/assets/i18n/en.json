@@ -385,7 +385,7 @@
         "DETAILS_N_ROLES.TOOLTIP": "Change display: Details / Roles and Permissions",
         "ROLES": "Roles",
         "ROLES.LOADING": "...loading Roles",
-        "ROLES.FILTER": "Role filter",
+        "ROLES.FILTER": "Role name filter",
         "ROLES.FILTER.TOOLTIP": "Filter for Role name",
         "ROLES.MANAGE": "Manage Roles",
         "ROLES.NOT_EXIST": "No Workspace Roles defined",
@@ -394,7 +394,7 @@
         "PREVIEW2.TOOLTIP": "Red = no translation",
         "REORDER.TOOLTIP": "Reorder via Drag & Drop"
       },
-      "SUBHEADER": "Manage the Menu",
+      "SUBHEADER": "Manage details and Role assignments of the Workspace Menu",
       "ACTION": {
         "VIEW": "Display details",
         "EDIT": "Edit details"
@@ -421,6 +421,12 @@
         "PRODUCT.TOOLTIP": "Indicator whether the menu URL is offered by a registered Application ",
         "EXTERN": "X",
         "EXTERN.TOOLTIP": "If checked then the Workspace is exit"
+      },
+      "ROLE": {
+        "FILTER": "Role filter: Display Menu Items according to the selected Roles",
+        "FILTER.LABEL": "Role filter",
+        "FILTER.CLEAR": "Clear Role filter",
+        "FILTER.NAME": "Click to add/remove role name to filter"
       },
       "ASSIGNMENT": {
         "OK": "Assigned: ",

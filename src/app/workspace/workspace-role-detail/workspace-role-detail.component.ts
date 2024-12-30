@@ -97,7 +97,7 @@ export class WorkspaceRoleDetailComponent implements OnChanges {
           },
           error: (err) => {
             this.msgService.error({ summaryKey: 'ACTIONS.CREATE.ROLE_NOK' })
-            console.error(err)
+            console.error('createWorkspaceRole', err)
           }
         })
     } else {
@@ -114,7 +114,7 @@ export class WorkspaceRoleDetailComponent implements OnChanges {
         },
         error: (err) => {
           this.msgService.error({ summaryKey: 'ACTIONS.EDIT.ROLE_NOK' })
-          console.error(err)
+          console.error('updateWorkspaceRole', err)
         }
       })
     }
@@ -128,7 +128,7 @@ export class WorkspaceRoleDetailComponent implements OnChanges {
       },
       error: (err) => {
         this.msgService.error({ summaryKey: 'ACTIONS.DELETE.ROLE.MESSAGE_NOK' })
-        console.error(err)
+        console.error('deleteWorkspaceRole', err)
       }
     })
   }
