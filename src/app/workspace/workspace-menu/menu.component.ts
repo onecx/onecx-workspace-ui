@@ -403,7 +403,8 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.menuNodes = [...this.menuNodes]
   }
   public onHierarchyViewChange(event: TreeTableNodeExpandEvent): void {
-    if (event.node.key) this.stateService.getState().treeExpansionState.set(event.node.key, event.node.expanded!)
+    if (event.node.key)
+      this.stateService.getState().treeExpansionState.set(event.node.key, event.node.expanded === true)
   }
 
   /****************************************************************************
@@ -661,7 +662,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     // initially open the first menu item if exists
     if (!restore && this.menuNodes.length >= 1) {
       this.menuNodes[0].expanded = true
-      this.stateService.getState().treeExpansionState.set(this.menuNodes[0].key!, true)
+      if (this.menuNodes[0].key) this.stateService.getState().treeExpansionState.set(this.menuNodes[0].key, true)
     }
   }
   private prepareTreeNodeHelperRecursively(nodes: TreeNode[]): void {
