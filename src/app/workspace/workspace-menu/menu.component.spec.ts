@@ -95,7 +95,7 @@ const state: MenuState = {
   workspaceMenuItems: []
 }
 
-fdescribe('MenuComponent', () => {
+describe('MenuComponent', () => {
   let component: MenuComponent
   let fixture: ComponentFixture<MenuComponent>
 
@@ -201,7 +201,7 @@ fdescribe('MenuComponent', () => {
     })
   })
 
-  fdescribe('Page actions:', () => {
+  describe('Page actions:', () => {
     beforeEach(() => {
       component.ngOnInit()
     })

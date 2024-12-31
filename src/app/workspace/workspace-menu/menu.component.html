@@ -16,9 +16,6 @@
     <p-message *ngIf="exceptionKey" severity="error" styleClass="m-3 p-2" [text]="exceptionKey | translate"></p-message>
 
     <!-- If menu exist -->
-    <!-- 
-      *ngIf="(!exceptionKey && menuNodes.length > 0) || (menuNodes.length === 0 && roleFilterValue.length > 0)"
-    -->
     <p-treeTable
       #menuTree
       *ngIf="!exceptionKey"
