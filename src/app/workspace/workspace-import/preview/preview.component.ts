@@ -47,7 +47,7 @@ export class PreviewComponent implements OnInit, OnChanges {
         this.displayName = this.importRequestDTO.workspaces[key[0]].displayName ?? ''
         this.themeName = this.importRequestDTO?.workspaces[key[0]].theme
           ? this.importRequestDTO?.workspaces[key[0]].theme
-          : this.formGroup.controls['theme'].value || ''
+          : (this.formGroup.controls['theme'].value ?? '')
         this.baseUrl = this.importRequestDTO.workspaces[key[0]].baseUrl ?? ''
         this.menuItems = this.mapToTreeNodes(this.importRequestDTO.workspaces[key[0]].menuItems)
         this.workspaceRoles = this.extractRoleNames(this.importRequestDTO.workspaces[key[0]].roles)
