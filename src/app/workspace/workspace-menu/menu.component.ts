@@ -6,7 +6,6 @@ import { catchError, combineLatest, finalize, map, Observable, Subject, of } fro
 import { saveAs } from 'file-saver'
 
 import { TreeTable, TreeTableNodeExpandEvent } from 'primeng/treetable'
-import { Overlay } from 'primeng/overlay'
 import { SelectItem, TreeNode } from 'primeng/api'
 
 import { Action } from '@onecx/angular-accelerator'
@@ -59,7 +58,6 @@ type Column = { name: string; headerKey: string; tooltipKey: string; css?: strin
 export class MenuComponent implements OnInit, OnDestroy {
   @ViewChild('menuTree') menuTree: TreeTable | undefined
   @ViewChild('menuTreeFilter') menuTreeFilter: ElementRef<HTMLInputElement> = {} as ElementRef
-  @ViewChild('treeOverlay') treeOverlay: Overlay | undefined
   @ViewChild('roleFilter') roleFilter: HTMLInputElement | undefined
 
   Object = Object

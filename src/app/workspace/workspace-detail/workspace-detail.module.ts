@@ -1,11 +1,12 @@
 import { NgModule } from '@angular/core'
 import { CommonModule } from '@angular/common'
-import { FormsModule } from '@angular/forms'
 import { RouterModule, Routes } from '@angular/router'
-import { FieldsetModule } from 'primeng/fieldset'
+import { DividerModule } from 'primeng/divider'
+import { PickListModule } from 'primeng/picklist'
 
 import { PortalCoreModule } from '@onecx/portal-integration-angular'
 import { addInitializeModuleGuard, InitializeModuleGuard } from '@onecx/angular-integration-interface'
+
 import { SharedModule } from 'src/app/shared/shared.module'
 import { LabelResolver } from 'src/app/shared/label.resolver'
 
@@ -52,11 +53,11 @@ const routes: Routes = [
   ],
   imports: [
     CommonModule,
-    FormsModule,
-    FieldsetModule,
     PortalCoreModule.forMicroFrontend(),
     [RouterModule.forChild(addInitializeModuleGuard(routes))],
-    SharedModule
+    SharedModule,
+    DividerModule,
+    PickListModule
   ],
   providers: [InitializeModuleGuard]
 })

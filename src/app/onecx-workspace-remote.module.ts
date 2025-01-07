@@ -1,8 +1,8 @@
 import { APP_INITIALIZER, DoBootstrap, Injector, NgModule } from '@angular/core'
 import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
-import { RouterModule, Routes, Router } from '@angular/router'
 import { BrowserModule } from '@angular/platform-browser'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
+import { RouterModule, Routes, Router } from '@angular/router'
 import { TranslateLoader, TranslateModule, MissingTranslationHandler } from '@ngx-translate/core'
 
 import { AngularAuthModule } from '@onecx/angular-auth'

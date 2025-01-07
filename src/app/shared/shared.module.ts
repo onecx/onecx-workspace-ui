@@ -2,20 +2,16 @@ import { NgModule } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
-import { ColorSketchModule } from 'ngx-color/sketch'
 import { provideErrorTailorConfig, errorTailorImports } from '@ngneat/error-tailor'
 
 import { AutoCompleteModule } from 'primeng/autocomplete'
-import { BadgeModule } from 'primeng/badge'
 import { CheckboxModule } from 'primeng/checkbox'
-import { CalendarModule } from 'primeng/calendar'
 import { ConfirmDialogModule } from 'primeng/confirmdialog'
 import { ConfirmPopupModule } from 'primeng/confirmpopup'
 import { ConfirmationService } from 'primeng/api'
 import { DataViewModule } from 'primeng/dataview'
 import { DialogModule } from 'primeng/dialog'
 import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog'
-import { DividerModule } from 'primeng/divider'
 import { DropdownModule } from 'primeng/dropdown'
 import { FloatLabelModule } from 'primeng/floatlabel'
 import { FileUploadModule } from 'primeng/fileupload'
@@ -23,18 +19,13 @@ import { InputTextModule } from 'primeng/inputtext'
 import { InputTextareaModule } from 'primeng/inputtextarea'
 import { KeyFilterModule } from 'primeng/keyfilter'
 import { ListboxModule } from 'primeng/listbox'
-import { MultiSelectModule } from 'primeng/multiselect'
-import { OverlayPanelModule } from 'primeng/overlaypanel'
 import { PanelModule } from 'primeng/panel'
-import { PickListModule } from 'primeng/picklist'
 import { SelectButtonModule } from 'primeng/selectbutton'
-import { StepsModule } from 'primeng/steps'
 import { TabViewModule } from 'primeng/tabview'
 import { TableModule } from 'primeng/table'
 import { ToastModule } from 'primeng/toast'
 import { ToggleButtonModule } from 'primeng/togglebutton'
 import { TreeModule } from 'primeng/tree'
-import { TreeTableModule } from 'primeng/treetable'
 
 import { PortalCoreModule, PortalDialogService } from '@onecx/portal-integration-angular'
 
@@ -46,16 +37,12 @@ import { ImageContainerComponent } from './image-container/image-container.compo
   imports: [
     PortalCoreModule.forMicroFrontend(),
     AutoCompleteModule,
-    BadgeModule,
     CheckboxModule,
-    CalendarModule,
-    ColorSketchModule,
     CommonModule,
     ConfirmDialogModule,
     ConfirmPopupModule,
     DataViewModule,
     DialogModule,
-    DividerModule,
     DropdownModule,
     DynamicDialogModule,
     FloatLabelModule,
@@ -65,35 +52,26 @@ import { ImageContainerComponent } from './image-container/image-container.compo
     InputTextareaModule,
     KeyFilterModule,
     ListboxModule,
-    MultiSelectModule,
-    OverlayPanelModule,
     PanelModule,
-    PickListModule,
     ReactiveFormsModule,
     SelectButtonModule,
-    StepsModule,
     TabViewModule,
     TableModule,
     ToastModule,
     ToggleButtonModule,
     TreeModule,
-    TreeTableModule,
     FileUploadModule,
     TranslateModule,
     errorTailorImports
   ],
   exports: [
     AutoCompleteModule,
-    BadgeModule,
     CheckboxModule,
-    CalendarModule,
-    ColorSketchModule,
     CommonModule,
     ConfirmDialogModule,
     ConfirmPopupModule,
     DataViewModule,
     DialogModule,
-    DividerModule,
     DropdownModule,
     DynamicDialogModule,
     FloatLabelModule,
@@ -103,19 +81,14 @@ import { ImageContainerComponent } from './image-container/image-container.compo
     InputTextareaModule,
     KeyFilterModule,
     ListboxModule,
-    MultiSelectModule,
-    OverlayPanelModule,
     PanelModule,
-    PickListModule,
     ReactiveFormsModule,
     SelectButtonModule,
-    StepsModule,
     TabViewModule,
     TableModule,
     ToastModule,
     ToggleButtonModule,
     TreeModule,
-    TreeTableModule,
     TranslateModule,
     ImageContainerComponent,
     FileUploadModule,
