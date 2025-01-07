@@ -153,7 +153,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
 
   // NAVIGATE import step : NEXT
   public next(importRequestDTO?: any): void {
-    if (this.activeIndex == 0 && importRequestDTO?.workspaces) {
+    if (this.activeIndex === 0 && importRequestDTO?.workspaces) {
       this.importRequestDTO = importRequestDTO
       let keys: string[] = []
       if (this.importRequestDTO?.workspaces) {
@@ -163,7 +163,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
       this.displayNameOrg = importRequestDTO.workspaces[keys[0]].displayName ?? ''
       this.themeName = importRequestDTO.workspaces[keys[0]].theme ?? ''
       this.baseUrlOrg = importRequestDTO.workspaces[keys[0]].baseUrl
-    } else if (this.activeIndex == 1) {
+    } else if (this.activeIndex === 1) {
       this.workspaceName = this.previewComponent?.workspaceName ?? ''
       this.displayName = this.previewComponent?.displayName ?? ''
       this.themeName = this.previewComponent?.themeName ?? ''
@@ -176,7 +176,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
   public back(): void {
     if (this.importRequestDTO?.workspaces) {
       const key: string[] = Object.keys(this.importRequestDTO.workspaces)
-      if (this.activeIndex == 2 && this.importRequestDTO?.workspaces) {
+      if (this.activeIndex === 2 && this.importRequestDTO?.workspaces) {
         this.importRequestDTO.workspaces[key[0]].name = this.confirmComponent?.workspaceName ?? ''
         this.importRequestDTO.workspaces[key[0]].displayName = this.confirmComponent?.displayName ?? ''
         this.importRequestDTO.workspaces[key[0]].baseUrl = this.confirmComponent?.baseUrl ?? ''
