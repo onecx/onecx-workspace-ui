@@ -13,11 +13,7 @@ const snapshot: any = {
   workspaces: {
     workspace: {
       name: 'name',
-      menu: {
-        menu: {
-          menuItems: [{ name: 'name' }, { name: 'name2' }]
-        }
-      },
+      menuItems: [{ name: 'name' }, { name: 'name2' }],
       products: [{ productName: 'productTestName' }],
       roles: [{ name: 'roleTestName' }]
     }
@@ -148,13 +144,7 @@ describe('PreviewComponent', () => {
     if (!component.importRequestDTO.workspaces['newName']) {
       component.importRequestDTO.workspaces['newName'] = {}
     }
-    if (!component.importRequestDTO.workspaces['newName'].menu) {
-      component.importRequestDTO.workspaces['newName'].menu = {}
-    }
-    if (!component.importRequestDTO.workspaces['newName'].menu.menu) {
-      component.importRequestDTO.workspaces['newName'].menu.menu = {}
-    }
-    component.importRequestDTO.workspaces['newName'].menu.menu.menuItems = undefined
+    component.importRequestDTO.workspaces['newName'].menuItems = undefined
 
     component.ngOnInit()
 
@@ -171,13 +161,7 @@ describe('PreviewComponent', () => {
     if (!component.importRequestDTO.workspaces['newName']) {
       component.importRequestDTO.workspaces['newName'] = {}
     }
-    if (!component.importRequestDTO.workspaces['newName'].menu) {
-      component.importRequestDTO.workspaces['newName'].menu = {}
-    }
-    if (!component.importRequestDTO.workspaces['newName'].menu.menu) {
-      component.importRequestDTO.workspaces['newName'].menu.menu = {}
-    }
-    component.importRequestDTO.workspaces['newName'].menu.menu.menuItems = [
+    component.importRequestDTO.workspaces['newName'].menuItems = [
       {
         name: 'menu',
         key: 'key',
@@ -190,7 +174,7 @@ describe('PreviewComponent', () => {
 
     component.ngOnInit()
 
-    if (component.importRequestDTO?.workspaces?.['newName'].menu?.menu?.menuItems) {
+    if (component.importRequestDTO?.workspaces?.['newName'].menuItems) {
       expect(component.menuItems).toContain({
         label: 'menu',
         expanded: false,

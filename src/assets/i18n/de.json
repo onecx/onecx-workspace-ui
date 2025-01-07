@@ -1,7 +1,7 @@
 {
   "ACTIONS": {
     "LABEL": "Aktionen",
-    "TOOLTIP": "Aktionen für die Daten der Taellenzeile",
+    "TOOLTIP": "Aktionen für die Daten der Tabellenzeile",
     "CONFIRMATION": {
       "NO": "Nein",
       "YES": "Ja",
@@ -161,9 +161,7 @@
     "CREATE": "Neu",
     "DETAIL": "Details",
     "MENU": "Menü",
-    "EDIT": "Ändern",
-    "ENABLE_DRAG_DROP": "Drag&Drop aktivieren",
-    "SAVE_TREE_STRUCTURE": "Baumstruktur speichern"
+    "SEARCH": "Workspaces"
   },
   "TABS": {
     "WORKSPACE": {

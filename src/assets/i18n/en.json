@@ -161,9 +161,7 @@
     "CREATE": "New",
     "DETAIL": "Details",
     "MENU": "Menu",
-    "EDIT": "Edit",
-    "ENABLE_DRAG_DROP": "Enable drag&drop",
-    "SAVE_TREE_STRUCTURE": "Save tree structure"
+    "SEARCH": "Workspaces"
   },
   "TABS": {
     "WORKSPACE": {
