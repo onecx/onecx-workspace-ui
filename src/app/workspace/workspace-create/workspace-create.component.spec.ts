@@ -153,7 +153,7 @@ describe('WorkspaceCreateComponent', () => {
   }))
 
   it('should change fetchingLogoUrl on inputChange: empty value', fakeAsync(() => {
-    const url = 'https://www.capgemini.com/wp-content/themes/capgemini-komposite/assets/images/logo.svg'
+    const url = 'https://host/path-to-assets/images/logo.svg'
     const event = {
       target: { value: url }
     } as unknown as Event
