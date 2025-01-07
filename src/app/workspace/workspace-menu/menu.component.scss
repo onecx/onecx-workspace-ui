@@ -10,6 +10,10 @@
 @include table-inline-buttons;
 
 :host ::ng-deep {
+  .p-treetable-wrapper {
+    overflow: auto;
+    max-height: 45rem;
+  }
   .p-treetable-tbody {
     tr[aria-level='2'],
     tr[aria-level='4'],
