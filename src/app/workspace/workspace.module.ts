@@ -20,8 +20,8 @@ import { OneCXListWorkspacesUsingThemeComponent } from '../remotes/list-workspac
 const routes: Routes = [
   {
     path: '',
-    component: WorkspaceSearchComponent,
     pathMatch: 'full',
+    component: WorkspaceSearchComponent,
     data: {
       breadcrumb: 'BREADCRUMBS.SEARCH',
       breadcrumbFn: (data: any) => `${data.labeli18n}`
