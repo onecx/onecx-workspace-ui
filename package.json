@@ -13,7 +13,7 @@
   "scripts": {
     "build": "ng build",
     "check": "ng lint --cache=true && npx prettier -c --cache .",
-    "clean": "npm cache clean --force && ng cache clean && rm -f .eslintcache && rm -f ./node_modules/.cache/prettier/.prettier-cache",
+    "clean": "npm cache clean --force && ng cache clean && rm -rf dist reports .angular .eslintcache ./node_modules/.cache/prettier/.prettier-cache",
     "lint": "ng lint --cache=true",
     "format": "ng lint --fix",
     "eslint": "eslint --quiet --ext .js,.ts src",
