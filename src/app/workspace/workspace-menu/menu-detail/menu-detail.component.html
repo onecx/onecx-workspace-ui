@@ -1,4 +1,5 @@
 <p-dialog
+  #menuDetailDialog
   [header]="'DIALOG.MENU.HEADER.' + changeMode | translate"
   [(visible)]="displayDetailDialog"
   (onHide)="onCloseDetailDialog()"
@@ -139,23 +140,23 @@
                 formControlName="badge"
                 [showClear]="true"
                 [options]="iconItems"
-                scrollHeight="150px"
+                [appendTo]="'body'"
                 [showClear]="true"
                 [ariaLabel]="'MENU_ITEM.BADGE' | translate"
                 [pTooltip]="'MENU_ITEM.TOOLTIP.BADGE' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
               >
-                <ng-template let-ico pTemplate="selectedItem">
-                  <div class="flex">
-                    <span class="pi pi-{{ ico.value }} mr-3"> </span>
-                    <span>{{ ico.label }}</span>
+                <ng-template let-icon pTemplate="selectedItem">
+                  <div class="flex align-items-center">
+                    <span class="pi pi-{{ icon.value }} mr-3"> </span>
+                    <span>{{ icon.label }}</span>
                   </div>
                 </ng-template>
-                <ng-template let-ico pTemplate="item">
-                  <div class="flex">
-                    <span class="pi pi-{{ ico.value }} mr-3"> </span>
-                    <span>{{ ico.label }}</span>
+                <ng-template let-icon pTemplate="item">
+                  <div class="flex align-items-center">
+                    <span class="pi pi-{{ icon.value }} mr-3"> </span>
+                    <span>{{ icon.label }}</span>
                   </div>
                 </ng-template>
               </p-dropdown>
