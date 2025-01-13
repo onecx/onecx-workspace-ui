@@ -1,10 +1,11 @@
 import { NgModule } from '@angular/core'
 import { CommonModule } from '@angular/common'
-import { FormsModule } from '@angular/forms'
 import { RouterModule, Routes } from '@angular/router'
+import { StepsModule } from 'primeng/steps'
 
 import { PortalCoreModule } from '@onecx/portal-integration-angular'
 import { addInitializeModuleGuard, InitializeModuleGuard } from '@onecx/angular-integration-interface'
+
 import { SharedModule } from 'src/app/shared/shared.module'
 import { LabelResolver } from 'src/app/shared/label.resolver'
 
@@ -19,8 +20,15 @@ import { OneCXListWorkspacesUsingThemeComponent } from '../remotes/list-workspac
 const routes: Routes = [
   {
     path: '',
+    pathMatch: 'full',
     component: WorkspaceSearchComponent,
-    pathMatch: 'full'
+    data: {
+      breadcrumb: 'BREADCRUMBS.SEARCH',
+      breadcrumbFn: (data: any) => `${data.labeli18n}`
+    },
+    resolve: {
+      labeli18n: LabelResolver
+    }
   },
   {
     path: 'new',
@@ -53,10 +61,10 @@ const routes: Routes = [
   ],
   imports: [
     CommonModule,
-    FormsModule,
     PortalCoreModule.forMicroFrontend(),
     [RouterModule.forChild(addInitializeModuleGuard(routes))],
-    SharedModule
+    SharedModule,
+    StepsModule
   ],
   providers: [InitializeModuleGuard]
 })

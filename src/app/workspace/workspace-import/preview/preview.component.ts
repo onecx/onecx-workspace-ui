@@ -42,15 +42,17 @@ export class PreviewComponent implements OnInit, OnChanges {
     let key: string[] = []
     if (this.importRequestDTO.workspaces) {
       key = Object.keys(this.importRequestDTO.workspaces)
-      this.workspaceName = this.importRequestDTO.workspaces[key[0]].name ?? ''
-      this.displayName = this.importRequestDTO.workspaces[key[0]].displayName ?? ''
-      this.themeName = this.importRequestDTO?.workspaces[key[0]].theme
-        ? this.importRequestDTO?.workspaces[key[0]].theme
-        : this.formGroup.controls['theme'].value || ''
-      this.baseUrl = this.importRequestDTO.workspaces[key[0]].baseUrl ?? ''
-      this.menuItems = this.mapToTreeNodes(this.importRequestDTO.workspaces[key[0]].menu?.menu?.menuItems)
-      this.workspaceProducts = this.extractProductNames(this.importRequestDTO.workspaces[key[0]].products)
-      this.workspaceRoles = this.extractRoleNames(this.importRequestDTO.workspaces[key[0]].roles)
+      if (key.length > 0) {
+        this.workspaceName = this.importRequestDTO.workspaces[key[0]].name ?? ''
+        this.displayName = this.importRequestDTO.workspaces[key[0]].displayName ?? ''
+        this.themeName = this.importRequestDTO?.workspaces[key[0]].theme
+          ? this.importRequestDTO?.workspaces[key[0]].theme
+          : (this.formGroup.controls['theme'].value ?? '')
+        this.baseUrl = this.importRequestDTO.workspaces[key[0]].baseUrl ?? ''
+        this.menuItems = this.mapToTreeNodes(this.importRequestDTO.workspaces[key[0]].menuItems)
+        this.workspaceRoles = this.extractRoleNames(this.importRequestDTO.workspaces[key[0]].roles)
+        this.workspaceProducts = this.extractProductNames(this.importRequestDTO.workspaces[key[0]].products)
+      }
     }
   }
 

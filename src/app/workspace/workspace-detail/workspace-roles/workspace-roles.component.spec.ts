@@ -91,12 +91,15 @@ describe('WorkspaceRolesComponent', () => {
     component = fixture.componentInstance
     component.workspace = workspace
     fixture.detectChanges()
+    // to spy data: reset
     wRoleServiceSpy.searchWorkspaceRoles.calls.reset()
     wRoleServiceSpy.createWorkspaceRole.calls.reset()
     wRoleServiceSpy.deleteWorkspaceRole.calls.reset()
     iamRoleServiceSpy.searchAvailableRoles.calls.reset()
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
+    // to spy data: refill with neutral data
+    wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({}))
   })
 
   it('should create', () => {
@@ -161,6 +164,7 @@ describe('WorkspaceRolesComponent', () => {
   it('should display error on ws search', () => {
     const errorResponse = { status: 404, statusText: 'Workspace roles not found' }
     wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(throwError(() => errorResponse))
+    spyOn(console, 'error')
     const changes = {
       ['workspace']: {
         previousValue: 'ws0',
@@ -172,10 +176,11 @@ describe('WorkspaceRolesComponent', () => {
 
     component.ngOnChanges(changes as unknown as SimpleChanges)
 
+    expect(console.error).toHaveBeenCalledWith('searchAvailableRoles', errorResponse)
     expect(component.exceptionKey).toEqual('EXCEPTIONS.HTTP_STATUS_' + errorResponse.status + '.WS_ROLES')
   })
 
-  it('should populate iamRoles on search', () => {
+  it('should populate IAM roles on search', () => {
     iamRoleServiceSpy.searchAvailableRoles.and.returnValue(of({ stream: [{ name: 'role' }] as IAMRolePageResult }))
     const changes = {
       ['workspace']: {
@@ -228,9 +233,10 @@ describe('WorkspaceRolesComponent', () => {
     expect(component.roles[0]).toBeUndefined()
   })
 
-  it('should display error on iam search', () => {
+  it('should display error on IAM search', () => {
     const errorResponse = { status: 404, statusText: 'IAM roles not found' }
     iamRoleServiceSpy.searchAvailableRoles.and.returnValue(throwError(() => errorResponse))
+    spyOn(console, 'error')
     const changes = {
       ['workspace']: {
         previousValue: 'ws0',
@@ -242,6 +248,7 @@ describe('WorkspaceRolesComponent', () => {
 
     component.ngOnChanges(changes as unknown as SimpleChanges)
 
+    expect(console.error).toHaveBeenCalledWith('searchAvailableRoles', errorResponse)
     expect(component.exceptionKey).toEqual('EXCEPTIONS.HTTP_STATUS_' + errorResponse.status + '.IAM_ROLES')
   })
 
@@ -282,7 +289,7 @@ describe('WorkspaceRolesComponent', () => {
 
     component.onAddRole(mockEvent, wRole)
 
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.ROLE.MESSAGE_OK' })
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.ROLE_OK' })
   })
 
   it('should display error when creating a role onAddRole', () => {
@@ -293,7 +300,7 @@ describe('WorkspaceRolesComponent', () => {
 
     component.onAddRole(mockEvent, wRole)
 
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.ROLE.MESSAGE_NOK' })
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.ROLE_NOK' })
     expect(console.error).toHaveBeenCalledWith('createWorkspaceRole', errorResponse)
   })
 

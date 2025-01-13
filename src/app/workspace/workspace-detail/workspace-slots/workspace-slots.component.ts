@@ -133,7 +133,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
           }),
           catchError((err) => {
             this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.PRODUCTS'
-            console.error('getProductsByWorkspaceId():', err)
+            console.error('getProductsByWorkspaceId', err)
             return of([] as string[])
           }),
           finalize(() => (this.wpLoading = false))
@@ -170,7 +170,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
         }),
         catchError((err) => {
           this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.SLOTS'
-          console.error('searchSlots():', err)
+          console.error('getSlotsForWorkspace', err)
           return of([])
         })
       )
@@ -263,7 +263,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
       }),
       catchError((err) => {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.PRODUCTS'
-        console.error('searchAvailableProducts():', err)
+        console.error('searchAvailableProducts', err)
         return of([])
       }),
       finalize(() => (this.sLoading = false))

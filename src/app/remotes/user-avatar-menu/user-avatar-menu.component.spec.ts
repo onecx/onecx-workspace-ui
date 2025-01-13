@@ -94,7 +94,7 @@ describe('OneCXUserAvatarMenuComponent', () => {
       })
       .compileComponents()
 
-    baseUrlSubject.next('base_url')
+    baseUrlSubject.next('base_url_mock')
 
     menuItemApiSpy.getMenuItems.calls.reset()
     appConfigSpy.init.and.returnValue(Promise.resolve())
@@ -116,7 +116,6 @@ describe('OneCXUserAvatarMenuComponent', () => {
       baseUrl: 'base'
     }
     spyOn(component, 'ocxInitRemoteComponent')
-
     component.ocxRemoteComponentConfig = mockConfig
 
     expect(component.ocxInitRemoteComponent).toHaveBeenCalledWith(mockConfig)
@@ -124,9 +123,7 @@ describe('OneCXUserAvatarMenuComponent', () => {
 
   it('should init remote component', (done: DoneFn) => {
     appConfigSpy.getProperty.and.returnValue('right')
-
     const { component } = setUp()
-
     component.ocxInitRemoteComponent({
       baseUrl: 'base_url'
     } as RemoteComponentConfig)
@@ -142,7 +139,6 @@ describe('OneCXUserAvatarMenuComponent', () => {
 
   it('should show button initially', async () => {
     appConfigSpy.getProperty.and.returnValue('right')
-
     const { avatarMenuHarness } = await setUpWithHarness()
 
     expect(await avatarMenuHarness.getUserAvatarButtonId()).toEqual('ws_user_avatar_menu_action')
@@ -150,12 +146,10 @@ describe('OneCXUserAvatarMenuComponent', () => {
 
   it('should not show profile info if permissions not met', async () => {
     appConfigSpy.getProperty.and.returnValue('right')
-
     const fixture = TestBed.createComponent(OneCXUserAvatarMenuComponent)
     const component = fixture.componentInstance
     component.ocxInitRemoteComponent({ baseUrl: 'base_url', permissions: [] } as any)
     fixture.detectChanges()
-
     const avatarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXUserAvatarMenuHarness)
 
     expect(await avatarMenuHarness.getOrganization()).toBeUndefined()
@@ -210,13 +204,11 @@ describe('OneCXUserAvatarMenuComponent', () => {
       spyOn(userService.profile$, 'asObservable').and.returnValue(of(profile) as any)
       const appStateService = TestBed.inject(AppStateService)
       spyOn(appStateService.currentWorkspace$, 'asObservable').and.returnValue(
-        of({
-          workspaceName: 'test-workspace'
-        }) as any
+        of({ workspaceName: 'test-workspace' }) as any
       )
     })
 
-    xit('should render menu in correct positions', async () => {
+    it('should render menu in correct positions', async () => {
       const userProfileMenu = {
         workspaceName: 'test-workspace',
         menu: [
@@ -249,16 +241,15 @@ describe('OneCXUserAvatarMenuComponent', () => {
       menuItemApiSpy.getMenuItems.and.returnValue(of(userProfileMenu as any))
 
       const { avatarMenuHarness } = await setUpWithHarnessAndInit([])
-
       const menuItems = await avatarMenuHarness.getMenuItems()
-      expect(menuItems.length).toBe(3)
 
+      expect(menuItems.length).toBe(3)
       expect(await menuItems[0].getText()).toEqual('Account Settings')
       expect(await menuItems[1].getText()).toEqual('Personal Info')
       expect(await menuItems[2].getText()).toEqual('Log out')
     })
 
-    xit('should use translations whenever i18n translation is provided', async () => {
+    it('should use translations whenever i18n translation is provided', async () => {
       menuItemApiSpy.getMenuItems.and.returnValue(
         of({
           workspaceName: 'test-workspace',
@@ -284,14 +275,13 @@ describe('OneCXUserAvatarMenuComponent', () => {
           ]
         } as any)
       )
-
       const { avatarMenuHarness } = await setUpWithHarnessAndInit([])
-
       const menuItems = await avatarMenuHarness.getMenuItems()
+
       expect(await menuItems[0].getText()).toEqual('English personal info')
     })
 
-    xit('should display icon if provided', async () => {
+    it('should display icon if provided', async () => {
       menuItemApiSpy.getMenuItems.and.returnValue(
         of({
           workspaceName: 'test-workspace',
@@ -315,14 +305,13 @@ describe('OneCXUserAvatarMenuComponent', () => {
           ]
         } as any)
       )
-
       const { avatarMenuHarness } = await setUpWithHarnessAndInit([])
-
       const menuItems = await avatarMenuHarness.getMenuItems()
+
       expect(await menuItems[0].hasIcon(PrimeIcons.HOME)).toBeTrue()
     })
 
-    xit('should use routerLink for local urls', async () => {
+    it('should use routerLink for local urls', async () => {
       menuItemApiSpy.getMenuItems.and.returnValue(
         of({
           workspaceName: 'test-workspace',
@@ -346,15 +335,14 @@ describe('OneCXUserAvatarMenuComponent', () => {
         } as any)
       )
       const router = TestBed.inject(Router)
-
       const { avatarMenuHarness } = await setUpWithHarnessAndInit([])
-
       const menuItems = await avatarMenuHarness.getMenuItems()
+
       await menuItems[0].selectItem()
       expect(router.url).toBe('/admin/user-profile')
     })
 
-    xit('should use href for external urls', async () => {
+    it('should use href for external urls', async () => {
       menuItemApiSpy.getMenuItems.and.returnValue(
         of({
           workspaceName: 'test-workspace',
@@ -376,23 +364,21 @@ describe('OneCXUserAvatarMenuComponent', () => {
           ]
         } as any)
       )
-
       const { avatarMenuHarness } = await setUpWithHarnessAndInit([])
-
       const menuItems = await avatarMenuHarness.getMenuItems()
+
       expect(await menuItems[0].getLink()).toBe('https://www.google.com/')
     })
 
-    xit('should only show logout on failed menu fetch call', async () => {
+    it('should only show logout on failed menu fetch call', async () => {
       menuItemApiSpy.getMenuItems.and.returnValue(throwError(() => {}))
-
       const { avatarMenuHarness } = await setUpWithHarnessAndInit([])
-
       const menuItems = await avatarMenuHarness.getMenuItems()
+
       expect(await menuItems[0].getText()).toEqual('Log out')
     })
 
-    xit('should have correct icon for logout', async () => {
+    it('should have correct icon for logout', async () => {
       menuItemApiSpy.getMenuItems.and.returnValue(of({ workspaceName: 'workspace', menu: [] } as any))
       const { avatarMenuHarness } = await setUpWithHarness()
       const menuItems = await avatarMenuHarness.getMenuItems()
@@ -419,45 +405,36 @@ describe('OneCXUserAvatarMenuComponent', () => {
           menu: []
         } as any)
       )
-
       const { avatarMenuHarness } = await setUpWithHarnessAndInit([])
 
       expect(await avatarMenuHarness.isMenuHidden()).toBeTrue()
-
       await avatarMenuHarness.clickButton()
-
       expect(await avatarMenuHarness.isMenuHidden()).toBeFalse()
     })
   })
 
   it('should create listener on ngAfterViewInit and remove it on ngOnDestroy', () => {
     const spyRemoveFunction = jasmine.createSpy()
-
     const { fixture, component } = setUp()
-
     const renderer = fixture.componentRef.injector.get<Renderer2>(Renderer2)
     spyOn(renderer, 'listen').and.returnValue(spyRemoveFunction)
 
     component.ngAfterViewInit()
 
     expect(renderer.listen).toHaveBeenCalledWith('body', 'click', jasmine.any(Function))
-
     component.ngOnDestroy()
     expect(spyRemoveFunction).toHaveBeenCalledTimes(1)
   })
 
   it('should open menu on avatar button enter key', () => {
     const { component } = setUp()
-
     component.menuOpen = false
     component.onAvatarEnter()
-
     expect(component.menuOpen).toBeTrue()
   })
 
   it('should close menu on avatar button escape key', () => {
     const { component } = setUp()
-
     component.menuOpen = true
     component.onAvatarEscape()
     expect(component.menuOpen).toBeFalse()
@@ -465,7 +442,6 @@ describe('OneCXUserAvatarMenuComponent', () => {
 
   it('should close menu and focus on avatar button when escape clicked on menu item', async () => {
     const { avatarMenuHarness, fixture, component } = await setUpWithHarnessAndInit([])
-
     component.menuOpen = true
     fixture.nativeElement.focus()
 

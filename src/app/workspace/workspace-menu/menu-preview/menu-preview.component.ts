@@ -56,6 +56,10 @@ export class MenuPreviewComponent implements OnChanges {
     if (changes['menuItems'] || this.displayDialog) {
       this.menuNodes = this.mapToTree(this.menuItems, this.languagesPreviewValue)
       this.treeExpanded = false
+      if (this.menuNodes.length > 1 && this.menuNodes[0].key) {
+        this.menuNodes[0].expanded = true
+        this.stateService.getState().treeExpansionState.set(this.menuNodes[0].key, true)
+      }
       this.preparePreviewLanguages()
     }
   }
@@ -165,7 +169,8 @@ export class MenuPreviewComponent implements OnChanges {
   }
 
   public onHierarchyViewChange(event: TreeTableNodeExpandEvent): void {
-    this.stateService.getState().treeExpansionState.set(event.node.key ?? '', event.node.expanded ?? false)
+    if (event.node.key)
+      this.stateService.getState().treeExpansionState.set(event.node.key, event.node.expanded === true)
   }
 
   public onLanguagesPreviewChange(lang: string) {

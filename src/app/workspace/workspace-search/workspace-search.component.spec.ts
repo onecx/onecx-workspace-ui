@@ -7,7 +7,7 @@ import { ActivatedRoute, provideRouter, Router } from '@angular/router'
 import { of, throwError } from 'rxjs'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 
-import { getLocation } from '@onecx/accelerator'
+import * as Accelerator from '@onecx/accelerator'
 import { PortalMessageService } from '@onecx/portal-integration-angular'
 
 import { Workspace, WorkspaceAbstract, WorkspaceAPIService, SearchWorkspacesResponse } from 'src/app/shared/generated'
@@ -16,9 +16,12 @@ import { WorkspaceSearchComponent } from './workspace-search.component'
 describe('WorkspaceSearchComponent', () => {
   let component: WorkspaceSearchComponent
   let fixture: ComponentFixture<WorkspaceSearchComponent>
+
   let mockActivatedRoute: ActivatedRoute
   const mockRouter = { navigate: jasmine.createSpy('navigate') }
-
+  const accSpy = {
+    getLocation: jasmine.createSpy('getLocation').and.returnValue({ deploymentPath: '/path' })
+  }
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['info', 'error'])
   const wApiServiceSpy = {
     searchWorkspaces: jasmine.createSpy('searchWorkspaces').and.returnValue(of({})),
@@ -42,22 +45,30 @@ describe('WorkspaceSearchComponent', () => {
         { provide: Router, useValue: mockRouter },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: PortalMessageService, useValue: msgServiceSpy },
-        { provide: WorkspaceAPIService, useValue: wApiServiceSpy }
+        { provide: WorkspaceAPIService, useValue: wApiServiceSpy },
+        { provide: Accelerator.getLocation, useValue: accSpy.getLocation }
       ]
     }).compileComponents()
-    msgServiceSpy.info.calls.reset()
-    msgServiceSpy.error.calls.reset()
-    wApiServiceSpy.searchWorkspaces.calls.reset()
   }))
 
   beforeEach(() => {
     fixture = TestBed.createComponent(WorkspaceSearchComponent)
+    accSpy.getLocation()
     component = fixture.componentInstance
     fixture.detectChanges()
+    // to spy data: reset
+    msgServiceSpy.info.calls.reset()
+    msgServiceSpy.error.calls.reset()
+    wApiServiceSpy.searchWorkspaces.calls.reset()
+    // to spy data: refill with neutral data
+    wApiServiceSpy.searchWorkspaces.and.returnValue(of({}))
   })
 
-  it('should create', () => {
-    expect(component).toBeTruthy()
+  describe('initialize', () => {
+    it('should create', () => {
+      expect(component).toBeTruthy()
+      expect(component.deploymentPath).toEqual('')
+    })
   })
 
   it('should search workspaces with results', (done) => {
@@ -136,9 +147,7 @@ describe('WorkspaceSearchComponent', () => {
   it('should behave correctly onGotoWorkspace', () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const mockNewWorkspaceWindow = spyOn(window, 'open')
-    const mockEvent = {
-      stopPropagation: jasmine.createSpy()
-    }
+    const mockEvent = { stopPropagation: jasmine.createSpy() }
     const w: WorkspaceAbstract = {
       name: 'name',
       theme: 'theme',
@@ -146,15 +155,15 @@ describe('WorkspaceSearchComponent', () => {
       displayName: ''
     }
 
-    const deploymentPath = getLocation().deploymentPath === '/' ? '' : getLocation().deploymentPath
-
     component.onGotoWorkspace(mockEvent, w)
 
     expect(mockEvent.stopPropagation).toHaveBeenCalled()
     expect(window.open).toHaveBeenCalledWith(
-      Location.joinWithSlash(Location.joinWithSlash(window.document.location.origin, deploymentPath), w.baseUrl || ''),
+      Location.joinWithSlash(Location.joinWithSlash(window.document.location.origin, ''), w.baseUrl || ''),
       '_blank'
     )
+
+    component.onGotoWorkspace(mockEvent, { ...w, baseUrl: undefined })
   })
 
   it('should behave correctly onGotoMenu', () => {
@@ -199,8 +208,8 @@ describe('WorkspaceSearchComponent', () => {
 
     if (component.actions$) {
       component.actions$.subscribe((actions) => {
-        const firstAction = actions[0]
-        firstAction.actionCallback()
+        const action = actions[0]
+        action.actionCallback()
         expect(component.toggleShowCreateDialog).toHaveBeenCalled()
       })
     }
@@ -213,8 +222,8 @@ describe('WorkspaceSearchComponent', () => {
 
     if (component.actions$) {
       component.actions$.subscribe((actions) => {
-        const firstAction = actions[1]
-        firstAction.actionCallback()
+        const action = actions[1]
+        action.actionCallback()
         expect(component.toggleShowImportDialog).toHaveBeenCalled()
       })
     }
@@ -237,8 +246,9 @@ describe('WorkspaceSearchComponent', () => {
   })
 
   it('should search workspaces but display error if API call fails', (done) => {
-    const errorResponse = { status: 403, statusText: 'not authorized' }
+    const errorResponse = { status: 403, statusText: 'no permissions' }
     wApiServiceSpy.searchWorkspaces.and.returnValue(throwError(() => errorResponse))
+    spyOn(console, 'error')
 
     component.search()
 
@@ -247,6 +257,7 @@ describe('WorkspaceSearchComponent', () => {
         if (result) {
           expect(result.length).toBe(0)
           expect(component.exceptionKey).toEqual('EXCEPTIONS.HTTP_STATUS_' + errorResponse.status + '.WORKSPACES')
+          expect(console.error).toHaveBeenCalledWith('searchWorkspaces', errorResponse)
         }
         done()
       },

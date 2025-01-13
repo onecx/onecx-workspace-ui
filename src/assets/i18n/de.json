@@ -1,7 +1,7 @@
 {
   "ACTIONS": {
     "LABEL": "Aktionen",
-    "TOOLTIP": "Aktionen für die Daten der Taellenzeile",
+    "TOOLTIP": "Aktionen für die Daten der Tabellenzeile",
     "CONFIRMATION": {
       "NO": "Nein",
       "YES": "Ja",
@@ -161,9 +161,7 @@
     "CREATE": "Neu",
     "DETAIL": "Details",
     "MENU": "Menü",
-    "EDIT": "Ändern",
-    "ENABLE_DRAG_DROP": "Drag&Drop aktivieren",
-    "SAVE_TREE_STRUCTURE": "Baumstruktur speichern"
+    "SEARCH": "Workspaces"
   },
   "TABS": {
     "WORKSPACE": {
@@ -385,7 +383,7 @@
         "DETAILS_N_ROLES.TOOLTIP": "Anzeigewechsel: Details / Rollen und Berechtigungen",
         "ROLES": "Rollen",
         "ROLES.LOADING": "...Rollen laden",
-        "ROLES.FILTER": "Rollenfilter",
+        "ROLES.FILTER": "Rollennamefilter",
         "ROLES.FILTER.TOOLTIP": "Filter für Rollenname",
         "ROLES.MANAGE": "Rollen verwalten",
         "ROLES.NOT_EXIST": "Keine Rollen für den Workspace definiert",
@@ -394,7 +392,7 @@
         "PREVIEW2.TOOLTIP": "Rot = keine Übersetzungen",
         "REORDER.TOOLTIP": "Umordnen mit Drag & Drop"
       },
-      "SUBHEADER": "Menü verwalten",
+      "SUBHEADER": "Die Details und Rollenberechtigungen des Workspace Menüs verwalten",
       "ACTION": {
         "VIEW": "Details anzeigen",
         "EDIT": "Details bearbeiten"
@@ -416,11 +414,17 @@
         "POSITION.TOOLTIP": "Der Position-Pfad des Menü-Eintrags im Format [Eltern-Position.]Position",
         "I18N": "I18n",
         "I18N.TOOLTIP": "Indikator ob Übersetzungen vorhanden sind",
-        "I18N.ROW.TOOLTIP": "Mindestens eine Übersetzung vorhanden",
+        "I18N.ROW.TOOLTIP": "Übersetzung vorhanden",
         "URL.TOOLTIP": "Die URL die beim Aktivieren aufgerufen wird",
         "PRODUCT.TOOLTIP": "Indikator ob die Menü-URL durch eine registrierte Applikation angeboten wird",
         "EXTERN": "X",
         "EXTERN.TOOLTIP": "Wenn diese Option aktiviert ist, wird der Workspace verlassen"
+      },
+      "ROLE": {
+        "FILTER": "Rollenfilter: Anzeige der Menüeinträge entsprechend der gewählten Rollen",
+        "FILTER.LABEL": "Rollenfilter",
+        "FILTER.CLEAR": "Rollenfilter löschen",
+        "FILTER.NAME": "Mit Klick Rollenname zum Filter hinzufügen/entfernen"
       },
       "ASSIGNMENT": {
         "OK": "Zugeordnet: ",

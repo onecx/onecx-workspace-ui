@@ -221,6 +221,7 @@ describe('WorkspaceRoleDetailComponent', () => {
   it('should display error if create role fails', () => {
     const errorResponse = { status: 400, statusText: 'error on creating a role' }
     wRoleServiceSpy.createWorkspaceRole.and.returnValue(throwError(() => errorResponse))
+    spyOn(console, 'error')
     component.formGroupRole = {
       valid: true,
       controls: {
@@ -234,6 +235,7 @@ describe('WorkspaceRoleDetailComponent', () => {
     component.onSaveRole()
 
     expect(wRoleServiceSpy.createWorkspaceRole).toHaveBeenCalled()
+    expect(console.error).toHaveBeenCalledWith('createWorkspaceRole', errorResponse)
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.ROLE_NOK' })
   })
 
@@ -283,6 +285,7 @@ describe('WorkspaceRoleDetailComponent', () => {
   it('should update the role successfully', () => {
     const errorResponse = { status: 400, statusText: 'error on updating a role' }
     wRoleServiceSpy.updateWorkspaceRole.and.returnValue(throwError(() => errorResponse))
+    spyOn(console, 'error')
     component.formGroupRole = {
       valid: true,
       controls: {
@@ -297,15 +300,18 @@ describe('WorkspaceRoleDetailComponent', () => {
     component.onSaveRole()
 
     expect(wRoleServiceSpy.updateWorkspaceRole).toHaveBeenCalled()
+    expect(console.error).toHaveBeenCalledWith('updateWorkspaceRole', errorResponse)
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.ROLE_NOK' })
   })
 
   it('should display error message if delete api call fails', () => {
     const errorResponse = { status: 400, statusText: 'error on deleting a role' }
     wRoleServiceSpy.deleteWorkspaceRole.and.returnValue(throwError(() => errorResponse))
+    spyOn(console, 'error')
 
     component.onDeleteRoleConfirmation()
 
+    expect(console.error).toHaveBeenCalledWith('deleteWorkspaceRole', errorResponse)
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.ROLE.MESSAGE_NOK' })
   })
 })

@@ -33,7 +33,7 @@
           tooltipEvent="hover"
         >
         </p-dropdown>
-        <label class="ocx-required-label" for="ws_import_preview_theme"> {{ 'WORKSPACE.THEME' | translate }} </label>
+        <label class="ocx-required-label" for="ws_import_preview_theme">{{ 'WORKSPACE.THEME' | translate }} </label>
       </span>
     </div>
     <div>
@@ -81,9 +81,9 @@
       tooltipPosition="top"
       tooltipEvent="focus|hover"
     >
-      <div class="mb-1 mx-3">
+      <div class="my-1 mx-2 max-h-13rem overflow-auto">
         <p-tree
-          styleClass="py-1 px-0 max-h-25rem overflow-y-auto"
+          styleClass="p-0"
           id="ws_import_preview_menu"
           [value]="menuItems"
           [emptyMessage]="'DIALOG.MENU.MENU_NOT_EXIST' | translate"
@@ -96,9 +96,13 @@
       tooltipPosition="top"
       tooltipEvent="focus|hover"
     >
-      <div class="mt-1 mb-2 mx-3">
-        <div *ngIf="workspaceRoles.length === 0">{{ 'ROLE.ROLES_NOT_EXIST' | translate }}</div>
-        <div *ngIf="workspaceRoles.length > 0">{{ workspaceRoles.join(', ') }}</div>
+      <div class="my-1 mx-2 max-h-10rem overflow-auto">
+        <ng-container *ngIf="workspaceRoles.length === 0" id="ws_import_preview_roles_not_exist">
+          {{ 'ROLE.ROLES_NOT_EXIST' | translate }}
+        </ng-container>
+        <ng-container *ngIf="workspaceRoles.length > 0" id="ws_import_preview_roles">
+          {{ workspaceRoles.sort(sortByLocale).join(', ') }}
+        </ng-container>
       </div>
     </p-tabPanel>
     <p-tabPanel
@@ -107,9 +111,13 @@
       tooltipPosition="top"
       tooltipEvent="focus|hover"
     >
-      <div class="mt-1 mb-2 mx-3">
-        <div *ngIf="workspaceProducts.length === 0">{{ 'PRODUCTS.MESSAGES.NOTHING_REGISTERED' | translate }}</div>
-        <div *ngIf="workspaceProducts.length > 0">{{ workspaceProducts.join(', ') }}</div>
+      <div class="my-1 mx-2 max-h-10rem overflow-auto">
+        <ng-container *ngIf="workspaceProducts.length === 0" id="ws_import_preview_products_not_exist">
+          {{ 'PRODUCTS.MESSAGES.NOTHING_REGISTERED' | translate }}
+        </ng-container>
+        <ng-container *ngIf="workspaceProducts.length > 0" id="ws_import_preview_products">
+          {{ workspaceProducts.sort(sortByLocale).join(', ') }}
+        </ng-container>
       </div>
     </p-tabPanel>
   </p-tabView>

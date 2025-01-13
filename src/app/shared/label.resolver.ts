@@ -3,7 +3,7 @@ import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/r
 import { TranslateService } from '@ngx-translate/core'
 import { Observable, map } from 'rxjs'
 
-//dont use `providedIn root` - wont work when we are in shell
+// dont use `providedIn root` - wont work when we are in shell
 @Injectable()
 export class LabelResolver implements Resolve<string> {
   constructor(private readonly translate: TranslateService) {}

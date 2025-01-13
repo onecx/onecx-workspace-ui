@@ -76,12 +76,18 @@ describe('WorkspaceSlotsComponent', () => {
         { provide: UserService, useValue: mockUserService }
       ]
     }).compileComponents()
-    msgServiceSpy.success.calls.reset()
-    msgServiceSpy.error.calls.reset()
+    // to spy data: reset
     wProductServiceSpy.getProductsByWorkspaceId.calls.reset()
     slotServiceSpy.getSlotsForWorkspace.calls.reset()
     slotServiceSpy.createSlot.calls.reset()
     productServiceSpy.searchAvailableProducts.calls.reset()
+    msgServiceSpy.success.calls.reset()
+    msgServiceSpy.error.calls.reset()
+    // to spy data: refill with neutral data
+    wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of({}))
+    slotServiceSpy.getSlotsForWorkspace.and.returnValue(of({}))
+    slotServiceSpy.createSlot.and.returnValue(of({}))
+    productServiceSpy.searchAvailableProducts.and.returnValue(of({}))
   }))
 
   function initializeComponent(): void {
@@ -156,15 +162,17 @@ describe('WorkspaceSlotsComponent', () => {
     })
 
     it('should display error when product names cannot be loaded', () => {
-      const err = { status: '404' }
-      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(throwError(() => err))
+      const errorResponse = { status: '404', statusText: 'Not found' }
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(throwError(() => errorResponse))
       spyOn(component as any, 'declareWorkspaceSlots').and.callFake(() => {})
       spyOn(component as any, 'declarePsSlots').and.callFake(() => {})
+      spyOn(console, 'error')
       component.workspace = workspace
 
       component.loadData()
 
-      expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + err.status + '.PRODUCTS')
+      expect(console.error).toHaveBeenCalledWith('getProductsByWorkspaceId', errorResponse)
+      expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + errorResponse.status + '.PRODUCTS')
     })
 
     it('should get ws slots', () => {
@@ -183,14 +191,16 @@ describe('WorkspaceSlotsComponent', () => {
     })
 
     it('should display error when ws slots cannot be loaded', () => {
-      const err = { status: '404' }
-      slotServiceSpy.getSlotsForWorkspace.and.returnValue(throwError(() => err))
+      const errorResponse = { status: '404', statusText: 'Not found' }
+      slotServiceSpy.getSlotsForWorkspace.and.returnValue(throwError(() => errorResponse))
       spyOn(component as any, 'declareWorkspaceProducts').and.callFake(() => {})
       spyOn(component as any, 'declarePsSlots').and.callFake(() => {})
+      spyOn(console, 'error')
 
       component.loadData()
 
-      expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + err.status + '.SLOTS')
+      expect(console.error).toHaveBeenCalledWith('getSlotsForWorkspace', errorResponse)
+      expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + errorResponse.status + '.SLOTS')
     })
 
     it('should get ps slots', () => {
@@ -246,14 +256,16 @@ describe('WorkspaceSlotsComponent', () => {
     })
 
     it('should display error when ps slots cannot be loaded', () => {
-      const err = { status: '404' }
-      productServiceSpy.searchAvailableProducts.and.returnValue(throwError(() => err))
+      const errorResponse = { status: '404', statusText: 'Not found' }
+      productServiceSpy.searchAvailableProducts.and.returnValue(throwError(() => errorResponse))
       spyOn(component as any, 'declareWorkspaceProducts').and.callFake(() => {})
       spyOn(component as any, 'declareWorkspaceSlots').and.callFake(() => {})
+      spyOn(console, 'error')
 
       component.loadData()
 
-      expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + err.status + '.PRODUCTS')
+      expect(console.error).toHaveBeenCalledWith('searchAvailableProducts', errorResponse)
+      expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + errorResponse.status + '.PRODUCTS')
     })
   })
 

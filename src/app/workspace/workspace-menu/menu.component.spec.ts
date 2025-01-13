@@ -1,7 +1,7 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { Location } from '@angular/common'
-import { HttpErrorResponse, provideHttpClient } from '@angular/common/http'
+import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router'
 import { of, throwError } from 'rxjs'
@@ -125,9 +125,8 @@ describe('MenuComponent', () => {
 
   const mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
   mockUserService.hasPermission.and.callFake((permission: string) => {
-    return ['MENU#VIEW', 'MENU#EDIT', 'MENU#GRANT', 'WORKSPACE_ROLE#EDIT'].includes(permission)
+    return ['MENU#VIEW', 'MENU#CREATE', 'MENU#EDIT', 'MENU#GRANT', 'WORKSPACE_ROLE#EDIT'].includes(permission)
   })
-
   const mockActivatedRouteSnapshot: Partial<ActivatedRouteSnapshot> = {
     params: { id: 'mockId' }
   }
@@ -159,6 +158,15 @@ describe('MenuComponent', () => {
         { provide: UserService, useValue: mockUserService }
       ]
     }).compileComponents()
+  }))
+
+  beforeEach(() => {
+    stateServiceSpy.getState.and.returnValue(state)
+    fixture = TestBed.createComponent(MenuComponent)
+    component = fixture.componentInstance
+    component.workspace = workspace
+    fixture.detectChanges()
+    // to spy data: reset
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
     apiServiceSpy.getWorkspaceByName.calls.reset()
@@ -172,66 +180,82 @@ describe('MenuComponent', () => {
     assgmtApiServiceSpy.deleteAssignment.calls.reset()
     translateServiceSpy.get.calls.reset()
     stateServiceSpy.getState.calls.reset()
-  }))
-
-  beforeEach(() => {
-    stateServiceSpy.getState.and.returnValue(state)
-    fixture = TestBed.createComponent(MenuComponent)
-    component = fixture.componentInstance
-    component.workspace = workspace
-    fixture.detectChanges()
+    // to spy data: refill with neutral data
+    apiServiceSpy.getWorkspaceByName.and.returnValue(of({}))
+    menuApiServiceSpy.getMenuStructure.and.returnValue(of({}))
+    wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({}))
+    assgmtApiServiceSpy.searchAssignments.and.returnValue(of({}))
   })
 
-  it('should create', () => {
-    expect(component).toBeTruthy()
+  describe('Initialize:', () => {
+    it('should create', () => {
+      expect(component).toBeTruthy()
+    })
+
+    it('it should push permissions to array if userService has them', () => {
+      expect(component.myPermissions).toContain('MENU#VIEW')
+      expect(component.myPermissions).toContain('MENU#CREATE')
+      expect(component.myPermissions).toContain('MENU#EDIT')
+      expect(component.myPermissions).toContain('MENU#GRANT')
+      expect(component.myPermissions).toContain('WORKSPACE_ROLE#EDIT')
+    })
   })
 
-  it('it should push permissions to array if userService has them', () => {
-    expect(component.myPermissions).toContain('MENU#VIEW')
-    expect(component.myPermissions).toContain('MENU#EDIT')
-    expect(component.myPermissions).toContain('MENU#GRANT')
-    expect(component.myPermissions).toContain('WORKSPACE_ROLE#EDIT')
-  })
-
-  describe('prepare page actions', () => {
-    it('should have prepared action buttons onInit: onClose, and called it', () => {
+  describe('Page actions:', () => {
+    beforeEach(() => {
       component.ngOnInit()
+    })
 
+    it('should have BACK navigation', () => {
       if (component.actions$) {
         component.actions$.subscribe((actions) => {
           const action = actions[0]
           action.actionCallback()
+
           expect(locationSpy.back).toHaveBeenCalled()
         })
       }
     })
 
-    it('should have prepared action buttons onInit: hide Export button due to no menu items', () => {
-      spyOn(component, 'onExportMenu')
-
-      component.ngOnInit()
+    it('should call CREATE', () => {
+      spyOn(component, 'onCreateMenu')
 
       if (component.actions$) {
         component.actions$.subscribe((actions) => {
           const action = actions[1]
           action.actionCallback()
-          expect(component.onExportMenu).toHaveBeenCalled()
+
+          expect(action.permission).toEqual('MENU#CREATE')
+          //expect(component.changeMode).toEqual('CREATE')
+          expect(component.onCreateMenu).toHaveBeenCalled()
+          //expect(component.displayMenuDetail).toBeTrue()
+        })
+      }
+    })
+
+    it('should call EXPORT: hide button if there are no menu items', () => {
+      spyOn(component, 'onExportMenu')
+
+      if (component.actions$) {
+        component.actions$.subscribe((actions) => {
+          const action = actions[2]
+          action.actionCallback()
+
           expect(action.permission).toEqual('MENU#EXPORT')
           expect(action.showCondition).toBeFalse()
+          expect(component.onExportMenu).toHaveBeenCalled()
           expect(component.menuItems).toEqual([])
           expect(component.menuItems?.length).toBe(0)
         })
       }
     })
-    it('should have prepared action buttons onInit: hide Export button due to no menu items', () => {
+    it('should call EXPORT', () => {
       spyOn(component, 'onExportMenu')
-
-      component.ngOnInit()
       component.menuItems = mockMenuItems
 
       if (component.actions$) {
         component.actions$.subscribe((actions) => {
-          const action = actions[1]
+          const action = actions[2]
           action.actionCallback()
           expect(component.onExportMenu).toHaveBeenCalled()
           expect(action.permission).toEqual('MENU#EXPORT')
@@ -240,25 +264,24 @@ describe('MenuComponent', () => {
         })
       }
     })
-    it('should have exclude some actions', () => {
+
+    it('should call EXPORT: hide on conditions', () => {
       component.menuItems = undefined
       component.prepareActionButtons()
 
       if (component.actions$) {
         component.actions$.subscribe((actions) => {
-          expect(actions[1].showCondition).toBeFalse()
+          expect(actions[2].showCondition).toBeFalse()
         })
       }
     })
 
-    it('should have prepared action buttons onInit: onImportMenu', () => {
+    it('should call IMPORT', () => {
       spyOn(component, 'onImportMenu')
-
-      component.ngOnInit()
 
       if (component.actions$) {
         component.actions$.subscribe((actions) => {
-          const action = actions[2]
+          const action = actions[3]
           action.actionCallback()
           expect(component.onImportMenu).toHaveBeenCalled()
         })
@@ -269,8 +292,8 @@ describe('MenuComponent', () => {
   /**
    * UI ACTIONS
    */
-  describe('on UI events', () => {
-    it('should call loadMenu onReload', () => {
+  describe('UI events', () => {
+    it('should call loadMenu on reload', () => {
       spyOn(component, 'loadMenu')
 
       component.onReload()
@@ -311,13 +334,56 @@ describe('MenuComponent', () => {
     it('should call updateMenuItem and handle error', () => {
       const event = { stopPropagation: jasmine.createSpy('stopPropagation') } as any
       const errorResponse = { status: 400, statusText: 'error on updating a menu item' }
-
       menuApiServiceSpy.updateMenuItem.and.returnValue(throwError(() => errorResponse))
+      spyOn(console, 'error')
 
       component.onToggleDisable(event, mockMenuItems[0])
 
       expect(event.stopPropagation).toHaveBeenCalled()
+      expect(console.error).toHaveBeenCalledWith('updateMenuItem', errorResponse)
       expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
+    })
+
+    describe('Role Filter', () => {
+      it('should add role name to filter array and reload', () => {
+        menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
+        component.workspace = workspace
+        component.wRoles = [wRole]
+        component.wAssignments = [assgmt]
+        component.displayRoles = true
+
+        spyOn(component, 'loadMenu')
+        //spyOn<any>(component, 'assignNode2Role')
+        component.roleFilterValue = ['role1']
+
+        component.onChangeRoleFilter('role2')
+
+        expect(component.roleFilterValue).toEqual(['role1', 'role2'])
+        expect(component.loadMenu).toHaveBeenCalledWith(false)
+        expect(component.wRoles).toEqual([wRole])
+        //expect(component.menuItems).toEqual(mockMenuItems)
+        //expect(component['assignNode2Role']).toHaveBeenCalled()
+      })
+
+      it('should remove role name to filter array and reload', () => {
+        spyOn(component, 'loadMenu')
+        component.roleFilterValue = ['role1', 'role2']
+
+        component.onChangeRoleFilter('role2')
+
+        expect(component.roleFilterValue).toEqual(['role1'])
+        expect(component.loadMenu).toHaveBeenCalledWith(false)
+      })
+
+      it('should reset filter array and reload', () => {
+        spyOn(component, 'loadMenu')
+        component.roleFilterValue = ['role1', 'role2']
+
+        component.onResetRoleFilter()
+
+        expect(component.roleFilterValue).toEqual([])
+        expect(component.loadMenu).toHaveBeenCalledWith(false)
+      })
     })
   })
 
@@ -461,34 +527,30 @@ describe('MenuComponent', () => {
     expect(component.displayMenuDetail).toBeFalse()
   })
 
-  it('should handle onCreateMenu correctly', () => {
-    const mockEvent = jasmine.createSpyObj('MouseEvent', ['stopPropagation'])
-    const mockParent = {
-      key: '1-1',
-      id: 'id1'
-    }
-    component.onCreateMenu(mockEvent, mockParent)
+  describe('create menu item', () => {
+    it('should handle onCreateMenu correctly: with parent', () => {
+      const mockParent = { key: '1-1', id: 'id1' }
+      component.onCreateMenu(mockParent)
 
-    expect(mockEvent.stopPropagation).toHaveBeenCalled()
-    expect(component.changeMode).toEqual('CREATE')
-    expect(component.menuItem).toEqual(mockParent)
-    expect(component.displayMenuDetail).toBeTrue()
+      expect(component.changeMode).toEqual('CREATE')
+      expect(component.menuItem).toEqual(mockParent)
+      expect(component.displayMenuDetail).toBeTrue()
+    })
+
+    it('should handle onCreateMenu correctly: without parent', () => {
+      component.onCreateMenu()
+
+      expect(component.changeMode).toEqual('CREATE')
+      expect(component.menuItem).toEqual(undefined)
+      expect(component.displayMenuDetail).toBeTrue()
+    })
   })
 
   it('should removeNodeFromTree if key is present and refresh menuNodes if delete displayed onMenuItemChanged', () => {
     component.displayMenuDelete = true
-    const item = {
-      key: 'key'
-    }
+    const item = { key: 'key' }
     component.menuItem = item
-    const nodes = [
-      {
-        key: 'key'
-      },
-      {
-        key: 'key2'
-      }
-    ]
+    const nodes = [{ key: 'key' }, { key: 'key2' }]
     component.menuNodes = nodes
 
     component.onMenuItemChanged(true)
@@ -498,16 +560,9 @@ describe('MenuComponent', () => {
 
   it('should removeNodeFromTree if key is present in node children', () => {
     component.displayMenuDelete = true
-    const item = {
-      key: 'child key'
-    }
+    const item = { key: 'child key' }
     component.menuItem = item
-    const nodes = [
-      {
-        key: 'key2',
-        children: [{ key: 'child key' }]
-      }
-    ]
+    const nodes = [{ key: 'key2', children: [{ key: 'child key' }] }]
     component.menuNodes = nodes
 
     component.onMenuItemChanged(true)
@@ -518,16 +573,9 @@ describe('MenuComponent', () => {
   it('should not removeNodeFromTree if no key present', () => {
     component.displayMenuDelete = true
     const key = undefined
-    const item = {
-      key: key
-    }
+    const item = { key: key }
     component.menuItem = item
-    const nodes = [
-      item,
-      {
-        key: 'key2'
-      }
-    ]
+    const nodes = [item, { key: 'key2' }]
     component.menuNodes = nodes
 
     component.onMenuItemChanged(true)
@@ -643,93 +691,86 @@ describe('MenuComponent', () => {
   /****************************************************************************
    * DATA
    */
-  it('should loadData', () => {
-    apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
-    component.workspaceName = 'workspace-name'
+  describe('load data', () => {
+    it('should load all', () => {
+      apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
+      menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
+      component.workspaceName = 'workspace-name'
 
-    component.loadData()
+      component.loadData()
 
-    expect(component.workspace).toEqual(workspace)
-  })
-
-  it('it should handle error response on loadData', () => {
-    const errorResponse = new HttpErrorResponse({
-      error: 'test error',
-      status: 404,
-      statusText: 'Not Found'
+      expect(component.workspace).toEqual(workspace)
+      expect(component.menuNodes.length).toBe(2)
+      expect(component.menuNodes[0].expanded).toBeTrue()
     })
-    apiServiceSpy.getWorkspaceByName.and.returnValue(throwError(() => errorResponse))
 
-    component.loadData()
+    it('should display error message if loading workspace failed', () => {
+      const errorResponse = { status: 404, statusText: 'Workspace not found' }
+      apiServiceSpy.getWorkspaceByName.and.returnValue(throwError(() => errorResponse))
+      spyOn(console, 'error')
 
-    expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_404.WORKSPACES')
-  })
+      component.loadData()
 
-  it('it should handle exception on loadData', () => {
-    apiServiceSpy.getWorkspaceByName.and.returnValue(of(null))
-
-    component.loadData()
-
-    expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_0.WORKSPACES')
-  })
-
-  it('should loadMenu - restore', () => {
-    menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
-
-    component.loadMenu(true)
-
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.SEARCH.RELOAD.OK' })
-  })
-
-  it('should loadMenu - not restore', () => {
-    menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
-    apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
-    component.workspaceName = 'workspace-name'
-
-    component.loadData()
-
-    expect(component.workspace).toEqual(workspace)
-    expect(component.menuNodes.length).toBe(2)
-    expect(component.menuNodes[0].expanded).toBeTrue()
-  })
-
-  it('should loadMenu: no node key in restoreRecursive', () => {
-    const mockMenuItems: WorkspaceMenuItem[] = [
-      {
-        id: 'id',
-        key: undefined,
-        name: 'menu name',
-        i18n: { ['en']: 'en' },
-        children: [{ name: 'child name', key: 'key', id: 'id' }],
-        url: '/workspace'
-      }
-    ]
-    menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
-
-    component.loadMenu(true)
-
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.SEARCH.RELOAD.OK' })
-  })
-
-  it('should handle error response on loadMenu', () => {
-    const errorResponse = new HttpErrorResponse({
-      error: 'test error',
-      status: 404,
-      statusText: 'Not Found'
+      expect(console.error).toHaveBeenCalledWith('getWorkspaceByName', errorResponse)
+      expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + errorResponse.status + '.WORKSPACE')
     })
-    menuApiServiceSpy.getMenuStructure.and.returnValue(throwError(() => errorResponse))
 
-    component.loadMenu(true)
+    it('should reject menu loading if workspace is not available', () => {
+      component.workspace = undefined
 
-    expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_404.MENUS')
-  })
+      component.loadMenu(false)
 
-  it('should return an empty array from mapToTreeNodes if no menuItems onLoadMenu', () => {
-    menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: [] }))
+      expect(menuApiServiceSpy.getMenuStructure).not.toHaveBeenCalled()
+    })
 
-    component.loadMenu(true)
+    it('should loadMenu - restore', () => {
+      menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
+      component.workspace = workspace
 
-    expect(component.menuNodes).toEqual([])
+      component.loadMenu(true)
+
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.SEARCH.RELOAD.OK' })
+    })
+
+    it('should loadMenu: no node key in restoreRecursive', () => {
+      const mockMenuItems: WorkspaceMenuItem[] = [
+        {
+          id: 'id',
+          key: undefined,
+          name: 'menu name',
+          i18n: { ['en']: 'en' },
+          children: [{ name: 'child name', key: 'key', id: 'id' }],
+          url: '/workspace'
+        }
+      ]
+      menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
+      component.workspace = workspace
+
+      component.loadMenu(true)
+
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.SEARCH.RELOAD.OK' })
+    })
+
+    it('should display error message if loading menu failed', () => {
+      const errorResponse = { status: 404, statusText: 'Menu not found' }
+      menuApiServiceSpy.getMenuStructure.and.returnValue(throwError(() => errorResponse))
+      spyOn(console, 'error')
+      component.workspace = workspace
+
+      component.loadMenu(true)
+
+      expect(console.error).toHaveBeenCalledWith('getMenuStructure', errorResponse)
+      expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + errorResponse.status + '.MENUS')
+    })
+
+    it('should return an empty array from mapToTreeNodes if no menuItems onLoadMenu', () => {
+      menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: [] }))
+      component.workspace = workspace
+
+      component.loadMenu(true)
+
+      expect(component.menuNodes).toEqual([])
+    })
   })
 
   /****************************************************************************
@@ -737,6 +778,11 @@ describe('MenuComponent', () => {
    */
 
   describe('load roles and assignments', () => {
+    beforeEach(() => {
+      component.workspace = workspace
+      component.displayRoles = true
+    })
+
     it('should loadRolesAndAssignments -> searchRoles and searchAssignments on loadMenu', () => {
       const wRole2: WorkspaceRole = {
         name: 'role name2',
@@ -747,7 +793,6 @@ describe('MenuComponent', () => {
       wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: [wRole, wRole2] }))
       assgmtApiServiceSpy.searchAssignments.and.returnValue(of({ stream: [assgmt] }))
 
-      component.displayRoles = true
       component.loadMenu(true)
 
       expect(component.wRoles).toEqual([wRole, wRole2])
@@ -796,6 +841,7 @@ describe('MenuComponent', () => {
       component.displayRoles = true
       component.loadMenu(true)
 
+      expect(component.wRoles).toEqual([wRole])
       expect(component.wAssignments).toEqual([assgmt2])
     })
 
@@ -817,16 +863,18 @@ describe('MenuComponent', () => {
   })
 
   describe('onGrantPermission', () => {
+    beforeEach(() => {
+      component.workspace = workspace
+    })
+
     it('should create assignment when role is not assigned', () => {
       const roleId = 'role1'
       const menuItemId = 'menu1'
       const assignmentId = 'assignment1'
-
       const rowData: MenuItemNodeData = {
         id: menuItemId,
         roles: {}
       } as MenuItemNodeData
-
       const rowNode: TreeNode = {
         data: rowData,
         parent: undefined
@@ -851,12 +899,10 @@ describe('MenuComponent', () => {
         id: parentMenuItemId,
         roles: {}
       } as MenuItemNodeData
-
       const parentRowNode: TreeNode = {
         data: parentRowData,
         parent: undefined
       }
-
       const rowData: MenuItemNodeData = {
         id: menuItemId,
         roles: {},
@@ -868,7 +914,6 @@ describe('MenuComponent', () => {
         positionPath: '',
         node: {} as TreeNode
       }
-
       const rowNode: TreeNode = {
         data: rowData,
         parent: parentRowNode
@@ -980,9 +1025,11 @@ describe('MenuComponent', () => {
   it('should display error onRevokePermission', () => {
     const errorResponse = { status: 400, statusText: 'Error on delete assignment' }
     assgmtApiServiceSpy.deleteAssignment.and.returnValue(throwError(() => errorResponse))
+    spyOn(console, 'error')
 
     component.onRevokePermission(nodeData, 'role', assgmt.id!)
 
+    expect(console.error).toHaveBeenCalledWith('deleteAssignment', errorResponse)
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.REVOKE_NOK' })
   })
 
@@ -1048,7 +1095,7 @@ describe('MenuComponent', () => {
   })
 
   it('should return the logoURL on getLogoUrl', () => {
-    const result = component.getLogoUrl({ name: 'name', displayName: 'name', logoUrl: 'url' })
+    const result = component['getLogoUrl']({ name: 'name', displayName: 'name', logoUrl: 'url' })
 
     expect(result).toBe('url')
   })

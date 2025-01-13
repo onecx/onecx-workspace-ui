@@ -1,4 +1,5 @@
 <p-dialog
+  #menuDetailDialog
   [header]="'DIALOG.MENU.HEADER.' + changeMode | translate"
   [(visible)]="displayDetailDialog"
   (onHide)="onCloseDetailDialog()"
@@ -26,6 +27,7 @@
                 id="ws_menu_detail_field_menu_name"
                 class="w-full pt-3 pb-2"
                 formControlName="name"
+                aria-labelledby="ws_menu_detail_field_menu_name"
                 [pTooltip]="'MENU_ITEM.TOOLTIP.MENU_NAME' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
@@ -44,6 +46,7 @@
                 id="ws_menu_detail_field_menu_id"
                 class="w-full pt-3 pb-2"
                 formControlName="key"
+                aria-labelledby="ws_menu_detail_field_menu_id"
                 [pTooltip]="'MENU_ITEM.TOOLTIP.MENU_ID' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
@@ -59,15 +62,15 @@
                 id="ws_menu_detail_field_parent_id"
                 styleClass="w-full input-field-correction"
                 formControlName="parentItemId"
-                [showClear]="true"
                 [options]="parentItems"
+                [showClear]="true"
                 [ariaLabel]="'MENU_ITEM.TOOLTIP.PARENT_ID' | translate"
                 [pTooltip]="'MENU_ITEM.TOOLTIP.PARENT_ID' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
               >
               </p-dropdown>
-              <label for="ws_menu_detail_field_parent_id"> {{ 'MENU_ITEM.PARENT_ID' | translate }} </label>
+              <label for="ws_menu_detail_field_parent_id">{{ 'MENU_ITEM.PARENT_ID' | translate }} </label>
             </span>
           </div>
 
@@ -109,7 +112,7 @@
                   </div>
                 </ng-template>
               </p-autoComplete>
-              <label for="ws_menu_detail_field_url"> {{ 'MENU_ITEM.URL' | translate }} </label>
+              <label for="ws_menu_detail_field_url">{{ 'MENU_ITEM.URL' | translate }} </label>
             </span>
           </div>
 
@@ -121,12 +124,12 @@
                 id="ws_menu_detail_field_position"
                 class="w-full pt-3 pb-2"
                 formControlName="position"
-                [ariaLabel]="'MENU_ITEM.POSITION' | translate"
+                aria-labelledby="ws_menu_detail_field_position"
                 [pTooltip]="'MENU_ITEM.TOOLTIP.POSITION' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
               />
-              <label for="ws_menu_detail_field_position">Position</label>
+              <label for="ws_menu_detail_field_position">{{ 'MENU_ITEM.POSITION' | translate }}</label>
             </span>
           </div>
           <div class="col-12 md:col-4 my-1" style="min-width: 10rem">
@@ -137,26 +140,27 @@
                 formControlName="badge"
                 [showClear]="true"
                 [options]="iconItems"
-                scrollHeight="150px"
+                [appendTo]="'body'"
+                [showClear]="true"
                 [ariaLabel]="'MENU_ITEM.BADGE' | translate"
                 [pTooltip]="'MENU_ITEM.TOOLTIP.BADGE' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
               >
-                <ng-template let-ico pTemplate="selectedItem">
-                  <div class="flex">
-                    <span class="pi pi-{{ ico.value }} mr-3"> </span>
-                    <span>{{ ico.label }}</span>
+                <ng-template let-icon pTemplate="selectedItem">
+                  <div class="flex align-items-center">
+                    <span class="pi pi-{{ icon.value }} mr-3"> </span>
+                    <span>{{ icon.label }}</span>
                   </div>
                 </ng-template>
-                <ng-template let-ico pTemplate="item">
-                  <div class="flex">
-                    <span class="pi pi-{{ ico.value }} mr-3"> </span>
-                    <span>{{ ico.label }}</span>
+                <ng-template let-icon pTemplate="item">
+                  <div class="flex align-items-center">
+                    <span class="pi pi-{{ icon.value }} mr-3"> </span>
+                    <span>{{ icon.label }}</span>
                   </div>
                 </ng-template>
               </p-dropdown>
-              <label for="ws_menu_detail_field_badge"> {{ 'MENU_ITEM.BADGE' | translate }} </label>
+              <label for="ws_menu_detail_field_badge">{{ 'MENU_ITEM.BADGE' | translate }} </label>
             </span>
           </div>
           <div class="col-12 md:col-3 my-1" style="min-width: 10rem">
@@ -173,7 +177,7 @@
                 tooltipEvent="hover"
               >
               </p-dropdown>
-              <label for="ws_menu_detail_field_scope"> {{ 'MENU_ITEM.SCOPE' | translate }} </label>
+              <label for="ws_menu_detail_field_scope">{{ 'MENU_ITEM.SCOPE' | translate }} </label>
             </span>
           </div>
 
@@ -200,12 +204,12 @@
                 id="ws_menu_detail_field_description"
                 class="w-full pt-3 pb-2"
                 formControlName="description"
-                [ariaLabel]="'MENU_ITEM.DESCRIPTION' | translate"
+                aria-labelledby="ws_menu_detail_field_description"
                 [pTooltip]="'MENU_ITEM.TOOLTIP.DESCRIPTION' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
               />
-              <label for="ws_menu_detail_field_description"> {{ 'MENU_ITEM.DESCRIPTION' | translate }} </label>
+              <label for="ws_menu_detail_field_description">{{ 'MENU_ITEM.DESCRIPTION' | translate }} </label>
             </span>
           </div>
           <div class="col-12 md:col-3 my-1 md:pl-5 flex justify-content-start">
@@ -243,12 +247,12 @@
             [id]="'ws_menu_detail_i18n_lang_' + i + '_value'"
             class="w-30rem pt-3 pb-2"
             [(ngModel)]="language.data"
-            [ariaLabel]="'DIALOG.MENU.TABS.I18N.REMOVE_LANGUAGE' | translate"
+            [attr.aria-label]="'ws_menu_detail_i18n_lang_' + i + '_value'"
             [pTooltip]="'DIALOG.MENU.TABS.I18N.REMOVE_LANGUAGE' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
           />
-          <label [for]="'ws_menu_detail_i18n_lang_' + i + '_value'"> {{ getLanguageLabel(language.value) }} </label>
+          <label [for]="'ws_menu_detail_i18n_lang_' + i + '_value'">{{ getLanguageLabel(language.value) }} </label>
         </span>
       </div>
       <div class="mt-5 flex flex-row align-items-center column-gap-4 row-gap-2" *ngIf="languagesAvailable.length > 0">
