@@ -70,8 +70,7 @@ describe('MenuItemService', () => {
         items: undefined,
         icon: 'pi pi-cog',
         routerLink: undefined,
-        url: undefined,
-        routerLinkActiveOptions: Object({ exact: true })
+        url: undefined
       },
       {
         id: '4',
@@ -79,8 +78,7 @@ describe('MenuItemService', () => {
         items: undefined,
         icon: 'pi pi-box',
         routerLink: 'l',
-        url: undefined,
-        routerLinkActiveOptions: Object({ exact: true })
+        url: undefined
       },
       {
         id: '3',
@@ -88,8 +86,7 @@ describe('MenuItemService', () => {
         items: undefined,
         icon: 'pi pi-bar',
         routerLink: 'r',
-        url: undefined,
-        routerLinkActiveOptions: Object({ exact: true })
+        url: undefined
       }
     ]
     const input: UserWorkspaceMenuItem[] = [
@@ -123,7 +120,6 @@ describe('MenuItemService', () => {
         items: childrenMenuItem,
         icon: 'pi pi-star',
         routerLink: '/item1',
-        items: undefined,
         url: undefined
       },
       {
@@ -132,7 +128,6 @@ describe('MenuItemService', () => {
         items: undefined,
         icon: 'pi pi-check',
         routerLink: undefined,
-        items: undefined,
         url: 'http://external.com'
       }
     ]
