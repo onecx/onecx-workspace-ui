@@ -48,7 +48,7 @@ export interface WorkspaceMenuItems {
 @Component({
   selector: 'app-vertical-main-menu',
   templateUrl: './vertical-main-menu.component.html',
-  styleUrl: './vertical-main-manu.component.scss',
+  styleUrl: './vertical-main-menu.component.scss',
   standalone: true,
   imports: [
     AngularRemoteComponentsModule,
