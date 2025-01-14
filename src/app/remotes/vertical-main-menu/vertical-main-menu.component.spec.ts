@@ -138,6 +138,14 @@ describe('OneCXVerticalMainMenuComponent', () => {
     )
 
     const { fixture, component } = setUp()
+    spyOn(component.eventsTopic$, 'asObservable').and.returnValue(
+      of({
+        type: 'navigated',
+        payload: {
+          url: 'page-url'
+        }
+      })
+    )
     await component.ngOnInit()
 
     const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PPanelMenuHarness)
@@ -183,6 +191,14 @@ describe('OneCXVerticalMainMenuComponent', () => {
     )
 
     const { fixture, component } = setUp()
+    spyOn(component.eventsTopic$, 'asObservable').and.returnValue(
+      of({
+        type: 'navigated',
+        payload: {
+          url: 'page-url'
+        }
+      })
+    )
     await component.ngOnInit()
 
     const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PPanelMenuHarness)
@@ -224,6 +240,14 @@ describe('OneCXVerticalMainMenuComponent', () => {
     )
 
     const { fixture, component } = setUp()
+    spyOn(component.eventsTopic$, 'asObservable').and.returnValue(
+      of({
+        type: 'navigated',
+        payload: {
+          url: 'page-url'
+        }
+      })
+    )
     await component.ngOnInit()
 
     const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PPanelMenuHarness)
@@ -265,6 +289,14 @@ describe('OneCXVerticalMainMenuComponent', () => {
     const router = TestBed.inject(Router)
 
     const { fixture, component } = setUp()
+    spyOn(component.eventsTopic$, 'asObservable').and.returnValue(
+      of({
+        type: 'navigated',
+        payload: {
+          url: 'page-url'
+        }
+      })
+    )
     await component.ngOnInit()
 
     const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PPanelMenuHarness)
@@ -305,6 +337,14 @@ describe('OneCXVerticalMainMenuComponent', () => {
     )
 
     const { fixture, component } = setUp()
+    spyOn(component.eventsTopic$, 'asObservable').and.returnValue(
+      of({
+        type: 'navigated',
+        payload: {
+          url: 'page-url'
+        }
+      })
+    )
     await component.ngOnInit()
 
     const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PPanelMenuHarness)
@@ -341,7 +381,7 @@ describe('OneCXVerticalMainMenuComponent', () => {
               {
                 key: 'CORE_AH_MGMT',
                 name: 'Announcement & Help',
-                url: '',
+                url: 'page-url',
                 position: 1,
                 external: false,
                 i18n: {},
@@ -373,6 +413,14 @@ describe('OneCXVerticalMainMenuComponent', () => {
     )
 
     const { fixture, component } = setUp()
+    spyOn(component.eventsTopic$, 'asObservable').and.returnValue(
+      of({
+        type: 'navigated',
+        payload: {
+          url: 'page-url'
+        }
+      })
+    )
     await component.ngOnInit()
 
     const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PPanelMenuHarness)
@@ -386,6 +434,208 @@ describe('OneCXVerticalMainMenuComponent', () => {
     expect((await secondItemChildren[0].getChildren()).length).toBe(0)
     expect(await secondItemChildren[1].getText()).toEqual('Help Items')
     expect((await secondItemChildren[1].getChildren()).length).toBe(0)
+  })
+
+  describe('on router changes', () => {
+    const baseItems = [
+      {
+        key: 'PORTAL_MAIN_MENU',
+        name: 'Main Menu',
+        children: [
+          {
+            key: 'CORE_WELCOME',
+            name: 'Welcome Page',
+            url: '/admin/welcome',
+            position: 0,
+            external: false,
+            i18n: {},
+            children: []
+          },
+          {
+            key: 'CORE_AH_MGMT',
+            name: 'Announcement & Help',
+            url: 'page-url',
+            position: 1,
+            external: false,
+            i18n: {},
+            children: [
+              {
+                key: 'CORE_AH_MGMT_A',
+                name: 'Announcements',
+                url: '/admin/announcement',
+                position: 1,
+                external: false,
+                i18n: {},
+                children: []
+              },
+              {
+                key: 'CORE_AH_MGMT_HI',
+                name: 'Help Items',
+                url: '/admin/help',
+                position: 2,
+                external: false,
+                i18n: {},
+                children: []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+
+    it('should expand active item parents', async () => {
+      const appStateService = TestBed.inject(AppStateService)
+      spyOn(appStateService.currentWorkspace$, 'asObservable').and.returnValue(
+        of({
+          workspaceName: 'test-workspace'
+        }) as any
+      )
+      spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(of({} as any))
+      menuItemApiSpy.getMenuItems.and.returnValue(
+        of({
+          workspaceName: 'test-workspace',
+          menu: baseItems
+        } as any)
+      )
+
+      const { fixture, component } = setUp()
+      spyOn(component.eventsTopic$, 'asObservable').and.returnValue(
+        of({
+          type: 'navigated',
+          payload: {
+            url: '/admin/help'
+          }
+        })
+      )
+      await component.ngOnInit()
+
+      const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PPanelMenuHarness)
+      const panels = await menu.getAllPanels()
+      expect(panels.length).toEqual(2)
+
+      expect((await panels[0].getChildren()).length).toBe(0)
+      const secondItemChildren = await panels[1].getChildren()
+      expect(secondItemChildren.length).toBe(2)
+      expect(await secondItemChildren[0].getText()).toEqual('Announcements')
+      expect(await (await secondItemChildren[0].host()).hasClass(component.activeItemClass)).toBeFalse()
+      expect(await secondItemChildren[1].getText()).toEqual('Help Items')
+      expect(await (await secondItemChildren[1].host()).hasClass(component.activeItemClass)).toBeTrue()
+
+      const menuItems = component.menuItems$.getValue()
+      expect(menuItems?.items.length).toBe(2)
+      expect(menuItems?.items[0].expanded).toBeFalsy()
+      expect(menuItems?.items[1].expanded).toBeTrue()
+    })
+
+    it('should update items if workspace did not change', async () => {
+      const appStateService = TestBed.inject(AppStateService)
+      spyOn(appStateService.currentWorkspace$, 'asObservable').and.returnValue(
+        of({
+          workspaceName: 'test-workspace'
+        }) as any
+      )
+      spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(of({} as any))
+      menuItemApiSpy.getMenuItems.and.returnValue(
+        of({
+          workspaceName: 'test-workspace',
+          menu: [
+            {
+              key: 'my-item',
+              name: 'item-name-1',
+              url: '/admin/help',
+              position: 2,
+              external: false,
+              i18n: {},
+              children: []
+            }
+          ]
+        } as any)
+      )
+
+      const { component } = setUp()
+      spyOn(component.eventsTopic$, 'asObservable').and.returnValue(
+        of({
+          type: 'navigated',
+          payload: {
+            url: '/admin/help'
+          }
+        })
+      )
+      component.menuItems$.next({
+        workspaceName: 'test-workspace',
+        items: [
+          {
+            id: 'my-item',
+            items: undefined,
+            label: 'item-name-2',
+            routerLink: '/admin/help'
+          }
+        ]
+      })
+      await component.ngOnInit()
+
+      const menuItems = component.menuItems$.getValue()
+      expect(menuItems?.items.length).toBe(1)
+      expect(menuItems?.items[0].label).toBe('item-name-2')
+    })
+
+    it('should overwrite items if workspace has changed', async () => {
+      const appStateService = TestBed.inject(AppStateService)
+      spyOn(appStateService.currentWorkspace$, 'asObservable').and.returnValue(
+        of({
+          workspaceName: 'other-workspace'
+        }) as any
+      )
+      spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(of({} as any))
+      menuItemApiSpy.getMenuItems.and.returnValue(
+        of({
+          workspaceName: 'other-workspace',
+          menu: [
+            {
+              key: 'PORTAL_MAIN_MENU',
+              name: 'Main Menu',
+              children: [
+                {
+                  key: 'my-item',
+                  name: 'item-name-1',
+                  url: '/admin/help',
+                  position: 2,
+                  external: false,
+                  i18n: {},
+                  children: []
+                }
+              ]
+            }
+          ]
+        } as any)
+      )
+
+      const { component } = setUp()
+      spyOn(component.eventsTopic$, 'asObservable').and.returnValue(
+        of({
+          type: 'navigated',
+          payload: {
+            url: '/admin/help'
+          }
+        })
+      )
+      component.menuItems$.next({
+        workspaceName: 'test-workspace',
+        items: [
+          {
+            id: 'my-item',
+            items: undefined,
+            label: 'item-name-2',
+            routerLink: '/admin/help'
+          }
+        ]
+      })
+      await component.ngOnInit()
+
+      const menuItems = component.menuItems$.getValue()
+      expect(menuItems?.items.length).toBe(1)
+      expect(menuItems?.items[0].label).toBe('item-name-1')
+    })
   })
 
   it('should return 0 panels when unable to load them', async () => {

@@ -1,0 +1,42 @@
+@import './../../shared/sidebar-panelmenu.scss';
+
+:host ::ng-deep {
+  .p-panelmenu {
+    .p-panelmenu-header {
+      &.ocx-vertical-menu-active-item {
+        &:not(:focus-visible):not(:hover) {
+          > .p-panelmenu-header-content {
+            .p-panelmenu-header-action {
+              &:not(:hover):not(:focus) {
+                background-color: var(--menu-active-item-bg-color);
+                color: var(--menu-active-item-text-color);
+              }
+            }
+          }
+        }
+      }
+    }
+    .p-panelmenu-content {
+      .p-menuitem {
+        &.ocx-vertical-menu-active-item {
+          &:not(.p-focus) {
+            > .p-menuitem-content {
+              &:not(:hover) {
+                .p-menuitem-link {
+                  background-color: var(--menu-active-item-bg-color);
+                  color: var(--menu-active-item-text-color);
+                  .p-menuitem-icon {
+                    color: var(--menu-active-item-text-color);
+                  }
+                  .p-menuitem-text {
+                    color: var(--menu-active-item-text-color);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
