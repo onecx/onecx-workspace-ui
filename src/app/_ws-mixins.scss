@@ -52,20 +52,12 @@
 /* disable preset of opacity in form: not readable */
 @mixin readable-disabled-form-controls {
   :host ::ng-deep {
-    .p-inputtext.p-component:disabled,
-    .p-dropdown.p-component.p-disabled,
-    .p-checkbox-box.p-disabled,
-    .p-checkbox-label.p-disabled {
-      opacity: unset;
-    }
+    --disabled-opacity: 0.7;
   }
 }
 @mixin readable-disabled-components {
   :host ::ng-deep {
-    .p-component:disabled,
-    .p-disabled {
-      opacity: unset;
-    }
+    --disabled-opacity: 0.7;
   }
 }
 
@@ -120,8 +112,18 @@
 }
 
 /* **********************************************
- *  Card Badges
+ *  Badges
  * **********************************************/
+@mixin text-badges {
+  :host ::ng-deep {
+    .text-badge-right {
+      display: inline-block;
+      position: absolute;
+      right: 20px;
+      top: -10px;
+    }
+  }
+}
 @mixin card-badges {
   :host ::ng-deep {
     /* badge basics: position */

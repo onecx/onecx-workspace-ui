@@ -7,7 +7,7 @@
   [resizable]="true"
   [dismissableMask]="true"
 >
-  <span class="mt-1 mb-3 p-float-label">
+  <span class="mt-1 mb-4 p-float-label">
     <input
       pInputText
       type="text"
@@ -16,7 +16,7 @@
       id="ws_slot_detail_item_slot_name"
       class="pt-3 pb-2 text-responsive"
       [value]="slot?.name"
-      [ariaLabel]="'SLOT.NAME' | translate"
+      [attr.aria-label]="'SLOT.NAME' | translate"
       [pTooltip]="'SLOT.NAME' | translate"
       tooltipPosition="top"
       tooltipEvent="hover"
@@ -52,7 +52,7 @@
           <div class="flex flex-row justify-content-between align-items-center column-gap-2">
             <div
               class="flex-grow-1 font-semibold"
-              [ariaLabel]="'DIALOG.SLOT.COMPONENTS.NOT_USED' | translate"
+              [attr.aria-label]="'DIALOG.SLOT.COMPONENTS.NOT_USED' | translate"
               [pTooltip]="'DIALOG.SLOT.COMPONENTS.NOT_USED.TOOLTIP' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
@@ -65,7 +65,7 @@
           <div class="flex flex-row justify-content-between align-items-center column-gap-2">
             <div
               class="flex-grow-1 font-semibold"
-              [ariaLabel]="'DIALOG.SLOT.COMPONENTS.USED' | translate"
+              [attr.aria-label]="'DIALOG.SLOT.COMPONENTS.USED' | translate"
               [pTooltip]="'DIALOG.SLOT.COMPONENTS.USED.TOOLTIP' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
@@ -80,7 +80,7 @@
             *ngIf="component?.undeployed"
             [id]="'ws_slot_detail_picklist_' + i + '_undeployed'"
             class="card-badge-right badge-1 danger-action-text font-bold text-lg pi pi-ban"
-            [ariaLabel]="'DIALOG.SLOT.UNDEPLOYED' | translate"
+            [attr.aria-label]="'DIALOG.SLOT.UNDEPLOYED' | translate"
             [pTooltip]="'DIALOG.SLOT.UNDEPLOYED.TOOLTIP' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
@@ -89,7 +89,7 @@
             *ngIf="component?.deprecated && !component?.undeployed"
             [id]="'ws_slot_detail_picklist_' + i + '_deprecated'"
             class="card-badge-right badge-1 danger-action-text font-bold text-lg pi pi-exclamation-circle"
-            [ariaLabel]="'DIALOG.SLOT.DEPRECATED' | translate"
+            [attr.aria-label]="'DIALOG.SLOT.DEPRECATED' | translate"
             [pTooltip]="'DIALOG.SLOT.DEPRECATED.TOOLTIP' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
@@ -134,7 +134,7 @@
                 *ngIf="slot?.undeployed"
                 [id]="'ws_slot_detail_product_' + i + '_undeployed'"
                 class="danger-action-text text-md pi pi-ban"
-                [ariaLabel]="'DIALOG.SLOT.UNDEPLOYED' | translate"
+                [attr.aria-label]="'DIALOG.SLOT.UNDEPLOYED' | translate"
                 [pTooltip]="'DIALOG.SLOT.UNDEPLOYED' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
@@ -144,7 +144,7 @@
                 *ngIf="slot?.deprecated"
                 [id]="'ws_slot_detail_product_' + i + '_deprecated'"
                 class="danger-action-text text-md pi pi-exclamation-circle"
-                [ariaLabel]="'DIALOG.SLOT.DEPRECATED' | translate"
+                [attr.aria-label]="'DIALOG.SLOT.DEPRECATED' | translate"
                 [pTooltip]="'DIALOG.SLOT.DEPRECATED' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
@@ -169,7 +169,7 @@
             <div
               id="ws_slot_detail_item_creation_date"
               class="ocx-float-label-textbox pt-3 pb-2"
-              [ariaLabel]="'INTERNAL.CREATION_DATE' | translate"
+              [attr.aria-label]="'INTERNAL.CREATION_DATE' | translate"
               [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_DATE' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
@@ -178,15 +178,16 @@
             </div>
             <span class="ocx-float-label">{{ 'INTERNAL.CREATION_DATE' | translate }}</span>
           </span>
-          <div class="w-12 sm:w-7 sm:pl-3">
+          <div class="sm:pl-3">
             <span class="p-float-label">
               <input
                 pInputText
                 type="text"
-                readonly
                 id="ws_slot_detail_intern_item_creation-user"
                 class="w-full pt-3 pb-2 text-responsive"
                 [value]="slot?.creationUser"
+                [disabled]="true"
+                [attr.aria-label]="'INTERNAL.CREATION_USER' | translate"
                 [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_USER' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
@@ -201,7 +202,7 @@
             <div
               id="ws_slot_detail_item_modification_date"
               class="ocx-float-label-textbox pt-3 pb-2"
-              [ariaLabel]="'INTERNAL.MODIFICATION_DATE' | translate"
+              [attr.aria-label]="'INTERNAL.MODIFICATION_DATE' | translate"
               [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_DATE' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
@@ -210,15 +211,16 @@
             </div>
             <span class="ocx-float-label">{{ 'INTERNAL.MODIFICATION_DATE' | translate }}</span>
           </span>
-          <div class="w-12 sm:w-7 sm:pl-3">
+          <div class="sm:pl-3">
             <span class="p-float-label">
               <input
                 pInputText
                 type="text"
-                readonly
                 id="ws_slot_detail_intern_item_modification-user"
                 class="w-full pt-3 pb-2 text-responsive"
                 [value]="slot?.modificationUser"
+                [disabled]="true"
+                [attr.aria-label]="'INTERNAL.MODIFICATION_USER' | translate"
                 [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_USER' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
@@ -258,7 +260,7 @@
   [closable]="true"
   [resizable]="false"
   [dismissableMask]="true"
-  [style]="{ width: '400px' }"
+  [style]="{ width: '450px' }"
   styleClass="disable-max-height-preset"
 >
   <div class="my-2 flex column-gap-4 row-gap-1 justify-content-start align-items-center">

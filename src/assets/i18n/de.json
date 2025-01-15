@@ -16,7 +16,7 @@
     },
     "CREATE": {
       "LABEL": "Erstellen",
-      "WORKSPACE": "Workspace erstellen",
+      "WORKSPACE": "Erstellen",
       "WORKSPACE.TOOLTIP": "Einen neuen Workspace erstellen",
       "WORKSPACE.ROLE": "Rolle zum Workspace hinzufügen",
       "ROLE": "Rolle erstellen",

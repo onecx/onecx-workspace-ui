@@ -69,7 +69,7 @@ describe('WorkspaceSlotDetailComponent', () => {
     mockUserService.lang$.next('de')
     initializeComponent()
 
-    expect(component.dateFormat).toEqual('dd.MM.yyyy HH:mm')
+    expect(component.dateFormat).toEqual('dd.MM.yyyy HH:mm:ss')
   })
 
   it('should set English date format', () => {
