@@ -16,7 +16,7 @@
     },
     "CREATE": {
       "LABEL": "Create",
-      "WORKSPACE": "Create Workspace",
+      "WORKSPACE": "Create",
       "WORKSPACE.TOOLTIP": "Create a new Workspace",
       "WORKSPACE.ROLE": "Create Workspace Role",
       "ROLE": "Create Role",

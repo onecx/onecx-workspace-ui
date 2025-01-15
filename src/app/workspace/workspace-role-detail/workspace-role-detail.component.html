@@ -13,19 +13,19 @@
     <div class="flex flex-wrap flex-column gap-4 justify-content-between">
       <p-message
         *ngIf="role?.isIamRole && !role?.isWorkspaceRole"
-        id="ws_role_create_info"
+        id="ws_role_create_info_inw"
         severity="info"
         [text]="'DIALOG.ROLE.ORIGIN.IAM.VIEW' | translate"
       ></p-message>
       <p-message
         *ngIf="!role?.isIamRole && role?.isWorkspaceRole"
-        id="ws_role_create_info"
+        id="ws_role_create_info_niw"
         severity="info"
         [text]="'DIALOG.ROLE.ORIGIN.WORKSPACE.EDIT' | translate"
       ></p-message>
       <p-message
         *ngIf="role?.isIamRole && role?.isWorkspaceRole"
-        id="ws_role_create_info"
+        id="ws_role_create_info_iw"
         severity="info"
         [text]="'DIALOG.ROLE.ORIGIN.IAM.WORKSPACE.EDIT' | translate"
       ></p-message>
@@ -36,13 +36,14 @@
             pInputText
             type="text"
             class="w-full"
-            id="ws_role_create_field_name"
+            id="ws_role_create_form_name"
             formControlName="name"
+            [attr.aria-label]="'ROLE.NAME' | translate"
             [pTooltip]="'ROLE.NAME.TOOLTIP' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
           />
-          <label class="ocx-required-label" for="ws_role_create_field_name">{{ 'ROLE.NAME' | translate }} </label>
+          <label class="ocx-required-label" for="ws_role_create_form_name">{{ 'ROLE.NAME' | translate }} </label>
         </span>
       </div>
       <div>
@@ -51,13 +52,14 @@
             pInputText
             type="text"
             class="w-full"
-            id="ws_role_create_field_description"
+            id="ws_role_create_form_description"
             formControlName="description"
+            [attr.aria-label]="'ROLE.DESCRIPTION' | translate"
             [pTooltip]="'ROLE.DESCRIPTION.TOOLTIP' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
           />
-          <label for="ws_role_create_field_description">{{ 'ROLE.DESCRIPTION' | translate }} </label>
+          <label for="ws_role_create_form_description">{{ 'ROLE.DESCRIPTION' | translate }} </label>
         </span>
       </div>
     </div>

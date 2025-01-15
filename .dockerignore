@@ -1,4 +1,4 @@
-# Copy of .gitignore AND removed "dist" directory
+# Copy of .gitignore AND exclude "dist" directory
 
 # compiled output
 # dist
@@ -26,7 +26,6 @@ speed-measure-plugin*.json
 .angular
 .eslintcache
 .sass-cache
-.scannerwork
 .husky/_
 .gitlab*
 connect.lock

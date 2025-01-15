@@ -84,6 +84,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       this.fillForm()
       if (this.editMode) this.formGroup.enable()
       else this.formGroup.disable()
+      this.formGroup.controls['disabled'].disable()
       // if a home page value exists then fill it into drop down list for displaying
       if (this.workspace.homePage) this.productPaths$ = of([this.workspace.homePage])
     } else {

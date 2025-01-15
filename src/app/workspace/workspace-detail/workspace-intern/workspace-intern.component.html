@@ -6,7 +6,7 @@
       styleClass="cursor-auto shadow-none"
       [(ngModel)]="operator"
       [binary]="true"
-      [readonly]="true"
+      [disabled]="true"
       [label]="'INTERNAL.OPERATOR' | translate"
       [ariaLabel]="'INTERNAL.OPERATOR' | translate"
       [pTooltip]="'INTERNAL.TOOLTIPS.OPERATOR' | translate"
@@ -19,7 +19,7 @@
       styleClass="cursor-auto shadow-none"
       [(ngModel)]="mandatory"
       [binary]="true"
-      [readonly]="true"
+      [disabled]="true"
       [label]="'INTERNAL.MANDATORY' | translate"
       [ariaLabel]="'INTERNAL.MANDATORY' | translate"
       [pTooltip]="'INTERNAL.TOOLTIPS.MANDATORY' | translate"
@@ -34,10 +34,11 @@
         <input
           pInputText
           type="text"
-          readonly
           id="ws_detail_intern_item_name"
           class="w-full pt-3 pb-2 text-responsive"
+          [disabled]="true"
           [value]="workspace.name"
+          [attr.aria-label]="'WORKSPACE.NAME' | translate"
           [pTooltip]="'WORKSPACE.TOOLTIPS.NAME' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"
@@ -52,10 +53,11 @@
           <input
             pInputText
             type="text"
-            readonly
             id="ws_detail_intern_item_creation-date"
             class="w-full pt-3 pb-2 text-responsive"
+            [disabled]="true"
             [value]="workspace.creationDate | date: dateFormat"
+            [attr.aria-label]="'WORKSPACE.CREATION_DATE' | translate"
             [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_DATE' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
@@ -69,10 +71,11 @@
           <input
             pInputText
             type="text"
-            readonly
             id="ws_detail_intern_item_creation-user"
             class="w-full pt-3 pb-2 text-responsive"
+            [disabled]="true"
             [value]="workspace.creationUser"
+            [attr.aria-label]="'WORKSPACE.CREATION_USER' | translate"
             [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_USER' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
@@ -88,10 +91,11 @@
           <input
             pInputText
             type="text"
-            readonly
             id="ws_detail_intern_item_modification-date"
             class="w-full pt-3 pb-2 text-responsive"
+            [disabled]="true"
             [value]="workspace.modificationDate | date: dateFormat"
+            [attr.aria-label]="'WORKSPACE.MODIFICATION_DATE' | translate"
             [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_DATE' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
@@ -105,10 +109,11 @@
           <input
             pInputText
             type="text"
-            readonly
             id="ws_detail_intern_item_modification-user"
             class="w-full pt-3 pb-2 text-responsive"
+            [disabled]="true"
             [value]="workspace.modificationUser"
+            [attr.aria-label]="'WORKSPACE.MODIFICATION_USER' | translate"
             [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_USER' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
