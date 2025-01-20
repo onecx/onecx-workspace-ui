@@ -61,7 +61,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     this.themeProductRegistered$ = workspaceService.doesUrlExistFor('onecx-theme', 'onecx-theme-ui', 'theme-detail')
 
     this.formGroup = new FormGroup({
-      disabled: new FormControl(null),
+      disabled: new FormControl(false),
       displayName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(100)]),
       theme: new FormControl(null),
       baseUrl: new FormControl(null, [Validators.required, Validators.minLength(1), Validators.pattern('^/.*')]),
@@ -84,7 +84,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       this.fillForm()
       if (this.editMode) this.formGroup.enable()
       else this.formGroup.disable()
-      this.formGroup.controls['disabled'].disable()
       // if a home page value exists then fill it into drop down list for displaying
       if (this.workspace.homePage) this.productPaths$ = of([this.workspace.homePage])
     } else {

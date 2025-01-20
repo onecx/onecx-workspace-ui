@@ -488,7 +488,7 @@
     },
     "DATAVIEW": {
       "FILTER": "Filter",
-      "FILTER_TOOLTIP": "Applikationen filtern",
+      "PRODUCT_FILTER_TOOLTIP": "Filtern nach Applikation und Klassifikation",
       "FILTER_BY": "Filter für ",
       "FILTER_CLEAR": "Filter entfernen",
       "FILTER_PLACEHOLDER": "Filter",

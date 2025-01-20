@@ -94,7 +94,8 @@
               (keyup)="options.filter(getFilterValue($event))"
               type="text"
               [placeholder]="'DIALOG.DATAVIEW.FILTER' | translate"
-              [pTooltip]="'DIALOG.DATAVIEW.FILTER_TOOLTIP' | translate"
+              [attr.aria-label]="'DIALOG.DATAVIEW.FILTER' | translate"
+              [pTooltip]="'DIALOG.DATAVIEW.PRODUCT_FILTER_TOOLTIP' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
             />
@@ -137,7 +138,8 @@
               (keyup)="options.filter(getFilterValue($event))"
               type="text"
               [placeholder]="'DIALOG.DATAVIEW.FILTER' | translate"
-              [pTooltip]="'DIALOG.DATAVIEW.FILTER_TOOLTIP' | translate"
+              [attr.aria-label]="'DIALOG.DATAVIEW.FILTER' | translate"
+              [pTooltip]="'DIALOG.DATAVIEW.PRODUCT_FILTER_TOOLTIP' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
             />
@@ -189,7 +191,7 @@
                 class="tile-view-mandatory sm:font-semibold text-sm lg:text-md"
                 [class.danger-action-text]="product?.undeployed || product?.changedComponents"
               >
-                {{ product.displayName }}
+                {{ product.displayName ?? product.productName }}
               </div>
               <div
                 [id]="'ws_products_picklist_' + product.productName + '_product_name'"
@@ -295,7 +297,7 @@
             class="w-full text-responsive"
             id="ws_products_detail_baseurl"
             formControlName="baseUrl"
-            [readonly]="displayedDetailItem.bucket === 'SOURCE'"
+            [attr.aria-label]="'PRODUCT.BASE_URL' | translate"
             [pTooltip]="'PRODUCT.BASE_URL.TOOLTIP' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
@@ -356,6 +358,7 @@
                       class="w-full text-responsive"
                       [id]="'ws_products_detail_mfe_' + i + '_base_path'"
                       formControlName="basePath"
+                      [attr.aria-label]="'PRODUCT.MFE.BASE_PATH' | translate"
                       [pTooltip]="'PRODUCT.MFE.BASE_PATH.TOOLTIP' | translate"
                       tooltipPosition="top"
                       tooltipEvent="hover"

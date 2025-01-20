@@ -4,9 +4,9 @@
 @include danger-action;
 @include displaying-text-responsive;
 @include readable-disabled-components;
+@include correct-data-view-control;
 @include correct-select-button;
 @include search-criteria-select-button-slim;
-@include correct-data-view-control;
 @include table-inline-buttons;
 
 :host ::ng-deep {

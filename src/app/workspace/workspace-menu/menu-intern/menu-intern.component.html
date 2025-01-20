@@ -5,10 +5,11 @@
         <input
           pInputText
           type="text"
-          readonly
           id="ws_menu_intern_field_creationDate"
           class="w-full pt-3 pb-2 text-responsive"
           [value]="menuItem?.creationDate | date: dateFormat"
+          [disabled]="true"
+          [attr.aria-label]="'INTERNAL.CREATION_DATE' | translate"
           [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_DATE' | translate"
           tooltipPosition="top"
           tooltipEvent="focus"
@@ -25,6 +26,8 @@
           id="ws_menu_intern_field_creationUser"
           class="w-full pt-3 pb-2 text-responsive"
           [value]="menuItem?.creationUser"
+          [disabled]="true"
+          [attr.aria-label]="'INTERNAL.CREATION_USER' | translate"
           [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_USER' | translate"
           tooltipPosition="top"
           tooltipEvent="focus"
@@ -40,10 +43,11 @@
         <input
           pInputText
           type="text"
-          readonly
           id="ws_menu_intern_field_modificationDate"
           class="w-full pt-3 pb-2 text-responsive"
           [value]="menuItem?.modificationDate | date: dateFormat"
+          [disabled]="true"
+          [attr.aria-label]="'INTERNAL.MODIFICATION_DATE' | translate"
           [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_DATE' | translate"
           tooltipPosition="top"
           tooltipEvent="focus"
@@ -57,10 +61,11 @@
         <input
           pInputText
           type="text"
-          readonly
           id="ws_menu_intern_field_modificationUser"
           class="w-full pt-3 pb-2 text-responsive"
           [value]="menuItem?.modificationUser"
+          [disabled]="true"
+          [attr.aria-label]="'INTERNAL.MODIFICATION_USER' | translate"
           [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_USER' | translate"
           tooltipPosition="top"
           tooltipEvent="focus"
