@@ -383,6 +383,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     this.formGroup.controls['baseUrl'].setValue(this.displayedDetailItem.baseUrl)
     // build a dynamic form array for all microfrontend modules for a TARGET product
     if (item.bucket === 'TARGET') {
+      this.formGroup.controls['baseUrl'].enable()
       const modules = this.formGroup.get('modules') as FormArray
       while (modules.length > 0) modules.removeAt(0) // clear form
       if (this.displayedDetailItem.microfrontends) {
@@ -392,6 +393,8 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
         this.prepareFormForModulesAndComponents(this.displayedDetailItem, modules)
       }
     }
+    if (item.bucket === 'SOURCE') this.formGroup.controls['baseUrl'].disable()
+
     this.displayDetails = true
   }
   private prepareFormForModulesAndComponents(item: ExtendedProduct, modules: FormArray): void {
