@@ -488,7 +488,7 @@
     },
     "DATAVIEW": {
       "FILTER": "Filter",
-      "FILTER_TOOLTIP": "Filter Applications",
+      "PRODUCT_FILTER_TOOLTIP": "Filter by Application and Classification",
       "FILTER_BY": "Filter by ",
       "FILTER_CLEAR": "Clear Filter",
       "FILTER_PLACEHOLDER": "Filter",

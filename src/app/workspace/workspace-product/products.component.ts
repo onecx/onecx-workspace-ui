@@ -301,14 +301,18 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     this.displayedDetailItem = undefined
   }
   public onSourceViewModeChange(ev: { icon: string; mode: string }): void {
-    this.sourceListViewMode = this.viewingModes.find((v) => v.mode === ev.mode)
-    if (ev.mode === 'grid') this.renderer.addClass(this.sourceList, 'tile-view')
-    if (ev.mode === 'list') this.renderer.removeClass(this.sourceList, 'tile-view')
+    if (ev) {
+      this.sourceListViewMode = this.viewingModes.find((v) => v.mode === ev.mode)
+      if (ev.mode === 'grid') this.renderer.addClass(this.sourceList, 'tile-view')
+      if (ev.mode === 'list') this.renderer.removeClass(this.sourceList, 'tile-view')
+    }
   }
   public onTargetViewModeChange(ev: { icon: string; mode: string }): void {
-    this.targetListViewMode = this.viewingModes.find((v) => v.mode === ev.mode)
-    if (ev.mode === 'grid') this.renderer.addClass(this.targetList, 'tile-view')
-    if (ev.mode === 'list') this.renderer.removeClass(this.targetList, 'tile-view')
+    if (ev) {
+      this.targetListViewMode = this.viewingModes.find((v) => v.mode === ev.mode)
+      if (ev.mode === 'grid') this.renderer.addClass(this.targetList, 'tile-view')
+      if (ev.mode === 'list') this.renderer.removeClass(this.targetList, 'tile-view')
+    }
   }
 
   /**

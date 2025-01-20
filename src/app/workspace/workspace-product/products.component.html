@@ -95,7 +95,7 @@
               type="text"
               [placeholder]="'DIALOG.DATAVIEW.FILTER' | translate"
               [attr.aria-label]="'DIALOG.DATAVIEW.FILTER' | translate"
-              [pTooltip]="'DIALOG.DATAVIEW.FILTER_TOOLTIP' | translate"
+              [pTooltip]="'DIALOG.DATAVIEW.PRODUCT_FILTER_TOOLTIP' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
             />
@@ -139,7 +139,7 @@
               type="text"
               [placeholder]="'DIALOG.DATAVIEW.FILTER' | translate"
               [attr.aria-label]="'DIALOG.DATAVIEW.FILTER' | translate"
-              [pTooltip]="'DIALOG.DATAVIEW.FILTER_TOOLTIP' | translate"
+              [pTooltip]="'DIALOG.DATAVIEW.PRODUCT_FILTER_TOOLTIP' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
             />
@@ -191,7 +191,7 @@
                 class="tile-view-mandatory sm:font-semibold text-sm lg:text-md"
                 [class.danger-action-text]="product?.undeployed || product?.changedComponents"
               >
-                {{ product.displayName }}
+                {{ product.displayName ?? product.productName }}
               </div>
               <div
                 [id]="'ws_products_picklist_' + product.productName + '_product_name'"
