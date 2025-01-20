@@ -75,7 +75,7 @@ export class OneCXListWorkspacesUsingProductComponent implements ocxRemoteCompon
   }
 
   ngOnChanges(): void {
-    this.findWorkspacesUsingProduct()
+    if (this.productName) this.findWorkspacesUsingProduct()
   }
 
   private findWorkspacesUsingProduct() {

@@ -49,7 +49,7 @@ import { environment } from 'src/environments/environment'
 })
 @UntilDestroy()
 export class OneCXListWorkspacesUsingThemeComponent implements ocxRemoteComponent, ocxRemoteWebcomponent, OnChanges {
-  @Input() themeName = ''
+  @Input() themeName: string | undefined = undefined
   public workspacesUsingTheme: Observable<string[]> | undefined
 
   constructor(
@@ -73,7 +73,7 @@ export class OneCXListWorkspacesUsingThemeComponent implements ocxRemoteComponen
   }
 
   ngOnChanges(): void {
-    this.findWorkspacesUsingTheme()
+    if (this.themeName) this.findWorkspacesUsingTheme()
   }
 
   public findWorkspacesUsingTheme() {
