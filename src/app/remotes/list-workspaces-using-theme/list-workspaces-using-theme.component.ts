@@ -1,9 +1,12 @@
+import { Component, EventEmitter, Inject, Input, OnChanges } from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { Component, Inject, Input, OnChanges } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy } from '@ngneat/until-destroy'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
+import { catchError, map, Observable, of, ReplaySubject } from 'rxjs'
+import { PanelMenuModule } from 'primeng/panelmenu'
+
 import {
   AngularRemoteComponentsModule,
   BASE_URL,
@@ -13,8 +16,7 @@ import {
   provideTranslateServiceForRoot
 } from '@onecx/angular-remote-components'
 import { PortalCoreModule, UserService, createRemoteComponentTranslateLoader } from '@onecx/portal-integration-angular'
-import { PanelMenuModule } from 'primeng/panelmenu'
-import { catchError, map, Observable, of, ReplaySubject } from 'rxjs'
+
 import { Configuration, SearchWorkspacesResponse, WorkspaceAPIService } from 'src/app/shared/generated'
 import { SharedModule } from 'src/app/shared/shared.module'
 import { environment } from 'src/environments/environment'
@@ -50,6 +52,8 @@ import { environment } from 'src/environments/environment'
 @UntilDestroy()
 export class OneCXListWorkspacesUsingThemeComponent implements ocxRemoteComponent, ocxRemoteWebcomponent, OnChanges {
   @Input() themeName: string | undefined = undefined
+  @Input() workspaceList = new EventEmitter<string[]>()
+
   public workspacesUsingTheme: Observable<string[]> | undefined
 
   constructor(
@@ -91,6 +95,7 @@ export class OneCXListWorkspacesUsingThemeComponent implements ocxRemoteComponen
               workspaces.push(ws.displayName)
             })
           }
+          this.workspaceList.emit(workspaces)
           return workspaces
         })
       )
