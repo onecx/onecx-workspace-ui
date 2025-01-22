@@ -178,11 +178,12 @@ describe('WorkspaceDetailComponent', () => {
         next: () => {
           done()
         },
-        error: done.fail
+        error: () => {
+          expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + errorResponse.status + '.WORKSPACE')
+          expect(console.error).toHaveBeenCalledWith('getWorkspaceByName', errorResponse)
+          done.fail
+        }
       })
-
-      expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + errorResponse.status + '.WORKSPACE')
-      expect(console.error).toHaveBeenCalledWith('getWorkspaceByName', errorResponse)
     })
   })
 

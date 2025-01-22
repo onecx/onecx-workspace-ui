@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { Location } from '@angular/common'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { ActivatedRoute, provideRouter, Router } from '@angular/router'
+import { ActivatedRoute, ActivatedRouteSnapshot, provideRouter, Router } from '@angular/router'
 import { of, throwError } from 'rxjs'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 
@@ -17,8 +17,12 @@ describe('WorkspaceSearchComponent', () => {
   let component: WorkspaceSearchComponent
   let fixture: ComponentFixture<WorkspaceSearchComponent>
 
-  let mockActivatedRoute: ActivatedRoute
   const mockRouter = { navigate: jasmine.createSpy('navigate') }
+  const mockActivatedRouteSnapshot: Partial<ActivatedRouteSnapshot> = { params: { id: 'mockId' } }
+  const mockActivatedRoute: Partial<ActivatedRoute> = {
+    snapshot: mockActivatedRouteSnapshot as ActivatedRouteSnapshot
+  }
+
   const accSpy = {
     getLocation: jasmine.createSpy('getLocation').and.returnValue({ deploymentPath: '/path' })
   }
@@ -49,6 +53,12 @@ describe('WorkspaceSearchComponent', () => {
         { provide: Accelerator.getLocation, useValue: accSpy.getLocation }
       ]
     }).compileComponents()
+    // to spy data: reset
+    msgServiceSpy.info.calls.reset()
+    msgServiceSpy.error.calls.reset()
+    wApiServiceSpy.searchWorkspaces.calls.reset()
+    // to spy data: refill with neutral data
+    wApiServiceSpy.searchWorkspaces.and.returnValue(of({}))
   }))
 
   beforeEach(() => {
@@ -56,12 +66,6 @@ describe('WorkspaceSearchComponent', () => {
     accSpy.getLocation()
     component = fixture.componentInstance
     fixture.detectChanges()
-    // to spy data: reset
-    msgServiceSpy.info.calls.reset()
-    msgServiceSpy.error.calls.reset()
-    wApiServiceSpy.searchWorkspaces.calls.reset()
-    // to spy data: refill with neutral data
-    wApiServiceSpy.searchWorkspaces.and.returnValue(of({}))
   })
 
   describe('initialize', () => {
