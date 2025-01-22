@@ -158,14 +158,6 @@ describe('MenuComponent', () => {
         { provide: UserService, useValue: mockUserService }
       ]
     }).compileComponents()
-  }))
-
-  beforeEach(() => {
-    stateServiceSpy.getState.and.returnValue(state)
-    fixture = TestBed.createComponent(MenuComponent)
-    component = fixture.componentInstance
-    component.workspace = workspace
-    fixture.detectChanges()
     // to spy data: reset
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
@@ -185,6 +177,14 @@ describe('MenuComponent', () => {
     menuApiServiceSpy.getMenuStructure.and.returnValue(of({}))
     wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({}))
     assgmtApiServiceSpy.searchAssignments.and.returnValue(of({}))
+  }))
+
+  beforeEach(() => {
+    stateServiceSpy.getState.and.returnValue(state)
+    fixture = TestBed.createComponent(MenuComponent)
+    component = fixture.componentInstance
+    component.workspace = workspace
+    fixture.detectChanges()
   })
 
   describe('Initialize:', () => {

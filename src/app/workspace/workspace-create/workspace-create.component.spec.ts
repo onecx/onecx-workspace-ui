@@ -46,11 +46,7 @@ describe('WorkspaceCreateComponent', () => {
     searchAvailableProducts: jasmine.createSpy('searchAvailableProducts').and.returnValue(of({}))
   }
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'info', 'error'])
-  const mockActivatedRouteSnapshot: Partial<ActivatedRouteSnapshot> = {
-    params: {
-      id: 'mockId'
-    }
-  }
+  const mockActivatedRouteSnapshot: Partial<ActivatedRouteSnapshot> = { params: { id: 'mockId' } }
   const mockActivatedRoute: Partial<ActivatedRoute> = {
     snapshot: mockActivatedRouteSnapshot as ActivatedRouteSnapshot
   }

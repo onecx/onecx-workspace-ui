@@ -3,13 +3,13 @@ import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { TranslateTestingModule } from 'ngx-translate-testing'
-
 import { BehaviorSubject, of, throwError } from 'rxjs'
 
 import { PortalMessageService, UserService } from '@onecx/portal-integration-angular'
+
 import { SlotAPIService } from 'src/app/shared/generated'
-import { WorkspaceSlotDetailComponent } from './workspace-slot-detail.component'
 import { CombinedSlot, ExtendedComponent } from '../workspace-slots/workspace-slots.component'
+import { WorkspaceSlotDetailComponent } from './workspace-slot-detail.component'
 
 describe('WorkspaceSlotDetailComponent', () => {
   let component: WorkspaceSlotDetailComponent
