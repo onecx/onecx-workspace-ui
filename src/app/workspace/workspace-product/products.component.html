@@ -295,6 +295,22 @@
             pInputText
             type="text"
             class="w-full text-responsive"
+            id="ws_products_detail_display_name"
+            formControlName="displayName"
+            [attr.aria-label]="'PRODUCT.DISPLAY_NAME' | translate"
+            [pTooltip]="'PRODUCT.DISPLAY_NAME.TOOLTIP' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          />
+          <label class="ocx-required-label" for="ws_products_detail_display_name">
+            {{ 'PRODUCT.DISPLAY_NAME' | translate }}</label
+          >
+        </span>
+        <span class="p-float-label" controlErrorAnchor>
+          <input
+            pInputText
+            type="text"
+            class="w-full text-responsive"
             id="ws_products_detail_baseurl"
             formControlName="baseUrl"
             [attr.aria-label]="'PRODUCT.BASE_URL' | translate"

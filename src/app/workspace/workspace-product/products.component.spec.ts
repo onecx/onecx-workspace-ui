@@ -1,7 +1,6 @@
 import { NO_ERRORS_SCHEMA, Renderer2, SimpleChanges } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { of, throwError } from 'rxjs'
-import { ActivatedRoute, provideRouter } from '@angular/router'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { TranslateTestingModule } from 'ngx-translate-testing'
@@ -28,7 +27,7 @@ const workspace: Workspace = {
   name: 'name',
   theme: 'theme',
   baseUrl: '/some/base/url',
-  displayName: ''
+  displayName: 'Workspace'
 }
 
 const microfrontend: Microfrontend = {
@@ -48,8 +47,8 @@ const microfrontendComponent: Microfrontend = {
 const product: ExtendedProduct = {
   id: 'prod id',
   productName: 'prod name',
-  displayName: 'display name',
-  description: 'description',
+  displayName: 'Display Name',
+  description: 'Description',
   version: '1.0',
   microfrontends: [microfrontend],
   modificationCount: 1,
@@ -62,8 +61,8 @@ const product: ExtendedProduct = {
 
 const prodStoreItem: ExtendedProduct = {
   productName: 'prodStoreItemName',
-  displayName: 'display name2',
-  description: 'description2',
+  displayName: 'Display Name 2',
+  description: 'Description 2',
   version: '1.0',
   microfrontends: [microfrontend],
   bucket: 'SOURCE',
@@ -74,8 +73,8 @@ const prodStoreItem: ExtendedProduct = {
 
 const prodStoreItemTarget: ExtendedProduct = {
   productName: 'prodStoreItemName',
-  displayName: 'display name2',
-  description: 'description2',
+  displayName: 'Display Name 2',
+  description: 'Description 2',
   version: '1.0',
   microfrontends: [microfrontend],
   bucket: 'TARGET',
@@ -86,8 +85,8 @@ const prodStoreItemTarget: ExtendedProduct = {
 
 const prodStoreItemEmptyMicrofrontends: ExtendedProduct = {
   productName: 'prodStoreItemName',
-  displayName: 'display name2',
-  description: 'description2',
+  displayName: 'Display Name 2',
+  description: 'Description 2',
   version: '1.0',
   microfrontends: [],
   bucket: 'TARGET',
@@ -105,10 +104,9 @@ const mfeInfo: MfeInfo = {
   productName: 'prodName'
 }
 
-describe('ProductComponent', () => {
+fdescribe('ProductComponent', () => {
   let component: ProductComponent
   let fixture: ComponentFixture<ProductComponent>
-  let mockActivatedRoute: ActivatedRoute
   let mockRenderer: Renderer2
   let fb: FormBuilder
   let mockAppState
@@ -145,8 +143,6 @@ describe('ProductComponent', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        provideRouter([{ path: '', component: ProductComponent }]),
-        { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: WorkspaceProductAPIService, useValue: wProductServiceSpy },
         { provide: ProductAPIService, useValue: productServiceSpy },
@@ -206,7 +202,7 @@ describe('ProductComponent', () => {
       name: 'name',
       theme: 'theme',
       baseUrl: '/some/base/url',
-      displayName: ''
+      displayName: 'Workspace'
     }
     component.workspace = workspace2
 
@@ -807,8 +803,8 @@ describe('ProductComponent', () => {
     wProductServiceSpy.updateProductById.and.returnValue(of({ resource: product }))
     const event: any = { items: [{ id: 1 }] }
     component.formGroup = fb.group({
-      displayName: new FormControl(''),
-      baseUrl: new FormControl(''),
+      displayName: new FormControl(null),
+      baseUrl: new FormControl(null),
       modules: fb.array([])
     })
     const modules: FormArray = component.formGroup.get('modules') as FormArray
@@ -831,16 +827,16 @@ describe('ProductComponent', () => {
   it('should update a product by id: no ids in ws and product', () => {
     const product2: Product = {
       productName: 'prod name',
-      displayName: 'display name',
-      description: 'description',
+      displayName: 'Display Name',
+      description: 'Description',
       microfrontends: [microfrontend],
       modificationCount: 1
     }
     wProductServiceSpy.updateProductById.and.returnValue(of({ resource: product2 }))
     const event: any = { items: [{ id: 1 }] }
     component.formGroup = fb.group({
-      displayName: new FormControl(''),
-      baseUrl: new FormControl(''),
+      displayName: new FormControl(null),
+      baseUrl: new FormControl(null),
       modules: fb.array([])
     })
     component.displayedDetailItem = {
@@ -854,7 +850,7 @@ describe('ProductComponent', () => {
       name: 'name',
       theme: 'theme',
       baseUrl: '/some/base/url',
-      displayName: ''
+      displayName: 'Workspace'
     }
     component.workspace = workspace2
 

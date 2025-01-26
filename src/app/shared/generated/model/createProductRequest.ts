@@ -15,6 +15,7 @@ import { CreateSlot } from './createSlot';
 
 export interface CreateProductRequest { 
     productName: string;
+    displayName?: string;
     baseUrl: string;
     microfrontends?: Array<CreateUpdateMicrofrontend>;
     slots?: Array<CreateSlot>;

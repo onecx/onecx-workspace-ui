@@ -339,6 +339,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
         next: (data) => {
           const item = data as ExtendedProduct
           item.bucket = wProduct.bucket
+          item.displayName = item.displayName ?? wProduct.displayName
           item.microfrontends?.sort(this.sortMfesByAppId)
           this.prepareWProduct(item)
           this.fillForm(item)
@@ -387,7 +388,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     this.formGroup.controls['baseUrl'].setValue(this.displayedDetailItem.baseUrl)
     // build a dynamic form array for all microfrontend modules for a TARGET product
     if (item.bucket === 'TARGET') {
-      this.formGroup.controls['baseUrl'].enable()
+      this.formGroup.enable()
       const modules = this.formGroup.get('modules') as FormArray
       while (modules.length > 0) modules.removeAt(0) // clear form
       if (this.displayedDetailItem.microfrontends) {
@@ -397,7 +398,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
         this.prepareFormForModulesAndComponents(this.displayedDetailItem, modules)
       }
     }
-    if (item.bucket === 'SOURCE') this.formGroup.controls['baseUrl'].disable()
+    if (item.bucket === 'SOURCE') this.formGroup.disable()
 
     this.displayDetails = true
   }
@@ -454,6 +455,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   public onProductSave(ev: any): void {
     this.editMode = false
     if (this.formGroup.valid && this.displayedDetailItem) {
+      this.displayedDetailItem.displayName = this.formGroup.controls['displayName'].value
       this.displayedDetailItem.baseUrl = this.formGroup.controls['baseUrl'].value
       this.displayedDetailItem.microfrontends = [] // clear
       const modules = this.formGroup.get('modules') as FormArray
@@ -467,6 +469,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
           updateProductRequest: {
             modificationCount: this.displayedDetailItem.modificationCount,
             baseUrl: this.displayedDetailItem.baseUrl,
+            displayName: this.displayedDetailItem.displayName,
             microfrontends: this.displayedDetailItem.microfrontends?.map((m) => ({
               appId: m.appId,
               basePath: m.basePath
@@ -517,6 +520,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
             createProductRequest: {
               productName: p.productName,
               baseUrl: p.baseUrl,
+              displayName: p.displayName,
               microfrontends: this.prepareMfePaths(mfes),
               slots: p.slots
                 ? p.slots.filter((s: SlotPS) => !s.undeployed).map((s: SlotPS) => ({ name: s.name }) as CreateSlot)
