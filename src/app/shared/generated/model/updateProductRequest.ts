@@ -14,6 +14,7 @@ import { CreateUpdateMicrofrontend } from './createUpdateMicrofrontend';
 
 export interface UpdateProductRequest { 
     modificationCount: number;
+    displayName?: string;
     baseUrl: string;
     microfrontends?: Array<CreateUpdateMicrofrontend>;
 }
