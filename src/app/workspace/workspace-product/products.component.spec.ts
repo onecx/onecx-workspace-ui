@@ -466,6 +466,14 @@ describe('ProductComponent', () => {
    */
   describe('save product', () => {
     it('should update a product - successful', () => {
+      // load data
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([productItem]))
+      productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [prodStoreItem] }))
+      const changes = {
+        ['workspace']: { previousValue: 'ws0', currentValue: 'ws1', firstChange: true }
+      }
+      component.ngOnChanges(changes as unknown as SimpleChanges)
+      // let's go
       wProductServiceSpy.updateProductById.and.returnValue(of({ resource: productItem }))
       component.formGroup = productFormGroup
       const modules: FormArray = component.formGroup.get('modules') as FormArray

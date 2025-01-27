@@ -6,6 +6,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { of } from 'rxjs'
 
 import { AppStateService, createTranslateLoader } from '@onecx/portal-integration-angular'
+
 import { WorkspaceAPIService } from 'src/app/shared/generated'
 import { PreviewComponent } from './preview.component'
 
