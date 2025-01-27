@@ -439,7 +439,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
 
   private getProductStoreMfeData(item: ExtendedProduct, appId: string): ExtendedMicrofrontend | undefined {
     let module: ExtendedMicrofrontend | undefined
-    if (item.apps && item.apps.has(appId)) {
+    if (item.apps?.has(appId)) {
       const a = item.apps.get(appId)
       module = a?.modules ? a.modules[0] : undefined
     }
