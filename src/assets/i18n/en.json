@@ -506,8 +506,8 @@
     }
   },
   "PRODUCT": {
-    "DISPLAY_NAME": "Application",
-    "DISPLAY_NAME.TOOLTIP": "Displayed name of the Application",
+    "DISPLAY_NAME": "Application Display Name",
+    "DISPLAY_NAME.TOOLTIP": "The display name is used when pages of the application are accessed and thus appears in the browser history.",
     "DESCRIPTION": "Description",
     "BASE_URL": "Application Base Path",
     "BASE_URL.TOOLTIP": "Base path for all Modules in the Application. Must be unique for all Applications in the Workspace.",

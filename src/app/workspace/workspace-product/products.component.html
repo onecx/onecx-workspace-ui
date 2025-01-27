@@ -221,7 +221,7 @@
            Displaying of some meta data: origin (workspace/products store), logo, state
       -->
     <div class="mb-3 w-full flex flex-row flex-wrap gap-2 justify-content-between align-items-start">
-      <div class="flex flex-column">
+      <div class="flex flex-column cursor-default">
         <div class="font-semibold text-primary text-xl">{{ displayedDetailItem.displayName }}</div>
         <div class="flex flex-row column-gap-3">
           <div class="flex flex-column">
@@ -285,10 +285,10 @@
     </div>
 
     <!-- 
-           Product Config: Displaying details and Editing access pathes
+          Product Config: Displaying and Editing
       -->
     <form [formGroup]="formGroup">
-      <div class="flex flex-column row-gap-4">
+      <div class="flex flex-column row-gap-4 cursor-default">
         <!-- Editing the product base URL/Path -->
         <span class="p-float-label" controlErrorAnchor>
           <input

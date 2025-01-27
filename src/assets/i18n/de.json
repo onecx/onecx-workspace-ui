@@ -506,9 +506,9 @@
     }
   },
   "PRODUCT": {
-    "DISPLAY_NAME": "Applikation",
-    "DISPLAY_NAME.TOOLTIP": "Name der Applikation",
-    "DESCRIPTION": "Description",
+    "DISPLAY_NAME": "Anzeigename",
+    "DISPLAY_NAME.TOOLTIP": "Der Angezeigename wird benutzt, wenn Seiten der Applikation aufgerufen werden und erscheint damit im Browserverlauf.",
+    "DESCRIPTION": "Beschreibung",
     "BASE_URL": "Application Base Path",
     "BASE_URL.TOOLTIP": "Basispfad für alle Module der Applikation. Muss eindeutig sein über alle Applikationen im Workspace.",
     "MFE": {
