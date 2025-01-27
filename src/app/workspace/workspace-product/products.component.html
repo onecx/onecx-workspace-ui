@@ -516,7 +516,7 @@
           *ngIf="hasRegisterPermission && displayedDetailItem.bucket === 'TARGET' && formGroup.valid"
           id="ws_products_detail_action_save"
           icon="pi pi-save"
-          (onClick)="onProductSave($event)"
+          (onClick)="onProductSave()"
           [label]="'ACTIONS.SAVE' | translate"
           [ariaLabel]="'ACTIONS.SAVE' | translate"
           [pTooltip]="'ACTIONS.TOOLTIPS.SAVE' | translate"
