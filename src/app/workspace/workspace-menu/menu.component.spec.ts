@@ -301,13 +301,33 @@ describe('MenuComponent', () => {
       expect(component.loadMenu).toHaveBeenCalledWith(true)
     })
 
+    it('should prevent data loading during loading', () => {
+      spyOn(component, 'loadMenu')
+      component.loading = true
+
+      component.onReload()
+
+      expect(component.loadMenu).not.toHaveBeenCalled()
+    })
+
     it('should change the tree table content: display of roles', () => {
-      component.displayRoles = false
+      spyOn(component, 'onResetRoleFilter')
       const event = { checked: true }
 
       component.onToggleTreeTableContent(event)
 
       expect(component.displayRoles).toBeTrue()
+      expect(component.onResetRoleFilter).not.toHaveBeenCalled()
+    })
+
+    it('should change the tree table content: display of roles', () => {
+      spyOn(component, 'onResetRoleFilter')
+      const event = { checked: false }
+
+      component.onToggleTreeTableContent(event)
+
+      expect(component.displayRoles).toBeFalse()
+      expect(component.onResetRoleFilter).toHaveBeenCalled()
     })
 
     it('should return true if an object is empty', () => {
@@ -696,6 +716,7 @@ describe('MenuComponent', () => {
       apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
       menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
       component.workspaceName = 'workspace-name'
+      component.wRoles = [{ name: 'role1' }]
 
       component.loadData()
 
