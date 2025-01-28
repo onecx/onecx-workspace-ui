@@ -116,7 +116,7 @@
     >
       <div class="my-1 mx-2 max-h-10rem overflow-auto">
         <ng-container *ngIf="workspaceProducts.length === 0" id="ws_import_preview_products_not_exist">
-          {{ 'PRODUCTS.MESSAGES.NOTHING_REGISTERED' | translate }}
+          {{ 'DIALOG.PRODUCTS.MESSAGES.NOTHING_REGISTERED' | translate }}
         </ng-container>
         <ng-container *ngIf="workspaceProducts.length > 0" id="ws_import_preview_products">
           {{ workspaceProducts.sort(sortByLocale).join(', ') }}

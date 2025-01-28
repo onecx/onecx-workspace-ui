@@ -553,6 +553,7 @@
     "SYNCHRONIZE_PERMISSIONS": "Berechtigungen synchronisieren",
     "INVALID_FILE": "Ungültige Datei",
     "RESPONSE.CREATED": "Der Workspace wurde erfolgreich erstellt.",
+    "RESPONSE.SKIPPED": "Der Workspace wurde beim Import ignoriert.",
     "RESPONSE.UPDATED": "Der Workspace wurde erfolgreich geändert.",
     "RESPONSE.ERROR": "Ein Fehler ist aufgetreten. Der Workspace konnte nicht erstellt/aktualisiert werden.",
     "INVALID_IMPORT_FILE": "Die Workspace Import-Datei ist nicht gültig.",
