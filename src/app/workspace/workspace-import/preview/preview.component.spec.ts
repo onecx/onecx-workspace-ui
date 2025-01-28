@@ -30,7 +30,7 @@ const importDTO: any = {
   }
 }
 
-fdescribe('PreviewComponent', () => {
+describe('PreviewComponent', () => {
   let component: PreviewComponent
   let fixture: ComponentFixture<PreviewComponent>
 
@@ -110,43 +110,7 @@ fdescribe('PreviewComponent', () => {
     })
   })
 
-  describe('construction - nok', () => {
-    it('should create - form invalid, no menu items', () => {
-      const formValue_2 = {
-        name: 'ADMIN2',
-        displayName: 'Admin 2',
-        theme: 'default',
-        baseUrl: '/' // too short
-      }
-      const importDTO_2: any = {
-        id: 'uuid',
-        created: '2025-01-07T06:20:55.581276Z',
-        workspaces: {
-          ADMIN2: {
-            ...formValue_2,
-            homePage: '/welcome',
-            menuItems: []
-          }
-        }
-      }
-      component.importRequestDTO = importDTO_2
-      component.ngOnInit()
-
-      expect(component).toBeTruthy()
-      // init component values
-      expect(component.workspaceName).toEqual(importDTO_2.workspaces.ADMIN2.name)
-      expect(component.displayName).toEqual(importDTO_2.workspaces.ADMIN2.displayName)
-      expect(component.themeName).toEqual(importDTO_2.workspaces.ADMIN2.theme)
-      expect(component.baseUrl).toEqual(importDTO_2.workspaces.ADMIN2.baseUrl)
-      // complex data
-      expect(component.menuItems.length).toBe(0)
-      expect(component.workspaceRoles.length).toBe(0)
-      expect(component.workspaceProducts.length).toBe(0)
-      // init form
-      expect(component.formGroup.value).toEqual(formValue_2)
-      expect(component.formGroup.valid).toBeFalse()
-    })
-
+  describe('different import data', () => {
     it('should create - form invalid, no menu items', () => {
       const formValue_2 = {
         name: 'ADMIN2',
@@ -183,98 +147,4 @@ fdescribe('PreviewComponent', () => {
       expect(component.formGroup.valid).toBeFalse()
     })
   })
-
-  /*
-  it('should set workspaceName correctly', () => {
-    component.formGroup.controls['name'].setValue('workspace')
-
-    component.onModelChange()
-    expect(component.workspaceName).toEqual('workspace')
-  })
-
-  it('should change values onModelChange', () => {
-    component.formGroup.controls['name'].setValue('newName')
-    component.formGroup.controls['theme'].setValue('new theme')
-
-    component.onModelChange()
-    expect(component.themeName).toEqual('new theme')
-    if (component.importRequestDTO.workspaces?.['newName'].name) {
-      expect(component.workspaceName).toEqual(component.importRequestDTO.workspaces?.['newName'].name)
-    }
-    if (component.importRequestDTO.workspaces?.['newName'].theme) {
-      expect(component.themeName).toEqual(component.importRequestDTO.workspaces?.['newName'].theme)
-    }
-  })
-
-  it('should map menuItems to tree nodes: standard case', () => {
-    component.ngOnInit()
-
-    if (component.importRequestDTO?.workspaces?.['newName'].menu?.menu?.menuItems) {
-      expect(component.menuItems).toContain({
-        label: 'name',
-        expanded: false,
-        key: undefined,
-        leaf: true,
-        children: []
-      })
-    }
-  })
-
-  it('should map menuItems to tree nodes: empty case', () => {
-    if (!component.importRequestDTO) {
-      component.importRequestDTO = {}
-    }
-    if (!component.importRequestDTO.workspaces) {
-      component.importRequestDTO.workspaces = {}
-    }
-    if (!component.importRequestDTO.workspaces['newName']) {
-      component.importRequestDTO.workspaces['newName'] = {}
-    }
-    component.importRequestDTO.workspaces['newName'].menuItems = undefined
-
-    component.ngOnInit()
-
-    expect(component.menuItems).toEqual([])
-  })
-
-  it('should map menuItems to tree nodes: recursion case', () => {
-    if (!component.importRequestDTO) {
-      component.importRequestDTO = {}
-    }
-    if (!component.importRequestDTO.workspaces) {
-      component.importRequestDTO.workspaces = {}
-    }
-    if (!component.importRequestDTO.workspaces['newName']) {
-      component.importRequestDTO.workspaces['newName'] = {}
-    }
-    component.importRequestDTO.workspaces['newName'].menuItems = [
-      {
-        name: 'menu',
-        key: 'key',
-        position: 1,
-        disabled: true,
-        external: true,
-        children: [{ name: 'menu', key: 'key', position: 2, disabled: true, external: true }]
-      }
-    ]
-
-    component.ngOnInit()
-
-    if (component.importRequestDTO?.workspaces?.['newName'].menuItems) {
-      expect(component.menuItems).toContain({
-        label: 'menu',
-        expanded: false,
-        key: 'key',
-        leaf: false,
-        children: [
-          jasmine.objectContaining({
-            label: 'menu',
-            key: 'key',
-            leaf: true
-          })
-        ]
-      })
-    }
-  })
-*/
 })
