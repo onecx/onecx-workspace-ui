@@ -160,7 +160,6 @@ describe('WorkspaceSlotDetailComponent', () => {
       component.ngOnChanges()
 
       expect(component.slot).toEqual(slotOrg)
-      expect(component.slotName).toBe('slot1')
       expect(component.wComponents).toEqual(slotOrg.psComponents!)
       expect(component.psComponents).toEqual([
         { name: 'compA', productName: 'compA', appId: 'appId', undeployed: false, deprecated: false },

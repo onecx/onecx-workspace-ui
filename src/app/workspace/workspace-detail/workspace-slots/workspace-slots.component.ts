@@ -32,7 +32,7 @@ export type CombinedSlot = Slot & {
   undeployed?: boolean
   deprecated?: boolean
   psSlots: PSSlot[]
-  psComponents?: ExtendedComponent[]
+  psComponents: ExtendedComponent[]
 }
 export type ExtendedComponent = SlotComponent & { undeployed?: boolean; deprecated?: boolean }
 

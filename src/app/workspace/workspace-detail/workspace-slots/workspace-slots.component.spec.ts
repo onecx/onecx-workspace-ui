@@ -428,7 +428,8 @@ describe('WorkspaceSlotsComponent', () => {
         new: false,
         bucket: 'TARGET',
         changes: false,
-        psSlots: []
+        psSlots: [],
+        psComponents: []
       }
       component.hasEditPermission = true
 
@@ -447,7 +448,8 @@ describe('WorkspaceSlotsComponent', () => {
         new: false,
         bucket: 'TARGET',
         changes: false,
-        psSlots: []
+        psSlots: [],
+        psComponents: []
       }
       component.hasEditPermission = false
 
@@ -466,7 +468,8 @@ describe('WorkspaceSlotsComponent', () => {
         new: true,
         bucket: 'TARGET',
         changes: false,
-        psSlots: []
+        psSlots: [],
+        psComponents: []
       }
       component.hasEditPermission = true
 
@@ -539,7 +542,8 @@ describe('WorkspaceSlotsComponent', () => {
       new: true,
       bucket: 'TARGET',
       changes: false,
-      psSlots: []
+      psSlots: [],
+      psComponents: []
     }
 
     beforeEach(() => {
@@ -581,7 +585,8 @@ describe('WorkspaceSlotsComponent', () => {
       new: true,
       bucket: 'TARGET',
       changes: false,
-      psSlots: []
+      psSlots: [],
+      psComponents: []
     }
 
     beforeEach(() => {
