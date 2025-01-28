@@ -548,7 +548,7 @@
     "IMPORT_OK": "Die Workspace-Definition wurde geprüft und kann importiert werden.",
     "WORKSPACE_EXISTS_MESSAGE": "Ein Workspace mit diesem Namen existiert bereits. Dessen Definition wird überschrieben.",
     "BASE_URL.TOOLTIP": "Base URL des Workspaces. Muss eindeutig sein weil sie für den Zugriff auf den Workspace benutzt wird. Das wird im nächsten Schritt geprüft.",
-    "BASE_URL_EXISTS_MESSAGE": "Ein Workspace mit dieser Base URL existiert bereits. Eine erneute Verwendung wird wahrscheinlich zu Problemen führen.",
+    "BASE_URL_EXISTS_MESSAGE": "Ein Workspace mit dieser Base URL existiert bereits. Eine erneute Verwendung wird zu Problemen führen.",
     "BASE_URL_MISSING": "Eine Base URL wird benötigt.",
     "SYNCHRONIZE_PERMISSIONS": "Berechtigungen synchronisieren",
     "INVALID_FILE": "Ungültige Datei",

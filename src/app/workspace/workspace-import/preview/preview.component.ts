@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter, OnChanges } from '@angular/core'
+import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { TreeNode, SelectItem } from 'primeng/api'
 import { Observable, map } from 'rxjs'
@@ -11,8 +11,8 @@ import { forceFormValidation, sortByLocale } from 'src/app/shared/utils'
   templateUrl: './preview.component.html',
   styleUrls: ['./preview.component.scss']
 })
-export class PreviewComponent implements OnInit, OnChanges {
-  @Input() public importRequestDTO!: any
+export class PreviewComponent implements OnInit {
+  @Input() public importRequestDTO: any
   @Input() public hasPermission = false
   @Output() public isFormValide = new EventEmitter<boolean>()
 
@@ -30,7 +30,7 @@ export class PreviewComponent implements OnInit, OnChanges {
 
   constructor(private readonly workspaceApi: WorkspaceAPIService) {
     this.formGroup = new FormGroup({
-      workspaceName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
+      name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
       displayName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
       theme: new FormControl(null),
       baseUrl: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(100)])
@@ -39,40 +39,32 @@ export class PreviewComponent implements OnInit, OnChanges {
   }
 
   public ngOnInit(): void {
-    let key: string[] = []
-    if (this.importRequestDTO.workspaces) {
-      key = Object.keys(this.importRequestDTO.workspaces)
-      if (key.length > 0) {
-        this.workspaceName = this.importRequestDTO.workspaces[key[0]].name ?? ''
-        this.displayName = this.importRequestDTO.workspaces[key[0]].displayName ?? ''
-        this.themeName = this.importRequestDTO?.workspaces[key[0]].theme
-          ? this.importRequestDTO?.workspaces[key[0]].theme
-          : (this.formGroup.controls['theme'].value ?? '')
-        this.baseUrl = this.importRequestDTO.workspaces[key[0]].baseUrl ?? ''
-        this.menuItems = this.mapToTreeNodes(this.importRequestDTO.workspaces[key[0]].menuItems)
-        this.workspaceRoles = this.extractRoleNames(this.importRequestDTO.workspaces[key[0]].roles)
-        this.workspaceProducts = this.extractProductNames(this.importRequestDTO.workspaces[key[0]].products)
+    if (this.importRequestDTO?.workspaces) {
+      let keys: string[] = []
+      keys = Object.keys(this.importRequestDTO.workspaces)
+      if (keys.length > 0) {
+        const ws = this.importRequestDTO.workspaces[keys[0]]
+        this.workspaceName = ws.name
+        this.displayName = ws.displayName
+        this.themeName = ws.theme
+        this.baseUrl = ws.baseUrl
+        this.menuItems = this.mapToTreeNodes(ws.menuItems)
+        this.workspaceRoles = this.extractRoleNames(ws.roles)
+        this.workspaceProducts = this.extractProductNames(ws.products)
+        this.fillForm(ws)
+        this.onModelChange()
       }
     }
   }
 
-  public ngOnChanges(): void {
-    this.fillForm()
-    // trigger validation to be up-to-date
-    forceFormValidation(this.formGroup)
-    this.onModelChange()
-  }
-
-  public fillForm(): void {
-    let key: string[] = []
-    if (this.importRequestDTO.workspaces) {
-      key = Object.keys(this.importRequestDTO.workspaces)
-    }
-    if (this.importRequestDTO.workspaces) {
-      this.formGroup.controls['workspaceName'].setValue(this.importRequestDTO?.workspaces[key[0]].name)
-      this.formGroup.controls['displayName'].setValue(this.importRequestDTO?.workspaces[key[0]].displayName)
-      this.formGroup.controls['theme'].setValue(this.importRequestDTO?.workspaces[key[0]].theme)
-      this.formGroup.controls['baseUrl'].setValue(this.importRequestDTO?.workspaces[key[0]].baseUrl)
+  public fillForm(ws: any): void {
+    if (ws) {
+      this.formGroup.controls['name'].setValue(ws.name)
+      this.formGroup.controls['displayName'].setValue(ws.displayName)
+      this.formGroup.controls['theme'].setValue(ws.theme)
+      this.formGroup.controls['baseUrl'].setValue(ws.baseUrl)
+      // trigger validation to be up-to-date
+      forceFormValidation(this.formGroup)
     }
   }
 
@@ -81,16 +73,13 @@ export class PreviewComponent implements OnInit, OnChanges {
     if (this.importRequestDTO.workspaces) {
       const key: string[] = Object.keys(this.importRequestDTO.workspaces)
       // if workspace name was changed then change the also the key:
-      if (key[0] !== this.formGroup.controls['workspaceName'].value) {
+      if (key[0] !== this.formGroup.controls['name'].value) {
         // save the workspace properties to be reassigned on new key
-        const workspaceProps = Object.getOwnPropertyDescriptor(this.importRequestDTO.workspaces, key[0])
-        Object.defineProperty(
-          this.importRequestDTO.workspaces,
-          this.formGroup.controls['workspaceName'].value,
-          workspaceProps ?? {}
-        )
+        const workspace = Object.getOwnPropertyDescriptor(this.importRequestDTO.workspaces, key[0])
+        if (workspace)
+          Object.defineProperty(this.importRequestDTO.workspaces, this.formGroup.controls['name'].value, workspace)
         delete this.importRequestDTO.workspaces[key[0]]
-        this.workspaceName = this.formGroup.controls['workspaceName'].value
+        this.workspaceName = this.formGroup.controls['name'].value
       } else {
         this.workspaceName = key[0]
       }
@@ -134,13 +123,13 @@ export class PreviewComponent implements OnInit, OnChanges {
   }
 
   private extractProductNames(products?: Product[]): string[] {
-    const par: string[] = []
-    if (products) for (const p of products) par.push(p.productName ?? '')
-    return par
+    const arr: string[] = []
+    if (products) for (const p of products) if (p.productName) arr.push(p.productName)
+    return arr
   }
   private extractRoleNames(roles?: any[]): string[] {
-    const par: string[] = []
-    if (roles) for (const r of roles) par.push(r.name ?? '')
-    return par
+    const arr: string[] = []
+    if (roles) for (const r of roles) arr.push(r.name)
+    return arr
   }
 }

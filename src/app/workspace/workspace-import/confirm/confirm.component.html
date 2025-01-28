@@ -1,5 +1,5 @@
-<div class="mt-3 px-1">
-  <div class="flex flex-wrap align-items-center gap-3 mb-2">
+<div class="mt-3 flex flex-wrap align-items-top gap-3">
+  <div>
     <span class="p-float-label">
       <input
         pInputText
@@ -15,6 +15,8 @@
       />
       <label for="ws_import_confirm_workspace_name">{{ 'WORKSPACE_IMPORT.WORKSPACE_NAME' | translate }}</label>
     </span>
+  </div>
+  <div>
     <span class="p-float-label">
       <input
         pInputText
@@ -23,13 +25,15 @@
         id="ws_import_confirm_theme_name"
         [(ngModel)]="themeName"
         [disabled]="true"
-        [attr.aria-label]="'WORKSPACE_IMPORT.THEME_NAME' | translate"
+        [attr.aria-label]="'WORKSPACE.THEME' | translate"
         [pTooltip]="'WORKSPACE_IMPORT.THEME_NAME.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       />
       <label for="ws_import_confirm_theme_name">{{ 'WORKSPACE.THEME' | translate }}</label>
     </span>
+  </div>
+  <div>
     <span class="p-float-label">
       <input
         pInputText
@@ -38,13 +42,15 @@
         id="ws_import_confirm_base_url"
         [(ngModel)]="baseUrl"
         [disabled]="true"
-        [attr.aria-label]="'WORKSPACE_IMPORT.BASE_URL' | translate"
+        [attr.aria-label]="'WORKSPACE.BASE_URL' | translate"
         [pTooltip]="'WORKSPACE_IMPORT.BASE_URL.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       />
       <label for="ws_import_confirm_base_url">{{ 'WORKSPACE.BASE_URL' | translate }}</label>
     </span>
+  </div>
+  <div>
     <span class="p-float-label">
       <input
         pInputText
@@ -53,7 +59,7 @@
         id="ws_import_confirm_display_name"
         [(ngModel)]="displayName"
         [disabled]="true"
-        [attr.aria-label]="'WORKSPACE_IMPORT.DISPLAY_NAME' | translate"
+        [attr.aria-label]="'WORKSPACE.DISPLAY_NAME' | translate"
         [pTooltip]="'WORKSPACE_IMPORT.DISPLAY_NAME.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
@@ -62,7 +68,7 @@
     </span>
   </div>
 
-  <div class="flex flex-wrap align-items-center row-gap-1 my-4">
+  <div class="flex flex-wrap align-items-center row-gap-2 mt-1 mb-2">
     <p-message
       *ngIf="workspaceNameExists"
       id="ws_import_confirm_message_workspace_exists"
