@@ -441,7 +441,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     let module: ExtendedMicrofrontend | undefined
     if (item.apps?.has(appId)) {
       const a = item.apps.get(appId)
-      module = a?.modules ? a.modules[0] : undefined
+      if (a?.modules) module = a.modules[0]
     }
     return module
   }
