@@ -441,7 +441,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     let module: ExtendedMicrofrontend | undefined
     if (item.apps?.has(appId)) {
       const a = item.apps.get(appId)
-      module = a?.modules ? a.modules[0] : undefined
+      if (a?.modules) module = a.modules[0]
     }
     return module
   }
@@ -483,7 +483,14 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
         })
         .subscribe({
           next: (data) => {
-            if (this.displayedDetailItem) this.displayedDetailItem.modificationCount = data.resource.modificationCount
+            if (this.displayedDetailItem) {
+              this.displayedDetailItem.modificationCount = data.resource.modificationCount
+              const wps: ExtendedProduct[] = this.wProducts.filter((wp) => wp.id === this.displayedDetailItem?.id)
+              if (wps.length === 1) {
+                wps[0].displayName = this.displayedDetailItem.displayName
+                wps[0].baseUrl = this.displayedDetailItem.baseUrl
+              }
+            }
             this.msgService.success({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.UPDATE_OK' })
           },
           error: (err) => {

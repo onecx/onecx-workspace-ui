@@ -506,9 +506,9 @@
     }
   },
   "PRODUCT": {
-    "DISPLAY_NAME": "Applikation",
-    "DISPLAY_NAME.TOOLTIP": "Name der Applikation",
-    "DESCRIPTION": "Description",
+    "DISPLAY_NAME": "Anzeigename",
+    "DISPLAY_NAME.TOOLTIP": "Der Angezeigename wird benutzt, wenn Seiten der Applikation aufgerufen werden und erscheint damit im Browserverlauf.",
+    "DESCRIPTION": "Beschreibung",
     "BASE_URL": "Application Base Path",
     "BASE_URL.TOOLTIP": "Basispfad für alle Module der Applikation. Muss eindeutig sein über alle Applikationen im Workspace.",
     "MFE": {
@@ -548,11 +548,12 @@
     "IMPORT_OK": "Die Workspace-Definition wurde geprüft und kann importiert werden.",
     "WORKSPACE_EXISTS_MESSAGE": "Ein Workspace mit diesem Namen existiert bereits. Dessen Definition wird überschrieben.",
     "BASE_URL.TOOLTIP": "Base URL des Workspaces. Muss eindeutig sein weil sie für den Zugriff auf den Workspace benutzt wird. Das wird im nächsten Schritt geprüft.",
-    "BASE_URL_EXISTS_MESSAGE": "Ein Workspace mit dieser Base URL existiert bereits. Eine erneute Verwendung wird wahrscheinlich zu Problemen führen.",
+    "BASE_URL_EXISTS_MESSAGE": "Ein Workspace mit dieser Base URL existiert bereits. Eine erneute Verwendung wird zu Problemen führen.",
     "BASE_URL_MISSING": "Eine Base URL wird benötigt.",
     "SYNCHRONIZE_PERMISSIONS": "Berechtigungen synchronisieren",
     "INVALID_FILE": "Ungültige Datei",
     "RESPONSE.CREATED": "Der Workspace wurde erfolgreich erstellt.",
+    "RESPONSE.SKIPPED": "Der Workspace wurde beim Import ignoriert.",
     "RESPONSE.UPDATED": "Der Workspace wurde erfolgreich geändert.",
     "RESPONSE.ERROR": "Ein Fehler ist aufgetreten. Der Workspace konnte nicht erstellt/aktualisiert werden.",
     "INVALID_IMPORT_FILE": "Die Workspace Import-Datei ist nicht gültig.",

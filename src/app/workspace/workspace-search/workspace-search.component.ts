@@ -1,14 +1,13 @@
 import { Component, OnInit, ViewChild } from '@angular/core'
+import { Location } from '@angular/common'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 import { Observable, catchError, finalize, map, of } from 'rxjs'
 
 import { Action } from '@onecx/angular-accelerator'
 import { DataViewControlTranslations } from '@onecx/portal-integration-angular'
+import { getLocation } from '@onecx/accelerator'
 
-import { Location } from '@angular/common'
-import * as Accelerator from '@onecx/accelerator'
-//import { getLocation } from '@onecx/accelerator'
 import {
   ImagesInternalAPIService,
   RefType,
@@ -30,6 +29,7 @@ export class WorkspaceSearchComponent implements OnInit {
   public showCreateDialog = false
   public showImportDialog = false
   public limitText = limitText
+  public getLocation = getLocation
 
   public workspaces$!: Observable<Workspace[]>
   public viewMode: 'list' | 'grid' = 'grid'
@@ -37,7 +37,6 @@ export class WorkspaceSearchComponent implements OnInit {
   public sortField = 'displayName'
   public sortOrder = 1
   public dataViewControlsTranslations: DataViewControlTranslations = {}
-  public deploymentPath: string
 
   @ViewChild('table', { static: false }) table!: any
 
@@ -47,10 +46,7 @@ export class WorkspaceSearchComponent implements OnInit {
     private readonly router: Router,
     private readonly translate: TranslateService,
     private readonly imageApi: ImagesInternalAPIService
-  ) {
-    this.deploymentPath =
-      Accelerator.getLocation().deploymentPath === '/' ? '' : Accelerator.getLocation().deploymentPath
-  }
+  ) {}
 
   ngOnInit() {
     this.prepareDialogTranslations()
@@ -149,17 +145,18 @@ export class WorkspaceSearchComponent implements OnInit {
   public onSortDirChange(asc: boolean) {
     this.sortOrder = asc ? -1 : 1
   }
-  public onGotoWorkspace(ev: any, workspace: Workspace) {
+
+  public onGotoWorkspace(ev: any, workspace: Workspace, deploymentPath: string): void {
     ev.stopPropagation()
-    window.open(
-      Location.joinWithSlash(
-        Location.joinWithSlash(window.document.location.origin, this.deploymentPath),
-        workspace.baseUrl ?? ''
-      ),
-      '_blank'
+    if (!workspace.baseUrl) return
+    const url = Location.joinWithSlash(
+      Location.joinWithSlash(window.document.location.origin, deploymentPath),
+      workspace.baseUrl
     )
+    window.open(url, '_blank')
   }
-  public onGotoMenu(ev: any, workspace: Workspace) {
+
+  public onGotoMenu(ev: any, workspace: Workspace): void {
     ev.stopPropagation()
     this.router.navigate(['./', workspace.name, 'menu'], { relativeTo: this.route })
   }

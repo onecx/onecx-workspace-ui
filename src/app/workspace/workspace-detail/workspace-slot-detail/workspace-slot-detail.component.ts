@@ -25,7 +25,6 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
 
   public dateFormat = 'medium'
   public slot: CombinedSlot | undefined
-  public slotName!: string
   public wComponents: ExtendedComponent[] = []
   public psComponents: ExtendedComponent[] = [] // org ps components reduced by used in slot
   public hasEditPermission = false
@@ -50,9 +49,8 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   public ngOnChanges(): void {
     if (this.slotOrg) {
       this.slot = { ...this.slotOrg }
-      this.slotName = this.slot.name ?? ''
       // extract ps components
-      this.wComponents = this.slot.psComponents ?? []
+      this.wComponents = this.slot.psComponents
       this.wComponentsOrg = [...this.wComponents]
       this.psComponents = []
       // select available components from product store and registered workspaces

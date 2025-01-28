@@ -39,6 +39,14 @@
   }
 }
 
+@mixin cursor-default {
+  :host ::ng-deep {
+    .cursor-default {
+      cursor: default;
+    }
+  }
+}
+
 @mixin displaying-text-responsive {
   :host ::ng-deep {
     .text-responsive {

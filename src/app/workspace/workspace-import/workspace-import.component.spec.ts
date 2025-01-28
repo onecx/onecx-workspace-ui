@@ -2,8 +2,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { HttpClient, provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { Router } from '@angular/router'
-import { ActivatedRoute } from '@angular/router'
+import { ActivatedRoute, ActivatedRouteSnapshot, Router } from '@angular/router'
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { of, throwError } from 'rxjs'
 
@@ -43,16 +42,22 @@ class MockPreviewComponent {
 describe('WorkspaceImportComponent', () => {
   let component: WorkspaceImportComponent
   let fixture: ComponentFixture<WorkspaceImportComponent>
-  let mockActivatedRoute: ActivatedRoute
   const mockRouter = new MockRouter()
+  const mockActivatedRouteSnapshot: Partial<ActivatedRouteSnapshot> = { params: { id: 'mockId' } }
+  const mockActivatedRoute: Partial<ActivatedRoute> = {
+    snapshot: mockActivatedRouteSnapshot as ActivatedRouteSnapshot
+  }
+
   const mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let mockWindow: any
 
-  const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
-  const apiServiceSpy = {
-    importWorkspaces: jasmine.createSpy('importWorkspaces').and.returnValue(of({}))
-  }
+  const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', [
+    'success',
+    'error',
+    'warning'
+  ])
+  const apiServiceSpy = { importWorkspaces: jasmine.createSpy('importWorkspaces').and.returnValue(of({})) }
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -79,6 +84,7 @@ describe('WorkspaceImportComponent', () => {
     }).compileComponents()
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
+    msgServiceSpy.warning.calls.reset()
     apiServiceSpy.importWorkspaces.calls.reset()
   }))
 
@@ -128,13 +134,12 @@ describe('WorkspaceImportComponent', () => {
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'WORKSPACE_IMPORT.IMPORT_ERROR' })
   })
 
-  it('should import a portal', () => {
+  it('should import a workspace successfully', () => {
     const response = {
       id: 'testString1',
-      workspaces: { Updated: ImportResponseStatus.Updated },
-      menus: { Updated: ImportResponseStatus.Updated }
+      workspaces: { WS1: ImportResponseStatus.Updated },
+      menus: { WS1: ImportResponseStatus.Updated }
     }
-
     apiServiceSpy.importWorkspaces.and.returnValue(of(response))
     const workspaceSnap = { workspaces: { workspace: { name: 'name' } } }
     component.importRequestDTO = workspaceSnap
@@ -147,22 +152,17 @@ describe('WorkspaceImportComponent', () => {
     component.importWorkspace()
 
     expect(component.isLoading).toBeFalse()
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({
-      summaryKey: 'WORKSPACE_IMPORT.RESPONSE.UPDATED'
-    })
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'WORKSPACE_IMPORT.RESPONSE.UPDATED' })
   })
 
-  it('should update a portal', () => {
+  it('should create a workspace', () => {
     const response = {
-      id: 'testString1',
-      workspaces: { Updated: ImportResponseStatus.Updated },
-      menus: { Updated: ImportResponseStatus.Updated }
+      id: 'uuid',
+      workspaces: { WS1: ImportResponseStatus.Created },
+      menus: { WS1: ImportResponseStatus.Skipped }
     }
-
     apiServiceSpy.importWorkspaces.and.returnValue(of(response))
-    const workspaceSnap = { workspaces: { workspace: { name: 'name' } } }
-    component.importRequestDTO = workspaceSnap
-    component.hasPermission = true
+    component.importRequestDTO = { workspaces: { WS1: { name: 'name' } } }
     component.confirmComponent = new MockConfirmComponent() as unknown as ConfirmComponent
     if (component.confirmComponent) {
       component.confirmComponent.workspaceNameExists = true
@@ -170,32 +170,22 @@ describe('WorkspaceImportComponent', () => {
 
     component.importWorkspace()
 
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({
-      summaryKey: 'WORKSPACE_IMPORT.RESPONSE.UPDATED'
-    })
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'WORKSPACE_IMPORT.RESPONSE.CREATED' })
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['./', 'name'], { relativeTo: mockActivatedRoute })
   })
 
   it('should update a portal with new base url', () => {
     const response = {
-      id: 'testString1',
-      workspaces: { Updated: ImportResponseStatus.Updated },
-      menus: { Updated: ImportResponseStatus.Updated }
+      id: 'uuid',
+      workspaces: { WS1: ImportResponseStatus.Updated },
+      menus: { WS1: ImportResponseStatus.Updated }
     }
-
     apiServiceSpy.importWorkspaces.and.returnValue(of(response))
     const workspaceSnap = {
       workspaces: {
-        workspace: {
+        WS1: {
           name: 'name',
-          menu: {
-            menu: {
-              menuItems: [
-                {
-                  name: 'menu'
-                }
-              ]
-            }
-          }
+          menu: { menu: { menuItems: [{ name: 'menu' }] } }
         }
       }
     }
@@ -211,15 +201,31 @@ describe('WorkspaceImportComponent', () => {
     component.next()
     component.importWorkspace()
 
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({
-      summaryKey: 'WORKSPACE_IMPORT.RESPONSE.UPDATED'
-    })
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'WORKSPACE_IMPORT.RESPONSE.UPDATED' })
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['./', 'name'], { relativeTo: mockActivatedRoute })
+  })
+
+  it('should create a workspace', () => {
+    const response = {
+      id: 'uuid',
+      workspaces: { WS1: ImportResponseStatus.Skipped },
+      menus: { WS1: ImportResponseStatus.Skipped }
+    }
+    apiServiceSpy.importWorkspaces.and.returnValue(of(response))
+    component.importRequestDTO = { workspaces: { WS1: { name: 'name' } } }
+    component.confirmComponent = new MockConfirmComponent() as unknown as ConfirmComponent
+    if (component.confirmComponent) {
+      component.confirmComponent.workspaceNameExists = true
+    }
+
+    component.importWorkspace()
+
+    expect(msgServiceSpy.warning).toHaveBeenCalledWith({ summaryKey: 'WORKSPACE_IMPORT.RESPONSE.SKIPPED' })
   })
 
   it('should display error msg if api call fails', () => {
     const errorResponse = { status: 400, statusText: 'Error on import workspaces' }
-    const workspaceSnap = { workspaces: { workspace: { name: 'name' } } }
-    component.importRequestDTO = workspaceSnap
+    component.importRequestDTO = { workspaces: { WS1: { name: 'name' } } }
     apiServiceSpy.importWorkspaces.and.returnValue(throwError(() => errorResponse))
     component.hasPermission = true
     spyOn(console, 'error')
@@ -233,12 +239,11 @@ describe('WorkspaceImportComponent', () => {
   it('should display error msg if response status is error', () => {
     const response = {
       id: 'testString1',
-      workspaces: { Updated: ImportResponseStatus.Error },
-      menus: { Updated: ImportResponseStatus.Updated }
+      workspaces: { WS1: ImportResponseStatus.Error },
+      menus: { WS1: ImportResponseStatus.Updated }
     }
     apiServiceSpy.importWorkspaces.and.returnValue(of(response))
-    const workspaceSnap = { workspaces: { workspace: { name: 'name' } } }
-    component.importRequestDTO = workspaceSnap
+    component.importRequestDTO = { workspaces: { WS1: { name: 'name' } } }
     component.hasPermission = true
 
     component.importWorkspace()

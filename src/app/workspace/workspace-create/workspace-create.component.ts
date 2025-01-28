@@ -102,11 +102,11 @@ export class WorkspaceCreateComponent {
     if (themes.length > 0) return
     this.themes$ = this.workspaceApi.getAllThemes().pipe(
       map((data: string[]) => {
-        return data ? data.sort(sortByLocale) : []
+        return data.sort(sortByLocale)
       }),
       catchError((err) => {
         console.error('getAllThemes', err)
-        return of([] as string[])
+        return of([])
       })
     )
   }

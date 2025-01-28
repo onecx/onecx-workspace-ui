@@ -7,7 +7,6 @@ import { ActivatedRoute, ActivatedRouteSnapshot, provideRouter, Router } from '@
 import { of, throwError } from 'rxjs'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 
-import * as Accelerator from '@onecx/accelerator'
 import { PortalMessageService } from '@onecx/portal-integration-angular'
 
 import { Workspace, WorkspaceAbstract, WorkspaceAPIService, SearchWorkspacesResponse } from 'src/app/shared/generated'
@@ -21,10 +20,6 @@ describe('WorkspaceSearchComponent', () => {
   const mockActivatedRouteSnapshot: Partial<ActivatedRouteSnapshot> = { params: { id: 'mockId' } }
   const mockActivatedRoute: Partial<ActivatedRoute> = {
     snapshot: mockActivatedRouteSnapshot as ActivatedRouteSnapshot
-  }
-
-  const accSpy = {
-    getLocation: jasmine.createSpy('getLocation').and.returnValue({ deploymentPath: '/path' })
   }
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['info', 'error'])
   const wApiServiceSpy = {
@@ -49,8 +44,7 @@ describe('WorkspaceSearchComponent', () => {
         { provide: Router, useValue: mockRouter },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: PortalMessageService, useValue: msgServiceSpy },
-        { provide: WorkspaceAPIService, useValue: wApiServiceSpy },
-        { provide: Accelerator.getLocation, useValue: accSpy.getLocation }
+        { provide: WorkspaceAPIService, useValue: wApiServiceSpy }
       ]
     }).compileComponents()
     // to spy data: reset
@@ -63,7 +57,6 @@ describe('WorkspaceSearchComponent', () => {
 
   beforeEach(() => {
     fixture = TestBed.createComponent(WorkspaceSearchComponent)
-    accSpy.getLocation()
     component = fixture.componentInstance
     fixture.detectChanges()
   })
@@ -71,7 +64,6 @@ describe('WorkspaceSearchComponent', () => {
   describe('initialize', () => {
     it('should create', () => {
       expect(component).toBeTruthy()
-      expect(component.deploymentPath).toEqual('')
     })
   })
 
@@ -148,26 +140,40 @@ describe('WorkspaceSearchComponent', () => {
     expect(component.sortOrder).toEqual(1)
   })
 
-  it('should behave correctly onGotoWorkspace', () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const mockNewWorkspaceWindow = spyOn(window, 'open')
-    const mockEvent = { stopPropagation: jasmine.createSpy() }
-    const w: WorkspaceAbstract = {
-      name: 'name',
-      theme: 'theme',
-      baseUrl: '/some/base/url',
-      displayName: ''
-    }
+  describe('onGotoWorkspace', () => {
+    it('should correct with baseUrl', () => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const mockNewWorkspaceWindow = spyOn(window, 'open')
+      const mockEvent = { stopPropagation: jasmine.createSpy() }
+      const w: WorkspaceAbstract = {
+        name: 'name',
+        theme: 'theme',
+        baseUrl: '/some/base/url',
+        displayName: 'Workspace'
+      }
 
-    component.onGotoWorkspace(mockEvent, w)
+      component.onGotoWorkspace(mockEvent, w, '/')
 
-    expect(mockEvent.stopPropagation).toHaveBeenCalled()
-    expect(window.open).toHaveBeenCalledWith(
-      Location.joinWithSlash(Location.joinWithSlash(window.document.location.origin, ''), w.baseUrl || ''),
-      '_blank'
-    )
+      expect(mockEvent.stopPropagation).toHaveBeenCalled()
+      expect(window.open).toHaveBeenCalledWith(
+        Location.joinWithSlash(Location.joinWithSlash(window.document.location.origin, ''), w.baseUrl || ''),
+        '_blank'
+      )
+    })
 
-    component.onGotoWorkspace(mockEvent, { ...w, baseUrl: undefined })
+    it('should do nothing without baseUrl', () => {
+      const mockEvent = { stopPropagation: jasmine.createSpy() }
+      const w: WorkspaceAbstract = {
+        name: 'name',
+        theme: 'theme',
+        baseUrl: undefined,
+        displayName: 'Workspace'
+      }
+
+      component.onGotoWorkspace(mockEvent, w, '/')
+
+      expect(mockEvent.stopPropagation).toHaveBeenCalled()
+    })
   })
 
   it('should behave correctly onGotoMenu', () => {

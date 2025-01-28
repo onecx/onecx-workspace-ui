@@ -93,9 +93,10 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
   /**
    * IMPORT
    */
-  private importParseAndExtract(response: any) {
+  private importResponseParse(response: any) {
     if (response.workspaces && response.menus) {
       let keys
+      // default: both failed ... but get real state on respone
       this.importResponse = JSON.parse('{"workspace":"ERROR", "menu":"ERROR"}')
       if (this.importResponse && response.workspaces) {
         keys = Object.keys(response.workspaces)
@@ -107,17 +108,23 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
       }
     }
   }
-  private importCheckAndRoute(wKeys: string[]) {
+  private importResponseResult(wName: string) {
     const messageKey = 'WORKSPACE_IMPORT.RESPONSE.' + this.importResponse?.workspace
-    if (this.importResponse?.workspace === ImportResponseStatus.Error) {
-      this.msgService.error({ summaryKey: messageKey })
-    }
-    if (['CREATED', 'UPDATED'].includes(this.importResponse?.workspace ?? 'ERROR')) {
-      this.importResponse = undefined
-      this.msgService.success({ summaryKey: messageKey })
-      if (this.importRequestDTO?.workspaces) {
-        this.router.navigate(['./', this.importRequestDTO.workspaces[wKeys[0]].name], { relativeTo: this.route })
-      }
+    // on error
+    switch (this.importResponse?.workspace) {
+      case ImportResponseStatus.Error:
+        this.msgService.error({ summaryKey: messageKey })
+        break
+      // on success
+      case ImportResponseStatus.Created:
+      case ImportResponseStatus.Updated:
+        this.importResponse = undefined
+        this.msgService.success({ summaryKey: messageKey })
+        this.router.navigate(['./', wName], { relativeTo: this.route })
+        break
+      case ImportResponseStatus.Skipped:
+        this.msgService.warning({ summaryKey: messageKey })
+        break
     }
   }
 
@@ -127,28 +134,26 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
       return
     }
     this.isLoading = true
-    const wKeys: string[] = Object.keys(this.importRequestDTO.workspaces)
-    this.importRequestDTO.workspaces[wKeys[0]].name = this.workspaceName
-    this.importRequestDTO.workspaces[wKeys[0]].displayName = this.workspaceName
-    this.importRequestDTO.workspaces[wKeys[0]].theme = this.themeName
-    this.importRequestDTO.workspaces[wKeys[0]].baseUrl = this.baseUrl
-    this.workspaceApi
-      .importWorkspaces({
-        body: this.importRequestDTO
-      })
-      .subscribe({
-        next: (response) => {
-          this.isLoading = false
-          // read data and prepare feedback: UPDATED | CREATED | SKIPPED | ERROR
-          this.importParseAndExtract(response)
-          this.importCheckAndRoute(wKeys)
-        },
-        error: (err) => {
-          this.isLoading = false
-          this.msgService.error({ summaryKey: 'WORKSPACE_IMPORT.IMPORT_NOK' })
-          console.error('importWorkspaces', err)
-        }
-      })
+    const keys: string[] = Object.keys(this.importRequestDTO.workspaces)
+    if (keys.length > 0) {
+      const ws = this.importRequestDTO.workspaces[keys[0]]
+      this.workspaceApi
+        .importWorkspaces({
+          body: this.importRequestDTO
+        })
+        .subscribe({
+          next: (response) => {
+            this.isLoading = false
+            this.importResponseParse(response)
+            this.importResponseResult(ws.name)
+          },
+          error: (err) => {
+            this.isLoading = false
+            this.msgService.error({ summaryKey: 'WORKSPACE_IMPORT.IMPORT_NOK' })
+            console.error('importWorkspaces', err)
+          }
+        })
+    }
   }
 
   // NAVIGATE import step : NEXT
@@ -158,11 +163,14 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
       let keys: string[] = []
       if (this.importRequestDTO?.workspaces) {
         keys = Object.keys(this.importRequestDTO.workspaces)
+        if (keys.length > 0) {
+          const ws = this.importRequestDTO.workspaces[keys[0]]
+          this.workspaceNameOrg = ws.name
+          this.displayNameOrg = ws.displayName ?? ''
+          this.themeName = ws.theme ?? ''
+          this.baseUrlOrg = ws.baseUrl
+        }
       }
-      this.workspaceNameOrg = importRequestDTO.workspaces[keys[0]].name ?? ''
-      this.displayNameOrg = importRequestDTO.workspaces[keys[0]].displayName ?? ''
-      this.themeName = importRequestDTO.workspaces[keys[0]].theme ?? ''
-      this.baseUrlOrg = importRequestDTO.workspaces[keys[0]].baseUrl
     } else if (this.activeIndex === 1) {
       this.workspaceName = this.previewComponent?.workspaceName ?? ''
       this.displayName = this.previewComponent?.displayName ?? ''
