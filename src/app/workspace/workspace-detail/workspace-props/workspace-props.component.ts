@@ -5,6 +5,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { map, Observable, of, Subject } from 'rxjs'
 
 import { PortalMessageService, WorkspaceService } from '@onecx/angular-integration-interface'
+import { getLocation } from '@onecx/accelerator'
 
 import {
   ImagesInternalAPIService,
@@ -14,7 +15,6 @@ import {
   WorkspaceProductAPIService
 } from 'src/app/shared/generated'
 import { bffImageUrl, copyToClipboard, goToEndpoint, sortByLocale } from 'src/app/shared/utils'
-import { getLocation } from '@onecx/accelerator'
 
 @Component({
   selector: 'app-workspace-props',

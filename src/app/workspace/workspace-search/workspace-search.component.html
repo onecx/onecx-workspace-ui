@@ -139,7 +139,13 @@
                 tabindex="0"
                 [id]="'ws_search_data_grid_row_' + i + '_goto_workspace'"
                 class="card-badge-right badge-1 p-1 pi pi-external-link button-icon-only"
-                (click)="onGotoWorkspace($event, workspace)"
+                (click)="
+                  onGotoWorkspace(
+                    $event,
+                    workspace,
+                    getLocation().deploymentPath === '/' ? '' : getLocation().deploymentPath
+                  )
+                "
                 [attr.aria-label]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_WORKSPACE' | translate"
                 [pTooltip]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_WORKSPACE' | translate"
                 tooltipPosition="right"

@@ -128,7 +128,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
         .pipe(
           map((products) => {
             this.wProductNames = []
-            for (const p of products) this.wProductNames.push(p.productName ?? '')
+            for (const p of products) this.wProductNames.push(p.productName!)
             return []
           }),
           catchError((err) => {
@@ -270,8 +270,8 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     )
   }
 
-  private sortSlotsByName(a: Slot, b: Slot): number {
-    return (a.name ? a.name.toUpperCase() : '').localeCompare(b.name ? b.name.toUpperCase() : '')
+  public sortSlotsByName(a: Slot, b: Slot): number {
+    return a.name!.toUpperCase().localeCompare(b.name!.toUpperCase())
   }
 
   /**
