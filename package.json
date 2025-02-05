@@ -87,7 +87,7 @@
     "@angular/compiler-cli": "^18.2.6",
     "@angular/language-service": "^18.2.6",
     "@commitlint/cli": "^19.5.0",
-    "@commitlint/config-conventional": "^19.5.0",
+    "@commitlint/config-conventional": "^19.7.1",
     "@openapitools/openapi-generator-cli": "^2.15.3",
     "@schematics/angular": "^18.2.10",
     "@types/file-saver": "^2.0.7",
