@@ -26,7 +26,6 @@ export type PSSlot = SlotPS & { pName?: string; pDisplayName?: string }
 // workspace slot data combined with status from product store
 export type CombinedSlot = Slot & {
   productName?: string
-  bucket: 'SOURCE' | 'TARGET'
   new: boolean
   changes: boolean
   undeployed?: boolean
@@ -34,7 +33,10 @@ export type CombinedSlot = Slot & {
   psSlots: PSSlot[]
   psComponents: ExtendedComponent[]
 }
-export type ExtendedComponent = SlotComponent & { undeployed?: boolean; deprecated?: boolean }
+export type ExtendedComponent = SlotComponent & {
+  undeployed?: boolean
+  deprecated?: boolean
+}
 
 @Component({
   selector: 'app-workspace-slots',
@@ -161,7 +163,6 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
               this.wSlotsIntern.push({
                 ...s, // contains the original registered components
                 new: false,
-                bucket: 'TARGET',
                 changes: false,
                 psSlots: [],
                 psComponents: []
@@ -199,7 +200,6 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
           .filter((mfe) => mfe.type === 'COMPONENT')
           .forEach((c) => {
             this.psComponents.push({
-              bucket: 'SOURCE',
               productName: p.productName,
               appId: c.appId,
               name: c.exposedModule,
@@ -320,17 +320,13 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     this.showSlotDetailDialog = true
   }
 
-  // detail/delete dialog closed - on any changes a reload of data is required
+  // detail/delete dialog closed - on changes: reload data
   public onSlotDetailClosed(changed: boolean) {
     this.slot = undefined
     this.detailSlotId = undefined
     this.changeMode = 'VIEW'
     this.showSlotDetailDialog = false
     this.showSlotDeleteDialog = false
-    if (changed) this.loadData()
-  }
-  // on any changes within DETAIL dialog a reload of data is required
-  public onSlotDetailChanged(changed: boolean) {
     if (changed) this.loadData()
   }
 

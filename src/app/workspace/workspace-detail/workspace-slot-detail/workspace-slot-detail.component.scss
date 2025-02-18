@@ -1,5 +1,6 @@
 @import '/src/app/_ws-mixins.scss';
 
+@include invisible;
 @include card-badges;
 @include picklist-zebra-rows;
 @include displaying-text-responsive;

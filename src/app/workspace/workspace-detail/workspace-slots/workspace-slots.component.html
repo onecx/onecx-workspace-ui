@@ -170,8 +170,8 @@
   </ng-template>
 </p-dataView>
 
+<!-- DETAIL -->
 <app-workspace-slot-detail
-  [workspace]="workspace"
   [slotOrg]="slot"
   [psComponentsOrg]="psComponents"
   [wProductNames]="wProductNames"
@@ -179,5 +179,4 @@
   [displayDetailDialog]="showSlotDetailDialog"
   [displayDeleteDialog]="showSlotDeleteDialog"
   (detailClosed)="onSlotDetailClosed($event)"
-  (changed)="onSlotDetailChanged($event)"
 ></app-workspace-slot-detail>
