@@ -185,8 +185,8 @@ describe('WorkspaceSlotsComponent', () => {
       component.loadData()
 
       expect(component.wSlotsIntern).toEqual([
-        { name: 'slot1', new: false, bucket: 'TARGET', changes: false, psSlots: [], psComponents: [] },
-        { name: 'slot2', new: false, bucket: 'TARGET', changes: false, psSlots: [], psComponents: [] }
+        { name: 'slot1', new: false, changes: false, psSlots: [], psComponents: [] },
+        { name: 'slot2', new: false, changes: false, psSlots: [], psComponents: [] }
       ] as CombinedSlot[])
     })
 
@@ -219,7 +219,6 @@ describe('WorkspaceSlotsComponent', () => {
           productName: 'product',
           name: 'slotPsName',
           new: false,
-          bucket: 'SOURCE',
           changes: false,
           psSlots: [],
           psComponents: [],
@@ -231,13 +230,12 @@ describe('WorkspaceSlotsComponent', () => {
           productName: 'product',
           name: 'slotPsName',
           new: false,
-          bucket: 'TARGET',
           changes: false,
           psSlots: [],
           psComponents: [],
           components: [{ productName: 'slotComponentProdName', appId: 'slotComponentAppId', name: 'slotComponentName' }]
         },
-        { name: 'slot2', new: false, bucket: 'TARGET', changes: false, psSlots: [], psComponents: [] }
+        { name: 'slot2', new: false, changes: false, psSlots: [], psComponents: [] }
       ]
       component.wProductNames = ['psItem1', 'wsProd2', 'product']
 
@@ -245,7 +243,6 @@ describe('WorkspaceSlotsComponent', () => {
 
       expect(component.psComponents).toEqual([
         {
-          bucket: 'SOURCE',
           productName: 'psItem1',
           appId: 'appId',
           name: 'slotComponentName',
@@ -426,7 +423,6 @@ describe('WorkspaceSlotsComponent', () => {
       const mockSlot: CombinedSlot = {
         id: '123',
         new: false,
-        bucket: 'TARGET',
         changes: false,
         psSlots: [],
         psComponents: []
@@ -446,7 +442,6 @@ describe('WorkspaceSlotsComponent', () => {
       const mockSlot: CombinedSlot = {
         id: '123',
         new: false,
-        bucket: 'TARGET',
         changes: false,
         psSlots: [],
         psComponents: []
@@ -466,7 +461,6 @@ describe('WorkspaceSlotsComponent', () => {
       const mockSlot: CombinedSlot = {
         id: '123',
         new: true,
-        bucket: 'TARGET',
         changes: false,
         psSlots: [],
         psComponents: []
@@ -521,18 +515,6 @@ describe('WorkspaceSlotsComponent', () => {
       expect(component.showSlotDeleteDialog).toBeFalse()
       expect(component.loadData).not.toHaveBeenCalled() // NOT called
     })
-
-    it('should loadData if detail has changed', () => {
-      component.onSlotDetailChanged(true) // changed data
-
-      expect(component.loadData).toHaveBeenCalled()
-    })
-
-    it('should not loadDate if detail has changed', () => {
-      component.onSlotDetailChanged(false)
-
-      expect(component.loadData).not.toHaveBeenCalled()
-    })
   })
 
   describe('onAddSlot', () => {
@@ -540,7 +522,6 @@ describe('WorkspaceSlotsComponent', () => {
     const mockSlot: CombinedSlot = {
       id: '123',
       new: true,
-      bucket: 'TARGET',
       changes: false,
       psSlots: [],
       psComponents: []
@@ -583,7 +564,6 @@ describe('WorkspaceSlotsComponent', () => {
     const mockSlot: CombinedSlot = {
       id: '123',
       new: true,
-      bucket: 'TARGET',
       changes: false,
       psSlots: [],
       psComponents: []

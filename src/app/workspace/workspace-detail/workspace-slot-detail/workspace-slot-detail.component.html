@@ -32,82 +32,89 @@
       tooltipPosition="top"
       tooltipEvent="hover"
     >
-      <p-pickList
-        #picklist
-        id="ws_slot_detail_component_picklist"
-        [filterBy]="'name'"
-        breakpoint="500px"
-        [source]="psComponents"
-        [target]="wComponents"
-        [showSourceControls]="false"
-        [showTargetControls]="true"
-        [responsive]="true"
-        [metaKeySelection]="true"
-        [disabled]="!hasEditPermission"
-        (onTargetReorder)="onSaveSlot()"
-        (onMoveToTarget)="onSaveSlot()"
-        (onMoveToSource)="onMoveToSource($event)"
-      >
-        <ng-template pTemplate="sourceHeader">
-          <div class="flex flex-row justify-content-between align-items-center column-gap-2">
-            <div
-              class="flex-grow-1 font-semibold"
-              [attr.aria-label]="'DIALOG.SLOT.COMPONENTS.NOT_USED' | translate"
-              [pTooltip]="'DIALOG.SLOT.COMPONENTS.NOT_USED.TOOLTIP' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            >
-              {{ 'DIALOG.SLOT.COMPONENTS.NOT_USED' | translate }}: {{ psComponents.length }}
+      <div class="flex flex-row column-gap-4">
+        <p-pickList
+          #picklist
+          id="ws_slot_detail_component_picklist"
+          [filterBy]="'name'"
+          breakpoint="500px"
+          [source]="psComponents"
+          [target]="wComponents"
+          [showSourceControls]="false"
+          [showTargetControls]="showTargetControls"
+          [responsive]="true"
+          [metaKeySelection]="true"
+          [disabled]="!hasEditPermission"
+          (onTargetSelect)="onTargetSelect($event)"
+          (onTargetReorder)="onSaveSlot(true)"
+          (onMoveToTarget)="onSaveSlot(false)"
+          (onMoveToSource)="onDeregister($event)"
+        >
+          <ng-template pTemplate="sourceHeader">
+            <div class="flex flex-row justify-content-between align-items-center column-gap-2">
+              <div
+                class="flex-grow-1 font-semibold"
+                [attr.aria-label]="'DIALOG.SLOT.COMPONENTS.NOT_USED' | translate"
+                [pTooltip]="'DIALOG.SLOT.COMPONENTS.NOT_USED.TOOLTIP' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+              >
+                {{ 'DIALOG.SLOT.COMPONENTS.NOT_USED' | translate }}: {{ psComponents.length }}
+              </div>
             </div>
-          </div>
-        </ng-template>
-        <ng-template pTemplate="targetHeader">
-          <div class="flex flex-row justify-content-between align-items-center column-gap-2">
-            <div
-              class="flex-grow-1 font-semibold"
-              [attr.aria-label]="'DIALOG.SLOT.COMPONENTS.USED' | translate"
-              [pTooltip]="'DIALOG.SLOT.COMPONENTS.USED.TOOLTIP' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            >
-              {{ 'DIALOG.SLOT.COMPONENTS.USED' | translate }}: {{ wComponents.length }}
+          </ng-template>
+          <ng-template pTemplate="targetHeader">
+            <div class="flex flex-row justify-content-between align-items-center column-gap-2">
+              <div
+                class="flex-grow-1 font-semibold"
+                [attr.aria-label]="'DIALOG.SLOT.COMPONENTS.USED' | translate"
+                [pTooltip]="'DIALOG.SLOT.COMPONENTS.USED.TOOLTIP' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+              >
+                {{ 'DIALOG.SLOT.COMPONENTS.USED' | translate }}: {{ wComponents.length }}
+              </div>
             </div>
-          </div>
-        </ng-template>
+          </ng-template>
 
-        <ng-template let-component let-i="rowIndex" pTemplate="item">
-          <span
-            *ngIf="component?.undeployed"
-            [id]="'ws_slot_detail_picklist_' + i + '_undeployed'"
-            class="card-badge-right badge-1 danger-action-text font-bold text-lg pi pi-ban"
-            [attr.aria-label]="'DIALOG.SLOT.UNDEPLOYED' | translate"
-            [pTooltip]="'DIALOG.SLOT.UNDEPLOYED.TOOLTIP' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          ></span>
-          <span
-            *ngIf="component?.deprecated && !component?.undeployed"
-            [id]="'ws_slot_detail_picklist_' + i + '_deprecated'"
-            class="card-badge-right badge-1 danger-action-text font-bold text-lg pi pi-exclamation-circle"
-            [attr.aria-label]="'DIALOG.SLOT.DEPRECATED' | translate"
-            [pTooltip]="'DIALOG.SLOT.DEPRECATED.TOOLTIP' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          ></span>
-          <div class="py-0 sm:py-1 px-2 flex flex-column row-gap-0" (dblclick)="return($event)">
-            <div
-              [id]="'ws_slot_detail_picklist_' + i + '_component_name'"
-              class="font-semibold text-sm md:text-md text-responsive"
-            >
-              {{ component.name }}
+          <ng-template let-component let-i="rowIndex" pTemplate="item">
+            <span
+              *ngIf="component?.undeployed"
+              [id]="'ws_slot_detail_picklist_' + i + '_undeployed'"
+              class="card-badge-right badge-1 danger-action-text font-bold text-lg pi pi-ban"
+              [attr.aria-label]="'DIALOG.SLOT.UNDEPLOYED' | translate"
+              [pTooltip]="'DIALOG.SLOT.UNDEPLOYED.TOOLTIP' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            ></span>
+            <span
+              *ngIf="component?.deprecated && !component?.undeployed"
+              [id]="'ws_slot_detail_picklist_' + i + '_deprecated'"
+              class="card-badge-right badge-1 danger-action-text font-bold text-lg pi pi-exclamation-circle"
+              [attr.aria-label]="'DIALOG.SLOT.DEPRECATED' | translate"
+              [pTooltip]="'DIALOG.SLOT.DEPRECATED.TOOLTIP' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            ></span>
+            <div class="py-0 sm:py-1 px-2 flex flex-column row-gap-0" (dblclick)="return($event)">
+              <div
+                [id]="'ws_slot_detail_picklist_' + i + '_component_name'"
+                class="font-semibold text-sm md:text-md text-responsive"
+              >
+                {{ component.name }}
+              </div>
+              <div [id]="'ws_slot_detail_picklist_' + i + '_product_name'" class="text-right text-xs">
+                {{ component.productName }}
+              </div>
             </div>
-            <div [id]="'ws_slot_detail_picklist_' + i + '_product_name'" class="text-right text-xs">
-              {{ component.productName }}
-            </div>
-          </div>
-          <div class="relative"></div>
-        </ng-template>
-      </p-pickList>
+            <div class="relative"></div>
+          </ng-template>
+        </p-pickList>
+        <!-- manage picklist bug: use the following invisible dummy if controls are hidden -->
+        <div *ngIf="!showTargetControls">
+          <button type="button" class="invisible p-element p-ripple p-button-icon-only p-button p-component"></button>
+        </div>
+      </div>
     </p-tabPanel>
 
     <p-tabPanel

@@ -3,7 +3,7 @@ import { TranslateService } from '@ngx-translate/core'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 
-import { SlotAPIService, SlotComponent, UpdateSlotRequest, Workspace } from 'src/app/shared/generated'
+import { SlotAPIService, SlotComponent, UpdateSlotRequest } from 'src/app/shared/generated'
 import { ChangeMode, CombinedSlot, ExtendedComponent } from '../workspace-slots/workspace-slots.component'
 
 @Component({
@@ -12,16 +12,13 @@ import { ChangeMode, CombinedSlot, ExtendedComponent } from '../workspace-slots/
   styleUrls: ['./workspace-slot-detail.component.scss']
 })
 export class WorkspaceSlotDetailComponent implements OnChanges {
-  @Input() workspace!: Workspace | undefined
   @Input() slotOrg: CombinedSlot | undefined
-  @Input() psComponentsOrg!: ExtendedComponent[]
+  @Input() psComponentsOrg: ExtendedComponent[] = []
   @Input() wProductNames: string[] = []
-
   @Input() changeMode: ChangeMode = 'VIEW'
   @Input() displayDetailDialog = false
   @Input() displayDeleteDialog = false
   @Output() detailClosed: EventEmitter<boolean> = new EventEmitter()
-  @Output() changed: EventEmitter<boolean> = new EventEmitter()
 
   public dateFormat = 'medium'
   public slot: CombinedSlot | undefined
@@ -29,8 +26,9 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   public psComponents: ExtendedComponent[] = [] // org ps components reduced by used in slot
   public hasEditPermission = false
   public displayDeregisterConfirmation = false
-  private deregisterItems: ExtendedComponent[] = []
-  private wComponentsOrg: ExtendedComponent[] = []
+  private deregisterItems: ExtendedComponent[] = [] // moved items
+  private wComponentsOrg: ExtendedComponent[] = [] // used for restore
+  public showTargetControls = false // manage visibility of target controls due to picklist bug
 
   constructor(
     private readonly slotApi: SlotAPIService,
@@ -47,13 +45,13 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   }
 
   public ngOnChanges(): void {
-    if (this.slotOrg) {
+    if (this.slotOrg && this.slot === undefined) {
       this.slot = { ...this.slotOrg }
       // extract ps components
-      this.wComponents = this.slot.psComponents
-      this.wComponentsOrg = [...this.wComponents]
+      this.wComponents = [...this.slot.psComponents]
+      this.wComponentsOrg = [...this.wComponents] // to be able to restore
       this.psComponents = []
-      // select available components from product store and registered workspaces
+      // collect available but not yet registered components from product store/workspace
       this.psComponentsOrg.forEach((c) => {
         if (this.wComponents.filter((wc) => wc.name === c.name).length === 0)
           if (this.wProductNames.includes(c.productName)) this.psComponents.push(c)
@@ -63,7 +61,11 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   }
 
   public onClose(): void {
-    this.detailClosed.emit(false)
+    if (this.slotOrg && this.slot) {
+      this.detailClosed.emit(this.slotOrg?.modificationCount !== this.slot?.modificationCount)
+      this.slot = undefined
+      this.slotOrg = undefined
+    }
   }
 
   /**
@@ -72,10 +74,18 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   return(event: any) {
     event.stopPropagation()
   }
-  public onMoveToSource(event: any): void {
+
+  // fix picklist bug: hide controls if not one item is selected
+  public onTargetSelect(event: any) {
+    this.showTargetControls = event.items.length === 1
+  }
+
+  // The picklist has done the deregistration immediatly - roll back with more effort
+  public onDeregister(event: any): void {
     this.deregisterItems = event.items
     this.displayDeregisterConfirmation = true
   }
+  // restore the previous state: on user abortion or closing the dialog
   public onDeregisterCancellation() {
     if (this.deregisterItems.length === 0) return
     this.displayDeregisterConfirmation = false
@@ -90,11 +100,13 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
 
   public onDeregisterConfirmation(): void {
     this.displayDeregisterConfirmation = false
-    this.onSaveSlot()
+    this.onSaveSlot(false)
   }
 
-  public onSaveSlot() {
+  public onSaveSlot(reorder: boolean) {
     if (this.slot) {
+      // picklist bug: ignore change if only one component in list
+      if (reorder && this.slot.components && this.slot.components.length < 2) return
       this.slotApi
         .updateSlot({
           id: this.slot.id!,
@@ -113,8 +125,10 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
               this.slot.modificationDate = data.modificationDate
               this.slot.components = data.components
             }
+            // clean up
+            this.deregisterItems = []
+            this.wComponentsOrg = [...this.wComponents]
             this.msgService.success({ summaryKey: 'ACTIONS.EDIT.SLOT_OK' })
-            this.changed.emit(true)
           },
           error: (err) => {
             this.msgService.error({ summaryKey: 'ACTIONS.EDIT.SLOT_NOK' })
