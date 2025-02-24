@@ -167,7 +167,6 @@
     "WORKSPACE": {
       "DETAILS": "Eigenschaften",
       "CONTACT": "Kontakt",
-      "INTERN": "Intern",
       "MENU": "Menü",
       "ROLES": "Rollen",
       "SLOTS": "Slots",
@@ -175,7 +174,6 @@
       "TOOLTIPS": {
         "DETAILS": "Basiseigenschaften des Workspaces",
         "CONTACT": "Kontaktinformationen zum Workspace",
-        "INTERN": "Interne Eigenschaften des Workspaces",
         "MENU": "Workspace Menü: Verwalten der Menüstruktur für den Workspace",
         "ROLES": "Workspace Rollen: die für die Benutzung des Workspaces von Bedeutung sind (als Teil aller Rollen des Mandants)",
         "SLOTS": "Workspace Slots: die für die Benutzung des Workspaces von Bedeutung sind.",
@@ -333,11 +331,9 @@
       "TABS": {
         "COMPONENTS": "Komponenten",
         "PRODUCTS": "Applikationen",
-        "INTERN": "Intern",
         "TOOLTIPS": {
           "COMPONENTS": "Verwalten von Zuweisungen von Komponenten zum Slot",
-          "PRODUCTS": "Applikationen die den Slot registriert haben",
-          "INTERN": "Interne Eigenschaften des Slots"
+          "PRODUCTS": "Applikationen die den Slot registriert haben"
         }
       },
       "CHANGED": "Es gibt wichtige Änderungen.",
@@ -408,9 +404,7 @@
           "TOOLTIP": "Übersetzungen verwalten",
           "ADD_LANGUAGE": "Sprache hinzufügen",
           "REMOVE_LANGUAGE": "Sprache entfernen"
-        },
-        "INTERN": "Intern",
-        "INTERN.TOOLTIP": "Interne Eigenschaften"
+        }
       },
       "TREE": {
         "POSITION": "Position",
