@@ -25,26 +25,20 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   @Input() workspace: Workspace | undefined
   @Input() editMode = false
   @Input() isLoading = false
-  @Output() currentLogoUrl = new EventEmitter<string>()
-
+  @Output() currentLogoUrl = new EventEmitter<string>() // send logo url to detail header
+  // make it available in HTML
   public getLocation = getLocation
   public copyToClipboard = copyToClipboard
-  public sortByLocale = sortByLocale
-  public RefType = RefType
-
+  // data
   private readonly destroy$ = new Subject()
   public formGroup: FormGroup
   public productPaths$: Observable<string[]> = of([])
   public themeProductRegistered$!: Observable<boolean>
   public themes$!: Observable<string[]>
+  public deploymentPath: string | undefined = undefined
   public urlPattern = '/base-path-to-workspace'
   public externUrlPattern = 'http(s)://path-to-image'
-  public deploymentPath: string | undefined = undefined
-
   //Logo
-  public preview = false
-  public previewSrc: string | undefined
-  public selectedFile: File | undefined
   public minimumImageWidth = 150
   public minimumImageHeight = 150
   public fetchingLogoUrl: string | undefined = undefined
@@ -99,6 +93,11 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     this.fetchingLogoUrl = this.getLogoUrl(this.workspace)
     this.currentLogoUrl.emit(this.fetchingLogoUrl)
   }
+  // Image component informs about non existing stored Workspace logo
+  public onImageLoadingError(error: any) {
+    this.fetchingLogoUrl = error ? undefined : this.getLogoUrl(this.workspace)
+    this.currentLogoUrl.emit(this.fetchingLogoUrl)
+  }
 
   public onSave(): void {
     if (!this.workspace) return
@@ -123,12 +122,15 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   }
 
   public onRemoveLogo() {
-    /*
-    this.imageApi.({ refId: this.workspace?.name ?? '', refType: RefType.Logo }).subscribe({
-      next: () => {},
-      error: (err) => {}
+    this.imageApi.deleteImage({ refId: this.workspace?.name ?? '', refType: RefType.Logo }).subscribe({
+      next: () => {
+        this.fetchingLogoUrl = undefined // reset - important to trigger the change in UI
+        this.currentLogoUrl.emit(this.fetchingLogoUrl)
+      },
+      error: (err) => {
+        console.error('deleteImage', err)
+      }
     })
-    */
   }
 
   public onFileUpload(ev: Event): void {
@@ -161,20 +163,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     this.imageApi.uploadImage(saveRequestParameter).subscribe(() => {
       this.prepareImageResponse(name)
     })
-    /*    
-    this.imageApi.getImage({ refId: name, refType: RefType.Logo }).subscribe({
-      next: () => {
-        this.imageApi.updateImage(saveRequestParameter).subscribe(() => {
-          this.prepareImageResponse(name)
-        })
-      },
-      error: (err) => {
-        this.imageApi.uploadImage(saveRequestParameter).subscribe(() => {
-          this.prepareImageResponse(name)
-        })
-      }
-    })
-      */
   }
   private prepareImageResponse(name: string): void {
     this.fetchingLogoUrl = bffImageUrl(this.imageApi.configuration.basePath, name, RefType.Logo)

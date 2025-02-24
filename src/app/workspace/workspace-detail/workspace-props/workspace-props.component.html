@@ -182,12 +182,13 @@
           id="ws_detail_props_form_logo_image"
           [imageUrl]="fetchingLogoUrl"
           [small]="true"
+          (imageLoadError)="onImageLoadingError($event)"
         ></app-image-container>
         <button
           pButton
           id="ws_detail_props_item_remove_logo"
           icon="pi pi-times"
-          [disabled]="!(editMode && !fetchingLogoUrl)"
+          [disabled]="!editMode || (editMode && !fetchingLogoUrl)"
           class="action-button p-button-icon-only"
           [class.cursor-pointer]="editMode"
           (click)="onRemoveLogo()"
