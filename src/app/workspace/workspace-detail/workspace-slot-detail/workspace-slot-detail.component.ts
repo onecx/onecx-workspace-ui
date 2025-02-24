@@ -37,7 +37,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
     private readonly msgService: PortalMessageService
   ) {
     this.hasEditPermission = this.user.hasPermission('WORKSPACE_SLOT#EDIT')
-    this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm:ss' : 'medium'
+    this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm:ss' : 'M/d/yy, hh:mm:ss a'
   }
 
   public sortComponentsByName(a: ExtendedComponent, b: ExtendedComponent): number {

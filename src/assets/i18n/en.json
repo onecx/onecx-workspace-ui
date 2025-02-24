@@ -184,6 +184,8 @@
     }
   },
   "INTERNAL": {
+    "HEADER": "Internal",
+    "TOOLTIP": "Internal properties",
     "CREATION_DATE": "Created on",
     "CREATION_USER": "Created by",
     "MODIFICATION_DATE": "Changed on",

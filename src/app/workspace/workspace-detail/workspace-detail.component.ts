@@ -59,7 +59,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
     private readonly imageApi: ImagesInternalAPIService,
     private readonly cd: ChangeDetectorRef
   ) {
-    this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm' : 'medium'
+    this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm:ss' : 'M/d/yy, hh:mm:ss a'
   }
 
   ngOnInit() {

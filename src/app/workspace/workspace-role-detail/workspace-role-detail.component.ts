@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, Output, OnChanges } from '@angular/core
 import { FormGroup, FormControl, Validators } from '@angular/forms'
 import { TranslateService } from '@ngx-translate/core'
 
-import { PortalMessageService } from '@onecx/angular-integration-interface'
+import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 
 import {
   CreateWorkspaceRoleRequest,
@@ -14,7 +14,8 @@ import { ChangeMode, Role } from '../workspace-detail/workspace-roles/workspace-
 
 @Component({
   selector: 'app-workspace-role-detail',
-  templateUrl: './workspace-role-detail.component.html'
+  templateUrl: './workspace-role-detail.component.html',
+  styleUrls: ['./workspace-role-detail.component.scss']
 })
 export class WorkspaceRoleDetailComponent implements OnChanges {
   @Input() workspace!: Workspace | undefined
@@ -25,14 +26,17 @@ export class WorkspaceRoleDetailComponent implements OnChanges {
   @Input() displayDeleteDialog = false
   @Output() dataChanged: EventEmitter<boolean> = new EventEmitter()
 
+  public dateFormat = 'medium'
   public formGroupRole: FormGroup
   private orgRoleName: string | undefined
 
   constructor(
     private readonly wRoleApi: WorkspaceRolesAPIService,
+    private readonly user: UserService,
     private readonly translate: TranslateService,
     private readonly msgService: PortalMessageService
   ) {
+    this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm:ss' : 'M/d/yy, hh:mm:ss a'
     this.formGroupRole = new FormGroup({
       id: new FormControl(null),
       name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(100)]),

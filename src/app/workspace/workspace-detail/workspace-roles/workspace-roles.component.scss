@@ -1,5 +1,6 @@
 @import 'src/app/_ws-mixins.scss';
 
+@include readable-disabled-components;
 @include correct-data-view-control;
 @include correct-data-view-header-for-tabpanel;
 @include search-criteria-select-button;

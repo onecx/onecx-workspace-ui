@@ -23,7 +23,7 @@ export class ImageContainerComponent implements OnChanges {
   @Input() public small = false
   @Input() public imageUrl: string | undefined
   @Input() public styleClass: string | undefined
-  @Output() public imageLoadError = new EventEmitter<boolean>()
+  @Output() public imageLoadError = new EventEmitter<boolean>() // inform caller
 
   public displayImageUrl: string | undefined
   public defaultImageUrl$: Observable<string>
