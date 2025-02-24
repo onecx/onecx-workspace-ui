@@ -12,11 +12,14 @@
   <p-tabView>
     <p-tabPanel
       [header]="'DIALOG.MENU.TABS.DETAILS' | translate"
+      [attr.aria-label]="'DIALOG.MENU.TABS.DETAILS' | translate"
       [tooltip]="'DIALOG.MENU.TABS.DETAILS.TOOLTIP' | translate"
+      tooltipPosition="top"
+      tooltipEvent="focus|hover"
     >
       <form [formGroup]="formGroupRole" errorTailor>
         <div class="flex flex-wrap flex-column gap-4 justify-content-between">
-          <div class="mt-1">
+          <div>
             <span class="p-float-label" controlErrorAnchor>
               <input
                 pInputText
@@ -57,6 +60,8 @@
       [header]="'INTERNAL.HEADER' | translate"
       [attr.aria-label]="'INTERNAL.HEADER' | translate"
       [tooltip]="'INTERNAL.TOOLTIP' | translate"
+      tooltipPosition="top"
+      tooltipEvent="focus|hover"
     >
       <div class="flex flex-column justify-content-between gap-4">
         <div class="flex flex-row flex-wrap gap-4">

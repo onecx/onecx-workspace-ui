@@ -9,17 +9,20 @@
   [resizable]="true"
   [dismissableMask]="true"
   [contentStyle]="{ overflow: 'auto' }"
-  [style]="{ width: '750px' }"
+  [style]="{ width: '630px' }"
   styleClass="disable-max-height-preset"
 >
   <p-tabView #panelDetail [(activeIndex)]="tabIndex" (onChange)="onTabPanelChange($event)">
     <p-tabPanel
       [header]="'DIALOG.MENU.TABS.DETAILS' | translate"
+      [attr.aria-label]="'DIALOG.MENU.TABS.DETAILS' | translate"
       [tooltip]="'DIALOG.MENU.TABS.DETAILS.TOOLTIP' | translate"
+      tooltipPosition="top"
+      tooltipEvent="focus|hover"
     >
       <form [formGroup]="formGroup" errorTailor>
         <div class="grid">
-          <div class="col-12 md:col-12 my-1" style="min-width: 15rem">
+          <div class="col-12 md:col-7" style="min-width: 15rem">
             <span class="p-float-label" controlErrorAnchor>
               <input
                 pInputText
@@ -35,6 +38,37 @@
               <label class="ocx-required-label" for="ws_menu_detail_field_menu_name">
                 {{ 'MENU_ITEM.MENU_NAME' | translate }}
               </label>
+            </span>
+          </div>
+          <div class="col-12 md:col-5 my-1" style="min-width: 10rem">
+            <span class="p-float-label mb-1" controlErrorAnchor>
+              <p-dropdown
+                id="ws_menu_detail_field_badge"
+                styleClass="w-full min-w-min input-field-correction"
+                formControlName="badge"
+                [showClear]="true"
+                [options]="iconItems"
+                [appendTo]="'body'"
+                [showClear]="true"
+                [ariaLabel]="'MENU_ITEM.BADGE' | translate"
+                [pTooltip]="'MENU_ITEM.TOOLTIP.BADGE' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+              >
+                <ng-template let-icon pTemplate="selectedItem">
+                  <div class="flex align-items-center">
+                    <span class="pi pi-{{ icon.value }} mr-3"> </span>
+                    <span>{{ icon.label }}</span>
+                  </div>
+                </ng-template>
+                <ng-template let-icon pTemplate="item">
+                  <div class="flex align-items-center">
+                    <span class="pi pi-{{ icon.value }} mr-3"> </span>
+                    <span>{{ icon.label }}</span>
+                  </div>
+                </ng-template>
+              </p-dropdown>
+              <label for="ws_menu_detail_field_badge">{{ 'MENU_ITEM.BADGE' | translate }} </label>
             </span>
           </div>
 
@@ -116,7 +150,7 @@
             </span>
           </div>
 
-          <div class="col-12 md:col-2 my-1">
+          <div class="col-12 md:col-3 my-1">
             <span class="p-float-label mb-1" controlErrorAnchor>
               <input
                 pInputText
@@ -132,38 +166,7 @@
               <label for="ws_menu_detail_field_position">{{ 'MENU_ITEM.POSITION' | translate }}</label>
             </span>
           </div>
-          <div class="col-12 md:col-4 my-1" style="min-width: 10rem">
-            <span class="p-float-label mb-1" controlErrorAnchor>
-              <p-dropdown
-                id="ws_menu_detail_field_badge"
-                styleClass="w-full min-w-min input-field-correction"
-                formControlName="badge"
-                [showClear]="true"
-                [options]="iconItems"
-                [appendTo]="'body'"
-                [showClear]="true"
-                [ariaLabel]="'MENU_ITEM.BADGE' | translate"
-                [pTooltip]="'MENU_ITEM.TOOLTIP.BADGE' | translate"
-                tooltipPosition="top"
-                tooltipEvent="hover"
-              >
-                <ng-template let-icon pTemplate="selectedItem">
-                  <div class="flex align-items-center">
-                    <span class="pi pi-{{ icon.value }} mr-3"> </span>
-                    <span>{{ icon.label }}</span>
-                  </div>
-                </ng-template>
-                <ng-template let-icon pTemplate="item">
-                  <div class="flex align-items-center">
-                    <span class="pi pi-{{ icon.value }} mr-3"> </span>
-                    <span>{{ icon.label }}</span>
-                  </div>
-                </ng-template>
-              </p-dropdown>
-              <label for="ws_menu_detail_field_badge">{{ 'MENU_ITEM.BADGE' | translate }} </label>
-            </span>
-          </div>
-          <div class="col-12 md:col-3 my-1" style="min-width: 10rem">
+          <div class="col-12 md:col-5 my-1" style="min-width: 10rem">
             <span class="p-float-label mb-1" controlErrorAnchor>
               <p-dropdown
                 id="ws_menu_detail_field_scope"
@@ -181,7 +184,7 @@
             </span>
           </div>
 
-          <div class="col-12 md:col-3 my-1 md:pl-5 flex justify-content-start">
+          <div class="col-12 md:col-4 my-1 md:pl-5 flex justify-content-start">
             <p-checkbox
               id="ws_menu_detail_field_disabled"
               class="checkbox-label"
@@ -196,7 +199,7 @@
             </p-checkbox>
           </div>
 
-          <div class="col-12 md:col-9 my-1">
+          <div class="col-12 md:col-8 my-1">
             <span class="p-float-label mb-1" controlErrorAnchor>
               <input
                 pInputText
@@ -212,7 +215,7 @@
               <label for="ws_menu_detail_field_description">{{ 'MENU_ITEM.DESCRIPTION' | translate }} </label>
             </span>
           </div>
-          <div class="col-12 md:col-3 my-1 md:pl-5 flex justify-content-start">
+          <div class="col-12 md:col-4 my-1 md:pl-5 flex justify-content-start">
             <p-checkbox
               id="ws_menu_detail_field_ws_exit"
               class="checkbox-label"
@@ -232,9 +235,12 @@
 
     <p-tabPanel
       [header]="'DIALOG.MENU.TABS.I18N.LABEL' | translate"
+      [attr.aria-label]="'DIALOG.MENU.TABS.I18N.LABEL' | translate"
       [tooltip]="'DIALOG.MENU.TABS.I18N.TOOLTIP' | translate"
+      tooltipPosition="top"
+      tooltipEvent="focus|hover"
     >
-      <div class="mt-3 mb-1 flex flex-column gap-4">
+      <div class="flex flex-column gap-4">
         <span *ngFor="let language of languagesDisplayed; index as i" class="p-float-label p-input-icon-right w-30rem">
           <a
             [id]="'ws_menu_detail_i18n_lang_' + i + '_action_remove'"
@@ -255,7 +261,10 @@
           <label [for]="'ws_menu_detail_i18n_lang_' + i + '_value'">{{ getLanguageLabel(language.value) }} </label>
         </span>
       </div>
-      <div class="mt-5 flex flex-row align-items-center column-gap-4 row-gap-2" *ngIf="languagesAvailable.length > 0">
+      <div
+        *ngIf="languagesAvailable.length > 0"
+        class="mt-5 mb-3 flex flex-row align-items-center column-gap-4 row-gap-2"
+      >
         <div class="text-sm w-4rem">{{ 'DIALOG.MENU.TABS.I18N.ADD_LANGUAGE' | translate }}</div>
         <div class="slim-selectbutton filter-selectbutton">
           <p-selectButton
@@ -278,6 +287,8 @@
       [header]="'INTERNAL.HEADER' | translate"
       [attr.aria-label]="'INTERNAL.HEADER' | translate"
       [tooltip]="'INTERNAL.TOOLTIP' | translate"
+      tooltipPosition="top"
+      tooltipEvent="focus|hover"
     >
       <app-menu-intern [menuItem]="menuItem" [dateFormat]="dateFormat"></app-menu-intern>
     </p-tabPanel>

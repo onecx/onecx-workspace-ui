@@ -397,7 +397,7 @@
         "EDIT": "Edit details"
       },
       "TABS": {
-        "DETAILS": "Details",
+        "DETAILS": "Properties",
         "DETAILS.TOOLTIP": "Manage Properties",
         "I18N": {
           "LABEL": "Translations",
