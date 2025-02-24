@@ -131,17 +131,17 @@ describe('ChooseFileComponent', () => {
     let mockData: any
     beforeEach(() => {
       mockData = {
-        'WORKSPACE_IMPORT.VALIDATION_WORKSPACE_MISSING': 'Workspace missing',
-        'WORKSPACE_IMPORT.VALIDATION_WORKSPACE_NAME_MISSING': 'Workspace name missing',
-        'WORKSPACE_IMPORT.VALIDATION_WORKSPACE_DISPLAY_NAME_MISSING': 'Workspace display name missing',
-        'WORKSPACE_IMPORT.VALIDATION_WORKSPACE_THEME_MISSING': 'Workspace theme missing',
-        'WORKSPACE_IMPORT.VALIDATION_WORKSPACE_URL_MISSING': 'Workspace URL missing',
+        'WORKSPACE_IMPORT.VALIDATION.WORKSPACE.MISSING': 'Workspace missing',
+        'WORKSPACE_IMPORT.VALIDATION.WORKSPACE.NAME_MISSING': 'Workspace name missing',
+        'WORKSPACE_IMPORT.VALIDATION.WORKSPACE.DISPLAY_NAME_MISSING': 'Workspace display name missing',
+        'WORKSPACE_IMPORT.VALIDATION.WORKSPACE.THEME_MISSING': 'Workspace theme missing',
+        'WORKSPACE_IMPORT.VALIDATION.WORKSPACE.URL_MISSING': 'Workspace URL missing',
         'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_KEY_MISSING': 'Menu item key missing',
         'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_NAME_MISSING': 'Menu item name missing',
         'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_WRONG_POSITION': 'Invalid menu item position',
         'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_WRONG_DISABLED': 'Invalid menu item disabled state',
         'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_WRONG_WORKSPACEEXIT': 'Invalid menu item external state',
-        'WORKSPACE_IMPORT.VALIDATION_RESULT': 'Validation failed: '
+        'WORKSPACE_IMPORT.VALIDATION.RESULT': 'Validation failed: '
       }
     })
 

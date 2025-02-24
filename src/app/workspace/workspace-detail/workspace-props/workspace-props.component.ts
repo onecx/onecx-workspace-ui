@@ -122,6 +122,15 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     return changes
   }
 
+  public onRemoveLogo() {
+    /*
+    this.imageApi.({ refId: this.workspace?.name ?? '', refType: RefType.Logo }).subscribe({
+      next: () => {},
+      error: (err) => {}
+    })
+    */
+  }
+
   public onFileUpload(ev: Event): void {
     if (ev.target && (ev.target as HTMLInputElement).files) {
       const files = (ev.target as HTMLInputElement).files
@@ -149,6 +158,10 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       refType: RefType.Logo,
       body: blob
     }
+    this.imageApi.uploadImage(saveRequestParameter).subscribe(() => {
+      this.prepareImageResponse(name)
+    })
+    /*    
     this.imageApi.getImage({ refId: name, refType: RefType.Logo }).subscribe({
       next: () => {
         this.imageApi.updateImage(saveRequestParameter).subscribe(() => {
@@ -161,6 +174,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
         })
       }
     })
+      */
   }
   private prepareImageResponse(name: string): void {
     this.fetchingLogoUrl = bffImageUrl(this.imageApi.configuration.basePath, name, RefType.Logo)

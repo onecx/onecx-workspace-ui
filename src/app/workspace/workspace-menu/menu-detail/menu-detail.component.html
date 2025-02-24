@@ -274,7 +274,7 @@
     </p-tabPanel>
 
     <p-tabPanel
-      [disabled]="changeMode === 'CREATE'"
+      *ngIf="changeMode !== 'CREATE'"
       [header]="'DIALOG.MENU.TABS.INTERN' | translate"
       [tooltip]="'DIALOG.MENU.TABS.INTERN.TOOLTIP' | translate"
     >

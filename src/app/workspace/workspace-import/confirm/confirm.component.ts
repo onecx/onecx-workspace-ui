@@ -14,6 +14,7 @@ export class ConfirmComponent implements OnInit {
   // eslint-disable-next-line @typescript-eslint/ban-types
   @Input() public importResponse: {} | undefined
   @Output() public isLoading = new EventEmitter<boolean>(true)
+  @Output() public isFormValide = new EventEmitter<boolean>()
 
   private workspaces!: WorkspaceAbstract[] | undefined
   public workspaceNameExists = false
@@ -39,12 +40,14 @@ export class ConfirmComponent implements OnInit {
     this.workspaceNameExists = false
     this.baseUrlExists = false
     if (this.workspaces) {
-      for (const { name, baseUrl } of this.workspaces) {
-        if (this.workspaceName === name) {
+      for (const { displayName, name, baseUrl } of this.workspaces) {
+        if (this.workspaceName === name || this.displayName === displayName) {
           this.workspaceNameExists = true
+          this.isFormValide.emit(false)
         }
         if (!this.baseUrlIsMissing && baseUrl === this.baseUrl) {
           this.baseUrlExists = true
+          this.isFormValide.emit(false)
         }
       }
     }

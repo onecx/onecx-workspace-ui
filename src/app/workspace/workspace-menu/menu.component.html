@@ -119,44 +119,52 @@
       <!-- TABLE HEADER -->
       <ng-template pTemplate="header" let-columns>
         <tr id="ws_menu_table_header_row_1">
-          <th id="ws_menu_table_header_row_1_1" class="pb-3 vertical-align-top text-left border-transparent">
-            <p-toggleButton
-              inputId="ws_menu_table_header_tree_toggle"
-              styleClass="white-space-nowrap"
-              [onIcon]="'pi pi-arrow-down-left-and-arrow-up-right-to-center'"
-              [offIcon]="'pi pi-arrow-up-right-and-arrow-down-left-from-center'"
-              [onLabel]="'ACTIONS.TREE.COLLAPSE_ALL' | translate"
-              [offLabel]="'ACTIONS.TREE.EXPAND_ALL' | translate"
-              [(ngModel)]="treeExpanded"
-              [disabled]="menuNodes.length === 0"
-              (onChange)="onToggleTreeViewMode($event)"
-              [ariaLabel]="'ACTIONS.TREE.EXPAND_ALL.TOOLTIP' | translate"
-              [pTooltip]="'ACTIONS.TREE.EXPAND_ALL.TOOLTIP' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            />
+          <th id="ws_menu_table_header_row_1_1" class="pb-2 vertical-align-top text-left border-transparent">
+            <div class="slim-selectbutton search-criteria-selectbutton">
+              <p-selectButton
+                inputid="ws_menu_table_header_row_1_switch_tree_label"
+                styleClass="max-w-15rem flex flex flex-wrap row-gap-1"
+                [options]="treeNodeLabelSwitchItems"
+                [(ngModel)]="treeNodeLabelSwitchValue"
+                [disabled]="menuNodes.length === 0"
+                (onChange)="onTreeNodeLabelSwitchChange($event)"
+                [ariaLabel]="'DIALOG.MENU.HEADER.DISPLAYED_ITEM' | translate"
+                [pTooltip]="'DIALOG.MENU.HEADER.DISPLAYED_ITEM' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+              >
+                <ng-template let-item pTemplate="item">{{ item.label }} </ng-template>
+              </p-selectButton>
+            </div>
           </th>
           <th
             id="ws_menu_table_header_row_1_2"
-            class="pl-5 vertical-align-top text-left border-transparent"
+            class="pl-3 vertical-align-top text-left border-transparent"
             [attr.colspan]="displayRoles ? 1 + columns.length : 6"
           >
             <div class="flex flex-row justify-content-start align-items-center column-gap-5">
-              <p-toggleButton
-                inputid="ws_menu_table_header_row_1_switch_details_n_roles"
-                styleClass="white-space-nowrap hidden-xs"
-                [onIcon]="'pi pi-search-plus'"
-                [offIcon]="'pi pi-lock'"
-                [onLabel]="'DIALOG.MENU.HEADER.DETAILS' | translate"
-                [offLabel]="'DIALOG.MENU.HEADER.ROLES' | translate"
-                [(ngModel)]="treeTableContentValue"
-                [disabled]="menuNodes.length === 0"
-                (onChange)="onToggleTreeTableContent($event)"
-                [ariaLabel]="'DIALOG.MENU.HEADER.DETAILS_N_ROLES.TOOLTIP' | translate"
-                [pTooltip]="'DIALOG.MENU.HEADER.DETAILS_N_ROLES.TOOLTIP' | translate"
-                tooltipPosition="top"
-                tooltipEvent="hover"
-              />
+              <div class="slim-selectbutton search-criteria-selectbutton">
+                <p-selectButton
+                  inputid="ws_menu_table_header_row_1_switch_content"
+                  styleClass="white-space-nowrap hidden-xs"
+                  [options]="(treeTableContentSwitchItems$ | async) ?? []"
+                  [(ngModel)]="treeTableContentSwitchValue"
+                  [disabled]="menuNodes.length === 0"
+                  (onChange)="onToggleTreeTableContent($event)"
+                >
+                  <ng-template let-item pTemplate
+                    ><span
+                      [id]="'ws_menu_table_header_row_1_switch_content_' + item.value"
+                      [attr.ariaLabel]="item.label"
+                      [pTooltip]="item.tooltip"
+                      tooltipPosition="top"
+                      tooltipEvent="hover"
+                    >
+                      {{ item.label }}</span
+                    ></ng-template
+                  >
+                </p-selectButton>
+              </div>
               <div *ngIf="displayRoles && wRoles.length > 3" class="p-inputgroup h-2rem">
                 <span class="p-inputgroup-addon pi pi-filter p-2 text-sm min-w-min"> </span>
                 <input
@@ -179,20 +187,26 @@
         <!-- ROW 2 -->
         <tr id="ws_menu_table_header_row_2">
           <th id="ws_menu_table_header_row_2_1" class="pr-4 vertical-align-bottom border-transparent border-bottom-2">
-            <div class="slim-selectbutton filter-selectbutton">
+            <div class="slim-selectbutton search-criteria-selectbutton">
               <p-selectButton
-                inputid="ws_menu_table_header_row_1_switch_tree_label"
-                styleClass="data-view-control max-w-15rem flex flex flex-wrap row-gap-1"
-                [options]="treeNodeLabelSwitchItems"
-                [(ngModel)]="treeNodeLabelSwitchValue"
+                inputid="ws_menu_table_header_row_2_switch_content"
+                styleClass="white-space-nowrap hidden-xs"
+                [options]="(treeTableExpandSwitchItems$ | async) ?? []"
+                [(ngModel)]="treeTableExpandSwitchValue"
                 [disabled]="menuNodes.length === 0"
-                (onChange)="onTreeNodeLabelSwitchChange($event)"
-                [ariaLabel]="'DIALOG.MENU.HEADER.DISPLAYED_ITEM' | translate"
-                [pTooltip]="'DIALOG.MENU.HEADER.DISPLAYED_ITEM' | translate"
-                tooltipPosition="top"
-                tooltipEvent="hover"
+                (onChange)="onToggleTreeViewMode($event)"
               >
-                <ng-template let-item pTemplate="item">{{ item.label }} </ng-template>
+                <ng-template let-item pTemplate
+                  ><span
+                    [id]="'ws_menu_table_header_row_1_switch_expand_' + item.value"
+                    [attr.ariaLabel]="item.label"
+                    [pTooltip]="item.tooltip"
+                    tooltipPosition="top"
+                    tooltipEvent="hover"
+                  >
+                    {{ item.label }}</span
+                  ></ng-template
+                >
               </p-selectButton>
             </div>
           </th>
@@ -304,7 +318,7 @@
           </td>
           <!-- menu item actions -->
           <ng-container *ngIf="!displayRoles">
-            <td class="p-0 hidden-xs">
+            <td class="p-0 hidden-xs border-right-1">
               <div class="flex flex-row flex-nowrap column-gap-0 align-items-center">
                 <button
                   *ocxIfPermission="'MENU#EDIT'"

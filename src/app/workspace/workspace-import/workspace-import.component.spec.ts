@@ -131,7 +131,7 @@ describe('WorkspaceImportComponent', () => {
 
     component.importWorkspace()
 
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'WORKSPACE_IMPORT.IMPORT_ERROR' })
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'WORKSPACE_IMPORT.VALIDATION.WORKSPACE.MISSING' })
   })
 
   it('should import a workspace successfully', () => {

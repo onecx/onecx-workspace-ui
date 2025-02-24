@@ -33,7 +33,7 @@
       <div *ngIf="!iamAvailable" id="ws_roles_quick_filter_placeholder"></div>
       <div
         *ngIf="iamAvailable"
-        class="slim-selectbutton filter-selectbutton"
+        class="slim-selectbutton search-criteria-selectbutton"
         [attr.aria-label]="'DIALOG.ROLE.QUICK_FILTER.TOOLTIP' | translate"
         [pTooltip]="'DIALOG.ROLE.QUICK_FILTER.TOOLTIP' | translate"
         tooltipPosition="top"
@@ -41,7 +41,6 @@
       >
         <p-selectButton
           inputid="ws_roles_quick_filter"
-          styleClass="data-view-control"
           [options]="quickFilterItems"
           [(ngModel)]="quickFilterValue"
           (onChange)="onQuickFilterChange($event)"
