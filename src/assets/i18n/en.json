@@ -535,6 +535,7 @@
     "PREVIEW_MENU": "Menu Structure",
     "CONFIRMATION": "Confirmation",
     "SUMMARY": "Summary",
+    "PRODUCT_HINT": "Only applications that are known in the Application Store are imported.",
     "THEME_NAME.TOOLTIP": "Name of the used Theme. Can be changed later.",
     "WORKSPACE_NAME": "Name",
     "WORKSPACE_NAME.TOOLTIP": "Unique name of the new Workspace. Uniqueness is checked in next step.",
