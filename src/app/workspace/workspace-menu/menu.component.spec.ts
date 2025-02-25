@@ -312,7 +312,7 @@ describe('MenuComponent', () => {
 
     it('should change the tree table content: display of roles', () => {
       spyOn(component, 'onResetRoleFilter')
-      const event = { checked: true }
+      const event = { value: 'ROLES' }
 
       component.onToggleTreeTableContent(event)
 
@@ -322,7 +322,7 @@ describe('MenuComponent', () => {
 
     it('should change the tree table content: display of roles', () => {
       spyOn(component, 'onResetRoleFilter')
-      const event = { checked: false }
+      const event = { value: 'DETAILS' }
 
       component.onToggleTreeTableContent(event)
 
@@ -654,7 +654,7 @@ describe('MenuComponent', () => {
   })
 
   it('should toggle tree view mode and update tree nodes', () => {
-    const event = { checked: true }
+    const event = { value: 'EXPAND' }
     component.menuNodes = [treeNodes]
 
     component.onToggleTreeViewMode(event)

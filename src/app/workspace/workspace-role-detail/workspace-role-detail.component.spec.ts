@@ -3,9 +3,10 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { HttpClient, provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
-import { of, throwError } from 'rxjs'
+import { BehaviorSubject, of, throwError } from 'rxjs'
 
-import { AppStateService, createTranslateLoader, PortalMessageService } from '@onecx/portal-integration-angular'
+import { AppStateService, PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+import { createTranslateLoader } from '@onecx/portal-integration-angular'
 
 import { Workspace, WorkspaceRolesAPIService } from 'src/app/shared/generated'
 import { Role } from '../workspace-detail/workspace-roles/workspace-roles.component'
@@ -38,6 +39,11 @@ describe('WorkspaceRoleDetailComponent', () => {
     updateWorkspaceRole: jasmine.createSpy('updateWorkspaceRole').and.returnValue(of({})),
     deleteWorkspaceRole: jasmine.createSpy('deleteWorkspaceRole').and.returnValue(of({}))
   }
+  const mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
+  mockUserService.hasPermission.and.callFake((permission: string) => {
+    return ['WORKSPACE_SLOT#EDIT'].includes(permission)
+  })
+  mockUserService.lang$ = new BehaviorSubject('de')
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -57,18 +63,24 @@ describe('WorkspaceRoleDetailComponent', () => {
         provideHttpClientTesting(),
         provideHttpClient(),
         { provide: PortalMessageService, useValue: msgServiceSpy },
-        { provide: WorkspaceRolesAPIService, useValue: wRoleServiceSpy }
+        { provide: WorkspaceRolesAPIService, useValue: wRoleServiceSpy },
+        { provide: UserService, useValue: mockUserService }
       ]
     }).compileComponents()
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
   }))
 
-  beforeEach(() => {
+  function initializeComponent(): void {
     fixture = TestBed.createComponent(WorkspaceRoleDetailComponent)
     component = fixture.componentInstance
     component.workspace = workspace
     fixture.detectChanges()
+  }
+
+  beforeEach(() => {
+    initializeComponent()
+    // reset
     wRoleServiceSpy.createWorkspaceRole.calls.reset()
     wRoleServiceSpy.updateWorkspaceRole.calls.reset()
     wRoleServiceSpy.deleteWorkspaceRole.calls.reset()
@@ -313,5 +325,24 @@ describe('WorkspaceRoleDetailComponent', () => {
 
     expect(console.error).toHaveBeenCalledWith('deleteWorkspaceRole', errorResponse)
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.ROLE.MESSAGE_NOK' })
+  })
+
+  /**
+   * EXTRAS
+   */
+  describe('language', () => {
+    it('should set German date format', () => {
+      mockUserService.lang$.next('de')
+      initializeComponent()
+
+      expect(component.dateFormat).toEqual('dd.MM.yyyy HH:mm:ss')
+    })
+
+    it('should set English date format', () => {
+      mockUserService.lang$.next('en')
+      initializeComponent()
+
+      expect(component.dateFormat).toEqual('M/d/yy, hh:mm:ss a')
+    })
   })
 })

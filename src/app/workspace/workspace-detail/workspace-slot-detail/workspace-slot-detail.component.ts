@@ -20,7 +20,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   @Input() displayDeleteDialog = false
   @Output() detailClosed: EventEmitter<boolean> = new EventEmitter()
 
-  public dateFormat = 'medium'
+  public dateFormat = 'M/d/yy, hh:mm:ss a'
   public slot: CombinedSlot | undefined
   public wComponents: ExtendedComponent[] = []
   public psComponents: ExtendedComponent[] = [] // org ps components reduced by used in slot

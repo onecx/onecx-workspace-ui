@@ -26,7 +26,7 @@ export class WorkspaceRoleDetailComponent implements OnChanges {
   @Input() displayDeleteDialog = false
   @Output() dataChanged: EventEmitter<boolean> = new EventEmitter()
 
-  public dateFormat = 'medium'
+  public dateFormat = 'M/d/yy, hh:mm:ss a'
   public formGroupRole: FormGroup
   private orgRoleName: string | undefined
 

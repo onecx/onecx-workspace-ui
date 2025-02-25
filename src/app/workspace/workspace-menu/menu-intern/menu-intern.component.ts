@@ -9,7 +9,7 @@ import { WorkspaceMenuItem } from 'src/app/shared/generated'
 })
 export class MenuInternComponent {
   @Input() menuItem: WorkspaceMenuItem | undefined
-  @Input() dateFormat = 'medium'
+  @Input() dateFormat = 'M/d/yy, hh:mm:ss a'
 
   constructor(private readonly translate: TranslateService) {}
 }

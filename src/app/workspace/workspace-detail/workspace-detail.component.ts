@@ -33,7 +33,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
   public exceptionKey: string | undefined = undefined
   public headerImageUrl?: string
   public selectedTabIndex = 0
-  public dateFormat = 'medium'
+  public dateFormat = 'M/d/yy, hh:mm:ss a'
   public objectDetails!: ObjectDetailItem[]
   public workspace$!: Observable<Workspace>
   public workspace: Workspace | undefined

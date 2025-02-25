@@ -327,14 +327,14 @@ export class MenuComponent implements OnInit, OnDestroy {
     }
     return label
   }
+  public isObjectEmpty(obj: object) {
+    return Object.keys(obj).length === 0
+  }
 
   public onToggleTreeTableContent(ev: any): void {
     this.displayRoles = ev.value === 'ROLES'
     if (!this.displayRoles) this.onResetRoleFilter()
     this.loadRolesAndAssignments()
-  }
-  public isObjectEmpty(obj: object) {
-    return Object.keys(obj).length === 0
   }
 
   // change visibility of menu item by click in tree

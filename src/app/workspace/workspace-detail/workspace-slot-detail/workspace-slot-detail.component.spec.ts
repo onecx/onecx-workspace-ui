@@ -5,7 +5,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { BehaviorSubject, of, throwError } from 'rxjs'
 
-import { PortalMessageService, UserService } from '@onecx/portal-integration-angular'
+import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 
 import { SlotAPIService } from 'src/app/shared/generated'
 import { CombinedSlot, ExtendedComponent } from '../workspace-slots/workspace-slots.component'
@@ -336,7 +336,7 @@ describe('WorkspaceSlotDetailComponent', () => {
       mockUserService.lang$.next('en')
       initializeComponent()
 
-      expect(component.dateFormat).toEqual('medium')
+      expect(component.dateFormat).toEqual('M/d/yy, hh:mm:ss a')
     })
   })
 

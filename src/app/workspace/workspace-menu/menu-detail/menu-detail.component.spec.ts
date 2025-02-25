@@ -197,14 +197,14 @@ describe('MenuDetailComponent', () => {
     mockUserService.lang$.next('de')
     initializeComponent()
 
-    expect(component.dateFormat).toEqual('dd.MM.yyyy HH:mm')
+    expect(component.dateFormat).toEqual('dd.MM.yyyy HH:mm:ss')
   })
 
   it('should set English date format', () => {
     mockUserService.lang$.next('en')
     initializeComponent()
 
-    expect(component.dateFormat).toEqual('short')
+    expect(component.dateFormat).toEqual('M/d/yy, hh:mm:ss a')
   })
 
   describe('ngOnChanges', () => {
