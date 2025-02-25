@@ -9,7 +9,7 @@
   [resizable]="true"
   [dismissableMask]="true"
   [contentStyle]="{ overflow: 'auto' }"
-  [style]="{ width: '630px' }"
+  [style]="{ width: '650px' }"
   styleClass="disable-max-height-preset"
 >
   <p-tabView #panelDetail [(activeIndex)]="tabIndex" (onChange)="onTabPanelChange($event)">
@@ -21,7 +21,7 @@
       tooltipEvent="focus|hover"
     >
       <form [formGroup]="formGroup" errorTailor>
-        <div class="grid">
+        <div class="grid align-items-center">
           <div class="col-12 md:col-7" style="min-width: 15rem">
             <span class="p-float-label" controlErrorAnchor>
               <input
@@ -40,15 +40,14 @@
               </label>
             </span>
           </div>
-          <div class="col-12 md:col-5 my-1" style="min-width: 10rem">
-            <span class="p-float-label mb-1" controlErrorAnchor>
+          <div class="col-12 md:col-5" style="min-width: 10rem">
+            <span class="p-float-label" controlErrorAnchor>
               <p-dropdown
                 id="ws_menu_detail_field_badge"
                 styleClass="w-full min-w-min input-field-correction"
                 formControlName="badge"
                 [showClear]="true"
                 [options]="iconItems"
-                [appendTo]="'body'"
                 [showClear]="true"
                 [ariaLabel]="'MENU_ITEM.BADGE' | translate"
                 [pTooltip]="'MENU_ITEM.TOOLTIP.BADGE' | translate"
@@ -156,7 +155,7 @@
                 pInputText
                 type="text"
                 id="ws_menu_detail_field_position"
-                class="w-full pt-3 pb-2"
+                class="w-full pt-3 pb-2 text-center"
                 formControlName="position"
                 aria-labelledby="ws_menu_detail_field_position"
                 [pTooltip]="'MENU_ITEM.TOOLTIP.POSITION' | translate"
@@ -172,6 +171,7 @@
                 id="ws_menu_detail_field_scope"
                 styleClass="w-full min-w-min input-field-correction"
                 formControlName="scope"
+                [appendTo]="'body'"
                 [showClear]="true"
                 [options]="scopeItems"
                 [ariaLabel]="'MENU_ITEM.SCOPE' | translate"
@@ -184,7 +184,7 @@
             </span>
           </div>
 
-          <div class="col-12 md:col-4 my-1 md:pl-5 flex justify-content-start">
+          <div class="col-12 md:col-4 md:pl-5 flex justify-content-start align-items-center">
             <p-checkbox
               id="ws_menu_detail_field_disabled"
               class="checkbox-label"
@@ -215,7 +215,7 @@
               <label for="ws_menu_detail_field_description">{{ 'MENU_ITEM.DESCRIPTION' | translate }} </label>
             </span>
           </div>
-          <div class="col-12 md:col-4 my-1 md:pl-5 flex justify-content-start">
+          <div class="col-12 md:col-4 md:pl-5 flex justify-content-start align-items-center">
             <p-checkbox
               id="ws_menu_detail_field_ws_exit"
               class="checkbox-label"
@@ -266,10 +266,10 @@
         class="mt-5 mb-3 flex flex-row align-items-center column-gap-4 row-gap-2"
       >
         <div class="text-sm w-4rem">{{ 'DIALOG.MENU.TABS.I18N.ADD_LANGUAGE' | translate }}</div>
-        <div class="slim-selectbutton filter-selectbutton">
+        <div class="slim-selectbutton search-criteria-selectbutton">
           <p-selectButton
             inputid="ws_menu_detail_i18n_language_selector"
-            styleClass="data-view-control flex flex-nowrap"
+            styleClass="flex flex-nowrap"
             [options]="languagesAvailable"
             (onOptionClick)="onAddLanguage($event.option.value)"
             [ariaLabel]="'DIALOG.MENU.TABS.I18N.ADD_LANGUAGE' | translate"

@@ -1,14 +1,14 @@
 ::ng-deep {
   .image-object {
-    object-fit: contain;
+    object-fit: scale-down;
     vertical-align: middle;
   }
   .image-sm {
-    max-height: 35px;
+    max-height: 39px;
     max-width: 100px;
   }
   .placeholder-sm {
-    max-height: 35px;
+    max-height: 39px;
     max-width: 65px;
   }
   .image-lg {
