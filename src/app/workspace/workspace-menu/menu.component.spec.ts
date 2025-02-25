@@ -201,6 +201,30 @@ describe('MenuComponent', () => {
     })
   })
 
+  describe('Translation of tree table switches:', () => {
+    beforeEach(() => {
+      component.ngOnInit()
+    })
+
+    it('should have expand/collapse', () => {
+      if (component.treeTableExpandSwitchItems$) {
+        component.treeTableExpandSwitchItems$.subscribe((data) => {
+          expect(data[0].value).toEqual('COLLAPSE')
+          expect(data[1].value).toEqual('EXPAND')
+        })
+      }
+    })
+
+    it('should have expand/collapse', () => {
+      if (component.treeTableContentSwitchItems$) {
+        component.treeTableContentSwitchItems$.subscribe((data) => {
+          expect(data[0].value).toEqual('DETAILS')
+          expect(data[1].value).toEqual('ROLES')
+        })
+      }
+    })
+  })
+
   describe('Page actions:', () => {
     beforeEach(() => {
       component.ngOnInit()
@@ -267,7 +291,7 @@ describe('MenuComponent', () => {
 
     it('should call EXPORT: hide on conditions', () => {
       component.menuItems = undefined
-      component.prepareActionButtons()
+      component['prepareActionButtons']()
 
       if (component.actions$) {
         component.actions$.subscribe((actions) => {

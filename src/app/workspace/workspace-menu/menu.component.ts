@@ -166,7 +166,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     })
   }
 
-  public prepareTreeTableSwitchItems(): void {
+  private prepareTreeTableSwitchItems(): void {
     // Due to use PrimeNG Tooltips: do not use the "title" property of SelectItem here
     this.treeTableExpandSwitchItems$ = this.translate
       .get([
@@ -216,7 +216,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       )
   }
 
-  public prepareActionButtons(): void {
+  private prepareActionButtons(): void {
     this.actions$ = this.translate
       .get([
         'ACTIONS.NAVIGATION.BACK',

@@ -93,6 +93,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     this.fetchingLogoUrl = this.getLogoUrl(this.workspace)
     this.currentLogoUrl.emit(this.fetchingLogoUrl)
   }
+
   // Image component informs about non existing stored Workspace logo
   public onImageLoadingError(error: any) {
     this.fetchingLogoUrl = error ? undefined : this.getLogoUrl(this.workspace)
@@ -122,15 +123,16 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   }
 
   public onRemoveLogo() {
-    this.imageApi.deleteImage({ refId: this.workspace?.name ?? '', refType: RefType.Logo }).subscribe({
-      next: () => {
-        this.fetchingLogoUrl = undefined // reset - important to trigger the change in UI
-        this.currentLogoUrl.emit(this.fetchingLogoUrl)
-      },
-      error: (err) => {
-        console.error('deleteImage', err)
-      }
-    })
+    if (this.workspace?.name)
+      this.imageApi.deleteImage({ refId: this.workspace?.name, refType: RefType.Logo }).subscribe({
+        next: () => {
+          this.fetchingLogoUrl = undefined // reset - important to trigger the change in UI
+          this.currentLogoUrl.emit(this.fetchingLogoUrl)
+        },
+        error: (err) => {
+          console.error('deleteImage', err)
+        }
+      })
   }
 
   public onFileUpload(ev: Event): void {
