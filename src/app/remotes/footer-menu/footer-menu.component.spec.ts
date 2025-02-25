@@ -194,6 +194,7 @@ describe('OneCXFooterMenuComponent', () => {
 
   it('should return 0 menu items when unable to load them', async () => {
     const appStateService = TestBed.inject(AppStateService)
+    spyOn(console, 'error')
     spyOn(appStateService.currentWorkspace$, 'asObservable').and.returnValue(
       of({
         workspaceName: 'test-workspace'
@@ -207,5 +208,6 @@ describe('OneCXFooterMenuComponent', () => {
     const oneCXFooterMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXFooterMenuHarness)
     const menuItems = await oneCXFooterMenuHarness.getMenuItems()
     expect(menuItems.length).toEqual(0)
+    expect(console.error).toHaveBeenCalled()
   })
 })

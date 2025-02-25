@@ -640,6 +640,7 @@ describe('OneCXVerticalMainMenuComponent', () => {
 
   it('should return 0 panels when unable to load them', async () => {
     const appStateService = TestBed.inject(AppStateService)
+    spyOn(console, 'error')
     spyOn(appStateService.currentWorkspace$, 'asObservable').and.returnValue(
       of({
         workspaceName: 'test-workspace'
@@ -653,5 +654,6 @@ describe('OneCXVerticalMainMenuComponent', () => {
     const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PPanelMenuHarness)
     const panels = await menu.getAllPanels()
     expect(panels.length).toEqual(0)
+    expect(console.error).toHaveBeenCalled()
   })
 })
