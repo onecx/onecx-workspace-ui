@@ -56,8 +56,8 @@ describe('OneCXUserAvatarMenuComponent', () => {
     const avatarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXUserAvatarMenuHarness)
     return { fixture, component, avatarMenuHarness }
   }
-
   let baseUrlSubject: ReplaySubject<any>
+
   beforeEach(async () => {
     baseUrlSubject = new ReplaySubject<any>(1)
     await TestBed.configureTestingModule({
@@ -372,10 +372,12 @@ describe('OneCXUserAvatarMenuComponent', () => {
 
     it('should only show logout on failed menu fetch call', async () => {
       menuItemApiSpy.getMenuItems.and.returnValue(throwError(() => {}))
+      spyOn(console, 'error')
       const { avatarMenuHarness } = await setUpWithHarnessAndInit([])
       const menuItems = await avatarMenuHarness.getMenuItems()
 
       expect(await menuItems[0].getText()).toEqual('Log out')
+      expect(console.error).toHaveBeenCalled()
     })
 
     it('should have correct icon for logout', async () => {

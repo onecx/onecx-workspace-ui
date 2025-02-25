@@ -9,7 +9,7 @@ import { Workspace } from 'src/app/shared/generated'
 })
 export class WorkspaceInternComponent implements OnChanges {
   @Input() workspace!: Workspace
-  @Input() dateFormat = 'medium'
+  @Input() dateFormat = 'M/d/yy, hh:mm:ss a'
 
   public mandatory = false
   public operator = false

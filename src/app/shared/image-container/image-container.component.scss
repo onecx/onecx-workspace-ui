@@ -37,11 +37,8 @@
   .placeholder {
     // https://www.mediaevent.de/css/gradient.html
     // org:   rgba(168, 185, 209, 0.9) === hsla(215, 30%, 70%, 0.9)
-    background-image: linear-gradient(
-        rgba(203, 210, 221, 0.9) 0%,
-        rgba(203, 210, 221, 0) 50%,
-        rgba(203, 210, 221, 0.9) 100%
-      ),
+    background-image:
+      linear-gradient(rgba(203, 210, 221, 0.9) 0%, rgba(203, 210, 221, 0) 50%, rgba(203, 210, 221, 0.9) 100%),
       linear-gradient(to right, rgba(203, 210, 221, 0.8) 30%, white 50%, rgba(203, 210, 221, 0.8) 70%);
   }
 }

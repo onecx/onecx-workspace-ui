@@ -1,4 +1,4 @@
-<div class="mt-3 flex flex-wrap align-items-top gap-3">
+<div class="mt-3 flex flex-wrap align-items-top gap-4">
   <div>
     <span class="p-float-label">
       <input
@@ -67,31 +67,31 @@
       <label for="ws_import_confirm_display_name">{{ 'WORKSPACE.DISPLAY_NAME' | translate }}</label>
     </span>
   </div>
+</div>
 
-  <div class="flex flex-wrap align-items-center row-gap-2 mt-1 mb-2">
-    <p-message
-      *ngIf="workspaceNameExists"
-      id="ws_import_confirm_message_workspace_exists"
-      severity="warn"
-      [text]="'WORKSPACE_IMPORT.WORKSPACE_EXISTS_MESSAGE' | translate"
-    ></p-message>
-    <p-message
-      *ngIf="baseUrlExists"
-      id="ws_import_confirm_message_base_url_exists"
-      severity="warn"
-      [text]="'WORKSPACE_IMPORT.BASE_URL_EXISTS_MESSAGE' | translate"
-    ></p-message>
-    <p-message
-      *ngIf="baseUrlIsMissing"
-      id="ws_import_confirm_message_base_url_missing"
-      severity="error"
-      [text]="'WORKSPACE_IMPORT.BASE_URL_MISSING' | translate"
-    ></p-message>
-    <p-message
-      *ngIf="importResponse"
-      id="ws_import_confirm_message_import_error"
-      severity="error"
-      [text]="'WORKSPACE_IMPORT.RESPONSE.ERROR' | translate"
-    ></p-message>
-  </div>
+<div class="mt-4 flex flex-wrap align-items-center row-gap-2 mt-1 mb-2">
+  <p-message
+    *ngIf="workspaceNameExists"
+    id="ws_import_confirm_message_workspace_exists"
+    severity="error"
+    [text]="'WORKSPACE_IMPORT.VALIDATION.WORKSPACE.EXISTS_MESSAGE' | translate"
+  ></p-message>
+  <p-message
+    *ngIf="baseUrlExists"
+    id="ws_import_confirm_message_base_url_exists"
+    severity="error"
+    [text]="'WORKSPACE_IMPORT.BASE_URL.EXISTS_MESSAGE' | translate"
+  ></p-message>
+  <p-message
+    *ngIf="baseUrlIsMissing"
+    id="ws_import_confirm_message_base_url_missing"
+    severity="error"
+    [text]="'WORKSPACE_IMPORT.BASE_URL.MISSING' | translate"
+  ></p-message>
+  <p-message
+    *ngIf="importResponse"
+    id="ws_import_confirm_message_import_error"
+    severity="error"
+    [text]="'WORKSPACE_IMPORT.RESPONSE.ERROR' | translate"
+  ></p-message>
 </div>

@@ -111,7 +111,7 @@ describe('WorkspaceDetailComponent', () => {
       mockUserService.lang$.next('en')
       initializeComponent()
 
-      expect(component.dateFormat).toEqual('medium')
+      expect(component.dateFormat).toEqual('M/d/yy, hh:mm:ss a')
     })
 
     describe('onTabChange', () => {

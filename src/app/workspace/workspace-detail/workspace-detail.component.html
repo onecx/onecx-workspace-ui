@@ -3,8 +3,6 @@
     [header]="workspace?.displayName ? limitText(workspace?.displayName, 70) : ''"
     [subheader]="'DIALOG.WORKSPACE.HEADER.DETAIL' | translate"
     [actions]="(actions$ | async) ?? []"
-    [figureImage]="currentLogoUrl"
-    [figureBackground]="!currentLogoUrl"
   >
   </ocx-page-header>
 
@@ -66,9 +64,9 @@
         *ocxIfPermission="'WORKSPACE_INTERNAL#VIEW'"
         id="ws_detail_intern"
         [disabled]="editMode"
-        [header]="'TABS.WORKSPACE.INTERN' | translate"
-        [attr.aria-label]="'TABS.WORKSPACE.INTERN' | translate"
-        [tooltip]="'TABS.WORKSPACE.TOOLTIPS.INTERN' | translate"
+        [header]="'INTERNAL.HEADER' | translate"
+        [attr.aria-label]="'INTERNAL.HEADER' | translate"
+        [tooltip]="'INTERNAL.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       >

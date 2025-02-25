@@ -20,7 +20,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   @Input() displayDeleteDialog = false
   @Output() detailClosed: EventEmitter<boolean> = new EventEmitter()
 
-  public dateFormat = 'medium'
+  public dateFormat = 'M/d/yy, hh:mm:ss a'
   public slot: CombinedSlot | undefined
   public wComponents: ExtendedComponent[] = []
   public psComponents: ExtendedComponent[] = [] // org ps components reduced by used in slot
@@ -37,7 +37,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
     private readonly msgService: PortalMessageService
   ) {
     this.hasEditPermission = this.user.hasPermission('WORKSPACE_SLOT#EDIT')
-    this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm:ss' : 'medium'
+    this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm:ss' : 'M/d/yy, hh:mm:ss a'
   }
 
   public sortComponentsByName(a: ExtendedComponent, b: ExtendedComponent): number {

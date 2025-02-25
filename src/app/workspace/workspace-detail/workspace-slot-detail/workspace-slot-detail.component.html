@@ -28,6 +28,7 @@
     <p-tabPanel
       id="ws_slot_detail_components"
       [header]="'DIALOG.SLOT.TABS.COMPONENTS' | translate"
+      [attr.aria-label]="'DIALOG.SLOT.TABS.COMPONENTS' | translate"
       [tooltip]="'DIALOG.SLOT.TABS.TOOLTIPS.COMPONENTS' | translate"
       tooltipPosition="top"
       tooltipEvent="hover"
@@ -120,6 +121,7 @@
     <p-tabPanel
       id="ws_slot_detail_products"
       [header]="'DIALOG.SLOT.TABS.PRODUCTS' | translate"
+      [attr.aria-label]="'DIALOG.SLOT.TABS.PRODUCTS' | translate"
       [tooltip]="'DIALOG.SLOT.TABS.TOOLTIPS.PRODUCTS' | translate"
       tooltipPosition="top"
       tooltipEvent="hover"
@@ -165,8 +167,9 @@
 
     <p-tabPanel
       id="ws_slot_detail_intern"
-      [header]="'DIALOG.SLOT.TABS.INTERN' | translate"
-      [tooltip]="'DIALOG.SLOT.TABS.TOOLTIPS.INTERN' | translate"
+      [header]="'INTERNAL.HEADER' | translate"
+      [attr.aria-label]="'INTERNAL.HEADER' | translate"
+      [tooltip]="'INTERNAL.TOOLTIP' | translate"
       tooltipPosition="top"
       tooltipEvent="hover"
     >

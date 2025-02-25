@@ -48,6 +48,7 @@ export type MenuItemNodeData = WorkspaceMenuItem & {
   node: TreeNode
 }
 export type UsedLanguage = { lang: string; count: number }
+export type ExtendedSelectItem = SelectItem & { tooltip: string }
 type Column = { name: string; headerKey: string; tooltipKey: string; css?: string }
 
 @Component({
@@ -65,16 +66,18 @@ export class MenuComponent implements OnInit, OnDestroy {
   public sortByLocale = sortByLocale
   private readonly destroy$ = new Subject()
   // dialog control
-  public actions: Action[] = []
   public actions$: Observable<Action[]> | undefined
   public loading = true
   public loadingRoles = false
   public exceptionKey: string | undefined = undefined
   public myPermissions = new Array<string>() // permissions of the user
-  public treeTableContentValue = false // off => details
+  public treeTableContentSwitchValue = 'DETAILS'
+  public treeTableExpandSwitchValue = 'COLLAPSE'
   public treeExpanded = false // off => collapsed
   public treeFrozenColumns: Column[]
   public treeDetailColumns: Column[]
+  public treeTableContentSwitchItems$: Observable<ExtendedSelectItem[]> | undefined
+  public treeTableExpandSwitchItems$: Observable<ExtendedSelectItem[]> | undefined
   public treeNodeLabelSwitchItems: SelectItem[] = []
   public treeNodeLabelSwitchValue = 'NAME'
   public treeNodeLabelSwitchValueOrg = '' // prevent bug in PrimeNG SelectButton
@@ -128,7 +131,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     if (this.userService.hasPermission('WORKSPACE_ROLE#EDIT')) this.myPermissions.push('WORKSPACE_ROLE#EDIT')
     this.treeFrozenColumns = [{ name: 'node label', headerKey: '', tooltipKey: '' }]
     this.treeDetailColumns = [
-      { name: 'actions', headerKey: 'ACTIONS.LABEL', tooltipKey: 'ACTIONS.TOOLTIP', css: 'hidden-xs' },
+      { name: 'actions', headerKey: 'ACTIONS.LABEL', tooltipKey: 'ACTIONS.TOOLTIP', css: 'hidden-xs border-right-1' },
       {
         name: 'i18n',
         headerKey: 'DIALOG.MENU.TREE.I18N',
@@ -151,6 +154,8 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
+    this.prepareTreeTableSwitchItems()
+    this.prepareTreeNodeLabelSwitch()
     this.prepareActionButtons()
     this.loadData()
   }
@@ -161,7 +166,57 @@ export class MenuComponent implements OnInit, OnDestroy {
     })
   }
 
-  public prepareActionButtons(): void {
+  private prepareTreeTableSwitchItems(): void {
+    // Due to use PrimeNG Tooltips: do not use the "title" property of SelectItem here
+    this.treeTableExpandSwitchItems$ = this.translate
+      .get([
+        'ACTIONS.TREE.COLLAPSE_ALL',
+        'ACTIONS.TREE.COLLAPSE_ALL.TOOLTIP',
+        'ACTIONS.TREE.EXPAND_ALL',
+        'ACTIONS.TREE.EXPAND_ALL.TOOLTIP'
+      ])
+      .pipe(
+        map((data) => {
+          return [
+            {
+              label: data['ACTIONS.TREE.COLLAPSE_ALL'],
+              tooltip: data['ACTIONS.TREE.COLLAPSE_ALL.TOOLTIP'],
+              value: 'COLLAPSE'
+            },
+            {
+              label: data['ACTIONS.TREE.EXPAND_ALL'],
+              tooltip: data['ACTIONS.TREE.EXPAND_ALL.TOOLTIP'],
+              value: 'EXPAND'
+            }
+          ]
+        })
+      )
+    this.treeTableContentSwitchItems$ = this.translate
+      .get([
+        'DIALOG.MENU.HEADER.DETAILS',
+        'DIALOG.MENU.HEADER.DETAILS.TOOLTIP',
+        'DIALOG.MENU.HEADER.ROLES',
+        'DIALOG.MENU.HEADER.ROLES.TOOLTIP'
+      ])
+      .pipe(
+        map((data) => {
+          return [
+            {
+              label: data['DIALOG.MENU.HEADER.DETAILS'],
+              tooltip: data['DIALOG.MENU.HEADER.DETAILS.TOOLTIP'],
+              value: 'DETAILS'
+            },
+            {
+              label: data['DIALOG.MENU.HEADER.ROLES'],
+              tooltip: data['DIALOG.MENU.HEADER.ROLES.TOOLTIP'],
+              value: 'ROLES'
+            }
+          ]
+        })
+      )
+  }
+
+  private prepareActionButtons(): void {
     this.actions$ = this.translate
       .get([
         'ACTIONS.NAVIGATION.BACK',
@@ -272,14 +327,14 @@ export class MenuComponent implements OnInit, OnDestroy {
     }
     return label
   }
-
-  public onToggleTreeTableContent(ev: any): void {
-    this.displayRoles = ev.checked
-    if (!this.displayRoles) this.onResetRoleFilter()
-    this.loadRolesAndAssignments()
-  }
   public isObjectEmpty(obj: object) {
     return Object.keys(obj).length === 0
+  }
+
+  public onToggleTreeTableContent(ev: any): void {
+    this.displayRoles = ev.value === 'ROLES'
+    if (!this.displayRoles) this.onResetRoleFilter()
+    this.loadRolesAndAssignments()
   }
 
   // change visibility of menu item by click in tree
@@ -373,7 +428,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
   public onToggleTreeViewMode(event: any): void {
     this.menuNodes.forEach((node) => {
-      this.expandRecursive(node, event.checked)
+      this.expandRecursive(node, event.value === 'EXPAND')
     })
     this.menuNodes = [...this.menuNodes]
   }
@@ -654,7 +709,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.usedLanguages = new Map()
     // fill
     this.prepareTreeNodeHelperRecursively(this.menuNodes)
-    this.prepareTreeNodeLabelSwitch()
+    this.prepareTreeNodeLabelSwitch() // update
     this.treeNodeLabelSwitchValueOrg = '' // reset
     this.onTreeNodeLabelSwitchChange({ value: this.treeNodeLabelSwitchValue })
     // initially open the first menu item if exists

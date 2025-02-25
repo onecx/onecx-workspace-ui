@@ -90,7 +90,7 @@ export class MenuDetailComponent implements OnChanges {
     private readonly translate: TranslateService,
     private readonly msgService: PortalMessageService
   ) {
-    this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm' : 'short'
+    this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm:ss' : 'M/d/yy, hh:mm:ss a'
     this.iconItems.push(...this.icon.icons.map((i) => ({ label: i, value: i })))
     this.iconItems.sort(dropDownSortItemsByLabel)
     this.scopeItems = [

@@ -61,11 +61,9 @@ describe('WorkspacePropsComponent', () => {
   }
   const imageServiceSpy = {
     getImage: jasmine.createSpy('getImage').and.returnValue(of({})),
-    updateImage: jasmine.createSpy('updateImage').and.returnValue(of({})),
+    deleteImage: jasmine.createSpy('deleteImage').and.returnValue(of({})),
     uploadImage: jasmine.createSpy('uploadImage').and.returnValue(of({})),
-    configuration: {
-      basePath: 'basepath'
-    }
+    configuration: { basePath: 'basepath' }
   }
   const themeService = jasmine.createSpyObj<ThemeService>('ThemeService', ['apply'])
   const wProductServiceSpy = {
@@ -96,6 +94,7 @@ describe('WorkspacePropsComponent', () => {
       ],
       teardown: { destroyAfterEach: false }
     }).compileComponents()
+    // reset
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.info.calls.reset()
     msgServiceSpy.error.calls.reset()
@@ -105,6 +104,9 @@ describe('WorkspacePropsComponent', () => {
     themeAPIServiceSpy.getThemeById.calls.reset()
     wProductServiceSpy.getProductsByWorkspaceId.calls.reset()
     themeService.apply.calls.reset()
+    imageServiceSpy.getImage.calls.reset()
+    imageServiceSpy.deleteImage.calls.reset()
+    imageServiceSpy.uploadImage.calls.reset()
   }))
 
   beforeEach(() => {
@@ -243,7 +245,21 @@ describe('WorkspacePropsComponent', () => {
     })
   })
 
-  describe('onFileUpload', () => {
+  describe('Upload image', () => {
+    it('should be informed on image loading error', () => {
+      component.onImageLoadingError(true)
+
+      expect(component.fetchingLogoUrl).toBeUndefined()
+    })
+
+    it('should be informed on image loading error', () => {
+      component.onImageLoadingError(false)
+
+      expect(component.fetchingLogoUrl).toEqual(workspace.logoUrl)
+    })
+  })
+
+  describe('Upload file', () => {
     it('should not upload a file that is too large', () => {
       const largeBlob = new Blob(['a'.repeat(120000)], { type: 'image/png' })
       const largeFile = new File([largeBlob], 'test.png', { type: 'image/png' })
@@ -294,7 +310,7 @@ describe('WorkspacePropsComponent', () => {
     })
 
     it('should upload a file', () => {
-      imageServiceSpy.updateImage.and.returnValue(of({}))
+      imageServiceSpy.uploadImage.and.returnValue(of({}))
       const blob = new Blob(['a'.repeat(10)], { type: 'image/png' })
       const file = new File([blob], 'test.png', { type: 'image/png' })
       const event = {
@@ -326,6 +342,26 @@ describe('WorkspacePropsComponent', () => {
       component.onFileUpload(event as any)
 
       expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'IMAGE.UPLOAD_SUCCESS' })
+    })
+  })
+
+  describe('Remove logo', () => {
+    it('should remove the log - successful', () => {
+      imageServiceSpy.deleteImage.and.returnValue(of({}))
+
+      component.onRemoveLogo()
+
+      expect(component.fetchingLogoUrl).toBeUndefined()
+    })
+
+    it('should remove the log - failed', () => {
+      const errorResponse = { status: 400, statusText: 'Error on image deletion' }
+      imageServiceSpy.deleteImage.and.returnValue(throwError(() => errorResponse))
+      spyOn(console, 'error')
+
+      component.onRemoveLogo()
+
+      expect(console.error).toHaveBeenCalledWith('deleteImage', errorResponse)
     })
   })
 

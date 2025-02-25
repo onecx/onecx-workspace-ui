@@ -377,6 +377,7 @@ describe('OneCXHorizontalMainMenuComponent', () => {
 
   it('should return 0 menu items when unable to load them', async () => {
     const appStateService = TestBed.inject(AppStateService)
+    spyOn(console, 'error')
     spyOn(appStateService.currentWorkspace$, 'asObservable').and.returnValue(
       of({
         workspaceName: 'test-workspace'
@@ -390,5 +391,6 @@ describe('OneCXHorizontalMainMenuComponent', () => {
     const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PMenuBarHarness)
     const menuItems = await menu.getAllMenuItems()
     expect(menuItems.length).toEqual(0)
+    expect(console.error).toHaveBeenCalled()
   })
 })

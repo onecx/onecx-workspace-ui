@@ -459,6 +459,7 @@ describe('OneCXUserSidebarMenuComponent', () => {
 
     it('should only show logout on failed menu fetch call', async () => {
       menuItemApiSpy.getMenuItems.and.returnValue(throwError(() => {}))
+      spyOn(console, 'error')
 
       const { sidebarMenuHarness } = await setUpWithHarness()
       await sidebarMenuHarness.expandAccordion()
@@ -469,6 +470,7 @@ describe('OneCXUserSidebarMenuComponent', () => {
 
       expect(panels?.length).toBe(1)
       expect(await panels![0].getText()).toBe('Log out')
+      expect(console.error).toHaveBeenCalled()
     })
   })
 

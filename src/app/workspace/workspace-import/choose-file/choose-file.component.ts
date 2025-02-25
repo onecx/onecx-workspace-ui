@@ -36,20 +36,20 @@ export class ChooseFileComponent implements OnInit {
 
       this.translate
         .get([
-          'WORKSPACE_IMPORT.VALIDATION_WORKSPACE_MISSING',
-          'WORKSPACE_IMPORT.VALIDATION_WORKSPACE_NAME_MISSING',
-          'WORKSPACE_IMPORT.VALIDATION_WORKSPACE_DISPLAY_NAME_MISSING',
-          'WORKSPACE_IMPORT.VALIDATION_WORKSPACE_URL_MISSING',
-          'WORKSPACE_IMPORT.VALIDATION_WORKSPACE_THEME_MISSING',
-          'WORKSPACE_IMPORT.VALIDATION_WORKSPACE_ROLES_MISSING',
+          'WORKSPACE_IMPORT.VALIDATION.WORKSPACE.MISSING',
+          'WORKSPACE_IMPORT.VALIDATION.WORKSPACE.NAME_MISSING',
+          'WORKSPACE_IMPORT.VALIDATION.WORKSPACE.DISPLAY_NAME_MISSING',
+          'WORKSPACE_IMPORT.VALIDATION.WORKSPACE.URL_MISSING',
+          'WORKSPACE_IMPORT.VALIDATION.WORKSPACE.THEME_MISSING',
+          'WORKSPACE_IMPORT.VALIDATION.WORKSPACE.ROLES_MISSING',
           'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_KEY_MISSING',
           'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_NAME_MISSING',
           'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_WRONG_POSITION',
           'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_WRONG_DISABLED',
           'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_WRONG_WORKSPACEEXIT',
           'WORKSPACE_IMPORT.VALIDATION_MENU_NOT_EXIST',
-          'WORKSPACE_IMPORT.VALIDATION_RESULT',
-          'WORKSPACE_IMPORT.VALIDATION_JSON_ERROR'
+          'WORKSPACE_IMPORT.VALIDATION.RESULT',
+          'WORKSPACE_IMPORT.VALIDATION.JSON_ERROR'
         ])
         .subscribe((data) => {
           try {
@@ -61,7 +61,7 @@ export class ChooseFileComponent implements OnInit {
             console.error('Parse Error', err)
             this.importError = true
             this.validationErrorCause =
-              data['WORKSPACE_IMPORT.VALIDATION_RESULT'] + data['WORKSPACE_IMPORT.VALIDATION_JSON_ERROR']
+              data['WORKSPACE_IMPORT.VALIDATION.RESULT'] + data['WORKSPACE_IMPORT.VALIDATION.JSON_ERROR']
           }
         })
     })
@@ -82,22 +82,22 @@ export class ChooseFileComponent implements OnInit {
     if (dto.workspaces) {
       const key: string[] = Object.keys(dto.workspaces)
       if (!dto.workspaces[key[0]]) {
-        this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_WORKSPACE_MISSING']
+        this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION.WORKSPACE.MISSING']
       } else if (!dto.workspaces[key[0]].name) {
-        this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_WORKSPACE_NAME_MISSING']
+        this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION.WORKSPACE.NAME_MISSING']
       } else if (!dto.workspaces[key[0]].displayName) {
-        this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_WORKSPACE_DISPLAY_NAME_MISSING']
+        this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION.WORKSPACE.DISPLAY_NAME_MISSING']
       } else if (!dto.workspaces[key[0]].theme) {
-        this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_WORKSPACE_THEME_MISSING']
+        this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION.WORKSPACE.THEME_MISSING']
       } else if (!dto.workspaces[key[0]].baseUrl) {
-        this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_WORKSPACE_URL_MISSING']
+        this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION.WORKSPACE.URL_MISSING']
       } else this.checkMenuItems(dto, data)
     } else {
-      this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_WORKSPACE_MISSING']
+      this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION.WORKSPACE.MISSING']
     }
     if (this.validationErrorCause) {
       this.importError = true
-      this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION_RESULT'] + this.validationErrorCause
+      this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION.RESULT'] + this.validationErrorCause
       return false
     }
     return true

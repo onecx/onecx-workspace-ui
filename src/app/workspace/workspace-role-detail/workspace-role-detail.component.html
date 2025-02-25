@@ -6,64 +6,156 @@
   [closable]="true"
   [resizable]="false"
   [dismissableMask]="true"
-  [style]="{ width: '450px' }"
+  [style]="{ width: '550px' }"
   styleClass="disable-max-height-preset"
 >
-  <form [formGroup]="formGroupRole" errorTailor>
-    <div class="flex flex-wrap flex-column gap-4 justify-content-between">
-      <p-message
-        *ngIf="role?.isIamRole && !role?.isWorkspaceRole"
-        id="ws_role_create_info_inw"
-        severity="info"
-        [text]="'DIALOG.ROLE.ORIGIN.IAM.VIEW' | translate"
-      ></p-message>
-      <p-message
-        *ngIf="!role?.isIamRole && role?.isWorkspaceRole"
-        id="ws_role_create_info_niw"
-        severity="info"
-        [text]="'DIALOG.ROLE.ORIGIN.WORKSPACE.EDIT' | translate"
-      ></p-message>
-      <p-message
-        *ngIf="role?.isIamRole && role?.isWorkspaceRole"
-        id="ws_role_create_info_iw"
-        severity="info"
-        [text]="'DIALOG.ROLE.ORIGIN.IAM.WORKSPACE.EDIT' | translate"
-      ></p-message>
+  <p-tabView>
+    <p-tabPanel
+      [header]="'DIALOG.MENU.TABS.DETAILS' | translate"
+      [attr.aria-label]="'DIALOG.MENU.TABS.DETAILS' | translate"
+      [tooltip]="'DIALOG.MENU.TABS.DETAILS.TOOLTIP' | translate"
+      tooltipPosition="top"
+      tooltipEvent="focus|hover"
+    >
+      <form [formGroup]="formGroupRole" errorTailor>
+        <div class="flex flex-wrap flex-column gap-4 justify-content-between">
+          <div>
+            <span class="p-float-label" controlErrorAnchor>
+              <input
+                pInputText
+                type="text"
+                class="w-full"
+                id="ws_role_create_form_name"
+                formControlName="name"
+                [attr.aria-label]="'ROLE.NAME' | translate"
+                [pTooltip]="'ROLE.NAME.TOOLTIP' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+              />
+              <label class="ocx-required-label" for="ws_role_create_form_name">{{ 'ROLE.NAME' | translate }} </label>
+            </span>
+          </div>
+          <div>
+            <span class="p-float-label">
+              <input
+                pInputText
+                type="text"
+                class="w-full"
+                id="ws_role_create_form_description"
+                formControlName="description"
+                [attr.aria-label]="'ROLE.DESCRIPTION' | translate"
+                [pTooltip]="'ROLE.DESCRIPTION.TOOLTIP' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+              />
+              <label for="ws_role_create_form_description">{{ 'ROLE.DESCRIPTION' | translate }} </label>
+            </span>
+          </div>
+        </div>
+      </form>
+    </p-tabPanel>
 
-      <div class="mt-1">
-        <span class="p-float-label" controlErrorAnchor>
-          <input
-            pInputText
-            type="text"
-            class="w-full"
-            id="ws_role_create_form_name"
-            formControlName="name"
-            [attr.aria-label]="'ROLE.NAME' | translate"
-            [pTooltip]="'ROLE.NAME.TOOLTIP' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          />
-          <label class="ocx-required-label" for="ws_role_create_form_name">{{ 'ROLE.NAME' | translate }} </label>
-        </span>
+    <p-tabPanel
+      *ngIf="role?.isWorkspaceRole"
+      [header]="'INTERNAL.HEADER' | translate"
+      [attr.aria-label]="'INTERNAL.HEADER' | translate"
+      [tooltip]="'INTERNAL.TOOLTIP' | translate"
+      tooltipPosition="top"
+      tooltipEvent="focus|hover"
+    >
+      <div class="flex flex-column justify-content-between gap-4">
+        <div class="flex flex-row flex-wrap gap-4">
+          <span class="flex-grow-1 sm:flex-grow-0 p-float-label">
+            <input
+              pInputText
+              type="text"
+              id="ws_slot_detail_item_creation_date"
+              class="w-full sm:w-13rem pt-3 pb-2 text-responsive"
+              [disabled]="true"
+              [value]="role ? (role.creationDate | date: dateFormat) : ''"
+              [attr.aria-label]="'INTERNAL.CREATION_DATE' | translate"
+              [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_DATE' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            />
+            <label for="ws_slot_detail_item_creation_date">{{ 'INTERNAL.CREATION_DATE' | translate }}</label>
+          </span>
+          <span class="flex-grow-1 p-float-label">
+            <input
+              pInputText
+              type="text"
+              id="ws_slot_detail_intern_item_creation-user"
+              class="w-full pt-3 pb-2 text-responsive"
+              [value]="role?.creationUser"
+              [disabled]="true"
+              [attr.aria-label]="'INTERNAL.CREATION_USER' | translate"
+              [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_USER' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            />
+            <label for="ws_slot_detail_intern_item_creation-user">{{ 'INTERNAL.CREATION_USER' | translate }}</label>
+          </span>
+        </div>
+
+        <div class="flex flex-row flex-wrap gap-4">
+          <span class="flex-grow-1 sm:flex-grow-0 p-float-label">
+            <input
+              pInputText
+              type="text"
+              id="ws_slot_detail_item_creation_date"
+              class="w-full sm:w-13rem pt-3 pb-2 text-responsive"
+              [disabled]="true"
+              [value]="role ? (role.modificationDate | date: dateFormat) : ''"
+              [attr.aria-label]="'INTERNAL.MODIFICATION_DATE' | translate"
+              [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_DATE' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            />
+            <label for="ws_slot_detail_item_creation_date">{{ 'INTERNAL.MODIFICATION_DATE' | translate }}</label>
+          </span>
+          <span class="flex-grow-1 p-float-label">
+            <input
+              pInputText
+              type="text"
+              id="ws_slot_detail_intern_item_modification-user"
+              class="w-full pt-3 pb-2 text-responsive"
+              [value]="role?.modificationUser"
+              [disabled]="true"
+              [attr.aria-label]="'INTERNAL.MODIFICATION_USER' | translate"
+              [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_USER' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            />
+            <label for="ws_slot_detail_intern_item_modification-user">
+              {{ 'INTERNAL.MODIFICATION_USER' | translate }}</label
+            >
+          </span>
+        </div>
       </div>
-      <div>
-        <span class="p-float-label">
-          <input
-            pInputText
-            type="text"
-            class="w-full"
-            id="ws_role_create_form_description"
-            formControlName="description"
-            [attr.aria-label]="'ROLE.DESCRIPTION' | translate"
-            [pTooltip]="'ROLE.DESCRIPTION.TOOLTIP' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          />
-          <label for="ws_role_create_form_description">{{ 'ROLE.DESCRIPTION' | translate }} </label>
-        </span>
-      </div>
-    </div>
-  </form>
+    </p-tabPanel>
+  </p-tabView>
+
+  <div *ngIf="changeMode !== 'CREATE'" class="mt-4">
+    <p-message
+      *ngIf="role?.isIamRole && !role?.isWorkspaceRole"
+      id="ws_role_create_info_inw"
+      severity="info"
+      [text]="'DIALOG.ROLE.ORIGIN.IAM.VIEW' | translate"
+    ></p-message>
+    <p-message
+      *ngIf="!role?.isIamRole && role?.isWorkspaceRole"
+      id="ws_role_create_info_niw"
+      severity="info"
+      [text]="'DIALOG.ROLE.ORIGIN.WORKSPACE.EDIT' | translate"
+    ></p-message>
+    <p-message
+      *ngIf="role?.isIamRole && role?.isWorkspaceRole"
+      id="ws_role_create_info_iw"
+      severity="info"
+      [text]="'DIALOG.ROLE.ORIGIN.IAM.WORKSPACE.EDIT' | translate"
+    ></p-message>
+  </div>
+
   <ng-template pTemplate="footer">
     <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
       <p-button

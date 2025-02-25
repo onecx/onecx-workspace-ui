@@ -1,5 +1,5 @@
 <p-dialog
-  [header]="'WORKSPACE_IMPORT.IMPORT_WORKSPACE' | translate"
+  [header]="'WORKSPACE_IMPORT.HEADER' | translate"
   [(visible)]="displayDialog"
   [modal]="true"
   [closable]="true"
@@ -26,8 +26,9 @@
         [displayName]="displayName"
         [baseUrl]="baseUrl"
         [themeName]="themeName"
-        (isLoading)="handleIsLoading($event)"
         [importResponse]="importResponse"
+        (isLoading)="handleIsLoading($event)"
+        (isFormValide)="handleFormValidation($event)"
       ></app-import-confirm>
     </div>
 
@@ -37,9 +38,9 @@
         id="ws_import_action_restart"
         icon="pi pi-upload"
         (onClick)="reset()"
-        [label]="'WORKSPACE_IMPORT.IMPORT_RESTART' | translate"
-        [ariaLabel]="'WORKSPACE_IMPORT.IMPORT_RESTART' | translate"
-        [pTooltip]="'WORKSPACE_IMPORT.IMPORT_RESTART_TOOLTIP' | translate"
+        [label]="'WORKSPACE_IMPORT.RESTART' | translate"
+        [ariaLabel]="'WORKSPACE_IMPORT.RESTART' | translate"
+        [pTooltip]="'WORKSPACE_IMPORT.RESTART_TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       ></p-button>
@@ -73,9 +74,9 @@
         [icon]="isLoading ? 'pi pi-spin pi-spinner' : 'pi pi-check'"
         [disabled]="isLoading || !isFormValid"
         (onClick)="importWorkspace()"
-        [label]="'WORKSPACE_IMPORT.IMPORT' | translate"
-        [ariaLabel]="'WORKSPACE_IMPORT.IMPORT' | translate"
-        [pTooltip]="'WORKSPACE_IMPORT.START_IMPORT' | translate"
+        [label]="'WORKSPACE_IMPORT.START_IMPORT' | translate"
+        [ariaLabel]="'WORKSPACE_IMPORT.START_IMPORT' | translate"
+        [pTooltip]="'WORKSPACE_IMPORT.START_IMPORT.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       ></p-button>

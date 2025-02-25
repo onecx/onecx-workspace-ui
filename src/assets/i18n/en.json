@@ -138,7 +138,7 @@
       "COLLAPSE_ALL": "Collapse all",
       "COLLAPSE_ALL.TOOLTIP": "Collapse all levels",
       "EXPAND_ALL": "Expand all",
-      "EXPAND_ALL.TOOLTIP": "Expand/Collapse all levels"
+      "EXPAND_ALL.TOOLTIP": "Expand all levels"
     },
     "CANCEL": "Cancel",
     "CHOOSE": "Choose",
@@ -167,7 +167,6 @@
     "WORKSPACE": {
       "DETAILS": "Properties",
       "CONTACT": "Contact",
-      "INTERN": "Internal",
       "MENU": "Menu",
       "ROLES": "Roles",
       "SLOTS": "Slots",
@@ -175,7 +174,6 @@
       "TOOLTIPS": {
         "DETAILS": "Base properties of the Workspace",
         "CONTACT": "Contact information of the Workspace",
-        "INTERN": "Internal properties of the Workspace",
         "MENU": "Workspace Menu: Management of the Menu structure",
         "ROLES": "Workspace Roles: Management of the Roles usable by the Workspace (as an subset of Tenant roles)",
         "SLOTS": "Workspace Slots: Management of the Slots usable by the Workspace.",
@@ -184,6 +182,8 @@
     }
   },
   "INTERNAL": {
+    "HEADER": "Internal",
+    "TOOLTIP": "Internal properties",
     "CREATION_DATE": "Created on",
     "CREATION_USER": "Created by",
     "MODIFICATION_DATE": "Changed on",
@@ -331,11 +331,9 @@
       "TABS": {
         "COMPONENTS": "Components",
         "PRODUCTS": "Applications",
-        "INTERN": "Intern",
         "TOOLTIPS": {
           "COMPONENTS": "Manage assignments of components to the Slot",
-          "PRODUCTS": "Applications, which have declared this Slot",
-          "INTERN": "Internal properties of the Slots"
+          "PRODUCTS": "Applications, which have declared this Slot"
         }
       },
       "CHANGED": "There are important changes.",
@@ -380,8 +378,9 @@
         "DISPLAYED_ITEM.NAME": "Name",
         "DISPLAYED_ITEM.ID": "ID",
         "DETAILS": "Details",
-        "DETAILS_N_ROLES.TOOLTIP": "Change display: Details / Roles and Permissions",
+        "DETAILS.TOOLTIP": "Display Details",
         "ROLES": "Roles",
+        "ROLES.TOOLTIP": "Display Roles and Permissions",
         "ROLES.LOADING": "...loading Roles",
         "ROLES.FILTER": "Role name filter",
         "ROLES.FILTER.TOOLTIP": "Filter for Role name",
@@ -398,16 +397,14 @@
         "EDIT": "Edit details"
       },
       "TABS": {
-        "DETAILS": "Details",
+        "DETAILS": "Properties",
         "DETAILS.TOOLTIP": "Manage Properties",
         "I18N": {
           "LABEL": "Translations",
           "TOOLTIP": "Manage Translations",
           "ADD_LANGUAGE": "Add Language",
           "REMOVE_LANGUAGE": "Remove Language"
-        },
-        "INTERN": "Internal",
-        "INTERN.TOOLTIP": "Internal Properties"
+        }
       },
       "TREE": {
         "POSITION": "Position",
@@ -527,54 +524,52 @@
     "MENU_TOOLTIP": "Include menu in Workspace definition"
   },
   "WORKSPACE_IMPORT": {
-    "IMPORT_WORKSPACE": "Import Workspace",
-    "FROM_JSON": "from JSON File",
-    "IMPORT": "Import",
-    "IMPORT_TOOLTIP": "Import a Workspace definition",
-    "IMPORT_RESTART": "New",
-    "IMPORT_RESTART_TOOLTIP": "Restart the import process",
-    "IMPORT_CLOSE": "Close dialog without changes",
-    "START_IMPORT": "Start Import",
+    "HEADER": "Import Workspace",
+    "RESTART": "New",
+    "RESTART_TOOLTIP": "Restart the import process",
+    "START_IMPORT": "Import",
+    "START_IMPORT.TOOLTIP": "Start Import",
     "CHOOSE_FILE": "Choose file",
     "DELETE_FILE": "Delete file",
     "PREVIEW": "Preview & Adjustment",
     "PREVIEW_MENU": "Menu Structure",
     "CONFIRMATION": "Confirmation",
     "SUMMARY": "Summary",
+    "PRODUCT_HINT": "Only applications that are known in the Application Store are imported.",
     "THEME_NAME.TOOLTIP": "Name of the used Theme. Can be changed later.",
     "WORKSPACE_NAME": "Name",
     "WORKSPACE_NAME.TOOLTIP": "Unique name of the new Workspace. Uniqueness is checked in next step.",
     "DISPLAY_NAME.TOOLTIP": "Display name of the new Workspace, can be changed afterwards.",
-    "IMPORT_OK": "The Workspace definition has been checked and can be imported.",
-    "WORKSPACE_EXISTS_MESSAGE": "A Workspace with this name already exists. Its definition is overwritten.",
-    "BASE_URL.TOOLTIP": "Base URL of the Workspace. Must be unique because it is used to access the Workspace. Uniqueness is checked in next step",
-    "BASE_URL_EXISTS_MESSAGE": "A Workspace with this Base URL already exists. Using it again will cause problems.",
-    "BASE_URL_MISSING": "A Base URL is required.",
-    "SYNCHRONIZE_PERMISSIONS": "Synchronize permissions",
-    "INVALID_FILE": "Invalid file",
-    "RESPONSE.CREATED": "The Workspace was successfully created.",
-    "RESPONSE.SKIPPED": "The Workspace was skipped by the import.",
-    "RESPONSE.UPDATED": "The Workspace was successfully updated.",
-    "RESPONSE.ERROR": "An error occurred, the Workspace could not be created/updated.",
-    "INVALID_IMPORT_FILE": "The Workspace file is invalid",
-    "MISSING": "missing.",
-    "INVALID_MENU_ITEMS": "One or more Menu Items are not valid",
-    "WORKSPACE_FORM_MISSING_FILES": " Workspace file is missing",
-    "VALIDATION_JSON_ERROR": "JSON format error",
-    "VALIDATION_WORKSPACE_MISSING": "no Workspace definition included/found",
-    "VALIDATION_WORKSPACE_NAME_MISSING": "no Workspace name included/found",
-    "VALIDATION_WORKSPACE_DISPLAY_NAME_MISSING": "no Workspace display name included/found",
-    "VALIDATION_WORKSPACE_THEME_MISSING": "no Workspace theme included/found",
-    "VALIDATION_WORKSPACE_URL_MISSING": "no Workspace url included/found",
-    "VALIDATION_WORKSPACE_ROLES_MISSING": "no Workspace roles included/found",
+    "BASE_URL": {
+      "TOOLTIP": "Base URL of the Workspace. Must be unique because it is used to access the Workspace. Uniqueness is checked in next step",
+      "EXISTS_MESSAGE": "A Workspace with this Base URL already exists.",
+      "MISSING": "A Base URL is required."
+    },
+    "RESPONSE": {
+      "CREATED": "The Workspace was successfully created.",
+      "SKIPPED": "The Workspace was skipped by the import.",
+      "UPDATED": "The Workspace was successfully updated.",
+      "ERROR": "An error occurred, the Workspace could not be created/updated."
+    },
+    "VALIDATION": {
+      "JSON_ERROR": "JSON format error",
+      "RESULT": "Processing not possible: ",
+      "WORKSPACE": {
+        "EXISTS_MESSAGE": "A Workspace with this name/display name already exists.",
+        "MISSING": "no Workspace definition included/found",
+        "NAME_MISSING": "no Workspace name included/found",
+        "DISPLAY_NAME_MISSING": "no Workspace display name included/found",
+        "THEME_MISSING": "no Workspace theme included/found",
+        "URL_MISSING": "no Workspace url included/found",
+        "ROLES_MISSING": "no Workspace roles included/found"
+      }
+    },
     "VALIDATION_MENU_NOT_EXIST": "no menu definition included/found",
     "VALIDATION_MENU_ITEM_KEY_MISSING": "The key is missing in a Menu Item",
     "VALIDATION_MENU_ITEM_NAME_MISSING": "The name is missing in a Menu Item",
     "VALIDATION_MENU_ITEM_WRONG_POSITION": "In a Menu Item, the value for 'position' is not a number",
     "VALIDATION_MENU_ITEM_WRONG_DISABLED": "In a Menu Item, the value for 'disabled' is not a boolean",
     "VALIDATION_MENU_ITEM_WRONG_WORKSPACEEXIT": "In a Menu Item, the value for 'workspaceExit' is not a boolean",
-    "VALIDATION_RESULT": "Processing not possible: ",
-    "IMPORT_ERROR": "An error occurred, the Workspace could not be loaded for import.",
     "IMPORT_NOK": "An error occurred, the Workspace could not be imported."
   },
   "IMAGE": {
@@ -590,6 +585,7 @@
       "URL": "As an alternative to uploading, a URL to an image can be specified here.",
       "IMAGE": "Logo",
       "PLACEHOLDER": "Logo Placeholder",
+      "REMOVE": "Remove Image",
       "UPLOAD": "Select and upload image"
     }
   },

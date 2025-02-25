@@ -201,6 +201,30 @@ describe('MenuComponent', () => {
     })
   })
 
+  describe('Translation of tree table switches:', () => {
+    beforeEach(() => {
+      component.ngOnInit()
+    })
+
+    it('should have expand/collapse', () => {
+      if (component.treeTableExpandSwitchItems$) {
+        component.treeTableExpandSwitchItems$.subscribe((data) => {
+          expect(data[0].value).toEqual('COLLAPSE')
+          expect(data[1].value).toEqual('EXPAND')
+        })
+      }
+    })
+
+    it('should have expand/collapse', () => {
+      if (component.treeTableContentSwitchItems$) {
+        component.treeTableContentSwitchItems$.subscribe((data) => {
+          expect(data[0].value).toEqual('DETAILS')
+          expect(data[1].value).toEqual('ROLES')
+        })
+      }
+    })
+  })
+
   describe('Page actions:', () => {
     beforeEach(() => {
       component.ngOnInit()
@@ -267,7 +291,7 @@ describe('MenuComponent', () => {
 
     it('should call EXPORT: hide on conditions', () => {
       component.menuItems = undefined
-      component.prepareActionButtons()
+      component['prepareActionButtons']()
 
       if (component.actions$) {
         component.actions$.subscribe((actions) => {
@@ -312,7 +336,7 @@ describe('MenuComponent', () => {
 
     it('should change the tree table content: display of roles', () => {
       spyOn(component, 'onResetRoleFilter')
-      const event = { checked: true }
+      const event = { value: 'ROLES' }
 
       component.onToggleTreeTableContent(event)
 
@@ -322,7 +346,7 @@ describe('MenuComponent', () => {
 
     it('should change the tree table content: display of roles', () => {
       spyOn(component, 'onResetRoleFilter')
-      const event = { checked: false }
+      const event = { value: 'DETAILS' }
 
       component.onToggleTreeTableContent(event)
 
@@ -654,7 +678,7 @@ describe('MenuComponent', () => {
   })
 
   it('should toggle tree view mode and update tree nodes', () => {
-    const event = { checked: true }
+    const event = { value: 'EXPAND' }
     component.menuNodes = [treeNodes]
 
     component.onToggleTreeViewMode(event)
