@@ -39,14 +39,6 @@
   }
 }
 
-@mixin cursor-default {
-  :host ::ng-deep {
-    .cursor-default {
-      cursor: default;
-    }
-  }
-}
-
 @mixin displaying-text-responsive {
   :host ::ng-deep {
     .text-responsive {
@@ -57,17 +49,21 @@
   }
 }
 
-@mixin readable-disabled-components {
-  :host ::ng-deep {
-    --disabled-opacity: 0.7;
+@mixin displaying-text-ellipsis($lines: 1) {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  @if ($lines > 1) {
+    display: -webkit-box;
+    -webkit-line-clamp: $lines;
+    -webkit-box-orient: vertical;
+  } @else {
+    white-space: nowrap;
   }
 }
 
-@mixin compact-dropdown-list-items {
+@mixin readable-disabled-components {
   :host ::ng-deep {
-    .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
-      padding: 0.4rem 1rem !important;
-    }
+    --disabled-opacity: 0.7;
   }
 }
 
@@ -75,6 +71,22 @@
   :host ::ng-deep {
     .invisible {
       visibility: hidden;
+    }
+  }
+}
+
+@mixin word-break-all {
+  :host ::ng-deep {
+    .word-break-all {
+      word-break: break-all;
+    }
+  }
+}
+
+@mixin cursor-default {
+  :host ::ng-deep {
+    .cursor-default {
+      cursor: default;
     }
   }
 }
@@ -88,6 +100,14 @@
     .danger-action-bg {
       color: white;
       background-color: var(--danger-button-bg);
+    }
+  }
+}
+
+@mixin compact-dropdown-list-items {
+  :host ::ng-deep {
+    .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
+      padding: 0.4rem 1rem !important;
     }
   }
 }

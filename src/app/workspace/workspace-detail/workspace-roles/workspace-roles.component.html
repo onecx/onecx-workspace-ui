@@ -75,7 +75,7 @@
         [defaultSortDirection]="sortOrder === 1"
         (sortChange)="onSortChange($event)"
         (sortDirectionChange)="onSortDirChange($event)"
-        [translations]="dataViewControlsTranslations"
+        [translations]="(dataViewControlsTranslations$ | async) ?? {}"
       >
       </ocx-data-view-controls>
       <!-- Additional Actions -->

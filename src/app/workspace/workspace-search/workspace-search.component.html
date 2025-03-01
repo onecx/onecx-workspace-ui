@@ -55,7 +55,7 @@
           [filterColumns]="['WORKSPACE.DISPLAY_NAME' | translate, 'WORKSPACE.THEME' | translate]"
           (sortChange)="onSortChange($event)"
           (sortDirectionChange)="onSortDirChange($event)"
-          [translations]="dataViewControlsTranslations"
+          [translations]="(dataViewControlsTranslations$ | async) ?? {}"
         >
         </ocx-data-view-controls>
       </ng-template>

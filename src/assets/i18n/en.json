@@ -196,8 +196,8 @@
       "CREATION_USER": "ID of the user of the creation",
       "MODIFICATION_DATE": "Timestamp of the last change",
       "MODIFICATION_USER": "ID of the user of the last change",
-      "MANDATORY": "If set then this Workspace is necessary for operation. The Workspace cannot therefore be deleted.",
-      "OPERATOR": "If set, the Workspace cannot be deleted and all changes will be lost during the next deployment."
+      "MANDATORY": "If set then this Workspace is necessary for operation and therefore the Workspace cannot be deleted.",
+      "OPERATOR": "If set, the Workspace was created by automation. All changes will be lost during the next deployment."
     }
   },
   "ROLE": {
@@ -486,7 +486,7 @@
     "DATAVIEW": {
       "FILTER": "Filter",
       "PRODUCT_FILTER_TOOLTIP": "Filter by Application and Classification",
-      "FILTER_BY": "Filter by ",
+      "FILTER_OF": "Filter of ",
       "FILTER_CLEAR": "Clear Filter",
       "FILTER_PLACEHOLDER": "Filter",
       "SORT_BY": "Sort By",

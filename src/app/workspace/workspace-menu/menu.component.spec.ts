@@ -403,10 +403,8 @@ describe('MenuComponent', () => {
         component.onChangeRoleFilter('role2')
 
         expect(component.roleFilterValue).toEqual(['role1', 'role2'])
-        expect(component.loadMenu).toHaveBeenCalledWith(false)
+        expect(component.loadMenu).toHaveBeenCalledWith(true)
         expect(component.wRoles).toEqual([wRole])
-        //expect(component.menuItems).toEqual(mockMenuItems)
-        //expect(component['assignNode2Role']).toHaveBeenCalled()
       })
 
       it('should remove role name to filter array and reload', () => {
@@ -416,7 +414,7 @@ describe('MenuComponent', () => {
         component.onChangeRoleFilter('role2')
 
         expect(component.roleFilterValue).toEqual(['role1'])
-        expect(component.loadMenu).toHaveBeenCalledWith(false)
+        expect(component.loadMenu).toHaveBeenCalledWith(true)
       })
 
       it('should reset filter array and reload', () => {
@@ -426,7 +424,7 @@ describe('MenuComponent', () => {
         component.onResetRoleFilter()
 
         expect(component.roleFilterValue).toEqual([])
-        expect(component.loadMenu).toHaveBeenCalledWith(false)
+        expect(component.loadMenu).toHaveBeenCalledWith(true)
       })
     })
   })
