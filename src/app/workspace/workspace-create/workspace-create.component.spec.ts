@@ -1,20 +1,15 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing'
-import { HttpClient, provideHttpClient } from '@angular/common/http'
+import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ActivatedRoute, ActivatedRouteSnapshot, provideRouter, Router } from '@angular/router'
-import { TranslateModule, TranslateLoader } from '@ngx-translate/core'
+import { TranslateTestingModule } from 'ngx-translate-testing'
 import { ConfirmationService } from 'primeng/api'
 import { DropdownModule } from 'primeng/dropdown'
 import { of, throwError } from 'rxjs'
 
-import {
-  APP_CONFIG,
-  AppStateService,
-  createTranslateLoader,
-  PortalMessageService
-} from '@onecx/portal-integration-angular'
+import { APP_CONFIG, PortalMessageService } from '@onecx/portal-integration-angular'
 
 import { ProductAPIService, Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
 import { environment } from 'src/environments/environment'
@@ -57,14 +52,10 @@ describe('WorkspaceCreateComponent', () => {
       imports: [
         ReactiveFormsModule,
         DropdownModule,
-        TranslateModule.forRoot({
-          isolate: true,
-          loader: {
-            provide: TranslateLoader,
-            useFactory: createTranslateLoader,
-            deps: [HttpClient, AppStateService]
-          }
-        })
+        TranslateTestingModule.withTranslations({
+          de: require('src/assets/i18n/de.json'),
+          en: require('src/assets/i18n/en.json')
+        }).withDefaultLanguage('en')
       ],
       providers: [
         provideHttpClientTesting(),

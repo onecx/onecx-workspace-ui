@@ -1,269 +1,252 @@
-<div class="surface-section my-1 mx-3">
-  <form [formGroup]="formGroup" errorTailor>
-    <div class="flex flex-wrap flex-column row-gap-4 w-12 md:w-10 lg:w-8 xl:w-6">
-      <div class="ml-3 flex flex-row flex-wrap justify-content-start align-items-center column-gap-8 row-gap-2">
-        <p-checkbox
-          inputId="ws_detail_props_item_disabled"
-          formControlName="disabled"
-          styleClass="cursor-pointer shadow-none"
-          [binary]="true"
-          [label]="'WORKSPACE.DISABLED' | translate"
-          [ariaLabel]="'WORKSPACE.DISABLED' | translate"
-          [pTooltip]="'WORKSPACE.TOOLTIPS.DISABLED' | translate"
+<div
+  class="m-3 mb-1 flex flex-wrap flex-column row-gap-4 w-12 md:w-10 lg:w-8 xl:w-6"
+  [formGroup]="formGroup"
+  errorTailor
+>
+  <div class="w-12">
+    <span class="p-float-label mb-1" controlErrorAnchor>
+      <input
+        pInputText
+        type="text"
+        id="ws_detail_props_item_display_name"
+        class="w-full pt-3 pb-2 text-responsive"
+        formControlName="displayName"
+        [attr.aria-label]="'WORKSPACE.DISPLAY_NAME' | translate"
+        [pTooltip]="'WORKSPACE.TOOLTIPS.DISPLAY_NAME' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      />
+      <label class="ocx-required-label" for="ws_detail_props_item_display_name">
+        {{ 'WORKSPACE.DISPLAY_NAME' | translate }}
+      </label>
+    </span>
+  </div>
+
+  <div>
+    <div class="p-inputgroup mb-1" controlErrorAnchor>
+      <span class="p-float-label">
+        <p-dropdown
+          #wsThemeName
+          id="ws_detail_props_item_theme"
+          formControlName="theme"
+          styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
+          [options]="(themes$ | async) ?? []"
+          [ariaLabel]="'WORKSPACE.THEME' | translate"
+          [pTooltip]="'WORKSPACE.TOOLTIPS.THEME' | translate"
           tooltipPosition="top"
-          tooltipEvent="hover"
-        ></p-checkbox>
-        <div></div>
-      </div>
-      <div class="w-12">
-        <span class="p-float-label mb-1" controlErrorAnchor>
-          <input
-            pInputText
-            type="text"
-            id="ws_detail_props_item_display_name"
-            class="w-full pt-3 pb-2 text-responsive"
-            formControlName="displayName"
-            [attr.aria-label]="'WORKSPACE.DISPLAY_NAME' | translate"
-            [pTooltip]="'WORKSPACE.TOOLTIPS.DISPLAY_NAME' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          />
-          <label class="ocx-required-label" for="ws_detail_props_item_display_name">
-            {{ 'WORKSPACE.DISPLAY_NAME' | translate }}
-          </label>
-        </span>
-      </div>
-
-      <div>
-        <div class="p-inputgroup mb-1" controlErrorAnchor>
-          <span class="p-float-label">
-            <p-dropdown
-              #wsThemeName
-              id="ws_detail_props_item_theme"
-              formControlName="theme"
-              styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
-              [options]="(themes$ | async) ?? []"
-              [ariaLabel]="'WORKSPACE.THEME' | translate"
-              [pTooltip]="'WORKSPACE.TOOLTIPS.THEME' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            >
-            </p-dropdown>
-            <label class="ocx-required-label" for="ws_detail_props_item_theme">
-              {{ 'WORKSPACE.THEME' | translate }}
-            </label>
-          </span>
-          <a
-            tabindex="0"
-            id="ws_detail_props_item_theme_link"
-            class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
-            (click)="onGoToTheme(wsThemeName.value)"
-            [ngClass]="
-              !editMode && inputBaseUrl.value && (themeProductRegistered$ | async) ? 'cursor-pointer' : 'p-disabled'
-            "
-            [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
-            [pTooltip]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
-            tooltipPosition="right"
-            tooltipEvent="hover"
-          >
-          </a>
-        </div>
-      </div>
-
-      <div>
-        <div class="p-inputgroup mb-1" controlErrorAnchor>
-          <span class="p-float-label">
-            <input
-              #inputBaseUrl
-              pInputText
-              type="text"
-              id="ws_detail_props_item_base_url"
-              class="w-full pt-3 pb-2 text-responsive"
-              formControlName="baseUrl"
-              [attr.aria-label]="'WORKSPACE.BASE_URL' | translate"
-              [pTooltip]="'WORKSPACE.TOOLTIPS.BASE_URL' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            />
-            <label for="ws_detail_props_item_base_url">{{ 'WORKSPACE.BASE_URL' | translate }} </label>
-          </span>
-          <a
-            tabindex="0"
-            id="ws_detail_props_item_base_url_link"
-            class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
-            [ngClass]="!editMode && inputBaseUrl.value ? 'cursor-pointer' : 'p-disabled'"
-            target="_blank"
-            [href]="
-              (getLocation().deploymentPath === '/' ? '' : getLocation().deploymentPath.slice(0, -1)) +
-              inputBaseUrl.value
-            "
-            (click)="$event.stopPropagation()"
-            [attr.aria-label]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
-            [pTooltip]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
-            tooltipPosition="right"
-            tooltipEvent="hover"
-          >
-          </a>
-        </div>
-        <label *ngIf="editMode" class="ocx-control-hint block" for="ws_detail_props_item_base_url_link">
-          {{ ('VALIDATION.HINTS.FORMAT_URL' | translate) + urlPattern }}
-        </label>
-      </div>
-
-      <div *ngIf="(productPaths$ | async) ?? [] as paths" class="p-inputgroup mb-1" controlErrorAnchor>
-        <span class="p-float-label">
-          <p-dropdown
-            #inputHomePage
-            id="ws_detail_props_item_home_page"
-            formControlName="homePage"
-            styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
-            (onClick)="onOpenProductPathes(paths); $event.stopPropagation()"
-            [options]="paths"
-            [editable]="true"
-            [showClear]="true"
-            [ariaLabel]="'WORKSPACE.HOME_PAGE' | translate"
-            [pTooltip]="'WORKSPACE.TOOLTIPS.HOME_PAGE' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          >
-          </p-dropdown>
-          <label for="ws_detail_props_item_home_page">{{ 'WORKSPACE.HOME_PAGE' | translate }} </label>
-        </span>
-        <a
-          tabindex="0"
-          id="ws_detail_props_item_homePage_link"
-          class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
-          [ngClass]="!editMode && !workspace?.disabled && inputHomePage.value ? 'cursor-pointer' : 'p-disabled'"
-          target="_blank"
-          [href]="prepareProductUrl(inputHomePage.value)"
-          (click)="$event.stopPropagation()"
-          [attr.aria-label]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
-          [pTooltip]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
-          tooltipPosition="right"
           tooltipEvent="hover"
         >
-        </a>
-      </div>
+        </p-dropdown>
+        <label class="ocx-required-label" for="ws_detail_props_item_theme"> {{ 'WORKSPACE.THEME' | translate }} </label>
+      </span>
+      <a
+        tabindex="0"
+        id="ws_detail_props_item_theme_link"
+        class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
+        (click)="onGoToTheme(wsThemeName.value)"
+        [ngClass]="
+          !editMode && inputBaseUrl.value && (themeProductRegistered$ | async) ? 'cursor-pointer' : 'p-disabled'
+        "
+        [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
+        [pTooltip]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
+        tooltipPosition="right"
+        tooltipEvent="hover"
+      >
+      </a>
+    </div>
+  </div>
 
-      <div class="p-inputgroup mb-1" controlErrorAnchor>
-        <span class="p-float-label">
-          <input
-            #inputRssFeedUrl
-            pInputText
-            type="text"
-            id="ws_detail_props_item_rssFeedUrl"
-            class="w-full pt-3 pb-2 text-responsive"
-            formControlName="rssFeedUrl"
-            [attr.aria-label]="'WORKSPACE.RSS_FEED_URL' | translate"
-            [pTooltip]="'WORKSPACE.TOOLTIPS.RSS_FEED_URL' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          />
-          <label for="ws_detail_props_item_rssFeedUrl">{{ 'WORKSPACE.RSS_FEED_URL' | translate }} </label>
-        </span>
-        <a
-          tabindex="0"
-          id="ws_detail_props_item_rssFeedUrl_link"
-          class="p-inputgroup-addon bg-primary pseudo-button"
-          [ngClass]="inputRssFeedUrl.value ? 'cursor-pointer' : 'p-disabled'"
-          (click)="copyToClipboard(workspace?.rssFeedUrl)"
-          [attr.aria-label]="'ACTIONS.COPY.CLIPBOARD' | translate"
-          [pTooltip]="'ACTIONS.COPY.CLIPBOARD' | translate"
-          tooltipPosition="right"
-          tooltipEvent="hover"
-        >
-          <span class="pi pi-copy"></span>
-        </a>
-      </div>
-
-      <div class="flex flex-row flex-wrap sm:flex-nowrap align-items-center row-gap-2 column-gap-4">
-        <input hidden type="file" accept="image/*" #selectedFileInputLogo (change)="onFileUpload($event)" />
-        <app-image-container
-          id="ws_detail_props_form_logo_image"
-          [imageUrl]="fetchingLogoUrl"
-          [small]="true"
-          (imageLoadError)="onImageLoadingError($event)"
-        ></app-image-container>
-        <button
-          pButton
-          id="ws_detail_props_item_remove_logo"
-          icon="pi pi-times"
-          [disabled]="!editMode || (editMode && !fetchingLogoUrl)"
-          class="action-button p-button-icon-only"
-          [class.cursor-pointer]="editMode"
-          (click)="onRemoveLogo()"
-          [attr.aria-label]="'IMAGE.TOOLTIPS.REMOVE' | translate"
-          [pTooltip]="'IMAGE.TOOLTIPS.REMOVE' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        ></button>
-        <button
-          pButton
-          id="ws_detail_props_item_upload_logo"
-          icon="pi pi-upload"
-          [disabled]="!editMode"
-          class="action-button p-button-icon-only"
-          [class.cursor-pointer]="editMode"
-          (click)="selectedFileInputLogo.click()"
-          [attr.aria-label]="'IMAGE.TOOLTIPS.UPLOAD' | translate"
-          [pTooltip]="'IMAGE.TOOLTIPS.UPLOAD' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        ></button>
-        <div class="flex flex-column row-gap-1 w-full">
-          <span class="p-float-label">
-            <input
-              pInputText
-              type="text"
-              class="w-full"
-              id="ws_detail_props_item_logo_url"
-              formControlName="logoUrl"
-              (input)="onInputChange($event)"
-              (change)="onInputChange($event)"
-              [attr.aria-label]="'IMAGE.LOGO_URL' | translate"
-              [pTooltip]="'IMAGE.TOOLTIPS.URL' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            />
-            <label for="ws_detail_props_item_logo_url">{{ 'IMAGE.LOGO_URL' | translate }} </label>
-          </span>
-          <label *ngIf="editMode" class="ocx-control-hint block" for="ws_detail_props_item_logo_url">
-            {{ ('VALIDATION.HINTS.FORMAT_URL' | translate) + externUrlPattern }}
-          </label>
-        </div>
-      </div>
-
-      <span class="p-float-label mb-1" controlErrorAnchor>
+  <div>
+    <div class="p-inputgroup mb-1" controlErrorAnchor>
+      <span class="p-float-label">
         <input
+          #inputBaseUrl
           pInputText
           type="text"
-          id="ws_detail_props_item_footer-label"
+          id="ws_detail_props_item_base_url"
           class="w-full pt-3 pb-2 text-responsive"
-          formControlName="footerLabel"
-          [attr.aria-label]="'WORKSPACE.FOOTER_LABEL' | translate"
-          [pTooltip]="'WORKSPACE.TOOLTIPS.FOOTER_LABEL' | translate"
+          formControlName="baseUrl"
+          [attr.aria-label]="'WORKSPACE.BASE_URL' | translate"
+          [pTooltip]="'WORKSPACE.TOOLTIPS.BASE_URL' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"
         />
-        <label for="ws_detail_props_item_footer_label">{{ 'WORKSPACE.FOOTER_LABEL' | translate }} </label>
+        <label for="ws_detail_props_item_base_url">{{ 'WORKSPACE.BASE_URL' | translate }} </label>
       </span>
+      <a
+        tabindex="0"
+        id="ws_detail_props_item_base_url_link"
+        class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
+        [ngClass]="!editMode && inputBaseUrl.value ? 'cursor-pointer' : 'p-disabled'"
+        target="_blank"
+        [href]="
+          (getLocation().deploymentPath === '/' ? '' : getLocation().deploymentPath.slice(0, -1)) + inputBaseUrl.value
+        "
+        (click)="$event.stopPropagation()"
+        [attr.aria-label]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
+        [pTooltip]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
+        tooltipPosition="right"
+        tooltipEvent="hover"
+      >
+      </a>
+    </div>
+    <label *ngIf="editMode" class="ocx-control-hint block" for="ws_detail_props_item_base_url_link">
+      {{ ('VALIDATION.HINTS.FORMAT_URL' | translate) + urlPattern }}
+    </label>
+  </div>
 
-      <span class="p-float-label mb-1" controlErrorAnchor>
-        <textarea
+  <div *ngIf="(productPaths$ | async) ?? [] as paths" class="p-inputgroup mb-1" controlErrorAnchor>
+    <span class="p-float-label">
+      <p-dropdown
+        #inputHomePage
+        id="ws_detail_props_item_home_page"
+        formControlName="homePage"
+        styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
+        (onClick)="onOpenProductPathes(paths); $event.stopPropagation()"
+        [options]="paths"
+        [editable]="true"
+        [showClear]="true"
+        [ariaLabel]="'WORKSPACE.HOME_PAGE' | translate"
+        [pTooltip]="'WORKSPACE.TOOLTIPS.HOME_PAGE' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      >
+      </p-dropdown>
+      <label for="ws_detail_props_item_home_page">{{ 'WORKSPACE.HOME_PAGE' | translate }} </label>
+    </span>
+    <a
+      tabindex="0"
+      id="ws_detail_props_item_homePage_link"
+      class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
+      [ngClass]="!editMode && !workspace?.disabled && inputHomePage.value ? 'cursor-pointer' : 'p-disabled'"
+      target="_blank"
+      [href]="prepareProductUrl(inputHomePage.value)"
+      (click)="$event.stopPropagation()"
+      [attr.aria-label]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
+      [pTooltip]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
+      tooltipPosition="right"
+      tooltipEvent="hover"
+    >
+    </a>
+  </div>
+
+  <div class="p-inputgroup mb-1" controlErrorAnchor>
+    <span class="p-float-label">
+      <input
+        #inputRssFeedUrl
+        pInputText
+        type="text"
+        id="ws_detail_props_item_rssFeedUrl"
+        class="w-full pt-3 pb-2 text-responsive"
+        formControlName="rssFeedUrl"
+        [attr.aria-label]="'WORKSPACE.RSS_FEED_URL' | translate"
+        [pTooltip]="'WORKSPACE.TOOLTIPS.RSS_FEED_URL' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      />
+      <label for="ws_detail_props_item_rssFeedUrl">{{ 'WORKSPACE.RSS_FEED_URL' | translate }} </label>
+    </span>
+    <a
+      tabindex="0"
+      id="ws_detail_props_item_rssFeedUrl_link"
+      class="p-inputgroup-addon bg-primary pseudo-button"
+      [ngClass]="inputRssFeedUrl.value ? 'cursor-pointer' : 'p-disabled'"
+      (click)="copyToClipboard(workspace?.rssFeedUrl)"
+      [attr.aria-label]="'ACTIONS.COPY.CLIPBOARD' | translate"
+      [pTooltip]="'ACTIONS.COPY.CLIPBOARD' | translate"
+      tooltipPosition="right"
+      tooltipEvent="hover"
+    >
+      <span class="pi pi-copy"></span>
+    </a>
+  </div>
+
+  <div class="flex flex-row flex-wrap sm:flex-nowrap align-items-center row-gap-2 column-gap-4">
+    <input hidden type="file" accept="image/*" #selectedFileInputLogo (change)="onFileUpload($event)" />
+    <app-image-container
+      id="ws_detail_props_form_logo_image"
+      [imageUrl]="fetchingLogoUrl"
+      [small]="true"
+      (imageLoadError)="onImageLoadingError($event)"
+    ></app-image-container>
+    <button
+      pButton
+      id="ws_detail_props_item_remove_logo"
+      icon="pi pi-times"
+      [disabled]="!editMode || (editMode && !fetchingLogoUrl)"
+      class="action-button p-button-icon-only"
+      [class.cursor-pointer]="editMode"
+      (click)="onRemoveLogo()"
+      [attr.aria-label]="'IMAGE.TOOLTIPS.REMOVE' | translate"
+      [pTooltip]="'IMAGE.TOOLTIPS.REMOVE' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
+    ></button>
+    <button
+      pButton
+      id="ws_detail_props_item_upload_logo"
+      icon="pi pi-upload"
+      [disabled]="!editMode"
+      class="action-button p-button-icon-only"
+      [class.cursor-pointer]="editMode"
+      (click)="selectedFileInputLogo.click()"
+      [attr.aria-label]="'IMAGE.TOOLTIPS.UPLOAD' | translate"
+      [pTooltip]="'IMAGE.TOOLTIPS.UPLOAD' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
+    ></button>
+    <div class="flex flex-column row-gap-1 w-full">
+      <span class="p-float-label">
+        <input
+          pInputText
+          type="text"
           class="w-full"
-          pInputTextarea
-          autoresize="true"
-          rows="4"
-          id="ws_detail_props_item_description"
-          maxlength="255"
-          formControlName="description"
-          [attr.aria-label]="'WORKSPACE.DESCRIPTION' | translate"
-          [pTooltip]="'WORKSPACE.TOOLTIPS.DESCRIPTION' | translate"
+          id="ws_detail_props_item_logo_url"
+          formControlName="logoUrl"
+          (input)="onInputChange($event)"
+          (change)="onInputChange($event)"
+          [attr.aria-label]="'IMAGE.LOGO_URL' | translate"
+          [pTooltip]="'IMAGE.TOOLTIPS.URL' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"
-        ></textarea>
-        <label for="ws_detail_props_item_description">{{ 'WORKSPACE.DESCRIPTION' | translate }} </label>
+        />
+        <label for="ws_detail_props_item_logo_url">{{ 'IMAGE.LOGO_URL' | translate }} </label>
       </span>
+      <label *ngIf="editMode" class="ocx-control-hint block" for="ws_detail_props_item_logo_url">
+        {{ ('VALIDATION.HINTS.FORMAT_URL' | translate) + externUrlPattern }}
+      </label>
     </div>
-  </form>
+  </div>
+
+  <span class="p-float-label mb-1" controlErrorAnchor>
+    <input
+      pInputText
+      type="text"
+      id="ws_detail_props_item_footer-label"
+      class="w-full pt-3 pb-2 text-responsive"
+      formControlName="footerLabel"
+      [attr.aria-label]="'WORKSPACE.FOOTER_LABEL' | translate"
+      [pTooltip]="'WORKSPACE.TOOLTIPS.FOOTER_LABEL' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
+    />
+    <label for="ws_detail_props_item_footer_label">{{ 'WORKSPACE.FOOTER_LABEL' | translate }} </label>
+  </span>
+
+  <span class="p-float-label mb-1" controlErrorAnchor>
+    <textarea
+      class="w-full"
+      pInputTextarea
+      autoresize="true"
+      rows="4"
+      id="ws_detail_props_item_description"
+      maxlength="255"
+      formControlName="description"
+      [attr.aria-label]="'WORKSPACE.DESCRIPTION' | translate"
+      [pTooltip]="'WORKSPACE.TOOLTIPS.DESCRIPTION' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
+    ></textarea>
+    <label for="ws_detail_props_item_description">{{ 'WORKSPACE.DESCRIPTION' | translate }} </label>
+  </span>
 </div>

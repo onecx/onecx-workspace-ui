@@ -62,8 +62,6 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
 
   public onClose(): void {
     if (this.slotOrg && this.slot) {
-      console.log(this.slotOrg?.modificationCount)
-      console.log(this.slot?.modificationCount)
       this.detailClosed.emit(this.slotOrg?.modificationCount !== this.slot?.modificationCount)
       this.slot = undefined
       this.slotOrg = undefined
@@ -123,7 +121,6 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
         .subscribe({
           next: (data) => {
             if (this.slot) {
-              console.log('new: ', data)
               this.slot.modificationCount = data.modificationCount
               this.slot.modificationDate = data.modificationDate
               this.slot.components = data.components

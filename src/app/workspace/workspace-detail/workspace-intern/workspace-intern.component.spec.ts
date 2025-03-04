@@ -1,10 +1,9 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { HttpClient, provideHttpClient } from '@angular/common/http'
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
+import { provideHttpClient } from '@angular/common/http'
+import { TranslateTestingModule } from 'ngx-translate-testing'
 
-import { AppStateService, createTranslateLoader } from '@onecx/portal-integration-angular'
 import { WorkspaceInternComponent } from './workspace-intern.component'
 
 describe('WorkspaceInternComponent', () => {
@@ -15,13 +14,10 @@ describe('WorkspaceInternComponent', () => {
     TestBed.configureTestingModule({
       declarations: [WorkspaceInternComponent],
       imports: [
-        TranslateModule.forRoot({
-          loader: {
-            provide: TranslateLoader,
-            useFactory: createTranslateLoader,
-            deps: [HttpClient, AppStateService]
-          }
-        })
+        TranslateTestingModule.withTranslations({
+          de: require('src/assets/i18n/de.json'),
+          en: require('src/assets/i18n/en.json')
+        }).withDefaultLanguage('en')
       ],
       providers: [provideHttpClientTesting(), provideHttpClient()],
       schemas: [NO_ERRORS_SCHEMA]

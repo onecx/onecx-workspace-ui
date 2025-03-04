@@ -23,7 +23,7 @@ import { bffImageUrl, copyToClipboard, goToEndpoint, sortByLocale } from 'src/ap
 })
 export class WorkspacePropsComponent implements OnInit, OnChanges {
   @Input() workspace: Workspace | undefined
-  @Input() editMode = false
+  @Input() editMode = true
   @Input() isLoading = false
   @Output() currentLogoUrl = new EventEmitter<string>() // send logo url to detail header
   // make it available in HTML
@@ -55,7 +55,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     this.themeProductRegistered$ = workspaceService.doesUrlExistFor('onecx-theme', 'onecx-theme-ui', 'theme-detail')
 
     this.formGroup = new FormGroup({
-      disabled: new FormControl(false),
       displayName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(100)]),
       theme: new FormControl(null),
       baseUrl: new FormControl(null, [Validators.required, Validators.minLength(1), Validators.pattern('^/.*')]),

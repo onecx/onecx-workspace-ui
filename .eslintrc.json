@@ -18,9 +18,7 @@
     {
       "files": ["*.ts", "*.js"],
       "env": { "es6": true },
-      "globals": {
-        "__dirname": true
-      },
+      "globals": { "__dirname": true },
       "parserOptions": {
         "ecmaVersion": "latest",
         "project": "**/tsconfig.json",
@@ -53,12 +51,8 @@
             "style": "kebab-case"
           }
         ],
-        "prettier/prettier": [
-          "error",
-          {
-            "singleQuote": true
-          }
-        ],
+        "deprecation/deprecation": "warn",
+        "prettier/prettier": ["error", { "singleQuote": true }],
         "no-unused-vars": "off",
         "@typescript-eslint/no-unused-vars": ["error", { "vars": "all", "args": "none" }],
         "@typescript-eslint/no-explicit-any": "off",

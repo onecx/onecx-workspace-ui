@@ -19,5 +19,7 @@ export interface WorkspaceAbstract {
     baseUrl?: string;
     logoUrl?: string;
     disabled?: boolean;
+    operator?: boolean;
+    mandatory?: boolean;
 }
 

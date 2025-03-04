@@ -63,14 +63,17 @@
       <p-tabPanel
         *ocxIfPermission="'WORKSPACE_INTERNAL#VIEW'"
         id="ws_detail_intern"
-        [disabled]="editMode"
         [header]="'INTERNAL.HEADER' | translate"
         [attr.aria-label]="'INTERNAL.HEADER' | translate"
         [tooltip]="'INTERNAL.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       >
-        <app-workspace-intern [workspace]="workspace" [dateFormat]="dateFormat"></app-workspace-intern>
+        <app-workspace-intern
+          [workspace]="workspace"
+          [editMode]="editMode"
+          [dateFormat]="dateFormat"
+        ></app-workspace-intern>
       </p-tabPanel>
 
       <p-tabPanel
@@ -128,19 +131,49 @@
   [draggable]="true"
   [resizable]="false"
   [dismissableMask]="true"
+  [style]="{ 'max-width': '425px' }"
   styleClass="disable-max-height-preset"
 >
   <div class="flex column-gap-3 row-gap-1 justify-content-start align-items-center">
     <div class="pi pi-question-circle text-3xl danger-action-text"></div>
-    <div class="flex flex-column row-gap-2">
-      <div id="ws_delete_message" class="font-bold">{{ 'ACTIONS.DELETE.WORKSPACE.MESSAGE' | translate }}</div>
-      <div id="ws_delete_workspace_name" class="font-bold text-center danger-action-text">{{ workspace?.name }}</div>
-      <div>{{ 'ACTIONS.DELETE.INFO' | translate }}</div>
+    <div class="flex flex-column row-gap-3">
+      <p-message
+        *ngIf="workspace?.mandatory"
+        id="th_delete_reject_mandatory_message"
+        severity="info"
+        styleClass="p-2"
+        [text]="'ACTIONS.DELETE.WORKSPACE.MESSAGE_REJECT_MANDATORY' | translate"
+      ></p-message>
+      <div *ngIf="!workspace?.mandatory" class="flex flex-column row-gap-2">
+        <div id="ws_delete_message" class="font-bold">{{ 'ACTIONS.DELETE.WORKSPACE.MESSAGE' | translate }}</div>
+        <div id="ws_delete_workspace_name" class="font-bold text-center danger-action-text">{{ workspace?.name }}</div>
+        <div *ngIf="!workspace?.operator">{{ 'ACTIONS.DELETE.INFO' | translate }}</div>
+        <p-message
+          *ngIf="workspace?.operator"
+          id="ws_delete_operator_hint"
+          severity="info"
+          styleClass="mt-1 p-2"
+          [text]="'ACTIONS.DELETE.WORKSPACE.MESSAGE_INFO_OPERATOR' | translate"
+        ></p-message>
+      </div>
     </div>
   </div>
+
   <ng-template pTemplate="footer">
     <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
       <p-button
+        *ngIf="workspace?.mandatory"
+        id="ws_delete_action_close"
+        icon="pi pi-times"
+        (onClick)="workspaceDeleteVisible = false"
+        [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+        [ariaLabel]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+        [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      ></p-button>
+      <p-button
+        *ngIf="!workspace?.mandatory"
         id="ws_delete_action_no"
         icon="pi pi-times"
         (onClick)="workspaceDeleteVisible = false"
@@ -151,6 +184,7 @@
         tooltipEvent="hover"
       ></p-button>
       <p-button
+        *ngIf="!workspace?.mandatory"
         id="ws_delete_action_yes"
         icon="pi pi-check"
         (onClick)="onConfirmDeleteWorkspace()"

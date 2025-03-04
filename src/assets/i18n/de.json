@@ -43,6 +43,8 @@
       "WORKSPACE": {
         "HEADER": "Workspace löschen",
         "MESSAGE": "Möchten Sie diesen Workspace löschen?",
+        "MESSAGE_INFO_OPERATOR": "Dieser Workspace wurde automatisiert erstellt. Er ist löschbar wird aber automatisiert wiederhergestellt.",
+        "MESSAGE_REJECT_MANDATORY": "Der Workspace ist gekennzeichnet als erforderlich für den Betrieb und kann deshalb nicht gelöscht werden.",
         "MESSAGE_OK": "Workspace erfolgreich gelöscht",
         "MESSAGE_NOK": "Workspace konnte nicht gelöscht werden"
       },

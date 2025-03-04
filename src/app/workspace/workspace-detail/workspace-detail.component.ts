@@ -17,6 +17,7 @@ import { bffImageUrl, limitText } from 'src/app/shared/utils'
 
 import { WorkspacePropsComponent } from './workspace-props/workspace-props.component'
 import { WorkspaceContactComponent } from './workspace-contact/workspace-contact.component'
+import { WorkspaceInternComponent } from './workspace-intern/workspace-intern.component'
 
 @Component({
   selector: 'app-workspace-detail',
@@ -26,6 +27,7 @@ import { WorkspaceContactComponent } from './workspace-contact/workspace-contact
 export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
   @ViewChild(WorkspacePropsComponent, { static: false }) workspacePropsComponent!: WorkspacePropsComponent
   @ViewChild(WorkspaceContactComponent, { static: false }) workspaceContactComponent!: WorkspaceContactComponent
+  @ViewChild(WorkspaceInternComponent, { static: false }) WorkspaceInternComponent!: WorkspaceInternComponent
 
   public actions$: Observable<Action[]> | undefined
   public editMode = false
@@ -105,6 +107,11 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
       case 1: {
         this.workspaceContactComponent.onSave()
         workspaceData = this.workspaceContactComponent.workspace
+        break
+      }
+      case 2: {
+        this.WorkspaceInternComponent.onSave()
+        workspaceData = this.WorkspaceInternComponent.workspace
         break
       }
       default: {
@@ -284,7 +291,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
               show: 'always',
               permission: 'WORKSPACE#EDIT',
               conditional: true,
-              showCondition: this.workspace != null && !this.editMode && [0, 1].includes(this.selectedTabIndex)
+              showCondition: this.workspace != null && !this.editMode && [0, 1, 2].includes(this.selectedTabIndex)
             },
             {
               label: data['ACTIONS.DELETE.LABEL'],
@@ -296,7 +303,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
               show: 'asOverflow',
               permission: 'WORKSPACE#DELETE',
               conditional: true,
-              showCondition: !this.editMode && this.workspace && !this.workspace?.mandatory
+              showCondition: !this.editMode
             }
           ]
         })

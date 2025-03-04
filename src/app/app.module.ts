@@ -4,12 +4,17 @@ import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/
 import { RouterModule, Routes } from '@angular/router'
 import { BrowserModule } from '@angular/platform-browser'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
-import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
+import { TranslateService } from '@ngx-translate/core'
+import { TranslateLoader, TranslateModule, MissingTranslationHandler } from '@ngx-translate/core'
 
 import { KeycloakAuthModule } from '@onecx/keycloak-auth'
-import { createTranslateLoader } from '@onecx/angular-accelerator'
+import { createTranslateLoader, TRANSLATION_PATH, translationPathFactory } from '@onecx/angular-utils'
 import { APP_CONFIG, AppStateService, UserService } from '@onecx/angular-integration-interface'
-import { translateServiceInitializer, PortalCoreModule } from '@onecx/portal-integration-angular'
+import {
+  translateServiceInitializer,
+  PortalCoreModule,
+  PortalMissingTranslationHandler
+} from '@onecx/portal-integration-angular'
 
 import { environment } from 'src/environments/environment'
 import { AppComponent } from './app.component'
@@ -36,11 +41,8 @@ export const routes: Routes = [
     }),
     TranslateModule.forRoot({
       isolate: true,
-      loader: {
-        provide: TranslateLoader,
-        useFactory: createTranslateLoader,
-        deps: [HttpClient, AppStateService]
-      }
+      loader: { provide: TranslateLoader, useFactory: createTranslateLoader, deps: [HttpClient] },
+      missingTranslationHandler: { provide: MissingTranslationHandler, useClass: PortalMissingTranslationHandler }
     })
   ],
   providers: [
@@ -50,6 +52,12 @@ export const routes: Routes = [
       useFactory: translateServiceInitializer,
       multi: true,
       deps: [UserService, TranslateService]
+    },
+    {
+      provide: TRANSLATION_PATH,
+      useFactory: (appStateService: AppStateService) => translationPathFactory('assets/i18n/')(appStateService),
+      multi: true,
+      deps: [AppStateService]
     },
     provideHttpClient(withInterceptorsFromDi())
   ]
