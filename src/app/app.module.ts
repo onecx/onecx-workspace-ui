@@ -4,8 +4,7 @@ import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/
 import { RouterModule, Routes } from '@angular/router'
 import { BrowserModule } from '@angular/platform-browser'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
-import { TranslateService } from '@ngx-translate/core'
-import { TranslateLoader, TranslateModule, MissingTranslationHandler } from '@ngx-translate/core'
+import { TranslateLoader, TranslateModule, TranslateService, MissingTranslationHandler } from '@ngx-translate/core'
 
 import { KeycloakAuthModule } from '@onecx/keycloak-auth'
 import { createTranslateLoader, TRANSLATION_PATH, translationPathFactory } from '@onecx/angular-utils'
