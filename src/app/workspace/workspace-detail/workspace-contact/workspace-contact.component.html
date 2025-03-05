@@ -1,112 +1,110 @@
 <div
-  class="m-3 mb-1 flex flex-wrap flex-column row-gap-4 w-12 md:w-10 lg:w-8 xl:w-6"
+  class="mt-3 mx-2 sm:mx-3 flex flex-wrap flex-column row-gap-3 sm:row-gap-4 md:w-10 lg:w-8 xl:w-6"
   [formGroup]="formGroup"
   errorTailor
 >
-  <div class="flex flex-wrap flex-column gap-4 justify-content-between">
-    <span class="p-float-label mb-1" controlErrorAnchor>
-      <input
-        pInputText
-        type="text"
-        id="ws_detail_contact_item_companyName"
-        class="w-full pt-3 pb-2"
-        formControlName="companyName"
-        [attr.aria-label]="'WORKSPACE.COMPANY_NAME' | translate"
-        [pTooltip]="'WORKSPACE.COMPANY_NAME' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      />
-      <label for="ws_detail_item_companyName">{{ 'WORKSPACE.COMPANY_NAME' | translate }}</label>
-    </span>
+  <span class="p-float-label mb-1" controlErrorAnchor>
+    <input
+      pInputText
+      type="text"
+      id="ws_detail_contact_item_companyName"
+      class="w-full pt-3 pb-2"
+      formControlName="companyName"
+      [attr.aria-label]="'WORKSPACE.COMPANY_NAME' | translate"
+      [pTooltip]="'WORKSPACE.COMPANY_NAME' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
+    />
+    <label for="ws_detail_item_companyName">{{ 'WORKSPACE.COMPANY_NAME' | translate }}</label>
+  </span>
 
-    <span class="p-float-label mb-1" controlErrorAnchor>
-      <input
-        pInputText
-        type="text"
-        id="ws_detail_contact_item_phoneNumber"
-        class="w-full pt-3 pb-2"
-        formControlName="phoneNumber"
-        [attr.aria-label]="'WORKSPACE.PHONE_NUMBER' | translate"
-        [pTooltip]="'WORKSPACE.PHONE_NUMBER' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      />
-      <label for="ws_detail_item_phoneNumber">{{ 'WORKSPACE.PHONE_NUMBER' | translate }}</label>
-    </span>
+  <span class="p-float-label mb-1" controlErrorAnchor>
+    <input
+      pInputText
+      type="text"
+      id="ws_detail_contact_item_phoneNumber"
+      class="w-full pt-3 pb-2"
+      formControlName="phoneNumber"
+      [attr.aria-label]="'WORKSPACE.PHONE_NUMBER' | translate"
+      [pTooltip]="'WORKSPACE.PHONE_NUMBER' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
+    />
+    <label for="ws_detail_item_phoneNumber">{{ 'WORKSPACE.PHONE_NUMBER' | translate }}</label>
+  </span>
 
-    <span class="p-float-label mb-1" controlErrorAnchor>
-      <input
-        pInputText
-        type="text"
-        id="ws_detail_contact_item_street"
-        class="w-full pt-3 pb-2"
-        formControlName="street"
-        [attr.aria-label]="'WORKSPACE.STREET' | translate"
-        [pTooltip]="'WORKSPACE.STREET' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      />
-      <label for="ws_detail_item_street">{{ 'WORKSPACE.STREET' | translate }}</label>
-    </span>
+  <span class="p-float-label mb-1" controlErrorAnchor>
+    <input
+      pInputText
+      type="text"
+      id="ws_detail_contact_item_street"
+      class="w-full pt-3 pb-2"
+      formControlName="street"
+      [attr.aria-label]="'WORKSPACE.STREET' | translate"
+      [pTooltip]="'WORKSPACE.STREET' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
+    />
+    <label for="ws_detail_item_street">{{ 'WORKSPACE.STREET' | translate }}</label>
+  </span>
 
-    <span class="p-float-label mb-1" controlErrorAnchor>
-      <input
-        pInputText
-        type="text"
-        id="ws_detail_contact_item_street_no"
-        class="w-full pt-3 pb-2"
-        formControlName="streetNo"
-        [attr.aria-label]="'WORKSPACE.STREET_NO' | translate"
-        [pTooltip]="'WORKSPACE.STREET_NO' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      />
-      <label for="ws_detail_item_street_no">{{ 'WORKSPACE.STREET_NO' | translate }}</label>
-    </span>
+  <span class="p-float-label mb-1" controlErrorAnchor>
+    <input
+      pInputText
+      type="text"
+      id="ws_detail_contact_item_street_no"
+      class="w-full pt-3 pb-2"
+      formControlName="streetNo"
+      [attr.aria-label]="'WORKSPACE.STREET_NO' | translate"
+      [pTooltip]="'WORKSPACE.STREET_NO' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
+    />
+    <label for="ws_detail_item_street_no">{{ 'WORKSPACE.STREET_NO' | translate }}</label>
+  </span>
 
-    <span class="p-float-label mb-1" controlErrorAnchor>
-      <input
-        pInputText
-        type="text"
-        id="ws_detail_contact_item_city"
-        class="w-full pt-3 pb-2"
-        formControlName="city"
-        [attr.aria-label]="'WORKSPACE.CITY' | translate"
-        [pTooltip]="'WORKSPACE.CITY' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      />
-      <label for="ws_detail_item_city">{{ 'WORKSPACE.CITY' | translate }}</label>
-    </span>
+  <span class="p-float-label mb-1" controlErrorAnchor>
+    <input
+      pInputText
+      type="text"
+      id="ws_detail_contact_item_city"
+      class="w-full pt-3 pb-2"
+      formControlName="city"
+      [attr.aria-label]="'WORKSPACE.CITY' | translate"
+      [pTooltip]="'WORKSPACE.CITY' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
+    />
+    <label for="ws_detail_item_city">{{ 'WORKSPACE.CITY' | translate }}</label>
+  </span>
 
-    <span class="p-float-label mb-1" controlErrorAnchor>
-      <input
-        pInputText
-        type="text"
-        id="ws_detail_contact_item_postalCode"
-        class="w-full pt-3 pb-2"
-        formControlName="postalCode"
-        [attr.aria-label]="'WORKSPACE.POSTAL_CODE' | translate"
-        [pTooltip]="'WORKSPACE.POSTAL_CODE' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      />
-      <label for="ws_detail_item_postalCode">{{ 'WORKSPACE.POSTAL_CODE' | translate }}</label>
-    </span>
+  <span class="p-float-label mb-1" controlErrorAnchor>
+    <input
+      pInputText
+      type="text"
+      id="ws_detail_contact_item_postalCode"
+      class="w-full pt-3 pb-2"
+      formControlName="postalCode"
+      [attr.aria-label]="'WORKSPACE.POSTAL_CODE' | translate"
+      [pTooltip]="'WORKSPACE.POSTAL_CODE' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
+    />
+    <label for="ws_detail_item_postalCode">{{ 'WORKSPACE.POSTAL_CODE' | translate }}</label>
+  </span>
 
-    <span class="p-float-label mb-1" controlErrorAnchor>
-      <input
-        pInputText
-        type="text"
-        id="ws_detail_contact_item_country"
-        class="w-full pt-3 pb-2"
-        formControlName="country"
-        [attr.aria-label]="'WORKSPACE.COUNTRY' | translate"
-        [pTooltip]="'WORKSPACE.COUNTRY' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      />
-      <label for="ws_detail_item_country">{{ 'WORKSPACE.COUNTRY' | translate }}</label>
-    </span>
-  </div>
+  <span class="p-float-label mb-1" controlErrorAnchor>
+    <input
+      pInputText
+      type="text"
+      id="ws_detail_contact_item_country"
+      class="w-full pt-3 pb-2"
+      formControlName="country"
+      [attr.aria-label]="'WORKSPACE.COUNTRY' | translate"
+      [pTooltip]="'WORKSPACE.COUNTRY' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
+    />
+    <label for="ws_detail_item_country">{{ 'WORKSPACE.COUNTRY' | translate }}</label>
+  </span>
 </div>
