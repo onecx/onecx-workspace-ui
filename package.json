@@ -49,7 +49,7 @@
     "@ngneat/error-tailor": "^5.0.1",
     "@ngneat/until-destroy": "^10.0.0",
     "@ngrx/effects": "^18.0.1",
-    "@ngrx/router-store": "^18.0.1",
+    "@ngrx/router-store": "^19.0.1",
     "@ngx-translate/core": "^15.0.0",
     "@ngx-translate/http-loader": "^8.0.0",
     "@onecx/accelerator": "^5.32.1",
