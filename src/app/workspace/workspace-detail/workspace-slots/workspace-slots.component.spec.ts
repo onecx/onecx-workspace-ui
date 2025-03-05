@@ -2,8 +2,8 @@ import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
+import { TranslateService } from '@ngx-translate/core'
 import { TranslateTestingModule } from 'ngx-translate-testing'
-
 import { of, throwError } from 'rxjs'
 
 import { PortalMessageService, UserService } from '@onecx/portal-integration-angular'
@@ -100,8 +100,32 @@ describe('WorkspaceSlotsComponent', () => {
     initializeComponent()
   })
 
-  it('should create', () => {
-    expect(component).toBeTruthy()
+  describe('initialize', () => {
+    it('should create', () => {
+      expect(component).toBeTruthy()
+    })
+
+    it('dataview translations', (done) => {
+      const translationData = {
+        'DIALOG.DATAVIEW.FILTER': 'filter',
+        'DIALOG.DATAVIEW.FILTER_OF': 'filterOf',
+        'DIALOG.DATAVIEW.SORT_BY': 'sortBy'
+      }
+      const translateService = TestBed.inject(TranslateService)
+      spyOn(translateService, 'get').and.returnValue(of(translationData))
+
+      component.ngOnInit()
+
+      component.dataViewControlsTranslations$?.subscribe({
+        next: (data) => {
+          if (data) {
+            expect(data.sortDropdownTooltip).toEqual('sortBy')
+          }
+          done()
+        },
+        error: done.fail
+      })
+    })
   })
 
   it('should load data onChanges', () => {

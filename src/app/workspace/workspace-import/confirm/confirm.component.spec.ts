@@ -1,14 +1,12 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { createTranslateLoader } from '@onecx/angular-accelerator'
+import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { HttpClient, provideHttpClient } from '@angular/common/http'
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
+import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of } from 'rxjs'
 
 import { WorkspaceAPIService, WorkspaceAbstract } from 'src/app/shared/generated'
 import { ConfirmComponent } from './confirm.component'
-import { AppStateService } from '@onecx/angular-integration-interface'
 
 const workspace: WorkspaceAbstract = {
   theme: 'theme',
@@ -30,13 +28,10 @@ describe('ConfirmComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ConfirmComponent],
       imports: [
-        TranslateModule.forRoot({
-          loader: {
-            provide: TranslateLoader,
-            useFactory: createTranslateLoader,
-            deps: [HttpClient, AppStateService]
-          }
-        })
+        TranslateTestingModule.withTranslations({
+          de: require('src/assets/i18n/de.json'),
+          en: require('src/assets/i18n/en.json')
+        }).withDefaultLanguage('en')
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [

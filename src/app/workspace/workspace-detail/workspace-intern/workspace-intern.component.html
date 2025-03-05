@@ -1,12 +1,13 @@
-<div class="surface-section my-1 mx-3">
-  <div class="ml-3 flex flex-row flex-wrap justify-content-start align-items-center column-gap-8 row-gap-2 mb-4">
+<div class="mt-2 mx-2 sm:mx-3 flex flex-wrap flex-column row-gap-3 sm:row-gap-4 md:w-10 lg:w-8 xl:w-6">
+  <div
+    class="ml-2 sm:ml-3 mb-1 flex flex-row flex-wrap justify-content-start align-items-center column-gap-7 row-gap-2"
+    [formGroup]="formGroup"
+  >
     <p-checkbox
-      type="text"
       inputId="ws_detail_intern_item_operator"
       styleClass="cursor-auto shadow-none"
-      [(ngModel)]="operator"
+      formControlName="operator"
       [binary]="true"
-      [disabled]="true"
       [label]="'INTERNAL.OPERATOR' | translate"
       [ariaLabel]="'INTERNAL.OPERATOR' | translate"
       [pTooltip]="'INTERNAL.TOOLTIPS.OPERATOR' | translate"
@@ -14,113 +15,120 @@
       tooltipEvent="hover"
     ></p-checkbox>
     <p-checkbox
-      type="text"
-      inputId="ws_detail_intern_item_mandatory"
-      styleClass="cursor-auto shadow-none"
-      [(ngModel)]="mandatory"
+      inputId="ws_detail_props_item_mandatory"
+      styleClass="cursor-pointer shadow-none"
+      formControlName="mandatory"
       [binary]="true"
-      [disabled]="true"
       [label]="'INTERNAL.MANDATORY' | translate"
       [ariaLabel]="'INTERNAL.MANDATORY' | translate"
       [pTooltip]="'INTERNAL.TOOLTIPS.MANDATORY' | translate"
       tooltipPosition="top"
       tooltipEvent="hover"
     ></p-checkbox>
+    <p-checkbox
+      inputId="ws_detail_props_item_disabled"
+      styleClass="cursor-pointer shadow-none"
+      formControlName="disabled"
+      [binary]="true"
+      [label]="'WORKSPACE.DISABLED' | translate"
+      [ariaLabel]="'WORKSPACE.DISABLED' | translate"
+      [pTooltip]="'WORKSPACE.TOOLTIPS.DISABLED' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
+    ></p-checkbox>
   </div>
 
-  <div class="flex flex-wrap flex-column row-gap-4 w-12 md:w-10 lg:w-8 xl:w-6">
-    <div class="w-12">
+  <div class="w-12">
+    <span class="p-float-label mb-1">
+      <input
+        pInputText
+        type="text"
+        id="ws_detail_intern_item_name"
+        class="w-full pt-3 pb-2 text-responsive"
+        [disabled]="true"
+        [value]="workspace.name"
+        [attr.aria-label]="'WORKSPACE.NAME' | translate"
+        [pTooltip]="'WORKSPACE.TOOLTIPS.NAME' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      />
+      <label for="ws_detail_intern_item_name">{{ 'WORKSPACE.NAME' | translate }}</label>
+    </span>
+  </div>
+
+  <div class="flex flex-wrap row-gap-4">
+    <div class="w-12 sm:w-5 sm:pr-3">
       <span class="p-float-label mb-1">
         <input
           pInputText
           type="text"
-          id="ws_detail_intern_item_name"
+          id="ws_detail_intern_item_creation-date"
           class="w-full pt-3 pb-2 text-responsive"
           [disabled]="true"
-          [value]="workspace.name"
-          [attr.aria-label]="'WORKSPACE.NAME' | translate"
-          [pTooltip]="'WORKSPACE.TOOLTIPS.NAME' | translate"
+          [value]="workspace.creationDate | date: dateFormat"
+          [attr.aria-label]="'INTERNAL.CREATION_DATE' | translate"
+          [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_DATE' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"
         />
-        <label for="ws_detail_intern_item_name">{{ 'WORKSPACE.NAME' | translate }}</label>
+        <label for="ws_detail_intern_item_creation-date">{{ 'INTERNAL.CREATION_DATE' | translate }}</label>
       </span>
     </div>
 
-    <div class="flex flex-wrap row-gap-4">
-      <div class="w-12 sm:w-5 sm:pr-3">
-        <span class="p-float-label mb-1">
-          <input
-            pInputText
-            type="text"
-            id="ws_detail_intern_item_creation-date"
-            class="w-full pt-3 pb-2 text-responsive"
-            [disabled]="true"
-            [value]="workspace.creationDate | date: dateFormat"
-            [attr.aria-label]="'INTERNAL.CREATION_DATE' | translate"
-            [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_DATE' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          />
-          <label for="ws_detail_intern_item_creation-date">{{ 'INTERNAL.CREATION_DATE' | translate }}</label>
-        </span>
-      </div>
+    <div class="w-12 sm:w-7 sm:pl-3">
+      <span class="p-float-label mb-1">
+        <input
+          pInputText
+          type="text"
+          id="ws_detail_intern_item_creation-user"
+          class="w-full pt-3 pb-2 text-responsive"
+          [disabled]="true"
+          [value]="workspace.creationUser"
+          [attr.aria-label]="'INTERNAL.CREATION_USER' | translate"
+          [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_USER' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        />
+        <label for="ws_detail_intern_item_creation-user">{{ 'INTERNAL.CREATION_USER' | translate }}</label>
+      </span>
+    </div>
+  </div>
 
-      <div class="w-12 sm:w-7 sm:pl-3">
-        <span class="p-float-label mb-1">
-          <input
-            pInputText
-            type="text"
-            id="ws_detail_intern_item_creation-user"
-            class="w-full pt-3 pb-2 text-responsive"
-            [disabled]="true"
-            [value]="workspace.creationUser"
-            [attr.aria-label]="'INTERNAL.CREATION_USER' | translate"
-            [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_USER' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          />
-          <label for="ws_detail_intern_item_creation-user">{{ 'INTERNAL.CREATION_USER' | translate }}</label>
-        </span>
-      </div>
+  <div class="flex flex-wrap row-gap-4">
+    <div class="w-12 sm:w-5 sm:pr-3">
+      <span class="p-float-label mb-1">
+        <input
+          pInputText
+          type="text"
+          id="ws_detail_intern_item_modification-date"
+          class="w-full pt-3 pb-2 text-responsive"
+          [disabled]="true"
+          [value]="workspace.modificationDate | date: dateFormat"
+          [attr.aria-label]="'INTERNAL.MODIFICATION_DATE' | translate"
+          [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_DATE' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        />
+        <label for="ws_detail_intern_item_modification-date">{{ 'INTERNAL.MODIFICATION_DATE' | translate }}</label>
+      </span>
     </div>
 
-    <div class="flex flex-wrap row-gap-4">
-      <div class="w-12 sm:w-5 sm:pr-3">
-        <span class="p-float-label mb-1">
-          <input
-            pInputText
-            type="text"
-            id="ws_detail_intern_item_modification-date"
-            class="w-full pt-3 pb-2 text-responsive"
-            [disabled]="true"
-            [value]="workspace.modificationDate | date: dateFormat"
-            [attr.aria-label]="'INTERNAL.MODIFICATION_DATE' | translate"
-            [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_DATE' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          />
-          <label for="ws_detail_intern_item_modification-date">{{ 'INTERNAL.MODIFICATION_DATE' | translate }}</label>
-        </span>
-      </div>
-
-      <div class="w-12 sm:w-7 sm:pl-3">
-        <span class="p-float-label mb-1">
-          <input
-            pInputText
-            type="text"
-            id="ws_detail_intern_item_modification-user"
-            class="w-full pt-3 pb-2 text-responsive"
-            [disabled]="true"
-            [value]="workspace.modificationUser"
-            [attr.aria-label]="'INTERNAL.MODIFICATION_USER' | translate"
-            [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_USER' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          />
-          <label for="ws_detail_intern_item_modification-user">{{ 'INTERNAL.MODIFICATION_USER' | translate }}</label>
-        </span>
-      </div>
+    <div class="w-12 sm:w-7 sm:pl-3">
+      <span class="p-float-label mb-1">
+        <input
+          pInputText
+          type="text"
+          id="ws_detail_intern_item_modification-user"
+          class="w-full pt-3 pb-2 text-responsive"
+          [disabled]="true"
+          [value]="workspace.modificationUser"
+          [attr.aria-label]="'INTERNAL.MODIFICATION_USER' | translate"
+          [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_USER' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        />
+        <label for="ws_detail_intern_item_modification-user">{{ 'INTERNAL.MODIFICATION_USER' | translate }}</label>
+      </span>
     </div>
   </div>
 </div>

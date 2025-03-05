@@ -55,7 +55,7 @@
           [filterColumns]="['WORKSPACE.DISPLAY_NAME' | translate, 'WORKSPACE.THEME' | translate]"
           (sortChange)="onSortChange($event)"
           (sortDirectionChange)="onSortDirChange($event)"
-          [translations]="dataViewControlsTranslations"
+          [translations]="(dataViewControlsTranslations$ | async) ?? {}"
         >
         </ocx-data-view-controls>
       </ng-template>
@@ -169,6 +169,15 @@
                 [attr.aria-label]="'WORKSPACE.DISABLED' | translate"
                 [pTooltip]="'WORKSPACE.TOOLTIPS.DISABLED' | translate"
                 tooltipPosition="right"
+                tooltipEvent="hover"
+              ></span>
+              <span
+                *ngIf="workspace.mandatory"
+                [id]="'ws_search_data_grid_row_' + i + '_mandatory'"
+                class="card-badge-left badge-1 font-bold text-lg pi pi-shield"
+                [attr.aria-label]="'INTERNAL.MANDATORY' | translate"
+                [pTooltip]="'WORKSPACE.TOOLTIPS.MANDATORY' | translate"
+                tooltipPosition="top"
                 tooltipEvent="hover"
               ></span>
 

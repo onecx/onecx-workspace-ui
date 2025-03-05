@@ -15,11 +15,11 @@ import { Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
 import { WorkspaceDetailComponent } from './workspace-detail.component'
 import { WorkspaceContactComponent } from './workspace-contact/workspace-contact.component'
 import { WorkspacePropsComponent } from './workspace-props/workspace-props.component'
+import { WorkspaceInternComponent } from './workspace-intern/workspace-intern.component'
 
 class MockRouter {
   navigate = jasmine.createSpy('navigate')
 }
-
 const workspace: Workspace = {
   id: 'id',
   name: 'name',
@@ -27,12 +27,13 @@ const workspace: Workspace = {
   baseUrl: '/some/base/url',
   displayName: ''
 }
-
 class MockWorkspacePropsComponent {
   public onSave(): void {}
 }
-
 class MockWorkspaceContactComponent {
+  public onSave(): void {}
+}
+class MockWorkspaceInternComponent {
   public onSave(): void {}
 }
 
@@ -314,6 +315,19 @@ describe('WorkspaceDetailComponent', () => {
       apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
       component.workspaceContactComponent = new MockWorkspaceContactComponent() as unknown as WorkspaceContactComponent
       component.selectedTabIndex = 1
+      component.ngOnInit()
+      let actions: any = []
+      component.actions$!.subscribe((act) => (actions = act))
+
+      actions[3].actionCallback()
+
+      expect(component.editMode).toBeFalse()
+    })
+
+    it('should have prepared action buttons onInit: update workspace intern', () => {
+      apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
+      component.workspaceInternComponent = new MockWorkspaceInternComponent() as unknown as WorkspaceInternComponent
+      component.selectedTabIndex = 2
       component.ngOnInit()
       let actions: any = []
       component.actions$!.subscribe((act) => (actions = act))

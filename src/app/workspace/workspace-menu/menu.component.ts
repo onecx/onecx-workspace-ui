@@ -73,7 +73,6 @@ export class MenuComponent implements OnInit, OnDestroy {
   public myPermissions = new Array<string>() // permissions of the user
   public treeTableContentSwitchValue = 'DETAILS'
   public treeTableExpandSwitchValue = 'COLLAPSE'
-  public treeExpanded = false // off => collapsed
   public treeFrozenColumns: Column[]
   public treeDetailColumns: Column[]
   public treeTableContentSwitchItems$: Observable<ExtendedSelectItem[]> | undefined
@@ -772,13 +771,13 @@ export class MenuComponent implements OnInit, OnDestroy {
   public onResetRoleFilter(): void {
     if (this.roleFilterValue.length > 0) {
       this.roleFilterValue = []
-      this.loadMenu(false)
+      this.loadMenu(true)
     }
   }
   public onChangeRoleFilter(role: string): void {
     if (this.roleFilterValue.includes(role)) this.roleFilterValue = this.roleFilterValue.filter((r) => r !== role)
     else this.roleFilterValue.push(role)
-    this.loadMenu(false)
+    this.loadMenu(true)
   }
   public onDisplayRoles(): void {
     if (!this.displayRoles && this.wRoles.length === 0) {

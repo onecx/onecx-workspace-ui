@@ -36,7 +36,7 @@ export class WorkspaceSearchComponent implements OnInit {
   public filter: string | undefined
   public sortField = 'displayName'
   public sortOrder = 1
-  public dataViewControlsTranslations: DataViewControlTranslations = {}
+  public dataViewControlsTranslations$: Observable<DataViewControlTranslations> | undefined
 
   @ViewChild('table', { static: false }) table!: any
 
@@ -74,18 +74,25 @@ export class WorkspaceSearchComponent implements OnInit {
    * DIALOG
    */
   private prepareDialogTranslations() {
-    this.translate
-      .get(['WORKSPACE.DISPLAY_NAME', 'WORKSPACE.THEME', 'DIALOG.DATAVIEW.SORT_BY', 'DIALOG.DATAVIEW.FILTER_BY'])
+    this.dataViewControlsTranslations$ = this.translate
+      .get([
+        'WORKSPACE.DISPLAY_NAME',
+        'WORKSPACE.THEME',
+        'DIALOG.DATAVIEW.FILTER',
+        'DIALOG.DATAVIEW.FILTER_OF',
+        'DIALOG.DATAVIEW.SORT_BY'
+      ])
       .pipe(
         map((data) => {
-          this.dataViewControlsTranslations = {
-            sortDropdownTooltip: data['DIALOG.DATAVIEW.SORT_BY'],
+          return {
+            filterInputPlaceholder: data['DIALOG.DATAVIEW.FILTER'],
             filterInputTooltip:
-              data['DIALOG.DATAVIEW.FILTER_BY'] + data['WORKSPACE.DISPLAY_NAME'] + ', ' + data['WORKSPACE.THEME']
-          }
+              data['DIALOG.DATAVIEW.FILTER_OF'] + data['WORKSPACE.DISPLAY_NAME'] + ', ' + data['WORKSPACE.THEME'],
+            sortDropdownTooltip: data['DIALOG.DATAVIEW.SORT_BY'],
+            sortDropdownPlaceholder: data['DIALOG.DATAVIEW.SORT_BY']
+          } as DataViewControlTranslations
         })
       )
-      .subscribe()
   }
 
   private prepareActionButtons() {

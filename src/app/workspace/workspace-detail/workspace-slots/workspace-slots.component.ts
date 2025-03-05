@@ -64,7 +64,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
 
   // dialog
   @ViewChild(DataView) dv: DataView | undefined
-  public dataViewControlsTranslations: DataViewControlTranslations = {}
+  public dataViewControlsTranslations$: Observable<DataViewControlTranslations> | undefined
   public filterValue: string | undefined
   public filterValueDefault = 'name'
   public filterBy = this.filterValueDefault
@@ -278,18 +278,18 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
    * Dialog preparation
    */
   private prepareTranslations(): void {
-    this.translate
-      .get(['SLOT.NAME', 'DIALOG.DATAVIEW.SORT_BY', 'DIALOG.DATAVIEW.FILTER', 'DIALOG.DATAVIEW.FILTER_BY'])
+    this.dataViewControlsTranslations$ = this.translate
+      .get(['SLOT.NAME', 'ROLE.TYPE', 'DIALOG.DATAVIEW.FILTER', 'DIALOG.DATAVIEW.FILTER_OF', 'DIALOG.DATAVIEW.SORT_BY'])
       .pipe(
         map((data) => {
-          this.dataViewControlsTranslations = {
-            sortDropdownTooltip: data['DIALOG.DATAVIEW.SORT_BY'],
+          return {
             filterInputPlaceholder: data['DIALOG.DATAVIEW.FILTER'],
-            filterInputTooltip: data['DIALOG.DATAVIEW.FILTER_BY'] + data['SLOT.NAME']
-          }
+            filterInputTooltip: data['DIALOG.DATAVIEW.FILTER_OF'] + data['SLOT.NAME'],
+            sortDropdownTooltip: data['DIALOG.DATAVIEW.SORT_BY'],
+            sortDropdownPlaceholder: data['DIALOG.DATAVIEW.SORT_BY']
+          } as DataViewControlTranslations
         })
       )
-      .subscribe()
   }
 
   /**

@@ -1,5 +1,4 @@
 import { NgModule } from '@angular/core'
-import { CommonModule } from '@angular/common'
 import { RouterModule, Routes } from '@angular/router'
 import { TreeTableModule } from 'primeng/treetable'
 import { TreeDragDropService } from 'primeng/api'
@@ -25,7 +24,6 @@ const routes: Routes = [
 @NgModule({
   declarations: [MenuComponent, MenuDetailComponent, MenuInternComponent, MenuImportComponent, MenuPreviewComponent],
   imports: [
-    CommonModule,
     PortalCoreModule.forMicroFrontend(),
     [RouterModule.forChild(addInitializeModuleGuard(routes))],
     SharedModule,

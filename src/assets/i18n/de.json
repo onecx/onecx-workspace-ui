@@ -43,6 +43,8 @@
       "WORKSPACE": {
         "HEADER": "Workspace löschen",
         "MESSAGE": "Möchten Sie diesen Workspace löschen?",
+        "MESSAGE_INFO_OPERATOR": "Dieser Workspace wurde automatisiert erstellt. Er ist löschbar wird aber automatisiert wiederhergestellt.",
+        "MESSAGE_REJECT_MANDATORY": "Der Workspace ist gekennzeichnet als erforderlich für den Betrieb und kann deshalb nicht gelöscht werden.",
         "MESSAGE_OK": "Workspace erfolgreich gelöscht",
         "MESSAGE_NOK": "Workspace konnte nicht gelöscht werden"
       },
@@ -196,8 +198,8 @@
       "CREATION_USER": "ID des Benutzers der Erstellung",
       "MODIFICATION_DATE": "Zeitpunkt der letzten Änderung",
       "MODIFICATION_USER": "ID des Benutzers der letzten Änderung",
-      "MANDATORY": "Wenn gesetzt, dann ist dieser Workspace notwendig für den Betrieb. Der Workspace kann nicht somit nicht gelöscht werden.",
-      "OPERATOR": "Wenn gesetzt, dann kann der Workspace nicht gelöscht werden und alle Änderungen gehen beim beim nächsten Deployment verloren."
+      "MANDATORY": "Wenn gesetzt, dann ist dieser Workspace notwendig für den Betrieb. Der Workspace kann somit nicht gelöscht werden.",
+      "OPERATOR": "Wenn gesetzt, dann wurde der Workspace automatisiert erstellt. Alle Änderungen gehen beim beim nächsten Deployment verloren."
     }
   },
   "ROLE": {
@@ -486,7 +488,7 @@
     "DATAVIEW": {
       "FILTER": "Filter",
       "PRODUCT_FILTER_TOOLTIP": "Filtern nach Applikation und Klassifikation",
-      "FILTER_BY": "Filter für ",
+      "FILTER_OF": "Filter für ",
       "FILTER_CLEAR": "Filter entfernen",
       "FILTER_PLACEHOLDER": "Filter",
       "SORT_BY": "Sortiert nach",

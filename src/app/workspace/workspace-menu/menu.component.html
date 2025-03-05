@@ -55,7 +55,7 @@
                 class="py-0 text-responsive"
                 (input)="menuTree.filterGlobal($any($event.target).value, 'contains')"
                 [pTooltip]="
-                  ('DIALOG.DATAVIEW.FILTER_BY' | translate) +
+                  ('DIALOG.DATAVIEW.FILTER_OF' | translate) +
                   ('MENU_ITEM.MENU_NAME' | translate) +
                   ', ' +
                   ('MENU_ITEM.URL' | translate)
@@ -123,7 +123,7 @@
             <div class="slim-selectbutton search-criteria-selectbutton">
               <p-selectButton
                 inputid="ws_menu_table_header_row_1_switch_tree_label"
-                styleClass="max-w-15rem flex flex flex-wrap row-gap-1"
+                styleClass="max-w-15rem flex flex-wrap row-gap-1"
                 [options]="treeNodeLabelSwitchItems"
                 [(ngModel)]="treeNodeLabelSwitchValue"
                 [disabled]="menuNodes.length === 0"

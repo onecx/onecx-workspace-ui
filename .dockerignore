@@ -8,6 +8,7 @@ reports
 
 # dependencies
 node_modules
+src
 
 # profiling files
 chrome-profiler-events*.json
