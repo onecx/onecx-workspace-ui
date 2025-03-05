@@ -27,7 +27,7 @@ import { WorkspaceInternComponent } from './workspace-intern/workspace-intern.co
 export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
   @ViewChild(WorkspacePropsComponent, { static: false }) workspacePropsComponent!: WorkspacePropsComponent
   @ViewChild(WorkspaceContactComponent, { static: false }) workspaceContactComponent!: WorkspaceContactComponent
-  @ViewChild(WorkspaceInternComponent, { static: false }) WorkspaceInternComponent!: WorkspaceInternComponent
+  @ViewChild(WorkspaceInternComponent, { static: false }) workspaceInternComponent!: WorkspaceInternComponent
 
   public actions$: Observable<Action[]> | undefined
   public editMode = false
@@ -110,8 +110,8 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
         break
       }
       case 2: {
-        this.WorkspaceInternComponent.onSave()
-        workspaceData = this.WorkspaceInternComponent.workspace
+        this.workspaceInternComponent.onSave()
+        workspaceData = this.workspaceInternComponent.workspace
         break
       }
       default: {

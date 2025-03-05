@@ -1,6 +1,5 @@
 import { Component, Input, OnChanges } from '@angular/core'
 import { FormControl, FormGroup } from '@angular/forms'
-import { TranslateService } from '@ngx-translate/core'
 
 import { Workspace } from 'src/app/shared/generated'
 
@@ -15,7 +14,7 @@ export class WorkspaceInternComponent implements OnChanges {
 
   public formGroup: FormGroup
 
-  constructor(private readonly translate: TranslateService) {
+  constructor() {
     this.formGroup = new FormGroup({
       operator: new FormControl<boolean | null>(null),
       mandatory: new FormControl<boolean | null>(null),

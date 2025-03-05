@@ -6,6 +6,17 @@ import { TranslateTestingModule } from 'ngx-translate-testing'
 
 import { WorkspaceInternComponent } from './workspace-intern.component'
 
+const workspace = {
+  id: 'id',
+  operator: true,
+  mandatory: false,
+  disabled: false,
+  name: 'name',
+  displayName: 'name',
+  theme: 'theme',
+  baseUrl: '/some/base/url'
+}
+
 describe('WorkspaceInternComponent', () => {
   let component: WorkspaceInternComponent
   let fixture: ComponentFixture<WorkspaceInternComponent>
@@ -27,14 +38,7 @@ describe('WorkspaceInternComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(WorkspaceInternComponent)
     component = fixture.componentInstance
-
-    component.workspace = {
-      name: 'name',
-      displayName: 'name',
-      theme: 'theme',
-      baseUrl: '/some/base/url',
-      id: 'id'
-    }
+    component.workspace = workspace
     fixture.detectChanges()
   })
 
@@ -43,9 +47,41 @@ describe('WorkspaceInternComponent', () => {
   })
 
   describe('ngOnChanges', () => {
-    it('should create', () => {
+    it('should disable form and filled', () => {
+      component.editMode = false
+
       component.ngOnChanges()
-      expect(component.mandatory).toEqual(component.workspace?.mandatory ?? false)
+
+      expect(component.formGroup.enabled).toBeFalse()
+      expect(component.formGroup.controls['operator'].value).toBeTrue()
+      expect(component.formGroup.controls['mandatory'].value).toBeFalse()
+    })
+    it('should enable form and filled', () => {
+      component.editMode = true
+
+      component.ngOnChanges()
+
+      expect(component.formGroup.enabled).toBeTrue()
+      expect(component.formGroup.controls['operator'].value).toBeTrue()
+      expect(component.formGroup.controls['mandatory'].value).toBeFalse()
+    })
+  })
+
+  describe('save', () => {
+    it('should refill workspace from form', () => {
+      component.editMode = true
+      component.ngOnChanges()
+      component.formGroup.setValue({
+        operator: true,
+        mandatory: true,
+        disabled: true
+      })
+      component.onSave()
+
+      expect(component.formGroup.valid).toBeTrue()
+      expect(component.workspace.mandatory).toBeTrue()
+      expect(component.workspace.disabled).toBeTrue()
+      expect(component.editMode).toBeFalse()
     })
   })
 })

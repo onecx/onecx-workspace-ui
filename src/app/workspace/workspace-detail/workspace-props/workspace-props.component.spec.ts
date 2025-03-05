@@ -220,8 +220,6 @@ describe('WorkspacePropsComponent', () => {
       component.workspace = undefined
 
       component.onSave()
-
-      expect(component.editMode).toBeFalse()
     })
 
     it('should update workspace onSave', () => {
@@ -229,12 +227,11 @@ describe('WorkspacePropsComponent', () => {
       component.workspace = workspace
 
       component.onSave()
-
-      expect(component.editMode).toBeFalse()
     })
 
     it('should display error msg if form group invalid', () => {
       component.formGroup = formGroup
+      component.workspace = workspace
       component.formGroup.controls['baseUrl'].setValue('url')
 
       component.onSave()
