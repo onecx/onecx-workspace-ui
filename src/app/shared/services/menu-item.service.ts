@@ -24,7 +24,7 @@ export class MenuItemService {
 
     for (const item of items) {
       const segments = this.getMatchedSegments(item, pathToMatch)
-      if (segments > (bestMatch?.matchedSegments || 0)) {
+      if (segments > (bestMatch?.matchedSegments ?? 0)) {
         bestMatch = {
           item: item,
           parents: [],
@@ -34,7 +34,7 @@ export class MenuItemService {
 
       if (item.items) {
         const bestChildMatch = this.findActiveItemBestMatch(item.items, pathToMatch)
-        if (bestChildMatch && bestChildMatch.matchedSegments > (bestMatch?.matchedSegments || 0)) {
+        if (bestChildMatch && bestChildMatch.matchedSegments > (bestMatch?.matchedSegments ?? 0)) {
           bestMatch = {
             item: bestChildMatch.item,
             parents: [...bestChildMatch.parents, item],

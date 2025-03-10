@@ -219,19 +219,4 @@ describe('MenuPreviewComponent', () => {
 
     expect(component.hideDialog.emit).toHaveBeenCalled()
   })
-
-  it('should call onStartResizeTree without errors', () => {
-    const mockEvent = new MouseEvent('click')
-
-    expect(() => component.onStartResizeTree(mockEvent)).not.toThrow()
-  })
-
-  it('should set treeHeight on onEndResizeTree call', () => {
-    const mockClientY = 300
-    const mockEvent = { clientY: mockClientY } as MouseEvent
-
-    component.onEndResizeTree(mockEvent)
-
-    expect(component['treeHeight']).toEqual(mockClientY)
-  })
 })

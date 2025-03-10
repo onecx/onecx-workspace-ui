@@ -27,7 +27,6 @@ export class MenuPreviewComponent implements OnChanges {
 
   public menuNodes!: TreeNode<WorkspaceMenuItem>[]
   public treeExpanded = false
-  private treeHeight = 0
   public languagesPreviewValue: string
   public languagesPreview: SelectItem[] = []
   public languagesUsed!: string[]
@@ -180,14 +179,5 @@ export class MenuPreviewComponent implements OnChanges {
 
   public onClose() {
     this.hideDialog.emit()
-  }
-
-  public onStartResizeTree(ev: MouseEvent) {
-    //console.log('start:', ev)
-  }
-  public onEndResizeTree(ev: MouseEvent) {
-    //console.log('end:', ev)
-    this.treeHeight = ev.clientY
-    // .p-tree-wrapper => max-height: 300px;
   }
 }

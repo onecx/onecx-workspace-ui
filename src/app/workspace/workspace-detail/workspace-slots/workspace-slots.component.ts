@@ -2,6 +2,7 @@ import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChil
 import { Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 import { Subject, catchError, finalize, map, mergeMap, of, switchMap, takeUntil, Observable } from 'rxjs'
+import { SelectItem } from 'primeng/api'
 import { DataView } from 'primeng/dataview'
 
 import { DataViewControlTranslations } from '@onecx/portal-integration-angular'
@@ -21,12 +22,16 @@ import {
 } from 'src/app/shared/generated'
 import { goToEndpoint, limitText } from 'src/app/shared/utils'
 
+export type SlotType = 'WORKSPACE' | 'UNREGISTERED' | 'WORKSPACE,UNREGISTERED'
+export type SlotFilterType = 'ALL' | SlotType
+export type ExtendedSelectItem = SelectItem & { tooltipKey?: string }
 export type ChangeMode = 'VIEW' | 'CREATE' | 'EDIT' | 'COPY' | 'DELETE'
 export type PSSlot = SlotPS & { pName?: string; pDisplayName?: string }
 // workspace slot data combined with status from product store
 export type CombinedSlot = Slot & {
   productName?: string
   new: boolean
+  type: SlotType
   changes: boolean
   undeployed?: boolean
   deprecated?: boolean
@@ -66,10 +71,14 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild(DataView) dv: DataView | undefined
   public dataViewControlsTranslations$: Observable<DataViewControlTranslations> | undefined
   public filterValue: string | undefined
-  public filterValueDefault = 'name'
-  public filterBy = this.filterValueDefault
+  public filterByDefault = 'name,type'
+  public filterBy = this.filterByDefault
   public sortField = 'name'
   public sortOrder = -1
+  public quickFilterValue: SlotFilterType = 'ALL'
+  public quickFilterValue2: SlotFilterType = 'ALL'
+  public quickFilterItems: ExtendedSelectItem[]
+  public quickFilterCount = ''
   public exceptionKey: string | undefined = undefined
   public sLoading = false
   public wpLoading = false
@@ -93,6 +102,20 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     this.hasEditPermission = this.user.hasPermission('WORKSPACE_SLOT#EDIT')
     this.hasCreatePermission = this.user.hasPermission('WORKSPACE_SLOT#CREATE')
     this.hasDeletePermission = this.user.hasPermission('WORKSPACE_SLOT#DELETE')
+    // quick filter
+    this.quickFilterItems = [
+      { label: 'DIALOG.SLOT.QUICK_FILTER.ALL', value: 'ALL', tooltipKey: 'DIALOG.SLOT.QUICK_FILTER.ALL.TOOLTIP' },
+      {
+        label: 'DIALOG.SLOT.QUICK_FILTER.UNREGISTERED',
+        value: 'UNREGISTERED',
+        tooltipKey: 'DIALOG.SLOT.QUICK_FILTER.UNREGISTERED.TOOLTIP'
+      },
+      {
+        label: 'DIALOG.ROLE.QUICK_FILTER.WORKSPACE',
+        value: 'WORKSPACE',
+        tooltipKey: 'DIALOG.ROLE.QUICK_FILTER.WORKSPACE.TOOLTIP'
+      }
+    ]
   }
 
   public ngOnInit() {
@@ -106,6 +129,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     this.destroy$.complete()
   }
   public onReload() {
+    this.quickFilterValue = 'ALL'
     this.loadData()
   }
   public loadData(): void {
@@ -163,6 +187,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
               this.wSlotsIntern.push({
                 ...s, // contains the original registered components
                 new: false,
+                type: 'WORKSPACE',
                 changes: false,
                 psSlots: [],
                 psComponents: []
@@ -228,7 +253,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
         .filter((psp) => psp.productName === pn)
         .forEach((ps) => {
           if (this.wSlotsIntern.filter((ws) => ws.name === ps.name).length === 0) {
-            if (!ps.undeployed) this.wSlotsIntern.push({ ...ps, new: true })
+            if (!ps.undeployed) this.wSlotsIntern.push({ ...ps, new: true, type: 'UNREGISTERED' })
           }
         })
     })
@@ -295,6 +320,19 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   /**
    * UI Events
    */
+  public onQuickFilterChange(ev: any): void {
+    if (ev.value) {
+      this.quickFilterValue = ev.value
+      this.quickFilterValue2 = this.quickFilterValue // bug in select button on click active button again
+      if (ev.value === 'ALL') {
+        this.filterBy = this.filterByDefault
+        this.dv?.filter('', 'contains')
+      } else {
+        this.filterBy = 'type'
+        this.dv?.filter(ev.value, 'contains')
+      }
+    } else this.quickFilterValue = this.quickFilterValue2 // remember, prevent null because bug
+  }
   public onFilterChange(filter: string): void {
     if (filter === '') {
       this.filterBy = 'name'

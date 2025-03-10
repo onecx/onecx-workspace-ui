@@ -239,15 +239,16 @@
     "STREET": "Straße",
     "STREET_NO": "Hausnummer",
     "TOOLTIPS": {
-      "NAME": "Eindeutiger Name, der nicht mehr geändert werden kann, da er als Referenz zu diesem Workspace benutzt wird.",
-      "DISPLAY_NAME": "Angezeigter Name, der beliebig verändert werden kann",
-      "DISABLED": "Wenn gesetzt dann kann der Workspace zwar konfiguriert werden aber eine Benutzung ist nicht möglich.",
-      "THEME": "Referenz zum genutzten Theme",
-      "HOME_PAGE": "Startseite vom Workspace, die angezeigt wird, wenn zu keiner speziellen Applikation navigiert wird.",
-      "RSS_FEED_URL": "RSS-Feed URL für diesen Workspace",
       "BASE_URL": "Basispfad in der Webadresse des Workspace",
+      "DESCRIPTION": "Detaillierte Beschreibung des Workspace",
+      "DISABLED": "Wenn gesetzt dann kann der Workspace zwar konfiguriert werden aber eine Benutzung ist nicht möglich.",
+      "DISPLAY_NAME": "Angezeigter Name, der beliebig verändert werden kann",
       "FOOTER_LABEL": "Text in der Fußzeile der Seite",
-      "DESCRIPTION": "Detaillierte Beschreibung des Workspace"
+      "HOME_PAGE": "Startseite vom Workspace, die angezeigt wird, wenn zu keiner speziellen Applikation navigiert wird.",
+      "MANDATORY": "Erforderlich für den Betrieb",
+      "NAME": "Eindeutiger Name, der nicht mehr geändert werden kann, da er als Referenz zu diesem Workspace benutzt wird.",
+      "RSS_FEED_URL": "RSS-Feed URL für diesen Workspace",
+      "THEME": "Referenz zum genutzten Theme"
     }
   },
   "MENU_ITEM": {
@@ -330,6 +331,16 @@
         "VIEW": "Slot Details",
         "COMPONENTS.DEREGISTER": "Komponenten abmelden"
       },
+      "QUICK_FILTER": {
+        "LABEL": "Registrierung",
+        "TOOLTIP": "Filter für Registrierung",
+        "ALL": "Alle",
+        "ALL.TOOLTIP": "Registrierte und Nichtregistrierte",
+        "UNREGISTERED": "Nicht registriert",
+        "UNREGISTERED.TOOLTIP": "Für den Workspace nicht registriert",
+        "WORKSPACE": "Workspace",
+        "WORKSPACE.TOOLTIP": "Für den Workspace registriert"
+      },
       "TABS": {
         "COMPONENTS": "Komponenten",
         "PRODUCTS": "Applikationen",
@@ -339,10 +350,14 @@
         }
       },
       "CHANGED": "Es gibt wichtige Änderungen.",
-      "NEW.TOOLTIP": "Slot für den Workspace registrieren.",
-      "DEPRECATED": "Slot ist veraltet",
+      "WORKSPACE": "Slot ist für den Workspace registriert",
+      "UNREGISTERED": "Nicht registriert",
+      "UNREGISTERED.TOOLTIP": "Slot ist nicht für den Workspace registriert",
+      "CREATE": "Registrieren",
+      "CREATE.TOOLTIP": "Slot für den Workspace registrieren.",
+      "DEPRECATED": "Veraltet",
       "DEPRECATED.TOOLTIP": "Dieser Slot ist veraltet und wird in absehbarer Zeit nicht mehr nutzbar sein.",
-      "UNDEPLOYED": "Slot ist unverfügbar",
+      "UNDEPLOYED": "Unverfügbar",
       "UNDEPLOYED.TOOLTIP": "Dieser Slot ist nicht länger nutzbar.",
       "PRODUCTS": "Registrierende Applikationen",
       "PRODUCTS.NOT_EXIST": "Keine",
@@ -638,6 +653,15 @@
       "WS_ROLES": "Unbekanntes Problem beim Abrufen von Workspace-Rollen - Bitte versuchen sie es noch einmal.",
       "SLOTS": "Unbekanntes Problem beim Abrufen von Slot-Daten - Bitte versuchen sie es noch einmal.",
       "MENUS": "Unbekanntes Problem beim Abrufen von Menü-Daten - Bitte versuchen sie es noch einmal."
+    },
+    "HTTP_STATUS_400": {
+      "WORKSPACE": "Ihre Anfrage konnte nicht bearbeitet werden.",
+      "WORKSPACES": "Ihre Anfrage konnte nicht bearbeitet werden.",
+      "PRODUCTS": "Ihre Anfrage konnte nicht bearbeitet werden.",
+      "IAM_ROLES": "Ihre Anfrage konnte nicht bearbeitet werden.",
+      "WS_ROLES": "Ihre Anfrage konnte nicht bearbeitet werden.",
+      "SLOTS": "Ihre Anfrage konnte nicht bearbeitet werden.",
+      "MENUS": "Ihre Anfrage konnte nicht bearbeitet werden."
     },
     "HTTP_STATUS_401": {
       "WORKSPACE": "Sie sind nicht autorisiert um Workspace Details zu sehen.",
