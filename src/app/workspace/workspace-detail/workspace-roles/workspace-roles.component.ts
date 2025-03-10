@@ -46,7 +46,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   public dataViewControlsTranslations$: Observable<DataViewControlTranslations> | undefined
   public filterValue = 'WORKSPACE'
   public filterByDefault = 'name,type'
-  public filterBy = 'name,type'
+  public filterBy = this.filterByDefault
   public sortField = 'name'
   public sortOrder = -1
   public iamLoading = false
@@ -192,8 +192,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
     this.roles = []
     this.wRolesLoaded = false
     this.iamRolesLoaded = false
-    this.quickFilterValue = 'ALL'
-    this.searchRoles(true)
+    this.onQuickFilterChange({ value: 'ALL' }) // includes reload
   }
 
   public onAddRole(ev: MouseEvent, role: Role): void {
@@ -294,7 +293,9 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
     }
   }
   public onFilterChange(filter: string): void {
+    console.log('onFilterChange => ' + filter)
     if (filter === '') {
+      this.onQuickFilterChange({ value: 'ALL' })
       this.filterBy = 'name,type'
     }
     this.dv?.filter(filter, 'contains')
