@@ -209,8 +209,8 @@ describe('WorkspaceSlotsComponent', () => {
       component.loadData()
 
       expect(component.wSlotsIntern).toEqual([
-        { name: 'slot1', new: false, changes: false, psSlots: [], psComponents: [] },
-        { name: 'slot2', new: false, changes: false, psSlots: [], psComponents: [] }
+        { name: 'slot1', new: false, type: 'WORKSPACE', changes: false, psSlots: [], psComponents: [] },
+        { name: 'slot2', new: false, type: 'WORKSPACE', changes: false, psSlots: [], psComponents: [] }
       ] as CombinedSlot[])
     })
 
@@ -243,6 +243,7 @@ describe('WorkspaceSlotsComponent', () => {
           productName: 'product',
           name: 'slotPsName',
           new: false,
+          type: 'WORKSPACE',
           changes: false,
           psSlots: [],
           psComponents: [],
@@ -254,12 +255,13 @@ describe('WorkspaceSlotsComponent', () => {
           productName: 'product',
           name: 'slotPsName',
           new: false,
+          type: 'WORKSPACE',
           changes: false,
           psSlots: [],
           psComponents: [],
           components: [{ productName: 'slotComponentProdName', appId: 'slotComponentAppId', name: 'slotComponentName' }]
         },
-        { name: 'slot2', new: false, changes: false, psSlots: [], psComponents: [] }
+        { name: 'slot2', new: false, type: 'WORKSPACE', changes: false, psSlots: [], psComponents: [] }
       ]
       component.wProductNames = ['psItem1', 'wsProd2', 'product']
 
@@ -399,7 +401,34 @@ describe('WorkspaceSlotsComponent', () => {
   /**
    * UI Events
    */
-  describe('onFilterChange', () => {
+  describe('filtering', () => {
+    it('should reset filter to default when ALL is selected', () => {
+      component.onQuickFilterChange({ value: 'ALL' })
+
+      expect(component.filterBy).toEqual('name,type')
+      expect(component.quickFilterValue).toEqual('ALL')
+    })
+
+    it('should set filter by specific type', () => {
+      component.onQuickFilterChange({ value: 'UNREGISTERED' })
+
+      expect(component.filterBy).toEqual('type')
+      expect(component.quickFilterValue).toEqual('UNREGISTERED')
+    })
+
+    it('should remember on old value if click on filter value again', () => {
+      component.onQuickFilterChange({ value: 'ALL' })
+
+      expect(component.filterBy).toEqual('name,type')
+      expect(component.quickFilterValue).toEqual('ALL')
+      expect(component.quickFilterValue2).toEqual('ALL')
+
+      component.onQuickFilterChange({})
+
+      expect(component.quickFilterValue).toEqual('ALL')
+      expect(component.quickFilterValue2).toEqual('ALL')
+    })
+
     it('should set filterBy to name,type when filter is empty', () => {
       component.onFilterChange('')
 
@@ -447,6 +476,7 @@ describe('WorkspaceSlotsComponent', () => {
       const mockSlot: CombinedSlot = {
         id: '123',
         new: false,
+        type: 'WORKSPACE',
         changes: false,
         psSlots: [],
         psComponents: []
@@ -466,6 +496,7 @@ describe('WorkspaceSlotsComponent', () => {
       const mockSlot: CombinedSlot = {
         id: '123',
         new: false,
+        type: 'WORKSPACE',
         changes: false,
         psSlots: [],
         psComponents: []
@@ -485,6 +516,7 @@ describe('WorkspaceSlotsComponent', () => {
       const mockSlot: CombinedSlot = {
         id: '123',
         new: true,
+        type: 'WORKSPACE',
         changes: false,
         psSlots: [],
         psComponents: []
@@ -546,6 +578,7 @@ describe('WorkspaceSlotsComponent', () => {
     const mockSlot: CombinedSlot = {
       id: '123',
       new: true,
+      type: 'UNREGISTERED',
       changes: false,
       psSlots: [],
       psComponents: []
@@ -588,6 +621,7 @@ describe('WorkspaceSlotsComponent', () => {
     const mockSlot: CombinedSlot = {
       id: '123',
       new: true,
+      type: 'WORKSPACE',
       changes: false,
       psSlots: [],
       psComponents: []

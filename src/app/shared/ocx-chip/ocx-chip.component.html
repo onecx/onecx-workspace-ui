@@ -1,0 +1,11 @@
+<span
+  [id]="id"
+  [class]="'text-xs sm:text-sm px-3 border-round-xl ' + (styleClass ? styleClass : '')"
+  [style]="'padding-bottom: 3px; padding-top: 2px;'"
+  [attr.aria-label]="label"
+  [pTooltip]="title"
+  tooltipPosition="top"
+  tooltipEvent="hover"
+>
+  {{ label }}
+</span>

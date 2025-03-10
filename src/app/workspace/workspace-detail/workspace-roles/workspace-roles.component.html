@@ -18,8 +18,8 @@
   [value]="roles"
   [paginator]="true"
   [alwaysShowPaginator]="true"
-  [rowsPerPageOptions]="[24, 48, 100]"
-  [rows]="24"
+  [rowsPerPageOptions]="[20, 60, 100]"
+  [rows]="20"
   [layout]="'grid'"
   [filterBy]="filterBy"
   [sortField]="sortField"
@@ -123,45 +123,18 @@
   <!-- GRID -->
   <ng-template let-roles pTemplate="gridItem">
     <div class="grid grid-nogutter">
-      <div *ngFor="let role of roles; index as i" class="col-6 md:col-4 lg:col-4 xl:col-3 p-2 sm:px-3">
+      <div *ngFor="let role of roles; index as i" class="col-6 md:col-4 lg:col-4 xl:col-3 p-2 sm:p-3">
         <a
           [id]="'ws_roles_grid_data_row_' + i"
-          class="block card relative py-2 px-4 hover:bg-gray-200 cursor-pointer"
-          [class.card-primary-color]="role.isWorkspaceRole"
+          class="block card relative py-1 px-4 hover:bg-gray-200 cursor-pointer"
           (click)="onEditRole($event, role)"
-          [attr.aria-label]="role.description ?? ''"
-          [pTooltip]="role.description ?? ''"
-          tooltipPosition="top"
-          tooltipEvent="hover"
+          [attr.aria-label]="'edit role'"
         >
-          <span
-            *ngIf="role.isWorkspaceRole"
-            [id]="'ws_roles_grid_data_row_' + i + '_is_workspace'"
-            class="card-badge-left card-badge-left-text badge-2 p-1"
-            [class.line-through]="role.deleted"
-            [class.danger-action-text]="role.deleted"
-            [class.text-md]="role.deleted"
-            [attr.aria-label]="'DIALOG.ROLE.ORIGIN.WORKSPACE' | translate"
-            [pTooltip]="'DIALOG.ROLE.ORIGIN.WORKSPACE' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-            >W</span
-          >
-          <span
-            *ngIf="role.isIamRole"
-            [id]="'ws_roles_grid_data_row_' + i + '_is_iam'"
-            class="card-badge-left card-badge-left-text badge-1 p-1"
-            [attr.aria-label]="'DIALOG.ROLE.ORIGIN.IAM' | translate"
-            [pTooltip]="'DIALOG.ROLE.ORIGIN.IAM' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-            >IAM</span
-          >
+          <!-- BADGES -->
           <a
             *ngIf="role.isWorkspaceRole && hasDeletePermission"
             [id]="'ws_roles_grid_data_row_' + i + '_delete'"
             class="card-badge-right badge-1 p-1 pi pi-trash button-icon-only"
-            [class.card-primary-color]="role.isWorkspaceRole"
             (click)="onDeleteRole($event, role)"
             [attr.aria-label]="'ACTIONS.DELETE.ROLE.HEADER' | translate"
             [pTooltip]="'ACTIONS.DELETE.ROLE.HEADER' | translate"
@@ -181,15 +154,37 @@
           ></a>
 
           <!-- CONTENT -->
-          <div
-            [id]="'ws_roles_grid_data_row_' + i + '_role_name'"
-            class="h-2-5rem flex flex-column justify-content-center text-sm sm:text-base text-center word-wrap-break"
-            [attr.aria-label]="role.name"
-            [pTooltip]="role.name?.length > 40 ? role.name : ''"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          >
-            {{ limitText(role.name, 40) }}
+          <div class="flex flex-column justify-content-between row-gap-2 text-center">
+            <div
+              [id]="'ws_roles_grid_data_row_' + i + '_role_name'"
+              class="text-sm sm:text-base font-bold text-responsive"
+              [attr.aria-label]="role.name"
+              [pTooltip]="role.name?.length > 40 ? role.name : ''"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            >
+              {{ limitText(role.name, 40) }}
+            </div>
+            <div
+              [id]="'ws_roles_grid_data_row_' + i + '_workspace'"
+              class="flex flex-row justify-content-center align-items-center column-gap-3 text-xs sm:text-sm"
+            >
+              <app-ocx-chip
+                *ngIf="role.isWorkspaceRole"
+                [id]="'ws_roles_grid_data_row_' + i + '_workspace'"
+                class="py-1"
+                [styleClass]="'bg-primary'"
+                [label]="'Workspace'"
+                [title]="'DIALOG.ROLE.ORIGIN.WORKSPACE' | translate"
+              />
+              <app-ocx-chip
+                *ngIf="role.isIamRole"
+                [id]="'ws_roles_grid_data_row_' + i + '_workspace'"
+                class="py-1"
+                [label]="'IAM'"
+                [title]="'DIALOG.ROLE.ORIGIN.IAM' | translate"
+              />
+            </div>
           </div>
         </a>
       </div>

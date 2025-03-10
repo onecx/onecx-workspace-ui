@@ -31,9 +31,10 @@ import { PortalCoreModule, PortalDialogService } from '@onecx/portal-integration
 
 import { LabelResolver } from './label.resolver'
 import { ImageContainerComponent } from './image-container/image-container.component'
+import { OcxChipComponent } from './ocx-chip/ocx-chip.component'
 
 @NgModule({
-  declarations: [ImageContainerComponent],
+  declarations: [ImageContainerComponent, OcxChipComponent],
   imports: [
     PortalCoreModule.forMicroFrontend(),
     AutoCompleteModule,
@@ -92,7 +93,8 @@ import { ImageContainerComponent } from './image-container/image-container.compo
     TranslateModule,
     ImageContainerComponent,
     FileUploadModule,
-    errorTailorImports
+    errorTailorImports,
+    OcxChipComponent
   ],
   //this is not elegant, for some reason the injection token from primeng does not work across federated module
   providers: [
