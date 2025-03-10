@@ -337,7 +337,7 @@
         "ALL": "Alle",
         "ALL.TOOLTIP": "Registrierte und Nichtregistrierte",
         "UNREGISTERED": "Nicht registriert",
-        "UNREGISTERED.TOOLTIP": "Für den Workspace nicht regsitriert",
+        "UNREGISTERED.TOOLTIP": "Für den Workspace nicht registriert",
         "WORKSPACE": "Workspace",
         "WORKSPACE.TOOLTIP": "Für den Workspace registriert"
       },

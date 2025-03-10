@@ -209,8 +209,8 @@ describe('WorkspaceSlotsComponent', () => {
       component.loadData()
 
       expect(component.wSlotsIntern).toEqual([
-        { name: 'slot1', new: false, changes: false, psSlots: [], psComponents: [] },
-        { name: 'slot2', new: false, changes: false, psSlots: [], psComponents: [] }
+        { name: 'slot1', new: false, type: 'WORKSPACE', changes: false, psSlots: [], psComponents: [] },
+        { name: 'slot2', new: false, type: 'WORKSPACE', changes: false, psSlots: [], psComponents: [] }
       ] as CombinedSlot[])
     })
 
@@ -243,6 +243,7 @@ describe('WorkspaceSlotsComponent', () => {
           productName: 'product',
           name: 'slotPsName',
           new: false,
+          type: 'WORKSPACE',
           changes: false,
           psSlots: [],
           psComponents: [],
@@ -254,12 +255,13 @@ describe('WorkspaceSlotsComponent', () => {
           productName: 'product',
           name: 'slotPsName',
           new: false,
+          type: 'WORKSPACE',
           changes: false,
           psSlots: [],
           psComponents: [],
           components: [{ productName: 'slotComponentProdName', appId: 'slotComponentAppId', name: 'slotComponentName' }]
         },
-        { name: 'slot2', new: false, changes: false, psSlots: [], psComponents: [] }
+        { name: 'slot2', new: false, type: 'WORKSPACE', changes: false, psSlots: [], psComponents: [] }
       ]
       component.wProductNames = ['psItem1', 'wsProd2', 'product']
 
@@ -447,6 +449,7 @@ describe('WorkspaceSlotsComponent', () => {
       const mockSlot: CombinedSlot = {
         id: '123',
         new: false,
+        type: 'WORKSPACE',
         changes: false,
         psSlots: [],
         psComponents: []
@@ -466,6 +469,7 @@ describe('WorkspaceSlotsComponent', () => {
       const mockSlot: CombinedSlot = {
         id: '123',
         new: false,
+        type: 'WORKSPACE',
         changes: false,
         psSlots: [],
         psComponents: []
@@ -485,6 +489,7 @@ describe('WorkspaceSlotsComponent', () => {
       const mockSlot: CombinedSlot = {
         id: '123',
         new: true,
+        type: 'WORKSPACE',
         changes: false,
         psSlots: [],
         psComponents: []
@@ -546,6 +551,7 @@ describe('WorkspaceSlotsComponent', () => {
     const mockSlot: CombinedSlot = {
       id: '123',
       new: true,
+      type: 'UNREGISTERED',
       changes: false,
       psSlots: [],
       psComponents: []
@@ -588,6 +594,7 @@ describe('WorkspaceSlotsComponent', () => {
     const mockSlot: CombinedSlot = {
       id: '123',
       new: true,
+      type: 'WORKSPACE',
       changes: false,
       psSlots: [],
       psComponents: []

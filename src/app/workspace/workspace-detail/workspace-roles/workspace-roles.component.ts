@@ -293,7 +293,6 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
     }
   }
   public onFilterChange(filter: string): void {
-    console.log('onFilterChange => ' + filter)
     if (filter === '') {
       this.onQuickFilterChange({ value: 'ALL' })
       this.filterBy = 'name,type'

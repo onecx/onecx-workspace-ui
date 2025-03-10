@@ -181,13 +181,4 @@ export class MenuPreviewComponent implements OnChanges {
   public onClose() {
     this.hideDialog.emit()
   }
-
-  public onStartResizeTree(ev: MouseEvent) {
-    //console.log('start:', ev)
-  }
-  public onEndResizeTree(ev: MouseEvent) {
-    //console.log('end:', ev)
-    this.treeHeight = ev.clientY
-    // .p-tree-wrapper => max-height: 300px;
-  }
 }

@@ -70,6 +70,7 @@ describe('WorkspaceSlotDetailComponent', () => {
       const slotOrg: CombinedSlot = {
         name: 'slot1',
         new: false,
+        type: 'WORKSPACE',
         changes: false,
         psSlots: [],
         psComponents: [{ productName: 'slotComponentProdName', appId: 'slotComponentAppId', name: 'slotComponentName' }]
@@ -106,6 +107,7 @@ describe('WorkspaceSlotDetailComponent', () => {
         modificationCount: 0,
         name: 'slot1',
         new: false,
+        type: 'WORKSPACE',
         changes: false,
         psSlots: [],
         psComponents: [{ productName: 'slotComponentProdName', appId: 'slotComponentAppId', name: 'slotComponentName' }]
@@ -115,6 +117,7 @@ describe('WorkspaceSlotDetailComponent', () => {
         modificationCount: 1,
         name: 'slot1',
         new: false,
+        type: 'WORKSPACE',
         changes: false,
         psSlots: [],
         psComponents: [{ productName: 'slotComponentProdName', appId: 'slotComponentAppId', name: 'slotComponentName' }]
@@ -204,6 +207,7 @@ describe('WorkspaceSlotDetailComponent', () => {
       component.slot = {
         name: 'slot1',
         new: false,
+        type: 'WORKSPACE',
         changes: false,
         psSlots: [],
         psComponents: [{ productName: 'slotComponentProdName', appId: 'slotComponentAppId', name: 'slotComponentName' }]
@@ -249,6 +253,7 @@ describe('WorkspaceSlotDetailComponent', () => {
       component.slot = {
         name: 'slot1',
         new: false,
+        type: 'WORKSPACE',
         changes: false,
         psSlots: [],
         components: [{ productName: 'Product', appId: 'AppId', name: 'Component Name' }],
@@ -265,6 +270,7 @@ describe('WorkspaceSlotDetailComponent', () => {
       component.slot = {
         name: 'slot1',
         new: false,
+        type: 'WORKSPACE',
         changes: false,
         psSlots: [],
         components: [
@@ -287,6 +293,7 @@ describe('WorkspaceSlotDetailComponent', () => {
         name: 'slot1',
         id: '1',
         new: false,
+        type: 'WORKSPACE',
         changes: false,
         psSlots: [],
         psComponents: [{ productName: 'slotComponentProdName', appId: 'slotComponentAppId', name: 'slotComponentName' }]
