@@ -27,7 +27,6 @@ export class MenuPreviewComponent implements OnChanges {
 
   public menuNodes!: TreeNode<WorkspaceMenuItem>[]
   public treeExpanded = false
-  private treeHeight = 0
   public languagesPreviewValue: string
   public languagesPreview: SelectItem[] = []
   public languagesUsed!: string[]

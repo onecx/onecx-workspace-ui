@@ -180,7 +180,7 @@
               [id]="'ws_slots_grid_data_row_' + i + '_slot_name'"
               class="text-sm md:text-base md:font-bold text-responsive"
               [attr.aria-label]="slot.name"
-              [pTooltip]="slot.name.length < 40 ? '' : slot.name"
+              [pTooltip]="slot.name.length < 20 ? '' : slot.name"
               tooltipPosition="top"
               tooltipEvent="hover"
             >

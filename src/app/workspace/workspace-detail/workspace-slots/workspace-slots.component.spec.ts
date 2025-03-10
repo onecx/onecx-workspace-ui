@@ -401,7 +401,34 @@ describe('WorkspaceSlotsComponent', () => {
   /**
    * UI Events
    */
-  describe('onFilterChange', () => {
+  describe('filtering', () => {
+    it('should reset filter to default when ALL is selected', () => {
+      component.onQuickFilterChange({ value: 'ALL' })
+
+      expect(component.filterBy).toEqual('name,type')
+      expect(component.quickFilterValue).toEqual('ALL')
+    })
+
+    it('should set filter by specific type', () => {
+      component.onQuickFilterChange({ value: 'UNREGISTERED' })
+
+      expect(component.filterBy).toEqual('type')
+      expect(component.quickFilterValue).toEqual('UNREGISTERED')
+    })
+
+    it('should remember on old value if click on filter value again', () => {
+      component.onQuickFilterChange({ value: 'ALL' })
+
+      expect(component.filterBy).toEqual('name,type')
+      expect(component.quickFilterValue).toEqual('ALL')
+      expect(component.quickFilterValue2).toEqual('ALL')
+
+      component.onQuickFilterChange({})
+
+      expect(component.quickFilterValue).toEqual('ALL')
+      expect(component.quickFilterValue2).toEqual('ALL')
+    })
+
     it('should set filterBy to name,type when filter is empty', () => {
       component.onFilterChange('')
 
