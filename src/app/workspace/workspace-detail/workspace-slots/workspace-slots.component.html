@@ -1,15 +1,8 @@
 <p-message
-  *ngIf="wpLoading || sLoading"
-  id="ws_slots_message_loading"
-  severity="info"
-  styleClass="m-2 p-2"
-  [text]="'ACTIONS.LOADING' | translate"
-></p-message>
-<p-message
   *ngIf="exceptionKey"
   id="ws_slots_message_error"
   severity="error"
-  styleClass="m-2 p-2"
+  styleClass="m-2"
   [text]="exceptionKey | translate"
 ></p-message>
 
@@ -30,8 +23,17 @@
 >
   <ng-template pTemplate="header">
     <div class="flex flex-wrap align-items-center column-gap-4 row-gap-1">
+      <p-message
+        *ngIf="wpLoading || sLoading"
+        id="ws_slots_message_loading"
+        severity="info"
+        styleClass="m-2 p-2"
+        [text]="'ACTIONS.LOADING' | translate"
+      ></p-message>
+
       <!-- Quick Filter -->
       <div
+        *ngIf="!(wpLoading || sLoading)"
         class="slim-selectbutton search-criteria-selectbutton"
         [attr.aria-label]="'DIALOG.SLOT.QUICK_FILTER.TOOLTIP' | translate"
         [pTooltip]="'DIALOG.SLOT.QUICK_FILTER.TOOLTIP' | translate"
