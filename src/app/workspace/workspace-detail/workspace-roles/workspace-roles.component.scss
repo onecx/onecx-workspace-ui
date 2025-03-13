@@ -8,6 +8,10 @@
 @include dialog-modal-disable-full-height;
 
 :host ::ng-deep {
+  ocx-data-view-controls {
+    flex-grow: unset !important;
+  }
+
   .p-dataview .p-dataview-content {
     padding-left: 0;
     padding-right: 0;

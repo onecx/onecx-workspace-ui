@@ -1,4 +1,13 @@
-import { Component, Input, SimpleChanges, OnChanges, OnInit, ViewChild } from '@angular/core'
+import {
+  APP_INITIALIZER,
+  Component,
+  EventEmitter,
+  Input,
+  SimpleChanges,
+  OnChanges,
+  OnInit,
+  ViewChild
+} from '@angular/core'
 import { Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 import { Observable, catchError, finalize, map, of } from 'rxjs'
@@ -6,6 +15,7 @@ import { SelectItem } from 'primeng/api'
 import { DataView } from 'primeng/dataview'
 
 import { DataViewControlTranslations } from '@onecx/portal-integration-angular'
+import { SLOT_SERVICE, SlotService } from '@onecx/angular-remote-components'
 import { PortalMessageService, UserService, WorkspaceService } from '@onecx/angular-integration-interface'
 
 import {
@@ -13,32 +23,38 @@ import {
   WorkspaceRole,
   WorkspaceRolesAPIService,
   RoleAPIService,
-  CreateWorkspaceRoleRequest,
-  IAMRolePageResult
+  CreateWorkspaceRoleRequest
 } from 'src/app/shared/generated'
 import { goToEndpoint, limitText } from 'src/app/shared/utils'
 
+export type IAMRole = { name?: string; description?: string }
 export type RoleType = 'WORKSPACE' | 'IAM' | 'WORKSPACE,IAM'
 export type RoleFilterType = 'ALL' | RoleType
 export type Role = WorkspaceRole & { isIamRole: boolean; isWorkspaceRole: boolean; type: RoleType }
 export type ChangeMode = 'VIEW' | 'CREATE' | 'EDIT' | 'COPY' | 'DELETE'
 export type ExtendedSelectItem = SelectItem & { tooltipKey?: string }
 
+export function slotInitializer(slotService: SlotService) {
+  return () => slotService.init()
+}
+
 @Component({
   selector: 'app-workspace-roles',
   templateUrl: './workspace-roles.component.html',
-  styleUrls: ['./workspace-roles.component.scss']
+  styleUrls: ['./workspace-roles.component.scss'],
+  providers: [
+    { provide: APP_INITIALIZER, useFactory: slotInitializer, deps: [SLOT_SERVICE], multi: true },
+    { provide: SLOT_SERVICE, useExisting: SlotService }
+  ]
 })
 export class WorkspaceRolesComponent implements OnInit, OnChanges {
   @Input() workspace!: Workspace | undefined
-
-  public wRoles$!: Observable<IAMRolePageResult>
-  public iamRoles$!: Observable<IAMRolePageResult>
-  public roles$!: Observable<Role[]>
-  public roles: Role[] = []
-  public role: Role | undefined
-  public wRoles: string[] = []
-  public iamRoleCount = 0
+  // data: the receiving of workspace and iam roles are complete decoupled (no combineLatest possible)
+  public wRoles$!: Observable<WorkspaceRole[]>
+  public wRoles: WorkspaceRole[] = []
+  public iamRoles: IAMRole[] = []
+  public roles: Role[] = [] // target collection used in HTML
+  public role: Role | undefined // for detail
   public limitText = limitText
 
   // dialog
@@ -47,13 +63,10 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   public filterValue = 'WORKSPACE'
   public filterByDefault = 'name,type'
   public filterBy = this.filterByDefault
-  public sortField = 'name'
-  public sortOrder = -1
-  public iamLoading = false
   public wsLoading = false
+  public wRolesLoaded = false
   public iamRolesLoaded = false
   public iamAvailable = false
-  public wRolesLoaded = false
   public exceptionKey: string | undefined = undefined
   public quickFilterValue: RoleFilterType = 'ALL'
   public quickFilterValue2: RoleFilterType = 'WORKSPACE'
@@ -66,10 +79,19 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   public showRoleDetailDialog = false
   public showRoleDeleteDialog = false
 
+  // manage slot to get roles from iam
+  public loadingIamRoles = false
+  public isComponentDefined = false
+  public refreshIamRoles = false // any change here triggers getting data from IAM
+  public slotName = 'onecx-permission-iam-user-roles'
+  public roleListEmitter = new EventEmitter<IAMRole[]>()
+  public componentPermissions: string[] = []
+
   constructor(
     private readonly router: Router,
     private readonly workspaceService: WorkspaceService,
     private readonly user: UserService,
+    private readonly slotService: SlotService,
     private readonly iamRoleApi: RoleAPIService,
     private readonly wRoleApi: WorkspaceRolesAPIService,
     private readonly translate: TranslateService,
@@ -90,28 +112,50 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
     ]
   }
 
-  ngOnInit() {
+  public ngOnInit(): void {
     this.prepareTranslations()
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
-    if (this.workspace && changes['workspace']) this.searchRoles(true)
+    if (this.workspace && changes['workspace']) {
+      this.prepareWorkspaceRoleSearch()
+      this.searchRoles()
+    }
+  }
+
+  /**
+   * SLOT for IAM roles
+   */
+  // initialize receiving data - once
+  private initSlot() {
+    if (!this.isComponentDefined) {
+      // check if the IAM component is assigned to the slot
+      this.slotService.isSomeComponentDefinedForSlot(this.slotName).subscribe((def) => {
+        this.isComponentDefined = def
+        this.loadingIamRoles = true
+        if (this.isComponentDefined) this.prepareRoleListEmitter()
+      })
+    }
+  }
+  // Hommage to SonarCloud: separate this
+  private prepareRoleListEmitter() {
+    // receive data from remote component
+    this.roleListEmitter.subscribe((list) => {
+      this.iamRolesLoaded = true
+      this.loadingIamRoles = false
+      this.iamRoles = list
+      this.combineRoles()
+    })
   }
 
   /**
    * SEARCH
    */
-  private searchWorkspaceRoles(): Observable<Role[]> {
-    return this.wRoleApi
+  private prepareWorkspaceRoleSearch(): void {
+    this.wRoles$ = this.wRoleApi
       .searchWorkspaceRoles({ workspaceRoleSearchCriteria: { workspaceId: this.workspace?.id, pageSize: 1000 } })
       .pipe(
-        map((result) => {
-          return result.stream
-            ? result.stream?.map((role) => {
-                return { ...role, isIamRole: false, isWorkspaceRole: true, type: 'WORKSPACE' } as Role
-              })
-            : []
-        }),
+        map((result) => result.stream ?? []),
         catchError((err) => {
           this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.WS_ROLES'
           console.error('searchAvailableRoles', err)
@@ -120,81 +164,65 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
         finalize(() => (this.wsLoading = false))
       )
   }
-  private searchIamRoles(): Observable<Role[]> {
-    return this.iamRoleApi.searchAvailableRoles({ iAMRoleSearchCriteria: { pageSize: 1000 } }).pipe(
-      map((result) => {
-        this.iamAvailable = true
-        return result.stream
-          ? result.stream?.map((role) => {
-              return { ...role, isIamRole: true, isWorkspaceRole: false, type: 'IAM' } as Role
-            })
-          : []
-      }),
-      catchError((err) => {
-        if (err.status === 418) {
-          this.iamAvailable = false
-        } else {
-          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.IAM_ROLES'
-          console.error('searchAvailableRoles', err)
-        }
-        return of([])
-      }),
-      finalize(() => (this.iamLoading = false))
-    )
-  }
 
+  // get workspace roles and fill (clean) into target array
   private getWorkspaceRoles(): void {
     this.wsLoading = true
     this.exceptionKey = undefined
-    const result: Role[] = []
-    this.searchWorkspaceRoles().subscribe({
-      next: (data) => data.forEach((r) => result.push(r)),
+    this.wRoles$.subscribe({
+      next: (data) => {
+        this.wRoles = data
+        this.combineRoles()
+      },
       complete: () => {
         this.wRolesLoaded = true
-        this.roles = [...result]
-        this.wRoles = this.roles.map((r) => r.name ?? '')
       }
     })
   }
-  private getIamRoles(): void {
-    this.iamLoading = true
-    this.exceptionKey = undefined
-    const result: Role[] = []
-    this.searchIamRoles().subscribe({
-      next: (data) => data.forEach((r) => result.push(r)),
-      complete: () => {
-        this.iamRolesLoaded = true
-        // combine role results and prevent duplicates
-        result.forEach((iam) => {
-          if (iam.name) {
-            if (this.wRoles.length === 0 || !this.wRoles.includes(iam.name)) this.roles.push(iam)
-            else {
-              const role = this.roles.filter((r) => r.name === iam.name)
-              role[0].isIamRole = true
-              role[0].type = 'WORKSPACE,IAM'
-            }
-          }
-        })
-        this.roles = [...this.roles]
-        this.iamRoleCount = result.length
-      }
+
+  // This is done each time the role data arrives the component.
+  private combineRoles() {
+    const roles: Role[] = [] // trigger UI refresh
+    this.wRoles.forEach((r) => {
+      roles.push({ ...r, isIamRole: false, isWorkspaceRole: true, type: 'WORKSPACE' })
     })
+    this.iamRoles.forEach((r) => {
+      const wRole = roles.find((wr) => wr.name === r.name) // get role if exists on workspace
+      if (wRole) {
+        wRole.isIamRole = true
+        wRole.type = 'WORKSPACE,IAM'
+      } else roles.push({ ...r, isIamRole: true, isWorkspaceRole: false, type: 'IAM' })
+    })
+    const sortByRoleName = function (a: Role, b: Role): number {
+      return (a.name ? a.name.toUpperCase() : '').localeCompare(b.name ? b.name.toUpperCase() : '')
+    }
+    roles.sort(sortByRoleName)
+    this.roles = roles
   }
+
   private searchRoles(force: boolean = false): void {
     if (['WORKSPACE', 'ALL'].includes(this.quickFilterValue) && (force || !this.wRolesLoaded)) {
       this.getWorkspaceRoles()
     }
     if (['IAM', 'ALL'].includes(this.quickFilterValue) && (force || !this.iamRolesLoaded)) {
-      this.getIamRoles()
+      this.initSlot()
     }
   }
+
+  // reset local data stores and filter and trigger iam role refresh
   public onReload() {
     this.roles = []
     this.wRolesLoaded = false
     this.iamRolesLoaded = false
     this.onQuickFilterChange({ value: 'ALL' }) // includes reload
+    this.refreshIamRoles = !this.refreshIamRoles // trigger iam role refresh
+    this.loadingIamRoles = true
+    this.searchRoles(true)
   }
 
+  /**
+   * On Changes
+   */
   public onAddRole(ev: MouseEvent, role: Role): void {
     ev.stopPropagation()
     this.wRoleApi
@@ -212,6 +240,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
           role.modificationCount = data.modificationCount
           role.modificationDate = data.modificationDate
           role.isWorkspaceRole = true
+          role.type = 'WORKSPACE,IAM'
         },
         error: (err) => {
           this.msgService.error({ summaryKey: 'ACTIONS.CREATE.ROLE_NOK' })
@@ -219,6 +248,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
         }
       })
   }
+
   public onCreateRole(ev: MouseEvent): void {
     ev.stopPropagation()
     this.role = undefined
@@ -272,7 +302,6 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
     if (ev.value) {
       this.quickFilterValue = ev.value
       this.quickFilterValue2 = this.quickFilterValue // bug in select button on click active button again
-      this.searchRoles()
       if (ev.value === 'ALL') {
         this.filterBy = this.filterByDefault
         this.dv?.filter('', 'contains')
@@ -285,7 +314,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   public onGetQuickFilterCount(roleType: RoleFilterType): string {
     switch (roleType) {
       case 'IAM':
-        return '' + this.iamRoleCount
+        return '' + this.iamRoles.length
       case 'WORKSPACE':
         return '' + this.wRoles.length
       default:
@@ -298,13 +327,6 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
       this.filterBy = 'name,type'
     }
     this.dv?.filter(filter, 'contains')
-  }
-
-  public onSortChange(field: string): void {
-    this.sortField = field
-  }
-  public onSortDirChange(asc: boolean): void {
-    this.sortOrder = asc ? -1 : 1
   }
 
   public onGoToPermission(): void {

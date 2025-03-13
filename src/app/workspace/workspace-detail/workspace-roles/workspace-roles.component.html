@@ -1,15 +1,17 @@
-<p-message
-  *ngIf="iamLoading || wsLoading"
-  id="ws_roles_message_loading"
-  severity="info"
-  styleClass="m-2 p-2"
-  [text]="'ACTIONS.LOADING' | translate"
-></p-message>
+<ng-container *ngIf="isComponentDefined">
+  <ocx-slot
+    [name]="slotName"
+    [inputs]="{ userId: '$$ocx-iam-roles-search-all-indicator$$', refresh: refreshIamRoles }"
+    [outputs]="{ roleList: roleListEmitter }"
+  >
+  </ocx-slot>
+</ng-container>
+
 <p-message
   *ngIf="exceptionKey"
   id="ws_roles_message_error"
   severity="error"
-  styleClass="m-2 p-2"
+  styleClass="m-2"
   [text]="exceptionKey | translate"
 ></p-message>
 
@@ -22,17 +24,23 @@
   [rows]="20"
   [layout]="'grid'"
   [filterBy]="filterBy"
-  [sortField]="sortField"
-  [sortOrder]="sortOrder"
   [showCurrentPageReport]="true"
   currentPageReportTemplate="{first} - {last} {{ 'ACTIONS.SEARCH.OF' | translate }} {totalRecords}"
 >
   <ng-template pTemplate="header">
-    <div class="sm:ml-1 flex flex-wrap align-items-center column-gap-4 row-gap-1">
+    <div class="sm:ml-1 flex flex-row flex-wrap justify-content-between align-items-center column-gap-4 row-gap-1">
       <!-- Quick Filter -->
-      <div *ngIf="!iamAvailable" id="ws_roles_quick_filter_placeholder"></div>
+      <div *ngIf="iamRoles.length === 0 || loadingIamRoles || wsLoading" id="ws_roles_quick_filter_placeholder">
+        <p-message
+          *ngIf="loadingIamRoles || wsLoading"
+          id="ws_roles_message_loading"
+          severity="info"
+          styleClass="m-2 p-2"
+          [text]="'ACTIONS.LOADING' | translate"
+        ></p-message>
+      </div>
       <div
-        *ngIf="iamAvailable"
+        *ngIf="iamRoles.length > 0"
         class="slim-selectbutton search-criteria-selectbutton"
         [attr.aria-label]="'DIALOG.ROLE.QUICK_FILTER.TOOLTIP' | translate"
         [pTooltip]="'DIALOG.ROLE.QUICK_FILTER.TOOLTIP' | translate"
@@ -57,7 +65,7 @@
           <span>{{ onGetQuickFilterCount(quickFilterValue) }} </span>
         </div>
       </div>
-      <!-- Filter & Sorting -->
+      <!-- Filter & Sorting (not used because buggy) -->
       <ocx-data-view-controls
         class="flex-grow-1"
         [supportedViews]="['grid']"
@@ -66,15 +74,7 @@
         [enableFiltering]="true"
         (filterChange)="onFilterChange($event)"
         [filterColumns]="['ROLE.NAME' | translate, 'ROLE.TYPE' | translate]"
-        [enableSorting]="true"
-        [sortingOptions]="[
-          { label: 'ROLE.NAME' | translate, value: 'name' },
-          { label: 'ROLE.TYPE' | translate, value: 'type' }
-        ]"
-        [defaultSortOption]="sortField"
-        [defaultSortDirection]="sortOrder === 1"
-        (sortChange)="onSortChange($event)"
-        (sortDirectionChange)="onSortDirChange($event)"
+        [enableSorting]="false"
         [translations]="(dataViewControlsTranslations$ | async) ?? {}"
       >
       </ocx-data-view-controls>
@@ -145,7 +145,6 @@
             *ngIf="!role.isWorkspaceRole && role.isIamRole && hasCreatePermission"
             [id]="'ws_roles_grid_data_row_' + i + '_create'"
             class="card-badge-right badge-1 p-1 pi pi-plus hover:text-white button-icon-only text-color"
-            [class.bg-white]="role.isWorkspaceRole"
             (click)="onAddRole($event, role)"
             [attr.aria-label]="'ACTIONS.CREATE.WORKSPACE.ROLE' | translate"
             [pTooltip]="'ACTIONS.CREATE.WORKSPACE.ROLE' | translate"
