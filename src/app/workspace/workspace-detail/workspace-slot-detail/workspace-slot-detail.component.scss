@@ -6,6 +6,7 @@
 @include displaying-text-responsive;
 @include dialog-modal-disable-full-height;
 @include tabview-fix-color-selected-tab;
+@include tabview-reduce-padding;
 
 :host ::ng-deep {
   .p-fieldset {
