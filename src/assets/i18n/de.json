@@ -308,7 +308,7 @@
       "EDIT.TOOLTIP": "Rollentyp",
       "QUICK_FILTER": {
         "LABEL": "Rollentyp",
-        "TOOLTIP": "Laden & Filter für Rollentyp",
+        "TOOLTIP": "Filter für Rollentyp",
         "ALL": "Alle",
         "ALL.TOOLTIP": "IAM und Workspace-Rollen",
         "IAM": "IAM",
@@ -577,7 +577,7 @@
         "NAME_MISSING": "Kein Workspace-Name enthalten/gefunden",
         "DISPLAY_NAME_MISSING": "Kein Workspace-Display Name enthalten/gefunden",
         "THEME_MISSING": "Kein Workspace-Theme enthalten/gefunden",
-        "URL_MISSING": "Keine Workspace-Url enthalten/gefunden",
+        "URL_MISSING": "Keine Workspace-URL enthalten/gefunden",
         "ROLES_MISSING": "Keine Workspace-Rollen enthalten/gefunden"
       }
     },
@@ -644,6 +644,9 @@
     "CONTACT_ADMIN": "Wenden Sie sich bitte an Ihren Administrator.",
     "ENDPOINT": {
       "NOT_EXIST": "Routing nicht möglich da Ziel nicht korrekt konfiguriert."
+    },
+    "NOT_FOUND": {
+      "IAM_COMPONENT": "Keine Komponente bereitgestellt, die IAM Rollen liefert."
     },
     "HTTP_STATUS_0": {
       "WORKSPACE": "Unbekanntes Problem beim Abrufen von Workspace Details - Bitte versuchen sie es noch einmal.",

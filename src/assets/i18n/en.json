@@ -244,7 +244,7 @@
       "DISABLED": "If set then the workspace can be configured but cannot be used.",
       "DISPLAY_NAME": "Displayed name of this workspace, can be changed",
       "FOOTER_LABEL": "Label text displayed in the footer of the page",
-      "HOME_PAGE": "Home page of the workspace, which is displayed when no specific application is navigated to.",
+      "HOME_PAGE": "Home page of the workspace, which is displayed when no specific Application is navigated to.",
       "MANDATORY": "Necessary for operation",
       "NAME": "Unique name that cannot be changed because it is used as a reference to this workspace.",
       "RSS_FEED_URL": "RSS-Feed URL of this workspace",
@@ -308,7 +308,7 @@
       "EDIT.TOOLTIP": "Role Type",
       "QUICK_FILTER": {
         "LABEL": "Role Type",
-        "TOOLTIP": "Load & Filter for Role Type",
+        "TOOLTIP": "Filter for Role Type",
         "ALL": "All",
         "ALL.TOOLTIP": "IAM and Workspace Roles",
         "IAM": "IAM",
@@ -367,7 +367,7 @@
       "COMPONENTS.USED": "Used Components",
       "COMPONENTS.USED.TOOLTIP": "Components used in the slot, in order from top to bottom.",
       "COMPONENTS.NOT_USED": "Available Components",
-      "COMPONENTS.NOT_USED.TOOLTIP": "List of available components declared via the registered applications.",
+      "COMPONENTS.NOT_USED.TOOLTIP": "List of available components declared via the registered Applications.",
       "MESSAGES": {
         "CREATE_OK": "The Slot was successfully registered",
         "CREATE_NOK": "An error has occurred during Slot registration",
@@ -430,7 +430,7 @@
         "I18N.TOOLTIP": "Indicator whether translations exist",
         "I18N.ROW.TOOLTIP": "Translation available",
         "URL.TOOLTIP": "The URL to be called upon activation",
-        "PRODUCT.TOOLTIP": "Indicator whether the menu URL is offered by a registered Application ",
+        "PRODUCT.TOOLTIP": "Indicator whether the Menu URL is offered by a registered Application ",
         "EXTERN": "X",
         "EXTERN.TOOLTIP": "If checked then the Workspace is exit"
       },
@@ -438,7 +438,7 @@
         "FILTER": "Role filter: Display Menu Items according to the selected Roles",
         "FILTER.LABEL": "Role filter",
         "FILTER.CLEAR": "Clear Role filter",
-        "FILTER.NAME": "Click to add/remove role name to filter"
+        "FILTER.NAME": "Click to add/remove Role name to filter"
       },
       "ASSIGNMENT": {
         "OK": "Assigned: ",
@@ -457,7 +457,7 @@
         "LANG.EMPTY": "No translations available",
         "LANG.TOOLTIP": "List of configured languages"
       },
-      "MENU_NOT_EXIST": "No menu defined",
+      "MENU_NOT_EXIST": "No Menu defined",
       "MENU_ITEM_NOT_FOUND": "Cannot find Menu Item with ID: ",
       "IMPORT": {
         "UPLOAD_INFO": "Please, upload JSON file from your device. Keep in mind, that after upload whole Menu structure will be overwritten.",
@@ -521,7 +521,7 @@
   },
   "PRODUCT": {
     "DISPLAY_NAME": "Application Display Name",
-    "DISPLAY_NAME.TOOLTIP": "The display name is used when pages of the application are accessed and thus appears in the browser history.",
+    "DISPLAY_NAME.TOOLTIP": "The display name is used when pages of the Application are accessed and thus appears in the browser history.",
     "DESCRIPTION": "Description",
     "BASE_URL": "Application Base Path",
     "BASE_URL.TOOLTIP": "Base path for all Modules in the Application. Must be unique for all Applications in the Workspace.",
@@ -536,9 +536,9 @@
     "THEME_CHECKBOX_HEADER": "Export Workspace definition",
     "THEME_CHECKBOX_MESSAGE": "Download the Workspace definition as JSON file.",
     "THEME_LOADING": "...is loading",
-    "THEME_NOT_AVALIABLE": "no available themes",
+    "THEME_NOT_AVALIABLE": "no available Themes",
     "MENU": "Include the Menu definition",
-    "MENU_TOOLTIP": "Include menu in Workspace definition"
+    "MENU_TOOLTIP": "Include Menu in Workspace definition"
   },
   "WORKSPACE_IMPORT": {
     "HEADER": "Import Workspace",
@@ -552,7 +552,7 @@
     "PREVIEW_MENU": "Menu Structure",
     "CONFIRMATION": "Confirmation",
     "SUMMARY": "Summary",
-    "PRODUCT_HINT": "Only applications that are known in the Application Store are imported.",
+    "PRODUCT_HINT": "Only Applications that are known in the Application Store are imported.",
     "THEME_NAME.TOOLTIP": "Name of the used Theme. Can be changed later.",
     "WORKSPACE_NAME": "Name",
     "WORKSPACE_NAME.TOOLTIP": "Unique name of the new Workspace. Uniqueness is checked in next step.",
@@ -576,12 +576,12 @@
         "MISSING": "no Workspace definition included/found",
         "NAME_MISSING": "no Workspace name included/found",
         "DISPLAY_NAME_MISSING": "no Workspace display name included/found",
-        "THEME_MISSING": "no Workspace theme included/found",
-        "URL_MISSING": "no Workspace url included/found",
-        "ROLES_MISSING": "no Workspace roles included/found"
+        "THEME_MISSING": "no Workspace Theme included/found",
+        "URL_MISSING": "no Workspace URL included/found",
+        "ROLES_MISSING": "no Workspace Roles included/found"
       }
     },
-    "VALIDATION_MENU_NOT_EXIST": "no menu definition included/found",
+    "VALIDATION_MENU_NOT_EXIST": "no Menu definition included/found",
     "VALIDATION_MENU_ITEM_KEY_MISSING": "The key is missing in a Menu Item",
     "VALIDATION_MENU_ITEM_NAME_MISSING": "The name is missing in a Menu Item",
     "VALIDATION_MENU_ITEM_WRONG_POSITION": "In a Menu Item, the value for 'position' is not a number",
@@ -644,6 +644,9 @@
     "CONTACT_ADMIN": "Please contact your administrator.",
     "ENDPOINT": {
       "NOT_EXIST": "Routing not possible because target is not configured correctly."
+    },
+    "NOT_FOUND": {
+      "IAM_COMPONENT": "No component provided that provides IAM Roles."
     },
     "HTTP_STATUS_0": {
       "WORKSPACE": "Unknown problem retrieving Workspace details - please try again.",

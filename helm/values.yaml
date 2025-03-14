@@ -112,12 +112,13 @@ app:
             GRANT: Assign roles to menu item
             EXPORT: Export menu
             IMPORT: Import menu
-
+    # Permission
     slot:
       enabled: true
       specs:
         onecx-avatar-image:
           name: 'onecx-avatar-image'
           description: 'User Profile avatar image'
-
-# PIPE Config
+        onecx-iam-user-roles:
+          name: 'onecx-iam-user-roles'
+          description: 'Receive IAM user roles'

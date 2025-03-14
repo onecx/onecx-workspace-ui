@@ -83,7 +83,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   public loadingIamRoles = false
   public isComponentDefined = false
   public refreshIamRoles = false // any change here triggers getting data from IAM
-  public slotName = 'onecx-permission-iam-user-roles'
+  public slotName = 'onecx-iam-user-roles'
   public roleListEmitter = new EventEmitter<IAMRole[]>()
   public componentPermissions: string[] = []
 
@@ -175,6 +175,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
         this.combineRoles()
       },
       complete: () => {
+        this.wsLoading = true
         this.wRolesLoaded = true
       }
     })
@@ -187,6 +188,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
       roles.push({ ...r, isIamRole: false, isWorkspaceRole: true, type: 'WORKSPACE' })
     })
     this.iamRoles.forEach((r) => {
+      // mark existing workspace roles as IAM role
       const wRole = roles.find((wr) => wr.name === r.name) // get role if exists on workspace
       if (wRole) {
         wRole.isIamRole = true
