@@ -11,6 +11,10 @@ export class OneCXUserSidebarMenuHarness extends ComponentHarness {
     return await (await this.locatorFor('#ws_user_sidebar_display_name')()).text()
   }
 
+  async getOrg() {
+    return await (await this.locatorForOptional('#ws_user_sidebar_orgid')())?.text()
+  }
+
   async expandAccordion() {
     const tabs = await (await this.getAccordion()).getAllAccordionTabs()
     await tabs[0].expand()

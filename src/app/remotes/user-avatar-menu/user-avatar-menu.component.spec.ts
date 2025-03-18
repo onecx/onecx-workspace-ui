@@ -22,6 +22,7 @@ import { AppConfigService } from '@onecx/portal-integration-angular'
 import { MenuItemAPIService } from 'src/app/shared/generated'
 import { OneCXUserAvatarMenuHarness } from './user-avatar-menu.harness'
 import { OneCXUserAvatarMenuComponent, slotInitializer } from './user-avatar-menu.component'
+import { TranslateService } from '@ngx-translate/core'
 
 @NgModule({
   imports: [],
@@ -378,6 +379,35 @@ describe('OneCXUserAvatarMenuComponent', () => {
 
       expect(await menuItems[0].getText()).toEqual('Log out')
       expect(console.error).toHaveBeenCalled()
+    })
+
+    it('should publish event on logout click for menu item', async () => {
+      menuItemApiSpy.getMenuItems.and.returnValue(of({ workspaceName: 'workspace', menu: [] } as any))
+
+      const { avatarMenuHarness, component } = await setUpWithHarness()
+      const menuItems = await avatarMenuHarness.getMenuItems()
+
+      spyOn(component.eventsPublisher$, 'publish')
+
+      await menuItems[0].click()
+
+      expect(component.eventsPublisher$.publish).toHaveBeenCalledOnceWith({
+        type: 'authentication#logoutButtonClicked'
+      })
+    })
+
+    it('should revert to Logout for non-existing translation', async () => {
+      menuItemApiSpy.getMenuItems.and.returnValue(of({ workspaceName: 'workspace', menu: [] } as any))
+      const translateService = TestBed.inject(TranslateService)
+      spyOn(translateService, 'get')
+        .and.callThrough()
+        .withArgs('REMOTES.USER_AVATAR_MENU.LOGOUT')
+        .and.returnValue(throwError(() => {}))
+
+      const { avatarMenuHarness } = await setUpWithHarnessAndInit([])
+      const menuItems = await avatarMenuHarness.getMenuItems()
+
+      expect(await menuItems[0].getText()).toEqual('Logout')
     })
 
     it('should have correct icon for logout', async () => {
