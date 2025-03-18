@@ -194,6 +194,44 @@ describe('OneCXUserSidebarMenuComponent', () => {
 
       expect(component.inlineProfileActive).toBe(true)
     })
+
+    it('should display organization', async () => {
+      const userService = TestBed.inject(UserService)
+      spyOn(userService.profile$, 'asObservable').and.returnValue(
+        of({
+          userId: 'my-user-id',
+          organization: 'user-organization',
+          person: {
+            displayName: undefined,
+            firstName: undefined,
+            lastName: undefined
+          }
+        }) as any
+      )
+
+      const { sidebarMenuHarness } = await setUpWithHarness()
+
+      expect(await sidebarMenuHarness.getOrg()).toEqual('user-organization')
+    })
+
+    it('should not display organization', async () => {
+      const userService = TestBed.inject(UserService)
+      spyOn(userService.profile$, 'asObservable').and.returnValue(
+        of({
+          userId: 'my-user-id',
+          organization: undefined,
+          person: {
+            displayName: undefined,
+            firstName: undefined,
+            lastName: undefined
+          }
+        }) as any
+      )
+
+      const { sidebarMenuHarness } = await setUpWithHarness()
+
+      expect(await sidebarMenuHarness.getOrg()).toBeFalsy()
+    })
   })
 
   describe('menu section', () => {

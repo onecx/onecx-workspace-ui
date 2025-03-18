@@ -3,6 +3,10 @@ import { MenuItemWithIconHarness } from '@onecx/angular-testing'
 
 class AvatarMenuItemHarness extends MenuItemWithIconHarness {
   static override readonly hostSelector = 'li>a'
+
+  async click() {
+    await (await this.host()).click()
+  }
 }
 
 export class OneCXUserAvatarMenuHarness extends ComponentHarness {
