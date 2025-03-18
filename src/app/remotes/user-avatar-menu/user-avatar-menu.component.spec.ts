@@ -396,10 +396,13 @@ describe('OneCXUserAvatarMenuComponent', () => {
       })
     })
 
-    fit('should revert to Logout for non-existing translation', async () => {
+    it('should revert to Logout for non-existing translation', async () => {
       menuItemApiSpy.getMenuItems.and.returnValue(of({ workspaceName: 'workspace', menu: [] } as any))
       const translateService = TestBed.inject(TranslateService)
-      spyOn(translateService, 'get').and.returnValue(throwError(() => new Error('Error')))
+      spyOn(translateService, 'get')
+        .and.callThrough()
+        .withArgs('REMOTES.USER_AVATAR_MENU.LOGOUT')
+        .and.returnValue(throwError(() => {}))
 
       const { avatarMenuHarness } = await setUpWithHarnessAndInit([])
       const menuItems = await avatarMenuHarness.getMenuItems()
