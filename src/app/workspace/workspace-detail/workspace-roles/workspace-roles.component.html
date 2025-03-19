@@ -30,8 +30,7 @@
   <ng-template pTemplate="header">
     <div class="flex flex-row flex-wrap justify-content-between align-items-center column-gap-4 row-gap-1">
       <!-- INFO -->
-      <div
-        *ngIf="!isComponentDefined || loadingIamRoles || wsLoading" id="ws_roles_qui_message">
+      <div *ngIf="!isComponentDefined || loadingIamRoles || wsLoading" id="ws_roles_qui_message">
         <p-message
           *ngIf="isComponentDefined && (loadingIamRoles || wsLoading)"
           id="ws_roles_message_loading"
