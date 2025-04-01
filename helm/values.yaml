@@ -71,6 +71,26 @@ app:
           technology: WEBCOMPONENTMODULE
           remoteName: onecx-workspace
           tagName: ocx-list-workspaces-using-product-component
+        workspace-footer:
+          exposedModule: "./OneCXWorkspaceFooterComponent"
+          description: "Workspace Footer"
+          type: COMPONENT
+          technology: WEBCOMPONENTMODULE
+          remoteName: onecx-workspace
+          tagName: ocx-workspace-footer-component
+    # Slot
+    slot:
+      enabled: true
+      specs:
+        onecx-avatar-image:
+          name: 'onecx-avatar-image'
+          description: 'User Profile avatar image'
+        onecx-iam-user-roles:
+          name: 'onecx-iam-user-roles'
+          description: 'Receive IAM user roles'
+        onecx-theme-infos:
+          name: 'onecx-theme-infos'
+          description: 'Use theme data'
     # Permission
     permission:
       enabled: true
@@ -112,13 +132,3 @@ app:
             GRANT: Assign roles to menu item
             EXPORT: Export menu
             IMPORT: Import menu
-    # Permission
-    slot:
-      enabled: true
-      specs:
-        onecx-avatar-image:
-          name: 'onecx-avatar-image'
-          description: 'User Profile avatar image'
-        onecx-iam-user-roles:
-          name: 'onecx-iam-user-roles'
-          description: 'Receive IAM user roles'

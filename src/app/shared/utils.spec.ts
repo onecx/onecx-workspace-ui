@@ -14,6 +14,7 @@ import {
   filterObject,
   filterObjectTree,
   sortByLocale,
+  sortByDisplayName,
   dropDownSortItemsByLabel,
   goToEndpoint
 } from './utils'
@@ -65,6 +66,50 @@ describe('util functions', () => {
     it('should correctly sort strings with numbers', () => {
       expect(sortByLocale('apple1', 'apple2')).toBeLessThan(0)
       expect(sortByLocale('apple2', 'apple1')).toBeGreaterThan(0)
+    })
+  })
+
+  describe('sortByDisplayName', () => {
+    it('should return negative value when first product name comes before second alphabetically', () => {
+      const itemA = { id: 'a', name: 'name', displayName: 'Admin' }
+      const itemB = { id: 'b', name: 'name', displayName: 'User' }
+      expect(sortByDisplayName(itemA, itemB)).toBeLessThan(0)
+    })
+
+    it('should return positive value when first product name comes after second alphabetically', () => {
+      const itemA = { id: 'a', name: 'name', displayName: 'User' }
+      const itemB = { id: 'b', name: 'name', displayName: 'Admin' }
+      expect(sortByDisplayName(itemA, itemB)).toBeGreaterThan(0)
+    })
+
+    it('should return zero when product names are the same', () => {
+      const itemA = { id: 'a', name: 'name', displayName: 'Admin' }
+      const itemB = { id: 'b', name: 'name', displayName: 'Admin' }
+      expect(sortByDisplayName(itemA, itemB)).toBe(0)
+    })
+
+    it('should be case-insensitive', () => {
+      const itemA = { id: 'a', name: 'name', displayName: 'admin' }
+      const itemB = { id: 'b', name: 'name', displayName: 'Admin' }
+      expect(sortByDisplayName(itemA, itemB)).toBe(0)
+    })
+
+    it('should handle undefined names', () => {
+      const itemA = { id: 'a', name: 'name', displayName: undefined }
+      const itemB = { id: 'b', name: 'name', displayName: 'Admin' }
+      expect(sortByDisplayName(itemA, itemB)).toBeLessThan(0)
+    })
+
+    it('should handle empty string names', () => {
+      const itemA = { id: 'a', name: 'name', displayName: '' }
+      const itemB = { id: 'b', name: 'name', displayName: 'Admin' }
+      expect(sortByDisplayName(itemA, itemB)).toBeLessThan(0)
+    })
+
+    it('should handle both names being undefined', () => {
+      const itemA = { id: 'a', name: 'name', displayName: undefined }
+      const itemB = { id: 'b', name: 'name', displayName: undefined }
+      expect(sortByDisplayName(itemA, itemB)).toBe(0)
     })
   })
 

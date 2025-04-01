@@ -23,36 +23,66 @@
   </div>
 
   <div>
-    <div class="p-inputgroup mb-1" controlErrorAnchor>
-      <span class="p-float-label">
-        <p-dropdown
-          #wsThemeName
-          id="ws_detail_props_item_theme"
-          formControlName="theme"
-          styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
-          [options]="(themes$ | async) ?? []"
-          [ariaLabel]="'WORKSPACE.THEME' | translate"
-          [pTooltip]="'WORKSPACE.TOOLTIPS.THEME' | translate"
-          tooltipPosition="top"
+    <!-- THEMES -->
+    <ocx-slot
+      *ngIf="isComponentDefined$ | async"
+      [name]="slotName"
+      [inputs]="{ dataType: 'themes' }"
+      [outputs]="{ themes: themesEmitter }"
+    >
+    </ocx-slot>
+    <div
+      *ngIf="(themes$ | async) ?? [] as themes"
+      class="flex flex-row flex-wrap sm:flex-nowrap align-items-center row-gap-2 column-gap-4"
+    >
+      <!-- LOGO -->
+      <ocx-slot
+        *ngIf="isComponentDefined$ | async"
+        [name]="slotName"
+        [inputs]="{
+          dataType: 'logo',
+          themeName: wsThemeName.value,
+          themeLogoUrl: getThemeLogoUrl(themes, wsThemeName.value),
+          logoStyleClass: 'h-2rem'
+        }"
+        [outputs]="{ logoLoadingFailed: logoLoadingEmitter }"
+      ></ocx-slot>
+
+      <div class="p-inputgroup mb-1" controlErrorAnchor>
+        <span class="p-float-label">
+          <p-dropdown
+            #wsThemeName
+            id="ws_detail_props_item_theme"
+            formControlName="theme"
+            styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
+            [options]="themes"
+            optionLabel="displayName"
+            optionValue="name"
+            [ariaLabel]="'WORKSPACE.THEME' | translate"
+            [pTooltip]="'WORKSPACE.TOOLTIPS.THEME' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          >
+          </p-dropdown>
+          <label class="ocx-required-label" for="ws_detail_props_item_theme">
+            {{ 'WORKSPACE.THEME' | translate }}
+          </label>
+        </span>
+        <a
+          tabindex="0"
+          id="ws_detail_props_item_theme_link"
+          class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
+          (click)="onGoToTheme(wsThemeName.value)"
+          [ngClass]="
+            !editMode && inputBaseUrl.value && (themeProductRegistered$ | async) ? 'cursor-pointer' : 'p-disabled'
+          "
+          [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
+          [pTooltip]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
+          tooltipPosition="right"
           tooltipEvent="hover"
         >
-        </p-dropdown>
-        <label class="ocx-required-label" for="ws_detail_props_item_theme"> {{ 'WORKSPACE.THEME' | translate }} </label>
-      </span>
-      <a
-        tabindex="0"
-        id="ws_detail_props_item_theme_link"
-        class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
-        (click)="onGoToTheme(wsThemeName.value)"
-        [ngClass]="
-          !editMode && inputBaseUrl.value && (themeProductRegistered$ | async) ? 'cursor-pointer' : 'p-disabled'
-        "
-        [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
-        [pTooltip]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
-        tooltipPosition="right"
-        tooltipEvent="hover"
-      >
-      </a>
+        </a>
+      </div>
     </div>
   </div>
 

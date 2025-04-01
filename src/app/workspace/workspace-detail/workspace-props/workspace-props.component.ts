@@ -4,7 +4,8 @@ import { Router } from '@angular/router'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { map, Observable, of, Subject } from 'rxjs'
 
-import { PortalMessageService, WorkspaceService } from '@onecx/angular-integration-interface'
+import { SlotService } from '@onecx/angular-remote-components'
+import { PortalMessageService, ThemeService, WorkspaceService } from '@onecx/angular-integration-interface'
 import { getLocation } from '@onecx/accelerator'
 
 import {
@@ -14,8 +15,13 @@ import {
   WorkspaceAPIService,
   WorkspaceProductAPIService
 } from 'src/app/shared/generated'
-import { bffImageUrl, copyToClipboard, goToEndpoint, sortByLocale } from 'src/app/shared/utils'
+import { bffImageUrl, copyToClipboard, goToEndpoint, sortByDisplayName, sortByLocale } from 'src/app/shared/utils'
 
+type Theme = {
+  name: string
+  displayName: string
+  logoUrl: string
+}
 @Component({
   selector: 'app-workspace-props',
   templateUrl: './workspace-props.component.html',
@@ -34,7 +40,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   public formGroup: FormGroup
   public productPaths$: Observable<string[]> = of([])
   public themeProductRegistered$!: Observable<boolean>
-  public themes$!: Observable<string[]>
+  public themes$!: Observable<Theme[]>
   public deploymentPath: string | undefined = undefined
   public urlPattern = '/base-path-to-workspace'
   public externUrlPattern = 'http(s)://path-to-image'
@@ -43,16 +49,25 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   public minimumImageHeight = 150
   public fetchingLogoUrl: string | undefined = undefined
   public themeUrl: string | undefined = undefined
+  // slot configuration: get theme infos
+  public slotName = 'onecx-theme-infos'
+  public isComponentDefined$: Observable<boolean> // check a component was assigned
+  public themesEmitter = new EventEmitter<Theme[]>()
+  public logoLoadingEmitter = new EventEmitter<boolean>()
+  public themeLogoLoadingFailed = false
 
   constructor(
     private readonly router: Router,
-    public workspaceService: WorkspaceService,
+    private readonly slotService: SlotService,
+    private readonly themeService: ThemeService,
+    private readonly workspaceService: WorkspaceService,
     private readonly msgService: PortalMessageService,
     private readonly imageApi: ImagesInternalAPIService,
     private readonly workspaceApi: WorkspaceAPIService,
     private readonly wProductApi: WorkspaceProductAPIService
   ) {
     this.themeProductRegistered$ = workspaceService.doesUrlExistFor('onecx-theme', 'onecx-theme-ui', 'theme-detail')
+    this.isComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.slotName)
 
     this.formGroup = new FormGroup({
       displayName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(100)]),
@@ -67,9 +82,9 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   }
 
   public ngOnInit(): void {
-    if (!this.isLoading) {
-      this.loadThemes()
-    }
+    //if (!this.isLoading) this.loadThemes()
+    this.themesEmitter.subscribe(this.themes$)
+    this.logoLoadingEmitter.subscribe(this.themeLogoLoadingFailed)
   }
 
   public ngOnChanges(): void {
@@ -216,17 +231,25 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
 
   private loadThemes(): void {
     this.themes$ = this.workspaceApi.getAllThemes().pipe(
-      map((val: any[]) => {
-        if (val.length === 0) {
-          return [this.workspace?.theme]
+      map((themes: string[]) => {
+        const ths: Theme[] = []
+        if (themes.length === 0) {
+          ths.push({ name: this.workspace?.theme, displayName: this.workspace?.theme } as Theme)
         } else {
-          val.sort(sortByLocale)
           // if not included (why ever) then add the used value to make it visible
-          if (!val.includes(this.workspace?.theme)) val.push(this.workspace?.theme)
-          return val
+          if (!themes.includes(this.workspace?.theme ?? '')) {
+            ths.push({ name: this.workspace?.theme, displayName: this.workspace?.theme } as Theme)
+          }
+          themes.forEach((th) => ths.push({ name: th, displayName: th } as Theme))
         }
+        ths.sort(sortByDisplayName)
+        console.log(ths)
+        return ths
       })
     )
+  }
+  public getThemeLogoUrl(themes: Theme[], themeName: string): string | undefined {
+    return themes.find((t) => t.name === themeName)?.logoUrl
   }
 
   public onGoToTheme(name?: string): void {

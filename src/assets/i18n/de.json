@@ -359,6 +359,7 @@
       "DEPRECATED.TOOLTIP": "Dieser Slot ist veraltet und wird in absehbarer Zeit nicht mehr nutzbar sein.",
       "UNDEPLOYED": "Unverfügbar",
       "UNDEPLOYED.TOOLTIP": "Dieser Slot ist nicht länger nutzbar.",
+      "UNDEPLOYED.COMPONENT.TOOLTIP": "Diese Komponente ist nicht länger nutzbar.",
       "PRODUCTS": "Registrierende Applikationen",
       "PRODUCTS.NOT_EXIST": "Keine",
       "PRODUCTS.TOOLTIP": "Applikationen die den Slot registriert haben:",
@@ -607,6 +608,14 @@
     }
   },
   "REMOTES": {
+    "LIST_WORKSPACES_THEME": {
+      "USED": "Das Theme wird in diesen Workspaces verwendet: ",
+      "UNUSED": "Das Theme wird von keinem Workspace verwendet."
+    },
+    "LIST_WORKSPACES_PRODUCT": {
+      "USED": "Die Applikation wird in diesen Workspaces verwendet: ",
+      "UNUSED": "Die Applikation wird von keinem Workspace verwendet."
+    },
     "USER_AVATAR_MENU": {
       "ORGID": "Organisation",
       "TENANT": "Mandant",
@@ -616,13 +625,10 @@
     "USER_SIDEBAR_MENU": {
       "LOGOUT": "Abmelden"
     },
-    "LIST_WORKSPACES_THEME": {
-      "USED": "Das Theme wird in diesen Workspaces verwendet: ",
-      "UNUSED": "Das Theme wird von keinem Workspace verwendet."
-    },
-    "LIST_WORKSPACES_PRODUCT": {
-      "USED": "Die Applikation wird in diesen Workspaces verwendet: ",
-      "UNUSED": "Die Applikation wird von keinem Workspace verwendet."
+    "WORKSPACE_FOOTER.VERSION": {
+      "WORKSPACE": "Workspace Name",
+      "SHELL_VERSION": "Workspace Name",
+      "MFE": "Microfrontend Name und Version"
     }
   },
   "VALIDATION": {
