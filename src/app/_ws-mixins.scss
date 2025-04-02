@@ -155,17 +155,17 @@
       position: absolute;
       padding: 4px !important;
       &.badge-1 {
-        top: 3px;
+        top: 40px;
       }
       &.badge-2 {
-        top: 35px;
+        top: 70px;
       }
     }
     .card-badge-right {
-      right: 1px;
+      right: 3px;
     }
     .card-badge-left {
-      left: 1px;
+      left: 3px;
     }
     /* correct colors on clickable badges */
     .card-primary-color {
