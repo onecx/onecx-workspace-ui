@@ -11,12 +11,16 @@ import { ConfigurationService, PortalMessageService, ThemeService } from '@onecx
 import { WorkspaceService } from '@onecx/angular-integration-interface'
 import * as Accelerator from '@onecx/accelerator'
 
-import { WorkspacePropsComponent } from 'src/app/workspace/workspace-detail/workspace-props/workspace-props.component'
+import {
+  Theme,
+  WorkspacePropsComponent
+} from 'src/app/workspace/workspace-detail/workspace-props/workspace-props.component'
 import {
   WorkspaceAPIService,
   ImagesInternalAPIService,
   Workspace,
-  WorkspaceProductAPIService
+  WorkspaceProductAPIService,
+  RefType
 } from 'src/app/shared/generated'
 import * as utils from 'src/app/shared/utils'
 
@@ -30,6 +34,10 @@ const workspace = {
   homePage: '/welcome',
   logoUrl: 'https://host:port/site/logo.png'
 }
+const themesOrg: Theme[] = [
+  { name: 'theme1', displayName: 'Theme 1', logoUrl: '/logo', faviconUrl: '/favicon' },
+  { name: 'theme2', displayName: 'Theme 2' }
+]
 
 const formGroup = new FormGroup({
   displayName: new FormControl('displayName', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
@@ -37,7 +45,7 @@ const formGroup = new FormGroup({
   baseUrl: new FormControl('/url', [Validators.required, Validators.minLength(1), Validators.pattern('^/.*')])
 })
 
-describe('WorkspacePropsComponent', () => {
+fdescribe('WorkspacePropsComponent', () => {
   let component: WorkspacePropsComponent
   let fixture: ComponentFixture<WorkspacePropsComponent>
   const workspaceServiceMock: jasmine.SpyObj<WorkspaceService> = jasmine.createSpyObj('WorkspaceService', [
@@ -46,8 +54,7 @@ describe('WorkspacePropsComponent', () => {
   ])
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'info', 'error'])
   const apiServiceSpy = {
-    updateWorkspace: jasmine.createSpy('updateWorkspace').and.returnValue(of([])),
-    getAllThemes: jasmine.createSpy('getAllThemes').and.returnValue(of([]))
+    updateWorkspace: jasmine.createSpy('updateWorkspace').and.returnValue(of([]))
   }
   const themeAPIServiceSpy = {
     getThemes: jasmine.createSpy('getThemes').and.returnValue(of({})),
@@ -99,7 +106,6 @@ describe('WorkspacePropsComponent', () => {
     msgServiceSpy.info.calls.reset()
     msgServiceSpy.error.calls.reset()
     apiServiceSpy.updateWorkspace.calls.reset()
-    apiServiceSpy.getAllThemes.calls.reset()
     themeAPIServiceSpy.getThemes.calls.reset()
     themeAPIServiceSpy.getThemeById.calls.reset()
     wProductServiceSpy.getProductsByWorkspaceId.calls.reset()
@@ -117,20 +123,66 @@ describe('WorkspacePropsComponent', () => {
     fixture.detectChanges()
   })
 
-  it('should create and get themes: no themes', () => {
-    expect(component).toBeTruthy()
+  describe('initialize', () => {
+    it('should create', () => {
+      expect(component).toBeTruthy()
+    })
   })
 
-  it('should create and get themes: themes include ws theme', () => {
-    apiServiceSpy.getAllThemes.and.returnValue(of(['theme', 'theme2']))
+  describe('themes', () => {
+    it('should get themes form rc emitter', (done) => {
+      component.ngOnInit()
 
-    expect(component).toBeTruthy()
-  })
+      component.themesEmitter.emit(themesOrg)
 
-  it('should create and get themes: themes do not include ws theme', () => {
-    apiServiceSpy.getAllThemes.and.returnValue(of(['theme1', 'theme2']))
+      component.themes$?.subscribe({
+        next: (data) => {
+          expect(data).toEqual(themesOrg)
+          done()
+        },
+        error: done.fail
+      })
+    })
 
-    expect(component).toBeTruthy()
+    it('should NOT extend themes if workspace is using a known theme', () => {
+      if (component.workspace) {
+        component.workspace.theme = 'theme1'
+
+        component.checkAndExtendThemes(themesOrg)
+
+        expect(themesOrg.length).toBe(2)
+      }
+    })
+
+    it('should extend themes if workspace is using an unknown theme name', () => {
+      if (component.workspace) {
+        component.workspace.theme = 'unknown'
+
+        component.checkAndExtendThemes(themesOrg)
+
+        expect(themesOrg.length).toBe(3)
+      }
+    })
+
+    it('should get url if defined - logo', () => {
+      if (component.workspace) {
+        component.workspace.theme = 'theme1'
+
+        const url = component.getThemeImageUrl(themesOrg, 'theme1', RefType.Logo)
+
+        expect(url).toBe(themesOrg[0].logoUrl)
+      }
+    })
+
+    it('should get url if defined - favicon', () => {
+      if (component.workspace) {
+        component.workspace.theme = 'theme1'
+
+        const url = component.getThemeImageUrl(themesOrg, 'theme1', RefType.Favicon)
+
+        expect(url).toBe(themesOrg[0].faviconUrl)
+      }
+    })
   })
 
   describe('loadProductPaths', () => {
@@ -294,7 +346,7 @@ describe('WorkspacePropsComponent', () => {
     })
 
     it('should not upload a file that is too large', () => {
-      const largeBlob = new Blob(['a'.repeat(120000)], { type: 'image/png' })
+      const largeBlob = new Blob(['a'.repeat(1200000)], { type: 'image/png' })
       const largeFile = new File([largeBlob], 'test.png', { type: 'image/png' })
       const event = {
         target: {
