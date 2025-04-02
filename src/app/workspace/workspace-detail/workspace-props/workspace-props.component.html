@@ -22,28 +22,22 @@
     </span>
   </div>
 
-  <div>
+  <div *ngIf="isThemeComponentDefined$ | async; else themeComponentNotDefined">
     <!-- THEMES -->
-    <ocx-slot
-      *ngIf="isComponentDefined$ | async"
-      [name]="slotName"
-      [inputs]="{ dataType: 'themes' }"
-      [outputs]="{ themes: themesEmitter }"
-    >
-    </ocx-slot>
+    <ocx-slot [name]="slotName" [inputs]="{ dataType: 'themes' }" [outputs]="{ themes: themesEmitter }"> </ocx-slot>
     <div
       *ngIf="(themes$ | async) ?? [] as themes"
       class="flex flex-row flex-wrap sm:flex-nowrap align-items-center row-gap-2 column-gap-4"
     >
       <!-- LOGO -->
       <ocx-slot
-        *ngIf="isComponentDefined$ | async"
         [name]="slotName"
         [inputs]="{
           dataType: 'logo',
           themeName: wsThemeName.value,
-          themeLogoUrl: getThemeLogoUrl(themes, wsThemeName.value),
-          logoStyleClass: 'h-2rem'
+          themeImageUrl: getThemeImageUrl(themes, wsThemeName.value, RefType.Logo),
+          useDefaultLogo: true,
+          imageStyleClass: 'h-2rem'
         }"
         [outputs]="{ logoLoadingFailed: logoLoadingEmitter }"
       ></ocx-slot>
@@ -55,7 +49,7 @@
             id="ws_detail_props_item_theme"
             formControlName="theme"
             styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
-            [options]="themes"
+            [options]="checkAndExtendThemes(themes)"
             optionLabel="displayName"
             optionValue="name"
             [ariaLabel]="'WORKSPACE.THEME' | translate"
@@ -85,6 +79,46 @@
       </div>
     </div>
   </div>
+
+  <!-- THEME readonly (no change possible) -->
+  <ng-template #themeComponentNotDefined>
+    <div>
+      <div class="p-inputgroup mb-1" controlErrorAnchor>
+        <span class="p-float-label">
+          <input
+            #wsThemeNameReadonly
+            pInputText
+            type="text"
+            id="ws_detail_props_item_theme_readonly"
+            formControlName="theme"
+            [readOnly]="true"
+            styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
+            [ariaLabel]="'WORKSPACE.THEME' | translate"
+            [pTooltip]="'WORKSPACE.TOOLTIPS.THEME.READONLY' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          />
+          <label class="ocx-required-label" for="ws_detail_props_item_theme_readonly">
+            {{ 'WORKSPACE.THEME' | translate }}
+          </label>
+        </span>
+        <a
+          tabindex="0"
+          id="ws_detail_props_item_theme_link"
+          class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
+          (click)="onGoToTheme(wsThemeNameReadonly.value)"
+          [ngClass]="
+            !editMode && inputBaseUrl.value && (themeProductRegistered$ | async) ? 'cursor-pointer' : 'p-disabled'
+          "
+          [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
+          [pTooltip]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
+          tooltipPosition="right"
+          tooltipEvent="hover"
+        >
+        </a>
+      </div>
+    </div>
+  </ng-template>
 
   <div>
     <div class="p-inputgroup mb-1" controlErrorAnchor>

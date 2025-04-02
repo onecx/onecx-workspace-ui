@@ -5,10 +5,10 @@
       <ocx-slot
         *ngIf="isComponentDefined$ | async"
         [name]="slotName"
-        [inputs]="{ dataType: 'logo', themeName: theme.name, themeLogoUrl: theme.logoUrl, logoStyleClass: 'h-1rem' }"
+        [inputs]="{ dataType: 'logo', themeName: theme.name, themeImageUrl: theme.logoUrl, imageStyleClass: 'h-1rem' }"
       ></ocx-slot>
     </ng-container>
-    <!-- footer menu -->
+    <!-- MENU footer -->
     <ocx-slot name="onecx-shell-footer"></ocx-slot>
   </div>
   <!-- VERSION -->

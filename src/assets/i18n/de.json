@@ -248,7 +248,8 @@
       "MANDATORY": "Erforderlich für den Betrieb",
       "NAME": "Eindeutiger Name, der nicht mehr geändert werden kann, da er als Referenz zu diesem Workspace benutzt wird.",
       "RSS_FEED_URL": "RSS-Feed URL für diesen Workspace",
-      "THEME": "Referenz zum genutzten Theme"
+      "THEME": "Referenz zum genutzten Theme",
+      "THEME.READONLY": "Referenz zum genutzten Theme. Themeauswahl nicht möglich."
     }
   },
   "MENU_ITEM": {

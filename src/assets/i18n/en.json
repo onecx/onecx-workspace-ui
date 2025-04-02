@@ -248,7 +248,8 @@
       "MANDATORY": "Necessary for operation",
       "NAME": "Unique name that cannot be changed because it is used as a reference to this workspace.",
       "RSS_FEED_URL": "RSS-Feed URL of this workspace",
-      "THEME": "Reference to the used Theme"
+      "THEME": "Reference to the used Theme",
+      "THEME.READONLY": "Reference to the used Theme. Theme selection not possible."
     }
   },
   "MENU_ITEM": {

@@ -12,7 +12,13 @@ import {
   SlotService
 } from '@onecx/angular-remote-components'
 import { PortalCoreModule } from '@onecx/portal-integration-angular'
-import { AppStateService, CONFIG_KEY, ConfigurationService, ThemeService } from '@onecx/angular-integration-interface'
+import {
+  AppStateService,
+  CONFIG_KEY,
+  ConfigurationService,
+  Theme,
+  ThemeService
+} from '@onecx/angular-integration-interface'
 
 import { SharedModule } from 'src/app/shared/shared.module'
 
@@ -38,7 +44,7 @@ type Version = {
 @UntilDestroy()
 export class OneCXWorkspaceFooterComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
   public versionInfo$!: Observable<Version | undefined>
-  public currentTheme$: Observable<any | undefined>
+  public currentTheme$: Observable<Theme | undefined>
   // slot configuration: get theme infos
   public slotName = 'onecx-theme-infos'
   public isComponentDefined$: Observable<boolean> // check a component was assigned
