@@ -138,7 +138,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     if (ev.target && (ev.target as HTMLInputElement).files) {
       const files = (ev.target as HTMLInputElement).files
       if (files) {
-        if (files[0].size > 100000) {
+        if (files[0].size > 1000000) {
           this.msgService.error({ summaryKey: 'IMAGE.CONSTRAINT_FAILED', detailKey: 'IMAGE.CONSTRAINT_SIZE' })
         } else if (!/^.*.(jpg|jpeg|png)$/.exec(files[0].name)) {
           this.msgService.error({ summaryKey: 'IMAGE.CONSTRAINT_FAILED', detailKey: 'IMAGE.CONSTRAINT_FILE_TYPE' })

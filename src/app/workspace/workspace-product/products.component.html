@@ -182,8 +182,7 @@
             <app-image-container
               [id]="'ws_products_picklist_' + product.productName + '_logo'"
               [imageUrl]="getImageUrl(product)"
-              [small]="true"
-              styleClass="w-1rem sm:w-2rem md:w-4rem tile-view-optional "
+              styleClass="max-h-1rem sm:max-h-2rem md:max-h-3rem max-w-2rem sm:max-w-3rem tile-view-optional border-round-sm"
             ></app-image-container>
             <div class="flex flex-column row-gap-1">
               <div
@@ -247,12 +246,13 @@
         </div>
       </div>
       <div class="hidden xl:block">
-        <app-image-container
-          id="ws_products_detail_logo"
-          [imageUrl]="getImageUrl(displayedDetailItem)"
-          [small]="true"
-          styleClass="pt-1 w-3rem md:w-5rem"
-        ></app-image-container>
+        <div class="h-2rem md:h-3rem md:h-4rem flex justify-content-center align-items-center">
+          <app-image-container
+            id="ws_products_detail_logo"
+            [imageUrl]="getImageUrl(displayedDetailItem)"
+            styleClass="max-h-2rem md:max-h-3rem md:max-h-4rem max-w-3rem md:max-w-4rem md:max-w-5rem border-round-sm"
+          ></app-image-container>
+        </div>
       </div>
       <div class="hidden xl:block">
         <div class="flex flex-column">
