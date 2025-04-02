@@ -166,16 +166,16 @@
     <app-image-container
       id="ws_detail_props_form_logo_image"
       [imageUrl]="fetchingLogoUrl"
-      [small]="true"
+      styleClass="max-h-3rem max-w-4rem border-round-sm"
       (imageLoadError)="onImageLoadingError($event)"
     ></app-image-container>
     <button
+      *ocxIfPermission="'WORKSPACE#EDIT'"
       pButton
       id="ws_detail_props_item_remove_logo"
       icon="pi pi-times"
-      [disabled]="!editMode || (editMode && !fetchingLogoUrl)"
-      class="action-button p-button-icon-only"
-      [class.cursor-pointer]="editMode"
+      [disabled]="!fetchingLogoUrl"
+      class="action-button p-button-icon-only cursor-pointer"
       (click)="onRemoveLogo()"
       [attr.aria-label]="'IMAGE.TOOLTIPS.REMOVE' | translate"
       [pTooltip]="'IMAGE.TOOLTIPS.REMOVE' | translate"
@@ -183,12 +183,11 @@
       tooltipEvent="hover"
     ></button>
     <button
+      *ocxIfPermission="'WORKSPACE#EDIT'"
       pButton
       id="ws_detail_props_item_upload_logo"
       icon="pi pi-upload"
-      [disabled]="!editMode"
-      class="action-button p-button-icon-only"
-      [class.cursor-pointer]="editMode"
+      class="action-button p-button-icon-only cursor-pointer"
       (click)="selectedFileInputLogo.click()"
       [attr.aria-label]="'IMAGE.TOOLTIPS.UPLOAD' | translate"
       [pTooltip]="'IMAGE.TOOLTIPS.UPLOAD' | translate"

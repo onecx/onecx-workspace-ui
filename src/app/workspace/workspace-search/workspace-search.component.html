@@ -130,7 +130,7 @@
           <div *ngFor="let workspace of workspaces; index as i" class="col-6 md:col-4 xl:col-3 p-2 md:p-3">
             <div
               [id]="'ws_search_data_grid_row_' + i"
-              class="card relative px-2 p-1 sm:p-2 flex flex-column gap-1 sm:gap-2 justify-content-between text-center hover:bg-gray-200 cursor-pointer"
+              class="card relative px-2 p-1 sm:p-2 flex flex-column gap-1 sm:gap-2 justify-content-between align-items-center text-center hover:bg-gray-200 cursor-pointer"
               [routerLink]="['./', workspace.name]"
             >
               <!-- BADGES -->
@@ -182,12 +182,14 @@
               ></span>
 
               <!-- CONTENT -->
-              <app-image-container
-                [id]="'ws_search_data_grid_row_' + i + '_logo'"
-                [small]="false"
-                styleClass="h-2rem sm:h-3rem md:h-4rem max-h-2rem sm:max-h-3rem md:max-h-4rem max-w-10rem"
-                [imageUrl]="getLogoUrl(workspace)"
-              ></app-image-container>
+              <div class="h-6rem sm:h-10rem flex justify-content-center align-items-center">
+                <app-image-container
+                  [id]="'ws_search_data_grid_row_' + i + '_logo'"
+                  [small]="false"
+                  styleClass="max-h-6rem sm:max-h-10rem max-w-12rem sm:max-w-18rem border-round-sm"
+                  [imageUrl]="getLogoUrl(workspace)"
+                ></app-image-container>
+              </div>
               <div class="h-2rem md:h-3rem flex flex-column justify-content-between text-center gap-1">
                 <div
                   [id]="'ws_search_data_grid_row_' + i + '_display_name'"

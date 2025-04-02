@@ -121,6 +121,12 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
       this.prepareWorkspaceRoleSearch()
       this.searchRoles()
     }
+    // after 5s we assume IAM product is not running
+    setTimeout(() => {
+      if (this.loadingIamRoles) {
+        this.loadingIamRoles = false
+      }
+    }, 5000)
   }
 
   /**

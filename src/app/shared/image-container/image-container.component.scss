@@ -3,37 +3,6 @@
     object-fit: scale-down;
     vertical-align: middle;
   }
-  .image-sm {
-    max-height: 39px;
-    max-width: 100px;
-  }
-  .placeholder-sm {
-    max-height: 39px;
-    max-width: 65px;
-  }
-  .image-lg {
-    max-height: 65px;
-    max-width: 170px;
-  }
-  .placeholder-lg {
-    max-height: 60px;
-    max-width: 97px;
-  }
-  @media screen and (max-width: 768px) {
-    .sm\:image-lg {
-      max-height: 45px;
-      max-width: 100px;
-    }
-    .sm\:placeholder-lg {
-      max-height: 40px;
-      max-width: 65px;
-    }
-  }
-  .placeholder-sm,
-  .placeholder-lg {
-    width: 100%;
-    border-radius: var(--border-radius);
-  }
   .placeholder {
     // https://www.mediaevent.de/css/gradient.html
     // org:   rgba(168, 185, 209, 0.9) === hsla(215, 30%, 70%, 0.9)
