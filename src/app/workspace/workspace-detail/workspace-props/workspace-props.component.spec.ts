@@ -310,7 +310,7 @@ fdescribe('WorkspacePropsComponent', () => {
 
   describe('Upload file', () => {
     it('should not upload a file that is too large', () => {
-      const largeBlob = new Blob(['a'.repeat(120000)], { type: 'image/png' })
+      const largeBlob = new Blob(['a'.repeat(1200000)], { type: 'image/png' })
       const largeFile = new File([largeBlob], 'test.png', { type: 'image/png' })
       const event = {
         target: {

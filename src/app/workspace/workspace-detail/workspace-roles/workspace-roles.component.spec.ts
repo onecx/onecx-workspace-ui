@@ -1,5 +1,5 @@
 import { NO_ERRORS_SCHEMA, SimpleChanges } from '@angular/core'
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
+import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { TranslateService } from '@ngx-translate/core'
@@ -146,7 +146,7 @@ describe('WorkspaceRolesComponent', () => {
   })
 
   describe('search WORKSPACE roles', () => {
-    it('should populate wRoles on search', () => {
+    it('should populate wRoles on search', fakeAsync(() => {
       const wRoles: WorkspaceRole[] = [{ name: 'role' }]
       wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: wRoles as WorkspaceRolePageResult }))
       const changes = { ['workspace']: { previousValue: 'ws0', currentValue: 'ws1', firstChange: true } }
@@ -156,7 +156,12 @@ describe('WorkspaceRolesComponent', () => {
 
       expect(component.wRoles).toEqual(wRoles)
       expect(component.roles.length).toEqual(wRoles.length)
-    })
+
+      component.loadingIamRoles = true
+      tick(5000)
+      fixture.detectChanges()
+      expect(component.loadingIamRoles).toEqual(false)
+    }))
 
     it('should populate wRoles on search: empty stream', () => {
       wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({}))

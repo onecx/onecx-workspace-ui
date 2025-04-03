@@ -8,3 +8,25 @@
 @include correct-data-view-control;
 @include correct-dataview-header;
 @include correct-select-button;
+
+:host ::ng-deep {
+  .h-2-5rem {
+    height: 2.5rem !important;
+  }
+
+  .card-badge-left,
+  .card-badge-right {
+    &.badge-1 {
+      top: 40px;
+    }
+    &.badge-2 {
+      top: 70px;
+    }
+  }
+  .card-badge-right {
+    right: 3px;
+  }
+  .card-badge-left {
+    left: 3px;
+  }
+}

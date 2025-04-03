@@ -28,8 +28,8 @@
       [value]="workspaces"
       [paginator]="true"
       [alwaysShowPaginator]="true"
-      [rowsPerPageOptions]="viewMode === 'grid' ? [12, 24, 60] : [10, 20, 50]"
-      [rows]="viewMode === 'grid' ? 12 : 10"
+      [rowsPerPageOptions]="viewMode === 'grid' ? [80, 320] : [20, 100]"
+      [rows]="viewMode === 'grid' ? 80 : 20"
       [layout]="viewMode"
       [emptyMessage]="'ACTIONS.SEARCH.NO_DATA' | translate"
       filterBy="displayName,theme"
@@ -71,8 +71,7 @@
           <div class="p-0 col-4 sm:col-3 md:col-2 flex justify-content-around align-items-center">
             <app-image-container
               [id]="'ws_search_data_list_row_' + i + '_logo'"
-              [small]="false"
-              styleClass="h-2rem sm:h-3rem md:h-3rem max-h-2rem sm:max-h-3rem md:max-h-3rem max-w-8rem"
+              styleClass="h-4rem sm:h-5rem max-h-4rem sm:max-h-5rem max-w-4rem sm:max-w-6rem border-round-sm"
               [imageUrl]="getLogoUrl(workspace)"
             ></app-image-container>
           </div>
@@ -130,12 +129,12 @@
           <div *ngFor="let workspace of workspaces; index as i" class="col-6 md:col-4 xl:col-3 p-2 md:p-3">
             <div
               [id]="'ws_search_data_grid_row_' + i"
-              class="card relative px-2 p-1 sm:p-2 flex flex-column gap-1 sm:gap-2 justify-content-between text-center hover:bg-gray-200 cursor-pointer"
+              class="card relative p-2 sm:px-3 flex flex-column gap-1 sm:gap-3 justify-content-between text-center hover:bg-gray-200 cursor-pointer"
               [routerLink]="['./', workspace.name]"
             >
               <!-- BADGES -->
               <a
-                *ngIf="workspace.name !== 'ADMIN' && !workspace.disabled"
+                *ngIf="!workspace.disabled"
                 tabindex="0"
                 [id]="'ws_search_data_grid_row_' + i + '_goto_workspace'"
                 class="card-badge-right badge-1 p-1 pi pi-external-link button-icon-only"
@@ -182,32 +181,43 @@
               ></span>
 
               <!-- CONTENT -->
-              <app-image-container
-                [id]="'ws_search_data_grid_row_' + i + '_logo'"
-                [small]="false"
-                styleClass="h-2rem sm:h-3rem md:h-4rem max-h-2rem sm:max-h-3rem md:max-h-4rem max-w-10rem"
-                [imageUrl]="getLogoUrl(workspace)"
-              ></app-image-container>
-              <div class="h-2rem md:h-3rem flex flex-column justify-content-between text-center gap-1">
+              <div
+                [id]="'ws_search_data_grid_row_' + i + '_display_name'"
+                class="font-bold text-base sm:text-lg md:text-xl lg:text-2xl text-responsive"
+                [attr.aria-label]="workspace.displayName"
+                [pTooltip]="workspace.displayName.length < 20 ? '' : workspace.displayName"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+              >
+                {{ workspace.displayName }}
+              </div>
+              <div class="h-6rem sm:h-10rem flex justify-content-center align-items-center">
+                <app-image-container
+                  [id]="'ws_search_data_grid_row_' + i + '_logo'"
+                  styleClass="max-h-6rem sm:max-h-10rem max-w-9rem sm:max-w-10rem md:max-w-11rem lg:max-w-13rem xl:max-w-14rem border-round-sm"
+                  [imageUrl]="getLogoUrl(workspace)"
+                ></app-image-container>
+              </div>
+              <div class="h-3rem flex flex-column justify-content-between row-gap-1 justify-content-center">
                 <div
-                  [id]="'ws_search_data_grid_row_' + i + '_display_name'"
-                  class="font-bold sm:text-lg md:text-xl text-responsive"
-                  [attr.aria-label]="workspace.displayName"
-                  [pTooltip]="workspace.displayName.length < 20 ? '' : workspace.displayName"
+                  [id]="'ws_search_data_grid_row_' + i + '_description'"
+                  class="text-xs md:text-sm md:text-base text-responsive"
+                  [attr.aria-label]="'WORKSPACE.DESCRIPTION' | translate"
+                  [pTooltip]="'WORKSPACE.DESCRIPTION' | translate"
                   tooltipPosition="top"
                   tooltipEvent="hover"
                 >
-                  {{ workspace.displayName }}
+                  {{ workspace.description }}
                 </div>
                 <div
                   [id]="'ws_search_data_grid_row_' + i + '_theme'"
-                  class="text-xs md:text-sm text-responsive"
+                  class="text-xs md:text-sm md:text-base text-responsive"
                   [attr.aria-label]="'WORKSPACE.THEME' | translate"
                   [pTooltip]="'WORKSPACE.THEME' | translate"
                   tooltipPosition="top"
                   tooltipEvent="hover"
                 >
-                  {{ workspace.theme }}
+                  Theme: {{ workspace.theme }}
                 </div>
               </div>
             </div>
