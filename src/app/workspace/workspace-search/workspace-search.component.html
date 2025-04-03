@@ -129,12 +129,12 @@
           <div *ngFor="let workspace of workspaces; index as i" class="col-6 md:col-4 xl:col-3 p-2 md:p-3">
             <div
               [id]="'ws_search_data_grid_row_' + i"
-              class="card relative p-1 sm:p-2 sm:px-3 flex flex-column gap-1 sm:gap-3 justify-content-between text-center hover:bg-gray-200 cursor-pointer"
+              class="card relative p-2 sm:px-3 flex flex-column gap-1 sm:gap-3 justify-content-between text-center hover:bg-gray-200 cursor-pointer"
               [routerLink]="['./', workspace.name]"
             >
               <!-- BADGES -->
               <a
-                *ngIf="workspace.name !== 'ADMIN' && !workspace.disabled"
+                *ngIf="!workspace.disabled"
                 tabindex="0"
                 [id]="'ws_search_data_grid_row_' + i + '_goto_workspace'"
                 class="card-badge-right badge-1 p-1 pi pi-external-link button-icon-only"
@@ -194,7 +194,7 @@
               <div class="h-6rem sm:h-10rem flex justify-content-center align-items-center">
                 <app-image-container
                   [id]="'ws_search_data_grid_row_' + i + '_logo'"
-                  styleClass="max-h-6rem sm:max-h-10rem max-w-10rem sm:max-w-11rem md:max-w-12rem lg:max-w-13rem xl:max-w-14rem border-round-sm"
+                  styleClass="max-h-6rem sm:max-h-10rem max-w-9rem sm:max-w-10rem md:max-w-11rem lg:max-w-13rem xl:max-w-14rem border-round-sm"
                   [imageUrl]="getLogoUrl(workspace)"
                 ></app-image-container>
               </div>
