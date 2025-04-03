@@ -34,13 +34,12 @@ describe('WorkspaceCreateComponent', () => {
   const mockRouter = new MockRouter()
 
   const wApiServiceSpy = {
-    getAllThemes: jasmine.createSpy('getAllThemes').and.returnValue(of(['theme1', 'theme2'])),
     createWorkspace: jasmine.createSpy('createWorkspace').and.returnValue(of({}))
   }
   const productServiceSpy = {
     searchAvailableProducts: jasmine.createSpy('searchAvailableProducts').and.returnValue(of({}))
   }
-  const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'info', 'error'])
+  const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
   const mockActivatedRouteSnapshot: Partial<ActivatedRouteSnapshot> = { params: { id: 'mockId' } }
   const mockActivatedRoute: Partial<ActivatedRoute> = {
     snapshot: mockActivatedRouteSnapshot as ActivatedRouteSnapshot
@@ -71,7 +70,6 @@ describe('WorkspaceCreateComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents()
-    wApiServiceSpy.getAllThemes.calls.reset()
   }))
 
   beforeEach(() => {
@@ -95,11 +93,9 @@ describe('WorkspaceCreateComponent', () => {
   })
 
   afterEach(() => {
-    wApiServiceSpy.getAllThemes.calls.reset()
     wApiServiceSpy.createWorkspace.calls.reset()
     productServiceSpy.searchAvailableProducts.calls.reset()
     msgServiceSpy.success.calls.reset()
-    msgServiceSpy.info.calls.reset()
     msgServiceSpy.error.calls.reset()
   })
 
@@ -185,6 +181,7 @@ describe('WorkspaceCreateComponent', () => {
     })
   })
 
+  /*
   describe('onOpenThemes', () => {
     it('should load themes', () => {
       const themes = ['theme-1', 'theme-2']
@@ -215,5 +212,5 @@ describe('WorkspaceCreateComponent', () => {
         expect(console.error).toHaveBeenCalledWith('getAllThemes', errorResponse)
       })
     })
-  })
+  }) */
 })

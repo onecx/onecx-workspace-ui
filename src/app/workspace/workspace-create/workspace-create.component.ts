@@ -1,24 +1,31 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core'
+import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
-import { Observable, catchError, map, of } from 'rxjs'
+import { BehaviorSubject, catchError, map, Observable, of } from 'rxjs'
 
+import { SlotService } from '@onecx/angular-remote-components'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 
 import { sortByLocale } from 'src/app/shared/utils'
 import { WorkspaceAPIService, ProductAPIService } from 'src/app/shared/generated'
+
+export type Theme = {
+  name: string
+  displayName: string
+  logoUrl?: string
+  faviconUrl?: string
+}
 
 @Component({
   selector: 'app-workspace-create',
   templateUrl: './workspace-create.component.html',
   styleUrls: ['./workspace-create.component.scss']
 })
-export class WorkspaceCreateComponent {
+export class WorkspaceCreateComponent implements OnInit {
   @Input() displayDialog = false
   @Output() toggleCreationDialogEvent = new EventEmitter()
 
-  public themes$: Observable<string[]> = of([])
   public productPaths$: Observable<string[]> = of([])
   public formGroup: FormGroup
   public selectedLogoFile: File | undefined
@@ -26,14 +33,23 @@ export class WorkspaceCreateComponent {
   public minimumImageHeight = 150
   public fetchingLogoUrl?: string
 
+  // slot configuration: get theme infos
+  public slotName = 'onecx-theme-infos'
+  public isThemeComponentDefined$: Observable<boolean> // check a component was assigned
+  public themes$ = new BehaviorSubject<Theme[] | undefined>(undefined) // theme infos
+  public themesEmitter = new EventEmitter<Theme[]>()
+  public themeLogoLoadingFailed = false
+
   constructor(
     private readonly router: Router,
     private readonly route: ActivatedRoute,
+    private readonly slotService: SlotService,
     private readonly workspaceApi: WorkspaceAPIService,
     private readonly message: PortalMessageService,
     private readonly translate: TranslateService,
     private readonly productApi: ProductAPIService
   ) {
+    this.isThemeComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.slotName)
     this.formGroup = new FormGroup({
       name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
       displayName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
@@ -44,6 +60,10 @@ export class WorkspaceCreateComponent {
       footerLabel: new FormControl(null, [Validators.maxLength(255)]),
       description: new FormControl(null, [Validators.maxLength(255)])
     })
+  }
+
+  public ngOnInit(): void {
+    this.themesEmitter.subscribe(this.themes$)
   }
 
   public closeDialog(): void {
@@ -93,20 +113,6 @@ export class WorkspaceCreateComponent {
       catchError((err) => {
         console.error('searchAvailableProducts', err)
         return of([] as string[])
-      })
-    )
-  }
-
-  public onOpenThemes(themes: string[]) {
-    // if paths already filled then prevent doing twice
-    if (themes.length > 0) return
-    this.themes$ = this.workspaceApi.getAllThemes().pipe(
-      map((data: string[]) => {
-        return data.sort(sortByLocale)
-      }),
-      catchError((err) => {
-        console.error('getAllThemes', err)
-        return of([])
       })
     )
   }

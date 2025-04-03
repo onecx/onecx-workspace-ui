@@ -5,7 +5,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { BehaviorSubject, map, Observable, of, Subject } from 'rxjs'
 
 import { SlotService } from '@onecx/angular-remote-components'
-import { PortalMessageService, ThemeService, WorkspaceService } from '@onecx/angular-integration-interface'
+import { PortalMessageService, WorkspaceService } from '@onecx/angular-integration-interface'
 import { getLocation } from '@onecx/accelerator'
 
 import {
@@ -42,11 +42,10 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   public formGroup: FormGroup
   public productPaths$: Observable<string[]> = of([])
   public themeProductRegistered$!: Observable<boolean>
-  //public themes$!: Observable<Theme[]>
   public deploymentPath: string | undefined = undefined
   public urlPattern = '/base-path-to-workspace'
   public externUrlPattern = 'http(s)://path-to-image'
-  //Logo
+  // Logo
   public minimumImageWidth = 150
   public minimumImageHeight = 150
   public fetchingLogoUrl: string | undefined = undefined
@@ -62,7 +61,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   constructor(
     private readonly router: Router,
     private readonly slotService: SlotService,
-    private readonly themeService: ThemeService,
     private readonly workspaceService: WorkspaceService,
     private readonly msgService: PortalMessageService,
     private readonly imageApi: ImagesInternalAPIService,
