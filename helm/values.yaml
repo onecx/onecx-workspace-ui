@@ -91,6 +91,9 @@ app:
         onecx-theme-infos:
           name: 'onecx-theme-infos'
           description: 'Use theme data'
+        onecx-shell-footer:
+          name: 'onecx-shell-footer'
+          description: 'Shell footer'
     # Permission
     permission:
       enabled: true
