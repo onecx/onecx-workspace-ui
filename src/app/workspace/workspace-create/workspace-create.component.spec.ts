@@ -13,7 +13,7 @@ import { APP_CONFIG, PortalMessageService } from '@onecx/portal-integration-angu
 
 import { ProductAPIService, Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
 import { environment } from 'src/environments/environment'
-import { WorkspaceCreateComponent } from './workspace-create.component'
+import { Theme, WorkspaceCreateComponent } from './workspace-create.component'
 
 const workspace: Workspace = {
   id: 'id',
@@ -23,6 +23,10 @@ const workspace: Workspace = {
   homePage: '/homepage',
   displayName: 'displayName'
 }
+const themesOrg: Theme[] = [
+  { name: 'theme1', displayName: 'Theme 1', logoUrl: '/logo', faviconUrl: '/favicon' },
+  { name: 'theme2', displayName: 'Theme 2' }
+]
 
 class MockRouter {
   navigate = jasmine.createSpy('navigate')
@@ -181,36 +185,19 @@ describe('WorkspaceCreateComponent', () => {
     })
   })
 
-  /*
-  describe('onOpenThemes', () => {
-    it('should load themes', () => {
-      const themes = ['theme-1', 'theme-2']
-      wApiServiceSpy.getAllThemes.and.returnValue(of(themes))
+  describe('themes', () => {
+    it('should get themes form rc emitter', (done) => {
+      component.ngOnInit()
 
-      component.onOpenThemes([])
+      component.themesEmitter.emit(themesOrg)
 
-      component.themes$.subscribe((data) => {
-        expect(data).toEqual(themes)
+      component.themes$?.subscribe({
+        next: (data) => {
+          expect(data).toEqual(themesOrg)
+          done()
+        },
+        error: done.fail
       })
     })
-
-    it('should prevent loading product URLs again', () => {
-      const themes = ['theme-1', 'theme-2']
-
-      component.onOpenThemes(themes)
-    })
-
-    it('should load themes failed', () => {
-      const errorResponse = { status: 400, statusText: 'Error on loading themes' }
-      wApiServiceSpy.getAllThemes.and.returnValue(throwError(() => errorResponse))
-      spyOn(console, 'error')
-
-      component.onOpenThemes([])
-
-      component.themes$.subscribe((data) => {
-        expect(data).toEqual([])
-        expect(console.error).toHaveBeenCalledWith('getAllThemes', errorResponse)
-      })
-    })
-  }) */
+  })
 })
