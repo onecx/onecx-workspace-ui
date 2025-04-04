@@ -157,25 +157,35 @@
             tooltipEvent="hover"
             >{{ slot.components.length }}</span
           >
-          <span
-            *ngIf="slot.changes && !slot.deprecated"
-            [id]="'ws_slots_grid_data_row_' + i + '_changed'"
-            class="card-badge-left badge-2 pi pi-exclamation-circle danger-action-text font-bold"
-            [attr.aria-label]="'DIALOG.SLOT.CHANGED' | translate"
-            [pTooltip]="'DIALOG.SLOT.CHANGED' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          ></span>
-          <span
-            *ngIf="slot.deprecated"
-            [id]="'ws_slots_grid_data_row_' + i + '_deprecated'"
-            class="card-badge-left badge-2 pi pi-exclamation-circle danger-action-text font-bold"
-            [attr.aria-label]="'DIALOG.SLOT.DEPRECATED' | translate"
-            [pTooltip]="'DIALOG.SLOT.DEPRECATED.TOOLTIP' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          ></span>
-
+          <ng-container *ngIf="slot.changes">
+            <span
+              *ngIf="slot.undeployed && !slot.deprecated"
+              [id]="'ws_slots_grid_data_row_' + i + '_undeployed'"
+              class="card-badge-left badge-2 pi pi-ban danger-action-text font-bold"
+              [attr.aria-label]="'DIALOG.SLOT.UNDEPLOYED' | translate"
+              [pTooltip]="'DIALOG.SLOT.UNDEPLOYED.TOOLTIP' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            ></span>
+            <span
+              *ngIf="!slot.undeployed && slot.deprecated"
+              [id]="'ws_slots_grid_data_row_' + i + '_deprecated'"
+              class="card-badge-left badge-2 pi pi-exclamation-circle danger-action-text font-bold"
+              [attr.aria-label]="'DIALOG.SLOT.DEPRECATED' | translate"
+              [pTooltip]="'DIALOG.SLOT.DEPRECATED.TOOLTIP' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            ></span>
+            <span
+              *ngIf="!slot.undeployed && !slot.deprecated"
+              [id]="'ws_slots_grid_data_row_' + i + '_changed'"
+              class="card-badge-left badge-2 pi pi-exclamation-circle danger-action-text font-bold"
+              [attr.aria-label]="'DIALOG.SLOT.CHANGED' | translate"
+              [pTooltip]="'DIALOG.SLOT.CHANGED' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            ></span>
+          </ng-container>
           <!-- CONTENT -->
           <div class="flex flex-column justify-content-between row-gap-2 text-center">
             <div
@@ -205,10 +215,10 @@
                 [id]="'ws_roles_grid_data_row_' + i + '_new'"
                 class="py-1"
                 [label]="
-                  (slot.deprecated
-                    ? 'DIALOG.SLOT.DEPRECATED'
-                    : slot.undeployed
-                      ? 'DIALOG.SLOT.UNDEPLOYED'
+                  (slot.undeployed
+                    ? 'DIALOG.SLOT.UNDEPLOYED'
+                    : slot.deprecated
+                      ? 'DIALOG.SLOT.DEPRECATED'
                       : 'DIALOG.SLOT.UNREGISTERED'
                   ) | translate
                 "

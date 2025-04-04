@@ -212,11 +212,13 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
         // add slot to ps slot array
         this.psSlots.push(ps)
         // select workspace slot with same name
-        const ws = this.wSlotsIntern.filter((s) => s.name === ps.name)
-        if (ws.length === 1) {
+        const ws = this.wSlotsIntern.find((s) => s.name === ps.name)
+        if (ws) {
           // extend workspace slot with product store info
-          ws[0].psSlots.push({ ...ps, pName: p.productName, pDisplayName: p.displayName! })
-          ws[0].changes = ps.undeployed || ps.deprecated || ws[0].changes
+          ws.psSlots.push({ ...ps, pName: p.productName, pDisplayName: p.displayName! })
+          ws.changes = ps.undeployed || ps.deprecated || ws.changes
+          ws.deprecated = ps.deprecated
+          ws.undeployed = ps.undeployed
         }
       })
       // 2. collect all product store components

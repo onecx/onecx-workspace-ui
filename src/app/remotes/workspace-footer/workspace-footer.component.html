@@ -1,0 +1,27 @@
+<div class="mx-3 py-2 flex flex-wrap align-items-center justify-content-between gap-1 text-sm">
+  <div class="flex flex-wrap justify-content-start column-gap-3 row-gap-1">
+    <!-- LOGO -->
+    <ng-container *ngIf="currentTheme$ | async as theme">
+      <ocx-slot
+        *ngIf="isComponentDefined$ | async"
+        [name]="slotName"
+        [inputs]="{ dataType: 'logo', themeName: theme.name, imageUrl: theme.logoUrl, imageStyleClass: 'h-1rem' }"
+      ></ocx-slot>
+    </ng-container>
+    <!-- MENU (footer) -->
+    <ocx-slot name="onecx-page-footer-menu"></ocx-slot>
+  </div>
+  <!-- VERSION -->
+  <div *ngIf="versionInfo$ | async as version">
+    <span aria-label="Workspace" pTooltip="Workspace" tooltipPosition="top" tooltipEvent="hover">
+      {{ version.workspaceName }}
+    </span>
+    <span aria-label="Shell" pTooltip="Shell" tooltipPosition="top" tooltipEvent="hover">
+      {{ version.hostVersion }}
+    </span>
+    <span>{{ version.separator }}</span>
+    <span aria-label="Microfrontend" pTooltip="Microfrontend" tooltipPosition="top" tooltipEvent="hover">
+      {{ version.mfeInfo }}
+    </span>
+  </div>
+</div>

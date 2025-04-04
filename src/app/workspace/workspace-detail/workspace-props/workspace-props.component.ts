@@ -2,8 +2,9 @@ import { Component, EventEmitter, Input, OnInit, OnChanges, Output } from '@angu
 import { Location } from '@angular/common'
 import { Router } from '@angular/router'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
-import { map, Observable, of, Subject } from 'rxjs'
+import { BehaviorSubject, map, Observable, of, Subject } from 'rxjs'
 
+import { SlotService } from '@onecx/angular-remote-components'
 import { PortalMessageService, WorkspaceService } from '@onecx/angular-integration-interface'
 import { getLocation } from '@onecx/accelerator'
 
@@ -16,6 +17,12 @@ import {
 } from 'src/app/shared/generated'
 import { bffImageUrl, copyToClipboard, goToEndpoint, sortByLocale } from 'src/app/shared/utils'
 
+export type Theme = {
+  name: string
+  displayName: string
+  logoUrl?: string
+  faviconUrl?: string
+}
 @Component({
   selector: 'app-workspace-props',
   templateUrl: './workspace-props.component.html',
@@ -29,30 +36,39 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   // make it available in HTML
   public getLocation = getLocation
   public copyToClipboard = copyToClipboard
+  public RefType = RefType
   // data
   private readonly destroy$ = new Subject()
   public formGroup: FormGroup
   public productPaths$: Observable<string[]> = of([])
   public themeProductRegistered$!: Observable<boolean>
-  public themes$!: Observable<string[]>
   public deploymentPath: string | undefined = undefined
   public urlPattern = '/base-path-to-workspace'
   public externUrlPattern = 'http(s)://path-to-image'
-  //Logo
+  // Logo
   public minimumImageWidth = 150
   public minimumImageHeight = 150
   public fetchingLogoUrl: string | undefined = undefined
   public themeUrl: string | undefined = undefined
+  // slot configuration: get theme infos
+  public slotName = 'onecx-theme-infos'
+  public isThemeComponentDefined$: Observable<boolean> // check a component was assigned
+  public themes$ = new BehaviorSubject<Theme[] | undefined>(undefined) // theme infos
+  public themesEmitter = new EventEmitter<Theme[]>()
+  public logoLoadingEmitter = new EventEmitter<boolean>()
+  public themeLogoLoadingFailed = false
 
   constructor(
     private readonly router: Router,
-    public workspaceService: WorkspaceService,
+    private readonly slotService: SlotService,
+    private readonly workspaceService: WorkspaceService,
     private readonly msgService: PortalMessageService,
     private readonly imageApi: ImagesInternalAPIService,
     private readonly workspaceApi: WorkspaceAPIService,
     private readonly wProductApi: WorkspaceProductAPIService
   ) {
     this.themeProductRegistered$ = workspaceService.doesUrlExistFor('onecx-theme', 'onecx-theme-ui', 'theme-detail')
+    this.isThemeComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.slotName)
 
     this.formGroup = new FormGroup({
       displayName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(100)]),
@@ -67,9 +83,8 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   }
 
   public ngOnInit(): void {
-    if (!this.isLoading) {
-      this.loadThemes()
-    }
+    this.themesEmitter.subscribe(this.themes$)
+    this.logoLoadingEmitter.subscribe(this.themeLogoLoadingFailed)
   }
 
   public ngOnChanges(): void {
@@ -214,19 +229,18 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     }
   }
 
-  private loadThemes(): void {
-    this.themes$ = this.workspaceApi.getAllThemes().pipe(
-      map((val: any[]) => {
-        if (val.length === 0) {
-          return [this.workspace?.theme]
-        } else {
-          val.sort(sortByLocale)
-          // if not included (why ever) then add the used value to make it visible
-          if (!val.includes(this.workspace?.theme)) val.push(this.workspace?.theme)
-          return val
-        }
-      })
-    )
+  // sometimes the theme is unknown, then add to the list
+  public checkAndExtendThemes(themes: Theme[]): Theme[] {
+    // if not included (why ever) then add the used value to make it visible
+    if (!themes.find((t) => t.name === this.workspace?.theme)) {
+      themes.push({ name: this.workspace?.theme, displayName: this.workspace?.theme } as Theme)
+    }
+    return themes
+  }
+
+  public getThemeImageUrl(themes: Theme[], themeName: string, refType: RefType): string | undefined {
+    const theme = themes.find((t) => t.name === themeName)
+    return refType === RefType.Logo ? theme?.logoUrl : theme?.faviconUrl
   }
 
   public onGoToTheme(name?: string): void {

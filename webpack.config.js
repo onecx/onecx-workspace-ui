@@ -6,6 +6,7 @@ const config = withModuleFederationPlugin({
   filename: 'remoteEntry.js',
   exposes: {
     './OneCXWorkspaceModule': 'src/main.ts',
+    './OneCXWorkspaceFooterComponent': 'src/app/remotes/workspace-footer/workspace-footer.component.main.ts',
     './OneCXUserAvatarMenuComponent': 'src/app/remotes/user-avatar-menu/user-avatar-menu.component.main.ts',
     './OneCXUserSidebarMenuComponent': 'src/app/remotes/user-sidebar-menu/user-sidebar-menu.component.main.ts',
     './OneCXVerticalMainMenuComponent': 'src/app/remotes/vertical-main-menu/vertical-main-menu.component.main.ts',

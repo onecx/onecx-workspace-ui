@@ -68,6 +68,12 @@ export function sortByLocale(a: any, b: any): number {
   return a.toUpperCase().localeCompare(b.toUpperCase())
 }
 
+export function sortByDisplayName(a: any, b: any): number {
+  return (a.displayName ? a.displayName.toUpperCase() : '').localeCompare(
+    b.displayName ? b.displayName.toUpperCase() : ''
+  )
+}
+
 /**
  * Filter objects => exclude given properties
  */

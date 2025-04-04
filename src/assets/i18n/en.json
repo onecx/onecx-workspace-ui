@@ -248,7 +248,8 @@
       "MANDATORY": "Necessary for operation",
       "NAME": "Unique name that cannot be changed because it is used as a reference to this workspace.",
       "RSS_FEED_URL": "RSS-Feed URL of this workspace",
-      "THEME": "Reference to the used Theme"
+      "THEME": "Reference to the used Theme",
+      "THEME.READONLY": "Reference to the used Theme. Theme selection not possible."
     }
   },
   "MENU_ITEM": {
@@ -359,6 +360,7 @@
       "DEPRECATED.TOOLTIP": "This Slot is outdated and will no longer be usable in the foreseeable future.",
       "UNDEPLOYED": "Unavailable",
       "UNDEPLOYED.TOOLTIP": "This Slot is no longer usable.",
+      "UNDEPLOYED.COMPONENT.TOOLTIP": "This Component is no longer usable.",
       "PRODUCTS": "Registered by Applications",
       "PRODUCTS.NOT_EXIST": "Not available",
       "PRODUCTS.TOOLTIP": "Applications that have registered this Slot:",
@@ -607,6 +609,14 @@
     }
   },
   "REMOTES": {
+    "LIST_WORKSPACES_THEME": {
+      "USED": "The Theme is used by the following Workspaces: ",
+      "UNUSED": "The Theme is not used by any Workspace."
+    },
+    "LIST_WORKSPACES_PRODUCT": {
+      "USED": "The Application is used by the following Workspaces: ",
+      "UNUSED": "The Application is not used by any Workspace."
+    },
     "USER_AVATAR_MENU": {
       "ORGID": "Organization",
       "TENANT": "Tenant",
@@ -616,13 +626,10 @@
     "USER_SIDEBAR_MENU": {
       "LOGOUT": "Log out"
     },
-    "LIST_WORKSPACES_THEME": {
-      "USED": "The Theme is used by the following Workspaces: ",
-      "UNUSED": "The Theme is not used by any Workspace."
-    },
-    "LIST_WORKSPACES_PRODUCT": {
-      "USED": "The Application is used by the following Workspaces: ",
-      "UNUSED": "The Application is not used by any Workspace."
+    "WORKSPACE_FOOTER.VERSION": {
+      "WORKSPACE": "Workspace Name",
+      "SHELL_VERSION": "Shell Version",
+      "MFE": "Microfrontend Name and Version"
     }
   },
   "VALIDATION": {
