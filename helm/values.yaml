@@ -88,12 +88,12 @@ app:
         onecx-iam-user-roles:
           name: 'onecx-iam-user-roles'
           description: 'Receive IAM user roles'
+        onecx-page-footer-menu:
+          name: 'onecx-page-footer-menu'
+          description: 'Footer Menu (possible used within page footer)'
         onecx-theme-infos:
           name: 'onecx-theme-infos'
           description: 'Use theme data'
-        onecx-shell-footer:
-          name: 'onecx-shell-footer'
-          description: 'Shell footer'
     # Permission
     permission:
       enabled: true
