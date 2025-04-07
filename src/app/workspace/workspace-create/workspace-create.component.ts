@@ -34,7 +34,7 @@ export class WorkspaceCreateComponent implements OnInit {
   public fetchingLogoUrl?: string
 
   // slot configuration: get theme infos
-  public slotName = 'onecx-theme-infos'
+  public slotName = 'onecx-theme-data'
   public isThemeComponentDefined$: Observable<boolean> // check a component was assigned
   public themes$ = new BehaviorSubject<Theme[] | undefined>(undefined) // theme infos
   public themesEmitter = new EventEmitter<Theme[]>()

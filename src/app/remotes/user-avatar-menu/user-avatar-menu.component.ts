@@ -1,13 +1,4 @@
-import {
-  APP_INITIALIZER,
-  AfterViewInit,
-  Component,
-  CUSTOM_ELEMENTS_SCHEMA,
-  Inject,
-  Input,
-  OnDestroy,
-  Renderer2
-} from '@angular/core'
+import { AfterViewInit, Component, EventEmitter, Inject, Input, OnDestroy, Renderer2 } from '@angular/core'
 import { Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import { FormsModule } from '@angular/forms'
@@ -55,11 +46,6 @@ import { SharedModule } from 'src/app/shared/shared.module'
 import { environment } from 'src/environments/environment'
 
 export type MenuAnchorPositionConfig = 'right' | 'left'
-
-export function slotInitializer(slotService: SlotService) {
-  return () => slotService.init()
-}
-
 @Component({
   selector: 'app-user-avatar-menu',
   templateUrl: './user-avatar-menu.component.html',
@@ -76,10 +62,8 @@ export function slotInitializer(slotService: SlotService) {
     RouterModule,
     TranslateModule
   ],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [
     { provide: BASE_URL, useValue: new ReplaySubject<string>(1) },
-    { provide: APP_INITIALIZER, useFactory: slotInitializer, deps: [SLOT_SERVICE], multi: true },
     { provide: SLOT_SERVICE, useExisting: SlotService },
     provideTranslateServiceForRoot({
       isolate: true,
@@ -102,10 +86,16 @@ export class OneCXUserAvatarMenuComponent
   permissions: string[] = []
   removeDocumentClickListener: (() => void) | undefined
   menuAnchorPosition: MenuAnchorPositionConfig = 'right'
+  // slot configuration: get theme data
+  public slotName = 'onecx-avatar-image'
+  public isAvatarImageComponentDefined$: Observable<boolean> = of(true) // check a component was assigned
+  public avatarImageLoadedEmitter = new EventEmitter<boolean>()
+  public avatarImageLoaded = false
 
   constructor(
     private readonly renderer: Renderer2,
     private readonly userService: UserService,
+    private readonly slotService: SlotService,
     private readonly menuItemApiService: MenuItemAPIService,
     private readonly appStateService: AppStateService,
     private readonly appConfigService: AppConfigService,
@@ -114,6 +104,8 @@ export class OneCXUserAvatarMenuComponent
     private readonly menuItemService: MenuItemService
   ) {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
+    this.isAvatarImageComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.slotName)
+    this.avatarImageLoadedEmitter.subscribe(this.avatarImageLoaded)
 
     this.currentUser$ = this.userService.profile$.pipe(
       filter((x) => x !== undefined),
@@ -197,7 +189,7 @@ export class OneCXUserAvatarMenuComponent
     this.menuOpen = false
   }
 
-  onItemEscape(userAvatarMenuButton: HTMLAnchorElement) {
+  onItemEscape(userAvatarMenuButton: HTMLElement) {
     this.menuOpen = false
     userAvatarMenuButton.focus()
   }

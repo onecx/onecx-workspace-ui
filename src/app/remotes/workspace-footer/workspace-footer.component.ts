@@ -45,8 +45,8 @@ type Version = {
 export class OneCXWorkspaceFooterComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
   public versionInfo$!: Observable<Version | undefined>
   public currentTheme$: Observable<Theme | undefined>
-  // slot configuration: get theme infos
-  public slotName = 'onecx-theme-infos'
+  // slot configuration: get theme data
+  public slotName = 'onecx-theme-data'
   public isComponentDefined$: Observable<boolean> // check a component was assigned
 
   constructor(

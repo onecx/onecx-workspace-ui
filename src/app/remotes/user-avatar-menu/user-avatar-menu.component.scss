@@ -1,9 +1,3 @@
-.user-avatar-menu-action:hover {
-  background-color: var(--topbar-item-text-hover-bg-color);
-  color: var(--topbar-item-text-hover-color, var(--topbar-item-text-color));
-  transition: background-color var(--transition-duration);
-}
-
 .layout-topbar-action-panel {
   background-color: var(--overlay-content-bg-color);
   color: var(--text-color);

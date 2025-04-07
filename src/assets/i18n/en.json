@@ -655,6 +655,15 @@
     "NOT_FOUND": {
       "IAM_COMPONENT": "No component provided that provides IAM Roles."
     },
+    "HTTP_STATUS_undefined": {
+      "WORKSPACE": "Unknown problem retrieving Workspace details.",
+      "WORKSPACES": "Unknown problem retrieving Workspace data.",
+      "PRODUCTS": "Unknown problem retrieving Application data.",
+      "IAM_ROLES": "Unknown problem retrieving IAM Roles.",
+      "WS_ROLES": "Unknown problem retrieving Workspace Role data.",
+      "SLOTS": "Unknown problem retrieving Slot data.",
+      "MENUS": "Unknown problem retrieving Menu data."
+    },
     "HTTP_STATUS_0": {
       "WORKSPACE": "Unknown problem retrieving Workspace details - please try again.",
       "WORKSPACES": "Unknown problem retrieving Workspace data - please try again.",

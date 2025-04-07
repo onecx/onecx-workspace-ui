@@ -78,6 +78,11 @@ app:
           technology: WEBCOMPONENTMODULE
           remoteName: onecx-workspace
           tagName: ocx-workspace-footer-component
+    # Microservice
+    microservice:
+      spec:
+        name: OneCX Workspace UI
+        description: OneCX Workspace Frontend
     # Slot
     slot:
       enabled: true
@@ -91,8 +96,8 @@ app:
         onecx-page-footer-menu:
           name: 'onecx-page-footer-menu'
           description: 'Footer Menu (possible used within page footer)'
-        onecx-theme-infos:
-          name: 'onecx-theme-infos'
+        onecx-theme-data:
+          name: 'onecx-theme-data'
           description: 'Use theme data'
     # Permission
     permission:
