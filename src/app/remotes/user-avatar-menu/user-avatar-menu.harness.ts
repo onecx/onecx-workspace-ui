@@ -12,7 +12,7 @@ class AvatarMenuItemHarness extends MenuItemWithIconHarness {
 export class OneCXUserAvatarMenuHarness extends ComponentHarness {
   static readonly hostSelector = 'app-user-avatar-menu'
 
-  public getUserAvatarButton = this.locatorFor('#ws_user_avatar_menu_action')
+  public getUserAvatarButton = this.locatorFor('#ocx_topbar_action_user_avatar_menu')
 
   public getMenuItems = this.locatorForAll(AvatarMenuItemHarness)
 

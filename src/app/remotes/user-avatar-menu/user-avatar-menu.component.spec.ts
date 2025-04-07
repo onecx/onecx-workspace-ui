@@ -14,14 +14,14 @@ import { RippleModule } from 'primeng/ripple'
 import { TooltipModule } from 'primeng/tooltip'
 import { PrimeIcons } from 'primeng/api'
 
-import { BASE_URL, RemoteComponentConfig, SlotService } from '@onecx/angular-remote-components'
+import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
 import { AppStateService, UserService } from '@onecx/angular-integration-interface'
 import { IfPermissionDirective } from '@onecx/angular-accelerator'
 import { AppConfigService } from '@onecx/portal-integration-angular'
 
 import { MenuItemAPIService } from 'src/app/shared/generated'
 import { OneCXUserAvatarMenuHarness } from './user-avatar-menu.harness'
-import { OneCXUserAvatarMenuComponent, slotInitializer } from './user-avatar-menu.component'
+import { OneCXUserAvatarMenuComponent } from './user-avatar-menu.component'
 import { TranslateService } from '@ngx-translate/core'
 
 @NgModule({
@@ -142,7 +142,7 @@ describe('OneCXUserAvatarMenuComponent', () => {
     appConfigSpy.getProperty.and.returnValue('right')
     const { avatarMenuHarness } = await setUpWithHarness()
 
-    expect(await avatarMenuHarness.getUserAvatarButtonId()).toEqual('ws_user_avatar_menu_action')
+    expect(await avatarMenuHarness.getUserAvatarButtonId()).toEqual('ocx_topbar_action_user_avatar_menu')
   })
 
   it('should not show profile info if permissions not met', async () => {
@@ -481,20 +481,5 @@ describe('OneCXUserAvatarMenuComponent', () => {
 
     expect(component.menuOpen).toBeFalse()
     expect(await (await avatarMenuHarness.getUserAvatarButton()).isFocused()).toBeTrue()
-  })
-
-  describe('slotInitializer', () => {
-    let slotService: jasmine.SpyObj<SlotService>
-
-    beforeEach(() => {
-      slotService = jasmine.createSpyObj('SlotService', ['init'])
-    })
-
-    it('should call SlotService.init', () => {
-      const initializer = slotInitializer(slotService)
-      initializer()
-
-      expect(slotService.init).toHaveBeenCalled()
-    })
   })
 })
