@@ -1,11 +1,20 @@
 <p-accordion [activeIndex]="null" expandIcon="pi pi-chevron-right" collapseIcon="pi pi-chevron-down">
   <p-accordionTab>
     <ng-template pTemplate="header">
-      <ocx-slot name="onecx-avatar-image"></ocx-slot>
-      <span class="flex flex-column ml-3 row-gap-1">
-        <span id="ws_user_sidebar_display_name" class="font-bold">{{ displayName$ | async }}</span>
-        <span *ngIf="organization$ | async as orgId" id="ws_user_sidebar_orgid" class="text-sm">{{ orgId }}</span>
-      </span>
+      <div class="flex flex-row align-items-center column-gap-3">
+        <ocx-slot name="onecx-avatar-image" [inputs]="{ imageStyleClass: 'h-3rem w-3rem' }"></ocx-slot>
+        <span *ngIf="displayName$ | async as name" class="mr-3 flex flex-column row-gap-1">
+          <span
+            id="ws_user_sidebar_display_name"
+            class="font-bold"
+            [ngClass]="name.length > 30 ? 'text-sm' : ''"
+            [ngStyle]="{ 'word-break': name.length > 30 ? 'break-all' : 'normal' }"
+          >
+            {{ name }}
+          </span>
+          <span *ngIf="organization$ | async as orgId" id="ws_user_sidebar_orgid" class="text-sm">{{ orgId }}</span>
+        </span>
+      </div>
     </ng-template>
     <ng-template pTemplate="content">
       <p-panelMenu *ngIf="userMenu$ | async as menu" [model]="menu" styleClass="shadow-none"></p-panelMenu>

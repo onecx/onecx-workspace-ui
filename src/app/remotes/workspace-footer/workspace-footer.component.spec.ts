@@ -1,14 +1,15 @@
-import { TestBed } from '@angular/core/testing'
+import { TestBed, waitForAsync } from '@angular/core/testing'
 import { CommonModule } from '@angular/common'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'
 import { TranslateTestingModule } from 'ngx-translate-testing'
-import { ReplaySubject } from 'rxjs'
+import { ReplaySubject, of } from 'rxjs'
 
 import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
+import { AppStateService } from '@onecx/angular-integration-interface'
+import { provideAppStateServiceMock } from '@onecx/angular-integration-interface/mocks'
 
-//import { Workspace } from 'src/app/shared/generated'
 import { OneCXWorkspaceFooterComponent } from './workspace-footer.component'
 
 describe('OneCXWorkspaceFooterComponent', () => {
@@ -19,8 +20,18 @@ describe('OneCXWorkspaceFooterComponent', () => {
     return { fixture, component }
   }
 
+  type MFE = { displayName?: string | undefined; version?: string | undefined }
+  const mfe: MFE = { displayName: 'OneCX Help UI', version: '1.0.0' }
+
   let baseUrlSubject: ReplaySubject<any>
-  beforeEach(() => {
+  class MockAppStateService {
+    currentWorkspace$ = { asObservable: () => of({ workspaceName: 'ADMIN' }) }
+    currentMfe$ = { asObservable: () => of(mfe) }
+  }
+  let mockAppStateService: MockAppStateService
+
+  beforeEach(waitForAsync(() => {
+    mockAppStateService = new MockAppStateService()
     baseUrlSubject = new ReplaySubject<any>(1)
     TestBed.configureTestingModule({
       declarations: [],
@@ -34,21 +45,21 @@ describe('OneCXWorkspaceFooterComponent', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        {
-          provide: BASE_URL,
-          useValue: baseUrlSubject
-        }
+        provideAppStateServiceMock(),
+        { provide: BASE_URL, useValue: baseUrlSubject },
+        { provide: AppStateService, useValue: mockAppStateService }
       ]
     })
       .overrideComponent(OneCXWorkspaceFooterComponent, {
         set: {
-          imports: [TranslateTestingModule, CommonModule]
+          imports: [TranslateTestingModule, CommonModule],
+          providers: [{ provide: AppStateService, useValue: mockAppStateService }]
         }
       })
       .compileComponents()
 
     baseUrlSubject.next('base_url_mock')
-  })
+  }))
 
   describe('initialize', () => {
     it('should create', () => {
@@ -72,7 +83,7 @@ describe('OneCXWorkspaceFooterComponent', () => {
       expect(component.ocxInitRemoteComponent).toHaveBeenCalledWith(mockConfig)
     })
 
-    xit('should init remote component', (done: DoneFn) => {
+    it('should init remote component', (done: DoneFn) => {
       const { component } = setUp()
 
       component.ocxInitRemoteComponent({ baseUrl: 'base_url' } as RemoteComponentConfig)
@@ -82,63 +93,67 @@ describe('OneCXWorkspaceFooterComponent', () => {
         done()
       })
     })
-  })
 
-  /*
-  describe('themes', () => {
-    it('should get themes from rc emitter', (done) => {
-      component.ngOnInit()
+    it('should getting version info', (done) => {
+      const { component } = setUp()
 
-      component.themesEmitter.emit(themesOrg)
-
-      component.themes$?.subscribe({
-        next: (data) => {
-          expect(data).toEqual(themesOrg)
-          done()
-        },
-        error: done.fail
+      component.versionInfo$.subscribe((version) => {
+        expect(version).toEqual({
+          workspaceName: 'ADMIN',
+          hostVersion: '',
+          separator: ' - ',
+          mfeInfo: 'OneCX Help UI 1.0.0'
+        })
+        done()
       })
     })
 
-    it('should NOT extend themes if workspace is using a known theme', () => {
-      if (component.workspace) {
-        component.workspace.theme = 'theme1'
+    it('should getting version info - without mfe version info', (done) => {
+      const mfe: MFE = { displayName: 'OneCX Help UI' }
+      mockAppStateService.currentMfe$ = { asObservable: () => of(mfe) }
+      const { component } = setUp()
 
-        component.checkAndExtendThemes(themesOrg)
-
-        expect(themesOrg.length).toBe(2)
-      }
+      component.versionInfo$.subscribe((version) => {
+        expect(version).toEqual({
+          workspaceName: 'ADMIN',
+          hostVersion: '',
+          separator: ' - ',
+          mfeInfo: 'OneCX Help UI'
+        })
+        done()
+      })
     })
 
-    it('should extend themes if workspace is using an unknown theme name', () => {
-      if (component.workspace) {
-        component.workspace.theme = 'unknown'
+    it('should getting version info - without mfe display name', (done) => {
+      const mfe: MFE = { version: '1.1.0' }
+      mockAppStateService.currentMfe$ = { asObservable: () => of(mfe) }
+      const { component } = setUp()
 
-        component.checkAndExtendThemes(themesOrg)
-
-        expect(themesOrg.length).toBe(3)
-      }
+      component.versionInfo$.subscribe((version) => {
+        expect(version).toEqual({
+          workspaceName: 'ADMIN',
+          hostVersion: '',
+          separator: ' - ',
+          mfeInfo: ''
+        })
+        done()
+      })
     })
 
-    it('should get url if defined - logo', () => {
-      if (component.workspace) {
-        component.workspace.theme = 'theme1'
+    it('should getting version info - without mfe info', (done) => {
+      const mfe: MFE = {}
+      mockAppStateService.currentMfe$ = { asObservable: () => of(mfe) }
+      const { component } = setUp()
 
-        const url = component.getThemeImageUrl(themesOrg, 'theme1', RefType.Logo)
-
-        expect(url).toBe(themesOrg[0].logoUrl)
-      }
-    })
-
-    it('should get url if defined - favicon', () => {
-      if (component.workspace) {
-        component.workspace.theme = 'theme1'
-
-        const url = component.getThemeImageUrl(themesOrg, 'theme1', RefType.Favicon)
-
-        expect(url).toBe(themesOrg[0].faviconUrl)
-      }
+      component.versionInfo$.subscribe((version) => {
+        expect(version).toEqual({
+          workspaceName: 'ADMIN',
+          hostVersion: '',
+          separator: '',
+          mfeInfo: ''
+        })
+        done()
+      })
     })
   })
-  */
 })

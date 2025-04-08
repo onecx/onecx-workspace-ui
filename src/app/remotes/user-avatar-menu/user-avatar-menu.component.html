@@ -21,8 +21,8 @@
     ></i>
     <ocx-slot
       *ngIf="isAvatarImageComponentDefined$ | async"
-      id="ocx_topbar_action_manage-bookmark_icon"
       [name]="slotName"
+      [inputs]="{ id: 'ocx_topbar_action_user_avatar_image'}"
       [outputs]="{ imageLoaded: avatarImageLoadedEmitter }"
     ></ocx-slot>
   </button>
