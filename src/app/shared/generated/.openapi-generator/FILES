@@ -7,7 +7,6 @@ api/assignment.service.ts
 api/imagesInternal.service.ts
 api/menuItem.service.ts
 api/product.service.ts
-api/role.service.ts
 api/slot.service.ts
 api/workspace.service.ts
 api/workspaceProduct.service.ts
@@ -36,9 +35,6 @@ model/exportWorkspacesRequest.ts
 model/getMenuItemsRequest.ts
 model/getMenuItemsResponse.ts
 model/getWorkspaceResponse.ts
-model/iAMRole.ts
-model/iAMRolePageResult.ts
-model/iAMRoleSearchCriteria.ts
 model/imageInfo.ts
 model/importMenuResponse.ts
 model/importResponseStatus.ts

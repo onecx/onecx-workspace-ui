@@ -22,67 +22,71 @@
     </span>
   </div>
 
-  <div *ngIf="isThemeComponentDefined$ | async; else themeComponentNotDefined">
-    <!-- THEMES -->
-    <ocx-slot [name]="slotName" [inputs]="{ dataType: 'themes' }" [outputs]="{ themes: themesEmitter }"> </ocx-slot>
-    <div
-      *ngIf="(themes$ | async) ?? [] as themes"
-      class="flex flex-row flex-nowrap align-items-center row-gap-2 column-gap-2 sm:column-gap-4"
-    >
-      <!-- LOGO -->
-      <ocx-slot
-        [name]="slotName"
-        [inputs]="{
-          dataType: 'logo',
-          themeName: wsThemeName.value,
-          imageUrl: getThemeImageUrl(themes, wsThemeName.value, RefType.Logo),
-          useDefaultLogo: true,
-          imageStyleClass: 'h-2rem'
-        }"
-        [outputs]="{ imageLoadingFailed: logoLoadingEmitter }"
-      ></ocx-slot>
+  <div>
+    <ng-container *ngIf="isThemeComponentDefined$ | async; else noThemesAvailable">
+      <!-- THEMES -->
+      <ocx-slot [name]="slotName" [inputs]="{ dataType: 'themes' }" [outputs]="{ themes: themesEmitter }"> </ocx-slot>
+      <div
+        *ngIf="(themes$ | async) ?? [] as themes; else noThemesAvailable"
+        class="flex flex-row flex-nowrap align-items-center"
+        [ngClass]="{ 'row-gap-2 column-gap-2 sm:column-gap-4': (themeLogoLoadingFailed$ | async) !== undefined }"
+      >
+        <!-- LOGO -->
+        <ng-container *ngIf="formGroupValues$ | async as formGroupValues">
+          <ocx-slot
+            *ngIf="(themeLogoLoadingFailed$ | async) !== true"
+            [name]="slotName"
+            [inputs]="{
+              dataType: 'logo',
+              themeName: formGroupValues.theme,
+              imageUrl: getThemeImageUrl(themes, formGroupValues.theme, RefType.Logo),
+              useDefaultLogo: true,
+              imageStyleClass: 'h-2rem'
+            }"
+            [outputs]="{ imageLoadingFailed: logoLoadingEmitter }"
+          ></ocx-slot
+        ></ng-container>
 
-      <div class="p-inputgroup mb-1" controlErrorAnchor>
-        <span class="p-float-label">
-          <p-dropdown
-            #wsThemeName
-            id="ws_detail_props_item_theme"
-            formControlName="theme"
-            styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
-            [options]="checkAndExtendThemes(themes)"
-            optionLabel="displayName"
-            optionValue="name"
-            [ariaLabel]="'WORKSPACE.THEME' | translate"
-            [pTooltip]="'WORKSPACE.TOOLTIPS.THEME' | translate"
-            tooltipPosition="top"
+        <div class="p-inputgroup mb-1" controlErrorAnchor>
+          <span class="p-float-label">
+            <p-dropdown
+              #wsThemeName
+              id="ws_detail_props_item_theme"
+              formControlName="theme"
+              styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
+              [options]="checkAndExtendThemes(themes)"
+              optionLabel="displayName"
+              optionValue="name"
+              [ariaLabel]="'WORKSPACE.THEME' | translate"
+              [pTooltip]="'WORKSPACE.TOOLTIPS.THEME' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            >
+            </p-dropdown>
+            <label class="ocx-required-label" for="ws_detail_props_item_theme">
+              {{ 'WORKSPACE.THEME' | translate }}
+            </label>
+          </span>
+          <a
+            tabindex="0"
+            id="ws_detail_props_item_theme_link"
+            class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
+            (click)="onGoToTheme(wsThemeName.value)"
+            [ngClass]="
+              !editMode && inputBaseUrl.value && (themeProductRegistered$ | async) ? 'cursor-pointer' : 'p-disabled'
+            "
+            [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
+            [pTooltip]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
+            tooltipPosition="right"
             tooltipEvent="hover"
           >
-          </p-dropdown>
-          <label class="ocx-required-label" for="ws_detail_props_item_theme">
-            {{ 'WORKSPACE.THEME' | translate }}
-          </label>
-        </span>
-        <a
-          tabindex="0"
-          id="ws_detail_props_item_theme_link"
-          class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
-          (click)="onGoToTheme(wsThemeName.value)"
-          [ngClass]="
-            !editMode && inputBaseUrl.value && (themeProductRegistered$ | async) ? 'cursor-pointer' : 'p-disabled'
-          "
-          [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
-          [pTooltip]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
-          tooltipPosition="right"
-          tooltipEvent="hover"
-        >
-        </a>
+          </a>
+        </div>
       </div>
-    </div>
-  </div>
+    </ng-container>
 
-  <!-- THEME readonly (no change possible) -->
-  <ng-template #themeComponentNotDefined>
-    <div>
+    <!-- THEME readonly (no change possible) -->
+    <ng-template #noThemesAvailable>
       <div class="p-inputgroup mb-1" controlErrorAnchor>
         <span class="p-float-label">
           <input
@@ -117,8 +121,9 @@
         >
         </a>
       </div>
-    </div>
-  </ng-template>
+    </ng-template>
+    <!-- end of theme row -->
+  </div>
 
   <div>
     <div class="p-inputgroup mb-1" controlErrorAnchor>

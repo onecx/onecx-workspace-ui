@@ -655,6 +655,15 @@
     "NOT_FOUND": {
       "IAM_COMPONENT": "Keine Komponente bereitgestellt, die IAM Rollen liefert."
     },
+    "HTTP_STATUS_undefined": {
+      "WORKSPACE": "Unbekanntes Problem beim Abrufen von Workspace Details.",
+      "WORKSPACES": "Unbekanntes Problem beim Abrufen von Workspace-Daten.",
+      "PRODUCTS": "Unbekanntes Problem beim Abrufen von Applikation-Daten.",
+      "IAM_ROLES": "Unbekanntes Problem beim Abrufen von Rollen aus dem IAM.",
+      "WS_ROLES": "Unbekanntes Problem beim Abrufen von Workspace-Rollen.",
+      "SLOTS": "Unbekanntes Problem beim Abrufen von Slot-Daten.",
+      "MENUS": "Unbekanntes Problem beim Abrufen von Menü-Daten."
+    },
     "HTTP_STATUS_0": {
       "WORKSPACE": "Unbekanntes Problem beim Abrufen von Workspace Details - Bitte versuchen sie es noch einmal.",
       "WORKSPACES": "Unbekanntes Problem beim Abrufen von Workspace-Daten - Bitte versuchen sie es noch einmal.",

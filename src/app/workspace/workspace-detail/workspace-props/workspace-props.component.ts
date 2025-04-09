@@ -2,19 +2,13 @@ import { Component, EventEmitter, Input, OnInit, OnChanges, Output } from '@angu
 import { Location } from '@angular/common'
 import { Router } from '@angular/router'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
-import { BehaviorSubject, map, Observable, of, Subject } from 'rxjs'
+import { BehaviorSubject, map, Observable, of, ReplaySubject, Subject } from 'rxjs'
 
 import { SlotService } from '@onecx/angular-remote-components'
 import { PortalMessageService, WorkspaceService } from '@onecx/angular-integration-interface'
 import { getLocation } from '@onecx/accelerator'
 
-import {
-  ImagesInternalAPIService,
-  RefType,
-  Workspace,
-  WorkspaceAPIService,
-  WorkspaceProductAPIService
-} from 'src/app/shared/generated'
+import { ImagesInternalAPIService, RefType, Workspace, WorkspaceProductAPIService } from 'src/app/shared/generated'
 import { bffImageUrl, copyToClipboard, goToEndpoint, sortByLocale } from 'src/app/shared/utils'
 
 export type Theme = {
@@ -51,12 +45,13 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   public fetchingLogoUrl: string | undefined = undefined
   public themeUrl: string | undefined = undefined
   // slot configuration: get theme infos
-  public slotName = 'onecx-theme-infos'
+  public slotName = 'onecx-theme-data'
   public isThemeComponentDefined$: Observable<boolean> // check a component was assigned
   public themes$ = new BehaviorSubject<Theme[] | undefined>(undefined) // theme infos
   public themesEmitter = new EventEmitter<Theme[]>()
   public logoLoadingEmitter = new EventEmitter<boolean>()
-  public themeLogoLoadingFailed = false
+  public themeLogoLoadingFailed$ = new BehaviorSubject<boolean | undefined>(undefined)
+  public formGroupValues$ = new ReplaySubject<{ theme: string }>(1) // async storage of formgroup value to manage change detection
 
   constructor(
     private readonly router: Router,
@@ -64,7 +59,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     private readonly workspaceService: WorkspaceService,
     private readonly msgService: PortalMessageService,
     private readonly imageApi: ImagesInternalAPIService,
-    private readonly workspaceApi: WorkspaceAPIService,
     private readonly wProductApi: WorkspaceProductAPIService
   ) {
     this.themeProductRegistered$ = workspaceService.doesUrlExistFor('onecx-theme', 'onecx-theme-ui', 'theme-detail')
@@ -80,11 +74,14 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       footerLabel: new FormControl(null, [Validators.maxLength(255)]),
       description: new FormControl(null, [Validators.maxLength(255)])
     })
+    this.formGroup.valueChanges.subscribe(this.formGroupValues$)
   }
 
   public ngOnInit(): void {
     this.themesEmitter.subscribe(this.themes$)
-    this.logoLoadingEmitter.subscribe(this.themeLogoLoadingFailed)
+    this.logoLoadingEmitter.subscribe((data) => {
+      this.themeLogoLoadingFailed$.next(data)
+    })
   }
 
   public ngOnChanges(): void {

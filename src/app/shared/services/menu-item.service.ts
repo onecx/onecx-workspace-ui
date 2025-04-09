@@ -69,7 +69,7 @@ export class MenuItemService {
       item.children.sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
     }
     return {
-      id: item.key,
+      id: item.key?.toLocaleLowerCase(),
       label: label,
       items:
         item.children && item.children.length > 0

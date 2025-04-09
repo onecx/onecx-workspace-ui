@@ -9,18 +9,12 @@ import { of, throwError } from 'rxjs'
 import { SlotService } from '@onecx/angular-remote-components'
 import { PortalMessageService, UserService } from '@onecx/portal-integration-angular'
 import {
+  IAMRole,
   Role,
   slotInitializer,
   WorkspaceRolesComponent
 } from 'src/app/workspace/workspace-detail/workspace-roles/workspace-roles.component'
-import {
-  IAMRole,
-  Workspace,
-  WorkspaceRole,
-  WorkspaceRolesAPIService,
-  RoleAPIService,
-  WorkspaceRolePageResult
-} from 'src/app/shared/generated'
+import { Workspace, WorkspaceRole, WorkspaceRolesAPIService, WorkspaceRolePageResult } from 'src/app/shared/generated'
 import * as utils from 'src/app/shared/utils'
 
 const workspace: Workspace = {
@@ -77,7 +71,6 @@ describe('WorkspaceRolesComponent', () => {
         { provide: SlotService, useValue: slotServiceSpy },
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: WorkspaceRolesAPIService, useValue: wRoleServiceSpy },
-        { provide: RoleAPIService, useValue: iamRoleServiceSpy },
         { provide: UserService, useValue: mockUserService }
       ]
     }).compileComponents()

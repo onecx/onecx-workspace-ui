@@ -1,4 +1,4 @@
-import { APP_INITIALIZER, Component, Inject, Input } from '@angular/core'
+import { APP_INITIALIZER, Component, EventEmitter, Inject, Input } from '@angular/core'
 import { Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import { RouterModule } from '@angular/router'
@@ -91,13 +91,15 @@ export function slotInitializer(slotService: SlotService) {
 })
 @UntilDestroy()
 export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
-  currentUser$: Observable<UserProfile>
-  userMenu$: Observable<MenuItem[]>
-  displayName$: Observable<string>
-  organization$: Observable<string | undefined>
-  eventsPublisher$: EventsPublisher = new EventsPublisher()
-
-  inlineProfileActive = false
+  public currentUser$: Observable<UserProfile>
+  public userMenu$: Observable<MenuItem[]>
+  public displayName$: Observable<string>
+  public organization$: Observable<string | undefined>
+  public eventsPublisher$: EventsPublisher = new EventsPublisher()
+  public inlineProfileActive = false
+  // slot: avatar image
+  public avatarImageLoadedEmitter = new EventEmitter<boolean>()
+  public avatarImageLoaded: boolean | undefined = undefined // getting true/false from response, then component managed
 
   constructor(
     @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
@@ -109,6 +111,10 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent, ocxRem
     private readonly menuItemService: MenuItemService
   ) {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
+    this.avatarImageLoadedEmitter.subscribe(this.avatarImageLoaded)
+    this.avatarImageLoadedEmitter.subscribe((data: boolean) => {
+      this.avatarImageLoaded = data
+    })
 
     this.currentUser$ = this.userService.profile$.pipe(
       filter((x) => x !== undefined),

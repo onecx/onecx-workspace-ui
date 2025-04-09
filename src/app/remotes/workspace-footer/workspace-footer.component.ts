@@ -1,4 +1,4 @@
-import { Component, Inject, Input } from '@angular/core'
+import { Component, Inject, Input, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { UntilDestroy } from '@ngneat/until-destroy'
 import { combineLatest, map, Observable, ReplaySubject } from 'rxjs'
@@ -34,19 +34,19 @@ type Version = {
   templateUrl: './workspace-footer.component.html',
   standalone: true,
   imports: [AngularRemoteComponentsModule, CommonModule, PortalCoreModule, SharedModule],
-  providers: [
-    {
-      provide: BASE_URL,
-      useValue: new ReplaySubject<string>(1)
-    }
-  ]
+  providers: [{ provide: BASE_URL, useValue: new ReplaySubject<string>(1) }],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 @UntilDestroy()
 export class OneCXWorkspaceFooterComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
+  @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
+    this.ocxInitRemoteComponent(config)
+  }
+
   public versionInfo$!: Observable<Version | undefined>
   public currentTheme$: Observable<Theme | undefined>
-  // slot configuration: get theme infos
-  public slotName = 'onecx-theme-infos'
+  // slot configuration: get theme data
+  public slotName = 'onecx-theme-data'
   public isComponentDefined$: Observable<boolean> // check a component was assigned
 
   constructor(
@@ -67,18 +67,14 @@ export class OneCXWorkspaceFooterComponent implements ocxRemoteComponent, ocxRem
         const version: Version = { workspaceName: workspace.workspaceName }
         const mfeInfoVersion = mfe?.version ? ' ' + mfe?.version : ''
         version.hostVersion = this.configurationService.getProperty(CONFIG_KEY.APP_VERSION) ?? ''
-        version.separator = mfe?.displayName ? ' - ' : ''
+        version.separator = mfe?.displayName || mfeInfoVersion !== '' ? ' - ' : ''
         version.mfeInfo = mfe?.displayName ? mfe?.displayName + mfeInfoVersion : ''
         return version
       })
     )
   }
 
-  @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
-    this.ocxInitRemoteComponent(config)
-  }
-
-  ocxInitRemoteComponent(remoteComponentConfig: RemoteComponentConfig) {
+  public ocxInitRemoteComponent(remoteComponentConfig: RemoteComponentConfig) {
     this.baseUrl.next(remoteComponentConfig.baseUrl)
   }
 }

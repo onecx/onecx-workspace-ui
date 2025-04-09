@@ -88,8 +88,8 @@ describe('WorkspacePropsComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
-        provideHttpClientTesting(),
         provideHttpClient(),
+        provideHttpClientTesting(),
         provideRouter([{ path: '', component: WorkspacePropsComponent }]),
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: ConfigurationService, useValue: configServiceSpy },
@@ -125,6 +125,8 @@ describe('WorkspacePropsComponent', () => {
 
   describe('initialize', () => {
     it('should create', () => {
+      component.logoLoadingEmitter.emit(true)
+
       expect(component).toBeTruthy()
     })
   })

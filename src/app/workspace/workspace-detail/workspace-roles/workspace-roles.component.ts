@@ -22,7 +22,6 @@ import {
   Workspace,
   WorkspaceRole,
   WorkspaceRolesAPIService,
-  RoleAPIService,
   CreateWorkspaceRoleRequest
 } from 'src/app/shared/generated'
 import { goToEndpoint, limitText } from 'src/app/shared/utils'
@@ -92,7 +91,6 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
     private readonly workspaceService: WorkspaceService,
     private readonly user: UserService,
     private readonly slotService: SlotService,
-    private readonly iamRoleApi: RoleAPIService,
     private readonly wRoleApi: WorkspaceRolesAPIService,
     private readonly translate: TranslateService,
     private readonly msgService: PortalMessageService
