@@ -88,9 +88,9 @@ export class OneCXUserAvatarMenuComponent
   menuAnchorPosition: MenuAnchorPositionConfig = 'right'
   // slot configuration: get theme data
   public slotName = 'onecx-avatar-image'
-  public isAvatarImageComponentDefined$: Observable<boolean> = of(true) // check a component was assigned
+  public isAvatarImageComponentDefined$: Observable<boolean> = of(false) // check a component was assigned
   public avatarImageLoadedEmitter = new EventEmitter<boolean>()
-  public avatarImageLoaded = false
+  public avatarImageLoaded: boolean | undefined = undefined // getting true/false from response, then component managed
 
   constructor(
     private readonly renderer: Renderer2,

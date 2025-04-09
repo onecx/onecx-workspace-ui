@@ -15,7 +15,7 @@
     tooltipEvent="hover"
   >
     <i
-      *ngIf="(isAvatarImageComponentDefined$ | async) === false && !avatarImageLoaded"
+      *ngIf="avatarImageLoaded === undefined"
       id="ocx_topbar_action_manage-bookmark_icon"
       class="pi pi-user fs-xlarge"
     ></i>
@@ -30,18 +30,18 @@
   <!-- MENU -->
   <ul
     id="ws_user_avatar_menu_list"
-    class="layout-topbar-action-panel shadow-3 sm:m-2 fixed sm:absolute mt-2 sm:top-100 w-screen sm:w-auto"
+    class="layout-topbar-action-panel shadow-4 border-round-bottom fixed sm:absolute mt-2 sm:top-100 w-screen sm:w-auto"
     [ngClass]="menuAnchorPosition + '-0'"
     [hidden]="!menuOpen"
   >
-    <li id="ws_user_avatar_menu_list_user_info" class="layout-topbar-action-item cursor-auto user-info">
+    <li id="ws_user_avatar_menu_list_item_0" class="layout-topbar-action-item cursor-auto user-info">
       <div
         *ngIf="currentUser$ | async as user"
         class="my-1 flex flex-column flex-wrap justify-content-evenly row-gap-1"
       >
         <div
-          id="ws_user_avatar_menu_list_user_name"
-          class="font-bold text-center text-lg text-color-secondary white-space-nowrap"
+          id="ws_user_avatar_menu_list_item_0_user_name"
+          class="font-bold text-color-secondary text-center text-lg white-space-nowrap"
           [pTooltip]="user.person.email ?? ''"
           tooltipPosition="bottom"
           tooltipEvent="hover"
@@ -60,38 +60,44 @@
         </div>
       </div>
     </li>
+
+    <!-- user-profile-menu -->
     <ng-container *ngIf="userMenu$ | async as userMenu">
       <li
         *ngFor="let item of userMenu; let i = index"
-        [id]="'ws_user_avatar_menu_list_item_' + i"
+        [id]="'ws_user_avatar_menu_list_item_' + (i + 1)"
         class="layout-topbar-action-item"
       >
         <a
           *ngIf="!item.routerLink && item.url && !item.command"
-          [id]="'ws_user_avatar_menu_list_item_' + i + '_link'"
+          [id]="'ws_user_avatar_menu_list_item_' + (i + 1) + '_link'"
           class="p-3 flex flex-row flex-nowrap align-items-center gap-2"
           pRipple
           [attr.href]="item.url"
           (keydown.escape)="onItemEscape(userAvatarMenuButton)"
         >
           <i *ngIf="item.icon" [ngClass]="item.icon"></i>
-          <span [id]="'ws_user_avatar_menu_list_item_' + i + '_text'" class="white-space-nowrap">{{ item.label }}</span>
+          <span [id]="'ws_user_avatar_menu_list_item_' + (i + 1) + '_text'" class="white-space-nowrap">
+            {{ item.label }}
+          </span>
         </a>
         <a
           *ngIf="item.routerLink && !item.url && !item.command"
-          [id]="'ws_user_avatar_menu_list_item_' + i + '_link'"
+          [id]="'ws_user_avatar_menu_list_item_' + (i + 1) + '_link'"
           class="p-3 flex flex-row flex-nowrap align-items-center gap-2"
           pRipple
           [routerLink]="item.routerLink"
           (keydown.escape)="onItemEscape(userAvatarMenuButton)"
         >
           <i *ngIf="item.icon" [ngClass]="item.icon"></i>
-          <span [id]="'ws_user_avatar_menu_list_item_' + i + '_text'" class="white-space-nowrap">{{ item.label }}</span>
+          <span [id]="'ws_user_avatar_menu_list_item_' + (i + 1) + '_text'" class="white-space-nowrap">
+            {{ item.label }}
+          </span>
         </a>
         <a
           tabindex="0"
           *ngIf="!item.routerLink && !item.url && item.command"
-          [id]="'ws_user_avatar_menu_list_item_' + i + '_link'"
+          [id]="'ws_user_avatar_menu_list_item_' + (i + 1) + '_link'"
           class="p-3 flex flex-row flex-nowrap align-items-center gap-2"
           pRipple
           (click)="item.command({})"
@@ -99,7 +105,9 @@
           (keydown.escape)="onItemEscape(userAvatarMenuButton)"
         >
           <i *ngIf="item.icon" [ngClass]="item.icon"></i>
-          <span [id]="'ws_user_avatar_menu_list_item_' + i + '_text'" class="white-space-nowrap">{{ item.label }}</span>
+          <span [id]="'ws_user_avatar_menu_list_item_' + (i + 1) + '_text'" class="white-space-nowrap">
+            {{ item.label }}
+          </span>
         </a>
       </li>
     </ng-container>
