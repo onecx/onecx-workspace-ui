@@ -80,10 +80,18 @@ describe('OneCXUserSidebarMenuComponent', () => {
     menuItemApiSpy.getMenuItems.calls.reset()
   })
 
-  it('should create', () => {
-    const { component } = setUp()
+  describe('initialize', () => {
+    it('should create', () => {
+      const { component } = setUp()
 
-    expect(component).toBeTruthy()
+      expect(component).toBeTruthy()
+    })
+
+    it('should get image loaded response', () => {
+      const { component } = setUp()
+
+      component.avatarImageLoadedEmitter.emit(true)
+    })
   })
 
   it('should call ocxInitRemoteComponent with the correct config', () => {

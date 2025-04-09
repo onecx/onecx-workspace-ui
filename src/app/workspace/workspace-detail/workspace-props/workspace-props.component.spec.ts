@@ -125,6 +125,8 @@ describe('WorkspacePropsComponent', () => {
 
   describe('initialize', () => {
     it('should create', () => {
+      component.logoLoadingEmitter.emit(true)
+
       expect(component).toBeTruthy()
     })
   })

@@ -25,11 +25,11 @@ export class OneCXUserAvatarMenuHarness extends ComponentHarness {
   }
 
   async getOrganization() {
-    return (await this.locatorForOptional('#ws_user_avatar_menu_list_user_organization')())?.text()
+    return (await this.locatorForOptional('#ws_user_avatar_menu_list_item_0_organization')())?.text()
   }
 
   async getUserName() {
-    return (await this.locatorForOptional('#ws_user_avatar_menu_list_user_name')())?.text()
+    return (await this.locatorForOptional('#ws_user_avatar_menu_list_item_0_user_name')())?.text()
   }
 
   async isMenuHidden() {
