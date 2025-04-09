@@ -105,7 +105,9 @@ export class OneCXUserAvatarMenuComponent
   ) {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
     this.isAvatarImageComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.slotName)
-    this.avatarImageLoadedEmitter.subscribe(this.avatarImageLoaded)
+    this.avatarImageLoadedEmitter.subscribe((data) => {
+      this.avatarImageLoaded = data
+    })
 
     this.currentUser$ = this.userService.profile$.pipe(
       filter((x) => x !== undefined),

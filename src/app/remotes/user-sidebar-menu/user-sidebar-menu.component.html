@@ -1,9 +1,14 @@
 <p-accordion [activeIndex]="null" expandIcon="pi pi-chevron-right" collapseIcon="pi pi-chevron-down">
   <p-accordionTab>
     <ng-template pTemplate="header">
-      <div class="flex flex-row align-items-center column-gap-3">
-        <ocx-slot name="onecx-avatar-image" [inputs]="{ imageStyleClass: 'h-3rem w-3rem' }"></ocx-slot>
-        <span *ngIf="displayName$ | async as name" class="mr-3 flex flex-column row-gap-1">
+      <div class="flex flex-row align-items-center">
+        <ocx-slot
+          name="onecx-avatar-image"
+          [inputs]="{ imageStyleClass: 'h-3rem w-3rem' }"
+          [outputs]="{ imageLoaded: avatarImageLoadedEmitter }"
+        ></ocx-slot>
+        <span *ngIf="avatarImageLoaded === undefined" class="font-bold text-lg pi pi-user"></span>
+        <span *ngIf="displayName$ | async as name" class="mx-3 flex flex-column row-gap-1">
           <span
             id="ws_user_sidebar_display_name"
             class="font-bold"

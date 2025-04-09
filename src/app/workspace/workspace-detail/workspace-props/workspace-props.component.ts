@@ -50,7 +50,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   public themes$ = new BehaviorSubject<Theme[] | undefined>(undefined) // theme infos
   public themesEmitter = new EventEmitter<Theme[]>()
   public logoLoadingEmitter = new EventEmitter<boolean>()
-  public themeLogoLoadingFailed$ = new BehaviorSubject(false)
+  public themeLogoLoadingFailed$ = new BehaviorSubject<boolean | undefined>(undefined)
   public formGroupValues$ = new ReplaySubject<{ theme: string }>(1) // async storage of formgroup value to manage change detection
 
   constructor(
@@ -79,7 +79,9 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
 
   public ngOnInit(): void {
     this.themesEmitter.subscribe(this.themes$)
-    this.logoLoadingEmitter.subscribe(this.themeLogoLoadingFailed$)
+    this.logoLoadingEmitter.subscribe((data) => {
+      this.themeLogoLoadingFailed$.next(data)
+    })
   }
 
   public ngOnChanges(): void {
