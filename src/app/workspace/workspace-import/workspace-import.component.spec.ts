@@ -30,7 +30,7 @@ class MockConfirmComponent {
 
 class MockPreviewComponent {
   public workspaceName = 'portal name'
-  public themeName = 'theme name'
+  public theme = { name: 'theme name' }
   public baseUrl = 'base url'
 }
 
@@ -260,12 +260,10 @@ describe('WorkspaceImportComponent', () => {
       component.hasPermission = true
 
       component.previewComponent.workspaceName = undefined!
-      component.previewComponent.themeName = undefined!
       component.previewComponent.baseUrl = undefined!
       component.next()
 
       expect(component.workspaceName).toEqual('')
-      expect(component.themeName).toEqual('')
       expect(component.baseUrl).toEqual('')
     })
 
@@ -277,7 +275,7 @@ describe('WorkspaceImportComponent', () => {
       component.next()
 
       expect(component.workspaceName).toEqual(component.previewComponent?.workspaceName)
-      expect(component.themeName).toEqual(component.previewComponent?.themeName)
+      expect(component.themeName).toEqual(component.previewComponent?.theme.name)
       expect(component.baseUrl).toEqual(component.previewComponent?.baseUrl)
     })
   })

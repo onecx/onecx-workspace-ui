@@ -38,6 +38,10 @@ describe('util functions', () => {
   })
 
   describe('sortByLocale', () => {
+    it('should return 0 when one parameter is not a string', () => {
+      const result = sortByLocale(1, 'a')
+      expect(result).toBe(0)
+    })
     it('should return 0 when both strings are identical', () => {
       const result = sortByLocale('apple', 'apple')
       expect(result).toBe(0)

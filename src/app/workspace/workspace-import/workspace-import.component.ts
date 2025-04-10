@@ -32,7 +32,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
   public workspaceNameOrg = ''
   public displayName = ''
   public displayNameOrg = ''
-  public themeName = ''
+  public themeName: string | undefined
   public baseUrl = ''
   public baseUrlOrg: string | undefined = undefined // the original
   public importRequestDTO?: any
@@ -70,7 +70,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
 
   public reset(): void {
     this.workspaceName = ''
-    this.themeName = ''
+    this.themeName = undefined
     this.baseUrl = ''
     this.baseUrlOrg = ''
     this.workspaceNameOrg = ''
@@ -167,14 +167,14 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
           const ws = this.importRequestDTO.workspaces[keys[0]]
           this.workspaceNameOrg = ws.name
           this.displayNameOrg = ws.displayName ?? ''
-          this.themeName = ws.theme ?? ''
+          this.themeName = ws.theme
           this.baseUrlOrg = ws.baseUrl
         }
       }
     } else if (this.activeIndex === 1) {
       this.workspaceName = this.previewComponent?.workspaceName ?? ''
       this.displayName = this.previewComponent?.displayName ?? ''
-      this.themeName = this.previewComponent?.themeName ?? ''
+      this.themeName = this.previewComponent?.theme.name
       this.baseUrl = this.previewComponent?.baseUrl ?? ''
     }
     this.activeIndex++
