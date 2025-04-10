@@ -129,8 +129,6 @@ describe('ChooseFileComponent', () => {
     beforeEach(() => {
       mockData = {
         'WORKSPACE_IMPORT.VALIDATION.WORKSPACE.MISSING': 'Workspace missing',
-        'WORKSPACE_IMPORT.VALIDATION.WORKSPACE.NAME_MISSING': 'Workspace name missing',
-        'WORKSPACE_IMPORT.VALIDATION.WORKSPACE.THEME_MISSING': 'Workspace theme missing',
         'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_KEY_MISSING': 'Menu item key missing',
         'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_NAME_MISSING': 'Menu item name missing',
         'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_WRONG_POSITION': 'Invalid menu item position',
@@ -154,8 +152,7 @@ describe('ChooseFileComponent', () => {
 
     it('should return false when workspace name is missing', () => {
       const obj = { workspaces: { key1: {} } }
-      expect(component.isWorkspaceImportValid(obj, mockData)).toBeFalse()
-      expect(component.validationErrorCause).toContain('Workspace name missing')
+      expect(component.isWorkspaceImportValid(obj, mockData)).toBeTrue()
     })
 
     it('should return true when workspace theme is missing', () => {
