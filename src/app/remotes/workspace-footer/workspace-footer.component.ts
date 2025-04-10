@@ -51,7 +51,7 @@ export class OneCXWorkspaceFooterComponent implements ocxRemoteComponent, ocxRem
 
   constructor(
     @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
-    private readonly configurationService: ConfigurationService,
+    public readonly configurationService: ConfigurationService,
     private readonly appState: AppStateService,
     private readonly themeService: ThemeService,
     private readonly slotService: SlotService
