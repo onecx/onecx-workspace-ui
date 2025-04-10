@@ -70,14 +70,6 @@ describe('OneCXWorkspaceFooterComponent', () => {
 
       expect(component).toBeTruthy()
     })
-  })
-
-  describe('initialize', () => {
-    it('should create', () => {
-      const { component } = setUp()
-
-      expect(component).toBeTruthy()
-    })
 
     it('should call ocxInitRemoteComponent with the correct config', () => {
       const { component } = setUp()
