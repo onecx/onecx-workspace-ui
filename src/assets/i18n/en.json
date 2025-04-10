@@ -559,11 +559,7 @@
     "WORKSPACE_NAME": "Name",
     "WORKSPACE_NAME.TOOLTIP": "Unique name of the new Workspace. Uniqueness is checked in next step.",
     "DISPLAY_NAME.TOOLTIP": "Display name of the new Workspace, can be changed afterwards.",
-    "BASE_URL": {
-      "TOOLTIP": "Base URL of the Workspace. Must be unique because it is used to access the Workspace. Uniqueness is checked in next step",
-      "EXISTS_MESSAGE": "A Workspace with this Base URL already exists.",
-      "MISSING": "A Base URL is required."
-    },
+    "BASE_URL.TOOLTIP": "Base URL of the Workspace. Must be unique because it is used to access the Workspace. Uniqueness is checked in next step",
     "RESPONSE": {
       "CREATED": "The Workspace was successfully created.",
       "SKIPPED": "The Workspace was skipped by the import.",
@@ -573,14 +569,18 @@
     "VALIDATION": {
       "JSON_ERROR": "JSON format error",
       "RESULT": "Processing not possible: ",
+      "BASE_URL": {
+        "EXISTS_MESSAGE": "A Workspace with this Base URL already exists (Case insensitive).",
+        "MISSING": "A Base URL is required."
+      },
       "WORKSPACE": {
-        "EXISTS_MESSAGE": "A Workspace with this name/display name already exists.",
-        "MISSING": "no Workspace definition included/found",
-        "NAME_MISSING": "no Workspace name included/found",
-        "DISPLAY_NAME_MISSING": "no Workspace display name included/found",
-        "THEME_MISSING": "no Workspace Theme included/found",
-        "URL_MISSING": "no Workspace URL included/found",
-        "ROLES_MISSING": "no Workspace Roles included/found"
+        "EXISTS_MESSAGE": "A Workspace with this name/display name already exists (Case insensitive).",
+        "MISSING": "No Workspace definition included/found",
+        "NAME_MISSING": "No Workspace name included/found",
+        "DISPLAY_NAME_MISSING": "No Workspace display name included/found",
+        "THEME_MISSING": "No Workspace Theme included/found",
+        "URL_MISSING": "No Workspace URL included/found",
+        "ROLES_MISSING": "No Workspace Roles included/found"
       }
     },
     "VALIDATION_MENU_NOT_EXIST": "no Menu definition included/found",

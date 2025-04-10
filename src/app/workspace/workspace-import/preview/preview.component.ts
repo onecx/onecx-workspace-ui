@@ -5,12 +5,13 @@ import { BehaviorSubject, Observable } from 'rxjs'
 
 import { SlotService } from '@onecx/angular-remote-components'
 
-import { EximWorkspaceMenuItem, Product, WorkspaceAPIService } from 'src/app/shared/generated'
+import { EximWorkspaceMenuItem, Product } from 'src/app/shared/generated'
 import { forceFormValidation, sortByLocale } from 'src/app/shared/utils'
 
+// All properties could be empty in case the import file does not contain a theme
 export type Theme = {
-  name: string
-  displayName: string
+  name?: string
+  displayName?: string
   logoUrl?: string
   faviconUrl?: string
 }
@@ -41,14 +42,11 @@ export class PreviewComponent implements OnInit {
   public themes$ = new BehaviorSubject<Theme[] | undefined>(undefined) // theme infos
   public themesEmitter = new EventEmitter<Theme[]>()
 
-  constructor(
-    private readonly slotService: SlotService,
-    private readonly workspaceApi: WorkspaceAPIService
-  ) {
+  constructor(private readonly slotService: SlotService) {
     this.formGroup = new FormGroup({
       name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
       displayName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
-      theme: new FormControl(null),
+      theme: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
       baseUrl: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(100)])
     })
     this.isThemeComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.slotName)
@@ -101,7 +99,7 @@ export class PreviewComponent implements OnInit {
         this.workspaceName = key[0]
       }
       this.displayName = this.formGroup.controls['displayName'].value
-      this.theme.name = this.formGroup.controls['theme'].value
+      if (this.formGroup.controls['theme'].value) this.theme.name = this.formGroup.controls['theme'].value
       this.baseUrl = this.formGroup.controls['baseUrl'].value
 
       this.importRequestDTO.workspaces[this.workspaceName].name = this.workspaceName
