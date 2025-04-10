@@ -1,7 +1,7 @@
 import { Component, Inject, Input, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { UntilDestroy } from '@ngneat/until-destroy'
-import { combineLatest, map, Observable, ReplaySubject } from 'rxjs'
+import { combineLatest, from, map, Observable, ReplaySubject } from 'rxjs'
 
 import {
   AngularRemoteComponentsModule,
@@ -51,7 +51,7 @@ export class OneCXWorkspaceFooterComponent implements ocxRemoteComponent, ocxRem
 
   constructor(
     @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
-    private readonly configurationService: ConfigurationService,
+    public readonly configurationService: ConfigurationService,
     private readonly appState: AppStateService,
     private readonly themeService: ThemeService,
     private readonly slotService: SlotService
@@ -61,7 +61,8 @@ export class OneCXWorkspaceFooterComponent implements ocxRemoteComponent, ocxRem
 
     this.versionInfo$ = combineLatest([
       this.appState.currentMfe$.asObservable(),
-      this.appState.currentWorkspace$.asObservable()
+      this.appState.currentWorkspace$.asObservable(),
+      from(this.configurationService.isInitialized)
     ]).pipe(
       map(([mfe, workspace]) => {
         const version: Version = { workspaceName: workspace.workspaceName }

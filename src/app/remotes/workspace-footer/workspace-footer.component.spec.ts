@@ -7,8 +7,8 @@ import { TranslateTestingModule } from 'ngx-translate-testing'
 import { ReplaySubject, of } from 'rxjs'
 
 import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
-import { AppStateService } from '@onecx/angular-integration-interface'
-import { provideAppStateServiceMock } from '@onecx/angular-integration-interface/mocks'
+import { AppStateService, ConfigurationService } from '@onecx/angular-integration-interface'
+import { provideAppStateServiceMock, provideConfigurationServiceMock } from '@onecx/angular-integration-interface/mocks'
 
 import { OneCXWorkspaceFooterComponent } from './workspace-footer.component'
 
@@ -16,12 +16,14 @@ describe('OneCXWorkspaceFooterComponent', () => {
   function setUp() {
     const fixture = TestBed.createComponent(OneCXWorkspaceFooterComponent)
     const component = fixture.componentInstance
+    TestBed.inject(ConfigurationService)
+    component.configurationService.init()
     fixture.detectChanges()
     return { fixture, component }
   }
 
   type MFE = { displayName?: string | undefined; version?: string | undefined }
-  const mfe: MFE = { displayName: 'OneCX Help UI', version: '1.0.0' }
+  const mfe: MFE = { displayName: 'OneCX Workspace UI', version: '1.0.0' }
 
   let baseUrlSubject: ReplaySubject<any>
   class MockAppStateService {
@@ -46,6 +48,7 @@ describe('OneCXWorkspaceFooterComponent', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         provideAppStateServiceMock(),
+        provideConfigurationServiceMock(),
         { provide: BASE_URL, useValue: baseUrlSubject },
         { provide: AppStateService, useValue: mockAppStateService }
       ]
@@ -83,14 +86,13 @@ describe('OneCXWorkspaceFooterComponent', () => {
       expect(component.ocxInitRemoteComponent).toHaveBeenCalledWith(mockConfig)
     })
 
-    it('should init remote component', (done: DoneFn) => {
+    it('should init remote component', () => {
       const { component } = setUp()
 
       component.ocxInitRemoteComponent({ baseUrl: 'base_url' } as RemoteComponentConfig)
 
       baseUrlSubject.asObservable().subscribe((item) => {
         expect(item).toEqual('base_url')
-        done()
       })
     })
 
@@ -102,14 +104,14 @@ describe('OneCXWorkspaceFooterComponent', () => {
           workspaceName: 'ADMIN',
           hostVersion: '',
           separator: ' - ',
-          mfeInfo: 'OneCX Help UI 1.0.0'
+          mfeInfo: 'OneCX Workspace UI 1.0.0'
         })
         done()
       })
     })
 
     it('should getting version info - without mfe version info', (done) => {
-      const mfe: MFE = { displayName: 'OneCX Help UI' }
+      const mfe: MFE = { displayName: 'OneCX Workspace UI' }
       mockAppStateService.currentMfe$ = { asObservable: () => of(mfe) }
       const { component } = setUp()
 
@@ -118,7 +120,7 @@ describe('OneCXWorkspaceFooterComponent', () => {
           workspaceName: 'ADMIN',
           hostVersion: '',
           separator: ' - ',
-          mfeInfo: 'OneCX Help UI'
+          mfeInfo: 'OneCX Workspace UI'
         })
         done()
       })
