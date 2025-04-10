@@ -20,22 +20,33 @@
       </span>
     </div>
     <div>
-      <span class="p-float-label aw-16rem" controlErrorAnchor>
-        <p-dropdown
-          #inputThemeName
-          id="ws_import_preview_theme"
-          formControlName="theme"
-          styleClass="w-16rem inputgroup-dropdown-with-link input-field-correction"
-          [options]="(themes$ | async)?.sort(sortByLocale) || [themeName]"
-          (onChange)="onModelChange()"
-          [ariaLabel]="'WORKSPACE.THEME' | translate"
-          [pTooltip]="'WORKSPACE_IMPORT.THEME_NAME.TOOLTIP' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        >
-        </p-dropdown>
-        <label class="ocx-required-label" for="ws_import_preview_theme">{{ 'WORKSPACE.THEME' | translate }} </label>
-      </span>
+      <ocx-slot
+        *ngIf="isThemeComponentDefined$ | async"
+        [name]="slotName"
+        [inputs]="{ dataType: 'themes' }"
+        [outputs]="{ themes: themesEmitter }"
+      >
+      </ocx-slot>
+
+      <div *ngIf="(themes$ | async) ?? [theme] as themes">
+        <span class="p-float-label" controlErrorAnchor>
+          <p-dropdown
+            id="ws_import_preview_theme"
+            formControlName="theme"
+            styleClass="w-16rem inputgroup-dropdown-with-link input-field-correction"
+            [options]="checkAndExtendThemes(themes)"
+            optionLabel="displayName"
+            optionValue="name"
+            (onChange)="onModelChange()"
+            [ariaLabel]="'WORKSPACE.THEME' | translate"
+            [pTooltip]="'WORKSPACE_IMPORT.THEME_NAME.TOOLTIP' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          >
+          </p-dropdown>
+          <label class="ocx-required-label" for="ws_import_preview_theme">{{ 'WORKSPACE.THEME' | translate }} </label>
+        </span>
+      </div>
     </div>
     <div>
       <span class="p-float-label" controlErrorAnchor>

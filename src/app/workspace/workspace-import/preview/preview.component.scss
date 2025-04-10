@@ -1,6 +1,7 @@
 @import 'src/app/_ws-mixins.scss';
 
 @include dialog-modal-dialog-content;
+@include dropdown-zebra-rows;
 
 :host ::ng-deep {
   .p-tree {

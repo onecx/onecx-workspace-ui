@@ -1,10 +1,20 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
-import { TreeNode, SelectItem } from 'primeng/api'
-import { Observable, map } from 'rxjs'
+import { TreeNode } from 'primeng/api'
+import { BehaviorSubject, Observable } from 'rxjs'
 
-import { EximWorkspaceMenuItem, Product, WorkspaceAPIService } from 'src/app/shared/generated'
+import { SlotService } from '@onecx/angular-remote-components'
+
+import { EximWorkspaceMenuItem, Product } from 'src/app/shared/generated'
 import { forceFormValidation, sortByLocale } from 'src/app/shared/utils'
+
+// All properties could be empty in case the import file does not contain a theme
+export type Theme = {
+  name?: string
+  displayName?: string
+  logoUrl?: string
+  faviconUrl?: string
+}
 
 @Component({
   selector: 'app-import-preview',
@@ -17,25 +27,30 @@ export class PreviewComponent implements OnInit {
   @Output() public isFormValide = new EventEmitter<boolean>()
 
   public formGroup!: FormGroup
-  public themes$: Observable<SelectItem<string>[]>
   public workspaceName = ''
   public displayName = ''
-  public themeName!: string
+  public theme!: Theme
   public baseUrl = ''
   public themeProperties: any = null
   public menuItems!: TreeNode[]
   public workspaceRoles: string[] = []
   public workspaceProducts!: string[]
   public sortByLocale = sortByLocale
+  // slot configuration: get theme data
+  public slotName = 'onecx-theme-data'
+  public isThemeComponentDefined$: Observable<boolean> // check if a component was assigned
+  public themes$ = new BehaviorSubject<Theme[] | undefined>(undefined) // theme infos
+  public themesEmitter = new EventEmitter<Theme[]>()
 
-  constructor(private readonly workspaceApi: WorkspaceAPIService) {
+  constructor(private readonly slotService: SlotService) {
     this.formGroup = new FormGroup({
       name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
       displayName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
-      theme: new FormControl(null),
+      theme: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
       baseUrl: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(100)])
     })
-    this.themes$ = this.workspaceApi.getAllThemes().pipe(map((val: any[]) => val))
+    this.isThemeComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.slotName)
+    this.themesEmitter.subscribe(this.themes$)
   }
 
   public ngOnInit(): void {
@@ -46,7 +61,7 @@ export class PreviewComponent implements OnInit {
         const ws = this.importRequestDTO.workspaces[keys[0]]
         this.workspaceName = ws.name
         this.displayName = ws.displayName
-        this.themeName = ws.theme
+        this.theme = { name: ws.theme, displayName: ws.theme } as Theme
         this.baseUrl = ws.baseUrl
         this.menuItems = this.mapToTreeNodes(ws.menuItems)
         this.workspaceRoles = this.extractRoleNames(ws.roles)
@@ -84,12 +99,12 @@ export class PreviewComponent implements OnInit {
         this.workspaceName = key[0]
       }
       this.displayName = this.formGroup.controls['displayName'].value
-      this.themeName = this.formGroup.controls['theme'].value
+      if (this.formGroup.controls['theme'].value) this.theme.name = this.formGroup.controls['theme'].value
       this.baseUrl = this.formGroup.controls['baseUrl'].value
 
       this.importRequestDTO.workspaces[this.workspaceName].name = this.workspaceName
       this.importRequestDTO.workspaces[this.workspaceName].displayName = this.displayName
-      this.importRequestDTO.workspaces[this.workspaceName].theme = this.themeName
+      this.importRequestDTO.workspaces[this.workspaceName].theme = this.theme.name
       this.importRequestDTO.workspaces[this.workspaceName].baseUrl = this.baseUrl
     }
     this.isFormValide.emit(this.formGroup.valid)
@@ -131,5 +146,14 @@ export class PreviewComponent implements OnInit {
     const arr: string[] = []
     if (roles) for (const r of roles) arr.push(r.name)
     return arr
+  }
+
+  // sometimes the imported theme is unknown, then add to the list
+  public checkAndExtendThemes(themes: Theme[]): Theme[] {
+    // if not included (why ever) then add the used value to make it visible
+    if (!themes.find((t) => t.name === this.theme.name)) {
+      themes.push({ name: this.theme.name, displayName: this.theme.name } as Theme)
+    }
+    return themes
   }
 }

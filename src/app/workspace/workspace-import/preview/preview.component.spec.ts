@@ -3,10 +3,8 @@ import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { of } from 'rxjs'
 
-import { WorkspaceAPIService } from 'src/app/shared/generated'
-import { PreviewComponent } from './preview.component'
+import { PreviewComponent, Theme } from './preview.component'
 
 const formValue = {
   name: 'ADMIN',
@@ -27,18 +25,14 @@ const importDTO: any = {
     }
   }
 }
+const themesOrg: Theme[] = [
+  { name: 'theme1', displayName: 'Theme 1', logoUrl: '/logo', faviconUrl: '/favicon' },
+  { name: 'theme2', displayName: 'Theme 2' }
+]
 
 describe('PreviewComponent', () => {
   let component: PreviewComponent
   let fixture: ComponentFixture<PreviewComponent>
-
-  const wsServiceSpy = jasmine.createSpyObj('WorkspaceAPIService', ['getAllThemes'])
-  wsServiceSpy.getAllThemes.and.returnValue(
-    of([
-      { label: undefined, value: 'theme1' },
-      { label: undefined, value: 'theme2' }
-    ])
-  )
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -49,14 +43,9 @@ describe('PreviewComponent', () => {
           en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
-      providers: [
-        provideHttpClientTesting(),
-        provideHttpClient(),
-        { provide: WorkspaceAPIService, useValue: wsServiceSpy }
-      ],
+      providers: [provideHttpClientTesting(), provideHttpClient()],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents()
-    wsServiceSpy.getAllThemes.calls.reset()
   }))
 
   beforeEach(() => {
@@ -72,7 +61,7 @@ describe('PreviewComponent', () => {
       // init component values
       expect(component.workspaceName).toEqual(importDTO.workspaces.ADMIN.name)
       expect(component.displayName).toEqual(importDTO.workspaces.ADMIN.displayName)
-      expect(component.themeName).toEqual(importDTO.workspaces.ADMIN.theme)
+      expect(component.theme.name).toEqual(importDTO.workspaces.ADMIN.theme)
       expect(component.baseUrl).toEqual(importDTO.workspaces.ADMIN.baseUrl)
       // complex data
       expect(component.menuItems.length).toBe(2)
@@ -81,16 +70,6 @@ describe('PreviewComponent', () => {
       // init form
       expect(component.formGroup.value).toEqual(formValue)
       expect(component.formGroup.valid).toBeTrue()
-    })
-
-    it('should get themes from service', (done) => {
-      component.themes$.subscribe((themes) => {
-        expect(themes).toEqual([
-          { label: undefined, value: 'theme1' },
-          { label: undefined, value: 'theme2' }
-        ])
-        done()
-      })
     })
 
     describe('model changes', () => {
@@ -102,6 +81,38 @@ describe('PreviewComponent', () => {
 
         expect(component.workspaceName).toEqual(newWorkspaceName)
       })
+    })
+  })
+
+  describe('themes', () => {
+    it('should get themes form rc emitter', (done) => {
+      component.ngOnInit()
+
+      component.themesEmitter.emit(themesOrg)
+
+      component.themes$?.subscribe({
+        next: (data) => {
+          expect(data).toEqual(themesOrg)
+          done()
+        },
+        error: done.fail
+      })
+    })
+
+    it('should NOT extend themes if workspace is using a known theme', () => {
+      component.theme.name = 'theme1'
+
+      component.checkAndExtendThemes(themesOrg)
+
+      expect(themesOrg.length).toBe(2)
+    })
+
+    it('should extend themes if workspace is using an unknown theme name', () => {
+      component.theme.name = 'unknown'
+
+      component.checkAndExtendThemes(themesOrg)
+
+      expect(themesOrg.length).toBe(3)
     })
   })
 
@@ -131,7 +142,7 @@ describe('PreviewComponent', () => {
       // init component values
       expect(component.workspaceName).toEqual(importDTO_2.workspaces.ADMIN2.name)
       expect(component.displayName).toEqual(importDTO_2.workspaces.ADMIN2.displayName)
-      expect(component.themeName).toEqual(importDTO_2.workspaces.ADMIN2.theme)
+      expect(component.theme.name).toEqual(importDTO_2.workspaces.ADMIN2.theme)
       expect(component.baseUrl).toEqual(importDTO_2.workspaces.ADMIN2.baseUrl)
       // complex data
       expect(component.menuItems.length).toBe(0)

@@ -44,10 +44,10 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   public minimumImageHeight = 150
   public fetchingLogoUrl: string | undefined = undefined
   public themeUrl: string | undefined = undefined
-  // slot configuration: get theme infos
+  // slot configuration: get theme data
   public slotName = 'onecx-theme-data'
-  public isThemeComponentDefined$: Observable<boolean> // check a component was assigned
-  public themes$ = new BehaviorSubject<Theme[] | undefined>(undefined) // theme infos
+  public isThemeComponentDefined$: Observable<boolean> // check if a component was assigned
+  public themes$ = new BehaviorSubject<Theme[] | undefined>(undefined) // theme data
   public themesEmitter = new EventEmitter<Theme[]>()
   public logoLoadingEmitter = new EventEmitter<boolean>()
   public themeLogoLoadingFailed$ = new BehaviorSubject<boolean | undefined>(undefined)

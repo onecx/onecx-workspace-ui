@@ -41,11 +41,11 @@ export class ConfirmComponent implements OnInit {
     this.baseUrlExists = false
     if (this.workspaces) {
       for (const { displayName, name, baseUrl } of this.workspaces) {
-        if (this.workspaceName === name || this.displayName === displayName) {
+        if (this.workspaceName?.toLocaleLowerCase() === name.toLocaleLowerCase() || this.displayName === displayName) {
           this.workspaceNameExists = true
           this.isFormValide.emit(false)
         }
-        if (!this.baseUrlIsMissing && baseUrl === this.baseUrl) {
+        if (!this.baseUrlIsMissing && baseUrl?.toLocaleLowerCase() === this.baseUrl?.toLocaleLowerCase()) {
           this.baseUrlExists = true
           this.isFormValide.emit(false)
         }

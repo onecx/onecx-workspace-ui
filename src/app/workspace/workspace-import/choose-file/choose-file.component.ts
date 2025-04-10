@@ -83,14 +83,6 @@ export class ChooseFileComponent implements OnInit {
       const key: string[] = Object.keys(dto.workspaces)
       if (!dto.workspaces[key[0]]) {
         this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION.WORKSPACE.MISSING']
-      } else if (!dto.workspaces[key[0]].name) {
-        this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION.WORKSPACE.NAME_MISSING']
-      } else if (!dto.workspaces[key[0]].displayName) {
-        this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION.WORKSPACE.DISPLAY_NAME_MISSING']
-      } else if (!dto.workspaces[key[0]].theme) {
-        this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION.WORKSPACE.THEME_MISSING']
-      } else if (!dto.workspaces[key[0]].baseUrl) {
-        this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION.WORKSPACE.URL_MISSING']
       } else this.checkMenuItems(dto, data)
     } else {
       this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION.WORKSPACE.MISSING']

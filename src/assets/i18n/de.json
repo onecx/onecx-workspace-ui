@@ -559,11 +559,7 @@
     "WORKSPACE_NAME": "Name",
     "WORKSPACE_NAME.TOOLTIP": "Eindeutiger Name des neuen Workspaces. Die Eindeutigkeit wird im nächsten Schritt geprüft.",
     "DISPLAY_NAME.TOOLTIP": "Anzeigename des neuen Workspace, der nachträglich geändert werden kann.",
-    "BASE_URL": {
-      "TOOLTIP": "Base URL des Workspaces. Muss eindeutig sein weil sie für den Zugriff auf den Workspace benutzt wird. Das wird im nächsten Schritt geprüft.",
-      "EXISTS_MESSAGE": "Ein Workspace mit dieser Base URL existiert bereits.",
-      "MISSING": "Eine Base URL wird benötigt."
-    },
+    "BASE_URL.TOOLTIP": "Base URL des Workspaces. Muss eindeutig sein weil sie für den Zugriff auf den Workspace benutzt wird. Das wird im nächsten Schritt geprüft.",
     "RESPONSE": {
       "CREATED": "Der Workspace wurde erfolgreich erstellt.",
       "SKIPPED": "Der Workspace wurde beim Import ignoriert.",
@@ -573,8 +569,12 @@
     "VALIDATION": {
       "JSON_ERROR": "JSON Formatfehler",
       "RESULT": "Verarbeitung nicht möglich: ",
+      "BASE_URL": {
+        "EXISTS_MESSAGE": "Ein Workspace mit dieser Base URL existiert bereits. Groß-/Kleinschreibung wird nicht beachtet.",
+        "MISSING": "Eine Base URL wird benötigt."
+      },
       "WORKSPACE": {
-        "EXISTS_MESSAGE": "Ein Workspace mit diesem Namen/Anzeigenamen existiert bereits.",
+        "EXISTS_MESSAGE": "Ein Workspace mit diesem Namen/Anzeigenamen existiert bereits. Groß-/Kleinschreibung wird nicht beachtet.",
         "MISSING": "Keine Workspace-Definition enthalten/gefunden",
         "NAME_MISSING": "Kein Workspace-Name enthalten/gefunden",
         "DISPLAY_NAME_MISSING": "Kein Workspace-Display Name enthalten/gefunden",

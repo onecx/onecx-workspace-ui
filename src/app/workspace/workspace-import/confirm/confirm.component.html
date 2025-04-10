@@ -69,7 +69,7 @@
   </div>
 </div>
 
-<div class="mt-4 flex flex-wrap align-items-center row-gap-2 mt-1 mb-2">
+<div class="mt-4 flex flex-wrap align-items-center row-gap-2 mt-1 mb-4">
   <p-message
     *ngIf="workspaceNameExists"
     id="ws_import_confirm_message_workspace_exists"
@@ -80,13 +80,13 @@
     *ngIf="baseUrlExists"
     id="ws_import_confirm_message_base_url_exists"
     severity="error"
-    [text]="'WORKSPACE_IMPORT.BASE_URL.EXISTS_MESSAGE' | translate"
+    [text]="'WORKSPACE_IMPORT.VALIDATION.BASE_URL.EXISTS_MESSAGE' | translate"
   ></p-message>
   <p-message
     *ngIf="baseUrlIsMissing"
     id="ws_import_confirm_message_base_url_missing"
     severity="error"
-    [text]="'WORKSPACE_IMPORT.BASE_URL.MISSING' | translate"
+    [text]="'WORKSPACE_IMPORT.VALIDATION.BASE_URL.MISSING' | translate"
   ></p-message>
   <p-message
     *ngIf="importResponse"

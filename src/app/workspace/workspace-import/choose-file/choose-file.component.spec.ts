@@ -129,10 +129,6 @@ describe('ChooseFileComponent', () => {
     beforeEach(() => {
       mockData = {
         'WORKSPACE_IMPORT.VALIDATION.WORKSPACE.MISSING': 'Workspace missing',
-        'WORKSPACE_IMPORT.VALIDATION.WORKSPACE.NAME_MISSING': 'Workspace name missing',
-        'WORKSPACE_IMPORT.VALIDATION.WORKSPACE.DISPLAY_NAME_MISSING': 'Workspace display name missing',
-        'WORKSPACE_IMPORT.VALIDATION.WORKSPACE.THEME_MISSING': 'Workspace theme missing',
-        'WORKSPACE_IMPORT.VALIDATION.WORKSPACE.URL_MISSING': 'Workspace URL missing',
         'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_KEY_MISSING': 'Menu item key missing',
         'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_NAME_MISSING': 'Menu item name missing',
         'WORKSPACE_IMPORT.VALIDATION_MENU_ITEM_WRONG_POSITION': 'Invalid menu item position',
@@ -156,26 +152,12 @@ describe('ChooseFileComponent', () => {
 
     it('should return false when workspace name is missing', () => {
       const obj = { workspaces: { key1: {} } }
-      expect(component.isWorkspaceImportValid(obj, mockData)).toBeFalse()
-      expect(component.validationErrorCause).toContain('Workspace name missing')
+      expect(component.isWorkspaceImportValid(obj, mockData)).toBeTrue()
     })
 
-    it('should return false when workspace display name is missing', () => {
-      const obj = { workspaces: { key1: { name: 'Name' } } }
-      expect(component.isWorkspaceImportValid(obj, mockData)).toBeFalse()
-      expect(component.validationErrorCause).toContain('Workspace display name missing')
-    })
-
-    it('should return false when workspace theme is missing', () => {
+    it('should return true when workspace theme is missing', () => {
       const obj = { workspaces: { key1: { name: 'Name', displayName: 'Name Display' } } }
-      expect(component.isWorkspaceImportValid(obj, mockData)).toBeFalse()
-      expect(component.validationErrorCause).toContain('Workspace theme missing')
-    })
-
-    it('should return false when workspace baseUrl is missing', () => {
-      const obj = { workspaces: { key1: { name: 'Name', displayName: 'Name Display', theme: 'theme' } } }
-      expect(component.isWorkspaceImportValid(obj, mockData)).toBeFalse()
-      expect(component.validationErrorCause).toContain('Workspace URL missing')
+      expect(component.isWorkspaceImportValid(obj, mockData)).toBeTrue()
     })
 
     it('should return true for a valid workspace object', () => {
