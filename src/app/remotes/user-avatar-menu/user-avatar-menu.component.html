@@ -34,6 +34,14 @@
     [ngClass]="menuAnchorPosition + '-0'"
     [hidden]="!menuOpen"
   >
+    <!--
+        currentUser: currentUser$ | async,
+        customComponentDefined: isCustomUserInfoComponentDefined$ | async
+
+        *ngIf="data.customComponentDefined === false && data.currentUser as user"
+
+      <ocx-slot *ngIf="data.customComponentDefined" [name]="slotNameCustomUserInfo"></ocx-slot>
+    -->
     <li
       *ngIf="{
         currentUser: currentUser$ | async,

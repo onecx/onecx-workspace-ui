@@ -14,8 +14,10 @@ import { RippleModule } from 'primeng/ripple'
 import { TooltipModule } from 'primeng/tooltip'
 import { PrimeIcons } from 'primeng/api'
 
-import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
+import { BASE_URL, RemoteComponentConfig, SlotService } from '@onecx/angular-remote-components'
+import { SlotServiceMock } from '@onecx/angular-remote-components/mocks'
 import { AppStateService, UserService } from '@onecx/angular-integration-interface'
+
 import { IfPermissionDirective } from '@onecx/angular-accelerator'
 import { AppConfigService } from '@onecx/portal-integration-angular'
 
@@ -34,7 +36,6 @@ class PortalDependencyModule {}
 describe('OneCXUserAvatarMenuComponent', () => {
   const menuItemApiSpy = jasmine.createSpyObj<MenuItemAPIService>('MenuItemAPIService', ['getMenuItems'])
   const appConfigSpy = jasmine.createSpyObj<AppConfigService>('AppConfigService', ['init', 'getProperty'])
-
   function setUp() {
     const fixture = TestBed.createComponent(OneCXUserAvatarMenuComponent)
     const component = fixture.componentInstance
@@ -90,7 +91,10 @@ describe('OneCXUserAvatarMenuComponent', () => {
             RippleModule,
             TooltipModule
           ],
-          providers: [{ provide: MenuItemAPIService, useValue: menuItemApiSpy }]
+          providers: [
+            { provide: MenuItemAPIService, useValue: menuItemApiSpy },
+            { provide: SlotService, useClass: SlotServiceMock }
+          ]
         }
       })
       .compileComponents()
@@ -183,6 +187,7 @@ describe('OneCXUserAvatarMenuComponent', () => {
 
   it('should show profile info if permissions met and user defined', async () => {
     appConfigSpy.getProperty.and.returnValue('right')
+    const slotService = TestBed.inject(SlotService)
     const userService = TestBed.inject(UserService)
     const profile = {
       organization: 'orgId',
@@ -191,6 +196,7 @@ describe('OneCXUserAvatarMenuComponent', () => {
         email: 'my-user@example.com'
       }
     }
+    spyOn(slotService, 'isSomeComponentDefinedForSlot').and.returnValue(of(false))
     spyOn(userService.profile$, 'asObservable').and.returnValue(of(profile) as any)
 
     const { avatarMenuHarness } = await setUpWithHarnessAndInit([])
