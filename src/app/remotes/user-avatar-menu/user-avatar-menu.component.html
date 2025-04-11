@@ -21,7 +21,7 @@
     ></i>
     <ocx-slot
       *ngIf="isAvatarImageComponentDefined$ | async"
-      [name]="slotName"
+      [name]="slotNameAvatarImage"
       [inputs]="{ id: 'ocx_topbar_action_user_avatar_image' }"
       [outputs]="{ imageLoaded: avatarImageLoadedEmitter }"
     ></ocx-slot>
@@ -34,9 +34,17 @@
     [ngClass]="menuAnchorPosition + '-0'"
     [hidden]="!menuOpen"
   >
-    <li id="ws_user_avatar_menu_list_item_0" class="layout-topbar-action-item cursor-auto user-info">
+    <!-- USER data from various sources:  a) OneCX user profile, b) custom data -->
+    <li
+      *ngIf="{
+        currentUser: currentUser$ | async,
+        customComponentDefined: isCustomUserInfoComponentDefined$ | async
+      } as data"
+      id="ws_user_avatar_menu_list_item_0"
+      class="layout-topbar-action-item cursor-auto user-info"
+    >
       <div
-        *ngIf="currentUser$ | async as user"
+        *ngIf="data.customComponentDefined === false && data.currentUser as user"
         class="my-1 flex flex-column flex-wrap justify-content-evenly row-gap-1"
       >
         <div
@@ -59,6 +67,7 @@
           {{ user.organization }}
         </div>
       </div>
+      <ocx-slot *ngIf="data.customComponentDefined" [name]="slotNameCustomUserInfo"></ocx-slot>
     </li>
 
     <!-- user-profile-menu -->

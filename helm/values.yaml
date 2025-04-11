@@ -99,6 +99,9 @@ app:
         onecx-theme-data:
           name: 'onecx-theme-data'
           description: 'Use theme data'
+        onecx-custom-user-info:
+          name: 'onecx-custom-user-info'
+          description: 'Display specific user info'
     # Permission
     permission:
       enabled: true

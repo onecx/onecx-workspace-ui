@@ -79,18 +79,21 @@ export type MenuAnchorPositionConfig = 'right' | 'left'
 export class OneCXUserAvatarMenuComponent
   implements ocxRemoteComponent, ocxRemoteWebcomponent, AfterViewInit, OnDestroy
 {
-  currentUser$: Observable<UserProfile>
-  userMenu$: Observable<MenuItem[]>
-  eventsPublisher$: EventsPublisher = new EventsPublisher()
-  menuOpen = false
-  permissions: string[] = []
-  removeDocumentClickListener: (() => void) | undefined
-  menuAnchorPosition: MenuAnchorPositionConfig = 'right'
-  // slot configuration: get theme data
-  public slotName = 'onecx-avatar-image'
-  public isAvatarImageComponentDefined$: Observable<boolean> = of(false) // check a component was assigned
+  public currentUser$: Observable<UserProfile>
+  public userMenu$: Observable<MenuItem[]>
+  public eventsPublisher$: EventsPublisher = new EventsPublisher()
+  public menuOpen = false
+  public permissions: string[] = []
+  public removeDocumentClickListener: (() => void) | undefined
+  public menuAnchorPosition: MenuAnchorPositionConfig = 'right'
+  // slot configuration: get avatar image
+  public slotNameAvatarImage = 'onecx-avatar-image'
+  public isAvatarImageComponentDefined$: Observable<boolean> = of(false) // check if a component was assigned
   public avatarImageLoadedEmitter = new EventEmitter<boolean>()
   public avatarImageLoaded: boolean | undefined = undefined // getting true/false from response, then component managed
+  // slot configuration: get custom user info
+  public slotNameCustomUserInfo = 'onecx-custom-user-info'
+  public isCustomUserInfoComponentDefined$: Observable<boolean> = of(false) // check if a component was assigned
 
   constructor(
     private readonly renderer: Renderer2,
@@ -104,7 +107,8 @@ export class OneCXUserAvatarMenuComponent
     private readonly menuItemService: MenuItemService
   ) {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
-    this.isAvatarImageComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.slotName)
+    this.isCustomUserInfoComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.slotNameCustomUserInfo)
+    this.isAvatarImageComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.slotNameAvatarImage)
     this.avatarImageLoadedEmitter.subscribe((data) => {
       this.avatarImageLoaded = data
     })
