@@ -138,12 +138,10 @@ describe('OneCXVerticalMainMenuComponent', () => {
     )
 
     const { fixture, component } = setUp()
-    spyOn(component.eventsTopic$, 'asObservable').and.returnValue(
+    spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(
       of({
-        type: 'navigated',
-        payload: {
-          url: 'page-url'
-        }
+        url: 'page-url',
+        isFirst: true
       })
     )
     await component.ngOnInit()
@@ -191,12 +189,10 @@ describe('OneCXVerticalMainMenuComponent', () => {
     )
 
     const { fixture, component } = setUp()
-    spyOn(component.eventsTopic$, 'asObservable').and.returnValue(
+    spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(
       of({
-        type: 'navigated',
-        payload: {
-          url: 'page-url'
-        }
+        url: 'page-url',
+        isFirst: true
       })
     )
     await component.ngOnInit()
@@ -240,12 +236,10 @@ describe('OneCXVerticalMainMenuComponent', () => {
     )
 
     const { fixture, component } = setUp()
-    spyOn(component.eventsTopic$, 'asObservable').and.returnValue(
+    spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(
       of({
-        type: 'navigated',
-        payload: {
-          url: 'page-url'
-        }
+        url: 'page-url',
+        isFirst: true
       })
     )
     await component.ngOnInit()
@@ -289,12 +283,10 @@ describe('OneCXVerticalMainMenuComponent', () => {
     const router = TestBed.inject(Router)
 
     const { fixture, component } = setUp()
-    spyOn(component.eventsTopic$, 'asObservable').and.returnValue(
+    spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(
       of({
-        type: 'navigated',
-        payload: {
-          url: 'page-url'
-        }
+        url: 'page-url',
+        isFirst: true
       })
     )
     await component.ngOnInit()
@@ -337,12 +329,10 @@ describe('OneCXVerticalMainMenuComponent', () => {
     )
 
     const { fixture, component } = setUp()
-    spyOn(component.eventsTopic$, 'asObservable').and.returnValue(
+    spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(
       of({
-        type: 'navigated',
-        payload: {
-          url: 'page-url'
-        }
+        url: 'page-url',
+        isFirst: true
       })
     )
     await component.ngOnInit()
@@ -413,12 +403,10 @@ describe('OneCXVerticalMainMenuComponent', () => {
     )
 
     const { fixture, component } = setUp()
-    spyOn(component.eventsTopic$, 'asObservable').and.returnValue(
+    spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(
       of({
-        type: 'navigated',
-        payload: {
-          url: 'page-url'
-        }
+        url: 'page-url',
+        isFirst: true
       })
     )
     await component.ngOnInit()
@@ -499,12 +487,10 @@ describe('OneCXVerticalMainMenuComponent', () => {
       )
 
       const { fixture, component } = setUp()
-      spyOn(component.eventsTopic$, 'asObservable').and.returnValue(
+      spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(
         of({
-          type: 'navigated',
-          payload: {
-            url: '/admin/help'
-          }
+          url: '/admin/help',
+          isFirst: true
         })
       )
       await component.ngOnInit()
@@ -553,12 +539,10 @@ describe('OneCXVerticalMainMenuComponent', () => {
       )
 
       const { component } = setUp()
-      spyOn(component.eventsTopic$, 'asObservable').and.returnValue(
+      spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(
         of({
-          type: 'navigated',
-          payload: {
-            url: '/admin/help'
-          }
+          url: '/admin/help',
+          isFirst: true
         })
       )
       component.menuItems$.next({
@@ -611,12 +595,10 @@ describe('OneCXVerticalMainMenuComponent', () => {
       )
 
       const { component } = setUp()
-      spyOn(component.eventsTopic$, 'asObservable').and.returnValue(
+      spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(
         of({
-          type: 'navigated',
-          payload: {
-            url: '/admin/help'
-          }
+          url: '/admin/help',
+          isFirst: true
         })
       )
       component.menuItems$.next({
