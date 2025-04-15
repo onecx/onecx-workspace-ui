@@ -1,6 +1,6 @@
 import { CommonModule, Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { Component, Inject, Input, OnInit } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
@@ -12,7 +12,6 @@ import {
   ocxRemoteWebcomponent,
   provideTranslateServiceForRoot
 } from '@onecx/angular-remote-components'
-import { EventsTopic, NavigatedEventPayload } from '@onecx/integration-interface'
 import {
   AppStateService,
   PortalCoreModule,
@@ -75,9 +74,7 @@ export interface WorkspaceMenuItems {
   ]
 })
 @UntilDestroy()
-export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRemoteWebcomponent, OnInit, OnDestroy {
-  eventsTopic$ = new EventsTopic()
-
+export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRemoteWebcomponent, OnInit {
   menuItems$: BehaviorSubject<WorkspaceMenuItems | undefined> = new BehaviorSubject<WorkspaceMenuItems | undefined>(
     undefined
   )
@@ -94,9 +91,6 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRe
   ) {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
   }
-  ngOnDestroy(): void {
-    this.eventsTopic$.destroy()
-  }
 
   @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
     this.ocxInitRemoteComponent(config)
@@ -111,9 +105,8 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRe
 
   ngOnInit(): void {
     combineLatest([
-      this.eventsTopic$.asObservable().pipe(
-        filter((e) => e.type === 'navigated'),
-        map((e) => (e.payload as NavigatedEventPayload).url),
+      this.appStateService.currentLocation$.asObservable().pipe(
+        map((e) => e.url),
         filter((url): url is string => !!url),
         distinctUntilChanged()
       ),
