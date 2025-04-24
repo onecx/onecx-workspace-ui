@@ -18,6 +18,7 @@
 <p-dataView
   id="ws_roles_dataview"
   [value]="roles"
+  [emptyMessage]="'ACTIONS.SEARCH.NO_DATA' | translate"
   [paginator]="true"
   [alwaysShowPaginator]="true"
   [rowsPerPageOptions]="[20, 60, 100]"
