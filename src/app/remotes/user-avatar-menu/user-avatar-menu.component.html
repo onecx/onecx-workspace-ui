@@ -44,12 +44,12 @@
       class="layout-topbar-action-item cursor-auto user-info"
     >
       <div
-        *ngIf="data.customComponentDefined === false && data.currentUser as user"
-        class="my-1 flex flex-column flex-wrap justify-content-evenly row-gap-1"
+        *ngIf="data.currentUser as user"
+        class="my-1 flex flex-column flex-wrap justify-content-evenly row-gap-1 w-15rem"
       >
         <div
           id="ws_user_avatar_menu_list_item_0_user_name"
-          class="font-bold text-color-secondary text-center text-lg white-space-nowrap"
+          class="font-bold text-color-secondary text-center text-lg"
           [pTooltip]="user.person.email ?? ''"
           tooltipPosition="bottom"
           tooltipEvent="hover"
