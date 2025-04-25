@@ -1,6 +1,6 @@
 import { CommonModule, Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { Component, Inject, Input, OnInit } from '@angular/core'
+import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
@@ -77,12 +77,14 @@ export interface WorkspaceMenuItems {
   ]
 })
 @UntilDestroy()
-export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRemoteWebcomponent, OnInit {
+export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRemoteWebcomponent, OnInit, OnDestroy {
   menuItems$: BehaviorSubject<WorkspaceMenuItems | undefined> = new BehaviorSubject<WorkspaceMenuItems | undefined>(
     undefined
   )
 
   activeItemClass = 'ocx-vertical-menu-active-item'
+
+  eventsTopic$ = new EventsTopic()
 
   constructor(
     @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
@@ -115,13 +117,13 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRe
     )
 
     if (!this.capabilityService.hasCapability(Capability.CURRENT_LOCATION_TOPIC)) {
-      location$ = new EventsTopic().pipe(filter((e) => e.type === 'navigated')).pipe(
+      location$ = this.eventsTopic$.pipe(filter((e) => e.type === 'navigated')).pipe(
         map((e) => (e.payload as NavigatedEventPayload).url),
         filter((url): url is string => !!url),
-        distinctUntilChanged(),
-        untilDestroyed(this)
+        distinctUntilChanged()
       )
     }
+
     combineLatest([location$, this.getMenuItems()])
       .pipe(
         map(([url, workspaceItems]) => {
@@ -140,6 +142,10 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRe
         })
       )
       .subscribe(this.menuItems$)
+  }
+
+  ngOnDestroy(): void {
+    this.eventsTopic$.destroy()
   }
 
   private getMenuItems() {
