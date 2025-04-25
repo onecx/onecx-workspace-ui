@@ -4,6 +4,7 @@ import { Component, Inject, Input, OnInit } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
+import { Capability, ShellCapabilityService } from '@onecx/angular-integration-interface'
 import {
   AngularRemoteComponentsModule,
   BASE_URL,
@@ -12,6 +13,7 @@ import {
   ocxRemoteWebcomponent,
   provideTranslateServiceForRoot
 } from '@onecx/angular-remote-components'
+import { EventsTopic, NavigatedEventPayload } from '@onecx/integration-interface'
 import {
   AppStateService,
   PortalCoreModule,
@@ -22,6 +24,7 @@ import { MenuItem } from 'primeng/api'
 import { PanelMenuModule } from 'primeng/panelmenu'
 import {
   BehaviorSubject,
+  Observable,
   ReplaySubject,
   catchError,
   combineLatest,
@@ -87,7 +90,8 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRe
     private readonly translateService: TranslateService,
     private readonly appStateService: AppStateService,
     private readonly menuItemApiService: MenuItemAPIService,
-    private readonly menuItemService: MenuItemService
+    private readonly menuItemService: MenuItemService,
+    private readonly capabilityService: ShellCapabilityService
   ) {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
   }
@@ -104,14 +108,21 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRe
   }
 
   ngOnInit(): void {
-    combineLatest([
-      this.appStateService.currentLocation$.asObservable().pipe(
-        map((e) => e.url),
+    let location$: Observable<string> = this.appStateService.currentLocation$.asObservable().pipe(
+      map((e) => e.url),
+      filter((url): url is string => !!url),
+      distinctUntilChanged()
+    )
+
+    if (!this.capabilityService.hasCapability(Capability.CURRENT_LOCATION_TOPIC)) {
+      location$ = new EventsTopic().pipe(filter((e) => e.type === 'navigated')).pipe(
+        map((e) => (e.payload as NavigatedEventPayload).url),
         filter((url): url is string => !!url),
-        distinctUntilChanged()
-      ),
-      this.getMenuItems()
-    ])
+        distinctUntilChanged(),
+        untilDestroyed(this)
+      )
+    }
+    combineLatest([location$, this.getMenuItems()])
       .pipe(
         map(([url, workspaceItems]) => {
           const currentItems = this.menuItems$.getValue()

@@ -11,11 +11,15 @@ import { PanelMenuModule } from 'primeng/panelmenu'
 import { PrimeIcons } from 'primeng/api'
 
 import { PPanelMenuHarness } from '@onecx/angular-testing'
-import { AppStateService } from '@onecx/angular-integration-interface'
+import { AppStateService, Capability } from '@onecx/angular-integration-interface'
 import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
 
 import { MenuItemAPIService } from 'src/app/shared/generated'
 import { OneCXVerticalMainMenuComponent } from './vertical-main-menu.component'
+import {
+  provideShellCapabilityServiceMock,
+  ShellCapabilityServiceMock
+} from '@onecx/angular-integration-interface/mocks'
 
 describe('OneCXVerticalMainMenuComponent', () => {
   const menuItemApiSpy = jasmine.createSpyObj<MenuItemAPIService>('MenuItemAPIService', ['getMenuItems'])
@@ -46,7 +50,8 @@ describe('OneCXVerticalMainMenuComponent', () => {
           provide: BASE_URL,
           useValue: baseUrlSubject
         },
-        provideRouter([{ path: 'admin/welcome', component: OneCXVerticalMainMenuComponent }])
+        provideRouter([{ path: 'admin/welcome', component: OneCXVerticalMainMenuComponent }]),
+        provideShellCapabilityServiceMock()
       ]
     })
       .overrideComponent(OneCXVerticalMainMenuComponent, {
@@ -60,6 +65,7 @@ describe('OneCXVerticalMainMenuComponent', () => {
     baseUrlSubject.next('base_url_mock')
 
     menuItemApiSpy.getMenuItems.calls.reset()
+    ShellCapabilityServiceMock.setCapabilities([Capability.CURRENT_LOCATION_TOPIC])
   })
 
   it('should create', () => {
