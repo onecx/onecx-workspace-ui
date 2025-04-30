@@ -29,7 +29,10 @@ export class ImageContainerComponent implements OnChanges {
   public displayImageUrl: string | undefined
   public defaultImageUrl$: Observable<string>
   public displayDefaultLogo = false
-  private defaultLogoPaths = { workspace: environment.DEFAULT_LOGO_PATH, product: environment.DEFAULT_PRODUCT_PATH }
+  private readonly defaultLogoPaths = {
+    workspace: environment.DEFAULT_LOGO_PATH,
+    product: environment.DEFAULT_PRODUCT_PATH
+  }
 
   prepareUrlPath = prepareUrlPath
 
