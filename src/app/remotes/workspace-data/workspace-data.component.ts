@@ -55,8 +55,8 @@ export class OneCXWorkspaceDataComponent implements ocxRemoteComponent, ocxRemot
   @Input() dataType: DataType | undefined = undefined // which response data is expected
   // search parameter
   @Input() workspaceName: string | undefined = undefined // search parameter
-  @Input() themeName: string | undefined = undefined // search parameter
   @Input() productName: string | undefined = undefined // search parameter
+  @Input() themeName: string | undefined = undefined // search parameter
   // logo
   @Input() imageId: string | undefined = undefined
   @Input() imageUrl: string | undefined = undefined
@@ -96,6 +96,7 @@ export class OneCXWorkspaceDataComponent implements ocxRemoteComponent, ocxRemot
    * Prepare searches on each change
    */
   public ngOnChanges(): void {
+    this.log('ngOnChanges')
     if (this.dataType === 'workspaces') this.getWorkspaces()
     if (this.dataType === 'workspace') this.getWorkspace()
     if (this.dataType === 'logo') {
@@ -105,7 +106,7 @@ export class OneCXWorkspaceDataComponent implements ocxRemoteComponent, ocxRemot
   }
 
   /**
-   * THEMES
+   * WORKSPACES
    */
   private getWorkspaces(): void {
     const criteria: SearchWorkspacesRequest = {
@@ -114,6 +115,7 @@ export class OneCXWorkspaceDataComponent implements ocxRemoteComponent, ocxRemot
       productName: this.productName,
       pageSize: 1000
     }
+    this.log(criteria)
     this.workspaces$ = this.workspaceApi.searchWorkspaces({ searchWorkspacesRequest: criteria }).pipe(
       map((response) => {
         return response.stream?.sort(sortByDisplayName) ?? []
@@ -127,7 +129,7 @@ export class OneCXWorkspaceDataComponent implements ocxRemoteComponent, ocxRemot
   }
 
   /**
-   * THEME
+   * WORKSPACE
    */
   private getWorkspace() {
     if (!this.workspaceName) return
@@ -180,7 +182,7 @@ export class OneCXWorkspaceDataComponent implements ocxRemoteComponent, ocxRemot
     return undefined
   }
 
-  private log(text: string) {
-    if (this.logEnabled === true) console.info('onecx-workspace-data: ' + (this.logPrefix ?? '') + ' => ' + text)
+  private log(info: any) {
+    if (this.logEnabled === true) console.info('onecx-workspace-data: ' + (this.logPrefix ?? '') + ' => ', info)
   }
 }
