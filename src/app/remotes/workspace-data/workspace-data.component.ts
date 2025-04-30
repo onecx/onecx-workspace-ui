@@ -53,11 +53,16 @@ export class OneCXWorkspaceDataComponent implements ocxRemoteComponent, ocxRemot
   // input
   @Input() refresh: boolean | undefined = false // on any change here a reload is triggered
   @Input() dataType: DataType | undefined = undefined // which response data is expected
+  // search parameter
   @Input() workspaceName: string | undefined = undefined // search parameter
+  @Input() themeName: string | undefined = undefined // search parameter
+  @Input() productName: string | undefined = undefined // search parameter
+  // logo
   @Input() imageId: string | undefined = undefined
   @Input() imageUrl: string | undefined = undefined
   @Input() imageStyleClass: string | undefined = undefined
   @Input() useDefaultLogo = false // used if logo loading failed
+  // log
   @Input() logPrefix: string | undefined = undefined
   @Input() logEnabled = false
   @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
@@ -105,6 +110,8 @@ export class OneCXWorkspaceDataComponent implements ocxRemoteComponent, ocxRemot
   private getWorkspaces(): void {
     const criteria: SearchWorkspacesRequest = {
       name: this.workspaceName,
+      themeName: this.themeName,
+      productName: this.productName,
       pageSize: 1000
     }
     this.workspaces$ = this.workspaceApi.searchWorkspaces({ searchWorkspacesRequest: criteria }).pipe(
@@ -124,8 +131,9 @@ export class OneCXWorkspaceDataComponent implements ocxRemoteComponent, ocxRemot
    */
   private getWorkspace() {
     if (!this.workspaceName) return
+
     this.workspace$ = this.workspaceApi.getWorkspaceByName({ workspaceName: this.workspaceName }).pipe(
-      map((data) => data.resource ?? ({} as Workspace)),
+      map((data) => data.resource),
       catchError((err) => {
         console.error('onecx-workspace-data.getWorkspaceByName', err)
         return of({} as Workspace)
@@ -173,6 +181,6 @@ export class OneCXWorkspaceDataComponent implements ocxRemoteComponent, ocxRemot
   }
 
   private log(text: string) {
-    if (this.logEnabled) console.log('onecx-workspace-data: ' + (this.logPrefix ?? '') + ' => ' + text)
+    if (this.logEnabled === true) console.info('onecx-workspace-data: ' + (this.logPrefix ?? '') + ' => ' + text)
   }
 }

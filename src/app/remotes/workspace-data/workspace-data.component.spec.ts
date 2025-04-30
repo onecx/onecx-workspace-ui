@@ -12,12 +12,12 @@ import { SearchWorkspacesResponse, Workspace, WorkspaceAPIService } from 'src/ap
 import { OneCXWorkspaceDataComponent } from './workspace-data.component'
 
 const workspace1: Workspace = {
-  id: 't1',
+  id: 'w1',
   name: 'workspace1',
   displayName: 'Workspace 1'
 }
 const workspace2: Workspace = {
-  id: 't2',
+  id: 'w2',
   name: 'workspace2',
   displayName: 'Workspace 2'
 }
@@ -183,10 +183,10 @@ describe('OneCXWorkspaceDataComponent', () => {
   })
 
   describe('getting workspace', () => {
-    it('should get workspace - successful with data', () => {
+    it('should get workspace - rejected, missing name', () => {
       const { component } = setUp()
       component.dataType = 'workspace'
-      workspaceApiSpy.getWorkspaceByName.and.returnValue(of(workspace1))
+      workspaceApiSpy.getWorkspaceByName.and.returnValue(of())
 
       component.ngOnChanges()
 
@@ -195,7 +195,7 @@ describe('OneCXWorkspaceDataComponent', () => {
 
     it('should get workspace - successful with data', (done) => {
       const { component } = setUp()
-      workspaceApiSpy.getWorkspaceByName.and.returnValue(of(workspace1))
+      workspaceApiSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace1 }))
       component.dataType = 'workspace'
       component.workspaceName = workspace1.name
 
@@ -203,9 +203,7 @@ describe('OneCXWorkspaceDataComponent', () => {
 
       component.workspace$?.subscribe({
         next: (data) => {
-          if (data) {
-            expect(data).toEqual(workspace1)
-          }
+          expect(data).toEqual(workspace1)
           done()
         },
         error: done.fail
@@ -224,9 +222,7 @@ describe('OneCXWorkspaceDataComponent', () => {
 
       component.workspace$?.subscribe({
         next: (data) => {
-          if (data) {
-            expect(console.error).toHaveBeenCalledWith('onecx-workspace-data.getWorkspaceByName', errorResponse)
-          }
+          expect(console.error).toHaveBeenCalledWith('onecx-workspace-data.getWorkspaceByName', errorResponse)
           done()
         },
         error: done.fail
@@ -237,7 +233,7 @@ describe('OneCXWorkspaceDataComponent', () => {
   describe('provide logo', () => {
     it('should load - initially', (done) => {
       const { component } = setUp()
-      component.logEnabled = true
+      component.logEnabled = true // log with prefix
       component.logPrefix = 'get image url'
       component.workspaceName = workspace1.name
       component.dataType = 'logo'
