@@ -6,23 +6,37 @@
   [closable]="true"
   [resizable]="true"
   [dismissableMask]="true"
+  [style]="{ 'overflow-y': 'unset' }"
 >
-  <span class="mt-1 mb-4 p-float-label">
-    <input
-      pInputText
-      type="text"
-      [style]="{ width: 2 + (slot?.name?.length ?? 0) + 'ch' }"
-      id="ws_slot_detail_item_slot_name"
-      class="pt-3 pb-2 text-responsive"
-      [value]="slot?.name"
-      [disabled]="true"
+  <ng-container *ngIf="slot?.name">
+    <!-- display slot name on dialog header -->
+    <div
+      class="absolute sm:dialog-header-right-slot"
       [attr.aria-label]="'SLOT.NAME' | translate"
       [pTooltip]="'SLOT.NAME' | translate"
       tooltipPosition="top"
       tooltipEvent="hover"
-    />
-    <label for="ws_slot_detail_item_slot_name">{{ 'SLOT.NAME' | translate }}</label>
-  </span>
+    >
+      {{ slot?.name }}
+    </div>
+    <!-- display slot name on dialog content -->
+    <span class="mt-1 mb-4 p-float-label sm:hidden">
+      <input
+        pInputText
+        type="text"
+        [style]="{ width: 2 + (slot?.name?.length ?? 0) + 'ch' }"
+        id="ws_slot_detail_item_slot_name"
+        class="pt-3 pb-2 text-responsive"
+        [value]="slot?.name"
+        [disabled]="true"
+        [attr.aria-label]="'SLOT.NAME' | translate"
+        [pTooltip]="'SLOT.NAME' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      />
+      <label for="ws_slot_detail_item_slot_name">{{ 'SLOT.NAME' | translate }}</label>
+    </span>
+  </ng-container>
 
   <p-tabView>
     <p-tabPanel
@@ -38,11 +52,10 @@
           #picklist
           id="ws_slot_detail_component_picklist"
           [filterBy]="'name'"
-          breakpoint="500px"
           [source]="psComponents"
           [target]="wComponents"
           [showSourceControls]="false"
-          [showTargetControls]="showTargetControls"
+          [showTargetControls]="showTargetControls && wComponents.length > 1"
           [responsive]="true"
           [metaKeySelection]="true"
           [disabled]="!hasEditPermission"
@@ -74,6 +87,61 @@
                 tooltipEvent="hover"
               >
                 {{ 'DIALOG.SLOT.COMPONENTS.USED' | translate }}: {{ wComponents.length }}
+              </div>
+            </div>
+          </ng-template>
+
+          <ng-template pTemplate="sourceFilter" let-options="options">
+            <div class="flex flex-row align-items-center">
+              <div class="p-inputgroup p-picklist-filter">
+                <span class="p-inputgroup-addon data-view-control-border"><i class="pi pi-filter"></i></span>
+                <input
+                  id="ws_slot_detail_picklist_unregistered_filter_value"
+                  class="p-picklist-filter-input p-inputtext p-component"
+                  [(ngModel)]="sourceFilterValue"
+                  (keyup)="options.filter(getFilterValue($event))"
+                  type="text"
+                  [placeholder]="'DIALOG.DATAVIEW.FILTER' | translate"
+                  [attr.aria-label]="'DIALOG.DATAVIEW.FILTER' | translate"
+                  [pTooltip]="'DIALOG.DATAVIEW.SLOT_FILTER_TOOLTIP' | translate"
+                  tooltipPosition="top"
+                  tooltipEvent="hover"
+                />
+                <a
+                  tabindex="0"
+                  id="ws_slot_detail_picklist_unregistered_filter_clear"
+                  class="p-inputgroup-addon pseudo-button bg-primary data-view-control-border cursor-pointer"
+                  (click)="options.reset(); sourceFilterValue = undefined"
+                >
+                  <i class="pi pi-filter-slash"></i
+                ></a>
+              </div>
+            </div>
+          </ng-template>
+          <ng-template pTemplate="targetFilter" let-options="options">
+            <div class="flex flex-row align-items-center">
+              <div class="p-inputgroup p-picklist-filter">
+                <span class="p-inputgroup-addon data-view-control-border"><i class="pi pi-filter"></i></span>
+                <input
+                  id="ws_slot_detail_picklist_registered_filter_value"
+                  class="p-picklist-filter-input p-inputtext p-component"
+                  [(ngModel)]="targetFilterValue"
+                  (keyup)="options.filter(getFilterValue($event))"
+                  type="text"
+                  [placeholder]="'DIALOG.DATAVIEW.FILTER' | translate"
+                  [attr.aria-label]="'DIALOG.DATAVIEW.FILTER' | translate"
+                  [pTooltip]="'DIALOG.DATAVIEW.SLOT_FILTER_TOOLTIP' | translate"
+                  tooltipPosition="top"
+                  tooltipEvent="hover"
+                />
+                <a
+                  tabindex="0"
+                  id="ws_slot_detail_picklist_registered_filter_clear"
+                  class="p-inputgroup-addon pseudo-button bg-primary data-view-control-border cursor-pointer"
+                  (click)="options.reset(); targetFilterValue = undefined"
+                >
+                  <i class="pi pi-filter-slash"></i
+                ></a>
               </div>
             </div>
           </ng-template>
@@ -111,8 +179,8 @@
             <div class="relative"></div>
           </ng-template>
         </p-pickList>
-        <!-- manage picklist bug: use the following invisible dummy if controls are hidden -->
-        <div *ngIf="!showTargetControls">
+        <!-- manage picklist bug: use the following invisible dummy if controls are hidden (no selected items) -->
+        <div *ngIf="!showTargetControls && wComponents.length > 1">
           <button type="button" class="invisible p-element p-ripple p-button-icon-only p-button p-component"></button>
         </div>
       </div>
@@ -126,43 +194,45 @@
       tooltipPosition="top"
       tooltipEvent="hover"
     >
-      <p-message
-        *ngIf="slot?.psSlots?.length === 0"
-        id="ws_slot_detail_no_products_message"
-        severity="info"
-        styleClass="mx-2"
-        [text]="'DIALOG.SLOT.NO_PRODUCTS' | translate"
-      ></p-message>
-      <ng-container *ngIf="slot?.psSlots?.length !== 0">
-        <div>{{ 'DIALOG.SLOT.PRODUCTS.TOOLTIP' | translate }}</div>
-        <ul class="ml-0 mt-2">
-          <li *ngFor="let slot of slot?.psSlots; let i = index" class="mb-1">
-            <div class="p-1 flex flex-row column-gap-2">
-              <span [id]="'ws_slot_detail_product_' + i + '_name'" class="text-md">{{ slot?.pDisplayName }}</span>
-              <span
-                *ngIf="slot?.undeployed"
-                [id]="'ws_slot_detail_product_' + i + '_undeployed'"
-                class="danger-action-text text-md pi pi-ban"
-                [attr.aria-label]="'DIALOG.SLOT.UNDEPLOYED' | translate"
-                [pTooltip]="'DIALOG.SLOT.UNDEPLOYED.TOOLTIP' | translate"
-                tooltipPosition="top"
-                tooltipEvent="hover"
-              >
-              </span>
-              <span
-                *ngIf="slot?.deprecated"
-                [id]="'ws_slot_detail_product_' + i + '_deprecated'"
-                class="danger-action-text text-md pi pi-exclamation-circle"
-                [attr.aria-label]="'DIALOG.SLOT.DEPRECATED' | translate"
-                [pTooltip]="'DIALOG.SLOT.DEPRECATED' | translate"
-                tooltipPosition="top"
-                tooltipEvent="hover"
-              >
-              </span>
-            </div>
-          </li>
-        </ul>
-      </ng-container>
+      <div [style]="{ 'min-width': '35rem', 'min-height': '7rem' }">
+        <p-message
+          *ngIf="slot?.psSlots?.length === 0; else ProductsWithSlots"
+          id="ws_slot_detail_no_products_message"
+          severity="info"
+          styleClass="mx-2"
+          [text]="'DIALOG.SLOT.NO_PRODUCTS' | translate"
+        ></p-message>
+        <ng-template #ProductsWithSlots>
+          <div>{{ 'DIALOG.SLOT.PRODUCTS.TOOLTIP' | translate }}</div>
+          <ul class="ml-0 mt-2">
+            <li *ngFor="let slot of slot?.psSlots; let i = index" class="">
+              <div class="p-1 flex flex-row column-gap-2">
+                <span [id]="'ws_slot_detail_product_' + i + '_name'" class="text-md">{{ slot?.pDisplayName }}</span>
+                <span
+                  *ngIf="slot?.undeployed"
+                  [id]="'ws_slot_detail_product_' + i + '_undeployed'"
+                  class="danger-action-text text-md pi pi-ban"
+                  [attr.aria-label]="'DIALOG.SLOT.UNDEPLOYED' | translate"
+                  [pTooltip]="'DIALOG.SLOT.UNDEPLOYED.TOOLTIP' | translate"
+                  tooltipPosition="top"
+                  tooltipEvent="hover"
+                >
+                </span>
+                <span
+                  *ngIf="slot?.deprecated"
+                  [id]="'ws_slot_detail_product_' + i + '_deprecated'"
+                  class="danger-action-text text-md pi pi-exclamation-circle"
+                  [attr.aria-label]="'DIALOG.SLOT.DEPRECATED' | translate"
+                  [pTooltip]="'DIALOG.SLOT.DEPRECATED' | translate"
+                  tooltipPosition="top"
+                  tooltipEvent="hover"
+                >
+                </span>
+              </div>
+            </li>
+          </ul>
+        </ng-template>
+      </div>
     </p-tabPanel>
 
     <p-tabPanel

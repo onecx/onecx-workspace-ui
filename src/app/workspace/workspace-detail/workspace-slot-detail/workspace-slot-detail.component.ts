@@ -29,6 +29,8 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   private deregisterItems: ExtendedComponent[] = [] // moved items
   private wComponentsOrg: ExtendedComponent[] = [] // used for restore
   public showTargetControls = false // manage visibility of target controls due to picklist bug
+  public sourceFilterValue: string | undefined // unregistered items
+  public targetFilterValue: string | undefined // registered items
 
   constructor(
     private readonly slotApi: SlotAPIService,
@@ -74,9 +76,13 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   return(event: any) {
     event.stopPropagation()
   }
+  public getFilterValue(ev: any): string {
+    return ev.target.value
+  }
 
   // fix picklist bug: hide controls if not one item is selected
   public onTargetSelect(event: any) {
+    console.log(event.items.length)
     this.showTargetControls = event.items.length === 1
   }
 
