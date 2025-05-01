@@ -13,9 +13,6 @@
   .p-dialog .p-dialog-content {
     overflow-y: unset;
   }
-}
-
-:host ::ng-deep {
   @media screen and (min-width: 576px) {
     .sm\:dialog-header-right-slot {
       top: 1.55rem;
@@ -51,7 +48,6 @@
       background-color: var(--primary-color);
     }
     .p-picklist-list {
-      /*max-height: 25.7rem;*/
       max-height: 20rem;
       overflow-y: auto;
       .p-picklist-item {
