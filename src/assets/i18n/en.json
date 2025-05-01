@@ -505,6 +505,7 @@
     "DATAVIEW": {
       "FILTER": "Filter",
       "PRODUCT_FILTER_TOOLTIP": "Filter by Application and Classification",
+      "SLOT_FILTER_TOOLTIP": "Filter by Components",
       "FILTER_OF": "Filter of ",
       "FILTER_CLEAR": "Clear Filter",
       "FILTER_PLACEHOLDER": "Filter",

@@ -182,6 +182,7 @@
             <app-image-container
               [id]="'ws_products_picklist_' + product.productName + '_logo'"
               [imageUrl]="getImageUrl(product)"
+              [defaultLogoType]="'product'"
               styleClass="max-h-1rem sm:max-h-2rem md:max-h-3rem max-w-2rem sm:max-w-3rem tile-view-optional border-round-sm"
             ></app-image-container>
             <div class="flex flex-column row-gap-1">
@@ -250,6 +251,7 @@
           <app-image-container
             id="ws_products_detail_logo"
             [imageUrl]="getImageUrl(displayedDetailItem)"
+            [defaultLogoType]="'product'"
             styleClass="max-h-2rem md:max-h-3rem md:max-h-4rem max-w-3rem md:max-w-4rem md:max-w-5rem border-round-sm"
           ></app-image-container>
         </div>
@@ -460,11 +462,11 @@
 
         <div *ngIf="displayedDetailItem.slots">
           <p-divider align="center" styleClass="mt-0 mb-1">
-            <div class="px-3 font-bold text-primary">Slots</div></p-divider
-          >
+            <div class="px-3 font-bold text-primary">Slots</div>
+          </p-divider>
           <div
             *ngFor="let item of displayedDetailItem.slots; let i = index"
-            class="ml-2 flex flex-row align-items-center column-gap-3"
+            class="ml-2 flex flex-row align-items-center column-gap-3 text-sm"
           >
             <span [id]="'ws_products_detail_slot_' + i + '_name'" class="text-responsive">{{ item.name }}</span>
             <span

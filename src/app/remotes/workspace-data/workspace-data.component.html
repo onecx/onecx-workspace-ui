@@ -1,0 +1,10 @@
+<img
+  *ngIf="imageUrl$ | async as url"
+  [id]="imageId ?? 'ws_logo_' + workspaceName"
+  [class]="'border-round-sm ' + (imageStyleClass ?? '')"
+  alt="Workspace Logo"
+  [ocxSrc]="url"
+  aria-label="Workspace Logo"
+  (error)="onImageLoadError(url)"
+  (load)="onImageLoad()"
+/>

@@ -23,18 +23,23 @@ export class ImageContainerComponent implements OnChanges {
   @Input() public small = false
   @Input() public imageUrl: string | undefined
   @Input() public styleClass: string | undefined
+  @Input() public defaultLogoType: 'workspace' | 'product' | undefined
   @Output() public imageLoadError = new EventEmitter<boolean>() // inform caller
 
   public displayImageUrl: string | undefined
   public defaultImageUrl$: Observable<string>
   public displayDefaultLogo = false
+  private readonly defaultLogoPaths = {
+    workspace: environment.DEFAULT_LOGO_PATH,
+    product: environment.DEFAULT_PRODUCT_PATH
+  }
 
   prepareUrlPath = prepareUrlPath
 
   constructor(appState: AppStateService) {
     this.defaultImageUrl$ = appState.currentMfe$.pipe(
       map((mfe) => {
-        return this.prepareUrlPath(mfe.remoteBaseUrl, environment.DEFAULT_LOGO_PATH)
+        return this.prepareUrlPath(mfe.remoteBaseUrl, this.defaultLogoPaths[this.defaultLogoType ?? 'workspace'])
       })
     )
   }

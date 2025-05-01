@@ -136,6 +136,12 @@ describe('WorkspaceSlotDetailComponent', () => {
    * UI Events: DETAIL
    */
   describe('Extra UI events', () => {
+    it('should return value from event object', () => {
+      const event = { target: { value: 'test value' } }
+
+      expect(component.getFilterValue(event)).toEqual('test value')
+    })
+
     it('should call stopPropagation on the event when return is called', () => {
       const mockEvent = jasmine.createSpyObj('event', ['stopPropagation'])
 
