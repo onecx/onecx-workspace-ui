@@ -10,11 +10,9 @@
 @include tabview-reduce-padding;
 
 :host ::ng-deep {
-  .p-dialog .p-dialog-content {
-    overflow-y: unset;
-  }
-  @media screen and (min-width: 576px) {
-    .sm\:dialog-header-right-slot {
+  @media screen and (min-width: 962px) {
+    .lg\:dialog-header-right-slot {
+      display: block !important;
       top: 1.55rem;
       right: 5rem;
       font-weight: var(--dialog-header-font-weight); // same as dialog-title
