@@ -6,12 +6,12 @@
   [closable]="true"
   [resizable]="true"
   [dismissableMask]="true"
-  [style]="{ 'overflow-y': 'unset' }"
+  contentStyleClass="overflow-y-auto md:overflow-y-hidden"
 >
   <ng-container *ngIf="slot?.name">
     <!-- display slot name on dialog header -->
     <div
-      class="absolute sm:dialog-header-right-slot"
+      class="absolute hidden lg:dialog-header-right-slot"
       [attr.aria-label]="'SLOT.NAME' | translate"
       [pTooltip]="'SLOT.NAME' | translate"
       tooltipPosition="top"
@@ -20,7 +20,7 @@
       {{ slot?.name }}
     </div>
     <!-- display slot name on dialog content -->
-    <span class="mt-1 mb-4 p-float-label sm:hidden">
+    <span class="mt-1 mb-4 p-float-label lg:hidden">
       <input
         pInputText
         type="text"
@@ -112,6 +112,10 @@
                   id="ws_slot_detail_picklist_unregistered_filter_clear"
                   class="p-inputgroup-addon pseudo-button bg-primary data-view-control-border cursor-pointer"
                   (click)="options.reset(); sourceFilterValue = undefined"
+                  [attr.aria-label]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
+                  [pTooltip]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
+                  tooltipPosition="top"
+                  tooltipEvent="hover"
                 >
                   <i class="pi pi-filter-slash"></i
                 ></a>
@@ -139,6 +143,10 @@
                   id="ws_slot_detail_picklist_registered_filter_clear"
                   class="p-inputgroup-addon pseudo-button bg-primary data-view-control-border cursor-pointer"
                   (click)="options.reset(); targetFilterValue = undefined"
+                  [attr.aria-label]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
+                  [pTooltip]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
+                  tooltipPosition="top"
+                  tooltipEvent="hover"
                 >
                   <i class="pi pi-filter-slash"></i
                 ></a>

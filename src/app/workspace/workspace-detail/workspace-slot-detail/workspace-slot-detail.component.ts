@@ -82,7 +82,6 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
 
   // fix picklist bug: hide controls if not one item is selected
   public onTargetSelect(event: any) {
-    console.log(event.items.length)
     this.showTargetControls = event.items.length === 1
   }
 
