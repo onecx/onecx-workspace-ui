@@ -1,3 +1,87 @@
+.layout-topbar-item {
+  display: flex;
+  align-items: center;
+  position: relative;
+
+  .layout-topbar-action {
+    user-select: none;
+    justify-content: center;
+    height: 3.2rem;
+    width: 3.2rem;
+    min-width: 3.2rem; // fix button setting
+    border-radius: 50%;
+    cursor: pointer;
+    margin: 0;
+    padding: 0.5rem !important; // fix uneven button dimensions
+    color: var(--topbar-item-text-color);
+    background-color: var(--topbar-bg-color);
+    &:hover,
+    &:focus {
+      color: var(--topbar-item-text-hover-color);
+      background-color: var(--topbar-item-text-hover-bg-color);
+      transition: background-color var(--transition-duration);
+    }
+  }
+
+  .layout-topbar-action-panel {
+    position: absolute;
+    top: 4rem;
+    right: 0;
+    z-index: 1000;
+    min-width: 13rem;
+    padding: 0.5rem 0;
+    transform-origin: top;
+
+    .layout-topbar-action-item {
+      cursor: pointer;
+    }
+  }
+
+  &.layout-search-item {
+    .layout-search-panel {
+      height: 4rem;
+      width: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+      transform-origin: top;
+
+      input {
+        border-radius: 0;
+        border: 0 none;
+
+        &:focus {
+          outline: 0 none;
+          box-shadow: none;
+        }
+      }
+
+      i {
+        font-weight: bold;
+      }
+
+      .p-inputgroup-addon {
+        border: 0 none;
+      }
+
+      .p-inputgroup-addon:first-child,
+      .p-inputgroup button:first-child,
+      .p-inputgroup input:first-child {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+      }
+
+      .p-inputgroup-addon:last-child,
+      .p-inputgroup button:last-child,
+      .p-inputgroup input:last-child {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+    }
+  }
+}
+
 .layout-topbar-action-panel {
   background-color: var(--overlay-content-bg-color);
   color: var(--text-color);
