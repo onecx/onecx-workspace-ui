@@ -74,6 +74,13 @@ describe('OneCXVerticalMainMenuComponent', () => {
     expect(component).toBeTruthy()
   })
 
+  it('should create if CURRENT_LOCATION_TOPIC capability is not set', () => {
+    ShellCapabilityServiceMock.setCapabilities([])
+    const { component } = setUp()
+
+    expect(component).toBeTruthy()
+  })
+
   it('should call ocxInitRemoteComponent with the correct config', () => {
     const { component } = setUp()
     const mockConfig: RemoteComponentConfig = {
