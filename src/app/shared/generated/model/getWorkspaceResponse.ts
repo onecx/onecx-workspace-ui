@@ -13,6 +13,6 @@ import { Workspace } from './workspace';
 
 
 export interface GetWorkspaceResponse { 
-    resource?: Workspace;
+    resource: Workspace;
 }
 

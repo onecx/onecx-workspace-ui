@@ -2,6 +2,7 @@
 
 @include invisible;
 @include card-badges;
+@include prepare-inputgroup;
 @include picklist-zebra-rows;
 @include displaying-text-responsive;
 @include dialog-modal-disable-full-height;
@@ -9,6 +10,16 @@
 @include tabview-reduce-padding;
 
 :host ::ng-deep {
+  @media screen and (min-width: 962px) {
+    .lg\:dialog-header-right-slot {
+      display: block !important;
+      top: 1.55rem;
+      right: 5rem;
+      font-weight: var(--dialog-header-font-weight); // same as dialog-title
+      font-size: var(--dialog-header-font-size);
+    }
+  }
+
   .p-fieldset {
     &.p-fieldset-toggleable .p-fieldset-legend a,
     .p-fieldset-legend {
@@ -35,7 +46,8 @@
       background-color: var(--primary-color);
     }
     .p-picklist-list {
-      height: 15.7rem;
+      max-height: 20rem;
+      overflow-y: auto;
       .p-picklist-item {
         padding: 0.3rem;
       }

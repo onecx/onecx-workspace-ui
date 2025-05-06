@@ -78,7 +78,6 @@ const prodStoreItem: ProductStoreItem = {
   imageUrl: '/image/url',
   baseUrl: '/base',
   version: '1.0',
-  classifications: 'test,game',
   microfrontends: [mfeModule, mfeModuleDeprecated, mfeModuleUndeployed, mfeComponent],
   undeployed: false,
   slots: [{ name: 'slot' }]
@@ -101,7 +100,6 @@ const productItem: Product = {
   imageUrl: '/image/url',
   baseUrl: '/base',
   version: '1.0',
-  classifications: 'test,game',
   microfrontends: [mfeModule, mfeComponent],
   slots: [{ name: 'slot' }],
   undeployed: false

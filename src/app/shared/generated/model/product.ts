@@ -25,7 +25,6 @@ export interface Product {
     version?: string;
     baseUrl?: string;
     imageUrl?: string;
-    classifications?: string;
     description?: string;
     undeployed?: boolean;
     microfrontends?: Array<Microfrontend>;
