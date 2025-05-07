@@ -11,11 +11,15 @@ import { PanelMenuModule } from 'primeng/panelmenu'
 import { PrimeIcons } from 'primeng/api'
 
 import { PPanelMenuHarness } from '@onecx/angular-testing'
-import { AppStateService } from '@onecx/angular-integration-interface'
+import { AppStateService, Capability } from '@onecx/angular-integration-interface'
 import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
 
 import { MenuItemAPIService } from 'src/app/shared/generated'
 import { OneCXVerticalMainMenuComponent } from './vertical-main-menu.component'
+import {
+  provideShellCapabilityServiceMock,
+  ShellCapabilityServiceMock
+} from '@onecx/angular-integration-interface/mocks'
 
 describe('OneCXVerticalMainMenuComponent', () => {
   const menuItemApiSpy = jasmine.createSpyObj<MenuItemAPIService>('MenuItemAPIService', ['getMenuItems'])
@@ -46,7 +50,8 @@ describe('OneCXVerticalMainMenuComponent', () => {
           provide: BASE_URL,
           useValue: baseUrlSubject
         },
-        provideRouter([{ path: 'admin/welcome', component: OneCXVerticalMainMenuComponent }])
+        provideRouter([{ path: 'admin/welcome', component: OneCXVerticalMainMenuComponent }]),
+        provideShellCapabilityServiceMock()
       ]
     })
       .overrideComponent(OneCXVerticalMainMenuComponent, {
@@ -60,9 +65,17 @@ describe('OneCXVerticalMainMenuComponent', () => {
     baseUrlSubject.next('base_url_mock')
 
     menuItemApiSpy.getMenuItems.calls.reset()
+    ShellCapabilityServiceMock.setCapabilities([Capability.CURRENT_LOCATION_TOPIC])
   })
 
   it('should create', () => {
+    const { component } = setUp()
+
+    expect(component).toBeTruthy()
+  })
+
+  it('should create if CURRENT_LOCATION_TOPIC capability is not set', () => {
+    ShellCapabilityServiceMock.setCapabilities([])
     const { component } = setUp()
 
     expect(component).toBeTruthy()
@@ -138,12 +151,10 @@ describe('OneCXVerticalMainMenuComponent', () => {
     )
 
     const { fixture, component } = setUp()
-    spyOn(component.eventsTopic$, 'asObservable').and.returnValue(
+    spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(
       of({
-        type: 'navigated',
-        payload: {
-          url: 'page-url'
-        }
+        url: 'page-url',
+        isFirst: true
       })
     )
     await component.ngOnInit()
@@ -191,12 +202,10 @@ describe('OneCXVerticalMainMenuComponent', () => {
     )
 
     const { fixture, component } = setUp()
-    spyOn(component.eventsTopic$, 'asObservable').and.returnValue(
+    spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(
       of({
-        type: 'navigated',
-        payload: {
-          url: 'page-url'
-        }
+        url: 'page-url',
+        isFirst: true
       })
     )
     await component.ngOnInit()
@@ -240,12 +249,10 @@ describe('OneCXVerticalMainMenuComponent', () => {
     )
 
     const { fixture, component } = setUp()
-    spyOn(component.eventsTopic$, 'asObservable').and.returnValue(
+    spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(
       of({
-        type: 'navigated',
-        payload: {
-          url: 'page-url'
-        }
+        url: 'page-url',
+        isFirst: true
       })
     )
     await component.ngOnInit()
@@ -289,12 +296,10 @@ describe('OneCXVerticalMainMenuComponent', () => {
     const router = TestBed.inject(Router)
 
     const { fixture, component } = setUp()
-    spyOn(component.eventsTopic$, 'asObservable').and.returnValue(
+    spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(
       of({
-        type: 'navigated',
-        payload: {
-          url: 'page-url'
-        }
+        url: 'page-url',
+        isFirst: true
       })
     )
     await component.ngOnInit()
@@ -337,12 +342,10 @@ describe('OneCXVerticalMainMenuComponent', () => {
     )
 
     const { fixture, component } = setUp()
-    spyOn(component.eventsTopic$, 'asObservable').and.returnValue(
+    spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(
       of({
-        type: 'navigated',
-        payload: {
-          url: 'page-url'
-        }
+        url: 'page-url',
+        isFirst: true
       })
     )
     await component.ngOnInit()
@@ -413,12 +416,10 @@ describe('OneCXVerticalMainMenuComponent', () => {
     )
 
     const { fixture, component } = setUp()
-    spyOn(component.eventsTopic$, 'asObservable').and.returnValue(
+    spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(
       of({
-        type: 'navigated',
-        payload: {
-          url: 'page-url'
-        }
+        url: 'page-url',
+        isFirst: true
       })
     )
     await component.ngOnInit()
@@ -499,12 +500,10 @@ describe('OneCXVerticalMainMenuComponent', () => {
       )
 
       const { fixture, component } = setUp()
-      spyOn(component.eventsTopic$, 'asObservable').and.returnValue(
+      spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(
         of({
-          type: 'navigated',
-          payload: {
-            url: '/admin/help'
-          }
+          url: '/admin/help',
+          isFirst: true
         })
       )
       await component.ngOnInit()
@@ -553,12 +552,10 @@ describe('OneCXVerticalMainMenuComponent', () => {
       )
 
       const { component } = setUp()
-      spyOn(component.eventsTopic$, 'asObservable').and.returnValue(
+      spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(
         of({
-          type: 'navigated',
-          payload: {
-            url: '/admin/help'
-          }
+          url: '/admin/help',
+          isFirst: true
         })
       )
       component.menuItems$.next({
@@ -611,12 +608,10 @@ describe('OneCXVerticalMainMenuComponent', () => {
       )
 
       const { component } = setUp()
-      spyOn(component.eventsTopic$, 'asObservable').and.returnValue(
+      spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(
         of({
-          type: 'navigated',
-          payload: {
-            url: '/admin/help'
-          }
+          url: '/admin/help',
+          isFirst: true
         })
       )
       component.menuItems$.next({
