@@ -4,6 +4,7 @@ import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
+import { Capability, ShellCapabilityService } from '@onecx/angular-integration-interface'
 import {
   AngularRemoteComponentsModule,
   BASE_URL,
@@ -23,6 +24,7 @@ import { MenuItem } from 'primeng/api'
 import { PanelMenuModule } from 'primeng/panelmenu'
 import {
   BehaviorSubject,
+  Observable,
   ReplaySubject,
   catchError,
   combineLatest,
@@ -76,13 +78,13 @@ export interface WorkspaceMenuItems {
 })
 @UntilDestroy()
 export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRemoteWebcomponent, OnInit, OnDestroy {
-  eventsTopic$ = new EventsTopic()
-
   menuItems$: BehaviorSubject<WorkspaceMenuItems | undefined> = new BehaviorSubject<WorkspaceMenuItems | undefined>(
     undefined
   )
 
   activeItemClass = 'ocx-vertical-menu-active-item'
+
+  eventsTopic$ = new EventsTopic()
 
   constructor(
     @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
@@ -90,12 +92,10 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRe
     private readonly translateService: TranslateService,
     private readonly appStateService: AppStateService,
     private readonly menuItemApiService: MenuItemAPIService,
-    private readonly menuItemService: MenuItemService
+    private readonly menuItemService: MenuItemService,
+    private readonly capabilityService: ShellCapabilityService
   ) {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
-  }
-  ngOnDestroy(): void {
-    this.eventsTopic$.destroy()
   }
 
   @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
@@ -110,15 +110,21 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRe
   }
 
   ngOnInit(): void {
-    combineLatest([
-      this.eventsTopic$.asObservable().pipe(
-        filter((e) => e.type === 'navigated'),
+    let location$: Observable<string> = this.appStateService.currentLocation$.asObservable().pipe(
+      map((e) => e.url),
+      filter((url): url is string => !!url),
+      distinctUntilChanged()
+    )
+
+    if (!this.capabilityService.hasCapability(Capability.CURRENT_LOCATION_TOPIC)) {
+      location$ = this.eventsTopic$.pipe(filter((e) => e.type === 'navigated')).pipe(
         map((e) => (e.payload as NavigatedEventPayload).url),
         filter((url): url is string => !!url),
         distinctUntilChanged()
-      ),
-      this.getMenuItems()
-    ])
+      )
+    }
+
+    combineLatest([location$, this.getMenuItems()])
       .pipe(
         map(([url, workspaceItems]) => {
           const currentItems = this.menuItems$.getValue()
@@ -136,6 +142,10 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRe
         })
       )
       .subscribe(this.menuItems$)
+  }
+
+  ngOnDestroy(): void {
+    this.eventsTopic$.destroy()
   }
 
   private getMenuItems() {
