@@ -76,7 +76,6 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   public sortField = 'name'
   public sortOrder = -1
   public quickFilterValue: SlotFilterType = 'ALL'
-  public quickFilterValue2: SlotFilterType = 'ALL'
   public quickFilterItems: ExtendedSelectItem[]
   public quickFilterCount = ''
   public exceptionKey: string | undefined = undefined
@@ -323,17 +322,14 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
    * UI Events
    */
   public onQuickFilterChange(ev: any): void {
-    if (ev.value) {
-      this.quickFilterValue = ev.value
-      this.quickFilterValue2 = this.quickFilterValue // bug in select button on click active button again
-      if (ev.value === 'ALL') {
-        this.filterBy = this.filterByDefault
-        this.dv?.filter('', 'contains')
-      } else {
-        this.filterBy = 'type'
-        this.dv?.filter(ev.value, 'contains')
-      }
-    } else this.quickFilterValue = this.quickFilterValue2 // remember, prevent null because bug
+    this.quickFilterValue = ev.value
+    if (ev.value === 'ALL') {
+      this.filterBy = this.filterByDefault
+      this.dv?.filter('', 'contains')
+    } else {
+      this.filterBy = 'type'
+      this.dv?.filter(ev.value, 'contains')
+    }
   }
   public onFilterChange(filter: string): void {
     if (filter === '') {
