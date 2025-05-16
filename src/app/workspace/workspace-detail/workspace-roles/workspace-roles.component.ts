@@ -68,7 +68,6 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   public iamAvailable = false
   public exceptionKey: string | undefined = undefined
   public quickFilterValue: RoleFilterType = 'ALL'
-  public quickFilterValue2: RoleFilterType = 'WORKSPACE'
   public quickFilterItems: ExtendedSelectItem[]
   public quickFilterCount = ''
   public changeMode: ChangeMode = 'VIEW'
@@ -305,17 +304,14 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
    * UI Events
    */
   public onQuickFilterChange(ev: any): void {
-    if (ev.value) {
-      this.quickFilterValue = ev.value
-      this.quickFilterValue2 = this.quickFilterValue // bug in select button on click active button again
-      if (ev.value === 'ALL') {
-        this.filterBy = this.filterByDefault
-        this.dv?.filter('', 'contains')
-      } else {
-        this.filterBy = 'type'
-        this.dv?.filter(ev.value, 'contains')
-      }
-    } else this.quickFilterValue = this.quickFilterValue2 // remember, prevent null because bug
+    this.quickFilterValue = ev.value
+    if (ev.value === 'ALL') {
+      this.filterBy = this.filterByDefault
+      this.dv?.filter('', 'contains')
+    } else {
+      this.filterBy = 'type'
+      this.dv?.filter(ev.value, 'contains')
+    }
   }
   public onGetQuickFilterCount(roleType: RoleFilterType): string {
     switch (roleType) {

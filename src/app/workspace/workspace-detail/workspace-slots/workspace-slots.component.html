@@ -45,6 +45,7 @@
           [options]="quickFilterItems"
           [(ngModel)]="quickFilterValue"
           (onChange)="onQuickFilterChange($event)"
+          [allowEmpty]="false"
           [ariaLabel]="'DIALOG.SLOT.QUICK_FILTER.LABEL' | translate"
           [pTooltip]="'DIALOG.SLOT.QUICK_FILTER.TOOLTIP' | translate"
           tooltipPosition="top"

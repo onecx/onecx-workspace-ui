@@ -127,6 +127,7 @@
                 [options]="treeNodeLabelSwitchItems"
                 [(ngModel)]="treeNodeLabelSwitchValue"
                 [disabled]="menuNodes.length === 0"
+                [allowEmpty]="false"
                 (onChange)="onTreeNodeLabelSwitchChange($event)"
                 [ariaLabel]="'DIALOG.MENU.HEADER.DISPLAYED_ITEM' | translate"
                 [pTooltip]="'DIALOG.MENU.HEADER.DISPLAYED_ITEM' | translate"
@@ -150,6 +151,7 @@
                   [options]="(treeTableContentSwitchItems$ | async) ?? []"
                   [(ngModel)]="treeTableContentSwitchValue"
                   [disabled]="menuNodes.length === 0"
+                  [allowEmpty]="false"
                   (onChange)="onToggleTreeTableContent($event)"
                 >
                   <ng-template let-item pTemplate
@@ -193,6 +195,7 @@
                 [options]="(treeTableExpandSwitchItems$ | async) ?? []"
                 [(ngModel)]="treeTableExpandSwitchValue"
                 [disabled]="menuNodes.length === 0"
+                [allowEmpty]="false"
                 (onChange)="onToggleTreeViewMode($event)"
               >
                 <ng-template let-item pTemplate
