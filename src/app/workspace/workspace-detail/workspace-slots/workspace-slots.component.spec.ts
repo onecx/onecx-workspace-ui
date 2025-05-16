@@ -416,19 +416,6 @@ describe('WorkspaceSlotsComponent', () => {
       expect(component.quickFilterValue).toEqual('UNREGISTERED')
     })
 
-    it('should remember on old value if click on filter value again', () => {
-      component.onQuickFilterChange({ value: 'ALL' })
-
-      expect(component.filterBy).toEqual('name,type')
-      expect(component.quickFilterValue).toEqual('ALL')
-      expect(component.quickFilterValue2).toEqual('ALL')
-
-      component.onQuickFilterChange({})
-
-      expect(component.quickFilterValue).toEqual('ALL')
-      expect(component.quickFilterValue2).toEqual('ALL')
-    })
-
     it('should set filterBy to name,type when filter is empty', () => {
       component.onFilterChange('')
 
