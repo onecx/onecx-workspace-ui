@@ -321,7 +321,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
           {
             id: 'ws_detail_operator_message',
             severity: 'warn',
-            life: 500000,
+            life: 5000,
             closable: true,
             summary: data['INTERNAL.OPERATOR_HINT'],
             detail: data['INTERNAL.OPERATOR_MESSAGE']
