@@ -192,6 +192,7 @@
     "MODIFICATION_USER": "Geändert von",
     "MANDATORY": "Notwendig",
     "OPERATOR": "Automatisiert erstellt",
+    "OPERATOR_HINT": "Hinweis",
     "OPERATOR_MESSAGE": "Dieser Workspace wurde automatisiert erstellt. Alle Änderungen gehen beim nächsten Deployment verloren.",
     "TOOLTIPS": {
       "CREATION_DATE": "Zeitpunkt der Erstellung",

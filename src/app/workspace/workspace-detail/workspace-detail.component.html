@@ -32,13 +32,17 @@
       >
         <!-- showOperatorMessage -->
         <ng-container *ocxIfPermission="'WORKSPACE#EDIT'">
-          <p-message
+          <!-- PrimeNG  17: Using p-messages uses the correct alert role (aria)
+               PrimeNG >17: Try again with p-message - check correct use of aria role
+          -->
+          <p-messages
             *ngIf="workspace?.operator && showOperatorMessage"
-            id="ws_detail_operator_message"
-            styleClass="absolute z-1 max-w-11 fadeout animation-duration-1000 animation-delay-3000 animation-iteration-1 animation-fill-forwards"
-            severity="warn"
-            [text]="'INTERNAL.OPERATOR_MESSAGE' | translate"
-          ></p-message>
+            [(value)]="messages"
+            [enableService]="false"
+            [style]="{ 'margin-top': '-20px' }"
+            styleClass="absolute z-1 max-w-11"
+          >
+          </p-messages>
         </ng-container>
         <app-workspace-props
           [workspace]="workspace"
