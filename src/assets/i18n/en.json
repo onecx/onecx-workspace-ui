@@ -192,6 +192,7 @@
     "MODIFICATION_USER": "Changed by",
     "MANDATORY": "Mandatory",
     "OPERATOR": "Created by automation",
+    "OPERATOR_HINT": "Hint",
     "OPERATOR_MESSAGE": "This Workspace was created by automation. All changes will be lost on the next deployment.",
     "TOOLTIPS": {
       "CREATION_DATE": "Timestamp of the creation",

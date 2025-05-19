@@ -260,6 +260,14 @@ describe('WorkspaceDetailComponent', () => {
     })
   })
 
+  describe('test message translations', () => {
+    it('should have prepared messages', () => {
+      component.ngOnInit()
+
+      expect(component.messages.length).toBe(1)
+    })
+  })
+
   describe('test action buttons', () => {
     it('should have prepared action buttons onInit: close', () => {
       apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
