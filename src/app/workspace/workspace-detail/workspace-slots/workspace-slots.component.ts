@@ -22,7 +22,12 @@ import {
 } from 'src/app/shared/generated'
 import { goToEndpoint, limitText } from 'src/app/shared/utils'
 
-export type SlotType = 'WORKSPACE' | 'UNREGISTERED' | 'WORKSPACE,UNREGISTERED'
+export type SlotType =
+  | 'WORKSPACE'
+  | 'UNREGISTERED'
+  | 'OUTDATED'
+  | 'WORKSPACE,OUTDATED'
+  | 'WORKSPACE,UNREGISTERED,OUTDATED'
 export type SlotFilterType = 'ALL' | SlotType
 export type ExtendedSelectItem = SelectItem & { tooltipKey?: string }
 export type ChangeMode = 'VIEW' | 'CREATE' | 'EDIT' | 'COPY' | 'DELETE'
@@ -108,6 +113,11 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
         label: 'DIALOG.SLOT.QUICK_FILTER.UNREGISTERED',
         value: 'UNREGISTERED',
         tooltipKey: 'DIALOG.SLOT.QUICK_FILTER.UNREGISTERED.TOOLTIP'
+      },
+      {
+        label: 'DIALOG.SLOT.QUICK_FILTER.OUTDATED',
+        value: 'OUTDATED',
+        tooltipKey: 'DIALOG.SLOT.QUICK_FILTER.OUTDATED.TOOLTIP'
       },
       {
         label: 'DIALOG.ROLE.QUICK_FILTER.WORKSPACE',
@@ -218,6 +228,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
           ws.changes = ps.undeployed || ps.deprecated || ws.changes
           ws.deprecated = ps.deprecated
           ws.undeployed = ps.undeployed
+          if (ws.changes === true) ws.type = 'WORKSPACE,OUTDATED'
         }
       })
       // 2. collect all product store components
