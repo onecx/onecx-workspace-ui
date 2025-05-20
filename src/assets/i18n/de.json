@@ -338,6 +338,8 @@
         "TOOLTIP": "Filter für Registrierung",
         "ALL": "Alle",
         "ALL.TOOLTIP": "Registrierte und Nichtregistrierte",
+        "OUTDATED": "Veraltet",
+        "OUTDATED.TOOLTIP": "Als veraltet markiert - bitte nicht mehr verwenden",
         "UNREGISTERED": "Nicht registriert",
         "UNREGISTERED.TOOLTIP": "Für den Workspace nicht registriert",
         "WORKSPACE": "Workspace",
