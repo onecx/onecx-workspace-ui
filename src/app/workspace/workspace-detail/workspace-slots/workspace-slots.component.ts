@@ -22,12 +22,7 @@ import {
 } from 'src/app/shared/generated'
 import { goToEndpoint, limitText } from 'src/app/shared/utils'
 
-export type SlotType =
-  | 'WORKSPACE'
-  | 'UNREGISTERED'
-  | 'OUTDATED'
-  | 'WORKSPACE,OUTDATED'
-  | 'WORKSPACE,UNREGISTERED,OUTDATED'
+export type SlotType = 'WORKSPACE' | 'UNREGISTERED' | 'OUTDATED' | 'WORKSPACE,OUTDATED'
 export type SlotFilterType = 'ALL' | SlotType
 export type ExtendedSelectItem = SelectItem & { tooltipKey?: string }
 export type ChangeMode = 'VIEW' | 'CREATE' | 'EDIT' | 'COPY' | 'DELETE'
