@@ -106,6 +106,10 @@ app:
         onecx-theme-data:
           name: 'onecx-theme-data'
           description: 'Use theme data'
+        onecx-theme-infos:
+          name: 'onecx-theme-infos'
+          description: 'Use theme infos'
+          deprecated: true
         onecx-custom-user-info:
           name: 'onecx-custom-user-info'
           description: 'Display specific user info'
