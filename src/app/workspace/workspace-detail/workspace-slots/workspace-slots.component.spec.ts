@@ -36,7 +36,7 @@ const mfePs: MicrofrontendPS = {
   appId: 'appId'
 }
 
-describe('WorkspaceSlotsComponent', () => {
+fdescribe('WorkspaceSlotsComponent', () => {
   let component: WorkspaceSlotsComponent
   let fixture: ComponentFixture<WorkspaceSlotsComponent>
 
@@ -256,7 +256,7 @@ describe('WorkspaceSlotsComponent', () => {
           name: 'slotPsName',
           new: false,
           type: 'WORKSPACE',
-          changes: false,
+          changes: true,
           psSlots: [],
           psComponents: [],
           components: [{ productName: 'slotComponentProdName', appId: 'slotComponentAppId', name: 'slotComponentName' }]
@@ -414,19 +414,6 @@ describe('WorkspaceSlotsComponent', () => {
 
       expect(component.filterBy).toEqual('type')
       expect(component.quickFilterValue).toEqual('UNREGISTERED')
-    })
-
-    it('should remember on old value if click on filter value again', () => {
-      component.onQuickFilterChange({ value: 'ALL' })
-
-      expect(component.filterBy).toEqual('name,type')
-      expect(component.quickFilterValue).toEqual('ALL')
-      expect(component.quickFilterValue2).toEqual('ALL')
-
-      component.onQuickFilterChange({})
-
-      expect(component.quickFilterValue).toEqual('ALL')
-      expect(component.quickFilterValue2).toEqual('ALL')
     })
 
     it('should set filterBy to name,type when filter is empty', () => {

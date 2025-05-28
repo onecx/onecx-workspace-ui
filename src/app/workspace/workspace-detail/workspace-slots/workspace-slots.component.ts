@@ -22,7 +22,7 @@ import {
 } from 'src/app/shared/generated'
 import { goToEndpoint, limitText } from 'src/app/shared/utils'
 
-export type SlotType = 'WORKSPACE' | 'UNREGISTERED' | 'WORKSPACE,UNREGISTERED'
+export type SlotType = 'WORKSPACE' | 'UNREGISTERED' | 'OUTDATED' | 'WORKSPACE,OUTDATED'
 export type SlotFilterType = 'ALL' | SlotType
 export type ExtendedSelectItem = SelectItem & { tooltipKey?: string }
 export type ChangeMode = 'VIEW' | 'CREATE' | 'EDIT' | 'COPY' | 'DELETE'
@@ -76,7 +76,6 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   public sortField = 'name'
   public sortOrder = -1
   public quickFilterValue: SlotFilterType = 'ALL'
-  public quickFilterValue2: SlotFilterType = 'ALL'
   public quickFilterItems: ExtendedSelectItem[]
   public quickFilterCount = ''
   public exceptionKey: string | undefined = undefined
@@ -109,6 +108,11 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
         label: 'DIALOG.SLOT.QUICK_FILTER.UNREGISTERED',
         value: 'UNREGISTERED',
         tooltipKey: 'DIALOG.SLOT.QUICK_FILTER.UNREGISTERED.TOOLTIP'
+      },
+      {
+        label: 'DIALOG.SLOT.QUICK_FILTER.OUTDATED',
+        value: 'OUTDATED',
+        tooltipKey: 'DIALOG.SLOT.QUICK_FILTER.OUTDATED.TOOLTIP'
       },
       {
         label: 'DIALOG.ROLE.QUICK_FILTER.WORKSPACE',
@@ -219,6 +223,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
           ws.changes = ps.undeployed || ps.deprecated || ws.changes
           ws.deprecated = ps.deprecated
           ws.undeployed = ps.undeployed
+          if (ws.changes === true) ws.type = 'WORKSPACE,OUTDATED'
         }
       })
       // 2. collect all product store components
@@ -323,17 +328,14 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
    * UI Events
    */
   public onQuickFilterChange(ev: any): void {
-    if (ev.value) {
-      this.quickFilterValue = ev.value
-      this.quickFilterValue2 = this.quickFilterValue // bug in select button on click active button again
-      if (ev.value === 'ALL') {
-        this.filterBy = this.filterByDefault
-        this.dv?.filter('', 'contains')
-      } else {
-        this.filterBy = 'type'
-        this.dv?.filter(ev.value, 'contains')
-      }
-    } else this.quickFilterValue = this.quickFilterValue2 // remember, prevent null because bug
+    this.quickFilterValue = ev.value
+    if (ev.value === 'ALL') {
+      this.filterBy = this.filterByDefault
+      this.dv?.filter('', 'contains')
+    } else {
+      this.filterBy = 'type'
+      this.dv?.filter(ev.value, 'contains')
+    }
   }
   public onFilterChange(filter: string): void {
     if (filter === '') {

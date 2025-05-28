@@ -270,6 +270,7 @@
             styleClass="flex flex-nowrap"
             [options]="languagesAvailable"
             (onOptionClick)="onAddLanguage($event.option.value)"
+            [allowEmpty]="false"
             [ariaLabel]="'DIALOG.MENU.TABS.I18N.ADD_LANGUAGE' | translate"
             [pTooltip]="'DIALOG.MENU.TABS.I18N.ADD_LANGUAGE' | translate"
             tooltipPosition="top"

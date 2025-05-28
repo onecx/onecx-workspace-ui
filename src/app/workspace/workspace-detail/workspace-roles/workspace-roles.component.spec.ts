@@ -374,19 +374,6 @@ describe('WorkspaceRolesComponent', () => {
       component.onFilterChange('testFilter')
     })
 
-    it('should remember on old value if click on filter value again', () => {
-      component.onQuickFilterChange({ value: 'ALL' })
-
-      expect(component.filterBy).toEqual('name,type')
-      expect(component.quickFilterValue).toEqual('ALL')
-      expect(component.quickFilterValue2).toEqual('ALL')
-
-      component.onQuickFilterChange({})
-
-      expect(component.quickFilterValue).toEqual('ALL')
-      expect(component.quickFilterValue2).toEqual('ALL')
-    })
-
     it('should quick filter after searching', () => {
       const wRoles: WorkspaceRole[] = [{ name: 'role1', description: 'desc' }]
       wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: wRoles as WorkspaceRolePageResult }))

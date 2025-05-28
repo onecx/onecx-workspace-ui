@@ -71,6 +71,7 @@ app:
           technology: WEBCOMPONENTMODULE
           remoteName: onecx-workspace
           tagName: ocx-list-workspaces-using-theme-component
+          deprecated: true
         list-workspaces-using-product:
           exposedModule: "./OneCXListWorkspacesUsingProductComponent"
           description: "List of Workspaces using the given Product"
@@ -78,6 +79,7 @@ app:
           technology: WEBCOMPONENTMODULE
           remoteName: onecx-workspace
           tagName: ocx-list-workspaces-using-product-component
+          deprecated: true
         workspace-footer:
           exposedModule: "./OneCXWorkspaceFooterComponent"
           description: "Workspace Footer"
@@ -106,6 +108,10 @@ app:
         onecx-theme-data:
           name: 'onecx-theme-data'
           description: 'Use theme data'
+        onecx-theme-infos:
+          name: 'onecx-theme-infos'
+          description: 'Use theme infos'
+          deprecated: true
         onecx-custom-user-info:
           name: 'onecx-custom-user-info'
           description: 'Display specific user info'

@@ -192,6 +192,7 @@
     "MODIFICATION_USER": "Changed by",
     "MANDATORY": "Mandatory",
     "OPERATOR": "Created by automation",
+    "OPERATOR_HINT": "Hint",
     "OPERATOR_MESSAGE": "This Workspace was created by automation. All changes will be lost on the next deployment.",
     "TOOLTIPS": {
       "CREATION_DATE": "Timestamp of the creation",
@@ -337,6 +338,8 @@
         "TOOLTIP": "Filter for Registration",
         "ALL": "All",
         "ALL.TOOLTIP": "All = Regardless of the status of registration",
+        "OUTDATED": "Outdated",
+        "OUTDATED.TOOLTIP": "Marked as outdated - please do not use anymore",
         "UNREGISTERED": "Non-registered",
         "UNREGISTERED.TOOLTIP": "Not registered for the workspace",
         "WORKSPACE": "Workspace",

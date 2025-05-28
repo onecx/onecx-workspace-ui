@@ -192,6 +192,7 @@
     "MODIFICATION_USER": "Geändert von",
     "MANDATORY": "Notwendig",
     "OPERATOR": "Automatisiert erstellt",
+    "OPERATOR_HINT": "Hinweis",
     "OPERATOR_MESSAGE": "Dieser Workspace wurde automatisiert erstellt. Alle Änderungen gehen beim nächsten Deployment verloren.",
     "TOOLTIPS": {
       "CREATION_DATE": "Zeitpunkt der Erstellung",
@@ -337,6 +338,8 @@
         "TOOLTIP": "Filter für Registrierung",
         "ALL": "Alle",
         "ALL.TOOLTIP": "Registrierte und Nichtregistrierte",
+        "OUTDATED": "Veraltet",
+        "OUTDATED.TOOLTIP": "Als veraltet markiert - bitte nicht mehr verwenden",
         "UNREGISTERED": "Nicht registriert",
         "UNREGISTERED.TOOLTIP": "Für den Workspace nicht registriert",
         "WORKSPACE": "Workspace",

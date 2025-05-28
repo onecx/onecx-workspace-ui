@@ -1,6 +1,7 @@
 @import 'src/app/_ws-mixins.scss';
 
 @include prepare-inputgroup;
+@include search-criteria-select-button;
 
 :host ::ng-deep {
   .mt-05 {
