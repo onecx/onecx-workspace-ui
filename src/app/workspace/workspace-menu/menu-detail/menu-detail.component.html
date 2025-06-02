@@ -120,7 +120,7 @@
               (onSelect)="onSelect($event)"
               [minLength]="0"
               styleClass="w-full"
-              scrollHeight="150px"
+              scrollHeight="130px"
               field="mfePath"
               [showClear]="true"
               [dropdown]="true"
@@ -133,8 +133,8 @@
             >
               <ng-template let-mfe pTemplate="item">
                 <div class="flex flex-row column-gap-2 align-items-center">
-                  <div class="hidden md:block w-35rem text-responsive">{{ mfe.mfePath }}</div>
-                  <div class="block md:hidden w-25rem text-responsive">{{ mfe.mfePath }}</div>
+                  <div class="hidden md:block w-30rem text-responsive">{{ mfe.mfePath }}</div>
+                  <div class="block md:hidden w-15rem text-responsive">{{ mfe.mfePath }}</div>
                   <div class="flex flex-column">
                     <div class="text-sm font-bold" [class.danger-action-text]="!mfe.id">
                       {{ mfe.id ? mfe.product : (mfe.product | translate) }}
