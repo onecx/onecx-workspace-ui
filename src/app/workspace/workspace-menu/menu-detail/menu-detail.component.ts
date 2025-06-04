@@ -1,8 +1,8 @@
-import { Component, EventEmitter, Input, OnChanges, Output, Renderer2, SimpleChanges, ViewChild } from '@angular/core'
+import { Component, EventEmitter, Input, OnChanges, Output, Renderer2, ViewChild } from '@angular/core'
 import { Location } from '@angular/common'
 import { DefaultValueAccessor, FormControl, FormGroup, Validators } from '@angular/forms'
 import { TranslateService } from '@ngx-translate/core'
-import { Observable, Subject, catchError, map, of, takeUntil } from 'rxjs'
+import { firstValueFrom, catchError, map, of, Subject, takeUntil } from 'rxjs'
 import { TabView } from 'primeng/tabview'
 import { SelectItem } from 'primeng/api'
 
@@ -59,7 +59,6 @@ export class MenuDetailComponent implements OnChanges {
   public dateFormat = 'short'
   public tabIndex = 0
   public menuItem: MenuItem | undefined
-  private menuItem$: Observable<MenuItem | null> = new Observable<MenuItem | null>()
   public iconItems: SelectItem[] = [] // default value is empty
   public scopeItems: SelectItem[]
   private readonly posPattern = '[0-9]{1,9}'
@@ -116,7 +115,7 @@ export class MenuDetailComponent implements OnChanges {
     })
   }
 
-  public ngOnChanges(changes: SimpleChanges): void {
+  public ngOnChanges(): void {
     if (this.displayDetailDialog) {
       this.cleanupMfeUrls() // remove special entries
       this.loadMfeUrls() // load first time only
@@ -131,9 +130,8 @@ export class MenuDetailComponent implements OnChanges {
           external: false,
           disabled: false
         } as MenuItem
-        this.formGroup.patchValue(this.menuItem)
-        this.prepareUrlList()
-      } else if (this.menuItemOrg?.id) this.getMenu() // edit
+        this.fillForm(this.menuItem)
+      } else this.getMenu() // edit
     }
   }
 
@@ -142,40 +140,24 @@ export class MenuDetailComponent implements OnChanges {
     else return (item.children[item.children.length - 1].position ?? 0) + 1
   }
 
-  public getMenu() {
-    this.menuItem$ = this.menuApi.getMenuItemById({ menuItemId: this.menuItemOrg?.id ?? '' }).pipe(
-      catchError((err) => {
-        this.msgService.error({ summaryKey: 'DIALOG.MENU.MENU_ITEM_NOT_FOUND' })
-        console.error('getMenuItemById', err)
-        return of(err)
-      })
-    )
-    this.menuItem$.subscribe({
-      next: (item) => {
-        this.menuItem = item ?? undefined
-        if (this.menuItem && this.displayDetailDialog) {
-          this.fillForm()
-        }
-      }
-    })
-  }
-  private fillForm() {
-    if (this.menuItem) {
-      this.formGroup.reset()
-      this.formGroup.setValue({
-        parentItemId: this.menuItem.parentItemId,
-        key: this.menuItem.key,
-        name: this.menuItem.name,
-        badge: this.menuItem.badge,
-        scope: this.menuItem.scope,
-        position: this.menuItem.position,
-        disabled: this.menuItem.disabled,
-        external: this.menuItem.external,
-        url: this.prepareUrlList(this.menuItem.url),
-        description: this.menuItem.description
-      })
-      this.adjustExternalLinkCheckbox(this.menuItem.url)
+  private async getMenu() {
+    if (this.menuItemOrg?.id) {
+      const menuItem$ = this.menuApi.getMenuItemById({ menuItemId: this.menuItemOrg.id }).pipe(
+        catchError((err) => {
+          this.msgService.error({ summaryKey: 'DIALOG.MENU.MENU_ITEM_NOT_FOUND' })
+          console.error('getMenuItemById', err)
+          return of(undefined)
+        })
+      )
+      this.menuItem = await firstValueFrom(menuItem$)
+      if (this.menuItem) this.fillForm(this.menuItem)
     }
+  }
+
+  private fillForm(item: MenuItem) {
+    this.formGroup.reset()
+    this.formGroup.patchValue({ ...item, url: this.prepareUrlList(item.url) })
+    this.adjustExternalLinkCheckbox(item.url)
   }
 
   /**
