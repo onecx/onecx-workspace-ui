@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, Renderer2, SimpleChanges, ViewChild } from '@angular/core'
+import { Component, EventEmitter, Input, OnChanges, Output, Renderer2, ViewChild } from '@angular/core'
 import { Location } from '@angular/common'
 import { DefaultValueAccessor, FormControl, FormGroup, Validators } from '@angular/forms'
 import { TranslateService } from '@ngx-translate/core'
@@ -115,7 +115,7 @@ export class MenuDetailComponent implements OnChanges {
     })
   }
 
-  public ngOnChanges(changes: SimpleChanges): void {
+  public ngOnChanges(): void {
     if (this.displayDetailDialog) {
       this.cleanupMfeUrls() // remove special entries
       this.loadMfeUrls() // load first time only
@@ -131,8 +131,6 @@ export class MenuDetailComponent implements OnChanges {
           disabled: false
         } as MenuItem
         this.fillForm(this.menuItem)
-        //  this.formGroup.patchValue(this.menuItem)
-        //  this.prepareUrlList()
       } else this.getMenu() // edit
     }
   }

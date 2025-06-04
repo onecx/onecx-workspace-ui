@@ -1,4 +1,4 @@
-import { NO_ERRORS_SCHEMA, Component, SimpleChange } from '@angular/core'
+import { NO_ERRORS_SCHEMA, Component } from '@angular/core'
 import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing'
 import { Location } from '@angular/common'
 import { FormControl, FormGroup, FormsModule, Validators } from '@angular/forms'
@@ -214,7 +214,7 @@ describe('MenuDetailComponent', () => {
       component.menuItemOrg = { id: 'menuItemId' }
       component.displayDetailDialog = true
 
-      component.ngOnChanges({})
+      component.ngOnChanges()
 
       expect(component.formGroup.reset).toHaveBeenCalled()
       expect(component.menuItem?.parentItemId).toBe('menuItemId')
@@ -227,7 +227,7 @@ describe('MenuDetailComponent', () => {
       component.displayDetailDialog = true
       spyOn(component, 'getMaxChildrenPosition')
 
-      component.ngOnChanges({})
+      component.ngOnChanges()
 
       expect(component.menuItem?.parentItemId).toBeUndefined()
       expect(component.menuItem?.position).toBe(0)
@@ -260,7 +260,7 @@ describe('MenuDetailComponent', () => {
       component.displayDetailDialog = true
       spyOn(component as any, 'loadMfeUrls')
 
-      component.ngOnChanges({})
+      component.ngOnChanges()
       tick(200)
 
       expect(component.menuItem).toEqual(mockMenuItems[0])
@@ -282,7 +282,7 @@ describe('MenuDetailComponent', () => {
       }
       wProductApiServiceSpy.getProductsByWorkspaceId.and.returnValue(of([prod]))
 
-      component.ngOnChanges({})
+      component.ngOnChanges()
 
       expect(component.menuItems?.length).toBe(5)
     })
@@ -302,7 +302,7 @@ describe('MenuDetailComponent', () => {
       }
       wProductApiServiceSpy.getProductsByWorkspaceId.and.returnValue(of([prod]))
 
-      component.ngOnChanges({})
+      component.ngOnChanges()
 
       expect(component.menuItems?.length).toEqual(5)
     })
@@ -313,7 +313,7 @@ describe('MenuDetailComponent', () => {
       component.menuItemOrg = { id: 'menuItemId' }
       component.displayDetailDialog = true
 
-      component.ngOnChanges({})
+      component.ngOnChanges()
 
       expect(component.menuItem).toBeUndefined()
     })
@@ -326,7 +326,7 @@ describe('MenuDetailComponent', () => {
       component.displayDetailDialog = true
       spyOn(console, 'error')
 
-      component.ngOnChanges({})
+      component.ngOnChanges()
 
       expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.MENU.MENU_ITEM_NOT_FOUND' })
       expect(console.error).toHaveBeenCalledWith('getMenuItemById', errorResponse)
@@ -353,7 +353,7 @@ describe('MenuDetailComponent', () => {
         component.workspaceId = 'workspaceId'
         component.displayDetailDialog = true
 
-        component.ngOnChanges({})
+        component.ngOnChanges()
         tick(200)
 
         const controlMfeItems: MenuURL[] = []
@@ -373,7 +373,7 @@ describe('MenuDetailComponent', () => {
         component.displayDetailDialog = true
         spyOn(console, 'error')
 
-        component.ngOnChanges({ workspaceId: {} as SimpleChange })
+        component.ngOnChanges()
 
         expect(console.error).toHaveBeenCalledWith('getProductsByWorkspaceId', errorResponse)
       })
