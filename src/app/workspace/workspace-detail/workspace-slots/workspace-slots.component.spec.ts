@@ -36,7 +36,7 @@ const mfePs: MicrofrontendPS = {
   appId: 'appId'
 }
 
-fdescribe('WorkspaceSlotsComponent', () => {
+describe('WorkspaceSlotsComponent', () => {
   let component: WorkspaceSlotsComponent
   let fixture: ComponentFixture<WorkspaceSlotsComponent>
 

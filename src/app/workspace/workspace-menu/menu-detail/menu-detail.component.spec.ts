@@ -1,5 +1,5 @@
-import { NO_ERRORS_SCHEMA, Component, SimpleChange } from '@angular/core'
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
+import { NO_ERRORS_SCHEMA, Component } from '@angular/core'
+import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing'
 import { Location } from '@angular/common'
 import { FormControl, FormGroup, FormsModule, Validators } from '@angular/forms'
 import { By } from '@angular/platform-browser'
@@ -36,7 +36,7 @@ const form = new FormGroup({
 
 const mockMenuItems: MenuItem[] = [
   {
-    id: 'id',
+    id: 'id1',
     modificationCount: 0,
     parentItemId: 'parentId',
     key: 'key',
@@ -197,14 +197,14 @@ describe('MenuDetailComponent', () => {
     mockUserService.lang$.next('de')
     initializeComponent()
 
-    expect(component.dateFormat).toEqual('dd.MM.yyyy HH:mm:ss')
+    expect(component.dateFormat).toBe('dd.MM.yyyy HH:mm:ss')
   })
 
   it('should set English date format', () => {
     mockUserService.lang$.next('en')
     initializeComponent()
 
-    expect(component.dateFormat).toEqual('M/d/yy, hh:mm:ss a')
+    expect(component.dateFormat).toBe('M/d/yy, hh:mm:ss a')
   })
 
   describe('ngOnChanges', () => {
@@ -214,7 +214,7 @@ describe('MenuDetailComponent', () => {
       component.menuItemOrg = { id: 'menuItemId' }
       component.displayDetailDialog = true
 
-      component.ngOnChanges({})
+      component.ngOnChanges()
 
       expect(component.formGroup.reset).toHaveBeenCalled()
       expect(component.menuItem?.parentItemId).toBe('menuItemId')
@@ -227,10 +227,10 @@ describe('MenuDetailComponent', () => {
       component.displayDetailDialog = true
       spyOn(component, 'getMaxChildrenPosition')
 
-      component.ngOnChanges({})
+      component.ngOnChanges()
 
       expect(component.menuItem?.parentItemId).toBeUndefined()
-      expect(component.menuItem?.position).toEqual(0)
+      expect(component.menuItem?.position).toBe(0)
       expect(component.getMaxChildrenPosition).toHaveBeenCalledTimes(0)
     })
 
@@ -252,31 +252,20 @@ describe('MenuDetailComponent', () => {
       expect(component.getMaxChildrenPosition(item)).toEqual(1)
     })
 
-    it('should call getMenu in view mode onChanges and fetch menuItem', () => {
-      menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[0]))
-      component.changeMode = 'VIEW'
-      component.menuItemOrg = { id: 'menuItemId' }
-      component.displayDetailDialog = true
-
-      component.ngOnChanges({})
-
-      expect(component.menuItem).toBe(mockMenuItems[0])
-    })
-
-    it('should call getMenu in view mode onChanges and fetch menuItem', () => {
+    it('should call getMenu in view mode onChanges and get menu item', fakeAsync(() => {
       menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[0]))
       wProductApiServiceSpy.getProductsByWorkspaceId.and.returnValue(of([product]))
       component.changeMode = 'VIEW'
-      component.workspaceId = 'id'
       component.menuItemOrg = { id: 'menuItemId' }
       component.displayDetailDialog = true
       spyOn(component as any, 'loadMfeUrls')
 
-      component.ngOnChanges({ workspaceId: {} as SimpleChange })
+      component.ngOnChanges()
+      tick(200)
 
-      expect(component.menuItem).toBe(mockMenuItems[0])
+      expect(component.menuItem).toEqual(mockMenuItems[0])
       expect((component as any).loadMfeUrls).toHaveBeenCalled()
-    })
+    }))
 
     it('should prepare mfe paths for menu items - empty product path', () => {
       component.changeMode = 'VIEW'
@@ -293,9 +282,9 @@ describe('MenuDetailComponent', () => {
       }
       wProductApiServiceSpy.getProductsByWorkspaceId.and.returnValue(of([prod]))
 
-      component.ngOnChanges({})
+      component.ngOnChanges()
 
-      expect(component.menuItems?.length).toEqual(5)
+      expect(component.menuItems?.length).toBe(5)
     })
 
     it('should prepare mfe paths for menu items - empty mfe path', () => {
@@ -313,7 +302,7 @@ describe('MenuDetailComponent', () => {
       }
       wProductApiServiceSpy.getProductsByWorkspaceId.and.returnValue(of([prod]))
 
-      component.ngOnChanges({})
+      component.ngOnChanges()
 
       expect(component.menuItems?.length).toEqual(5)
     })
@@ -324,17 +313,20 @@ describe('MenuDetailComponent', () => {
       component.menuItemOrg = { id: 'menuItemId' }
       component.displayDetailDialog = true
 
-      component.ngOnChanges({})
+      component.ngOnChanges()
 
-      expect(component.menuItem).toBe(undefined)
+      expect(component.menuItem).toBeUndefined()
     })
 
     it('should call getMenu in view mode onChanges and catch error if api call fails', () => {
       const errorResponse = { status: 400, statusText: 'Error on getting menu items' }
       menuApiServiceSpy.getMenuItemById.and.returnValue(throwError(() => errorResponse))
+      component.changeMode = 'VIEW'
+      component.menuItemOrg = { id: 'menuItemId' }
+      component.displayDetailDialog = true
       spyOn(console, 'error')
 
-      component.getMenu()
+      component.ngOnChanges()
 
       expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.MENU.MENU_ITEM_NOT_FOUND' })
       expect(console.error).toHaveBeenCalledWith('getMenuItemById', errorResponse)
@@ -353,7 +345,7 @@ describe('MenuDetailComponent', () => {
      **/
 
     describe('loadMfeUrls', () => {
-      it('should loadMfeUrls: with product display name', () => {
+      it('should loadMfeUrls: with product display name', fakeAsync(() => {
         menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[0]))
         wProductApiServiceSpy.getProductsByWorkspaceId.and.returnValue(of([product]))
         component.changeMode = 'VIEW'
@@ -361,14 +353,15 @@ describe('MenuDetailComponent', () => {
         component.workspaceId = 'workspaceId'
         component.displayDetailDialog = true
 
-        component.ngOnChanges({ workspaceId: {} as SimpleChange })
+        component.ngOnChanges()
+        tick(200)
 
         const controlMfeItems: MenuURL[] = []
         controlMfeItems.push({ mfePath: '/workspace', product: 'MENU_ITEM.URL.UNKNOWN.PRODUCT', isSpecial: true })
         controlMfeItems.push({ mfePath: '', product: 'MENU_ITEM.URL.EMPTY' })
         controlMfeItems.push({ ...microfrontend, mfePath: '/path/base', product: 'display name', isSpecial: false })
         expect(component.mfeItems).toEqual(controlMfeItems)
-      })
+      }))
 
       it('should display error when trying to loadMfeUrls', () => {
         const errorResponse = { status: 400, statusText: 'Error on getting workspace products' }
@@ -380,7 +373,7 @@ describe('MenuDetailComponent', () => {
         component.displayDetailDialog = true
         spyOn(console, 'error')
 
-        component.ngOnChanges({ workspaceId: {} as SimpleChange })
+        component.ngOnChanges()
 
         expect(console.error).toHaveBeenCalledWith('getProductsByWorkspaceId', errorResponse)
       })
