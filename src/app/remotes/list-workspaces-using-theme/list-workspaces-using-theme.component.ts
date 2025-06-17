@@ -15,7 +15,9 @@ import {
   ocxRemoteWebcomponent,
   provideTranslateServiceForRoot
 } from '@onecx/angular-remote-components'
-import { PortalCoreModule, UserService, createRemoteComponentTranslateLoader } from '@onecx/portal-integration-angular'
+import { UserService } from '@onecx/angular-integration-interface'
+import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
+import { PortalCoreModule } from '@onecx/portal-integration-angular'
 
 import { Configuration, SearchWorkspacesResponse, WorkspaceAPIService } from 'src/app/shared/generated'
 import { SharedModule } from 'src/app/shared/shared.module'

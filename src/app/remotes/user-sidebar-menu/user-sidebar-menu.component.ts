@@ -30,15 +30,10 @@ import {
   ocxRemoteWebcomponent,
   provideTranslateServiceForRoot
 } from '@onecx/angular-remote-components'
-import { EventsPublisher } from '@onecx/integration-interface'
-import {
-  AppConfigService,
-  AppStateService,
-  PortalCoreModule,
-  UserProfile,
-  UserService,
-  createRemoteComponentTranslateLoader
-} from '@onecx/portal-integration-angular'
+import { EventsPublisher, UserProfile } from '@onecx/integration-interface'
+import { AppConfigService, AppStateService, UserService } from '@onecx/angular-integration-interface'
+import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
+import { PortalCoreModule } from '@onecx/portal-integration-angular'
 
 import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'

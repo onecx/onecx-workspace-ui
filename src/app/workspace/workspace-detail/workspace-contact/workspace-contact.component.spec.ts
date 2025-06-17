@@ -6,7 +6,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { FormControl, FormGroup } from '@angular/forms'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 
-import { PortalMessageService } from '@onecx/portal-integration-angular'
+import { PortalMessageService } from '@onecx/angular-integration-interface'
 
 import { Workspace } from 'src/app/shared/generated'
 import { WorkspaceContactComponent } from './workspace-contact.component'

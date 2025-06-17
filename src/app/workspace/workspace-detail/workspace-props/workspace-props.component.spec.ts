@@ -7,8 +7,12 @@ import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angul
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of, throwError } from 'rxjs'
 
-import { ConfigurationService, PortalMessageService, ThemeService } from '@onecx/portal-integration-angular'
-import { WorkspaceService } from '@onecx/angular-integration-interface'
+import {
+  ConfigurationService,
+  PortalMessageService,
+  ThemeService,
+  WorkspaceService
+} from '@onecx/angular-integration-interface'
 import * as Accelerator from '@onecx/accelerator'
 
 import {

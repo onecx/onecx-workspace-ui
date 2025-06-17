@@ -6,7 +6,9 @@ import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { ReactiveFormsModule, FormBuilder, FormArray, FormControl, FormGroup } from '@angular/forms'
 
-import { AppStateService, MfeInfo, PortalMessageService, UserService } from '@onecx/portal-integration-angular'
+import { AppStateService, PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+import { MfeInfo } from '@onecx/integration-interface'
+
 import {
   Product,
   WorkspaceProductAPIService,

@@ -6,29 +6,6 @@ import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
 import {
-  AngularRemoteComponentsModule,
-  BASE_URL,
-  RemoteComponentConfig,
-  SLOT_SERVICE,
-  SlotService,
-  ocxRemoteComponent,
-  ocxRemoteWebcomponent,
-  provideTranslateServiceForRoot
-} from '@onecx/angular-remote-components'
-import { EventsPublisher } from '@onecx/integration-interface'
-import {
-  AppConfigService,
-  AppStateService,
-  PortalCoreModule,
-  UserProfile,
-  UserService,
-  createRemoteComponentTranslateLoader
-} from '@onecx/portal-integration-angular'
-import { MenuItem, PrimeIcons } from 'primeng/api'
-import { AvatarModule } from 'primeng/avatar'
-import { MenuModule } from 'primeng/menu'
-import { RippleModule } from 'primeng/ripple'
-import {
   Observable,
   ReplaySubject,
   catchError,
@@ -40,6 +17,26 @@ import {
   shareReplay,
   withLatestFrom
 } from 'rxjs'
+import { MenuItem, PrimeIcons } from 'primeng/api'
+import { AvatarModule } from 'primeng/avatar'
+import { MenuModule } from 'primeng/menu'
+import { RippleModule } from 'primeng/ripple'
+
+import {
+  AngularRemoteComponentsModule,
+  BASE_URL,
+  RemoteComponentConfig,
+  SLOT_SERVICE,
+  SlotService,
+  ocxRemoteComponent,
+  ocxRemoteWebcomponent,
+  provideTranslateServiceForRoot
+} from '@onecx/angular-remote-components'
+import { EventsPublisher, UserProfile } from '@onecx/integration-interface'
+import { AppConfigService, AppStateService, UserService } from '@onecx/angular-integration-interface'
+import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
+import { PortalCoreModule } from '@onecx/portal-integration-angular'
+
 import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
 import { SharedModule } from 'src/app/shared/shared.module'
@@ -79,7 +76,7 @@ export type MenuAnchorPositionConfig = 'right' | 'left'
 export class OneCXUserAvatarMenuComponent
   implements ocxRemoteComponent, ocxRemoteWebcomponent, AfterViewInit, OnDestroy
 {
-  public currentUser$: Observable<UserProfile>
+  public userProfile$: Observable<UserProfile>
   public userMenu$: Observable<MenuItem[]>
   public eventsPublisher$: EventsPublisher = new EventsPublisher()
   public menuOpen = false
@@ -113,7 +110,7 @@ export class OneCXUserAvatarMenuComponent
       this.avatarImageLoaded = data
     })
 
-    this.currentUser$ = this.userService.profile$.pipe(
+    this.userProfile$ = this.userService.profile$.pipe(
       filter((x) => x !== undefined),
       untilDestroyed(this)
     )

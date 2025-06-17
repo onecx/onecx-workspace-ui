@@ -37,34 +37,44 @@
     <!-- USER data from various sources:  a) OneCX user profile, b) custom data -->
     <li
       *ngIf="{
-        currentUser: currentUser$ | async,
+        userProfile: userProfile$ | async,
         customComponentDefined: isCustomUserInfoComponentDefined$ | async
       } as data"
       id="ws_user_avatar_menu_list_item_0"
       class="layout-topbar-action-item cursor-auto user-info"
     >
       <div
-        *ngIf="data.currentUser as user"
+        *ngIf="data.userProfile as profile"
         class="my-1 flex flex-column flex-wrap justify-content-evenly row-gap-1 w-15rem"
       >
         <div
           id="ws_user_avatar_menu_list_item_0_user_name"
           class="font-bold text-color-secondary text-center text-lg"
-          [pTooltip]="user.person.email ?? ''"
+          [pTooltip]="profile.person.email ?? ''"
           tooltipPosition="bottom"
           tooltipEvent="hover"
         >
-          {{ user.person.displayName }}
+          {{ profile.person.displayName }}
         </div>
         <div
-          *ngIf="user.organization"
+          *ngIf="profile.issuer"
           id="ws_user_avatar_menu_list_item_0_organization"
           class="my-1 text-center text-sm text-color-secondary"
           [pTooltip]="'REMOTES.USER_AVATAR_MENU.ORGID' | translate"
           tooltipPosition="bottom"
           tooltipEvent="hover"
         >
-          {{ user.organization }}
+          {{ profile.issuer }}
+        </div>
+        <div
+          *ngIf="profile.organization"
+          id="ws_user_avatar_menu_list_item_0_organization"
+          class="my-1 text-center text-sm text-color-secondary"
+          [pTooltip]="'REMOTES.USER_AVATAR_MENU.ORGID' | translate"
+          tooltipPosition="bottom"
+          tooltipEvent="hover"
+        >
+          {{ profile.organization }}
         </div>
       </div>
       <ocx-slot *ngIf="data.customComponentDefined" [name]="slotNameCustomUserInfo"></ocx-slot>
