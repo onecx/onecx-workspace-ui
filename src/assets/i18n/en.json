@@ -312,18 +312,18 @@
         "LABEL": "Role Type",
         "TOOLTIP": "Filter for Role Type",
         "ALL": "All",
-        "ALL.TOOLTIP": "IAM and Workspace Roles",
-        "IAM": "IAM",
-        "IAM.TOOLTIP": "IAM Roles",
+        "ALL.TOOLTIP": "IDM and Workspace Roles",
+        "IAM": "IDM",
+        "IAM.TOOLTIP": "IDM Roles",
         "WORKSPACE": "Workspace",
         "WORKSPACE.TOOLTIP": "Workspace Roles"
       },
       "ORIGIN": {
-        "IAM": "Role exists in Identity Access Management",
+        "IAM": "Role exists in Identity Management",
         "WORKSPACE": "Role exists in Workspace",
-        "IAM.VIEW": "This Role only exists in Identity Access Management (IAM) and therefore cannot be changed here.",
-        "WORKSPACE.EDIT": "This Role only exists in Workspace and not in Identity Access Management (IAM).",
-        "IAM.WORKSPACE.EDIT": "This Role exists in Identity Access Management (IAM) and Workspace (same name). However, a change only affects the Workspace role."
+        "IAM.VIEW": "This Role only exists in Identity Management (IDM) and therefore cannot be changed here.",
+        "WORKSPACE.EDIT": "This Role only exists in Workspace and not in Identity Management (IDM).",
+        "IAM.WORKSPACE.EDIT": "This Role exists in Identity Management (IDM) and Workspace (same name). However, a change only affects the Workspace role."
       }
     },
     "SLOT": {
@@ -657,13 +657,13 @@
       "NOT_EXIST": "Routing not possible because target is not configured correctly."
     },
     "NOT_FOUND": {
-      "IAM_COMPONENT": "No component provided that provides IAM Roles."
+      "IAM_COMPONENT": "No component provided that provides IDM Roles."
     },
     "HTTP_STATUS_undefined": {
       "WORKSPACE": "Unknown problem retrieving Workspace details.",
       "WORKSPACES": "Unknown problem retrieving Workspace data.",
       "PRODUCTS": "Unknown problem retrieving Application data.",
-      "IAM_ROLES": "Unknown problem retrieving IAM Roles.",
+      "IAM_ROLES": "Unknown problem retrieving IDM Roles.",
       "WS_ROLES": "Unknown problem retrieving Workspace Role data.",
       "SLOTS": "Unknown problem retrieving Slot data.",
       "MENUS": "Unknown problem retrieving Menu data."
@@ -672,7 +672,7 @@
       "WORKSPACE": "Unknown problem retrieving Workspace details - please try again.",
       "WORKSPACES": "Unknown problem retrieving Workspace data - please try again.",
       "PRODUCTS": "Unknown problem retrieving Application data - please try again.",
-      "IAM_ROLES": "Unknown problem retrieving IAM Roles - please try again.",
+      "IAM_ROLES": "Unknown problem retrieving IDM Roles - please try again.",
       "WS_ROLES": "Unknown problem retrieving Workspace Role data - please try again.",
       "SLOTS": "Unknown problem retrieving Slot data - please try again.",
       "MENUS": "Unknown problem retrieving Menu data - please try again."
@@ -690,7 +690,7 @@
       "WORKSPACE": "You are not authorized to see Workspace details.",
       "WORKSPACES": "You are not authorized to see Workspaces.",
       "PRODUCTS": "You are not authorized to see Applications.",
-      "IAM_ROLES": "You are not authorized to see IAM Roles.",
+      "IAM_ROLES": "You are not authorized to see IDM Roles.",
       "WS_ROLES": "You are not authorized to see Workspace Roles.",
       "SLOTS": "You are not authorized to see Slots.",
       "MENUS": "You are not authorized to see Menus."
@@ -699,7 +699,7 @@
       "WORKSPACE": "You have no permissions to see Workspace details.",
       "WORKSPACES": "You have no permissions to see Workspaces.",
       "PRODUCTS": "You have no permissions to see Applications.",
-      "IAM_ROLES": "You have no permissions to see IAM Roles.",
+      "IAM_ROLES": "You have no permissions to see IDM Roles.",
       "WS_ROLES": "You have no permissions to see Workspace Roles.",
       "SLOTS": "You have no permissions to see Slots.",
       "MENUS": "You have no permissions to see Menus."
@@ -708,19 +708,19 @@
       "WORKSPACE": "The Workspace could not be found.",
       "WORKSPACES": "No Workspaces could be found.",
       "PRODUCTS": "No Applications could be load.",
-      "IAM_ROLES": "No IAM Roles could be load.",
+      "IAM_ROLES": "No IDM Roles could be load.",
       "WS_ROLES": "No Workspace Roles could be load.",
       "SLOTS": "No Slots could be load.",
       "MENUS": "No Menus could be found."
     },
     "HTTP_STATUS_418": {
-      "IAM_ROLES": "No IAM Roles could be load."
+      "IAM_ROLES": "No IDM Roles could be load."
     },
     "HTTP_STATUS_500": {
       "WORKSPACE": "Unknown server problem retrieving Workspace details - please try again.",
       "WORKSPACES": "Unknown server problem retrieving Workspace data - please try again.",
       "PRODUCTS": "Unknown server problem retrieving Application data - please try again.",
-      "IAM_ROLES": "Unknown server problem retrieving IAM Role data - please try again.",
+      "IAM_ROLES": "Unknown server problem retrieving IDM Role data - please try again.",
       "WS_ROLES": "Unknown server problem retrieving Workspace Role data - please try again.",
       "SLOTS": "Unknown server problem retrieving Slot data - please try again.",
       "MENUS": "Unknown server problem retrieving Menu data - please try again."

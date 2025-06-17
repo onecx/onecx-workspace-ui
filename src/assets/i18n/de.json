@@ -312,18 +312,18 @@
         "LABEL": "Rollentyp",
         "TOOLTIP": "Filter für Rollentyp",
         "ALL": "Alle",
-        "ALL.TOOLTIP": "IAM und Workspace-Rollen",
-        "IAM": "IAM",
-        "IAM.TOOLTIP": "IAM-Rollen",
+        "ALL.TOOLTIP": "IDM und Workspace-Rollen",
+        "IAM": "IDM",
+        "IAM.TOOLTIP": "IDM-Rollen",
         "WORKSPACE": "Workspace",
         "WORKSPACE.TOOLTIP": "Workspace-Rollen"
       },
       "ORIGIN": {
-        "IAM": "Rolle existiert im Identity Access Management",
+        "IAM": "Rolle existiert im Identity Management",
         "WORKSPACE": "Rolle existiert im Workspace",
-        "IAM.VIEW": "Diese Rolle existiert nur im Identity Access Management (IAM) und kann deshalb hier nicht geändert werden.",
-        "WORKSPACE.EDIT": "Diese Rolle existiert nur im Workspace und nicht im Identity Access Management.",
-        "IAM.WORKSPACE.EDIT": "Diese Rolle existiert im Identity Access Management (IAM) und im Workspace (gleicher Name). Eine Änderung betrifft allerdings nur die Rolle im Workspace."
+        "IAM.VIEW": "Diese Rolle existiert nur im Identity Management (IDM) und kann deshalb hier nicht geändert werden.",
+        "WORKSPACE.EDIT": "Diese Rolle existiert nur im Workspace und nicht im Identity Management.",
+        "IAM.WORKSPACE.EDIT": "Diese Rolle existiert im Identity Management (IDM) und im Workspace (gleicher Name). Eine Änderung betrifft allerdings nur die Rolle im Workspace."
       }
     },
     "SLOT": {
@@ -657,13 +657,13 @@
       "NOT_EXIST": "Routing nicht möglich da Ziel nicht korrekt konfiguriert."
     },
     "NOT_FOUND": {
-      "IAM_COMPONENT": "Keine Komponente bereitgestellt, die IAM Rollen liefert."
+      "IAM_COMPONENT": "Keine Komponente bereitgestellt, die IDM Rollen liefert."
     },
     "HTTP_STATUS_undefined": {
       "WORKSPACE": "Unbekanntes Problem beim Abrufen von Workspace Details.",
       "WORKSPACES": "Unbekanntes Problem beim Abrufen von Workspace-Daten.",
       "PRODUCTS": "Unbekanntes Problem beim Abrufen von Applikation-Daten.",
-      "IAM_ROLES": "Unbekanntes Problem beim Abrufen von Rollen aus dem IAM.",
+      "IAM_ROLES": "Unbekanntes Problem beim Abrufen von Rollen aus dem IDM.",
       "WS_ROLES": "Unbekanntes Problem beim Abrufen von Workspace-Rollen.",
       "SLOTS": "Unbekanntes Problem beim Abrufen von Slot-Daten.",
       "MENUS": "Unbekanntes Problem beim Abrufen von Menü-Daten."
@@ -672,7 +672,7 @@
       "WORKSPACE": "Unbekanntes Problem beim Abrufen von Workspace Details - Bitte versuchen sie es noch einmal.",
       "WORKSPACES": "Unbekanntes Problem beim Abrufen von Workspace-Daten - Bitte versuchen sie es noch einmal.",
       "PRODUCTS": "Unbekanntes Problem beim Abrufen von Applikation-Daten - Bitte versuchen sie es noch einmal.",
-      "IAM_ROLES": "Unbekanntes Problem beim Abrufen von Rollen aus dem IAM - Bitte versuchen sie es noch einmal.",
+      "IAM_ROLES": "Unbekanntes Problem beim Abrufen von Rollen aus dem IDM - Bitte versuchen sie es noch einmal.",
       "WS_ROLES": "Unbekanntes Problem beim Abrufen von Workspace-Rollen - Bitte versuchen sie es noch einmal.",
       "SLOTS": "Unbekanntes Problem beim Abrufen von Slot-Daten - Bitte versuchen sie es noch einmal.",
       "MENUS": "Unbekanntes Problem beim Abrufen von Menü-Daten - Bitte versuchen sie es noch einmal."
@@ -690,7 +690,7 @@
       "WORKSPACE": "Sie sind nicht autorisiert um Workspace Details zu sehen.",
       "WORKSPACES": "Sie sind nicht autorisiert um Workspaces zu sehen.",
       "PRODUCTS": "Sie sind nicht autorisiert um Applikationen zu sehen.",
-      "IAM_ROLES": "Sie sind nicht autorisiert um Rollen aus dem IAM zu sehen.",
+      "IAM_ROLES": "Sie sind nicht autorisiert um Rollen aus dem IDM zu sehen.",
       "WS_ROLES": "Sie sind nicht autorisiert um Workspace-Rollen zu sehen.",
       "SLOTS": "Sie sind nicht autorisiert um Slots zu sehen.",
       "MENUS": "Sie sind nicht autorisiert um Menüs zu sehen."
@@ -699,7 +699,7 @@
       "WORKSPACE": "Sie haben keine Rechte um Workspace Details zu sehen.",
       "WORKSPACES": "Sie haben keine Rechte um Workspaces zu sehen.",
       "PRODUCTS": "Sie haben keine Rechte um Applikationen zu sehen.",
-      "IAM_ROLES": "Sie haben keine Rechte um Rollen aus dem IAM zu sehen.",
+      "IAM_ROLES": "Sie haben keine Rechte um Rollen aus dem IDM zu sehen.",
       "WS_ROLES": "Sie haben keine Rechte um Workspace-Rollen zu sehen.",
       "SLOTS": "Sie haben keine Rechte um Slots zu sehen.",
       "MENUS": "Sie haben keine Rechte um Menüs zu sehen."
@@ -708,19 +708,19 @@
       "WORKSPACE": "Der Workspace wurde nicht gefunden.",
       "WORKSPACES": "Es konnten keine Workspaces gefunden werden.",
       "PRODUCTS": "Es konnten keine Applikationen gefunden werden.",
-      "IAM_ROLES": "Es konnten keine Rollen aus dem IAM gefunden werden.",
+      "IAM_ROLES": "Es konnten keine Rollen aus dem IDM gefunden werden.",
       "WS_ROLES": "Es konnten keine Workspace-Rollen gefunden werden.",
       "SLOTS": "Es konnten keine Slots gefunden werden.",
       "MENUS": "Es konnten keine Menüs gefunden werden."
     },
     "HTTP_STATUS_418": {
-      "IAM_ROLES": "Es konnten keine Rollen aus dem IAM geholt werden."
+      "IAM_ROLES": "Es konnten keine Rollen aus dem IDM geholt werden."
     },
     "HTTP_STATUS_500": {
       "WORKSPACE": "Unbekanntes Server-Problem beim Abrufen von Workspace-Details - Bitte versuchen sie es noch einmal.",
       "WORKSPACES": "Unbekanntes Server-Problem beim Abrufen von Workspace-Daten - Bitte versuchen sie es noch einmal.",
       "PRODUCTS": "Unbekanntes Server-Problem beim Abrufen von Applikation-Daten - Bitte versuchen sie es noch einmal.",
-      "IAM_ROLES": "Unbekanntes Server-Problem beim Abrufen von Rollen aus dem IAM - Bitte versuchen sie es noch einmal.",
+      "IAM_ROLES": "Unbekanntes Server-Problem beim Abrufen von Rollen aus dem IDM - Bitte versuchen sie es noch einmal.",
       "WS_ROLES": "Unbekanntes Server-Problem beim Abrufen von Workspace-Rollen - Bitte versuchen sie es noch einmal.",
       "SLOTS": "Unbekanntes Server-Problem beim Abrufen von Slots - Bitte versuchen sie es noch einmal.",
       "MENUS": "Unbekanntes Server-Problem beim Abrufen von Menüdaten - Bitte versuchen sie es noch einmal."
