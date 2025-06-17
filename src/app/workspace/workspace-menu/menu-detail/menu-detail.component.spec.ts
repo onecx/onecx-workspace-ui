@@ -7,7 +7,7 @@ import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router'
 import { BehaviorSubject, of, throwError } from 'rxjs'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 
-import { PortalMessageService, UserService } from '@onecx/portal-integration-angular'
+import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 
 import { MenuDetailComponent } from './menu-detail.component'
 import {

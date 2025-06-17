@@ -14,9 +14,8 @@ import { AccordionModule } from 'primeng/accordion'
 import { PrimeIcons } from 'primeng/api'
 
 import { BASE_URL, RemoteComponentConfig, SlotService } from '@onecx/angular-remote-components'
-import { AppStateService, UserService } from '@onecx/angular-integration-interface'
+import { AppConfigService, AppStateService, UserService } from '@onecx/angular-integration-interface'
 import { UserProfile } from '@onecx/integration-interface'
-import { AppConfigService } from '@onecx/portal-integration-angular'
 
 import { MenuItemAPIService } from 'src/app/shared/generated'
 import { OneCXUserSidebarMenuHarness } from './user-sidebar-menu.harness'

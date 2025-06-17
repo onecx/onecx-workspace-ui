@@ -5,9 +5,11 @@ import { provideHttpClient } from '@angular/common/http'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of, throwError } from 'rxjs'
 
-import { PortalMessageService } from '@onecx/portal-integration-angular'
-import { WorkspaceExportComponent } from './workspace-export.component'
+import { PortalMessageService } from '@onecx/angular-integration-interface'
+
 import { WorkspaceAPIService } from 'src/app/shared/generated'
+
+import { WorkspaceExportComponent } from './workspace-export.component'
 
 describe('WorkspaceExportComponent', () => {
   let component: WorkspaceExportComponent

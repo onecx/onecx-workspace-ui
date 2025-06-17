@@ -6,7 +6,8 @@ import { ActivatedRoute, ActivatedRouteSnapshot, Router } from '@angular/router'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of, throwError } from 'rxjs'
 
-import { PortalMessageService, UserService } from '@onecx/portal-integration-angular'
+import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+
 import { ImportResponseStatus, WorkspaceAPIService } from 'src/app/shared/generated'
 
 import { WorkspaceImportComponent } from './workspace-import.component'

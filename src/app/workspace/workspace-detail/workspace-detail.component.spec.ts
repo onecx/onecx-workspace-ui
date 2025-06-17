@@ -6,10 +6,10 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { provideRouter, Router } from '@angular/router'
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router'
 import { TranslateTestingModule } from 'ngx-translate-testing'
-
 import { of, BehaviorSubject, throwError } from 'rxjs'
 
-import { PortalMessageService, UserService } from '@onecx/portal-integration-angular'
+import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+
 import { Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
 
 import { WorkspaceDetailComponent } from './workspace-detail.component'
