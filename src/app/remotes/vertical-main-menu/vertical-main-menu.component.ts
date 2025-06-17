@@ -22,7 +22,6 @@ import {
 import { MenuItem } from 'primeng/api'
 import { PanelMenuModule } from 'primeng/panelmenu'
 
-import { Capability, ShellCapabilityService } from '@onecx/angular-integration-interface'
 import {
   AngularRemoteComponentsModule,
   BASE_URL,
@@ -32,7 +31,7 @@ import {
   provideTranslateServiceForRoot
 } from '@onecx/angular-remote-components'
 import { EventsTopic, NavigatedEventPayload } from '@onecx/integration-interface'
-import { AppStateService, UserService } from '@onecx/angular-integration-interface'
+import { AppStateService, Capability, ShellCapabilityService, UserService } from '@onecx/angular-integration-interface'
 import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
 import { PortalCoreModule } from '@onecx/portal-integration-angular'
 
