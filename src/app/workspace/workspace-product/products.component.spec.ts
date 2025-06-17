@@ -7,7 +7,7 @@ import { TranslateTestingModule } from 'ngx-translate-testing'
 import { ReactiveFormsModule, FormBuilder, FormArray, FormControl, FormGroup } from '@angular/forms'
 
 import { AppStateService, PortalMessageService, UserService } from '@onecx/angular-integration-interface'
-import { MfeInfo } from '@onecx/portal-integration-angular'
+import { MfeInfo } from '@onecx/integration-interface'
 
 import {
   Product,

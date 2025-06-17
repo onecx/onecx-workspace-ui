@@ -15,7 +15,7 @@ import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@ang
 import { catchError, finalize, map, Observable, of, Subject, switchMap, takeUntil } from 'rxjs'
 import { TranslateService } from '@ngx-translate/core'
 
-import { MfeInfo } from '@onecx/portal-integration-angular'
+import { MfeInfo } from '@onecx/integration-interface'
 import {
   AppStateService,
   PortalMessageService,
