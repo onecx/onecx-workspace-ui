@@ -138,17 +138,6 @@ describe('MenuItemService', () => {
   it('should correctly replace external menuItem variable using sessionStorage', () => {
     const input: UserWorkspaceMenuItem[] = [
       {
-        key: '1',
-        name: 'Item 1',
-        position: undefined,
-        disabled: false,
-        external: false,
-        url: '/item1?param=[[DONTREPLACEME]]',
-        badge: 'star',
-        children: [],
-        i18n: { en: 'Item 1 EN' }
-      },
-      {
         key: '2',
         name: 'Item 2',
         position: 2,
@@ -161,14 +150,6 @@ describe('MenuItemService', () => {
       }
     ]
     const expected: MenuItem[] = [
-      {
-        id: '1',
-        label: 'Item 1 EN',
-        icon: 'pi pi-star',
-        routerLink: '/item1?param=[[DONTREPLACEME]]',
-        items: undefined,
-        url: undefined
-      },
       {
         id: '2',
         label: 'Item 2 EN',
@@ -184,23 +165,42 @@ describe('MenuItemService', () => {
     expect(result).toEqual(expected)
   })
 
-  it('should correctly replace external menuItem variable using localStorage as a fallback for sessionStorage', () => {
+  it('should correctly replace internal menuItem variable using sessionStorage', () => {
     const input: UserWorkspaceMenuItem[] = [
-      {
-        key: '1',
-        name: 'Item 1',
-        position: 1,
-        disabled: false,
-        external: false,
-        url: '/item1?param=[[DONTREPLACEME]]',
-        badge: 'star',
-        children: [],
-        i18n: { en: 'Item 1 EN' }
-      },
       {
         key: '2',
         name: 'Item 2',
-        position: 2,
+        position: undefined,
+        disabled: false,
+        external: false,
+        url: '/item2?id=[[id]]',
+        badge: 'star',
+        children: [],
+        i18n: { en: 'Item 2 EN' }
+      }
+    ]
+    const expected: MenuItem[] = [
+      {
+        id: '2',
+        label: 'Item 2 EN',
+        icon: 'pi pi-star',
+        routerLink: '/item2?id=2',
+        items: undefined,
+        url: undefined
+      }
+    ]
+    const result = service.constructMenuItems(input, 'en')
+    expect(sessionStorage.getItem).toHaveBeenCalledTimes(1)
+    expect(localStorage.getItem).toHaveBeenCalledTimes(0)
+    expect(result).toEqual(expected)
+  })
+
+  it('should correctly replace external menuItem variable using localStorage as a fallback for sessionStorage', () => {
+    const input: UserWorkspaceMenuItem[] = [
+      {
+        key: '2',
+        name: 'Item 2',
+        position: 1,
         disabled: false,
         external: true,
         url: 'http://external.com?id=[[id]]',
@@ -210,14 +210,6 @@ describe('MenuItemService', () => {
       }
     ]
     const expected: MenuItem[] = [
-      {
-        id: '1',
-        label: 'Item 1 EN',
-        icon: 'pi pi-star',
-        routerLink: '/item1?param=[[DONTREPLACEME]]',
-        items: undefined,
-        url: undefined
-      },
       {
         id: '2',
         label: 'Item 2 EN',
@@ -234,23 +226,43 @@ describe('MenuItemService', () => {
     expect(result).toEqual(expected)
   })
 
-  it("should correctly replace external menuItem variable using '' as a fallback for localStorage and sessionStorage", () => {
+  it('should correctly replace internal menuItem variable using localStorage as a fallback for sessionStorage', () => {
     const input: UserWorkspaceMenuItem[] = [
-      {
-        key: '1',
-        name: 'Item 1',
-        position: 1,
-        disabled: false,
-        external: false,
-        url: '/item1?param=[[DONTREPLACEME]]',
-        badge: 'star',
-        children: [],
-        i18n: { en: 'Item 1 EN' }
-      },
       {
         key: '2',
         name: 'Item 2',
-        position: 2,
+        position: 1,
+        disabled: false,
+        external: false,
+        url: '/item2?id=[[id]]',
+        badge: 'star',
+        children: [],
+        i18n: { en: 'Item 2 EN' }
+      }
+    ]
+    const expected: MenuItem[] = [
+      {
+        id: '2',
+        label: 'Item 2 EN',
+        icon: 'pi pi-star',
+        routerLink: '/item2?id=1',
+        items: undefined,
+        url: undefined
+      }
+    ]
+    sessionStorage.clear()
+    const result = service.constructMenuItems(input, 'en')
+    expect(sessionStorage.getItem).toHaveBeenCalledTimes(1)
+    expect(localStorage.getItem).toHaveBeenCalledTimes(1)
+    expect(result).toEqual(expected)
+  })
+
+  it("should correctly replace external menuItem variable using '' as a fallback for localStorage and sessionStorage", () => {
+    const input: UserWorkspaceMenuItem[] = [
+      {
+        key: '2',
+        name: 'Item 2',
+        position: 1,
         disabled: false,
         external: true,
         url: 'http://external.com?id=[[id]]',
@@ -260,14 +272,6 @@ describe('MenuItemService', () => {
       }
     ]
     const expected: MenuItem[] = [
-      {
-        id: '1',
-        label: 'Item 1 EN',
-        icon: 'pi pi-star',
-        routerLink: '/item1?param=[[DONTREPLACEME]]',
-        items: undefined,
-        url: undefined
-      },
       {
         id: '2',
         label: 'Item 2 EN',
@@ -285,23 +289,44 @@ describe('MenuItemService', () => {
     expect(result).toEqual(expected)
   })
 
-  it('should correctly replace multiple external menuItem variables using sessionStorage', () => {
+  it("should correctly replace internal menuItem variable using '' as a fallback for localStorage and sessionStorage", () => {
     const input: UserWorkspaceMenuItem[] = [
-      {
-        key: '1',
-        name: 'Item 1',
-        position: 1,
-        disabled: false,
-        external: false,
-        url: '/item1?param=[[DONTREPLACEME]]',
-        badge: 'star',
-        children: [],
-        i18n: { en: 'Item 1 EN' }
-      },
       {
         key: '2',
         name: 'Item 2',
-        position: 2,
+        position: 1,
+        disabled: false,
+        external: false,
+        url: '/item2?id=[[id]]',
+        badge: 'star',
+        children: [],
+        i18n: { en: 'Item 2 EN' }
+      }
+    ]
+    const expected: MenuItem[] = [
+      {
+        id: '2',
+        label: 'Item 2 EN',
+        icon: 'pi pi-star',
+        routerLink: '/item2?id=',
+        items: undefined,
+        url: undefined
+      }
+    ]
+    sessionStorage.clear()
+    localStorage.clear()
+    const result = service.constructMenuItems(input, 'en')
+    expect(sessionStorage.getItem).toHaveBeenCalledTimes(1)
+    expect(localStorage.getItem).toHaveBeenCalledTimes(1)
+    expect(result).toEqual(expected)
+  })
+
+  it('should correctly replace multiple external menuItem variables using sessionStorage', () => {
+    const input: UserWorkspaceMenuItem[] = [
+      {
+        key: '2',
+        name: 'Item 2',
+        position: 1,
         disabled: false,
         external: true,
         url: 'http://external.com?id=[[id]]&mykey=[[key]]',
@@ -312,20 +337,42 @@ describe('MenuItemService', () => {
     ]
     const expected: MenuItem[] = [
       {
-        id: '1',
-        label: 'Item 1 EN',
-        icon: 'pi pi-star',
-        routerLink: '/item1?param=[[DONTREPLACEME]]',
-        items: undefined,
-        url: undefined
-      },
-      {
         id: '2',
         label: 'Item 2 EN',
         icon: 'pi pi-check',
         routerLink: undefined,
         items: undefined,
         url: 'http://external.com?id=2&mykey=my-sessionstorage-key'
+      }
+    ]
+    const result = service.constructMenuItems(input, 'en')
+    expect(sessionStorage.getItem).toHaveBeenCalledTimes(2)
+    expect(localStorage.getItem).toHaveBeenCalledTimes(0)
+    expect(result).toEqual(expected)
+  })
+
+  it('should correctly replace multiple internal menuItem variables using sessionStorage', () => {
+    const input: UserWorkspaceMenuItem[] = [
+      {
+        key: '2',
+        name: 'Item 2',
+        position: 1,
+        disabled: false,
+        external: false,
+        url: '/item2?id=[[id]]&mykey=[[key]]',
+        badge: 'star',
+        children: [],
+        i18n: { en: 'Item 2 EN' }
+      }
+    ]
+    const expected: MenuItem[] = [
+      {
+        id: '2',
+        label: 'Item 2 EN',
+        icon: 'pi pi-star',
+        routerLink: '/item2?id=2&mykey=my-sessionstorage-key',
+        items: undefined,
+        url: undefined
       }
     ]
     const result = service.constructMenuItems(input, 'en')

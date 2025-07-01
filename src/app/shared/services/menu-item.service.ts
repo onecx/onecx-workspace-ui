@@ -76,7 +76,7 @@ export class MenuItemService {
           ? item.children.filter((i) => !i.disabled).map((i) => this.mapMenuItem(i, userLang))
           : undefined,
       icon: item.badge ? 'pi pi-' + item.badge : undefined,
-      routerLink: isLocal ? this.stripBaseHref(item.url) : undefined,
+      routerLink: isLocal ? this.stripBaseHref(this.replaceUrlVariables(item.url)) : undefined,
       url: isLocal ? undefined : this.replaceUrlVariables(item.url)
     }
   }
