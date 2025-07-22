@@ -45,21 +45,21 @@ app:
           tagName: ocx-user-siderbar-menu-component
         vertical-main-menu:
           exposedModule: "./OneCXVerticalMainMenuComponent"
-          description: "Vercital main menu component"
+          description: "Creates the main menu in vertical orientation"
           type: COMPONENT
           technology: WEBCOMPONENTMODULE
           remoteName: onecx-workspace
           tagName: ocx-vertical-main-menu-component
         horizontal-main-menu:
           exposedModule: "./OneCXHorizontalMainMenuComponent"
-          description: "Horizontal main menu component"
+          description: "Creates the main menu in horizontal orientation, displayed only if screen dimension is greather then mobile breakpoint (767px)"
           type: COMPONENT
           technology: WEBCOMPONENTMODULE
           remoteName: onecx-workspace
           tagName: ocx-horizontal-main-menu-component
         footer-menu:
           exposedModule: "./OneCXFooterMenuComponent"
-          description: "Footer menu component"
+          description: "Creates the footer menu of the workspace (if configured)"
           type: COMPONENT
           technology: WEBCOMPONENTMODULE
           remoteName: onecx-workspace
@@ -82,7 +82,7 @@ app:
           deprecated: true
         workspace-footer:
           exposedModule: "./OneCXWorkspaceFooterComponent"
-          description: "Workspace Footer"
+          description: "Creates the page footer using slots for logo (theme), footer menu (workspace) and version (shell)"
           type: COMPONENT
           technology: WEBCOMPONENTMODULE
           remoteName: onecx-workspace
@@ -98,23 +98,23 @@ app:
       specs:
         onecx-avatar-image:
           name: 'onecx-avatar-image'
-          description: 'User Profile avatar image'
+          description: 'Area to displaying the users avatar provided by avatar image component'
         onecx-iam-user-roles:
           name: 'onecx-iam-user-roles'
           description: 'Receive IAM user roles'
         onecx-page-footer-menu:
           name: 'onecx-page-footer-menu'
-          description: 'Footer Menu (possible used within page footer)'
+          description: 'Area within page footer usually used to display a specific menu'
         onecx-theme-data:
           name: 'onecx-theme-data'
-          description: 'Use theme data'
+          description: 'Getting theme data (like theme logo) to be used within workspace.'
         onecx-theme-infos:
           name: 'onecx-theme-infos'
           description: 'Use theme infos'
           deprecated: true
         onecx-custom-user-info:
           name: 'onecx-custom-user-info'
-          description: 'Display specific user info'
+          description: 'Area on top of the avatar menu for displaying specific user info'
     # Permission
     permission:
       enabled: true

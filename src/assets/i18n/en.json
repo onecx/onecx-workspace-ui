@@ -625,7 +625,7 @@
       "ORGID": "Organization",
       "TENANT": "Tenant",
       "LOGOUT": "Log out",
-      "TOOLTIP": "Profile"
+      "TOOLTIP": "Profile and Settings"
     },
     "USER_SIDEBAR_MENU": {
       "LOGOUT": "Log out"

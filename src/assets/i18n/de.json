@@ -625,7 +625,7 @@
       "ORGID": "Organisation",
       "TENANT": "Mandant",
       "LOGOUT": "Abmelden",
-      "TOOLTIP": "Profil"
+      "TOOLTIP": "Profil und Einstellungen"
     },
     "USER_SIDEBAR_MENU": {
       "LOGOUT": "Abmelden"
