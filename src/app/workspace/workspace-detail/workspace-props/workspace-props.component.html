@@ -16,13 +16,13 @@
         tooltipPosition="top"
         tooltipEvent="hover"
       />
-      <label class="ocx-required-label" for="ws_detail_props_item_display_name">
+      <label class="ocx-required-label" for="ws_detail_props_item_display_name" aria-hidden="true">
         {{ 'WORKSPACE.DISPLAY_NAME' | translate }}
       </label>
     </span>
   </div>
 
-  <div>
+  <div role="group">
     <ng-container *ngIf="isThemeComponentDefined$ | async; else noThemesAvailable">
       <!-- THEMES -->
       <ocx-slot [name]="slotName" [inputs]="{ dataType: 'themes' }" [outputs]="{ themes: themesEmitter }"> </ocx-slot>
@@ -63,7 +63,7 @@
               tooltipEvent="hover"
             >
             </p-dropdown>
-            <label class="ocx-required-label" for="ws_detail_props_item_theme">
+            <label class="ocx-required-label" for="ws_detail_props_item_theme" aria-hidden="true">
               {{ 'WORKSPACE.THEME' | translate }}
             </label>
           </span>
@@ -79,6 +79,7 @@
             [pTooltip]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
             tooltipPosition="right"
             tooltipEvent="hover"
+            role="link"
           >
           </a>
         </div>
@@ -125,7 +126,7 @@
     <!-- end of theme row -->
   </div>
 
-  <div>
+  <div role="group">
     <div class="p-inputgroup mb-1" controlErrorAnchor>
       <span class="p-float-label">
         <input
@@ -140,7 +141,7 @@
           tooltipPosition="top"
           tooltipEvent="hover"
         />
-        <label for="ws_detail_props_item_base_url">{{ 'WORKSPACE.BASE_URL' | translate }} </label>
+        <label for="ws_detail_props_item_base_url" aria-hidden="true">{{ 'WORKSPACE.BASE_URL' | translate }} </label>
       </span>
       <a
         tabindex="0"
@@ -159,12 +160,12 @@
       >
       </a>
     </div>
-    <label *ngIf="editMode" class="ocx-control-hint block" for="ws_detail_props_item_base_url_link">
+    <label *ngIf="editMode" class="ocx-control-hint block" for="ws_detail_props_item_base_url_link" aria-hidden="true">
       {{ ('VALIDATION.HINTS.FORMAT_URL' | translate) + urlPattern }}
     </label>
   </div>
 
-  <div *ngIf="(productPaths$ | async) ?? [] as paths" class="p-inputgroup mb-1" controlErrorAnchor>
+  <div *ngIf="(productPaths$ | async) ?? [] as paths" class="p-inputgroup mb-1" controlErrorAnchor role="group">
     <span class="p-float-label">
       <p-dropdown
         #inputHomePage
@@ -181,7 +182,7 @@
         tooltipEvent="hover"
       >
       </p-dropdown>
-      <label for="ws_detail_props_item_home_page">{{ 'WORKSPACE.HOME_PAGE' | translate }} </label>
+      <label for="ws_detail_props_item_home_page" aria-hidden="true">{{ 'WORKSPACE.HOME_PAGE' | translate }} </label>
     </span>
     <a
       tabindex="0"
@@ -199,7 +200,7 @@
     </a>
   </div>
 
-  <div class="p-inputgroup mb-1" controlErrorAnchor>
+  <div class="p-inputgroup mb-1" controlErrorAnchor role="group">
     <span class="p-float-label">
       <input
         #inputRssFeedUrl
@@ -213,7 +214,9 @@
         tooltipPosition="top"
         tooltipEvent="hover"
       />
-      <label for="ws_detail_props_item_rssFeedUrl">{{ 'WORKSPACE.RSS_FEED_URL' | translate }} </label>
+      <label for="ws_detail_props_item_rssFeedUrl" aria-hidden="true"
+        >{{ 'WORKSPACE.RSS_FEED_URL' | translate }}
+      </label>
     </span>
     <a
       tabindex="0"
@@ -225,12 +228,13 @@
       [pTooltip]="'ACTIONS.COPY.CLIPBOARD' | translate"
       tooltipPosition="right"
       tooltipEvent="hover"
+      role="button"
     >
       <span class="pi pi-copy"></span>
     </a>
   </div>
 
-  <div class="flex flex-row flex-wrap sm:flex-nowrap align-items-center row-gap-2 column-gap-4">
+  <div class="flex flex-row flex-wrap sm:flex-nowrap align-items-center row-gap-2 column-gap-4" role="group">
     <input hidden type="file" accept="image/*" #selectedFileInputLogo (change)="onFileUpload($event)" />
     <app-image-container
       id="ws_detail_props_form_logo_image"
@@ -278,9 +282,9 @@
           tooltipPosition="top"
           tooltipEvent="hover"
         />
-        <label for="ws_detail_props_item_logo_url">{{ 'IMAGE.LOGO_URL' | translate }} </label>
+        <label for="ws_detail_props_item_logo_url" aria-hidden="true">{{ 'IMAGE.LOGO_URL' | translate }} </label>
       </span>
-      <label *ngIf="editMode" class="ocx-control-hint block" for="ws_detail_props_item_logo_url">
+      <label *ngIf="editMode" class="ocx-control-hint block" for="ws_detail_props_item_logo_url" aria-hidden="true">
         {{ ('VALIDATION.HINTS.FORMAT_URL' | translate) + externUrlPattern }}
       </label>
     </div>
@@ -298,7 +302,9 @@
       tooltipPosition="top"
       tooltipEvent="hover"
     />
-    <label for="ws_detail_props_item_footer_label">{{ 'WORKSPACE.FOOTER_LABEL' | translate }} </label>
+    <label for="ws_detail_props_item_footer_label" aria-hidden="true"
+      >{{ 'WORKSPACE.FOOTER_LABEL' | translate }}
+    </label>
   </span>
 
   <span class="p-float-label mb-1" controlErrorAnchor>
@@ -315,6 +321,6 @@
       tooltipPosition="top"
       tooltipEvent="hover"
     ></textarea>
-    <label for="ws_detail_props_item_description">{{ 'WORKSPACE.DESCRIPTION' | translate }} </label>
+    <label for="ws_detail_props_item_description" aria-hidden="true">{{ 'WORKSPACE.DESCRIPTION' | translate }} </label>
   </span>
 </div>

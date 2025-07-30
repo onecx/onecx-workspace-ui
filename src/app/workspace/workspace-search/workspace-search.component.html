@@ -67,6 +67,7 @@
           class="sm:mx-3 py-1 px-3 flex flex-row flex-nowrap justify-content-start align-items-center column-gap-3 hover:bg-gray-200 cursor-pointer"
           [id]="'ws_search_data_list_row_' + i"
           [routerLink]="['./' + workspace.name]"
+          role="group"
         >
           <div class="p-0 col-4 sm:col-3 md:col-2 flex justify-content-around align-items-center">
             <app-image-container
@@ -78,10 +79,11 @@
           <div
             [id]="'ws_search_data_list_row_' + i + '_display_name'"
             class="p-0 col-8 sm:col-6 md:col-6 lg:col-5 xl:col-3 sm:font-bold text-base sm:text-md md:text-lg"
-            [attr.aria-label]="workspace.displayName"
+            aria-label="Workspace"
             [pTooltip]="workspace.displayName"
             tooltipPosition="top"
             tooltipEvent="hover"
+            role="note"
           >
             {{ limitText(workspace.displayName, 60) }}
           </div>
@@ -96,6 +98,7 @@
               [pTooltip]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
+              role="link"
             >
               {{ limitText(workspace.baseUrl, 30) }}
             </a>
@@ -103,20 +106,22 @@
           <div
             [id]="'ws_search_data_list_row_' + i + '_theme'"
             class="p-0 hidden md:block col-2"
-            [attr.aria-label]="('WORKSPACE.THEME' | translate) + ': ' + workspace.theme"
+            aria-label="Theme"
             [pTooltip]="('WORKSPACE.THEME' | translate) + (workspace.theme.length < 40 ? '' : ' ' + workspace.theme)"
             tooltipPosition="top"
             tooltipEvent="hover"
+            role="note"
           >
             {{ limitText(workspace.theme, 40) }}
           </div>
           <div
             [id]="'ws_search_data_list_row_' + i + '_description'"
             class="p-0 hidden xl:block col-2"
-            [attr.aria-label]="workspace.description"
+            [attr.aria-label]="'WORKSPACE.DESCRIPTION' | translate"
             [pTooltip]="workspace.description < 50 ? '' : workspace.description"
             tooltipPosition="top"
             tooltipEvent="hover"
+            role="note"
           >
             {{ limitText(workspace.description, 50) }}
           </div>
@@ -131,36 +136,8 @@
               [id]="'ws_search_data_grid_row_' + i"
               class="card relative p-2 sm:px-3 flex flex-column gap-1 sm:gap-3 justify-content-between text-center hover:bg-gray-200 cursor-pointer"
               [routerLink]="['./', workspace.name]"
+              role="group"
             >
-              <!-- BADGES -->
-              <a
-                *ngIf="!workspace.disabled"
-                tabindex="0"
-                [id]="'ws_search_data_grid_row_' + i + '_goto_workspace'"
-                class="card-badge-right badge-1 p-1 pi pi-external-link button-icon-only"
-                (click)="
-                  onGotoWorkspace(
-                    $event,
-                    workspace,
-                    getLocation().deploymentPath === '/' ? '' : getLocation().deploymentPath
-                  )
-                "
-                [attr.aria-label]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_WORKSPACE' | translate"
-                [pTooltip]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_WORKSPACE' | translate"
-                tooltipPosition="right"
-                tooltipEvent="hover"
-              ></a>
-              <a
-                *ocxIfPermission="'MENU#VIEW'"
-                tabindex="0"
-                [id]="'ws_search_data_grid_row_' + i + '_goto_menu'"
-                class="card-badge-right badge-2 p-1 pi pi-sitemap button-icon-only"
-                (click)="onGotoMenu($event, workspace)"
-                [attr.aria-label]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_MENU' | translate"
-                [pTooltip]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_MENU' | translate"
-                tooltipPosition="right"
-                tooltipEvent="hover"
-              ></a>
               <span
                 *ngIf="workspace.disabled"
                 [id]="'ws_search_data_grid_row_' + i + '_disabled'"
@@ -169,6 +146,7 @@
                 [pTooltip]="'WORKSPACE.TOOLTIPS.DISABLED' | translate"
                 tooltipPosition="right"
                 tooltipEvent="hover"
+                aria-hidden="true"
               ></span>
               <span
                 *ngIf="workspace.mandatory"
@@ -178,16 +156,18 @@
                 [pTooltip]="'WORKSPACE.TOOLTIPS.MANDATORY' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
+                aria-hidden="true"
               ></span>
 
               <!-- CONTENT -->
               <div
                 [id]="'ws_search_data_grid_row_' + i + '_display_name'"
                 class="font-bold text-base sm:text-lg md:text-xl lg:text-2xl text-responsive"
-                [attr.aria-label]="workspace.displayName"
+                aria-label="Workspace"
                 [pTooltip]="workspace.displayName.length < 20 ? '' : workspace.displayName"
                 tooltipPosition="top"
                 tooltipEvent="hover"
+                role="note"
               >
                 {{ workspace.displayName }}
               </div>
@@ -206,6 +186,7 @@
                   [pTooltip]="'WORKSPACE.DESCRIPTION' | translate"
                   tooltipPosition="top"
                   tooltipEvent="hover"
+                  role="note"
                 >
                   {{ workspace.description }}
                 </div>
@@ -216,10 +197,42 @@
                   [pTooltip]="'WORKSPACE.THEME' | translate"
                   tooltipPosition="top"
                   tooltipEvent="hover"
+                  role="note"
                 >
                   Theme: {{ workspace.theme }}
                 </div>
               </div>
+              <!-- BADGES -->
+              <a
+                *ngIf="!workspace.disabled"
+                tabindex="0"
+                [id]="'ws_search_data_grid_row_' + i + '_goto_workspace'"
+                class="card-badge-right badge-1 p-1 pi pi-external-link button-icon-only"
+                (click)="
+                  onGotoWorkspace(
+                    $event,
+                    workspace,
+                    getLocation().deploymentPath === '/' ? '' : getLocation().deploymentPath
+                  )
+                "
+                [attr.aria-label]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_WORKSPACE' | translate"
+                [pTooltip]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_WORKSPACE' | translate"
+                tooltipPosition="right"
+                tooltipEvent="hover"
+                role="link"
+              ></a>
+              <a
+                *ocxIfPermission="'MENU#VIEW'"
+                tabindex="0"
+                [id]="'ws_search_data_grid_row_' + i + '_goto_menu'"
+                class="card-badge-right badge-2 p-1 pi pi-sitemap button-icon-only"
+                (click)="onGotoMenu($event, workspace)"
+                [attr.aria-label]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_MENU' | translate"
+                [pTooltip]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_MENU' | translate"
+                tooltipPosition="right"
+                tooltipEvent="hover"
+                role="link"
+              ></a>
             </div>
           </div>
         </div>
