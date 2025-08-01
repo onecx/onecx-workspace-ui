@@ -257,11 +257,11 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   private prepareProductAppPart(mfe: Microfrontend, psp: ExtendedProduct): void {
     const app = psp.apps?.get(mfe.appId!)
     if (app && mfe.type === MicrofrontendType.Module) {
-      if (!app.modules) app.modules = []
+      app.modules = app.modules ?? []
       app.modules.push(mfe as ExtendedMicrofrontend)
     }
     if (app && mfe.type === MicrofrontendType.Component) {
-      if (!app.components) app.components = []
+      app.components = app.components ?? []
       app.components.push(mfe as ExtendedMicrofrontend)
       app.components.sort(this.sortMfesByExposedModule)
     }

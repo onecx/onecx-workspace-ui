@@ -182,9 +182,10 @@
     /* clickable icon-only buttons */
     .button-icon-only {
       border-radius: var(--border-radius);
+      background: transparent;
       &:hover {
         color: var(--primary-color-text);
-        background: var(--button-hover-bg);
+        background: var(--button-hover-bg) !important;
         cursor: pointer;
       }
     }
@@ -195,12 +196,15 @@
  *  PrimeNG - Layout Corrections
  * **********************************************/
 @mixin input-clear-icon {
+  .p-input-icon-right > button:last-of-type,
   .p-input-icon-right > a:last-of-type {
     right: 0.75rem;
     color: var(--emphasis-medium);
   }
   .p-input-icon-left > a,
-  .p-input-icon-right > a {
+  .p-input-icon-left > button,
+  .p-input-icon-right > a,
+  .p-input-icon-right > button {
     position: absolute;
     top: 50%;
     margin-top: -0.5rem;

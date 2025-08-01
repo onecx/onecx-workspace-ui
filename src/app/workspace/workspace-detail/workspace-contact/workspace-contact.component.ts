@@ -11,10 +11,10 @@ export class WorkspaceContactComponent implements OnChanges {
   @Input() workspace!: Workspace
   @Input() editMode = false
 
-  public formGroup: FormGroup
+  public contactForm: FormGroup
 
   constructor() {
-    this.formGroup = new FormGroup({
+    this.contactForm = new FormGroup({
       companyName: new FormControl(null, [Validators.maxLength(255)]),
       phoneNumber: new FormControl(null, [Validators.maxLength(255)]),
       country: new FormControl(null, [Validators.maxLength(255)]),
@@ -26,45 +26,37 @@ export class WorkspaceContactComponent implements OnChanges {
   }
 
   public ngOnChanges(): void {
-    this.setFormData()
-    this.editMode ? this.formGroup.enable() : this.formGroup.disable()
+    this.fillForm()
+    this.editMode ? this.contactForm.enable() : this.contactForm.disable()
   }
 
-  setFormData(): void {
-    Object.keys(this.formGroup.controls).forEach((element) => {
+  private fillForm(): void {
+    Object.keys(this.contactForm.controls).forEach((element) => {
       if (['street', 'streetNo', 'city', 'postalCode', 'country'].includes(element) && this.workspace.address) {
-        this.formGroup.controls[element].setValue((this.workspace.address as any)[element])
+        this.contactForm.controls[element].setValue((this.workspace.address as any)[element])
       } else {
-        this.formGroup.controls[element].setValue((this.workspace as any)[element])
+        this.contactForm.controls[element].setValue((this.workspace as any)[element])
       }
     })
   }
 
   public onSave(): void {
-    if (this.formGroup.valid) {
-      Object.assign(this.workspace, this.getPortalChangesFromForm())
+    if (this.contactForm.valid) {
+      Object.assign(this.workspace, this.getFormData())
       this.editMode = false
     }
   }
 
-  //return the values that are different in form than in Workspace
-  private getPortalChangesFromForm(): any[] {
-    const changes: any = {
+  // read form values
+  private getFormData(): any[] {
+    const data: any = {
       address: {}
     }
-
-    Object.keys(this.formGroup.controls).forEach((key) => {
-      if (['street', 'streetNo', 'city', 'postalCode', 'country'].includes(key)) {
-        if (!this.workspace.address) {
-          this.workspace.address = {}
-        }
-        if (this.formGroup.value[key] !== undefined) {
-          changes['address'][key] = this.formGroup.value[key]
-        }
-      } else if (this.formGroup.value[key] !== undefined) {
-        changes[key] = this.formGroup.value[key]
-      }
+    Object.keys(this.contactForm.controls).forEach((key) => {
+      const val = this.contactForm.value[key] ?? '' // to clear the data: server needs a value
+      if (['street', 'streetNo', 'city', 'postalCode', 'country'].includes(key)) data.address[key] = val
+      else data[key] = val
     })
-    return changes
+    return data
   }
 }

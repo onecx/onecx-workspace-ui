@@ -118,6 +118,7 @@
       "BACK.TOOLTIP": "Previous page",
       "DETAILS.TOOLTIP": "Display details",
       "NEW.TOOLTIP": "Create new entry",
+      "RELATED_TOPICS": "Related Topics",
       "GOTO_MENU": "Go to Menu Management",
       "GOTO_THEME": "Go to Theme",
       "GOTO_PRODUCT": "Go to Product",
@@ -212,7 +213,7 @@
     "ROLES_NOT_EXIST": "No Roles defined"
   },
   "SLOT": {
-    "NAME": "Name",
+    "NAME": "Slot Name",
     "PRODUCT": "Application",
     "APP_ID": "App ID",
     "COMPONENT": "Component",
@@ -311,6 +312,8 @@
       "QUICK_FILTER": {
         "LABEL": "Role Type",
         "TOOLTIP": "Filter for Role Type",
+        "SELECTED": "Selected",
+        "COUNT": "Count",
         "ALL": "All",
         "ALL.TOOLTIP": "IDM and Workspace Roles",
         "IAM": "IDM",
@@ -335,7 +338,8 @@
       },
       "QUICK_FILTER": {
         "LABEL": "Registration",
-        "TOOLTIP": "Filter for Registration",
+        "TOOLTIP": "Filter for Slot registration",
+        "SELECTED": "Selected",
         "ALL": "All",
         "ALL.TOOLTIP": "All = Regardless of the status of registration",
         "OUTDATED": "Outdated",
@@ -521,7 +525,7 @@
       "VIEW_MODE_TREE": "Tree view"
     },
     "LOGO": {
-      "LABEL": "Logo",
+      "LABEL": "Logo Workspace",
       "PLACEHOLDER": "Logo Placeholder"
     }
   },

@@ -46,7 +46,7 @@
         ></p-message>
       </div>
       <!-- Quick Filter -->
-      <div
+      <nav
         *ngIf="isComponentDefined && !loadingIamRoles && !wsLoading"
         class="slim-selectbutton search-criteria-selectbutton"
         [attr.aria-label]="'DIALOG.ROLE.QUICK_FILTER.TOOLTIP' | translate"
@@ -56,7 +56,7 @@
       >
         <p-selectButton
           inputid="ws_roles_quick_filter"
-          [options]="quickFilterItems"
+          [options]="(quickFilterOptions$ | async) ?? []"
           [(ngModel)]="quickFilterValue"
           (onChange)="onQuickFilterChange($event)"
           [allowEmpty]="false"
@@ -65,14 +65,22 @@
           tooltipPosition="top"
           tooltipEvent="hover"
         >
-          <ng-template let-i pTemplate>{{ i.label | translate }}</ng-template>
+          <ng-template let-item pTemplate>
+            <span [id]="'ws_detail_roles_quick_filter_' + item.value"> {{ item.label }}</span>
+          </ng-template>
         </p-selectButton>
-        <div class="p-selectbutton-subtitle flex flex-row flex-nowrap column-gap-3 opacity-90">
+        <div
+          class="p-selectbutton-subtitle flex flex-row flex-nowrap column-gap-3 opacity-90"
+          [attr.aria-label]="'DIALOG.ROLE.QUICK_FILTER.SELECTED' | translate"
+          role="note"
+        >
           <span>{{ 'DIALOG.ROLE.QUICK_FILTER.LABEL' | translate }}: </span>
           <span>{{ 'DIALOG.ROLE.QUICK_FILTER.' + quickFilterValue | translate }} </span>
-          <span>{{ onGetQuickFilterCount(quickFilterValue) }} </span>
+          <span role="note" [attr.aria-label]="'DIALOG.ROLE.QUICK_FILTER.COUNT' | translate">
+            {{ onGetQuickFilterCount(quickFilterValue) }}
+          </span>
         </div>
-      </div>
+      </nav>
       <!-- Filter & Sorting (not used because buggy) -->
       <ocx-data-view-controls
         class="flex-grow-1"
@@ -87,7 +95,10 @@
       >
       </ocx-data-view-controls>
       <!-- Additional Actions -->
-      <div class="flex flex-wrap align-is-center column-gap-2 row-gap-1">
+      <nav
+        class="flex flex-wrap align-is-center column-gap-2 row-gap-1"
+        [attr.aria-label]="'ACTIONS.NAVIGATION.RELATED_TOPICS' | translate"
+      >
         <p-button
           *ocxIfPermission="'WORKSPACE#GOTO_PERMISSION'"
           id="ws_roles_header_action_slot_link"
@@ -124,41 +135,45 @@
           tooltipEvent="hover"
         >
         </p-button>
-      </div>
+      </nav>
     </div>
   </ng-template>
 
   <!-- GRID -->
   <ng-template let-roles pTemplate="gridItem">
     <div class="grid grid-nogutter">
-      <div *ngFor="let role of roles; index as i" class="col-6 md:col-4 lg:col-4 xl:col-3 p-2 sm:p-3">
+      <article
+        *ngFor="let role of roles; index as i"
+        class="col-6 md:col-4 lg:col-4 xl:col-3 p-2 sm:p-3"
+        [attr.aria-label]="role.name"
+      >
         <a
           [id]="'ws_roles_grid_data_row_' + i"
           class="block card relative py-1 px-4 hover:bg-gray-200 cursor-pointer"
           (click)="onEditRole($event, role)"
-          [attr.aria-label]="'edit role'"
+          [attr.aria-label]="'DIALOG.ROLE.HEADER.' + (hasEditPermission ? 'EDIT' : 'VIEW') | translate"
         >
           <!-- BADGES -->
-          <a
+          <button
             *ngIf="role.isWorkspaceRole && hasDeletePermission"
             [id]="'ws_roles_grid_data_row_' + i + '_delete'"
-            class="card-badge-right badge-1 p-1 pi pi-trash button-icon-only"
+            class="card-badge-right badge-1 p-1 pi pi-trash bg-transparent border-none button-icon-only"
             (click)="onDeleteRole($event, role)"
             [attr.aria-label]="'ACTIONS.DELETE.ROLE.HEADER' | translate"
             [pTooltip]="'ACTIONS.DELETE.ROLE.HEADER' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
-          ></a>
-          <a
+          ></button>
+          <button
             *ngIf="!role.isWorkspaceRole && role.isIamRole && hasCreatePermission"
             [id]="'ws_roles_grid_data_row_' + i + '_create'"
-            class="card-badge-right badge-1 p-1 pi pi-plus hover:text-white button-icon-only text-color"
+            class="card-badge-right badge-1 p-1 pi pi-plus bg-transparent border-none button-icon-only"
             (click)="onAddRole($event, role)"
             [attr.aria-label]="'ACTIONS.CREATE.WORKSPACE.ROLE' | translate"
             [pTooltip]="'ACTIONS.CREATE.WORKSPACE.ROLE' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
-          ></a>
+          ></button>
 
           <!-- CONTENT -->
           <div class="flex flex-column justify-content-between row-gap-2 text-center">
@@ -169,12 +184,14 @@
               [pTooltip]="role.name?.length > 40 ? role.name : ''"
               tooltipPosition="top"
               tooltipEvent="hover"
+              aria-hidden="true"
             >
               {{ limitText(role.name, 40) }}
             </div>
             <div
               [id]="'ws_roles_grid_data_row_' + i + '_workspace'"
               class="flex flex-row justify-content-center align-items-center column-gap-1 text-xs sm:text-sm"
+              aria-hidden="true"
             >
               <app-ocx-chip
                 *ngIf="role.isWorkspaceRole"
@@ -194,7 +211,7 @@
             </div>
           </div>
         </a>
-      </div>
+      </article>
     </div>
   </ng-template>
 </p-dataView>

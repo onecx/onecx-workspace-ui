@@ -76,7 +76,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   public sortField = 'name'
   public sortOrder = -1
   public quickFilterValue: SlotFilterType = 'ALL'
-  public quickFilterItems: ExtendedSelectItem[]
+  public quickFilterOptions$: Observable<SelectItem[]> | undefined
   public quickFilterCount = ''
   public exceptionKey: string | undefined = undefined
   public sLoading = false
@@ -101,25 +101,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     this.hasEditPermission = this.user.hasPermission('WORKSPACE_SLOT#EDIT')
     this.hasCreatePermission = this.user.hasPermission('WORKSPACE_SLOT#CREATE')
     this.hasDeletePermission = this.user.hasPermission('WORKSPACE_SLOT#DELETE')
-    // quick filter
-    this.quickFilterItems = [
-      { label: 'DIALOG.SLOT.QUICK_FILTER.ALL', value: 'ALL', tooltipKey: 'DIALOG.SLOT.QUICK_FILTER.ALL.TOOLTIP' },
-      {
-        label: 'DIALOG.SLOT.QUICK_FILTER.UNREGISTERED',
-        value: 'UNREGISTERED',
-        tooltipKey: 'DIALOG.SLOT.QUICK_FILTER.UNREGISTERED.TOOLTIP'
-      },
-      {
-        label: 'DIALOG.SLOT.QUICK_FILTER.OUTDATED',
-        value: 'OUTDATED',
-        tooltipKey: 'DIALOG.SLOT.QUICK_FILTER.OUTDATED.TOOLTIP'
-      },
-      {
-        label: 'DIALOG.ROLE.QUICK_FILTER.WORKSPACE',
-        value: 'WORKSPACE',
-        tooltipKey: 'DIALOG.ROLE.QUICK_FILTER.WORKSPACE.TOOLTIP'
-      }
-    ]
+    this.prepareQuickFilter()
   }
 
   public ngOnInit() {
@@ -133,7 +115,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     this.destroy$.complete()
   }
   public onReload() {
-    this.quickFilterValue = 'ALL'
+    this.onQuickFilterChange({ value: 'ALL' })
     this.loadData()
   }
   public loadData(): void {
@@ -220,7 +202,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
         if (ws) {
           // extend workspace slot with product store info
           ws.psSlots.push({ ...ps, pName: p.productName, pDisplayName: p.displayName! })
-          ws.changes = ps.undeployed || ps.deprecated || ws.changes
+          ws.changes = ps.undeployed || ps.deprecated || ps.changes
           ws.deprecated = ps.deprecated
           ws.undeployed = ps.undeployed
           if (ws.changes === true) ws.type = 'WORKSPACE,OUTDATED'
@@ -406,5 +388,23 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
       'onecx-product-store-ui',
       'slots'
     )
+  }
+
+  public prepareQuickFilter(): void {
+    this.quickFilterOptions$ = this.translate
+      .get([
+        'DIALOG.SLOT.QUICK_FILTER.ALL',
+        'DIALOG.SLOT.QUICK_FILTER.WORKSPACE',
+        'DIALOG.SLOT.QUICK_FILTER.UNREGISTERED'
+      ])
+      .pipe(
+        map((data) => {
+          return [
+            { label: data['DIALOG.SLOT.QUICK_FILTER.ALL'], value: 'ALL' },
+            { label: data['DIALOG.SLOT.QUICK_FILTER.UNREGISTERED'], value: 'UNREGISTERED' },
+            { label: data['DIALOG.SLOT.QUICK_FILTER.WORKSPACE'], value: 'WORKSPACE' }
+          ]
+        })
+      )
   }
 }

@@ -57,7 +57,7 @@ export class WorkspaceSearchComponent implements OnInit {
   public search(): void {
     this.loading = true
     this.workspaces$ = this.workspaceApi.searchWorkspaces({ searchWorkspacesRequest: {} }).pipe(
-      map((data) => (data?.stream ? data.stream.sort(this.sortWorkspacesByName) : [])),
+      map((data) => data.stream?.sort(this.sortWorkspacesByName) ?? []),
       catchError((err) => {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.WORKSPACES'
         console.error('searchWorkspaces', err)

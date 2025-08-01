@@ -4,6 +4,7 @@
     [formGroup]="formGroup"
   >
     <p-checkbox
+      #check1
       inputId="ws_detail_intern_item_operator"
       styleClass="cursor-auto shadow-none"
       formControlName="operator"
@@ -13,8 +14,14 @@
       [pTooltip]="'INTERNAL.TOOLTIPS.OPERATOR' | translate"
       tooltipPosition="top"
       tooltipEvent="hover"
-    ></p-checkbox>
+    >
+      <!-- simplifies aria appearance-->
+      <ng-template pTemplate="icon">
+        <span class="pi" [ngClass]="check1.value ? 'pi-check-square' : 'pi-check'"></span>
+      </ng-template>
+    </p-checkbox>
     <p-checkbox
+      #check2
       inputId="ws_detail_props_item_mandatory"
       styleClass="cursor-pointer shadow-none"
       formControlName="mandatory"
@@ -24,8 +31,14 @@
       [pTooltip]="'INTERNAL.TOOLTIPS.MANDATORY' | translate"
       tooltipPosition="top"
       tooltipEvent="hover"
-    ></p-checkbox>
+    >
+      <!-- simplifies aria appearance-->
+      <ng-template pTemplate="icon">
+        <span class="pi" [ngClass]="check2.value ? 'pi-check-square' : 'pi-check'"></span>
+      </ng-template>
+    </p-checkbox>
     <p-checkbox
+      #check3
       inputId="ws_detail_props_item_disabled"
       styleClass="cursor-pointer shadow-none"
       formControlName="disabled"
@@ -35,7 +48,12 @@
       [pTooltip]="'WORKSPACE.TOOLTIPS.DISABLED' | translate"
       tooltipPosition="top"
       tooltipEvent="hover"
-    ></p-checkbox>
+    >
+      <!-- simplifies aria appearance-->
+      <ng-template pTemplate="icon">
+        <span class="pi" [ngClass]="check3.value ? 'pi-check-square' : 'pi-check'"></span>
+      </ng-template>
+    </p-checkbox>
   </div>
 
   <div class="w-12">
@@ -47,12 +65,12 @@
         class="w-full pt-3 pb-2 text-responsive"
         [disabled]="true"
         [value]="workspace.name"
-        [attr.aria-label]="'WORKSPACE.NAME' | translate"
+        [attr.aria-label]="'Workspace ' + ('WORKSPACE.NAME' | translate)"
         [pTooltip]="'WORKSPACE.TOOLTIPS.NAME' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       />
-      <label for="ws_detail_intern_item_name">{{ 'WORKSPACE.NAME' | translate }}</label>
+      <label for="ws_detail_intern_item_name" aria-hidden="true">{{ 'WORKSPACE.NAME' | translate }}</label>
     </span>
   </div>
 
@@ -71,7 +89,9 @@
           tooltipPosition="top"
           tooltipEvent="hover"
         />
-        <label for="ws_detail_intern_item_creation-date">{{ 'INTERNAL.CREATION_DATE' | translate }}</label>
+        <label for="ws_detail_intern_item_creation-date" aria-hidden="true">
+          {{ 'INTERNAL.CREATION_DATE' | translate }}
+        </label>
       </span>
     </div>
 
@@ -89,7 +109,9 @@
           tooltipPosition="top"
           tooltipEvent="hover"
         />
-        <label for="ws_detail_intern_item_creation-user">{{ 'INTERNAL.CREATION_USER' | translate }}</label>
+        <label for="ws_detail_intern_item_creation-user" aria-hidden="true">
+          {{ 'INTERNAL.CREATION_USER' | translate }}
+        </label>
       </span>
     </div>
   </div>
@@ -109,7 +131,9 @@
           tooltipPosition="top"
           tooltipEvent="hover"
         />
-        <label for="ws_detail_intern_item_modification-date">{{ 'INTERNAL.MODIFICATION_DATE' | translate }}</label>
+        <label for="ws_detail_intern_item_modification-date" aria-hidden="true">
+          {{ 'INTERNAL.MODIFICATION_DATE' | translate }}
+        </label>
       </span>
     </div>
 
@@ -127,7 +151,9 @@
           tooltipPosition="top"
           tooltipEvent="hover"
         />
-        <label for="ws_detail_intern_item_modification-user">{{ 'INTERNAL.MODIFICATION_USER' | translate }}</label>
+        <label for="ws_detail_intern_item_modification-user" aria-hidden="true">
+          {{ 'INTERNAL.MODIFICATION_USER' | translate }}
+        </label>
       </span>
     </div>
   </div>

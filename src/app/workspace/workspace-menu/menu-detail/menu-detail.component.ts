@@ -406,7 +406,7 @@ export class MenuDetailComponent implements OnChanges {
       .subscribe()
   }
   public sortMfesByPath(a: MenuURL, b: MenuURL): number {
-    return (a.mfePath ? a.mfePath : '').localeCompare(b.mfePath ? b.mfePath : '')
+    return (a.mfePath ?? '').localeCompare(b.mfePath ?? '')
   }
 
   /**

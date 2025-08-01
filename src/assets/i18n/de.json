@@ -118,6 +118,7 @@
       "BACK.TOOLTIP": "Vorherige Seite",
       "DETAILS.TOOLTIP": "Details anzeigen",
       "NEW.TOOLTIP": "Erstelle neuen Menüpunkt",
+      "RELATED_TOPICS": "Verwandte Themen",
       "GOTO_MENU": "Zur Menüverwaltung wechseln",
       "GOTO_THEME": "Zum Theme wechseln",
       "GOTO_PRODUCT": "Zum Produkt wechseln",
@@ -212,7 +213,7 @@
     "ROLES_NOT_EXIST": "Keine Rollen definiert"
   },
   "SLOT": {
-    "NAME": "Name",
+    "NAME": "Slotname",
     "PRODUCT": "Applikation",
     "APP_ID": "App ID",
     "COMPONENT": "Komponente",
@@ -311,6 +312,8 @@
       "QUICK_FILTER": {
         "LABEL": "Rollentyp",
         "TOOLTIP": "Filter für Rollentyp",
+        "SELECTED": "Ausgewählt",
+        "COUNT": "Anzahl",
         "ALL": "Alle",
         "ALL.TOOLTIP": "IDM und Workspace-Rollen",
         "IAM": "IDM",
@@ -335,7 +338,8 @@
       },
       "QUICK_FILTER": {
         "LABEL": "Registrierung",
-        "TOOLTIP": "Filter für Registrierung",
+        "TOOLTIP": "Filter für Slotregistrierung",
+        "SELECTED": "Ausgewählt",
         "ALL": "Alle",
         "ALL.TOOLTIP": "Registrierte und Nichtregistrierte",
         "OUTDATED": "Veraltet",
@@ -521,7 +525,7 @@
       "VIEW_MODE_TREE": "Baumansicht"
     },
     "LOGO": {
-      "LABEL": "Logo",
+      "LABEL": "Workspace Logo",
       "PLACEHOLDER": "Logo Platzhalter"
     }
   },
