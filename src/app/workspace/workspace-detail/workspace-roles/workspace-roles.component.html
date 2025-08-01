@@ -151,7 +151,7 @@
           [id]="'ws_roles_grid_data_row_' + i"
           class="block card relative py-1 px-4 hover:bg-gray-200 cursor-pointer"
           (click)="onEditRole($event, role)"
-          [attr.aria-label]="('DIALOG.ROLE.HEADER.' + (hasEditPermission ? 'EDIT' : 'VIEW')) | translate"
+          [attr.aria-label]="'DIALOG.ROLE.HEADER.' + (hasEditPermission ? 'EDIT' : 'VIEW') | translate"
         >
           <!-- BADGES -->
           <button

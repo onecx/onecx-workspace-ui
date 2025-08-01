@@ -129,7 +129,7 @@
           [ngClass]="{ 'hover:bg-gray-200 cursor-pointer': !slot.new }"
           [class.bg-gray-200]="slot.new"
           (click)="onSlotDetail($event, slot)"
-          [attr.aria-label]="('DIALOG.SLOT.HEADER.' + (hasEditPermission ? 'EDIT' : 'VIEW')) | translate"
+          [attr.aria-label]="'DIALOG.SLOT.HEADER.' + (hasEditPermission ? 'EDIT' : 'VIEW') | translate"
         >
           <!-- right badges -->
           <button
