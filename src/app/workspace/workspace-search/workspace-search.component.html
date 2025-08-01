@@ -62,12 +62,11 @@
 
       <!-- LIST -->
       <ng-template let-workspaces pTemplate="listItem">
-        <div
+        <article
           *ngFor="let workspace of workspaces; index as i"
           class="sm:mx-3 py-1 px-3 flex flex-row flex-nowrap justify-content-start align-items-center column-gap-3 hover:bg-gray-200 cursor-pointer"
           [id]="'ws_search_data_list_row_' + i"
           [routerLink]="['./' + workspace.name]"
-          role="group"
         >
           <div class="p-0 col-4 sm:col-3 md:col-2 flex justify-content-around align-items-center">
             <app-image-container
@@ -125,18 +124,17 @@
           >
             {{ limitText(workspace.description, 50) }}
           </div>
-        </div>
+        </article>
       </ng-template>
 
       <!-- GRID -->
       <ng-template let-workspaces pTemplate="gridItem">
         <div class="grid grid-nogutter">
           <div *ngFor="let workspace of workspaces; index as i" class="col-6 md:col-4 xl:col-3 p-2 md:p-3">
-            <div
+            <article
               [id]="'ws_search_data_grid_row_' + i"
               class="card relative p-2 sm:px-3 flex flex-column gap-1 sm:gap-3 justify-content-between text-center hover:bg-gray-200 cursor-pointer"
               [routerLink]="['./', workspace.name]"
-              role="group"
             >
               <span
                 *ngIf="workspace.disabled"
@@ -233,7 +231,7 @@
                 tooltipEvent="hover"
                 role="link"
               ></a>
-            </div>
+            </article>
           </div>
         </div>
       </ng-template>

@@ -71,7 +71,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild(DataView) dv: DataView | undefined
   public dataViewControlsTranslations$: Observable<DataViewControlTranslations> | undefined
   public filterValue: string | undefined
-  public filterByDefault = 'name,type'
+  public filterByDefault = 'type,name'
   public filterBy = this.filterByDefault
   public sortField = 'name'
   public sortOrder = -1
@@ -115,7 +115,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     this.destroy$.complete()
   }
   public onReload() {
-    this.quickFilterValue = 'ALL'
+    this.onQuickFilterChange({ value: 'ALL' })
     this.loadData()
   }
   public loadData(): void {
@@ -202,7 +202,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
         if (ws) {
           // extend workspace slot with product store info
           ws.psSlots.push({ ...ps, pName: p.productName, pDisplayName: p.displayName! })
-          ws.changes = ps.undeployed || ps.deprecated || ws.changes
+          ws.changes = ps.undeployed || ps.deprecated || ps.changes
           ws.deprecated = ps.deprecated
           ws.undeployed = ps.undeployed
           if (ws.changes === true) ws.type = 'WORKSPACE,OUTDATED'
@@ -395,15 +395,13 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
       .get([
         'DIALOG.SLOT.QUICK_FILTER.ALL',
         'DIALOG.SLOT.QUICK_FILTER.WORKSPACE',
-        'DIALOG.SLOT.QUICK_FILTER.UNREGISTERED',
-        'DIALOG.SLOT.QUICK_FILTER.OUTDATED'
+        'DIALOG.SLOT.QUICK_FILTER.UNREGISTERED'
       ])
       .pipe(
         map((data) => {
           return [
             { label: data['DIALOG.SLOT.QUICK_FILTER.ALL'], value: 'ALL' },
             { label: data['DIALOG.SLOT.QUICK_FILTER.UNREGISTERED'], value: 'UNREGISTERED' },
-            { label: data['DIALOG.SLOT.QUICK_FILTER.OUTDATED'], value: 'OUTDATED' },
             { label: data['DIALOG.SLOT.QUICK_FILTER.WORKSPACE'], value: 'WORKSPACE' }
           ]
         })

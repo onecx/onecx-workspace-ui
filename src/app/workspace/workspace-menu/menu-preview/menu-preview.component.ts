@@ -96,7 +96,7 @@ export class MenuPreviewComponent implements OnChanges {
 
   private expandRecursive(node: TreeNode, isExpand: boolean) {
     node.expanded = isExpand
-    this.stateService.getState().treeExpansionState.set(node.key || '', node.expanded)
+    this.stateService.getState().treeExpansionState.set(node.key ?? '', node.expanded)
     if (node.children) {
       node.children.forEach((childNode) => {
         this.expandRecursive(childNode, isExpand)

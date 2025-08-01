@@ -200,7 +200,7 @@
     </a>
   </div>
 
-  <div class="p-inputgroup mb-1" controlErrorAnchor role="group">
+  <section class="p-inputgroup mb-1" controlErrorAnchor role="group">
     <span class="p-float-label">
       <input
         #inputRssFeedUrl
@@ -232,9 +232,9 @@
     >
       <span class="pi pi-copy"></span>
     </a>
-  </div>
+  </section>
 
-  <div class="flex flex-row flex-wrap sm:flex-nowrap align-items-center row-gap-2 column-gap-4" role="group">
+  <section class="flex flex-row flex-wrap sm:flex-nowrap align-items-center row-gap-2 column-gap-4">
     <input hidden type="file" accept="image/*" #selectedFileInputLogo (change)="onFileUpload($event)" />
     <app-image-container
       id="ws_detail_props_form_logo_image"
@@ -288,7 +288,7 @@
         {{ ('VALIDATION.HINTS.FORMAT_URL' | translate) + externUrlPattern }}
       </label>
     </div>
-  </div>
+  </section>
 
   <span class="p-float-label mb-1" controlErrorAnchor>
     <input

@@ -329,6 +329,6 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
         ]
       })
     )
-    this.translations$.subscribe((data) => (this.messages = data as Message[]))
+    this.translations$.subscribe((data) => (this.messages = data))
   }
 }

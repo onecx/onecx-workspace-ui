@@ -32,14 +32,13 @@
       ></p-message>
 
       <!-- Quick Filter -->
-      <div
+      <nav
         *ngIf="!(wpLoading || sLoading)"
         class="slim-selectbutton search-criteria-selectbutton"
         [attr.aria-label]="'DIALOG.SLOT.QUICK_FILTER.TOOLTIP' | translate"
         [pTooltip]="'DIALOG.SLOT.QUICK_FILTER.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
-        role="group"
       >
         <p-selectButton
           inputid="ws_roles_quick_filter"
@@ -58,13 +57,13 @@
         </p-selectButton>
         <div
           class="p-selectbutton-subtitle flex flex-row flex-nowrap column-gap-3 opacity-90"
-          role="note"
           [attr.aria-label]="'DIALOG.SLOT.QUICK_FILTER.SELECTED' | translate"
+          role="note"
         >
           <span>{{ 'DIALOG.SLOT.QUICK_FILTER.LABEL' | translate }}: </span>
           <span>{{ 'DIALOG.SLOT.QUICK_FILTER.' + quickFilterValue + '.TOOLTIP' | translate }} </span>
         </div>
-      </div>
+      </nav>
       <!-- Filter & Sorting -->
       <ocx-data-view-controls
         class="flex-grow-1"
@@ -84,7 +83,10 @@
       >
       </ocx-data-view-controls>
       <!-- Additional Actions -->
-      <div class="pl-1 flex flex-wrap align-items-center column-gap-2 row-gap-1">
+      <nav
+        class="pl-1 flex flex-wrap align-items-center column-gap-2 row-gap-1"
+        [attr.aria-label]="'ACTIONS.NAVIGATION.RELATED_TOPICS' | translate"
+      >
         <p-button
           *ocxIfPermission="'WORKSPACE#GOTO_APP_STORE'"
           id="ws_slots_header_action_slot_link"
@@ -109,46 +111,47 @@
           tooltipEvent="hover"
         >
         </p-button>
-      </div>
+      </nav>
     </div>
   </ng-template>
 
   <!-- GRID -->
   <ng-template let-slots pTemplate="gridItem">
-    <div class="grid grid-nogutter" role="group" [attr.aria-label]="'TABS.WORKSPACE.SLOTS' | translate">
-      <div *ngFor="let slot of slots; index as i" class="col-6 md:col-4 lg:col-4 xl:col-3 p-2 md:p-3">
+    <div class="grid grid-nogutter" [attr.aria-label]="'TABS.WORKSPACE.SLOTS' | translate">
+      <article
+        *ngFor="let slot of slots; index as i"
+        class="col-6 md:col-4 lg:col-4 xl:col-3 p-2 md:p-3"
+        [attr.aria-label]="slot.name"
+      >
         <a
           [id]="'ws_slots_grid_data_row_' + i + '_action_detail'"
           class="block card relative py-1 px-4"
           [ngClass]="{ 'hover:bg-gray-200 cursor-pointer': !slot.new }"
           [class.bg-gray-200]="slot.new"
           (click)="onSlotDetail($event, slot)"
-          [attr.aria-label]="slot.name"
-          role="group"
+          [attr.aria-label]="('DIALOG.SLOT.HEADER.' + (hasEditPermission ? 'EDIT' : 'VIEW')) | translate"
         >
           <!-- right badges -->
-          <a
+          <button
             *ngIf="slot.new && hasCreatePermission"
             [id]="'ws_slots_grid_data_row_' + i + '_action_new'"
-            class="card-badge-right badge-1 p-1 pi pi-plus button-icon-only"
+            class="card-badge-right badge-1 p-1 pi pi-plus bg-transparent border-none button-icon-only"
             (click)="onAddSlot($event, slot)"
             [attr.aria-label]="'DIALOG.SLOT.CREATE.TOOLTIP' | translate"
             [pTooltip]="'DIALOG.SLOT.CREATE.TOOLTIP' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
-            role="button"
-          ></a>
-          <a
+          ></button>
+          <button
             *ngIf="!slot.new && hasDeletePermission && slot.components.length === 0"
             [id]="'ws_slots_grid_data_row_' + i + '_action_delete'"
-            class="card-badge-right badge-1 p-1 pi pi-trash button-icon-only"
+            class="card-badge-right badge-1 p-1 pi pi-trash bg-transparent border-none button-icon-only"
             (click)="onDeleteSlot($event, slot)"
             [attr.aria-label]="'ACTIONS.DELETE.SLOT.LABEL' | translate"
             [pTooltip]="'ACTIONS.DELETE.SLOT.LABEL' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
-            role="button"
-          ></a>
+          ></button>
           <span
             *ngIf="!slot.new && hasDeletePermission && slot.components.length > 0"
             [id]="'ws_slots_grid_data_row_' + i + '_action_delete_blocked'"
@@ -157,7 +160,7 @@
             [pTooltip]="'ACTIONS.DELETE.SLOT.LABEL.COMPONENTS' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
-            role="button"
+            role="note"
           ></span>
           <!-- left badges -->
           <span
@@ -220,6 +223,7 @@
             <div
               [id]="'ws_roles_grid_data_row_' + i + '_workspace'"
               class="flex flex-row justify-content-center align-items-center column-gap-3 text-xs sm:text-sm"
+              aria-hidden="true"
             >
               <app-ocx-chip
                 *ngIf="!slot.new"
@@ -246,7 +250,7 @@
             </div>
           </div>
         </a>
-      </div>
+      </article>
     </div>
   </ng-template>
 </p-dataView>
