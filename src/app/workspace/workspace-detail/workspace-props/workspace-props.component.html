@@ -223,7 +223,7 @@
         >{{ 'WORKSPACE.RSS_FEED_URL' | translate }}
       </label>
     </span>
-    <a
+    <button
       tabindex="0"
       id="ws_detail_props_item_rssFeedUrl_link"
       class="p-inputgroup-addon bg-primary pseudo-button"
@@ -233,10 +233,9 @@
       [pTooltip]="'ACTIONS.COPY.CLIPBOARD' | translate"
       tooltipPosition="right"
       tooltipEvent="hover"
-      role="button"
     >
-      <span class="pi pi-copy"></span>
-    </a>
+      <span class="pi pi-copy" aria-hidden="true"></span>
+    </button>
   </article>
 
   <article

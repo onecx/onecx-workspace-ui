@@ -100,28 +100,6 @@ describe('WorkspaceRolesComponent', () => {
     it('should create', () => {
       expect(component).toBeTruthy()
     })
-
-    it('dataview translations', (done) => {
-      const translationData = {
-        'DIALOG.DATAVIEW.FILTER': 'filter',
-        'DIALOG.DATAVIEW.FILTER_OF': 'filterOf',
-        'DIALOG.DATAVIEW.SORT_BY': 'sortBy'
-      }
-      const translateService = TestBed.inject(TranslateService)
-      spyOn(translateService, 'get').and.returnValue(of(translationData))
-
-      component.ngOnInit()
-
-      component.dataViewControlsTranslations$?.subscribe({
-        next: (data) => {
-          if (data) {
-            expect(data.sortDropdownTooltip).toEqual('sortBy')
-          }
-          done()
-        },
-        error: done.fail
-      })
-    })
   })
 
   describe('slotInitializer', () => {
@@ -399,6 +377,41 @@ describe('WorkspaceRolesComponent', () => {
       component.onGoToPermission()
 
       expect(utils.goToEndpoint).toHaveBeenCalled()
+    })
+  })
+
+  describe('Test translations', () => {
+    it('dataview translations', (done) => {
+      const translationData = {
+        'DIALOG.DATAVIEW.FILTER': 'filter',
+        'DIALOG.DATAVIEW.FILTER_OF': 'filterOf',
+        'DIALOG.DATAVIEW.SORT_BY': 'sortBy'
+      }
+      const translateService = TestBed.inject(TranslateService)
+      spyOn(translateService, 'get').and.returnValue(of(translationData))
+
+      component.ngOnInit()
+
+      component.dataViewControlsTranslations$?.subscribe({
+        next: (data) => {
+          if (data) {
+            expect(data.sortDropdownTooltip).toEqual('sortBy')
+          }
+          done()
+        },
+        error: done.fail
+      })
+    })
+
+    it('should translate quick filter items', () => {
+      component.prepareQuickFilter()
+
+      let items: any = []
+      component.quickFilterOptions$!.subscribe((data) => (items = data))
+
+      items[0].value
+
+      expect(items[0].value).toEqual('ALL')
     })
   })
 })

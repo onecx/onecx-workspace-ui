@@ -71,7 +71,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild(DataView) dv: DataView | undefined
   public dataViewControlsTranslations$: Observable<DataViewControlTranslations> | undefined
   public filterValue: string | undefined
-  public filterByDefault = 'type,name'
+  public filterByDefault = 'name,type'
   public filterBy = this.filterByDefault
   public sortField = 'name'
   public sortOrder = -1
