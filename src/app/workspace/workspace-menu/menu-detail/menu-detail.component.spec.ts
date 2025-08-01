@@ -390,28 +390,32 @@ describe('MenuDetailComponent', () => {
       expect(wProductApiServiceSpy.getProductsByWorkspaceId).not.toHaveBeenCalled()
     })
 
-    it('should sort urls by path 1 - non-empty', () => {
-      const a: MenuURL = { mfePath: 'a' }
-      const b: MenuURL = { mfePath: 'b' }
-      const urls: MenuURL[] = [b, a]
+    describe('sort mfe pathes', () => {
+      it('should sort urls by path 1 - non-empty', () => {
+        const a: MenuURL = { mfePath: 'a' }
+        const b: MenuURL = { mfePath: 'b' }
+        const urls: MenuURL[] = [b, a]
 
-      urls.sort((x, y) => component.sortMfesByPath(x, y))
+        urls.sort((x, y) => component.sortMfesByPath(x, y))
 
-      expect(urls).toEqual([a, b])
-    })
+        expect(urls).toEqual([a, b])
+      })
 
-    it('should sort urls by path 1 - empty', () => {
-      const a: MenuURL = { mfePath: undefined }
-      const b: MenuURL = { mfePath: 'b' }
-      const urls: MenuURL[] = [b, a]
+      it('should sort urls by path 1 - empty', () => {
+        const a: MenuURL = { mfePath: undefined }
+        const b: MenuURL = { mfePath: 'b' }
+        let urls: MenuURL[] = [a, b]
 
-      urls.sort((x, y) => component.sortMfesByPath(x, y))
+        urls.sort((x, y) => component.sortMfesByPath(x, y))
 
-      expect(urls).toEqual([a, b])
+        expect(urls).toEqual([a, b])
 
-      urls.sort((x, y) => component.sortMfesByPath(y, x))
+        urls = [b, a]
 
-      expect(urls).toEqual([b, a])
+        urls.sort((x, y) => component.sortMfesByPath(x, y))
+
+        expect(urls).toEqual([a, b])
+      })
     })
   })
 
