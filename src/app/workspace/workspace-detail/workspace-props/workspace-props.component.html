@@ -22,7 +22,7 @@
     </span>
   </div>
 
-  <div role="group">
+  <article [ariaLabel]="'WORKSPACE.THEME' | translate">
     <ng-container *ngIf="isThemeComponentDefined$ | async; else noThemesAvailable">
       <!-- THEMES -->
       <ocx-slot [name]="slotName" [inputs]="{ dataType: 'themes' }" [outputs]="{ themes: themesEmitter }"> </ocx-slot>
@@ -124,9 +124,9 @@
       </div>
     </ng-template>
     <!-- end of theme row -->
-  </div>
+  </article>
 
-  <div role="group">
+  <article [attr.aria-label]="'WORKSPACE.BASE_URL' | translate">
     <div class="p-inputgroup mb-1" controlErrorAnchor>
       <span class="p-float-label">
         <input
@@ -163,9 +163,14 @@
     <label *ngIf="editMode" class="ocx-control-hint block" for="ws_detail_props_item_base_url_link" aria-hidden="true">
       {{ ('VALIDATION.HINTS.FORMAT_URL' | translate) + urlPattern }}
     </label>
-  </div>
+  </article>
 
-  <div *ngIf="(productPaths$ | async) ?? [] as paths" class="p-inputgroup mb-1" controlErrorAnchor role="group">
+  <article
+    *ngIf="(productPaths$ | async) ?? [] as paths"
+    class="p-inputgroup mb-1"
+    controlErrorAnchor
+    [attr.aria-label]="'WORKSPACE.HOME_PAGE' | translate"
+  >
     <span class="p-float-label">
       <p-dropdown
         #inputHomePage
@@ -198,9 +203,9 @@
       tooltipEvent="hover"
     >
     </a>
-  </div>
+  </article>
 
-  <section class="p-inputgroup mb-1" controlErrorAnchor role="group">
+  <article class="p-inputgroup mb-1" controlErrorAnchor [attr.aria-label]="'WORKSPACE.RSS_FEED_URL' | translate">
     <span class="p-float-label">
       <input
         #inputRssFeedUrl
@@ -232,9 +237,12 @@
     >
       <span class="pi pi-copy"></span>
     </a>
-  </section>
+  </article>
 
-  <section class="flex flex-row flex-wrap sm:flex-nowrap align-items-center row-gap-2 column-gap-4">
+  <article
+    class="flex flex-row flex-wrap sm:flex-nowrap align-items-center row-gap-2 column-gap-4"
+    [attr.aria-label]="'DIALOG.LOGO.LABEL' | translate"
+  >
     <input hidden type="file" accept="image/*" #selectedFileInputLogo (change)="onFileUpload($event)" />
     <app-image-container
       id="ws_detail_props_form_logo_image"
@@ -288,7 +296,7 @@
         {{ ('VALIDATION.HINTS.FORMAT_URL' | translate) + externUrlPattern }}
       </label>
     </div>
-  </section>
+  </article>
 
   <span class="p-float-label mb-1" controlErrorAnchor>
     <input
