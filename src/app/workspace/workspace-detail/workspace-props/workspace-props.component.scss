@@ -2,3 +2,7 @@
 
 @include prepare-inputgroup;
 @include dropdown-zebra-rows;
+
+.p-inputgroup {
+  width: unset !important;
+}

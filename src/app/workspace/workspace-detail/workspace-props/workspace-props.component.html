@@ -20,13 +20,14 @@
     </label>
   </span>
 
+  <!-- THEMES -->
   <article [ariaLabel]="'WORKSPACE.THEME' | translate" class="w-full">
+    <ocx-slot class="hidden" [name]="slotName" [inputs]="{ dataType: 'themes' }" [outputs]="{ themes: themesEmitter }">
+    </ocx-slot>
     <ng-container *ngIf="isThemeComponentDefined$ | async; else noThemesAvailable">
-      <!-- THEMES -->
-      <ocx-slot [name]="slotName" [inputs]="{ dataType: 'themes' }" [outputs]="{ themes: themesEmitter }"> </ocx-slot>
       <div
         *ngIf="(themes$ | async) ?? [] as themes; else noThemesAvailable"
-        class="flex flex-row flex-nowrap align-items-center"
+        class="flex flex-row flex-wrap align-items-center"
         [ngClass]="{ 'row-gap-2 column-gap-2 sm:column-gap-4': (themeLogoLoadingFailed$ | async) !== undefined }"
       >
         <!-- LOGO -->
@@ -45,7 +46,7 @@
           ></ocx-slot
         ></ng-container>
 
-        <div class="p-inputgroup mb-1" controlErrorAnchor>
+        <div class="p-inputgroup mb-1 flex-grow-1" controlErrorAnchor>
           <span class="p-float-label">
             <p-dropdown
               #wsThemeName
