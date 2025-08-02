@@ -25,15 +25,6 @@
     <ocx-slot class="hidden" [name]="slotName" [inputs]="{ dataType: 'themes' }" [outputs]="{ themes: themesEmitter }">
     </ocx-slot>
     <ng-container *ngIf="isThemeComponentDefined$ | async; else noThemesAvailable">
-      <!--
-      <div
-        *ngIf="(themes$ | async) ?? [] as themes; else noThemesAvailable"
-        class="flex flex-row flex-wrap align-items-center"
-        [ngClass]="{ 'row-gap-3 column-gap-2 sm:column-gap-4': (themeLogoLoadingFailed$ | async) !== undefined,
-          'row-gap-3 column-gap-2 sm:column-gap-4': true
-         }"
-      >
-      -->
       <div
         *ngIf="{
           themes: (themes$ | async) ?? [],
