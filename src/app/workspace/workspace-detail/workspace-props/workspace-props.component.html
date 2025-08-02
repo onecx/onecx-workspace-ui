@@ -36,10 +36,10 @@
       -->
       <div
         *ngIf="{
-            themes: (themes$ | async) ?? [],
-            formValues: formGroupValues$ | async, 
-            themeLogoUrl: getThemeImageUrl((themes$ | async) ?? [], (formGroupValues$ | async)?.theme ?? '', RefType.Logo)
-          } as data"
+          themes: (themes$ | async) ?? [],
+          formValues: formGroupValues$ | async,
+          themeLogoUrl: getThemeImageUrl((themes$ | async) ?? [], (formGroupValues$ | async)?.theme ?? '', RefType.Logo)
+        } as data"
         class="flex flex-row flex-wrap align-items-center"
         [ngClass]="{
           'row-gap-2 column-gap-3 sm:column-gap-4': (themeLogoLoadingFailed$ | async) !== undefined || data.themeLogoUrl
@@ -58,11 +58,11 @@
           *ngIf="!data.themeLogoUrl"
           [name]="slotName"
           [inputs]="{
-              dataType: 'logo',
-              themeName: data.formValues?.theme,
-              useDefaultLogo: true,
-              imageStyleClass: 'h-2rem'
-            }"
+            dataType: 'logo',
+            themeName: data.formValues?.theme,
+            useDefaultLogo: true,
+            imageStyleClass: 'h-2rem'
+          }"
           [outputs]="{ imageLoadingFailed: logoLoadingEmitter }"
         ></ocx-slot>
 
