@@ -3,26 +3,24 @@
   [formGroup]="formGroup"
   errorTailor
 >
-  <div>
-    <span class="p-float-label mb-1" controlErrorAnchor>
-      <input
-        pInputText
-        type="text"
-        id="ws_detail_props_item_display_name"
-        class="w-full pt-3 pb-2 text-responsive"
-        formControlName="displayName"
-        [attr.aria-label]="'WORKSPACE.DISPLAY_NAME' | translate"
-        [pTooltip]="'WORKSPACE.TOOLTIPS.DISPLAY_NAME' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      />
-      <label class="ocx-required-label" for="ws_detail_props_item_display_name" aria-hidden="true">
-        {{ 'WORKSPACE.DISPLAY_NAME' | translate }}
-      </label>
-    </span>
-  </div>
+  <span class="p-float-label mb-1 w-full" controlErrorAnchor>
+    <input
+      pInputText
+      type="text"
+      id="ws_detail_props_item_display_name"
+      class="w-full pt-3 pb-2 text-responsive"
+      formControlName="displayName"
+      [attr.aria-label]="'WORKSPACE.DISPLAY_NAME' | translate"
+      [pTooltip]="'WORKSPACE.TOOLTIPS.DISPLAY_NAME' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
+    />
+    <label class="ocx-required-label" for="ws_detail_props_item_display_name" aria-hidden="true">
+      {{ 'WORKSPACE.DISPLAY_NAME' | translate }}
+    </label>
+  </span>
 
-  <article [ariaLabel]="'WORKSPACE.THEME' | translate">
+  <article [ariaLabel]="'WORKSPACE.THEME' | translate" class="w-full">
     <ng-container *ngIf="isThemeComponentDefined$ | async; else noThemesAvailable">
       <!-- THEMES -->
       <ocx-slot [name]="slotName" [inputs]="{ dataType: 'themes' }" [outputs]="{ themes: themesEmitter }"> </ocx-slot>
@@ -88,7 +86,7 @@
 
     <!-- THEME readonly (no change possible) -->
     <ng-template #noThemesAvailable>
-      <div class="p-inputgroup mb-1" controlErrorAnchor>
+      <div class="p-inputgroup mb-1 w-full" controlErrorAnchor>
         <span class="p-float-label">
           <input
             #wsThemeNameReadonly
@@ -126,7 +124,7 @@
     <!-- end of theme row -->
   </article>
 
-  <article [attr.aria-label]="'WORKSPACE.BASE_URL' | translate">
+  <article [attr.aria-label]="'WORKSPACE.BASE_URL' | translate" class="w-full">
     <div class="p-inputgroup mb-1" controlErrorAnchor>
       <span class="p-float-label">
         <input
@@ -167,7 +165,7 @@
 
   <article
     *ngIf="(productPaths$ | async) ?? [] as paths"
-    class="p-inputgroup mb-1"
+    class="p-inputgroup mb-1 w-full"
     controlErrorAnchor
     [attr.aria-label]="'WORKSPACE.HOME_PAGE' | translate"
   >
@@ -205,7 +203,7 @@
     </a>
   </article>
 
-  <article class="p-inputgroup mb-1" controlErrorAnchor [attr.aria-label]="'WORKSPACE.RSS_FEED_URL' | translate">
+  <article class="p-inputgroup mb-1 w-full" controlErrorAnchor [attr.aria-label]="'WORKSPACE.RSS_FEED_URL' | translate">
     <span class="p-float-label">
       <input
         #inputRssFeedUrl
@@ -239,7 +237,7 @@
   </article>
 
   <article
-    class="flex flex-row flex-wrap sm:flex-nowrap align-items-center row-gap-2 column-gap-4"
+    class="flex flex-row flex-wrap sm:flex-nowrap align-items-center row-gap-2 column-gap-4 w-full"
     [attr.aria-label]="'DIALOG.LOGO.LABEL' | translate"
   >
     <input hidden type="file" accept="image/*" #selectedFileInputLogo (change)="onFileUpload($event)" />
@@ -274,7 +272,7 @@
       tooltipPosition="top"
       tooltipEvent="hover"
     ></button>
-    <div class="flex flex-column row-gap-1 w-full">
+    <div class="flex flex-column row-gap-1 flex-grow-1">
       <span class="p-float-label">
         <input
           pInputText
@@ -297,7 +295,7 @@
     </div>
   </article>
 
-  <span class="p-float-label mb-1" controlErrorAnchor>
+  <span class="p-float-label mb-1 w-full" controlErrorAnchor>
     <input
       pInputText
       type="text"
@@ -314,7 +312,7 @@
     </label>
   </span>
 
-  <span class="p-float-label mb-1" controlErrorAnchor>
+  <span class="p-float-label mb-1 w-full" controlErrorAnchor>
     <textarea
       class="w-full"
       pInputTextarea
