@@ -20,39 +20,51 @@
     </label>
   </span>
 
+  <!-- THEMES -->
   <article [ariaLabel]="'WORKSPACE.THEME' | translate" class="w-full">
+    <ocx-slot class="hidden" [name]="slotName" [inputs]="{ dataType: 'themes' }" [outputs]="{ themes: themesEmitter }">
+    </ocx-slot>
     <ng-container *ngIf="isThemeComponentDefined$ | async; else noThemesAvailable">
-      <!-- THEMES -->
-      <ocx-slot [name]="slotName" [inputs]="{ dataType: 'themes' }" [outputs]="{ themes: themesEmitter }"> </ocx-slot>
       <div
-        *ngIf="(themes$ | async) ?? [] as themes; else noThemesAvailable"
-        class="flex flex-row flex-nowrap align-items-center"
-        [ngClass]="{ 'row-gap-2 column-gap-2 sm:column-gap-4': (themeLogoLoadingFailed$ | async) !== undefined }"
+        *ngIf="{
+          themes: (themes$ | async) ?? [],
+          formValues: formGroupValues$ | async,
+          themeLogoUrl: getThemeImageUrl((themes$ | async) ?? [], (formGroupValues$ | async)?.theme ?? '', RefType.Logo)
+        } as data"
+        class="flex flex-row flex-wrap align-items-center"
+        [ngClass]="{
+          'row-gap-2 column-gap-3 sm:column-gap-4': (themeLogoLoadingFailed$ | async) !== undefined || data.themeLogoUrl
+        }"
       >
-        <!-- LOGO -->
-        <ng-container *ngIf="formGroupValues$ | async as formGroupValues">
-          <ocx-slot
-            *ngIf="(themeLogoLoadingFailed$ | async) !== true"
-            [name]="slotName"
-            [inputs]="{
-              dataType: 'logo',
-              themeName: formGroupValues.theme,
-              imageUrl: getThemeImageUrl(themes, formGroupValues.theme, RefType.Logo),
-              useDefaultLogo: true,
-              imageStyleClass: 'h-2rem'
-            }"
-            [outputs]="{ imageLoadingFailed: logoLoadingEmitter }"
-          ></ocx-slot
-        ></ng-container>
+        <!-- theme has extern logo url -->
+        <img
+          *ngIf="data.themeLogoUrl"
+          [class]="'border-round-sm h-2rem'"
+          [src]="data.themeLogoUrl"
+          alt="Theme Logo"
+          aria-label="Theme Logo"
+        />
+        <!-- theme has uploaded logo or default logo -->
+        <ocx-slot
+          *ngIf="!data.themeLogoUrl"
+          [name]="slotName"
+          [inputs]="{
+            dataType: 'logo',
+            themeName: data.formValues?.theme,
+            useDefaultLogo: true,
+            imageStyleClass: 'h-2rem'
+          }"
+          [outputs]="{ imageLoadingFailed: logoLoadingEmitter }"
+        ></ocx-slot>
 
-        <div class="p-inputgroup mb-1" controlErrorAnchor>
+        <div class="p-inputgroup mb-1 flex-grow-1" controlErrorAnchor>
           <span class="p-float-label">
             <p-dropdown
               #wsThemeName
               id="ws_detail_props_item_theme"
               formControlName="theme"
               styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
-              [options]="checkAndExtendThemes(themes)"
+              [options]="checkAndExtendThemes(data.themes)"
               optionLabel="displayName"
               optionValue="name"
               [ariaLabel]="'WORKSPACE.THEME' | translate"
