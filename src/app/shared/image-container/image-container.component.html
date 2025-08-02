@@ -1,7 +1,7 @@
 <img
   *ngIf="!displayDefaultLogo"
   [id]="id"
-  [class]="'image-object ' + (styleClass ?? '')"
+  [class]="'image-object max-w-full ' + (styleClass ?? '')"
   [ocxSrc]="displayImageUrl"
   (error)="onImageError()"
   [alt]="'DIALOG.LOGO.LABEL' | translate"
@@ -12,7 +12,7 @@
 <img
   *ngIf="displayDefaultLogo"
   [id]="id"
-  [class]="'image-object ' + (styleClass ?? '')"
+  [class]="'image-object max-w-full ' + (styleClass ?? '')"
   [src]="defaultImageUrl$ | async"
   [alt]="'DIALOG.LOGO.PLACEHOLDER' | translate"
   [pTooltip]="title"

@@ -67,6 +67,7 @@
           class="sm:mx-3 py-1 px-3 flex flex-row flex-nowrap justify-content-start align-items-center column-gap-3 hover:bg-gray-200 cursor-pointer"
           [id]="'ws_search_data_list_row_' + i"
           [routerLink]="['./' + workspace.name]"
+          [attr.aria-label]="workspace.displayName"
         >
           <div class="p-0 col-4 sm:col-3 md:col-2 flex justify-content-around align-items-center">
             <app-image-container
@@ -127,15 +128,7 @@
         </article>
       </ng-template>
 
-      <!-- GRID -->
-      <ng-template let-workspaces pTemplate="gridItem">
-        <div class="grid grid-nogutter">
-          <div *ngFor="let workspace of workspaces; index as i" class="col-6 md:col-4 xl:col-3 p-2 md:p-3">
-            <article
-              [id]="'ws_search_data_grid_row_' + i"
-              class="card relative p-2 sm:px-3 flex flex-column gap-1 sm:gap-3 justify-content-between text-center hover:bg-gray-200 cursor-pointer"
-              [routerLink]="['./', workspace.name]"
-            >
+      <!--
               <span
                 *ngIf="workspace.disabled"
                 [id]="'ws_search_data_grid_row_' + i + '_disabled'"
@@ -157,7 +150,19 @@
                 aria-hidden="true"
               ></span>
 
-              <!-- CONTENT -->
+      
+-->
+
+      <!-- GRID -->
+      <ng-template let-workspaces pTemplate="gridItem">
+        <div class="grid grid-nogutter">
+          <div *ngFor="let workspace of workspaces; index as i" class="col-6 md:col-4 xl:col-3 p-2 md:p-3">
+            <article
+              [id]="'ws_search_data_grid_row_' + i"
+              class="card p-2 sm:px-3 flex flex-column gap-1 sm:gap-3 justify-content-between align-items-center hover:bg-gray-200 cursor-pointer"
+              [routerLink]="['./', workspace.name]"
+              [attr.aria-label]="'Workspace: ' + workspace.displayName"
+            >
               <div
                 [id]="'ws_search_data_grid_row_' + i + '_display_name'"
                 class="font-bold text-base sm:text-lg md:text-xl lg:text-2xl text-responsive"
@@ -165,17 +170,50 @@
                 [pTooltip]="workspace.displayName.length < 20 ? '' : workspace.displayName"
                 tooltipPosition="top"
                 tooltipEvent="hover"
-                role="note"
+                aria-hidden="true"
               >
                 {{ workspace.displayName }}
               </div>
-              <div class="h-6rem sm:h-10rem flex justify-content-center align-items-center">
+              <!-- IMAGE & BADGE -->
+              <div class="relative w-full px-4 h-6rem sm:h-10rem flex justify-content-center align-items-center">
                 <app-image-container
                   [id]="'ws_search_data_grid_row_' + i + '_logo'"
-                  styleClass="max-h-6rem sm:max-h-10rem max-w-9rem sm:max-w-10rem md:max-w-11rem lg:max-w-13rem xl:max-w-14rem border-round-sm"
+                  styleClass="border-round-sm"
                   [imageUrl]="getLogoUrl(workspace)"
                 ></app-image-container>
+                <!-- BADGES -->
+                <a
+                  *ngIf="!workspace.disabled"
+                  tabindex="0"
+                  [id]="'ws_search_data_grid_row_' + i + '_goto_workspace'"
+                  class="card-badge-right badge-1 p-1 pi pi-external-link button-icon-only"
+                  (click)="
+                  onGotoWorkspace(
+                    $event,
+                    workspace,
+                    getLocation().deploymentPath === '/' ? '' : getLocation().deploymentPath
+                  )
+                "
+                  [attr.aria-label]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_WORKSPACE' | translate"
+                  [pTooltip]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_WORKSPACE' | translate"
+                  tooltipPosition="right"
+                  tooltipEvent="hover"
+                  role="link"
+                ></a>
+                <a
+                  *ocxIfPermission="'MENU#VIEW'"
+                  tabindex="0"
+                  [id]="'ws_search_data_grid_row_' + i + '_goto_menu'"
+                  class="card-badge-right badge-2 p-1 pi pi-sitemap button-icon-only"
+                  (click)="onGotoMenu($event, workspace)"
+                  [attr.aria-label]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_MENU' | translate"
+                  [pTooltip]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_MENU' | translate"
+                  tooltipPosition="right"
+                  tooltipEvent="hover"
+                  role="link"
+                ></a>
               </div>
+
               <div class="h-3rem flex flex-column justify-content-between row-gap-1 justify-content-center">
                 <div
                   [id]="'ws_search_data_grid_row_' + i + '_description'"
@@ -200,37 +238,6 @@
                   Theme: {{ workspace.theme }}
                 </div>
               </div>
-              <!-- BADGES -->
-              <a
-                *ngIf="!workspace.disabled"
-                tabindex="0"
-                [id]="'ws_search_data_grid_row_' + i + '_goto_workspace'"
-                class="card-badge-right badge-1 p-1 pi pi-external-link button-icon-only"
-                (click)="
-                  onGotoWorkspace(
-                    $event,
-                    workspace,
-                    getLocation().deploymentPath === '/' ? '' : getLocation().deploymentPath
-                  )
-                "
-                [attr.aria-label]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_WORKSPACE' | translate"
-                [pTooltip]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_WORKSPACE' | translate"
-                tooltipPosition="right"
-                tooltipEvent="hover"
-                role="link"
-              ></a>
-              <a
-                *ocxIfPermission="'MENU#VIEW'"
-                tabindex="0"
-                [id]="'ws_search_data_grid_row_' + i + '_goto_menu'"
-                class="card-badge-right badge-2 p-1 pi pi-sitemap button-icon-only"
-                (click)="onGotoMenu($event, workspace)"
-                [attr.aria-label]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_MENU' | translate"
-                [pTooltip]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_MENU' | translate"
-                tooltipPosition="right"
-                tooltipEvent="hover"
-                role="link"
-              ></a>
             </article>
           </div>
         </div>
