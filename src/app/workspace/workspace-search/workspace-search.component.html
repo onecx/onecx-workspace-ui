@@ -134,7 +134,7 @@
           <div *ngFor="let workspace of workspaces; index as i" class="col-6 md:col-4 xl:col-3 p-2 md:p-3">
             <article
               [id]="'ws_search_data_grid_row_' + i"
-              class="card p-2 sm:px-3 flex flex-column gap-1 sm:gap-2 justify-content-between align-items-center hover:bg-gray-200 cursor-pointer"
+              class="card p-2 sm:px-3 flex flex-column gap-1 sm:gap-2 justify-content-between text-center hover:bg-gray-200 cursor-pointer"
               [routerLink]="['./', workspace.name]"
               [attr.aria-label]="'Workspace: ' + workspace.displayName"
             >
@@ -150,10 +150,10 @@
                 {{ workspace.displayName }}
               </div>
               <!-- IMAGE & BADGE -->
-              <div class="relative w-full h-6rem sm:h-10rem px-4 flex justify-content-center align-items-center">
+              <div class="relative w-full h-5rem sm:h-10rem px-4 flex justify-content-center align-items-center">
                 <app-image-container
                   [id]="'ws_search_data_grid_row_' + i + '_logo'"
-                  styleClass="max-h-6rem sm:max-h-10rem border-round-sm"
+                  styleClass="max-h-5rem sm:max-h-10rem border-round-sm"
                   [imageUrl]="getLogoUrl(workspace)"
                 ></app-image-container>
                 <!-- BADGES -->
@@ -209,7 +209,7 @@
                 ></a>
               </div>
 
-              <div class="w-full h-3rem flex flex-column justify-content-between row-gap-1 text-center">
+              <div class="w-full mt-1 h-2rem sm:h-3rem flex flex-column justify-content-between text-center">
                 <div
                   [id]="'ws_search_data_grid_row_' + i + '_description'"
                   class="text-xs md:text-sm md:text-base text-responsive"
