@@ -39,7 +39,7 @@
         <!-- theme has extern logo url -->
         <img
           *ngIf="data.themeLogoUrl"
-          [class]="'border-round-sm h-2rem'"
+          [class]="'border-round-sm max-h-2rem max-w-5rem'"
           [src]="data.themeLogoUrl"
           alt="Theme Logo"
           aria-label="Theme Logo"
@@ -256,7 +256,7 @@
     <app-image-container
       id="ws_detail_props_form_logo_image"
       [imageUrl]="fetchingLogoUrl"
-      styleClass="max-h-3rem max-w-4rem border-round-sm"
+      styleClass="max-h-3rem max-w-5rem border-round-sm"
       (imageLoadError)="onImageLoadingError($event)"
     ></app-image-container>
     <button
