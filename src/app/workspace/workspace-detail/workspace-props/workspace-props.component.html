@@ -1,5 +1,5 @@
 <div
-  class="mt-3 mx-2 sm:mx-3 flex flex-wrap flex-column row-gap-3 sm:row-gap-4 md:w-10 lg:w-8 xl:w-6"
+  class="mt-3 mx-2 sm:mx-3 flex flex-wrap flex-column row-gap-3 sm:row-gap-4 md:w-10 lg:w-8 xl:w-7"
   [formGroup]="formGroup"
   errorTailor
 >
@@ -31,7 +31,7 @@
           formValues: formGroupValues$ | async,
           themeLogoUrl: getThemeImageUrl((themes$ | async) ?? [], (formGroupValues$ | async)?.theme ?? '', RefType.Logo)
         } as data"
-        class="flex flex-row flex-wrap align-items-center"
+        class="w-full flex flex-row flex-wrap align-items-center"
         [ngClass]="{
           'row-gap-2 column-gap-3 sm:column-gap-4': (themeLogoLoadingFailed$ | async) !== undefined || data.themeLogoUrl
         }"
@@ -57,8 +57,9 @@
           [outputs]="{ imageLoadingFailed: logoLoadingEmitter }"
         ></ocx-slot>
 
-        <div class="p-inputgroup mb-1 flex-grow-1" controlErrorAnchor>
-          <span class="p-float-label">
+        <!-- build inputgroup by hand due to better flex layout -->
+        <div class="mb-1 flex-grow-1 flex flex-row justify-content-start row-gap-0" controlErrorAnchor>
+          <span class="p-float-label w-full">
             <p-dropdown
               #wsThemeName
               id="ws_detail_props_item_theme"
@@ -80,7 +81,7 @@
           <a
             tabindex="0"
             id="ws_detail_props_item_theme_link"
-            class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
+            class="flex-grow-0 p-inputgroup-addon bg-primary pseudo-button pi pi-link"
             (click)="onGoToTheme(wsThemeName.value)"
             [ngClass]="
               !editMode && inputBaseUrl.value && (themeProductRegistered$ | async) ? 'cursor-pointer' : 'p-disabled'
@@ -89,7 +90,6 @@
             [pTooltip]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
             tooltipPosition="right"
             tooltipEvent="hover"
-            role="link"
           >
           </a>
         </div>
