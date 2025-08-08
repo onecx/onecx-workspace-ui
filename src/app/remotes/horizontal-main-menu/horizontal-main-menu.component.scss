@@ -1,0 +1,42 @@
+::ng-deep .layout-menubar-horizontal-main-menu .p-menubar-root-list>.p-menuitem {
+    .p-menuitem-text {
+        white-space: nowrap;
+    }
+}
+
+::ng-deep .layout-menubar-horizontal-main-menu {
+    background: none !important;
+    border: none !important;
+
+    &.p-menubar .p-menubar-root-list>.p-menuitem {
+        >.p-menuitem-content {
+            .p-menuitem-link {
+
+                .p-menuitem-text,
+                .p-menuitem-icon,
+                .p-submenu-icon {
+                    color: var(--topbar-item-text-color);
+                }
+
+                &:not(.p-disabled):hover {
+                    background: var(--topbar-item-text-hover-bg-color);
+                    transition: background-color var(--p-transition-duration);
+                }
+            }
+        }
+        
+        >.p-menuitem-link {
+
+            .p-menuitem-text,
+            .p-menuitem-icon,
+            .p-submenu-icon {
+                color: var(onecx-topbar-item-text-color);
+            }
+
+            &:not(.p-disabled):hover {
+                background: var(--topbar-item-text-hover-bg-color);
+                transition: background-color var(--p-transition-duration);
+            }
+        }
+    }
+}

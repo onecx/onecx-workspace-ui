@@ -27,6 +27,7 @@ import { environment } from 'src/environments/environment'
   selector: 'app-horizontal-main-menu',
   standalone: true,
   templateUrl: './horizontal-main-menu.component.html',
+  styleUrls: ['./horizontal-main-menu.component.scss'],
   imports: [AngularRemoteComponentsModule, CommonModule, PortalCoreModule, RouterModule, TranslateModule, SharedModule],
   providers: [
     {
