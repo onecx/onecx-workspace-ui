@@ -3,58 +3,68 @@
   [formGroup]="formGroup"
   errorTailor
 >
-  <div>
-    <span class="p-float-label mb-1" controlErrorAnchor>
-      <input
-        pInputText
-        type="text"
-        id="ws_detail_props_item_display_name"
-        class="w-full pt-3 pb-2 text-responsive"
-        formControlName="displayName"
-        [attr.aria-label]="'WORKSPACE.DISPLAY_NAME' | translate"
-        [pTooltip]="'WORKSPACE.TOOLTIPS.DISPLAY_NAME' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      />
-      <label class="ocx-required-label" for="ws_detail_props_item_display_name">
-        {{ 'WORKSPACE.DISPLAY_NAME' | translate }}
-      </label>
-    </span>
-  </div>
+  <span class="p-float-label mb-1 w-full" controlErrorAnchor>
+    <input
+      pInputText
+      type="text"
+      id="ws_detail_props_item_display_name"
+      class="w-full pt-3 pb-2 text-responsive"
+      formControlName="displayName"
+      [attr.aria-label]="'WORKSPACE.DISPLAY_NAME' | translate"
+      [pTooltip]="'WORKSPACE.TOOLTIPS.DISPLAY_NAME' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
+    />
+    <label class="ocx-required-label" for="ws_detail_props_item_display_name" aria-hidden="true">
+      {{ 'WORKSPACE.DISPLAY_NAME' | translate }}
+    </label>
+  </span>
 
-  <div>
+  <!-- THEMES -->
+  <article [ariaLabel]="'WORKSPACE.THEME' | translate" class="w-full">
+    <ocx-slot class="hidden" [name]="slotName" [inputs]="{ dataType: 'themes' }" [outputs]="{ themes: themesEmitter }">
+    </ocx-slot>
     <ng-container *ngIf="isThemeComponentDefined$ | async; else noThemesAvailable">
-      <!-- THEMES -->
-      <ocx-slot [name]="slotName" [inputs]="{ dataType: 'themes' }" [outputs]="{ themes: themesEmitter }"> </ocx-slot>
       <div
-        *ngIf="(themes$ | async) ?? [] as themes; else noThemesAvailable"
-        class="flex flex-row flex-nowrap align-items-center"
-        [ngClass]="{ 'row-gap-2 column-gap-2 sm:column-gap-4': (themeLogoLoadingFailed$ | async) !== undefined }"
+        *ngIf="{
+          themes: (themes$ | async) ?? [],
+          formValues: formGroupValues$ | async,
+          themeLogoUrl: getThemeImageUrl((themes$ | async) ?? [], (formGroupValues$ | async)?.theme ?? '', RefType.Logo)
+        } as data"
+        class="flex flex-row flex-wrap align-items-center"
+        [ngClass]="{
+          'row-gap-2 column-gap-3 sm:column-gap-4': (themeLogoLoadingFailed$ | async) !== undefined || data.themeLogoUrl
+        }"
       >
-        <!-- LOGO -->
-        <ng-container *ngIf="formGroupValues$ | async as formGroupValues">
-          <ocx-slot
-            *ngIf="(themeLogoLoadingFailed$ | async) !== true"
-            [name]="slotName"
-            [inputs]="{
-              dataType: 'logo',
-              themeName: formGroupValues.theme,
-              imageUrl: getThemeImageUrl(themes, formGroupValues.theme, RefType.Logo),
-              useDefaultLogo: true,
-              imageStyleClass: 'h-2rem'
-            }"
-            [outputs]="{ imageLoadingFailed: logoLoadingEmitter }"
-          ></ocx-slot
-        ></ng-container>
+        <!-- theme has extern logo url -->
+        <img
+          *ngIf="data.themeLogoUrl"
+          [class]="'border-round-sm max-h-2rem max-w-5rem'"
+          [src]="data.themeLogoUrl"
+          alt="Theme Logo"
+          aria-label="Theme Logo"
+        />
+        <!-- theme has uploaded logo or default logo -->
+        <ocx-slot
+          *ngIf="!data.themeLogoUrl"
+          [name]="slotName"
+          [inputs]="{
+            dataType: 'logo',
+            themeName: data.formValues?.theme,
+            useDefaultLogo: true,
+            imageStyleClass: 'max-h-2rem max-w-5rem'
+          }"
+          [outputs]="{ imageLoadingFailed: logoLoadingEmitter }"
+        ></ocx-slot>
 
-        <div class="p-inputgroup mb-1" controlErrorAnchor>
+        <div class="p-inputgroup mb-1 flex-grow-1" controlErrorAnchor>
           <span class="p-float-label">
             <p-dropdown
               #wsThemeName
               id="ws_detail_props_item_theme"
               formControlName="theme"
               styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
-              [options]="checkAndExtendThemes(themes)"
+              [options]="checkAndExtendThemes(data.themes)"
               optionLabel="displayName"
               optionValue="name"
               [ariaLabel]="'WORKSPACE.THEME' | translate"
@@ -63,7 +73,7 @@
               tooltipEvent="hover"
             >
             </p-dropdown>
-            <label class="ocx-required-label" for="ws_detail_props_item_theme">
+            <label class="ocx-required-label" for="ws_detail_props_item_theme" aria-hidden="true">
               {{ 'WORKSPACE.THEME' | translate }}
             </label>
           </span>
@@ -79,6 +89,7 @@
             [pTooltip]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
             tooltipPosition="right"
             tooltipEvent="hover"
+            role="link"
           >
           </a>
         </div>
@@ -87,7 +98,7 @@
 
     <!-- THEME readonly (no change possible) -->
     <ng-template #noThemesAvailable>
-      <div class="p-inputgroup mb-1" controlErrorAnchor>
+      <div class="p-inputgroup mb-1 w-full" controlErrorAnchor>
         <span class="p-float-label">
           <input
             #wsThemeNameReadonly
@@ -123,9 +134,9 @@
       </div>
     </ng-template>
     <!-- end of theme row -->
-  </div>
+  </article>
 
-  <div>
+  <article [attr.aria-label]="'WORKSPACE.BASE_URL' | translate" class="w-full">
     <div class="p-inputgroup mb-1" controlErrorAnchor>
       <span class="p-float-label">
         <input
@@ -140,7 +151,7 @@
           tooltipPosition="top"
           tooltipEvent="hover"
         />
-        <label for="ws_detail_props_item_base_url">{{ 'WORKSPACE.BASE_URL' | translate }} </label>
+        <label for="ws_detail_props_item_base_url" aria-hidden="true">{{ 'WORKSPACE.BASE_URL' | translate }} </label>
       </span>
       <a
         tabindex="0"
@@ -159,12 +170,17 @@
       >
       </a>
     </div>
-    <label *ngIf="editMode" class="ocx-control-hint block" for="ws_detail_props_item_base_url_link">
+    <label *ngIf="editMode" class="ocx-control-hint block" for="ws_detail_props_item_base_url_link" aria-hidden="true">
       {{ ('VALIDATION.HINTS.FORMAT_URL' | translate) + urlPattern }}
     </label>
-  </div>
+  </article>
 
-  <div *ngIf="(productPaths$ | async) ?? [] as paths" class="p-inputgroup mb-1" controlErrorAnchor>
+  <article
+    *ngIf="(productPaths$ | async) ?? [] as paths"
+    class="p-inputgroup mb-1 w-full"
+    controlErrorAnchor
+    [attr.aria-label]="'WORKSPACE.HOME_PAGE' | translate"
+  >
     <span class="p-float-label">
       <p-dropdown
         #inputHomePage
@@ -181,7 +197,7 @@
         tooltipEvent="hover"
       >
       </p-dropdown>
-      <label for="ws_detail_props_item_home_page">{{ 'WORKSPACE.HOME_PAGE' | translate }} </label>
+      <label for="ws_detail_props_item_home_page" aria-hidden="true">{{ 'WORKSPACE.HOME_PAGE' | translate }} </label>
     </span>
     <a
       tabindex="0"
@@ -197,9 +213,9 @@
       tooltipEvent="hover"
     >
     </a>
-  </div>
+  </article>
 
-  <div class="p-inputgroup mb-1" controlErrorAnchor>
+  <article class="p-inputgroup mb-1 w-full" controlErrorAnchor [attr.aria-label]="'WORKSPACE.RSS_FEED_URL' | translate">
     <span class="p-float-label">
       <input
         #inputRssFeedUrl
@@ -213,9 +229,11 @@
         tooltipPosition="top"
         tooltipEvent="hover"
       />
-      <label for="ws_detail_props_item_rssFeedUrl">{{ 'WORKSPACE.RSS_FEED_URL' | translate }} </label>
+      <label for="ws_detail_props_item_rssFeedUrl" aria-hidden="true"
+        >{{ 'WORKSPACE.RSS_FEED_URL' | translate }}
+      </label>
     </span>
-    <a
+    <button
       tabindex="0"
       id="ws_detail_props_item_rssFeedUrl_link"
       class="p-inputgroup-addon bg-primary pseudo-button"
@@ -226,16 +244,19 @@
       tooltipPosition="right"
       tooltipEvent="hover"
     >
-      <span class="pi pi-copy"></span>
-    </a>
-  </div>
+      <span class="pi pi-copy" aria-hidden="true"></span>
+    </button>
+  </article>
 
-  <div class="flex flex-row flex-wrap sm:flex-nowrap align-items-center row-gap-2 column-gap-4">
+  <article
+    class="flex flex-row flex-wrap sm:flex-nowrap align-items-center row-gap-2 column-gap-4 w-full"
+    [attr.aria-label]="'DIALOG.LOGO.LABEL' | translate"
+  >
     <input hidden type="file" accept="image/*" #selectedFileInputLogo (change)="onFileUpload($event)" />
     <app-image-container
       id="ws_detail_props_form_logo_image"
       [imageUrl]="fetchingLogoUrl"
-      styleClass="max-h-3rem max-w-4rem border-round-sm"
+      styleClass="max-h-3rem max-w-5rem border-round-sm"
       (imageLoadError)="onImageLoadingError($event)"
     ></app-image-container>
     <button
@@ -263,12 +284,12 @@
       tooltipPosition="top"
       tooltipEvent="hover"
     ></button>
-    <div class="flex flex-column row-gap-1 w-full">
+    <div class="flex flex-column row-gap-1 flex-grow-1">
       <span class="p-float-label">
         <input
           pInputText
           type="text"
-          class="w-full"
+          class="w-full pt-3 pb-2 text-responsive"
           id="ws_detail_props_item_logo_url"
           formControlName="logoUrl"
           (input)="onInputChange($event)"
@@ -278,15 +299,15 @@
           tooltipPosition="top"
           tooltipEvent="hover"
         />
-        <label for="ws_detail_props_item_logo_url">{{ 'IMAGE.LOGO_URL' | translate }} </label>
+        <label for="ws_detail_props_item_logo_url" aria-hidden="true">{{ 'IMAGE.LOGO_URL' | translate }} </label>
       </span>
-      <label *ngIf="editMode" class="ocx-control-hint block" for="ws_detail_props_item_logo_url">
+      <label *ngIf="editMode" class="ocx-control-hint block" for="ws_detail_props_item_logo_url" aria-hidden="true">
         {{ ('VALIDATION.HINTS.FORMAT_URL' | translate) + externUrlPattern }}
       </label>
     </div>
-  </div>
+  </article>
 
-  <span class="p-float-label mb-1" controlErrorAnchor>
+  <span class="p-float-label mb-1 w-full" controlErrorAnchor>
     <input
       pInputText
       type="text"
@@ -298,10 +319,12 @@
       tooltipPosition="top"
       tooltipEvent="hover"
     />
-    <label for="ws_detail_props_item_footer_label">{{ 'WORKSPACE.FOOTER_LABEL' | translate }} </label>
+    <label for="ws_detail_props_item_footer_label" aria-hidden="true"
+      >{{ 'WORKSPACE.FOOTER_LABEL' | translate }}
+    </label>
   </span>
 
-  <span class="p-float-label mb-1" controlErrorAnchor>
+  <span class="p-float-label mb-1 w-full" controlErrorAnchor>
     <textarea
       class="w-full"
       pInputTextarea
@@ -315,6 +338,6 @@
       tooltipPosition="top"
       tooltipEvent="hover"
     ></textarea>
-    <label for="ws_detail_props_item_description">{{ 'WORKSPACE.DESCRIPTION' | translate }} </label>
+    <label for="ws_detail_props_item_description" aria-hidden="true">{{ 'WORKSPACE.DESCRIPTION' | translate }} </label>
   </span>
 </div>

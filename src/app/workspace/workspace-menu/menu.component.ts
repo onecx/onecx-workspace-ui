@@ -534,7 +534,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       .searchWorkspaceRoles({ workspaceRoleSearchCriteria: { workspaceId: this.workspace?.id, pageSize: 1000 } })
       .pipe(
         map((result) => {
-          return result.stream ? result.stream : []
+          return result.stream ?? []
         }),
         catchError((err) => {
           this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.ROLES'
@@ -680,7 +680,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         roles: {}
       } as MenuItemNodeData
       const newNode: TreeNode = this.createTreeNode(nodeData)
-      if (item.children && item.children.length > 0 && item.children != null && item.children.toLocaleString() != '') {
+      if (item.children && item.children.length > 0) {
         newNode.leaf = false
         newNode.data.badge = item.badge ?? 'folder '
         newNode.data.node = newNode

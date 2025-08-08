@@ -19,7 +19,7 @@ const portal: Workspace = {
   displayName: ''
 }
 
-const formGroup = new FormGroup({
+const contactForm = new FormGroup({
   country: new FormControl('country'),
   city: new FormControl('city'),
   postalCode: new FormControl('postalCode'),
@@ -64,9 +64,9 @@ describe('WorkspaceContactComponent', () => {
     expect(component).toBeTruthy()
   })
 
-  it('should disable formGroup if editMode false', () => {
+  it('should disable contactForm if editMode false', () => {
     component.editMode = false
-    component.formGroup = formGroup
+    component.contactForm = contactForm
     component.workspace = portal
     component.workspace.address = {
       country: 'detail country',
@@ -78,22 +78,22 @@ describe('WorkspaceContactComponent', () => {
 
     component.ngOnChanges()
 
-    expect(component.formGroup.disabled).toBeTrue()
+    expect(component.contactForm.disabled).toBeTrue()
   })
 
-  it('should setFormData onChanges: no address', () => {
+  it('should fillForm onChanges: no address', () => {
     component.editMode = true
-    component.formGroup = formGroup
+    component.contactForm = contactForm
     component.workspace = portal
     component.workspace.address = undefined
 
     component.ngOnChanges()
 
-    expect(component.formGroup.controls['street'].value).toEqual(undefined)
+    expect(component.contactForm.controls['street'].value).toEqual(undefined)
   })
 
-  it('should setFormData onChanges: address', () => {
-    component.formGroup = formGroup
+  it('should fillForm onChanges: address', () => {
+    component.contactForm = contactForm
     component.workspace = portal
     component.workspace.address = {
       country: 'detail country',
@@ -105,11 +105,11 @@ describe('WorkspaceContactComponent', () => {
 
     component.ngOnChanges()
 
-    expect(component.formGroup.controls['street'].value).toEqual('detail street')
+    expect(component.contactForm.controls['street'].value).toEqual('detail street')
   })
 
   it('should update portal onSave', () => {
-    component.formGroup = new FormGroup({
+    component.contactForm = new FormGroup({
       phoneNumber: new FormControl('123456789'),
       country: new FormControl('Some country'),
       city: new FormControl('Some city'),

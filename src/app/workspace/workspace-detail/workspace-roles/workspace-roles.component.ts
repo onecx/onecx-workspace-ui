@@ -31,7 +31,6 @@ export type RoleType = 'WORKSPACE' | 'IAM' | 'WORKSPACE,IAM'
 export type RoleFilterType = 'ALL' | RoleType
 export type Role = WorkspaceRole & { isIamRole: boolean; isWorkspaceRole: boolean; type: RoleType }
 export type ChangeMode = 'VIEW' | 'CREATE' | 'EDIT' | 'COPY' | 'DELETE'
-export type ExtendedSelectItem = SelectItem & { tooltipKey?: string }
 
 export function slotInitializer(slotService: SlotService) {
   return () => slotService.init()
@@ -68,7 +67,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   public iamAvailable = false
   public exceptionKey: string | undefined = undefined
   public quickFilterValue: RoleFilterType = 'ALL'
-  public quickFilterItems: ExtendedSelectItem[]
+  public quickFilterOptions$: Observable<SelectItem[]> | undefined
   public quickFilterCount = ''
   public changeMode: ChangeMode = 'VIEW'
   public hasCreatePermission = false
@@ -97,16 +96,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
     this.hasEditPermission = this.user.hasPermission('WORKSPACE_ROLE#EDIT')
     this.hasCreatePermission = this.user.hasPermission('WORKSPACE_ROLE#CREATE')
     this.hasDeletePermission = this.user.hasPermission('WORKSPACE_ROLE#DELETE')
-    // quick filter
-    this.quickFilterItems = [
-      { label: 'DIALOG.ROLE.QUICK_FILTER.ALL', value: 'ALL', tooltipKey: 'DIALOG.ROLE.QUICK_FILTER.ALL.TOOLTIP' },
-      { label: 'DIALOG.ROLE.QUICK_FILTER.IAM', value: 'IAM', tooltipKey: 'DIALOG.ROLE.QUICK_FILTER.IAM.TOOLTIP' },
-      {
-        label: 'DIALOG.ROLE.QUICK_FILTER.WORKSPACE',
-        value: 'WORKSPACE',
-        tooltipKey: 'DIALOG.ROLE.QUICK_FILTER.WORKSPACE.TOOLTIP'
-      }
-    ]
+    this.prepareQuickFilter()
   }
 
   public ngOnInit(): void {
@@ -341,5 +331,19 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
       'workspace',
       { 'workspace-name': this.workspace?.name }
     )
+  }
+
+  public prepareQuickFilter(): void {
+    this.quickFilterOptions$ = this.translate
+      .get(['DIALOG.ROLE.QUICK_FILTER.ALL', 'DIALOG.ROLE.QUICK_FILTER.IAM', 'DIALOG.ROLE.QUICK_FILTER.WORKSPACE'])
+      .pipe(
+        map((data) => {
+          return [
+            { label: data['DIALOG.ROLE.QUICK_FILTER.ALL'], value: 'ALL' },
+            { label: data['DIALOG.ROLE.QUICK_FILTER.IAM'], value: 'IAM' },
+            { label: data['DIALOG.ROLE.QUICK_FILTER.WORKSPACE'], value: 'WORKSPACE' }
+          ]
+        })
+      )
   }
 }

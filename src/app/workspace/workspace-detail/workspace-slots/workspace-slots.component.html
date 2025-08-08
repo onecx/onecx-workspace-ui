@@ -32,7 +32,7 @@
       ></p-message>
 
       <!-- Quick Filter -->
-      <div
+      <nav
         *ngIf="!(wpLoading || sLoading)"
         class="slim-selectbutton search-criteria-selectbutton"
         [attr.aria-label]="'DIALOG.SLOT.QUICK_FILTER.TOOLTIP' | translate"
@@ -42,7 +42,7 @@
       >
         <p-selectButton
           inputid="ws_roles_quick_filter"
-          [options]="quickFilterItems"
+          [options]="(quickFilterOptions$ | async) ?? []"
           [(ngModel)]="quickFilterValue"
           (onChange)="onQuickFilterChange($event)"
           [allowEmpty]="false"
@@ -51,13 +51,19 @@
           tooltipPosition="top"
           tooltipEvent="hover"
         >
-          <ng-template let-i pTemplate>{{ i.label | translate }}</ng-template>
+          <ng-template let-item pTemplate>
+            <span [id]="'ws_detail_slots_quick_filter_' + item.value"> {{ item.label }}</span>
+          </ng-template>
         </p-selectButton>
-        <div class="p-selectbutton-subtitle flex flex-row flex-nowrap column-gap-3 opacity-90">
+        <div
+          class="p-selectbutton-subtitle flex flex-row flex-nowrap column-gap-3 opacity-90"
+          [attr.aria-label]="'DIALOG.SLOT.QUICK_FILTER.SELECTED' | translate"
+          role="note"
+        >
           <span>{{ 'DIALOG.SLOT.QUICK_FILTER.LABEL' | translate }}: </span>
           <span>{{ 'DIALOG.SLOT.QUICK_FILTER.' + quickFilterValue + '.TOOLTIP' | translate }} </span>
         </div>
-      </div>
+      </nav>
       <!-- Filter & Sorting -->
       <ocx-data-view-controls
         class="flex-grow-1"
@@ -77,7 +83,10 @@
       >
       </ocx-data-view-controls>
       <!-- Additional Actions -->
-      <div class="pl-1 flex flex-wrap align-items-center column-gap-2 row-gap-1">
+      <nav
+        class="pl-1 flex flex-wrap align-items-center column-gap-2 row-gap-1"
+        [attr.aria-label]="'ACTIONS.NAVIGATION.RELATED_TOPICS' | translate"
+      >
         <p-button
           *ocxIfPermission="'WORKSPACE#GOTO_APP_STORE'"
           id="ws_slots_header_action_slot_link"
@@ -102,42 +111,47 @@
           tooltipEvent="hover"
         >
         </p-button>
-      </div>
+      </nav>
     </div>
   </ng-template>
 
   <!-- GRID -->
   <ng-template let-slots pTemplate="gridItem">
-    <div class="grid grid-nogutter">
-      <div *ngFor="let slot of slots; index as i" class="col-6 md:col-4 lg:col-4 xl:col-3 p-2 md:p-3">
+    <div class="grid grid-nogutter" [attr.aria-label]="'TABS.WORKSPACE.SLOTS' | translate">
+      <article
+        *ngFor="let slot of slots; index as i"
+        class="col-6 md:col-4 lg:col-4 xl:col-3 p-2 md:p-3"
+        [attr.aria-label]="slot.name"
+      >
         <a
           [id]="'ws_slots_grid_data_row_' + i + '_action_detail'"
           class="block card relative py-1 px-4"
           [ngClass]="{ 'hover:bg-gray-200 cursor-pointer': !slot.new }"
           [class.bg-gray-200]="slot.new"
           (click)="onSlotDetail($event, slot)"
+          [attr.aria-label]="'DIALOG.SLOT.HEADER.' + (hasEditPermission ? 'EDIT' : 'VIEW') | translate"
         >
           <!-- right badges -->
-          <a
+          <button
             *ngIf="slot.new && hasCreatePermission"
             [id]="'ws_slots_grid_data_row_' + i + '_action_new'"
-            class="card-badge-right badge-1 p-1 pi pi-plus button-icon-only"
+            class="card-badge-right badge-1 p-1 pi pi-plus bg-transparent border-none button-icon-only"
             (click)="onAddSlot($event, slot)"
             [attr.aria-label]="'DIALOG.SLOT.CREATE.TOOLTIP' | translate"
             [pTooltip]="'DIALOG.SLOT.CREATE.TOOLTIP' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
-          ></a>
-          <a
+          ></button>
+          <button
             *ngIf="!slot.new && hasDeletePermission && slot.components.length === 0"
             [id]="'ws_slots_grid_data_row_' + i + '_action_delete'"
-            class="card-badge-right badge-1 p-1 pi pi-trash button-icon-only"
+            class="card-badge-right badge-1 p-1 pi pi-trash bg-transparent border-none button-icon-only"
             (click)="onDeleteSlot($event, slot)"
             [attr.aria-label]="'ACTIONS.DELETE.SLOT.LABEL' | translate"
             [pTooltip]="'ACTIONS.DELETE.SLOT.LABEL' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
-          ></a>
+          ></button>
           <span
             *ngIf="!slot.new && hasDeletePermission && slot.components.length > 0"
             [id]="'ws_slots_grid_data_row_' + i + '_action_delete_blocked'"
@@ -146,6 +160,7 @@
             [pTooltip]="'ACTIONS.DELETE.SLOT.LABEL.COMPONENTS' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
+            role="note"
           ></span>
           <!-- left badges -->
           <span
@@ -156,8 +171,10 @@
             [pTooltip]="'SLOT.COMPONENTS' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
-            >{{ slot.components.length }}</span
+            role="note"
           >
+            {{ slot.components.length }}
+          </span>
           <ng-container *ngIf="slot.changes">
             <span
               *ngIf="slot.undeployed && !slot.deprecated"
@@ -167,6 +184,7 @@
               [pTooltip]="'DIALOG.SLOT.UNDEPLOYED.TOOLTIP' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
+              aria-hidden="true"
             ></span>
             <span
               *ngIf="!slot.undeployed && slot.deprecated"
@@ -176,6 +194,7 @@
               [pTooltip]="'DIALOG.SLOT.DEPRECATED.TOOLTIP' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
+              aria-hidden="true"
             ></span>
             <span
               *ngIf="!slot.undeployed && !slot.deprecated"
@@ -185,23 +204,26 @@
               [pTooltip]="'DIALOG.SLOT.CHANGED' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
+              aria-hidden="true"
             ></span>
           </ng-container>
           <!-- CONTENT -->
-          <div class="flex flex-column justify-content-between row-gap-2 text-center">
+          <div class="flex flex-column justify-content-between row-gap-2 text-center" aria-hidden="true">
             <div
               [id]="'ws_slots_grid_data_row_' + i + '_slot_name'"
               class="text-sm md:text-base md:font-bold text-responsive"
-              [attr.aria-label]="slot.name"
+              [attr.aria-label]="'SLOT.NAME' | translate"
               [pTooltip]="slot.name.length < 20 ? '' : slot.name"
               tooltipPosition="top"
               tooltipEvent="hover"
+              role="note"
             >
               {{ slot.name }}
             </div>
             <div
               [id]="'ws_roles_grid_data_row_' + i + '_workspace'"
               class="flex flex-row justify-content-center align-items-center column-gap-3 text-xs sm:text-sm"
+              aria-hidden="true"
             >
               <app-ocx-chip
                 *ngIf="!slot.new"
@@ -228,7 +250,7 @@
             </div>
           </div>
         </a>
-      </div>
+      </article>
     </div>
   </ng-template>
 </p-dataView>

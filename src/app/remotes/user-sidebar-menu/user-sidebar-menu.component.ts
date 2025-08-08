@@ -123,7 +123,7 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent, ocxRem
     this.organization$ = this.currentUser$.pipe(
       filter((x) => x !== undefined),
       map((currentUser) => {
-        return currentUser.organization ? currentUser.organization : ''
+        return currentUser.organization ?? ''
       }),
       untilDestroyed(this)
     )

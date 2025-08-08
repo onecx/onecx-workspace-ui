@@ -1,6 +1,6 @@
-<div
+<form
   class="mt-3 mx-2 sm:mx-3 flex flex-wrap flex-column row-gap-3 sm:row-gap-4 md:w-10 lg:w-8 xl:w-6"
-  [formGroup]="formGroup"
+  [formGroup]="contactForm"
   errorTailor
 >
   <span class="p-float-label mb-1" controlErrorAnchor>
@@ -15,7 +15,7 @@
       tooltipPosition="top"
       tooltipEvent="hover"
     />
-    <label for="ws_detail_item_companyName">{{ 'WORKSPACE.COMPANY_NAME' | translate }}</label>
+    <label for="ws_detail_item_companyName" aria-hidden="true">{{ 'WORKSPACE.COMPANY_NAME' | translate }}</label>
   </span>
 
   <span class="p-float-label mb-1" controlErrorAnchor>
@@ -30,7 +30,7 @@
       tooltipPosition="top"
       tooltipEvent="hover"
     />
-    <label for="ws_detail_item_phoneNumber">{{ 'WORKSPACE.PHONE_NUMBER' | translate }}</label>
+    <label for="ws_detail_item_phoneNumber" aria-hidden="true">{{ 'WORKSPACE.PHONE_NUMBER' | translate }}</label>
   </span>
 
   <span class="p-float-label mb-1" controlErrorAnchor>
@@ -45,7 +45,7 @@
       tooltipPosition="top"
       tooltipEvent="hover"
     />
-    <label for="ws_detail_item_street">{{ 'WORKSPACE.STREET' | translate }}</label>
+    <label for="ws_detail_item_street" aria-hidden="true">{{ 'WORKSPACE.STREET' | translate }}</label>
   </span>
 
   <span class="p-float-label mb-1" controlErrorAnchor>
@@ -60,7 +60,7 @@
       tooltipPosition="top"
       tooltipEvent="hover"
     />
-    <label for="ws_detail_item_street_no">{{ 'WORKSPACE.STREET_NO' | translate }}</label>
+    <label for="ws_detail_item_street_no" aria-hidden="true">{{ 'WORKSPACE.STREET_NO' | translate }}</label>
   </span>
 
   <span class="p-float-label mb-1" controlErrorAnchor>
@@ -75,7 +75,7 @@
       tooltipPosition="top"
       tooltipEvent="hover"
     />
-    <label for="ws_detail_item_city">{{ 'WORKSPACE.CITY' | translate }}</label>
+    <label for="ws_detail_item_city" aria-hidden="true">{{ 'WORKSPACE.CITY' | translate }}</label>
   </span>
 
   <span class="p-float-label mb-1" controlErrorAnchor>
@@ -90,7 +90,7 @@
       tooltipPosition="top"
       tooltipEvent="hover"
     />
-    <label for="ws_detail_item_postalCode">{{ 'WORKSPACE.POSTAL_CODE' | translate }}</label>
+    <label for="ws_detail_item_postalCode" aria-hidden="true">{{ 'WORKSPACE.POSTAL_CODE' | translate }}</label>
   </span>
 
   <span class="p-float-label mb-1" controlErrorAnchor>
@@ -105,6 +105,6 @@
       tooltipPosition="top"
       tooltipEvent="hover"
     />
-    <label for="ws_detail_item_country">{{ 'WORKSPACE.COUNTRY' | translate }}</label>
+    <label for="ws_detail_item_country" aria-hidden="true">{{ 'WORKSPACE.COUNTRY' | translate }}</label>
   </span>
-</div>
+</form>

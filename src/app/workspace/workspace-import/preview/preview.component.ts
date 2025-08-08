@@ -118,7 +118,7 @@ export class PreviewComponent implements OnInit {
     items.sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
     for (const item of items) {
       const newNode: TreeNode = this.createTreeNode(item)
-      if (item.children && item.children.length > 0 && item.children != null && item.children.toLocaleString() != '') {
+      if (item.children && item.children.length > 0) {
         newNode.leaf = false
         newNode.children = this.mapToTreeNodes(item.children)
       }

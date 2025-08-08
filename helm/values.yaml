@@ -105,6 +105,7 @@ app:
         onecx-page-footer-menu:
           name: 'onecx-page-footer-menu'
           description: 'Area within page footer usually used to display a specific menu'
+          deprecated: true
         onecx-theme-data:
           name: 'onecx-theme-data'
           description: 'Getting theme data (like theme logo) to be used within workspace.'
