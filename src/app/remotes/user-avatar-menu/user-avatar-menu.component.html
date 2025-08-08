@@ -46,6 +46,8 @@
       <div
         *ngIf="data.userProfile as profile"
         class="my-1 flex flex-column flex-wrap justify-content-evenly row-gap-1 w-15rem"
+        role="note"
+        [attr.aria-label]="'User Information'"
       >
         <div
           id="ws_user_avatar_menu_list_item_0_user_name"
@@ -85,7 +87,7 @@
           [attr.href]="item.url"
           (keydown.escape)="onItemEscape(userAvatarMenuButton)"
         >
-          <i *ngIf="item.icon" [ngClass]="item.icon"></i>
+          <i *ngIf="item.icon" [ngClass]="item.icon" aria-hidden="true"></i>
           <span [id]="'ws_user_avatar_menu_list_item_' + (i + 1) + '_text'" class="white-space-nowrap">
             {{ item.label }}
           </span>
@@ -98,26 +100,27 @@
           [routerLink]="item.routerLink"
           (keydown.escape)="onItemEscape(userAvatarMenuButton)"
         >
-          <i *ngIf="item.icon" [ngClass]="item.icon"></i>
+          <i *ngIf="item.icon" [ngClass]="item.icon" aria-hidden="true"></i>
           <span [id]="'ws_user_avatar_menu_list_item_' + (i + 1) + '_text'" class="white-space-nowrap">
             {{ item.label }}
           </span>
         </a>
-        <a
+        <button
           tabindex="0"
           *ngIf="!item.routerLink && !item.url && item.command"
-          [id]="'ws_user_avatar_menu_list_item_' + (i + 1) + '_link'"
-          class="p-3 flex flex-row flex-nowrap align-items-center gap-2"
+          [id]="'ws_user_avatar_menu_list_item_' + (i + 1) + '_command'"
+          class="p-3 flex flex-row flex-nowrap align-items-center gap-2 border-none cursor-pointer"
+          style="background-color: inherit; color: inherit; font-size: inherit"
           pRipple
           (click)="item.command({})"
           (keydown.enter)="item.command({})"
           (keydown.escape)="onItemEscape(userAvatarMenuButton)"
         >
-          <i *ngIf="item.icon" [ngClass]="item.icon"></i>
+          <i *ngIf="item.icon" [ngClass]="item.icon" aria-hidden="true"></i>
           <span [id]="'ws_user_avatar_menu_list_item_' + (i + 1) + '_text'" class="white-space-nowrap">
             {{ item.label }}
           </span>
-        </a>
+        </button>
       </li>
     </ng-container>
   </ul>
