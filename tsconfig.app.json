@@ -4,8 +4,7 @@
     "composite": false,
     "declaration": false,
     "declarationMap": false,
-    "inlineSources": true,
-    "target": "ES2022"
+    "inlineSources": true
   },
   "files": [
     "src/main.ts",

@@ -24,8 +24,7 @@
           >
             {{ name }}
           </span>
-          <!-- *ngIf="organization$ | async as orgId"  {{ orgId }} -->
-          <span id="ws_user_sidebar_orgid" class="text-sm">organization</span>
+          <span *ngIf="organization$ | async as orgId" id="ws_user_sidebar_orgid" class="text-sm">{{ orgId }}</span>
         </span>
       </div>
     </ng-template>
