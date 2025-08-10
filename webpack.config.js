@@ -47,7 +47,6 @@ const plugins = config.plugins.filter((plugin) => !(plugin instanceof ModifyEntr
 module.exports = {
   ...config,
   plugins,
-  module: { parser: { javascript: { importMeta: false } } },
   output: { uniqueName: 'onecx-workspace-ui', publicPath: 'auto' },
   experiments: { ...config.experiments, topLevelAwait: true },
   optimization: { runtimeChunk: false, splitChunks: false }

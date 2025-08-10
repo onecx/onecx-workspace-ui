@@ -258,10 +258,9 @@ describe('OneCXUserAvatarMenuComponent', () => {
       const { avatarMenuHarness } = await setUpWithHarnessAndInit([])
       const menuItems = await avatarMenuHarness.getMenuItems()
 
-      expect(menuItems.length).toBe(3)
+      expect(menuItems.length).toBe(2)
       expect(await menuItems[0].getText()).toEqual('Account Settings')
       expect(await menuItems[1].getText()).toEqual('Personal Info')
-      expect(await menuItems[2].getText()).toEqual('Log out')
     })
 
     it('should use translations whenever i18n translation is provided', async () => {
@@ -389,9 +388,9 @@ describe('OneCXUserAvatarMenuComponent', () => {
       menuItemApiSpy.getMenuItems.and.returnValue(throwError(() => {}))
       spyOn(console, 'error')
       const { avatarMenuHarness } = await setUpWithHarnessAndInit([])
-      const menuItems = await avatarMenuHarness.getMenuItems()
+      const logoutButtonText = await avatarMenuHarness.getLogoutButtonText()
 
-      expect(await menuItems[0].getText()).toEqual('Log out')
+      expect(await logoutButtonText).toEqual('Log out')
       expect(console.error).toHaveBeenCalled()
     })
 
@@ -399,11 +398,11 @@ describe('OneCXUserAvatarMenuComponent', () => {
       menuItemApiSpy.getMenuItems.and.returnValue(of({ workspaceName: 'workspace', menu: [] } as any))
 
       const { avatarMenuHarness, component } = await setUpWithHarness()
-      const menuItems = await avatarMenuHarness.getMenuItems()
+      const logoutButton = await avatarMenuHarness.getLogoutButton()
 
       spyOn(component.eventsPublisher$, 'publish')
 
-      await menuItems[0].click()
+      await logoutButton.click()
 
       expect(component.eventsPublisher$.publish).toHaveBeenCalledOnceWith({
         type: 'authentication#logoutButtonClicked'
@@ -419,17 +418,17 @@ describe('OneCXUserAvatarMenuComponent', () => {
         .and.returnValue(throwError(() => {}))
 
       const { avatarMenuHarness } = await setUpWithHarnessAndInit([])
-      const menuItems = await avatarMenuHarness.getMenuItems()
+      const logoutButtonText = await avatarMenuHarness.getLogoutButtonText()
 
-      expect(await menuItems[0].getText()).toEqual('Logout')
+      expect(await logoutButtonText).toEqual('Logout')
     })
 
     it('should have correct icon for logout', async () => {
       menuItemApiSpy.getMenuItems.and.returnValue(of({ workspaceName: 'workspace', menu: [] } as any))
       const { avatarMenuHarness } = await setUpWithHarness()
-      const menuItems = await avatarMenuHarness.getMenuItems()
+      const logoutButtonIcon = await avatarMenuHarness.getLogoutButtonIcon()
 
-      expect(await menuItems[0].hasIcon(PrimeIcons.POWER_OFF)).toBeTrue()
+      expect(await logoutButtonIcon?.hasClass('pi-power-off')).toBeTrue()
     })
 
     it('should publish event on logout click', async () => {
