@@ -15,7 +15,6 @@ import { WorkspaceImportComponent } from './workspace-import/workspace-import.co
 import { ChooseFileComponent } from './workspace-import/choose-file/choose-file.component'
 import { PreviewComponent } from './workspace-import/preview/preview.component'
 import { ConfirmComponent } from './workspace-import/confirm/confirm.component'
-import { OneCXListWorkspacesUsingThemeComponent } from '../remotes/list-workspaces-using-theme/list-workspaces-using-theme.component'
 
 const routes: Routes = [
   {
@@ -33,10 +32,6 @@ const routes: Routes = [
   {
     path: 'new',
     component: WorkspaceCreateComponent
-  },
-  {
-    path: 'list-workspaces',
-    component: OneCXListWorkspacesUsingThemeComponent
   },
   {
     path: ':name',

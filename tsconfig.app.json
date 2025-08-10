@@ -15,9 +15,7 @@
     "src/app/remotes/user-sidebar-menu/user-sidebar-menu.component.main.ts",
     "src/app/remotes/footer-menu/footer-menu.component.main.ts",
     "src/app/remotes/vertical-main-menu/vertical-main-menu.component.main.ts",
-    "src/app/remotes/horizontal-main-menu/horizontal-main-menu.component.main.ts",
-    "src/app/remotes/list-workspaces-using-theme/list-workspaces-using-theme.component.main.ts",
-    "src/app/remotes/list-workspaces-using-product/list-workspaces-using-product.component.main.ts"
+    "src/app/remotes/horizontal-main-menu/horizontal-main-menu.component.main.ts"
   ],
   "include": ["src/**/*.ts"],
   "exclude": ["src/test.ts", "src/**/*.spec.ts", "src/**/*.harness.ts"]

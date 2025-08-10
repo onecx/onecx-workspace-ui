@@ -29,7 +29,7 @@
     right: 0;
     z-index: 1000;
     min-width: 13rem;
-    padding: 0.5rem 0;
+    padding: 0;
     transform-origin: top;
 
     .layout-topbar-action-item {
@@ -89,8 +89,17 @@
   list-style: none;
 
   .layout-topbar-action-item {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
     padding-right: 1rem;
     cursor: pointer;
+    * {
+      color: var(--menu-item-text-color);
+    }
+    &:hover {
+      background-color: var(--menu-item-hover-bg-color);
+      transition: background-color var(--transition-duration);
+    }
     &.user-info {
       padding: 0.4rem 1rem;
       &:hover {
