@@ -3,18 +3,7 @@
     white-space: nowrap;
   }
 }
-/*
-::ng-deep {
 
-  .p-menubar .p-menuitem-link:not(.p-disabled):hover {
-    background-color: var(--menu-item-hover-bg-color);
-    transition: background-color var(--p-transition-duration);
-  }
-  .p-menubar .p-menuitem-link {
-    color: var(--menu-item-text-color) !important;
-  }
-}
-*/
 ::ng-deep {
   .p-menubar .p-submenu-list {
     padding: 0.5rem !important;
