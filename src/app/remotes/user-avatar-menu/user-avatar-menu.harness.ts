@@ -3,10 +3,6 @@ import { MenuItemWithIconHarness } from '@onecx/angular-testing'
 
 class AvatarMenuItemHarness extends MenuItemWithIconHarness {
   static override readonly hostSelector = 'li > a'
-
-  async click() {
-    await (await this.host()).click()
-  }
 }
 
 export class OneCXUserAvatarMenuHarness extends ComponentHarness {
@@ -25,9 +21,6 @@ export class OneCXUserAvatarMenuHarness extends ComponentHarness {
 
   public getMenuItems = this.locatorForAll(AvatarMenuItemHarness)
 
-  async getLogoutButtonId(): Promise<string | null> {
-    return await (await this.getLogoutButton()).getAttribute('id')
-  }
   async getUserAvatarButtonId(): Promise<string | null> {
     return await (await this.getUserAvatarButton()).getAttribute('id')
   }
