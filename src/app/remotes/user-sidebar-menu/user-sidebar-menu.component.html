@@ -7,7 +7,11 @@
       >
         <ocx-slot
           name="onecx-avatar-image"
-          [inputs]="{ id: 'ocx_sidebar_action_user_avatar_image', imageType: 'medium', imageStyle: 'max-height: 2.5rem; max-width: 2.5rem' }"
+          [inputs]="{
+            id: 'ocx_sidebar_action_user_avatar_image',
+            imageType: 'medium',
+            imageStyle: 'max-height: 2.5rem; max-width: 2.5rem'
+          }"
           [outputs]="{ imageLoaded: avatarImageLoadedEmitter }"
         ></ocx-slot>
         <span *ngIf="avatarImageLoaded === undefined" class="font-bold text-lg pi pi-user"></span>
