@@ -14,15 +14,15 @@
     tooltipPosition="bottom"
     tooltipEvent="hover"
   >
-    <i
-      *ngIf="avatarImageLoaded === undefined"
-      id="ocx_topbar_action_manage-bookmark_icon"
-      class="pi pi-user fs-xlarge"
-    ></i>
+    <i *ngIf="avatarImageLoaded === undefined" id="ocx_topbar_action_user_avatar_icon" class="pi pi-user fs-xlarge"></i>
     <ocx-slot
       *ngIf="isAvatarImageComponentDefined$ | async"
       [name]="slotNameAvatarImage"
-      [inputs]="{ id: 'ocx_topbar_action_user_avatar_image' }"
+      [inputs]="{
+        id: 'ocx_topbar_action_user_avatar_image',
+        imageType: 'medium',
+        imageStyle: 'max-height: 2.5rem; max-width: 2.5rem'
+      }"
       [outputs]="{ imageLoaded: avatarImageLoadedEmitter }"
     ></ocx-slot>
   </button>
@@ -45,11 +45,13 @@
     >
       <div
         *ngIf="data.userProfile as profile"
-        class="my-1 flex flex-column flex-wrap justify-content-evenly row-gap-1 w-15rem"
+        class="my-1 flex flex-column flex-wrap justify-content-evenly row-gap-0 w-15rem text-center"
+        role="note"
+        [attr.aria-label]="'User Information'"
       >
         <div
           id="ws_user_avatar_menu_list_item_0_user_name"
-          class="font-bold text-color-secondary text-center text-lg"
+          class="font-bold text-lg text-color-secondary"
           [pTooltip]="profile.person.email ?? ''"
           tooltipPosition="bottom"
           tooltipEvent="hover"
@@ -59,7 +61,7 @@
         <div
           *ngIf="profile.organization"
           id="ws_user_avatar_menu_list_item_0_organization"
-          class="my-1 text-center text-sm text-color-secondary"
+          class="text-sm"
           [pTooltip]="'REMOTES.USER_AVATAR_MENU.ORGID' | translate"
           tooltipPosition="bottom"
           tooltipEvent="hover"
@@ -70,7 +72,7 @@
       <ocx-slot *ngIf="data.customComponentDefined" [name]="slotNameCustomUserInfo"></ocx-slot>
     </li>
 
-    <!-- user-profile-menu -->
+    <!-- user-profile menu -->
     <ng-container *ngIf="userMenu$ | async as userMenu">
       <li
         *ngFor="let item of userMenu; let i = index"
@@ -80,12 +82,12 @@
         <a
           *ngIf="!item.routerLink && item.url && !item.command"
           [id]="'ws_user_avatar_menu_list_item_' + (i + 1) + '_link'"
-          class="p-3 flex flex-row flex-nowrap align-items-center gap-2"
+          class="px-3 flex flex-row flex-nowrap align-items-center gap-2"
           pRipple
           [attr.href]="item.url"
           (keydown.escape)="onItemEscape(userAvatarMenuButton)"
         >
-          <i *ngIf="item.icon" [ngClass]="item.icon"></i>
+          <i *ngIf="item.icon" [ngClass]="item.icon" aria-hidden="true"></i>
           <span [id]="'ws_user_avatar_menu_list_item_' + (i + 1) + '_text'" class="white-space-nowrap">
             {{ item.label }}
           </span>
@@ -93,31 +95,35 @@
         <a
           *ngIf="item.routerLink && !item.url && !item.command"
           [id]="'ws_user_avatar_menu_list_item_' + (i + 1) + '_link'"
-          class="p-3 flex flex-row flex-nowrap align-items-center gap-2"
+          class="px-3 flex flex-row flex-nowrap align-items-center gap-2"
           pRipple
           [routerLink]="item.routerLink"
           (keydown.escape)="onItemEscape(userAvatarMenuButton)"
         >
-          <i *ngIf="item.icon" [ngClass]="item.icon"></i>
+          <i *ngIf="item.icon" [ngClass]="item.icon" aria-hidden="true"></i>
           <span [id]="'ws_user_avatar_menu_list_item_' + (i + 1) + '_text'" class="white-space-nowrap">
             {{ item.label }}
           </span>
         </a>
-        <a
+        <button
           tabindex="0"
           *ngIf="!item.routerLink && !item.url && item.command"
-          [id]="'ws_user_avatar_menu_list_item_' + (i + 1) + '_link'"
-          class="p-3 flex flex-row flex-nowrap align-items-center gap-2"
+          [id]="'ws_user_avatar_menu_list_item_logout'"
+          class="px-3 flex flex-row flex-nowrap align-items-center gap-2 border-none cursor-pointer"
+          style="background-color: inherit; color: inherit; font-size: inherit"
           pRipple
           (click)="item.command({})"
           (keydown.enter)="item.command({})"
           (keydown.escape)="onItemEscape(userAvatarMenuButton)"
         >
-          <i *ngIf="item.icon" [ngClass]="item.icon"></i>
-          <span [id]="'ws_user_avatar_menu_list_item_' + (i + 1) + '_text'" class="white-space-nowrap">
-            {{ item.label }}
-          </span>
-        </a>
+          <i
+            [id]="'ws_user_avatar_menu_list_item_logout_icon'"
+            *ngIf="item.icon"
+            [ngClass]="item.icon"
+            aria-hidden="true"
+          ></i>
+          <span [id]="'ws_user_avatar_menu_list_item_logout_text'" class="white-space-nowrap"> {{ item.label }} </span>
+        </button>
       </li>
     </ng-container>
   </ul>

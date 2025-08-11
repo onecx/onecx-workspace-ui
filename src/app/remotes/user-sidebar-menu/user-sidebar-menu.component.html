@@ -1,14 +1,21 @@
 <p-accordion [activeIndex]="null" expandIcon="pi pi-chevron-right" collapseIcon="pi pi-chevron-down">
   <p-accordionTab>
     <ng-template pTemplate="header">
-      <div class="flex flex-row align-items-center">
+      <div
+        class="flex flex-row align-items-center"
+        [ngClass]="avatarImageLoaded === true ? 'with-image' : 'without-image'"
+      >
         <ocx-slot
           name="onecx-avatar-image"
-          [inputs]="{ imageStyleClass: 'h-3rem w-3rem' }"
+          [inputs]="{
+            id: 'ocx_sidebar_action_user_avatar_image',
+            imageType: 'medium',
+            imageStyle: 'max-height: 2.5rem; max-width: 2.5rem'
+          }"
           [outputs]="{ imageLoaded: avatarImageLoadedEmitter }"
         ></ocx-slot>
         <span *ngIf="avatarImageLoaded === undefined" class="font-bold text-lg pi pi-user"></span>
-        <span *ngIf="displayName$ | async as name" class="mx-3 flex flex-column row-gap-1">
+        <span *ngIf="displayName$ | async as name" class="mx-2 flex flex-column row-gap-0">
           <span
             id="ws_user_sidebar_display_name"
             class="font-bold"
