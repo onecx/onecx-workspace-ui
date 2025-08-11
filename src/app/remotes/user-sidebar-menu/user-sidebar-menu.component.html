@@ -15,7 +15,7 @@
           [outputs]="{ imageLoaded: avatarImageLoadedEmitter }"
         ></ocx-slot>
         <span *ngIf="avatarImageLoaded === undefined" class="font-bold text-lg pi pi-user"></span>
-        <span *ngIf="displayName$ | async as name" class="mx-2 flex flex-column row-gap-0">
+        <span *ngIf="displayName$ | async as name" class="ml-2 flex flex-column row-gap-0">
           <span
             id="ws_user_sidebar_display_name"
             class="font-bold"
