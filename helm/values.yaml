@@ -64,7 +64,6 @@ app:
           technology: WEBCOMPONENTMODULE
           remoteName: onecx-workspace
           tagName: ocx-footer-menu-component
-          deprecated: true
         workspace-footer:
           exposedModule: "./OneCXWorkspaceFooterComponent"
           description: "Creates the page footer using slots for logo (theme), footer menu (workspace) and version (shell)"
