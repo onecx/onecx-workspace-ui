@@ -9,14 +9,11 @@
         transition: background-color var(--transition-duration);
       }
     }
-    .p-panelmenu-content {
-      padding-top: 0rem;
+    .p-toggleable-content .p-panelmenu-content {
+      padding-top: 0;
     }
   }
 
-  .p-panelmenu .p-toggleable-content .p-panelmenu-content {
-    padding-top: 0;
-  }
   .p-accordion {
     .p-accordion-tab {
       box-shadow: none !important;

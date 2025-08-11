@@ -43,6 +43,7 @@ import { SharedModule } from 'src/app/shared/shared.module'
 import { environment } from 'src/environments/environment'
 
 export type MenuAnchorPositionConfig = 'right' | 'left'
+
 @Component({
   selector: 'app-user-avatar-menu',
   templateUrl: './user-avatar-menu.component.html',

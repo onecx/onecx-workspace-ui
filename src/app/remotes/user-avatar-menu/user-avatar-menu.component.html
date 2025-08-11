@@ -14,11 +14,7 @@
     tooltipPosition="bottom"
     tooltipEvent="hover"
   >
-    <i
-      *ngIf="avatarImageLoaded === undefined"
-      id="ocx_topbar_action_manage-bookmark_icon"
-      class="pi pi-user fs-xlarge"
-    ></i>
+    <i *ngIf="avatarImageLoaded === undefined" id="ocx_topbar_action_user_avatar_icon" class="pi pi-user fs-xlarge"></i>
     <ocx-slot
       *ngIf="isAvatarImageComponentDefined$ | async"
       [name]="slotNameAvatarImage"
