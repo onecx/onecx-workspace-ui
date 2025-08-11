@@ -25,7 +25,7 @@
     "module": "ES2022",
     "lib": ["ES2022", "DOM"],
     "inlineSources": true,
-    "types": []
+    "types": ["node"]
   },
   "files": [],
   "include": [],
