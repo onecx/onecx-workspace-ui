@@ -24,6 +24,9 @@
       }
     }
     .p-accordion-header {
+      .p-accordion-header-link .p-accordion-toggle-icon {
+        margin-right: 1.5rem !important;
+      }
       &:not(.p-disabled) {
         .p-accordion-header-link {
           color: var(--menu-item-text-color) !important;
