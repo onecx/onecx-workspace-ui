@@ -15,8 +15,7 @@ import {
   filterObjectTree,
   sortByLocale,
   sortByDisplayName,
-  dropDownSortItemsByLabel,
-  goToEndpoint
+  dropDownSortItemsByLabel
 } from './utils'
 import { RefType } from './generated'
 import { of } from 'rxjs'
@@ -389,7 +388,7 @@ describe('util functions', () => {
       workspaceServiceMock.doesUrlExistFor.and.returnValue(of(true))
       workspaceServiceMock.getUrl.and.returnValue(of(expectedUrl))
 
-      goToEndpoint(workspaceServiceMock, msgServiceMock, routerMock, productName, appId, endpointName, params)
+      Extras.goToEndpoint(workspaceServiceMock, msgServiceMock, routerMock, productName, appId, endpointName, params)
 
       setTimeout(() => {
         expect(workspaceServiceMock.doesUrlExistFor).toHaveBeenCalledWith(productName, appId, endpointName)
@@ -408,7 +407,7 @@ describe('util functions', () => {
 
       workspaceServiceMock.doesUrlExistFor.and.returnValue(of(false))
 
-      goToEndpoint(workspaceServiceMock, msgServiceMock, routerMock, productName, appId, endpointName)
+      Extras.goToEndpoint(workspaceServiceMock, msgServiceMock, routerMock, productName, appId, endpointName)
 
       setTimeout(() => {
         expect(workspaceServiceMock.doesUrlExistFor).toHaveBeenCalledWith(productName, appId, endpointName)
@@ -434,7 +433,7 @@ describe('util functions', () => {
       workspaceServiceMock.doesUrlExistFor.and.returnValue(of(true))
       workspaceServiceMock.getUrl.and.returnValue(of(expectedUrl))
 
-      goToEndpoint(workspaceServiceMock, msgServiceMock, routerMock, productName, appId, endpointName)
+      Extras.goToEndpoint(workspaceServiceMock, msgServiceMock, routerMock, productName, appId, endpointName)
 
       setTimeout(() => {
         expect(workspaceServiceMock.doesUrlExistFor).toHaveBeenCalledWith(productName, appId, endpointName)

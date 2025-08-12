@@ -135,37 +135,6 @@ export function getCurrentDateTime(): string {
   return `${year}-${month}-${day}_${hours}${minutes}${seconds}`
 }
 
-export function goToEndpoint(
-  workspaceService: WorkspaceService,
-  msgService: PortalMessageService,
-  router: Router,
-  productName: string,
-  appId: string,
-  endpointName: string,
-  params?: Record<string, unknown>
-): void {
-  workspaceService
-    .doesUrlExistFor(productName, appId, endpointName)
-    .pipe(
-      tap((exists) => {
-        if (!exists) {
-          console.error(
-            'Routing not possible for product: ' + productName + '  app: ' + appId + '  endpoint: ' + endpointName
-          )
-          msgService.error({
-            summaryKey: 'EXCEPTIONS.ENDPOINT.NOT_EXIST',
-            detailKey: 'EXCEPTIONS.CONTACT_ADMIN'
-          })
-        }
-      }),
-      filter((exists) => exists), // stop on not exists
-      mergeMap(() => workspaceService.getUrl(productName, appId, endpointName, params))
-    )
-    .subscribe((url) => {
-      router.navigateByUrl(url)
-    })
-}
-
 const Extras = {
   bffImageUrl(basePath: string | undefined, name: string | undefined, refType: RefType): string {
     return !name ? '' : basePath + '/images/' + name + '/' + refType
