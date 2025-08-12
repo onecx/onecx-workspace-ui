@@ -21,7 +21,7 @@ import {
   SlotAPIService,
   UIEndpoint
 } from 'src/app/shared/generated'
-import * as utils from 'src/app/shared/utils'
+import { Utils } from 'src/app/shared/utils'
 
 import { AppType, ExtendedMicrofrontend, ExtendedProduct, ExtendedSlot, ProductComponent } from './products.component'
 
@@ -704,19 +704,19 @@ describe('ProductComponent', () => {
 
   describe('on go to other pages', () => {
     it('should follow link to current product detail in product store', () => {
-      spyOn(utils.Extras, 'goToEndpoint')
+      spyOn(Utils, 'goToEndpoint')
 
       component.onGoToProduct('name')
 
-      expect(utils.Extras.goToEndpoint).toHaveBeenCalled()
+      expect(Utils.goToEndpoint).toHaveBeenCalled()
     })
 
     it('should follow link to current product detail in permission UI', () => {
-      spyOn(utils.Extras, 'goToEndpoint')
+      spyOn(Utils, 'goToEndpoint')
 
       component.onGoToProductPermission('name')
 
-      expect(utils.Extras.goToEndpoint).toHaveBeenCalled()
+      expect(Utils.goToEndpoint).toHaveBeenCalled()
     })
   })
 

@@ -21,7 +21,7 @@ import {
   Assignment,
   WorkspaceRole
 } from 'src/app/shared/generated'
-import * as utils from 'src/app/shared/utils'
+import { Utils } from 'src/app/shared/utils'
 import { MenuStateService, MenuState } from './services/menu-state.service'
 import { MenuComponent, MenuItemNodeData } from './menu.component'
 
@@ -1144,10 +1144,10 @@ describe('MenuComponent', () => {
   })
 
   it('should go to workspace permissions', () => {
-    spyOn(utils.Extras, 'goToEndpoint')
+    spyOn(Utils, 'goToEndpoint')
 
     component.onGoToWorkspacePermission()
 
-    expect(utils.Extras.goToEndpoint).toHaveBeenCalled()
+    expect(Utils.goToEndpoint).toHaveBeenCalled()
   })
 })

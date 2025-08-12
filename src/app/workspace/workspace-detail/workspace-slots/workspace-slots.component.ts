@@ -20,7 +20,7 @@ import {
   SlotAPIService,
   WorkspaceProductAPIService
 } from 'src/app/shared/generated'
-import { Extras, limitText } from 'src/app/shared/utils'
+import { Utils } from 'src/app/shared/utils'
 
 export type SlotType = 'WORKSPACE' | 'UNREGISTERED' | 'OUTDATED' | 'WORKSPACE,OUTDATED'
 export type SlotFilterType = 'ALL' | SlotType
@@ -51,7 +51,7 @@ export type ExtendedComponent = SlotComponent & {
 export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   @Input() workspace!: Workspace | undefined
 
-  public limitText = limitText
+  public limitText = Utils.limitText
 
   // data
   private readonly destroy$ = new Subject()
@@ -380,7 +380,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public onGoToProductSlots(): void {
-    Extras.goToEndpoint(
+    Utils.goToEndpoint(
       this.workspaceService,
       this.msgService,
       this.router,

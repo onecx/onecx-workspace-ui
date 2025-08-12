@@ -24,7 +24,7 @@ import {
   SearchWorkspacesRequest
 } from 'src/app/shared/generated'
 import { SharedModule } from 'src/app/shared/shared.module'
-import { Extras, prepareUrlPath, sortByDisplayName } from 'src/app/shared/utils'
+import { Utils } from 'src/app/shared/utils'
 import { environment } from 'src/environments/environment'
 
 type DataType = 'logo' | 'workspaces' | 'workspace'
@@ -90,7 +90,7 @@ export class OneCXWorkspaceDataComponent implements ocxRemoteComponent, ocxRemot
       basePath: Location.joinWithSlash(remoteComponentConfig.baseUrl, environment.apiPrefix)
     })
     if (environment.DEFAULT_LOGO_PATH)
-      this.defaultImageUrl = prepareUrlPath(remoteComponentConfig.baseUrl, environment.DEFAULT_LOGO_PATH)
+      this.defaultImageUrl = Utils.prepareUrlPath(remoteComponentConfig.baseUrl, environment.DEFAULT_LOGO_PATH)
   }
 
   /**
@@ -119,7 +119,7 @@ export class OneCXWorkspaceDataComponent implements ocxRemoteComponent, ocxRemot
     this.log(criteria)
     this.workspaces$ = this.workspaceApi.searchWorkspaces({ searchWorkspacesRequest: criteria }).pipe(
       map((response) => {
-        return response.stream?.sort(sortByDisplayName) ?? []
+        return response.stream?.sort(Utils.sortByDisplayName) ?? []
       }),
       catchError((err) => {
         console.error('onecx-workspace-data.searchWorkspaces', err)
@@ -173,9 +173,9 @@ export class OneCXWorkspaceDataComponent implements ocxRemoteComponent, ocxRemot
       return this.imageUrl
     } else if (['url', 'image'].includes(prioType)) {
       this.log(
-        'getImageUrl => ' + Extras.bffImageUrl(this.workspaceApi.configuration.basePath, workspaceName, RefType.Logo)
+        'getImageUrl => ' + Utils.bffImageUrl(this.workspaceApi.configuration.basePath, workspaceName, RefType.Logo)
       )
-      return Extras.bffImageUrl(this.workspaceApi.configuration.basePath, workspaceName, RefType.Logo)
+      return Utils.bffImageUrl(this.workspaceApi.configuration.basePath, workspaceName, RefType.Logo)
     } else if (['url', 'image', 'default'].includes(prioType) && this.useDefaultLogo && this.defaultImageUrl !== '') {
       // if user wants to have the default (as asset)
       return this.defaultImageUrl

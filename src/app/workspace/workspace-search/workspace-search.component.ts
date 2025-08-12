@@ -15,7 +15,7 @@ import {
   WorkspaceAPIService,
   WorkspaceAbstract
 } from 'src/app/shared/generated'
-import { Extras, limitText } from 'src/app/shared/utils'
+import { Utils } from 'src/app/shared/utils'
 
 @Component({
   selector: 'app-workspace-search',
@@ -28,7 +28,7 @@ export class WorkspaceSearchComponent implements OnInit {
   public actions$: Observable<Action[]> | undefined
   public showCreateDialog = false
   public showImportDialog = false
-  public limitText = limitText
+  public limitText = Utils.limitText
   public getLocation = getLocation
 
   public workspaces$!: Observable<Workspace[]>
@@ -173,6 +173,6 @@ export class WorkspaceSearchComponent implements OnInit {
     if (workspace.logoUrl && workspace.logoUrl != '') {
       return workspace.logoUrl
     }
-    return Extras.bffImageUrl(this.imageApi.configuration.basePath, workspace.name, RefType.Logo)
+    return Utils.bffImageUrl(this.imageApi.configuration.basePath, workspace.name, RefType.Logo)
   }
 }

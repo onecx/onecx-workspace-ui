@@ -25,7 +25,7 @@ import {
   WorkspaceRolesAPIService,
   WorkspaceRolePageResult
 } from 'src/app/shared/generated'
-import { limitText, dropDownSortItemsByLabel, getCurrentDateTime, Extras, sortByLocale } from 'src/app/shared/utils'
+import { Utils } from 'src/app/shared/utils'
 import { MenuStateService } from './services/menu-state.service'
 
 export type ChangeMode = 'VIEW' | 'CREATE' | 'EDIT' | 'COPY' | 'DELETE'
@@ -55,8 +55,8 @@ export class MenuComponent implements OnInit, OnDestroy {
   @ViewChild('roleFilter') roleFilter: HTMLInputElement | undefined
 
   Object = Object
-  public limitText = limitText // utils declarations
-  public sortByLocale = sortByLocale
+  public limitText = Utils.limitText // utils declarations
+  public sortByLocale = Utils.sortByLocale
   private readonly destroy$ = new Subject()
   // dialog control
   public actions$: Observable<Action[]> | undefined
@@ -274,7 +274,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.loadMenu(true)
   }
   public onGoToWorkspacePermission(): void {
-    Extras.goToEndpoint(
+    Utils.goToEndpoint(
       this.workspaceService,
       this.msgService,
       this.router,
@@ -725,7 +725,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       // children
       if (m.children && m.children.length > 0) this.prepareTreeNodeHelperRecursively(m.children)
     })
-    this.parentItems.sort(dropDownSortItemsByLabel)
+    this.parentItems.sort(Utils.dropDownSortItemsByLabel)
   }
   // prepare the node label switcher: add the used languages at the end
   private prepareTreeNodeLabelSwitch(): void {
@@ -734,7 +734,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       { label: 'ID', value: 'ID' }
     ]
     const langs = Array.from(this.usedLanguages.keys())
-    langs.sort(sortByLocale)
+    langs.sort(Utils.sortByLocale)
     langs.forEach((l) => this.treeNodeLabelSwitchItems.push({ label: l, value: l }))
   }
 
@@ -748,7 +748,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         const jsonBody = JSON.stringify(data, null, 2)
         saveAs(
           new Blob([jsonBody], { type: 'text/json' }),
-          'onecx-menu_' + this.workspaceName + '_' + getCurrentDateTime() + '.json',
+          'onecx-menu_' + this.workspaceName + '_' + Utils.getCurrentDateTime() + '.json',
           { autoBom: false }
         )
       })
@@ -792,6 +792,6 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   private getLogoUrl(workspace: Workspace): string | undefined {
     if (workspace.logoUrl) return workspace.logoUrl
-    else return Extras.bffImageUrl(this.imageApi.configuration.basePath, workspace.name, RefType.Logo)
+    else return Utils.bffImageUrl(this.imageApi.configuration.basePath, workspace.name, RefType.Logo)
   }
 }

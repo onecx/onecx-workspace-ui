@@ -9,7 +9,7 @@ import { PortalMessageService, WorkspaceService } from '@onecx/angular-integrati
 import { getLocation } from '@onecx/accelerator'
 
 import { ImagesInternalAPIService, RefType, Workspace, WorkspaceProductAPIService } from 'src/app/shared/generated'
-import { copyToClipboard, Extras, sortByLocale } from 'src/app/shared/utils'
+import { Utils } from 'src/app/shared/utils'
 
 export type Theme = {
   name: string
@@ -29,7 +29,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   @Output() currentLogoUrl = new EventEmitter<string>() // send logo url to detail header
   // make it available in HTML
   public getLocation = getLocation
-  public copyToClipboard = copyToClipboard
+  public copyToClipboard = Utils.copyToClipboard
   public RefType = RefType
   // data
   private readonly destroy$ = new Subject()
@@ -178,7 +178,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     })
   }
   private prepareImageResponse(name: string): void {
-    this.fetchingLogoUrl = Extras.bffImageUrl(this.imageApi.configuration.basePath, name, RefType.Logo)
+    this.fetchingLogoUrl = Utils.bffImageUrl(this.imageApi.configuration.basePath, name, RefType.Logo)
     this.currentLogoUrl.emit(this.fetchingLogoUrl)
     this.msgService.info({ summaryKey: 'IMAGE.UPLOAD_SUCCESS' })
     this.formGroup.controls['logoUrl'].setValue('')
@@ -191,18 +191,14 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     if (workspace.logoUrl && workspace.logoUrl != '') {
       return workspace.logoUrl
     }
-    return Extras.bffImageUrl(this.imageApi.configuration.basePath, workspace.name, RefType.Logo)
+    return Utils.bffImageUrl(this.imageApi.configuration.basePath, workspace.name, RefType.Logo)
   }
 
   // changes on external log URL field: user enters text (change) or paste something
   public onInputChange(event: Event): void {
     this.fetchingLogoUrl = (event.target as HTMLInputElement).value
     if (!this.fetchingLogoUrl || this.fetchingLogoUrl === '') {
-      this.fetchingLogoUrl = Extras.bffImageUrl(
-        this.imageApi.configuration.basePath,
-        this.workspace?.name,
-        RefType.Logo
-      )
+      this.fetchingLogoUrl = Utils.bffImageUrl(this.imageApi.configuration.basePath, this.workspace?.name, RefType.Logo)
     }
     this.currentLogoUrl.emit(this.fetchingLogoUrl)
   }
@@ -222,7 +218,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
           const paths: string[] = []
           if (val.length > 0) {
             for (const p of val) paths.push(p.baseUrl)
-            paths.sort(sortByLocale)
+            paths.sort(Utils.sortByLocale)
           }
           return paths
         })
@@ -245,7 +241,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   }
 
   public onGoToTheme(name?: string): void {
-    Extras.goToEndpoint(
+    Utils.goToEndpoint(
       this.workspaceService,
       this.msgService,
       this.router,

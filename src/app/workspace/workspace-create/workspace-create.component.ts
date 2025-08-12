@@ -7,7 +7,7 @@ import { BehaviorSubject, catchError, map, Observable, of } from 'rxjs'
 import { SlotService } from '@onecx/angular-remote-components'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 
-import { sortByLocale } from 'src/app/shared/utils'
+import { Utils } from 'src/app/shared/utils'
 import { WorkspaceAPIService, ProductAPIService } from 'src/app/shared/generated'
 
 export type Theme = {
@@ -106,7 +106,7 @@ export class WorkspaceCreateComponent implements OnInit {
           for (const p of result.stream) {
             if (p.baseUrl) paths.push(p.baseUrl)
           }
-          paths.sort(sortByLocale)
+          paths.sort(Utils.sortByLocale)
         }
         return paths
       }),

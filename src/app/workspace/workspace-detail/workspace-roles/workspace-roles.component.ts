@@ -24,7 +24,7 @@ import {
   WorkspaceRolesAPIService,
   CreateWorkspaceRoleRequest
 } from 'src/app/shared/generated'
-import { Extras, limitText } from 'src/app/shared/utils'
+import { Utils } from 'src/app/shared/utils'
 
 export type IAMRole = { name?: string; description?: string }
 export type RoleType = 'WORKSPACE' | 'IAM' | 'WORKSPACE,IAM'
@@ -53,7 +53,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   public iamRoles: IAMRole[] = []
   public roles: Role[] = [] // target collection used in HTML
   public role: Role | undefined // for detail
-  public limitText = limitText
+  public limitText = Utils.limitText
 
   // dialog
   @ViewChild(DataView) dv: DataView | undefined
@@ -322,7 +322,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   }
 
   public onGoToPermission(): void {
-    Extras.goToEndpoint(
+    Utils.goToEndpoint(
       this.workspaceService,
       this.msgService,
       this.router,

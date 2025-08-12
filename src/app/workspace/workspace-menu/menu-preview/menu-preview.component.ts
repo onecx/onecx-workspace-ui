@@ -3,7 +3,7 @@ import { SelectItem, TreeNode } from 'primeng/api'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 
-import { dropDownSortItemsByLabel } from 'src/app/shared/utils'
+import { Utils } from 'src/app/shared/utils'
 import { MenuItemAPIService, WorkspaceMenuItem } from 'src/app/shared/generated'
 import { MenuTreeService } from '../services/menu-tree.service'
 import { MenuStateService } from '../services/menu-state.service'
@@ -71,7 +71,7 @@ export class MenuPreviewComponent implements OnChanges {
     this.prepareUsedLanguage(this.menuNodes)
     this.languagesPreview = []
     this.languagesUsed.forEach((l) => this.languagesPreview.push({ label: this.languageNames[l], value: l }))
-    this.languagesPreview.sort(dropDownSortItemsByLabel)
+    this.languagesPreview.sort(Utils.dropDownSortItemsByLabel)
   }
   private prepareUsedLanguage(nodes: TreeNode[]) {
     for (const node of nodes) {
