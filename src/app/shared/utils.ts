@@ -119,9 +119,6 @@ export function prepareUrlPath(url?: string, path?: string): string {
   else if (url) return url
   else return ''
 }
-export function bffImageUrl(basePath: string | undefined, name: string | undefined, refType: RefType): string {
-  return !name ? '' : basePath + '/images/' + name + '/' + refType
-}
 export function bffProductImageUrl(basePath: string | undefined, name: string | undefined): string {
   return !name ? '' : basePath + '/images/product/' + name
 }

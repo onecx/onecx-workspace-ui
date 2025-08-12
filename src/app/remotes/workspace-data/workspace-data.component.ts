@@ -24,7 +24,7 @@ import {
   SearchWorkspacesRequest
 } from 'src/app/shared/generated'
 import { SharedModule } from 'src/app/shared/shared.module'
-import { bffImageUrl, prepareUrlPath, sortByDisplayName } from 'src/app/shared/utils'
+import { Extras, prepareUrlPath, sortByDisplayName } from 'src/app/shared/utils'
 import { environment } from 'src/environments/environment'
 
 type DataType = 'logo' | 'workspaces' | 'workspace'
@@ -172,8 +172,10 @@ export class OneCXWorkspaceDataComponent implements ocxRemoteComponent, ocxRemot
       this.log('getImageUrl => ' + this.imageUrl)
       return this.imageUrl
     } else if (['url', 'image'].includes(prioType)) {
-      this.log('getImageUrl => ' + bffImageUrl(this.workspaceApi.configuration.basePath, workspaceName, RefType.Logo))
-      return bffImageUrl(this.workspaceApi.configuration.basePath, workspaceName, RefType.Logo)
+      this.log(
+        'getImageUrl => ' + Extras.bffImageUrl(this.workspaceApi.configuration.basePath, workspaceName, RefType.Logo)
+      )
+      return Extras.bffImageUrl(this.workspaceApi.configuration.basePath, workspaceName, RefType.Logo)
     } else if (['url', 'image', 'default'].includes(prioType) && this.useDefaultLogo && this.defaultImageUrl !== '') {
       // if user wants to have the default (as asset)
       return this.defaultImageUrl

@@ -25,14 +25,7 @@ import {
   WorkspaceRolesAPIService,
   WorkspaceRolePageResult
 } from 'src/app/shared/generated'
-import {
-  bffImageUrl,
-  limitText,
-  dropDownSortItemsByLabel,
-  getCurrentDateTime,
-  Extras,
-  sortByLocale
-} from 'src/app/shared/utils'
+import { limitText, dropDownSortItemsByLabel, getCurrentDateTime, Extras, sortByLocale } from 'src/app/shared/utils'
 import { MenuStateService } from './services/menu-state.service'
 
 export type ChangeMode = 'VIEW' | 'CREATE' | 'EDIT' | 'COPY' | 'DELETE'
@@ -799,6 +792,6 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   private getLogoUrl(workspace: Workspace): string | undefined {
     if (workspace.logoUrl) return workspace.logoUrl
-    else return bffImageUrl(this.imageApi.configuration.basePath, workspace.name, RefType.Logo)
+    else return Extras.bffImageUrl(this.imageApi.configuration.basePath, workspace.name, RefType.Logo)
   }
 }

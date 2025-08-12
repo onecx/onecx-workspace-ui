@@ -15,7 +15,7 @@ import {
   WorkspaceAPIService,
   WorkspaceAbstract
 } from 'src/app/shared/generated'
-import { bffImageUrl, limitText } from 'src/app/shared/utils'
+import { Extras, limitText } from 'src/app/shared/utils'
 
 @Component({
   selector: 'app-workspace-search',
@@ -173,6 +173,6 @@ export class WorkspaceSearchComponent implements OnInit {
     if (workspace.logoUrl && workspace.logoUrl != '') {
       return workspace.logoUrl
     }
-    return bffImageUrl(this.imageApi.configuration.basePath, workspace.name, RefType.Logo)
+    return Extras.bffImageUrl(this.imageApi.configuration.basePath, workspace.name, RefType.Logo)
   }
 }

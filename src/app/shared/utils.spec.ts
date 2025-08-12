@@ -9,7 +9,7 @@ import {
   dropDownGetLabelByValue,
   prepareUrl,
   prepareUrlPath,
-  bffImageUrl,
+  Extras,
   bffProductImageUrl,
   filterObject,
   filterObjectTree,
@@ -335,12 +335,12 @@ describe('util functions', () => {
 
   describe('bffImageUrl', () => {
     it('should return an empty string if name is not provided', () => {
-      const result = bffImageUrl('http://example.com', undefined, 'refTypeTest' as RefType)
+      const result = Extras.bffImageUrl('http://example.com', undefined, 'refTypeTest' as RefType)
       expect(result).toBe('')
     })
 
     it('should construct the correct image URL if basePath and name are provided', () => {
-      const result = bffImageUrl('http://example.com', 'imageName', 'refTypeTest' as RefType)
+      const result = Extras.bffImageUrl('http://example.com', 'imageName', 'refTypeTest' as RefType)
       expect(result).toBe('http://example.com/images/imageName/refTypeTest')
     })
   })
