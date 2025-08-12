@@ -8,7 +8,7 @@ import { TranslateLoader, TranslateModule, TranslateService, MissingTranslationH
 
 import { KeycloakAuthModule } from '@onecx/keycloak-auth'
 import { createTranslateLoader, provideTranslationPathFromMeta } from '@onecx/angular-utils'
-import { APP_CONFIG, AppStateService, UserService } from '@onecx/angular-integration-interface'
+import { APP_CONFIG, UserService } from '@onecx/angular-integration-interface'
 import {
   translateServiceInitializer,
   PortalCoreModule,
