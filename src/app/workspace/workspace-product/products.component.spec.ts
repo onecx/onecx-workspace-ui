@@ -704,19 +704,19 @@ describe('ProductComponent', () => {
 
   describe('on go to other pages', () => {
     it('should follow link to current product detail in product store', () => {
-      spyOn(utils, 'goToEndpoint')
+      spyOn(utils.Extras, 'goToEndpoint')
 
       component.onGoToProduct('name')
 
-      expect(utils.goToEndpoint).toHaveBeenCalled()
+      expect(utils.Extras.goToEndpoint).toHaveBeenCalled()
     })
 
     it('should follow link to current product detail in permission UI', () => {
-      spyOn(utils, 'goToEndpoint')
+      spyOn(utils.Extras, 'goToEndpoint')
 
       component.onGoToProductPermission('name')
 
-      expect(utils.goToEndpoint).toHaveBeenCalled()
+      expect(utils.Extras.goToEndpoint).toHaveBeenCalled()
     })
   })
 

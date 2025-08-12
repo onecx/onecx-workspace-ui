@@ -472,19 +472,19 @@ describe('WorkspacePropsComponent', () => {
         id: 'id',
         displayName: ''
       }
-      spyOn(utils, 'bffImageUrl')
+      spyOn(utils.Extras, 'bffImageUrl')
 
       component.getLogoUrl(testWorkspace)
 
-      expect(utils.bffImageUrl).toHaveBeenCalled()
+      expect(utils.Extras.bffImageUrl).toHaveBeenCalled()
     })
   })
 
   it('should follow link to current theme', () => {
-    spyOn(utils, 'goToEndpoint')
+    spyOn(utils.Extras, 'goToEndpoint')
 
     component.onGoToTheme('themeName')
 
-    expect(utils.goToEndpoint).toHaveBeenCalled()
+    expect(utils.Extras.goToEndpoint).toHaveBeenCalled()
   })
 })

@@ -21,6 +21,7 @@ import {
 } from 'src/app/shared/generated'
 import { CombinedSlot, ExtendedComponent, WorkspaceSlotsComponent } from './workspace-slots.component'
 import * as utils from 'src/app/shared/utils'
+//import { Greeter } from 'src/app/shared/utils'
 
 const workspace: Workspace = {
   id: 'id',
@@ -625,11 +626,11 @@ describe('WorkspaceSlotsComponent', () => {
   })
 
   it('should go to product slots', () => {
-    spyOn(utils, 'goToEndpoint')
+    spyOn(utils.Extras, 'goToEndpoint')
 
     component.onGoToProductSlots()
 
-    expect(utils.goToEndpoint).toHaveBeenCalled()
+    expect(utils.Extras.goToEndpoint).toHaveBeenCalled()
   })
 
   describe('Test translations', () => {

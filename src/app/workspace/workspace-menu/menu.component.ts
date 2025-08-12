@@ -30,7 +30,7 @@ import {
   limitText,
   dropDownSortItemsByLabel,
   getCurrentDateTime,
-  goToEndpoint,
+  Extras,
   sortByLocale
 } from 'src/app/shared/utils'
 import { MenuStateService } from './services/menu-state.service'
@@ -281,7 +281,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.loadMenu(true)
   }
   public onGoToWorkspacePermission(): void {
-    goToEndpoint(
+    Extras.goToEndpoint(
       this.workspaceService,
       this.msgService,
       this.router,

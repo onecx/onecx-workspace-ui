@@ -20,7 +20,7 @@ import {
   SlotAPIService,
   WorkspaceProductAPIService
 } from 'src/app/shared/generated'
-import { goToEndpoint, limitText } from 'src/app/shared/utils'
+import { Extras, limitText } from 'src/app/shared/utils'
 
 export type SlotType = 'WORKSPACE' | 'UNREGISTERED' | 'OUTDATED' | 'WORKSPACE,OUTDATED'
 export type SlotFilterType = 'ALL' | SlotType
@@ -380,7 +380,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public onGoToProductSlots(): void {
-    goToEndpoint(
+    Extras.goToEndpoint(
       this.workspaceService,
       this.msgService,
       this.router,

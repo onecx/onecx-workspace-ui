@@ -24,7 +24,7 @@ import {
   WorkspaceRolesAPIService,
   CreateWorkspaceRoleRequest
 } from 'src/app/shared/generated'
-import { goToEndpoint, limitText } from 'src/app/shared/utils'
+import { Extras, limitText } from 'src/app/shared/utils'
 
 export type IAMRole = { name?: string; description?: string }
 export type RoleType = 'WORKSPACE' | 'IAM' | 'WORKSPACE,IAM'
@@ -322,7 +322,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   }
 
   public onGoToPermission(): void {
-    goToEndpoint(
+    Extras.goToEndpoint(
       this.workspaceService,
       this.msgService,
       this.router,

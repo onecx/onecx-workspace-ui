@@ -371,12 +371,12 @@ describe('WorkspaceRolesComponent', () => {
   })
 
   describe('UI events', () => {
-    it('should go to product slots', () => {
-      spyOn(utils, 'goToEndpoint')
+    it('should go to permissions', () => {
+      spyOn(utils.Extras, 'goToEndpoint')
 
       component.onGoToPermission()
 
-      expect(utils.goToEndpoint).toHaveBeenCalled()
+      expect(utils.Extras.goToEndpoint).toHaveBeenCalled()
     })
   })
 

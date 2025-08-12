@@ -1144,10 +1144,10 @@ describe('MenuComponent', () => {
   })
 
   it('should go to workspace permissions', () => {
-    spyOn(utils, 'goToEndpoint')
+    spyOn(utils.Extras, 'goToEndpoint')
 
     component.onGoToWorkspacePermission()
 
-    expect(utils.goToEndpoint).toHaveBeenCalled()
+    expect(utils.Extras.goToEndpoint).toHaveBeenCalled()
   })
 })
