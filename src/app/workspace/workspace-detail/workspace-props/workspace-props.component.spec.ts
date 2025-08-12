@@ -26,7 +26,7 @@ import {
   WorkspaceProductAPIService,
   RefType
 } from 'src/app/shared/generated'
-import * as utils from 'src/app/shared/utils'
+import { Utils } from 'src/app/shared/utils'
 
 const workspace = {
   id: 'id',
@@ -472,19 +472,19 @@ describe('WorkspacePropsComponent', () => {
         id: 'id',
         displayName: ''
       }
-      spyOn(utils, 'bffImageUrl')
+      spyOn(Utils, 'bffImageUrl')
 
       component.getLogoUrl(testWorkspace)
 
-      expect(utils.bffImageUrl).toHaveBeenCalled()
+      expect(Utils.bffImageUrl).toHaveBeenCalled()
     })
   })
 
   it('should follow link to current theme', () => {
-    spyOn(utils, 'goToEndpoint')
+    spyOn(Utils, 'goToEndpoint')
 
     component.onGoToTheme('themeName')
 
-    expect(utils.goToEndpoint).toHaveBeenCalled()
+    expect(Utils.goToEndpoint).toHaveBeenCalled()
   })
 })

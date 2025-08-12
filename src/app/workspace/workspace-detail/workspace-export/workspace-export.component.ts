@@ -4,7 +4,7 @@ import FileSaver from 'file-saver'
 
 import { Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
-import { getCurrentDateTime } from 'src/app/shared/utils'
+import { Utils } from 'src/app/shared/utils'
 
 @Component({
   selector: 'app-workspace-export',
@@ -33,7 +33,7 @@ export class WorkspaceExportComponent {
           const workspaceJson = JSON.stringify(snapshot, null, 2)
           FileSaver.saveAs(
             new Blob([workspaceJson], { type: 'text/json' }),
-            `onecx-workspace_${this.workspace?.name}_${getCurrentDateTime()}.json`
+            `onecx-workspace_${this.workspace?.name}_${Utils.getCurrentDateTime()}.json`
           )
         },
         error: (err) => {

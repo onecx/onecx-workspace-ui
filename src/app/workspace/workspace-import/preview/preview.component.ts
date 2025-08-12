@@ -6,7 +6,7 @@ import { BehaviorSubject, Observable } from 'rxjs'
 import { SlotService } from '@onecx/angular-remote-components'
 
 import { EximWorkspaceMenuItem, Product } from 'src/app/shared/generated'
-import { forceFormValidation, sortByLocale } from 'src/app/shared/utils'
+import { Utils } from 'src/app/shared/utils'
 
 // All properties could be empty in case the import file does not contain a theme
 export type Theme = {
@@ -35,7 +35,7 @@ export class PreviewComponent implements OnInit {
   public menuItems!: TreeNode[]
   public workspaceRoles: string[] = []
   public workspaceProducts!: string[]
-  public sortByLocale = sortByLocale
+  public sortByLocale = Utils.sortByLocale
   // slot configuration: get theme data
   public slotName = 'onecx-theme-data'
   public isThemeComponentDefined$: Observable<boolean> // check if a component was assigned
@@ -79,7 +79,7 @@ export class PreviewComponent implements OnInit {
       this.formGroup.controls['theme'].setValue(ws.theme)
       this.formGroup.controls['baseUrl'].setValue(ws.baseUrl)
       // trigger validation to be up-to-date
-      forceFormValidation(this.formGroup)
+      Utils.forceFormValidation(this.formGroup)
     }
   }
 

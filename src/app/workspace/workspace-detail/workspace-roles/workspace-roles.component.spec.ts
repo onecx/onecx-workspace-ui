@@ -16,7 +16,7 @@ import {
   WorkspaceRolesComponent
 } from 'src/app/workspace/workspace-detail/workspace-roles/workspace-roles.component'
 import { Workspace, WorkspaceRole, WorkspaceRolesAPIService, WorkspaceRolePageResult } from 'src/app/shared/generated'
-import * as utils from 'src/app/shared/utils'
+import { Utils } from 'src/app/shared/utils'
 
 const workspace: Workspace = {
   id: 'id',
@@ -371,12 +371,12 @@ describe('WorkspaceRolesComponent', () => {
   })
 
   describe('UI events', () => {
-    it('should go to product slots', () => {
-      spyOn(utils, 'goToEndpoint')
+    it('should go to permissions', () => {
+      spyOn(Utils, 'goToEndpoint')
 
       component.onGoToPermission()
 
-      expect(utils.goToEndpoint).toHaveBeenCalled()
+      expect(Utils.goToEndpoint).toHaveBeenCalled()
     })
   })
 

@@ -1,28 +1,12 @@
 import { FormGroup, FormControl } from '@angular/forms'
 import { SelectItem } from 'primeng/api'
-
-import {
-  limitText,
-  setFetchUrls,
-  copyToClipboard,
-  forceFormValidation,
-  dropDownGetLabelByValue,
-  prepareUrl,
-  prepareUrlPath,
-  bffImageUrl,
-  bffProductImageUrl,
-  filterObject,
-  filterObjectTree,
-  sortByLocale,
-  sortByDisplayName,
-  dropDownSortItemsByLabel,
-  goToEndpoint
-} from './utils'
-import { RefType } from './generated'
 import { of } from 'rxjs'
 
+import { RefType } from './generated'
+import { Utils } from './utils'
+
 describe('util functions', () => {
-  describe('dropDownSortItemsByLabel', () => {
+  describe('Utils.dropDownSortItemsByLabel', () => {
     it('should correctly sort SelectItems by labels', () => {
       const items: SelectItem[] = [
         { label: 'a', value: 2 },
@@ -30,46 +14,46 @@ describe('util functions', () => {
         { label: undefined, value: 0 }
       ]
 
-      expect(dropDownSortItemsByLabel(items[0], items[1])).toBeLessThan(0)
-      expect(dropDownSortItemsByLabel(items[1], items[0])).toBeGreaterThan(0)
-      expect(dropDownSortItemsByLabel(items[2], items[0])).toBeLessThan(0)
-      expect(dropDownSortItemsByLabel(items[0], items[2])).toBeGreaterThan(0)
+      expect(Utils.dropDownSortItemsByLabel(items[0], items[1])).toBeLessThan(0)
+      expect(Utils.dropDownSortItemsByLabel(items[1], items[0])).toBeGreaterThan(0)
+      expect(Utils.dropDownSortItemsByLabel(items[2], items[0])).toBeLessThan(0)
+      expect(Utils.dropDownSortItemsByLabel(items[0], items[2])).toBeGreaterThan(0)
     })
   })
 
   describe('sortByLocale', () => {
     it('should return 0 when one parameter is not a string', () => {
-      const result = sortByLocale(1, 'a')
+      const result = Utils.sortByLocale(1, 'a')
       expect(result).toBe(0)
     })
     it('should return 0 when both strings are identical', () => {
-      const result = sortByLocale('apple', 'apple')
+      const result = Utils.sortByLocale('apple', 'apple')
       expect(result).toBe(0)
     })
 
     it('should correctly sort strings ignoring case', () => {
-      expect(sortByLocale('apple', 'Banana')).toBeLessThan(0)
-      expect(sortByLocale('Banana', 'apple')).toBeGreaterThan(0)
+      expect(Utils.sortByLocale('apple', 'Banana')).toBeLessThan(0)
+      expect(Utils.sortByLocale('Banana', 'apple')).toBeGreaterThan(0)
     })
 
     it('should correctly sort strings with different cases', () => {
-      expect(sortByLocale('Apple', 'apple')).toBe(0)
-      expect(sortByLocale('apple', 'Apple')).toBe(0)
+      expect(Utils.sortByLocale('Apple', 'apple')).toBe(0)
+      expect(Utils.sortByLocale('apple', 'Apple')).toBe(0)
     })
 
     it('should correctly sort strings with special characters', () => {
-      expect(sortByLocale('café', 'Cafe')).toBeGreaterThan(0)
-      expect(sortByLocale('Cafe', 'café')).toBeLessThan(0)
+      expect(Utils.sortByLocale('café', 'Cafe')).toBeGreaterThan(0)
+      expect(Utils.sortByLocale('Cafe', 'café')).toBeLessThan(0)
     })
 
     it('should correctly sort strings with different alphabets', () => {
-      expect(sortByLocale('äpple', 'banana')).toBeLessThan(0)
-      expect(sortByLocale('banana', 'äpple')).toBeGreaterThan(0)
+      expect(Utils.sortByLocale('äpple', 'banana')).toBeLessThan(0)
+      expect(Utils.sortByLocale('banana', 'äpple')).toBeGreaterThan(0)
     })
 
     it('should correctly sort strings with numbers', () => {
-      expect(sortByLocale('apple1', 'apple2')).toBeLessThan(0)
-      expect(sortByLocale('apple2', 'apple1')).toBeGreaterThan(0)
+      expect(Utils.sortByLocale('apple1', 'apple2')).toBeLessThan(0)
+      expect(Utils.sortByLocale('apple2', 'apple1')).toBeGreaterThan(0)
     })
   })
 
@@ -77,83 +61,69 @@ describe('util functions', () => {
     it('should return negative value when first product name comes before second alphabetically', () => {
       const itemA = { id: 'a', name: 'name', displayName: 'Admin' }
       const itemB = { id: 'b', name: 'name', displayName: 'User' }
-      expect(sortByDisplayName(itemA, itemB)).toBeLessThan(0)
+      expect(Utils.sortByDisplayName(itemA, itemB)).toBeLessThan(0)
     })
 
     it('should return positive value when first product name comes after second alphabetically', () => {
       const itemA = { id: 'a', name: 'name', displayName: 'User' }
       const itemB = { id: 'b', name: 'name', displayName: 'Admin' }
-      expect(sortByDisplayName(itemA, itemB)).toBeGreaterThan(0)
+      expect(Utils.sortByDisplayName(itemA, itemB)).toBeGreaterThan(0)
     })
 
     it('should return zero when product names are the same', () => {
       const itemA = { id: 'a', name: 'name', displayName: 'Admin' }
       const itemB = { id: 'b', name: 'name', displayName: 'Admin' }
-      expect(sortByDisplayName(itemA, itemB)).toBe(0)
+      expect(Utils.sortByDisplayName(itemA, itemB)).toBe(0)
     })
 
     it('should be case-insensitive', () => {
       const itemA = { id: 'a', name: 'name', displayName: 'admin' }
       const itemB = { id: 'b', name: 'name', displayName: 'Admin' }
-      expect(sortByDisplayName(itemA, itemB)).toBe(0)
+      expect(Utils.sortByDisplayName(itemA, itemB)).toBe(0)
     })
 
     it('should handle undefined names', () => {
       const itemA = { id: 'a', name: 'name', displayName: undefined }
       const itemB = { id: 'b', name: 'name', displayName: 'Admin' }
-      expect(sortByDisplayName(itemA, itemB)).toBeLessThan(0)
+      expect(Utils.sortByDisplayName(itemA, itemB)).toBeLessThan(0)
     })
 
     it('should handle empty string names', () => {
       const itemA = { id: 'a', name: 'name', displayName: '' }
       const itemB = { id: 'b', name: 'name', displayName: 'Admin' }
-      expect(sortByDisplayName(itemA, itemB)).toBeLessThan(0)
+      expect(Utils.sortByDisplayName(itemA, itemB)).toBeLessThan(0)
     })
 
     it('should handle both names being undefined', () => {
       const itemA = { id: 'a', name: 'name', displayName: undefined }
       const itemB = { id: 'b', name: 'name', displayName: undefined }
-      expect(sortByDisplayName(itemA, itemB)).toBe(0)
+      expect(Utils.sortByDisplayName(itemA, itemB)).toBe(0)
     })
   })
 
   describe('limitText', () => {
     it('should truncate text that exceeds the specified limit', () => {
-      const result = limitText('hello', 4)
+      const result = Utils.limitText('hello', 4)
 
       expect(result).toEqual('hell...')
     })
 
     it('should return the original text if it does not exceed the limit', () => {
-      const result = limitText('hello', 6)
+      const result = Utils.limitText('hello', 6)
 
       expect(result).toEqual('hello')
     })
 
     it('should return an empty string for undefined input', () => {
       const str: any = undefined
-      const result = limitText(str, 5)
+      const result = Utils.limitText(str, 5)
 
       expect(result).toEqual('')
     })
 
     it('should handle zero length text', () => {
-      const result = limitText(null, 4)
+      const result = Utils.limitText(null, 4)
       expect(result).toEqual('')
-    })
-  })
-
-  describe('setFetchUrls', () => {
-    it('should prepend apiPrefix to a relative URL', () => {
-      const result = setFetchUrls('ahm-api', '/am')
-
-      expect(result).toEqual('ahm-api/am')
-    })
-
-    it('should return the original URL if it is absolute', () => {
-      const result = setFetchUrls('ahm-api', 'http://am')
-
-      expect(result).toEqual('http://am')
     })
   })
 
@@ -165,7 +135,7 @@ describe('util functions', () => {
     })
 
     it('should copy text to clipboard', () => {
-      copyToClipboard('text')
+      Utils.copyToClipboard('text')
 
       expect(writeTextSpy).toHaveBeenCalledWith('text')
     })
@@ -178,35 +148,22 @@ describe('util functions', () => {
         control2: new FormControl('')
       })
 
-      forceFormValidation(group)
+      Utils.forceFormValidation(group)
 
       expect(group.dirty).toBeTrue()
       expect(group.touched).toBeTrue()
     })
   })
 
-  describe('dropDownGetLabelByValue', () => {
-    it('should return the label corresponding to the value', () => {
-      const items: SelectItem[] = [
-        { label: 'label2', value: 2 },
-        { label: 'label1', value: 1 }
-      ]
-
-      const result = dropDownGetLabelByValue(items, '1')
-
-      expect(result).toEqual('label1')
-    })
-  })
-
   describe('filterObject', () => {
     it('should return an empty object when input object is empty', () => {
-      const result = filterObject({}, [])
+      const result = Utils.filterObject({}, [])
       expect(result).toEqual({})
     })
 
     it('should return the same object when no properties are excluded', () => {
       const input = { a: 1, b: 2, c: 3 }
-      const result = filterObject(input, [])
+      const result = Utils.filterObject(input, [])
       expect(result).toEqual(input)
     })
 
@@ -214,20 +171,20 @@ describe('util functions', () => {
       const input = { a: 1, b: 2, c: 3 }
       const exProps = ['b']
       const expected = { a: 1, c: 3 }
-      const result = filterObject(input, exProps)
+      const result = Utils.filterObject(input, exProps)
       expect(result).toEqual(expected)
     })
   })
 
   describe('filterObjectTree', () => {
     it('should return an empty object when input object is empty', () => {
-      const result = filterObjectTree({}, [], 'children')
+      const result = Utils.filterObjectTree({}, [], 'children')
       expect(result).toEqual({})
     })
 
     it('should return the same object when no properties are excluded and there are no children', () => {
       const input = { a: 1, b: 2, c: 3 }
-      const result = filterObjectTree(input, [], 'children')
+      const result = Utils.filterObjectTree(input, [], 'children')
       expect(result).toEqual(input)
     })
 
@@ -235,7 +192,7 @@ describe('util functions', () => {
       const input = { a: 1, b: 2, c: 3 }
       const exProps = ['b']
       const expected = { a: 1, c: 3 }
-      const result = filterObjectTree(input, exProps, 'children')
+      const result = Utils.filterObjectTree(input, exProps, 'children')
       expect(result).toEqual(expected)
     })
 
@@ -251,7 +208,7 @@ describe('util functions', () => {
       }
       const exProps = ['b']
       const expected = { a: 1, c: 3, children: [{ a: 1 }, { a: 2, c: 3 }] }
-      const result = filterObjectTree(input, exProps, 'children')
+      const result = Utils.filterObjectTree(input, exProps, 'children')
       expect(result).toEqual(expected)
     })
 
@@ -274,42 +231,8 @@ describe('util functions', () => {
           { a: 2, c: 3, children: [{ a: 2, c: 3 }] }
         ]
       }
-      const result = filterObjectTree(input, exProps, 'children')
+      const result = Utils.filterObjectTree(input, exProps, 'children')
       expect(result).toEqual(expected)
-    })
-  })
-
-  describe('prepareUrl', () => {
-    it('should return the URL unchanged if it starts with http', () => {
-      const url = 'http://example.com/endpoint'
-      const result = prepareUrl(url)
-
-      expect(result).toBe(url)
-    })
-
-    it('should return the URL unchanged if it starts with https', () => {
-      const url = 'https://example.com/endpoint'
-      const result = prepareUrl(url)
-
-      expect(result).toBe(url)
-    })
-
-    it('should return undefined if the URL is undefined', () => {
-      const result = prepareUrl(undefined)
-
-      expect(result).toBeUndefined()
-    })
-
-    it('should return URL if the URL is undefined', () => {
-      const result = prepareUrl(undefined)
-
-      expect(result).toBeUndefined()
-    })
-
-    it('should return the URL unchanged if it does not start with http', () => {
-      const url = 'example.com/endpoint'
-      const result = prepareUrl(url)
-      expect(result).toBe('bff/example.com/endpoint')
     })
   })
 
@@ -317,130 +240,132 @@ describe('util functions', () => {
     it('should join URL and path if both are provided', () => {
       const url = 'http://example.com'
       const path = 'path'
-      const result = prepareUrlPath(url, path)
+      const result = Utils.prepareUrlPath(url, path)
       expect(result).toBe(`${url}/${path}`)
     })
 
     it('should return the URL if only URL is provided', () => {
       const url = 'http://example.com'
-      const result = prepareUrlPath(url)
+      const result = Utils.prepareUrlPath(url)
       expect(result).toBe(url)
     })
 
     it('should return an empty string if neither URL nor path is provided', () => {
-      const result = prepareUrlPath()
+      const result = Utils.prepareUrlPath()
       expect(result).toBe('')
-    })
-  })
-
-  describe('bffImageUrl', () => {
-    it('should return an empty string if name is not provided', () => {
-      const result = bffImageUrl('http://example.com', undefined, 'refTypeTest' as RefType)
-      expect(result).toBe('')
-    })
-
-    it('should construct the correct image URL if basePath and name are provided', () => {
-      const result = bffImageUrl('http://example.com', 'imageName', 'refTypeTest' as RefType)
-      expect(result).toBe('http://example.com/images/imageName/refTypeTest')
     })
   })
 
   describe('bffProductImageUrl', () => {
     it('should return an empty string if name is not provided', () => {
-      const result = bffProductImageUrl('http://example.com', undefined)
+      const result = Utils.bffProductImageUrl('http://example.com', undefined)
       expect(result).toBe('')
     })
 
     it('should construct the correct product image URL if basePath and name are provided', () => {
-      const result = bffProductImageUrl('http://example.com', 'productName')
+      const result = Utils.bffProductImageUrl('http://example.com', 'productName')
       expect(result).toBe('http://example.com/images/product/productName')
     })
   })
 
-  describe('goToEndpoint', () => {
-    let workspaceServiceMock: any
-    let msgServiceMock: any
-    let routerMock: any
+  describe('Utils', () => {
+    describe('bffImageUrl', () => {
+      it('should return an empty string if name is not provided', () => {
+        const result = Utils.bffImageUrl('http://example.com', undefined, 'refTypeTest' as RefType)
+        expect(result).toBe('')
+      })
 
-    beforeEach(() => {
-      workspaceServiceMock = {
-        doesUrlExistFor: jasmine.createSpy('doesUrlExistFor'),
-        getUrl: jasmine.createSpy('getUrl')
-      }
-
-      msgServiceMock = {
-        error: jasmine.createSpy('error')
-      }
-
-      routerMock = {
-        navigateByUrl: jasmine.createSpy('navigateByUrl')
-      }
-
-      spyOn(console, 'error')
-    })
-
-    it('should navigate to the URL when it exists', (done) => {
-      const productName = 'testProduct'
-      const appId = 'testApp'
-      const endpointName = 'testEndpoint'
-      const params = { param1: 'value1' }
-      const expectedUrl = '/test/url'
-
-      workspaceServiceMock.doesUrlExistFor.and.returnValue(of(true))
-      workspaceServiceMock.getUrl.and.returnValue(of(expectedUrl))
-
-      goToEndpoint(workspaceServiceMock, msgServiceMock, routerMock, productName, appId, endpointName, params)
-
-      setTimeout(() => {
-        expect(workspaceServiceMock.doesUrlExistFor).toHaveBeenCalledWith(productName, appId, endpointName)
-        expect(workspaceServiceMock.getUrl).toHaveBeenCalledWith(productName, appId, endpointName, params)
-        expect(routerMock.navigateByUrl).toHaveBeenCalledWith(expectedUrl)
-        expect(console.error).not.toHaveBeenCalled()
-        expect(msgServiceMock.error).not.toHaveBeenCalled()
-        done()
+      it('should construct the correct image URL if basePath and name are provided', () => {
+        const result = Utils.bffImageUrl('http://example.com', 'imageName', 'refTypeTest' as RefType)
+        expect(result).toBe('http://example.com/images/imageName/refTypeTest')
       })
     })
 
-    it('should show an error message when the URL does not exist', (done) => {
-      const productName = 'testProduct'
-      const appId = 'testApp'
-      const endpointName = 'testEndpoint'
+    describe('goToEndpoint', () => {
+      let workspaceServiceMock: any
+      let msgServiceMock: any
+      let routerMock: any
 
-      workspaceServiceMock.doesUrlExistFor.and.returnValue(of(false))
+      beforeEach(() => {
+        workspaceServiceMock = {
+          doesUrlExistFor: jasmine.createSpy('doesUrlExistFor'),
+          getUrl: jasmine.createSpy('getUrl')
+        }
 
-      goToEndpoint(workspaceServiceMock, msgServiceMock, routerMock, productName, appId, endpointName)
+        msgServiceMock = {
+          error: jasmine.createSpy('error')
+        }
 
-      setTimeout(() => {
-        expect(workspaceServiceMock.doesUrlExistFor).toHaveBeenCalledWith(productName, appId, endpointName)
-        expect(workspaceServiceMock.getUrl).not.toHaveBeenCalled()
-        expect(routerMock.navigateByUrl).not.toHaveBeenCalled()
-        expect(console.error).toHaveBeenCalledWith(
-          'Routing not possible for product: testProduct  app: testApp  endpoint: testEndpoint'
-        )
-        expect(msgServiceMock.error).toHaveBeenCalledWith({
-          summaryKey: 'EXCEPTIONS.ENDPOINT.NOT_EXIST',
-          detailKey: 'EXCEPTIONS.CONTACT_ADMIN'
+        routerMock = {
+          navigateByUrl: jasmine.createSpy('navigateByUrl')
+        }
+
+        spyOn(console, 'error')
+      })
+
+      it('should navigate to the URL when it exists', (done) => {
+        const productName = 'testProduct'
+        const appId = 'testApp'
+        const endpointName = 'testEndpoint'
+        const params = { param1: 'value1' }
+        const expectedUrl = '/test/url'
+
+        workspaceServiceMock.doesUrlExistFor.and.returnValue(of(true))
+        workspaceServiceMock.getUrl.and.returnValue(of(expectedUrl))
+
+        Utils.goToEndpoint(workspaceServiceMock, msgServiceMock, routerMock, productName, appId, endpointName, params)
+
+        setTimeout(() => {
+          expect(workspaceServiceMock.doesUrlExistFor).toHaveBeenCalledWith(productName, appId, endpointName)
+          expect(workspaceServiceMock.getUrl).toHaveBeenCalledWith(productName, appId, endpointName, params)
+          expect(routerMock.navigateByUrl).toHaveBeenCalledWith(expectedUrl)
+          expect(console.error).not.toHaveBeenCalled()
+          expect(msgServiceMock.error).not.toHaveBeenCalled()
+          done()
         })
-        done()
       })
-    })
 
-    it('should handle the case when params are not provided', (done) => {
-      const productName = 'testProduct'
-      const appId = 'testApp'
-      const endpointName = 'testEndpoint'
-      const expectedUrl = '/test/url'
+      it('should show an error message when the URL does not exist', (done) => {
+        const productName = 'testProduct'
+        const appId = 'testApp'
+        const endpointName = 'testEndpoint'
 
-      workspaceServiceMock.doesUrlExistFor.and.returnValue(of(true))
-      workspaceServiceMock.getUrl.and.returnValue(of(expectedUrl))
+        workspaceServiceMock.doesUrlExistFor.and.returnValue(of(false))
 
-      goToEndpoint(workspaceServiceMock, msgServiceMock, routerMock, productName, appId, endpointName)
+        Utils.goToEndpoint(workspaceServiceMock, msgServiceMock, routerMock, productName, appId, endpointName)
 
-      setTimeout(() => {
-        expect(workspaceServiceMock.doesUrlExistFor).toHaveBeenCalledWith(productName, appId, endpointName)
-        expect(workspaceServiceMock.getUrl).toHaveBeenCalledWith(productName, appId, endpointName, undefined)
-        expect(routerMock.navigateByUrl).toHaveBeenCalledWith(expectedUrl)
-        done()
+        setTimeout(() => {
+          expect(workspaceServiceMock.doesUrlExistFor).toHaveBeenCalledWith(productName, appId, endpointName)
+          expect(workspaceServiceMock.getUrl).not.toHaveBeenCalled()
+          expect(routerMock.navigateByUrl).not.toHaveBeenCalled()
+          expect(console.error).toHaveBeenCalledWith(
+            'Routing not possible for product: testProduct  app: testApp  endpoint: testEndpoint'
+          )
+          expect(msgServiceMock.error).toHaveBeenCalledWith({
+            summaryKey: 'EXCEPTIONS.ENDPOINT.NOT_EXIST',
+            detailKey: 'EXCEPTIONS.CONTACT_ADMIN'
+          })
+          done()
+        })
+      })
+
+      it('should handle the case when params are not provided', (done) => {
+        const productName = 'testProduct'
+        const appId = 'testApp'
+        const endpointName = 'testEndpoint'
+        const expectedUrl = '/test/url'
+
+        workspaceServiceMock.doesUrlExistFor.and.returnValue(of(true))
+        workspaceServiceMock.getUrl.and.returnValue(of(expectedUrl))
+
+        Utils.goToEndpoint(workspaceServiceMock, msgServiceMock, routerMock, productName, appId, endpointName)
+
+        setTimeout(() => {
+          expect(workspaceServiceMock.doesUrlExistFor).toHaveBeenCalledWith(productName, appId, endpointName)
+          expect(workspaceServiceMock.getUrl).toHaveBeenCalledWith(productName, appId, endpointName, undefined)
+          expect(routerMock.navigateByUrl).toHaveBeenCalledWith(expectedUrl)
+          done()
+        })
       })
     })
   })

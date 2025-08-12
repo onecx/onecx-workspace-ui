@@ -14,7 +14,7 @@ import {
   ImagesInternalAPIService,
   RefType
 } from 'src/app/shared/generated'
-import { bffImageUrl, limitText } from 'src/app/shared/utils'
+import { Utils } from 'src/app/shared/utils'
 
 import { WorkspacePropsComponent } from './workspace-props/workspace-props.component'
 import { WorkspaceContactComponent } from './workspace-contact/workspace-contact.component'
@@ -49,7 +49,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
   public workspaceExportVisible = false
   public currentLogoUrl: string | undefined = undefined
   public showOperatorMessage = true // display initially only
-  public limitText = limitText
+  public limitText = Utils.limitText
   private translations$: Observable<Message[]> | undefined
   public messages: Message[] = []
 
@@ -204,7 +204,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
   public getLogoUrl(workspace: Workspace | undefined): string | undefined {
     if (!workspace) return undefined
     if (workspace.logoUrl) return workspace?.logoUrl
-    else return bffImageUrl(this.imageApi.configuration.basePath, workspace?.name, RefType.Logo)
+    else return Utils.bffImageUrl(this.imageApi.configuration.basePath, workspace?.name, RefType.Logo)
   }
 
   // called by props component (this is the master of this url)

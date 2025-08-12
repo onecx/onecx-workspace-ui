@@ -4,7 +4,7 @@ import { Observable, map } from 'rxjs'
 import { AppStateService } from '@onecx/angular-integration-interface'
 
 import { environment } from 'src/environments/environment'
-import { prepareUrlPath } from 'src/app/shared/utils'
+import { Utils } from 'src/app/shared/utils'
 
 /**
  * This component displays the image with given imageURL.
@@ -34,7 +34,7 @@ export class ImageContainerComponent implements OnChanges {
     product: environment.DEFAULT_PRODUCT_PATH
   }
 
-  prepareUrlPath = prepareUrlPath
+  prepareUrlPath = Utils.prepareUrlPath
 
   constructor(appState: AppStateService) {
     this.defaultImageUrl$ = appState.currentMfe$.pipe(

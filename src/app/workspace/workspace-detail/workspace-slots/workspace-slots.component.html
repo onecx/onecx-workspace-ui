@@ -10,6 +10,7 @@
   *ngIf="!exceptionKey"
   id="ws_slots_dataview"
   [value]="wSlots"
+  [emptyMessage]="'ACTIONS.SEARCH.NO_DATA' | translate"
   [paginator]="true"
   [alwaysShowPaginator]="true"
   [rowsPerPageOptions]="[20, 60, 100]"

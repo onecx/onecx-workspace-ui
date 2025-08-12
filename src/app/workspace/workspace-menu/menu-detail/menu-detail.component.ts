@@ -8,7 +8,7 @@ import { SelectItem } from 'primeng/api'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 
-import { dropDownSortItemsByLabel, limitText } from 'src/app/shared/utils'
+import { Utils } from 'src/app/shared/utils'
 import {
   CreateMenuItem,
   MenuItem,
@@ -52,7 +52,7 @@ export class MenuDetailComponent implements OnChanges {
   @Input() displayDeleteDialog = false
   @Output() dataChanged: EventEmitter<boolean> = new EventEmitter()
 
-  limitText = limitText
+  limitText = Utils.limitText
   @ViewChild('panelDetail') panelDetail: TabView | undefined
   private readonly destroy$ = new Subject()
   public formGroup: FormGroup
@@ -91,7 +91,7 @@ export class MenuDetailComponent implements OnChanges {
   ) {
     this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm:ss' : 'M/d/yy, hh:mm:ss a'
     this.iconItems.push(...this.icon.icons.map((i) => ({ label: i, value: i })))
-    this.iconItems.sort(dropDownSortItemsByLabel)
+    this.iconItems.sort(Utils.dropDownSortItemsByLabel)
     this.scopeItems = [
       { label: 'APP', value: 'APP' },
       { label: 'PAGE', value: 'PAGE' },
@@ -342,7 +342,7 @@ export class MenuDetailComponent implements OnChanges {
       for (const l of this.languagesDisplayed) {
         if (this.menuItem?.i18n[l.value]) l.data = this.menuItem?.i18n[l.value]
       }
-      this.languagesDisplayed.sort(dropDownSortItemsByLabel)
+      this.languagesDisplayed.sort(Utils.dropDownSortItemsByLabel)
     }
   }
   public onRemoveLanguage(val: string) {
@@ -352,7 +352,7 @@ export class MenuDetailComponent implements OnChanges {
     } else {
       this.languagesAvailable.push(this.languagesDisplayed.filter((l) => l.value === val)[0])
       this.languagesAvailable.filter((l) => l.value === val)[0].data = ''
-      this.languagesAvailable = this.languagesAvailable.filter((l) => l).sort(dropDownSortItemsByLabel)
+      this.languagesAvailable = this.languagesAvailable.filter((l) => l).sort(Utils.dropDownSortItemsByLabel)
       this.languagesDisplayed = this.languagesDisplayed.filter((l) => l.value !== val)
     }
   }

@@ -42,7 +42,7 @@ import {
 } from 'src/app/shared/generated'
 
 import { environment } from 'src/environments/environment'
-import { bffProductImageUrl, goToEndpoint, limitText, prepareUrlPath } from 'src/app/shared/utils'
+import { Utils } from 'src/app/shared/utils'
 
 export type ExtendedMicrofrontend = Microfrontend & {
   exposedModule?: string // MicrofrontendPS
@@ -99,9 +99,9 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   public displayDeregisterConfirmation = false
   private deregisterItems: ExtendedProduct[] = []
 
-  limitText = limitText
+  limitText = Utils.limitText
   environment = environment
-  prepareUrlPath = prepareUrlPath
+  prepareUrlPath = Utils.prepareUrlPath
 
   // data
   public wProducts$!: Observable<ExtendedProduct[]>
@@ -289,7 +289,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     if (product.imageUrl && product.imageUrl != '') {
       return product.imageUrl
     }
-    return bffProductImageUrl(this.imageApi.configuration.basePath, product.productName)
+    return Utils.bffProductImageUrl(this.imageApi.configuration.basePath, product.productName)
   }
 
   /**
@@ -655,7 +655,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   }
 
   public onGoToProduct(name?: string): void {
-    goToEndpoint(
+    Utils.goToEndpoint(
       this.workspaceService,
       this.msgService,
       this.router,
@@ -666,7 +666,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     )
   }
   public onGoToProductPermission(name?: string): void {
-    goToEndpoint(
+    Utils.goToEndpoint(
       this.workspaceService,
       this.msgService,
       this.router,
