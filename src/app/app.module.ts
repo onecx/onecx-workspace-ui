@@ -9,11 +9,8 @@ import { TranslateLoader, TranslateModule, TranslateService, MissingTranslationH
 import { KeycloakAuthModule } from '@onecx/keycloak-auth'
 import { createTranslateLoader, provideTranslationPathFromMeta } from '@onecx/angular-utils'
 import { APP_CONFIG, UserService } from '@onecx/angular-integration-interface'
-import {
-  translateServiceInitializer,
-  PortalCoreModule,
-  PortalMissingTranslationHandler
-} from '@onecx/portal-integration-angular'
+import { AngularAcceleratorMissingTranslationHandler } from '@onecx/angular-accelerator'
+import { translateServiceInitializer, PortalCoreModule } from '@onecx/portal-integration-angular'
 
 import { environment } from 'src/environments/environment'
 import { AppComponent } from './app.component'
@@ -41,7 +38,10 @@ export const routes: Routes = [
     TranslateModule.forRoot({
       isolate: true,
       loader: { provide: TranslateLoader, useFactory: createTranslateLoader, deps: [HttpClient] },
-      missingTranslationHandler: { provide: MissingTranslationHandler, useClass: PortalMissingTranslationHandler }
+      missingTranslationHandler: {
+        provide: MissingTranslationHandler,
+        useClass: AngularAcceleratorMissingTranslationHandler
+      }
     })
   ],
   providers: [

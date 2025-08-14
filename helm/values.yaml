@@ -64,6 +64,13 @@ app:
           technology: WEBCOMPONENTMODULE
           remoteName: onecx-workspace
           tagName: ocx-footer-menu-component
+        version-info:
+          exposedModule: "./OneCXVersionInfoComponent"
+          description: "Display version information of shell and current application"
+          type: COMPONENT
+          technology: WEBCOMPONENTMODULE
+          remoteName: onecx-workspace
+          tagName: ocx-version-info-component
         workspace-footer:
           exposedModule: "./OneCXWorkspaceFooterComponent"
           description: "Creates the page footer using slots for logo (theme), footer menu (workspace) and version (shell)"
