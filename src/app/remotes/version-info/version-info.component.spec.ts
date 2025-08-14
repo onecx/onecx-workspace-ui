@@ -1,13 +1,13 @@
-import { TestBed, tick, waitForAsync } from '@angular/core/testing'
+import { TestBed, waitForAsync } from '@angular/core/testing'
 import { CommonModule } from '@angular/common'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'
 import { TranslateTestingModule } from 'ngx-translate-testing'
-import { ReplaySubject, debounceTime, firstValueFrom } from 'rxjs'
+import { ReplaySubject, firstValueFrom } from 'rxjs'
 
 import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
-import { CONFIG_KEY, ConfigurationService, MfeInfo } from '@onecx/angular-integration-interface'
+import { CONFIG_KEY, MfeInfo } from '@onecx/angular-integration-interface'
 import {
   AppStateServiceMock,
   ConfigurationServiceMock,
