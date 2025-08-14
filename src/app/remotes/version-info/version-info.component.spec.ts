@@ -1,25 +1,24 @@
-import { TestBed, waitForAsync } from '@angular/core/testing'
+import { TestBed, tick, waitForAsync } from '@angular/core/testing'
 import { CommonModule } from '@angular/common'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'
 import { TranslateTestingModule } from 'ngx-translate-testing'
-import { ReplaySubject, firstValueFrom } from 'rxjs'
+import { ReplaySubject, debounceTime, firstValueFrom } from 'rxjs'
 
 import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
-import { ConfigurationService, MfeInfo } from '@onecx/angular-integration-interface'
+import { CONFIG_KEY, ConfigurationService, MfeInfo } from '@onecx/angular-integration-interface'
 import {
   AppStateServiceMock,
   ConfigurationServiceMock,
   provideAppStateServiceMock,
   provideConfigurationServiceMock
 } from '@onecx/angular-integration-interface/mocks'
-import { CONFIG_KEY } from '@onecx/angular-integration-interface'
 
 import { OneCXVersionInfoComponent, Version } from './version-info.component'
-import { Workspace } from '@onecx/integration-interface'
+import { Config, Workspace } from '@onecx/integration-interface'
 
-xdescribe('OneCXVersionInfoComponent', () => {
+describe('OneCXVersionInfoComponent', () => {
   const rcConfig = new ReplaySubject<RemoteComponentConfig>(1)
   const defaultRCConfig = {
     productName: 'prodName',
@@ -27,13 +26,21 @@ xdescribe('OneCXVersionInfoComponent', () => {
     baseUrl: 'base',
     permissions: ['permission']
   }
-  rcConfig.next(defaultRCConfig) // load default
+  rcConfig.next(defaultRCConfig) // load default rc config
 
-  function setUp() {
+  const cfg: Config = { [CONFIG_KEY.APP_VERSION]: 'v1' }
+  const cfgEmpty: Config = {}
+
+  /* Why async:
+     versionInfo$ is declared with combineLatest whcih fires each time a
+     part is changed. Within the tests the versionInfo value is captured
+     with firstValueFrom. Therefore the config value should be set on
+     initialization time.
+  */
+  async function setUp(config: Config) {
     const fixture = TestBed.createComponent(OneCXVersionInfoComponent)
     const component = fixture.componentInstance
-    TestBed.inject(ConfigurationService)
-    component.config.init()
+    await mockConfigurationService.init(config)
     fixture.detectChanges()
     return { fixture, component }
   }
@@ -66,9 +73,8 @@ xdescribe('OneCXVersionInfoComponent', () => {
       })
       .compileComponents()
 
-    // Set initial values
+    // Initialize Mocks
     mockConfigurationService = TestBed.inject(ConfigurationServiceMock)
-    mockConfigurationService.config$.publish({ [CONFIG_KEY.APP_VERSION]: 'v1' })
 
     mockAppStateService = TestBed.inject(AppStateServiceMock)
     mockAppStateService.currentMfe$.publish({ displayName: 'OneCX Workspace UI', version: '1.0.0' } as MfeInfo)
@@ -76,14 +82,14 @@ xdescribe('OneCXVersionInfoComponent', () => {
   }))
 
   describe('initialize', () => {
-    it('should create', () => {
-      const { component } = setUp()
+    it('should create', async () => {
+      const { component } = await setUp(cfg)
 
       expect(component).toBeTruthy()
     })
 
     it('should call ocxInitRemoteComponent with the correct config', async () => {
-      const { component } = setUp()
+      const { component } = await setUp(cfg)
       const mockConfig: RemoteComponentConfig = {
         productName: 'prodName',
         appId: 'appId',
@@ -96,24 +102,25 @@ xdescribe('OneCXVersionInfoComponent', () => {
 
       expect(rcConfigValue).toEqual(mockConfig)
     })
+  })
 
-    it('should getting version info', async () => {
+  describe('version info', () => {
+    it('should getting data - all parts available', async () => {
       mockAppStateService.currentMfe$.publish({ displayName: 'OneCX Workspace UI', version: 'v1.0.0' } as MfeInfo)
       mockAppStateService.currentWorkspace$.publish({ workspaceName: 'ADMIN' } as Workspace)
-      const { component } = setUp()
+      const { component } = await setUp(cfg)
       const mockVersion: Version = {
         workspaceName: 'ADMIN',
         shellInfo: 'v1',
         mfeInfo: 'OneCX Workspace UI v1.0.0',
         separator: ' - '
       }
-
       const versionInfo = await firstValueFrom(component.versionInfo$)
 
       expect(versionInfo).toEqual(mockVersion)
     })
 
-    it('should getting version info - no workspace version', async () => {
+    it('should getting data - no mfe version', async () => {
       const mfe = { displayName: 'OneCX Workspace UI' } as MfeInfo
       mockAppStateService.currentMfe$.publish(mfe)
       const w = { workspaceName: 'ADMIN' } as Workspace
@@ -125,13 +132,13 @@ xdescribe('OneCXVersionInfoComponent', () => {
         separator: ' - '
       }
 
-      const { component } = setUp()
-
+      const { component } = await setUp(cfg)
       const versionInfo = await firstValueFrom(component.versionInfo$)
+
       expect(versionInfo).toEqual(mockVersion)
     })
 
-    it('should getting version info - no workspace version', async () => {
+    it('should getting version info - no mfe', async () => {
       const mfe = {} as MfeInfo
       mockAppStateService.currentMfe$.publish(mfe)
       const w = { workspaceName: 'ADMIN' } as Workspace
@@ -143,9 +150,24 @@ xdescribe('OneCXVersionInfoComponent', () => {
         separator: ''
       }
 
-      const { component } = setUp()
-
+      const { component } = await setUp(cfg)
       const versionInfo = await firstValueFrom(component.versionInfo$)
+
+      expect(versionInfo).toEqual(mockVersion)
+    })
+
+    it('should getting data - no host version', async () => {
+      mockAppStateService.currentMfe$.publish({ displayName: 'OneCX Workspace UI', version: 'v1.0.0' } as MfeInfo)
+      mockAppStateService.currentWorkspace$.publish({ workspaceName: 'ADMIN' } as Workspace)
+      const mockVersion: Version = {
+        workspaceName: 'ADMIN',
+        shellInfo: '',
+        mfeInfo: 'OneCX Workspace UI v1.0.0',
+        separator: ' - '
+      }
+      const { component } = await setUp({})
+      const versionInfo = await firstValueFrom(component.versionInfo$)
+
       expect(versionInfo).toEqual(mockVersion)
     })
   })

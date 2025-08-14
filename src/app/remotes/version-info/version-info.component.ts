@@ -44,7 +44,7 @@ export class OneCXVersionInfoComponent implements ocxRemoteComponent, ocxRemoteW
     from(this.config.isInitialized)
   ]).pipe(
     map(([mfe, workspace]) => {
-      const hostVersion = this.config.getProperty(CONFIG_KEY.APP_VERSION) ?? ''
+      const hostVersion = this.config.getProperty(CONFIG_KEY.APP_VERSION) ?? '' // only in Lib v5
       const mfeVersion = mfe.version ?? ''
       const mfeInfo = mfe.displayName + (mfe.version ? ' ' + mfeVersion : '')
       const version: Version = {
