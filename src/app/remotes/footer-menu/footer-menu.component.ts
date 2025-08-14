@@ -28,6 +28,7 @@ import { environment } from 'src/environments/environment'
   selector: 'app-ocx-footer-menu',
   standalone: true,
   templateUrl: './footer-menu.component.html',
+  styleUrls: ['./footer-menu.component.scss'],
   imports: [AngularRemoteComponentsModule, CommonModule, PortalCoreModule, RouterModule, TranslateModule, SharedModule],
   providers: [
     {

@@ -1,0 +1,8 @@
+::ng-deep {
+  .p-panelmenu .p-menuitem .p-menuitem-link {
+    &:not(.p-disabled):hover {
+      background-color: var(--menu-item-hover-bg-color);
+      transition: background-color var(--transition-duration);
+    }
+  }
+}
