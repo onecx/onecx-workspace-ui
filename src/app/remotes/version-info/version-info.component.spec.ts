@@ -29,7 +29,6 @@ describe('OneCXVersionInfoComponent', () => {
   rcConfig.next(defaultRCConfig) // load default rc config
 
   const cfg: Config = { [CONFIG_KEY.APP_VERSION]: 'v1' }
-  const cfgEmpty: Config = {}
 
   /* Why async:
      versionInfo$ is declared with combineLatest whcih fires each time a
