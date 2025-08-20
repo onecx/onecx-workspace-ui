@@ -197,8 +197,8 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
         ps.changes = ps.undeployed || ps.deprecated || ps.changes
         // add slot to ps slot array
         this.psSlots.push(ps)
-        // select workspace slot with same name
-        const ws = this.wSlotsIntern.find((s) => s.name === ps.name)
+        // select workspace slot with same product and name
+        const ws = this.wSlotsIntern.find((s) => s.productName === ps.productName && s.name === ps.name)
         if (ws) {
           // extend workspace slot with product store info
           ws.psSlots.push({ ...ps, pName: p.productName, pDisplayName: p.displayName! })
@@ -224,9 +224,11 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
       }
     }
     // 3. collect the components per workspace slot
+    console.log(this.wSlotsIntern)
     this.wSlotsIntern.forEach((ws) => {
       ws.components?.forEach((c) => {
-        const psc = this.psComponents?.filter((pc) => pc.name === c.name)
+        // select ps components with same product and name
+        const psc = this.psComponents?.filter((pc) => pc.productName === c.productName && pc.name === c.name)
         if (psc.length === 1) {
           ws.psComponents?.push(psc[0])
           ws.changes = psc[0].undeployed || psc[0].deprecated || ws.changes
