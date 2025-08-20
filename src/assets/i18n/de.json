@@ -192,6 +192,7 @@
     "MODIFICATION_DATE": "Geändert am",
     "MODIFICATION_USER": "Geändert von",
     "MANDATORY": "Notwendig",
+    "MANDATORY_TRUE": "Dieser Workspace ist notwendig für den Betrieb. Der Workspace kann somit nicht gelöscht werden.",
     "OPERATOR": "Automatisiert erstellt",
     "OPERATOR_HINT": "Hinweis",
     "OPERATOR_MESSAGE": "Dieser Workspace wurde automatisiert erstellt. Alle Änderungen gehen beim nächsten Deployment verloren.",
@@ -287,6 +288,10 @@
     }
   },
   "DIALOG": {
+    "SEARCH": {
+      "CRITERIA": "Suchfelder",
+      "RESULTS": "Suchergebnisse"
+    },
     "WORKSPACE": {
       "NOT_FOUND": "Der Workspace wurde nicht gefunden.",
       "HEADER": {

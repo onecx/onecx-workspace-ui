@@ -157,8 +157,9 @@
                   [imageUrl]="getLogoUrl(workspace)"
                 ></app-image-container>
                 <!-- BADGES -->
-                <span
+                <div
                   *ngIf="workspace.disabled"
+                  tabindex="0"
                   [id]="'ws_search_data_grid_row_' + i + '_disabled'"
                   class="card-badge-right badge-1 p-1 pi pi-ban danger-action-text font-bold"
                   [attr.aria-label]="'WORKSPACE.DISABLED' | translate"
@@ -166,17 +167,18 @@
                   tooltipPosition="right"
                   tooltipEvent="hover"
                   aria-hidden="true"
-                ></span>
-                <span
+                ></div>
+                <div
                   *ngIf="workspace.mandatory"
+                  tabindex="0"
                   [id]="'ws_search_data_grid_row_' + i + '_mandatory'"
                   class="card-badge-left badge-1 font-bold text-lg pi pi-shield"
-                  [attr.aria-label]="'INTERNAL.MANDATORY' | translate"
+                  [attr.aria-label]="'INTERNAL.MANDATORY_TRUE' | translate"
                   [pTooltip]="'WORKSPACE.TOOLTIPS.MANDATORY' | translate"
                   tooltipPosition="top"
                   tooltipEvent="hover"
-                  aria-hidden="true"
-                ></span>
+                  role="note"
+                ></div>
                 <a
                   *ngIf="!workspace.disabled"
                   tabindex="0"

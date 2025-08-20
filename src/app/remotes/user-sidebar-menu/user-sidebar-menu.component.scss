@@ -19,7 +19,7 @@
       box-shadow: none !important;
       &:not(.p-accordion-tab-active) .p-accordion-toggle-icon,
       &.p-accordion-tab-active .p-accordion-toggle-icon {
-        transform: none;
+        transform: none !important;
         margin-right: 1.5rem;
       }
     }
