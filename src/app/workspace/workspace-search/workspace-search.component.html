@@ -159,18 +159,16 @@
                 <!-- BADGES -->
                 <div
                   *ngIf="workspace.disabled"
-                  tabindex="0"
                   [id]="'ws_search_data_grid_row_' + i + '_disabled'"
                   class="card-badge-right badge-1 p-1 pi pi-ban danger-action-text font-bold"
                   [attr.aria-label]="'WORKSPACE.DISABLED' | translate"
                   [pTooltip]="'WORKSPACE.TOOLTIPS.DISABLED' | translate"
                   tooltipPosition="right"
                   tooltipEvent="hover"
-                  aria-hidden="true"
+                  role="note"
                 ></div>
                 <div
                   *ngIf="workspace.mandatory"
-                  tabindex="0"
                   [id]="'ws_search_data_grid_row_' + i + '_mandatory'"
                   class="card-badge-left badge-1 font-bold text-lg pi pi-shield"
                   [attr.aria-label]="'INTERNAL.MANDATORY_TRUE' | translate"

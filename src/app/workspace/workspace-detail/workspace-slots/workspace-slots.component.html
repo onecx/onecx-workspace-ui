@@ -182,7 +182,6 @@
           <ng-container *ngIf="slot.changes">
             <div
               *ngIf="slot.undeployed && !slot.deprecated"
-              tabindex="0"
               [id]="'ws_slots_grid_data_row_' + i + '_undeployed'"
               class="card-badge-left badge-2 pi pi-ban danger-action-text font-bold"
               [attr.aria-label]="'DIALOG.SLOT.UNDEPLOYED' | translate"
@@ -193,7 +192,6 @@
             ></div>
             <div
               *ngIf="!slot.undeployed && slot.deprecated"
-              tabindex="0"
               [id]="'ws_slots_grid_data_row_' + i + '_deprecated'"
               class="card-badge-left badge-2 pi pi-exclamation-circle danger-action-text font-bold"
               [attr.aria-label]="'DIALOG.SLOT.DEPRECATED' | translate"
@@ -204,7 +202,6 @@
             ></div>
             <div
               *ngIf="!slot.undeployed && !slot.deprecated"
-              tabindex="0"
               [id]="'ws_slots_grid_data_row_' + i + '_changed'"
               class="card-badge-left badge-2 pi pi-exclamation-circle danger-action-text font-bold"
               [attr.aria-label]="'DIALOG.SLOT.CHANGED' | translate"
