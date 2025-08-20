@@ -224,7 +224,6 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
       }
     }
     // 3. collect the components per workspace slot
-    console.log(this.wSlotsIntern)
     this.wSlotsIntern.forEach((ws) => {
       ws.components?.forEach((c) => {
         // select ps components with same product and name
