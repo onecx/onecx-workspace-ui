@@ -7,7 +7,7 @@ import { BehaviorSubject, of, throwError } from 'rxjs'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 
-import { SlotAPIService } from 'src/app/shared/generated'
+import { Slot, SlotAPIService } from 'src/app/shared/generated'
 import { CombinedSlot, ExtendedComponent } from '../workspace-slots/workspace-slots.component'
 import { WorkspaceSlotDetailComponent } from './workspace-slot-detail.component'
 
@@ -77,9 +77,9 @@ describe('WorkspaceSlotDetailComponent', () => {
         psSlots: [],
         psComponents: [
           {
-            productName: 'slotComponentProdName',
-            appId: 'slotComponentAppId',
-            name: 'slotComponentName',
+            productName: 'productA',
+            appId: 'appId1',
+            name: 'compA',
             undeployed: false,
             deprecated: false
           }
@@ -87,18 +87,22 @@ describe('WorkspaceSlotDetailComponent', () => {
       }
       component.slotOrg = slotOrg
       component.psComponentsOrg = [
-        { name: 'compA', productName: 'compA', appId: 'appId', undeployed: false, deprecated: false },
-        { name: 'compB', productName: 'compA', appId: 'appId', undeployed: false, deprecated: false }
+        { name: 'compA', productName: 'productA', appId: 'appId1', undeployed: false, deprecated: false },
+        { name: 'compB', productName: 'productA', appId: 'appId1', undeployed: false, deprecated: false },
+        { name: 'compA', productName: 'productB', appId: 'appId2', undeployed: false, deprecated: false },
+        { name: 'compB', productName: 'productB', appId: 'appId3', undeployed: false, deprecated: false }
       ]
-      component.wProductNames = ['compA']
+      component.wProductNames = ['productA', 'productB']
 
       component.ngOnChanges()
 
       expect(component.slot).toEqual(slotOrg)
       expect(component.wComponents).toEqual(slotOrg.psComponents)
+      // this is the reduced set of components in alphabetical order (minus slotOrg)
       expect(component.psComponents).toEqual([
-        { name: 'compA', productName: 'compA', appId: 'appId', undeployed: false, deprecated: false },
-        { name: 'compB', productName: 'compA', appId: 'appId', undeployed: false, deprecated: false }
+        { name: 'compA', productName: 'productB', appId: 'appId2', undeployed: false, deprecated: false },
+        { name: 'compB', productName: 'productA', appId: 'appId1', undeployed: false, deprecated: false },
+        { name: 'compB', productName: 'productB', appId: 'appId3', undeployed: false, deprecated: false }
       ])
     })
   })
@@ -211,9 +215,9 @@ describe('WorkspaceSlotDetailComponent', () => {
     it('should update state correctly when onDeregisterCancellation is called', () => {
       component['deregisterItems'] = [
         {
-          productName: 'slotComponentProdName',
-          appId: 'slotComponentAppId',
-          name: 'slotComponentName',
+          productName: 'product1',
+          appId: 'app1',
+          name: 'comp1',
           undeployed: false,
           deprecated: false
         }
@@ -221,16 +225,16 @@ describe('WorkspaceSlotDetailComponent', () => {
       component.displayDeregisterConfirmation = true
       component.psComponents = [
         {
-          productName: 'slotComponentProdName',
-          appId: 'slotComponentAppId',
-          name: 'slotComponentName',
+          productName: 'product1',
+          appId: 'app1',
+          name: 'comp1',
           undeployed: false,
           deprecated: false
         },
         {
-          productName: 'slotComponentProdName2',
-          appId: 'slotComponentAppId2',
-          name: 'slotComponentName2',
+          productName: 'product2',
+          appId: 'app2',
+          name: 'comp2',
           undeployed: false,
           deprecated: false
         }
@@ -241,9 +245,9 @@ describe('WorkspaceSlotDetailComponent', () => {
       expect(component.displayDeregisterConfirmation).toBeFalse()
       expect(component.psComponents).toEqual([
         {
-          productName: 'slotComponentProdName2',
-          appId: 'slotComponentAppId2',
-          name: 'slotComponentName2',
+          productName: 'product2',
+          appId: 'app2',
+          name: 'comp2',
           undeployed: false,
           deprecated: false
         }
@@ -274,29 +278,26 @@ describe('WorkspaceSlotDetailComponent', () => {
         psSlots: [],
         psComponents: [
           {
-            productName: 'slotComponentProdName',
-            appId: 'slotComponentAppId',
-            name: 'slotComponentName',
+            productName: 'product1',
+            appId: 'app1',
+            name: 'comp1',
             undeployed: false,
             deprecated: false
           }
         ]
       }
       component.wComponents = [
-        { productName: 'mockProdName', appId: 'mockAppId', name: 'mockName', undeployed: false, deprecated: false }
+        { productName: 'product1', appId: 'app1', name: 'comp1', undeployed: false, deprecated: false }
       ]
     })
 
     it('should save slot and handle success response', () => {
-      const slotResponse = {
+      const slotResponse: Slot = {
         modificationCount: 1,
         modificationDate: 'date',
-        components: [{ productName: 'slotProdName', appId: 'mockAppId', name: 'mockName' }]
+        components: [{ productName: 'product1', appId: 'app1', name: 'comp1' }]
       }
       slotServiceSpy.updateSlot.and.returnValue(of(slotResponse))
-      component.wComponents = [
-        { productName: 'mockProdName', appId: 'mockAppId', name: 'mockName', undeployed: false, deprecated: false }
-      ]
 
       component.onSaveSlot(false)
 
@@ -441,7 +442,7 @@ describe('WorkspaceSlotDetailComponent', () => {
     })
   })
 
-  describe('sortComponentsByName', () => {
+  describe('sort components', () => {
     it('should sort components by name correctly', () => {
       const compA: ExtendedComponent = {
         name: 'compA',
@@ -466,7 +467,7 @@ describe('WorkspaceSlotDetailComponent', () => {
       }
       const components: ExtendedComponent[] = [compB, compA, compC]
 
-      components.sort((a, b) => component.sortComponentsByName(a, b))
+      components.sort((a, b) => component.sortComponents(a, b))
 
       expect(components).toEqual([compA, compB, compC])
     })
@@ -495,7 +496,7 @@ describe('WorkspaceSlotDetailComponent', () => {
       }
       const components: ExtendedComponent[] = [compB, compA, compC]
 
-      components.sort((a, b) => component.sortComponentsByName(a, b))
+      components.sort((a, b) => component.sortComponents(a, b))
 
       expect(components).toEqual([compB, compA, compC])
     })

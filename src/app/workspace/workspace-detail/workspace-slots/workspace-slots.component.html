@@ -183,7 +183,7 @@
             <div
               *ngIf="slot.undeployed && !slot.deprecated"
               [id]="'ws_slots_grid_data_row_' + i + '_undeployed'"
-              class="card-badge-left badge-2 pi pi-ban danger-action-text font-bold"
+              class="card-badge-left badge-2 pi pi-ban danger-action-text"
               [attr.aria-label]="'DIALOG.SLOT.UNDEPLOYED' | translate"
               [pTooltip]="'DIALOG.SLOT.UNDEPLOYED.TOOLTIP' | translate"
               tooltipPosition="top"
@@ -193,7 +193,7 @@
             <div
               *ngIf="!slot.undeployed && slot.deprecated"
               [id]="'ws_slots_grid_data_row_' + i + '_deprecated'"
-              class="card-badge-left badge-2 pi pi-exclamation-circle danger-action-text font-bold"
+              class="card-badge-left badge-2 pi pi-exclamation-circle danger-action-text"
               [attr.aria-label]="'DIALOG.SLOT.DEPRECATED' | translate"
               [pTooltip]="'DIALOG.SLOT.DEPRECATED.TOOLTIP' | translate"
               tooltipPosition="top"
@@ -203,7 +203,7 @@
             <div
               *ngIf="!slot.undeployed && !slot.deprecated"
               [id]="'ws_slots_grid_data_row_' + i + '_changed'"
-              class="card-badge-left badge-2 pi pi-exclamation-circle danger-action-text font-bold"
+              class="card-badge-left badge-2 pi pi-exclamation-circle danger-action-text"
               [attr.aria-label]="'DIALOG.SLOT.CHANGED' | translate"
               [pTooltip]="'DIALOG.SLOT.CHANGED' | translate"
               tooltipPosition="top"

@@ -165,7 +165,7 @@ const wProduct2: Product = {
 }
 const wProducts: Product[] = [wProduct1, wProduct2]
 
-fdescribe('WorkspaceSlotsComponent', () => {
+describe('WorkspaceSlotsComponent', () => {
   let component: WorkspaceSlotsComponent
   let fixture: ComponentFixture<WorkspaceSlotsComponent>
 
