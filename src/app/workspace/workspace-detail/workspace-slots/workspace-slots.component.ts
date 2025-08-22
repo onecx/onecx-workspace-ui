@@ -65,7 +65,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   public psComponents: ExtendedComponent[] = []
 
   public slot: CombinedSlot | undefined
-  public detailSlotId: string | undefined
+  public itemForDelete: CombinedSlot | undefined
 
   // dialog
   @ViewChild(DataView) dv: DataView | undefined
@@ -296,22 +296,21 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     return a.name!.toUpperCase().localeCompare(b.name!.toUpperCase())
   }
 
-  /**
-   * Dialog preparation
-   */
-  private prepareTranslations(): void {
-    this.dataViewControlsTranslations$ = this.translate
-      .get(['SLOT.NAME', 'ROLE.TYPE', 'DIALOG.DATAVIEW.FILTER', 'DIALOG.DATAVIEW.FILTER_OF', 'DIALOG.DATAVIEW.SORT_BY'])
-      .pipe(
-        map((data) => {
-          return {
-            filterInputPlaceholder: data['DIALOG.DATAVIEW.FILTER'],
-            filterInputTooltip: data['DIALOG.DATAVIEW.FILTER_OF'] + data['SLOT.NAME'],
-            sortDropdownTooltip: data['DIALOG.DATAVIEW.SORT_BY'],
-            sortDropdownPlaceholder: data['DIALOG.DATAVIEW.SORT_BY']
-          } as DataViewControlTranslations
-        })
-      )
+  public onAddSlot(ev: Event, slot: CombinedSlot): void {
+    ev.stopPropagation()
+    this.slotApi
+      .createSlot({
+        createSlotRequest: { workspaceId: this.workspace?.id, name: slot.name } as CreateSlotRequest
+      })
+      .subscribe({
+        next: () => {
+          this.loadData()
+        },
+        error: (err) => {
+          this.msgService.error({ summaryKey: 'ACTIONS.CREATE.SLOT.MESSAGE_NOK' })
+          console.error('createSlot', err)
+        }
+      })
   }
 
   /**
@@ -347,7 +346,6 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     ev.stopPropagation()
     if (slot.new) return
     this.slot = slot
-    this.detailSlotId = this.slot.id
     this.changeMode = this.hasEditPermission ? 'EDIT' : 'VIEW'
     this.showSlotDetailDialog = true
   }
@@ -355,35 +353,16 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   // detail/delete dialog closed - on changes: reload data
   public onSlotDetailClosed(changed: boolean) {
     this.slot = undefined
-    this.detailSlotId = undefined
     this.changeMode = 'VIEW'
     this.showSlotDetailDialog = false
     this.showSlotDeleteDialog = false
     if (changed) this.loadData()
   }
 
-  public onAddSlot(ev: Event, slot: CombinedSlot): void {
-    ev.stopPropagation()
-    this.slotApi
-      .createSlot({
-        createSlotRequest: { workspaceId: this.workspace?.id, name: slot.name } as CreateSlotRequest
-      })
-      .subscribe({
-        next: () => {
-          this.loadData()
-        },
-        error: (err) => {
-          this.msgService.error({ summaryKey: 'ACTIONS.CREATE.SLOT.MESSAGE_NOK' })
-          console.error('createSlot', err)
-        }
-      })
-  }
-
   public onDeleteSlot(ev: Event, slot: CombinedSlot): void {
     ev.stopPropagation()
     this.slot = slot
-    this.detailSlotId = this.slot.id
-    this.changeMode = this.hasEditPermission ? 'EDIT' : 'VIEW'
+    this.changeMode = 'DELETE'
     this.showSlotDeleteDialog = true
   }
 
@@ -396,6 +375,24 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
       'onecx-product-store-ui',
       'slots'
     )
+  }
+
+  /**
+   * Dialog preparation
+   */
+  private prepareTranslations(): void {
+    this.dataViewControlsTranslations$ = this.translate
+      .get(['SLOT.NAME', 'ROLE.TYPE', 'DIALOG.DATAVIEW.FILTER', 'DIALOG.DATAVIEW.FILTER_OF', 'DIALOG.DATAVIEW.SORT_BY'])
+      .pipe(
+        map((data) => {
+          return {
+            filterInputPlaceholder: data['DIALOG.DATAVIEW.FILTER'],
+            filterInputTooltip: data['DIALOG.DATAVIEW.FILTER_OF'] + data['SLOT.NAME'],
+            sortDropdownTooltip: data['DIALOG.DATAVIEW.SORT_BY'],
+            sortDropdownPlaceholder: data['DIALOG.DATAVIEW.SORT_BY']
+          } as DataViewControlTranslations
+        })
+      )
   }
 
   public prepareQuickFilter(): void {

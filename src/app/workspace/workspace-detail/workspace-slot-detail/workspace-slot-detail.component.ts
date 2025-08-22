@@ -20,7 +20,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   @Input() displayDeleteDialog = false
   @Output() detailClosed: EventEmitter<boolean> = new EventEmitter()
 
-  public dateFormat = 'M/d/yy, hh:mm:ss a'
+  public dateFormat: string
   public slot: CombinedSlot | undefined
   public wComponents: ExtendedComponent[] = []
   public psComponents: ExtendedComponent[] = [] // org ps components reduced by used in slot
@@ -44,19 +44,23 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
 
   public ngOnChanges(): void {
     if (this.slotOrg && this.slot === undefined) {
-      this.slot = { ...this.slotOrg }
-      // extract ps components
-      this.wComponents = [...this.slot.psComponents]
-      this.wComponentsOrg = [...this.wComponents] // to be able to restore
-      this.psComponents = []
-      // collect available but not yet registered components from product store
-      this.psComponentsOrg.forEach((c) => {
-        if (
-          !this.wComponents.find((wc) => wc.productName === c.productName && wc.appId === c.appId && wc.name === c.name)
-        )
-          if (this.wProductNames.includes(c.productName)) this.psComponents.push(c)
-      })
-      this.psComponents.sort(this.sortComponents)
+      if (this.displayDetailDialog) {
+        this.slot = { ...this.slotOrg }
+        // extract ps components
+        this.wComponents = [...this.slot.psComponents]
+        this.wComponentsOrg = [...this.wComponents] // to be able to restore
+        this.psComponents = []
+        // collect available but not yet registered components from product store
+        this.psComponentsOrg.forEach((c) => {
+          if (
+            !this.wComponents.find(
+              (wc) => wc.productName === c.productName && wc.appId === c.appId && wc.name === c.name
+            )
+          )
+            if (this.wProductNames.includes(c.productName)) this.psComponents.push(c)
+        })
+        this.psComponents.sort(this.sortComponents)
+      }
     }
   }
 
@@ -69,11 +73,11 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   }
 
   public onClose(): void {
-    if (this.slotOrg && this.slot) {
-      this.detailClosed.emit(this.slotOrg?.modificationCount !== this.slot?.modificationCount)
-      this.slot = undefined
-      this.slotOrg = undefined
-    }
+    if (this.slotOrg)
+      if (this.slot) this.detailClosed.emit(this.slotOrg.modificationCount !== this.slot?.modificationCount)
+      else this.detailClosed.emit(false)
+    this.slot = undefined
+    this.slotOrg = undefined
   }
 
   /**

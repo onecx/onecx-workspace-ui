@@ -400,7 +400,6 @@ describe('WorkspaceSlotsComponent', () => {
 
       expect(mockEvent.stopPropagation).toHaveBeenCalled()
       expect(component.slot).toBe(mockSlot)
-      expect(component.detailSlotId).toBe('123')
       expect(component.changeMode).toBe('EDIT')
       expect(component.showSlotDetailDialog).toBeTrue()
     })
@@ -422,7 +421,6 @@ describe('WorkspaceSlotsComponent', () => {
 
       expect(mockEvent.stopPropagation).toHaveBeenCalled()
       expect(component.slot).toBe(mockSlot)
-      expect(component.detailSlotId).toBe('123')
       expect(component.changeMode).toBe('VIEW')
       expect(component.showSlotDetailDialog).toBeTrue()
     })
@@ -444,7 +442,6 @@ describe('WorkspaceSlotsComponent', () => {
 
       expect(mockEvent.stopPropagation).toHaveBeenCalled()
       expect(component.slot).toBeUndefined()
-      expect(component.detailSlotId).toBeUndefined()
       expect(component.changeMode).toBe('VIEW')
       expect(component.showSlotDetailDialog).toBeFalse()
     })
@@ -457,35 +454,27 @@ describe('WorkspaceSlotsComponent', () => {
 
     it('should reset the component state and call loadData when data was changed in detail', () => {
       component.slot = { id: '123', new: false } as any
-      component.detailSlotId = '123'
       component.changeMode = 'EDIT'
       component.showSlotDetailDialog = true
-      component.showSlotDeleteDialog = false
 
       component.onSlotDetailClosed(true) // changed data
 
       expect(component.slot).toBeUndefined()
-      expect(component.detailSlotId).toBeUndefined()
       expect(component.changeMode).toBe('VIEW')
       expect(component.showSlotDetailDialog).toBeFalse()
-      expect(component.showSlotDeleteDialog).toBeFalse()
       expect(component.loadData).toHaveBeenCalled() // call
     })
 
     it('should reset the component state and not call loadData when data was not changed in detail', () => {
       component.slot = { id: '123', new: false } as any
-      component.detailSlotId = '123'
       component.changeMode = 'EDIT'
       component.showSlotDetailDialog = true
-      component.showSlotDeleteDialog = false
 
       component.onSlotDetailClosed(false) // no changes
 
       expect(component.slot).toBeUndefined()
-      expect(component.detailSlotId).toBeUndefined()
       expect(component.changeMode).toBe('VIEW')
       expect(component.showSlotDetailDialog).toBeFalse()
-      expect(component.showSlotDeleteDialog).toBeFalse()
       expect(component.loadData).not.toHaveBeenCalled() // NOT called
     })
   })
@@ -535,7 +524,7 @@ describe('WorkspaceSlotsComponent', () => {
     })
   })
 
-  describe('onDeleteSlot', () => {
+  describe('deletion', () => {
     let mockEvent: any
     const mockSlot: CombinedSlot = {
       id: '123',
@@ -555,26 +544,11 @@ describe('WorkspaceSlotsComponent', () => {
     })
 
     it('should delete a slot and update component state', () => {
-      component.hasEditPermission = true
-
       component.onDeleteSlot(mockEvent, mockSlot)
 
       expect(mockEvent.stopPropagation).toHaveBeenCalled()
       expect(component.slot).toBe(mockSlot)
-      expect(component.detailSlotId).toBe('123')
-      expect(component.changeMode).toBe('EDIT')
-      expect(component.showSlotDeleteDialog).toBeTrue()
-    })
-
-    it('should delete a slot and update component state', () => {
-      component.hasEditPermission = false
-
-      component.onDeleteSlot(mockEvent, mockSlot)
-
-      expect(mockEvent.stopPropagation).toHaveBeenCalled()
-      expect(component.slot).toBe(mockSlot)
-      expect(component.detailSlotId).toBe('123')
-      expect(component.changeMode).toBe('VIEW')
+      expect(component.changeMode).toBe('DELETE')
       expect(component.showSlotDeleteDialog).toBeTrue()
     })
   })
