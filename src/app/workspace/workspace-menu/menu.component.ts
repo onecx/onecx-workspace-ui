@@ -538,7 +538,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
   private searchAssignments(): Observable<Assignment[]> {
     return this.assApi
-      .searchAssignments({ assignmentSearchCriteria: { workspaceId: this.workspace?.id, pageSize: 1000 } })
+      .searchAssignments({ assignmentSearchCriteria: { workspaceId: this.workspace?.id, pageSize: 3000 } })
       .pipe(
         map((result) => {
           return result.stream

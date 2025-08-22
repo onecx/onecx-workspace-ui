@@ -72,8 +72,18 @@ describe('WorkspaceSlotDetailComponent', () => {
         new: false,
         type: 'WORKSPACE',
         changes: false,
+        undeployed: false,
+        deprecated: false,
         psSlots: [],
-        psComponents: [{ productName: 'slotComponentProdName', appId: 'slotComponentAppId', name: 'slotComponentName' }]
+        psComponents: [
+          {
+            productName: 'slotComponentProdName',
+            appId: 'slotComponentAppId',
+            name: 'slotComponentName',
+            undeployed: false,
+            deprecated: false
+          }
+        ]
       }
       component.slotOrg = slotOrg
       component.psComponentsOrg = [
@@ -109,8 +119,18 @@ describe('WorkspaceSlotDetailComponent', () => {
         new: false,
         type: 'WORKSPACE',
         changes: false,
+        undeployed: false,
+        deprecated: false,
         psSlots: [],
-        psComponents: [{ productName: 'slotComponentProdName', appId: 'slotComponentAppId', name: 'slotComponentName' }]
+        psComponents: [
+          {
+            productName: 'slotComponentProdName',
+            appId: 'slotComponentAppId',
+            name: 'slotComponentName',
+            undeployed: false,
+            deprecated: false
+          }
+        ]
       }
       component.slotOrg = slotOrg
       const slot: CombinedSlot = {
@@ -119,8 +139,18 @@ describe('WorkspaceSlotDetailComponent', () => {
         new: false,
         type: 'WORKSPACE',
         changes: false,
+        undeployed: false,
+        deprecated: false,
         psSlots: [],
-        psComponents: [{ productName: 'slotComponentProdName', appId: 'slotComponentAppId', name: 'slotComponentName' }]
+        psComponents: [
+          {
+            productName: 'slotComponentProdName',
+            appId: 'slotComponentAppId',
+            name: 'slotComponentName',
+            undeployed: false,
+            deprecated: false
+          }
+        ]
       }
       component.slot = slot
 
@@ -180,19 +210,43 @@ describe('WorkspaceSlotDetailComponent', () => {
 
     it('should update state correctly when onDeregisterCancellation is called', () => {
       component['deregisterItems'] = [
-        { productName: 'slotComponentProdName', appId: 'slotComponentAppId', name: 'slotComponentName' }
+        {
+          productName: 'slotComponentProdName',
+          appId: 'slotComponentAppId',
+          name: 'slotComponentName',
+          undeployed: false,
+          deprecated: false
+        }
       ]
       component.displayDeregisterConfirmation = true
       component.psComponents = [
-        { productName: 'slotComponentProdName', appId: 'slotComponentAppId', name: 'slotComponentName' },
-        { productName: 'slotComponentProdName2', appId: 'slotComponentAppId2', name: 'slotComponentName2' }
+        {
+          productName: 'slotComponentProdName',
+          appId: 'slotComponentAppId',
+          name: 'slotComponentName',
+          undeployed: false,
+          deprecated: false
+        },
+        {
+          productName: 'slotComponentProdName2',
+          appId: 'slotComponentAppId2',
+          name: 'slotComponentName2',
+          undeployed: false,
+          deprecated: false
+        }
       ]
 
       component.onDeregisterCancellation()
 
       expect(component.displayDeregisterConfirmation).toBeFalse()
       expect(component.psComponents).toEqual([
-        { productName: 'slotComponentProdName2', appId: 'slotComponentAppId2', name: 'slotComponentName2' }
+        {
+          productName: 'slotComponentProdName2',
+          appId: 'slotComponentAppId2',
+          name: 'slotComponentName2',
+          undeployed: false,
+          deprecated: false
+        }
       ])
       expect(component['deregisterItems']).toEqual([])
     })
@@ -215,10 +269,22 @@ describe('WorkspaceSlotDetailComponent', () => {
         new: false,
         type: 'WORKSPACE',
         changes: false,
+        undeployed: false,
+        deprecated: false,
         psSlots: [],
-        psComponents: [{ productName: 'slotComponentProdName', appId: 'slotComponentAppId', name: 'slotComponentName' }]
+        psComponents: [
+          {
+            productName: 'slotComponentProdName',
+            appId: 'slotComponentAppId',
+            name: 'slotComponentName',
+            undeployed: false,
+            deprecated: false
+          }
+        ]
       }
-      component.wComponents = [{ productName: 'mockProdName', appId: 'mockAppId', name: 'mockName' }]
+      component.wComponents = [
+        { productName: 'mockProdName', appId: 'mockAppId', name: 'mockName', undeployed: false, deprecated: false }
+      ]
     })
 
     it('should save slot and handle success response', () => {
@@ -228,7 +294,9 @@ describe('WorkspaceSlotDetailComponent', () => {
         components: [{ productName: 'slotProdName', appId: 'mockAppId', name: 'mockName' }]
       }
       slotServiceSpy.updateSlot.and.returnValue(of(slotResponse))
-      component.wComponents = [{ productName: 'mockProdName', appId: 'mockAppId', name: 'mockName' }]
+      component.wComponents = [
+        { productName: 'mockProdName', appId: 'mockAppId', name: 'mockName', undeployed: false, deprecated: false }
+      ]
 
       component.onSaveSlot(false)
 
@@ -261,9 +329,13 @@ describe('WorkspaceSlotDetailComponent', () => {
         new: false,
         type: 'WORKSPACE',
         changes: false,
+        undeployed: false,
+        deprecated: false,
         psSlots: [],
         components: [{ productName: 'Product', appId: 'AppId', name: 'Component Name' }],
-        psComponents: [{ productName: 'Product', appId: 'AppId', name: 'Component Name' }]
+        psComponents: [
+          { productName: 'Product', appId: 'AppId', name: 'Component Name', undeployed: false, deprecated: false }
+        ]
       }
       slotServiceSpy.updateSlot.and.returnValue(of({}))
 
@@ -278,12 +350,16 @@ describe('WorkspaceSlotDetailComponent', () => {
         new: false,
         type: 'WORKSPACE',
         changes: false,
+        undeployed: false,
+        deprecated: false,
         psSlots: [],
         components: [
           { productName: 'Product', appId: 'AppId', name: 'Component Name 1' },
           { productName: 'Product', appId: 'AppId', name: 'Component Name 2' }
         ],
-        psComponents: [{ productName: 'Product', appId: 'AppId', name: 'Component Name' }]
+        psComponents: [
+          { productName: 'Product', appId: 'AppId', name: 'Component Name', undeployed: false, deprecated: false }
+        ]
       }
       slotServiceSpy.updateSlot.and.returnValue(of({}))
 
@@ -301,10 +377,22 @@ describe('WorkspaceSlotDetailComponent', () => {
         new: false,
         type: 'WORKSPACE',
         changes: false,
+        undeployed: false,
+        deprecated: false,
         psSlots: [],
-        psComponents: [{ productName: 'slotComponentProdName', appId: 'slotComponentAppId', name: 'slotComponentName' }]
+        psComponents: [
+          {
+            productName: 'slotComponentProdName',
+            appId: 'slotComponentAppId',
+            name: 'slotComponentName',
+            undeployed: false,
+            deprecated: false
+          }
+        ]
       }
-      component.wComponents = [{ productName: 'mockProdName', appId: 'mockAppId', name: 'mockName' }]
+      component.wComponents = [
+        { productName: 'mockProdName', appId: 'mockAppId', name: 'mockName', undeployed: false, deprecated: false }
+      ]
     })
 
     it('should call deleteSlotById and handle success response', () => {

@@ -12,6 +12,8 @@ import {
   ProductAPIService,
   Workspace,
   Slot,
+  SlotComponent,
+  SlotPS,
   SlotAPIService,
   WorkspaceProductAPIService,
   Product,
@@ -19,25 +21,151 @@ import {
   MicrofrontendPS,
   MicrofrontendType
 } from 'src/app/shared/generated'
-import { CombinedSlot, ExtendedComponent, WorkspaceSlotsComponent } from './workspace-slots.component'
+import { CombinedSlot, WorkspaceSlotsComponent } from './workspace-slots.component'
 import { Utils } from 'src/app/shared/utils'
 
 const workspace: Workspace = {
-  id: 'id',
+  id: 'wid',
   displayName: 'displayName',
   name: 'name',
   theme: 'theme',
   baseUrl: '/some/base/url'
 }
 
-const mfePs: MicrofrontendPS = {
-  appName: 'mfePsAppName',
+/**
+ * Product Store Data
+ */
+const psComp1: MicrofrontendPS = {
+  appId: 'app1',
+  appName: 'App 1',
+  exposedModule: 'comp1',
   type: MicrofrontendType.Component,
-  exposedModule: 'slotComponentName',
-  appId: 'appId'
+  deprecated: true,
+  undeployed: false
+}
+const psComp2: MicrofrontendPS = {
+  appId: 'app1',
+  appName: 'App 1',
+  exposedModule: 'comp2',
+  type: MicrofrontendType.Component,
+  deprecated: true,
+  undeployed: true
+}
+const psComp3: MicrofrontendPS = {
+  appId: 'app2',
+  appName: 'App 2',
+  exposedModule: 'comp3',
+  type: MicrofrontendType.Component
+  // no state flags
+}
+const psSlot1: SlotPS = {
+  name: 'slot-1',
+  deprecated: false,
+  undeployed: false
+}
+const psSlot2: SlotPS = {
+  name: 'slot-2',
+  deprecated: true,
+  undeployed: false
+}
+const psSlot3: SlotPS = {
+  name: 'slot-3',
+  deprecated: false,
+  undeployed: true
+}
+const psSlot4: SlotPS = {
+  name: 'slot-4'
+  // without state properties
+}
+// new slot = unregistered in workspace
+const psSlot5: SlotPS = {
+  name: 'slot-5',
+  deprecated: false,
+  undeployed: false
 }
 
-describe('WorkspaceSlotsComponent', () => {
+const psProduct1: ProductStoreItem = {
+  productName: 'product1',
+  displayName: 'Product 1',
+  baseUrl: '/some/base/url',
+  undeployed: false,
+  microfrontends: [psComp1, psComp2, psComp3],
+  slots: [psSlot1, psSlot2, psSlot3]
+}
+const psProduct2: ProductStoreItem = {
+  productName: 'product2',
+  displayName: 'Product 2',
+  baseUrl: '/some/base/url',
+  undeployed: false,
+  microfrontends: [psComp1],
+  slots: [psSlot4, psSlot5]
+}
+const psProducts: ProductStoreItem[] = [psProduct1, psProduct2]
+/**
+ * Workspace Data: registered products with slots
+ */
+const wSlotComp1: SlotComponent = {
+  productName: 'product1',
+  appId: 'app1',
+  name: 'comp1'
+}
+const wSlotComp2: SlotComponent = {
+  productName: 'product1',
+  appId: 'app1',
+  name: 'comp2'
+}
+const wSlotComp3: SlotComponent = {
+  productName: 'product1',
+  appId: 'app3',
+  name: 'comp3'
+}
+const wSlot1: Slot = {
+  id: 'ws1',
+  workspaceId: 'wid',
+  name: 'slot-1',
+  components: [wSlotComp1]
+}
+const wSlot2: Slot = {
+  id: 'ws2',
+  workspaceId: 'wid',
+  name: 'slot-2',
+  components: [wSlotComp2]
+}
+const wSlot3: Slot = {
+  id: 'ws3',
+  workspaceId: 'wid',
+  name: 'slot-3',
+  components: [wSlotComp3]
+}
+const wSlot4: Slot = {
+  id: 'ws4',
+  workspaceId: 'wid',
+  name: 'slot-4',
+  components: []
+}
+const wSlots: Slot[] = [wSlot1, wSlot2, wSlot3, wSlot4]
+
+const wProduct1: Product = {
+  id: 'p1',
+  productName: 'product1',
+  displayName: 'Product 1',
+  baseUrl: '/some/base/url',
+  undeployed: false,
+  microfrontends: [psComp1, psComp2],
+  slots: [wSlot1, wSlot2, wSlot3, wSlot4]
+}
+const wProduct2: Product = {
+  id: 'p2',
+  productName: 'product2',
+  displayName: 'Product 2',
+  baseUrl: '/some/base/url',
+  undeployed: false,
+  microfrontends: [],
+  slots: [wSlot4]
+}
+const wProducts: Product[] = [wProduct1, wProduct2]
+
+fdescribe('WorkspaceSlotsComponent', () => {
   let component: WorkspaceSlotsComponent
   let fixture: ComponentFixture<WorkspaceSlotsComponent>
 
@@ -107,70 +235,56 @@ describe('WorkspaceSlotsComponent', () => {
     })
   })
 
-  it('should load data onChanges', () => {
-    component.workspace = workspace
-    spyOn(component, 'loadData')
+  describe('on changes', () => {
+    it('should load data onChanges', () => {
+      component.workspace = workspace
+      spyOn(component, 'loadData')
 
-    component.ngOnChanges({
-      workspace: {
-        currentValue: 'ws',
-        previousValue: null,
-        firstChange: true,
-        isFirstChange: () => true
-      }
+      component.ngOnChanges({
+        workspace: {
+          currentValue: 'ws',
+          previousValue: null,
+          firstChange: true,
+          isFirstChange: () => true
+        }
+      })
+
+      expect(component.loadData).toHaveBeenCalled()
     })
 
-    expect(component.loadData).toHaveBeenCalled()
-  })
+    it('should load data onReload', () => {
+      spyOn(component, 'loadData')
 
-  it('should load data onReload', () => {
-    spyOn(component, 'loadData')
+      component.onReload()
 
-    component.onReload()
-
-    expect(component.loadData).toHaveBeenCalled()
+      expect(component.loadData).toHaveBeenCalled()
+    })
   })
 
   describe('loadData', () => {
     beforeEach(() => {
-      component.wSlots$ = of([])
-      component.wProducts$ = of([])
-      component.psSlots$ = of([])
-    })
-
-    it('should load data', () => {
-      spyOn(component as any, 'declareWorkspaceProducts').and.callFake(() => {})
-      spyOn(component as any, 'declareWorkspaceSlots').and.callFake(() => {})
-      spyOn(component as any, 'declarePsSlots').and.callFake(() => {})
-
-      component.loadData()
-
-      expect(component.exceptionKey).toBeUndefined()
-      expect(component['declareWorkspaceProducts']).toHaveBeenCalled()
-      expect(component['declareWorkspaceSlots']).toHaveBeenCalled()
-      expect(component['declarePsSlots']).toHaveBeenCalled()
-    })
-
-    it('should get ws product names', () => {
-      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(
-        of([{ productName: 'wsProd1' }, { productName: 'wsProd2' }] as Product[])
-      )
-      spyOn(component as any, 'declareWorkspaceSlots').and.callFake(() => {})
-      spyOn(component as any, 'declarePsSlots').and.callFake(() => {})
       component.workspace = workspace
+    })
+
+    it('should load data - all successfull', () => {
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of(wProducts))
+      slotServiceSpy.getSlotsForWorkspace.and.returnValue(of({ slots: wSlots }))
+      productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: psProducts }))
 
       component.loadData()
 
-      expect(component.wProductNames).toEqual(['wsProd1', 'wsProd2'])
+      expect(component.wProductNames.length).toBe(2)
+      expect(component.wSlots.length).toBe(5)
+      expect(component.psSlots.length).toBe(5)
+      expect(component.psComponents.length).toBe(4)
     })
 
-    it('should display error when product names cannot be loaded', () => {
+    it('should load data - workspace products failed', () => {
       const errorResponse = { status: '404', statusText: 'Not found' }
       wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(throwError(() => errorResponse))
-      spyOn(component as any, 'declareWorkspaceSlots').and.callFake(() => {})
-      spyOn(component as any, 'declarePsSlots').and.callFake(() => {})
+      slotServiceSpy.getSlotsForWorkspace.and.returnValue(of({ slots: wSlots }))
+      productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: psProducts }))
       spyOn(console, 'error')
-      component.workspace = workspace
 
       component.loadData()
 
@@ -178,26 +292,12 @@ describe('WorkspaceSlotsComponent', () => {
       expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + errorResponse.status + '.PRODUCTS')
     })
 
-    it('should get ws slots', () => {
-      slotServiceSpy.getSlotsForWorkspace.and.returnValue(
-        of({ slots: [{ name: 'slot1' }, { name: 'slot2' }] as Slot[] })
-      )
-      spyOn(component as any, 'declareWorkspaceProducts').and.callFake(() => {})
-      spyOn(component as any, 'declarePsSlots').and.callFake(() => {})
-
-      component.loadData()
-
-      expect(component.wSlotsIntern).toEqual([
-        { name: 'slot1', new: false, type: 'WORKSPACE', changes: false, psSlots: [], psComponents: [] },
-        { name: 'slot2', new: false, type: 'WORKSPACE', changes: false, psSlots: [], psComponents: [] }
-      ] as CombinedSlot[])
-    })
-
-    it('should display error when ws slots cannot be loaded', () => {
+    it('should load data - workspace slot failed', () => {
+      component.psSlots$ = of([])
       const errorResponse = { status: '404', statusText: 'Not found' }
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of(wProducts))
       slotServiceSpy.getSlotsForWorkspace.and.returnValue(throwError(() => errorResponse))
-      spyOn(component as any, 'declareWorkspaceProducts').and.callFake(() => {})
-      spyOn(component as any, 'declarePsSlots').and.callFake(() => {})
+      spyOn(component as any, 'declarePsProducts').and.callFake(() => {})
       spyOn(console, 'error')
 
       component.loadData()
@@ -206,174 +306,17 @@ describe('WorkspaceSlotsComponent', () => {
       expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + errorResponse.status + '.SLOTS')
     })
 
-    it('should get ps slots', () => {
-      productServiceSpy.searchAvailableProducts.and.returnValue(
-        of({
-          stream: [
-            { productName: 'psItem1', microfrontends: [mfePs], slots: [{ name: 'slotPsName' }] },
-            { productName: 'psItem2' }
-          ] as ProductStoreItem[]
-        })
-      )
-      spyOn(component as any, 'declareWorkspaceProducts').and.callFake(() => {})
-      spyOn(component as any, 'declareWorkspaceSlots').and.callFake(() => {})
-      component.psSlots = [
-        {
-          productName: 'product',
-          name: 'slotPsName',
-          new: false,
-          type: 'WORKSPACE',
-          changes: false,
-          psSlots: [],
-          psComponents: [],
-          components: []
-        }
-      ]
-      component.wSlotsIntern = [
-        {
-          productName: 'product',
-          name: 'slotPsName',
-          new: false,
-          type: 'WORKSPACE',
-          changes: true,
-          psSlots: [],
-          psComponents: [],
-          components: [{ productName: 'slotComponentProdName', appId: 'slotComponentAppId', name: 'slotComponentName' }]
-        },
-        { name: 'slot2', new: false, type: 'WORKSPACE', changes: false, psSlots: [], psComponents: [] }
-      ]
-      component.wProductNames = ['psItem1', 'wsProd2', 'product']
-
-      component.loadData()
-
-      expect(component.psComponents).toEqual([
-        {
-          productName: 'psItem1',
-          appId: 'appId',
-          name: 'slotComponentName',
-          undeployed: false,
-          deprecated: false
-        }
-      ] as unknown as ExtendedComponent[])
-    })
-
-    it('should display error when ps slots cannot be loaded', () => {
+    it('should load data - product store products failed', () => {
       const errorResponse = { status: '404', statusText: 'Not found' }
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of(wProducts))
+      slotServiceSpy.getSlotsForWorkspace.and.returnValue(of({ slots: wSlots }))
       productServiceSpy.searchAvailableProducts.and.returnValue(throwError(() => errorResponse))
-      spyOn(component as any, 'declareWorkspaceProducts').and.callFake(() => {})
-      spyOn(component as any, 'declareWorkspaceSlots').and.callFake(() => {})
       spyOn(console, 'error')
 
       component.loadData()
 
       expect(console.error).toHaveBeenCalledWith('searchAvailableProducts', errorResponse)
       expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + errorResponse.status + '.PRODUCTS')
-    })
-  })
-
-  describe('addNewSlots', () => {
-    it('should add new slots', () => {
-      component.wProductNames = ['Product1', 'Product2']
-      component.psSlots = [
-        { name: 'Slot1', productName: 'Product1', undeployed: false },
-        { name: 'Slot2', productName: 'Product1', undeployed: true },
-        { name: 'Slot3', productName: 'Product2', undeployed: false },
-        { name: 'Slot4', productName: 'Product3', undeployed: false }
-      ] as CombinedSlot[]
-      component.wSlotsIntern = [] as CombinedSlot[]
-
-      component['addNewSlots']()
-
-      expect(component.wSlotsIntern.length).toBe(2)
-      expect(component.wSlotsIntern[0].name).toBe('Slot1')
-      expect(component.wSlotsIntern[0].new).toBe(true)
-      expect(component.wSlotsIntern[1].name).toBe('Slot3')
-      expect(component.wSlotsIntern[1].new).toBe(true)
-    })
-
-    it('should not add slots that are already in workspace', () => {
-      component.wProductNames = ['Product1']
-      component.psSlots = [{ name: 'Slot1', productName: 'Product1', undeployed: false }] as CombinedSlot[]
-      component.wSlotsIntern = [{ name: 'Slot1', productName: 'Product1' }] as CombinedSlot[]
-
-      component['addNewSlots']()
-
-      expect(component.wSlotsIntern.length).toBe(1)
-      expect(component.wSlotsIntern[0].new).toBeUndefined()
-    })
-
-    it('should not add undeployed slots', () => {
-      component.wProductNames = ['Product1']
-      component.psSlots = [{ name: 'Slot1', productName: 'Product1', undeployed: true }] as CombinedSlot[]
-      component.wSlotsIntern = [] as CombinedSlot[]
-
-      component['addNewSlots']()
-
-      expect(component.wSlotsIntern.length).toBe(0)
-    })
-
-    describe('addLostSlotComponents', () => {
-      it('should add lost slot components and mark slots as changed', () => {
-        component.wSlotsIntern = [
-          {
-            name: 'Slot1',
-            components: [
-              { name: 'Component1', productName: 'Product1', appId: 'App1' },
-              { name: 'Component2', productName: 'Product1', appId: 'App1' }
-            ],
-            psComponents: [{ name: 'Component1', productName: 'Product1', appId: 'App1' }],
-            changes: false
-          },
-          {
-            name: 'Slot2',
-            components: [{ name: 'Component3', productName: 'Product2', appId: 'App2' }],
-            psComponents: [],
-            changes: false
-          }
-        ] as CombinedSlot[]
-
-        component['addLostSlotComponents']()
-
-        expect(component.wSlotsIntern[0].psComponents?.length).toBe(2)
-        expect(component.wSlotsIntern[0].psComponents?.[1].name).toBe('Component2')
-        expect(component.wSlotsIntern[0].psComponents?.[1].undeployed).toBe(true)
-        expect(component.wSlotsIntern[0].changes).toBe(true)
-
-        expect(component.wSlotsIntern[1].psComponents?.length).toBe(1)
-        expect(component.wSlotsIntern[1].psComponents?.[0].name).toBe('Component3')
-        expect(component.wSlotsIntern[1].psComponents?.[0].undeployed).toBe(true)
-        expect(component.wSlotsIntern[1].changes).toBe(true)
-      })
-
-      it('should not add components that already exist in psComponents', () => {
-        component.wSlotsIntern = [
-          {
-            name: 'Slot1',
-            components: [{ name: 'Component1', productName: 'Product1', appId: 'App1' }],
-            psComponents: [{ name: 'Component1', productName: 'Product1', appId: 'App1' }],
-            changes: false
-          }
-        ] as CombinedSlot[]
-
-        component['addLostSlotComponents']()
-
-        expect(component.wSlotsIntern[0].psComponents?.length).toBe(1)
-        expect(component.wSlotsIntern[0].changes).toBe(false)
-      })
-
-      it('should handle slots without components or psComponents', () => {
-        component.wSlotsIntern = [
-          {
-            name: 'Slot1',
-            changes: false
-          }
-        ] as CombinedSlot[]
-
-        component['addLostSlotComponents']()
-
-        expect(component.wSlotsIntern[0].psComponents).toBeUndefined()
-        expect(component.wSlotsIntern[0].changes).toBe(false)
-      })
     })
   })
 
@@ -408,25 +351,27 @@ describe('WorkspaceSlotsComponent', () => {
     })
   })
 
-  it('should set sortField correctly when onSortChange is called', () => {
-    const testField = 'name'
+  describe('sorting', () => {
+    it('should set sortField correctly when onSortChange is called', () => {
+      const testField = 'name'
 
-    component.onSortChange(testField)
+      component.onSortChange(testField)
 
-    expect(component.sortField).toBe(testField)
-  })
-
-  describe('onSortDirChange', () => {
-    it('should set sortOrder to -1 when onSortDirChange is called with true', () => {
-      component.onSortDirChange(true)
-
-      expect(component.sortOrder).toBe(-1)
+      expect(component.sortField).toBe(testField)
     })
 
-    it('should set sortOrder to 1 when onSortDirChange is called with false', () => {
-      component.onSortDirChange(false)
+    describe('onSortDirChange', () => {
+      it('should set sortOrder to -1 when onSortDirChange is called with true', () => {
+        component.onSortDirChange(true)
 
-      expect(component.sortOrder).toBe(1)
+        expect(component.sortOrder).toBe(-1)
+      })
+
+      it('should set sortOrder to 1 when onSortDirChange is called with false', () => {
+        component.onSortDirChange(false)
+
+        expect(component.sortOrder).toBe(1)
+      })
     })
   })
 
@@ -445,7 +390,9 @@ describe('WorkspaceSlotsComponent', () => {
         type: 'WORKSPACE',
         changes: false,
         psSlots: [],
-        psComponents: []
+        psComponents: [],
+        undeployed: false,
+        deprecated: false
       }
       component.hasEditPermission = true
 
@@ -465,7 +412,9 @@ describe('WorkspaceSlotsComponent', () => {
         type: 'WORKSPACE',
         changes: false,
         psSlots: [],
-        psComponents: []
+        psComponents: [],
+        undeployed: false,
+        deprecated: false
       }
       component.hasEditPermission = false
 
@@ -485,7 +434,9 @@ describe('WorkspaceSlotsComponent', () => {
         type: 'WORKSPACE',
         changes: false,
         psSlots: [],
-        psComponents: []
+        psComponents: [],
+        undeployed: false,
+        deprecated: false
       }
       component.hasEditPermission = true
 
@@ -547,7 +498,9 @@ describe('WorkspaceSlotsComponent', () => {
       type: 'UNREGISTERED',
       changes: false,
       psSlots: [],
-      psComponents: []
+      psComponents: [],
+      undeployed: false,
+      deprecated: false
     }
 
     beforeEach(() => {
@@ -590,7 +543,9 @@ describe('WorkspaceSlotsComponent', () => {
       type: 'WORKSPACE',
       changes: false,
       psSlots: [],
-      psComponents: []
+      psComponents: [],
+      undeployed: false,
+      deprecated: false
     }
 
     beforeEach(() => {

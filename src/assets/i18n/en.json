@@ -174,13 +174,14 @@
       "ROLES": "Roles",
       "SLOTS": "Slots",
       "PRODUCTS": "Applications",
+      "WORKSPACES": "Workspaces",
       "TOOLTIPS": {
         "DETAILS": "Base properties of the Workspace",
         "CONTACT": "Contact information of the Workspace",
-        "MENU": "Workspace Menu: Management of the Menu structure",
-        "ROLES": "Workspace Roles: Management of the Roles usable by the Workspace (as an subset of Tenant roles)",
-        "SLOTS": "Workspace Slots: Management of the Slots usable by the Workspace.",
-        "PRODUCTS": "Workspace Applications: Management of Applications usable in the Workspace"
+        "MENU": "Management of the Menu structure",
+        "ROLES": "Management of the Roles usable by the Workspace (as an subset of Tenant roles)",
+        "SLOTS": "Management of the Slots usable by the Workspace.",
+        "PRODUCTS": "Management of Applications usable in the Workspace"
       }
     }
   },
@@ -201,7 +202,7 @@
       "CREATION_USER": "ID of the user of the creation",
       "MODIFICATION_DATE": "Timestamp of the last change",
       "MODIFICATION_USER": "ID of the user of the last change",
-      "MANDATORY": "If set then this Workspace is necessary for operation and therefore the Workspace cannot be deleted.",
+      "MANDATORY": "If set then this Workspace is required for operation and therefore the Workspace cannot be deleted.",
       "OPERATOR": "If set, the Workspace was created by automation. All changes will be lost during the next deployment."
     }
   },

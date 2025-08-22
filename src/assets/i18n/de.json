@@ -174,12 +174,13 @@
       "ROLES": "Rollen",
       "SLOTS": "Slots",
       "PRODUCTS": "Applikationen",
+      "WORKSPACES": "Workspaces",
       "TOOLTIPS": {
         "DETAILS": "Basiseigenschaften des Workspaces",
         "CONTACT": "Kontaktinformationen zum Workspace",
-        "MENU": "Workspace Menü: Verwalten der Menüstruktur für den Workspace",
-        "ROLES": "Workspace Rollen: die für die Benutzung des Workspaces von Bedeutung sind (als Teil aller Rollen des Mandants)",
-        "SLOTS": "Workspace Slots: die für die Benutzung des Workspaces von Bedeutung sind.",
+        "MENU": "Verwalten der Menüstruktur für den Workspace",
+        "ROLES": "Workspace Rollen, die für die Benutzung des Workspaces von Bedeutung sind (als Teil aller Rollen des Mandants)",
+        "SLOTS": "Workspace Slots, die für die Benutzung des Workspaces von Bedeutung sind.",
         "PRODUCTS": "Registrierte Applikationen: Verwalten der für den Workspace registrierten Applikationen"
       }
     }
