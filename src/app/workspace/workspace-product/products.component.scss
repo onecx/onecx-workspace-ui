@@ -59,4 +59,10 @@
       }
     }
   }
+
+  @media screen and (max-width: 576px) {
+    .card-badge-right.badge-1 {
+      top: -1px;
+    }
+  }
 }

@@ -130,7 +130,10 @@
 
       <!-- GRID -->
       <ng-template let-workspaces pTemplate="gridItem">
-        <div class="grid grid-nogutter">
+        <section
+          class="grid grid-nogutter"
+          [attr.aria-label]="('DIALOG.SEARCH.RESULTS' | translate) + ': ' + ('TABS.WORKSPACE.WORKSPACES' | translate)"
+        >
           <div *ngFor="let workspace of workspaces; index as i" class="col-6 md:col-4 xl:col-3 p-2 md:p-3">
             <article
               [id]="'ws_search_data_grid_row_' + i"
@@ -157,7 +160,7 @@
                   [imageUrl]="getLogoUrl(workspace)"
                 ></app-image-container>
                 <!-- BADGES -->
-                <span
+                <div
                   *ngIf="workspace.disabled"
                   [id]="'ws_search_data_grid_row_' + i + '_disabled'"
                   class="card-badge-right badge-1 p-1 pi pi-ban danger-action-text font-bold"
@@ -165,18 +168,18 @@
                   [pTooltip]="'WORKSPACE.TOOLTIPS.DISABLED' | translate"
                   tooltipPosition="right"
                   tooltipEvent="hover"
-                  aria-hidden="true"
-                ></span>
-                <span
+                  role="note"
+                ></div>
+                <div
                   *ngIf="workspace.mandatory"
                   [id]="'ws_search_data_grid_row_' + i + '_mandatory'"
                   class="card-badge-left badge-1 font-bold text-lg pi pi-shield"
-                  [attr.aria-label]="'INTERNAL.MANDATORY' | translate"
+                  [attr.aria-label]="'INTERNAL.MANDATORY_TRUE' | translate"
                   [pTooltip]="'WORKSPACE.TOOLTIPS.MANDATORY' | translate"
                   tooltipPosition="top"
                   tooltipEvent="hover"
-                  aria-hidden="true"
-                ></span>
+                  role="note"
+                ></div>
                 <a
                   *ngIf="!workspace.disabled"
                   tabindex="0"
@@ -235,7 +238,7 @@
               </div>
             </article>
           </div>
-        </div>
+        </section>
       </ng-template>
     </p-dataView>
   </ocx-page-content>

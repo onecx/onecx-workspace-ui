@@ -158,7 +158,7 @@
             <span
               *ngIf="component?.undeployed"
               [id]="'ws_slot_detail_picklist_' + i + '_undeployed'"
-              class="card-badge-right badge-1 danger-action-text font-bold text-lg pi pi-ban"
+              class="card-badge-right badge-1 danger-action-text text-lg pi pi-ban"
               [attr.aria-label]="'DIALOG.SLOT.UNDEPLOYED' | translate"
               [pTooltip]="'DIALOG.SLOT.UNDEPLOYED.COMPONENT.TOOLTIP' | translate"
               tooltipPosition="top"
@@ -167,7 +167,7 @@
             <span
               *ngIf="component?.deprecated && !component?.undeployed"
               [id]="'ws_slot_detail_picklist_' + i + '_deprecated'"
-              class="card-badge-right badge-1 danger-action-text font-bold text-lg pi pi-exclamation-circle"
+              class="card-badge-right badge-1 danger-action-text text-lg pi pi-exclamation-circle"
               [attr.aria-label]="'DIALOG.SLOT.DEPRECATED' | translate"
               [pTooltip]="'DIALOG.SLOT.DEPRECATED.TOOLTIP' | translate"
               tooltipPosition="top"
@@ -389,7 +389,7 @@
 <p-dialog
   [header]="'DIALOG.SLOT.HEADER.COMPONENTS.DEREGISTER' | translate"
   [(visible)]="displayDeregisterConfirmation"
-  (onHide)="onDeregisterCancellation()"
+  (onHide)="displayDeregisterConfirmation = false"
   [modal]="true"
   [closable]="true"
   [resizable]="false"

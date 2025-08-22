@@ -1039,22 +1039,6 @@ describe('MenuComponent', () => {
       expect(rowData.roles[roleId]).toBeUndefined()
     })
   })
-  // xit('should handle successful assignment creation onGrantPermission', () => {
-  //   assgmtApiServiceSpy.createAssignment.and.returnValue(of(assgmt))
-
-  //   component.onGrantPermission(tree, nodeData, 'role')
-
-  //   expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.GRANT_OK' })
-  //   expect(nodeData.roles['role']).toBe('assgnmt id')
-  // })
-
-  // xit('should display error onGrantPermission', () => {
-  //   assgmtApiServiceSpy.createAssignment.and.returnValue(throwError(() => new Error()))
-
-  //   component.onGrantPermission(tree, nodeData, 'role')
-
-  //   expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.GRANT_NOK' })
-  // })
 
   it('should deletel assignment onRevokePermission', () => {
     assgmtApiServiceSpy.deleteAssignment.and.returnValue(of(assgmt))

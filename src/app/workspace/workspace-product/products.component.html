@@ -182,7 +182,7 @@
             <span
               *ngIf="product?.undeployed"
               [id]="'ws_products_picklist_' + product.productName + '_undeployed'"
-              class="card-badge-right badge-1 tile-view-optional danger-action-text sm:font-bold sm:text-xl pi pi-ban"
+              class="card-badge-right badge-1 tile-view-optional danger-action-text sm:text-xl pi pi-ban"
               [pTooltip]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
@@ -190,17 +190,19 @@
             <span
               *ngIf="!product?.undeployed && product?.changedComponents"
               [id]="'ws_products_picklist_' + product.productName + '_changed_mfe'"
-              class="card-badge-right badge-1 tile-view-optional danger-action-text sm:font-bold sm:text-xl pi pi-exclamation-circle"
+              class="card-badge-right badge-1 tile-view-optional danger-action-text sm:text-xl pi pi-exclamation-circle"
               [pTooltip]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
             ></span>
-            <app-image-container
-              [id]="'ws_products_picklist_' + product.productName + '_logo'"
-              [imageUrl]="getImageUrl(product)"
-              [defaultLogoType]="'product'"
-              styleClass="max-h-1rem sm:max-h-2rem md:max-h-3rem max-w-2rem sm:max-w-3rem tile-view-optional border-round-sm"
-            ></app-image-container>
+            <div class="h-1rem sm:h-2rem md:h-3rem w-1rem sm:w-2rem md:w-3rem">
+              <app-image-container
+                [id]="'ws_products_picklist_' + product.productName + '_logo'"
+                [imageUrl]="getImageUrl(product)"
+                [defaultLogoType]="'product'"
+                styleClass="max-h-1rem sm:max-h-2rem md:max-h-3rem max-w-1rem sm:max-w-2rem md:max-w-3rem tile-view-optional border-round-sm"
+              ></app-image-container>
+            </div>
             <div class="flex flex-column row-gap-1">
               <div
                 [id]="'ws_products_picklist_' + product.productName + '_display_name'"
@@ -247,7 +249,7 @@
           <span
             *ngIf="displayedDetailItem.undeployed"
             id="ws_products_detail_header_undeployed"
-            class="p-2 danger-action-text font-bold pi pi-ban"
+            class="p-2 danger-action-text pi pi-ban"
             [pTooltip]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
@@ -255,7 +257,7 @@
           <span
             *ngIf="!displayedDetailItem.undeployed && displayedDetailItem.changedComponents"
             id="ws_products_detail_header_changed_mfe"
-            class="p-2 danger-action-text font-bold pi pi-exclamation-circle"
+            class="p-2 danger-action-text pi pi-exclamation-circle"
             [pTooltip]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"

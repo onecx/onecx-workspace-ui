@@ -42,10 +42,6 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
     this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm:ss' : 'M/d/yy, hh:mm:ss a'
   }
 
-  public sortComponentsByName(a: ExtendedComponent, b: ExtendedComponent): number {
-    return (a.name ? a.name.toUpperCase() : '').localeCompare(b.name ? b.name.toUpperCase() : '')
-  }
-
   public ngOnChanges(): void {
     if (this.slotOrg && this.slot === undefined) {
       this.slot = { ...this.slotOrg }
@@ -53,13 +49,23 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
       this.wComponents = [...this.slot.psComponents]
       this.wComponentsOrg = [...this.wComponents] // to be able to restore
       this.psComponents = []
-      // collect available but not yet registered components from product store/workspace
+      // collect available but not yet registered components from product store
       this.psComponentsOrg.forEach((c) => {
-        if (this.wComponents.filter((wc) => wc.name === c.name).length === 0)
+        if (
+          !this.wComponents.find((wc) => wc.productName === c.productName && wc.appId === c.appId && wc.name === c.name)
+        )
           if (this.wProductNames.includes(c.productName)) this.psComponents.push(c)
       })
-      this.psComponents.sort(this.sortComponentsByName)
+      this.psComponents.sort(this.sortComponents)
     }
+  }
+
+  public sortComponents(a: ExtendedComponent, b: ExtendedComponent): number {
+    return (
+      a.name.toUpperCase().localeCompare(b.name.toUpperCase()) ||
+      a.appId.toUpperCase().localeCompare(b.appId.toUpperCase()) ||
+      a.productName.toUpperCase().localeCompare(b.productName.toUpperCase())
+    )
   }
 
   public onClose(): void {
@@ -95,9 +101,11 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
     if (this.deregisterItems.length === 0) return
     this.displayDeregisterConfirmation = false
     // restore
-    for (const comp of this.deregisterItems) {
-      this.psComponents = this.psComponents.filter((psc) => psc.name !== comp.name)
-    }
+    for (const deregItem of this.deregisterItems)
+      this.psComponents = this.psComponents.filter(
+        (psc) =>
+          !(psc.productName === deregItem.productName && psc.appId === deregItem.appId && psc.name === deregItem.name)
+      )
     this.wComponents = this.wComponentsOrg
     this.wComponentsOrg = [...this.wComponents]
     this.deregisterItems = []
@@ -110,14 +118,14 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
 
   public onSaveSlot(reorder: boolean) {
     if (this.slot) {
-      // picklist bug: ignore change if only one component in list
+      // picklist bug: ignore change if only one component is in list
       if (reorder && this.slot.components && this.slot.components.length < 2) return
       this.slotApi
         .updateSlot({
           id: this.slot.id!,
           updateSlotRequest: {
             modificationCount: this.slot.modificationCount!,
-            name: this.slot.name!,
+            name: this.slot.name,
             components: this.wComponents.map((ec) => {
               return { productName: ec.productName, appId: ec.appId, name: ec.name } as SlotComponent
             })
@@ -130,7 +138,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
               this.slot.modificationDate = data.modificationDate
               this.slot.components = data.components
             }
-            // clean up
+            if (this.deregisterItems.length > 0) this.psComponents.sort(this.sortComponents)
             this.deregisterItems = []
             this.wComponentsOrg = [...this.wComponents]
             this.msgService.success({ summaryKey: 'ACTIONS.EDIT.SLOT_OK' })

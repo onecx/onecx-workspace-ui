@@ -118,7 +118,10 @@
 
   <!-- GRID -->
   <ng-template let-slots pTemplate="gridItem">
-    <div class="grid grid-nogutter" [attr.aria-label]="'TABS.WORKSPACE.SLOTS' | translate">
+    <section
+      class="grid grid-nogutter"
+      [attr.aria-label]="('DIALOG.SEARCH.RESULTS' | translate) + ': ' + ('TABS.WORKSPACE.SLOTS' | translate)"
+    >
       <article
         *ngFor="let slot of slots; index as i"
         class="col-6 md:col-4 lg:col-4 xl:col-3 p-2 md:p-3"
@@ -153,7 +156,7 @@
             tooltipPosition="top"
             tooltipEvent="hover"
           ></button>
-          <span
+          <div
             *ngIf="!slot.new && hasDeletePermission && slot.components.length > 0"
             [id]="'ws_slots_grid_data_row_' + i + '_action_delete_blocked'"
             class="card-badge-right badge-1 p-1 pi pi-trash cursor-auto"
@@ -162,9 +165,9 @@
             tooltipPosition="top"
             tooltipEvent="hover"
             role="note"
-          ></span>
+          ></div>
           <!-- left badges -->
-          <span
+          <div
             *ngIf="slot.components"
             [id]="'ws_slots_grid_data_row_' + i + '_components'"
             class="card-badge-left badge-1-number p-1"
@@ -175,38 +178,38 @@
             role="note"
           >
             {{ slot.components.length }}
-          </span>
+          </div>
           <ng-container *ngIf="slot.changes">
-            <span
+            <div
               *ngIf="slot.undeployed && !slot.deprecated"
               [id]="'ws_slots_grid_data_row_' + i + '_undeployed'"
-              class="card-badge-left badge-2 pi pi-ban danger-action-text font-bold"
+              class="card-badge-left badge-2 pi pi-ban danger-action-text"
               [attr.aria-label]="'DIALOG.SLOT.UNDEPLOYED' | translate"
               [pTooltip]="'DIALOG.SLOT.UNDEPLOYED.TOOLTIP' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
-              aria-hidden="true"
-            ></span>
-            <span
+              role="note"
+            ></div>
+            <div
               *ngIf="!slot.undeployed && slot.deprecated"
               [id]="'ws_slots_grid_data_row_' + i + '_deprecated'"
-              class="card-badge-left badge-2 pi pi-exclamation-circle danger-action-text font-bold"
+              class="card-badge-left badge-2 pi pi-exclamation-circle danger-action-text"
               [attr.aria-label]="'DIALOG.SLOT.DEPRECATED' | translate"
               [pTooltip]="'DIALOG.SLOT.DEPRECATED.TOOLTIP' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
-              aria-hidden="true"
-            ></span>
-            <span
+              role="note"
+            ></div>
+            <div
               *ngIf="!slot.undeployed && !slot.deprecated"
               [id]="'ws_slots_grid_data_row_' + i + '_changed'"
-              class="card-badge-left badge-2 pi pi-exclamation-circle danger-action-text font-bold"
+              class="card-badge-left badge-2 pi pi-exclamation-circle danger-action-text"
               [attr.aria-label]="'DIALOG.SLOT.CHANGED' | translate"
               [pTooltip]="'DIALOG.SLOT.CHANGED' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
-              aria-hidden="true"
-            ></span>
+              role="note"
+            ></div>
           </ng-container>
           <!-- CONTENT -->
           <div class="flex flex-column justify-content-between row-gap-2 text-center" aria-hidden="true">
@@ -217,14 +220,12 @@
               [pTooltip]="slot.name.length < 20 ? '' : slot.name"
               tooltipPosition="top"
               tooltipEvent="hover"
-              role="note"
             >
               {{ slot.name }}
             </div>
             <div
               [id]="'ws_roles_grid_data_row_' + i + '_workspace'"
               class="flex flex-row justify-content-center align-items-center column-gap-3 text-xs sm:text-sm"
-              aria-hidden="true"
             >
               <app-ocx-chip
                 *ngIf="!slot.new"
@@ -252,7 +253,7 @@
           </div>
         </a>
       </article>
-    </div>
+    </section>
   </ng-template>
 </p-dataView>
 

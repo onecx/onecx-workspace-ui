@@ -141,7 +141,10 @@
 
   <!-- GRID -->
   <ng-template let-roles pTemplate="gridItem">
-    <div class="grid grid-nogutter">
+    <section
+      class="grid grid-nogutter"
+      [attr.aria-label]="('DIALOG.SEARCH.RESULTS' | translate) + ': ' + ('TABS.WORKSPACE.ROLES' | translate)"
+    >
       <article
         *ngFor="let role of roles; index as i"
         class="col-6 md:col-4 lg:col-4 xl:col-3 p-2 sm:p-3"
@@ -152,6 +155,7 @@
           class="block card relative py-1 px-4 hover:bg-gray-200 cursor-pointer"
           (click)="onEditRole($event, role)"
           [attr.aria-label]="'DIALOG.ROLE.HEADER.' + (hasEditPermission ? 'EDIT' : 'VIEW') | translate"
+          role="link"
         >
           <!-- BADGES -->
           <button
@@ -176,7 +180,7 @@
           ></button>
 
           <!-- CONTENT -->
-          <div class="flex flex-column justify-content-between row-gap-2 text-center">
+          <div class="flex flex-column justify-content-between row-gap-2 text-center" aria-hidden="true">
             <div
               [id]="'ws_roles_grid_data_row_' + i + '_role_name'"
               class="text-sm sm:text-base font-bold text-responsive"
@@ -184,14 +188,12 @@
               [pTooltip]="role.name?.length > 40 ? role.name : ''"
               tooltipPosition="top"
               tooltipEvent="hover"
-              aria-hidden="true"
             >
               {{ limitText(role.name, 40) }}
             </div>
             <div
               [id]="'ws_roles_grid_data_row_' + i + '_workspace'"
               class="flex flex-row justify-content-center align-items-center column-gap-1 text-xs sm:text-sm"
-              aria-hidden="true"
             >
               <app-ocx-chip
                 *ngIf="role.isWorkspaceRole"
@@ -212,7 +214,7 @@
           </div>
         </a>
       </article>
-    </div>
+    </section>
   </ng-template>
 </p-dataView>
 

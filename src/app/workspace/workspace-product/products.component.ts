@@ -200,7 +200,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   private searchPsProducts(): void {
     this.psLoading = true
     this.psProducts$ = this.psProductApi
-      .searchAvailableProducts({ productStoreSearchCriteria: {} })
+      .searchAvailableProducts({ productStoreSearchCriteria: { pageSize: 1000 } })
       .pipe(
         map((result) => {
           // filter: return psProducts which are not yet registered
