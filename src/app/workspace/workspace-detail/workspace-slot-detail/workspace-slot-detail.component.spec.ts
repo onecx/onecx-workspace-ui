@@ -1,7 +1,7 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing'
+import { ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angular/core/testing'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { BehaviorSubject, of, throwError } from 'rxjs'
 
