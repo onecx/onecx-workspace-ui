@@ -5,7 +5,6 @@ import { PortalMessageService, UserService } from '@onecx/angular-integration-in
 
 import { SlotAPIService, SlotComponent, UpdateSlotRequest } from 'src/app/shared/generated'
 import { ChangeMode, CombinedSlot, ExtendedComponent } from '../workspace-slots/workspace-slots.component'
-import { consumerPollProducersForChange } from '@angular/core/primitives/signals'
 
 @Component({
   selector: 'app-workspace-slot-detail',
