@@ -339,7 +339,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
       })
   }
   private ps2wTransferSlot(slot: Slot): void {
-    let wSlot = this.wSlots.find((ws) => ws.name === slot?.name)
+    const wSlot = this.wSlots.find((ws) => ws.name === slot?.name)
     if (wSlot) {
       console.log('ps2wTransferSlot', wSlot)
       wSlot.id = slot.id
@@ -355,7 +355,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
   private w2psTransferSlot(slot: CombinedSlot): void {
-    let psSlot = this.wSlotsIntern.find((ws) => ws.name === slot?.name)
+    const psSlot = this.wSlotsIntern.find((ws) => ws.name === slot?.name)
     if (psSlot) {
       psSlot.id = undefined
       psSlot.new = true
