@@ -156,8 +156,8 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   }
 
   public onDeleteSlot() {
-    if (this.slot) {
-      this.slotApi.deleteSlotById({ id: this.slot.id! }).subscribe({
+    if (this.slotOrg) {
+      this.slotApi.deleteSlotById({ id: this.slotOrg.id! }).subscribe({
         next: () => {
           this.msgService.success({ summaryKey: 'ACTIONS.DELETE.SLOT.MESSAGE_OK' })
           this.detailClosed.emit(true)

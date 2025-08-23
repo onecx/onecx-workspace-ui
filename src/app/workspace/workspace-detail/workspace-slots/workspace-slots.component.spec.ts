@@ -275,7 +275,6 @@ describe('WorkspaceSlotsComponent', () => {
 
       expect(component.wProductNames.length).toBe(2)
       expect(component.wSlots.length).toBe(5)
-      expect(component.psSlots.length).toBe(5)
       expect(component.psComponents.length).toBe(4)
     })
 
@@ -544,7 +543,7 @@ describe('WorkspaceSlotsComponent', () => {
     })
 
     it('should delete a slot and update component state', () => {
-      component.onDeleteSlot(mockEvent, mockSlot)
+      component.onSlotDelete(mockEvent, mockSlot)
 
       expect(mockEvent.stopPropagation).toHaveBeenCalled()
       expect(component.slot).toBe(mockSlot)

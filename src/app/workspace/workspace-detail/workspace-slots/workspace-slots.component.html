@@ -129,9 +129,9 @@
       >
         <a
           [id]="'ws_slots_grid_data_row_' + i + '_action_detail'"
-          class="block card relative py-1 px-4"
-          [ngClass]="{ 'hover:bg-gray-200 cursor-pointer': !slot.new }"
-          [class.bg-gray-200]="slot.new"
+          [attr.slotid]="slot.id"
+          class="block card relative py-1 px-4 p-button p-button-text"
+          [ngClass]="{ 'hover:bg-gray-200 cursor-pointer p-button-info': !slot.new, 'p-button-info': slot.new }"
           (click)="onSlotDetail($event, slot)"
           [attr.aria-label]="'DIALOG.SLOT.HEADER.' + (hasEditPermission ? 'EDIT' : 'VIEW') | translate"
         >
@@ -150,7 +150,7 @@
             *ngIf="!slot.new && hasDeletePermission && slot.components.length === 0"
             [id]="'ws_slots_grid_data_row_' + i + '_action_delete'"
             class="card-badge-right badge-1 p-1 pi pi-trash bg-transparent border-none button-icon-only"
-            (click)="onDeleteSlot($event, slot)"
+            (click)="onSlotDelete($event, slot)"
             [attr.aria-label]="'ACTIONS.DELETE.SLOT.LABEL' | translate"
             [pTooltip]="'ACTIONS.DELETE.SLOT.LABEL' | translate"
             tooltipPosition="top"
@@ -215,7 +215,7 @@
           <div class="flex flex-column justify-content-between row-gap-2 text-center" aria-hidden="true">
             <div
               [id]="'ws_slots_grid_data_row_' + i + '_slot_name'"
-              class="text-sm md:text-base md:font-bold text-responsive"
+              class="text-sm md:text-base text-color md:font-bold text-responsive"
               [attr.aria-label]="'SLOT.NAME' | translate"
               [pTooltip]="slot.name.length < 20 ? '' : slot.name"
               tooltipPosition="top"

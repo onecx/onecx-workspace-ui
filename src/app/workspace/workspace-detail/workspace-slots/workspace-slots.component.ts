@@ -30,13 +30,14 @@ export type PSSlot = SlotPS & { pName?: string; pDisplayName?: string }
 // workspace slot data combined with status from product store
 export type CombinedSlot = Slot & {
   productName?: string
-  new: boolean
+  new: boolean // true if slot exists only in product store
   type: SlotType
-  changes: boolean
+  psSlots: PSSlot[] // corresponding product store slots
+  psComponents: ExtendedComponent[] // corresponding product store components
+  // slot state in product store
+  changes: boolean // overall state including assigned components
   undeployed: boolean
   deprecated: boolean
-  psSlots: PSSlot[]
-  psComponents: ExtendedComponent[]
 }
 export type ExtendedComponent = SlotComponent & {
   undeployed: boolean
@@ -58,18 +59,18 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   public wProducts$!: Observable<string[]>
   public wProductNames: string[] = [] // simple list of product names registered in workspace
   public wSlots$!: Observable<string[]>
-  public wSlots: CombinedSlot[] = [] // registered workspace slots including assigned components
-  public wSlotsIntern!: CombinedSlot[] // temporary used array for workspace slots, final assigned to wSlots
+  public wSlots: CombinedSlot[] = [] // displayed slot collection: final state
+  public wSlotsIntern: CombinedSlot[] = [] // internal slot collection: decoupled from displaying
   public psSlots$!: Observable<string[]>
-  public psSlots: CombinedSlot[] = []
   public psComponents: ExtendedComponent[] = []
 
   public slot: CombinedSlot | undefined
-  public itemForDelete: CombinedSlot | undefined
+  //  public itemForDelete: CombinedSlot | undefined
 
   // dialog
   @ViewChild(DataView) dv: DataView | undefined
   public dataViewControlsTranslations$: Observable<DataViewControlTranslations> | undefined
+
   public filterValue: string | undefined
   public filterByDefault = 'name,type'
   public filterBy = this.filterByDefault
@@ -123,7 +124,6 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     this.declareWorkspaceProducts()
     this.declareWorkspaceSlots()
     this.declarePsProducts()
-    this.wSlots = []
     this.wSlots$
       .pipe(
         mergeMap(() => this.wProducts$),
@@ -132,6 +132,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
       .subscribe()
   }
 
+  // get registered products
   private declareWorkspaceProducts(): void {
     if (this.workspace) {
       this.wpLoading = true
@@ -157,9 +158,9 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   /**
    * SEARCH
    */
-  // Slots which were registered together with Products/Applications
+  // Workspace Slots which were added at time of registration products
   // a) the good case: slot and assigned components still exist in product store
-  // b) the bad case:  Slot or assigned components are no longer available in the product store
+  // b) the bad case:  slot or assigned components are no longer available in the product store
   private declareWorkspaceSlots(): void {
     this.wSlots$ = this.slotApi
       .getSlotsForWorkspace({ id: this.workspace?.id } as GetSlotsForWorkspaceRequestParams)
@@ -171,11 +172,13 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
             // cases: a + b
             for (const s of res.slots)
               this.wSlotsIntern.push({
-                ...s, // contains the original registered components
+                ...s, // contains also the current registered components
                 new: false,
                 type: 'WORKSPACE',
+                components: [],
                 psSlots: [],
                 psComponents: [],
+                // initial state...to be enriched later by product store slot states
                 changes: false,
                 undeployed: false,
                 deprecated: false
@@ -190,96 +193,21 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
       )
   }
 
-  private extractPsData(products: ProductStoreItem[]): void {
-    for (const p of products) {
-      // 1. enrich wSlotsIntern with deployment information from product store
-      p.slots?.forEach((sps: SlotPS) => {
-        // create slot
-        const ps: CombinedSlot = { ...sps, productName: p.productName } as CombinedSlot
-        ps.changes = ps.undeployed === true || ps.deprecated === true || ps.changes
-        // add slot to ps slot array
-        this.psSlots.push(ps)
-        // select workspace slot with same name (there is no productname for slots in workspace)
-        const wsSlot = this.wSlotsIntern.find((s) => s.name === ps.name)
-        if (wsSlot) {
-          // extend workspace slot with product store info
-          wsSlot.psSlots.push({ ...ps, pName: p.productName, pDisplayName: p.displayName! })
-          wsSlot.changes = ps.undeployed === true || ps.deprecated === true || ps.changes
-          wsSlot.deprecated = ps.deprecated === true
-          wsSlot.undeployed = ps.undeployed === true
-          if (wsSlot.changes === true) wsSlot.type = 'WORKSPACE,OUTDATED'
-        }
-      })
-      // 2. collect all product store components
-      if (p.microfrontends && p.microfrontends.length > 0) {
-        p.microfrontends
-          .filter((mfe) => mfe.type === 'COMPONENT')
-          .forEach((c) => {
-            this.psComponents.push({
-              productName: p.productName,
-              appId: c.appId,
-              name: c.exposedModule,
-              undeployed: c.undeployed ?? false,
-              deprecated: c.deprecated ?? false
-            } as ExtendedComponent)
-          })
-      }
-    }
-    // 3. collect components per workspace slot
-    this.wSlotsIntern.forEach((ws) => {
-      ws.components?.forEach((c) => {
-        // get ps components with the same product/app and component name to get their current state
-        const psc = this.psComponents?.filter(
-          (pc) => pc.productName === c.productName && pc.appId === c.appId && pc.name === c.name
-        )
-        if (psc.length === 1) {
-          ws.psComponents?.push(psc[0])
-          ws.changes = psc[0].undeployed || psc[0].deprecated || ws.changes // any changes?
-        }
-      })
-    })
-  }
-
-  private addUnregisteredSlots(): void {
-    // 4. add new slots existing in PS which are not existing in Workspace but part of a registered product)
-    //    exlude undeployed slots
-    this.wProductNames.forEach((pn) => {
-      this.psSlots
-        // valid slots
-        .filter((psp) => psp.productName === pn && psp?.undeployed !== true)
-        .forEach((ps) => {
-          // is slot registered in workspace?
-          if (!this.wSlotsIntern.find((ws) => ws.name === ps.name)) {
-            this.wSlotsIntern.push({ ...ps, new: true, type: 'UNREGISTERED' })
-          }
-        })
-    })
-  }
-  private addLostSlotComponents(): void {
-    // 5. add old components (not available in product store)
-    this.wSlotsIntern.forEach((slot) => {
-      slot.components?.forEach((wc) => {
-        if (slot.psComponents?.filter((psc) => psc.name === wc.name).length === 0) {
-          slot.psComponents?.push({ ...wc, undeployed: true, deprecated: false })
-          slot.changes = true
-        }
-      })
-    })
-  }
-
   // All declared Slots of Product store Products: containing deployment information
   private declarePsProducts(): void {
     this.sLoading = true
     this.psSlots$ = this.psProductApi.searchAvailableProducts({ productStoreSearchCriteria: { pageSize: 1000 } }).pipe(
       map((res) => {
-        this.psSlots = []
-        this.psComponents = []
         if (res.stream) {
-          this.extractPsData(res.stream) // steps: 1, 2, 3
-          this.addUnregisteredSlots() // steps: 4
-          this.addLostSlotComponents() // steps: 5
+          // build internal database
+          const psSlots = this.extractPsSlots(res.stream)
+          this.psComponents = this.extractPsComponents(res.stream)
+          this.updateComponentState(this.wSlotsIntern, this.psComponents)
+          this.addUnregisteredSlots(psSlots)
+          this.addLostSlotComponents(this.wSlotsIntern)
+          // finalize
           this.wSlotsIntern.sort(this.sortSlotsByName)
-          this.wSlots = [...this.wSlotsIntern]
+          this.wSlots = this.wSlotsIntern // to be displayed
         }
         return []
       }),
@@ -296,6 +224,106 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     return a.name!.toUpperCase().localeCompare(b.name!.toUpperCase())
   }
 
+  private extractPsSlots(products: ProductStoreItem[]): CombinedSlot[] {
+    const psSlots: CombinedSlot[] = []
+    for (const p of products) {
+      // 1.1 collect ps slots
+      // 1.2 enrich wSlotsIntern with deployment information from product store
+      p.slots?.forEach((sps: SlotPS) => {
+        const ps: CombinedSlot = {
+          ...sps,
+          productName: p.productName,
+          // state
+          changes: sps.undeployed === true || sps.deprecated === true,
+          undeployed: sps.undeployed === true,
+          deprecated: sps.deprecated === true
+        } as CombinedSlot
+        psSlots.push(ps)
+        //
+        // select workspace slot with same name (there is no productname for slots in workspace)
+        const wsSlot = this.wSlotsIntern.find((s) => s.name === ps.name)
+        if (wsSlot) {
+          // extend workspace slot with product store info
+          wsSlot.psSlots.push({ ...ps, pName: p.productName, pDisplayName: p.displayName! })
+          // consolidate slot state
+          wsSlot.changes = wsSlot.changes || ps.changes
+          wsSlot.deprecated = wsSlot.deprecated || ps.deprecated
+          wsSlot.undeployed = wsSlot.undeployed || ps.undeployed
+          if (wsSlot.changes) wsSlot.type = 'WORKSPACE,OUTDATED'
+        }
+      })
+    }
+    return psSlots
+  }
+
+  // global used PS component collection
+  private extractPsComponents(products: ProductStoreItem[]): ExtendedComponent[] {
+    const psComponents: ExtendedComponent[] = []
+    for (const p of products) {
+      if (p.microfrontends && p.microfrontends.length > 0) {
+        p.microfrontends
+          .filter((mfe) => mfe.type === 'COMPONENT') // only remote components
+          .forEach((c) => {
+            psComponents.push({
+              productName: p.productName,
+              appId: c.appId,
+              name: c.exposedModule,
+              undeployed: c.undeployed ?? false,
+              deprecated: c.deprecated ?? false
+            } as ExtendedComponent)
+          })
+      }
+    }
+    return psComponents
+  }
+
+  private updateComponentState(wSlots: CombinedSlot[], psComponents: ExtendedComponent[]): void {
+    wSlots.forEach((ws) => {
+      ws.components?.forEach((c) => {
+        // assigned components
+        // get ps components with the same product/app and component name to get their current state
+        const psc = psComponents.find(
+          (pc) => pc.productName === c.productName && pc.appId === c.appId && pc.name === c.name
+        )
+        if (psc) {
+          ws.psComponents.push(psc)
+          // extend consolidated slot state with component state
+          ws.changes = psc.undeployed || psc.deprecated || ws.changes
+        }
+      })
+    })
+  }
+
+  private addUnregisteredSlots(psSlots: CombinedSlot[]): void {
+    // 4. add new slots existing in PS which are not existing in Workspace but part of a registered product)
+    //    exlude undeployed slots
+    this.wProductNames.forEach((pn) => {
+      psSlots
+        // valid slots
+        .filter((psp) => psp.productName === pn && psp?.undeployed !== true)
+        .forEach((ps) => {
+          // add an artificial slot if slot is not registered in workspace
+          if (!this.wSlotsIntern.find((ws) => ws.name === ps.name)) {
+            this.wSlotsIntern.push({ ...ps, id: undefined, new: true, type: 'UNREGISTERED' })
+          }
+        })
+    })
+  }
+  // add components assigned to workspace slot but not available in product store anymore
+  private addLostSlotComponents(wSlots: CombinedSlot[]): void {
+    wSlots.forEach((slot) => {
+      slot.components?.forEach((wc) => {
+        if (slot.psComponents?.filter((psc) => psc.name === wc.name).length === 0) {
+          slot.psComponents?.push({ ...wc, undeployed: true, deprecated: false })
+          slot.changes = true
+        }
+      })
+    })
+  }
+
+  /**
+   * CHANGES
+   */
   public onAddSlot(ev: Event, slot: CombinedSlot): void {
     ev.stopPropagation()
     this.slotApi
@@ -303,14 +331,42 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
         createSlotRequest: { workspaceId: this.workspace?.id, name: slot.name } as CreateSlotRequest
       })
       .subscribe({
-        next: () => {
-          this.loadData()
-        },
+        next: (data) => this.ps2wTransferSlot(data),
         error: (err) => {
           this.msgService.error({ summaryKey: 'ACTIONS.CREATE.SLOT.MESSAGE_NOK' })
           console.error('createSlot', err)
         }
       })
+  }
+  private ps2wTransferSlot(slot: Slot): void {
+    let wSlot = this.wSlots.find((ws) => ws.name === slot?.name)
+    if (wSlot) {
+      console.log('ps2wTransferSlot', wSlot)
+      wSlot.id = slot.id
+      wSlot.new = false
+      wSlot.type = 'WORKSPACE'
+      wSlot.workspaceId = slot.workspaceId
+      wSlot.components = []
+      wSlot.modificationCount = 0
+      wSlot.creationDate = slot.creationDate
+      wSlot.creationUser = slot.creationUser
+      wSlot.modificationDate = slot.modificationDate
+      wSlot.modificationUser = slot.modificationUser
+    }
+  }
+  private w2psTransferSlot(slot: CombinedSlot): void {
+    let psSlot = this.wSlotsIntern.find((ws) => ws.name === slot?.name)
+    if (psSlot) {
+      psSlot.id = undefined
+      psSlot.new = true
+      psSlot.type = 'UNREGISTERED'
+      psSlot.workspaceId = undefined
+      psSlot.modificationCount = 0
+      psSlot.creationDate = undefined
+      psSlot.creationUser = undefined
+      psSlot.modificationDate = undefined
+      psSlot.modificationUser = undefined
+    }
   }
 
   /**
@@ -350,20 +406,22 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     this.showSlotDetailDialog = true
   }
 
+  public onSlotDelete(ev: Event, slot: CombinedSlot): void {
+    ev.stopPropagation()
+    this.slot = { ...slot }
+    this.changeMode = 'DELETE'
+    this.showSlotDeleteDialog = true
+  }
+
   // detail/delete dialog closed - on changes: reload data
   public onSlotDetailClosed(changed: boolean) {
+    if (changed && this.changeMode === 'DELETE' && this.slot?.id) {
+      this.w2psTransferSlot(this.slot)
+    }
     this.slot = undefined
     this.changeMode = 'VIEW'
     this.showSlotDetailDialog = false
     this.showSlotDeleteDialog = false
-    if (changed) this.loadData()
-  }
-
-  public onDeleteSlot(ev: Event, slot: CombinedSlot): void {
-    ev.stopPropagation()
-    this.slot = slot
-    this.changeMode = 'DELETE'
-    this.showSlotDeleteDialog = true
   }
 
   public onGoToProductSlots(): void {
