@@ -165,7 +165,7 @@ const wProduct2: Product = {
 }
 const wProducts: Product[] = [wProduct1, wProduct2]
 
-fdescribe('WorkspaceSlotsComponent', () => {
+describe('WorkspaceSlotsComponent', () => {
   let component: WorkspaceSlotsComponent
   let fixture: ComponentFixture<WorkspaceSlotsComponent>
 
@@ -175,7 +175,8 @@ fdescribe('WorkspaceSlotsComponent', () => {
   }
   const slotServiceSpy = {
     getSlotsForWorkspace: jasmine.createSpy('getSlotsForWorkspace').and.returnValue(of({})),
-    createSlot: jasmine.createSpy('createSlot').and.returnValue(of({}))
+    createSlot: jasmine.createSpy('createSlot').and.returnValue(of({})),
+    deleteSlotById: jasmine.createSpy('deleteSlotById').and.returnValue(of({}))
   }
   const productServiceSpy = {
     searchAvailableProducts: jasmine.createSpy('searchAvailableProducts').and.returnValue(of({}))
@@ -209,6 +210,7 @@ fdescribe('WorkspaceSlotsComponent', () => {
     wProductServiceSpy.getProductsByWorkspaceId.calls.reset()
     slotServiceSpy.getSlotsForWorkspace.calls.reset()
     slotServiceSpy.createSlot.calls.reset()
+    slotServiceSpy.deleteSlotById.calls.reset()
     productServiceSpy.searchAvailableProducts.calls.reset()
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
@@ -374,7 +376,7 @@ fdescribe('WorkspaceSlotsComponent', () => {
     })
   })
 
-  describe('onSlotDetail', () => {
+  describe('slot detail', () => {
     let mockEvent: any
 
     beforeEach(() => {
@@ -476,12 +478,25 @@ fdescribe('WorkspaceSlotsComponent', () => {
       expect(component.showSlotDetailDialog).toBeFalse()
       expect(component.loadData).not.toHaveBeenCalled() // NOT called
     })
+
+    it('should adjust slot array after a slot was deleted', () => {
+      component.slot = { id: '123', new: false } as any
+      component.changeMode = 'DELETE'
+      component.showSlotDeleteDialog = true
+
+      component.onSlotDetailClosed(true) // changes
+
+      expect(component.slot).toBeUndefined()
+      expect(component.changeMode).toBe('VIEW')
+      expect(component.showSlotDeleteDialog).toBeFalse()
+    })
   })
 
   describe('onAddSlot', () => {
     let mockEvent: any
-    const mockSlot: CombinedSlot = {
-      id: '123',
+    const slot: CombinedSlot = {
+      id: 'id5',
+      name: 'slot-5',
       new: true,
       type: 'UNREGISTERED',
       changes: false,
@@ -493,15 +508,32 @@ fdescribe('WorkspaceSlotsComponent', () => {
 
     beforeEach(() => {
       mockEvent = new Event('click')
-      spyOn(mockEvent, 'stopPropagation')
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of(wProducts))
+      slotServiceSpy.getSlotsForWorkspace.and.returnValue(of({ slots: wSlots }))
+      productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: psProducts }))
+      component.workspace = workspace
+      component.loadData()
     })
 
-    it('should create a slot and load data', () => {
-      component.onAddSlot(mockEvent, mockSlot)
+    it('should create a slot ', () => {
+      slotServiceSpy.createSlot.and.returnValue(
+        of({
+          ...slot,
+          id: 'id',
+          creationDate: 'date',
+          creationUser: 'test',
+          modificationDate: 'date',
+          modificationUser: 'test'
+        })
+      )
+      spyOn(mockEvent, 'stopPropagation')
+
+      component.onAddSlot(mockEvent, slot)
 
       expect(mockEvent.stopPropagation).toHaveBeenCalled()
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.SLOT.MESSAGE_OK' })
       expect(slotServiceSpy.createSlot).toHaveBeenCalledWith({
-        createSlotRequest: { workspaceId: component.workspace?.id, name: mockSlot.name }
+        createSlotRequest: { workspaceId: component.workspace?.id, name: slot.name }
       })
     })
 
@@ -510,14 +542,60 @@ fdescribe('WorkspaceSlotsComponent', () => {
       slotServiceSpy.createSlot.and.returnValue(throwError(() => errorResponse))
       spyOn(console, 'error')
 
-      component.onAddSlot(mockEvent, mockSlot)
+      component.onAddSlot(mockEvent, slot)
 
-      expect(mockEvent.stopPropagation).toHaveBeenCalled()
-      expect(slotServiceSpy.createSlot).toHaveBeenCalledWith({
-        createSlotRequest: { workspaceId: component.workspace?.id, name: mockSlot.name }
-      })
       expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.SLOT.MESSAGE_NOK' })
       expect(console.error).toHaveBeenCalledWith('createSlot', errorResponse)
+    })
+  })
+
+  describe('onDeleteSlot', () => {
+    let mockEvent: any
+    const slot: CombinedSlot = {
+      id: 'id5',
+      name: 'slot-5',
+      new: false,
+      type: 'WORKSPACE',
+      changes: false,
+      psSlots: [],
+      psComponents: [],
+      undeployed: false,
+      deprecated: false,
+      creationDate: 'date',
+      creationUser: 'test',
+      modificationDate: 'date',
+      modificationUser: 'test'
+    }
+
+    beforeEach(() => {
+      mockEvent = new Event('click')
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of(wProducts))
+      slotServiceSpy.getSlotsForWorkspace.and.returnValue(of({ slots: wSlots }))
+      productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: psProducts }))
+      component.workspace = workspace
+      component.loadData()
+    })
+
+    it('should delete a slot ', () => {
+      slotServiceSpy.deleteSlotById.and.returnValue(of({}))
+      spyOn(mockEvent, 'stopPropagation')
+
+      component.onDeleteSlot(mockEvent, slot)
+
+      expect(mockEvent.stopPropagation).toHaveBeenCalled()
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.SLOT.MESSAGE_OK' })
+      expect(slotServiceSpy.deleteSlotById).toHaveBeenCalledWith({ id: slot.id })
+    })
+
+    it('should display error if slot creation fails', () => {
+      const errorResponse = { status: 400, statusText: 'Error on creating a slot' }
+      slotServiceSpy.deleteSlotById.and.returnValue(throwError(() => errorResponse))
+      spyOn(console, 'error')
+
+      component.onDeleteSlot(mockEvent, slot)
+
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.SLOT.MESSAGE_NOK' })
+      expect(console.error).toHaveBeenCalledWith('deleteSlotById', errorResponse)
     })
   })
 

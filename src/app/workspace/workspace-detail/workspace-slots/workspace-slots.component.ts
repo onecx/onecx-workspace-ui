@@ -286,7 +286,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
         if (psc) {
           ws.psComponents.push(psc)
           // extend consolidated slot state with component state
-          ws.changes = psc.undeployed || psc.deprecated || ws.changes
+          ws.changes = ws.changes || psc.undeployed || psc.deprecated
         }
       })
     })

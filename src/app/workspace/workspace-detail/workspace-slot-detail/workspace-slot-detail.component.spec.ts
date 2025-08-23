@@ -420,7 +420,7 @@ describe('WorkspaceSlotDetailComponent', () => {
 
   describe('Deletion', () => {
     beforeEach(() => {
-      component.slot = {
+      component.slotOrg = {
         name: 'slot1',
         id: '1',
         new: false,
