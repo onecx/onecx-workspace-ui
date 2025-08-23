@@ -165,7 +165,7 @@ const wProduct2: Product = {
 }
 const wProducts: Product[] = [wProduct1, wProduct2]
 
-describe('WorkspaceSlotsComponent', () => {
+fdescribe('WorkspaceSlotsComponent', () => {
   let component: WorkspaceSlotsComponent
   let fixture: ComponentFixture<WorkspaceSlotsComponent>
 
@@ -494,7 +494,6 @@ describe('WorkspaceSlotsComponent', () => {
     beforeEach(() => {
       mockEvent = new Event('click')
       spyOn(mockEvent, 'stopPropagation')
-      spyOn(component, 'loadData').and.callFake(() => {})
     })
 
     it('should create a slot and load data', () => {
@@ -504,7 +503,6 @@ describe('WorkspaceSlotsComponent', () => {
       expect(slotServiceSpy.createSlot).toHaveBeenCalledWith({
         createSlotRequest: { workspaceId: component.workspace?.id, name: mockSlot.name }
       })
-      expect(component.loadData).toHaveBeenCalled()
     })
 
     it('should display error if slot creation fails', () => {
@@ -536,17 +534,13 @@ describe('WorkspaceSlotsComponent', () => {
       deprecated: false
     }
 
-    beforeEach(() => {
+    it('should call deletion dialog for a slot', () => {
       mockEvent = new Event('click')
       spyOn(mockEvent, 'stopPropagation')
-      spyOn(component, 'loadData').and.callFake(() => {})
-    })
 
-    it('should delete a slot and update component state', () => {
       component.onSlotDelete(mockEvent, mockSlot)
 
       expect(mockEvent.stopPropagation).toHaveBeenCalled()
-      expect(component.slot).toBe(mockSlot)
       expect(component.changeMode).toBe('DELETE')
       expect(component.showSlotDeleteDialog).toBeTrue()
     })

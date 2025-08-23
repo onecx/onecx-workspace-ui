@@ -175,7 +175,6 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
                 ...s, // contains also the current registered components
                 new: false,
                 type: 'WORKSPACE',
-                components: [],
                 psSlots: [],
                 psComponents: [],
                 // initial state...to be enriched later by product store slot states
@@ -354,6 +353,21 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
       wSlot.modificationUser = slot.modificationUser
     }
   }
+
+  public onDeleteSlot(ev: Event, slot: CombinedSlot): void {
+    ev.stopPropagation()
+    if (slot)
+      this.slotApi.deleteSlotById({ id: slot.id! }).subscribe({
+        next: () => {
+          this.msgService.success({ summaryKey: 'ACTIONS.DELETE.SLOT.MESSAGE_OK' })
+          this.w2psTransferSlot(slot)
+        },
+        error: (err) => {
+          this.msgService.error({ summaryKey: 'ACTIONS.DELETE.SLOT.MESSAGE_NOK' })
+          console.error('deleteSlotById', err)
+        }
+      })
+  }
   private w2psTransferSlot(slot: CombinedSlot): void {
     const psSlot = this.wSlotsIntern.find((ws) => ws.name === slot?.name)
     if (psSlot) {
@@ -361,6 +375,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
       psSlot.new = true
       psSlot.type = 'UNREGISTERED'
       psSlot.workspaceId = undefined
+      psSlot.components = undefined
       psSlot.modificationCount = 0
       psSlot.creationDate = undefined
       psSlot.creationUser = undefined
@@ -417,6 +432,9 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   public onSlotDetailClosed(changed: boolean) {
     if (changed && this.changeMode === 'DELETE' && this.slot?.id) {
       this.w2psTransferSlot(this.slot)
+    }
+    if (changed && this.changeMode === 'EDIT' && this.slot?.id) {
+      this.loadData()
     }
     this.slot = undefined
     this.changeMode = 'VIEW'
