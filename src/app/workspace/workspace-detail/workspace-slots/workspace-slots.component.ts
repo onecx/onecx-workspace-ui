@@ -36,8 +36,8 @@ export type CombinedSlot = Slot & {
   psComponents: ExtendedComponent[] // corresponding product store components
   // slot state in product store
   changes: boolean // overall state including assigned components
-  undeployed: boolean
-  deprecated: boolean
+  undeployed: boolean // slot state only
+  deprecated: boolean // slot state only
 }
 export type ExtendedComponent = SlotComponent & {
   undeployed: boolean
@@ -226,7 +226,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   private extractPsSlots(products: ProductStoreItem[]): CombinedSlot[] {
     const psSlots: CombinedSlot[] = []
     for (const p of products) {
-      // 1.1 collect ps slots
+      // 1.1 collect product slots
       // 1.2 enrich wSlotsIntern with deployment information from product store
       p.slots?.forEach((sps: SlotPS) => {
         const ps: CombinedSlot = {
@@ -242,9 +242,8 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
         // select workspace slot with same name (there is no productname for slots in workspace)
         const wsSlot = this.wSlotsIntern.find((s) => s.name === ps.name)
         if (wsSlot) {
-          // extend workspace slot with product store info
           wsSlot.psSlots.push({ ...ps, pName: p.productName, pDisplayName: p.displayName! })
-          // consolidate slot state
+          // consolidate slot state (aware of the state of current ps together with previous ones)
           wsSlot.changes = wsSlot.changes || ps.changes
           wsSlot.deprecated = wsSlot.deprecated || ps.deprecated
           wsSlot.undeployed = wsSlot.undeployed || ps.undeployed
@@ -330,7 +329,10 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
         createSlotRequest: { workspaceId: this.workspace?.id, name: slot.name } as CreateSlotRequest
       })
       .subscribe({
-        next: (data) => this.ps2wTransferSlot(data),
+        next: (data) => {
+          this.msgService.success({ summaryKey: 'ACTIONS.CREATE.SLOT.MESSAGE_OK' })
+          this.ps2wTransferSlot(data)
+        },
         error: (err) => {
           this.msgService.error({ summaryKey: 'ACTIONS.CREATE.SLOT.MESSAGE_NOK' })
           console.error('createSlot', err)
@@ -340,7 +342,6 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   private ps2wTransferSlot(slot: Slot): void {
     const wSlot = this.wSlots.find((ws) => ws.name === slot?.name)
     if (wSlot) {
-      console.log('ps2wTransferSlot', wSlot)
       wSlot.id = slot.id
       wSlot.new = false
       wSlot.type = 'WORKSPACE'

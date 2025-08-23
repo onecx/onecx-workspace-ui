@@ -181,7 +181,7 @@
           </div>
           <ng-container *ngIf="slot.changes">
             <div
-              *ngIf="slot.undeployed && !slot.deprecated"
+              *ngIf="slot.undeployed"
               [id]="'ws_slots_grid_data_row_' + i + '_undeployed'"
               class="card-badge-left badge-2 pi pi-ban danger-action-text"
               [attr.aria-label]="'DIALOG.SLOT.UNDEPLOYED' | translate"
@@ -201,7 +201,7 @@
               role="note"
             ></div>
             <div
-              *ngIf="!slot.undeployed && !slot.deprecated"
+              *ngIf="!slot.undeployed && !slot.deprecated && slot.changed"
               [id]="'ws_slots_grid_data_row_' + i + '_changed'"
               class="card-badge-left badge-2 pi pi-exclamation-circle danger-action-text"
               [attr.aria-label]="'DIALOG.SLOT.CHANGED' | translate"
@@ -231,7 +231,7 @@
                 *ngIf="!slot.new"
                 [id]="'ws_roles_grid_data_row_' + i + '_workspace'"
                 class="py-1"
-                [styleClass]="'bg-primary'"
+                [styleClass]="slot.changes ? 'danger-action-bg' : 'bg-primary'"
                 [label]="'Workspace'"
                 [title]="'DIALOG.SLOT.WORKSPACE' | translate"
               />
