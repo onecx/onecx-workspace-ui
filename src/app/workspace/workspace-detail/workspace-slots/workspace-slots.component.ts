@@ -301,7 +301,6 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     this.wProductNames.forEach((pn) => {
       psSlots
         // valid slots
-        // @ts-ignore show all for now
         //.filter((psp) => psp.productName === pn && psp?.undeployed !== true)
         .forEach((ps) => {
           // add an artificial slot if slot is not registered in workspace
