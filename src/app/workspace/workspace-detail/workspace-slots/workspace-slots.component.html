@@ -25,7 +25,7 @@
   <ng-template pTemplate="header">
     <div class="flex flex-wrap align-items-center column-gap-4 row-gap-1">
       <p-message
-        *ngIf="wpLoading || sLoading"
+        *ngIf="wpLoading || wsLoading || psLoading"
         id="ws_slots_message_loading"
         severity="info"
         styleClass="m-2 p-2"
@@ -34,7 +34,7 @@
 
       <!-- Quick Filter -->
       <nav
-        *ngIf="!(wpLoading || sLoading)"
+        *ngIf="!(wpLoading || wsLoading || psLoading)"
         class="slim-selectbutton search-criteria-selectbutton"
         [attr.aria-label]="'DIALOG.SLOT.QUICK_FILTER.TOOLTIP' | translate"
         [pTooltip]="'DIALOG.SLOT.QUICK_FILTER.TOOLTIP' | translate"
@@ -260,7 +260,7 @@
 
 <!-- DETAIL -->
 <app-workspace-slot-detail
-  [slotOrg]="slot"
+  [slotOrg]="item4Detail"
   [psComponentsOrg]="psComponents"
   [wProductNames]="wProductNames"
   [changeMode]="changeMode"

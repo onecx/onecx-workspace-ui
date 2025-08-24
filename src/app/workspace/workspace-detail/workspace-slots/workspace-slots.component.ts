@@ -27,6 +27,7 @@ export type SlotFilterType = 'ALL' | SlotType
 export type ExtendedSelectItem = SelectItem & { tooltipKey?: string }
 export type ChangeMode = 'VIEW' | 'CREATE' | 'EDIT' | 'COPY' | 'DELETE'
 export type PSSlot = SlotPS & { pName?: string; pDisplayName?: string }
+
 // workspace slot data combined with status from product store
 export type CombinedSlot = Slot & {
   productName?: string
@@ -52,8 +53,6 @@ export type ExtendedComponent = SlotComponent & {
 export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   @Input() workspace!: Workspace | undefined
 
-  public limitText = Utils.limitText
-
   // data
   private readonly destroy$ = new Subject()
   public wProducts$!: Observable<string[]>
@@ -63,9 +62,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   public wSlotsIntern: CombinedSlot[] = [] // internal slot collection: decoupled from displaying
   public psSlots$!: Observable<string[]>
   public psComponents: ExtendedComponent[] = []
-
-  public slot: CombinedSlot | undefined
-  //  public itemForDelete: CombinedSlot | undefined
+  public item4Detail: CombinedSlot | undefined
 
   // dialog
   @ViewChild(DataView) dv: DataView | undefined
@@ -80,8 +77,9 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   public quickFilterOptions$: Observable<SelectItem[]> | undefined
   public quickFilterCount = ''
   public exceptionKey: string | undefined = undefined
-  public sLoading = false
+  public psLoading = false
   public wpLoading = false
+  public wsLoading = false
   public changeMode: ChangeMode = 'VIEW'
   public hasCreatePermission = false
   public hasDeletePermission = false
@@ -102,10 +100,10 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     this.hasEditPermission = this.user.hasPermission('WORKSPACE_SLOT#EDIT')
     this.hasCreatePermission = this.user.hasPermission('WORKSPACE_SLOT#CREATE')
     this.hasDeletePermission = this.user.hasPermission('WORKSPACE_SLOT#DELETE')
-    this.prepareQuickFilter()
   }
 
   public ngOnInit() {
+    this.prepareQuickFilter()
     this.prepareTranslations()
   }
   public ngOnChanges(changes: SimpleChanges): void {
@@ -115,6 +113,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     this.destroy$.next(undefined)
     this.destroy$.complete()
   }
+
   public onReload() {
     this.onQuickFilterChange({ value: 'ALL' })
     this.loadData()
@@ -162,39 +161,43 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   // a) the good case: slot and assigned components still exist in product store
   // b) the bad case:  slot or assigned components are no longer available in the product store
   private declareWorkspaceSlots(): void {
-    this.wSlots$ = this.slotApi
-      .getSlotsForWorkspace({ id: this.workspace?.id } as GetSlotsForWorkspaceRequestParams)
-      .pipe(
-        takeUntil(this.destroy$),
-        map((res) => {
-          this.wSlotsIntern = []
-          if (res.slots)
-            // cases: a + b
-            for (const s of res.slots)
-              this.wSlotsIntern.push({
-                ...s, // contains also the current registered components
-                new: false,
-                type: 'WORKSPACE',
-                psSlots: [],
-                psComponents: [],
-                // initial state...to be enriched later by product store slot states
-                changes: false,
-                undeployed: false,
-                deprecated: false
-              } as CombinedSlot)
-          return []
-        }),
-        catchError((err) => {
-          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.SLOTS'
-          console.error('getSlotsForWorkspace', err)
-          return of([])
-        })
-      )
+    if (this.workspace) {
+      this.wsLoading = true
+      this.wSlots$ = this.slotApi
+        .getSlotsForWorkspace({ id: this.workspace?.id } as GetSlotsForWorkspaceRequestParams)
+        .pipe(
+          takeUntil(this.destroy$),
+          map((res) => {
+            this.wSlotsIntern = []
+            if (res.slots)
+              // cases: a + b
+              for (const s of res.slots)
+                this.wSlotsIntern.push({
+                  ...s, // contains also the registered components
+                  new: false,
+                  type: 'WORKSPACE',
+                  psSlots: [],
+                  psComponents: [],
+                  // initial state...to be enriched later by product store slot states
+                  changes: false,
+                  undeployed: false,
+                  deprecated: false
+                } as CombinedSlot)
+            return []
+          }),
+          catchError((err) => {
+            this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.SLOTS'
+            console.error('getSlotsForWorkspace', err)
+            return of([])
+          }),
+          finalize(() => (this.wsLoading = false))
+        )
+    }
   }
 
   // All declared Slots of Product store Products: containing deployment information
   private declarePsProducts(): void {
-    this.sLoading = true
+    this.psLoading = true
     this.psSlots$ = this.psProductApi.searchAvailableProducts({ productStoreSearchCriteria: { pageSize: 1000 } }).pipe(
       map((res) => {
         if (res.stream) {
@@ -215,7 +218,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
         console.error('searchAvailableProducts', err)
         return of([])
       }),
-      finalize(() => (this.sLoading = false))
+      finalize(() => (this.psLoading = false))
     )
   }
 
@@ -226,8 +229,8 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   private extractPsSlots(products: ProductStoreItem[]): CombinedSlot[] {
     const psSlots: CombinedSlot[] = []
     for (const p of products) {
-      // 1.1 collect product slots
-      // 1.2 enrich wSlotsIntern with deployment information from product store
+      // 1. collect product slots
+      // 2. enrich wSlotsIntern with deployment information from product store
       p.slots?.forEach((sps: SlotPS) => {
         const ps: CombinedSlot = {
           ...sps,
@@ -293,12 +296,13 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private addUnregisteredSlots(psSlots: CombinedSlot[]): void {
-    // 4. add new slots existing in PS which are not existing in Workspace but part of a registered product)
-    //    exlude undeployed slots
+    // add new slots existing in PS which are not existing in Workspace but part of a registered product)
+    //   exlude undeployed slots
     this.wProductNames.forEach((pn) => {
       psSlots
         // valid slots
-        .filter((psp) => psp.productName === pn && psp?.undeployed !== true)
+        // @ts-ignore show all for now
+        //.filter((psp) => psp.productName === pn && psp?.undeployed !== true)
         .forEach((ps) => {
           // add an artificial slot if slot is not registered in workspace
           if (!this.wSlotsIntern.find((ws) => ws.name === ps.name)) {
@@ -320,7 +324,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   /**
-   * CHANGES
+   * SLOT CHANGES - direct operation in UI
    */
   public onAddSlot(ev: Event, slot: CombinedSlot): void {
     ev.stopPropagation()
@@ -417,27 +421,27 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   public onSlotDetail(ev: Event, slot: CombinedSlot): void {
     ev.stopPropagation()
     if (slot.new) return
-    this.slot = slot
+    this.item4Detail = slot
     this.changeMode = this.hasEditPermission ? 'EDIT' : 'VIEW'
     this.showSlotDetailDialog = true
   }
 
   public onSlotDelete(ev: Event, slot: CombinedSlot): void {
     ev.stopPropagation()
-    this.slot = { ...slot }
+    this.item4Detail = { ...slot }
     this.changeMode = 'DELETE'
     this.showSlotDeleteDialog = true
   }
 
   // detail/delete dialog closed - on changes: reload data
   public onSlotDetailClosed(changed: boolean) {
-    if (changed && this.changeMode === 'DELETE' && this.slot?.id) {
-      this.w2psTransferSlot(this.slot)
+    if (changed && this.changeMode === 'DELETE' && this.item4Detail?.id) {
+      this.w2psTransferSlot(this.item4Detail)
     }
-    if (changed && this.changeMode === 'EDIT' && this.slot?.id) {
+    if (changed && this.changeMode === 'EDIT' && this.item4Detail?.id) {
       this.loadData()
     }
-    this.slot = undefined
+    this.item4Detail = undefined
     this.changeMode = 'VIEW'
     this.showSlotDetailDialog = false
     this.showSlotDeleteDialog = false
