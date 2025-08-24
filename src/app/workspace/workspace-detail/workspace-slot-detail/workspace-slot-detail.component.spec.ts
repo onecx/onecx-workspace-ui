@@ -67,6 +67,7 @@ describe('WorkspaceSlotDetailComponent', () => {
 
   describe('OnChanges', () => {
     it('should initialize component state when slotOrg is provided', () => {
+      component.displayDetailDialog = true
       const slotOrg: CombinedSlot = {
         name: 'slot1',
         new: false,
@@ -108,15 +109,7 @@ describe('WorkspaceSlotDetailComponent', () => {
   })
 
   describe('Closing', () => {
-    it('should NOT emit detailClosed event when dialog is simply closed', () => {
-      spyOn(component.detailClosed, 'emit')
-
-      component.onClose()
-
-      expect(component.detailClosed.emit).not.toHaveBeenCalled()
-    })
-
-    it('should emit detailClosed event with false if there is no change ', () => {
+    beforeEach(() => {
       const slotOrg: CombinedSlot = {
         modificationCount: 0,
         name: 'slot1',
@@ -137,6 +130,17 @@ describe('WorkspaceSlotDetailComponent', () => {
         ]
       }
       component.slotOrg = slotOrg
+    })
+
+    it('should always emit detailClosed event when dialog is closed', () => {
+      spyOn(component.detailClosed, 'emit')
+
+      component.onClose()
+
+      expect(component.detailClosed.emit).toHaveBeenCalled()
+    })
+
+    it('should emit detailClosed event with false if there is no change ', () => {
       const slot: CombinedSlot = {
         modificationCount: 1,
         name: 'slot1',
@@ -416,7 +420,7 @@ describe('WorkspaceSlotDetailComponent', () => {
 
   describe('Deletion', () => {
     beforeEach(() => {
-      component.slot = {
+      component.slotOrg = {
         name: 'slot1',
         id: '1',
         new: false,

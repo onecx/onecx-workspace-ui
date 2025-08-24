@@ -175,7 +175,8 @@ describe('WorkspaceSlotsComponent', () => {
   }
   const slotServiceSpy = {
     getSlotsForWorkspace: jasmine.createSpy('getSlotsForWorkspace').and.returnValue(of({})),
-    createSlot: jasmine.createSpy('createSlot').and.returnValue(of({}))
+    createSlot: jasmine.createSpy('createSlot').and.returnValue(of({})),
+    deleteSlotById: jasmine.createSpy('deleteSlotById').and.returnValue(of({}))
   }
   const productServiceSpy = {
     searchAvailableProducts: jasmine.createSpy('searchAvailableProducts').and.returnValue(of({}))
@@ -209,6 +210,7 @@ describe('WorkspaceSlotsComponent', () => {
     wProductServiceSpy.getProductsByWorkspaceId.calls.reset()
     slotServiceSpy.getSlotsForWorkspace.calls.reset()
     slotServiceSpy.createSlot.calls.reset()
+    slotServiceSpy.deleteSlotById.calls.reset()
     productServiceSpy.searchAvailableProducts.calls.reset()
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
@@ -275,7 +277,6 @@ describe('WorkspaceSlotsComponent', () => {
 
       expect(component.wProductNames.length).toBe(2)
       expect(component.wSlots.length).toBe(5)
-      expect(component.psSlots.length).toBe(5)
       expect(component.psComponents.length).toBe(4)
     })
 
@@ -375,7 +376,7 @@ describe('WorkspaceSlotsComponent', () => {
     })
   })
 
-  describe('onSlotDetail', () => {
+  describe('slot detail', () => {
     let mockEvent: any
 
     beforeEach(() => {
@@ -399,8 +400,7 @@ describe('WorkspaceSlotsComponent', () => {
       component.onSlotDetail(mockEvent, mockSlot)
 
       expect(mockEvent.stopPropagation).toHaveBeenCalled()
-      expect(component.slot).toBe(mockSlot)
-      expect(component.detailSlotId).toBe('123')
+      expect(component.item4Detail).toBe(mockSlot)
       expect(component.changeMode).toBe('EDIT')
       expect(component.showSlotDetailDialog).toBeTrue()
     })
@@ -421,8 +421,7 @@ describe('WorkspaceSlotsComponent', () => {
       component.onSlotDetail(mockEvent, mockSlot)
 
       expect(mockEvent.stopPropagation).toHaveBeenCalled()
-      expect(component.slot).toBe(mockSlot)
-      expect(component.detailSlotId).toBe('123')
+      expect(component.item4Detail).toBe(mockSlot)
       expect(component.changeMode).toBe('VIEW')
       expect(component.showSlotDetailDialog).toBeTrue()
     })
@@ -443,8 +442,7 @@ describe('WorkspaceSlotsComponent', () => {
       component.onSlotDetail(mockEvent, mockSlot)
 
       expect(mockEvent.stopPropagation).toHaveBeenCalled()
-      expect(component.slot).toBeUndefined()
-      expect(component.detailSlotId).toBeUndefined()
+      expect(component.item4Detail).toBeUndefined()
       expect(component.changeMode).toBe('VIEW')
       expect(component.showSlotDetailDialog).toBeFalse()
     })
@@ -456,44 +454,49 @@ describe('WorkspaceSlotsComponent', () => {
     })
 
     it('should reset the component state and call loadData when data was changed in detail', () => {
-      component.slot = { id: '123', new: false } as any
-      component.detailSlotId = '123'
+      component.item4Detail = { id: '123', new: false } as any
       component.changeMode = 'EDIT'
       component.showSlotDetailDialog = true
-      component.showSlotDeleteDialog = false
 
       component.onSlotDetailClosed(true) // changed data
 
-      expect(component.slot).toBeUndefined()
-      expect(component.detailSlotId).toBeUndefined()
+      expect(component.item4Detail).toBeUndefined()
       expect(component.changeMode).toBe('VIEW')
       expect(component.showSlotDetailDialog).toBeFalse()
-      expect(component.showSlotDeleteDialog).toBeFalse()
       expect(component.loadData).toHaveBeenCalled() // call
     })
 
     it('should reset the component state and not call loadData when data was not changed in detail', () => {
-      component.slot = { id: '123', new: false } as any
-      component.detailSlotId = '123'
+      component.item4Detail = { id: '123', new: false } as any
       component.changeMode = 'EDIT'
       component.showSlotDetailDialog = true
-      component.showSlotDeleteDialog = false
 
       component.onSlotDetailClosed(false) // no changes
 
-      expect(component.slot).toBeUndefined()
-      expect(component.detailSlotId).toBeUndefined()
+      expect(component.item4Detail).toBeUndefined()
       expect(component.changeMode).toBe('VIEW')
       expect(component.showSlotDetailDialog).toBeFalse()
-      expect(component.showSlotDeleteDialog).toBeFalse()
       expect(component.loadData).not.toHaveBeenCalled() // NOT called
+    })
+
+    it('should adjust slot array after a slot was deleted', () => {
+      component.item4Detail = { id: '123', new: false } as any
+      component.changeMode = 'DELETE'
+      component.showSlotDeleteDialog = true
+
+      component.onSlotDetailClosed(true) // changes
+
+      expect(component.item4Detail).toBeUndefined()
+      expect(component.changeMode).toBe('VIEW')
+      expect(component.showSlotDeleteDialog).toBeFalse()
     })
   })
 
   describe('onAddSlot', () => {
     let mockEvent: any
-    const mockSlot: CombinedSlot = {
-      id: '123',
+    const slot: CombinedSlot = {
+      id: 'id5',
+      name: 'slot-5',
       new: true,
       type: 'UNREGISTERED',
       changes: false,
@@ -505,18 +508,33 @@ describe('WorkspaceSlotsComponent', () => {
 
     beforeEach(() => {
       mockEvent = new Event('click')
-      spyOn(mockEvent, 'stopPropagation')
-      spyOn(component, 'loadData').and.callFake(() => {})
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of(wProducts))
+      slotServiceSpy.getSlotsForWorkspace.and.returnValue(of({ slots: wSlots }))
+      productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: psProducts }))
+      component.workspace = workspace
+      component.loadData()
     })
 
-    it('should create a slot and load data', () => {
-      component.onAddSlot(mockEvent, mockSlot)
+    it('should create a slot ', () => {
+      slotServiceSpy.createSlot.and.returnValue(
+        of({
+          ...slot,
+          id: 'id',
+          creationDate: 'date',
+          creationUser: 'test',
+          modificationDate: 'date',
+          modificationUser: 'test'
+        })
+      )
+      spyOn(mockEvent, 'stopPropagation')
+
+      component.onAddSlot(mockEvent, slot)
 
       expect(mockEvent.stopPropagation).toHaveBeenCalled()
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.SLOT.MESSAGE_OK' })
       expect(slotServiceSpy.createSlot).toHaveBeenCalledWith({
-        createSlotRequest: { workspaceId: component.workspace?.id, name: mockSlot.name }
+        createSlotRequest: { workspaceId: component.workspace?.id, name: slot.name }
       })
-      expect(component.loadData).toHaveBeenCalled()
     })
 
     it('should display error if slot creation fails', () => {
@@ -524,18 +542,64 @@ describe('WorkspaceSlotsComponent', () => {
       slotServiceSpy.createSlot.and.returnValue(throwError(() => errorResponse))
       spyOn(console, 'error')
 
-      component.onAddSlot(mockEvent, mockSlot)
+      component.onAddSlot(mockEvent, slot)
 
-      expect(mockEvent.stopPropagation).toHaveBeenCalled()
-      expect(slotServiceSpy.createSlot).toHaveBeenCalledWith({
-        createSlotRequest: { workspaceId: component.workspace?.id, name: mockSlot.name }
-      })
       expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.SLOT.MESSAGE_NOK' })
       expect(console.error).toHaveBeenCalledWith('createSlot', errorResponse)
     })
   })
 
   describe('onDeleteSlot', () => {
+    let mockEvent: any
+    const slot: CombinedSlot = {
+      id: 'id5',
+      name: 'slot-5',
+      new: false,
+      type: 'WORKSPACE',
+      changes: false,
+      psSlots: [],
+      psComponents: [],
+      undeployed: false,
+      deprecated: false,
+      creationDate: 'date',
+      creationUser: 'test',
+      modificationDate: 'date',
+      modificationUser: 'test'
+    }
+
+    beforeEach(() => {
+      mockEvent = new Event('click')
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of(wProducts))
+      slotServiceSpy.getSlotsForWorkspace.and.returnValue(of({ slots: wSlots }))
+      productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: psProducts }))
+      component.workspace = workspace
+      component.loadData()
+    })
+
+    it('should delete a slot ', () => {
+      slotServiceSpy.deleteSlotById.and.returnValue(of({}))
+      spyOn(mockEvent, 'stopPropagation')
+
+      component.onDeleteSlot(mockEvent, slot)
+
+      expect(mockEvent.stopPropagation).toHaveBeenCalled()
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.SLOT.MESSAGE_OK' })
+      expect(slotServiceSpy.deleteSlotById).toHaveBeenCalledWith({ id: slot.id })
+    })
+
+    it('should display error if slot creation fails', () => {
+      const errorResponse = { status: 400, statusText: 'Error on creating a slot' }
+      slotServiceSpy.deleteSlotById.and.returnValue(throwError(() => errorResponse))
+      spyOn(console, 'error')
+
+      component.onDeleteSlot(mockEvent, slot)
+
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.SLOT.MESSAGE_NOK' })
+      expect(console.error).toHaveBeenCalledWith('deleteSlotById', errorResponse)
+    })
+  })
+
+  describe('deletion', () => {
     let mockEvent: any
     const mockSlot: CombinedSlot = {
       id: '123',
@@ -548,33 +612,14 @@ describe('WorkspaceSlotsComponent', () => {
       deprecated: false
     }
 
-    beforeEach(() => {
+    it('should call deletion dialog for a slot', () => {
       mockEvent = new Event('click')
       spyOn(mockEvent, 'stopPropagation')
-      spyOn(component, 'loadData').and.callFake(() => {})
-    })
 
-    it('should delete a slot and update component state', () => {
-      component.hasEditPermission = true
-
-      component.onDeleteSlot(mockEvent, mockSlot)
+      component.onSlotDelete(mockEvent, mockSlot)
 
       expect(mockEvent.stopPropagation).toHaveBeenCalled()
-      expect(component.slot).toBe(mockSlot)
-      expect(component.detailSlotId).toBe('123')
-      expect(component.changeMode).toBe('EDIT')
-      expect(component.showSlotDeleteDialog).toBeTrue()
-    })
-
-    it('should delete a slot and update component state', () => {
-      component.hasEditPermission = false
-
-      component.onDeleteSlot(mockEvent, mockSlot)
-
-      expect(mockEvent.stopPropagation).toHaveBeenCalled()
-      expect(component.slot).toBe(mockSlot)
-      expect(component.detailSlotId).toBe('123')
-      expect(component.changeMode).toBe('VIEW')
+      expect(component.changeMode).toBe('DELETE')
       expect(component.showSlotDeleteDialog).toBeTrue()
     })
   })

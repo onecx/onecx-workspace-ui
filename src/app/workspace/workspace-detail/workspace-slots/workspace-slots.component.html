@@ -25,7 +25,7 @@
   <ng-template pTemplate="header">
     <div class="flex flex-wrap align-items-center column-gap-4 row-gap-1">
       <p-message
-        *ngIf="wpLoading || sLoading"
+        *ngIf="wpLoading || wsLoading || psLoading"
         id="ws_slots_message_loading"
         severity="info"
         styleClass="m-2 p-2"
@@ -34,7 +34,7 @@
 
       <!-- Quick Filter -->
       <nav
-        *ngIf="!(wpLoading || sLoading)"
+        *ngIf="!(wpLoading || wsLoading || psLoading)"
         class="slim-selectbutton search-criteria-selectbutton"
         [attr.aria-label]="'DIALOG.SLOT.QUICK_FILTER.TOOLTIP' | translate"
         [pTooltip]="'DIALOG.SLOT.QUICK_FILTER.TOOLTIP' | translate"
@@ -129,9 +129,9 @@
       >
         <a
           [id]="'ws_slots_grid_data_row_' + i + '_action_detail'"
-          class="block card relative py-1 px-4"
-          [ngClass]="{ 'hover:bg-gray-200 cursor-pointer': !slot.new }"
-          [class.bg-gray-200]="slot.new"
+          [attr.slotid]="slot.id"
+          class="block card relative py-1 px-4 p-button p-button-text"
+          [ngClass]="{ 'hover:bg-gray-200 cursor-pointer': !slot.new, 'cursor-auto p-button-info': slot.new }"
           (click)="onSlotDetail($event, slot)"
           [attr.aria-label]="'DIALOG.SLOT.HEADER.' + (hasEditPermission ? 'EDIT' : 'VIEW') | translate"
         >
@@ -170,7 +170,7 @@
           <div
             *ngIf="slot.components"
             [id]="'ws_slots_grid_data_row_' + i + '_components'"
-            class="card-badge-left badge-1-number p-1"
+            class="card-badge-left badge-1-number p-1 text-color"
             [attr.aria-label]="'SLOT.COMPONENTS' | translate"
             [pTooltip]="'SLOT.COMPONENTS' | translate"
             tooltipPosition="top"
@@ -181,7 +181,7 @@
           </div>
           <ng-container *ngIf="slot.changes">
             <div
-              *ngIf="slot.undeployed && !slot.deprecated"
+              *ngIf="slot.undeployed"
               [id]="'ws_slots_grid_data_row_' + i + '_undeployed'"
               class="card-badge-left badge-2 pi pi-ban danger-action-text"
               [attr.aria-label]="'DIALOG.SLOT.UNDEPLOYED' | translate"
@@ -201,7 +201,7 @@
               role="note"
             ></div>
             <div
-              *ngIf="!slot.undeployed && !slot.deprecated"
+              *ngIf="!slot.undeployed && !slot.deprecated && slot.changed"
               [id]="'ws_slots_grid_data_row_' + i + '_changed'"
               class="card-badge-left badge-2 pi pi-exclamation-circle danger-action-text"
               [attr.aria-label]="'DIALOG.SLOT.CHANGED' | translate"
@@ -215,7 +215,7 @@
           <div class="flex flex-column justify-content-between row-gap-2 text-center" aria-hidden="true">
             <div
               [id]="'ws_slots_grid_data_row_' + i + '_slot_name'"
-              class="text-sm md:text-base md:font-bold text-responsive"
+              class="text-sm md:text-base text-color md:font-bold text-responsive"
               [attr.aria-label]="'SLOT.NAME' | translate"
               [pTooltip]="slot.name.length < 20 ? '' : slot.name"
               tooltipPosition="top"
@@ -231,7 +231,7 @@
                 *ngIf="!slot.new"
                 [id]="'ws_roles_grid_data_row_' + i + '_workspace'"
                 class="py-1"
-                [styleClass]="'bg-primary'"
+                [styleClass]="slot.changes ? 'danger-action-bg' : 'bg-primary'"
                 [label]="'Workspace'"
                 [title]="'DIALOG.SLOT.WORKSPACE' | translate"
               />
@@ -239,6 +239,7 @@
                 *ngIf="slot.new"
                 [id]="'ws_roles_grid_data_row_' + i + '_new'"
                 class="py-1"
+                [ngClass]="{ 'danger-action-text': slot.changes }"
                 [label]="
                   (slot.undeployed
                     ? 'DIALOG.SLOT.UNDEPLOYED'
@@ -259,7 +260,7 @@
 
 <!-- DETAIL -->
 <app-workspace-slot-detail
-  [slotOrg]="slot"
+  [slotOrg]="item4Detail"
   [psComponentsOrg]="psComponents"
   [wProductNames]="wProductNames"
   [changeMode]="changeMode"
