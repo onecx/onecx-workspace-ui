@@ -249,7 +249,7 @@
           <span
             *ngIf="displayedDetailItem.undeployed"
             id="ws_products_detail_header_undeployed"
-            class="p-2 danger-action-text pi pi-ban"
+            class="p-2 text-lg danger-action-text pi pi-ban"
             [pTooltip]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
@@ -257,7 +257,7 @@
           <span
             *ngIf="!displayedDetailItem.undeployed && displayedDetailItem.changedComponents"
             id="ws_products_detail_header_changed_mfe"
-            class="p-2 danger-action-text pi pi-exclamation-circle"
+            class="p-2 text-lg danger-action-text pi pi-exclamation-circle"
             [pTooltip]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
@@ -459,7 +459,7 @@
               <span
                 *ngIf="item.undeployed"
                 [id]="'ws_products_detail_component_' + i + '_undeployed'"
-                class="danger-action-text pi pi-ban"
+                class="text-sm danger-action-text pi pi-ban"
                 [pTooltip]="'DIALOG.PRODUCTS.MFES.UNDEPLOYED' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
@@ -468,7 +468,7 @@
               <span
                 *ngIf="item.deprecated"
                 [id]="'ws_products_detail_component_' + i + '_deprecated'"
-                class="danger-action-text pi pi-exclamation-circle"
+                class="text-sm danger-action-text pi pi-exclamation-circle"
                 [pTooltip]="'DIALOG.PRODUCTS.MFES.DEPRECATED' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
