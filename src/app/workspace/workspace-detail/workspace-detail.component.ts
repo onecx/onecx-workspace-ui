@@ -99,7 +99,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
     )
   }
 
-  private updateWorkspace() {
+  private onSaveWorkspace() {
     // Trigger update on the form of the currently selected tab
     let workspaceData: Workspace | undefined
     switch (this.selectedTabIndex) {
@@ -270,7 +270,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
             {
               label: data['ACTIONS.SAVE'],
               title: data['ACTIONS.TOOLTIPS.SAVE'],
-              actionCallback: () => this.updateWorkspace(),
+              actionCallback: () => this.onSaveWorkspace(),
               icon: 'pi pi-save',
               show: 'always',
               permission: 'WORKSPACE#EDIT',

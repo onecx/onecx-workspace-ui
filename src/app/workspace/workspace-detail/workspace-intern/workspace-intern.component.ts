@@ -28,7 +28,7 @@ export class WorkspaceInternComponent implements OnChanges {
     this.formGroup.controls['operator'].disable()
   }
 
-  setFormData(): void {
+  private setFormData(): void {
     Object.keys(this.formGroup.controls).forEach((element) => {
       this.formGroup.controls[element].setValue((this.workspace as any)[element])
     })

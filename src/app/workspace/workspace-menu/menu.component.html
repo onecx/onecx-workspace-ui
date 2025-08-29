@@ -114,115 +114,118 @@
             ></p-button>
           </div>
         </div>
+        <div class="mt-3 flex flex-wrap justify-content-start align-items-center gap-5">
+          <div class="my-2 slim-selectbutton search-criteria-selectbutton">
+            <p-selectButton
+              inputid="ws_menu_table_header_row_1_switch_tree_label"
+              styleClass="max-w-15rem flex flex-wrap row-gap-1"
+              [options]="treeNodeLabelSwitchItems"
+              [(ngModel)]="treeNodeLabelSwitchValue"
+              [disabled]="menuNodes.length === 0"
+              [allowEmpty]="false"
+              (onChange)="onTreeNodeLabelSwitchChange($event)"
+              [ariaLabel]="'DIALOG.MENU.HEADER.DISPLAYED_ITEM' | translate"
+              [pTooltip]="'DIALOG.MENU.HEADER.DISPLAYED_ITEM' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            >
+              <ng-template let-item pTemplate="item">{{ item.label }} </ng-template>
+            </p-selectButton>
+          </div>
+          <div class="my-2 slim-selectbutton search-criteria-selectbutton">
+            <p-selectButton
+              inputid="ws_menu_table_header_row_2_switch_content"
+              styleClass="white-space-nowrap hidden-xs"
+              [options]="(treeTableExpandSwitchItems$ | async) ?? []"
+              [(ngModel)]="treeTableExpandSwitchValue"
+              [disabled]="menuNodes.length === 0"
+              [allowEmpty]="false"
+              (onChange)="onToggleTreeViewMode($event)"
+            >
+              <ng-template let-item pTemplate
+                ><span
+                  [id]="'ws_menu_table_header_row_1_switch_expand_' + item.value"
+                  [pTooltip]="item.tooltip"
+                  tooltipPosition="top"
+                  tooltipEvent="hover"
+                >
+                  {{ item.label }}
+                </span>
+              </ng-template>
+            </p-selectButton>
+          </div>
+          <div class="my-2 slim-selectbutton search-criteria-selectbutton">
+            <p-selectButton
+              inputid="ws_menu_table_header_row_1_switch_content"
+              styleClass="white-space-nowrap hidden-xs"
+              [options]="(treeTableContentSwitchItems$ | async) ?? []"
+              [(ngModel)]="treeTableContentSwitchValue"
+              [disabled]="menuNodes.length === 0"
+              [allowEmpty]="false"
+              (onChange)="onToggleTreeTableContent($event)"
+            >
+              <ng-template let-item pTemplate
+                ><span
+                  [id]="'ws_menu_table_header_row_1_switch_content_' + item.value"
+                  [pTooltip]="item.tooltip"
+                  tooltipPosition="top"
+                  tooltipEvent="hover"
+                >
+                  {{ item.label }}</span
+                ></ng-template
+              >
+            </p-selectButton>
+          </div>
+          <div *ngIf="displayRoles && wRoles.length > 3" class="p-inputgroup w-17rem">
+            <span class="p-float-label">
+              <input
+                #roleFilter
+                pInputText
+                type="search"
+                id="ws_menu_table_header_role_filter"
+                class="w-15rem data-view-control-border text-responsive"
+                (input)="onRoleFilterChange(roleFilter.value)"
+                [ariaLabel]="'DIALOG.MENU.HEADER.ROLES.FILTER' | translate"
+                [pTooltip]="'DIALOG.MENU.HEADER.ROLES.FILTER.TOOLTIP' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+              />
+              <label for="ws_menu_table_header_role_filter" aria-hidden="true">
+                {{ 'DIALOG.MENU.HEADER.ROLES.FILTER' | translate }}
+              </label>
+            </span>
+            <button
+              id="ws_menu_table_header_role_filter_clear"
+              class="p-inputgroup-addon bg-primary pseudo-button pi pi-filter-slash"
+              (click)="roleFilter.value = ''; onRoleFilterChange('')"
+              [attr.aria-label]="'ACTIONS.SEARCH.FILTER.CLEAR' | translate"
+              [pTooltip]="'ACTIONS.SEARCH.FILTER.CLEAR' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            ></button>
+          </div>
+        </div>
       </ng-template>
 
       <!-- TABLE HEADER -->
       <ng-template pTemplate="header" let-columns>
-        <tr id="ws_menu_table_header_row_1">
-          <th id="ws_menu_table_header_row_1_1" class="pb-2 vertical-align-top text-left border-transparent">
-            <div class="slim-selectbutton search-criteria-selectbutton">
-              <p-selectButton
-                inputid="ws_menu_table_header_row_1_switch_tree_label"
-                styleClass="max-w-15rem flex flex-wrap row-gap-1"
-                [options]="treeNodeLabelSwitchItems"
-                [(ngModel)]="treeNodeLabelSwitchValue"
-                [disabled]="menuNodes.length === 0"
-                [allowEmpty]="false"
-                (onChange)="onTreeNodeLabelSwitchChange($event)"
-                [ariaLabel]="'DIALOG.MENU.HEADER.DISPLAYED_ITEM' | translate"
-                [pTooltip]="'DIALOG.MENU.HEADER.DISPLAYED_ITEM' | translate"
-                tooltipPosition="top"
-                tooltipEvent="hover"
-              >
-                <ng-template let-item pTemplate="item">{{ item.label }} </ng-template>
-              </p-selectButton>
-            </div>
-          </th>
-          <th
-            id="ws_menu_table_header_row_1_2"
-            class="pl-3 vertical-align-top text-left border-transparent"
-            [attr.colspan]="displayRoles ? 1 + columns.length : 6"
-          >
-            <div class="flex flex-row justify-content-start align-items-center column-gap-5">
-              <div class="slim-selectbutton search-criteria-selectbutton">
-                <p-selectButton
-                  inputid="ws_menu_table_header_row_1_switch_content"
-                  styleClass="white-space-nowrap hidden-xs"
-                  [options]="(treeTableContentSwitchItems$ | async) ?? []"
-                  [(ngModel)]="treeTableContentSwitchValue"
-                  [disabled]="menuNodes.length === 0"
-                  [allowEmpty]="false"
-                  (onChange)="onToggleTreeTableContent($event)"
-                >
-                  <ng-template let-item pTemplate
-                    ><span
-                      [id]="'ws_menu_table_header_row_1_switch_content_' + item.value"
-                      [pTooltip]="item.tooltip"
-                      tooltipPosition="top"
-                      tooltipEvent="hover"
-                    >
-                      {{ item.label }}</span
-                    ></ng-template
-                  >
-                </p-selectButton>
-              </div>
-              <div *ngIf="displayRoles && wRoles.length > 3" class="p-inputgroup h-2rem">
-                <span class="p-inputgroup-addon pi pi-filter p-2 text-sm min-w-min"> </span>
-                <input
-                  #roleFilter
-                  pInputText
-                  type="search"
-                  id="ws_menu_table_header_role_filter"
-                  class="py-0 px-2 max-w-20rem h-2rem text-responsive"
-                  (input)="onRoleFilterChange(roleFilter.value)"
-                  [placeholder]="'DIALOG.MENU.HEADER.ROLES.FILTER' | translate"
-                  [pTooltip]="'DIALOG.MENU.HEADER.ROLES.FILTER.TOOLTIP' | translate"
-                  tooltipPosition="top"
-                  tooltipEvent="hover"
-                />
-              </div>
-            </div>
-          </th>
-        </tr>
-
-        <!-- ROW 2 -->
         <tr id="ws_menu_table_header_row_2">
-          <th id="ws_menu_table_header_row_2_1" class="pr-4 vertical-align-bottom border-transparent border-bottom-2">
-            <div class="slim-selectbutton search-criteria-selectbutton">
-              <p-selectButton
-                inputid="ws_menu_table_header_row_2_switch_content"
-                styleClass="white-space-nowrap hidden-xs"
-                [options]="(treeTableExpandSwitchItems$ | async) ?? []"
-                [(ngModel)]="treeTableExpandSwitchValue"
-                [disabled]="menuNodes.length === 0"
-                [allowEmpty]="false"
-                (onChange)="onToggleTreeViewMode($event)"
-              >
-                <ng-template let-item pTemplate
-                  ><span
-                    [id]="'ws_menu_table_header_row_1_switch_expand_' + item.value"
-                    [pTooltip]="item.tooltip"
-                    tooltipPosition="top"
-                    tooltipEvent="hover"
-                  >
-                    {{ item.label }}</span
-                  ></ng-template
-                >
-              </p-selectButton>
-            </div>
-          </th>
-          <!-- ROW 2: DETAIL Columns -->
+          <th
+            id="ws_menu_table_header_row_2_1"
+            class="pr-4 vertical-align-bottom border-transparent border-bottom-2 menu-name"
+          ></th>
+          <!-- HEADER ROW - DETAIL Columns -->
           <ng-container *ngIf="!displayRoles">
             <th
               *ngFor="let col of treeDetailColumns"
               [id]="'ws_menu_table_header_detail_' + col.name"
-              class="text-center vertical-align-bottom white-space-nowrap border-bottom-2"
+              class="pt-2 pb-1 px-1 text-center vertical-align-bottom white-space-nowrap border-bottom-2"
               [ngClass]="col.css"
               [pTooltip]="col.tooltipKey | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
             >
-              {{ col.headerKey | translate }}
+              <div class="p-1">{{ col.headerKey | translate }}</div>
             </th>
           </ng-container>
 
@@ -253,17 +256,17 @@
                 [text]="'DIALOG.MENU.HEADER.ROLES.NOT_MATCHING' | translate"
               ></p-message>
             </th>
-            <!-- role filter -->
+            <!-- HEADER ROW - ROLES filter -->
             <th class="p-0 hidden-xs border-bottom-none vertical-align-bottom">
-              <span
+              <div
                 *ngIf="roleFilterValue.length === 0"
                 [id]="'ws_menu_table_header_roles_action_filter'"
-                class="p-2 text-primary font-medium p-button-icon pi pi-filter"
+                class="p-2 text-primary p-button-icon pi pi-filter"
                 aria-hidden="true"
                 [pTooltip]="'DIALOG.MENU.ROLE.FILTER' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
-              ></span>
+              ></div>
               <button
                 *ngIf="roleFilterValue.length > 0"
                 pbutton
@@ -276,19 +279,19 @@
                 tooltipPosition="top"
                 tooltipEvent="hover"
               >
-                <span class="text-primary font-medium p-button-icon pi pi-filter-slash" aria-hidden="true"></span>
+                <span class="text-primary p-button-icon pi pi-filter-slash" aria-hidden="true"></span>
               </button>
             </th>
-            <!-- filtered columns => no match = no columns-->
+            <!-- HEADER ROW - ROLES - filtered columns => no match = no columns -->
             <th
               *ngFor="let role of columns"
-              class="p-1 hidden-xs text-center vertical-align-bottom border-bottom-2 border-right-1 role-name"
+              class="pt-2 pb-1 px-1 hidden-xs text-center vertical-align-bottom border-bottom-2 border-right-1 role-name"
             >
-              <a
+              <button
                 [id]="'ws_menu_table_header_roles_' + role.name"
-                class="p-1 cursor-pointer border-round-sm"
+                class="p-1 text-base cursor-pointer border-round-sm border-none"
+                style="background: transparent"
                 [class.bg-primary]="roleFilterValue.includes(role.name)"
-                tabindex="0"
                 (keydown.space)="onChangeRoleFilter(role.name)"
                 (click)="onChangeRoleFilter(role.name)"
                 [attr.aria-label]="'DIALOG.MENU.ROLE.FILTER.NAME' | translate"
@@ -297,7 +300,7 @@
                 tooltipEvent="hover"
               >
                 {{ role.name }}
-              </a>
+              </button>
             </th>
           </ng-container>
         </tr>
@@ -319,7 +322,7 @@
           </td>
           <!-- menu item actions -->
           <ng-container *ngIf="!displayRoles">
-            <td class="p-0 hidden-xs border-right-1">
+            <td class="px-2 hidden-xs border-right-1">
               <div class="flex flex-row flex-nowrap column-gap-0 align-items-center">
                 <button
                   *ocxIfPermission="'MENU#EDIT'"
@@ -333,7 +336,7 @@
                   tooltipEvent="hover"
                 >
                   <span
-                    class="text-red-500 font-medium p-button-icon pi pi-check-circle"
+                    class="text-red-500 p-button-icon pi pi-check-circle"
                     [class.pi-check-circle]="!rowData['disabled']"
                     [class.pi-minus-circle]="rowData['disabled']"
                     [class.text-green-500]="!rowData['disabled']"
@@ -357,7 +360,7 @@
                   tooltipEvent="hover"
                 >
                   <span
-                    class="text-primary font-medium p-button-icon pi"
+                    class="text-primary p-button-icon pi"
                     [class.pi-eye]="myPermissions.includes('MENU#VIEW') && !myPermissions.includes('MENU#EDIT')"
                     [class.pi-pencil]="myPermissions.includes('MENU#EDIT')"
                     aria-hidden="true"
@@ -375,7 +378,7 @@
                   tooltipPosition="top"
                   tooltipEvent="hover"
                 >
-                  <span class="text-primary font-medium p-button-icon pi pi-plus-circle" aria-hidden="true"></span>
+                  <span class="text-primary p-button-icon pi pi-plus-circle" aria-hidden="true"></span>
                 </button>
                 <button
                   *ocxIfPermission="'MENU#DELETE'"
@@ -389,7 +392,7 @@
                   tooltipPosition="top"
                   tooltipEvent="hover"
                 >
-                  <span class="danger-action-text font-medium p-button-icon pi pi-trash" aria-hidden="true"></span>
+                  <span class="danger-action-text p-button-icon pi pi-trash" aria-hidden="true"></span>
                 </button>
               </div>
             </td>
@@ -481,7 +484,7 @@
                   tooltipPosition="top"
                   tooltipEvent="hover"
                 >
-                  <span class="text-primary font-medium p-button-icon pi pi-circle-fill" aria-hidden="true"></span>
+                  <span class="text-primary text-lg p-button-icon pi pi-circle-fill" aria-hidden="true"></span>
                 </button>
                 <button
                   *ngIf="!rowData.roles[role.id]"
@@ -497,7 +500,7 @@
                   tooltipPosition="top"
                   tooltipEvent="hover"
                 >
-                  <span class="text-primary font-medium p-button-icon pi pi-circle" aria-hidden="true"></span>
+                  <span class="text-primary text-lg p-button-icon pi pi-circle" aria-hidden="true"></span>
                 </button>
               </div>
             </td>
