@@ -309,7 +309,7 @@
         <tr [ttRow]="rowNode" [id]="'ws_menu_table_row_' + rowData.key" [attr.level]="rowData.level">
           <!-- MENU ITEM -->
           <td class="p-0 pr-4">
-            <div class="flex flex-row flex-nowrap column-gap-1 align-items-center">
+            <div class="flex flex-row flex-nowrap column-gap-1 align-items-center" style="line-height: 2.2rem">
               <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
               <span *ngIf="rowData.badge" class="pi pi-{{ rowData.badge }} pr-2"></span>
               <span *ngIf="!rowData.badge" class="pi pi-folder pr-2 invisible"></span>
@@ -321,7 +321,8 @@
           <!-- DETAILS -->
           <ng-container *ngIf="!displayRoles">
             <td class="px-2 hidden-xs border-right-1">
-              <div class="flex flex-row flex-nowrap column-gap-0 align-items-center">
+              <!-- DETAILS: actions -->
+              <div class="flex flex-row flex-nowrap column-gap-1 align-items-center">
                 <button
                   *ocxIfPermission="'MENU#EDIT'"
                   pbutton
