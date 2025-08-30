@@ -414,11 +414,9 @@
         "ROLES": "Rollen",
         "ROLES.TOOLTIP": "Ansicht Rollen und Berechtigungen",
         "ROLES.LOADING": "...Rollen laden",
-        "ROLES.FILTER": "Rollennamefilter",
-        "ROLES.FILTER.TOOLTIP": "Filter für Rollenname",
         "ROLES.MANAGE": "Rollen verwalten",
         "ROLES.NOT_EXIST": "Keine Rollen für den Workspace definiert",
-        "ROLES.NOT_MATCHING": "Keine Rollen laut Filter",
+        "ROLES.NOT_MATCHING": "Keine Rollen entsprechend Filter",
         "PREVIEW.TOOLTIP": "Ansicht in den konfigurierten Sprachen",
         "PREVIEW2.TOOLTIP": "Rot = keine Übersetzungen",
         "REORDER.TOOLTIP": "Umordnen mit Drag & Drop"
@@ -451,6 +449,8 @@
       },
       "ROLE": {
         "FILTER": "Rollenfilter: Anzeige der Menüeinträge entsprechend der gewählten Rollen",
+        "FILTER.DISPLAY_ROLES": "Rollenspaltenfilter",
+        "FILTER.DISPLAY_ROLES.TOOLTIP": "Filter für Rollenname zur Anzeige der Rollenspalten",
         "FILTER.LABEL": "Rollenfilter",
         "FILTER.CLEAR": "Rollenfilter löschen",
         "FILTER.NAME": "Mit Klick Rollenname zum Filter hinzufügen/entfernen"

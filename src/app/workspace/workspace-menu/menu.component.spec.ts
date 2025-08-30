@@ -335,23 +335,23 @@ describe('MenuComponent', () => {
     })
 
     it('should change the tree table content: display of roles', () => {
-      spyOn(component, 'onResetRoleFilter')
+      spyOn(component, 'onColumnRoleFilterReset')
       const event = { value: 'ROLES' }
 
       component.onToggleTreeTableContent(event)
 
       expect(component.displayRoles).toBeTrue()
-      expect(component.onResetRoleFilter).not.toHaveBeenCalled()
+      expect(component.onColumnRoleFilterReset).not.toHaveBeenCalled()
     })
 
     it('should change the tree table content: display of roles', () => {
-      spyOn(component, 'onResetRoleFilter')
+      spyOn(component, 'onColumnRoleFilterReset')
       const event = { value: 'DETAILS' }
 
       component.onToggleTreeTableContent(event)
 
       expect(component.displayRoles).toBeFalse()
-      expect(component.onResetRoleFilter).toHaveBeenCalled()
+      expect(component.onColumnRoleFilterReset).toHaveBeenCalled()
     })
 
     it('should return true if an object is empty', () => {
@@ -400,7 +400,7 @@ describe('MenuComponent', () => {
         //spyOn<any>(component, 'assignNode2Role')
         component.roleFilterValue = ['role1']
 
-        component.onChangeRoleFilter('role2')
+        component.onColumnRoleFilterChange('role2')
 
         expect(component.roleFilterValue).toEqual(['role1', 'role2'])
         expect(component.loadMenu).toHaveBeenCalledWith(true)
@@ -411,7 +411,7 @@ describe('MenuComponent', () => {
         spyOn(component, 'loadMenu')
         component.roleFilterValue = ['role1', 'role2']
 
-        component.onChangeRoleFilter('role2')
+        component.onColumnRoleFilterChange('role2')
 
         expect(component.roleFilterValue).toEqual(['role1'])
         expect(component.loadMenu).toHaveBeenCalledWith(true)
@@ -421,7 +421,7 @@ describe('MenuComponent', () => {
         spyOn(component, 'loadMenu')
         component.roleFilterValue = ['role1', 'role2']
 
-        component.onResetRoleFilter()
+        component.onColumnRoleFilterReset()
 
         expect(component.roleFilterValue).toEqual([])
         expect(component.loadMenu).toHaveBeenCalledWith(true)

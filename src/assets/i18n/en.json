@@ -414,8 +414,6 @@
         "ROLES": "Roles",
         "ROLES.TOOLTIP": "Display Roles and Permissions",
         "ROLES.LOADING": "...loading Roles",
-        "ROLES.FILTER": "Role name filter",
-        "ROLES.FILTER.TOOLTIP": "Filter for Role name",
         "ROLES.MANAGE": "Manage Roles",
         "ROLES.NOT_EXIST": "No Workspace Roles defined",
         "ROLES.NOT_MATCHING": "No Roles according to filter",
@@ -451,6 +449,8 @@
       },
       "ROLE": {
         "FILTER": "Role filter: Display Menu Items according to the selected Roles",
+        "ROLES.FILTER": "Role column filter",
+        "ROLES.FILTER.TOOLTIP": "Filter for Role name for displaying role column",
         "FILTER.LABEL": "Role filter",
         "FILTER.CLEAR": "Clear Role filter",
         "FILTER.NAME": "Click to add/remove Role name to filter"

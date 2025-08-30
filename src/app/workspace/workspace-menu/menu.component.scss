@@ -12,20 +12,6 @@
 @include table-inline-buttons;
 
 :host ::ng-deep {
-  .p-treetable-wrapper {
-    overflow: auto;
-    max-height: 45rem;
-  }
-  .p-treetable-tbody {
-    tr[aria-level='2'],
-    tr[aria-level='4'],
-    tr[aria-level='6'] {
-      td {
-        background-color: var(--table-body-row-even-bg);
-      }
-    }
-  }
-
   .p-dialog .p-dialog-content {
     padding-bottom: 0;
     overflow-y: hidden;
@@ -59,20 +45,49 @@
     font-weight: var(--font-weight);
   }
 
+  .p-treetable-wrapper {
+    overflow: auto;
+    max-height: 45rem;
+    position: relative;
+  }
+  .p-treetable-tbody {
+    tr[aria-level='2'],
+    tr[aria-level='4'],
+    tr[aria-level='6'] {
+      td {
+        background-color: var(--table-body-row-even-bg);
+      }
+    }
+  }
+
   .p-treetable {
     .p-treetable-header {
-      padding: 1rem 0.5rem; // var(--table-header-padding);
-    }
-    .p-treetable-thead > tr > th {
-      padding: 0 0.5rem 0.3rem 0.5rem;
+      border: none;
+      padding: 0.75rem 0.2rem 0.5rem 0.2rem; // var(--table-header-padding);
+      border-bottom: var(--table-header-border);
     }
     table {
       width: unset;
       margin-top: 0.75rem;
       .p-treetable-thead {
+        tr th.menu-name {
+          min-width: 15rem;
+        }
+        /* role names displaying as buttons */
         tr th.role-name {
           word-break: break-all;
           min-width: 60px;
+          button {
+            background: transparent;
+            &:enabled:hover {
+              color: var(--primary-text-color);
+              background: var(--button-hover-bg);
+            }
+            &.clicked {
+              color: var(--primary-text-color);
+              background: var(--primary-color);
+            }
+          }
         }
         tr th:last-of-type {
           border-right: none !important;
@@ -106,6 +121,13 @@
     min-height: 33.2px;
   }
 
+  @media screen and (min-width: 567px) {
+    .role-message {
+      top: 0.5rem;
+      left: 15rem;
+    }
+  }
+
   @media screen and (max-width: 276px) {
     .xs\:hidden {
       display: none !important;
@@ -120,6 +142,10 @@
   @media (max-width: 567px) {
     .hidden-sm {
       display: none !important;
+    }
+    .role-message {
+      top: 0.5rem;
+      left: 0.15rem;
     }
   }
   @media (max-width: 768px) {

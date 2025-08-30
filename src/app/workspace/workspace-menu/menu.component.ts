@@ -52,7 +52,7 @@ type Column = { name: string; headerKey: string; tooltipKey: string; css?: strin
 export class MenuComponent implements OnInit, OnDestroy {
   @ViewChild('menuTree') menuTree: TreeTable | undefined
   @ViewChild('menuTreeFilter') menuTreeFilter: ElementRef<HTMLInputElement> = {} as ElementRef
-  @ViewChild('roleFilter') roleFilter: HTMLInputElement | undefined
+  @ViewChild('roleFilter') roleFilter: ElementRef<HTMLInputElement> = {} as ElementRef
 
   Object = Object
   public limitText = Utils.limitText // utils declarations
@@ -325,7 +325,7 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   public onToggleTreeTableContent(ev: any): void {
     this.displayRoles = ev.value === 'ROLES'
-    if (!this.displayRoles) this.onResetRoleFilter()
+    if (!this.displayRoles) this.onColumnRoleFilterReset()
     this.loadRolesAndAssignments()
   }
 
@@ -404,10 +404,6 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.changeMode = 'DELETE'
     this.menuItem = item
     this.displayMenuDelete = true
-  }
-
-  public onRoleFilterChange(val: string): void {
-    this.wRolesFiltered = this.wRoles.filter((r) => r.name!.indexOf(val) >= 0)
   }
 
   /****************************************************************************
@@ -567,7 +563,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       if (roles.length > 0) {
         roles.sort(this.sortRoleByName)
         this.wRoles = roles
-        this.wRolesFiltered = roles
+        this.wRolesFiltered = roles // displayed columns
         this.assignNode2Role(ass)
       }
       this.loadingRoles = false
@@ -761,17 +757,22 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.displayMenuImport = false
   }
 
-  public onResetRoleFilter(): void {
+  public onRoleFilterChange(val: string): void {
+    this.wRolesFiltered = this.wRoles.filter((r) => r.name!.indexOf(val) >= 0)
+  }
+
+  public onColumnRoleFilterReset(): void {
     if (this.roleFilterValue.length > 0) {
       this.roleFilterValue = []
       this.loadMenu(true)
     }
   }
-  public onChangeRoleFilter(role: string): void {
+  public onColumnRoleFilterChange(role: string): void {
     if (this.roleFilterValue.includes(role)) this.roleFilterValue = this.roleFilterValue.filter((r) => r !== role)
     else this.roleFilterValue.push(role)
     this.loadMenu(true)
   }
+
   public onDisplayRoles(): void {
     if (!this.displayRoles && this.wRoles.length === 0) {
       this.loadRolesAndAssignments()
