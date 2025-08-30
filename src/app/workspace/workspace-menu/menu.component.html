@@ -213,7 +213,7 @@
             class="pr-4 vertical-align-bottom border-transparent border-bottom-2 menu-name"
           ></th>
           <!-- HEADER ROW: DETAIL Columns -->
-          <ng-container *ngIf="!displayRoles">
+          <ng-container *ngIf="!loading && !displayRoles">
             <th
               *ngFor="let col of treeDetailColumns"
               [id]="'ws_menu_table_header_detail_' + col.name"
@@ -261,12 +261,10 @@
               <button
                 *ngIf="roleFilterValue.length === 0"
                 [id]="'ws_menu_table_header_roles_action_filter'"
-                class="p-button-rounded p-button-text p-button p-component p-button-icon-only cursor-auto"
-                style="background: transparent"
+                class="p-button-rounded p-button-text p-button p-component p-button-icon-only cursor-auto bg-transparent"
                 [pTooltip]="'DIALOG.MENU.ROLE.FILTER' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
-                aria-hidden="true"
               >
                 <span class="pi pi-filter" aria-hidden="true"></span>
               </button>
