@@ -73,7 +73,11 @@
               id="ws_menu_table_header_filter_clear"
               class="p-inputgroup-addon cursor-pointer pi pi-filter-slash"
               [ngClass]="{ 'bg-primary': menuTreeFilter.value !== '', 'p-disabled': menuTreeFilter.value === '' }"
-              [ngStyle]="menuTreeFilter.value === '' ? { 'background-color': 'var(--emphasis-lower)', opacity: 'var(--disabled-opacity)' } : null"
+              [ngStyle]="
+                menuTreeFilter.value === ''
+                  ? { 'background-color': 'var(--emphasis-lower)', opacity: 'var(--disabled-opacity)' }
+                  : null
+              "
               (keydown.space)="onClearFilterMenuTable()"
               (click)="onClearFilterMenuTable(menuTreeFilter.value)"
               [attr.aria-label]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
@@ -201,7 +205,11 @@
               id="ws_menu_table_header_role_filter_clear"
               class="p-inputgroup-addon bg-primary pseudo-button pi pi-filter-slash"
               [ngClass]="{ 'bg-primary': roleFilter.value !== '', 'p-disabled': roleFilter.value === '' }"
-              [ngStyle]="roleFilter.value === '' ? { 'background-color': 'var(--emphasis-lower)', opacity: 'var(--disabled-opacity)' } : null"
+              [ngStyle]="
+                roleFilter.value === ''
+                  ? { 'background-color': 'var(--emphasis-lower)', opacity: 'var(--disabled-opacity)' }
+                  : null
+              "
               (click)="roleFilter.value = ''; onRoleFilterChange('')"
               [attr.aria-label]="'DIALOG.MENU.ROLE.FILTER.CLEAR' | translate"
               [pTooltip]="'DIALOG.MENU.ROLE.FILTER.CLEAR' | translate"
