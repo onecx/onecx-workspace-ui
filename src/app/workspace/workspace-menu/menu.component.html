@@ -15,7 +15,6 @@
   <ocx-page-content>
     <p-message *ngIf="exceptionKey" severity="error" styleClass="m-3 p-2" [text]="exceptionKey | translate"></p-message>
 
-    <!-- If menu exist -->
     <p-treeTable
       #menuTree
       *ngIf="!exceptionKey"
@@ -29,7 +28,7 @@
     >
       <!-- TABLE FILTER + SORT -->
       <ng-template pTemplate="caption" class="p-0">
-        <div class="flex flex-wrap justify-content-between align-items-center row-gap-2 column-gap-4">
+        <div class="flex flex-wrap justify-content-between align-items-center row-gap-1 column-gap-4">
           <div *ngIf="menuItems">
             <p-button
               *ocxIfPermission="'MENU#DRAG_DROP'"
@@ -51,7 +50,7 @@
                 #menuTreeFilter
                 pInputText
                 type="text"
-                id="ws_menu_table_header_filter"
+                id="ws_menu_table_header_menu_filter"
                 class="py-0 text-responsive"
                 (input)="menuTree.filterGlobal($any($event.target).value, 'contains')"
                 [pTooltip]="
@@ -63,7 +62,9 @@
                 tooltipPosition="top"
                 tooltipEvent="hover"
               />
-              <label for="ws_menu_table_header_filter">{{ 'DIALOG.DATAVIEW.FILTER_PLACEHOLDER' | translate }} </label>
+              <label for="ws_menu_table_header_menu_filter"
+                >{{ 'DIALOG.DATAVIEW.FILTER_PLACEHOLDER' | translate }}
+              </label>
             </span>
             <button
               id="ws_menu_table_header_filter_clear"
@@ -103,7 +104,7 @@
             <p-button
               id="ws_menu_table_action_reload"
               styleClass="h-full button-min-height"
-              [icon]="'pi ' + (loading ? 'pi-spin pi-spinner' : 'pi-refresh')"
+              [icon]="'pi ' + (loadingMenu ? 'pi-spin pi-spinner' : 'pi-refresh')"
               (onClick)="onReload()"
               [ariaLabel]="'ACTIONS.SEARCH.RELOAD' | translate"
               [pTooltip]="'ACTIONS.SEARCH.RELOAD' | translate"
@@ -112,8 +113,30 @@
             ></p-button>
           </div>
         </div>
-        <div class="mt-1 sm:mt-3 flex flex-wrap justify-content-start align-items-center row-gap-0 column-gap-5">
-          <div class="my-2 slim-selectbutton search-criteria-selectbutton">
+        <div class="mt-2 md:mt-3 flex flex-wrap justify-content-start align-items-center row-gap-1 column-gap-5">
+          <div class="slim-selectbutton search-criteria-selectbutton" [ngClass]="{ 'sm:my-2': displayRoles }">
+            <p-selectButton
+              inputid="ws_menu_table_header_row_switch_content"
+              styleClass="white-space-nowrap hidden-xs"
+              [options]="(treeTableExpandSwitchItems$ | async) ?? []"
+              [(ngModel)]="treeTableExpandSwitchValue"
+              [disabled]="menuNodes.length === 0"
+              [allowEmpty]="false"
+              (onChange)="onToggleTreeViewMode($event)"
+            >
+              <ng-template let-item pTemplate>
+                <span
+                  [id]="'ws_menu_table_header_row_switch_expand_' + item.value"
+                  [pTooltip]="item.tooltip"
+                  tooltipPosition="top"
+                  tooltipEvent="hover"
+                >
+                  {{ item.label }}
+                </span>
+              </ng-template>
+            </p-selectButton>
+          </div>
+          <div class="slim-selectbutton search-criteria-selectbutton" [ngClass]="{ 'sm:my-2': displayRoles }">
             <p-selectButton
               inputid="ws_menu_table_header_row_1_switch_tree_label"
               styleClass="max-w-15rem flex flex-wrap row-gap-1"
@@ -130,29 +153,7 @@
               <ng-template let-item pTemplate="item">{{ item.label }} </ng-template>
             </p-selectButton>
           </div>
-          <div class="sm:my-2 slim-selectbutton search-criteria-selectbutton">
-            <p-selectButton
-              inputid="ws_menu_table_header_row_2_switch_content"
-              styleClass="white-space-nowrap hidden-xs"
-              [options]="(treeTableExpandSwitchItems$ | async) ?? []"
-              [(ngModel)]="treeTableExpandSwitchValue"
-              [disabled]="menuNodes.length === 0"
-              [allowEmpty]="false"
-              (onChange)="onToggleTreeViewMode($event)"
-            >
-              <ng-template let-item pTemplate>
-                <span
-                  [id]="'ws_menu_table_header_row_1_switch_expand_' + item.value"
-                  [pTooltip]="item.tooltip"
-                  tooltipPosition="top"
-                  tooltipEvent="hover"
-                >
-                  {{ item.label }}
-                </span>
-              </ng-template>
-            </p-selectButton>
-          </div>
-          <div class="sm:my-2 slim-selectbutton search-criteria-selectbutton">
+          <div class="slim-selectbutton search-criteria-selectbutton" [ngClass]="{ 'sm:my-2': displayRoles }">
             <p-selectButton
               inputid="ws_menu_table_header_row_1_switch_content"
               styleClass="white-space-nowrap hidden-xs"
@@ -174,7 +175,7 @@
               >
             </p-selectButton>
           </div>
-          <div *ngIf="displayRoles && wRoles.length > 3" class="p-inputgroup w-17rem">
+          <div *ngIf="displayRoles && wRoles.length > 3" class="mt-1 sm:mt-0 p-inputgroup w-17rem">
             <span class="p-float-label">
               <input
                 #roleFilter
@@ -206,14 +207,39 @@
 
       <!-- TABLE HEADER -->
       <ng-template pTemplate="header" let-columns>
-        <tr id="ws_menu_table_header_row_2">
-          <!-- HEADER ROW: Menu item: no content -->
+        <tr id="ws_menu_table_header_row">
+          <!-- HEADER ROW: Menu item column -->
           <th
-            id="ws_menu_table_header_row_2_1"
-            class="pr-4 vertical-align-bottom border-transparent border-bottom-2 menu-name"
-          ></th>
+            id="ws_menu_table_header_row_1"
+            class="p-0 text-right vertical-align-bottom border-transparent border-bottom-2 menu-name"
+          >
+            <!-- ROLE filter icon -->
+            <ng-container *ngIf="!loadingRoles && displayRoles && columns.length > 0">
+              <button
+                *ngIf="roleFilterValue.length === 0"
+                [id]="'ws_menu_table_header_roles_action_filter'"
+                class="p-button-rounded p-button-text p-button p-component p-button-icon-only cursor-auto bg-transparent"
+                [pTooltip]="'DIALOG.MENU.ROLE.FILTER' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+              >
+                <span class="pi pi-filter" aria-hidden="true"></span>
+              </button>
+              <button
+                *ngIf="roleFilterValue.length > 0"
+                [id]="'ws_menu_table_header_roles_action_filter_clear'"
+                class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
+                (click)="onColumnRoleFilterReset()"
+                [attr.aria-label]="'DIALOG.MENU.ROLE.FILTER.CLEAR' | translate"
+                [pTooltip]="'DIALOG.MENU.ROLE.FILTER.CLEAR' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+              >
+                <span class="pi pi-filter-slash" aria-hidden="true"></span></button
+            ></ng-container>
+          </th>
           <!-- HEADER ROW: DETAIL Columns -->
-          <ng-container *ngIf="!loading && !displayRoles">
+          <ng-container *ngIf="!loadingMenu && !displayRoles">
             <th
               *ngFor="let col of treeDetailColumns"
               [id]="'ws_menu_table_header_detail_' + col.name"
@@ -256,31 +282,6 @@
             </th>
           </ng-container>
           <ng-container *ngIf="displayRoles && columns.length > 0">
-            <!-- ROLE filter icon -->
-            <th class="p-0 hidden-xs vertical-align-bottom border-bottom-2">
-              <button
-                *ngIf="roleFilterValue.length === 0"
-                [id]="'ws_menu_table_header_roles_action_filter'"
-                class="p-button-rounded p-button-text p-button p-component p-button-icon-only cursor-auto bg-transparent"
-                [pTooltip]="'DIALOG.MENU.ROLE.FILTER' | translate"
-                tooltipPosition="top"
-                tooltipEvent="hover"
-              >
-                <span class="pi pi-filter" aria-hidden="true"></span>
-              </button>
-              <button
-                *ngIf="roleFilterValue.length > 0"
-                [id]="'ws_menu_table_header_roles_action_filter_clear'"
-                class="p-button-rounded p-button-text p-button p-component p-button-icon-only"
-                (click)="onColumnRoleFilterReset()"
-                [attr.aria-label]="'DIALOG.MENU.ROLE.FILTER.CLEAR' | translate"
-                [pTooltip]="'DIALOG.MENU.ROLE.FILTER.CLEAR' | translate"
-                tooltipPosition="top"
-                tooltipEvent="hover"
-              >
-                <span class="pi pi-filter-slash" aria-hidden="true"></span>
-              </button>
-            </th>
             <!-- ROLE columns - filtered columns => no match = no columns -->
             <th
               *ngFor="let role of columns"
@@ -438,8 +439,6 @@
 
           <!-- ROLE ASSIGNMENTS -->
           <ng-container *ngIf="displayRoles && columns.length > 0">
-            <!-- role filter icon: no content -->
-            <td></td>
             <td
               *ngFor="let role of columns"
               class="p-0 hidden-xs text-center border-right-1"
@@ -506,17 +505,28 @@
         </tr>
       </ng-template>
     </p-treeTable>
-    <!-- IF no data exist: -->
+
+    <!-- MESSAGES after loading - treetable caption visible == calm layout -->
+
     <p-message
-      *ngIf="!loading && menuNodes.length === 0 && roleFilterValue.length === 0"
+      *ngIf="loadingMenu"
       severity="info"
-      styleClass="m-3 p-2"
+      styleClass="m-3 mt-0 p-2"
+      [text]="'ACTIONS.LOADING' | translate"
+    ></p-message>
+
+    <!-- role column filter is NOT active: no data == no menu in general -->
+    <p-message
+      *ngIf="!loadingMenu && menuNodes.length === 0 && roleFilterValue.length === 0"
+      severity="info"
+      styleClass="m-3 mt-0 p-2"
       [text]="'DIALOG.MENU.MENU_NOT_EXIST' | translate"
     ></p-message>
+    <!-- role column filter is active: no data according to the selected columns -->
     <p-message
-      *ngIf="menuNodes.length === 0 && roleFilterValue.length > 0"
+      *ngIf="!loadingMenu && menuNodes.length === 0 && roleFilterValue.length > 0"
       severity="info"
-      styleClass="m-3 p-2"
+      styleClass="m-3 mt-0 p-2"
       [text]="'ACTIONS.SEARCH.NO_DATA' | translate"
     ></p-message>
   </ocx-page-content>

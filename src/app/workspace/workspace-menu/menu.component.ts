@@ -61,6 +61,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   // dialog control
   public actions$: Observable<Action[]> | undefined
   public loading = true
+  public loadingMenu = true
   public loadingRoles = false
   public exceptionKey: string | undefined = undefined
   public myPermissions = new Array<string>() // permissions of the user
@@ -268,7 +269,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.location.back()
   }
   public onReload(): void {
-    if (this.loading) return
+    if (this.loadingMenu) return
     this.wRoles = []
     this.wAssignments = []
     this.loadMenu(true)
@@ -281,7 +282,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       'onecx-permission',
       'onecx-permission-ui',
       'workspace',
-      { 'workspace-name': this.workspace?.name }
+      { 'workspace-name': this.workspaceName }
     )
   }
 
@@ -460,7 +461,13 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.workspaceApi
       .getWorkspaceByName({ workspaceName: this.workspaceName })
       .pipe(
-        map((result) => result.resource),
+        map((data) => {
+          if (data.resource) {
+            this.workspace = data.resource
+            this.currentLogoUrl = this.getLogoUrl(data.resource)
+            this.loadMenu(false)
+          }
+        }),
         catchError((err) => {
           this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.WORKSPACE'
           console.error('getWorkspaceByName', err)
@@ -468,21 +475,13 @@ export class MenuComponent implements OnInit, OnDestroy {
         }),
         finalize(() => (this.loading = false))
       )
-      .subscribe({
-        next: (data) => {
-          if (data) {
-            this.workspace = data
-            this.currentLogoUrl = this.getLogoUrl(data)
-            this.loadMenu(false)
-          }
-        }
-      })
+      .subscribe()
   }
 
   public loadMenu(restore: boolean): void {
     if (!this.workspace) return
     this.menuItem = undefined
-    this.loading = true
+    this.loadingMenu = true
 
     this.menuApi
       .getMenuStructure({
@@ -495,7 +494,7 @@ export class MenuComponent implements OnInit, OnDestroy {
           console.error('getMenuStructure', err)
           return of(null)
         }),
-        finalize(() => (this.loading = false))
+        finalize(() => (this.loadingMenu = false))
       )
       .subscribe({
         next: (data) => {
