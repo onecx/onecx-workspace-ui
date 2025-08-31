@@ -527,8 +527,8 @@ export class MenuComponent implements OnInit, OnDestroy {
           return result.stream ?? []
         }),
         catchError((err) => {
-          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.ROLES'
-          console.error('searchRoles', err)
+          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.WS_ROLES'
+          console.error('searchWorkspaceRoles', err)
           return of([])
         })
       )

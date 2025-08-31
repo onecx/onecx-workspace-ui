@@ -902,8 +902,8 @@ describe('MenuComponent', () => {
       component.displayRoles = true
       component.loadMenu(true)
 
-      expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + errorResponse1.status + '.ROLES')
-      expect(console.error).toHaveBeenCalledWith('searchRoles', errorResponse1)
+      expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + errorResponse1.status + '.WS_ROLES')
+      expect(console.error).toHaveBeenCalledWith('searchWorkspaceRoles', errorResponse1)
       expect(console.error).toHaveBeenCalledWith('searchAssignments', errorResponse2)
     })
   })
