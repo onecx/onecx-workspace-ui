@@ -1,8 +1,8 @@
 <ocx-portal-page permission="MENU#VIEW" helpArticleId="PAGE_MENU_DETAIL" pageName="PAGE_MENU_DETAIL">
   <ocx-page-header
-    *ngIf="workspace"
+    *ngIf="workspace$ | async as workspace"
     [header]="
-      workspace.displayName ? limitText(workspace.displayName, 70) + ': ' + ('DIALOG.MENU.LABEL' | translate) : ''
+      workspace?.displayName ? limitText(workspace.displayName, 70) + ': ' + ('DIALOG.MENU.LABEL' | translate) : ''
     "
     [subheader]="'DIALOG.MENU.SUBHEADER' | translate"
     [actions]="(actions$ | async) ?? []"
@@ -29,20 +29,19 @@
       <!-- TABLE FILTER + SORT -->
       <ng-template pTemplate="caption" class="p-0">
         <div class="flex flex-wrap justify-content-between align-items-center row-gap-1 column-gap-4">
-          <div *ngIf="menuItems">
-            <p-button
-              *ocxIfPermission="'MENU#DRAG_DROP'"
-              icon="pi pi-sort"
-              id="ws_menu_table_header_reorder"
-              (onClick)="onDisplayMenuPreview()"
-              [disabled]="menuNodes.length === 0"
-              [label]="'DIALOG.MENU.HEADER.TREE_MODAL' | translate"
-              [ariaLabel]="'DIALOG.MENU.HEADER.TREE_MODAL' | translate"
-              [pTooltip]="'DIALOG.MENU.HEADER.TREE_MODAL.TOOLTIP' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            ></p-button>
-          </div>
+          <p-button
+            *ocxIfPermission="'MENU#DRAG_DROP'"
+            icon="pi pi-sort"
+            id="ws_menu_table_header_reorder"
+            [disabled]="menuItems?.length === 0"
+            (onClick)="onDisplayMenuPreview()"
+            [disabled]="menuNodes.length === 0"
+            [label]="'DIALOG.MENU.HEADER.TREE_MODAL' | translate"
+            [ariaLabel]="'DIALOG.MENU.HEADER.TREE_MODAL' | translate"
+            [pTooltip]="'DIALOG.MENU.HEADER.TREE_MODAL.TOOLTIP' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          ></p-button>
           <div class="p-inputgroup w-13rem sm:w-17rem md:w-20rem">
             <span class="p-inputgroup-addon pi pi-filter" aria-hidden="true"> </span>
             <span class="p-float-label">
@@ -52,6 +51,7 @@
                 type="text"
                 id="ws_menu_table_header_menu_filter"
                 class="py-0 text-responsive"
+                [ngClass]="{ 'p-disabled': menuItems?.length === 0 }"
                 (input)="menuTree.filterGlobal($any($event.target).value, 'contains')"
                 [pTooltip]="
                   ('DIALOG.DATAVIEW.FILTER_OF' | translate) +
@@ -62,15 +62,20 @@
                 tooltipPosition="top"
                 tooltipEvent="hover"
               />
-              <label for="ws_menu_table_header_menu_filter"
-                >{{ 'DIALOG.DATAVIEW.FILTER_PLACEHOLDER' | translate }}
+              <label
+                for="ws_menu_table_header_menu_filter"
+                [ngStyle]="menuItems?.length === 0 ? { color: 'var(--emphasis-low)' } : null"
+              >
+                {{ 'DIALOG.DATAVIEW.FILTER_PLACEHOLDER' | translate }}
               </label>
             </span>
             <button
               id="ws_menu_table_header_filter_clear"
-              class="p-inputgroup-addon bg-primary cursor-pointer pi pi-filter-slash"
+              class="p-inputgroup-addon cursor-pointer pi pi-filter-slash"
+              [ngClass]="{ 'bg-primary': menuTreeFilter.value !== '', 'p-disabled': menuTreeFilter.value === '' }"
+              [ngStyle]="menuTreeFilter.value === '' ? { 'background-color': 'var(--emphasis-lower)', opacity: 'var(--disabled-opacity)' } : null"
               (keydown.space)="onClearFilterMenuTable()"
-              (click)="onClearFilterMenuTable()"
+              (click)="onClearFilterMenuTable(menuTreeFilter.value)"
               [attr.aria-label]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
               [pTooltip]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
               tooltipPosition="top"
@@ -195,6 +200,8 @@
             <button
               id="ws_menu_table_header_role_filter_clear"
               class="p-inputgroup-addon bg-primary pseudo-button pi pi-filter-slash"
+              [ngClass]="{ 'bg-primary': roleFilter.value !== '', 'p-disabled': roleFilter.value === '' }"
+              [ngStyle]="roleFilter.value === '' ? { 'background-color': 'var(--emphasis-lower)', opacity: 'var(--disabled-opacity)' } : null"
               (click)="roleFilter.value = ''; onRoleFilterChange('')"
               [attr.aria-label]="'DIALOG.MENU.ROLE.FILTER.CLEAR' | translate"
               [pTooltip]="'DIALOG.MENU.ROLE.FILTER.CLEAR' | translate"
@@ -243,7 +250,7 @@
             <th
               *ngFor="let col of treeDetailColumns"
               [id]="'ws_menu_table_header_detail_' + col.name"
-              class="pt-2 pb-1 px-1 text-center vertical-align-bottom white-space-nowrap border-bottom-2"
+              class="p-2 pb-1 text-center vertical-align-bottom white-space-nowrap border-bottom-2"
               [ngClass]="col.css"
               [pTooltip]="col.tooltipKey | translate"
               tooltipPosition="top"

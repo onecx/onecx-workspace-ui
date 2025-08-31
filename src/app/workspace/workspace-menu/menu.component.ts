@@ -78,6 +78,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   public roleFilterValue: string[] = []
 
   // workspace
+  public workspace$!: Observable<Workspace | undefined>
   public workspace?: Workspace
   public workspaceName: string = this.route.snapshot.params['name']
   public wRoles$!: Observable<WorkspaceRolePageResult>
@@ -115,7 +116,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     private readonly userService: UserService
   ) {
     const state = this.stateService.getState()
-    this.menuItems = state.workspaceMenuItems
+    this.menuItems = state.workspaceMenuItems // reestablish menu state
     // simplify permission checks
     if (this.userService.hasPermission('MENU#VIEW')) this.myPermissions.push('MENU#VIEW')
     if (this.userService.hasPermission('MENU#VIEW')) this.myPermissions.push('MENU#CREATE')
@@ -411,7 +412,8 @@ export class MenuComponent implements OnInit, OnDestroy {
    ****************************************************************************
    * TREE + DIALOG
    */
-  public onClearFilterMenuTable(): void {
+  public onClearFilterMenuTable(val?: any): void {
+    console.log('onClearFilterMenuTable', '#' + val + '#', typeof val)
     if (this.menuTreeFilter) this.menuTreeFilter.nativeElement.value = ''
     if (this.menuTree) this.menuTree.filterGlobal('', 'contains')
   }
@@ -458,24 +460,24 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.exceptionKey = undefined
     this.workspace = undefined
 
-    this.workspaceApi
-      .getWorkspaceByName({ workspaceName: this.workspaceName })
-      .pipe(
-        map((data) => {
-          if (data.resource) {
-            this.workspace = data.resource
-            this.currentLogoUrl = this.getLogoUrl(data.resource)
-            this.loadMenu(false)
-          }
-        }),
-        catchError((err) => {
-          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.WORKSPACE'
-          console.error('getWorkspaceByName', err)
-          return of(null)
-        }),
-        finalize(() => (this.loading = false))
-      )
-      .subscribe()
+    this.workspace$ = this.workspaceApi.getWorkspaceByName({ workspaceName: this.workspaceName }).pipe(
+      map((data) => {
+        let ws: Workspace | undefined = undefined
+        if (data.resource) {
+          this.workspace = data.resource
+          this.currentLogoUrl = this.getLogoUrl(data.resource)
+          this.loadMenu(false)
+          ws = data.resource
+        }
+        return ws
+      }),
+      catchError((err) => {
+        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.WORKSPACE'
+        console.error('getWorkspaceByName', err)
+        return of(undefined)
+      }),
+      finalize(() => (this.loading = false))
+    )
   }
 
   public loadMenu(restore: boolean): void {
