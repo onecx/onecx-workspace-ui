@@ -100,7 +100,7 @@ describe('MenuComponent', () => {
   let fixture: ComponentFixture<MenuComponent>
 
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
-  const apiServiceSpy = {
+  const workspaceServiceSpy = {
     getWorkspaceByName: jasmine.createSpy('getWorkspaceByName').and.returnValue(of({}))
   }
   const menuApiServiceSpy = {
@@ -149,7 +149,7 @@ describe('MenuComponent', () => {
         provideHttpClient(),
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: PortalMessageService, useValue: msgServiceSpy },
-        { provide: WorkspaceAPIService, useValue: apiServiceSpy },
+        { provide: WorkspaceAPIService, useValue: workspaceServiceSpy },
         { provide: WorkspaceRolesAPIService, useValue: wRoleServiceSpy },
         { provide: MenuItemAPIService, useValue: menuApiServiceSpy },
         { provide: AssignmentAPIService, useValue: assgmtApiServiceSpy },
@@ -161,7 +161,7 @@ describe('MenuComponent', () => {
     // to spy data: reset
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
-    apiServiceSpy.getWorkspaceByName.calls.reset()
+    workspaceServiceSpy.getWorkspaceByName.calls.reset()
     menuApiServiceSpy.getMenuItemById.calls.reset()
     menuApiServiceSpy.getMenuStructure.calls.reset()
     menuApiServiceSpy.bulkPatchMenuItems.calls.reset()
@@ -173,7 +173,7 @@ describe('MenuComponent', () => {
     translateServiceSpy.get.calls.reset()
     stateServiceSpy.getState.calls.reset()
     // to spy data: refill with neutral data
-    apiServiceSpy.getWorkspaceByName.and.returnValue(of({}))
+    workspaceServiceSpy.getWorkspaceByName.and.returnValue(of({}))
     menuApiServiceSpy.getMenuStructure.and.returnValue(of({}))
     wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({}))
     assgmtApiServiceSpy.searchAssignments.and.returnValue(of({}))
@@ -319,6 +319,7 @@ describe('MenuComponent', () => {
   describe('UI events', () => {
     it('should call loadMenu on reload', () => {
       spyOn(component, 'loadMenu')
+      component.loadingMenu = false
 
       component.onReload()
 
@@ -735,12 +736,13 @@ describe('MenuComponent', () => {
    */
   describe('load data', () => {
     it('should load all', () => {
-      apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
+      workspaceServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
       menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
       component.workspaceName = 'workspace-name'
       component.wRoles = [{ name: 'role1' }]
 
       component.loadData()
+      component.workspace$.subscribe()
 
       expect(component.workspace).toEqual(workspace)
       expect(component.menuNodes.length).toBe(2)
@@ -749,10 +751,11 @@ describe('MenuComponent', () => {
 
     it('should display error message if loading workspace failed', () => {
       const errorResponse = { status: 404, statusText: 'Workspace not found' }
-      apiServiceSpy.getWorkspaceByName.and.returnValue(throwError(() => errorResponse))
+      workspaceServiceSpy.getWorkspaceByName.and.returnValue(throwError(() => errorResponse))
       spyOn(console, 'error')
 
       component.loadData()
+      component.workspace$.subscribe()
 
       expect(console.error).toHaveBeenCalledWith('getWorkspaceByName', errorResponse)
       expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + errorResponse.status + '.WORKSPACE')
@@ -899,8 +902,8 @@ describe('MenuComponent', () => {
       component.displayRoles = true
       component.loadMenu(true)
 
-      expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + errorResponse1.status + '.ROLES')
-      expect(console.error).toHaveBeenCalledWith('searchRoles', errorResponse1)
+      expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + errorResponse1.status + '.WS_ROLES')
+      expect(console.error).toHaveBeenCalledWith('searchWorkspaceRoles', errorResponse1)
       expect(console.error).toHaveBeenCalledWith('searchAssignments', errorResponse2)
     })
   })

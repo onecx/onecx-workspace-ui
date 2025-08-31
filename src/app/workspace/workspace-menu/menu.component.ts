@@ -61,6 +61,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   // dialog control
   public actions$: Observable<Action[]> | undefined
   public loading = true
+  public loadingMenu = true
   public loadingRoles = false
   public exceptionKey: string | undefined = undefined
   public myPermissions = new Array<string>() // permissions of the user
@@ -77,6 +78,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   public roleFilterValue: string[] = []
 
   // workspace
+  public workspace$!: Observable<Workspace | undefined>
   public workspace?: Workspace
   public workspaceName: string = this.route.snapshot.params['name']
   public wRoles$!: Observable<WorkspaceRolePageResult>
@@ -114,7 +116,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     private readonly userService: UserService
   ) {
     const state = this.stateService.getState()
-    this.menuItems = state.workspaceMenuItems
+    this.menuItems = state.workspaceMenuItems // reestablish menu state
     // simplify permission checks
     if (this.userService.hasPermission('MENU#VIEW')) this.myPermissions.push('MENU#VIEW')
     if (this.userService.hasPermission('MENU#VIEW')) this.myPermissions.push('MENU#CREATE')
@@ -268,7 +270,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.location.back()
   }
   public onReload(): void {
-    if (this.loading) return
+    if (this.loadingMenu) return
     this.wRoles = []
     this.wAssignments = []
     this.loadMenu(true)
@@ -281,7 +283,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       'onecx-permission',
       'onecx-permission-ui',
       'workspace',
-      { 'workspace-name': this.workspace?.name }
+      { 'workspace-name': this.workspaceName }
     )
   }
 
@@ -410,7 +412,8 @@ export class MenuComponent implements OnInit, OnDestroy {
    ****************************************************************************
    * TREE + DIALOG
    */
-  public onClearFilterMenuTable(): void {
+  public onClearFilterMenuTable(val?: any): void {
+    console.log('onClearFilterMenuTable', '#' + val + '#', typeof val)
     if (this.menuTreeFilter) this.menuTreeFilter.nativeElement.value = ''
     if (this.menuTree) this.menuTree.filterGlobal('', 'contains')
   }
@@ -457,32 +460,30 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.exceptionKey = undefined
     this.workspace = undefined
 
-    this.workspaceApi
-      .getWorkspaceByName({ workspaceName: this.workspaceName })
-      .pipe(
-        map((result) => result.resource),
-        catchError((err) => {
-          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.WORKSPACE'
-          console.error('getWorkspaceByName', err)
-          return of(null)
-        }),
-        finalize(() => (this.loading = false))
-      )
-      .subscribe({
-        next: (data) => {
-          if (data) {
-            this.workspace = data
-            this.currentLogoUrl = this.getLogoUrl(data)
-            this.loadMenu(false)
-          }
+    this.workspace$ = this.workspaceApi.getWorkspaceByName({ workspaceName: this.workspaceName }).pipe(
+      map((data) => {
+        let ws: Workspace | undefined = undefined
+        if (data.resource) {
+          this.workspace = data.resource
+          this.currentLogoUrl = this.getLogoUrl(data.resource)
+          this.loadMenu(false)
+          ws = data.resource
         }
-      })
+        return ws
+      }),
+      catchError((err) => {
+        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.WORKSPACE'
+        console.error('getWorkspaceByName', err)
+        return of(undefined)
+      }),
+      finalize(() => (this.loading = false))
+    )
   }
 
   public loadMenu(restore: boolean): void {
     if (!this.workspace) return
     this.menuItem = undefined
-    this.loading = true
+    this.loadingMenu = true
 
     this.menuApi
       .getMenuStructure({
@@ -495,7 +496,7 @@ export class MenuComponent implements OnInit, OnDestroy {
           console.error('getMenuStructure', err)
           return of(null)
         }),
-        finalize(() => (this.loading = false))
+        finalize(() => (this.loadingMenu = false))
       )
       .subscribe({
         next: (data) => {
@@ -526,8 +527,8 @@ export class MenuComponent implements OnInit, OnDestroy {
           return result.stream ?? []
         }),
         catchError((err) => {
-          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.ROLES'
-          console.error('searchRoles', err)
+          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.WS_ROLES'
+          console.error('searchWorkspaceRoles', err)
           return of([])
         })
       )
