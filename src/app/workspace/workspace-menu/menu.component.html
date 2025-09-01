@@ -29,6 +29,7 @@
       <!-- TABLE FILTER + SORT -->
       <ng-template pTemplate="caption" class="p-0">
         <div class="flex flex-wrap justify-content-between align-items-center row-gap-1 column-gap-4">
+          <div *ocxIfNotPermission="'MENU#DRAG_DROP'" class="hidden sm:block"></div>
           <p-button
             *ocxIfPermission="'MENU#DRAG_DROP'"
             icon="pi pi-sort"
@@ -98,6 +99,7 @@
               [pTooltip]="'ACTIONS.NAVIGATION.GOTO_WORKSPACE_ROLES' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
+              role="link"
             ></p-button>
             <p-button
               *ocxIfPermission="'WORKSPACE#GOTO_PERMISSION'"
