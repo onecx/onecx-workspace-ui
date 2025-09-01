@@ -26,6 +26,7 @@
       <p-tabPanel
         *ocxIfPermission="'WORKSPACE#VIEW'"
         id="ws_detail_props"
+        class="relative"
         [header]="'TABS.WORKSPACE.DETAILS' | translate"
         [attr.aria-label]="'TABS.WORKSPACE.DETAILS' | translate"
         [tooltip]="'TABS.WORKSPACE.TOOLTIPS.DETAILS' | translate"
@@ -40,7 +41,7 @@
             [(value)]="messages"
             [enableService]="false"
             [style]="{ 'margin-top': '-20px' }"
-            styleClass="absolute z-1 max-w-11"
+            styleClass="absolute z-1"
           >
           </p-messages>
         </ng-container>
