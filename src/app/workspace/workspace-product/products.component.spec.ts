@@ -675,13 +675,16 @@ describe('ProductComponent', () => {
    * UI Events: ADD slot
    */
   describe('slot creation', () => {
-    it('should handle successful slot creation', () => {
-      const extendedSlot: ExtendedSlot = { name: 'Test Slot' }
+    const event = {
+      stopPropagation: jasmine.createSpy('stopPropagation')
+    }
+    const extendedSlot: ExtendedSlot = { name: 'Test Slot' }
 
-      component.onAddSlot({}, extendedSlot)
+    it('should handle successful slot creation', () => {
+      component.onAddSlot(event, extendedSlot)
 
       expect(slotApiServiceSpy.createSlot).toHaveBeenCalledWith({
-        createSlotRequest: { workspaceId: '', name: extendedSlot.name }
+        createSlotRequest: { workspaceId: workspace.id, name: extendedSlot.name }
       })
       expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.SLOT.MESSAGES.CREATE_OK' })
       expect(msgServiceSpy.error).not.toHaveBeenCalled()
@@ -690,12 +693,11 @@ describe('ProductComponent', () => {
     it('should handle failed slot creation', () => {
       const errorResponse = { status: 400, statusText: 'workspace slot could not be created' }
       slotApiServiceSpy.createSlot.and.returnValue(throwError(() => errorResponse))
-      const extendedSlot: ExtendedSlot = { name: 'Test Slot' }
 
-      component.onAddSlot({}, extendedSlot)
+      component.onAddSlot(event, extendedSlot)
 
       expect(slotApiServiceSpy.createSlot).toHaveBeenCalledWith({
-        createSlotRequest: { workspaceId: '', name: extendedSlot.name }
+        createSlotRequest: { workspaceId: workspace.id, name: extendedSlot.name }
       })
       expect(msgServiceSpy.success).not.toHaveBeenCalled()
       expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.SLOT.MESSAGES.CREATE_NOK' })
