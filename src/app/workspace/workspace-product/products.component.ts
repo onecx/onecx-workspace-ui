@@ -642,16 +642,18 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
    * UI Events
    */
   public onAddSlot(ev: any, item: ExtendedSlot) {
-    this.slotApi
-      .createSlot({ createSlotRequest: { workspaceId: '', name: item.name } as CreateSlotRequest })
-      .subscribe({
-        next: () => {
-          this.msgService.success({ summaryKey: 'DIALOG.SLOT.MESSAGES.CREATE_OK' })
-        },
-        error: () => {
-          this.msgService.error({ summaryKey: 'DIALOG.SLOT.MESSAGES.CREATE_NOK' })
-        }
-      })
+    ev.stopPropagation()
+    if (this.workspace?.id)
+      this.slotApi
+        .createSlot({ createSlotRequest: { workspaceId: this.workspace.id, name: item.name } as CreateSlotRequest })
+        .subscribe({
+          next: () => {
+            this.msgService.success({ summaryKey: 'DIALOG.SLOT.MESSAGES.CREATE_OK' })
+          },
+          error: () => {
+            this.msgService.error({ summaryKey: 'DIALOG.SLOT.MESSAGES.CREATE_NOK' })
+          }
+        })
   }
 
   public onGoToProduct(name?: string): void {
