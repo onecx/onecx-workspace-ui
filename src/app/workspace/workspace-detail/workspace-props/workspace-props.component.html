@@ -107,7 +107,6 @@
             type="text"
             id="ws_detail_props_item_theme_readonly"
             formControlName="theme"
-            [readOnly]="true"
             styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
             [ariaLabel]="'WORKSPACE.THEME' | translate"
             [pTooltip]="'WORKSPACE.TOOLTIPS.THEME.READONLY' | translate"
@@ -130,6 +129,7 @@
           [pTooltip]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
           tooltipPosition="right"
           tooltipEvent="hover"
+          role="note"
         >
         </a>
       </div>
@@ -168,6 +168,7 @@
         [pTooltip]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
         tooltipPosition="right"
         tooltipEvent="hover"
+        role="note"
       >
       </a>
     </div>
@@ -212,6 +213,7 @@
       [pTooltip]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
       tooltipPosition="right"
       tooltipEvent="hover"
+      role="note"
     >
     </a>
   </article>

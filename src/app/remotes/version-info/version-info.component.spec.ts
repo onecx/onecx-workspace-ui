@@ -18,6 +18,12 @@ import {
 import { OneCXVersionInfoComponent, Version } from './version-info.component'
 import { Config, Workspace } from '@onecx/integration-interface'
 
+const workspace1: Partial<Workspace> = {
+  id: 'w1',
+  workspaceName: 'workspace1',
+  displayName: 'Workspace 1'
+}
+
 describe('OneCXVersionInfoComponent', () => {
   const rcConfig = new ReplaySubject<RemoteComponentConfig>(1)
   const defaultRCConfig = {
@@ -76,8 +82,8 @@ describe('OneCXVersionInfoComponent', () => {
     mockConfigurationService = TestBed.inject(ConfigurationServiceMock)
 
     mockAppStateService = TestBed.inject(AppStateServiceMock)
-    mockAppStateService.currentMfe$.publish({ displayName: 'OneCX Workspace UI', version: '1.0.0' } as MfeInfo)
-    mockAppStateService.currentWorkspace$.publish({ workspaceName: 'ADMIN' } as Workspace)
+    mockAppStateService.currentMfe$.publish({ displayName: workspace1.displayName, version: '1.0.0' } as MfeInfo)
+    mockAppStateService.currentWorkspace$.publish({ workspaceName: workspace1.workspaceName } as Workspace)
   }))
 
   describe('initialize', () => {
@@ -106,10 +112,10 @@ describe('OneCXVersionInfoComponent', () => {
   describe('version info', () => {
     it('should getting data - all parts available', async () => {
       mockAppStateService.currentMfe$.publish({ displayName: 'OneCX Workspace UI', version: 'v1.0.0' } as MfeInfo)
-      mockAppStateService.currentWorkspace$.publish({ workspaceName: 'ADMIN' } as Workspace)
+      mockAppStateService.currentWorkspace$.publish({ workspaceName: workspace1.workspaceName } as Workspace)
       const { component } = await setUp(cfg)
       const mockVersion: Version = {
-        workspaceName: 'ADMIN',
+        workspaceName: workspace1.workspaceName!,
         shellInfo: 'v1',
         mfeInfo: 'OneCX Workspace UI v1.0.0',
         separator: ' - '
@@ -122,10 +128,9 @@ describe('OneCXVersionInfoComponent', () => {
     it('should getting data - no mfe version', async () => {
       const mfe = { displayName: 'OneCX Workspace UI' } as MfeInfo
       mockAppStateService.currentMfe$.publish(mfe)
-      const w = { workspaceName: 'ADMIN' } as Workspace
-      mockAppStateService.currentWorkspace$.publish({ workspaceName: 'ADMIN' } as Workspace)
+      mockAppStateService.currentWorkspace$.publish(workspace1 as Workspace)
       const mockVersion: Version = {
-        workspaceName: w.workspaceName,
+        workspaceName: workspace1.workspaceName!,
         shellInfo: 'v1',
         mfeInfo: mfe.displayName, // no version
         separator: ' - '
@@ -140,10 +145,9 @@ describe('OneCXVersionInfoComponent', () => {
     it('should getting version info - no mfe', async () => {
       const mfe = {} as MfeInfo
       mockAppStateService.currentMfe$.publish(mfe)
-      const w = { workspaceName: 'ADMIN' } as Workspace
-      mockAppStateService.currentWorkspace$.publish({ workspaceName: 'ADMIN' } as Workspace)
+      mockAppStateService.currentWorkspace$.publish(workspace1 as Workspace)
       const mockVersion: Version = {
-        workspaceName: w.workspaceName,
+        workspaceName: workspace1.workspaceName!,
         shellInfo: 'v1',
         mfeInfo: '', // empty
         separator: ''
@@ -157,9 +161,9 @@ describe('OneCXVersionInfoComponent', () => {
 
     it('should getting data - no host version', async () => {
       mockAppStateService.currentMfe$.publish({ displayName: 'OneCX Workspace UI', version: 'v1.0.0' } as MfeInfo)
-      mockAppStateService.currentWorkspace$.publish({ workspaceName: 'ADMIN' } as Workspace)
+      mockAppStateService.currentWorkspace$.publish(workspace1 as Workspace)
       const mockVersion: Version = {
-        workspaceName: 'ADMIN',
+        workspaceName: workspace1.workspaceName!,
         shellInfo: '',
         mfeInfo: 'OneCX Workspace UI v1.0.0',
         separator: ' - '

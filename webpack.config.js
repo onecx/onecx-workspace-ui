@@ -13,7 +13,9 @@ const config = withModuleFederationPlugin({
     './OneCXVerticalMainMenuComponent': 'src/app/remotes/vertical-main-menu/vertical-main-menu.component.main.ts',
     './OneCXHorizontalMainMenuComponent': 'src/app/remotes/horizontal-main-menu/horizontal-main-menu.component.main.ts',
     './OneCXFooterMenuComponent': 'src/app/remotes/footer-menu/footer-menu.component.main.ts',
-    './OneCXVersionInfoComponent': 'src/app/remotes/version-info/version-info.component.main.ts'
+    './OneCXVersionInfoComponent': 'src/app/remotes/version-info/version-info.component.main.ts',
+    './OneCXCurrentWorkspaceLogoComponent':
+      'src/app/remotes/current-workspace-logo/current-workspace-logo.component.main.ts'
   },
   shared: share({
     '@angular/core': { requiredVersion: 'auto', includeSecondaries: true },

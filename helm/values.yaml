@@ -79,6 +79,13 @@ app:
           remoteName: onecx-workspace
           tagName: ocx-workspace-footer-component
           deprecated: true
+        workspace-logo:
+          exposedModule: ./OneCXCurrentWorkspaceLogoComponent
+          description: 'Display the logo of the current workspace. Use imageStyleClass as slot input parameter to adjust the image style.'
+          type: COMPONENT
+          technology: WEBCOMPONENTMODULE
+          remoteName: onecx-workspace
+          tagName: ocx-current-workspace-logo-component
     # Microservice
     microservice:
       spec:
