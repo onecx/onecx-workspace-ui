@@ -1,7 +1,7 @@
 import { Component, EventEmitter, inject, Inject, Input, NO_ERRORS_SCHEMA } from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
 import { UntilDestroy } from '@ngneat/until-destroy'
-import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs'
+import { BehaviorSubject, ReplaySubject } from 'rxjs'
 
 import {
   AngularRemoteComponentsModule,
@@ -10,7 +10,7 @@ import {
   ocxRemoteComponent,
   ocxRemoteWebcomponent
 } from '@onecx/angular-remote-components'
-import { AppStateService, WorkspaceService } from '@onecx/angular-integration-interface'
+import { AppStateService } from '@onecx/angular-integration-interface'
 import { PortalCoreModule } from '@onecx/portal-integration-angular'
 
 import { Configuration, RefType, WorkspaceAPIService } from 'src/app/shared/generated'
