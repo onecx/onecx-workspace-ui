@@ -107,7 +107,6 @@
             type="text"
             id="ws_detail_props_item_theme_readonly"
             formControlName="theme"
-            [readOnly]="true"
             styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
             [ariaLabel]="'WORKSPACE.THEME' | translate"
             [pTooltip]="'WORKSPACE.TOOLTIPS.THEME.READONLY' | translate"
@@ -130,6 +129,7 @@
           [pTooltip]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
           tooltipPosition="right"
           tooltipEvent="hover"
+          role="link"
         >
         </a>
       </div>
@@ -152,7 +152,9 @@
           tooltipPosition="top"
           tooltipEvent="hover"
         />
-        <label for="ws_detail_props_item_base_url" aria-hidden="true">{{ 'WORKSPACE.BASE_URL' | translate }} </label>
+        <label class="ocx-required-label" for="ws_detail_props_item_base_url" aria-hidden="true"
+          >{{ 'WORKSPACE.BASE_URL' | translate }}
+        </label>
       </span>
       <a
         tabindex="0"
@@ -168,6 +170,7 @@
         [pTooltip]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
         tooltipPosition="right"
         tooltipEvent="hover"
+        role="link"
       >
       </a>
     </div>
@@ -212,6 +215,7 @@
       [pTooltip]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
       tooltipPosition="right"
       tooltipEvent="hover"
+      role="link"
     >
     </a>
   </article>
@@ -235,7 +239,6 @@
       </label>
     </span>
     <button
-      tabindex="0"
       id="ws_detail_props_item_rssFeedUrl_link"
       class="p-inputgroup-addon bg-primary pseudo-button"
       [ngClass]="inputRssFeedUrl.value ? 'cursor-pointer' : 'p-disabled'"

@@ -490,6 +490,7 @@
       "REGISTER_ONE": "Applikation registriert",
       "REGISTER_ALL": "Alle markierte Applikationen registriert",
       "DETAILS": "Applikation Details",
+      "DETAILS_CONFIG": "Applikation konfigurieren",
       "ORIGIN": "Herkunft",
       "ORIGIN.TARGET": "Workspace",
       "ORIGIN.SOURCE": "Application Store",
