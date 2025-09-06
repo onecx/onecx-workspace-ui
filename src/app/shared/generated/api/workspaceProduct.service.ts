@@ -1,6 +1,6 @@
 /**
  * onecx-workspace-bff
- * OneCX Workspace BFF
+ * Backend-For-Frontend (BFF) service for onecx-workspace. This API provides endpoints for managing Workspaces, Menus, Products, Roles and Assignments.
  *
  * The version of the OpenAPI document: 1.0
  * 
@@ -125,7 +125,7 @@ export class WorkspaceProductAPIService {
     }
 
     /**
-     * Create/Register new product to workspace
+     * Create/Register a new product to workspace
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -198,7 +198,7 @@ export class WorkspaceProductAPIService {
     }
 
     /**
-     * Delete a product by the workspace id and the productId
+     * Delete a product by the workspace id and the product id
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -261,7 +261,7 @@ export class WorkspaceProductAPIService {
     }
 
     /**
-     * Get a product by the productId
+     * Get a product by the workspace id and product id
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -324,7 +324,7 @@ export class WorkspaceProductAPIService {
     }
 
     /**
-     * Find all products belonging to a workspace
+     * Get all products belonging to a workspace
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -383,7 +383,7 @@ export class WorkspaceProductAPIService {
     }
 
     /**
-     * Update product and MFEs
+     * Update a product and MFEs by workspace id and product id
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.

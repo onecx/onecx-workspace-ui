@@ -1,6 +1,6 @@
 /**
  * onecx-workspace-bff
- * OneCX Workspace BFF
+ * Backend-For-Frontend (BFF) service for onecx-workspace. This API provides endpoints for managing Workspaces, Menus, Products, Roles and Assignments.
  *
  * The version of the OpenAPI document: 1.0
  * 
@@ -143,7 +143,7 @@ export class WorkspaceAPIService {
     }
 
     /**
-     * Create new workspace
+     * Create a new workspace
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -212,7 +212,7 @@ export class WorkspaceAPIService {
     }
 
     /**
-     * Delete workspace
+     * Delete a workspace by its id
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -340,7 +340,7 @@ export class WorkspaceAPIService {
     }
 
     /**
-     * Get workspace by id
+     * Get a workspace by its id
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -399,7 +399,7 @@ export class WorkspaceAPIService {
     }
 
     /**
-     * Get workspace by name
+     * Get workspace by its name
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -458,7 +458,7 @@ export class WorkspaceAPIService {
     }
 
     /**
-     * Import workspaces
+     * Import workspaces by a previously exported snapshot
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -527,7 +527,7 @@ export class WorkspaceAPIService {
     }
 
     /**
-     * Search workspaces by criteria
+     * Search workspaces by search criteria
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -596,7 +596,7 @@ export class WorkspaceAPIService {
     }
 
     /**
-     * Update workspace
+     * Update a workspace by its id
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
