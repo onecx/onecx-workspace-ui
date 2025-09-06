@@ -24,7 +24,8 @@ import {
   ImagesInternalAPIService,
   Workspace,
   WorkspaceProductAPIService,
-  RefType
+  RefType,
+  MimeType
 } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
 
@@ -300,7 +301,7 @@ describe('WorkspacePropsComponent', () => {
     })
   })
 
-  describe('Upload image', () => {
+  describe('Load image', () => {
     it('should be informed on image loading error', () => {
       component.onImageLoadingError(true)
 
@@ -315,86 +316,64 @@ describe('WorkspacePropsComponent', () => {
   })
 
   describe('Upload file', () => {
-    it('should not upload a file that is too large', () => {
-      const largeBlob = new Blob(['a'.repeat(1200000)], { type: 'image/png' })
-      const largeFile = new File([largeBlob], 'test.png', { type: 'image/png' })
-      const event = {
-        target: {
-          files: [largeFile]
-        }
-      }
+    it('should prevent upload if no file', () => {
+      const event = { target: {} }
 
-      component.onFileUpload(event as any)
-
-      expect(component.formGroup.valid).toBeFalse()
-    })
-
-    it('should not upload a file that does not end with file ending', () => {
-      const largeBlob = new Blob(['a'.repeat(10)], { type: 'image/png' })
-      const largeFile = new File([largeBlob], 'test.wrong', { type: 'image/png' })
-      const event = {
-        target: {
-          files: [largeFile]
-        }
-      }
-      component.onFileUpload(event as any)
-
-      expect(component.formGroup.valid).toBeFalse()
-    })
-
-    it('should show error if file empty', () => {
-      const event = {
-        target: {}
-      }
       component.onFileUpload(event as any)
 
       expect(component.formGroup.valid).toBeFalse()
     })
 
     it('should not upload a file that is too large', () => {
-      const largeBlob = new Blob(['a'.repeat(1200000)], { type: 'image/png' })
-      const largeFile = new File([largeBlob], 'test.png', { type: 'image/png' })
-      const event = {
-        target: {
-          files: [largeFile]
-        }
-      }
+      const blob = new Blob(['a'.repeat(1200000)], { type: 'image/png' })
+      const file = new File([blob], 'test.png', { type: 'image/png' })
+      const event = { target: { files: [file] } }
+
       component.onFileUpload(event as any)
 
       expect(component.formGroup.valid).toBeFalse()
     })
 
-    it('should upload a file', () => {
+    it('should upload file not possible withh unknown file extension', () => {
+      const blob = new Blob(['file content'.repeat(10)], { type: 'image/png' })
+      const file = new File([blob], 'test.unknown', { type: 'image/png' })
+      const event = { target: { files: [blob] } }
+
+      component.onFileUpload(event as any)
+
+      expect(component.formGroup.valid).toBeFalse()
+    })
+
+    it('should upload file - successful with png', () => {
       imageServiceSpy.uploadImage.and.returnValue(of({}))
-      const blob = new Blob(['a'.repeat(10)], { type: 'image/png' })
-      const file = new File([blob], 'test.png', { type: 'image/png' })
-      const event = {
-        target: {
-          files: [file]
-        }
-      }
-      component.formGroup.controls['logoUrl'].setValue('url')
+      const file = new File(['file content'], 'test.png', { type: 'image/png' })
+      const event = { target: { files: [file] } }
 
       component.onFileUpload(event as any)
 
       expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'IMAGE.UPLOAD_SUCCESS' })
     })
 
-    it('should display error if upload fails', () => {
+    it('should upload file - failed with svg', () => {
       const errorResponse = { status: 400, statusText: 'Error on getting image' }
-      imageServiceSpy.getImage.and.returnValue(throwError(() => errorResponse))
-      const blob = new Blob(['a'.repeat(10)], { type: 'image/png' })
-      const file = new File([blob], 'test.png', { type: 'image/png' })
-      const event = {
-        target: {
-          files: [file]
-        }
-      }
-      component.formGroup.controls['logoUrl'].setValue('url')
+      imageServiceSpy.uploadImage.and.returnValue(throwError(() => errorResponse))
+      const file = new File(['file content'], 'test.svg', { type: 'image/svg+xml' })
+      const event = { target: { files: [file] } }
 
       component.onFileUpload(event as any)
 
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'IMAGE.UPLOAD_SUCCESS' })
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'IMAGE.UPLOAD_FAILED' })
+    })
+
+    it('should map mime-types', () => {
+      let mt = component['mapMimeType']('image/x-icon')
+      expect(mt).toBe(MimeType.XIcon)
+      mt = component['mapMimeType']('image/jpg')
+      expect(mt).toBe(MimeType.Jpg)
+      mt = component['mapMimeType']('image/jpeg')
+      expect(mt).toBe(MimeType.Jpeg)
+      mt = component['mapMimeType']('image/tiff') // unknown for OneCX
+      expect(mt).toBe(MimeType.Png)
     })
   })
 

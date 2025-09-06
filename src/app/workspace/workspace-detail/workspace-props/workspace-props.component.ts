@@ -207,7 +207,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       },
       error: (err) => {
         console.error('uploadImage', err)
-        this.msgService.error({ summaryKey: 'IMAGE.UPLOAD_FAIL' })
+        this.msgService.error({ summaryKey: 'IMAGE.UPLOAD_FAILED' })
       }
     })
   }
