@@ -1,8 +1,8 @@
 import { inject, Injectable } from '@angular/core'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
-import { Topic } from '@onecx/accelerator'
-import { UserService } from '@onecx/angular-integration-interface'
-import { map, Observable, of, combineLatest, startWith, fromEvent, pairwise, filter, debounceTime } from 'rxjs'
+import { isMobile, Topic } from '@onecx/accelerator'
+import { Capability, ShellCapabilityService, UserService } from '@onecx/angular-integration-interface'
+import { map, Observable, of, combineLatest, startWith } from 'rxjs'
 
 export type MenuMode = 'horizontal' | 'static' | 'overlay' | 'slim' | 'slimplus'
 
@@ -10,6 +10,7 @@ export type MenuMode = 'horizontal' | 'static' | 'overlay' | 'slim' | 'slimplus'
 @Injectable({ providedIn: 'root' })
 export class MenuService {
   private readonly userService = inject(UserService)
+  private capabilityService = inject(ShellCapabilityService)
   private readonly staticMenuVisible$ = new Topic<{ isVisible: boolean }>('staticMenuVisible', 1)
 
   private readonly menuMode$: Observable<MenuMode> = this.userService.profile$.pipe(
@@ -23,32 +24,10 @@ export class MenuService {
     })
   )
 
-  private readonly onResize$: Observable<Event>
   private readonly isMobile$: Observable<boolean>
 
   constructor() {
-    // TODO: Move to some lib to detect mobile
-    const mobileBreakpointVar = getComputedStyle(document.documentElement).getPropertyValue('--mobile-break-point')
-    this.onResize$ = fromEvent(window, 'resize').pipe(debounceTime(100), untilDestroyed(this))
-    this.isMobile$ = this.onResize$.pipe(
-      map(() => window.matchMedia(`(max-width: ${mobileBreakpointVar})`).matches),
-      // Important: Start with 2 initial values to trigger pairwise for mobile detection on load
-      startWith(
-        !window.matchMedia(`(max-width: ${mobileBreakpointVar})`).matches,
-        window.matchMedia(`(max-width: ${mobileBreakpointVar})`).matches
-      )
-    )
-
-    // TODO: Move to Shell toggle menu button
-    this.isMobile$
-      .pipe(
-        pairwise(),
-        filter(([oldIsMobile, newIsMobile]) => {
-          return oldIsMobile !== newIsMobile
-        }),
-        map(([, isMobile]) => ({ isVisible: !isMobile }))
-      )
-      .subscribe((state) => this.staticMenuVisible$.publish(state))
+    this.isMobile$ = isMobile().pipe(untilDestroyed(this))
   }
 
   public isMenuActive(menuMode: MenuMode): Observable<boolean> {
@@ -64,10 +43,11 @@ export class MenuService {
 
   public isVisible(menuMode: MenuMode): Observable<boolean> {
     if (menuMode === 'static') {
-      return this.staticMenuVisible$.pipe(
-        map((state) => state.isVisible),
-        startWith(true)
-      )
+      if (this.capabilityService.hasCapability(Capability.PUBLISH_STATIC_MENU_VISIBILITY))
+        return this.staticMenuVisible$.pipe(
+          map((state) => state.isVisible),
+          startWith(true)
+        )
     }
     return of(true)
   }
