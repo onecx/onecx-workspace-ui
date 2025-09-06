@@ -11,7 +11,7 @@ export type MenuMode = 'horizontal' | 'static' | 'overlay' | 'slim' | 'slimplus'
 export class MenuService {
   private readonly userService = inject(UserService)
   private capabilityService = inject(ShellCapabilityService)
-  private readonly staticMenuVisible$ = new Topic<{ isVisible: boolean }>('staticMenuVisible', 1)
+  private staticMenuVisible$ = new Topic<{ isVisible: boolean }>('staticMenuVisible', 1)
 
   private readonly menuMode$: Observable<MenuMode> = this.userService.profile$.pipe(
     map((p) => {
@@ -24,7 +24,7 @@ export class MenuService {
     })
   )
 
-  private readonly isMobile$: Observable<boolean>
+  private isMobile$: Observable<boolean>
 
   constructor() {
     this.isMobile$ = isMobile().pipe(untilDestroyed(this))
