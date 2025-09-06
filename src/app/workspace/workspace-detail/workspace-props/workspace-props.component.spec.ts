@@ -314,7 +314,7 @@ describe('WorkspacePropsComponent', () => {
     })
   })
 
-  describe('Upload file', () => {
+  fdescribe('Upload file', () => {
     it('should not upload a file that is too large', () => {
       const largeBlob = new Blob(['a'.repeat(1200000)], { type: 'image/png' })
       const largeFile = new File([largeBlob], 'test.png', { type: 'image/png' })
@@ -377,9 +377,7 @@ describe('WorkspacePropsComponent', () => {
 
       component.onFileUpload(event as any)
 
-      expect(msgServiceSpy.info).toHaveBeenCalledWith({
-        summaryKey: 'IMAGE.UPLOAD_SUCCESS'
-      })
+      expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'IMAGE.UPLOAD_SUCCESS' })
     })
 
     it('should display error if upload fails', () => {

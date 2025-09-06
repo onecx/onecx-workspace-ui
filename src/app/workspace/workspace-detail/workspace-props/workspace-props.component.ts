@@ -8,7 +8,13 @@ import { SlotService } from '@onecx/angular-remote-components'
 import { PortalMessageService, WorkspaceService } from '@onecx/angular-integration-interface'
 import { getLocation } from '@onecx/accelerator'
 
-import { ImagesInternalAPIService, RefType, Workspace, WorkspaceProductAPIService } from 'src/app/shared/generated'
+import {
+  ImagesInternalAPIService,
+  MimeType,
+  RefType,
+  Workspace,
+  WorkspaceProductAPIService
+} from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
 
 export type Theme = {
@@ -152,7 +158,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       if (files) {
         if (files[0].size > 1000000) {
           this.msgService.error({ summaryKey: 'IMAGE.CONSTRAINT_FAILED', detailKey: 'IMAGE.CONSTRAINT_SIZE' })
-        } else if (!/^.*.(jpg|jpeg|png)$/.exec(files[0].name)) {
+        } else if (!/^.*.(jpg|jpeg|png|svg)$/.exec(files[0].name)) {
           this.msgService.error({ summaryKey: 'IMAGE.CONSTRAINT_FAILED', detailKey: 'IMAGE.CONSTRAINT_FILE_TYPE' })
         } else if (this.workspace) {
           this.saveImage(this.workspace.name, files) // store image
@@ -163,25 +169,47 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     }
   }
 
+  private mapMimeType(type: string): MimeType {
+    switch (type) {
+      case 'image/x-icon':
+        return MimeType.XIcon
+      case 'image/svg+xml':
+        return MimeType.Svgxml
+      case 'image/jpg':
+        return MimeType.Jpg
+      case 'image/jpeg':
+        return MimeType.Jpeg
+      case 'image/png':
+        return MimeType.Png
+      default:
+        return MimeType.Png
+    }
+  }
+
   private saveImage(name: string, files: FileList) {
-    const blob = new Blob([files[0]], { type: files[0].type })
     this.fetchingLogoUrl = undefined // reset - important to trigger the change in UI
     this.currentLogoUrl.emit(this.fetchingLogoUrl)
-    const saveRequestParameter = {
-      contentLength: files.length,
+    // prepare request
+    const mType = this.mapMimeType(files[0].type)
+    const data = mType === MimeType.Svgxml ? files[0] : new Blob([files[0]], { type: files[0].type })
+    const requestParameter = {
       refId: name,
       refType: RefType.Logo,
-      body: blob
+      mimeType: mType,
+      body: data
     }
-    this.imageApi.uploadImage(saveRequestParameter).subscribe(() => {
-      this.prepareImageResponse(name)
+    this.imageApi.uploadImage(requestParameter).subscribe({
+      next: () => {
+        this.fetchingLogoUrl = Utils.bffImageUrl(this.imageApi.configuration.basePath, name, RefType.Logo)
+        this.currentLogoUrl.emit(this.fetchingLogoUrl)
+        this.msgService.success({ summaryKey: 'IMAGE.UPLOAD_SUCCESS' })
+        this.formGroup.controls['logoUrl'].setValue(null)
+      },
+      error: (err) => {
+        console.error('uploadImage', err)
+        this.msgService.error({ summaryKey: 'IMAGE.UPLOAD_FAIL' })
+      }
     })
-  }
-  private prepareImageResponse(name: string): void {
-    this.fetchingLogoUrl = Utils.bffImageUrl(this.imageApi.configuration.basePath, name, RefType.Logo)
-    this.currentLogoUrl.emit(this.fetchingLogoUrl)
-    this.msgService.info({ summaryKey: 'IMAGE.UPLOAD_SUCCESS' })
-    this.formGroup.controls['logoUrl'].setValue('')
   }
 
   public getLogoUrl(workspace: Workspace | undefined): string | undefined {

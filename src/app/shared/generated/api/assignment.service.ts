@@ -1,6 +1,6 @@
 /**
  * onecx-workspace-bff
- * OneCX Workspace BFF
+ * Backend-For-Frontend (BFF) service for onecx-workspace. This API provides endpoints for managing Workspaces, Menus, Products, Roles and Assignments.
  *
  * The version of the OpenAPI document: 1.0
  * 
@@ -112,7 +112,7 @@ export class AssignmentAPIService {
     }
 
     /**
-     * Create new Assignment
+     * Create a new assignment
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -181,7 +181,7 @@ export class AssignmentAPIService {
     }
 
     /**
-     * Delete assignment
+     * Delete an assignment by its id
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
