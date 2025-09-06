@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { Topic } from '@onecx/accelerator'
 import { UserService } from '@onecx/angular-integration-interface'
-import { map, Observable, of, combineLatest, startWith, tap, fromEvent, pairwise, filter, debounceTime } from 'rxjs'
+import { map, Observable, of, combineLatest, startWith, fromEvent, pairwise, filter, debounceTime } from 'rxjs'
 
 export type MenuMode = 'horizontal' | 'static' | 'overlay' | 'slim' | 'slimplus'
 
