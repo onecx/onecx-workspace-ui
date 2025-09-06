@@ -47,7 +47,8 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
       if (this.displayDetailDialog) {
         this.slot = { ...this.slotOrg }
         // extract ps components
-        this.wComponents = [...this.slot.psComponents]
+        if (this.slot.psComponents) this.wComponents = [...this.slot.psComponents]
+        else this.wComponents = []
         this.wComponentsOrg = [...this.wComponents] // to be able to restore
         this.psComponents = []
         // collect available but not yet registered components from product store
