@@ -1,4 +1,4 @@
-import { Component, Inject, Input, OnInit } from '@angular/core'
+import { Component, inject, Inject, Input, OnInit } from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import { RouterModule } from '@angular/router'
@@ -22,6 +22,7 @@ import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
 import { SharedModule } from 'src/app/shared/shared.module'
 import { environment } from 'src/environments/environment'
+import { MenuService } from 'src/app/shared/services/menu.service'
 
 @Component({
   selector: 'app-horizontal-main-menu',
@@ -47,6 +48,10 @@ import { environment } from 'src/environments/environment'
 @UntilDestroy()
 export class OneCXHorizontalMainMenuComponent implements OnInit, ocxRemoteComponent, ocxRemoteWebcomponent {
   menuItems$: Observable<MenuItem[]> | undefined
+
+  private readonly menuService = inject(MenuService)
+  public isActive$ = this.menuService.isMenuActive('horizontal')
+  public isHidden$ = this.menuService.isVisible('horizontal').pipe(map((isVisible) => !isVisible))
 
   constructor(
     @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
