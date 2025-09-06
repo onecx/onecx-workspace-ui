@@ -325,8 +325,7 @@ describe('WorkspacePropsComponent', () => {
     })
 
     it('should not upload a file that is too large', () => {
-      const blob = new Blob(['a'.repeat(1200000)], { type: 'image/png' })
-      const file = new File([blob], 'test.png', { type: 'image/png' })
+      const file = new File(['a'.repeat(1200000)], 'test.png', { type: 'image/png' })
       const event = { target: { files: [file] } }
 
       component.onFileUpload(event as any)
@@ -335,9 +334,8 @@ describe('WorkspacePropsComponent', () => {
     })
 
     it('should upload file not possible withh unknown file extension', () => {
-      const blob = new Blob(['file content'.repeat(10)], { type: 'image/png' })
-      const file = new File([blob], 'test.unknown', { type: 'image/png' })
-      const event = { target: { files: [blob] } }
+      const file = new File(['file content'.repeat(10)], 'test.unknown', { type: 'image/png' })
+      const event = { target: { files: [file] } }
 
       component.onFileUpload(event as any)
 
