@@ -7,7 +7,7 @@ import {
   ShellCapabilityServiceMock,
   UserServiceMock
 } from '@onecx/angular-integration-interface/mocks'
-import { Capability, ShellCapabilityService, UserService } from '@onecx/angular-integration-interface'
+import { Capability, UserService } from '@onecx/angular-integration-interface'
 import { UserProfile } from '@onecx/integration-interface'
 import { of, skip } from 'rxjs'
 import { Topic } from '@onecx/accelerator'
@@ -15,7 +15,6 @@ import { Topic } from '@onecx/accelerator'
 describe('MenuService', () => {
   let service: MenuService
   let userServiceMock: UserServiceMock
-  let shellCapabilityServiceMock: ShellCapabilityServiceMock
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -24,7 +23,6 @@ describe('MenuService', () => {
 
     service = TestBed.inject(MenuService)
     userServiceMock = TestBed.inject(UserService) as unknown as UserServiceMock
-    shellCapabilityServiceMock = TestBed.inject(ShellCapabilityService) as unknown as ShellCapabilityServiceMock
     service['staticMenuVisible$'] = new FakeTopic() as unknown as Topic<{ isVisible: boolean }>
   })
 
