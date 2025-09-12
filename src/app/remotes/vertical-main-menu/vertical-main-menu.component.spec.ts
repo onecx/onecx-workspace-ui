@@ -20,9 +20,11 @@ import {
   provideShellCapabilityServiceMock,
   ShellCapabilityServiceMock
 } from '@onecx/angular-integration-interface/mocks'
+import { MenuService } from 'src/app/shared/services/menu.service'
 
 describe('OneCXVerticalMainMenuComponent', () => {
   const menuItemApiSpy = jasmine.createSpyObj<MenuItemAPIService>('MenuItemAPIService', ['getMenuItems'])
+  const menuServiceSpy = jasmine.createSpyObj<MenuService>('MenuService', ['isVisible', 'isMenuActive'])
 
   function setUp() {
     const fixture = TestBed.createComponent(OneCXVerticalMainMenuComponent)
@@ -51,7 +53,8 @@ describe('OneCXVerticalMainMenuComponent', () => {
           useValue: baseUrlSubject
         },
         provideRouter([{ path: 'admin/welcome', component: OneCXVerticalMainMenuComponent }]),
-        provideShellCapabilityServiceMock()
+        provideShellCapabilityServiceMock(),
+        { provide: MenuService, useValue: menuServiceSpy }
       ]
     })
       .overrideComponent(OneCXVerticalMainMenuComponent, {
@@ -63,7 +66,8 @@ describe('OneCXVerticalMainMenuComponent', () => {
       .compileComponents()
 
     baseUrlSubject.next('base_url_mock')
-
+    menuServiceSpy.isMenuActive.and.returnValue(of(true))
+    menuServiceSpy.isVisible.and.returnValue(of(true))
     menuItemApiSpy.getMenuItems.calls.reset()
     ShellCapabilityServiceMock.setCapabilities([Capability.CURRENT_LOCATION_TOPIC])
   })
