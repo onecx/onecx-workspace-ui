@@ -1,4 +1,4 @@
-import { APP_INITIALIZER, Component, EventEmitter, Inject, Input } from '@angular/core'
+import { APP_INITIALIZER, Component, EventEmitter, inject, Inject, Input } from '@angular/core'
 import { Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import { RouterModule } from '@angular/router'
@@ -39,6 +39,7 @@ import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
 import { SharedModule } from 'src/app/shared/shared.module'
 import { environment } from 'src/environments/environment'
+import { MenuService } from 'src/app/shared/services/menu.service'
 
 export function slotInitializer(slotService: SlotService) {
   return () => slotService.init()
@@ -95,6 +96,10 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent, ocxRem
   // slot: avatar image
   public avatarImageLoadedEmitter = new EventEmitter<boolean>()
   public avatarImageLoaded: boolean | undefined = undefined // getting true/false from response, then component managed
+
+  private readonly menuService = inject(MenuService)
+  public isActive$ = this.menuService.isMenuActive('static')
+  public isHidden$ = this.menuService.isVisible('static').pipe(map((isVisible) => !isVisible))
 
   constructor(
     @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
