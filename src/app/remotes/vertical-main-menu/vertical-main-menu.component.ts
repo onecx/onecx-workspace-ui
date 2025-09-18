@@ -86,7 +86,7 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRe
   eventsTopic$ = new EventsTopic()
 
   private readonly menuService = inject(MenuService)
-  public isActive$ = this.menuService.isMenuActive('static')
+  public isActive$ = this.menuService.isActive('static')
   public isHidden$ = this.menuService.isVisible('static').pipe(map((isVisible) => !isVisible))
 
   constructor(

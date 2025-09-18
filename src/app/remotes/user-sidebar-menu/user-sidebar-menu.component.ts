@@ -98,7 +98,7 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent, ocxRem
   public avatarImageLoaded: boolean | undefined = undefined // getting true/false from response, then component managed
 
   private readonly menuService = inject(MenuService)
-  public isActive$ = this.menuService.isMenuActive('static')
+  public isActive$ = this.menuService.isActive('static')
   public isHidden$ = this.menuService.isVisible('static').pipe(map((isVisible) => !isVisible))
 
   constructor(

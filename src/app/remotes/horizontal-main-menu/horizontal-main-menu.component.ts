@@ -50,7 +50,7 @@ export class OneCXHorizontalMainMenuComponent implements OnInit, ocxRemoteCompon
   menuItems$: Observable<MenuItem[]> | undefined
 
   private readonly menuService = inject(MenuService)
-  public isActive$ = this.menuService.isMenuActive('horizontal')
+  public isActive$ = this.menuService.isActive('horizontal')
   public isHidden$ = this.menuService.isVisible('horizontal').pipe(map((isVisible) => !isVisible))
 
   constructor(

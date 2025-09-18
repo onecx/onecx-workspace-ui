@@ -66,7 +66,7 @@ describe('OneCXVerticalMainMenuComponent', () => {
       .compileComponents()
 
     baseUrlSubject.next('base_url_mock')
-    menuServiceSpy.isMenuActive.and.returnValue(of(true))
+    menuServiceSpy.isActive.and.returnValue(of(true))
     menuServiceSpy.isVisible.and.returnValue(of(true))
     menuItemApiSpy.getMenuItems.calls.reset()
     ShellCapabilityServiceMock.setCapabilities([Capability.CURRENT_LOCATION_TOPIC])

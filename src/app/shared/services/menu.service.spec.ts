@@ -89,7 +89,7 @@ describe('MenuService', () => {
           }
         } as UserProfile)
 
-        service.isMenuActive('static').subscribe((isActive) => {
+        service.isActive('static').subscribe((isActive) => {
           expect(isActive).toBeTrue()
           done()
         })
@@ -104,7 +104,7 @@ describe('MenuService', () => {
           }
         } as UserProfile)
 
-        service.isMenuActive('horizontal').subscribe((isActive) => {
+        service.isActive('horizontal').subscribe((isActive) => {
           expect(isActive).toBeFalse()
           done()
         })
@@ -123,7 +123,7 @@ describe('MenuService', () => {
             }
           }
         } as UserProfile)
-        service.isMenuActive('overlay').subscribe((isActive) => {
+        service.isActive('overlay').subscribe((isActive) => {
           expect(isActive).toBeTrue()
           done()
         })
@@ -136,7 +136,7 @@ describe('MenuService', () => {
             }
           }
         } as UserProfile)
-        service.isMenuActive('slim').subscribe((isActive) => {
+        service.isActive('slim').subscribe((isActive) => {
           expect(isActive).toBeFalse()
           done()
         })
@@ -149,7 +149,7 @@ describe('MenuService', () => {
             }
           }
         } as UserProfile)
-        service.isMenuActive('horizontal').subscribe((isActive) => {
+        service.isActive('horizontal').subscribe((isActive) => {
           expect(isActive).toBeFalse()
           done()
         })
@@ -162,7 +162,7 @@ describe('MenuService', () => {
             }
           }
         } as UserProfile)
-        service.isMenuActive('static').subscribe((isActive) => {
+        service.isActive('static').subscribe((isActive) => {
           expect(isActive).toBeTrue()
           done()
         })

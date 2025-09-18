@@ -30,11 +30,11 @@ export class MenuService {
     this.isMobile$ = isMobile().pipe(untilDestroyed(this))
   }
 
-  public isMenuActive(menuMode: MenuMode): Observable<boolean> {
+  public isActive(menuMode: MenuMode): Observable<boolean> {
     return combineLatest([this.isMobile$, this.menuMode$]).pipe(
       map(([isMobile, userSelectedMenuMode]) => {
         if (isMobile) {
-          return this.isMenuModeActiveInMobile(menuMode, userSelectedMenuMode)
+          return this.isActiveOnMobile(menuMode, userSelectedMenuMode)
         }
         return menuMode === userSelectedMenuMode
       })
@@ -52,7 +52,7 @@ export class MenuService {
     return of(true)
   }
 
-  private isMenuModeActiveInMobile(menuMode: MenuMode, userSelectedMenuMode: MenuMode): boolean {
+  private isActiveOnMobile(menuMode: MenuMode, userSelectedMenuMode: MenuMode): boolean {
     // Disable horizontal menu in mobile
     if (menuMode === 'horizontal' && userSelectedMenuMode === 'horizontal') {
       return false
