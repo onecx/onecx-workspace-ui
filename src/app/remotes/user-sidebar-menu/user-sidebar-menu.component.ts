@@ -45,6 +45,7 @@ export function slotInitializer(slotService: SlotService) {
   return () => slotService.init()
 }
 
+const MENU_MODE = 'static'
 @Component({
   selector: 'app-user-sidebar-menu',
   standalone: true,
@@ -98,8 +99,8 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent, ocxRem
   public avatarImageLoaded: boolean | undefined = undefined // getting true/false from response, then component managed
 
   private readonly menuService = inject(MenuService)
-  public isActive$ = this.menuService.isActive('static')
-  public isHidden$ = this.menuService.isVisible('static').pipe(map((isVisible) => !isVisible))
+  public isActive$ = this.menuService.isActive(MENU_MODE)
+  public isHidden$ = this.menuService.isVisible(MENU_MODE).pipe(map((isVisible) => !isVisible))
 
   constructor(
     @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,

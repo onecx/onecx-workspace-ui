@@ -6,6 +6,24 @@ import { map, Observable, of, combineLatest, startWith, fromEvent, tap, debounce
 
 export type MenuMode = 'horizontal' | 'static' | 'overlay' | 'slim' | 'slimplus'
 
+/**
+ * Service to manage menu state such as visibility and active mode.
+ * The service uses user profile settings and window size to determine the current menu state.
+ *
+ * Usage:
+ *
+ * ```typescript
+ * constructor(private menuService: MenuService) {}
+ *
+ * this.menuService.isActive('horizontal').subscribe(isActive => {
+ *   // Handle active state
+ * });
+ *
+ * this.menuService.isVisible('static').subscribe(isVisible => {
+ *   // Handle visibility state
+ * });
+ * ```
+ */
 @UntilDestroy()
 @Injectable({ providedIn: 'root' })
 export class MenuService {
@@ -15,12 +33,7 @@ export class MenuService {
 
   private readonly menuMode$: Observable<MenuMode> = this.userService.profile$.pipe(
     map((p) => {
-      return (p?.accountSettings?.layoutAndThemeSettings?.menuMode?.toLowerCase() ?? 'static') as
-        | 'horizontal'
-        | 'static'
-        | 'overlay'
-        | 'slim'
-        | 'slimplus'
+      return (p?.accountSettings?.layoutAndThemeSettings?.menuMode?.toLowerCase() ?? 'static') as MenuMode
     })
   )
 

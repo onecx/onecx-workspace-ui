@@ -46,6 +46,8 @@ export interface WorkspaceMenuItems {
   items: MenuItem[]
 }
 
+const MENU_MODE = 'static'
+
 @Component({
   selector: 'app-vertical-main-menu',
   templateUrl: './vertical-main-menu.component.html',
@@ -86,8 +88,8 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRe
   eventsTopic$ = new EventsTopic()
 
   private readonly menuService = inject(MenuService)
-  public isActive$ = this.menuService.isActive('static')
-  public isHidden$ = this.menuService.isVisible('static').pipe(map((isVisible) => !isVisible))
+  public isActive$ = this.menuService.isActive(MENU_MODE)
+  public isHidden$ = this.menuService.isVisible(MENU_MODE).pipe(map((isVisible) => !isVisible))
 
   constructor(
     @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,

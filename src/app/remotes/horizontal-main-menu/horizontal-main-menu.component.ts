@@ -24,6 +24,8 @@ import { SharedModule } from 'src/app/shared/shared.module'
 import { environment } from 'src/environments/environment'
 import { MenuService } from 'src/app/shared/services/menu.service'
 
+const MENU_MODE = 'horizontal'
+
 @Component({
   selector: 'app-horizontal-main-menu',
   standalone: true,
@@ -50,8 +52,8 @@ export class OneCXHorizontalMainMenuComponent implements OnInit, ocxRemoteCompon
   menuItems$: Observable<MenuItem[]> | undefined
 
   private readonly menuService = inject(MenuService)
-  public isActive$ = this.menuService.isActive('horizontal')
-  public isHidden$ = this.menuService.isVisible('horizontal').pipe(map((isVisible) => !isVisible))
+  public isActive$ = this.menuService.isActive(MENU_MODE)
+  public isHidden$ = this.menuService.isVisible(MENU_MODE).pipe(map((isVisible) => !isVisible))
 
   constructor(
     @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
