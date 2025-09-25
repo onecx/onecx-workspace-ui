@@ -9,7 +9,7 @@ import {
 } from '@onecx/angular-integration-interface/mocks'
 import { Capability, UserService } from '@onecx/angular-integration-interface'
 import { UserProfile } from '@onecx/integration-interface'
-import { of, skip } from 'rxjs'
+import { BehaviorSubject, of, skip } from 'rxjs'
 import { Topic } from '@onecx/accelerator'
 
 describe('MenuService', () => {
@@ -55,6 +55,7 @@ describe('MenuService', () => {
       service['staticMenuVisible$'].publish({ isVisible: true })
       service
         .isVisible('static')
+        // Skip initial value
         .pipe(skip(1))
         .subscribe((isVisible) => {
           expect(isVisible).toBeTrue()
@@ -67,6 +68,20 @@ describe('MenuService', () => {
       service['staticMenuVisible$'].publish({ isVisible: false })
       service
         .isVisible('static')
+        // Skip initial value
+        .pipe(skip(1))
+        .subscribe((isVisible) => {
+          expect(isVisible).toBeFalse()
+          done()
+        })
+    })
+
+    it('should not be visible after viewport changed to mobile', (done) => {
+      ShellCapabilityServiceMock.setCapabilities([Capability.PUBLISH_STATIC_MENU_VISIBILITY])
+      service['isMobile$'] = of(false, true)
+      service
+        .isVisible('static')
+        // Skip initial value
         .pipe(skip(1))
         .subscribe((isVisible) => {
           expect(isVisible).toBeFalse()
