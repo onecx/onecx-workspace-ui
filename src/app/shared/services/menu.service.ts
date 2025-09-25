@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { Topic } from '@onecx/accelerator'
 import { Capability, ShellCapabilityService, UserService } from '@onecx/angular-integration-interface'
-import { map, Observable, of, combineLatest, startWith, fromEvent, tap, debounceTime } from 'rxjs'
+import { map, Observable, of, combineLatest, startWith, fromEvent, debounceTime, pairwise, filter } from 'rxjs'
 
 export type MenuMode = 'horizontal' | 'static' | 'overlay' | 'slim' | 'slimplus'
 
@@ -41,11 +41,7 @@ export class MenuService {
   private isMobile$: Observable<boolean>
 
   constructor() {
-    this.onResize$ = fromEvent(window, 'resize').pipe(
-      tap((v) => console.log(v)),
-      debounceTime(100),
-      untilDestroyed(this)
-    )
+    this.onResize$ = fromEvent(window, 'resize').pipe(debounceTime(100), untilDestroyed(this))
     const mobileBreakpointVar = getComputedStyle(document.documentElement).getPropertyValue('--mobile-break-point')
     this.isMobile$ = this.onResize$.pipe(
       map(() => window.matchMedia(`(max-width: ${mobileBreakpointVar})`).matches),
@@ -54,6 +50,15 @@ export class MenuService {
         window.matchMedia(`(max-width: ${mobileBreakpointVar})`).matches
       )
     )
+    this.isMobile$
+      .pipe(
+        pairwise(),
+        filter(([oldIsMobile, newIsMobile]) => {
+          return oldIsMobile !== newIsMobile
+        }),
+        map(([, isMobile]) => ({ isVisible: !isMobile }))
+      )
+      .subscribe((state) => this.staticMenuVisible$.publish(state))
   }
 
   public isActive(menuMode: MenuMode): Observable<boolean> {
