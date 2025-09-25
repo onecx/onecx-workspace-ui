@@ -9,7 +9,7 @@ import {
 } from '@onecx/angular-integration-interface/mocks'
 import { Capability, UserService } from '@onecx/angular-integration-interface'
 import { UserProfile } from '@onecx/integration-interface'
-import { BehaviorSubject, of, skip } from 'rxjs'
+import { of, skip } from 'rxjs'
 import { Topic } from '@onecx/accelerator'
 
 describe('MenuService', () => {
