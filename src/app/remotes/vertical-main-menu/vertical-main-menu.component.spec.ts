@@ -24,7 +24,7 @@ import { MenuService } from 'src/app/shared/services/menu.service'
 
 describe('OneCXVerticalMainMenuComponent', () => {
   const menuItemApiSpy = jasmine.createSpyObj<MenuItemAPIService>('MenuItemAPIService', ['getMenuItems'])
-  const menuServiceSpy = jasmine.createSpyObj<MenuService>('MenuService', ['isVisible', 'isMenuActive'])
+  const menuServiceSpy = jasmine.createSpyObj<MenuService>('MenuService', ['isVisible', 'isActive'])
 
   function setUp() {
     const fixture = TestBed.createComponent(OneCXVerticalMainMenuComponent)

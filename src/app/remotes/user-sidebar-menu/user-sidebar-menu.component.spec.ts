@@ -24,7 +24,7 @@ import { MenuService } from 'src/app/shared/services/menu.service'
 
 describe('OneCXUserSidebarMenuComponent', () => {
   const menuItemApiSpy = jasmine.createSpyObj<MenuItemAPIService>('MenuItemAPIService', ['getMenuItems'])
-  const menuServiceSpy = jasmine.createSpyObj<MenuService>('MenuService', ['isVisible', 'isMenuActive'])
+  const menuServiceSpy = jasmine.createSpyObj<MenuService>('MenuService', ['isVisible', 'isActive'])
 
   const appConfigSpy = jasmine.createSpyObj<AppConfigService>('AppConfigService', ['init'])
 
