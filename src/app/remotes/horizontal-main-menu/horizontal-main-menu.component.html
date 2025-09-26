@@ -1,4 +1,6 @@
 <p-menubar
+  *ngIf="isActive$ | async"
+  [hidden]="isHidden$ | async"
   autoHide="true"
   breakpoint="767"
   [model]="(menuItems$ | async) ?? []"

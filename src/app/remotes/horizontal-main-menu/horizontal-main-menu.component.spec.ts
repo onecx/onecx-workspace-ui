@@ -15,9 +15,11 @@ import { PMenuBarHarness } from '@onecx/angular-testing'
 
 import { MenuItemAPIService } from 'src/app/shared/generated'
 import { OneCXHorizontalMainMenuComponent } from './horizontal-main-menu.component'
+import { MenuService } from 'src/app/shared/services/menu.service'
 
 describe('OneCXHorizontalMainMenuComponent', () => {
   const menuItemApiSpy = jasmine.createSpyObj<MenuItemAPIService>('MenuItemAPIService', ['getMenuItems'])
+  const menuServiceSpy = jasmine.createSpyObj<MenuService>('MenuService', ['isVisible', 'isActive'])
 
   function setUp() {
     const fixture = TestBed.createComponent(OneCXHorizontalMainMenuComponent)
@@ -46,13 +48,17 @@ describe('OneCXHorizontalMainMenuComponent', () => {
       .overrideComponent(OneCXHorizontalMainMenuComponent, {
         set: {
           imports: [TranslateTestingModule, CommonModule, RouterModule, MenubarModule],
-          providers: [{ provide: MenuItemAPIService, useValue: menuItemApiSpy }]
+          providers: [
+            { provide: MenuItemAPIService, useValue: menuItemApiSpy },
+            { provide: MenuService, useValue: menuServiceSpy }
+          ]
         }
       })
       .compileComponents()
 
     baseUrlSubject.next('base_url_mock')
-
+    menuServiceSpy.isActive.and.returnValue(of(true))
+    menuServiceSpy.isVisible.and.returnValue(of(true))
     menuItemApiSpy.getMenuItems.calls.reset()
   })
 

@@ -1,4 +1,10 @@
-<p-accordion [activeIndex]="null" expandIcon="pi pi-chevron-right" collapseIcon="pi pi-chevron-down">
+<p-accordion
+  *ngIf="isActive$ | async"
+  [hidden]="isHidden$ | async"
+  [activeIndex]="null"
+  expandIcon="pi pi-chevron-right"
+  collapseIcon="pi pi-chevron-down"
+>
   <p-accordionTab>
     <ng-template pTemplate="header">
       <div

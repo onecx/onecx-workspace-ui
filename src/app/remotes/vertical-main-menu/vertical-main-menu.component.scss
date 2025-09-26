@@ -2,6 +2,8 @@
 
 :host ::ng-deep {
   .p-panelmenu {
+    width: 17rem;
+    display: block;
     .p-panelmenu-header {
       &.ocx-vertical-menu-active-item {
         &:not(:focus-visible):not(:hover) {
