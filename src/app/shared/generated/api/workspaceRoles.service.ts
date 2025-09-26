@@ -1,6 +1,6 @@
 /**
  * onecx-workspace-bff
- * OneCX Workspace BFF
+ * Backend-For-Frontend (BFF) service for onecx-workspace. This API provides endpoints for managing Workspaces, Menus, Products, Roles and Assignments.
  *
  * The version of the OpenAPI document: 1.0
  * 
@@ -123,7 +123,7 @@ export class WorkspaceRolesAPIService {
     }
 
     /**
-     * create role for workspace
+     * Create a new role for a workspace
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -192,7 +192,7 @@ export class WorkspaceRolesAPIService {
     }
 
     /**
-     * delete workspace role
+     * Delete a workspace role by its id
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -251,7 +251,7 @@ export class WorkspaceRolesAPIService {
     }
 
     /**
-     * Retrieve workspace role
+     * Get a workspace role by its id
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -310,7 +310,7 @@ export class WorkspaceRolesAPIService {
     }
 
     /**
-     * search workspaceRoles
+     * Search workspace roles by search criteria
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -379,7 +379,7 @@ export class WorkspaceRolesAPIService {
     }
 
     /**
-     * Update workspace role
+     * Update a workspace role by its id
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.

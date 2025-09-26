@@ -9,17 +9,13 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { MenuItemResult } from './menuItemResult';
 
 
-export interface MenuItemPageResult { 
-    /**
-     * The total elements in the resource.
-     */
-    totalElements?: number;
-    number?: number;
-    size?: number;
-    totalPages?: number;
-    stream?: Array<MenuItemResult>;
+export enum MimeType {
+    XIcon = 'image/x-icon',
+    Svgxml = 'image/svg+xml',
+    Png = 'image/png',
+    Jpg = 'image/jpg',
+    Jpeg = 'image/jpeg'
 }
 
