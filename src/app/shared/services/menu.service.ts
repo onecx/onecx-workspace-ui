@@ -50,17 +50,6 @@ export class MenuService {
         window.matchMedia(`(max-width: ${mobileBreakpointVar})`).matches
       )
     )
-    this.isMobile$
-      .pipe(
-        pairwise(),
-        filter(([oldIsMobile, newIsMobile]) => {
-          return oldIsMobile !== newIsMobile
-        }),
-        map(([, isMobile]) => ({ isVisible: !isMobile }))
-      )
-      .subscribe((state) => {
-        this.staticMenuVisible$.publish(state)
-      })
   }
 
   public isActive(menuMode: MenuMode): Observable<boolean> {
