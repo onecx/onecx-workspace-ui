@@ -215,8 +215,10 @@
           <ul class="ml-0 mt-2">
             <li *ngFor="let slot of slot?.psSlots; let i = index" class="">
               <div class="p-1 flex flex-row column-gap-2">
-                <span [id]="'ws_slot_detail_product_' + i + '_name'" class="text-md">{{ slot?.pDisplayName }}</span>
-                <span
+                <div [id]="'ws_slot_detail_product_' + i + '_name'" class="text-md text-responsive">
+                  {{ slot?.pDisplayName }}
+                </div>
+                <div
                   *ngIf="slot?.undeployed"
                   [id]="'ws_slot_detail_product_' + i + '_undeployed'"
                   class="danger-action-text text-md pi pi-ban"
@@ -224,9 +226,8 @@
                   [pTooltip]="'DIALOG.SLOT.UNDEPLOYED.TOOLTIP' | translate"
                   tooltipPosition="top"
                   tooltipEvent="hover"
-                >
-                </span>
-                <span
+                ></div>
+                <div
                   *ngIf="slot?.deprecated"
                   [id]="'ws_slot_detail_product_' + i + '_deprecated'"
                   class="danger-action-text text-md pi pi-exclamation-circle"
@@ -234,8 +235,7 @@
                   [pTooltip]="'DIALOG.SLOT.DEPRECATED' | translate"
                   tooltipPosition="top"
                   tooltipEvent="hover"
-                >
-                </span>
+                ></div>
               </div>
             </li>
           </ul>

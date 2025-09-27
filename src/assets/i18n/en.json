@@ -273,6 +273,7 @@
     "URL.EMPTY": "empty",
     "URL.HTTP": "Web Address",
     "URL.UNKNOWN.PRODUCT": "Unknown Application",
+    "URL.ROOT.PRODUCT": "Root",
     "TOOLTIP": {
       "BADGE": "Icon from the PrimeNG library which should be displayed next to the Menu name",
       "DESCRIPTION": "Additional informationen",

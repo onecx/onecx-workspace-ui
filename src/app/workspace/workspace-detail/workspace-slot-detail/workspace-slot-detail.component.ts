@@ -4,7 +4,8 @@ import { TranslateService } from '@ngx-translate/core'
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 
 import { SlotAPIService, SlotComponent, UpdateSlotRequest } from 'src/app/shared/generated'
-import { ChangeMode, CombinedSlot, ExtendedComponent } from '../workspace-slots/workspace-slots.component'
+import { ChangeMode, CombinedSlot, ExtendedComponent, PSSlot } from '../workspace-slots/workspace-slots.component'
+import { PSKCallbackNegotation } from 'node:tls'
 
 @Component({
   selector: 'app-workspace-slot-detail',
@@ -61,6 +62,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
             if (this.wProductNames.includes(c.productName)) this.psComponents.push(c)
         })
         this.psComponents.sort(this.sortComponents)
+        this.slot.psSlots.sort(this.sortProducts)
       }
     }
   }
@@ -71,6 +73,9 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
       a.appId.toUpperCase().localeCompare(b.appId.toUpperCase()) ||
       a.productName.toUpperCase().localeCompare(b.productName.toUpperCase())
     )
+  }
+  public sortProducts(a: PSSlot, b: PSSlot): number {
+    return a.pDisplayName!.toUpperCase().localeCompare(b.pDisplayName!.toUpperCase())
   }
 
   public onClose(): void {
