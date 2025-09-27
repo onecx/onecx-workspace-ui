@@ -191,6 +191,7 @@ export class MenuDetailComponent implements OnChanges {
     let item: MenuURL | null = null
     let maxLength = 0
     let itemCreated = false
+    // looking for URL match on MFEs
     for (const mfeItem of this.mfeItems) {
       const bp = mfeItem.mfePath!
       // perfect match
@@ -206,8 +207,14 @@ export class MenuDetailComponent implements OnChanges {
         itemCreated = true
       }
     }
+    // no match
     if (!item) {
-      item = { mfePath: url, product: 'MENU_ITEM.URL.UNKNOWN.PRODUCT', isSpecial: true } as MenuURL
+      const type = url === '/' ? 'ROOT' : 'UNKNOWN'
+      item = {
+        mfePath: url,
+        product: 'MENU_ITEM.URL.' + type + '.PRODUCT',
+        isSpecial: true
+      } as MenuURL
       itemCreated = true
     }
     return [item, itemCreated]
