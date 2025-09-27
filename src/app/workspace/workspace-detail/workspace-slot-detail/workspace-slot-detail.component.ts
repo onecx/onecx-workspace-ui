@@ -5,7 +5,6 @@ import { PortalMessageService, UserService } from '@onecx/angular-integration-in
 
 import { SlotAPIService, SlotComponent, UpdateSlotRequest } from 'src/app/shared/generated'
 import { ChangeMode, CombinedSlot, ExtendedComponent, PSSlot } from '../workspace-slots/workspace-slots.component'
-import { PSKCallbackNegotation } from 'node:tls'
 
 @Component({
   selector: 'app-workspace-slot-detail',
