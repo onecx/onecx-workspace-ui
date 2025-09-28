@@ -155,7 +155,7 @@
           </ng-template>
 
           <ng-template let-component let-i="rowIndex" pTemplate="item">
-            <span
+            <div
               *ngIf="component?.undeployed"
               [id]="'ws_slot_detail_picklist_' + i + '_undeployed'"
               class="card-badge-right badge-1 danger-action-text text-lg pi pi-ban"
@@ -163,8 +163,8 @@
               [pTooltip]="'DIALOG.SLOT.UNDEPLOYED.COMPONENT.TOOLTIP' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
-            ></span>
-            <span
+            ></div>
+            <div
               *ngIf="component?.deprecated && !component?.undeployed"
               [id]="'ws_slot_detail_picklist_' + i + '_deprecated'"
               class="card-badge-right badge-1 danger-action-text text-lg pi pi-exclamation-circle"
@@ -172,11 +172,11 @@
               [pTooltip]="'DIALOG.SLOT.DEPRECATED.TOOLTIP' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
-            ></span>
+            ></div>
             <div class="py-0 sm:py-1 px-2 flex flex-column row-gap-0" (dblclick)="return($event)">
               <div
                 [id]="'ws_slot_detail_picklist_' + i + '_component_name'"
-                class="font-semibold text-sm md:text-md text-responsive"
+                class="font-semibold text-sm md:text-md max-w-30rem text-responsive"
               >
                 {{ component.name }}
               </div>
@@ -215,7 +215,7 @@
           <ul class="ml-0 mt-2">
             <li *ngFor="let slot of slot?.psSlots; let i = index" class="">
               <div class="p-1 flex flex-row column-gap-2">
-                <div [id]="'ws_slot_detail_product_' + i + '_name'" class="text-md text-responsive">
+                <div [id]="'ws_slot_detail_product_' + i + '_name'" class="text-md max-w-30rem text-responsive">
                   {{ slot?.pDisplayName }}
                 </div>
                 <div

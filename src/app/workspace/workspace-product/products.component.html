@@ -216,7 +216,7 @@
             <div class="flex flex-column row-gap-1">
               <div
                 [id]="'ws_products_picklist_' + product.productName + '_display_name'"
-                class="tile-view-mandatory sm:font-semibold text-sm lg:text-md"
+                class="tile-view-mandatory sm:font-semibold text-sm lg:text-md max-w-15rem text-responsive"
                 [class.danger-action-text]="product?.undeployed || product?.changedComponents"
                 role="note"
               >
@@ -224,7 +224,7 @@
               </div>
               <div
                 [id]="'ws_products_picklist_' + product.productName + '_product_name'"
-                class="tile-view-optional text-xs hidden md:block"
+                class="tile-view-optional text-xs hidden md:block max-w-15rem text-responsive"
                 role="note"
               >
                 {{ product.productName }}
@@ -232,11 +232,15 @@
             </div>
           </div>
           <div
-            [id]="'ws_products_picklist_' + product.productName + '_product_base_url'"
-            class="tile-view-optional col-3 p-0 text-sm hidden md:block"
-            role="note"
+            class="tile-view-optional col-3 h-3rem p-0 text-sm hidden md:flex justify-content-start align-items-center"
           >
-            {{ limitText(product.baseUrl, 15) }}
+            <div
+              [id]="'ws_products_picklist_' + product.productName + '_product_base_url'"
+              class="max-w-15rem word-break-all text-ellipsis-2-lines"
+              role="note"
+            >
+              {{ product.baseUrl }}
+            </div>
           </div>
           <!-- BADGES -->
           <div
@@ -278,11 +282,13 @@
       -->
     <header class="mb-3 w-full flex flex-row flex-wrap gap-2 justify-content-between align-items-start">
       <div class="flex flex-column cursor-default">
-        <div class="font-semibold text-primary text-xl">{{ displayedDetailItem.displayName }}</div>
+        <div class="font-semibold text-primary text-xl max-w-15rem text-responsive">
+          {{ displayedDetailItem.displayName }}
+        </div>
         <div class="flex flex-row column-gap-3">
           <div class="flex flex-column" role="note">
-            <div class="text-sm">{{ displayedDetailItem.productName }}</div>
-            <div class="text-sm">{{ displayedDetailItem.version }}</div>
+            <div class="text-sm max-w-15rem text-responsive">{{ displayedDetailItem.productName }}</div>
+            <div class="text-sm max-w-15rem text-responsive">{{ displayedDetailItem.version }}</div>
           </div>
           <div
             *ngIf="displayedDetailItem.undeployed"
@@ -398,7 +404,7 @@
           <dl>
             <dt *ngFor="let app of displayedDetailItem.apps | keyvalue; let i = index">
               <p-divider align="center" styleClass="m-0 p-0">
-                <div class="font-bold text-primary text-responsive">{{ app.key }}</div>
+                <div class="font-bold text-primary max-w-20rem text-responsive">{{ app.key }}</div>
                 <div class="text-xs">Microfrontend</div>
               </p-divider>
 
@@ -412,7 +418,10 @@
                       class="ml-2 flex flex-column row-gap-0"
                     >
                       <div class="mb-1 flex flex-row column-gap-2">
-                        <span [id]="'ws_products_detail_mfe_' + i + '_exposed_module'" class="mr-2">
+                        <span
+                          [id]="'ws_products_detail_mfe_' + i + '_exposed_module'"
+                          class="mr-2 max-w-20rem text-responsive"
+                        >
                           {{ mfe.controls['exposedModule'].value }}</span
                         >
                         <!-- mfe state -->
@@ -464,7 +473,7 @@
                         <div
                           *ngFor="let ep of mfe.controls['endpoints'].value; let j = index"
                           [id]="'ws_products_detail_mfe_' + i + '_endpoint_' + j"
-                          class="text-responsive"
+                          class="max-w-20rem text-responsive"
                         >
                           {{ ep.name }} => {{ ep.path }}
                         </div>
@@ -476,7 +485,10 @@
                 <div *ngIf="app.value.modules && displayedDetailItem.bucket === 'SOURCE'">
                   <dt *ngFor="let smfe of app.value.modules; let i = index" class="flex flex-column row-gap-2">
                     <div class="flex flex-row flex-nowrap column-gap-2">
-                      <span [id]="'ws_products_detail_component_' + i + '_exposed_module'" class="mr-2">
+                      <span
+                        [id]="'ws_products_detail_component_' + i + '_exposed_module'"
+                        class="mr-2 max-w-20rem text-responsive"
+                      >
                         {{ smfe.exposedModule }}</span
                       >
                       <div
@@ -508,7 +520,10 @@
                   *ngFor="let item of app.value.components; let i = index"
                   class="ml-2 flex flex-row align-items-center column-gap-2"
                 >
-                  <span [id]="'ws_products_detail_component_' + i + '_exposed_module'" class="mr-2 text-responsive">
+                  <span
+                    [id]="'ws_products_detail_component_' + i + '_exposed_module'"
+                    class="mr-2 max-w-20rem text-responsive"
+                  >
                     {{ item.exposedModule }}</span
                   >
                   <div
@@ -543,7 +558,9 @@
             *ngFor="let item of displayedDetailItem.slots; let i = index"
             class="ml-2 flex flex-row align-items-center column-gap-3 text-sm"
           >
-            <span [id]="'ws_products_detail_slot_' + i + '_name'" class="text-responsive">{{ item.name }}</span>
+            <span [id]="'ws_products_detail_slot_' + i + '_name'" class="max-w-20rem text-responsive"
+              >{{ item.name }}</span
+            >
             <div
               *ngIf="item.undeployed"
               [id]="'ws_products_detail_slot_' + i + '_undeployed'"

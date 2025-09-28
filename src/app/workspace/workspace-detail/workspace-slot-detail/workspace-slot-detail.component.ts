@@ -52,14 +52,13 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
         this.wComponentsOrg = [...this.wComponents] // to be able to restore
         this.psComponents = []
         // collect available but not yet registered components from product store
-        this.psComponentsOrg.forEach((c) => {
+        for (const psComp of this.psComponentsOrg)
           if (
-            !this.wComponents.find(
-              (wc) => wc.productName === c.productName && wc.appId === c.appId && wc.name === c.name
+            !this.wComponents.some(
+              (wc) => wc.productName === psComp.productName && wc.appId === psComp.appId && wc.name === psComp.name
             )
           )
-            if (this.wProductNames.includes(c.productName)) this.psComponents.push(c)
-        })
+            if (this.wProductNames.includes(psComp.productName)) this.psComponents.push(psComp)
         this.psComponents.sort(this.sortComponents)
         this.slot.psSlots.sort(this.sortProducts)
       }

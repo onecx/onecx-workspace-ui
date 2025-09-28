@@ -354,23 +354,27 @@ export class MenuDetailComponent implements OnChanges {
   }
   public onRemoveLanguage(val: string) {
     if (this.languagesDisplayed.length === 0) return
-    if (['de', 'en'].includes(this.languagesDisplayed.filter((l) => l.value === val)[0].value)) {
-      this.languagesDisplayed.filter((l) => l.value === val)[0].data = ''
-    } else {
-      this.languagesAvailable.push(this.languagesDisplayed.filter((l) => l.value === val)[0])
-      this.languagesAvailable.filter((l) => l.value === val)[0].data = ''
-      this.languagesAvailable = this.languagesAvailable.filter((l) => l).sort(Utils.dropDownSortItemsByLabel)
-      this.languagesDisplayed = this.languagesDisplayed.filter((l) => l.value !== val)
-    }
+    let lang = this.languagesDisplayed.find((l) => l.value === val)
+    if (lang)
+      if (['de', 'en'].includes(lang.value)) {
+        lang.data = ''
+      } else {
+        this.languagesAvailable.push(lang)
+        lang = this.languagesAvailable.find((l) => l.value === val)
+        if (lang) lang.data = ''
+        this.languagesAvailable = this.languagesAvailable.filter((l) => l).sort(Utils.dropDownSortItemsByLabel)
+        this.languagesDisplayed = this.languagesDisplayed.filter((l) => l.value !== val)
+      }
   }
   public onAddLanguage(val: string): void {
-    this.languagesDisplayed.push(this.languagesAvailable.filter((l) => l.value === val)[0])
+    const lang = this.languagesAvailable.find((l) => l.value === val)
+    if (lang) this.languagesDisplayed.push(lang)
     this.languagesAvailable = this.languagesAvailable.filter((l) => l.value !== val)
   }
   public getLanguageLabel(val: any): string | undefined {
     if (this.languagesDisplayed.length > 0) {
-      const l = this.languagesDisplayed.filter((l) => l.value === val)
-      return l.length === 1 ? l[0].label : undefined
+      const lang = this.languagesDisplayed.find((l) => l.value === val)
+      return lang?.label ?? undefined
     }
     return undefined
   }
