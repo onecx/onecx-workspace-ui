@@ -137,7 +137,7 @@ export class MenuDetailComponent implements OnChanges {
 
   public getMaxChildrenPosition(item: WorkspaceMenuItem): number {
     if (!item.children || item.children?.length === 0) return 0
-    else return (item.children[item.children.length - 1].position ?? 0) + 1
+    else return (item.children.at(-1)?.position ?? 0) + 1
   }
 
   private async getMenu() {
@@ -362,7 +362,7 @@ export class MenuDetailComponent implements OnChanges {
         this.languagesAvailable.push(lang)
         lang = this.languagesAvailable.find((l) => l.value === val)
         if (lang) lang.data = ''
-        this.languagesAvailable = this.languagesAvailable.filter((l) => l).sort(Utils.dropDownSortItemsByLabel)
+        this.languagesAvailable.sort(Utils.dropDownSortItemsByLabel)
         this.languagesDisplayed = this.languagesDisplayed.filter((l) => l.value !== val)
       }
   }

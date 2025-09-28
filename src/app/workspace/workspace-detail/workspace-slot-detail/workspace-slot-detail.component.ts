@@ -43,26 +43,28 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   }
 
   public ngOnChanges(): void {
-    if (this.slotOrg && this.slot === undefined) {
-      if (this.displayDetailDialog) {
-        this.slot = { ...this.slotOrg }
-        // extract ps components
-        if (this.slot.psComponents) this.wComponents = [...this.slot.psComponents]
-        else this.wComponents = []
-        this.wComponentsOrg = [...this.wComponents] // to be able to restore
-        this.psComponents = []
-        // collect available but not yet registered components from product store
-        for (const psComp of this.psComponentsOrg)
-          if (
-            !this.wComponents.some(
-              (wc) => wc.productName === psComp.productName && wc.appId === psComp.appId && wc.name === psComp.name
-            )
-          )
-            if (this.wProductNames.includes(psComp.productName)) this.psComponents.push(psComp)
-        this.psComponents.sort(this.sortComponents)
-        this.slot.psSlots.sort(this.sortProducts)
-      }
+    if (this.displayDetailDialog && this.slotOrg && this.slot === undefined) {
+      this.slot = { ...this.slotOrg }
+      // extract ps components
+      if (this.slot.psComponents) this.wComponents = [...this.slot.psComponents]
+      else this.wComponents = []
+      this.wComponentsOrg = [...this.wComponents] // to be able to restore
+      this.psComponents = []
+      this.collectPsComponents()
+      this.psComponents.sort(this.sortComponents)
+      this.slot.psSlots.sort(this.sortProducts)
     }
+  }
+
+  private collectPsComponents() {
+    // collect available but not yet registered components from product store
+    for (const psComp of this.psComponentsOrg)
+      if (
+        !this.wComponents.some(
+          (wc) => wc.productName === psComp.productName && wc.appId === psComp.appId && wc.name === psComp.name
+        )
+      )
+        if (this.wProductNames.includes(psComp.productName)) this.psComponents.push(psComp)
   }
 
   public sortComponents(a: ExtendedComponent, b: ExtendedComponent): number {

@@ -401,14 +401,14 @@
                Such data are picked up from product store product.
           -->
         <section [attr.aria-label]="'Microfrontends'">
-          <dl>
+          <dl class="my-0">
             <dt *ngFor="let app of displayedDetailItem.apps | keyvalue; let i = index">
               <p-divider align="center" styleClass="m-0 p-0">
                 <div class="font-bold text-primary max-w-20rem text-responsive">{{ app.key }}</div>
                 <div class="text-xs">Microfrontend</div>
               </p-divider>
 
-              <dl *ngIf="app.value.modules" class="text-sm">
+              <dl *ngIf="app.value.modules" class="my-0 text-sm">
                 <div class="mb-1 font-bold">Modules</div>
                 <div *ngIf="app.value.modules && displayedDetailItem.bucket === 'TARGET'" formArrayName="modules">
                   <dt *ngFor="let mfe of moduleControls.controls; let i = index">
@@ -514,7 +514,7 @@
                 </div>
               </dl>
 
-              <dl *ngIf="app.value.components" class="text-sm">
+              <dl *ngIf="app.value.components" class="my-0 text-sm">
                 <div class="mt-3 mb-1 font-bold">Components</div>
                 <dt
                   *ngFor="let item of app.value.components; let i = index"
@@ -550,7 +550,7 @@
           </dl>
         </section>
 
-        <dl *ngIf="displayedDetailItem.slots" [attr.aria-label]="'TABS.WORKSPACE.SLOTS' | translate">
+        <dl *ngIf="displayedDetailItem.slots" class="my-0" [attr.aria-label]="'TABS.WORKSPACE.SLOTS' | translate">
           <p-divider align="center" styleClass="mt-0 mb-1">
             <div class="px-3 font-bold text-primary">Slots</div>
           </p-divider>

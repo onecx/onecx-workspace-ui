@@ -176,11 +176,14 @@
             <div class="py-0 sm:py-1 px-2 flex flex-column row-gap-0" (dblclick)="return($event)">
               <div
                 [id]="'ws_slot_detail_picklist_' + i + '_component_name'"
-                class="font-semibold text-sm md:text-md max-w-30rem text-responsive"
+                class="font-semibold text-sm md:text-md max-w-22rem text-responsive"
               >
                 {{ component.name }}
               </div>
-              <div [id]="'ws_slot_detail_picklist_' + i + '_product_name'" class="text-right text-xs">
+              <div
+                [id]="'ws_slot_detail_picklist_' + i + '_product_name'"
+                class="text-right text-xs max-w-22rem text-responsive"
+              >
                 {{ component.productName }}
               </div>
             </div>
