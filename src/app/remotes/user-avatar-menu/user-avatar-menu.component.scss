@@ -89,9 +89,6 @@
   list-style: none;
 
   .layout-topbar-action-item {
-    padding-top: 0.75rem;
-    padding-bottom: 0.75rem;
-    padding-right: 1rem;
     cursor: pointer;
     * {
       color: var(--menu-item-text-color);
@@ -106,5 +103,11 @@
         background-color: inherit !important;
       }
     }
+  }
+
+  .layout-topbar-action-item-padded {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    padding-right: 1rem;
   }
 }

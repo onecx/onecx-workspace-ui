@@ -41,7 +41,7 @@
         customComponentDefined: isCustomUserInfoComponentDefined$ | async
       } as data"
       id="ws_user_avatar_menu_list_item_0"
-      class="layout-topbar-action-item cursor-auto user-info"
+      class="layout-topbar-action-item layout-topbar-action-item-padded cursor-auto user-info"
     >
       <div
         *ngIf="data.userProfile as profile"
@@ -82,7 +82,7 @@
         <a
           *ngIf="!item.routerLink && item.url && !item.command"
           [id]="'ws_user_avatar_menu_list_item_' + (i + 1) + '_link'"
-          class="px-3 flex flex-row flex-nowrap align-items-center gap-2"
+          class="layout-topbar-action-item-padded px-3 flex flex-row flex-nowrap align-items-center gap-2"
           pRipple
           [attr.href]="item.url"
           (keydown.escape)="onItemEscape(userAvatarMenuButton)"
@@ -95,7 +95,7 @@
         <a
           *ngIf="item.routerLink && !item.url && !item.command"
           [id]="'ws_user_avatar_menu_list_item_' + (i + 1) + '_link'"
-          class="px-3 flex flex-row flex-nowrap align-items-center gap-2"
+          class="layout-topbar-action-item-padded px-3 flex flex-row flex-nowrap align-items-center gap-2"
           pRipple
           [routerLink]="item.routerLink"
           (keydown.escape)="onItemEscape(userAvatarMenuButton)"
@@ -109,8 +109,8 @@
           tabindex="0"
           *ngIf="!item.routerLink && !item.url && item.command"
           [id]="'ws_user_avatar_menu_list_item_logout'"
-          class="px-3 flex flex-row flex-nowrap align-items-center gap-2 border-none cursor-pointer"
-          style="background-color: inherit; color: inherit; font-size: inherit"
+          class="layout-topbar-action-item-padded px-3 flex flex-row flex-nowrap align-items-center gap-2 border-none cursor-pointer"
+          style="background-color: inherit; color: inherit; font-size: inherit; width: 100%"
           pRipple
           (click)="item.command({})"
           (keydown.enter)="item.command({})"
