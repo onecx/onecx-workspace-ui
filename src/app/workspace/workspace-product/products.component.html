@@ -558,9 +558,9 @@
             *ngFor="let item of displayedDetailItem.slots; let i = index"
             class="ml-2 flex flex-row align-items-center column-gap-3 text-sm"
           >
-            <span [id]="'ws_products_detail_slot_' + i + '_name'" class="max-w-20rem text-responsive"
-              >{{ item.name }}</span
-            >
+            <span [id]="'ws_products_detail_slot_' + i + '_name'" class="max-w-20rem text-responsive">
+              {{ item.name }}
+            </span>
             <div
               *ngIf="item.undeployed"
               [id]="'ws_products_detail_slot_' + i + '_undeployed'"
