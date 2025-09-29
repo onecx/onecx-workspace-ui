@@ -126,7 +126,7 @@ describe('OneCXCurrentWorkspaceLogoComponent', () => {
 
       it('should use image - failed - use default', () => {
         const { component } = setUp()
-        component.logEnabled = true
+        component.logEnabled = false
         component.logPrefix = 'default'
         component.workspaceName = workspace1.workspaceName
 

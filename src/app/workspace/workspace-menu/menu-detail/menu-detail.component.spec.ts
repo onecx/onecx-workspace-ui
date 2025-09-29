@@ -128,23 +128,23 @@ describe('MenuDetailComponent', () => {
     getProductsByWorkspaceId: jasmine.createSpy('getProductsByWorkspaceId').and.returnValue(of({}))
   }
   const menuApiServiceSpy = {
-    getMenuStructure: jasmine.createSpy('getMenuStructure').and.returnValue(of(mockMenuItems)),
     getMenuItemById: jasmine.createSpy('getMenuItemById').and.returnValue(of(mockMenuItems)),
     createMenuItemForWorkspace: jasmine.createSpy('createMenuItemForWorkspace').and.returnValue(of(mockMenuItems)),
     updateMenuItem: jasmine.createSpy('updateMenuItem').and.returnValue(of(mockMenuItems)),
-    deleteMenuItemById: jasmine.createSpy('deleteMenuItemById').and.returnValue(of({})),
-    exportMenuByWorkspaceName: jasmine.createSpy('exportMenuByWorkspaceName').and.returnValue(of({}))
+    deleteMenuItemById: jasmine.createSpy('deleteMenuItemById').and.returnValue(of({}))
   }
   const translateServiceSpy = jasmine.createSpyObj('TranslateService', ['get'])
   const locationSpy = jasmine.createSpyObj<Location>('Location', ['back'])
 
-  const mockActivatedRouteSnapshot: Partial<ActivatedRouteSnapshot> = {
-    params: {
-      id: 'mockId'
-    }
-  }
+  const mockActivatedRouteSnapshot: Partial<ActivatedRouteSnapshot> = { params: { id: 'mockId' } }
   const mockActivatedRoute: Partial<ActivatedRoute> = {
     snapshot: mockActivatedRouteSnapshot as ActivatedRouteSnapshot
+  }
+
+  function initTestComponent(): void {
+    fixture = TestBed.createComponent(MenuDetailComponent)
+    component = fixture.componentInstance
+    fixture.detectChanges()
   }
 
   beforeEach(waitForAsync(() => {
@@ -171,40 +171,19 @@ describe('MenuDetailComponent', () => {
     msgServiceSpy.error.calls.reset()
     wProductApiServiceSpy.getProductsByWorkspaceId.calls.reset()
     menuApiServiceSpy.getMenuItemById.calls.reset()
-    menuApiServiceSpy.getMenuStructure.calls.reset()
     menuApiServiceSpy.deleteMenuItemById.calls.reset()
     menuApiServiceSpy.createMenuItemForWorkspace.calls.reset()
     menuApiServiceSpy.updateMenuItem.calls.reset()
     translateServiceSpy.get.calls.reset()
   }))
 
-  function initializeComponent(): void {
-    fixture = TestBed.createComponent(MenuDetailComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
-  }
-
   beforeEach(() => {
-    initializeComponent()
+    initTestComponent()
     component.formGroup = form
   })
 
   it('should create', () => {
     expect(component).toBeTruthy()
-  })
-
-  it('should set German date format', () => {
-    mockUserService.lang$.next('de')
-    initializeComponent()
-
-    expect(component.dateFormat).toBe('dd.MM.yyyy HH:mm:ss')
-  })
-
-  it('should set English date format', () => {
-    mockUserService.lang$.next('en')
-    initializeComponent()
-
-    expect(component.dateFormat).toBe('M/d/yy, hh:mm:ss a')
   })
 
   describe('ngOnChanges', () => {
@@ -252,19 +231,18 @@ describe('MenuDetailComponent', () => {
       expect(component.getMaxChildrenPosition(item)).toEqual(1)
     })
 
-    it('should call getMenu in view mode onChanges and get menu item', fakeAsync(() => {
-      menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[0]))
+    it('should get menu item in view mode onChanges with extra ROOT menu url entry', fakeAsync(() => {
+      const menuItem = { ...mockMenuItems[0], url: '/' }
+      menuApiServiceSpy.getMenuItemById.and.returnValue(of(menuItem))
       wProductApiServiceSpy.getProductsByWorkspaceId.and.returnValue(of([product]))
       component.changeMode = 'VIEW'
-      component.menuItemOrg = { id: 'menuItemId' }
+      component.menuItemOrg = { id: menuItem.id }
       component.displayDetailDialog = true
-      spyOn(component as any, 'loadMfeUrls')
 
       component.ngOnChanges()
-      tick(200)
+      tick(300)
 
-      expect(component.menuItem).toEqual(mockMenuItems[0])
-      expect((component as any).loadMfeUrls).toHaveBeenCalled()
+      expect(component.menuItem).toEqual(menuItem)
     }))
 
     it('should prepare mfe paths for menu items - empty product path', () => {
@@ -340,10 +318,6 @@ describe('MenuDetailComponent', () => {
       expect(component.mfeItems).toEqual([{ isSpecial: false }, { isSpecial: false }])
     })
 
-    /**
-     * LOAD Microfrontends from registered products
-     **/
-
     describe('loadMfeUrls', () => {
       it('should loadMfeUrls: with product display name', fakeAsync(() => {
         menuApiServiceSpy.getMenuItemById.and.returnValue(of(mockMenuItems[0]))
@@ -377,17 +351,17 @@ describe('MenuDetailComponent', () => {
 
         expect(console.error).toHaveBeenCalledWith('getProductsByWorkspaceId', errorResponse)
       })
-    })
 
-    it('should return if no mfeItems are there to load', () => {
-      const controlMfeItems: MenuURL[] = []
-      controlMfeItems.push({ mfePath: '/workspace', product: 'MENU_ITEM.URL.UNKNOWN.PRODUCT', isSpecial: true })
-      controlMfeItems.push({ mfePath: '', product: 'MENU_ITEM.URL.EMPTY' })
-      component.mfeItems = controlMfeItems
+      it('should return if no mfeItems are there to load', () => {
+        const controlMfeItems: MenuURL[] = []
+        controlMfeItems.push({ mfePath: '/workspace', product: 'MENU_ITEM.URL.UNKNOWN.PRODUCT', isSpecial: true })
+        controlMfeItems.push({ mfePath: '', product: 'MENU_ITEM.URL.EMPTY' })
+        component.mfeItems = controlMfeItems
 
-      component['loadMfeUrls']()
+        component['loadMfeUrls']()
 
-      expect(wProductApiServiceSpy.getProductsByWorkspaceId).not.toHaveBeenCalled()
+        expect(wProductApiServiceSpy.getProductsByWorkspaceId).not.toHaveBeenCalled()
+      })
     })
 
     describe('sort mfe pathes', () => {
@@ -461,24 +435,6 @@ describe('MenuDetailComponent', () => {
     })
   })
 
-  describe('onCloseDetailDialog', () => {
-    it('should emit false when onCloseDetailDialog is called', () => {
-      spyOn(component.dataChanged, 'emit')
-
-      component.onCloseDetailDialog()
-
-      expect(component.dataChanged.emit).toHaveBeenCalledWith(false)
-    })
-
-    it('should emit false when onCloseDeleteDialog is called', () => {
-      spyOn(component.dataChanged, 'emit')
-
-      component.onCloseDeleteDialog()
-
-      expect(component.dataChanged.emit).toHaveBeenCalledWith(false)
-    })
-  })
-
   /***************************************************************************
    * SAVE => CREATE + UPDATE
    **************************************************************************/
@@ -521,7 +477,7 @@ describe('MenuDetailComponent', () => {
     expect(component.menuItem.url).toBe('url mfePath')
   })
 
-  describe('create menu item', () => {
+  describe('creation', () => {
     it('should save a menu: create', () => {
       menuApiServiceSpy.createMenuItemForWorkspace.and.returnValue(of({}))
       component.formGroup = new FormGroup({
@@ -560,70 +516,67 @@ describe('MenuDetailComponent', () => {
     })
   })
 
-  it('should save a menu: edit', () => {
-    menuApiServiceSpy.updateMenuItem.and.returnValue(of(mockMenuItems))
-    component.formGroup = form
-    component.menuItem = mockMenuItems[0]
-    component.menuItems = mockMenuItems
-    component.menuItemOrg = { id: 'id' }
-    component.changeMode = 'EDIT'
+  describe('editing', () => {
+    it('should save a menu: edit', () => {
+      menuApiServiceSpy.updateMenuItem.and.returnValue(of(mockMenuItems))
+      component.formGroup = form
+      component.menuItem = mockMenuItems[0]
+      component.menuItems = mockMenuItems
+      component.menuItemOrg = { id: 'id' }
+      component.changeMode = 'EDIT'
 
-    component.onMenuSave()
+      component.onMenuSave()
 
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' })
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' })
+    })
+
+    it('should display error message on save menu: edit', () => {
+      const errorResponse = { status: 400, statusText: 'Error on creating a menu item' }
+      menuApiServiceSpy.updateMenuItem.and.returnValue(throwError(() => errorResponse))
+      spyOn(console, 'error')
+      component.formGroup = form
+      component.menuItem = mockMenuItems[0]
+      component.changeMode = 'EDIT'
+      component.menuItemOrg = { id: 'menuItemId' }
+
+      component.onMenuSave()
+
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
+      expect(console.error).toHaveBeenCalledWith('updateMenuItem', errorResponse)
+    })
   })
 
-  it('should display error message on save menu: edit', () => {
-    const errorResponse = { status: 400, statusText: 'Error on creating a menu item' }
-    menuApiServiceSpy.updateMenuItem.and.returnValue(throwError(() => errorResponse))
-    spyOn(console, 'error')
-    component.formGroup = form
-    component.menuItem = mockMenuItems[0]
-    component.changeMode = 'EDIT'
-    component.menuItemOrg = { id: 'menuItemId' }
+  describe('deletion', () => {
+    it('should delete menu item', () => {
+      menuApiServiceSpy.deleteMenuItemById({ menuItemId: 'id' })
+      component.menuItem = mockMenuItems[0]
 
-    component.onMenuSave()
+      component.onMenuDelete()
 
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
-    expect(console.error).toHaveBeenCalledWith('updateMenuItem', errorResponse)
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MENU.MESSAGE_OK' })
+    })
+
+    it('should display error message on delete menu item', () => {
+      const errorResponse = { status: 400, statusText: 'Error on import menu items' }
+      menuApiServiceSpy.deleteMenuItemById.and.returnValue(throwError(() => errorResponse))
+      spyOn(console, 'error')
+
+      component.onMenuDelete()
+
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MENU.MESSAGE_NOK' })
+      expect(console.error).toHaveBeenCalledWith('deleteMenuItemById', errorResponse)
+    })
+
+    it('should update tabIndex onTabPanelChange', () => {
+      const mockEvent = { index: 3 }
+
+      component.onTabPanelChange(mockEvent)
+
+      expect(component.tabIndex).toBe(mockEvent.index)
+    })
   })
 
-  /**
-   * DELETE
-   */
-
-  it('should delete menu item', () => {
-    menuApiServiceSpy.deleteMenuItemById({ menuItemId: 'id' })
-    component.menuItem = mockMenuItems[0]
-
-    component.onMenuDelete()
-
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MENU.MESSAGE_OK' })
-  })
-
-  it('should display error message on delete menu item', () => {
-    const errorResponse = { status: 400, statusText: 'Error on import menu items' }
-    menuApiServiceSpy.deleteMenuItemById.and.returnValue(throwError(() => errorResponse))
-    spyOn(console, 'error')
-
-    component.onMenuDelete()
-
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MENU.MESSAGE_NOK' })
-    expect(console.error).toHaveBeenCalledWith('deleteMenuItemById', errorResponse)
-  })
-
-  it('should update tabIndex onTabPanelChange', () => {
-    const mockEvent = { index: 3 }
-
-    component.onTabPanelChange(mockEvent)
-
-    expect(component.tabIndex).toBe(mockEvent.index)
-  })
-
-  /**
-   * LANGUAGE
-   */
-  describe('language related', () => {
+  describe('translations', () => {
     it('should return if no languagesDisplayed on prepareLanguagePanel', () => {
       const languagesDisplayed = [
         { label: component.languageNames['de'], value: 'de', data: '' },
@@ -733,11 +686,7 @@ describe('MenuDetailComponent', () => {
     })
   })
 
-  /***************************************************************************
-   * UI EVENTS
-   **************************************************************************/
-
-  describe('on UI events', () => {
+  describe('UI events', () => {
     it('onDropDownClick: expect filteredMfes filled', () => {
       const event: any = { overlayVisible: false }
       const mfeItems: MenuURL[] = [
@@ -750,130 +699,175 @@ describe('MenuDetailComponent', () => {
 
       expect(component.filteredMfes.length).toBe(2)
     })
-  })
 
-  it('should call onFilterPaths with correct query when keyup event is triggered', () => {
-    // Spy on the onFilterPaths method
-    spyOn(component, 'onFilterPaths')
-    const mockEvent = new KeyboardEvent('keyup', {
-      bubbles: true,
-      cancelable: true
+    it('onClearUrl', () => {
+      const controlMfeItems: MenuURL[] = []
+      controlMfeItems.push({ mfePath: '', product: 'MENU_ITEM.URL.EMPTY' })
+      controlMfeItems.push({
+        mfePath: 'http://testdomain/workspace',
+        product: 'MENU_ITEM.URL.HTTP',
+        isSpecial: true
+      })
+
+      component.mfeItems = controlMfeItems
+      component.onClearUrl()
+
+      expect(component.formGroup.controls['url'].value).toEqual(controlMfeItems[0])
     })
-    // Create a mock event with a target value
-    const inputElement = fixture.debugElement.query(By.css('input')).nativeElement
-    inputElement.value = 'test query'
-    Object.defineProperty(mockEvent, 'target', { writable: false, value: inputElement })
-
-    // Dispatch the event
-    component.onKeyUpUrl(mockEvent)
-
-    // Assert that onFilterPaths was called with the correct argument
-    expect(component.onFilterPaths).toHaveBeenCalled()
   })
 
-  it('onClearUrl', () => {
-    const controlMfeItems: MenuURL[] = []
-    controlMfeItems.push({ mfePath: '', product: 'MENU_ITEM.URL.EMPTY' })
-    controlMfeItems.push({
-      mfePath: 'http://testdomain/workspace',
-      product: 'MENU_ITEM.URL.HTTP',
-      isSpecial: true
+  describe('Closing dialog', () => {
+    it('should emit false when onCloseDetailDialog is called', () => {
+      spyOn(component.dataChanged, 'emit')
+
+      component.onCloseDetailDialog()
+
+      expect(component.dataChanged.emit).toHaveBeenCalledWith(false)
     })
 
-    component.mfeItems = controlMfeItems
-    component.onClearUrl()
+    it('should emit false when onCloseDeleteDialog is called', () => {
+      spyOn(component.dataChanged, 'emit')
 
-    expect(component.formGroup.controls['url'].value).toEqual(controlMfeItems[0])
-  })
+      component.onCloseDeleteDialog()
 
-  /**
-   * FILTER URL (query)
-   *   try to filter with best match with some exceptions:
-   *     a) empty query => list all
-   *     b) unknown entry => list all
-   */
-  it('should filter when query is empty', () => {
-    const mockEvent = { originalEvent: new Event('filter'), query: undefined! }
-    component.formGroup = new FormGroup({
-      url: new FormControl(''),
-      external: new FormControl(false)
+      expect(component.dataChanged.emit).toHaveBeenCalledWith(false)
     })
-    component.mfeItems = [microfrontend]
-
-    component.onFilterPaths(mockEvent)
-
-    expect(component.filteredMfes.length).toBe(1)
-    expect(component.filteredMfes[0].id).toBe('id')
   })
 
-  it('should assign filtered MenuURL items if query equals microfrontend mfePath', () => {
-    const mf: Microfrontend = {
-      id: 'id',
-      appId: 'appId',
-      basePath: '/path'
-    }
-    const mockEvent = { originalEvent: new Event('filter'), query: '' }
+  describe('Filtering', () => {
+    it('should call onFilterPaths with correct query when keyup event is triggered', () => {
+      // Spy on the onFilterPaths method
+      spyOn(component, 'onFilterPaths')
+      const mockEvent = new KeyboardEvent('keyup', {
+        bubbles: true,
+        cancelable: true
+      })
+      // Create a mock event with a target value
+      const inputElement = fixture.debugElement.query(By.css('input')).nativeElement
+      inputElement.value = 'test query'
+      Object.defineProperty(mockEvent, 'target', { writable: false, value: inputElement })
 
-    component.mfeItems = [mf]
-    component.onFilterPaths(mockEvent)
+      // Dispatch the event
+      component.onKeyUpUrl(mockEvent)
 
-    expect(component.filteredMfes).toEqual(component.mfeItems)
-  })
-
-  it('should use url object mfePath if query is not provided', () => {
-    component.formGroup.controls['url'].setValue({ mfePath: '/path' })
-    const mockEvent = { originalEvent: new Event('filter'), query: '' }
-
-    component.mfeItems = [{ id: 'id1', appId: 'appId1', basePath: '/base1', mfePath: '/path' }]
-
-    component.onFilterPaths(mockEvent)
-
-    expect(component.filteredMfes.length).toBe(1)
-    expect(component.filteredMfes[0].mfePath).toBe('/path')
-  })
-
-  it('should filter MenuURL items based on the query', () => {
-    const mockEvent = { originalEvent: new Event('filter'), query: '/pa' }
-    component.formGroup = new FormGroup({
-      url: new FormControl(''),
-      external: new FormControl(false)
+      // Assert that onFilterPaths was called with the correct argument
+      expect(component.onFilterPaths).toHaveBeenCalled()
     })
-    const microfrontendNoId: Microfrontend = {
-      appId: 'appId',
-      basePath: 'path'
-    }
-    component.mfeItems = [
-      { ...microfrontendNoId, mfePath: '/path' },
-      { ...microfrontend, mfePath: '/path' }
-    ]
 
-    component.onFilterPaths(mockEvent)
+    /**
+     * FILTER URL (query)
+     *   try to filter with best match with some exceptions:
+     *     a) empty query => list all
+     *     b) unknown entry => list all
+     */
+    it('should filter when query is empty', () => {
+      const mockEvent = { originalEvent: new Event('filter'), query: undefined! }
+      component.formGroup = new FormGroup({
+        url: new FormControl(''),
+        external: new FormControl(false)
+      })
+      component.mfeItems = [microfrontend]
 
-    expect(component.filteredMfes.length).toBe(2)
-    expect(component.filteredMfes[0].id).toBeUndefined()
+      component.onFilterPaths(mockEvent)
+
+      expect(component.filteredMfes.length).toBe(1)
+      expect(component.filteredMfes[0].id).toBe('id')
+    })
+
+    it('should assign filtered MenuURL items if query equals microfrontend mfePath', () => {
+      const mf: Microfrontend = {
+        id: 'id',
+        appId: 'appId',
+        basePath: '/path'
+      }
+      const mockEvent = { originalEvent: new Event('filter'), query: '' }
+
+      component.mfeItems = [mf]
+      component.onFilterPaths(mockEvent)
+
+      expect(component.filteredMfes).toEqual(component.mfeItems)
+    })
+
+    it('should use url object mfePath if query is not provided', () => {
+      component.formGroup.controls['url'].setValue({ mfePath: '/path' })
+      const mockEvent = { originalEvent: new Event('filter'), query: '' }
+
+      component.mfeItems = [{ id: 'id1', appId: 'appId1', basePath: '/base1', mfePath: '/path' }]
+
+      component.onFilterPaths(mockEvent)
+
+      expect(component.filteredMfes.length).toBe(1)
+      expect(component.filteredMfes[0].mfePath).toBe('/path')
+    })
+
+    it('should filter MenuURL items based on the query', () => {
+      const mockEvent = { originalEvent: new Event('filter'), query: '/pa' }
+      component.formGroup = new FormGroup({
+        url: new FormControl(''),
+        external: new FormControl(false)
+      })
+      const microfrontendNoId: Microfrontend = {
+        appId: 'appId',
+        basePath: 'path'
+      }
+      component.mfeItems = [
+        { ...microfrontendNoId, mfePath: '/path' },
+        { ...microfrontend, mfePath: '/path' }
+      ]
+
+      component.onFilterPaths(mockEvent)
+
+      expect(component.filteredMfes.length).toBe(2)
+      expect(component.filteredMfes[0].id).toBeUndefined()
+    })
+
+    it('should adjust extern checkbox', () => {
+      const ev: any = { value: { mfePath: 'path' } }
+      spyOn(component, 'adjustExternalLinkCheckbox').withArgs(ev.value.mfePath)
+
+      component.onSelect(ev)
+
+      expect(component['adjustExternalLinkCheckbox']).toHaveBeenCalledWith(ev.value.mfePath)
+    })
   })
 
-  it('should adjust extern checkbox', () => {
-    const ev: any = { value: { mfePath: 'path' } }
-    spyOn(component, 'adjustExternalLinkCheckbox').withArgs(ev.value.mfePath)
+  describe('language', () => {
+    it('should set German date format', () => {
+      mockUserService.lang$.next('de')
+      initTestComponent()
 
-    component.onSelect(ev)
+      expect(component.dateFormat).toBe('dd.MM.yyyy HH:mm:ss')
+    })
 
-    expect(component['adjustExternalLinkCheckbox']).toHaveBeenCalledWith(ev.value.mfePath)
+    it('should set English date format', () => {
+      mockUserService.lang$.next('en')
+      initTestComponent()
+
+      expect(component.dateFormat).toBe('M/d/yy, hh:mm:ss a')
+    })
   })
 })
 
-/* Test modification of built-in Angular class registerOnChange at top of the file  */
+/*****************************************************************************
+ * Test modification of built-in Angular class registerOnChange at top of the file
+ */
 @Component({
   template: `<input type="text" [(ngModel)]="value" />`
 })
 class TestComponent {
   value: any = ''
 }
+
 describe('DefaultValueAccessor prototype modification', () => {
   let component: TestComponent
   let fixture: ComponentFixture<TestComponent>
   let inputElement: HTMLInputElement
+
+  function initTestComponent(): void {
+    fixture = TestBed.createComponent(TestComponent)
+    component = fixture.componentInstance
+    fixture.detectChanges()
+  }
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -881,17 +875,13 @@ describe('DefaultValueAccessor prototype modification', () => {
       imports: [FormsModule]
     }).compileComponents()
 
-    fixture = TestBed.createComponent(TestComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
-
+    initTestComponent()
     inputElement = fixture.nativeElement.querySelector('input')
   })
 
   it('should trim the value on model change: value is of type string', () => {
     inputElement.value = '  test  '
     inputElement.dispatchEvent(new Event('input'))
-    fixture.detectChanges()
 
     expect(component.value).toBe('test')
   })

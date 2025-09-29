@@ -79,9 +79,7 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRe
   menuItems$: BehaviorSubject<WorkspaceMenuItems | undefined> = new BehaviorSubject<WorkspaceMenuItems | undefined>(
     undefined
   )
-
   activeItemClass = 'ocx-vertical-menu-active-item'
-
   eventsTopic$ = new EventsTopic()
 
   constructor(
