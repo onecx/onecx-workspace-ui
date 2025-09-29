@@ -216,7 +216,7 @@
             <div class="flex flex-column row-gap-1">
               <div
                 [id]="'ws_products_picklist_' + product.productName + '_display_name'"
-                class="tile-view-mandatory sm:font-semibold text-sm lg:text-md max-w-15rem text-responsive"
+                class="tile-view-mandatory sm:font-semibold text-sm lg:text-md max-w-10rem xl:max-w-15rem text-responsive"
                 [class.danger-action-text]="product?.undeployed || product?.changedComponents"
                 role="note"
               >
@@ -224,7 +224,7 @@
               </div>
               <div
                 [id]="'ws_products_picklist_' + product.productName + '_product_name'"
-                class="tile-view-optional text-xs hidden md:block max-w-15rem text-responsive"
+                class="tile-view-optional text-xs hidden md:block max-w-10rem xl:max-w-15rem text-responsive"
                 role="note"
               >
                 {{ product.productName }}
@@ -282,7 +282,7 @@
       -->
     <header class="mb-3 w-full flex flex-row flex-wrap gap-2 justify-content-between align-items-start">
       <div class="flex flex-column cursor-default">
-        <div class="font-semibold text-primary text-xl max-w-15rem text-responsive">
+        <div class="font-semibold text-primary text-xl max-w-13rem lg:max-w-15rem text-responsive">
           {{ displayedDetailItem.displayName }}
         </div>
         <div class="flex flex-row column-gap-3">

@@ -26,7 +26,7 @@ export type SlotType = 'WORKSPACE' | 'UNREGISTERED' | 'OUTDATED' | 'WORKSPACE,OU
 export type SlotFilterType = 'ALL' | SlotType
 export type ExtendedSelectItem = SelectItem & { tooltipKey?: string }
 export type ChangeMode = 'VIEW' | 'CREATE' | 'EDIT' | 'COPY' | 'DELETE'
-export type PSSlot = SlotPS & { pName?: string; pDisplayName?: string }
+export type PSSlot = SlotPS & { pName: string; pDisplayName: string }
 
 // workspace slot data combined with status from product store
 export type CombinedSlot = Slot & {
@@ -226,6 +226,8 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     return a.name!.toUpperCase().localeCompare(b.name!.toUpperCase())
   }
 
+  // essential for listing products which using a slot:
+  // collect all such products (-slots) and assign to workspace slot
   private extractPsSlots(products: ProductStoreItem[]): CombinedSlot[] {
     const psSlots: CombinedSlot[] = []
     for (const p of products) {
@@ -245,7 +247,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
         // select workspace slot with same name (there is no productname for slots in workspace)
         const wsSlot = this.wSlotsIntern.find((s) => s.name === ps.name)
         if (wsSlot) {
-          wsSlot.psSlots.push({ ...ps, pName: p.productName, pDisplayName: p.displayName! })
+          wsSlot.psSlots.push({ ...ps, pName: p.productName!, pDisplayName: p.displayName! })
           // consolidate slot state (aware of the state of current ps together with previous ones)
           wsSlot.changes = wsSlot.changes || ps.changes
           wsSlot.deprecated = wsSlot.deprecated || ps.deprecated

@@ -168,7 +168,6 @@ export class MenuDetailComponent implements OnChanges {
    * 3. Add an empty item on top (to clean the field by selection = no url)
    */
   private prepareUrlList(url?: string): MenuURL | null {
-    if (!this.mfeItems) return null
     let item: MenuURL | null = null
     let itemCreated = false
     if (url?.match(/^(http|https)/g)) {

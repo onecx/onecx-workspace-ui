@@ -45,9 +45,9 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   public ngOnChanges(): void {
     if (this.displayDetailDialog && this.slotOrg && this.slot === undefined) {
       this.slot = { ...this.slotOrg }
+      this.wComponents = []
       // extract ps components
       if (this.slot.psComponents) this.wComponents = [...this.slot.psComponents]
-      else this.wComponents = []
       this.wComponentsOrg = [...this.wComponents] // to be able to restore
       this.psComponents = []
       this.collectPsComponents()
@@ -75,7 +75,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
     )
   }
   public sortProducts(a: PSSlot, b: PSSlot): number {
-    return a.pDisplayName!.toUpperCase().localeCompare(b.pDisplayName!.toUpperCase())
+    return a.pDisplayName.toUpperCase().localeCompare(b.pDisplayName.toUpperCase())
   }
 
   public onClose(): void {

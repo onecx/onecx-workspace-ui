@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing'
+import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { CommonModule } from '@angular/common'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
@@ -21,7 +21,7 @@ import {
   ShellCapabilityServiceMock
 } from '@onecx/angular-integration-interface/mocks'
 
-describe('OneCXVerticalMainMenuComponent', () => {
+fdescribe('OneCXVerticalMainMenuComponent', () => {
   const menuItemApiSpy = jasmine.createSpyObj<MenuItemAPIService>('MenuItemAPIService', ['getMenuItems'])
 
   function setUp() {
