@@ -1,6 +1,6 @@
 /**
  * onecx-workspace-bff
- * OneCX Workspace BFF
+ * Backend-For-Frontend (BFF) service for onecx-workspace. This API provides endpoints for managing Workspaces, Menus, Products, Roles and Assignments.
  *
  * The version of the OpenAPI document: 1.0
  * 
@@ -20,6 +20,8 @@ import { Observable }                                        from 'rxjs';
 
 // @ts-ignore
 import { ImageInfo } from '../model/imageInfo';
+// @ts-ignore
+import { MimeType } from '../model/mimeType';
 // @ts-ignore
 import { ProblemDetailResponse } from '../model/problemDetailResponse';
 // @ts-ignore
@@ -47,6 +49,7 @@ export interface GetProductLogoRequestParams {
 export interface UploadImageRequestParams {
     refId: string;
     refType: RefType;
+    mimeType: MimeType;
     body: Blob;
 }
 
@@ -116,7 +119,7 @@ export class ImagesInternalAPIService {
     }
 
     /**
-     * delete Image
+     * Delete an image by its reference id and type
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -178,7 +181,7 @@ export class ImagesInternalAPIService {
     }
 
     /**
-     * Get Image by id
+     * Get an image by its reference id and type
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -231,7 +234,7 @@ export class ImagesInternalAPIService {
     }
 
     /**
-     * Get product logo by name
+     * Get a logo of a product by its name
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -280,7 +283,7 @@ export class ImagesInternalAPIService {
     }
 
     /**
-     * Upload Images
+     * Upload an image by its reference id and type
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -297,12 +300,19 @@ export class ImagesInternalAPIService {
         if (refType === null || refType === undefined) {
             throw new Error('Required parameter refType was null or undefined when calling uploadImage.');
         }
+        const mimeType = requestParameters.mimeType;
+        if (mimeType === null || mimeType === undefined) {
+            throw new Error('Required parameter mimeType was null or undefined when calling uploadImage.');
+        }
         const body = requestParameters.body;
         if (body === null || body === undefined) {
             throw new Error('Required parameter body was null or undefined when calling uploadImage.');
         }
 
         let localVarHeaders = this.defaultHeaders;
+        if (mimeType !== undefined && mimeType !== null) {
+            localVarHeaders = localVarHeaders.set('mimeType', String(mimeType));
+        }
 
         let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
         if (localVarHttpHeaderAcceptSelected === undefined) {

@@ -1,6 +1,6 @@
 /**
  * onecx-workspace-bff
- * OneCX Workspace BFF
+ * Backend-For-Frontend (BFF) service for onecx-workspace. This API provides endpoints for managing Workspaces, Menus, Products, Roles and Assignments.
  *
  * The version of the OpenAPI document: 1.0
  * 
@@ -121,7 +121,7 @@ export class SlotAPIService {
     }
 
     /**
-     * Add a new slot to workspace
+     * Create/Add a new slot to a workspace
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -190,7 +190,7 @@ export class SlotAPIService {
     }
 
     /**
-     * Delete a slot
+     * Delete a slot by its id
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -249,7 +249,7 @@ export class SlotAPIService {
     }
 
     /**
-     * Retrieve slot detail info
+     * Get a slot by its id
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -308,7 +308,7 @@ export class SlotAPIService {
     }
 
     /**
-     * Get slots for workspace
+     * Get all slots of a workspace by its id
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -367,7 +367,7 @@ export class SlotAPIService {
     }
 
     /**
-     * Update an existing slot
+     * Update an existing slot by its id
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.

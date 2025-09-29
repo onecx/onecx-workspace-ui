@@ -177,17 +177,15 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   // This is done each time the role data arrives the component.
   private combineRoles() {
     const roles: Role[] = [] // trigger UI refresh
-    this.wRoles.forEach((r) => {
-      roles.push({ ...r, isIamRole: false, isWorkspaceRole: true, type: 'WORKSPACE' })
-    })
-    this.iamRoles.forEach((r) => {
+    for (const r of this.wRoles) roles.push({ ...r, isIamRole: false, isWorkspaceRole: true, type: 'WORKSPACE' })
+    for (const r of this.iamRoles) {
       // mark existing workspace roles as IAM role
       const wRole = roles.find((wr) => wr.name === r.name) // get role if exists on workspace
       if (wRole) {
         wRole.isIamRole = true
         wRole.type = 'WORKSPACE,IAM'
       } else roles.push({ ...r, isIamRole: true, isWorkspaceRole: false, type: 'IAM' })
-    })
+    }
     const sortByRoleName = function (a: Role, b: Role): number {
       return (a.name ? a.name.toUpperCase() : '').localeCompare(b.name ? b.name.toUpperCase() : '')
     }
@@ -294,15 +292,24 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
    * UI Events
    */
   public onQuickFilterChange(ev: any): void {
-    this.quickFilterValue = ev.value
     if (ev.value === 'ALL') {
       this.filterBy = this.filterByDefault
-      this.dv?.filter('', 'contains')
+      this.dv?.filter('')
     } else {
       this.filterBy = 'type'
-      this.dv?.filter(ev.value, 'contains')
+      this.dv?.filter(ev.value)
+    }
+    this.quickFilterValue = ev.value
+  }
+  public onFilterChange(filter: string): void {
+    if (filter === '') {
+      this.onQuickFilterChange({ value: 'ALL' })
+    } else {
+      this.filterBy = 'name'
+      this.dv?.filter(filter)
     }
   }
+
   public onGetQuickFilterCount(roleType: RoleFilterType): string {
     switch (roleType) {
       case 'IAM':
@@ -312,13 +319,6 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
       default:
         return '' + this.roles.length
     }
-  }
-  public onFilterChange(filter: string): void {
-    if (filter === '') {
-      this.onQuickFilterChange({ value: 'ALL' })
-      this.filterBy = 'name,type'
-    }
-    this.dv?.filter(filter, 'contains')
   }
 
   public onGoToPermission(): void {

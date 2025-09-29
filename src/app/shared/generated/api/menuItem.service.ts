@@ -1,6 +1,6 @@
 /**
  * onecx-workspace-bff
- * OneCX Workspace BFF
+ * Backend-For-Frontend (BFF) service for onecx-workspace. This API provides endpoints for managing Workspaces, Menus, Products, Roles and Assignments.
  *
  * The version of the OpenAPI document: 1.0
  * 
@@ -163,7 +163,7 @@ export class MenuItemAPIService {
     }
 
     /**
-     * Add a new menu item to workspace menu
+     * Create a new menu item to workspace menu
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -232,7 +232,7 @@ export class MenuItemAPIService {
     }
 
     /**
-     * Delete all menu items in workspace
+     * Delete all menu items of a workspace by its id
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -291,7 +291,7 @@ export class MenuItemAPIService {
     }
 
     /**
-     * Delete a menuItem by the workspace name and the menuItemId
+     * Delete a menu item by its id
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -350,7 +350,7 @@ export class MenuItemAPIService {
     }
 
     /**
-     * Export menu
+     * Export a menu of a workspace by its name
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -409,7 +409,7 @@ export class MenuItemAPIService {
     }
 
     /**
-     * Retrieve menu item detail info
+     * Get a menu item by its id
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -468,7 +468,7 @@ export class MenuItemAPIService {
     }
 
     /**
-     * get User specific menu items
+     * Get user specific menu items
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -537,7 +537,7 @@ export class MenuItemAPIService {
     }
 
     /**
-     * Fetch the menuItems of the workspace in the tree structure
+     * Get menu items as a tree structure for a specific workspace
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -606,7 +606,7 @@ export class MenuItemAPIService {
     }
 
     /**
-     * Import menu
+     * Import a menu into a workspace by its name
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -748,7 +748,7 @@ export class MenuItemAPIService {
     }
 
     /**
-     * Update menu Item
+     * Update a menu item by its id
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -821,7 +821,7 @@ export class MenuItemAPIService {
     }
 
     /**
-     * Update an existing menu item parent
+     * Update an existing menu item parent by its id
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.

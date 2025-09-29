@@ -32,6 +32,7 @@ export * from './menuStructureSearchCriteria';
 export * from './microfrontend';
 export * from './microfrontendPS';
 export * from './microfrontendType';
+export * from './mimeType';
 export * from './pagingResponse';
 export * from './problemDetailInvalidParam';
 export * from './problemDetailParam';
