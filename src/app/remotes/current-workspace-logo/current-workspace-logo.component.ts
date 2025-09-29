@@ -151,8 +151,6 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
         const slotWidth = e.payload.slotDetails.width
         if (slotWidth > 0) {
           this.container.nativeElement.style.width = e.payload.slotDetails.width + 'px'
-        } else {
-          this.setDefaultWidth()
         }
       })
   }
