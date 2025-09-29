@@ -392,6 +392,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
       this.filterBy = 'type'
       this.dv?.filter(ev.value)
     }
+    this.quickFilterValue = ev.value
   }
   public onFilterChange(filter: string): void {
     if (filter === '') {

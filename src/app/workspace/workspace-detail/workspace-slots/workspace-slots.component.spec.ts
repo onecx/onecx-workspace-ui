@@ -328,7 +328,7 @@ describe('WorkspaceSlotsComponent', () => {
     it('should reset filter to default when ALL is selected', () => {
       component.onQuickFilterChange({ value: 'ALL' })
 
-      expect(component.filterBy).toEqual('name,type')
+      expect(component.filterBy).toEqual(component.filterByDefault)
       expect(component.quickFilterValue).toEqual('ALL')
     })
 
@@ -342,7 +342,7 @@ describe('WorkspaceSlotsComponent', () => {
     it('should set filterBy to name,type when filter is empty', () => {
       component.onFilterChange('')
 
-      expect(component.filterBy).toEqual('name')
+      expect(component.filterBy).toEqual(component.filterByDefault)
     })
 
     it('should call filter method with "contains" when filter has a value', () => {
