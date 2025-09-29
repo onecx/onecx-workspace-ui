@@ -177,17 +177,15 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   // This is done each time the role data arrives the component.
   private combineRoles() {
     const roles: Role[] = [] // trigger UI refresh
-    this.wRoles.forEach((r) => {
-      roles.push({ ...r, isIamRole: false, isWorkspaceRole: true, type: 'WORKSPACE' })
-    })
-    this.iamRoles.forEach((r) => {
+    for (const r of this.wRoles) roles.push({ ...r, isIamRole: false, isWorkspaceRole: true, type: 'WORKSPACE' })
+    for (const r of this.iamRoles) {
       // mark existing workspace roles as IAM role
       const wRole = roles.find((wr) => wr.name === r.name) // get role if exists on workspace
       if (wRole) {
         wRole.isIamRole = true
         wRole.type = 'WORKSPACE,IAM'
       } else roles.push({ ...r, isIamRole: true, isWorkspaceRole: false, type: 'IAM' })
-    })
+    }
     const sortByRoleName = function (a: Role, b: Role): number {
       return (a.name ? a.name.toUpperCase() : '').localeCompare(b.name ? b.name.toUpperCase() : '')
     }

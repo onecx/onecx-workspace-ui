@@ -299,7 +299,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   // add new slots existing in PS which are not existing in Workspace but part of a registered product)
   private addUnregisteredSlots(psSlots: CombinedSlot[]): void {
     for (const pn of this.wProductNames)
-      for (const ps of psSlots)
+      for (const ps of psSlots.filter((s) => s.productName === pn))
         if (!this.wSlotsIntern.find((ws) => ws.name === ps.name)) {
           this.wSlotsIntern.push({ ...ps, id: undefined, new: true, type: 'UNREGISTERED' })
         }
