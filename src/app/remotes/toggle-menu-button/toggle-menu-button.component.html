@@ -1,0 +1,19 @@
+<ng-container *ngIf="isStaticMenuMode$ | async">
+  <button
+    id="ocx_vertical_menu_action_toggle"
+    class="onecx-toggle-menu-button border-none"
+    pRipple
+    (click)="onMenuButtonClick()"
+    [attr.aria-label]="'REMOTES.TOGGLE_MENU.ARIA_LABEL' | translate"
+    [pTooltip]="'REMOTES.TOGGLE_MENU.TOOLTIP' | translate"
+    tooltipPosition="top"
+    tooltipEvent="hover"
+  >
+    <span
+      id="ocx_vertical_menu_action_toggle_icon"
+      class="pi"
+      [ngClass]="'pi-chevron-' + ((isStaticMenuVisible$ | async) ? 'left' : 'right')"
+      aria-hidden="true"
+    ></span>
+  </button>
+</ng-container>

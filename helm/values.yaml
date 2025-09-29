@@ -86,6 +86,13 @@ app:
           technology: WEBCOMPONENTMODULE
           remoteName: onecx-workspace
           tagName: ocx-current-workspace-logo-component
+        toggle-menu-button:
+          exposedModule: ./OneCXToggleMenuButtonComponent
+          description: 'Display the toggle menu button to hide and show the sidebar menu.'
+          type: COMPONENT
+          technology: WEBCOMPONENTMODULE
+          remoteName: onecx-workspace
+          tagName: ocx-toggle-menu-button-component
     # Microservice
     microservice:
       spec:

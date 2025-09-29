@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
-import { Topic } from '@onecx/accelerator'
 import { Capability, ShellCapabilityService, UserService } from '@onecx/angular-integration-interface'
+import { StaticMenuVisibleTopic } from '@onecx/integration-interface'
 import { map, Observable, of, combineLatest, startWith, fromEvent, debounceTime } from 'rxjs'
 
 export type MenuMode = 'horizontal' | 'static' | 'overlay' | 'slim' | 'slimplus'
@@ -29,7 +29,7 @@ export type MenuMode = 'horizontal' | 'static' | 'overlay' | 'slim' | 'slimplus'
 export class MenuService {
   private readonly userService = inject(UserService)
   private capabilityService = inject(ShellCapabilityService)
-  private staticMenuVisible$ = new Topic<{ isVisible: boolean }>('staticMenuVisible', 1)
+  private staticMenuVisible$ = new StaticMenuVisibleTopic()
 
   private readonly menuMode$: Observable<MenuMode> = this.userService.profile$.pipe(
     map((p) => {

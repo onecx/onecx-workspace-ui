@@ -646,6 +646,10 @@
       "WORKSPACE": "Workspace Name",
       "SHELL_VERSION": "Workspace Name",
       "MFE": "Microfrontend Name und Version"
+    },
+    "TOGGLE_MENU": {
+      "ARIA_LABEL": "Menü ein/aus",
+      "TOOLTIP": "Menü ein/aus"
     }
   },
   "VALIDATION": {
