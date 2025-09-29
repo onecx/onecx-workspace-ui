@@ -60,6 +60,10 @@
     }
   }
 
+  .text-ellipsis-2-lines {
+    @include displaying-text-ellipsis(2);
+  }
+
   @media screen and (max-width: 576px) {
     .card-badge-right.badge-1 {
       top: -1px;

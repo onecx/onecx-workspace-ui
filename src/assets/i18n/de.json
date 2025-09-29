@@ -273,6 +273,7 @@
     "URL.EMPTY": "leer",
     "URL.HTTP": "Webadresse",
     "URL.UNKNOWN.PRODUCT": "Unbekannte Applikation",
+    "URL.ROOT.PRODUCT": "Root",
     "TOOLTIP": {
       "BADGE": "Icon aus der PrimeNG Bibliothek welches neben dem Menünamen angezeigt werden soll",
       "DESCRIPTION": "Zusatzinformationen",
@@ -608,20 +609,23 @@
     "IMPORT_NOK": "Ein Fehler ist aufgetreten. Workspace konnte nicht importiert werden."
   },
   "IMAGE": {
+    "LOGO": "Logo",
+    "LOGO_SMALL": "Logo (klein)",
     "LOGO_URL": "Externe Logo URL",
-    "UPLOAD_FAIL": "Die Datei wurde nicht erfolgreich hochgeladen",
+    "UPLOAD_FAILED": "Die Datei wurde nicht erfolgreich hochgeladen",
     "UPLOAD_SUCCESS": "Die Datei wurde erfolgreich hochgeladen",
     "CONSTRAINT_FILE_MISSING": "Keine Datei ausgewählt.",
-    "CONSTRAINT_FILE_TYPE": "Die folgenden Bildformate werden akzeptiert: jpg, jpeg, png",
+    "CONSTRAINT_FILE_TYPE": "Die folgenden Bildformate werden akzeptiert: jpg, jpeg, png, svg",
     "CONSTRAINT_FAILED": "Bedingung zum Hochladen nicht erfüllt:",
     "CONSTRAINT_NAME": "Bitte füge einen Namen hinzu bevor das Bild geladen wird.",
     "CONSTRAINT_SIZE": "Die Größe der Bilddatei übersteigt die maximale Lönge von 100.000 Bytes.",
     "TOOLTIPS": {
-      "URL": "Als Alternative zum Hochladen kann hier eine URL zu einem Bild angegeben werden.",
-      "IMAGE": "Logo",
+      "LOGO": "Logo in Standardgröße",
+      "LOGO_SMALL": "Logo in reduzierter Größe, z.b. für Verwendung im Slim Menü",
       "PLACEHOLDER": "Logo Platzhalter",
       "REMOVE": "Bild löschen",
-      "UPLOAD": "Bild auswählen und hochladen"
+      "UPLOAD": "Bild auswählen und hochladen",
+      "URL": "Als Alternative zum Hochladen kann hier eine URL zu einem Bild angegeben werden."
     }
   },
   "REMOTES": {

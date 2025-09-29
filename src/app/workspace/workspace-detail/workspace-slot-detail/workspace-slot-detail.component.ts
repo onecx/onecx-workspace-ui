@@ -4,7 +4,7 @@ import { TranslateService } from '@ngx-translate/core'
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 
 import { SlotAPIService, SlotComponent, UpdateSlotRequest } from 'src/app/shared/generated'
-import { ChangeMode, CombinedSlot, ExtendedComponent } from '../workspace-slots/workspace-slots.component'
+import { ChangeMode, CombinedSlot, ExtendedComponent, PSSlot } from '../workspace-slots/workspace-slots.component'
 
 @Component({
   selector: 'app-workspace-slot-detail',
@@ -43,25 +43,28 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   }
 
   public ngOnChanges(): void {
-    if (this.slotOrg && this.slot === undefined) {
-      if (this.displayDetailDialog) {
-        this.slot = { ...this.slotOrg }
-        // extract ps components
-        this.wComponents = [...this.slot.psComponents]
-        this.wComponentsOrg = [...this.wComponents] // to be able to restore
-        this.psComponents = []
-        // collect available but not yet registered components from product store
-        this.psComponentsOrg.forEach((c) => {
-          if (
-            !this.wComponents.find(
-              (wc) => wc.productName === c.productName && wc.appId === c.appId && wc.name === c.name
-            )
-          )
-            if (this.wProductNames.includes(c.productName)) this.psComponents.push(c)
-        })
-        this.psComponents.sort(this.sortComponents)
-      }
+    if (this.displayDetailDialog && this.slotOrg && this.slot === undefined) {
+      this.slot = { ...this.slotOrg }
+      this.wComponents = []
+      // extract ps components
+      if (this.slot.psComponents) this.wComponents = [...this.slot.psComponents]
+      this.wComponentsOrg = [...this.wComponents] // to be able to restore
+      this.psComponents = []
+      this.collectPsComponents()
+      this.psComponents.sort(this.sortComponents)
+      this.slot.psSlots.sort(this.sortProducts)
     }
+  }
+
+  private collectPsComponents() {
+    // collect available but not yet registered components from product store
+    for (const psComp of this.psComponentsOrg)
+      if (
+        !this.wComponents.some(
+          (wc) => wc.productName === psComp.productName && wc.appId === psComp.appId && wc.name === psComp.name
+        )
+      )
+        if (this.wProductNames.includes(psComp.productName)) this.psComponents.push(psComp)
   }
 
   public sortComponents(a: ExtendedComponent, b: ExtendedComponent): number {
@@ -70,6 +73,9 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
       a.appId.toUpperCase().localeCompare(b.appId.toUpperCase()) ||
       a.productName.toUpperCase().localeCompare(b.productName.toUpperCase())
     )
+  }
+  public sortProducts(a: PSSlot, b: PSSlot): number {
+    return a.pDisplayName.toUpperCase().localeCompare(b.pDisplayName.toUpperCase())
   }
 
   public onClose(): void {

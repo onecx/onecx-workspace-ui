@@ -8,7 +8,7 @@ import { BehaviorSubject, of, throwError } from 'rxjs'
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 
 import { Slot, SlotAPIService } from 'src/app/shared/generated'
-import { CombinedSlot, ExtendedComponent } from '../workspace-slots/workspace-slots.component'
+import { CombinedSlot, ExtendedComponent, PSSlot } from '../workspace-slots/workspace-slots.component'
 import { WorkspaceSlotDetailComponent } from './workspace-slot-detail.component'
 
 describe('WorkspaceSlotDetailComponent', () => {
@@ -68,32 +68,48 @@ describe('WorkspaceSlotDetailComponent', () => {
   describe('OnChanges', () => {
     it('should initialize component state when slotOrg is provided', () => {
       component.displayDetailDialog = true
+      // products which using the slot
+      const psSlots: PSSlot[] = [
+        {
+          name: 'slot1',
+          pName: 'productB',
+          pDisplayName: 'Product B'
+        },
+        {
+          name: 'slot1',
+          pName: 'productC',
+          pDisplayName: 'Product C'
+        }
+      ]
+      // original product store data of the assigned components
+      const psComponentsOrg: ExtendedComponent[] = [
+        {
+          name: 'compA',
+          appId: 'appId1',
+          productName: 'productA',
+          undeployed: false,
+          deprecated: false
+        }
+      ]
       const slotOrg: CombinedSlot = {
         name: 'slot1',
+        productName: 'productA',
         new: false,
         type: 'WORKSPACE',
         changes: false,
         undeployed: false,
         deprecated: false,
-        psSlots: [],
-        psComponents: [
-          {
-            productName: 'productA',
-            appId: 'appId1',
-            name: 'compA',
-            undeployed: false,
-            deprecated: false
-          }
-        ]
+        psSlots: psSlots,
+        psComponents: psComponentsOrg
       }
       component.slotOrg = slotOrg
       component.psComponentsOrg = [
-        { name: 'compA', productName: 'productA', appId: 'appId1', undeployed: false, deprecated: false },
-        { name: 'compB', productName: 'productA', appId: 'appId1', undeployed: false, deprecated: false },
-        { name: 'compA', productName: 'productB', appId: 'appId2', undeployed: false, deprecated: false },
-        { name: 'compB', productName: 'productB', appId: 'appId3', undeployed: false, deprecated: false }
+        { name: 'compA', appId: 'appId1', productName: 'productA', undeployed: false, deprecated: false },
+        { name: 'compB', appId: 'appId1', productName: 'productA', undeployed: false, deprecated: false },
+        { name: 'compA', appId: 'appId2', productName: 'productB', undeployed: false, deprecated: false },
+        { name: 'compB', appId: 'appId3', productName: 'productB', undeployed: false, deprecated: false }
       ]
-      component.wProductNames = ['productA', 'productB']
+      component.wProductNames = ['productA', 'productB', 'productC']
 
       component.ngOnChanges()
 

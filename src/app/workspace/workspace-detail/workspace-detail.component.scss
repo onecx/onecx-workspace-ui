@@ -1,5 +1,6 @@
 @import 'src/app/_ws-mixins.scss';
 
+@include word-break-all;
 @include card-badges;
 @include danger-action;
 @include cursor-default;
@@ -18,5 +19,8 @@
   }
   .animation-delay-3000 {
     animation-delay: 3000ms !important;
+  }
+  .text-ellipsis-2-lines {
+    @include displaying-text-ellipsis(2);
   }
 }

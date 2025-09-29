@@ -1,6 +1,6 @@
 /**
  * onecx-workspace-bff
- * OneCX Workspace BFF
+ * Backend-For-Frontend (BFF) service for onecx-workspace. This API provides endpoints for managing Workspaces, Menus, Products, Roles and Assignments.
  *
  * The version of the OpenAPI document: 1.0
  * 
@@ -18,6 +18,7 @@ export interface WorkspaceAbstract {
     theme?: string;
     baseUrl?: string;
     logoUrl?: string;
+    smallLogoUrl?: string;
     disabled?: boolean;
     operator?: boolean;
     mandatory?: boolean;
