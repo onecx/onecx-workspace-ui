@@ -300,7 +300,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   private addUnregisteredSlots(psSlots: CombinedSlot[]): void {
     for (const pn of this.wProductNames)
       for (const ps of psSlots.filter((s) => s.productName === pn))
-        if (!this.wSlotsIntern.find((ws) => ws.name === ps.name)) {
+        if (!this.wSlotsIntern.some((ws) => ws.name === ps.name)) {
           this.wSlotsIntern.push({ ...ps, id: undefined, new: true, type: 'UNREGISTERED' })
         }
   }
@@ -385,20 +385,24 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
    * UI Events
    */
   public onQuickFilterChange(ev: any): void {
-    this.quickFilterValue = ev.value
+    console.info('onQuickFilterChange', ev, this.quickFilterValue)
     if (ev.value === 'ALL') {
       this.filterBy = this.filterByDefault
-      this.dv?.filter('', 'contains')
+      this.dv?.filter('')
     } else {
       this.filterBy = 'type'
-      this.dv?.filter(ev.value, 'contains')
+      this.dv?.filter(ev.value)
     }
+    console.info('onQuickFilterChange', ev, this.filterBy)
   }
   public onFilterChange(filter: string): void {
+    console.info('onFilterChange', filter, filter === '', this.filterValue)
     if (filter === '') {
+      this.onQuickFilterChange({ value: this.quickFilterValue })
+    } else {
       this.filterBy = 'name'
+      this.dv?.filter(filter)
     }
-    this.dv?.filter(filter, 'contains')
   }
   public onSortChange(field: string): void {
     this.sortField = field
