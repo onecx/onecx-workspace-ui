@@ -396,7 +396,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   }
   public onFilterChange(filter: string): void {
     if (filter === '') {
-      this.onQuickFilterChange({ value: this.quickFilterValue })
+      this.onQuickFilterChange({ value: 'ALL' })
     } else {
       this.filterBy = 'name'
       this.dv?.filter(filter)
