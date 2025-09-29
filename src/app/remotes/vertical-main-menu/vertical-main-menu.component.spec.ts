@@ -21,7 +21,7 @@ import {
   ShellCapabilityServiceMock
 } from '@onecx/angular-integration-interface/mocks'
 
-fdescribe('OneCXVerticalMainMenuComponent', () => {
+describe('OneCXVerticalMainMenuComponent', () => {
   const menuItemApiSpy = jasmine.createSpyObj<MenuItemAPIService>('MenuItemAPIService', ['getMenuItems'])
 
   function setUp() {
