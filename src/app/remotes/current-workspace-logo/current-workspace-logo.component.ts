@@ -1,7 +1,17 @@
-import { Component, EventEmitter, inject, Inject, Input, NO_ERRORS_SCHEMA } from '@angular/core'
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  inject,
+  Inject,
+  Input,
+  NO_ERRORS_SCHEMA,
+  OnDestroy,
+  ViewChild
+} from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
 import { UntilDestroy } from '@ngneat/until-destroy'
-import { BehaviorSubject, ReplaySubject } from 'rxjs'
+import { BehaviorSubject, filter, ReplaySubject } from 'rxjs'
 
 import {
   AngularRemoteComponentsModule,
@@ -16,10 +26,14 @@ import { PortalCoreModule } from '@onecx/portal-integration-angular'
 import { Configuration, RefType, WorkspaceAPIService } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
 import { environment } from 'src/environments/environment'
+import { EventsTopic, SlotsResizedEvent } from '@onecx/integration-interface'
 
+const RESIZE_OBSERVED_SLOT_NAME = 'onecx-shell-vertical-menu'
+const DEFAULT_WIDTH = '17rem'
 @Component({
   selector: 'app-current-workspace-logo',
   templateUrl: './current-workspace-logo.component.html',
+  styleUrls: ['./current-workspace-logo.component.scss'],
   standalone: true,
   imports: [AngularRemoteComponentsModule, CommonModule, PortalCoreModule],
   providers: [
@@ -31,7 +45,7 @@ import { environment } from 'src/environments/environment'
   schemas: [NO_ERRORS_SCHEMA]
 })
 @UntilDestroy()
-export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
+export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, ocxRemoteWebcomponent, OnDestroy {
   // input
   @Input() refresh: boolean | undefined = false // on any change here a reload is triggered
   @Input() imageId: string | undefined = undefined
@@ -52,6 +66,9 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
   public imageUrl$ = new BehaviorSubject<string | undefined>(undefined)
   public defaultImageUrl: string | undefined = undefined
 
+  @ViewChild('container', { static: true }) container!: ElementRef
+  private eventsTopic = new EventsTopic()
+
   constructor(
     @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
     private readonly workspaceApi: WorkspaceAPIService
@@ -61,6 +78,9 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
       this.imageUrl$.next(this.getImageUrl(this.workspaceName, 'url'))
     })
   }
+  ngOnDestroy(): void {
+    this.eventsTopic.destroy()
+  }
 
   ocxInitRemoteComponent(remoteComponentConfig: RemoteComponentConfig) {
     this.baseUrl.next(remoteComponentConfig.baseUrl)
@@ -69,6 +89,8 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
     })
     if (environment.DEFAULT_LOGO_PATH)
       this.defaultImageUrl = Utils.prepareUrlPath(remoteComponentConfig.baseUrl, environment.DEFAULT_LOGO_PATH)
+
+    this.initializeContainerStyles()
   }
 
   /**
@@ -110,6 +132,33 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
     this.log('getImageUrl => stop')
     this.imageLoadingFailed.emit(true) // finally inform caller about impossibility
     return undefined
+  }
+
+  private initializeContainerStyles() {
+    this.setDefaultWidth()
+    this.initializeVerticalMenuSlotResizeListener()
+  }
+
+  private initializeVerticalMenuSlotResizeListener() {
+    this.eventsTopic
+      .pipe(
+        filter(
+          (e): e is SlotsResizedEvent =>
+            e.type === 'slotsResized' && (e as SlotsResizedEvent).payload.slotName === RESIZE_OBSERVED_SLOT_NAME
+        )
+      )
+      .subscribe((e) => {
+        const slotWidth = e.payload.slotDetails.width
+        if (slotWidth > 0) {
+          this.container.nativeElement.style.width = e.payload.slotDetails.width + 'px'
+        } else {
+          this.setDefaultWidth()
+        }
+      })
+  }
+
+  private setDefaultWidth() {
+    this.container.nativeElement.style.width = DEFAULT_WIDTH
   }
 
   private log(text: string) {
