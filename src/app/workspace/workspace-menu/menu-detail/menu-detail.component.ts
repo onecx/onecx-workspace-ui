@@ -8,7 +8,6 @@ import { SelectItem } from 'primeng/api'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 
-import { Utils } from 'src/app/shared/utils'
 import {
   CreateMenuItem,
   MenuItem,
@@ -18,6 +17,7 @@ import {
   Microfrontend,
   WorkspaceProductAPIService
 } from 'src/app/shared/generated'
+import { Utils } from 'src/app/shared/utils'
 import { ChangeMode } from '../menu.component'
 import { IconService } from '../services/iconservice'
 
@@ -52,7 +52,6 @@ export class MenuDetailComponent implements OnChanges {
   @Input() displayDeleteDialog = false
   @Output() dataChanged: EventEmitter<boolean> = new EventEmitter()
 
-  limitText = Utils.limitText
   @ViewChild('panelDetail') panelDetail: TabView | undefined
   private readonly destroy$ = new Subject()
   public formGroup: FormGroup
@@ -137,7 +136,7 @@ export class MenuDetailComponent implements OnChanges {
 
   public getMaxChildrenPosition(item: WorkspaceMenuItem): number {
     if (!item.children || item.children?.length === 0) return 0
-    else return (item.children[item.children.length - 1].position ?? 0) + 1
+    else return (item.children.at(-1)?.position ?? 0) + 1
   }
 
   private async getMenu() {
@@ -168,7 +167,6 @@ export class MenuDetailComponent implements OnChanges {
    * 3. Add an empty item on top (to clean the field by selection = no url)
    */
   private prepareUrlList(url?: string): MenuURL | null {
-    if (!this.mfeItems) return null
     let item: MenuURL | null = null
     let itemCreated = false
     if (url?.match(/^(http|https)/g)) {
@@ -191,6 +189,7 @@ export class MenuDetailComponent implements OnChanges {
     let item: MenuURL | null = null
     let maxLength = 0
     let itemCreated = false
+    // looking for URL match on MFEs
     for (const mfeItem of this.mfeItems) {
       const bp = mfeItem.mfePath!
       // perfect match
@@ -206,8 +205,14 @@ export class MenuDetailComponent implements OnChanges {
         itemCreated = true
       }
     }
+    // no match
     if (!item) {
-      item = { mfePath: url, product: 'MENU_ITEM.URL.UNKNOWN.PRODUCT', isSpecial: true } as MenuURL
+      const type = url === '/' ? 'ROOT' : 'UNKNOWN'
+      item = {
+        mfePath: url,
+        product: 'MENU_ITEM.URL.' + type + '.PRODUCT',
+        isSpecial: true
+      } as MenuURL
       itemCreated = true
     }
     return [item, itemCreated]
@@ -347,23 +352,27 @@ export class MenuDetailComponent implements OnChanges {
   }
   public onRemoveLanguage(val: string) {
     if (this.languagesDisplayed.length === 0) return
-    if (['de', 'en'].includes(this.languagesDisplayed.filter((l) => l.value === val)[0].value)) {
-      this.languagesDisplayed.filter((l) => l.value === val)[0].data = ''
-    } else {
-      this.languagesAvailable.push(this.languagesDisplayed.filter((l) => l.value === val)[0])
-      this.languagesAvailable.filter((l) => l.value === val)[0].data = ''
-      this.languagesAvailable = this.languagesAvailable.filter((l) => l).sort(Utils.dropDownSortItemsByLabel)
-      this.languagesDisplayed = this.languagesDisplayed.filter((l) => l.value !== val)
-    }
+    let lang = this.languagesDisplayed.find((l) => l.value === val)
+    if (lang)
+      if (['de', 'en'].includes(lang.value)) {
+        lang.data = ''
+      } else {
+        this.languagesAvailable.push(lang)
+        lang = this.languagesAvailable.find((l) => l.value === val)
+        if (lang) lang.data = ''
+        this.languagesAvailable.sort(Utils.dropDownSortItemsByLabel)
+        this.languagesDisplayed = this.languagesDisplayed.filter((l) => l.value !== val)
+      }
   }
   public onAddLanguage(val: string): void {
-    this.languagesDisplayed.push(this.languagesAvailable.filter((l) => l.value === val)[0])
+    const lang = this.languagesAvailable.find((l) => l.value === val)
+    if (lang) this.languagesDisplayed.push(lang)
     this.languagesAvailable = this.languagesAvailable.filter((l) => l.value !== val)
   }
   public getLanguageLabel(val: any): string | undefined {
     if (this.languagesDisplayed.length > 0) {
-      const l = this.languagesDisplayed.filter((l) => l.value === val)
-      return l.length === 1 ? l[0].label : undefined
+      const lang = this.languagesDisplayed.find((l) => l.value === val)
+      return lang?.label ?? undefined
     }
     return undefined
   }

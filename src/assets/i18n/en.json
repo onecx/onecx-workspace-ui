@@ -273,6 +273,7 @@
     "URL.EMPTY": "empty",
     "URL.HTTP": "Web Address",
     "URL.UNKNOWN.PRODUCT": "Unknown Application",
+    "URL.ROOT.PRODUCT": "Root",
     "TOOLTIP": {
       "BADGE": "Icon from the PrimeNG library which should be displayed next to the Menu name",
       "DESCRIPTION": "Additional informationen",
@@ -608,20 +609,23 @@
     "IMPORT_NOK": "An error occurred, the Workspace could not be imported."
   },
   "IMAGE": {
+    "LOGO": "Logo",
+    "LOGO_SMALL": "Logo (small)",
     "LOGO_URL": "External Logo URL",
-    "UPLOAD_FAIL": " The file was not uploaded successfully",
+    "UPLOAD_FAILED": " The file was not uploaded successfully",
     "UPLOAD_SUCCESS": "The file was uploaded successfully",
     "CONSTRAINT_FILE_MISSING": "No file selected.",
-    "CONSTRAINT_FILE_TYPE": "The following image formats are accepted: jpg, jpeg, png",
+    "CONSTRAINT_FILE_TYPE": "The following image formats are accepted: jpg, jpeg, png, svg",
     "CONSTRAINT_FAILED": "File upload condition check failed:",
     "CONSTRAINT_NAME": "Please add a Workspace name before uploading a file.",
     "CONSTRAINT_SIZE": "The image file size exceeds the maximum length of 100,000 bytes.",
     "TOOLTIPS": {
-      "URL": "As an alternative to uploading, a URL to an image can be specified here.",
-      "IMAGE": "Logo",
+      "LOGO": "Logo - standard size",
+      "LOGO_SMALL": "Logo - reduced size, e.g. for use in slim menu",
       "PLACEHOLDER": "Logo Placeholder",
       "REMOVE": "Remove Image",
-      "UPLOAD": "Select and upload image"
+      "UPLOAD": "Select and upload image",
+      "URL": "As an alternative to uploading, a URL to an image can be specified here."
     }
   },
   "REMOTES": {

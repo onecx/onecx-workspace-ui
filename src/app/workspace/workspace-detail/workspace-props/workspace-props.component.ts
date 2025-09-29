@@ -8,7 +8,13 @@ import { SlotService } from '@onecx/angular-remote-components'
 import { PortalMessageService, WorkspaceService } from '@onecx/angular-integration-interface'
 import { getLocation } from '@onecx/accelerator'
 
-import { ImagesInternalAPIService, RefType, Workspace, WorkspaceProductAPIService } from 'src/app/shared/generated'
+import {
+  ImagesInternalAPIService,
+  MimeType,
+  RefType,
+  Workspace,
+  WorkspaceProductAPIService
+} from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
 
 export type Theme = {
@@ -17,6 +23,7 @@ export type Theme = {
   logoUrl?: string
   faviconUrl?: string
 }
+
 @Component({
   selector: 'app-workspace-props',
   templateUrl: './workspace-props.component.html',
@@ -31,10 +38,13 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   public getLocation = getLocation
   public copyToClipboard = Utils.copyToClipboard
   public RefType = RefType
+  public imageUrl: Partial<Record<RefType, string | undefined>> = {}
+  public imageMaxSize = 1000000
+
   // data
   private readonly destroy$ = new Subject()
   public formGroup: FormGroup
-  public productPaths$: Observable<string[]> = of([])
+  public productPaths$: Observable<string[]> = of([]) // to fill drop down with product paths
   public themeProductRegistered$!: Observable<boolean>
   public deploymentPath: string | undefined = undefined
   public urlPattern = '/base-path-to-workspace'
@@ -42,16 +52,17 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   // Logo
   public minimumImageWidth = 150
   public minimumImageHeight = 150
-  public fetchingLogoUrl: string | undefined = undefined
   public themeUrl: string | undefined = undefined
+
   // slot configuration: get theme data
-  public slotName = 'onecx-theme-data'
+  public themeSlotName = 'onecx-theme-data'
   public isThemeComponentDefined$: Observable<boolean> // check if a component was assigned
   public themes$ = new BehaviorSubject<Theme[] | undefined>(undefined) // theme data
   public themesEmitter = new EventEmitter<Theme[]>()
-  public logoLoadingEmitter = new EventEmitter<boolean>()
+  // slot configuration: get theme logo
+  public themeLogoLoadingEmitter = new EventEmitter<boolean>()
   public themeLogoLoadingFailed$ = new BehaviorSubject<boolean | undefined>(undefined)
-  public formGroupValues$ = new ReplaySubject<{ theme: string }>(1) // async storage of formgroup value to manage change detection
+  public themeFormValues$ = new ReplaySubject<{ theme: string }>(1) // async storage of formgroup value to manage change detection
 
   constructor(
     private readonly router: Router,
@@ -62,24 +73,25 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     private readonly wProductApi: WorkspaceProductAPIService
   ) {
     this.themeProductRegistered$ = workspaceService.doesUrlExistFor('onecx-theme', 'onecx-theme-ui', 'theme-detail')
-    this.isThemeComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.slotName)
+    this.isThemeComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.themeSlotName)
 
     this.formGroup = new FormGroup({
       displayName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(100)]),
       theme: new FormControl(null),
       baseUrl: new FormControl(null, [Validators.required, Validators.minLength(1), Validators.pattern('^/.*')]),
       homePage: new FormControl(null),
-      logoUrl: new FormControl('', [Validators.maxLength(255)]),
+      logoUrl: new FormControl(null, [Validators.maxLength(255)]),
+      smallLogoUrl: new FormControl(null, [Validators.maxLength(255)]),
       rssFeedUrl: new FormControl(null, [Validators.maxLength(255)]),
       footerLabel: new FormControl(null, [Validators.maxLength(255)]),
       description: new FormControl(null, [Validators.maxLength(255)])
     })
-    this.formGroup.valueChanges.subscribe(this.formGroupValues$)
+    this.formGroup.valueChanges.subscribe(this.themeFormValues$)
   }
 
   public ngOnInit(): void {
     this.themesEmitter.subscribe(this.themes$)
-    this.logoLoadingEmitter.subscribe((data) => {
+    this.themeLogoLoadingEmitter.subscribe((data) => {
       this.themeLogoLoadingFailed$.next(data)
     })
   }
@@ -101,14 +113,15 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     Object.keys(this.formGroup.controls).forEach((element) => {
       this.formGroup.controls[element].setValue((this.workspace as any)[element])
     })
-    this.fetchingLogoUrl = this.getLogoUrl(this.workspace)
-    this.currentLogoUrl.emit(this.fetchingLogoUrl)
+    this.imageUrl[RefType.Logo] = this.getLogoUrl(this.workspace, RefType.Logo)
+    this.imageUrl[RefType.LogoSmall] = this.getLogoUrl(this.workspace, RefType.LogoSmall)
+    this.currentLogoUrl.emit(this.imageUrl[RefType.Logo])
   }
 
   // Image component informs about non existing stored Workspace logo
-  public onImageLoadingError(error: any) {
-    this.fetchingLogoUrl = error ? undefined : this.getLogoUrl(this.workspace)
-    this.currentLogoUrl.emit(this.fetchingLogoUrl)
+  public onImageLoadingError(error: any, refType: RefType) {
+    this.imageUrl[refType] = error ? undefined : this.getLogoUrl(this.workspace, refType)
+    if (refType === RefType.Logo) this.currentLogoUrl.emit(this.imageUrl[refType])
   }
 
   public onSave(): void {
@@ -133,12 +146,12 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     return changes
   }
 
-  public onRemoveLogo() {
+  public onRemoveLogo(refType: RefType) {
     if (this.workspace?.name)
-      this.imageApi.deleteImage({ refId: this.workspace?.name, refType: RefType.Logo }).subscribe({
+      this.imageApi.deleteImage({ refId: this.workspace?.name, refType: refType }).subscribe({
         next: () => {
-          this.fetchingLogoUrl = undefined // reset - important to trigger the change in UI
-          this.currentLogoUrl.emit(this.fetchingLogoUrl)
+          this.imageUrl[refType] = undefined // reset - important to trigger the change in UI
+          if (refType === RefType.Logo) this.currentLogoUrl.emit(this.imageUrl[refType])
         },
         error: (err) => {
           console.error('deleteImage', err)
@@ -146,16 +159,16 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       })
   }
 
-  public onFileUpload(ev: Event): void {
+  public onFileUpload(ev: Event, refType: RefType): void {
     if (ev.target && (ev.target as HTMLInputElement).files) {
       const files = (ev.target as HTMLInputElement).files
       if (files) {
-        if (files[0].size > 1000000) {
+        if (files[0].size > this.imageMaxSize) {
           this.msgService.error({ summaryKey: 'IMAGE.CONSTRAINT_FAILED', detailKey: 'IMAGE.CONSTRAINT_SIZE' })
-        } else if (!/^.*.(jpg|jpeg|png)$/.exec(files[0].name)) {
+        } else if (!/^.*.(jpg|jpeg|png|svg)$/.exec(files[0].name)) {
           this.msgService.error({ summaryKey: 'IMAGE.CONSTRAINT_FAILED', detailKey: 'IMAGE.CONSTRAINT_FILE_TYPE' })
         } else if (this.workspace) {
-          this.saveImage(this.workspace.name, files) // store image
+          this.saveImage(this.workspace.name, files, refType) // store image
         }
       }
     } else {
@@ -163,44 +176,64 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     }
   }
 
-  private saveImage(name: string, files: FileList) {
-    const blob = new Blob([files[0]], { type: files[0].type })
-    this.fetchingLogoUrl = undefined // reset - important to trigger the change in UI
-    this.currentLogoUrl.emit(this.fetchingLogoUrl)
-    const saveRequestParameter = {
-      contentLength: files.length,
-      refId: name,
-      refType: RefType.Logo,
-      body: blob
+  private mapMimeType(type: string): MimeType {
+    switch (type) {
+      case 'image/x-icon':
+        return MimeType.XIcon
+      case 'image/svg+xml':
+        return MimeType.Svgxml
+      case 'image/jpg':
+        return MimeType.Jpg
+      case 'image/jpeg':
+        return MimeType.Jpeg
+      case 'image/png':
+        return MimeType.Png
+      default:
+        return MimeType.Png
     }
-    this.imageApi.uploadImage(saveRequestParameter).subscribe(() => {
-      this.prepareImageResponse(name)
-    })
-  }
-  private prepareImageResponse(name: string): void {
-    this.fetchingLogoUrl = Utils.bffImageUrl(this.imageApi.configuration.basePath, name, RefType.Logo)
-    this.currentLogoUrl.emit(this.fetchingLogoUrl)
-    this.msgService.info({ summaryKey: 'IMAGE.UPLOAD_SUCCESS' })
-    this.formGroup.controls['logoUrl'].setValue('')
   }
 
-  public getLogoUrl(workspace: Workspace | undefined): string | undefined {
-    if (!workspace) {
-      return undefined
+  private saveImage(name: string, files: FileList, refType: RefType) {
+    this.imageUrl[refType] = undefined // reset - important to trigger the change in UI
+    if (refType === RefType.Logo) this.currentLogoUrl.emit(this.imageUrl[refType])
+    // prepare request
+    const mType = this.mapMimeType(files[0].type)
+    const data = mType === MimeType.Svgxml ? files[0] : new Blob([files[0]], { type: files[0].type })
+    const requestParameter = {
+      refId: name,
+      refType: refType,
+      mimeType: mType,
+      body: data
     }
-    if (workspace.logoUrl && workspace.logoUrl != '') {
-      return workspace.logoUrl
-    }
-    return Utils.bffImageUrl(this.imageApi.configuration.basePath, workspace.name, RefType.Logo)
+    this.imageApi.uploadImage(requestParameter).subscribe({
+      next: () => {
+        this.msgService.success({ summaryKey: 'IMAGE.UPLOAD_SUCCESS' })
+        this.imageUrl[refType] = Utils.bffImageUrl(this.imageApi.configuration.basePath, name, refType)
+        if (refType === RefType.Logo) this.currentLogoUrl.emit(this.imageUrl[refType])
+        if (refType === RefType.Logo) this.formGroup.controls['logoUrl'].setValue(null)
+        if (refType === RefType.LogoSmall) this.formGroup.controls['smallLogoUrl'].setValue(null)
+      },
+      error: (err) => {
+        console.error('uploadImage', err)
+        this.msgService.error({ summaryKey: 'IMAGE.UPLOAD_FAILED' })
+      }
+    })
+  }
+
+  public getLogoUrl(workspace: Workspace | undefined, refType: RefType): string | undefined {
+    if (!workspace) return undefined
+    if (refType === RefType.Logo && workspace.logoUrl && workspace.logoUrl != '') return workspace.logoUrl
+    if (refType === RefType.LogoSmall && workspace.smallLogoUrl && workspace.smallLogoUrl != '')
+      return workspace.smallLogoUrl
+    return Utils.bffImageUrl(this.imageApi.configuration.basePath, workspace.name, refType)
   }
 
   // changes on external log URL field: user enters text (change) or paste something
-  public onInputChange(event: Event): void {
-    this.fetchingLogoUrl = (event.target as HTMLInputElement).value
-    if (!this.fetchingLogoUrl || this.fetchingLogoUrl === '') {
-      this.fetchingLogoUrl = Utils.bffImageUrl(this.imageApi.configuration.basePath, this.workspace?.name, RefType.Logo)
-    }
-    this.currentLogoUrl.emit(this.fetchingLogoUrl)
+  public onInputChange(event: Event, refType: RefType): void {
+    this.imageUrl[refType] = (event.target as HTMLInputElement).value
+    if (!this.imageUrl[refType] || this.imageUrl[refType] === '')
+      this.imageUrl[refType] = Utils.bffImageUrl(this.imageApi.configuration.basePath, this.workspace?.name, refType)
+    if (refType === RefType.Logo) this.currentLogoUrl.emit(this.imageUrl[refType])
   }
 
   public prepareProductUrl(val: string): string | undefined {
@@ -209,7 +242,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     } else return undefined
   }
 
-  public onOpenProductPathes(paths: string[]) {
+  public onOpenProductPaths(paths: string[]) {
     // if paths already filled then prevent doing twice
     if (paths.length > (this.workspace?.homePage ? 1 : 0)) return
     if (this.workspace) {
