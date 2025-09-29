@@ -385,7 +385,6 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
    * UI Events
    */
   public onQuickFilterChange(ev: any): void {
-    console.info('onQuickFilterChange', ev, this.quickFilterValue)
     if (ev.value === 'ALL') {
       this.filterBy = this.filterByDefault
       this.dv?.filter('')
@@ -393,10 +392,8 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
       this.filterBy = 'type'
       this.dv?.filter(ev.value)
     }
-    console.info('onQuickFilterChange', ev, this.filterBy)
   }
   public onFilterChange(filter: string): void {
-    console.info('onFilterChange', filter, filter === '', this.filterValue)
     if (filter === '') {
       this.onQuickFilterChange({ value: this.quickFilterValue })
     } else {
