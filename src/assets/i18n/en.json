@@ -612,8 +612,10 @@
     "LOGO": "Logo",
     "LOGO_SMALL": "Logo (small)",
     "LOGO_URL": "External Logo URL",
-    "UPLOAD_FAILED": " The file was not uploaded successfully",
-    "UPLOAD_SUCCESS": "The file was uploaded successfully",
+    "UPLOAD": {
+      "OK": "The file was uploaded successfully",
+      "NOK": "The file was not uploaded successfully."
+    },
     "CONSTRAINT_FILE_MISSING": "No file selected.",
     "CONSTRAINT_FILE_TYPE": "The following image formats are accepted: jpg, jpeg, png, svg",
     "CONSTRAINT_FAILED": "File upload condition check failed:",

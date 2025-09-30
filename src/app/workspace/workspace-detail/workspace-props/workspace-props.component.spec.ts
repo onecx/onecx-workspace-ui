@@ -398,7 +398,7 @@ describe('WorkspacePropsComponent', () => {
     it('should remove the log - successful', () => {
       imageServiceSpy.deleteImage.and.returnValue(of({}))
 
-      component.onRemoveLogo(RefType.Logo)
+      component.onRemoveImage(RefType.Logo)
 
       expect(component.imageUrl[RefType.Logo]).toBeUndefined()
     })
@@ -408,7 +408,7 @@ describe('WorkspacePropsComponent', () => {
       imageServiceSpy.deleteImage.and.returnValue(throwError(() => errorResponse))
       spyOn(console, 'error')
 
-      component.onRemoveLogo(RefType.Logo)
+      component.onRemoveImage(RefType.Logo)
 
       expect(console.error).toHaveBeenCalledWith('deleteImage', errorResponse)
     })

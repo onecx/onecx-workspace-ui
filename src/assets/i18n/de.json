@@ -612,8 +612,10 @@
     "LOGO": "Logo",
     "LOGO_SMALL": "Logo (klein)",
     "LOGO_URL": "Externe Logo URL",
-    "UPLOAD_FAILED": "Die Datei wurde nicht erfolgreich hochgeladen",
-    "UPLOAD_SUCCESS": "Die Datei wurde erfolgreich hochgeladen",
+    "UPLOAD": {
+      "OK": "Die Datei wurde erfolgreich hochgeladen",
+      "NOK": "Die Datei wurde nicht erfolgreich hochgeladen"
+    },
     "CONSTRAINT_FILE_MISSING": "Keine Datei ausgewählt.",
     "CONSTRAINT_FILE_TYPE": "Die folgenden Bildformate werden akzeptiert: jpg, jpeg, png, svg",
     "CONSTRAINT_FAILED": "Bedingung zum Hochladen nicht erfüllt:",

@@ -12,6 +12,7 @@ import {
   ImagesInternalAPIService,
   MimeType,
   RefType,
+  UploadImageRequestParams,
   Workspace,
   WorkspaceProductAPIService
 } from 'src/app/shared/generated'
@@ -23,6 +24,7 @@ export type Theme = {
   logoUrl?: string
   faviconUrl?: string
 }
+export type ImageState = { uploaded: boolean; url: string }
 
 @Component({
   selector: 'app-workspace-props',
@@ -40,6 +42,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   public RefType = RefType
   public imageUrl: Partial<Record<RefType, string | undefined>> = {}
   public imageMaxSize = 1000000
+  public imageUrlExists: Partial<Record<RefType, boolean>> = { logo: false, 'logo-small': false }
 
   // data
   private readonly destroy$ = new Subject()
@@ -80,9 +83,21 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       theme: new FormControl(null),
       baseUrl: new FormControl(null, [Validators.required, Validators.minLength(1), Validators.pattern('^/.*')]),
       homePage: new FormControl(null),
-      logoUrl: new FormControl(null, [Validators.maxLength(255)]),
-      smallLogoUrl: new FormControl(null, [Validators.maxLength(255)]),
-      rssFeedUrl: new FormControl(null, [Validators.maxLength(255)]),
+      logoUrl: new FormControl(null, [
+        Validators.minLength(7),
+        Validators.maxLength(255),
+        Validators.pattern('^(http|https)://.{6,245}')
+      ]),
+      smallLogoUrl: new FormControl(null, [
+        Validators.minLength(7),
+        Validators.maxLength(255),
+        Validators.pattern('^(http|https)://.{6,245}')
+      ]),
+      rssFeedUrl: new FormControl(null, [
+        Validators.minLength(7),
+        Validators.maxLength(255),
+        Validators.pattern('^(http|https)://.{6,245}')
+      ]),
       footerLabel: new FormControl(null, [Validators.maxLength(255)]),
       description: new FormControl(null, [Validators.maxLength(255)])
     })
@@ -116,6 +131,8 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     this.imageUrl[RefType.Logo] = this.getLogoUrl(this.workspace, RefType.Logo)
     this.imageUrl[RefType.LogoSmall] = this.getLogoUrl(this.workspace, RefType.LogoSmall)
     this.currentLogoUrl.emit(this.imageUrl[RefType.Logo])
+
+    console.log(this.imageUrl[RefType.Logo], this.imageUrl[RefType.LogoSmall])
   }
 
   // Image component informs about non existing stored Workspace logo
@@ -146,9 +163,19 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     return changes
   }
 
-  public onRemoveLogo(refType: RefType) {
-    if (this.workspace?.name)
-      this.imageApi.deleteImage({ refId: this.workspace?.name, refType: refType }).subscribe({
+  public onRemoveImage(refType: RefType) {
+    // On EDIT mode: if URL exists then remove
+    if (this.editMode && refType === RefType.Logo && this.formGroup.get('logoUrl')?.value) {
+      this.formGroup.get('logoUrl')?.setValue(null)
+      this.imageUrlExists[refType] = false
+      this.imageUrl[refType] = Utils.bffImageUrl(this.imageApi.configuration.basePath, this.workspace?.name, refType)
+    } else if (this.editMode && refType === RefType.LogoSmall && this.formGroup.get('smallLogoUrl')?.value) {
+      this.formGroup.get('smallLogoUrl')?.setValue(null)
+      this.imageUrlExists[refType] = false
+      this.imageUrl[refType] = Utils.bffImageUrl(this.imageApi.configuration.basePath, this.workspace?.name, refType)
+    } else if (this.workspace?.name)
+      // On VIEW mode: manage image is enabled
+      this.imageApi.deleteImage({ refId: this.workspace.name, refType: refType }).subscribe({
         next: () => {
           this.imageUrl[refType] = undefined // reset - important to trigger the change in UI
           if (refType === RefType.Logo) this.currentLogoUrl.emit(this.imageUrl[refType])
@@ -199,36 +226,47 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     // prepare request
     const mType = this.mapMimeType(files[0].type)
     const data = mType === MimeType.Svgxml ? files[0] : new Blob([files[0]], { type: files[0].type })
-    const requestParameter = {
+    const requestParameter: UploadImageRequestParams = {
       refId: name,
       refType: refType,
       mimeType: mType,
       body: data
     }
     this.imageApi.uploadImage(requestParameter).subscribe({
-      next: () => {
-        this.msgService.success({ summaryKey: 'IMAGE.UPLOAD_SUCCESS' })
-        this.imageUrl[refType] = Utils.bffImageUrl(this.imageApi.configuration.basePath, name, refType)
-        if (refType === RefType.Logo) this.currentLogoUrl.emit(this.imageUrl[refType])
-        if (refType === RefType.Logo) this.formGroup.controls['logoUrl'].setValue(null)
-        if (refType === RefType.LogoSmall) this.formGroup.controls['smallLogoUrl'].setValue(null)
-      },
-      error: (err) => {
-        console.error('uploadImage', err)
-        this.msgService.error({ summaryKey: 'IMAGE.UPLOAD_FAILED' })
-      }
+      next: () => this.saveImageResponse(name, refType),
+      error: (err) => this.saveImageResponse(name, refType, err)
     })
+  }
+
+  private saveImageResponse(name: string, refType: RefType, err?: any): void {
+    if (err) {
+      console.error('uploadImage', err)
+      this.msgService.error({ summaryKey: 'IMAGE.UPLOAD.NOK' })
+    } else {
+      this.msgService.success({ summaryKey: 'IMAGE.UPLOAD.OK' })
+      this.imageUrl[refType] = Utils.bffImageUrl(this.imageApi.configuration.basePath, name, refType)
+      // reset URL field
+      if (refType === RefType.Logo) this.currentLogoUrl.emit(this.imageUrl[refType])
+      if (refType === RefType.Logo) this.formGroup.controls['logoUrl'].setValue(null)
+      if (refType === RefType.LogoSmall) this.formGroup.controls['smallLogoUrl'].setValue(null)
+    }
   }
 
   public getLogoUrl(workspace: Workspace | undefined, refType: RefType): string | undefined {
     if (!workspace) return undefined
-    if (refType === RefType.Logo && workspace.logoUrl && workspace.logoUrl != '') return workspace.logoUrl
-    if (refType === RefType.LogoSmall && workspace.smallLogoUrl && workspace.smallLogoUrl != '')
+    this.imageUrlExists[refType] = false
+    if (refType === RefType.Logo && workspace.logoUrl && workspace.logoUrl != '') {
+      this.imageUrlExists[refType] = true
+      return workspace.logoUrl
+    }
+    if (refType === RefType.LogoSmall && workspace.smallLogoUrl && workspace.smallLogoUrl != '') {
+      this.imageUrlExists[refType] = true
       return workspace.smallLogoUrl
+    }
     return Utils.bffImageUrl(this.imageApi.configuration.basePath, workspace.name, refType)
   }
 
-  // changes on external log URL field: user enters text (change) or paste something
+  // changes on external log URL field: user enters text (change) or paste/removed something
   public onInputChange(event: Event, refType: RefType): void {
     this.imageUrl[refType] = (event.target as HTMLInputElement).value
     if (!this.imageUrl[refType] || this.imageUrl[refType] === '')
