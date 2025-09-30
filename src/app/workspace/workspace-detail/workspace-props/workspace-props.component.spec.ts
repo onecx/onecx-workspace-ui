@@ -349,11 +349,11 @@ describe('WorkspacePropsComponent', () => {
 
       component.onFileUpload(event as any, RefType.Logo)
 
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'IMAGE.UPLOAD_SUCCESS' })
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'IMAGE.UPLOAD.OK' })
 
       component.onFileUpload(event as any, RefType.LogoSmall)
 
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'IMAGE.UPLOAD_SUCCESS' })
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'IMAGE.UPLOAD.OK' })
     })
 
     it('should upload file - failed with unsupported format', () => {
@@ -364,8 +364,8 @@ describe('WorkspacePropsComponent', () => {
       component.onFileUpload(event as any, RefType.Logo)
 
       expect(msgServiceSpy.error).toHaveBeenCalledWith({
-        summaryKey: 'IMAGE.CONSTRAINT_FAILED',
-        detailKey: 'IMAGE.CONSTRAINT_FILE_TYPE'
+        summaryKey: 'IMAGE.CONSTRAINT.FAILED',
+        detailKey: 'IMAGE.CONSTRAINT.FILE_TYPE'
       })
     })
 
@@ -378,7 +378,7 @@ describe('WorkspacePropsComponent', () => {
 
       component.onFileUpload(event as any, RefType.Logo)
 
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'IMAGE.UPLOAD_FAILED' })
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'IMAGE.UPLOAD.NOK' })
       expect(console.error).toHaveBeenCalledWith('uploadImage', errorResponse)
     })
 

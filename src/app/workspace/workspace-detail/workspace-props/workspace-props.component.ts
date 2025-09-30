@@ -44,17 +44,12 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   public imageUrlExists: Partial<Record<RefType, boolean>> = { logo: false, 'logo-small': false }
 
   // data
-  private readonly destroy$ = new Subject()
   public formGroup: FormGroup
   public productPaths$: Observable<string[]> = of([]) // to fill drop down with product paths
   public themeProductRegistered$!: Observable<boolean>
   public deploymentPath: string | undefined = undefined
   public urlPattern = '/base-path-to-workspace'
   public externUrlPattern = 'http(s)://path-to-image'
-  // Logo
-  public minimumImageWidth = 150
-  public minimumImageHeight = 150
-  public themeUrl: string | undefined = undefined
 
   // slot configuration: get theme data
   public themeSlotName = 'onecx-theme-data'
@@ -174,7 +169,8 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       // On VIEW mode: manage image is enabled
       this.imageApi.deleteImage({ refId: this.workspace.name, refType: refType }).subscribe({
         next: () => {
-          this.imageUrl[refType] = undefined // reset - important to trigger the change in UI
+          // reset - important to trigger the change in UI
+          if (!this.imageUrlExists[refType]) this.imageUrl[refType] = undefined
           if (refType === RefType.Logo) this.currentLogoUrl.emit(this.imageUrl[refType])
         },
         error: (err) => {
@@ -188,15 +184,15 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       const files = (ev.target as HTMLInputElement).files
       if (files) {
         if (files[0].size > this.imageMaxSize) {
-          this.msgService.error({ summaryKey: 'IMAGE.CONSTRAINT_FAILED', detailKey: 'IMAGE.CONSTRAINT_SIZE' })
+          this.msgService.error({ summaryKey: 'IMAGE.CONSTRAINT.FAILED', detailKey: 'IMAGE.CONSTRAINT.SIZE' })
         } else if (!/^.*.(jpg|jpeg|png|svg)$/.exec(files[0].name)) {
-          this.msgService.error({ summaryKey: 'IMAGE.CONSTRAINT_FAILED', detailKey: 'IMAGE.CONSTRAINT_FILE_TYPE' })
+          this.msgService.error({ summaryKey: 'IMAGE.CONSTRAINT.FAILED', detailKey: 'IMAGE.CONSTRAINT.FILE_TYPE' })
         } else if (this.workspace) {
           this.saveImage(this.workspace.name, files, refType) // store image
         }
       }
     } else {
-      this.msgService.error({ summaryKey: 'IMAGE.CONSTRAINT_FAILED', detailKey: 'IMAGE.CONSTRAINT_FILE_MISSING' })
+      this.msgService.error({ summaryKey: 'IMAGE.CONSTRAINT.FAILED', detailKey: 'IMAGE.CONSTRAINT.FILE_MISSING' })
     }
   }
 

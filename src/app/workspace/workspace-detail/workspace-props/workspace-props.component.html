@@ -360,9 +360,9 @@
       pButton
       id="ws_detail_props_item_remove_logo_small"
       icon="pi pi-times"
-      [disabled]="!imageUrl[RefType.LogoSmall]"
+      [disabled]="!imageUrl[RefType.LogoSmall] || (imageUrlExists[RefType.LogoSmall] && !editMode)"
       class="action-button p-button-icon-only cursor-pointer"
-      (click)="onRemoveLogo(RefType.LogoSmall)"
+      (click)="onRemoveImage(RefType.LogoSmall)"
       [attr.aria-label]="'IMAGE.TOOLTIPS.REMOVE' | translate"
       [pTooltip]="'IMAGE.TOOLTIPS.REMOVE' | translate"
       tooltipPosition="top"
