@@ -37,7 +37,8 @@ const workspace = {
   theme: 'theme',
   baseUrl: '/some/base/url',
   homePage: '/welcome',
-  logoUrl: 'https://host:port/site/logo.png'
+  logoUrl: 'https://host:port/site/logo.png',
+  smallLogoUrl: 'https://host:port/site/logo-small.png'
 }
 const themesOrg: Theme[] = [
   { name: 'theme1', displayName: 'Theme 1', logoUrl: '/logo', faviconUrl: '/favicon' },
@@ -53,24 +54,11 @@ const formGroup = new FormGroup({
 describe('WorkspacePropsComponent', () => {
   let component: WorkspacePropsComponent
   let fixture: ComponentFixture<WorkspacePropsComponent>
-  const workspaceServiceMock: jasmine.SpyObj<WorkspaceService> = jasmine.createSpyObj('WorkspaceService', [
-    'doesUrlExistFor',
-    'getUrl'
-  ])
-  const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'info', 'error'])
-  const apiServiceSpy = {
-    updateWorkspace: jasmine.createSpy('updateWorkspace').and.returnValue(of([]))
-  }
-  const themeAPIServiceSpy = {
-    getThemes: jasmine.createSpy('getThemes').and.returnValue(of({})),
-    getThemeById: jasmine.createSpy('getThemeById').and.returnValue(of({}))
-  }
-  const configServiceSpy = {
-    getProperty: jasmine.createSpy('getProperty').and.returnValue('123')
-  }
-  const accSpy = {
-    getLocation: jasmine.createSpy('getLocation').and.returnValue({ deploymentPath: '/path' })
-  }
+
+  const accSpy = { getLocation: jasmine.createSpy('getLocation').and.returnValue({ deploymentPath: '/path' }) }
+  const apiServiceSpy = { updateWorkspace: jasmine.createSpy('updateWorkspace').and.returnValue(of([])) }
+  const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
+  const configServiceSpy = { getProperty: jasmine.createSpy('getProperty').and.returnValue('123') }
   const imageServiceSpy = {
     getImage: jasmine.createSpy('getImage').and.returnValue(of({})),
     deleteImage: jasmine.createSpy('deleteImage').and.returnValue(of({})),
@@ -81,6 +69,10 @@ describe('WorkspacePropsComponent', () => {
   const wProductServiceSpy = {
     getProductsByWorkspaceId: jasmine.createSpy('getProductsByWorkspaceId').and.returnValue(of({}))
   }
+  const workspaceServiceMock: jasmine.SpyObj<WorkspaceService> = jasmine.createSpyObj('WorkspaceService', [
+    'doesUrlExistFor',
+    'getUrl'
+  ])
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -106,18 +98,6 @@ describe('WorkspacePropsComponent', () => {
       ],
       teardown: { destroyAfterEach: false }
     }).compileComponents()
-    // reset
-    msgServiceSpy.success.calls.reset()
-    msgServiceSpy.info.calls.reset()
-    msgServiceSpy.error.calls.reset()
-    apiServiceSpy.updateWorkspace.calls.reset()
-    themeAPIServiceSpy.getThemes.calls.reset()
-    themeAPIServiceSpy.getThemeById.calls.reset()
-    wProductServiceSpy.getProductsByWorkspaceId.calls.reset()
-    themeService.apply.calls.reset()
-    imageServiceSpy.getImage.calls.reset()
-    imageServiceSpy.deleteImage.calls.reset()
-    imageServiceSpy.uploadImage.calls.reset()
   }))
 
   beforeEach(() => {
@@ -126,6 +106,18 @@ describe('WorkspacePropsComponent', () => {
     component = fixture.componentInstance
     component.workspace = workspace
     fixture.detectChanges()
+  })
+
+  afterAll(() => {
+    // reset
+    msgServiceSpy.success.calls.reset()
+    msgServiceSpy.error.calls.reset()
+    apiServiceSpy.updateWorkspace.calls.reset()
+    wProductServiceSpy.getProductsByWorkspaceId.calls.reset()
+    themeService.apply.calls.reset()
+    imageServiceSpy.getImage.calls.reset()
+    imageServiceSpy.deleteImage.calls.reset()
+    imageServiceSpy.uploadImage.calls.reset()
   })
 
   describe('initialize', () => {
@@ -257,13 +249,13 @@ describe('WorkspacePropsComponent', () => {
       expect(component.workspace).toEqual(workspace)
       expect(component.formGroup.enabled).toBeTrue()
       expect(component.imageUrl[RefType.Logo]).toEqual(workspace.logoUrl)
+      expect(component.imageUrl[RefType.LogoSmall]).toEqual(workspace.smallLogoUrl)
     })
 
     it('should reset formGroup when workspace is empty', () => {
       component.editMode = true
-      workspace.name = 'ADMIN'
-
       component.workspace = undefined
+
       component.ngOnChanges()
 
       expect(component.formGroup.controls['displayName'].value).toBeNull()
@@ -273,49 +265,60 @@ describe('WorkspacePropsComponent', () => {
     })
   })
 
-  describe('onSave', () => {
+  describe('Saving image', () => {
     it('should return if no workspace to save', () => {
-      component.formGroup = formGroup
       component.workspace = undefined
 
       component.onSave()
     })
 
     it('should update workspace onSave', () => {
-      component.formGroup = formGroup
-      component.workspace = workspace
+      spyOn(component, 'getWorkspaceChangesFromForm')
+      component.ngOnChanges() // init form
 
       component.onSave()
+
+      expect(component.getWorkspaceChangesFromForm).toHaveBeenCalled()
     })
 
-    it('should display error msg if form group invalid', () => {
-      component.formGroup = formGroup
-      component.workspace = workspace
-      component.formGroup.controls['baseUrl'].setValue('url')
+    it('should detect changes on workspaces', () => {
+      component.ngOnChanges() // init form
+      const url = 'https://abc.de'
+      component.formGroup.controls['logoUrl'].setValue(url) // change
+
+      expect(component.formGroup.valid).toBeTrue() // valid form
+
+      const change = component.getWorkspaceChangesFromForm()
+
+      expect(change).toEqual({ logoUrl: url })
+    })
+
+    it('should display error msg if form is invalid', () => {
+      component.ngOnChanges()
+      component.formGroup.controls['logoUrl'].setValue('http://abc') // invalid: too short
 
       component.onSave()
 
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({
-        summaryKey: 'VALIDATION.FORM_INVALID'
-      })
+      expect(component.formGroup.valid).toBeFalse()
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'VALIDATION.FORM_INVALID' })
     })
   })
 
-  describe('Load image', () => {
-    it('should be informed on image loading error', () => {
+  describe('Loading image', () => {
+    it('should reset image URL on loading error', () => {
       component.onImageLoadingError(true, RefType.Logo)
 
       expect(component.imageUrl[RefType.Logo]).toBeUndefined()
     })
 
-    it('should be informed on image loading error', () => {
+    it('should use logo URL on image loading success', () => {
       component.onImageLoadingError(false, RefType.Logo)
 
       expect(component.imageUrl[RefType.Logo]).toEqual(workspace.logoUrl)
     })
   })
 
-  describe('Upload file', () => {
+  describe('Upload image', () => {
     it('should prevent upload if no file', () => {
       const event = { target: {} }
 
@@ -395,8 +398,29 @@ describe('WorkspacePropsComponent', () => {
   })
 
   describe('Remove logo', () => {
-    it('should remove the log - successful', () => {
+    it('should remove the real logo URL - successful', () => {
+      component.ngOnChanges() // init dialog
+
+      expect(component.imageUrl[RefType.Logo]).toBe(workspace.logoUrl)
+
+      component.editMode = true
+      component.onRemoveImage(RefType.Logo)
+
+      expect(component.imageUrl[RefType.Logo]).toBe('basepath/images/name/logo')
+
+      component.onRemoveImage(RefType.LogoSmall)
+
+      expect(component.imageUrl[RefType.LogoSmall]).toBe('basepath/images/name/logo-small')
+    })
+
+    it('should remove the used logo URL - successful', () => {
+      if (component.workspace) component.workspace.logoUrl = undefined // no real URL
       imageServiceSpy.deleteImage.and.returnValue(of({}))
+
+      component.editMode = false
+      component.ngOnChanges() // init dialog
+
+      expect(component.imageUrl[RefType.Logo]).toBe('basepath/images/name/logo')
 
       component.onRemoveImage(RefType.Logo)
 
@@ -434,43 +458,13 @@ describe('WorkspacePropsComponent', () => {
       component.onInputChange(event, RefType.Logo)
       tick(1000)
 
-      expect(component.imageUrl[RefType.Logo]).toBe('basepath/images/ADMIN/logo')
+      expect(component.imageUrl[RefType.Logo]).toBe('basepath/images/name/logo')
     }))
   })
 
   describe('getLogoUrl', () => {
     it('call with undefined workspace', () => {
-      const testWorkspace: Workspace = undefined!
-      expect(component.getLogoUrl(testWorkspace, RefType.Logo)).toBeUndefined()
-    })
-
-    it('call with workspace and logo URL', () => {
-      const testWorkspace: Workspace = {
-        name: 'name',
-        theme: 'theme',
-        baseUrl: '/some/base/url',
-        id: 'id',
-        logoUrl: 'testlogoUrl',
-        smallLogoUrl: 'testlogoUrl',
-        displayName: ''
-      }
-      expect(component.getLogoUrl(testWorkspace, RefType.Logo)).toBe(testWorkspace.logoUrl)
-      expect(component.getLogoUrl(testWorkspace, RefType.LogoSmall)).toBe(testWorkspace.smallLogoUrl)
-    })
-
-    it('call with workspace but no logo URL', () => {
-      const testWorkspace: Workspace = {
-        name: 'name',
-        theme: 'theme',
-        baseUrl: '/some/base/url',
-        id: 'id',
-        displayName: ''
-      }
-      spyOn(Utils, 'bffImageUrl')
-
-      component.getLogoUrl(testWorkspace, RefType.Logo)
-
-      expect(Utils.bffImageUrl).toHaveBeenCalled()
+      expect(component.getLogoUrl(undefined, RefType.Logo)).toBeUndefined()
     })
   })
 

@@ -35,21 +35,24 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   @Input() editMode = true
   @Input() isLoading = false
   @Output() currentLogoUrl = new EventEmitter<string>() // send logo url to detail header
+
   // make it available in HTML
   public getLocation = getLocation
   public copyToClipboard = Utils.copyToClipboard
+
+  // logo
   public RefType = RefType
   public imageUrl: Partial<Record<RefType, string | undefined>> = {}
   public imageMaxSize = 1000000
-  public imageUrlExists: Partial<Record<RefType, boolean>> = { logo: false, 'logo-small': false }
+  public imageUrlExists: Partial<Record<RefType, boolean>> = {}
 
   // data
   public formGroup: FormGroup
   public productPaths$: Observable<string[]> = of([]) // to fill drop down with product paths
   public themeProductRegistered$!: Observable<boolean>
   public deploymentPath: string | undefined = undefined
-  public urlPattern = '/base-path-to-workspace'
-  public externUrlPattern = 'http(s)://path-to-image'
+  public urlPatternRelative = '/base-path-to-workspace'
+  public urlPatternAbsolute = 'http(s)://path-to-image'
 
   // slot configuration: get theme data
   public themeSlotName = 'onecx-theme-data'
@@ -106,15 +109,14 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   }
 
   public ngOnChanges(): void {
+    this.formGroup.disable()
     if (this.workspace) {
       this.fillForm()
       if (this.editMode) this.formGroup.enable()
-      else this.formGroup.disable()
       // if a home page value exists then fill it into drop down list for displaying
       if (this.workspace.homePage) this.productPaths$ = of([this.workspace.homePage])
     } else {
       this.formGroup.reset()
-      this.formGroup.disable()
     }
   }
 
@@ -122,9 +124,10 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     Object.keys(this.formGroup.controls).forEach((element) => {
       this.formGroup.controls[element].setValue((this.workspace as any)[element])
     })
+    // initialize image variables: used URLs and if logo URLs exist
     this.imageUrl[RefType.Logo] = this.getLogoUrl(this.workspace, RefType.Logo)
     this.imageUrl[RefType.LogoSmall] = this.getLogoUrl(this.workspace, RefType.LogoSmall)
-    this.currentLogoUrl.emit(this.imageUrl[RefType.Logo])
+    this.currentLogoUrl.emit(this.imageUrl[RefType.Logo]) // inform page header
   }
 
   // Image component informs about non existing stored Workspace logo
@@ -133,17 +136,15 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     if (refType === RefType.Logo) this.currentLogoUrl.emit(this.imageUrl[refType])
   }
 
+  // called by workspace detail dialog: returns form values to workspace
   public onSave(): void {
     if (!this.workspace) return
-    if (this.formGroup.valid) {
-      Object.assign(this.workspace, this.getWorkspaceChangesFromForm())
-    } else {
-      this.msgService.error({ summaryKey: 'VALIDATION.FORM_INVALID' })
-    }
+    if (this.formGroup.valid) Object.assign(this.workspace, this.getWorkspaceChangesFromForm())
+    else this.msgService.error({ summaryKey: 'VALIDATION.FORM_INVALID' })
   }
 
   //return the values that are different in form than in PortalDTO
-  private getWorkspaceChangesFromForm(): any {
+  public getWorkspaceChangesFromForm(): any {
     const changes: any = {}
     Object.keys(this.formGroup.controls).forEach((key) => {
       if (this.formGroup.value[key] !== undefined) {

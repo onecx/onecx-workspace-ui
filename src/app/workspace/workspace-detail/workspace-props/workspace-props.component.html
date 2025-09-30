@@ -180,7 +180,7 @@
       </a>
     </div>
     <label *ngIf="editMode" class="ocx-control-hint block" for="ws_detail_props_item_base_url_link" aria-hidden="true">
-      {{ ('VALIDATION.HINTS.FORMAT_URL' | translate) + urlPattern }}
+      {{ ('VALIDATION.HINTS.FORMAT_URL' | translate) + urlPatternRelative }}
     </label>
   </article>
 
@@ -322,7 +322,7 @@
         <label for="ws_detail_props_item_logo_url" aria-hidden="true">{{ 'IMAGE.LOGO_URL' | translate }} </label>
       </span>
       <label *ngIf="editMode" class="ocx-control-hint block" for="ws_detail_props_item_logo_url" aria-hidden="true">
-        {{ ('VALIDATION.HINTS.FORMAT_URL' | translate) + externUrlPattern }}
+        {{ ('VALIDATION.HINTS.FORMAT_URL' | translate) + urlPatternAbsolute }}
       </label>
     </div>
   </article>
@@ -403,7 +403,7 @@
         for="ws_detail_props_item_logo_small_url"
         aria-hidden="true"
       >
-        {{ ('VALIDATION.HINTS.FORMAT_URL' | translate) + externUrlPattern }}
+        {{ ('VALIDATION.HINTS.FORMAT_URL' | translate) + urlPatternAbsolute }}
       </label>
     </div>
   </article>
