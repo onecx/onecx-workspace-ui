@@ -20,16 +20,16 @@ import {
   WorkspacePropsComponent
 } from 'src/app/workspace/workspace-detail/workspace-props/workspace-props.component'
 import {
-  WorkspaceAPIService,
+  MimeType,
   ImagesInternalAPIService,
   Workspace,
+  WorkspaceAPIService,
   WorkspaceProductAPIService,
-  RefType,
-  MimeType
+  RefType
 } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
 
-const workspace = {
+const workspace: Workspace = {
   id: 'id',
   disabled: false,
   name: 'name',
@@ -44,12 +44,6 @@ const themesOrg: Theme[] = [
   { name: 'theme1', displayName: 'Theme 1', logoUrl: '/logo', faviconUrl: '/favicon' },
   { name: 'theme2', displayName: 'Theme 2' }
 ]
-
-const formGroup = new FormGroup({
-  displayName: new FormControl('displayName', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
-  theme: new FormControl('theme', [Validators.required]),
-  baseUrl: new FormControl('/url', [Validators.required, Validators.minLength(1), Validators.pattern('^/.*')])
-})
 
 describe('WorkspacePropsComponent', () => {
   let component: WorkspacePropsComponent
