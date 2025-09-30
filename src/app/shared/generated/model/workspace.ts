@@ -30,6 +30,7 @@ export interface Workspace {
     rssFeedUrl?: string;
     footerLabel?: string;
     logoUrl?: string;
+    smallLogoUrl?: string;
     address?: WorkspaceAddress;
     mandatory?: boolean;
     operator?: boolean;

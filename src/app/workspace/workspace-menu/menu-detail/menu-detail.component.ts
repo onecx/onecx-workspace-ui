@@ -8,7 +8,6 @@ import { SelectItem } from 'primeng/api'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 
-import { Utils } from 'src/app/shared/utils'
 import {
   CreateMenuItem,
   MenuItem,
@@ -18,6 +17,7 @@ import {
   Microfrontend,
   WorkspaceProductAPIService
 } from 'src/app/shared/generated'
+import { Utils } from 'src/app/shared/utils'
 import { ChangeMode } from '../menu.component'
 import { IconService } from '../services/iconservice'
 
@@ -52,7 +52,6 @@ export class MenuDetailComponent implements OnChanges {
   @Input() displayDeleteDialog = false
   @Output() dataChanged: EventEmitter<boolean> = new EventEmitter()
 
-  limitText = Utils.limitText
   @ViewChild('panelDetail') panelDetail: TabView | undefined
   private readonly destroy$ = new Subject()
   public formGroup: FormGroup
