@@ -357,9 +357,22 @@ describe('WorkspacePropsComponent', () => {
     })
 
     it('should upload file - failed with unsupported format', () => {
+      imageServiceSpy.uploadImage.and.returnValue(of({}))
+      const file = new File(['file content'], 'test.tiff', { type: 'image/tiff' })
+      const event = { target: { files: [file] } }
+
+      component.onFileUpload(event as any, RefType.Logo)
+
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({
+        summaryKey: 'IMAGE.CONSTRAINT_FAILED',
+        detailKey: 'IMAGE.CONSTRAINT_FILE_TYPE'
+      })
+    })
+
+    it('should upload file - failed with server error', () => {
       const errorResponse = { status: 400, statusText: 'Error on getting image' }
       imageServiceSpy.uploadImage.and.returnValue(throwError(() => errorResponse))
-      const file = new File(['file content'], 'test.tiff', { type: 'image/tiff' })
+      const file = new File(['file content'], 'test.svg', { type: 'image/svg+xml' })
       const event = { target: { files: [file] } }
       spyOn(console, 'error')
 

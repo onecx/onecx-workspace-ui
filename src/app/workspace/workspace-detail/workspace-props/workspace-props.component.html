@@ -264,14 +264,14 @@
   >
     <input hidden type="file" accept="image/*" #fileUploadLogo (change)="onFileUpload($event, RefType.Logo)" />
     <section
-      class="w-3rem flex flex-column text-center"
+      class="w-3rem text-center"
+      style="color: var(--emphasis-medium)"
       [pTooltip]="'IMAGE.TOOLTIPS.LOGO' | translate"
       tooltipPosition="top"
       tooltipEvent="hover"
       aria-hidden="true"
     >
-      <div style="color: var(--emphasis-medium)">Logo</div>
-      <div style="color: var(--emphasis-medium)"></div>
+      {{ 'IMAGE.LOGO' | translate }}
     </section>
     <app-image-container
       id="ws_detail_props_form_logo_image"
@@ -340,14 +340,14 @@
       (change)="onFileUpload($event, RefType.LogoSmall)"
     />
     <section
-      class="w-3rem flex flex-column text-center"
+      class="w-3rem text-center"
+      style="color: var(--emphasis-medium)"
       [pTooltip]="'IMAGE.TOOLTIPS.LOGO_SMALL' | translate"
       tooltipPosition="top"
       tooltipEvent="hover"
       aria-hidden="true"
     >
-      <div style="color: var(--emphasis-medium)">Logo</div>
-      <div style="color: var(--emphasis-medium)">(klein)</div>
+      {{ 'IMAGE.LOGO_SMALL' | translate }}
     </section>
     <app-image-container
       id="ws_detail_props_form_logo_small_image"
