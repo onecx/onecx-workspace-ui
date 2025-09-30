@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, OnChanges, Output } from '@angu
 import { Location } from '@angular/common'
 import { Router } from '@angular/router'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
-import { BehaviorSubject, map, Observable, of, ReplaySubject, Subject } from 'rxjs'
+import { BehaviorSubject, map, Observable, of, ReplaySubject } from 'rxjs'
 
 import { SlotService } from '@onecx/angular-remote-components'
 import { PortalMessageService, WorkspaceService } from '@onecx/angular-integration-interface'
