@@ -18,6 +18,7 @@ export interface WorkspaceAbstract {
     theme?: string;
     baseUrl?: string;
     logoUrl?: string;
+    smallLogoUrl?: string;
     disabled?: boolean;
     operator?: boolean;
     mandatory?: boolean;

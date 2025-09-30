@@ -451,11 +451,11 @@ describe('WorkspacePropsComponent', () => {
         baseUrl: '/some/base/url',
         id: 'id',
         logoUrl: 'testlogoUrl',
-        //smallLogoUrl: 'testlogoUrl',
+        smallLogoUrl: 'testlogoUrl',
         displayName: ''
       }
       expect(component.getLogoUrl(testWorkspace, RefType.Logo)).toBe(testWorkspace.logoUrl)
-      //expect(component.getLogoUrl(testWorkspace, RefType.LogoSmall)).toBe(testWorkspace.smallLogoUrl)
+      expect(component.getLogoUrl(testWorkspace, RefType.LogoSmall)).toBe(testWorkspace.smallLogoUrl)
     })
 
     it('call with workspace but no logo URL', () => {

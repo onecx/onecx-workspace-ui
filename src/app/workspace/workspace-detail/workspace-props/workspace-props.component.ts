@@ -222,8 +222,9 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
 
   public getLogoUrl(workspace: Workspace | undefined, refType: RefType): string | undefined {
     if (!workspace) return undefined
-    if (refType === RefType.Logo && workspace['logoUrl'] && workspace['logoUrl'] != '') return workspace['logoUrl']
-    //if (refType === RefType.LogoSmall && workspace.smallLogoUrl && workspace.smallLogoUrl != '') return workspace.smallLogoUrl
+    if (refType === RefType.Logo && workspace.logoUrl && workspace.logoUrl != '') return workspace.logoUrl
+    if (refType === RefType.LogoSmall && workspace.smallLogoUrl && workspace.smallLogoUrl != '')
+      return workspace.smallLogoUrl
     return Utils.bffImageUrl(this.imageApi.configuration.basePath, workspace.name, refType)
   }
 
