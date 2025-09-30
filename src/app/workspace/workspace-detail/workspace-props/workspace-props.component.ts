@@ -24,7 +24,6 @@ export type Theme = {
   logoUrl?: string
   faviconUrl?: string
 }
-export type ImageState = { uploaded: boolean; url: string }
 
 @Component({
   selector: 'app-workspace-props',
@@ -131,8 +130,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     this.imageUrl[RefType.Logo] = this.getLogoUrl(this.workspace, RefType.Logo)
     this.imageUrl[RefType.LogoSmall] = this.getLogoUrl(this.workspace, RefType.LogoSmall)
     this.currentLogoUrl.emit(this.imageUrl[RefType.Logo])
-
-    console.log(this.imageUrl[RefType.Logo], this.imageUrl[RefType.LogoSmall])
   }
 
   // Image component informs about non existing stored Workspace logo
