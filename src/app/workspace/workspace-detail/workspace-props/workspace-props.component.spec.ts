@@ -256,7 +256,7 @@ describe('WorkspacePropsComponent', () => {
 
       expect(component.workspace).toEqual(workspace)
       expect(component.formGroup.enabled).toBeTrue()
-      expect(component.fetchingLogoUrl).toEqual(workspace.logoUrl)
+      expect(component.imageUrl[RefType.Logo]).toEqual(workspace.logoUrl)
     })
 
     it('should reset formGroup when workspace is empty', () => {
@@ -305,13 +305,13 @@ describe('WorkspacePropsComponent', () => {
     it('should be informed on image loading error', () => {
       component.onImageLoadingError(true, RefType.Logo)
 
-      expect(component.fetchingLogoUrl).toBeUndefined()
+      expect(component.imageUrl[RefType.Logo]).toBeUndefined()
     })
 
     it('should be informed on image loading error', () => {
       component.onImageLoadingError(false, RefType.Logo)
 
-      expect(component.fetchingLogoUrl).toEqual(workspace.logoUrl)
+      expect(component.imageUrl[RefType.Logo]).toEqual(workspace.logoUrl)
     })
   })
 
@@ -357,10 +357,12 @@ describe('WorkspacePropsComponent', () => {
       imageServiceSpy.uploadImage.and.returnValue(throwError(() => errorResponse))
       const file = new File(['file content'], 'test.svg', { type: 'image/svg+xml' })
       const event = { target: { files: [file] } }
+      spyOn(console, 'error')
 
       component.onFileUpload(event as any, RefType.Logo)
 
       expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'IMAGE.UPLOAD_FAILED' })
+      expect(console.error).toHaveBeenCalledWith('uploadImage', errorResponse)
     })
 
     it('should map mime-types', () => {
@@ -381,7 +383,7 @@ describe('WorkspacePropsComponent', () => {
 
       component.onRemoveLogo(RefType.Logo)
 
-      expect(component.fetchingLogoUrl).toBeUndefined()
+      expect(component.imageUrl[RefType.Logo]).toBeUndefined()
     })
 
     it('should remove the log - failed', () => {
@@ -396,28 +398,26 @@ describe('WorkspacePropsComponent', () => {
   })
 
   describe('onInputChange', () => {
-    it('should change fetchingLogoUrl on inputChange: valid value', fakeAsync(() => {
+    it('should change logo URL on inputChange: valid value', fakeAsync(() => {
       const event = {
         target: { value: 'newLogoValue' }
       } as unknown as Event
 
       component.onInputChange(event, RefType.Logo)
-
       tick(1000)
 
-      expect(component.fetchingLogoUrl).toBe('newLogoValue')
+      expect(component.imageUrl[RefType.Logo]).toBe('newLogoValue')
     }))
 
-    it('should change fetchingLogoUrl on inputChange: empty value', fakeAsync(() => {
+    it('should change logo URL on inputChange: empty value', fakeAsync(() => {
       const event = {
         target: { value: '' }
       } as unknown as Event
 
       component.onInputChange(event, RefType.Logo)
-
       tick(1000)
 
-      expect(component.fetchingLogoUrl).toBe('basepath/images/ADMIN/logo')
+      expect(component.imageUrl[RefType.Logo]).toBe('basepath/images/ADMIN/logo')
     }))
   })
 

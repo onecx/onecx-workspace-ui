@@ -51,8 +51,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   // Logo
   public minimumImageWidth = 150
   public minimumImageHeight = 150
-  public fetchingLogoUrl: string | undefined = undefined
-  public fetchingLogoSmallUrl: string | undefined = undefined
   public themeUrl: string | undefined = undefined
 
   // slot configuration: get theme data
