@@ -22,41 +22,46 @@
 
   <!-- THEMES -->
   <article [ariaLabel]="'WORKSPACE.THEME' | translate" class="w-full">
-    <ocx-slot class="hidden" [name]="slotName" [inputs]="{ dataType: 'themes' }" [outputs]="{ themes: themesEmitter }">
+    <ocx-slot
+      class="hidden"
+      [name]="themeSlotName"
+      [inputs]="{ dataType: 'themes' }"
+      [outputs]="{ themes: themesEmitter }"
+    >
     </ocx-slot>
     <ng-container *ngIf="isThemeComponentDefined$ | async; else noThemesAvailable">
       <div
         *ngIf="{
           themes: (themes$ | async) ?? [],
-          formValues: formGroupValues$ | async,
-          themeLogoUrl: getThemeImageUrl((themes$ | async) ?? [], (formGroupValues$ | async)?.theme ?? '', RefType.Logo)
+          formValues: themeFormValues$ | async,
+          themeLogoUrl: getThemeImageUrl((themes$ | async) ?? [], (themeFormValues$ | async)?.theme ?? '', RefType.Logo)
         } as data"
         class="w-full flex flex-row flex-wrap align-items-center"
         [ngClass]="{
           'row-gap-2 column-gap-3 sm:column-gap-4': (themeLogoLoadingFailed$ | async) !== undefined || data.themeLogoUrl
         }"
       >
-        <!-- theme has extern logo url -->
-        <img
-          *ngIf="data.themeLogoUrl"
-          [class]="'border-round-sm max-h-2rem max-w-5rem'"
-          [src]="data.themeLogoUrl"
-          alt="Theme Logo"
-          aria-label="Theme Logo"
-        />
-        <!-- theme has uploaded logo or default logo -->
-        <ocx-slot
-          *ngIf="!data.themeLogoUrl"
-          [name]="slotName"
-          [inputs]="{
-            dataType: 'logo',
-            themeName: data.formValues?.theme,
-            useDefaultLogo: true,
-            imageStyleClass: 'max-h-2rem max-w-5rem'
-          }"
-          [outputs]="{ imageLoadingFailed: logoLoadingEmitter }"
-        ></ocx-slot>
-
+        @if (data.themeLogoUrl) {
+          <!-- theme has extern logo url? -->
+          <img
+            [class]="'border-round-sm max-h-2rem max-w-5rem'"
+            [src]="data.themeLogoUrl"
+            alt="Theme Logo"
+            aria-label="Theme Logo"
+          />
+        } @else {
+          <!-- theme has uploaded logo or default logo -->
+          <ocx-slot
+            [name]="themeSlotName"
+            [inputs]="{
+              dataType: 'logo',
+              themeName: data.formValues?.theme,
+              useDefaultLogo: true,
+              imageStyleClass: 'max-h-2rem max-w-5rem'
+            }"
+            [outputs]="{ imageLoadingFailed: themeLogoLoadingEmitter }"
+          ></ocx-slot>
+        }
         <!-- build inputgroup by hand due to better flex layout -->
         <div class="mb-1 flex-grow-1 flex flex-row justify-content-start row-gap-0" controlErrorAnchor>
           <span class="p-float-label w-full">
@@ -191,7 +196,7 @@
         id="ws_detail_props_item_home_page"
         formControlName="homePage"
         styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
-        (onClick)="onOpenProductPathes(paths); $event.stopPropagation()"
+        (onClick)="onOpenProductPaths(paths); $event.stopPropagation()"
         [options]="paths"
         [editable]="true"
         [showClear]="true"
@@ -252,25 +257,36 @@
     </button>
   </article>
 
+  <!-- LOGO -->
   <article
     class="flex flex-row flex-wrap sm:flex-nowrap align-items-center row-gap-2 column-gap-4 w-full"
-    [attr.aria-label]="'DIALOG.LOGO.LABEL' | translate"
+    [attr.aria-label]="('DIALOG.LOGO.LABEL' | translate) + ': ' + ('IMAGE.TOOLTIPS.LOGO' | translate)"
   >
-    <input hidden type="file" accept="image/*" #selectedFileInputLogo (change)="onFileUpload($event)" />
+    <input hidden type="file" accept="image/*" #fileUploadLogo (change)="onFileUpload($event, RefType.Logo)" />
+    <section
+      class="w-3rem flex flex-column text-center"
+      [pTooltip]="'IMAGE.TOOLTIPS.LOGO' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
+      aria-hidden="true"
+    >
+      <div style="color: var(--emphasis-medium)">Logo</div>
+      <div style="color: var(--emphasis-medium)"></div>
+    </section>
     <app-image-container
       id="ws_detail_props_form_logo_image"
-      [imageUrl]="fetchingLogoUrl"
+      [imageUrl]="imageUrl[RefType.Logo]"
       styleClass="max-h-3rem max-w-5rem border-round-sm"
-      (imageLoadError)="onImageLoadingError($event)"
+      (imageLoadError)="onImageLoadingError($event, RefType.Logo)"
     ></app-image-container>
     <button
       *ocxIfPermission="'WORKSPACE#EDIT'"
       pButton
       id="ws_detail_props_item_remove_logo"
       icon="pi pi-times"
-      [disabled]="!fetchingLogoUrl"
+      [disabled]="!imageUrl[RefType.Logo]"
       class="action-button p-button-icon-only cursor-pointer"
-      (click)="onRemoveLogo()"
+      (click)="onRemoveLogo(RefType.Logo)"
       [attr.aria-label]="'IMAGE.TOOLTIPS.REMOVE' | translate"
       [pTooltip]="'IMAGE.TOOLTIPS.REMOVE' | translate"
       tooltipPosition="top"
@@ -282,7 +298,7 @@
       id="ws_detail_props_item_upload_logo"
       icon="pi pi-upload"
       class="action-button p-button-icon-only cursor-pointer"
-      (click)="selectedFileInputLogo.click()"
+      (click)="fileUploadLogo.click()"
       [attr.aria-label]="'IMAGE.TOOLTIPS.UPLOAD' | translate"
       [pTooltip]="'IMAGE.TOOLTIPS.UPLOAD' | translate"
       tooltipPosition="top"
@@ -296,8 +312,8 @@
           class="w-full pt-3 pb-2 text-responsive"
           id="ws_detail_props_item_logo_url"
           formControlName="logoUrl"
-          (input)="onInputChange($event)"
-          (change)="onInputChange($event)"
+          (input)="onInputChange($event, RefType.Logo)"
+          (change)="onInputChange($event, RefType.Logo)"
           [attr.aria-label]="'IMAGE.LOGO_URL' | translate"
           [pTooltip]="'IMAGE.TOOLTIPS.URL' | translate"
           tooltipPosition="top"
@@ -311,6 +327,88 @@
     </div>
   </article>
 
+  <!-- LOGO SMALL -->
+  <article
+    class="flex flex-row flex-wrap sm:flex-nowrap align-items-center row-gap-2 column-gap-4 w-full"
+    [attr.aria-label]="('DIALOG.LOGO.LABEL' | translate) + ': ' + ('IMAGE.TOOLTIPS.LOGO_SMALL' | translate)"
+  >
+    <input
+      #fileUploadLogoSmall
+      hidden
+      type="file"
+      accept="image/*"
+      (change)="onFileUpload($event, RefType.LogoSmall)"
+    />
+    <section
+      class="w-3rem flex flex-column text-center"
+      [pTooltip]="'IMAGE.TOOLTIPS.LOGO_SMALL' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
+      aria-hidden="true"
+    >
+      <div style="color: var(--emphasis-medium)">Logo</div>
+      <div style="color: var(--emphasis-medium)">(klein)</div>
+    </section>
+    <app-image-container
+      id="ws_detail_props_form_logo_small_image"
+      [imageUrl]="imageUrl[RefType.Logo]"
+      styleClass="max-h-3rem max-w-5rem border-round-sm"
+      (imageLoadError)="onImageLoadingError($event, RefType.LogoSmall)"
+    ></app-image-container>
+    <button
+      *ocxIfPermission="'WORKSPACE#EDIT'"
+      pButton
+      id="ws_detail_props_item_remove_logo_small"
+      icon="pi pi-times"
+      [disabled]="!imageUrl[RefType.LogoSmall]"
+      class="action-button p-button-icon-only cursor-pointer"
+      (click)="onRemoveLogo(RefType.LogoSmall)"
+      [attr.aria-label]="'IMAGE.TOOLTIPS.REMOVE' | translate"
+      [pTooltip]="'IMAGE.TOOLTIPS.REMOVE' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
+    ></button>
+    <button
+      *ocxIfPermission="'WORKSPACE#EDIT'"
+      pButton
+      id="ws_detail_props_item_upload_logo"
+      icon="pi pi-upload"
+      class="action-button p-button-icon-only cursor-pointer"
+      (click)="fileUploadLogoSmall.click()"
+      [attr.aria-label]="'IMAGE.TOOLTIPS.UPLOAD' | translate"
+      [pTooltip]="'IMAGE.TOOLTIPS.UPLOAD' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
+    ></button>
+    <div class="flex flex-column row-gap-1 flex-grow-1">
+      <span class="p-float-label">
+        <input
+          pInputText
+          type="text"
+          class="w-full pt-3 pb-2 text-responsive"
+          id="ws_detail_props_item_logo_small_url"
+          formControlName="logoUrl"
+          (input)="onInputChange($event, RefType.LogoSmall)"
+          (change)="onInputChange($event, RefType.LogoSmall)"
+          [attr.aria-label]="'IMAGE.LOGO_URL' | translate"
+          [pTooltip]="'IMAGE.TOOLTIPS.URL' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        />
+        <label for="ws_detail_props_item_logo_small_url" aria-hidden="true">{{ 'IMAGE.LOGO_URL' | translate }} </label>
+      </span>
+      <label
+        *ngIf="editMode"
+        class="ocx-control-hint block"
+        for="ws_detail_props_item_logo_small_url"
+        aria-hidden="true"
+      >
+        {{ ('VALIDATION.HINTS.FORMAT_URL' | translate) + externUrlPattern }}
+      </label>
+    </div>
+  </article>
+
+  <!-- FOOTER -->
   <span class="p-float-label mb-1 w-full" controlErrorAnchor>
     <input
       pInputText

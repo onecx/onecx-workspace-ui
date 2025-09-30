@@ -33,10 +33,10 @@ import { environment } from 'src/environments/environment'
 @UntilDestroy()
 export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
   // input
-  @Input() refresh: boolean | undefined = false // on any change here a reload is triggered
   @Input() imageId: string | undefined = undefined
   @Input() imageUrl: string | undefined = undefined
   @Input() imageStyleClass: string | undefined = undefined
+  @Input() imageType: RefType = RefType.Logo
   @Input() useDefaultLogo = false // used if logo loading failed
   @Input() logPrefix: string | undefined = undefined
   @Input() logEnabled = false
@@ -58,7 +58,7 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
   ) {
     this.appState.currentWorkspace$.asObservable().subscribe((workspace) => {
       this.workspaceName = workspace?.workspaceName
-      this.imageUrl$.next(this.getImageUrl(this.workspaceName, 'url'))
+      this.imageUrl$.next(this.getImageUrl(this.workspaceName, 'url', this.imageType))
     })
   }
 
@@ -84,14 +84,14 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
     this.log('onImageLoadError using => ' + usedUrl)
     if (usedUrl === this.imageUrl) {
       this.log('onImageLoadError using => image')
-      this.imageUrl$.next(this.getImageUrl(this.workspaceName, 'image'))
-    } else if (usedUrl === this.getImageUrl(this.workspaceName, 'image')) {
+      this.imageUrl$.next(this.getImageUrl(this.workspaceName, 'image', RefType.Logo))
+    } else if (usedUrl === this.getImageUrl(this.workspaceName, 'image', RefType.Logo)) {
       this.log('onImageLoadError using => default')
-      this.imageUrl$.next(this.getImageUrl(this.workspaceName, 'default'))
+      this.imageUrl$.next(this.getImageUrl(this.workspaceName, 'default', RefType.Logo))
     }
   }
 
-  public getImageUrl(workspaceName: string | undefined, prioType: string): string | undefined {
+  public getImageUrl(workspaceName: string | undefined, prioType: string, refType: RefType): string | undefined {
     this.log('getImageUrl on prioType => ' + prioType)
 
     // if URL exist
@@ -99,10 +99,8 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
       this.log('getImageUrl => ' + this.imageUrl)
       return this.imageUrl
     } else if (['url', 'image'].includes(prioType)) {
-      this.log(
-        'getImageUrl => ' + Utils.bffImageUrl(this.workspaceApi.configuration.basePath, workspaceName, RefType.Logo)
-      )
-      return Utils.bffImageUrl(this.workspaceApi.configuration.basePath, workspaceName, RefType.Logo)
+      this.log('getImageUrl => ' + Utils.bffImageUrl(this.workspaceApi.configuration.basePath, workspaceName, refType))
+      return Utils.bffImageUrl(this.workspaceApi.configuration.basePath, workspaceName, refType)
     } else if (['url', 'image', 'default'].includes(prioType) && this.useDefaultLogo && this.defaultImageUrl !== '') {
       // if user wants to have the default (as asset)
       return this.defaultImageUrl

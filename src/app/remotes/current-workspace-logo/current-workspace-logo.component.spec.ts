@@ -11,6 +11,7 @@ import { AppStateServiceMock, provideAppStateServiceMock } from '@onecx/angular-
 import { Workspace } from '@onecx/integration-interface'
 
 import { OneCXCurrentWorkspaceLogoComponent } from './current-workspace-logo.component'
+import { RefType } from 'src/app/shared/generated'
 
 const workspace1: Partial<Workspace> = {
   id: 'w1',
@@ -142,7 +143,7 @@ describe('OneCXCurrentWorkspaceLogoComponent', () => {
         component.workspaceName = workspace1.workspaceName
         component.imageUrl = '/url'
 
-        const url = component.getImageUrl(workspace1.workspaceName, 'url')
+        const url = component.getImageUrl(workspace1.workspaceName, 'url', RefType.Logo)
 
         expect(url).toBe(component.imageUrl)
       })
@@ -155,7 +156,7 @@ describe('OneCXCurrentWorkspaceLogoComponent', () => {
         component.defaultImageUrl = '/default/url'
         component.useDefaultLogo = true // enable use of default image
 
-        const url = component.getImageUrl(workspace1.workspaceName, 'default')
+        const url = component.getImageUrl(workspace1.workspaceName, 'default', RefType.Logo)
 
         expect(url).toBe(component.defaultImageUrl)
       })
@@ -168,7 +169,7 @@ describe('OneCXCurrentWorkspaceLogoComponent', () => {
         component.defaultImageUrl = '/default/url'
         component.useDefaultLogo = false // enable use of default image
 
-        const url = component.getImageUrl(workspace1.workspaceName, 'unknown')
+        const url = component.getImageUrl(workspace1.workspaceName, 'unknown', RefType.Logo)
 
         expect(url).toBeUndefined()
       })

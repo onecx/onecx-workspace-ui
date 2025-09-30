@@ -619,7 +619,8 @@
     "CONSTRAINT_SIZE": "Die Größe der Bilddatei übersteigt die maximale Lönge von 100.000 Bytes.",
     "TOOLTIPS": {
       "URL": "Als Alternative zum Hochladen kann hier eine URL zu einem Bild angegeben werden.",
-      "IMAGE": "Logo",
+      "LOGO": "Logo in Standardgröße",
+      "LOGO_SMALL": "Logo in reduzierter Größe, z.b. für Verwendung im Slim Menü",
       "PLACEHOLDER": "Logo Platzhalter",
       "REMOVE": "Bild löschen",
       "UPLOAD": "Bild auswählen und hochladen"
