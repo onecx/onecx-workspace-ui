@@ -39,6 +39,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   public copyToClipboard = Utils.copyToClipboard
   public RefType = RefType
   public imageUrl: Partial<Record<RefType, string | undefined>> = {}
+  public imageMaxSize = 1000000
 
   // data
   private readonly destroy$ = new Subject()
@@ -162,7 +163,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     if (ev.target && (ev.target as HTMLInputElement).files) {
       const files = (ev.target as HTMLInputElement).files
       if (files) {
-        if (files[0].size > 1000000) {
+        if (files[0].size > this.imageMaxSize) {
           this.msgService.error({ summaryKey: 'IMAGE.CONSTRAINT_FAILED', detailKey: 'IMAGE.CONSTRAINT_SIZE' })
         } else if (!/^.*.(jpg|jpeg|png|svg)$/.exec(files[0].name)) {
           this.msgService.error({ summaryKey: 'IMAGE.CONSTRAINT_FAILED', detailKey: 'IMAGE.CONSTRAINT_FILE_TYPE' })

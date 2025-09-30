@@ -350,12 +350,16 @@ describe('WorkspacePropsComponent', () => {
       component.onFileUpload(event as any, RefType.Logo)
 
       expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'IMAGE.UPLOAD_SUCCESS' })
+
+      component.onFileUpload(event as any, RefType.LogoSmall)
+
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'IMAGE.UPLOAD_SUCCESS' })
     })
 
-    it('should upload file - failed with svg', () => {
+    it('should upload file - failed with unsupported format', () => {
       const errorResponse = { status: 400, statusText: 'Error on getting image' }
       imageServiceSpy.uploadImage.and.returnValue(throwError(() => errorResponse))
-      const file = new File(['file content'], 'test.svg', { type: 'image/svg+xml' })
+      const file = new File(['file content'], 'test.tiff', { type: 'image/tiff' })
       const event = { target: { files: [file] } }
       spyOn(console, 'error')
 
@@ -427,16 +431,18 @@ describe('WorkspacePropsComponent', () => {
       expect(component.getLogoUrl(testWorkspace, RefType.Logo)).toBeUndefined()
     })
 
-    it('call with workspace logo URL', () => {
+    it('call with workspace and logo URL', () => {
       const testWorkspace: Workspace = {
         name: 'name',
         theme: 'theme',
         baseUrl: '/some/base/url',
         id: 'id',
         logoUrl: 'testlogoUrl',
+        //smallLogoUrl: 'testlogoUrl',
         displayName: ''
       }
       expect(component.getLogoUrl(testWorkspace, RefType.Logo)).toBe(testWorkspace.logoUrl)
+      //expect(component.getLogoUrl(testWorkspace, RefType.LogoSmall)).toBe(testWorkspace.smallLogoUrl)
     })
 
     it('call with workspace but no logo URL', () => {

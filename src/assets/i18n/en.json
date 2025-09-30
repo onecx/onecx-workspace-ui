@@ -620,7 +620,7 @@
     "TOOLTIPS": {
       "URL": "As an alternative to uploading, a URL to an image can be specified here.",
       "LOGO": "Logo - standard size",
-      "LOGO_SMALL": "Logo - reduced size, e,g, for use in slim menu",
+      "LOGO_SMALL": "Logo - reduced size, e.g. for use in slim menu",
       "PLACEHOLDER": "Logo Placeholder",
       "REMOVE": "Remove Image",
       "UPLOAD": "Select and upload image"
