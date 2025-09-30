@@ -29,7 +29,7 @@ import { environment } from 'src/environments/environment'
 import { EventsTopic, SlotsResizedEvent } from '@onecx/integration-interface'
 
 const RESIZE_OBSERVED_SLOT_NAME = 'onecx-shell-vertical-menu'
-const DEFAULT_WIDTH = '17rem'
+const DEFAULT_WIDTH_REM = 17
 @Component({
   selector: 'app-current-workspace-logo',
   templateUrl: './current-workspace-logo.component.html',
@@ -148,13 +148,18 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
       .subscribe((e) => {
         const slotWidth = e.payload.slotDetails.width
         if (slotWidth > 0) {
-          this.container.nativeElement.style.width = e.payload.slotDetails.width + 'px'
+          const widthWithSpaceForToggleButton = e.payload.slotDetails.width - this.remToPx() * 1.25
+          this.container.nativeElement.style.width = widthWithSpaceForToggleButton + 'px'
         }
       })
   }
 
+  private remToPx(): number {
+    return parseFloat(getComputedStyle(document.documentElement).fontSize)
+  }
+
   private setDefaultWidth() {
-    this.container.nativeElement.style.width = DEFAULT_WIDTH
+    this.container.nativeElement.style.width = DEFAULT_WIDTH_REM - 1.25 + 'rem'
   }
 
   private log(text: string) {
