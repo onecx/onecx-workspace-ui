@@ -5,6 +5,8 @@
   [ocxSrc]="imageUrl ? imageUrl : defaultUrl"
   (error)="onImageLoadError()"
   (load)="onImageLoadSuccess()"
+  [alt]="'Logo Workspace'"
+  [attr.aria-label]="'Logo Workspace'"
   [pTooltip]="title"
   tooltipPosition="top"
   tooltipEvent="hover"
