@@ -244,8 +244,8 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     const uploadUrl = Utils.bffImageUrl(this.imageApi.configuration.basePath, this.workspace?.name, refType)
     // if not loaded and external URL was used then try the uploaded image
     if (!loaded)
-      if (!(this.imageUrl[refType] === uploadUrl)) this.imageUrl[refType] = uploadUrl
-      else this.imageUrl[refType] = undefined
+      if (this.imageUrl[refType] === uploadUrl) this.imageUrl[refType] = undefined
+      else this.imageUrl[refType] = uploadUrl
 
     if (refType === RefType.Logo) this.currentLogoUrl.emit(this.imageUrl[refType])
   }
