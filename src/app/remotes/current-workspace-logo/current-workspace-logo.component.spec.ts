@@ -20,7 +20,7 @@ const workspace1: Partial<Workspace> = {
   logoUrl: 'https://host:port/site/logo.png'
 }
 
-fdescribe('OneCXCurrentWorkspaceLogoComponent', () => {
+describe('OneCXCurrentWorkspaceLogoComponent', () => {
   let mockAppStateService: AppStateServiceMock
 
   function setUp() {
