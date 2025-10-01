@@ -4,8 +4,8 @@
   [id]="imageId ?? 'ws_logo_' + workspaceName"
   [class]="'border-round-sm ' + (imageStyleClass ?? '')"
   [ocxSrc]="url"
+  (error)="onImageLoadError(url)"
+  (load)="onImageLoadSuccess()"
   [alt]="'Logo Workspace ' + workspaceName"
   [aria-label]="'Logo Workspace ' + workspaceName"
-  (error)="onImageLoadError(url)"
-  (load)="onImageLoad()"
 />
