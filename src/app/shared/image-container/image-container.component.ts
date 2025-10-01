@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges } from '@angular/core'
+import { Component, EventEmitter, Input, Output } from '@angular/core'
 import { Observable, map } from 'rxjs'
 
 import { AppStateService } from '@onecx/angular-integration-interface'
@@ -18,7 +18,7 @@ import { Utils } from 'src/app/shared/utils'
   templateUrl: './image-container.component.html'
 })
 export class ImageContainerComponent {
-  @Input() public id = 'image-container'
+  @Input() public id = 'ws_image_container'
   @Input() public title: string | undefined
   @Input() public small = false
   @Input() public imageUrl: string | undefined
@@ -34,12 +34,10 @@ export class ImageContainerComponent {
     product: environment.DEFAULT_PRODUCT_PATH
   }
 
-  prepareUrlPath = Utils.prepareUrlPath
-
   constructor(appState: AppStateService) {
     this.defaultImageUrl$ = appState.currentMfe$.pipe(
       map((mfe) => {
-        return this.prepareUrlPath(mfe.remoteBaseUrl, this.defaultLogoPaths[this.defaultLogoType ?? 'workspace'])
+        return Utils.prepareUrlPath(mfe.remoteBaseUrl, this.defaultLogoPaths[this.defaultLogoType ?? 'workspace'])
       })
     )
   }
