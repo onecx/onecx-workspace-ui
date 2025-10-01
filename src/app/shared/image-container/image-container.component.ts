@@ -14,7 +14,6 @@ import { Utils } from 'src/app/shared/utils'
  */
 @Component({
   selector: 'app-image-container',
-  styleUrls: ['./image-container.component.scss'],
   templateUrl: './image-container.component.html'
 })
 export class ImageContainerComponent {

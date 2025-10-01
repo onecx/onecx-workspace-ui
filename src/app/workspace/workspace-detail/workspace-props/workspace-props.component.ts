@@ -209,7 +209,8 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   }
 
   private saveImage(name: string, files: FileList, refType: RefType) {
-    this.imageUrl[refType] = undefined // reset - important to trigger the change in UI
+    this.imageUrl[refType] = undefined // reset - important to trigger the change in UI (props)
+    if (refType === RefType.Logo) this.currentLogoUrl.emit(undefined) // trigger the change in UI (header)
     // prepare request
     const mType = this.mapMimeType(files[0].type)
     const data = mType === MimeType.Svgxml ? files[0] : new Blob([files[0]], { type: files[0].type })
@@ -232,10 +233,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     } else {
       this.msgService.success({ summaryKey: 'IMAGE.UPLOAD.OK' })
       this.imageUrl[refType] = Utils.bffImageUrl(this.imageApi.configuration.basePath, name, refType)
-      // reset URL field
       if (refType === RefType.Logo) this.currentLogoUrl.emit(this.imageUrl[refType])
-      if (refType === RefType.Logo) this.formGroup.controls['logoUrl'].setValue(null)
-      if (refType === RefType.LogoSmall) this.formGroup.controls['smallLogoUrl'].setValue(null)
     }
   }
 
