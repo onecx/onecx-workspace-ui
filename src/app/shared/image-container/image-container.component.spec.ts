@@ -53,39 +53,23 @@ describe('ImageContainerComponent', () => {
     })
   })
 
-  describe('ngOnChanges', () => {
-    it('should not modify imageUrl if it starts with http/https', () => {
-      const testUrl = 'http://path/to/image.jpg'
-      component.imageUrl = testUrl
-      component.ngOnChanges({
-        imageUrl: {
-          currentValue: testUrl,
-          previousValue: null,
-          firstChange: true,
-          isFirstChange: () => true
-        }
-      })
+  describe('loading results', () => {
+    it('should emit an error if image could not be loaded', () => {
+      spyOn(component.imageLoadResult, 'emit')
 
-      expect(component.imageUrl).toBe(testUrl)
+      component.imageUrl = '/url'
+      component.onImageLoadError()
+
+      expect(component.imageLoadResult.emit).toHaveBeenCalledWith(false)
     })
 
-    it('should set defaultLogoUrl if component imageUrl is undefined', () => {
-      component.ngOnChanges({
-        imageUrl: {
-          currentValue: '',
-          previousValue: null,
-          firstChange: true,
-          isFirstChange: () => true
-        }
-      })
+    it('should emit a success if image could be loaded', () => {
+      spyOn(component.imageLoadResult, 'emit')
 
-      expect(component.displayDefaultLogo).toBeTrue
+      component.imageUrl = '/url'
+      component.onImageLoadSuccess()
+
+      expect(component.imageLoadResult.emit).toHaveBeenCalledWith(true)
     })
-  })
-
-  it('onImageError should set displayDefaultLogo to true', () => {
-    component.onImageError()
-
-    expect(component.displayDefaultLogo).toBeTrue()
   })
 })

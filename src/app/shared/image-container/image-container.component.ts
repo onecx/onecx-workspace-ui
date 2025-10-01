@@ -17,18 +17,18 @@ import { Utils } from 'src/app/shared/utils'
   styleUrls: ['./image-container.component.scss'],
   templateUrl: './image-container.component.html'
 })
-export class ImageContainerComponent implements OnChanges {
+export class ImageContainerComponent {
   @Input() public id = 'image-container'
   @Input() public title: string | undefined
   @Input() public small = false
   @Input() public imageUrl: string | undefined
   @Input() public styleClass: string | undefined
   @Input() public defaultLogoType: 'workspace' | 'product' | undefined
-  @Output() public imageLoadError = new EventEmitter<boolean>() // inform caller
+  @Output() public imageLoadResult = new EventEmitter<boolean>() // inform caller
 
   public displayImageUrl: string | undefined
   public defaultImageUrl$: Observable<string>
-  public displayDefaultLogo = false
+  public displayDefault = false
   private readonly defaultLogoPaths = {
     workspace: environment.DEFAULT_LOGO_PATH,
     product: environment.DEFAULT_PRODUCT_PATH
@@ -44,19 +44,14 @@ export class ImageContainerComponent implements OnChanges {
     )
   }
 
-  public onImageError(): void {
-    this.displayDefaultLogo = true
-    this.displayImageUrl = undefined
-    this.imageLoadError.emit(true)
+  /**
+   * Image loading Results
+   */
+  public onImageLoadSuccess(): void {
+    if (this.imageUrl !== undefined) this.imageLoadResult.emit(true)
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['imageUrl']) {
-      this.displayDefaultLogo = false
-      if (this.imageUrl) {
-        this.displayImageUrl = this.imageUrl
-        this.imageLoadError.emit(false)
-      } else this.displayDefaultLogo = true
-    }
+  public onImageLoadError(): void {
+    if (this.imageUrl !== undefined) this.imageLoadResult.emit(false)
   }
 }

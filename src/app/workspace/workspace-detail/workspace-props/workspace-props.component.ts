@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, OnChanges, Output } from '@angular/core'
+import { Component, EventEmitter, Input, OnInit, OnChanges, Output, SimpleChanges } from '@angular/core'
 import { Location } from '@angular/common'
 import { Router } from '@angular/router'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
@@ -108,10 +108,11 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     })
   }
 
-  public ngOnChanges(): void {
+  public ngOnChanges(changes: SimpleChanges): void {
     this.formGroup.disable()
+
     if (this.workspace) {
-      this.fillForm()
+      if (changes['workspace']) this.fillForm()
       if (this.editMode) this.formGroup.enable()
       // if a home page value exists then fill it into drop down list for displaying
       if (this.workspace.homePage) this.productPaths$ = of([this.workspace.homePage])
@@ -125,15 +126,8 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       this.formGroup.controls[element].setValue((this.workspace as any)[element])
     })
     // initialize image variables: used URLs and if logo URLs exist
-    this.imageUrl[RefType.Logo] = this.getLogoUrl(this.workspace, RefType.Logo)
-    this.imageUrl[RefType.LogoSmall] = this.getLogoUrl(this.workspace, RefType.LogoSmall)
-    this.currentLogoUrl.emit(this.imageUrl[RefType.Logo]) // inform page header
-  }
-
-  // Image component informs about non existing stored Workspace logo
-  public onImageLoadingError(error: any, refType: RefType) {
-    this.imageUrl[refType] = error ? undefined : this.getLogoUrl(this.workspace, refType)
-    if (refType === RefType.Logo) this.currentLogoUrl.emit(this.imageUrl[refType])
+    this.setImageUrl(this.workspace, RefType.Logo)
+    this.setImageUrl(this.workspace, RefType.LogoSmall)
   }
 
   // called by workspace detail dialog: returns form values to workspace
@@ -156,17 +150,19 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     return changes
   }
 
-  public onRemoveImage(refType: RefType) {
-    // On EDIT mode: if URL exists then remove
-    if (this.editMode && refType === RefType.Logo && this.formGroup.get('logoUrl')?.value) {
+  public onRemoveImageUrl(refType: RefType) {
+    if (refType === RefType.Logo && this.formGroup.get('logoUrl')?.value) {
       this.formGroup.get('logoUrl')?.setValue(null)
-      this.imageUrlExists[refType] = false
-      this.imageUrl[refType] = Utils.bffImageUrl(this.imageApi.configuration.basePath, this.workspace?.name, refType)
-    } else if (this.editMode && refType === RefType.LogoSmall && this.formGroup.get('smallLogoUrl')?.value) {
+    }
+    if (refType === RefType.LogoSmall && this.formGroup.get('smallLogoUrl')?.value) {
       this.formGroup.get('smallLogoUrl')?.setValue(null)
-      this.imageUrlExists[refType] = false
-      this.imageUrl[refType] = Utils.bffImageUrl(this.imageApi.configuration.basePath, this.workspace?.name, refType)
-    } else if (this.workspace?.name)
+    }
+    this.imageUrlExists[refType] = false
+    this.imageUrl[refType] = Utils.bffImageUrl(this.imageApi.configuration.basePath, this.workspace?.name, refType)
+  }
+
+  public onRemoveImage(refType: RefType) {
+    if (this.workspace?.name && this.imageUrl[refType] && !this.imageUrlExists[refType])
       // On VIEW mode: manage image is enabled
       this.imageApi.deleteImage({ refId: this.workspace.name, refType: refType }).subscribe({
         next: () => {
@@ -174,9 +170,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
           if (!this.imageUrlExists[refType]) this.imageUrl[refType] = undefined
           if (refType === RefType.Logo) this.currentLogoUrl.emit(this.imageUrl[refType])
         },
-        error: (err) => {
-          console.error('deleteImage', err)
-        }
+        error: (err) => console.error('deleteImage', err)
       })
   }
 
@@ -216,7 +210,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
 
   private saveImage(name: string, files: FileList, refType: RefType) {
     this.imageUrl[refType] = undefined // reset - important to trigger the change in UI
-    if (refType === RefType.Logo) this.currentLogoUrl.emit(this.imageUrl[refType])
     // prepare request
     const mType = this.mapMimeType(files[0].type)
     const data = mType === MimeType.Svgxml ? files[0] : new Blob([files[0]], { type: files[0].type })
@@ -246,26 +239,37 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     }
   }
 
-  public getLogoUrl(workspace: Workspace | undefined, refType: RefType): string | undefined {
-    if (!workspace) return undefined
-    this.imageUrlExists[refType] = false
-    if (refType === RefType.Logo && workspace.logoUrl && workspace.logoUrl != '') {
-      this.imageUrlExists[refType] = true
-      return workspace.logoUrl
-    }
-    if (refType === RefType.LogoSmall && workspace.smallLogoUrl && workspace.smallLogoUrl != '') {
-      this.imageUrlExists[refType] = true
-      return workspace.smallLogoUrl
-    }
-    return Utils.bffImageUrl(this.imageApi.configuration.basePath, workspace.name, refType)
+  // Image component informs about loading result for image
+  public onImageLoadResult(loaded: any, refType: RefType) {
+    const uploadUrl = Utils.bffImageUrl(this.imageApi.configuration.basePath, this.workspace?.name, refType)
+    // if not loaded and external URL was used then try uploaded image
+    if (!loaded) this.imageUrl[refType] = this.imageUrl[refType] !== uploadUrl ? uploadUrl : undefined
+    if (refType === RefType.Logo) this.currentLogoUrl.emit(this.imageUrl[refType])
   }
 
-  // changes on external log URL field: user enters text (change) or paste/removed something
+  // initially prepare image URL based on workspace
+  public setImageUrl(workspace: Workspace | undefined, refType: RefType): void {
+    if (!workspace) return undefined
+
+    this.imageUrlExists[refType] = false
+    if (refType === RefType.Logo && workspace.logoUrl && workspace.logoUrl !== '') {
+      this.imageUrl[refType] = workspace.logoUrl
+      this.imageUrlExists[refType] = true
+    } else if (refType === RefType.LogoSmall && workspace.smallLogoUrl && workspace.smallLogoUrl !== '') {
+      this.imageUrl[refType] = workspace.smallLogoUrl
+      this.imageUrlExists[refType] = true
+    } else this.imageUrl[refType] = Utils.bffImageUrl(this.imageApi.configuration.basePath, workspace.name, refType)
+  }
+
+  // changes on external image URL field: user enters text (change) or paste/removed something
   public onInputChange(event: Event, refType: RefType): void {
-    this.imageUrl[refType] = (event.target as HTMLInputElement).value
-    if (!this.imageUrl[refType] || this.imageUrl[refType] === '')
-      this.imageUrl[refType] = Utils.bffImageUrl(this.imageApi.configuration.basePath, this.workspace?.name, refType)
-    if (refType === RefType.Logo) this.currentLogoUrl.emit(this.imageUrl[refType])
+    const val = (event.target as HTMLInputElement).value
+    if (val && val !== '') {
+      this.imageUrl[refType] = val
+      this.imageUrlExists[refType] = true
+    } else {
+      this.imageUrlExists[refType] = false
+    }
   }
 
   public prepareProductUrl(val: string): string | undefined {

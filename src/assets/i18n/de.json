@@ -453,7 +453,7 @@
         "FILTER.DISPLAY_ROLES": "Rollenspaltenfilter",
         "FILTER.DISPLAY_ROLES.TOOLTIP": "Filter für Rollenname zur Anzeige der Rollenspalten",
         "FILTER.LABEL": "Rollenfilter",
-        "FILTER.CLEAR": "Rollenfilter löschen",
+        "FILTER.CLEAR": "Rollenfilter entfernen",
         "FILTER.NAME": "Mit Klick Rollenname zum Filter hinzufügen/entfernen"
       },
       "ASSIGNMENT": {
@@ -628,6 +628,7 @@
       "LOGO_SMALL": "Logo in reduzierter Größe, z.b. für Verwendung im Slim Menü",
       "PLACEHOLDER": "Logo Platzhalter",
       "REMOVE": "Bild löschen",
+      "REMOVE.URL": "Eintrag entfernen",
       "UPLOAD": "Bild auswählen und hochladen",
       "URL": "Als Alternative zum Hochladen kann hier eine URL zu einem Bild angegeben werden."
     }

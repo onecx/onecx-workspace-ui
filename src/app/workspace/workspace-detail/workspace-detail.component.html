@@ -3,6 +3,8 @@
     [header]="workspace?.displayName ? limitText(workspace?.displayName, 70) : ''"
     [subheader]="'DIALOG.WORKSPACE.HEADER.DETAIL' | translate"
     [actions]="(actions$ | async) ?? []"
+    [figureImage]="currentLogoUrl"
+    [figureBackground]="!currentLogoUrl"
   >
   </ocx-page-header>
 

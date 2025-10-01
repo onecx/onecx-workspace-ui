@@ -628,6 +628,7 @@
       "LOGO_SMALL": "Logo - reduced size, e.g. for use in slim menu",
       "PLACEHOLDER": "Logo Placeholder",
       "REMOVE": "Remove Image",
+      "REMOVE.URL": "Clear",
       "UPLOAD": "Select and upload image",
       "URL": "As an alternative to uploading, a URL to an image can be specified here."
     }
