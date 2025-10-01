@@ -34,7 +34,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   @Input() workspace: Workspace | undefined
   @Input() editMode = true
   @Input() isLoading = false
-  @Output() currentLogoUrl = new EventEmitter<string>() // send logo url to detail header
+  @Output() headerImageUrl = new EventEmitter<string>() // send logo url to detail header
 
   // make it available in HTML
   public getLocation = getLocation
@@ -168,7 +168,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
         next: () => {
           // reset - important to trigger the change in UI
           if (!this.imageUrlExists[refType]) this.imageUrl[refType] = undefined
-          if (refType === RefType.Logo) this.currentLogoUrl.emit(this.imageUrl[refType])
+          if (refType === RefType.Logo) this.headerImageUrl.emit(this.imageUrl[refType])
         },
         error: (err) => console.error('deleteImage', err)
       })
@@ -210,7 +210,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
 
   private saveImage(name: string, files: FileList, refType: RefType) {
     this.imageUrl[refType] = undefined // reset - important to trigger the change in UI (props)
-    if (refType === RefType.Logo) this.currentLogoUrl.emit(undefined) // trigger the change in UI (header)
+    if (refType === RefType.Logo) this.headerImageUrl.emit(undefined) // trigger the change in UI (header)
     // prepare request
     const mType = this.mapMimeType(files[0].type)
     const data = mType === MimeType.Svgxml ? files[0] : new Blob([files[0]], { type: files[0].type })
@@ -233,7 +233,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     } else {
       this.msgService.success({ summaryKey: 'IMAGE.UPLOAD.OK' })
       this.imageUrl[refType] = Utils.bffImageUrl(this.imageApi.configuration.basePath, name, refType)
-      if (refType === RefType.Logo) this.currentLogoUrl.emit(this.imageUrl[refType])
+      if (refType === RefType.Logo) this.headerImageUrl.emit(this.imageUrl[refType])
     }
   }
 
@@ -245,7 +245,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       if (this.imageUrl[refType] === uploadUrl) this.imageUrl[refType] = undefined
       else this.imageUrl[refType] = uploadUrl
 
-    if (refType === RefType.Logo) this.currentLogoUrl.emit(this.imageUrl[refType])
+    if (refType === RefType.Logo) this.headerImageUrl.emit(this.imageUrl[refType])
   }
 
   // initially prepare image URL based on workspace
