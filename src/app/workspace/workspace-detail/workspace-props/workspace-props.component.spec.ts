@@ -488,8 +488,8 @@ describe('WorkspacePropsComponent', () => {
     })
 
     describe('onInputChange', () => {
-      it('should change logo URL on inputChange: valid value', fakeAsync(() => {
-        const url = 'newLogoUrl'
+      it('should edit a logo URL on inputChange: valid value', fakeAsync(() => {
+        const url = 'https://host.com/logo-url'
         const event = { target: { value: url } } as unknown as Event
 
         component.onInputChange(event, RefType.Logo)
@@ -499,7 +499,17 @@ describe('WorkspacePropsComponent', () => {
         expect(component.imageUrlExists[RefType.Logo]).toBeTrue()
       }))
 
-      it('should switch to upload URL if no URL was enetered', fakeAsync(() => {
+      it('should edit a logo URL on inputChange: invalid value', fakeAsync(() => {
+        const url = 'https://host'
+        const event = { target: { value: url } } as unknown as Event
+
+        component.onInputChange(event, RefType.Logo)
+        tick(1000)
+
+        expect(component.imageUrl[RefType.Logo]).toBeUndefined()
+      }))
+
+      it('should switch to upload URL if no URL was entered', fakeAsync(() => {
         const url = ''
         const event = { target: { value: url } } as unknown as Event
         const currentUrl = component.imageUrl[RefType.Logo]

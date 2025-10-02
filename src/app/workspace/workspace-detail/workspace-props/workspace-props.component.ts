@@ -121,7 +121,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     }
   }
 
-  public fillForm(): void {
+  private fillForm(): void {
     Object.keys(this.formGroup.controls).forEach((element) => {
       this.formGroup.controls[element].setValue((this.workspace as any)[element])
     })
@@ -130,50 +130,55 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     this.setImageUrl(this.workspace, RefType.LogoSmall)
   }
 
-  // called by workspace detail dialog: returns form values to workspace
-  public onSave(): void {
-    if (!this.workspace) return
-    if (this.formGroup.valid) Object.assign(this.workspace, this.getWorkspaceChangesFromForm())
-    else this.msgService.error({ summaryKey: 'VALIDATION.FORM_INVALID' })
+  /***************************************************************************
+   * IMAGE => LOGO, LOGO SMALL, FAVICON => uploaded images and/or URL
+   */
+
+  // LOAD AND DISPLAYING
+  // Image component informs about loading result for image
+  public onImageLoadResult(loaded: any, refType: RefType) {
+    const uploadUrl = Utils.bffImageUrl(this.imageApi.configuration.basePath, this.workspace?.name, refType)
+    // Loading failed
+    if (!loaded) {
+      // if uploaded image was requested then loading is not possible
+      if (this.imageUrl[refType] === uploadUrl) this.imageUrl[refType] = undefined
+      // if external URL was requested then request the uploaded image => in VIEW mode only!
+      else if (this.editMode) this.imageUrl[refType] = undefined
+      else this.imageUrl[refType] = uploadUrl
+    }
+    if (refType === RefType.Logo) this.headerImageUrl.emit(this.imageUrl[refType])
   }
 
-  //return the values that are different in form than in PortalDTO
-  public getWorkspaceChangesFromForm(): any {
-    const changes: any = {}
-    Object.keys(this.formGroup.controls).forEach((key) => {
-      if (this.formGroup.value[key] !== undefined) {
-        if (this.formGroup.value[key] !== (this.workspace as any)[key]) {
-          changes[key] = this.formGroup.value[key]
-        }
-      }
-    })
-    return changes
-  }
+  // initially prepare image URL based on workspace
+  public setImageUrl(workspace: Workspace | undefined, refType: RefType): void {
+    if (!workspace) return undefined
 
-  public onRemoveImageUrl(refType: RefType) {
-    if (refType === RefType.Logo && this.formGroup.get('logoUrl')?.value) {
-      this.formGroup.get('logoUrl')?.setValue(null)
-    }
-    if (refType === RefType.LogoSmall && this.formGroup.get('smallLogoUrl')?.value) {
-      this.formGroup.get('smallLogoUrl')?.setValue(null)
-    }
     this.imageUrlExists[refType] = false
-    this.imageUrl[refType] = Utils.bffImageUrl(this.imageApi.configuration.basePath, this.workspace?.name, refType)
+    if (refType === RefType.Logo && workspace.logoUrl && workspace.logoUrl !== '') {
+      this.imageUrl[refType] = workspace.logoUrl
+      this.imageUrlExists[refType] = true
+    } else if (refType === RefType.LogoSmall && workspace.smallLogoUrl && workspace.smallLogoUrl !== '') {
+      this.imageUrl[refType] = workspace.smallLogoUrl
+      this.imageUrlExists[refType] = true
+    } else this.imageUrl[refType] = Utils.bffImageUrl(this.imageApi.configuration.basePath, workspace.name, refType)
   }
 
-  public onRemoveImage(refType: RefType) {
-    if (this.workspace?.name && this.imageUrl[refType] && !this.imageUrlExists[refType])
-      // On VIEW mode: manage image is enabled
-      this.imageApi.deleteImage({ refId: this.workspace.name, refType: refType }).subscribe({
-        next: () => {
-          // reset - important to trigger the change in UI
-          if (!this.imageUrlExists[refType]) this.imageUrl[refType] = undefined
-          if (refType === RefType.Logo) this.headerImageUrl.emit(this.imageUrl[refType])
-        },
-        error: (err) => console.error('deleteImage', err)
-      })
+  // ENTER URL
+  // changes on external image URL field: user enters text (change) or paste/removed something
+  public onInputChange(event: Event, refType: RefType): void {
+    const val = (event.target as HTMLInputElement).value
+    if (val && val !== '') {
+      // check minimum of URL pattern
+      if (/^(http|https):\/\/.{6,245}$/.exec(val)) {
+        this.imageUrl[refType] = val
+        this.imageUrlExists[refType] = true
+      } else this.imageUrl[refType] = undefined
+    } else {
+      this.imageUrlExists[refType] = false
+    }
   }
 
+  // UPLOAD
   public onFileUpload(ev: Event, refType: RefType): void {
     if (ev.target && (ev.target as HTMLInputElement).files) {
       const files = (ev.target as HTMLInputElement).files
@@ -208,6 +213,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     }
   }
 
+  // SAVE image
   private saveImage(name: string, files: FileList, refType: RefType) {
     this.imageUrl[refType] = undefined // reset - important to trigger the change in UI (props)
     if (refType === RefType.Logo) this.headerImageUrl.emit(undefined) // trigger the change in UI (header)
@@ -237,44 +243,58 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     }
   }
 
-  // Image component informs about loading result for image
-  public onImageLoadResult(loaded: any, refType: RefType) {
-    const uploadUrl = Utils.bffImageUrl(this.imageApi.configuration.basePath, this.workspace?.name, refType)
-    // Loading failed
-    if (!loaded) {
-      // if uploaded image was requested then loading is not possible
-      if (this.imageUrl[refType] === uploadUrl) this.imageUrl[refType] = undefined
-      // if external URL was requested then request the uploaded image => in VIEW mode only!
-      else if (this.editMode) this.imageUrl[refType] = undefined
-      else this.imageUrl[refType] = uploadUrl
+  // REMOVING
+  public onRemoveImageUrl(refType: RefType) {
+    if (refType === RefType.Logo && this.formGroup.get('logoUrl')?.value) {
+      this.formGroup.get('logoUrl')?.setValue(null)
     }
-    if (refType === RefType.Logo) this.headerImageUrl.emit(this.imageUrl[refType])
-  }
-
-  // initially prepare image URL based on workspace
-  public setImageUrl(workspace: Workspace | undefined, refType: RefType): void {
-    if (!workspace) return undefined
-
+    if (refType === RefType.LogoSmall && this.formGroup.get('smallLogoUrl')?.value) {
+      this.formGroup.get('smallLogoUrl')?.setValue(null)
+    }
     this.imageUrlExists[refType] = false
-    if (refType === RefType.Logo && workspace.logoUrl && workspace.logoUrl !== '') {
-      this.imageUrl[refType] = workspace.logoUrl
-      this.imageUrlExists[refType] = true
-    } else if (refType === RefType.LogoSmall && workspace.smallLogoUrl && workspace.smallLogoUrl !== '') {
-      this.imageUrl[refType] = workspace.smallLogoUrl
-      this.imageUrlExists[refType] = true
-    } else this.imageUrl[refType] = Utils.bffImageUrl(this.imageApi.configuration.basePath, workspace.name, refType)
+    this.imageUrl[refType] = Utils.bffImageUrl(this.imageApi.configuration.basePath, this.workspace?.name, refType)
   }
 
-  // changes on external image URL field: user enters text (change) or paste/removed something
-  public onInputChange(event: Event, refType: RefType): void {
-    const val = (event.target as HTMLInputElement).value
-    if (val && val !== '') {
-      this.imageUrl[refType] = val
-      this.imageUrlExists[refType] = true
-    } else {
-      this.imageUrlExists[refType] = false
-    }
+  public onRemoveImage(refType: RefType) {
+    if (this.workspace?.name && this.imageUrl[refType] && !this.imageUrlExists[refType])
+      // On VIEW mode: manage image is enabled
+      this.imageApi.deleteImage({ refId: this.workspace.name, refType: refType }).subscribe({
+        next: () => {
+          // reset - important to trigger the change in UI
+          if (!this.imageUrlExists[refType]) this.imageUrl[refType] = undefined
+          if (refType === RefType.Logo) this.headerImageUrl.emit(this.imageUrl[refType])
+        },
+        error: (err) => console.error('deleteImage', err)
+      })
   }
+
+  /***************************************************************************
+   * WORKSPACE
+   */
+
+  // called by workspace detail dialog: returns form values to workspace
+  public onSave(): void {
+    if (!this.workspace) return
+    if (this.formGroup.valid) Object.assign(this.workspace, this.getWorkspaceChangesFromForm())
+    else this.msgService.error({ summaryKey: 'VALIDATION.FORM_INVALID' })
+  }
+
+  //return the values that are different in form than in PortalDTO
+  public getWorkspaceChangesFromForm(): any {
+    const changes: any = {}
+    Object.keys(this.formGroup.controls).forEach((key) => {
+      if (this.formGroup.value[key] !== undefined) {
+        if (this.formGroup.value[key] !== (this.workspace as any)[key]) {
+          changes[key] = this.formGroup.value[key]
+        }
+      }
+    })
+    return changes
+  }
+
+  /***************************************************************************
+   * VARIOUS
+   */
 
   public prepareProductUrl(val: string): string | undefined {
     if (this.workspace?.baseUrl) {

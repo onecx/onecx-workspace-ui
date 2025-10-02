@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core'
+import { Component, EventEmitter, Input, Output } from '@angular/core'
 import { Observable, map } from 'rxjs'
 
 import { AppStateService } from '@onecx/angular-integration-interface'
@@ -16,7 +16,7 @@ import { Utils } from 'src/app/shared/utils'
   selector: 'app-image-container',
   templateUrl: './image-container.component.html'
 })
-export class ImageContainerComponent implements OnChanges {
+export class ImageContainerComponent {
   @Input() public id = 'ws_image_container'
   @Input() public title: string | undefined
   @Input() public small = false
@@ -39,18 +39,6 @@ export class ImageContainerComponent implements OnChanges {
         return Utils.prepareUrlPath(mfe.remoteBaseUrl, this.defaultLogoPaths[this.defaultLogoType ?? 'workspace'])
       })
     )
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    console.log('ngOnChanges', this.imageUrl)
-    /*
-    if (changes['imageUrl'] && this.imageUrl) {
-      // check minimum of URL pattern
-      if (!/^(http|https):\/\/.{6,245}$/.exec(this.imageUrl)) {
-        this.imageUrl = undefined
-        this.onImageLoadError()
-      }
-    }*/
   }
 
   /**
