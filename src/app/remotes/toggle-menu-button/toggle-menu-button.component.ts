@@ -17,7 +17,7 @@ import { MenuService } from 'src/app/shared/services/menu.service'
 import { TooltipModule } from 'primeng/tooltip'
 import { RippleModule } from 'primeng/ripple'
 import { createTranslateLoader, provideTranslationPathFromMeta } from '@onecx/angular-utils'
-import { StaticMenuVisiblePublisher } from '@onecx/integration-interface'
+import { StaticMenuVisiblePublisher } from 'src/app/shared/topics/static-menu-visible.topic'
 
 const MENU_MODE = 'static'
 
@@ -46,8 +46,18 @@ const MENU_MODE = 'static'
 @UntilDestroy()
 export class OneCXToggleMenuButtonComponent implements ocxRemoteWebcomponent {
   private menuService = inject(MenuService)
-  public isStaticMenuMode$: BehaviorSubject<boolean> = new BehaviorSubject(false)
+  public isStaticMenuActive$ = this.menuService.isActive(MENU_MODE)
   public isStaticMenuVisible$: BehaviorSubject<boolean> = new BehaviorSubject(false)
+
+  public icon$ = this.isStaticMenuVisible$.pipe(
+    map((isVisible) => {
+      if (document.documentElement.dir === 'rtl') {
+        return isVisible ? 'pi-chevron-right' : 'pi-chevron-left'
+      }
+
+      return isVisible ? 'pi-chevron-left' : 'pi-chevron-right'
+    })
+  )
 
   constructor(
     @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
@@ -55,12 +65,6 @@ export class OneCXToggleMenuButtonComponent implements ocxRemoteWebcomponent {
     private readonly translateService: TranslateService
   ) {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
-    this.userService.profile$
-      .pipe(
-        map((p) => p?.accountSettings?.layoutAndThemeSettings?.menuMode?.toLowerCase() ?? 'static'),
-        map((mode) => mode === MENU_MODE)
-      )
-      .subscribe(this.isStaticMenuMode$)
     this.menuService.isVisible(MENU_MODE).subscribe(this.isStaticMenuVisible$)
   }
 

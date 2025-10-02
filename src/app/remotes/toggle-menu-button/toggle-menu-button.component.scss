@@ -12,10 +12,6 @@
     transition: transform var(--p-transition-duration);
   }
 
-  .toggle-button-direction {
-    transform: rotate(180deg);
-  }
-
   & .hidden {
     display: none;
   }
