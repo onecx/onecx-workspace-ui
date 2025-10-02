@@ -1,4 +1,4 @@
-<ng-container *ngIf="isStaticMenuMode$ | async">
+<ng-container *ngIf="isStaticMenuActive$ | async">
   <button
     id="ocx_vertical_menu_action_toggle"
     class="onecx-toggle-menu-button border-none"
@@ -9,11 +9,6 @@
     tooltipPosition="top"
     tooltipEvent="hover"
   >
-    <span
-      id="ocx_vertical_menu_action_toggle_icon"
-      class="pi"
-      [ngClass]="'pi-chevron-' + ((isStaticMenuVisible$ | async) ? 'left' : 'right')"
-      aria-hidden="true"
-    ></span>
+    <span id="ocx_vertical_menu_action_toggle_icon" class="pi" [ngClass]="icon$ | async" aria-hidden="true"></span>
   </button>
 </ng-container>
