@@ -1,4 +1,4 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core'
+import { NO_ERRORS_SCHEMA, SimpleChanges } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of } from 'rxjs'
@@ -40,16 +40,55 @@ describe('ImageContainerComponent', () => {
     fixture.detectChanges()
   })
 
-  it('should create', () => {
-    expect(component).toBeTruthy()
+  describe('construction', () => {
+    it('should create', () => {
+      expect(component).toBeTruthy()
+    })
+
+    it('should set defaultImageUrl$ to the correct value', (done) => {
+      const expectedUrl = '/base/assets/images/workspace.png'
+
+      component.defaultImageUrl$.subscribe((url) => {
+        expect(url).toBe(expectedUrl)
+        done()
+      })
+    })
   })
 
-  it('should set defaultImageUrl$ to the correct value', (done) => {
-    const expectedUrl = '/base/assets/images/workspace.png'
+  describe('on changes', () => {
+    it('should use the given image URL if it is correct', () => {
+      component.imageUrl = 'https://domain.host.com' // a syntanctically valid URL
+      const changes: SimpleChanges = {
+        imageUrl: {
+          currentValue: component.imageUrl,
+          previousValue: null,
+          firstChange: true,
+          isFirstChange: () => true
+        }
+      }
+      spyOn(component.imageLoadResult, 'emit')
 
-    component.defaultImageUrl$.subscribe((url) => {
-      expect(url).toBe(expectedUrl)
-      done()
+      component.ngOnChanges(changes)
+
+      expect(component.imageLoadResult.emit).not.toHaveBeenCalled()
+    })
+
+    it('should use the given image URL if it is correct', () => {
+      component.imageUrl = 'https://abc' // a syntanctically incorrect URL
+      const changes: SimpleChanges = {
+        imageUrl: {
+          currentValue: component.imageUrl,
+          previousValue: null,
+          firstChange: true,
+          isFirstChange: () => true
+        }
+      }
+      spyOn(component, 'onImageLoadError')
+
+      component.ngOnChanges(changes)
+
+      expect(component.imageUrl).toBeUndefined()
+      expect(component.onImageLoadError).toHaveBeenCalled()
     })
   })
 
