@@ -16,7 +16,8 @@ import { RefType } from 'src/app/shared/generated'
 const workspace1: Partial<Workspace> = {
   id: 'w1',
   workspaceName: 'workspace1',
-  displayName: 'Workspace 1'
+  displayName: 'Workspace 1',
+  logoUrl: 'https://host:port/site/logo.png'
 }
 
 describe('OneCXCurrentWorkspaceLogoComponent', () => {
@@ -58,7 +59,10 @@ describe('OneCXCurrentWorkspaceLogoComponent', () => {
 
     baseUrlSubject.next('base_url_mock')
     mockAppStateService = TestBed.inject(AppStateServiceMock)
-    mockAppStateService.currentWorkspace$.publish({ workspaceName: workspace1.workspaceName } as Workspace)
+    mockAppStateService.currentWorkspace$.publish({
+      workspaceName: workspace1.workspaceName,
+      logoUrl: workspace1.logoUrl
+    } as Workspace)
   })
 
   describe('initialize', () => {
@@ -99,15 +103,15 @@ describe('OneCXCurrentWorkspaceLogoComponent', () => {
     it('should load - initially', (done) => {
       const { component } = setUp()
       component.logEnabled = true
-      component.logPrefix = 'get image url'
+      component.logPrefix = 'prefix'
       component.workspaceName = workspace1.workspaceName
 
-      component.onImageLoad()
+      component.onImageLoadSuccess()
 
       component.imageUrl$?.subscribe({
         next: (data) => {
           if (data) {
-            expect(data).toBe('http://onecx-workspace-bff:8080/images/' + workspace1.workspaceName + '/logo')
+            expect(data).toBe(workspace1.logoUrl!)
           }
           done()
         },
@@ -115,8 +119,8 @@ describe('OneCXCurrentWorkspaceLogoComponent', () => {
       })
     })
 
-    describe('provide logo - on error', () => {
-      it('should load - failed - used: url', () => {
+    describe('on load error', () => {
+      it('should failed - use image url', () => {
         const { component } = setUp()
         component.logEnabled = true // log without prefix !
         component.workspaceName = workspace1.workspaceName
@@ -125,10 +129,18 @@ describe('OneCXCurrentWorkspaceLogoComponent', () => {
         component.onImageLoadError(component.imageUrl)
       })
 
-      it('should use image - failed - use default', () => {
+      it('should failed - use external URL', () => {
         const { component } = setUp()
         component.logEnabled = false
-        component.logPrefix = 'default'
+        component.workspaceName = workspace1.workspaceName
+        component.imageUrl = undefined
+
+        component.onImageLoadError(component.logoUrl['logo']!)
+      })
+
+      it('should failed - use default', () => {
+        const { component } = setUp()
+        component.logEnabled = false
         component.workspaceName = workspace1.workspaceName
 
         component.onImageLoadError('http://onecx-workspace-bff:8080/images/' + workspace1.workspaceName + '/logo')
@@ -148,7 +160,19 @@ describe('OneCXCurrentWorkspaceLogoComponent', () => {
         expect(url).toBe(component.imageUrl)
       })
 
-      it('should get url - use default image url', () => {
+      it('should get image url without input URL - use the external URL', () => {
+        const { component } = setUp()
+        component.logEnabled = false
+        component.logPrefix = 'ext-url'
+        component.workspaceName = workspace1.workspaceName
+        component.imageUrl = undefined
+
+        const url = component.getImageUrl(workspace1.workspaceName, 'url', RefType.Logo)
+
+        expect(url).toBe(workspace1.logoUrl)
+      })
+
+      it('should get image url - use default image url', () => {
         const { component } = setUp()
         component.logEnabled = false
         component.logPrefix = 'default url'

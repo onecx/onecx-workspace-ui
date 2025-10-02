@@ -208,7 +208,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
   }
 
   // called by props component (this is the master of this url)
-  public onUpdateLogoUrl(url: string) {
+  public onUpdateHeaderImageUrl(url: string) {
     this.currentLogoUrl = url
   }
 

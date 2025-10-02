@@ -453,7 +453,7 @@
         "FILTER.DISPLAY_ROLES": "Rollenspaltenfilter",
         "FILTER.DISPLAY_ROLES.TOOLTIP": "Filter für Rollenname zur Anzeige der Rollenspalten",
         "FILTER.LABEL": "Rollenfilter",
-        "FILTER.CLEAR": "Rollenfilter löschen",
+        "FILTER.CLEAR": "Rollenfilter entfernen",
         "FILTER.NAME": "Mit Klick Rollenname zum Filter hinzufügen/entfernen"
       },
       "ASSIGNMENT": {
@@ -612,18 +612,23 @@
     "LOGO": "Logo",
     "LOGO_SMALL": "Logo (klein)",
     "LOGO_URL": "Externe Logo URL",
-    "UPLOAD_FAILED": "Die Datei wurde nicht erfolgreich hochgeladen",
-    "UPLOAD_SUCCESS": "Die Datei wurde erfolgreich hochgeladen",
-    "CONSTRAINT_FILE_MISSING": "Keine Datei ausgewählt.",
-    "CONSTRAINT_FILE_TYPE": "Die folgenden Bildformate werden akzeptiert: jpg, jpeg, png, svg",
-    "CONSTRAINT_FAILED": "Bedingung zum Hochladen nicht erfüllt:",
-    "CONSTRAINT_NAME": "Bitte füge einen Namen hinzu bevor das Bild geladen wird.",
-    "CONSTRAINT_SIZE": "Die Größe der Bilddatei übersteigt die maximale Lönge von 100.000 Bytes.",
+    "UPLOAD": {
+      "OK": "Die Datei wurde erfolgreich hochgeladen",
+      "NOK": "Die Datei wurde nicht erfolgreich hochgeladen"
+    },
+    "CONSTRAINT": {
+      "FILE_MISSING": "Keine Datei ausgewählt.",
+      "FILE_TYPE": "Die folgenden Bildformate werden akzeptiert: jpg, jpeg, png, svg",
+      "FAILED": "Bedingung zum Hochladen nicht erfüllt:",
+      "NAME": "Bitte füge einen Namen hinzu bevor das Bild geladen wird.",
+      "SIZE": "Die Größe der Bilddatei übersteigt die maximale Lönge von 100.000 Bytes."
+    },
     "TOOLTIPS": {
       "LOGO": "Logo in Standardgröße",
       "LOGO_SMALL": "Logo in reduzierter Größe, z.b. für Verwendung im Slim Menü",
       "PLACEHOLDER": "Logo Platzhalter",
       "REMOVE": "Bild löschen",
+      "REMOVE.URL": "Eintrag entfernen",
       "UPLOAD": "Bild auswählen und hochladen",
       "URL": "Als Alternative zum Hochladen kann hier eine URL zu einem Bild angegeben werden."
     }

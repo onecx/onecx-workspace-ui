@@ -612,18 +612,23 @@
     "LOGO": "Logo",
     "LOGO_SMALL": "Logo (small)",
     "LOGO_URL": "External Logo URL",
-    "UPLOAD_FAILED": " The file was not uploaded successfully",
-    "UPLOAD_SUCCESS": "The file was uploaded successfully",
-    "CONSTRAINT_FILE_MISSING": "No file selected.",
-    "CONSTRAINT_FILE_TYPE": "The following image formats are accepted: jpg, jpeg, png, svg",
-    "CONSTRAINT_FAILED": "File upload condition check failed:",
-    "CONSTRAINT_NAME": "Please add a Workspace name before uploading a file.",
-    "CONSTRAINT_SIZE": "The image file size exceeds the maximum length of 100,000 bytes.",
+    "UPLOAD": {
+      "OK": "The file was uploaded successfully",
+      "NOK": "The file was not uploaded successfully."
+    },
+    "CONSTRAINT": {
+      "FILE_MISSING": "No file selected.",
+      "FILE_TYPE": "The following image formats are accepted: jpg, jpeg, png, svg",
+      "FAILED": "File upload condition check failed:",
+      "NAME": "Please add a Workspace name before uploading a file.",
+      "SIZE": "The image file size exceeds the maximum length of 100,000 bytes."
+    },
     "TOOLTIPS": {
       "LOGO": "Logo - standard size",
       "LOGO_SMALL": "Logo - reduced size, e.g. for use in slim menu",
       "PLACEHOLDER": "Logo Placeholder",
       "REMOVE": "Remove Image",
+      "REMOVE.URL": "Clear",
       "UPLOAD": "Select and upload image",
       "URL": "As an alternative to uploading, a URL to an image can be specified here."
     }
