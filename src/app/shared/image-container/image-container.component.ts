@@ -42,13 +42,15 @@ export class ImageContainerComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    console.log('ngOnChanges', this.imageUrl)
+    /*
     if (changes['imageUrl'] && this.imageUrl) {
       // check minimum of URL pattern
       if (!/^(http|https):\/\/.{6,245}$/.exec(this.imageUrl)) {
         this.imageUrl = undefined
         this.onImageLoadError()
       }
-    }
+    }*/
   }
 
   /**
