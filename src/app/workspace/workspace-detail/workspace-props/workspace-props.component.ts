@@ -269,8 +269,12 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   public onInputChange(event: Event, refType: RefType): void {
     const val = (event.target as HTMLInputElement).value
     if (val && val !== '') {
-      this.imageUrl[refType] = val
-      this.imageUrlExists[refType] = true
+      // check minimum of URL pattern
+      if (!/^(http|https):\/\/.{6,245}$/.exec(val)) this.imageUrl[refType] = undefined
+      else {
+        this.imageUrl[refType] = val
+        this.imageUrlExists[refType] = true
+      }
     } else {
       this.imageUrlExists[refType] = false
     }
