@@ -320,13 +320,24 @@ describe('WorkspacePropsComponent', () => {
     })
 
     describe('Loading image', () => {
-      it('should switch to upload image URL if the external URL could not be loaded', () => {
+      it('should switch to upload image URL if the loading of external URL failed - VIEW mode', () => {
         expect(component.imageUrl[RefType.Logo]).toBe(workspace.logoUrl)
         expect(component.imageUrlExists[RefType.Logo]).toBeTrue()
 
+        component.editMode = false
         component.onImageLoadResult(false, RefType.Logo)
 
         expect(component.imageUrl[RefType.Logo]).toBe('basepath/images/name/logo')
+      })
+
+      it('should stop image displaying if the loading of external URL failed - EDIT mode', () => {
+        expect(component.imageUrl[RefType.Logo]).toBe(workspace.logoUrl)
+        expect(component.imageUrlExists[RefType.Logo]).toBeTrue()
+
+        component.editMode = true
+        component.onImageLoadResult(false, RefType.Logo)
+
+        expect(component.imageUrl[RefType.Logo]).toBeUndefined()
       })
 
       it('should set image URL to undefined if the uploaded URL could not be loaded', () => {
