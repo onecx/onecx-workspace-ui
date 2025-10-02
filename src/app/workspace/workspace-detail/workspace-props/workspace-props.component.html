@@ -1,5 +1,5 @@
 <form
-  class="mt-3 mx-2 sm:mx-3 flex flex-wrap flex-column row-gap-3 sm:row-gap-4 md:w-10 lg:w-9 xl:w-8"
+  class="mt-3 mx-2 sm:mx-3 flex flex-wrap flex-column row-gap-3 sm:row-gap-4 lg:w-10 xl:w-8"
   [formGroup]="formGroup"
   errorTailor
 >
@@ -260,7 +260,7 @@
   <!-- LOGO -->
   <article
     class="w-full flex flex-row flex-wrap sm:flex-nowrap align-items-center row-gap-2 column-gap-4"
-    [ngClass]="editMode ? 'h-4rem' : 'h-3rem'"
+    [ngClass]="editMode ? 'sm:h-4rem' : 'sm:h-3rem'"
     [attr.aria-label]="('DIALOG.LOGO.LABEL' | translate) + ': ' + ('IMAGE.TOOLTIPS.LOGO' | translate)"
   >
     <input hidden type="file" accept="image/*" #fileUploadLogo (change)="onFileUpload($event, RefType.Logo)" />
@@ -351,7 +351,7 @@
   <!-- LOGO SMALL -->
   <article
     class="w-full flex flex-row flex-wrap sm:flex-nowrap align-items-center row-gap-2 column-gap-4"
-    [ngClass]="editMode ? 'h-4rem' : 'h-3rem'"
+    [ngClass]="editMode ? 'sm:h-4rem' : 'sm:h-3rem'"
     [attr.aria-label]="('DIALOG.LOGO.LABEL' | translate) + ': ' + ('IMAGE.TOOLTIPS.LOGO_SMALL' | translate)"
   >
     <input
