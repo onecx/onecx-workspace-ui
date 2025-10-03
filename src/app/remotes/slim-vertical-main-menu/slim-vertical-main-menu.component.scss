@@ -17,6 +17,11 @@
     }
     // children styles
     > * {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
       padding: 1rem 0;
       width: 100%;
       color: var(--menu-item-text-color, var(--text-secondary-color, #000000));
@@ -25,6 +30,13 @@
     // icon styles
     .slim-menu-list-item-icon {
       font-size: calc(var(--font-size, var(--font-size-default, 1.25rem)) * 1.5);
+    }
+    .slim-menu-list-item-text {
+      width: 100%;
+      overflow-wrap: break-word;
+      font-size: var(--font-size);
+      margin-top: 0.25rem;
+      display: block;
     }
   }
   // active item styles
@@ -45,6 +57,12 @@
 
 .slim-menu-list-slim-plus {
   width: 8rem;
+  .slim-menu-list-item {
+    > * {
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+  }
 }
 
 // var(--menu-active-item-text-color)
