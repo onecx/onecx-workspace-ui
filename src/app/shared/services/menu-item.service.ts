@@ -47,6 +47,10 @@ export class MenuItemService {
     return bestMatch
   }
 
+  hasAction(item: MenuItem): boolean {
+    return !!item.routerLink || !!item.url || !!item.command
+  }
+
   private getMatchedSegments(item: MenuItem, strippedPath: string): number {
     const itemStrippedPath = item.routerLink ? this.stripPath(item.routerLink) : undefined
     if (itemStrippedPath && itemStrippedPath === strippedPath) {

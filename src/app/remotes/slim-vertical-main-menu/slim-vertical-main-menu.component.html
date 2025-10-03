@@ -1,16 +1,88 @@
 <ng-container *ngIf="activeMode$ | async as activeMode">
-  <div [hidden]="isHidden$ | async">
-    <ng-container [ngSwitch]="activeMode">
-      <ng-container *ngSwitchCase="Mode.SLIM">
-        <div style="width: 5rem">
-          <p>slim menu</p>
-        </div>
-      </ng-container>
-      <ng-container *ngSwitchCase="Mode.SLIM_PLUS">
-        <div style="width: 8rem">
-          <p>slim plus menu</p>
-        </div>
-      </ng-container>
-    </ng-container>
-  </div>
+  <ul
+    [hidden]="isHidden$ | async"
+    *ngIf="menuItems$ | async as menuItems"
+    id="ws_slim_vertical_main_menu_list"
+    class="slim-menu-list flex flex-column align-items-center justify-content-center list-none m-0 p-0"
+    [ngClass]="{
+      'slim-menu-list-slim': activeMode === Mode.SLIM,
+      'slim-menu-list-slim-plus': activeMode === Mode.SLIM_PLUS
+    }"
+  >
+    <li
+      *ngFor="let item of menuItems; let i = index"
+      [id]="'ws_slim_vertical_main_menu_list_item_' + (i + 1)"
+      class="slim-menu-list-item flex align-items-center justify-content-center"
+      [ngClass]="{
+        'slim-menu-list-item-active': item.active
+      }"
+    >
+      <ng-container
+        [ngTemplateOutlet]="itemTemplate"
+        [ngTemplateOutletContext]="{ $implicit: item, i: i }"
+      ></ng-container>
+    </li>
+  </ul>
 </ng-container>
+
+<ng-template #itemTemplate let-item let-i="index">
+  <ng-container *ngIf="item.type === ItemType.ROUTER_LINK">
+    <ng-container *ngTemplateOutlet="routerLinkTemplate; context: { $implicit: item, i: i }"></ng-container>
+  </ng-container>
+  <ng-container *ngIf="item.type === ItemType.URL">
+    <ng-container *ngTemplateOutlet="urlTemplate; context: { $implicit: item, i: i }"></ng-container>
+  </ng-container>
+  <ng-container *ngIf="item.type === ItemType.ACTION">
+    <ng-container *ngTemplateOutlet="actionTemplate; context: { $implicit: item, i: i }"></ng-container>
+  </ng-container>
+</ng-template>
+
+<ng-template #routerLinkTemplate let-item let-i="index">
+  <a
+    tabIndex="0"
+    [id]="'ws_slim_vertical_main_menu_list_item_' + (i + 1) + '_link'"
+    pRipple
+    [routerLink]="item.routerLink"
+    [pTooltip]="item.label"
+    tooltipPosition="right"
+    tooltipEvent="both"
+    class="slim-menu-list-item-link flex align-items-center justify-content-center outline-none cursor-pointer"
+  >
+    <ng-container *ngTemplateOutlet="iconTemplate; context: { $implicit: item }"></ng-container>
+  </a>
+</ng-template>
+
+<ng-template #urlTemplate let-item let-i="index">
+  <a
+    tabIndex="0"
+    [id]="'ws_slim_vertical_main_menu_list_item_' + (i + 1) + '_link'"
+    pRipple
+    [attr.href]="item.url"
+    [pTooltip]="item.label"
+    tooltipPosition="right"
+    tooltipEvent="both"
+    class="slim-menu-list-item-link flex align-items-center justify-content-center outline-none cursor-pointer"
+  >
+    <ng-container *ngTemplateOutlet="iconTemplate; context: { $implicit: item }"></ng-container>
+  </a>
+</ng-template>
+
+<ng-template #actionTemplate let-item let-i="index">
+  <button
+    tabIndex="0"
+    class="slim-menu-list-item-button flex align-items-center justify-content-center outline-none cursor-pointer border-none"
+    [id]="'ws_slim_vertical_main_menu_list_item_' + (i + 1) + '_button'"
+    pRipple
+    [pTooltip]="item.label"
+    tooltipPosition="right"
+    tooltipEvent="both"
+    (click)="item.command({})"
+    (keydown.enter)="item.command({})"
+  >
+    <ng-container *ngTemplateOutlet="iconTemplate; context: { $implicit: item }"></ng-container>
+  </button>
+</ng-template>
+
+<ng-template #iconTemplate let-item>
+  <i class="slim-menu-list-item-icon" [ngClass]="item.icon ?? 'pi-question'" aria-hidden="true"></i>
+</ng-template>
