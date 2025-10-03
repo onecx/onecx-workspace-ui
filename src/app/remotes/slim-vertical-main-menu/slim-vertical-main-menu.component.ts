@@ -35,41 +35,16 @@ import { WorkspaceMenuItems } from '../vertical-main-menu/vertical-main-menu.com
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
 import { MenuItem } from 'primeng/api'
 import { environment } from 'src/environments/environment'
-import { RippleModule } from 'primeng/ripple'
-import { RouterModule } from '@angular/router'
-import { TooltipModule } from 'primeng/tooltip'
-
-enum Mode {
-  SLIM = 'slim',
-  SLIM_PLUS = 'slimplus',
-  INACTIVE = 'inactive'
-}
-
-enum ItemType {
-  URL = 'url',
-  ROUTER_LINK = 'routerlink',
-  ACTION = 'action'
-}
-
-type SlimMenuItems = SlimMenuItem[]
-
-interface SlimMenuItem {
-  active: boolean
-  type?: ItemType
-  label?: string
-  icon?: string
-  command?: (event: any) => void
-  routerLink?: any
-  url?: string
-  tooltip?: string
-}
+import { ItemType, SlimMenuItem, SlimMenuItems } from 'src/app/types/slim-menu-item'
+import { SlimMenuMode } from 'src/app/types/slim-menu-mode'
+import { SlimMenuItemComponent } from 'src/app/shared/slim-menu-item/slim-menu-item.component'
 
 @Component({
   selector: 'app-slim-vertical-main-menu',
   templateUrl: './slim-vertical-main-menu.component.html',
   styleUrl: './slim-vertical-main-menu.component.scss',
   standalone: true,
-  imports: [CommonModule, TranslateModule, RippleModule, RouterModule, TooltipModule],
+  imports: [CommonModule, TranslateModule, SlimMenuItemComponent],
   providers: [
     {
       provide: BASE_URL,
@@ -88,8 +63,7 @@ interface SlimMenuItem {
 })
 @UntilDestroy()
 export class OneCXSlimVerticalMainMenuComponent implements ocxRemoteWebcomponent, OnInit, OnDestroy {
-  Mode = Mode
-  ItemType = ItemType
+  Mode = SlimMenuMode
 
   private readonly menuService = inject(MenuService)
 
@@ -100,19 +74,19 @@ export class OneCXSlimVerticalMainMenuComponent implements ocxRemoteWebcomponent
   public activeMode$ = combineLatest([this.isSlimMenuActive$, this.isSlimPlusMenuActive$]).pipe(
     map(([isSlimActive, isSlimPlusActive]) => {
       if (isSlimActive) {
-        return Mode.SLIM
+        return SlimMenuMode.SLIM
       }
       if (isSlimPlusActive) {
-        return Mode.SLIM_PLUS
+        return SlimMenuMode.SLIM_PLUS
       }
-      return Mode.INACTIVE
+      return SlimMenuMode.INACTIVE
     })
   )
 
   // Hide the menu when inactive or when the active menu is not visible
   public isHidden$ = this.activeMode$.pipe(
     mergeMap((mode) => {
-      if (mode === Mode.INACTIVE) {
+      if (mode === SlimMenuMode.INACTIVE) {
         return of(true)
       }
 
