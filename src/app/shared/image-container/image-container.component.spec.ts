@@ -40,52 +40,38 @@ describe('ImageContainerComponent', () => {
     fixture.detectChanges()
   })
 
-  it('should create', () => {
-    expect(component).toBeTruthy()
-  })
-
-  it('should set defaultImageUrl$ to the correct value', (done) => {
-    const expectedUrl = '/base/assets/images/workspace.png'
-
-    component.defaultImageUrl$.subscribe((url) => {
-      expect(url).toBe(expectedUrl)
-      done()
+  describe('construction', () => {
+    it('should create', () => {
+      expect(component).toBeTruthy()
     })
-  })
 
-  describe('ngOnChanges', () => {
-    it('should not modify imageUrl if it starts with http/https', () => {
-      const testUrl = 'http://path/to/image.jpg'
-      component.imageUrl = testUrl
-      component.ngOnChanges({
-        imageUrl: {
-          currentValue: testUrl,
-          previousValue: null,
-          firstChange: true,
-          isFirstChange: () => true
-        }
+    it('should set defaultImageUrl$ to the correct value', (done) => {
+      const expectedUrl = '/base/assets/images/workspace.png'
+
+      component.defaultImageUrl$.subscribe((url) => {
+        expect(url).toBe(expectedUrl)
+        done()
       })
-
-      expect(component.imageUrl).toBe(testUrl)
-    })
-
-    it('should set defaultLogoUrl if component imageUrl is undefined', () => {
-      component.ngOnChanges({
-        imageUrl: {
-          currentValue: '',
-          previousValue: null,
-          firstChange: true,
-          isFirstChange: () => true
-        }
-      })
-
-      expect(component.displayDefaultLogo).toBeTrue
     })
   })
 
-  it('onImageError should set displayDefaultLogo to true', () => {
-    component.onImageError()
+  describe('loading results', () => {
+    it('should emit an error if image could not be loaded', () => {
+      spyOn(component.imageLoadResult, 'emit')
 
-    expect(component.displayDefaultLogo).toBeTrue()
+      component.imageUrl = '/url'
+      component.onImageLoadError()
+
+      expect(component.imageLoadResult.emit).toHaveBeenCalledWith(false)
+    })
+
+    it('should emit a success if image could be loaded', () => {
+      spyOn(component.imageLoadResult, 'emit')
+
+      component.imageUrl = '/url'
+      component.onImageLoadSuccess()
+
+      expect(component.imageLoadResult.emit).toHaveBeenCalledWith(true)
+    })
   })
 })

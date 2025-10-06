@@ -1,5 +1,4 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core'
-import { FormControl, FormGroup, Validators } from '@angular/forms'
+import { NO_ERRORS_SCHEMA, SimpleChanges } from '@angular/core'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { provideRouter } from '@angular/router'
@@ -20,16 +19,16 @@ import {
   WorkspacePropsComponent
 } from 'src/app/workspace/workspace-detail/workspace-props/workspace-props.component'
 import {
-  WorkspaceAPIService,
+  MimeType,
   ImagesInternalAPIService,
   Workspace,
+  WorkspaceAPIService,
   WorkspaceProductAPIService,
-  RefType,
-  MimeType
+  RefType
 } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
 
-const workspace = {
+const workspace: Workspace = {
   id: 'id',
   disabled: false,
   name: 'name',
@@ -37,40 +36,31 @@ const workspace = {
   theme: 'theme',
   baseUrl: '/some/base/url',
   homePage: '/welcome',
-  logoUrl: 'https://host:port/site/logo.png'
+  logoUrl: 'https://host:port/site/logo.png',
+  smallLogoUrl: 'https://host:port/site/logo-small.png'
 }
+const changes: SimpleChanges = {
+  workspace: {
+    currentValue: workspace,
+    previousValue: null,
+    firstChange: true,
+    isFirstChange: () => true
+  }
+}
+
 const themesOrg: Theme[] = [
   { name: 'theme1', displayName: 'Theme 1', logoUrl: '/logo', faviconUrl: '/favicon' },
   { name: 'theme2', displayName: 'Theme 2' }
 ]
 
-const formGroup = new FormGroup({
-  displayName: new FormControl('displayName', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
-  theme: new FormControl('theme', [Validators.required]),
-  baseUrl: new FormControl('/url', [Validators.required, Validators.minLength(1), Validators.pattern('^/.*')])
-})
-
 describe('WorkspacePropsComponent', () => {
   let component: WorkspacePropsComponent
   let fixture: ComponentFixture<WorkspacePropsComponent>
-  const workspaceServiceMock: jasmine.SpyObj<WorkspaceService> = jasmine.createSpyObj('WorkspaceService', [
-    'doesUrlExistFor',
-    'getUrl'
-  ])
-  const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'info', 'error'])
-  const apiServiceSpy = {
-    updateWorkspace: jasmine.createSpy('updateWorkspace').and.returnValue(of([]))
-  }
-  const themeAPIServiceSpy = {
-    getThemes: jasmine.createSpy('getThemes').and.returnValue(of({})),
-    getThemeById: jasmine.createSpy('getThemeById').and.returnValue(of({}))
-  }
-  const configServiceSpy = {
-    getProperty: jasmine.createSpy('getProperty').and.returnValue('123')
-  }
-  const accSpy = {
-    getLocation: jasmine.createSpy('getLocation').and.returnValue({ deploymentPath: '/path' })
-  }
+
+  const accSpy = { getLocation: jasmine.createSpy('getLocation').and.returnValue({ deploymentPath: '/path' }) }
+  const apiServiceSpy = { updateWorkspace: jasmine.createSpy('updateWorkspace').and.returnValue(of([])) }
+  const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
+  const configServiceSpy = { getProperty: jasmine.createSpy('getProperty').and.returnValue('123') }
   const imageServiceSpy = {
     getImage: jasmine.createSpy('getImage').and.returnValue(of({})),
     deleteImage: jasmine.createSpy('deleteImage').and.returnValue(of({})),
@@ -81,6 +71,10 @@ describe('WorkspacePropsComponent', () => {
   const wProductServiceSpy = {
     getProductsByWorkspaceId: jasmine.createSpy('getProductsByWorkspaceId').and.returnValue(of({}))
   }
+  const workspaceServiceMock: jasmine.SpyObj<WorkspaceService> = jasmine.createSpyObj('WorkspaceService', [
+    'doesUrlExistFor',
+    'getUrl'
+  ])
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -106,18 +100,6 @@ describe('WorkspacePropsComponent', () => {
       ],
       teardown: { destroyAfterEach: false }
     }).compileComponents()
-    // reset
-    msgServiceSpy.success.calls.reset()
-    msgServiceSpy.info.calls.reset()
-    msgServiceSpy.error.calls.reset()
-    apiServiceSpy.updateWorkspace.calls.reset()
-    themeAPIServiceSpy.getThemes.calls.reset()
-    themeAPIServiceSpy.getThemeById.calls.reset()
-    wProductServiceSpy.getProductsByWorkspaceId.calls.reset()
-    themeService.apply.calls.reset()
-    imageServiceSpy.getImage.calls.reset()
-    imageServiceSpy.deleteImage.calls.reset()
-    imageServiceSpy.uploadImage.calls.reset()
   }))
 
   beforeEach(() => {
@@ -126,6 +108,18 @@ describe('WorkspacePropsComponent', () => {
     component = fixture.componentInstance
     component.workspace = workspace
     fixture.detectChanges()
+  })
+
+  afterAll(() => {
+    // reset
+    msgServiceSpy.success.calls.reset()
+    msgServiceSpy.error.calls.reset()
+    apiServiceSpy.updateWorkspace.calls.reset()
+    wProductServiceSpy.getProductsByWorkspaceId.calls.reset()
+    themeService.apply.calls.reset()
+    imageServiceSpy.getImage.calls.reset()
+    imageServiceSpy.deleteImage.calls.reset()
+    imageServiceSpy.uploadImage.calls.reset()
   })
 
   describe('initialize', () => {
@@ -244,27 +238,38 @@ describe('WorkspacePropsComponent', () => {
     it('should disable formGroup in view mode', () => {
       component.editMode = false
 
-      component.ngOnChanges()
+      component.ngOnChanges(changes)
 
       expect(component.formGroup.disabled).toBeTrue()
     })
 
-    it('should enable formGroup in edit mode', () => {
+    it('should enable formGroup in edit mode - with ext. logo URL', () => {
       component.editMode = true
 
-      component.ngOnChanges()
+      component.ngOnChanges(changes)
 
       expect(component.workspace).toEqual(workspace)
       expect(component.formGroup.enabled).toBeTrue()
       expect(component.imageUrl[RefType.Logo]).toEqual(workspace.logoUrl)
+      expect(component.imageUrl[RefType.LogoSmall]).toEqual(workspace.smallLogoUrl)
+    })
+
+    it('should enable formGroup in edit mode - without ext. logo URL', () => {
+      component.editMode = true
+      component.workspace = { ...workspace, logoUrl: undefined }
+
+      component.ngOnChanges(changes)
+
+      expect(component.formGroup.enabled).toBeTrue()
+      expect(component.imageUrl[RefType.Logo]).toBe('basepath/images/name/logo')
+      expect(component.imageUrl[RefType.LogoSmall]).toEqual(workspace.smallLogoUrl)
     })
 
     it('should reset formGroup when workspace is empty', () => {
       component.editMode = true
-      workspace.name = 'ADMIN'
-
       component.workspace = undefined
-      component.ngOnChanges()
+
+      component.ngOnChanges(changes)
 
       expect(component.formGroup.controls['displayName'].value).toBeNull()
       expect(component.formGroup.controls['theme'].value).toBeNull()
@@ -273,204 +278,254 @@ describe('WorkspacePropsComponent', () => {
     })
   })
 
-  describe('onSave', () => {
-    it('should return if no workspace to save', () => {
-      component.formGroup = formGroup
-      component.workspace = undefined
-
-      component.onSave()
+  describe('image', () => {
+    beforeEach(() => {
+      component.ngOnChanges(changes)
     })
 
-    it('should update workspace onSave', () => {
-      component.formGroup = formGroup
-      component.workspace = workspace
+    describe('Saving image', () => {
+      it('should return if no workspace to save', () => {
+        component.workspace = undefined
 
-      component.onSave()
-    })
-
-    it('should display error msg if form group invalid', () => {
-      component.formGroup = formGroup
-      component.workspace = workspace
-      component.formGroup.controls['baseUrl'].setValue('url')
-
-      component.onSave()
-
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({
-        summaryKey: 'VALIDATION.FORM_INVALID'
+        component.onSave()
       })
-    })
-  })
 
-  describe('Load image', () => {
-    it('should be informed on image loading error', () => {
-      component.onImageLoadingError(true, RefType.Logo)
+      it('should update workspace onSave', () => {
+        spyOn(component, 'getWorkspaceChangesFromForm')
 
-      expect(component.imageUrl[RefType.Logo]).toBeUndefined()
-    })
+        component.onSave()
 
-    it('should be informed on image loading error', () => {
-      component.onImageLoadingError(false, RefType.Logo)
+        expect(component.getWorkspaceChangesFromForm).toHaveBeenCalled()
+      })
 
-      expect(component.imageUrl[RefType.Logo]).toEqual(workspace.logoUrl)
-    })
-  })
+      it('should detect changes on workspaces', () => {
+        const url = 'https://abc.de'
+        component.formGroup.controls['logoUrl'].setValue(url) // change
 
-  describe('Upload file', () => {
-    it('should prevent upload if no file', () => {
-      const event = { target: {} }
+        expect(component.formGroup.valid).toBeTrue() // valid form
 
-      component.onFileUpload(event as any, RefType.Logo)
+        const change = component.getWorkspaceChangesFromForm()
 
-      expect(component.formGroup.valid).toBeFalse()
-    })
+        expect(change).toEqual({ logoUrl: url })
+      })
 
-    it('should not upload a file that is too large', () => {
-      const file = new File(['a'.repeat(1200000)], 'test.png', { type: 'image/png' })
-      const event = { target: { files: [file] } }
+      it('should display error msg if form is invalid', () => {
+        component.formGroup.controls['logoUrl'].setValue('http://abc') // invalid: too short
 
-      component.onFileUpload(event as any, RefType.Logo)
+        component.onSave()
 
-      expect(component.formGroup.valid).toBeFalse()
-    })
-
-    it('should upload file not possible withh unknown file extension', () => {
-      const file = new File(['file content'.repeat(10)], 'test.unknown', { type: 'image/png' })
-      const event = { target: { files: [file] } }
-
-      component.onFileUpload(event as any, RefType.Logo)
-
-      expect(component.formGroup.valid).toBeFalse()
-    })
-
-    it('should upload file - successful with png', () => {
-      imageServiceSpy.uploadImage.and.returnValue(of({}))
-      const file = new File(['file content'], 'test.png', { type: 'image/png' })
-      const event = { target: { files: [file] } }
-
-      component.onFileUpload(event as any, RefType.Logo)
-
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'IMAGE.UPLOAD_SUCCESS' })
-
-      component.onFileUpload(event as any, RefType.LogoSmall)
-
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'IMAGE.UPLOAD_SUCCESS' })
-    })
-
-    it('should upload file - failed with unsupported format', () => {
-      imageServiceSpy.uploadImage.and.returnValue(of({}))
-      const file = new File(['file content'], 'test.tiff', { type: 'image/tiff' })
-      const event = { target: { files: [file] } }
-
-      component.onFileUpload(event as any, RefType.Logo)
-
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({
-        summaryKey: 'IMAGE.CONSTRAINT_FAILED',
-        detailKey: 'IMAGE.CONSTRAINT_FILE_TYPE'
+        expect(component.formGroup.valid).toBeFalse()
+        expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'VALIDATION.FORM_INVALID' })
       })
     })
 
-    it('should upload file - failed with server error', () => {
-      const errorResponse = { status: 400, statusText: 'Error on getting image' }
-      imageServiceSpy.uploadImage.and.returnValue(throwError(() => errorResponse))
-      const file = new File(['file content'], 'test.svg', { type: 'image/svg+xml' })
-      const event = { target: { files: [file] } }
-      spyOn(console, 'error')
+    describe('Loading image', () => {
+      it('should switch to upload image URL if the loading of external URL failed - VIEW mode', () => {
+        expect(component.imageUrl[RefType.Logo]).toBe(workspace.logoUrl)
+        expect(component.imageUrlExists[RefType.Logo]).toBeTrue()
 
-      component.onFileUpload(event as any, RefType.Logo)
+        component.editMode = false
+        component.onImageLoadResult(false, RefType.Logo)
 
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'IMAGE.UPLOAD_FAILED' })
-      expect(console.error).toHaveBeenCalledWith('uploadImage', errorResponse)
+        expect(component.imageUrl[RefType.Logo]).toBe('basepath/images/name/logo')
+      })
+
+      it('should stop image displaying if the loading of external URL failed - EDIT mode', () => {
+        expect(component.imageUrl[RefType.Logo]).toBe(workspace.logoUrl)
+        expect(component.imageUrlExists[RefType.Logo]).toBeTrue()
+
+        component.editMode = true
+        component.onImageLoadResult(false, RefType.Logo)
+
+        expect(component.imageUrl[RefType.Logo]).toBeUndefined()
+      })
+
+      it('should set image URL to undefined if the uploaded URL could not be loaded', () => {
+        component.imageUrl[RefType.Logo] = 'basepath/images/name/logo'
+        component.imageUrlExists[RefType.Logo] = false
+        component.onImageLoadResult(false, RefType.Logo)
+
+        expect(component.imageUrl[RefType.Logo]).toBeUndefined()
+      })
+
+      it('should use logo URL on image loading success', () => {
+        expect(component.imageUrl[RefType.Logo]).toBe(workspace.logoUrl)
+        expect(component.imageUrlExists[RefType.Logo]).toBeTrue()
+
+        component.onImageLoadResult(true, RefType.Logo)
+
+        expect(component.imageUrl[RefType.Logo]).toEqual(workspace.logoUrl)
+      })
     })
 
-    it('should map mime-types', () => {
-      let mt = component['mapMimeType']('image/x-icon')
-      expect(mt).toBe(MimeType.XIcon)
-      mt = component['mapMimeType']('image/jpg')
-      expect(mt).toBe(MimeType.Jpg)
-      mt = component['mapMimeType']('image/jpeg')
-      expect(mt).toBe(MimeType.Jpeg)
-      mt = component['mapMimeType']('image/tiff') // unknown for OneCX
-      expect(mt).toBe(MimeType.Png)
+    describe('Upload image', () => {
+      it('should prevent upload if there is no file', () => {
+        const event = { target: {} }
+
+        component.onFileUpload(event as any, RefType.Logo)
+
+        expect(msgServiceSpy.error).toHaveBeenCalledWith({
+          summaryKey: 'IMAGE.CONSTRAINT.FAILED',
+          detailKey: 'IMAGE.CONSTRAINT.FILE_MISSING'
+        })
+      })
+
+      it('should not upload a file that is too large', () => {
+        const file = new File(['a'.repeat(1200000)], 'test.png', { type: 'image/png' })
+        const event = { target: { files: [file] } }
+
+        component.onFileUpload(event as any, RefType.Logo)
+
+        expect(msgServiceSpy.error).toHaveBeenCalledWith({
+          summaryKey: 'IMAGE.CONSTRAINT.FAILED',
+          detailKey: 'IMAGE.CONSTRAINT.SIZE'
+        })
+      })
+
+      it('should upload file not possible withh unknown file extension', () => {
+        const file = new File(['file content'.repeat(10)], 'test.unknown', { type: 'image/png' })
+        const event = { target: { files: [file] } }
+
+        component.onFileUpload(event as any, RefType.Logo)
+
+        expect(msgServiceSpy.error).toHaveBeenCalledWith({
+          summaryKey: 'IMAGE.CONSTRAINT.FAILED',
+          detailKey: 'IMAGE.CONSTRAINT.FILE_TYPE'
+        })
+      })
+
+      it('should upload file - successful with png', () => {
+        imageServiceSpy.uploadImage.and.returnValue(of({}))
+        const file = new File(['file content'], 'test.png', { type: 'image/png' })
+        const event = { target: { files: [file] } }
+
+        component.onFileUpload(event as any, RefType.Logo)
+
+        expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'IMAGE.UPLOAD.OK' })
+
+        component.onFileUpload(event as any, RefType.LogoSmall)
+
+        expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'IMAGE.UPLOAD.OK' })
+      })
+
+      it('should upload file - failed with unsupported format', () => {
+        imageServiceSpy.uploadImage.and.returnValue(of({}))
+        const file = new File(['file content'], 'test.tiff', { type: 'image/tiff' })
+        const event = { target: { files: [file] } }
+
+        component.onFileUpload(event as any, RefType.Logo)
+
+        expect(msgServiceSpy.error).toHaveBeenCalledWith({
+          summaryKey: 'IMAGE.CONSTRAINT.FAILED',
+          detailKey: 'IMAGE.CONSTRAINT.FILE_TYPE'
+        })
+      })
+
+      it('should upload file - failed with server error', () => {
+        const errorResponse = { status: 400, statusText: 'Error on getting image' }
+        imageServiceSpy.uploadImage.and.returnValue(throwError(() => errorResponse))
+        const file = new File(['file content'], 'test.svg', { type: 'image/svg+xml' })
+        const event = { target: { files: [file] } }
+        spyOn(console, 'error')
+
+        component.onFileUpload(event as any, RefType.Logo)
+
+        expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'IMAGE.UPLOAD.NOK' })
+        expect(console.error).toHaveBeenCalledWith('uploadImage', errorResponse)
+      })
+
+      it('should map mime-types', () => {
+        let mt = component['mapMimeType']('image/x-icon')
+        expect(mt).toBe(MimeType.XIcon)
+        mt = component['mapMimeType']('image/jpg')
+        expect(mt).toBe(MimeType.Jpg)
+        mt = component['mapMimeType']('image/jpeg')
+        expect(mt).toBe(MimeType.Jpeg)
+        mt = component['mapMimeType']('image/tiff') // unknown for OneCX
+        expect(mt).toBe(MimeType.Png)
+      })
+    })
+
+    describe('Remove image or URL', () => {
+      it('should remove the real logo URL - successful', () => {
+        expect(component.imageUrl[RefType.Logo]).toBe(workspace.logoUrl)
+        expect(component.imageUrlExists[RefType.Logo]).toBeTrue()
+
+        component.editMode = true
+        component.onRemoveImageUrl(RefType.Logo)
+
+        expect(component.imageUrl[RefType.Logo]).toBe('basepath/images/name/logo')
+
+        component.onRemoveImageUrl(RefType.LogoSmall)
+
+        expect(component.imageUrl[RefType.LogoSmall]).toBe('basepath/images/name/logo-small')
+      })
+
+      it('should remove the used logo URL - successful', () => {
+        //if (component.workspace) component.workspace.logoUrl = undefined // no real URL
+        imageServiceSpy.deleteImage.and.returnValue(of({}))
+        component.editMode = false
+        component.imageUrl[RefType.Logo] = 'basepath/images/name/logo'
+        component.imageUrlExists[RefType.Logo] = false
+
+        component.onRemoveImage(RefType.Logo)
+
+        expect(component.imageUrl[RefType.Logo]).toBeUndefined()
+      })
+
+      it('should remove the log - failed', () => {
+        const errorResponse = { status: 400, statusText: 'Error on image deletion' }
+        imageServiceSpy.deleteImage.and.returnValue(throwError(() => errorResponse))
+        component.editMode = false
+        component.imageUrl[RefType.Logo] = 'basepath/images/name/logo'
+        component.imageUrlExists[RefType.Logo] = false
+        spyOn(console, 'error')
+
+        component.onRemoveImage(RefType.Logo)
+
+        expect(console.error).toHaveBeenCalledWith('deleteImage', errorResponse)
+      })
+    })
+
+    describe('onInputChange', () => {
+      it('should edit a logo URL on inputChange: valid value', fakeAsync(() => {
+        const url = 'https://host.com/logo-url'
+        const event = { target: { value: url } } as unknown as Event
+
+        component.onInputChange(event, RefType.Logo)
+        tick(1000)
+
+        expect(component.imageUrl[RefType.Logo]).toBe(url)
+        expect(component.imageUrlExists[RefType.Logo]).toBeTrue()
+      }))
+
+      it('should edit a logo URL on inputChange: invalid value', fakeAsync(() => {
+        const url = 'https://host'
+        const event = { target: { value: url } } as unknown as Event
+
+        component.onInputChange(event, RefType.Logo)
+        tick(1000)
+
+        expect(component.imageUrl[RefType.Logo]).toBeUndefined()
+      }))
+
+      it('should switch to upload URL if no URL was entered', fakeAsync(() => {
+        const url = ''
+        const event = { target: { value: url } } as unknown as Event
+        const currentUrl = component.imageUrl[RefType.Logo]
+
+        component.onInputChange(event, RefType.Logo)
+        tick(1000)
+
+        expect(component.imageUrl[RefType.Logo]).toBe(currentUrl) // url remains
+        expect(component.imageUrlExists[RefType.Logo]).toBeFalse()
+      }))
     })
   })
 
-  describe('Remove logo', () => {
-    it('should remove the log - successful', () => {
-      imageServiceSpy.deleteImage.and.returnValue(of({}))
-
-      component.onRemoveLogo(RefType.Logo)
-
-      expect(component.imageUrl[RefType.Logo]).toBeUndefined()
-    })
-
-    it('should remove the log - failed', () => {
-      const errorResponse = { status: 400, statusText: 'Error on image deletion' }
-      imageServiceSpy.deleteImage.and.returnValue(throwError(() => errorResponse))
-      spyOn(console, 'error')
-
-      component.onRemoveLogo(RefType.Logo)
-
-      expect(console.error).toHaveBeenCalledWith('deleteImage', errorResponse)
-    })
-  })
-
-  describe('onInputChange', () => {
-    it('should change logo URL on inputChange: valid value', fakeAsync(() => {
-      const event = {
-        target: { value: 'newLogoValue' }
-      } as unknown as Event
-
-      component.onInputChange(event, RefType.Logo)
-      tick(1000)
-
-      expect(component.imageUrl[RefType.Logo]).toBe('newLogoValue')
-    }))
-
-    it('should change logo URL on inputChange: empty value', fakeAsync(() => {
-      const event = {
-        target: { value: '' }
-      } as unknown as Event
-
-      component.onInputChange(event, RefType.Logo)
-      tick(1000)
-
-      expect(component.imageUrl[RefType.Logo]).toBe('basepath/images/ADMIN/logo')
-    }))
-  })
-
-  describe('getLogoUrl', () => {
+  describe('setImageUrl', () => {
     it('call with undefined workspace', () => {
-      const testWorkspace: Workspace = undefined!
-      expect(component.getLogoUrl(testWorkspace, RefType.Logo)).toBeUndefined()
-    })
-
-    it('call with workspace and logo URL', () => {
-      const testWorkspace: Workspace = {
-        name: 'name',
-        theme: 'theme',
-        baseUrl: '/some/base/url',
-        id: 'id',
-        logoUrl: 'testlogoUrl',
-        smallLogoUrl: 'testlogoUrl',
-        displayName: ''
-      }
-      expect(component.getLogoUrl(testWorkspace, RefType.Logo)).toBe(testWorkspace.logoUrl)
-      expect(component.getLogoUrl(testWorkspace, RefType.LogoSmall)).toBe(testWorkspace.smallLogoUrl)
-    })
-
-    it('call with workspace but no logo URL', () => {
-      const testWorkspace: Workspace = {
-        name: 'name',
-        theme: 'theme',
-        baseUrl: '/some/base/url',
-        id: 'id',
-        displayName: ''
-      }
-      spyOn(Utils, 'bffImageUrl')
-
-      component.getLogoUrl(testWorkspace, RefType.Logo)
-
-      expect(Utils.bffImageUrl).toHaveBeenCalled()
+      expect(component.setImageUrl(undefined, RefType.Logo)).toBeUndefined()
     })
   })
 
