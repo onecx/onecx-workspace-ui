@@ -26,7 +26,7 @@ import { PortalCoreModule } from '@onecx/portal-integration-angular'
 import { Configuration, RefType, WorkspaceAPIService } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
 import { environment } from 'src/environments/environment'
-import { EventsTopic, SlotsResizedEvent } from '@onecx/integration-interface'
+import { EventsTopic, SlotResizedEvent } from '@onecx/integration-interface'
 
 const RESIZE_OBSERVED_SLOT_NAME = 'onecx-shell-vertical-menu'
 const DEFAULT_WIDTH_REM = 17
@@ -141,8 +141,8 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
     this.eventsTopic
       .pipe(
         filter(
-          (e): e is SlotsResizedEvent =>
-            e.type === 'slotsResized' && (e as SlotsResizedEvent).payload.slotName === RESIZE_OBSERVED_SLOT_NAME
+          (e): e is SlotResizedEvent =>
+            e.type === 'slotResized' && (e as SlotResizedEvent).payload.slotName === RESIZE_OBSERVED_SLOT_NAME
         )
       )
       .subscribe((e) => {
