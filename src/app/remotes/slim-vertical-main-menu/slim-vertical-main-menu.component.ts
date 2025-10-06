@@ -31,13 +31,12 @@ import { createTranslateLoader, provideTranslationPathFromMeta } from '@onecx/an
 import { MenuService } from 'src/app/shared/services/menu.service'
 import { EventsTopic, NavigatedEventPayload, Workspace } from '@onecx/integration-interface'
 import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
-import { WorkspaceMenuItems } from '../vertical-main-menu/vertical-main-menu.component'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
-import { MenuItem } from 'primeng/api'
 import { environment } from 'src/environments/environment'
-import { ItemType, SlimMenuItem, SlimMenuItems } from 'src/app/types/slim-menu-item'
-import { SlimMenuMode } from 'src/app/types/slim-menu-mode'
-import { SlimMenuItemComponent } from 'src/app/shared/slim-menu-item/slim-menu-item.component'
+import { ItemType, SlimMenuItems } from 'src/app/shared/model/slim-menu-item'
+import { SlimMenuMode } from 'src/app/shared/model/slim-menu-mode'
+import { SlimMenuItemComponent } from 'src/app/shared/components/slim-menu-item/slim-menu-item.component'
+import { MenuItem } from 'primeng/api'
 
 @Component({
   selector: 'app-slim-vertical-main-menu',
@@ -135,7 +134,8 @@ export class OneCXSlimVerticalMainMenuComponent implements ocxRemoteWebcomponent
 
     combineLatest([location$, this.getMenuItems()])
       .pipe(
-        map(([url, workspaceItems]) => this.mapWorkspaceItemsToSlimMenuItems(workspaceItems, url)),
+        map(([url, workspaceItems]) => this.menuItemService.mapMenuItemsToSlimMenuItems(workspaceItems, url)),
+        // TODO: Remove
         map((items) =>
           items.concat([
             {
@@ -155,51 +155,12 @@ export class OneCXSlimVerticalMainMenuComponent implements ocxRemoteWebcomponent
     this.eventsTopic$.destroy()
   }
 
-  private mapWorkspaceItemsToSlimMenuItems(workspaceItems: WorkspaceMenuItems, currentUrl: string) {
-    const actionItems = workspaceItems.items
-      .flatMap((item) => [item, ...(item.items ?? [])])
-      .filter((item) => this.menuItemService.hasAction(item))
-    return this.mapMenuItemsToSlimMenuItems(actionItems, currentUrl)
-  }
-
-  private mapMenuItemsToSlimMenuItems(items: MenuItem[], currentUrl: string): SlimMenuItem[] {
-    const bestMatch = this.menuItemService.findActiveItemBestMatch(items, currentUrl)
-    return items.map((item) => {
-      return {
-        active: item === bestMatch?.item,
-        type: this.getItemType(item),
-        label: item.label ?? item.title,
-        icon: item.icon,
-        command: item.command,
-        routerLink: item.routerLink,
-        url: item.url,
-        tooltip: item.tooltip ?? item.label ?? item.title
-      }
-    })
-  }
-
-  private getItemType(item: MenuItem): ItemType | undefined {
-    if (item.routerLink) {
-      return ItemType.ROUTER_LINK
-    }
-    if (item.url) {
-      return ItemType.URL
-    }
-    if (item.command) {
-      return ItemType.ACTION
-    }
-    return undefined
-  }
-
-  private getMenuItems(): Observable<WorkspaceMenuItems> {
+  private getMenuItems(): Observable<MenuItem[]> {
     return this.appStateService.currentWorkspace$.pipe(
       mergeMap((currentWorkspace) => this.getWorkspaceMainMenuItems(currentWorkspace)),
       withLatestFrom(this.userService.lang$),
-      map(
-        ([workspaceItems, userLang]): WorkspaceMenuItems => ({
-          workspaceName: workspaceItems?.workspaceName ?? '',
-          items: this.menuItemService.constructMenuItems(workspaceItems?.data?.menu?.[0]?.children, userLang)
-        })
+      map(([workspaceItems, userLang]): MenuItem[] =>
+        this.menuItemService.constructMenuItems(workspaceItems?.menu?.[0]?.children, userLang)
       ),
       shareReplay(),
       untilDestroyed(this)
@@ -215,7 +176,6 @@ export class OneCXSlimVerticalMainMenuComponent implements ocxRemoteWebcomponent
         }
       })
       .pipe(
-        map((response) => ({ data: response, workspaceName: currentWorkspace.workspaceName })),
         retry({ delay: 500, count: 3 }),
         catchError(() => {
           console.error('Unable to load menu items for slim vertical main menu.')

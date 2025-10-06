@@ -5,8 +5,8 @@ import { UntilDestroy } from '@ngneat/until-destroy'
 import { TranslateModule } from '@ngx-translate/core'
 import { RippleModule } from 'primeng/ripple'
 import { TooltipModule } from 'primeng/tooltip'
-import { ItemType, SlimMenuItem } from 'src/app/types/slim-menu-item'
-import { SlimMenuMode } from 'src/app/types/slim-menu-mode'
+import { ItemType, SlimMenuItem } from 'src/app/shared/model/slim-menu-item'
+import { SlimMenuMode } from 'src/app/shared/model/slim-menu-mode'
 
 @Component({
   selector: 'app-slim-menu-item',
