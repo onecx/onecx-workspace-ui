@@ -1,19 +1,21 @@
-<!-- <ng-container *ngIf="activeMode$ | async as activeMode">
-  <div [hidden]="isHidden$ | async">
-    <ng-container [ngSwitch]="activeMode">
-      <ng-container *ngSwitchCase="Mode.SLIM">
-        <div style="width: 5rem">
-          <p>slim menu</p>
-        </div>
-      </ng-container>
-      <ng-container *ngSwitchCase="Mode.SLIM_PLUS">
-        <div style="width: 8rem">
-          <p>slim plus menu</p>
-        </div>
-      </ng-container>
-    </ng-container>
-  </div>
-</ng-container> -->
-<div>
-  <p>Slim!</p>
-</div>
+<ng-container *ngIf="activeMode$ | async as activeMode">
+  <ul
+    [hidden]="isHidden$ | async"
+    *ngIf="menuItems$ | async as menuItems"
+    id="ws_slim_user_menu_list"
+    class="slim-menu-list flex flex-column align-items-center justify-content-center list-none m-0 p-0"
+    [ngClass]="{
+      'slim-menu-list-slim': activeMode === Mode.SLIM,
+      'slim-menu-list-slim-plus': activeMode === Mode.SLIM_PLUS
+    }"
+  >
+    <app-slim-menu-item
+      *ngFor="let item of menuItems; let i = index"
+      [item]="item"
+      [id]="'ws_slim_vertical_main_menu_list_item_' + (i + 1)"
+      [index]="i"
+      [activeMode]="activeMode"
+      style="width: 100%"
+    ></app-slim-menu-item>
+  </ul>
+</ng-container>

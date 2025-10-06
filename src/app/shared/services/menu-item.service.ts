@@ -65,9 +65,9 @@ export class MenuItemService {
     return undefined
   }
 
-  mapMenuItemsToSlimMenuItems(items: MenuItem[], currentUrl: string): SlimMenuItem[] {
+  mapMenuItemsToSlimMenuItems(items: MenuItem[], currentUrl?: string): SlimMenuItem[] {
     const actionItems = items.flatMap((item) => [item, ...(item.items ?? [])]).filter((item) => this.hasAction(item))
-    const bestMatch = this.findActiveItemBestMatch(items, currentUrl)
+    const bestMatch = currentUrl ? this.findActiveItemBestMatch(items, currentUrl) : undefined
     return actionItems.map((item) => {
       return {
         active: item === bestMatch?.item,
