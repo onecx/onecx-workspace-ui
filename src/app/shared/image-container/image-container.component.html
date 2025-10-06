@@ -1,8 +1,7 @@
 <img
-  *ngIf="defaultImageUrl$ | async as defaultUrl"
   [id]="id"
   [class]="'max-w-full ' + (styleClass ?? '')"
-  [ocxSrc]="imageUrl ? imageUrl : defaultUrl"
+  [ocxSrc]="imageUrl ?? defaultImageUrl"
   (error)="onImageLoadError()"
   (load)="onImageLoadSuccess()"
   [alt]="'Logo Workspace'"

@@ -66,6 +66,7 @@ model/searchWorkspacesResponse.ts
 model/slot.ts
 model/slotComponent.ts
 model/slotPS.ts
+model/target.ts
 model/uIEndpoint.ts
 model/updateMenuItemParentRequest.ts
 model/updateMenuItemRequest.ts

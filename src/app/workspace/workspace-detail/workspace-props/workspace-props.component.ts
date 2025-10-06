@@ -182,10 +182,12 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   public onFileUpload(ev: Event, refType: RefType): void {
     if (ev.target && (ev.target as HTMLInputElement).files) {
       const files = (ev.target as HTMLInputElement).files
+      const regex = /^.*.(jpg|jpeg|png|svg)$/
+
       if (files) {
         if (files[0].size > this.imageMaxSize) {
           this.msgService.error({ summaryKey: 'IMAGE.CONSTRAINT.FAILED', detailKey: 'IMAGE.CONSTRAINT.SIZE' })
-        } else if (!/^.*.(jpg|jpeg|png|svg)$/.exec(files[0].name)) {
+        } else if (!regex.exec(files[0].name)) {
           this.msgService.error({ summaryKey: 'IMAGE.CONSTRAINT.FAILED', detailKey: 'IMAGE.CONSTRAINT.FILE_TYPE' })
         } else if (this.workspace) {
           this.saveImage(this.workspace.name, files, refType) // store image

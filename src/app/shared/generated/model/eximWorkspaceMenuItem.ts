@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 import { EximScope } from './eximScope';
+import { Target } from './target';
 
 
 export interface EximWorkspaceMenuItem { 
@@ -23,6 +24,7 @@ export interface EximWorkspaceMenuItem {
     badge?: string;
     scope?: EximScope;
     external?: boolean;
+    target?: Target;
     roles?: Array<string>;
     i18n?: { [key: string]: string; };
     children?: Array<EximWorkspaceMenuItem>;
