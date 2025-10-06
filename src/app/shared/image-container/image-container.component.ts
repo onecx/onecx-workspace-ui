@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges } from '@angular/core'
+import { Component, EventEmitter, Input, Output } from '@angular/core'
 import { Observable, map } from 'rxjs'
 
 import { AppStateService } from '@onecx/angular-integration-interface'
@@ -14,49 +14,41 @@ import { Utils } from 'src/app/shared/utils'
  */
 @Component({
   selector: 'app-image-container',
-  styleUrls: ['./image-container.component.scss'],
   templateUrl: './image-container.component.html'
 })
-export class ImageContainerComponent implements OnChanges {
-  @Input() public id = 'image-container'
+export class ImageContainerComponent {
+  @Input() public id = 'ws_image_container'
   @Input() public title: string | undefined
   @Input() public small = false
   @Input() public imageUrl: string | undefined
   @Input() public styleClass: string | undefined
   @Input() public defaultLogoType: 'workspace' | 'product' | undefined
-  @Output() public imageLoadError = new EventEmitter<boolean>() // inform caller
+  @Output() public imageLoadResult = new EventEmitter<boolean>() // inform caller
 
   public displayImageUrl: string | undefined
   public defaultImageUrl$: Observable<string>
-  public displayDefaultLogo = false
+  public displayDefault = false
   private readonly defaultLogoPaths = {
     workspace: environment.DEFAULT_LOGO_PATH,
     product: environment.DEFAULT_PRODUCT_PATH
   }
 
-  prepareUrlPath = Utils.prepareUrlPath
-
   constructor(appState: AppStateService) {
     this.defaultImageUrl$ = appState.currentMfe$.pipe(
       map((mfe) => {
-        return this.prepareUrlPath(mfe.remoteBaseUrl, this.defaultLogoPaths[this.defaultLogoType ?? 'workspace'])
+        return Utils.prepareUrlPath(mfe.remoteBaseUrl, this.defaultLogoPaths[this.defaultLogoType ?? 'workspace'])
       })
     )
   }
 
-  public onImageError(): void {
-    this.displayDefaultLogo = true
-    this.displayImageUrl = undefined
-    this.imageLoadError.emit(true)
+  /**
+   * Emit image loading results
+   */
+  public onImageLoadSuccess(): void {
+    if (this.imageUrl !== undefined) this.imageLoadResult.emit(true)
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['imageUrl']) {
-      this.displayDefaultLogo = false
-      if (this.imageUrl) {
-        this.displayImageUrl = this.imageUrl
-        this.imageLoadError.emit(false)
-      } else this.displayDefaultLogo = true
-    }
+  public onImageLoadError(): void {
+    if (this.imageUrl !== undefined) this.imageLoadResult.emit(false)
   }
 }

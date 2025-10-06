@@ -252,9 +252,9 @@ describe('WorkspaceDetailComponent', () => {
     })
   })
 
-  describe('onUpdateLogoUrl', () => {
+  describe('onUpdateHeaderImageUrl', () => {
     it('should set current logo url', () => {
-      component.onUpdateLogoUrl('url')
+      component.onUpdateHeaderImageUrl('url')
 
       expect(component.currentLogoUrl).toBe('url')
     })
