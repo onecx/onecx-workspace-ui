@@ -102,7 +102,7 @@ export class OneCXHorizontalMainMenuComponent implements OnInit, ocxRemoteCompon
         this.menuItemService.constructMenuItems(
           menuData?.data?.menu?.[0]?.children,
           userLang,
-          menuData?.workspaceBaseUrl!
+          menuData?.workspaceBaseUrl
         )
       ),
       shareReplay(),

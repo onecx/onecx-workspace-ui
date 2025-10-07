@@ -17,7 +17,6 @@ import {
   of,
   retry,
   shareReplay,
-  tap,
   withLatestFrom
 } from 'rxjs'
 import { MenuItem } from 'primeng/api'
@@ -43,8 +42,8 @@ import { environment } from 'src/environments/environment'
 
 export interface WorkspaceMenuItems {
   items: MenuItem[]
-  workspaceName: string
-  workspaceBaseUrl: string
+  workspaceName: string | undefined
+  workspaceBaseUrl: string | undefined
 }
 
 @Component({
@@ -171,12 +170,12 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRe
       withLatestFrom(this.userService.lang$),
       map(
         ([menuData, userLang]): WorkspaceMenuItems => ({
-          workspaceBaseUrl: menuData?.workspaceBaseUrl!,
-          workspaceName: menuData?.workspaceName!,
+          workspaceBaseUrl: menuData?.workspaceBaseUrl,
+          workspaceName: menuData?.workspaceName,
           items: this.menuItemService.constructMenuItems(
             menuData?.data?.menu?.[0]?.children,
             userLang,
-            menuData?.workspaceBaseUrl!
+            menuData?.workspaceBaseUrl
           )
         })
       ),

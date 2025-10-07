@@ -103,7 +103,7 @@ export class OneCXFooterMenuComponent implements OnInit, ocxRemoteComponent, ocx
         this.menuItemService.constructMenuItems(
           menuData?.data?.menu?.[0]?.children,
           userLang,
-          menuData?.workspaceBaseUrl!
+          menuData?.workspaceBaseUrl
         )
       ),
       shareReplay(),

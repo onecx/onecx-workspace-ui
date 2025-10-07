@@ -155,7 +155,7 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent, ocxRem
         this.menuItemService.constructMenuItems(
           menuData?.data?.menu?.[0]?.children,
           userLang,
-          menuData?.workspaceBaseUrl!
+          menuData?.workspaceBaseUrl
         )
       ),
       mergeMap((currentMenu) => {

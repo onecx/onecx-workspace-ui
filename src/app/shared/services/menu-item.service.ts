@@ -11,7 +11,7 @@ export class MenuItemService {
   public constructMenuItems(
     userWorkspaceMenuItem: UserWorkspaceMenuItem[] | undefined,
     userLang: string,
-    workspaceBaseUrl: string
+    workspaceBaseUrl: string | undefined
   ): MenuItem[] {
     const workspaceMenuItems = userWorkspaceMenuItem?.filter((i) => i) // exclude undefined
     if (workspaceMenuItems) {
@@ -69,7 +69,7 @@ export class MenuItemService {
   }
 
   /** Item is never undefined when filtered out in constructMenuItems() */
-  private mapMenuItem(item: UserWorkspaceMenuItem, userLang: string, workspaceBaseUrl: string): MenuItem {
+  private mapMenuItem(item: UserWorkspaceMenuItem, userLang: string, workspaceBaseUrl: string | undefined): MenuItem {
     // is local (stay within Shell)  => use router link
     // is NOT local (leave Shell)    => use URL
     const isLocal: boolean = !item.external
@@ -88,7 +88,7 @@ export class MenuItemService {
     if (url && item.target === Target.Blank && !/^(http|https):\/\/.{6,245}$/.exec(url)) {
       url = Location.joinWithSlash(
         Location.joinWithSlash(getLocation().origin, getLocation().deploymentPath),
-        Location.joinWithSlash(workspaceBaseUrl, url)
+        Location.joinWithSlash(workspaceBaseUrl ?? '', url)
       )
     }
     if (item.children && item.children.length > 0) {

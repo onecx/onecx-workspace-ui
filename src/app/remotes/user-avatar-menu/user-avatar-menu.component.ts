@@ -143,7 +143,7 @@ export class OneCXUserAvatarMenuComponent
         this.menuItemService.constructMenuItems(
           menuData?.data?.menu?.[0]?.children,
           userLang,
-          menuData?.workspaceBaseUrl!
+          menuData?.workspaceBaseUrl
         )
       ),
       mergeMap((currentMenu) => {
