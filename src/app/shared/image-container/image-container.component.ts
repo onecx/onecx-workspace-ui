@@ -33,13 +33,12 @@ export class ImageContainerComponent {
   }
 
   constructor(appState: AppStateService) {
-    appState.currentMfe$.pipe(
-      map((mfe) => {
-        return Utils.prepareUrlPath(mfe.remoteBaseUrl, this.defaultLogoPaths[this.defaultLogoType ?? 'workspace'])
-      })
-    )
     appState.currentMfe$
-      .pipe(map((mfe) => Utils.prepareUrlPath(mfe.remoteBaseUrl, environment.DEFAULT_LOGO_PATH)))
+      .pipe(
+        map((mfe) =>
+          Utils.prepareUrlPath(mfe.remoteBaseUrl, this.defaultLogoPaths[this.defaultLogoType ?? 'workspace'])
+        )
+      )
       .subscribe((data) => (this.defaultImageUrl = data))
   }
 

@@ -64,7 +64,6 @@ export class MenuDetailComponent implements OnChanges {
   public mfeMap: Map<string, MenuURL> = new Map()
   public mfeItems!: MenuURL[]
   public filteredMfes: MenuURL[] = []
-
   // language settings and preview
   public languagesAvailable: LanguageItem[] = []
   public languagesDisplayed: LanguageItem[] = []
@@ -84,7 +83,6 @@ export class MenuDetailComponent implements OnChanges {
     private readonly icon: IconService,
     private readonly menuApi: MenuItemAPIService,
     private readonly wProductApi: WorkspaceProductAPIService,
-    private readonly renderer: Renderer2,
     private readonly translate: TranslateService,
     private readonly msgService: PortalMessageService
   ) {
@@ -127,8 +125,9 @@ export class MenuDetailComponent implements OnChanges {
         this.menuItem = {
           parentItemId: this.menuItemOrg?.id,
           position: this.menuItemOrg ? this.getMaxChildrenPosition(this.menuItemOrg) : 0,
+          disabled: false,
           external: false,
-          disabled: false
+          target: '_self'
         } as MenuItem
         this.fillForm(this.menuItem)
       } else this.getMenu() // edit
@@ -297,6 +296,7 @@ export class MenuDetailComponent implements OnChanges {
       this.menuItem.position = this.menuItemForm.controls['position'].value
       this.menuItem.disabled = this.menuItemForm.controls['disabled'].value
       this.menuItem.external = this.menuItemForm.controls['external'].value
+      this.menuItem.target = this.menuItemForm.controls['target'].value
       this.menuItem.description = this.menuItemForm.controls['description'].value
     }
   }
@@ -446,10 +446,13 @@ export class MenuDetailComponent implements OnChanges {
 
   // the opening of a URL in a new TAB requires the URL - manage here if not exist:
   public adjustExternalLinkCheckbox(url?: string) {
-    if (url) this.menuItemForm.controls['external'].enable()
-    else {
+    if (url) {
+      this.menuItemForm.controls['external'].enable()
+      this.menuItemForm.controls['target'].enable()
+    } else {
       this.menuItemForm.controls['external'].setValue(false) // reset
       this.menuItemForm.controls['external'].disable()
+      this.menuItemForm.controls['target'].disable()
     }
   }
   /**

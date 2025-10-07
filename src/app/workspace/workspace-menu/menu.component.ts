@@ -8,6 +8,7 @@ import { saveAs } from 'file-saver'
 import { TreeTable, TreeTableNodeExpandEvent } from 'primeng/treetable'
 import { SelectItem, TreeNode } from 'primeng/api'
 
+import { getLocation } from '@onecx/accelerator'
 import { Action } from '@onecx/angular-accelerator'
 import { PortalMessageService, UserService, WorkspaceService } from '@onecx/angular-integration-interface'
 import {
@@ -76,6 +77,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   public treeNodeLabelSwitchValueOrg = '' // prevent bug in PrimeNG SelectButton
   public currentLogoUrl: string | undefined = undefined
   public roleFilterValue: string[] = []
+  private currentLocation: string | undefined = undefined
 
   // workspace
   public workspace$!: Observable<Workspace | undefined>
@@ -99,6 +101,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   public displayMenuDelete = false
   public displayMenuPreview = false
   public displayRoles = false
+  public getLocation = getLocation
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -115,6 +118,8 @@ export class MenuComponent implements OnInit, OnDestroy {
     private readonly msgService: PortalMessageService,
     private readonly userService: UserService
   ) {
+    // appState.currentMfe$.subscribe((mfe) => (this.shellName = mfe.shellName))
+    // appState.currentLocation$.subscribe((loc) => (this.currentLocation = loc.url))
     const state = this.stateService.getState()
     this.menuItems = state.workspaceMenuItems // reestablish menu state
     // simplify permission checks
@@ -133,9 +138,15 @@ export class MenuComponent implements OnInit, OnDestroy {
         css: 'hidden-md'
       },
       {
-        name: 'extern',
+        name: 'external',
         headerKey: 'DIALOG.MENU.TREE.EXTERN',
         tooltipKey: 'DIALOG.MENU.TREE.EXTERN.TOOLTIP',
+        css: 'hidden-md'
+      },
+      {
+        name: 'target',
+        headerKey: 'DIALOG.MENU.TREE.TARGET',
+        tooltipKey: 'DIALOG.MENU.TREE.TARGET.TOOLTIP',
         css: 'hidden-md'
       },
       {
@@ -344,6 +355,7 @@ export class MenuComponent implements OnInit, OnDestroy {
           description: item.description,
           disabled: !item.disabled,
           external: item.external,
+          target: item.target,
           i18n: item.i18n,
           key: item.key,
           modificationCount: item.modificationCount ?? 0,
@@ -413,7 +425,6 @@ export class MenuComponent implements OnInit, OnDestroy {
    * TREE + DIALOG
    */
   public onClearFilterMenuTable(val?: any): void {
-    console.log('onClearFilterMenuTable', '#' + val + '#', typeof val)
     if (this.menuTreeFilter) this.menuTreeFilter.nativeElement.value = ''
     if (this.menuTree) this.menuTree.filterGlobal('', 'contains')
   }
@@ -664,7 +675,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         last: pos === items.length,
         level: (parent?.level ?? 0) + 1,
         prevId: prevId,
-        gotoUrl: this.prepareItemUrl(item.url),
+        gotoUrl: this.prepareMenuItemUrl(item.url),
         // concat the positions
         positionPath: parent ? parent.position + '.' + item.position : item.position,
         roles: {}
@@ -685,11 +696,13 @@ export class MenuComponent implements OnInit, OnDestroy {
   private createTreeNode(item: MenuItemNodeData): TreeNode {
     return { data: item, label: item.name, expanded: false, key: item.key, leaf: true, children: [] }
   }
-  private prepareItemUrl(url: string | undefined): string | undefined {
+  private prepareMenuItemUrl(url: string | undefined): string | undefined {
     if (!(url && this.workspace?.baseUrl)) return undefined
     if (url.startsWith('http')) return url
-    const url_parts = window.location.href.split('/')
-    return url_parts[0] + '//' + url_parts[2] + Location.joinWithSlash(this.workspace?.baseUrl, url)
+    return Location.joinWithSlash(
+      Location.joinWithSlash(this.getLocation().origin, this.getLocation().deploymentPath),
+      Location.joinWithSlash(this.workspace?.baseUrl, url)
+    )
   }
 
   private prepareTreeNodeHelper(restore: boolean): void {

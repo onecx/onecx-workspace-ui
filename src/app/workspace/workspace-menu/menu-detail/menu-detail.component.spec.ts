@@ -17,7 +17,8 @@ import {
   MenuItem,
   Product,
   Microfrontend,
-  Scope
+  Scope,
+  Target
 } from 'src/app/shared/generated'
 import { MenuURL } from './menu-detail.component'
 
@@ -28,6 +29,7 @@ const form = new FormGroup({
   position: new FormControl('1'),
   disabled: new FormControl<boolean>(false),
   external: new FormControl<boolean>(false),
+  target: new FormControl<string>('_self'),
   url: new FormControl('url'),
   badge: new FormControl('badge'),
   scope: new FormControl('scope'),
@@ -43,6 +45,7 @@ const mockMenuItems: MenuItem[] = [
     name: 'menu name',
     position: 0,
     external: false,
+    target: Target.Self,
     disabled: false,
     badge: 'badge',
     scope: Scope.App,
@@ -66,6 +69,7 @@ const mockMenuItems: MenuItem[] = [
     name: 'menu name',
     position: 0,
     external: false,
+    target: Target.Blank,
     disabled: false,
     badge: 'badge',
     scope: Scope.App,
@@ -80,6 +84,7 @@ const mockMenuItems: MenuItem[] = [
     name: 'menu name',
     position: 0,
     external: false,
+    target: Target.Self,
     disabled: false,
     badge: 'badge',
     scope: Scope.App,
@@ -94,6 +99,7 @@ const mockMenuItems: MenuItem[] = [
     name: 'menu name',
     position: 0,
     external: false,
+    target: Target.Self,
     disabled: false,
     badge: 'badge',
     scope: Scope.App,
@@ -462,6 +468,7 @@ describe('MenuDetailComponent', () => {
       position: new FormControl('1'),
       disabled: new FormControl<boolean>(false),
       external: new FormControl<boolean>(false),
+      target: new FormControl<string>('_self'),
       url: new FormControl({
         mfePath: 'url mfePath'
       }),
@@ -487,6 +494,7 @@ describe('MenuDetailComponent', () => {
         position: new FormControl('1'),
         disabled: new FormControl<boolean>(false),
         external: new FormControl<boolean>(false),
+        target: new FormControl<string>('_self'),
         url: new FormControl('url'),
         badge: new FormControl('badge'),
         scope: new FormControl('scope'),
@@ -764,7 +772,8 @@ describe('MenuDetailComponent', () => {
       const mockEvent = { originalEvent: new Event('filter'), query: undefined! }
       component.menuItemForm = new FormGroup({
         url: new FormControl(''),
-        external: new FormControl(false)
+        external: new FormControl(false),
+        target: new FormControl<string>('_self')
       })
       component.mfeItems = [microfrontend]
 
@@ -804,7 +813,8 @@ describe('MenuDetailComponent', () => {
       const mockEvent = { originalEvent: new Event('filter'), query: '/pa' }
       component.menuItemForm = new FormGroup({
         url: new FormControl(''),
-        external: new FormControl(false)
+        external: new FormControl(false),
+        target: new FormControl<string>('_self')
       })
       const microfrontendNoId: Microfrontend = {
         appId: 'appId',
