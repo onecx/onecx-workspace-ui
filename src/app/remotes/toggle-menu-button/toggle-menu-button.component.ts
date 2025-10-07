@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { Component, inject, Inject, Input, OnDestroy } from '@angular/core'
+import { Component, inject, Inject, Input } from '@angular/core'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
-import { BehaviorSubject, map, ReplaySubject, Subscription } from 'rxjs'
+import { BehaviorSubject, map, ReplaySubject } from 'rxjs'
 
 import {
   BASE_URL,

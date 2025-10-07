@@ -11,7 +11,7 @@ import {
 } from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
-import { BehaviorSubject, filter, ReplaySubject, Subscription } from 'rxjs'
+import { BehaviorSubject, filter, ReplaySubject } from 'rxjs'
 
 import {
   AngularRemoteComponentsModule,
