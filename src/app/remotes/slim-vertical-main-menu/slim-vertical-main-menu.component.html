@@ -3,10 +3,10 @@
     [hidden]="isHidden$ | async"
     *ngIf="menuItems$ | async as menuItems"
     id="ws_slim_vertical_main_menu_list"
-    class="slim-menu-list flex flex-column align-items-center justify-content-center list-none m-0 p-0"
+    class="slim-vertical-menu-list flex flex-column align-items-center justify-content-center list-none m-0 p-0"
     [ngClass]="{
-      'slim-menu-list-slim': activeMode === Mode.SLIM,
-      'slim-menu-list-slim-plus': activeMode === Mode.SLIM_PLUS
+      'slim-vertical-menu-list-slim': activeMode === Mode.SLIM,
+      'slim-vertical-menu-list-slim-plus': activeMode === Mode.SLIM_PLUS
     }"
   >
     <app-slim-menu-item

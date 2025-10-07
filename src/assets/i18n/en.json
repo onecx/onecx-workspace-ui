@@ -662,7 +662,9 @@
     },
     "SLIM_USER_MENU": {
       "GUEST": "Guest",
-      "LOGOUT": "Log out"
+      "LOGOUT": "Log out",
+      "DISPLAY_TOOLTIP": "Display user menu",
+      "HIDE_TOOLTIP": "Hide user menu"
     }
   },
   "VALIDATION": {

@@ -1,7 +1,59 @@
-.slim-menu-list-slim {
+.slim-user-menu-slim {
   width: 5rem;
 }
 
-.slim-menu-list-slim-plus {
+.slim-user-menu-slim-plus {
   width: 8rem;
+}
+
+.slim-user-menu {
+  border-top: 1px solid var(--menu-inline-border-color, #c4c4c4);
+}
+
+.slim-user-menu-header {
+  width: 100%;
+  color: var(--menu-item-text-color, var(--text-secondary-color, #000000));
+  background-color: var(--menu-item-bg-color, var(--menu-bg-color), #f7f7f7);
+  // hover and focus styles
+  & :hover,
+  & :focus {
+    background-color: var(--menu-item-hover-bg-color, #e0e0e0);
+  }
+}
+
+.slim-user-menu-header-button {
+  width: 100%;
+  color: var(--menu-item-text-color, var(--text-secondary-color, #000000));
+  background-color: var(--menu-item-bg-color, var(--menu-bg-color), #f7f7f7);
+}
+
+.slim-user-menu-header-button-icon {
+  width: 100%;
+  font-size: calc(var(--font-size, var(--font-size-default, 1.25rem)) * 1.5);
+}
+
+.slim-user-menu-header-button-text {
+  width: 100%;
+  overflow-wrap: break-word;
+  font-size: var(--font-size);
+  margin-top: 0.25rem;
+  display: block;
+  text-align: center;
+}
+
+.slim-user-menu-header-button-plus {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.slim-user-menu-list {
+  max-height: 40vh;
+  transition: max-height 0.25s ease-out;
+  overflow: auto;
+}
+
+.slim-user-menu-list-hidden {
+  max-height: 0;
+  transition: max-height 0.25s ease-in;
+  overflow: hidden;
 }
