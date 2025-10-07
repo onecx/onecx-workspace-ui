@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { Component, inject, Inject, Input } from '@angular/core'
-import { UntilDestroy } from '@ngneat/until-destroy'
+import { Component, inject, Inject, Input, OnDestroy } from '@angular/core'
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
-import { BehaviorSubject, map, ReplaySubject } from 'rxjs'
+import { BehaviorSubject, map, ReplaySubject, Subscription } from 'rxjs'
 
 import {
   BASE_URL,
@@ -64,8 +64,8 @@ export class OneCXToggleMenuButtonComponent implements ocxRemoteWebcomponent {
     private readonly userService: UserService,
     private readonly translateService: TranslateService
   ) {
-    this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
-    this.menuService.isVisible(MENU_MODE).subscribe(this.isStaticMenuVisible$)
+    this.userService.lang$.pipe(untilDestroyed(this)).subscribe((lang) => this.translateService.use(lang))
+    this.menuService.isVisible(MENU_MODE).pipe(untilDestroyed(this)).subscribe(this.isStaticMenuVisible$)
   }
 
   @Input() set ocxRemoteComponentConfig(remoteComponentConfig: RemoteComponentConfig) {

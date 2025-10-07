@@ -10,8 +10,8 @@ import {
   ViewChild
 } from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
-import { UntilDestroy } from '@ngneat/until-destroy'
-import { BehaviorSubject, filter, ReplaySubject } from 'rxjs'
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
+import { BehaviorSubject, filter, ReplaySubject, Subscription } from 'rxjs'
 
 import {
   AngularRemoteComponentsModule,
@@ -26,10 +26,11 @@ import { PortalCoreModule } from '@onecx/portal-integration-angular'
 import { Configuration, RefType, WorkspaceAPIService } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
 import { environment } from 'src/environments/environment'
-import { EventsTopic, SlotResizedEvent } from '@onecx/integration-interface'
+import { EventsTopic, EventType, SlotResizedEvent } from '@onecx/integration-interface'
 
 const RESIZE_OBSERVED_SLOT_NAME = 'onecx-shell-vertical-menu'
 const DEFAULT_WIDTH_REM = 17
+const TOGGLE_MENU_BUTTON_WIDTH_REM = 1.25
 @Component({
   selector: 'app-current-workspace-logo',
   templateUrl: './current-workspace-logo.component.html',
@@ -168,13 +169,15 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
       .pipe(
         filter(
           (e): e is SlotResizedEvent =>
-            e.type === 'slotResized' && (e as SlotResizedEvent).payload.slotName === RESIZE_OBSERVED_SLOT_NAME
-        )
+            e.type === EventType.SLOT_RESIZED && (e as SlotResizedEvent).payload.slotName === RESIZE_OBSERVED_SLOT_NAME
+        ),
+        untilDestroyed(this)
       )
       .subscribe((e) => {
         const slotWidth = e.payload.slotDetails.width
         if (slotWidth > 0) {
-          const widthWithSpaceForToggleButton = e.payload.slotDetails.width - this.remToPx() * 1.25
+          const widthWithSpaceForToggleButton =
+            e.payload.slotDetails.width - this.remToPx() * TOGGLE_MENU_BUTTON_WIDTH_REM
           this.container.nativeElement.style.width = widthWithSpaceForToggleButton + 'px'
         }
       })
@@ -185,7 +188,7 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
   }
 
   private setDefaultWidth() {
-    this.container.nativeElement.style.width = DEFAULT_WIDTH_REM - 1.25 + 'rem'
+    this.container.nativeElement.style.width = DEFAULT_WIDTH_REM - TOGGLE_MENU_BUTTON_WIDTH_REM + 'rem'
   }
 
   private log(text: string) {
