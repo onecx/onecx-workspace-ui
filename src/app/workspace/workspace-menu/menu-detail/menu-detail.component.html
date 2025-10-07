@@ -145,12 +145,12 @@
                 <div class="flex flex-row column-gap-2 align-items-center">
                   <div class="hidden md:block w-30rem text-responsive">{{ mfe.mfePath }}</div>
                   <div class="block md:hidden w-15rem text-responsive">{{ mfe.mfePath }}</div>
-                  <div class="flex flex-column">
+                  <!--div class="flex flex-column">
                     <div class="text-sm font-bold" [class.danger-action-text]="!mfe.id">
                       {{ mfe.id ? mfe.product : (mfe.product | translate) }}
                     </div>
                     <div class="text-xs" *ngIf="mfe.id">{{ mfe.appId }}</div>
-                  </div>
+                  </div-->
                 </div>
               </ng-template>
             </p-autoComplete>

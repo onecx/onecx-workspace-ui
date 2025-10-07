@@ -17,6 +17,7 @@ import {
   of,
   retry,
   shareReplay,
+  tap,
   withLatestFrom
 } from 'rxjs'
 import { MenuItem } from 'primeng/api'
@@ -41,8 +42,9 @@ import { SharedModule } from 'src/app/shared/shared.module'
 import { environment } from 'src/environments/environment'
 
 export interface WorkspaceMenuItems {
-  workspaceName: string
   items: MenuItem[]
+  workspaceName: string
+  workspaceBaseUrl: string
 }
 
 @Component({
@@ -60,10 +62,7 @@ export interface WorkspaceMenuItems {
     PanelMenuModule
   ],
   providers: [
-    {
-      provide: BASE_URL,
-      useValue: new ReplaySubject<string>(1)
-    },
+    { provide: BASE_URL, useValue: new ReplaySubject<string>(1) },
     provideTranslateServiceForRoot({
       isolate: true,
       loader: {
@@ -122,16 +121,18 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRe
 
     combineLatest([location$, this.getMenuItems()])
       .pipe(
-        map(([url, workspaceItems]) => {
+        map(([url, menuItems]) => {
           const currentItems = this.menuItems$.getValue()
-          if (!currentItems || currentItems.workspaceName !== workspaceItems.workspaceName) {
+          if (!currentItems || currentItems.workspaceName !== menuItems.workspaceName) {
             return {
-              workspaceName: workspaceItems.workspaceName,
-              items: this.changeActiveItem(url, workspaceItems.items)
+              workspaceName: menuItems.workspaceName,
+              workspaceBaseUrl: menuItems.workspaceBaseUrl,
+              items: this.changeActiveItem(url, menuItems.items)
             }
           } else {
             return {
               workspaceName: currentItems.workspaceName,
+              workspaceBaseUrl: currentItems.workspaceBaseUrl,
               items: this.changeActiveItem(url, currentItems.items)
             }
           }
@@ -155,7 +156,11 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRe
             }
           })
           .pipe(
-            map((response) => ({ data: response, workspaceName: currentWorkspace.workspaceName })),
+            map((response) => ({
+              data: response,
+              workspaceName: currentWorkspace.workspaceName,
+              workspaceBaseUrl: currentWorkspace.baseUrl
+            })),
             retry({ delay: 500, count: 3 }),
             catchError(() => {
               console.error('Unable to load menu items for vertical main menu.')
@@ -165,9 +170,14 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRe
       ),
       withLatestFrom(this.userService.lang$),
       map(
-        ([workspaceItems, userLang]): WorkspaceMenuItems => ({
-          workspaceName: workspaceItems?.workspaceName ?? '',
-          items: this.menuItemService.constructMenuItems(workspaceItems?.data?.menu?.[0]?.children, userLang)
+        ([menuData, userLang]): WorkspaceMenuItems => ({
+          workspaceBaseUrl: menuData?.workspaceBaseUrl!,
+          workspaceName: menuData?.workspaceName!,
+          items: this.menuItemService.constructMenuItems(
+            menuData?.data?.menu?.[0]?.children,
+            userLang,
+            menuData?.workspaceBaseUrl!
+          )
         })
       ),
       shareReplay(),
@@ -188,14 +198,9 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRe
 
   private updateItemsByActiveItem(item: MenuItem, activeItem: MenuItem | undefined): MenuItem {
     return {
+      ...item,
       styleClass: item.id === activeItem?.id ? this.activeItemClass : '',
-      items: item.items?.map((i) => this.updateItemsByActiveItem(i, activeItem)),
-      label: item.label,
-      id: item.id,
-      icon: item.icon,
-      routerLink: item.routerLink,
-      url: item.url,
-      expanded: item.expanded
+      items: item.items?.map((i) => this.updateItemsByActiveItem(i, activeItem))
     }
   }
 }

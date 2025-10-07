@@ -101,7 +101,6 @@ export class MenuComponent implements OnInit, OnDestroy {
   public displayMenuDelete = false
   public displayMenuPreview = false
   public displayRoles = false
-  public getLocation = getLocation
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -700,7 +699,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     if (!(url && this.workspace?.baseUrl)) return undefined
     if (url.startsWith('http')) return url
     return Location.joinWithSlash(
-      Location.joinWithSlash(this.getLocation().origin, this.getLocation().deploymentPath),
+      Location.joinWithSlash(getLocation().origin, getLocation().deploymentPath),
       Location.joinWithSlash(this.workspace?.baseUrl, url)
     )
   }
