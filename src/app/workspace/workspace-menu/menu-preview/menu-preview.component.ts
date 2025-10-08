@@ -5,7 +5,6 @@ import { PortalMessageService, UserService } from '@onecx/angular-integration-in
 
 import { Utils } from 'src/app/shared/utils'
 import { MenuItemAPIService, WorkspaceMenuItem } from 'src/app/shared/generated'
-import { MenuTreeService } from '../services/menu-tree.service'
 import { MenuStateService } from '../services/menu-state.service'
 import { TreeTableNodeExpandEvent } from 'primeng/treetable'
 import { TreeNodeDropEvent } from 'primeng/tree'
