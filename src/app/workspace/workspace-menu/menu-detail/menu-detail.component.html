@@ -2,7 +2,6 @@
   #menuDetailDialog
   [header]="'DIALOG.MENU.HEADER.' + changeMode | translate"
   [(visible)]="displayDetailDialog"
-  (onHide)="onCloseDetailDialog()"
   [modal]="true"
   [closable]="true"
   [draggable]="true"
@@ -346,7 +345,7 @@
         *ngIf="changeMode === 'VIEW'"
         id="ws_menu_detail_action_close"
         icon="pi pi-times"
-        (onClick)="onCloseDetailDialog()"
+        (onClick)="onCloseDialog()"
         [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
         [ariaLabel]="'ACTIONS.NAVIGATION.CLOSE' | translate"
         [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
@@ -357,7 +356,7 @@
         *ngIf="changeMode !== 'VIEW'"
         id="ws_menu_detail_action_cancel"
         icon="pi pi-times"
-        (onClick)="onCloseDetailDialog()"
+        (onClick)="onCloseDialog()"
         [label]="'ACTIONS.CANCEL' | translate"
         [ariaLabel]="'ACTIONS.TOOLTIPS.CANCEL_WITHOUT_SAVE' | translate"
         [pTooltip]="'ACTIONS.TOOLTIPS.CANCEL_WITHOUT_SAVE' | translate"
@@ -384,7 +383,6 @@
 <p-dialog
   [header]="'DIALOG.MENU.HEADER.DELETE' | translate"
   [(visible)]="displayDeleteDialog"
-  (onHide)="onCloseDetailDialog()"
   [modal]="true"
   [closable]="true"
   [draggable]="true"
@@ -411,7 +409,7 @@
       <p-button
         id="ws_menu_delete_action_no"
         icon="pi pi-times"
-        (onClick)="onCloseDeleteDialog()"
+        (onClick)="onCloseDialog()"
         [label]="'ACTIONS.CONFIRMATION.NO' | translate"
         [ariaLabel]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
         [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"

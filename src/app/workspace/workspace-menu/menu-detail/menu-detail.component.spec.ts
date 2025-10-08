@@ -291,7 +291,7 @@ describe('MenuDetailComponent', () => {
       expect(component.menuItems?.length).toEqual(5)
     })
 
-    it('should call getMenu in view mode onChanges and fetch undefined menuItem', () => {
+    it('should call getMenuItem in view mode onChanges and fetch undefined menuItem', () => {
       menuApiServiceSpy.getMenuItemById.and.returnValue(of(undefined))
       component.changeMode = 'VIEW'
       component.menuItemOrg = { id: 'menuItemId' }
@@ -302,7 +302,7 @@ describe('MenuDetailComponent', () => {
       expect(component.menuItem).toBeUndefined()
     })
 
-    it('should call getMenu in view mode onChanges and catch error if api call fails', () => {
+    it('should call getMenuItem in view mode onChanges and catch error if api call fails', () => {
       const errorResponse = { status: 400, statusText: 'Error on getting menu items' }
       menuApiServiceSpy.getMenuItemById.and.returnValue(throwError(() => errorResponse))
       component.changeMode = 'VIEW'
@@ -725,18 +725,11 @@ describe('MenuDetailComponent', () => {
   })
 
   describe('Closing dialog', () => {
-    it('should emit false when onCloseDetailDialog is called', () => {
+    it('should emit false when onCloseDialog is called', () => {
       spyOn(component.dataChanged, 'emit')
+      component.menuItemOrg = mockMenuItems[0]
 
-      component.onCloseDetailDialog()
-
-      expect(component.dataChanged.emit).toHaveBeenCalledWith(false)
-    })
-
-    it('should emit false when onCloseDeleteDialog is called', () => {
-      spyOn(component.dataChanged, 'emit')
-
-      component.onCloseDeleteDialog()
+      component.onCloseDialog()
 
       expect(component.dataChanged.emit).toHaveBeenCalledWith(false)
     })

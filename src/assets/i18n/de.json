@@ -136,7 +136,8 @@
       "NO_DATA": "Keine Daten",
       "RELOAD": "Daten neu laden",
       "RELOAD.OK": "Daten erfolgreich geladen",
-      "OF": "von"
+      "OF": "von",
+      "FILTER.NOT_MATCHING": "Keine Daten entsprechend Filter"
     },
     "TREE": {
       "COLLAPSE_ALL": "Alles zu",
@@ -428,13 +429,16 @@
       },
       "SUBHEADER": "Die Details und Rollenberechtigungen des Workspace Menüs verwalten",
       "ACTION": {
+        "LOAD": "Menüdaten laden",
+        "RELOAD": "Menüdaten neu laden",
         "VIEW": "Details anzeigen",
         "EDIT": "Details bearbeiten"
       },
       "SECTIONS": {
         "ACTIONS": "Aktionen: Menüeinträge verschieben, filtern, zu anderen Seiten gehen",
         "OPTIONS": "Anzeige-Optionen: Baum auf/zuklappen, wählen des Menüeintragstexts, wählen ob Details oder Rollen angezeigt werden sollen",
-        "LINKS": "Links und Neuladen"
+        "LINKS": "Links und Neuladen",
+        "MESSAGES": "Meldungen"
       },
       "TABS": {
         "DETAILS": "Eigenschaften",

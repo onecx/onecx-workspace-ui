@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild, OnDestroy } from '@angular/core'
+import { Component, OnInit, OnDestroy } from '@angular/core'
 import { Location } from '@angular/common'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
@@ -13,7 +13,6 @@ import { Action } from '@onecx/angular-accelerator'
 import { PortalMessageService, UserService, WorkspaceService } from '@onecx/angular-integration-interface'
 import {
   AssignmentAPIService,
-  AssignmentPageResult,
   Assignment,
   CreateAssignmentRequest,
   ImagesInternalAPIService,
@@ -23,8 +22,7 @@ import {
   WorkspaceMenuItem,
   WorkspaceRole,
   WorkspaceAPIService,
-  WorkspaceRolesAPIService,
-  WorkspaceRolePageResult
+  WorkspaceRolesAPIService
 } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
 import { MenuStateService } from './services/menu-state.service'
@@ -51,16 +49,13 @@ type Column = { name: string; headerKey: string; tooltipKey: string; css?: strin
   styleUrls: ['./menu.component.scss']
 })
 export class MenuComponent implements OnInit, OnDestroy {
-  @ViewChild('menuTree') menuTree: TreeTable | undefined
-  @ViewChild('menuTreeFilter') menuTreeFilter: ElementRef<HTMLInputElement> = {} as ElementRef
-  @ViewChild('roleFilter') roleFilter: ElementRef<HTMLInputElement> = {} as ElementRef
-
   Object = Object
   public limitText = Utils.limitText // utils declarations
   public sortByLocale = Utils.sortByLocale
   public getEndpointUrl = Utils.getEndpointUrl
+  public console = console
   private readonly destroy$ = new Subject()
-  // dialog control
+  // dialog
   public actions$: Observable<Action[]> | undefined
   public loading = true
   public loadingMenu = true
@@ -76,20 +71,18 @@ export class MenuComponent implements OnInit, OnDestroy {
   public treeNodeLabelSwitchItems: SelectItem[] = []
   public treeNodeLabelSwitchValue = 'NAME'
   public treeNodeLabelSwitchValueOrg = '' // prevent bug in PrimeNG SelectButton
+  public treeFilteredRows = 0
   public currentLogoUrl: string | undefined = undefined
   public roleFilterValue: string[] = []
   public endpointUrl$: Observable<string>
 
-  // workspace
+  // data
   public workspace$!: Observable<Workspace | undefined>
   public workspace?: Workspace
   public workspaceName: string = this.route.snapshot.params['name']
-  public wRoles$!: Observable<WorkspaceRolePageResult>
   public wRoles: WorkspaceRole[] = []
   public wRolesFiltered: WorkspaceRole[] = []
-  public wAssignments$!: Observable<AssignmentPageResult>
   public wAssignments: Assignment[] = []
-  // menu
   public menuNodes: TreeNode[] = []
   public menuItems: WorkspaceMenuItem[] | undefined
   public menuItem: WorkspaceMenuItem | undefined
@@ -168,7 +161,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.prepareTreeTableSwitchItems()
     this.prepareTreeNodeLabelSwitch()
     this.prepareActionButtons()
-    this.loadData()
+    this.loadAllData()
   }
 
   public ngOnDestroy(): void {
@@ -177,6 +170,9 @@ export class MenuComponent implements OnInit, OnDestroy {
     })
   }
 
+  /**
+   * DIALOG
+   */
   private prepareTreeTableSwitchItems(): void {
     // Due to use PrimeNG Tooltips: do not use the "title" property of SelectItem here
     this.treeTableExpandSwitchItems$ = this.translate
@@ -226,7 +222,6 @@ export class MenuComponent implements OnInit, OnDestroy {
         })
       )
   }
-
   private prepareActionButtons(): void {
     this.actions$ = this.translate
       .get([
@@ -279,6 +274,9 @@ export class MenuComponent implements OnInit, OnDestroy {
         })
       )
   }
+  public onTreeFilterChange(ev: any) {
+    this.treeFilteredRows = ev.filteredValue.length
+  }
 
   /**
    * UI ACTIONS
@@ -291,17 +289,6 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.wRoles = []
     this.wAssignments = []
     this.loadMenu(true)
-  }
-  public onGoToWorkspacePermission(): void {
-    Utils.goToEndpoint(
-      this.workspaceService,
-      this.msgService,
-      this.router,
-      'onecx-permission',
-      'onecx-permission-ui',
-      'workspace',
-      { 'workspace-name': this.workspaceName }
-    )
   }
 
   public onTreeNodeLabelSwitchChange(ev: any): void {
@@ -341,13 +328,11 @@ export class MenuComponent implements OnInit, OnDestroy {
   public isObjectEmpty(obj: object) {
     return Object.keys(obj).length === 0
   }
-
   public onToggleTreeTableContent(ev: any): void {
     this.displayRoles = ev.value === 'ROLES'
     if (!this.displayRoles) this.onColumnRoleFilterReset()
     this.loadRolesAndAssignments()
   }
-
   // change visibility of menu item by click in tree
   public onToggleDisable(ev: any, item: WorkspaceMenuItem): void {
     ev.stopPropagation()
@@ -385,11 +370,70 @@ export class MenuComponent implements OnInit, OnDestroy {
         }
       })
   }
+  // triggered by changes of tree structure in preview dialog
+  public onUpdateMenuStructure(changed: boolean): void {
+    this.loadMenu(true)
+  }
+
+  // EXPORT + IMPORT
+  public onExportMenu(): void {
+    if (this.workspaceName) {
+      this.menuApi.exportMenuByWorkspaceName({ workspaceName: this.workspaceName }).subscribe((data) => {
+        const jsonBody = JSON.stringify(data, null, 2)
+        saveAs(
+          new Blob([jsonBody], { type: 'text/json' }),
+          'onecx-menu_' + this.workspaceName + '_' + Utils.getCurrentDateTime() + '.json',
+          { autoBom: false }
+        )
+      })
+    }
+  }
+  public onImportMenu(): void {
+    this.displayMenuImport = true
+  }
+  public onImportMenuHide(): void {
+    this.displayMenuImport = false
+  }
+
+  // ROLES
+  public onRoleFilterChange(val: string): void {
+    this.wRolesFiltered = this.wRoles.filter((r) => r.name!.indexOf(val) >= 0)
+  }
+  public onColumnRoleFilterReset(): void {
+    if (this.roleFilterValue.length > 0) {
+      this.roleFilterValue = []
+      this.loadMenu(true)
+    }
+  }
+  public onColumnRoleFilterChange(role: string): void {
+    if (this.roleFilterValue.includes(role)) this.roleFilterValue = this.roleFilterValue.filter((r) => r !== role)
+    else this.roleFilterValue.push(role)
+    this.loadMenu(true)
+  }
+  public onDisplayRoles(): void {
+    if (!this.displayRoles && this.wRoles.length === 0) {
+      this.loadRolesAndAssignments()
+    }
+    this.displayRoles = !this.displayRoles
+  }
+
+  // REORDER
+  public onDisplayMenuPreview(): void {
+    this.displayMenuPreview = true
+  }
+  public onHideMenuPreview(): void {
+    this.displayMenuPreview = false
+  }
+
+  // LOGO
+  private getLogoUrl(workspace: Workspace): string | undefined {
+    if (workspace.logoUrl) return workspace.logoUrl
+    else return Utils.bffImageUrl(this.imageApi.configuration.basePath, workspace.name, RefType.Logo)
+  }
 
   /****************************************************************************
-   * ROW ACTIONS
    ****************************************************************************
-   * CREATE + EDIT + DELETE + GO TO EXTERN
+   * ROW ACTIONS
    */
   public onGotoDetails($event: MouseEvent, item: WorkspaceMenuItem): void {
     $event.stopPropagation()
@@ -403,12 +447,17 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.menuItem = parent
     this.displayMenuDetail = true
   }
-
-  // triggered by change event in menu detail dialog
+  public onDeleteMenu($event: MouseEvent, item: WorkspaceMenuItem): void {
+    $event.stopPropagation()
+    this.changeMode = 'DELETE'
+    this.menuItem = item
+    this.displayMenuDelete = true
+  }
+  // triggered by change event from menu detail dialog
   public onMenuItemChanged(changed: boolean): void {
     if (changed) {
       if (this.displayMenuDelete) {
-        this.removeNodeFromTree(this.menuNodes, this.menuItem?.key)
+        this.removeTreeNode(this.menuNodes, this.menuItem?.key)
         this.menuNodes = [...this.menuNodes] // refresh UI
       }
       if (this.displayMenuDetail) {
@@ -419,20 +468,14 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.displayMenuDelete = false
     this.menuItem = undefined
   }
-  public onDeleteMenu($event: MouseEvent, item: WorkspaceMenuItem): void {
-    $event.stopPropagation()
-    this.changeMode = 'DELETE'
-    this.menuItem = item
-    this.displayMenuDelete = true
-  }
 
   /****************************************************************************
    ****************************************************************************
-   * TREE + DIALOG
+   * TREE
    */
-  public onClearFilterMenuTable(val?: any): void {
-    if (this.menuTreeFilter) this.menuTreeFilter.nativeElement.value = ''
-    if (this.menuTree) this.menuTree.filterGlobal('', 'contains')
+  public onTreeFilterClear(tree: TreeTable, filter: HTMLInputElement): void {
+    filter.value = ''
+    tree.filterGlobal('', 'contains')
   }
   public onToggleTreeViewMode(event: any): void {
     this.menuNodes.forEach((node) => {
@@ -468,11 +511,117 @@ export class MenuComponent implements OnInit, OnDestroy {
       this.stateService.getState().treeExpansionState.set(event.node.key, event.node.expanded === true)
   }
 
+  // remove a node and its sub nodes (recursively) in the tree
+  private removeTreeNode(nodes: TreeNode[], key?: string): boolean {
+    if (!key) return false
+    let stop = false
+    nodes.forEach((n, i) => {
+      if (!stop) {
+        if (n.key === key) {
+          // remove all children
+          if (n.children) for (const child of n.children) this.removeTreeNode(n.children, child.key)
+          nodes.splice(i, 1)
+          stop = true
+        } else if (n.children)
+          // try other items on same level...start with children of them
+          this.removeTreeNode(n.children, key)
+      }
+    })
+    return stop
+  }
+  private createTreeNode(item: MenuItemNodeData): TreeNode {
+    return { data: item, label: item.name, expanded: false, key: item.key, leaf: true, children: [] }
+  }
+
+  // prepare recursively the tree nodes from menu structure
+  private mapToTreeNodes(items: WorkspaceMenuItem[], parent?: MenuItemNodeData): TreeNode[] {
+    const nodes: TreeNode[] = []
+    items.forEach((i) => (i.position = i.position ?? 0)) // set default
+    items.sort((a, b) => a.position! - b.position!)
+    let pos = 1
+    let prevId: string | undefined
+    for (const item of items) {
+      const nodeData = {
+        ...item,
+        first: pos === 1,
+        last: pos === items.length,
+        level: (parent?.level ?? 0) + 1,
+        prevId: prevId,
+        gotoUrl: this.prepareMenuItemUrl(item.url),
+        // concat the positions
+        positionPath: parent ? parent.position + '.' + item.position : item.position,
+        roles: {}
+      } as MenuItemNodeData
+      const newNode: TreeNode = this.createTreeNode(nodeData)
+      if (item.children && item.children.length > 0) {
+        newNode.leaf = false
+        newNode.data.badge = item.badge ?? 'folder '
+        newNode.data.node = newNode
+        newNode.children = this.mapToTreeNodes(item.children, nodeData)
+      }
+      nodes.push(newNode)
+      pos++
+      prevId = item.id
+    }
+    return nodes
+  }
+  private prepareMenuItemUrl(url: string | undefined): string | undefined {
+    if (!(url && this.workspace?.baseUrl)) return undefined
+    if (url.startsWith('http')) return url
+    return Location.joinWithSlash(
+      Location.joinWithSlash(getLocation().origin, getLocation().deploymentPath),
+      Location.joinWithSlash(this.workspace?.baseUrl, url)
+    )
+  }
+
+  private prepareTreeNodeHelper(restore: boolean): void {
+    // init stores
+    this.parentItems = [] // default value is empty
+    this.usedLanguages = new Map()
+    // fill
+    this.prepareTreeNodeHelperRecursively(this.menuNodes)
+    this.prepareTreeNodeLabelSwitch() // update
+    this.treeNodeLabelSwitchValueOrg = '' // reset
+    this.onTreeNodeLabelSwitchChange({ value: this.treeNodeLabelSwitchValue })
+    // initially open the first menu item if exists
+    if (!restore && this.menuNodes.length >= 1) {
+      this.menuNodes[0].expanded = true
+      if (this.menuNodes[0].key) this.stateService.getState().treeExpansionState.set(this.menuNodes[0].key, true)
+    }
+  }
+  private prepareTreeNodeHelperRecursively(nodes: TreeNode[]): void {
+    nodes.forEach((m) => {
+      // 1. collect all parent items to build a drop down list
+      this.parentItems.push({ label: m.key, value: m.data.id } as SelectItem)
+      // 2. collect all languages to be used in label switcher
+      if (m.data.i18n && Object.keys(m.data.i18n).length > 0) {
+        for (const k in m.data.i18n) {
+          let n = 1
+          if (this.usedLanguages.has(k)) n = this.usedLanguages.get(k)! + 1
+          this.usedLanguages.set(k, n)
+        }
+      }
+      // children
+      if (m.children && m.children.length > 0) this.prepareTreeNodeHelperRecursively(m.children)
+    })
+    this.parentItems.sort(Utils.dropDownSortItemsByLabel)
+  }
+  // prepare the node label switcher: add the used languages at the end
+  private prepareTreeNodeLabelSwitch(): void {
+    this.treeNodeLabelSwitchItems = [
+      { label: 'Name', value: 'NAME' },
+      { label: 'ID', value: 'ID' }
+    ]
+    const langs = Array.from(this.usedLanguages.keys())
+    langs.sort(Utils.sortByLocale)
+    langs.forEach((l) => this.treeNodeLabelSwitchItems.push({ label: l, value: l }))
+  }
+
   /****************************************************************************
    ****************************************************************************
    * DATA
    */
-  public loadData(): void {
+  public loadAllData(): void {
     this.loading = true
     this.exceptionKey = undefined
     this.workspace = undefined
@@ -499,8 +648,10 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   public loadMenu(restore: boolean): void {
     if (!this.workspace) return
+    this.menuItems = []
     this.menuItem = undefined
     this.loadingMenu = true
+    this.treeFilteredRows = 0
 
     this.menuApi
       .getMenuStructure({
@@ -511,14 +662,15 @@ export class MenuComponent implements OnInit, OnDestroy {
         catchError((err) => {
           this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.MENUS'
           console.error('getMenuStructure', err)
-          return of(null)
+          return of([] as WorkspaceMenuItem[])
         }),
         finalize(() => (this.loadingMenu = false))
       )
       .subscribe({
         next: (data) => {
-          if (data) {
-            this.menuItems = data
+          this.menuItems = data
+          this.treeFilteredRows = this.menuItems.length
+          if (this.menuItems.length > 0) {
             this.menuNodes = this.mapToTreeNodes(this.menuItems)
             this.prepareTreeNodeHelper(restore)
             if (this.wRoles.length > 0) this.assignNode2Role(this.wAssignments)
@@ -597,7 +749,6 @@ export class MenuComponent implements OnInit, OnDestroy {
       }
     })
   }
-
   private findTreeNodeById(source: TreeNode[], id?: string): TreeNode | undefined {
     let treeNode: TreeNode | undefined = undefined
     for (const node of source) {
@@ -640,179 +791,5 @@ export class MenuComponent implements OnInit, OnDestroy {
         console.error('deleteAssignment', err)
       }
     })
-  }
-
-  /** remove node and sub nodes (recursively) in the tree
-   */
-  private removeNodeFromTree(nodes: TreeNode[], key?: string): boolean {
-    if (!key) return false
-    let stop = false
-    nodes.forEach((n, i) => {
-      if (!stop) {
-        if (n.key === key) {
-          nodes.splice(i, 1)
-          stop = true
-        }
-      }
-      if (!stop && n.children && n.children?.length > 0) stop = this.removeNodeFromTree(n.children, key)
-    })
-    return stop
-  }
-
-  /****************************************************************************
-   ****************************************************************************
-   *  MENU TREE POPUP - outsourced for reordering and preview
-   */
-
-  // prepare recursively the tree nodes from menu structure
-  private mapToTreeNodes(items?: WorkspaceMenuItem[], parent?: MenuItemNodeData): TreeNode[] {
-    if (!items || items.length === 0) {
-      return []
-    }
-    const nodes: TreeNode[] = []
-    items.forEach((i) => (i.position = i.position ?? 0)) // set default
-    items.sort((a, b) => a.position! - b.position!)
-    let pos = 1
-    let prevId: string | undefined
-    for (const item of items) {
-      const nodeData = {
-        ...item,
-        first: pos === 1,
-        last: pos === items.length,
-        level: (parent?.level ?? 0) + 1,
-        prevId: prevId,
-        gotoUrl: this.prepareMenuItemUrl(item.url),
-        // concat the positions
-        positionPath: parent ? parent.position + '.' + item.position : item.position,
-        roles: {}
-      } as MenuItemNodeData
-      const newNode: TreeNode = this.createTreeNode(nodeData)
-      if (item.children && item.children.length > 0) {
-        newNode.leaf = false
-        newNode.data.badge = item.badge ?? 'folder '
-        newNode.data.node = newNode
-        newNode.children = this.mapToTreeNodes(item.children, nodeData)
-      }
-      nodes.push(newNode)
-      pos++
-      prevId = item.id
-    }
-    return nodes
-  }
-  private createTreeNode(item: MenuItemNodeData): TreeNode {
-    return { data: item, label: item.name, expanded: false, key: item.key, leaf: true, children: [] }
-  }
-  private prepareMenuItemUrl(url: string | undefined): string | undefined {
-    if (!(url && this.workspace?.baseUrl)) return undefined
-    if (url.startsWith('http')) return url
-    return Location.joinWithSlash(
-      Location.joinWithSlash(getLocation().origin, getLocation().deploymentPath),
-      Location.joinWithSlash(this.workspace?.baseUrl, url)
-    )
-  }
-
-  private prepareTreeNodeHelper(restore: boolean): void {
-    // init stores
-    this.parentItems = [] // default value is empty
-    this.usedLanguages = new Map()
-    // fill
-    this.prepareTreeNodeHelperRecursively(this.menuNodes)
-    this.prepareTreeNodeLabelSwitch() // update
-    this.treeNodeLabelSwitchValueOrg = '' // reset
-    this.onTreeNodeLabelSwitchChange({ value: this.treeNodeLabelSwitchValue })
-    // initially open the first menu item if exists
-    if (!restore && this.menuNodes.length >= 1) {
-      this.menuNodes[0].expanded = true
-      if (this.menuNodes[0].key) this.stateService.getState().treeExpansionState.set(this.menuNodes[0].key, true)
-    }
-  }
-  private prepareTreeNodeHelperRecursively(nodes: TreeNode[]): void {
-    nodes.forEach((m) => {
-      // 1. collect all parent items to build a drop down list
-      this.parentItems.push({ label: m.key, value: m.data.id } as SelectItem)
-      // 2. collect all languages to be used in label switcher
-      if (m.data.i18n && Object.keys(m.data.i18n).length > 0) {
-        for (const k in m.data.i18n) {
-          let n = 1
-          if (this.usedLanguages.has(k)) n = this.usedLanguages.get(k)! + 1
-          this.usedLanguages.set(k, n)
-        }
-      }
-      // children
-      if (m.children && m.children.length > 0) this.prepareTreeNodeHelperRecursively(m.children)
-    })
-    this.parentItems.sort(Utils.dropDownSortItemsByLabel)
-  }
-  // prepare the node label switcher: add the used languages at the end
-  private prepareTreeNodeLabelSwitch(): void {
-    this.treeNodeLabelSwitchItems = [
-      { label: 'Name', value: 'NAME' },
-      { label: 'ID', value: 'ID' }
-    ]
-    const langs = Array.from(this.usedLanguages.keys())
-    langs.sort(Utils.sortByLocale)
-    langs.forEach((l) => this.treeNodeLabelSwitchItems.push({ label: l, value: l }))
-  }
-
-  /****************************************************************************
-   ****************************************************************************
-   *  EXPORT / IMPORT
-   */
-  public onExportMenu(): void {
-    if (this.workspaceName) {
-      this.menuApi.exportMenuByWorkspaceName({ workspaceName: this.workspaceName }).subscribe((data) => {
-        const jsonBody = JSON.stringify(data, null, 2)
-        saveAs(
-          new Blob([jsonBody], { type: 'text/json' }),
-          'onecx-menu_' + this.workspaceName + '_' + Utils.getCurrentDateTime() + '.json',
-          { autoBom: false }
-        )
-      })
-    }
-  }
-  public onImportMenu(): void {
-    this.displayMenuImport = true
-  }
-  public onHideMenuImport(): void {
-    this.displayMenuImport = false
-  }
-
-  public onRoleFilterChange(val: string): void {
-    this.wRolesFiltered = this.wRoles.filter((r) => r.name!.indexOf(val) >= 0)
-  }
-
-  public onColumnRoleFilterReset(): void {
-    if (this.roleFilterValue.length > 0) {
-      this.roleFilterValue = []
-      this.loadMenu(true)
-    }
-  }
-  public onColumnRoleFilterChange(role: string): void {
-    if (this.roleFilterValue.includes(role)) this.roleFilterValue = this.roleFilterValue.filter((r) => r !== role)
-    else this.roleFilterValue.push(role)
-    this.loadMenu(true)
-  }
-
-  public onDisplayRoles(): void {
-    if (!this.displayRoles && this.wRoles.length === 0) {
-      this.loadRolesAndAssignments()
-    }
-    this.displayRoles = !this.displayRoles
-  }
-  public onDisplayMenuPreview(): void {
-    this.displayMenuPreview = true
-  }
-  public onHideMenuPreview(): void {
-    this.displayMenuPreview = false
-  }
-
-  // triggered by changes of tree structure in preview dialog
-  public onUpdateMenuStructure(changed: boolean): void {
-    this.loadMenu(true)
-  }
-
-  private getLogoUrl(workspace: Workspace): string | undefined {
-    if (workspace.logoUrl) return workspace.logoUrl
-    else return Utils.bffImageUrl(this.imageApi.configuration.basePath, workspace.name, RefType.Logo)
   }
 }

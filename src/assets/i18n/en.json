@@ -136,7 +136,8 @@
       "NO_DATA": "No Data",
       "RELOAD": "Reload data",
       "RELOAD.OK": "Data successfully reloaded",
-      "OF": "of"
+      "OF": "of",
+      "FILTER.NOT_MATCHING": "No data matching filter"
     },
     "TREE": {
       "COLLAPSE_ALL": "Collapse all",
@@ -428,13 +429,16 @@
       },
       "SUBHEADER": "Manage details and Role assignments of the Workspace Menu",
       "ACTION": {
+        "LOAD": "Load Menu",
+        "RELOAD": "Reload Menu",
         "VIEW": "Display details",
         "EDIT": "Edit details"
       },
       "SECTIONS": {
         "ACTIONS": "Actions: Move menu items, filter, go to other pages",
         "OPTIONS": "Display options: Expand/collapse tree, select menu item text, choose whether to display details or roles",
-        "LINKS": "Links and Reload"
+        "LINKS": "Links and Reload",
+        "MESSAGES": "Messages"
       },
       "TABS": {
         "DETAILS": "Properties",
