@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing'
 import { MenuItemService } from './menu-item.service'
-import { UserWorkspaceMenuItem } from '../generated'
+import { Target, UserWorkspaceMenuItem } from '../generated'
 import { MenuItem } from 'primeng/api'
 
 const storageMock = (initialStorage: { [key: string]: string }) => {
@@ -48,20 +48,37 @@ describe('MenuItemService', () => {
   })
 
   it('should return an empty array if input is undefined', () => {
-    const result = service.constructMenuItems(undefined, 'en')
+    const result = service.constructMenuItems(undefined, 'en', '/base-path')
     expect(result).toEqual([])
   })
 
   it('should return an empty array if input is an empty array', () => {
-    const result = service.constructMenuItems([], 'en')
+    const result = service.constructMenuItems([], 'en', '/base-path')
     expect(result).toEqual([])
   })
 
   it('should correctly construct menu items from input data', () => {
     const childrenItem = [
-      { key: '2', name: '2', external: false, disabled: false, badge: 'cog' },
-      { key: '3', name: '3', external: false, disabled: false, badge: 'bar', url: 'r', position: 2 },
-      { key: '4', name: '4', external: false, disabled: false, badge: 'box', url: 'l' }
+      { key: '2', name: '2', disabled: false, external: false, target: Target.Self, badge: 'cog' },
+      {
+        key: '3',
+        name: '3',
+        disabled: false,
+        external: false,
+        target: Target.Self,
+        badge: 'bar',
+        url: 'r',
+        position: 3
+      },
+      {
+        key: '4',
+        name: '4',
+        disabled: false,
+        external: false,
+        target: Target.Self,
+        badge: 'box',
+        url: 'l'
+      }
     ]
     const childrenMenuItem = [
       {
@@ -69,7 +86,9 @@ describe('MenuItemService', () => {
         label: '2',
         items: undefined,
         icon: 'pi pi-cog',
+        target: Target.Self,
         routerLink: undefined,
+        queryParams: undefined,
         url: undefined
       },
       {
@@ -77,15 +96,19 @@ describe('MenuItemService', () => {
         label: '4',
         items: undefined,
         icon: 'pi pi-box',
-        routerLink: 'l',
+        target: Target.Self,
+        routerLink: '/l',
+        queryParams: undefined,
         url: undefined
       },
       {
         id: '3',
         label: '3',
         items: undefined,
+        target: Target.Self,
         icon: 'pi pi-bar',
-        routerLink: 'r',
+        routerLink: '/r',
+        queryParams: undefined,
         url: undefined
       }
     ]
@@ -96,6 +119,7 @@ describe('MenuItemService', () => {
         position: 1,
         disabled: false,
         external: false,
+        target: Target.Self,
         url: '/item1',
         badge: 'star',
         children: childrenItem,
@@ -107,6 +131,7 @@ describe('MenuItemService', () => {
         position: 2,
         disabled: false,
         external: true,
+        target: Target.Self,
         url: 'http://external.com',
         badge: 'check',
         children: [],
@@ -119,7 +144,9 @@ describe('MenuItemService', () => {
         label: 'Item 1 EN',
         items: childrenMenuItem,
         icon: 'pi pi-star',
+        target: Target.Self,
         routerLink: '/item1',
+        queryParams: undefined,
         url: undefined
       },
       {
@@ -127,11 +154,13 @@ describe('MenuItemService', () => {
         label: 'Item 2 EN',
         items: undefined,
         icon: 'pi pi-check',
+        target: Target.Self,
         routerLink: undefined,
+        queryParams: undefined,
         url: 'http://external.com'
       }
     ]
-    const result = service.constructMenuItems(input, 'en')
+    const result = service.constructMenuItems(input, 'en', '/base-path')
     expect(result).toEqual(expected)
   })
 
@@ -143,6 +172,7 @@ describe('MenuItemService', () => {
         position: 2,
         disabled: false,
         external: true,
+        target: Target.Self,
         url: 'http://external.com?id=[[id]]',
         badge: 'check',
         children: [],
@@ -154,12 +184,14 @@ describe('MenuItemService', () => {
         id: '2',
         label: 'Item 2 EN',
         icon: 'pi pi-check',
+        target: Target.Self,
         routerLink: undefined,
+        queryParams: undefined,
         items: undefined,
         url: 'http://external.com?id=2'
       }
     ]
-    const result = service.constructMenuItems(input, 'en')
+    const result = service.constructMenuItems(input, 'en', '/base-path')
     expect(sessionStorage.getItem).toHaveBeenCalledTimes(1)
     expect(localStorage.getItem).toHaveBeenCalledTimes(0)
     expect(result).toEqual(expected)
@@ -173,6 +205,7 @@ describe('MenuItemService', () => {
         position: undefined,
         disabled: false,
         external: false,
+        target: Target.Blank,
         url: '/item2?id=[[id]]',
         badge: 'star',
         children: [],
@@ -184,12 +217,14 @@ describe('MenuItemService', () => {
         id: '2',
         label: 'Item 2 EN',
         icon: 'pi pi-star',
-        routerLink: '/item2?id=2',
+        target: Target.Blank,
+        routerLink: '/item2',
+        queryParams: { id: '2' },
         items: undefined,
         url: undefined
       }
     ]
-    const result = service.constructMenuItems(input, 'en')
+    const result = service.constructMenuItems(input, 'en', '/base-path')
     expect(sessionStorage.getItem).toHaveBeenCalledTimes(1)
     expect(localStorage.getItem).toHaveBeenCalledTimes(0)
     expect(result).toEqual(expected)
@@ -203,6 +238,7 @@ describe('MenuItemService', () => {
         position: 1,
         disabled: false,
         external: true,
+        target: Target.Blank,
         url: 'http://external.com?id=[[id]]',
         badge: 'check',
         children: [],
@@ -214,13 +250,15 @@ describe('MenuItemService', () => {
         id: '2',
         label: 'Item 2 EN',
         icon: 'pi pi-check',
+        target: Target.Blank,
         routerLink: undefined,
+        queryParams: undefined,
         items: undefined,
         url: 'http://external.com?id=1'
       }
     ]
     sessionStorage.clear()
-    const result = service.constructMenuItems(input, 'en')
+    const result = service.constructMenuItems(input, 'en', '/base-path')
     expect(sessionStorage.getItem).toHaveBeenCalledTimes(1)
     expect(localStorage.getItem).toHaveBeenCalledTimes(1)
     expect(result).toEqual(expected)
@@ -234,6 +272,7 @@ describe('MenuItemService', () => {
         position: 1,
         disabled: false,
         external: false,
+        target: Target.Blank,
         url: '/item2?id=[[id]]',
         badge: 'star',
         children: [],
@@ -245,13 +284,15 @@ describe('MenuItemService', () => {
         id: '2',
         label: 'Item 2 EN',
         icon: 'pi pi-star',
-        routerLink: '/item2?id=1',
+        target: Target.Blank,
+        routerLink: '/item2',
+        queryParams: { id: '1' },
         items: undefined,
         url: undefined
       }
     ]
     sessionStorage.clear()
-    const result = service.constructMenuItems(input, 'en')
+    const result = service.constructMenuItems(input, 'en', '/base-path')
     expect(sessionStorage.getItem).toHaveBeenCalledTimes(1)
     expect(localStorage.getItem).toHaveBeenCalledTimes(1)
     expect(result).toEqual(expected)
@@ -265,6 +306,7 @@ describe('MenuItemService', () => {
         position: 1,
         disabled: false,
         external: true,
+        target: Target.Blank,
         url: 'http://external.com?id=[[id]]',
         badge: 'check',
         children: [],
@@ -276,14 +318,16 @@ describe('MenuItemService', () => {
         id: '2',
         label: 'Item 2 EN',
         icon: 'pi pi-check',
+        target: Target.Blank,
         routerLink: undefined,
+        queryParams: undefined,
         items: undefined,
         url: 'http://external.com?id='
       }
     ]
     sessionStorage.clear()
     localStorage.clear()
-    const result = service.constructMenuItems(input, 'en')
+    const result = service.constructMenuItems(input, 'en', '/base-path')
     expect(sessionStorage.getItem).toHaveBeenCalledTimes(1)
     expect(localStorage.getItem).toHaveBeenCalledTimes(1)
     expect(result).toEqual(expected)
@@ -297,6 +341,7 @@ describe('MenuItemService', () => {
         position: 1,
         disabled: false,
         external: false,
+        target: Target.Self,
         url: '/item2?id=[[id]]',
         badge: 'star',
         children: [],
@@ -308,14 +353,16 @@ describe('MenuItemService', () => {
         id: '2',
         label: 'Item 2 EN',
         icon: 'pi pi-star',
-        routerLink: '/item2?id=',
+        target: Target.Self,
+        routerLink: '/item2',
+        queryParams: { id: '' },
         items: undefined,
         url: undefined
       }
     ]
     sessionStorage.clear()
     localStorage.clear()
-    const result = service.constructMenuItems(input, 'en')
+    const result = service.constructMenuItems(input, 'en', '/base-path')
     expect(sessionStorage.getItem).toHaveBeenCalledTimes(1)
     expect(localStorage.getItem).toHaveBeenCalledTimes(1)
     expect(result).toEqual(expected)
@@ -329,6 +376,7 @@ describe('MenuItemService', () => {
         position: 1,
         disabled: false,
         external: true,
+        target: Target.Self,
         url: 'http://external.com?id=[[id]]&mykey=[[key]]',
         badge: 'check',
         children: [],
@@ -340,12 +388,14 @@ describe('MenuItemService', () => {
         id: '2',
         label: 'Item 2 EN',
         icon: 'pi pi-check',
+        target: Target.Self,
         routerLink: undefined,
+        queryParams: undefined,
         items: undefined,
         url: 'http://external.com?id=2&mykey=my-sessionstorage-key'
       }
     ]
-    const result = service.constructMenuItems(input, 'en')
+    const result = service.constructMenuItems(input, 'en', '/base-path')
     expect(sessionStorage.getItem).toHaveBeenCalledTimes(2)
     expect(localStorage.getItem).toHaveBeenCalledTimes(0)
     expect(result).toEqual(expected)
@@ -359,6 +409,7 @@ describe('MenuItemService', () => {
         position: 1,
         disabled: false,
         external: false,
+        target: Target.Self,
         url: '/item2?id=[[id]]&mykey=[[key]]',
         badge: 'star',
         children: [],
@@ -370,12 +421,14 @@ describe('MenuItemService', () => {
         id: '2',
         label: 'Item 2 EN',
         icon: 'pi pi-star',
-        routerLink: '/item2?id=2&mykey=my-sessionstorage-key',
+        target: Target.Self,
+        routerLink: '/item2',
+        queryParams: { id: '2', mykey: 'my-sessionstorage-key' },
         items: undefined,
         url: undefined
       }
     ]
-    const result = service.constructMenuItems(input, 'en')
+    const result = service.constructMenuItems(input, 'en', '/base-path')
     expect(sessionStorage.getItem).toHaveBeenCalledTimes(2)
     expect(localStorage.getItem).toHaveBeenCalledTimes(0)
     expect(result).toEqual(expected)
@@ -438,7 +491,7 @@ describe('MenuItemService', () => {
         ]
       }
     ]
-    const result = service.constructMenuItems(input, 'en')
+    const result = service.constructMenuItems(input, 'en', '/base-path')
     expect(result[0].id).toBe('1')
     expect(result[0].items?.length).toBe(3)
     expect(result[0].items?.at(0)?.id).toBe('3')
@@ -492,7 +545,7 @@ describe('MenuItemService', () => {
         badge: 'star'
       }
     ]
-    const result = service.constructMenuItems(input, 'en')
+    const result = service.constructMenuItems(input, 'en', '/base-path')
     expect(result[0].id).toBe('1')
     expect(result[1].id).toBe('2')
   })
@@ -512,7 +565,7 @@ describe('MenuItemService', () => {
       },
       undefined!
     ]
-    const result = service.constructMenuItems(input, 'en')
+    const result = service.constructMenuItems(input, 'en', '/base-path')
     expect(result[0].id).toBe('2')
   })
 
@@ -542,7 +595,7 @@ describe('MenuItemService', () => {
       },
       {}
     ]
-    const result = service.constructMenuItems(input, 'en')
+    const result = service.constructMenuItems(input, 'en', '/base-path')
     expect(result[0].id).toBe(undefined)
     expect(result[1].id).toBe('1')
     expect(result[2].id).toBe('2')
@@ -556,6 +609,7 @@ describe('MenuItemService', () => {
         position: 1,
         disabled: false,
         external: false,
+        target: Target.Self,
         url: '/parent',
         badge: 'parent',
         children: [
@@ -565,6 +619,7 @@ describe('MenuItemService', () => {
             position: 1,
             disabled: false,
             external: false,
+            target: Target.Self,
             url: '/child',
             badge: 'child',
             children: [],
@@ -579,13 +634,17 @@ describe('MenuItemService', () => {
         id: '1',
         label: 'Parent Item EN',
         icon: 'pi pi-parent',
+        target: Target.Self,
         routerLink: '/parent',
+        queryParams: undefined,
         items: [
           {
             id: '1.1',
             label: 'Child Item EN',
             icon: 'pi pi-child',
+            target: Target.Self,
             routerLink: '/child',
+            queryParams: undefined,
             items: undefined,
             url: undefined
           }
@@ -593,7 +652,7 @@ describe('MenuItemService', () => {
         url: undefined
       }
     ]
-    const result = service.constructMenuItems(input, 'en')
+    const result = service.constructMenuItems(input, 'en', '/base-path')
     expect(result).toEqual(expected)
   })
 
@@ -611,8 +670,8 @@ describe('MenuItemService', () => {
         i18n: { en: 'Item 1 EN', fr: 'Item 1 FR' }
       }
     ]
-    const resultEn = service.constructMenuItems(input, 'en')
-    const resultFr = service.constructMenuItems(input, 'fr')
+    const resultEn = service.constructMenuItems(input, 'en', '/base-path')
+    const resultFr = service.constructMenuItems(input, 'fr', '/base-path')
     expect(resultEn[0].label).toBe('Item 1 EN')
     expect(resultFr[0].label).toBe('Item 1 FR')
   })

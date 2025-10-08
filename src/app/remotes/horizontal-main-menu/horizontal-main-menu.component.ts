@@ -85,6 +85,11 @@ export class OneCXHorizontalMainMenuComponent implements OnInit, ocxRemoteCompon
             }
           })
           .pipe(
+            map((response) => ({
+              data: response,
+              workspaceName: currentWorkspace.workspaceName,
+              workspaceBaseUrl: currentWorkspace.baseUrl
+            })),
             retry({ delay: 500, count: 3 }),
             catchError(() => {
               console.error('Unable to load menu items for horizontal main menu.')
@@ -93,7 +98,13 @@ export class OneCXHorizontalMainMenuComponent implements OnInit, ocxRemoteCompon
           )
       ),
       withLatestFrom(this.userService.lang$),
-      map(([data, userLang]) => this.menuItemService.constructMenuItems(data?.menu?.[0]?.children, userLang)),
+      map(([menuData, userLang]) =>
+        this.menuItemService.constructMenuItems(
+          menuData?.data?.menu?.[0]?.children,
+          userLang,
+          menuData?.workspaceBaseUrl
+        )
+      ),
       shareReplay(),
       untilDestroyed(this)
     )

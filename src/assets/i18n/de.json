@@ -126,6 +126,7 @@
       "GOTO_PRODUCT_SLOTS": "Zu Slots im Application Store wechseln",
       "GOTO_WORKSPACE_PERMISSIONS": "Zu Workspace-Berechtigungen wechseln",
       "GOTO_WORKSPACE_ROLES": "Zu Workspace-Rollen wechseln",
+      "OPEN": "Im selben TAB öffnen",
       "OPEN_IN_NEW_TAB": "In neuem TAB öffnen",
       "MOVE_UP": "Nach oben verschieben",
       "MOVE_DOWN": "Nach unten verschieben"
@@ -262,6 +263,7 @@
     "ENABLED": "Aktiviert (sichtbar)",
     "DISABLED": "Deaktiviert",
     "EXTERN": "Externer Link",
+    "TARGET": "In neuem TAB öffnen",
     "MENU_ID": "Menü-ID",
     "MENU_NAME": "Menüname",
     "PARENT_ID": "Eltern-Menü ID",
@@ -278,7 +280,8 @@
       "BADGE": "Icon aus der PrimeNG Bibliothek welches neben dem Menünamen angezeigt werden soll",
       "DESCRIPTION": "Zusatzinformationen",
       "DISABLED": "Wenn gesetzt, dann wird der Menüpunkt nicht angezeigt",
-      "EXTERN": "Wenn gesetzt, dann wird bei der Benutzung des Menüpunkts das Ziel in einem neuen TAB geöffnet. Erfordert einen Wert in Path/URL.",
+      "EXTERN": "Wenn gesetzt, dann wird bei der Benutzung die OneCX Shell verlassen. Erfordert einen Wert in Path/URL.",
+      "TARGET": "Wenn gesetzt, dann wird bei der Benutzung des Menüpunkts das Ziel in einem neuen TAB geöffnet. Erfordert einen Wert in Path/URL.",
       "MENU_ID": "Ein eindeutiger Identifikator des Menüpunkts",
       "MENU_NAME": "Angezeigter Name",
       "PARENT_ID": "Der Identifier des übergeordneten Menüpunkts",
@@ -300,6 +303,7 @@
         "SEARCH": "Workspace Verwaltung",
         "SEARCH.SUBHEADER": "Erstellung und Bearbeitung von Workspaces",
         "DETAIL": "Anzeige und Bearbeitung der Workspace-Eigenschaften",
+        "CREATE": "Workspace erstellen",
         "DELETE": "Workspace löschen",
         "EXPORT": "Workspace exportieren"
       },
@@ -427,6 +431,11 @@
         "VIEW": "Details anzeigen",
         "EDIT": "Details bearbeiten"
       },
+      "SECTIONS": {
+        "ACTIONS": "Aktionen: Menüeinträge verschieben, filtern, zu anderen Seiten gehen",
+        "OPTIONS": "Anzeige-Optionen: Baum auf/zuklappen, wählen des Menüeintragstexts, wählen ob Details oder Rollen angezeigt werden sollen",
+        "LINKS": "Links und Neuladen"
+      },
       "TABS": {
         "DETAILS": "Eigenschaften",
         "DETAILS.TOOLTIP": "Eigenschaften verwalten",
@@ -444,9 +453,11 @@
         "I18N.TOOLTIP": "Indikator ob Übersetzungen vorhanden sind",
         "I18N.ROW.TOOLTIP": "Übersetzung vorhanden",
         "URL.TOOLTIP": "Die URL die beim Aktivieren aufgerufen wird",
-        "PRODUCT.TOOLTIP": "Indikator ob die Menü-URL durch eine registrierte Applikation angeboten wird",
+        "PRODUCT.TOOLTIP": "Indikator ob die Menü-URL durch eine registrierte Applikation angeboten wird.",
         "EXTERN": "X",
-        "EXTERN.TOOLTIP": "Wenn diese Option aktiviert ist, wird der Workspace verlassen"
+        "EXTERN.TOOLTIP": "Wenn diese Option aktiviert ist wird die OneCX Shell verlassen.",
+        "TARGET": "T",
+        "TARGET.TOOLTIP": "Wenn diese Option aktiviert ist wird das Ziel in einem neuen TAB geöffnet."
       },
       "ROLE": {
         "FILTER": "Rollenfilter: Anzeige der Menüeinträge entsprechend der gewählten Rollen",

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, Renderer2, ViewChild } from '@angular/core'
+import { Component, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core'
 import { Location } from '@angular/common'
 import { DefaultValueAccessor, FormControl, FormGroup, Validators } from '@angular/forms'
 import { TranslateService } from '@ngx-translate/core'
@@ -54,7 +54,7 @@ export class MenuDetailComponent implements OnChanges {
 
   @ViewChild('panelDetail') panelDetail: TabView | undefined
   private readonly destroy$ = new Subject()
-  public formGroup: FormGroup
+  public menuItemForm: FormGroup
   public dateFormat = 'short'
   public tabIndex = 0
   public menuItem: MenuItem | undefined
@@ -64,7 +64,6 @@ export class MenuDetailComponent implements OnChanges {
   public mfeMap: Map<string, MenuURL> = new Map()
   public mfeItems!: MenuURL[]
   public filteredMfes: MenuURL[] = []
-
   // language settings and preview
   public languagesAvailable: LanguageItem[] = []
   public languagesDisplayed: LanguageItem[] = []
@@ -84,7 +83,6 @@ export class MenuDetailComponent implements OnChanges {
     private readonly icon: IconService,
     private readonly menuApi: MenuItemAPIService,
     private readonly wProductApi: WorkspaceProductAPIService,
-    private readonly renderer: Renderer2,
     private readonly translate: TranslateService,
     private readonly msgService: PortalMessageService
   ) {
@@ -96,7 +94,7 @@ export class MenuDetailComponent implements OnChanges {
       { label: 'PAGE', value: 'PAGE' },
       { label: 'WORKSPACE', value: 'WORKSPACE' }
     ]
-    this.formGroup = new FormGroup({
+    this.menuItemForm = new FormGroup({
       parentItemId: new FormControl(null),
       key: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(100)]),
       name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(100)]),
@@ -109,6 +107,7 @@ export class MenuDetailComponent implements OnChanges {
       ]),
       disabled: new FormControl<boolean>(false),
       external: new FormControl<boolean>(false),
+      target: new FormControl(null),
       url: new FormControl(null, [Validators.maxLength(255)]),
       description: new FormControl(null, [Validators.maxLength(255)])
     })
@@ -120,14 +119,15 @@ export class MenuDetailComponent implements OnChanges {
       this.loadMfeUrls() // load first time only
       this.tabIndex = 0
       this.languagesDisplayed = []
-      this.formGroup.reset()
-      if (this.changeMode === 'VIEW') this.formGroup.disable()
+      this.menuItemForm.reset()
+      if (this.changeMode === 'VIEW') this.menuItemForm.disable()
       if (this.changeMode === 'CREATE') {
         this.menuItem = {
           parentItemId: this.menuItemOrg?.id,
           position: this.menuItemOrg ? this.getMaxChildrenPosition(this.menuItemOrg) : 0,
+          disabled: false,
           external: false,
-          disabled: false
+          target: '_self'
         } as MenuItem
         this.fillForm(this.menuItem)
       } else this.getMenu() // edit
@@ -154,8 +154,8 @@ export class MenuDetailComponent implements OnChanges {
   }
 
   private fillForm(item: MenuItem) {
-    this.formGroup.reset()
-    this.formGroup.patchValue({ ...item, url: this.prepareUrlList(item.url) })
+    this.menuItemForm.reset()
+    this.menuItemForm.patchValue({ ...item, url: this.prepareUrlList(item.url) })
     this.adjustExternalLinkCheckbox(item.url)
   }
 
@@ -232,14 +232,14 @@ export class MenuDetailComponent implements OnChanges {
    * SAVE => CREATE + UPDATE
    **************************************************************************/
   public onMenuSave(): void {
-    if (!this.formGroup.valid) {
-      console.error('invalid form', this.formGroup)
+    if (!this.menuItemForm.valid) {
+      console.error('invalid form', this.menuItemForm)
       return
     }
     if (this.menuItem) {
-      if (this.formGroup.controls['url'].value instanceof Object)
-        this.menuItem.url = this.formGroup.controls['url'].value.mfePath
-      else this.menuItem.url = this.formGroup.controls['url'].value
+      if (this.menuItemForm.controls['url'].value instanceof Object)
+        this.menuItem.url = this.menuItemForm.controls['url'].value.mfePath
+      else this.menuItem.url = this.menuItemForm.controls['url'].value
       this.getFormValues()
       this.getI18nValues()
     }
@@ -288,15 +288,16 @@ export class MenuDetailComponent implements OnChanges {
   }
   private getFormValues() {
     if (this.menuItem) {
-      this.menuItem.parentItemId = this.formGroup.controls['parentItemId'].value
-      this.menuItem.key = this.formGroup.controls['key'].value
-      this.menuItem.name = this.formGroup.controls['name'].value
-      this.menuItem.badge = this.formGroup.controls['badge'].value
-      this.menuItem.scope = this.formGroup.controls['scope'].value
-      this.menuItem.position = this.formGroup.controls['position'].value
-      this.menuItem.disabled = this.formGroup.controls['disabled'].value
-      this.menuItem.external = this.formGroup.controls['external'].value
-      this.menuItem.description = this.formGroup.controls['description'].value
+      this.menuItem.parentItemId = this.menuItemForm.controls['parentItemId'].value
+      this.menuItem.key = this.menuItemForm.controls['key'].value
+      this.menuItem.name = this.menuItemForm.controls['name'].value
+      this.menuItem.badge = this.menuItemForm.controls['badge'].value
+      this.menuItem.scope = this.menuItemForm.controls['scope'].value
+      this.menuItem.position = this.menuItemForm.controls['position'].value
+      this.menuItem.disabled = this.menuItemForm.controls['disabled'].value
+      this.menuItem.external = this.menuItemForm.controls['external'].value
+      this.menuItem.target = this.menuItemForm.controls['target'].value
+      this.menuItem.description = this.menuItemForm.controls['description'].value
     }
   }
 
@@ -439,16 +440,19 @@ export class MenuDetailComponent implements OnChanges {
   }
   public onClearUrl(ev?: Event): void {
     ev?.stopPropagation()
-    this.formGroup.controls['url'].setValue(this.mfeItems[0])
+    this.menuItemForm.controls['url'].setValue(this.mfeItems[0])
     this.adjustExternalLinkCheckbox()
   }
 
   // the opening of a URL in a new TAB requires the URL - manage here if not exist:
   public adjustExternalLinkCheckbox(url?: string) {
-    if (url) this.formGroup.controls['external'].enable()
-    else {
-      this.formGroup.controls['external'].setValue(false) // reset
-      this.formGroup.controls['external'].disable()
+    if (url) {
+      this.menuItemForm.controls['external'].enable()
+      this.menuItemForm.controls['target'].enable()
+    } else {
+      this.menuItemForm.controls['external'].setValue(false) // reset
+      this.menuItemForm.controls['external'].disable()
+      this.menuItemForm.controls['target'].disable()
     }
   }
   /**
@@ -459,8 +463,9 @@ export class MenuDetailComponent implements OnChanges {
   public onFilterPaths(ev: AutoCompleteCompleteEvent): void {
     let query = ev?.query ?? undefined
     if (!query) {
-      if (this.formGroup.controls['url'].value instanceof Object) query = this.formGroup.controls['url'].value.mfePath
-      else query = this.formGroup.controls['url'].value
+      if (this.menuItemForm.controls['url'].value instanceof Object)
+        query = this.menuItemForm.controls['url'].value.mfePath
+      else query = this.menuItemForm.controls['url'].value
     }
     this.filteredMfes = this.filterUrl(query) // this split fixed a sonar complexity issue
     this.adjustExternalLinkCheckbox(query)
