@@ -2,7 +2,7 @@
   <ocx-page-header
     *ngIf="workspace$ | async as workspace"
     [header]="
-      workspace?.displayName ? limitText(workspace.displayName, 70) + ': ' + ('DIALOG.MENU.LABEL' | translate) : ''
+      workspace?.displayName ? limitText(workspace.displayName, 50) + ': ' + ('DIALOG.MENU.LABEL' | translate) : ''
     "
     [subheader]="'DIALOG.MENU.SUBHEADER' | translate"
     [actions]="(actions$ | async) ?? []"

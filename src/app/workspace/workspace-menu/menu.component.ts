@@ -516,10 +516,16 @@ export class MenuComponent implements OnInit, OnDestroy {
     if (!key) return false
     let stop = false
     nodes.forEach((n, i) => {
-      if (!stop && n.key === key) {
-        if (n.children) for (const child of n.children) this.removeTreeNode(nodes, child.key)
-        nodes.splice(i, 1)
-        stop = true
+      if (!stop) {
+        if (n.key === key) {
+          // remove all children
+          if (n.children) for (const child of n.children) this.removeTreeNode(n.children, child.key)
+          nodes.splice(i, 1)
+          stop = true
+        } else {
+          // try other items on same level...start with children of them
+          if (n.children) this.removeTreeNode(n.children, key)
+        }
       }
     })
     return stop

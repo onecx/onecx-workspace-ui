@@ -21,7 +21,6 @@ import {
   Assignment,
   WorkspaceRole
 } from 'src/app/shared/generated'
-import { Utils } from 'src/app/shared/utils'
 import { MenuStateService, MenuState } from './services/menu-state.service'
 import { MenuComponent, MenuItemNodeData } from './menu.component'
 

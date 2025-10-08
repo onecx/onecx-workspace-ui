@@ -1,5 +1,5 @@
-import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core'
-import { MenuItem, SelectItem, TreeNode } from 'primeng/api'
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core'
+import { SelectItem, TreeNode } from 'primeng/api'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 
@@ -23,8 +23,6 @@ export class MenuPreviewComponent implements OnChanges {
   @Output() public hideDialog = new EventEmitter()
   @Output() public reorderEmitter = new EventEmitter<boolean>()
 
-  @ViewChild('previewTree') previewTree!: ElementRef
-
   public menuNodes!: TreeNode<WorkspaceMenuItem>[]
   public treeExpanded = false
   public languagesPreviewValue: string
@@ -41,9 +39,7 @@ export class MenuPreviewComponent implements OnChanges {
   }
 
   constructor(
-    private readonly elementRef: ElementRef,
     private readonly stateService: MenuStateService,
-    private readonly treeService: MenuTreeService,
     private readonly userService: UserService,
     private readonly msgService: PortalMessageService,
     private readonly menuApi: MenuItemAPIService
