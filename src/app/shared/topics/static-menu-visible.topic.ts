@@ -1,13 +1,17 @@
 import { Topic, TopicPublisher } from '@onecx/accelerator'
 
-export class StaticMenuVisiblePublisher extends TopicPublisher<{ isVisible: boolean }> {
+export interface StaticMenuState {
+  isVisible: boolean
+}
+
+export class StaticMenuStatePublisher extends TopicPublisher<StaticMenuState> {
   constructor() {
-    super('staticMenuVisible', 1)
+    super('staticMenuState', 1)
   }
 }
 
-export class StaticMenuVisibleTopic extends Topic<{ isVisible: boolean }> {
+export class StaticMenuStateTopic extends Topic<StaticMenuState> {
   constructor() {
-    super('staticMenuVisible', 1)
+    super('staticMenuState', 1)
   }
 }

@@ -26,7 +26,29 @@ import { PortalCoreModule } from '@onecx/portal-integration-angular'
 import { Configuration, RefType, WorkspaceAPIService } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
 import { environment } from 'src/environments/environment'
-import { EventsTopic, EventType, SlotResizedEvent } from '@onecx/integration-interface'
+import { EventsTopic } from '@onecx/integration-interface'
+
+// Copied over from libs v7. Remove once migrating to v7.
+enum EventType {
+  NAVIGATED = 'navigated',
+  AUTH_LOGOUT_BUTTON_CLICKED = 'authentication#logoutButtonClicked',
+  SLOT_RESIZED = 'slot#resized'
+}
+// Copied over from libs v7. Remove once migrating to v7.
+type SlotResizedDetails = {
+  width: number
+  height: number
+}
+// Copied over from libs v7. Remove once migrating to v7.
+type SlotResizedEventPayload = {
+  slotName: string
+  slotDetails: SlotResizedDetails
+}
+// Copied over from libs v7. Remove once migrating to v7.
+type SlotResizedEvent = {
+  type: EventType.SLOT_RESIZED
+  payload: SlotResizedEventPayload
+}
 
 const RESIZE_OBSERVED_SLOT_NAME = 'onecx-shell-vertical-menu'
 const DEFAULT_WIDTH_REM = 17

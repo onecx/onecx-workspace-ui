@@ -14,7 +14,7 @@ import {
   mergeMap,
   withLatestFrom
 } from 'rxjs'
-import { StaticMenuVisibleTopic } from '../topics/static-menu-visible.topic'
+import { StaticMenuStateTopic } from '../topics/static-menu-visible.topic'
 
 export type MenuMode = 'horizontal' | 'static' | 'overlay' | 'slim' | 'slimplus'
 
@@ -41,7 +41,7 @@ export type MenuMode = 'horizontal' | 'static' | 'overlay' | 'slim' | 'slimplus'
 export class MenuService {
   private readonly userService = inject(UserService)
   private capabilityService = inject(ShellCapabilityService)
-  private staticMenuVisible$ = new StaticMenuVisibleTopic()
+  private staticMenuState$ = new StaticMenuStateTopic()
 
   private readonly menuMode$: Observable<MenuMode> = this.userService.profile$.pipe(
     map((p) => {
@@ -98,6 +98,24 @@ export class MenuService {
     )
   }
 
+  private isMenuModeActiveForHorizontalMode(menuMode: MenuMode, isMobile: boolean): Observable<boolean> {
+    if (isMobile) {
+      if (menuMode === 'horizontal') {
+        return of(false)
+      }
+
+      if (menuMode === 'static') {
+        return of(true)
+      }
+    }
+
+    return of(menuMode === 'horizontal')
+  }
+
+  private isMenuModeActiveForStaticMode(menuMode: MenuMode, isMobile: boolean): Observable<boolean> {
+    return of(menuMode === 'static')
+  }
+
   /**
    * Determines if the specified menu mode is visible.
    * @param menuMode Menu mode to check visibility for
@@ -114,6 +132,21 @@ export class MenuService {
     }
   }
 
+  private isHorizontalMenuVisible(): Observable<boolean> {
+    return of(true)
+  }
+
+  private isStaticMenuVisible(): Observable<boolean> {
+    if (this.capabilityService.hasCapability(Capability.ACTIVENESS_AWARE_MENUS)) {
+      return this.staticMenuState$.pipe(
+        map((state) => state.isVisible),
+        startWith(true)
+      )
+    }
+
+    return of(true)
+  }
+
   private handleViewportChange(userSelectedMenuMode: MenuMode, isMobile: boolean): void {
     switch (userSelectedMenuMode) {
       case 'horizontal':
@@ -125,44 +158,11 @@ export class MenuService {
     }
   }
 
-  private isMenuModeActiveForStaticMode(menuMode: MenuMode, isMobile: boolean): Observable<boolean> {
-    return of(menuMode === 'static')
-  }
-
-  private isStaticMenuVisible(): Observable<boolean> {
-    if (this.capabilityService.hasCapability(Capability.PUBLISH_STATIC_MENU_VISIBILITY)) {
-      return this.staticMenuVisible$.pipe(
-        map((state) => state.isVisible),
-        startWith(true)
-      )
-    }
-
-    return of(true)
+  private handleHorizontalMenuViewportChange(isMobile: boolean): void {
+    this.staticMenuState$.publish({ isVisible: !isMobile })
   }
 
   private handleStaticMenuViewportChange(isMobile: boolean): void {
-    this.staticMenuVisible$.publish({ isVisible: !isMobile })
-  }
-
-  private isMenuModeActiveForHorizontalMode(menuMode: MenuMode, isMobile: boolean): Observable<boolean> {
-    if (isMobile) {
-      if (menuMode === 'horizontal') {
-        return of(false)
-      }
-
-      if (menuMode === 'static') {
-        return of(true)
-      }
-    }
-
-    return of(menuMode === 'horizontal')
-  }
-
-  private isHorizontalMenuVisible(): Observable<boolean> {
-    return of(true)
-  }
-
-  private handleHorizontalMenuViewportChange(isMobile: boolean): void {
-    // No specific action needed on viewport change for horizontal menu
+    this.staticMenuState$.publish({ isVisible: !isMobile })
   }
 }
