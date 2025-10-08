@@ -15,7 +15,8 @@ import {
   MenuItemAPIService,
   UpdateMenuItemRequest,
   Microfrontend,
-  WorkspaceProductAPIService
+  WorkspaceProductAPIService,
+  Target
 } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
 import { ChangeMode } from '../menu.component'
@@ -115,11 +116,11 @@ export class MenuDetailComponent implements OnChanges {
 
   public ngOnChanges(): void {
     if (this.displayDetailDialog) {
-      this.cleanupMfeUrls() // remove special entries
-      this.loadMfeUrls() // load first time only
       this.tabIndex = 0
       this.languagesDisplayed = []
       this.menuItemForm.reset()
+      this.cleanupMfeUrls() // remove special entries
+      this.loadMfeUrls() // load first time only
       if (this.changeMode === 'VIEW') this.menuItemForm.disable()
       if (this.changeMode === 'CREATE') {
         this.menuItem = {
@@ -127,10 +128,10 @@ export class MenuDetailComponent implements OnChanges {
           position: this.menuItemOrg ? this.getMaxChildrenPosition(this.menuItemOrg) : 0,
           disabled: false,
           external: false,
-          target: '_self'
+          target: Target.Self
         } as MenuItem
         this.fillForm(this.menuItem)
-      } else this.getMenu() // edit
+      } else this.getMenuItem() // edit
     }
   }
 
@@ -139,7 +140,7 @@ export class MenuDetailComponent implements OnChanges {
     else return (item.children.at(-1)?.position ?? 0) + 1
   }
 
-  private async getMenu() {
+  private async getMenuItem() {
     if (this.menuItemOrg?.id) {
       const menuItem$ = this.menuApi.getMenuItemById({ menuItemId: this.menuItemOrg.id }).pipe(
         catchError((err) => {
@@ -221,11 +222,8 @@ export class MenuDetailComponent implements OnChanges {
   /***************************************************************************
    * CLOSE
    **************************************************************************/
-  public onCloseDetailDialog(): void {
-    this.dataChanged.emit(false)
-  }
-  public onCloseDeleteDialog(): void {
-    this.dataChanged.emit(false)
+  public onCloseDialog(): void {
+    if (this.menuItemOrg) this.dataChanged.emit(false)
   }
 
   /***************************************************************************

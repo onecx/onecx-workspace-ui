@@ -5,7 +5,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { provideRouter } from '@angular/router'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { ToggleButtonModule } from 'primeng/togglebutton'
-import { TreeTableNodeExpandEvent } from 'primeng/treetable'
+import { TreeNodeDropEvent, TreeNodeExpandEvent } from 'primeng/tree'
 
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { MenuPreviewComponent } from './menu-preview.component'
@@ -38,6 +38,12 @@ describe('MenuPreviewComponent', () => {
     updateMenuItemParent: jasmine.createSpy('updateMenuItemParent').and.returnValue(of({}))
   }
 
+  function initTestComponent(): void {
+    fixture = TestBed.createComponent(MenuPreviewComponent)
+    component = fixture.componentInstance
+    fixture.detectChanges()
+  }
+
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [MenuPreviewComponent],
@@ -59,123 +65,149 @@ describe('MenuPreviewComponent', () => {
         { provide: PortalMessageService, useValue: msgServiceSpy }
       ]
     }).compileComponents()
+  }))
+
+  beforeEach(() => {
     treeServiceSpy.calculateNewNodesPositions.calls.reset()
     stateServiceSpy.getState.calls.reset()
     menuApiService.updateMenuItemParent.calls.reset()
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
-  }))
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(MenuPreviewComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    initTestComponent()
   })
 
   it('should create', () => {
     expect(component).toBeTruthy()
   })
 
-  it('should set menuNodes onChanges if workspaceDetail & changes correct: langExists false', () => {
-    stateServiceSpy.getState.and.returnValue(state)
-    component.displayDialog = true
-    component.menuItems = items
+  describe('ngOnChanges', () => {
+    it('should set menuNodes onChanges if workspaceDetail & changes correct: langExists false', () => {
+      stateServiceSpy.getState.and.returnValue(state)
+      component.displayDialog = true
+      component.menuItems = items
 
-    component.ngOnChanges({})
+      component.ngOnChanges({})
 
-    expect(component.treeExpanded).toBeFalse()
-  })
-
-  it('should set menuNodes onChanges if workspaceDetail & changes correct: langExists true', () => {
-    stateServiceSpy.getState.and.returnValue(state)
-    component.displayDialog = true
-    component.menuItems = items
-    component.languagesPreviewValue = 'lang'
-
-    component.ngOnChanges({})
-
-    expect(component.treeExpanded).toBeFalse()
-  })
-
-  it('should expand tree nodes on expandAll', () => {
-    const mockExpansionState: Map<string, boolean> = new Map<string, boolean>()
-    stateServiceSpy.getState.and.returnValue({
-      treeExpansionState: mockExpansionState,
-      pageSize: 0,
-      showDetails: false,
-      rootFilter: true,
-      treeMode: true
+      expect(component.treeExpanded).toBeFalse()
     })
-    component.menuNodes = [
-      { key: '1', expanded: false, children: [{ key: '1-1', children: [{ key: '1-1-1' }] }] },
-      { key: '2' }
-    ]
 
-    component.onToggleTreeViewMode({ checked: true })
+    it('should set menuNodes onChanges if workspaceDetail & changes correct: langExists true', () => {
+      stateServiceSpy.getState.and.returnValue(state)
+      component.displayDialog = true
+      component.menuItems = items
+      component.languagesPreviewValue = 'lang'
 
-    expect(stateServiceSpy.getState().treeExpansionState.get('1')).toBeTrue()
-  })
+      component.ngOnChanges({})
 
-  it('should expand tree nodes on expandAll: no node key', () => {
-    const mockExpansionState: Map<string, boolean> = new Map<string, boolean>()
-    stateServiceSpy.getState.and.returnValue({
-      treeExpansionState: mockExpansionState,
-      pageSize: 0,
-      showDetails: false,
-      rootFilter: true,
-      treeMode: true
+      expect(component.treeExpanded).toBeFalse()
     })
-    component.menuNodes = [{ expanded: false, children: [{ key: '1-1', children: [{ key: '1-1-1' }] }] }, { key: '2' }]
-
-    component.onToggleTreeViewMode({ checked: true })
-
-    expect(stateServiceSpy.getState().treeExpansionState.get('1')).toBeUndefined()
   })
 
-  it('should collapse tree nodes on collapseAll', () => {
-    const mockExpansionState: Map<string, boolean> = new Map<string, boolean>()
-    stateServiceSpy.getState.and.returnValue({
-      treeExpansionState: mockExpansionState,
-      pageSize: 0,
-      showDetails: false,
-      rootFilter: true,
-      treeMode: true
+  describe('on Drop', () => {
+    it('should update menu item - drag on node', () => {
+      menuApiService.updateMenuItemParent.and.returnValue(of({}))
+      spyOn(component.reorderEmitter, 'emit')
+      const event: TreeNodeDropEvent = {
+        dropPoint: 'node',
+        index: 1,
+        dragNode: { key: 'draggedNodeId', parent: { key: 'oldParentNodeId' }, data: items[0] },
+        dropNode: { key: 'newParentNodeId', children: [{ key: 'draggedNodeId' }], parent: { key: 'parent key' } }
+      }
+
+      component.onDrop(event)
+
+      expect(component.reorderEmitter.emit).toHaveBeenCalledWith(true)
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' })
     })
-    component.menuNodes = [
-      { key: '1', expanded: true, children: [{ key: '1-1', children: [{ key: '1-1-1' }] }] },
-      { key: '2' }
-    ]
 
-    component.onToggleTreeViewMode({ checked: false })
+    it('should update menu item - drag between nodes', () => {
+      const event: TreeNodeDropEvent = {
+        dropPoint: 'between',
+        index: 1,
+        dragNode: { key: 'draggedNodeId', parent: { key: 'oldParentNodeId' }, data: items[0] },
+        dropNode: { key: 'newParentNodeId', children: [{ key: 'draggedNodeId' }], parent: { key: 'parent key' } }
+      }
+      menuApiService.updateMenuItemParent.and.returnValue(of({}))
 
-    expect(stateServiceSpy.getState().treeExpansionState.get('1')).toBeFalse()
+      component.onDrop(event)
+
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' })
+    })
+
+    it('should update menu items onDrop: return before pushing items', () => {
+      const errorResponse = { status: 400, statusText: 'Error on change parent' }
+      const event = {
+        dragNode: { key: 'draggedNodeId', parent: { key: 'oldParentNodeId' }, data: items[0] },
+        dropNode: { key: 'newParentNodeId', children: [{ key: 'draggedNodeId' }], parent: { key: 'parent key' } }
+      }
+      menuApiService.updateMenuItemParent.and.returnValue(throwError(() => errorResponse))
+      spyOn(console, 'error')
+
+      component.onDrop(event)
+
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
+      expect(console.error).toHaveBeenCalledWith('updateMenuItemParent', errorResponse)
+    })
   })
 
-  it('should update menu items onDrop: return before pushing items', () => {
-    const event = {
-      dragNode: { key: 'draggedNodeId', parent: { key: 'oldParentNodeId' }, data: items[0] },
-      dropNode: { key: 'newParentNodeId', children: [{ key: 'draggedNodeId' }], parent: { key: 'parent key' } }
-    }
-    menuApiService.updateMenuItemParent.and.returnValue(of({}))
+  describe('toggle tree view', () => {
+    it('should expand tree nodes on expandAll', () => {
+      const mockExpansionState: Map<string, boolean> = new Map<string, boolean>()
+      stateServiceSpy.getState.and.returnValue({
+        treeExpansionState: mockExpansionState,
+        pageSize: 0,
+        showDetails: false,
+        rootFilter: true,
+        treeMode: true
+      })
+      component.menuNodes = [
+        { key: '1', expanded: false, children: [{ key: '1-1', children: [{ key: '1-1-1' }] }] },
+        { key: '2' }
+      ]
 
-    component.onDrop(event)
+      component.onToggleTreeViewMode({ checked: true })
 
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' })
-  })
+      expect(stateServiceSpy.getState().treeExpansionState.get('1')).toBeTrue()
+    })
 
-  it('should update menu items onDrop: return before pushing items', () => {
-    const errorResponse = { status: 400, statusText: 'Error on change parent' }
-    const event = {
-      dragNode: { key: 'draggedNodeId', parent: { key: 'oldParentNodeId' }, data: items[0] },
-      dropNode: { key: 'newParentNodeId', children: [{ key: 'draggedNodeId' }], parent: { key: 'parent key' } }
-    }
-    menuApiService.updateMenuItemParent.and.returnValue(throwError(() => errorResponse))
-    spyOn(console, 'error')
+    it('should expand tree nodes on expandAll: no node key', () => {
+      const mockExpansionState: Map<string, boolean> = new Map<string, boolean>()
+      stateServiceSpy.getState.and.returnValue({
+        treeExpansionState: mockExpansionState,
+        pageSize: 0,
+        showDetails: false,
+        rootFilter: true,
+        treeMode: true
+      })
+      component.menuNodes = [
+        { expanded: false, children: [{ key: '1-1', children: [{ key: '1-1-1' }] }] },
+        { key: '2' }
+      ]
 
-    component.onDrop(event)
+      component.onToggleTreeViewMode({ checked: true })
 
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
-    expect(console.error).toHaveBeenCalledWith('updateMenuItemParent', errorResponse)
+      expect(stateServiceSpy.getState().treeExpansionState.get('1')).toBeUndefined()
+    })
+
+    it('should collapse tree nodes on collapseAll', () => {
+      const mockExpansionState: Map<string, boolean> = new Map<string, boolean>()
+      stateServiceSpy.getState.and.returnValue({
+        treeExpansionState: mockExpansionState,
+        pageSize: 0,
+        showDetails: false,
+        rootFilter: true,
+        treeMode: true
+      })
+      component.menuNodes = [
+        { key: '1', expanded: true, children: [{ key: '1-1', children: [{ key: '1-1-1' }] }] },
+        { key: '2' }
+      ]
+
+      component.onToggleTreeViewMode({ checked: false })
+
+      expect(stateServiceSpy.getState().treeExpansionState.get('1')).toBeFalse()
+    })
   })
 
   it('should set treeExpansionState onHierarchyViewChange', () => {
@@ -190,7 +222,7 @@ describe('MenuPreviewComponent', () => {
     const event = { node: { key: 'node', expanded: true } }
     spyOn(mockExpansionState, 'set').and.callThrough()
 
-    component.onHierarchyViewChange(event as TreeTableNodeExpandEvent)
+    component.onHierarchyViewChange(event as TreeNodeExpandEvent)
 
     expect(stateServiceSpy.getState().treeExpansionState.set).toHaveBeenCalledWith(event.node.key, event.node.expanded)
   })
