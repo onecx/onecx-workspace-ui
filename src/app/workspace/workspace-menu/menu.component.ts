@@ -511,7 +511,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       this.stateService.getState().treeExpansionState.set(event.node.key, event.node.expanded === true)
   }
 
-  // remove node and sub nodes (recursively) in the tree
+  // remove a node and its sub nodes (recursively) in the tree
   private removeTreeNode(nodes: TreeNode[], key?: string): boolean {
     if (!key) return false
     let stop = false
@@ -522,10 +522,9 @@ export class MenuComponent implements OnInit, OnDestroy {
           if (n.children) for (const child of n.children) this.removeTreeNode(n.children, child.key)
           nodes.splice(i, 1)
           stop = true
-        } else {
+        } else if (n.children)
           // try other items on same level...start with children of them
-          if (n.children) this.removeTreeNode(n.children, key)
-        }
+          this.removeTreeNode(n.children, key)
       }
     })
     return stop
