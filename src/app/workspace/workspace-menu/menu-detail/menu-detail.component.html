@@ -142,15 +142,15 @@
               tooltipEvent="hover"
             >
               <ng-template let-mfe pTemplate="item">
-                <div class="flex flex-row column-gap-2 align-items-center">
-                  <div class="hidden md:block w-30rem text-responsive">{{ mfe.mfePath }}</div>
+                <div class="flex flex-row column-gap-4 align-items-center">
+                  <div class="hidden md:block w-26rem text-responsive">{{ mfe.mfePath }}</div>
                   <div class="block md:hidden w-15rem text-responsive">{{ mfe.mfePath }}</div>
-                  <!--div class="flex flex-column">
-                    <div class="text-sm font-bold" [class.danger-action-text]="!mfe.id">
+                  <div class="flex flex-column w-12rem">
+                    <div class="text-sm font-bold text-responsive" [class.danger-action-text]="!mfe.id">
                       {{ mfe.id ? mfe.product : (mfe.product | translate) }}
                     </div>
-                    <div class="text-xs" *ngIf="mfe.id">{{ mfe.appId }}</div>
-                  </div-->
+                    <div class="text-xs text-responsive" *ngIf="mfe.id">{{ mfe.appId }}</div>
+                  </div>
                 </div>
               </ng-template>
             </p-autoComplete>

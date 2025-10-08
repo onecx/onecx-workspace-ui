@@ -58,6 +58,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   Object = Object
   public limitText = Utils.limitText // utils declarations
   public sortByLocale = Utils.sortByLocale
+  public getEndpointUrl = Utils.getEndpointUrl
   private readonly destroy$ = new Subject()
   // dialog control
   public actions$: Observable<Action[]> | undefined
@@ -77,7 +78,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   public treeNodeLabelSwitchValueOrg = '' // prevent bug in PrimeNG SelectButton
   public currentLogoUrl: string | undefined = undefined
   public roleFilterValue: string[] = []
-  private currentLocation: string | undefined = undefined
+  public endpointUrl$: Observable<string>
 
   // workspace
   public workspace$!: Observable<Workspace | undefined>
@@ -117,8 +118,14 @@ export class MenuComponent implements OnInit, OnDestroy {
     private readonly msgService: PortalMessageService,
     private readonly userService: UserService
   ) {
-    // appState.currentMfe$.subscribe((mfe) => (this.shellName = mfe.shellName))
-    // appState.currentLocation$.subscribe((loc) => (this.currentLocation = loc.url))
+    this.endpointUrl$ = Utils.getEndpointUrl(
+      this.workspaceService,
+      this.msgService,
+      'onecx-permission',
+      'onecx-permission-ui',
+      'workspace',
+      { 'workspace-name': this.workspaceName }
+    )
     const state = this.stateService.getState()
     this.menuItems = state.workspaceMenuItems // reestablish menu state
     // simplify permission checks

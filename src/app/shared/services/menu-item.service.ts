@@ -75,8 +75,8 @@ export class MenuItemService {
     const isLocal: boolean = !item.external
     const label = item.i18n ? (item.i18n[userLang] ?? item.name) : item.name
     let url = this.replaceUrlVariables(item.url)
-    let queryParams: any | undefined
-    let routerUrl: any | undefined
+    let queryParams: { [key: string]: string } | undefined
+    let routerUrl: string | undefined
 
     if (url && isLocal) {
       // separate query parameter if using router link
@@ -88,7 +88,7 @@ export class MenuItemService {
     if (url && item.target === Target.Blank && !/^(http|https):\/\/.{6,245}$/.exec(url)) {
       url = Location.joinWithSlash(
         Location.joinWithSlash(getLocation().origin, getLocation().deploymentPath),
-        Location.joinWithSlash(workspaceBaseUrl ?? '', url)
+        Location.joinWithSlash(workspaceBaseUrl!, url)
       )
     }
     if (item.children && item.children.length > 0) {
