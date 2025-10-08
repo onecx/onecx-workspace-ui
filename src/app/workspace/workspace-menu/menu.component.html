@@ -123,6 +123,7 @@
               id="ws_menu_table_action_reload"
               styleClass="button-min-height"
               [icon]="'pi ' + (loadingMenu ? 'pi-spin pi-spinner' : 'pi-refresh')"
+              [disabled]="loadingMenu"
               (onClick)="onReload()"
               [ariaLabel]="'DIALOG.MENU.ACTION.RELOAD' | translate"
               [pTooltip]="'DIALOG.MENU.ACTION.RELOAD' | translate"
@@ -231,31 +232,23 @@
           </div>
         </section>
         <!-- MESSAGES -->
-        <section [attr.aria-label]="'DIALOG.MENU.SECTIONS.MESSAGES' | translate">
-          <p-message
-            *ngIf="loading"
-            severity="info"
-            styleClass="mt-3 p-2"
-            [text]="'ACTIONS.LOADING' | translate"
-          ></p-message>
+        <section class="pt-3" [attr.aria-label]="'DIALOG.MENU.SECTIONS.MESSAGES' | translate">
+          <p-message *ngIf="loading" severity="info" [text]="'ACTIONS.LOADING' | translate"></p-message>
           <p-message
             *ngIf="!loading && loadingMenu"
             severity="info"
-            styleClass="mt-3 p-2"
             [text]="'DIALOG.MENU.ACTION.LOAD' | translate"
           ></p-message>
           <!-- role column filter is NOT active: no data == no menu in general -->
           <p-message
             *ngIf="!loadingMenu && menuNodes.length === 0 && roleFilterValue.length === 0"
             severity="info"
-            styleClass="mt-3 p-2"
             [text]="'DIALOG.MENU.MENU_NOT_EXIST' | translate"
           ></p-message>
           <!-- role column filter is active: no data according to the selected columns -->
           <p-message
             *ngIf="!loadingMenu && menuNodes.length === 0 && roleFilterValue.length > 0"
             severity="info"
-            styleClass="mt-3 p-2"
             [text]="'ACTIONS.SEARCH.NO_DATA' | translate"
           ></p-message>
         </section>
@@ -567,7 +560,7 @@
         <p-message
           *ngIf="!loadingMenu && treeFilteredRows === 0"
           severity="info"
-          styleClass="mt-3 p-2"
+          styleClass="mt-3"
           [text]="'ACTIONS.SEARCH.FILTER.NOT_MATCHING' | translate"
         ></p-message>
       </ng-template>

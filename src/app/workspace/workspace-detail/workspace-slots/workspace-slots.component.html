@@ -28,7 +28,6 @@
         *ngIf="wpLoading || wsLoading || psLoading"
         id="ws_slots_message_loading"
         severity="info"
-        styleClass="m-2 p-2"
         [text]="'ACTIONS.LOADING' | translate"
       ></p-message>
 
@@ -103,7 +102,8 @@
           *ocxIfPermission="'WORKSPACE_SLOT#VIEW'"
           id="ws_slots_header_action_reload"
           styleClass="h-full"
-          icon="pi pi-refresh"
+          [icon]="'pi ' + (psLoading || wsLoading || wpLoading ? 'pi-spin pi-spinner' : 'pi-refresh')"
+          [disabled]="psLoading || wsLoading || wpLoading"
           (onClick)="onReload()"
           [ariaLabel]="'ACTIONS.SEARCH.RELOAD' | translate"
           [pTooltip]="'ACTIONS.SEARCH.RELOAD' | translate"

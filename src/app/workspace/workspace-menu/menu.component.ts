@@ -651,6 +651,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.menuItems = []
     this.menuItem = undefined
     this.loadingMenu = true
+    this.treeFilteredRows = 0
 
     this.menuApi
       .getMenuStructure({
