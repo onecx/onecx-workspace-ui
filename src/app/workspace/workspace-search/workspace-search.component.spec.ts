@@ -1,12 +1,11 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { Location } from '@angular/common'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { ActivatedRoute, ActivatedRouteSnapshot, provideRouter, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of, throwError } from 'rxjs'
+import { DataView } from 'primeng/dataview'
 
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 
@@ -17,15 +16,16 @@ describe('WorkspaceSearchComponent', () => {
   let component: WorkspaceSearchComponent
   let fixture: ComponentFixture<WorkspaceSearchComponent>
 
-  const mockRouter = { navigate: jasmine.createSpy('navigate') }
-  const mockActivatedRouteSnapshot: Partial<ActivatedRouteSnapshot> = { params: { id: 'mockId' } }
-  const mockActivatedRoute: Partial<ActivatedRoute> = {
-    snapshot: mockActivatedRouteSnapshot as ActivatedRouteSnapshot
-  }
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['info', 'error'])
   const wApiServiceSpy = {
     searchWorkspaces: jasmine.createSpy('searchWorkspaces').and.returnValue(of({})),
     getWorkspaceByName: jasmine.createSpy('getWorkspaceByName').and.returnValue(of({}))
+  }
+
+  function initTestComponent() {
+    fixture = TestBed.createComponent(WorkspaceSearchComponent)
+    component = fixture.componentInstance
+    fixture.detectChanges()
   }
 
   beforeEach(waitForAsync(() => {
@@ -41,25 +41,21 @@ describe('WorkspaceSearchComponent', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        provideRouter([{ path: '', component: WorkspaceSearchComponent }]),
-        { provide: Router, useValue: mockRouter },
-        { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: WorkspaceAPIService, useValue: wApiServiceSpy }
       ]
     }).compileComponents()
+  }))
+
+  beforeEach(() => {
+    initTestComponent()
+
     // to spy data: reset
     msgServiceSpy.info.calls.reset()
     msgServiceSpy.error.calls.reset()
     wApiServiceSpy.searchWorkspaces.calls.reset()
     // to spy data: refill with neutral data
     wApiServiceSpy.searchWorkspaces.and.returnValue(of({}))
-  }))
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(WorkspaceSearchComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
   })
 
   describe('initialize', () => {
@@ -132,11 +128,12 @@ describe('WorkspaceSearchComponent', () => {
   })
 
   it('should call filter table onFilterChange', () => {
-    component.table = jasmine.createSpyObj('table', ['filter'])
+    const dv = jasmine.createSpyObj('nativeElement', ['filter']) as DataView
+    const ev = 'filter'
 
-    component.onFilterChange('test')
+    component.onFilterChange(ev, dv)
 
-    expect(component.table?.filter).toHaveBeenCalledWith('test', 'contains')
+    expect(dv.filter).toHaveBeenCalledWith(ev, 'contains')
   })
 
   it('should set correct values onLayoutChange', () => {
@@ -163,103 +160,34 @@ describe('WorkspaceSearchComponent', () => {
     expect(component.sortOrder).toEqual(1)
   })
 
-  describe('onGotoWorkspace', () => {
-    it('should correct with baseUrl', () => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const mockNewWorkspaceWindow = spyOn(window, 'open')
-      const mockEvent = { stopPropagation: jasmine.createSpy() }
-      const w: WorkspaceAbstract = {
-        name: 'name',
-        theme: 'theme',
-        baseUrl: '/some/base/url',
-        displayName: 'Workspace'
+  describe('page actions', () => {
+    it('should call toggleShowCreateDialog when actionCallback is executed', () => {
+      spyOn(component, 'toggleShowCreateDialog')
+
+      component.ngOnInit()
+
+      if (component.actions$) {
+        component.actions$.subscribe((actions) => {
+          const action = actions[0]
+          action.actionCallback()
+          expect(component.toggleShowCreateDialog).toHaveBeenCalled()
+        })
       }
-
-      component.onGotoWorkspace(mockEvent, w, '/')
-
-      expect(mockEvent.stopPropagation).toHaveBeenCalled()
-      expect(window.open).toHaveBeenCalledWith(
-        Location.joinWithSlash(Location.joinWithSlash(window.document.location.origin, ''), w.baseUrl || ''),
-        '_blank'
-      )
     })
 
-    it('should do nothing without baseUrl', () => {
-      const mockEvent = { stopPropagation: jasmine.createSpy() }
-      const w: WorkspaceAbstract = {
-        name: 'name',
-        theme: 'theme',
-        baseUrl: undefined,
-        displayName: 'Workspace'
+    it('should call toggleShowImportDialog when actionCallback is executed', () => {
+      spyOn(component, 'toggleShowImportDialog')
+
+      component.ngOnInit()
+
+      if (component.actions$) {
+        component.actions$.subscribe((actions) => {
+          const action = actions[1]
+          action.actionCallback()
+          expect(component.toggleShowImportDialog).toHaveBeenCalled()
+        })
       }
-
-      component.onGotoWorkspace(mockEvent, w, '/')
-
-      expect(mockEvent.stopPropagation).toHaveBeenCalled()
     })
-  })
-
-  it('should behave correctly onGotoMenu', () => {
-    const mockEvent = {
-      stopPropagation: jasmine.createSpy()
-    }
-    const w: WorkspaceAbstract = {
-      name: 'name',
-      theme: 'theme',
-      baseUrl: '/some/base/url',
-      displayName: ''
-    }
-
-    component.onGotoMenu(mockEvent, w)
-
-    expect(mockEvent.stopPropagation).toHaveBeenCalled()
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['./', w.name, 'menu'], { relativeTo: component.route })
-  })
-
-  it('should return undefined if there is no ws object', () => {
-    const result = component.getLogoUrl(undefined)
-
-    expect(result).toBeUndefined()
-  })
-
-  it('should return correct imageUrl', () => {
-    const result = component.getLogoUrl({ logoUrl: 'url' } as Workspace)
-
-    expect(result).toBe('url')
-  })
-
-  it('should return uploaded imageUrl', () => {
-    const result = component.getLogoUrl({ name: 'workspace' } as Workspace)
-
-    expect(result).toBe('http://onecx-workspace-bff:8080/images/workspace/logo')
-  })
-
-  it('should call toggleShowCreateDialog when actionCallback is executed', () => {
-    spyOn(component, 'toggleShowCreateDialog')
-
-    component.ngOnInit()
-
-    if (component.actions$) {
-      component.actions$.subscribe((actions) => {
-        const action = actions[0]
-        action.actionCallback()
-        expect(component.toggleShowCreateDialog).toHaveBeenCalled()
-      })
-    }
-  })
-
-  it('should call toggleShowImportDialog when actionCallback is executed', () => {
-    spyOn(component, 'toggleShowImportDialog')
-
-    component.ngOnInit()
-
-    if (component.actions$) {
-      component.actions$.subscribe((actions) => {
-        const action = actions[1]
-        action.actionCallback()
-        expect(component.toggleShowImportDialog).toHaveBeenCalled()
-      })
-    }
   })
 
   it('should toggle showCreateDialog from false to true', () => {

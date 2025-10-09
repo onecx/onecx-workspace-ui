@@ -74,7 +74,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   public treeFilteredRows = 0
   public currentLogoUrl: string | undefined = undefined
   public roleFilterValue: string[] = []
-  public endpointUrl$: Observable<string>
+  public endpointUrlPermission$: Observable<string>
 
   // data
   public workspace$!: Observable<Workspace | undefined>
@@ -111,7 +111,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     private readonly msgService: PortalMessageService,
     private readonly userService: UserService
   ) {
-    this.endpointUrl$ = Utils.getEndpointUrl(
+    this.endpointUrlPermission$ = Utils.getEndpointUrl(
       this.workspaceService,
       this.msgService,
       'onecx-permission',
