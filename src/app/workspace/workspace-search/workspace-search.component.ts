@@ -136,7 +136,7 @@ export class WorkspaceSearchComponent implements OnInit {
   }
 
   public onFilterChange(event: string, dv: DataView): void {
-    dv.filter(event, 'contains')
+    dv.filter(event)
   }
 
   public onLayoutChange(viewMode: 'list' | 'grid') {
