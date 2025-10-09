@@ -9,7 +9,7 @@ import { DataView } from 'primeng/dataview'
 
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 
-import { Workspace, WorkspaceAbstract, WorkspaceAPIService, SearchWorkspacesResponse } from 'src/app/shared/generated'
+import { WorkspaceAbstract, WorkspaceAPIService, SearchWorkspacesResponse } from 'src/app/shared/generated'
 import { WorkspaceSearchComponent } from './workspace-search.component'
 
 describe('WorkspaceSearchComponent', () => {
