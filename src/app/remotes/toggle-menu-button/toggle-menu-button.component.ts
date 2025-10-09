@@ -74,7 +74,7 @@ export class OneCXToggleMenuButtonComponent implements ocxRemoteWebcomponent {
   }
 
   onMenuButtonClick(isVisible: boolean | null): void {
-    if (!isVisible) return
+    if (isVisible === null) return
     new StaticMenuStatePublisher().publish({ isVisible: !isVisible })
   }
 }

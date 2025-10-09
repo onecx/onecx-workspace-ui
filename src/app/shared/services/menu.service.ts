@@ -64,18 +64,18 @@ export class MenuService {
     )
 
     // Update static menu visibility on breakpoint change
-    this.isMobile$
-      .pipe(
+    combineLatest([
+      this.isMobile$.pipe(
         pairwise(),
         filter(([oldIsMobile, newIsMobile]) => {
           return oldIsMobile !== newIsMobile
         }),
-        map(([, isMobile]) => isMobile),
-        withLatestFrom(this.menuMode$)
-      )
-      .subscribe(([isMobile, menuMode]) => {
-        this.handleViewportChange(menuMode, isMobile)
-      })
+        map(([, isMobile]) => isMobile)
+      ),
+      this.menuMode$
+    ]).subscribe(([isMobile, userSelctedMenuMode]) => {
+      this.handleViewportChange(userSelctedMenuMode, isMobile)
+    })
   }
 
   /**
@@ -138,10 +138,7 @@ export class MenuService {
 
   private isStaticMenuVisible(): Observable<boolean> {
     if (this.capabilityService.hasCapability(Capability.ACTIVENESS_AWARE_MENUS)) {
-      return this.staticMenuState$.pipe(
-        map((state) => state.isVisible),
-        startWith(true)
-      )
+      return this.staticMenuState$.pipe(map((state) => state.isVisible))
     }
 
     return of(true)
