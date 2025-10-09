@@ -9,23 +9,10 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { Target } from './target';
 
 
-export interface UserWorkspaceMenuItem { 
-    key?: string;
-    name?: string;
-    description?: string;
-    url?: string;
-    applicationId?: string;
-    position?: number;
-    badge?: string;
-    external?: boolean;
-    target?: Target;
-    disabled?: boolean;
-    i18n?: { [key: string]: string; };
-    children?: Array<UserWorkspaceMenuItem>;
+export enum Target {
+    Self = '_self',
+    Blank = '_blank'
 }
-
-
 

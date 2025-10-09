@@ -1,14 +1,24 @@
 import { Injectable } from '@angular/core'
-import { UserWorkspaceMenuItem } from '../generated'
+import { Location } from '@angular/common'
 import { MenuItem } from 'primeng/api'
+
+import { getLocation } from '@onecx/accelerator'
+
+import { Target, UserWorkspaceMenuItem } from '../generated'
 
 @Injectable({ providedIn: 'root' })
 export class MenuItemService {
-  public constructMenuItems(userWorkspaceMenuItem: UserWorkspaceMenuItem[] | undefined, userLang: string): MenuItem[] {
+  public constructMenuItems(
+    userWorkspaceMenuItem: UserWorkspaceMenuItem[] | undefined,
+    userLang: string,
+    workspaceBaseUrl: string | undefined
+  ): MenuItem[] {
     const workspaceMenuItems = userWorkspaceMenuItem?.filter((i) => i) // exclude undefined
     if (workspaceMenuItems) {
       workspaceMenuItems.sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
-      const menuItems = workspaceMenuItems.filter((i) => !i.disabled).map((item) => this.mapMenuItem(item, userLang))
+      const menuItems = workspaceMenuItems
+        .filter((i) => !i.disabled)
+        .map((item) => this.mapMenuItem(item, userLang, workspaceBaseUrl))
       return menuItems
     } else {
       return []
@@ -55,29 +65,48 @@ export class MenuItemService {
       const matchedSegments = this.countSegments(itemStrippedPath)
       return matchedSegments
     }
-
     return 0
   }
 
   /** Item is never undefined when filtered out in constructMenuItems() */
-  private mapMenuItem(item: UserWorkspaceMenuItem, userLang: string): MenuItem {
+  private mapMenuItem(item: UserWorkspaceMenuItem, userLang: string, workspaceBaseUrl: string | undefined): MenuItem {
+    // is local (stay within Shell)  => use router link
+    // is NOT local (leave Shell)    => use URL
     const isLocal: boolean = !item.external
-    const label: string | undefined = item.i18n ? (item.i18n[userLang] ?? item.name) : item.name
+    const label = item.i18n ? (item.i18n[userLang] ?? item.name) : item.name
+    let url = this.replaceUrlVariables(item.url)
+    let queryParams: { [key: string]: string } | undefined
+    let routerUrl: string | undefined
 
+    if (url && isLocal) {
+      // separate query parameter if using router link
+      const u = new URL(url, 'https://dummy')
+      if (u.searchParams.size > 0) queryParams = Object.fromEntries(u.searchParams.entries())
+      routerUrl = u.pathname
+    }
+    // build a complete URL for opening in a new TAB
+    if (url && item.target === Target.Blank && !/^(http|https):\/\/.{6,245}$/.exec(url)) {
+      url = Location.joinWithSlash(
+        Location.joinWithSlash(getLocation().origin, getLocation().deploymentPath),
+        Location.joinWithSlash(workspaceBaseUrl!, url)
+      )
+    }
     if (item.children && item.children.length > 0) {
-      // separated due to sonar
       item.children.sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
     }
+
     return {
       id: item.key?.toLocaleLowerCase(),
       label: label,
       items:
         item.children && item.children.length > 0
-          ? item.children.filter((i) => !i.disabled).map((i) => this.mapMenuItem(i, userLang))
+          ? item.children.filter((i) => !i.disabled).map((i) => this.mapMenuItem(i, userLang, workspaceBaseUrl))
           : undefined,
       icon: item.badge ? 'pi pi-' + item.badge : undefined,
-      routerLink: isLocal ? this.stripBaseHref(this.replaceUrlVariables(item.url)) : undefined,
-      url: isLocal ? undefined : this.replaceUrlVariables(item.url)
+      target: item.target,
+      routerLink: isLocal ? this.stripBaseHref(routerUrl) : undefined,
+      queryParams: queryParams,
+      url: isLocal ? undefined : this.stripBaseHref(url)
     }
   }
 

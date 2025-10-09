@@ -71,14 +71,6 @@ app:
           technology: WEBCOMPONENTMODULE
           remoteName: onecx-workspace
           tagName: ocx-version-info-component
-        workspace-footer:
-          exposedModule: "./OneCXWorkspaceFooterComponent"
-          description: "Creates the page footer using slots for logo (theme), footer menu (workspace) and version (shell)"
-          type: COMPONENT
-          technology: WEBCOMPONENTMODULE
-          remoteName: onecx-workspace
-          tagName: ocx-workspace-footer-component
-          deprecated: true
         workspace-logo:
           exposedModule: ./OneCXCurrentWorkspaceLogoComponent
           description: 'Display the logo of the current workspace. Use imageStyleClass as slot input parameter to adjust the image style.'
@@ -108,17 +100,9 @@ app:
         onecx-iam-user-roles:
           name: 'onecx-iam-user-roles'
           description: 'Receive IAM user roles'
-        onecx-page-footer-menu:
-          name: 'onecx-page-footer-menu'
-          description: 'Area within page footer usually used to display a specific menu'
-          deprecated: true
         onecx-theme-data:
           name: 'onecx-theme-data'
           description: 'Getting theme data (like theme logo) to be used within workspace.'
-        onecx-theme-infos:
-          name: 'onecx-theme-infos'
-          description: 'Use theme infos'
-          deprecated: true
         onecx-custom-user-info:
           name: 'onecx-custom-user-info'
           description: 'Area on top of the avatar menu for displaying specific user info'

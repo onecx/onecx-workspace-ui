@@ -45,13 +45,10 @@ describe('ImageContainerComponent', () => {
       expect(component).toBeTruthy()
     })
 
-    it('should set defaultImageUrl$ to the correct value', (done) => {
+    it('should set defaultImageUrl$ to the correct value', () => {
       const expectedUrl = '/base/assets/images/workspace.png'
 
-      component.defaultImageUrl$.subscribe((url) => {
-        expect(url).toBe(expectedUrl)
-        done()
-      })
+      expect(component.defaultImageUrl).toBe(expectedUrl)
     })
   })
 

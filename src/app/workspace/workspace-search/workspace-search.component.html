@@ -23,7 +23,7 @@
     ></p-message>
     <p-dataView
       *ngIf="!exceptionKey"
-      #table
+      #workspaceTable
       id="ws_search_dataview"
       [value]="workspaces"
       [paginator]="true"
@@ -51,7 +51,7 @@
           [defaultSortOption]="sortField"
           [defaultSortDirection]="false"
           (dataViewChange)="onLayoutChange($event)"
-          (filterChange)="onFilterChange($event)"
+          (filterChange)="onFilterChange($event, workspaceTable)"
           [filterColumns]="['WORKSPACE.DISPLAY_NAME' | translate, 'WORKSPACE.THEME' | translate]"
           (sortChange)="onSortChange($event)"
           (sortDirectionChange)="onSortDirChange($event)"
@@ -73,7 +73,8 @@
             <app-image-container
               [id]="'ws_search_data_list_row_' + i + '_logo'"
               styleClass="h-4rem sm:h-5rem max-h-4rem sm:max-h-5rem max-w-4rem sm:max-w-6rem border-round-sm"
-              [imageUrl]="getLogoUrl(workspace)"
+              [imageUrl]="workspace.logoUrl ?? Utils.bffImageUrl(this.imageBasePath, workspace.name, RefType.Logo)"
+              aria-hidden="true"
             ></app-image-container>
           </div>
           <div
@@ -85,7 +86,7 @@
             tooltipEvent="hover"
             role="note"
           >
-            {{ limitText(workspace.displayName, 60) }}
+            {{ Utils.limitText(workspace.displayName, 60) }}
           </div>
           <div class="p-0 hidden sm:block col-3 md:col-2">
             <a
@@ -100,7 +101,7 @@
               tooltipEvent="hover"
               role="link"
             >
-              {{ limitText(workspace.baseUrl, 30) }}
+              {{ Utils.limitText(workspace.baseUrl, 30) }}
             </a>
           </div>
           <div
@@ -112,7 +113,7 @@
             tooltipEvent="hover"
             role="note"
           >
-            {{ limitText(workspace.theme, 40) }}
+            {{ Utils.limitText(workspace.theme, 40) }}
           </div>
           <div
             [id]="'ws_search_data_list_row_' + i + '_description'"
@@ -123,7 +124,7 @@
             tooltipEvent="hover"
             role="note"
           >
-            {{ limitText(workspace.description, 50) }}
+            {{ Utils.limitText(workspace.description, 50) }}
           </div>
         </article>
       </ng-template>
@@ -157,13 +158,18 @@
                 <app-image-container
                   [id]="'ws_search_data_grid_row_' + i + '_logo'"
                   styleClass="max-h-5rem sm:max-h-10rem border-round-sm"
-                  [imageUrl]="getLogoUrl(workspace)"
+                  [imageUrl]="
+                    workspace.logoUrl && workspace.logoUrl !== ''
+                      ? workspace.logoUrl
+                      : Utils.bffImageUrl(this.imageBasePath, workspace.name, RefType.Logo)
+                  "
+                  aria-hidden="true"
                 ></app-image-container>
                 <!-- BADGES -->
                 <div
                   *ngIf="workspace.disabled"
                   [id]="'ws_search_data_grid_row_' + i + '_disabled'"
-                  class="card-badge-right badge-1 p-1 pi pi-ban danger-action-text font-bold"
+                  class="card-badge-right badge-1 text-xl pi pi-ban danger-action-text font-bold"
                   [attr.aria-label]="'WORKSPACE.DISABLED' | translate"
                   [pTooltip]="'WORKSPACE.TOOLTIPS.DISABLED' | translate"
                   tooltipPosition="right"
@@ -173,7 +179,7 @@
                 <div
                   *ngIf="workspace.mandatory"
                   [id]="'ws_search_data_grid_row_' + i + '_mandatory'"
-                  class="card-badge-left badge-1 font-bold text-lg pi pi-shield"
+                  class="card-badge-left badge-1 font-bold text-xl pi pi-shield"
                   [attr.aria-label]="'INTERNAL.MANDATORY_TRUE' | translate"
                   [pTooltip]="'WORKSPACE.TOOLTIPS.MANDATORY' | translate"
                   tooltipPosition="top"
@@ -184,14 +190,10 @@
                   *ngIf="!workspace.disabled"
                   tabindex="0"
                   [id]="'ws_search_data_grid_row_' + i + '_goto_workspace'"
-                  class="card-badge-right badge-1 p-1 pi pi-external-link button-icon-only"
-                  (click)="
-                    onGotoWorkspace(
-                      $event,
-                      workspace,
-                      getLocation().deploymentPath === '/' ? '' : getLocation().deploymentPath
-                    )
-                  "
+                  class="card-badge-right badge-1 text-xl p-2 pi pi-external-link button-icon-only"
+                  [routerLink]="[workspace.name]"
+                  target="_blank"
+                  (click)="$event.stopPropagation()"
                   [attr.aria-label]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_WORKSPACE' | translate"
                   [pTooltip]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_WORKSPACE' | translate"
                   tooltipPosition="right"
@@ -202,8 +204,10 @@
                   *ocxIfPermission="'MENU#VIEW'"
                   tabindex="0"
                   [id]="'ws_search_data_grid_row_' + i + '_goto_menu'"
-                  class="card-badge-right badge-2 p-1 pi pi-sitemap button-icon-only"
-                  (click)="onGotoMenu($event, workspace)"
+                  class="card-badge-right badge-2 text-xl p-2 pi pi-sitemap button-icon-only"
+                  [routerLink]="[workspace.name, 'menu']"
+                  target="_self"
+                  (click)="$event.stopPropagation()"
                   [attr.aria-label]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_MENU' | translate"
                   [pTooltip]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_MENU' | translate"
                   tooltipPosition="right"

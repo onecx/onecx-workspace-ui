@@ -2,7 +2,6 @@
   #menuDetailDialog
   [header]="'DIALOG.MENU.HEADER.' + changeMode | translate"
   [(visible)]="displayDetailDialog"
-  (onHide)="onCloseDetailDialog()"
   [modal]="true"
   [closable]="true"
   [draggable]="true"
@@ -20,96 +19,103 @@
       tooltipPosition="top"
       tooltipEvent="focus|hover"
     >
-      <form class="grid row-gap-2" [formGroup]="formGroup" errorTailor>
-        <div class="col-12 md:col-7" style="min-width: 15rem">
-          <span class="p-float-label" controlErrorAnchor>
-            <input
-              pInputText
-              type="text"
-              id="ws_menu_detail_field_menu_name"
-              class="w-full pt-3 pb-2"
-              formControlName="name"
-              [attr.aria-label]="'MENU_ITEM.MENU_NAME' | translate"
-              [pTooltip]="'MENU_ITEM.TOOLTIP.MENU_NAME' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            />
-            <label class="ocx-required-label" for="ws_menu_detail_field_menu_name" aria-hidden="true">
-              {{ 'MENU_ITEM.MENU_NAME' | translate }}
-            </label>
-          </span>
+      <form class="md:mb-3 flex flex-column row-gap-4" [formGroup]="menuItemForm" errorTailor>
+        <!-- ROW 1 -->
+        <div class="flex flex-row flex-wrap gap-4">
+          <div class="w-12 md:w-7" style="min-width: 15rem">
+            <span class="p-float-label" controlErrorAnchor>
+              <input
+                pInputText
+                type="text"
+                id="ws_menu_detail_field_menu_name"
+                class="w-full pt-3 pb-2"
+                formControlName="name"
+                [attr.aria-label]="'MENU_ITEM.MENU_NAME' | translate"
+                [pTooltip]="'MENU_ITEM.TOOLTIP.MENU_NAME' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+              />
+              <label class="ocx-required-label" for="ws_menu_detail_field_menu_name" aria-hidden="true">
+                {{ 'MENU_ITEM.MENU_NAME' | translate }}
+              </label>
+            </span>
+          </div>
+          <article class="flex-grow-1" style="min-width: 10rem" [attr.aria-abel]="'MENU_ITEM.BADGE' | translate">
+            <span class="p-float-label" controlErrorAnchor>
+              <p-dropdown
+                id="ws_menu_detail_field_badge"
+                styleClass="w-full min-w-min input-field-correction"
+                formControlName="badge"
+                [showClear]="true"
+                [options]="iconItems"
+                [showClear]="true"
+                [ariaLabel]="'MENU_ITEM.BADGE' | translate"
+                [pTooltip]="'MENU_ITEM.TOOLTIP.BADGE' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+              >
+                <ng-template let-icon pTemplate="selectedItem">
+                  <div class="flex align-items-center">
+                    <span class="pi pi-{{ icon.value }} mr-3" aria-hidden="true"> </span>
+                    <span>{{ icon.label }}</span>
+                  </div>
+                </ng-template>
+                <ng-template let-icon pTemplate="item">
+                  <div class="flex align-items-center">
+                    <span class="pi pi-{{ icon.value }} mr-3" aria-hidden="true"> </span>
+                    <span>{{ icon.label }}</span>
+                  </div>
+                </ng-template>
+              </p-dropdown>
+              <label for="ws_menu_detail_field_badge" aria-hidden="true">{{ 'MENU_ITEM.BADGE' | translate }} </label>
+            </span>
+          </article>
         </div>
-        <article class="col-12 md:col-5" style="min-width: 10rem" [attr.aria-abel]="'MENU_ITEM.BADGE' | translate">
-          <span class="p-float-label" controlErrorAnchor>
-            <p-dropdown
-              id="ws_menu_detail_field_badge"
-              styleClass="w-full min-w-min input-field-correction"
-              formControlName="badge"
-              [showClear]="true"
-              [options]="iconItems"
-              [showClear]="true"
-              [ariaLabel]="'MENU_ITEM.BADGE' | translate"
-              [pTooltip]="'MENU_ITEM.TOOLTIP.BADGE' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            >
-              <ng-template let-icon pTemplate="selectedItem">
-                <div class="flex align-items-center">
-                  <span class="pi pi-{{ icon.value }} mr-3" aria-hidden="true"> </span>
-                  <span>{{ icon.label }}</span>
-                </div>
-              </ng-template>
-              <ng-template let-icon pTemplate="item">
-                <div class="flex align-items-center">
-                  <span class="pi pi-{{ icon.value }} mr-3" aria-hidden="true"> </span>
-                  <span>{{ icon.label }}</span>
-                </div>
-              </ng-template>
-            </p-dropdown>
-            <label for="ws_menu_detail_field_badge" aria-hidden="true">{{ 'MENU_ITEM.BADGE' | translate }} </label>
-          </span>
-        </article>
 
-        <article class="col-12 md:col-6" style="min-width: 15rem" [attr.aria-abel]="'MENU_ITEM.MENU_ID' | translate">
-          <span class="p-float-label" controlErrorAnchor>
-            <input
-              pInputText
-              type="text"
-              id="ws_menu_detail_field_menu_id"
-              class="w-full pt-3 pb-2"
-              formControlName="key"
-              [attr.aria-label]="'MENU_ITEM.TOOLTIP.MENU_ID' | translate"
-              [pTooltip]="'MENU_ITEM.TOOLTIP.MENU_ID' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            />
-            <label class="ocx-required-label" for="ws_menu_detail_field_menu_id" aria-hidden="true">
-              {{ 'MENU_ITEM.MENU_ID' | translate }}
-            </label>
-          </span>
-        </article>
-        <article class="col-12 md:col-6" style="min-width: 15rem" [attr.aria-abel]="'MENU_ITEM.PARENT_ID' | translate">
-          <span class="p-float-label">
-            <p-dropdown
-              id="ws_menu_detail_field_parent_id"
-              styleClass="w-full input-field-correction"
-              formControlName="parentItemId"
-              [options]="parentItems"
-              [showClear]="true"
-              scrollHeight="150px"
-              [ariaLabel]="'MENU_ITEM.PARENT_ID' | translate"
-              [pTooltip]="'MENU_ITEM.TOOLTIP.PARENT_ID' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            >
-            </p-dropdown>
-            <label for="ws_menu_detail_field_parent_id" aria-hidden="true"
-              >{{ 'MENU_ITEM.PARENT_ID' | translate }}
-            </label>
-          </span>
-        </article>
+        <!-- ROW 2 -->
+        <div class="flex flex-row flex-wrap gap-4">
+          <article class="w-12 md:w-6" style="min-width: 15rem" [attr.aria-abel]="'MENU_ITEM.MENU_ID' | translate">
+            <span class="p-float-label" controlErrorAnchor>
+              <input
+                pInputText
+                type="text"
+                id="ws_menu_detail_field_menu_id"
+                class="w-full pt-3 pb-2"
+                formControlName="key"
+                [attr.aria-label]="'MENU_ITEM.TOOLTIP.MENU_ID' | translate"
+                [pTooltip]="'MENU_ITEM.TOOLTIP.MENU_ID' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+              />
+              <label class="ocx-required-label" for="ws_menu_detail_field_menu_id" aria-hidden="true">
+                {{ 'MENU_ITEM.MENU_ID' | translate }}
+              </label>
+            </span>
+          </article>
+          <article class="flex-grow-1" style="min-width: 15rem" [attr.aria-abel]="'MENU_ITEM.PARENT_ID' | translate">
+            <span class="p-float-label">
+              <p-dropdown
+                id="ws_menu_detail_field_parent_id"
+                styleClass="w-full input-field-correction"
+                formControlName="parentItemId"
+                [options]="parentItems"
+                [showClear]="true"
+                scrollHeight="150px"
+                [ariaLabel]="'MENU_ITEM.PARENT_ID' | translate"
+                [pTooltip]="'MENU_ITEM.TOOLTIP.PARENT_ID' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+              >
+              </p-dropdown>
+              <label for="ws_menu_detail_field_parent_id" aria-hidden="true"
+                >{{ 'MENU_ITEM.PARENT_ID' | translate }}
+              </label>
+            </span>
+          </article>
+        </div>
 
-        <article class="col-12" [attr.aria-abel]="'MENU_ITEM.URL' | translate">
+        <!-- ROW 3 -->
+        <article class="w-12" [attr.aria-abel]="'MENU_ITEM.URL' | translate">
           <span class="p-float-label mb-1" controlErrorAnchor>
             <p-autoComplete
               id="ws_menu_detail_field_url"
@@ -135,14 +141,14 @@
               tooltipEvent="hover"
             >
               <ng-template let-mfe pTemplate="item">
-                <div class="flex flex-row column-gap-2 align-items-center">
-                  <div class="hidden md:block w-30rem text-responsive">{{ mfe.mfePath }}</div>
+                <div class="flex flex-row column-gap-4 align-items-center">
+                  <div class="hidden md:block w-26rem text-responsive">{{ mfe.mfePath }}</div>
                   <div class="block md:hidden w-15rem text-responsive">{{ mfe.mfePath }}</div>
-                  <div class="flex flex-column">
-                    <div class="text-sm font-bold" [class.danger-action-text]="!mfe.id">
+                  <div class="flex flex-column w-12rem">
+                    <div class="text-sm font-bold text-responsive" [class.danger-action-text]="!mfe.id">
                       {{ mfe.id ? mfe.product : (mfe.product | translate) }}
                     </div>
-                    <div class="text-xs" *ngIf="mfe.id">{{ mfe.appId }}</div>
+                    <div class="text-xs text-responsive" *ngIf="mfe.id">{{ mfe.appId }}</div>
                   </div>
                 </div>
               </ng-template>
@@ -151,87 +157,115 @@
           </span>
         </article>
 
-        <div class="col-12 md:col-3">
-          <span class="p-float-label mb-1" controlErrorAnchor>
-            <input
-              pInputText
-              type="text"
-              id="ws_menu_detail_field_position"
-              class="w-full pt-3 pb-2 text-center"
-              formControlName="position"
-              [attr.aria-label]="'MENU_ITEM.POSITION' | translate"
-              [pTooltip]="'MENU_ITEM.TOOLTIP.POSITION' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            />
-            <label for="ws_menu_detail_field_position" aria-hidden="true">{{ 'MENU_ITEM.POSITION' | translate }}</label>
-          </span>
-        </div>
-        <article class="col-12 md:col-5" style="min-width: 10rem" [attr.aria-label]="'MENU_ITEM.SCOPE' | translate">
-          <span class="p-float-label mb-1" controlErrorAnchor>
-            <p-dropdown
-              id="ws_menu_detail_field_scope"
-              styleClass="w-full min-w-min input-field-correction"
-              formControlName="scope"
-              [appendTo]="'body'"
-              [showClear]="true"
-              [options]="scopeItems"
-              [ariaLabel]="'MENU_ITEM.SCOPE' | translate"
-              [pTooltip]="'MENU_ITEM.TOOLTIP.SCOPE' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            >
-            </p-dropdown>
-            <label for="ws_menu_detail_field_scope" aria-hidden="true">{{ 'MENU_ITEM.SCOPE' | translate }} </label>
-          </span>
-        </article>
-
-        <div class="col-12 md:col-4 md:pl-5 flex justify-content-start align-items-center">
-          <p-checkbox
-            id="ws_menu_detail_field_disabled"
-            class="checkbox-label"
-            formControlName="disabled"
-            [binary]="true"
-            [label]="'MENU_ITEM.DISABLED' | translate"
-            [ariaLabel]="'MENU_ITEM.DISABLED' | translate"
-            [pTooltip]="'MENU_ITEM.TOOLTIP.DISABLED' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          >
-          </p-checkbox>
-        </div>
-
-        <div class="col-12 md:col-8">
-          <span class="p-float-label mb-1" controlErrorAnchor>
-            <input
-              pInputText
-              type="text"
-              id="ws_menu_detail_field_description"
-              class="w-full pt-3 pb-2"
-              formControlName="description"
-              [attr.aria-label]="'MENU_ITEM.DESCRIPTION' | translate"
-              [pTooltip]="'MENU_ITEM.TOOLTIP.DESCRIPTION' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            />
-            <label for="ws_menu_detail_field_description" aria-hidden="true"
-              >{{ 'MENU_ITEM.DESCRIPTION' | translate }}
-            </label>
-          </span>
-        </div>
-        <div class="col-12 md:col-4 md:pl-5 flex justify-content-start align-items-center">
-          <p-checkbox
-            id="ws_menu_detail_field_ws_exit"
-            class="checkbox-label"
-            formControlName="external"
-            [binary]="true"
-            [label]="'MENU_ITEM.EXTERN' | translate"
-            [ariaLabel]="'MENU_ITEM.EXTERN' | translate"
-            [pTooltip]="'MENU_ITEM.TOOLTIP.EXTERN' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          >
-          </p-checkbox>
+        <!-- ROW 4/5 -->
+        <div class="w-12 flex flex-row flex-wrap gap-4">
+          <div class="flex-grow-1 flex flex-column gap-4">
+            <!-- ROW 4 -->
+            <div class="flex-grow-1 flex flex-row gap-4 flex-wrap">
+              <div class="w-12 md:w-3">
+                <span class="p-float-label mb-1" controlErrorAnchor>
+                  <input
+                    pInputText
+                    type="text"
+                    id="ws_menu_detail_field_position"
+                    class="w-full pt-3 pb-2 text-center"
+                    formControlName="position"
+                    [attr.aria-label]="'MENU_ITEM.POSITION' | translate"
+                    [pTooltip]="'MENU_ITEM.TOOLTIP.POSITION' | translate"
+                    tooltipPosition="top"
+                    tooltipEvent="hover"
+                  />
+                  <label for="ws_menu_detail_field_position" aria-hidden="true">{{
+                    'MENU_ITEM.POSITION' | translate
+                  }}</label>
+                </span>
+              </div>
+              <article class="flex-grow-1" style="min-width: 10rem" [attr.aria-label]="'MENU_ITEM.SCOPE' | translate">
+                <span class="p-float-label mb-1" controlErrorAnchor>
+                  <p-dropdown
+                    id="ws_menu_detail_field_scope"
+                    styleClass="w-full min-w-min input-field-correction"
+                    formControlName="scope"
+                    [appendTo]="'body'"
+                    [showClear]="true"
+                    [options]="scopeItems"
+                    [ariaLabel]="'MENU_ITEM.SCOPE' | translate"
+                    [pTooltip]="'MENU_ITEM.TOOLTIP.SCOPE' | translate"
+                    tooltipPosition="top"
+                    tooltipEvent="hover"
+                  >
+                  </p-dropdown>
+                  <label for="ws_menu_detail_field_scope" aria-hidden="true"
+                    >{{ 'MENU_ITEM.SCOPE' | translate }}
+                  </label>
+                </span>
+              </article>
+            </div>
+            <!-- ROW 5 -->
+            <div class="p-float-label mb-1" controlErrorAnchor>
+              <input
+                pInputText
+                type="text"
+                id="ws_menu_detail_field_description"
+                class="w-full pt-3 pb-2"
+                formControlName="description"
+                [attr.aria-label]="'MENU_ITEM.DESCRIPTION' | translate"
+                [pTooltip]="'MENU_ITEM.TOOLTIP.DESCRIPTION' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+              />
+              <label for="ws_menu_detail_field_description" aria-hidden="true"
+                >{{ 'MENU_ITEM.DESCRIPTION' | translate }}
+              </label>
+            </div>
+          </div>
+          <div class="md:w-4 md:pl-5 flex flex-column gap-3 justify-content-evenly">
+            <div class="w-full flex justify-content-start align-items-center">
+              <p-checkbox
+                id="ws_menu_detail_field_disabled"
+                class="checkbox-label"
+                formControlName="disabled"
+                [binary]="true"
+                [label]="'MENU_ITEM.DISABLED' | translate"
+                [ariaLabel]="'MENU_ITEM.DISABLED' | translate"
+                [pTooltip]="'MENU_ITEM.TOOLTIP.DISABLED' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+              >
+              </p-checkbox>
+            </div>
+            <div class="w-full md:my-2 flex justify-content-start align-items-center">
+              <p-checkbox
+                id="ws_menu_detail_field_ws_exit"
+                class="checkbox-label"
+                formControlName="external"
+                [binary]="true"
+                [label]="'MENU_ITEM.EXTERN' | translate"
+                [ariaLabel]="'MENU_ITEM.EXTERN' | translate"
+                [pTooltip]="'MENU_ITEM.TOOLTIP.EXTERN' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+              >
+              </p-checkbox>
+            </div>
+            <div class="w-full flex justify-content-start align-items-center">
+              <p-checkbox
+                id="ws_menu_detail_field_target"
+                class="checkbox-label"
+                formControlName="target"
+                [binary]="true"
+                trueValue="_blank"
+                falseValue="_self"
+                [binary]="true"
+                [label]="'MENU_ITEM.TARGET' | translate"
+                [ariaLabel]="'MENU_ITEM.TARGET' | translate"
+                [pTooltip]="'MENU_ITEM.TOOLTIP.TARGET' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+              >
+              </p-checkbox>
+            </div>
+          </div>
         </div>
       </form>
     </p-tabPanel>
@@ -306,12 +340,12 @@
   </p-tabView>
 
   <ng-template pTemplate="footer">
-    <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
+    <footer class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
       <p-button
         *ngIf="changeMode === 'VIEW'"
         id="ws_menu_detail_action_close"
         icon="pi pi-times"
-        (onClick)="onCloseDetailDialog()"
+        (onClick)="onCloseDialog()"
         [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
         [ariaLabel]="'ACTIONS.NAVIGATION.CLOSE' | translate"
         [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
@@ -322,7 +356,7 @@
         *ngIf="changeMode !== 'VIEW'"
         id="ws_menu_detail_action_cancel"
         icon="pi pi-times"
-        (onClick)="onCloseDetailDialog()"
+        (onClick)="onCloseDialog()"
         [label]="'ACTIONS.CANCEL' | translate"
         [ariaLabel]="'ACTIONS.TOOLTIPS.CANCEL_WITHOUT_SAVE' | translate"
         [pTooltip]="'ACTIONS.TOOLTIPS.CANCEL_WITHOUT_SAVE' | translate"
@@ -333,7 +367,7 @@
         *ngIf="changeMode !== 'VIEW'"
         id="ws_menu_detail_action_save"
         icon="pi pi-save"
-        [disabled]="!formGroup.valid"
+        [disabled]="!menuItemForm.valid"
         (onClick)="onMenuSave()"
         [label]="'ACTIONS.SAVE' | translate"
         [ariaLabel]="'ACTIONS.SAVE' | translate"
@@ -341,7 +375,7 @@
         tooltipPosition="top"
         tooltipEvent="hover"
       ></p-button>
-    </div>
+    </footer>
   </ng-template>
 </p-dialog>
 
@@ -349,7 +383,6 @@
 <p-dialog
   [header]="'DIALOG.MENU.HEADER.DELETE' | translate"
   [(visible)]="displayDeleteDialog"
-  (onHide)="onCloseDetailDialog()"
   [modal]="true"
   [closable]="true"
   [draggable]="true"
@@ -376,7 +409,7 @@
       <p-button
         id="ws_menu_delete_action_no"
         icon="pi pi-times"
-        (onClick)="onCloseDeleteDialog()"
+        (onClick)="onCloseDialog()"
         [label]="'ACTIONS.CONFIRMATION.NO' | translate"
         [ariaLabel]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
         [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"

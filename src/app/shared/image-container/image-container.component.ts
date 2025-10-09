@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core'
-import { Observable, map } from 'rxjs'
+import { map } from 'rxjs'
 
 import { AppStateService } from '@onecx/angular-integration-interface'
 
@@ -19,14 +19,13 @@ import { Utils } from 'src/app/shared/utils'
 export class ImageContainerComponent {
   @Input() public id = 'ws_image_container'
   @Input() public title: string | undefined
-  @Input() public small = false
   @Input() public imageUrl: string | undefined
   @Input() public styleClass: string | undefined
   @Input() public defaultLogoType: 'workspace' | 'product' | undefined
   @Output() public imageLoadResult = new EventEmitter<boolean>() // inform caller
 
   public displayImageUrl: string | undefined
-  public defaultImageUrl$: Observable<string>
+  public defaultImageUrl: string | undefined = undefined
   public displayDefault = false
   private readonly defaultLogoPaths = {
     workspace: environment.DEFAULT_LOGO_PATH,
@@ -34,11 +33,13 @@ export class ImageContainerComponent {
   }
 
   constructor(appState: AppStateService) {
-    this.defaultImageUrl$ = appState.currentMfe$.pipe(
-      map((mfe) => {
-        return Utils.prepareUrlPath(mfe.remoteBaseUrl, this.defaultLogoPaths[this.defaultLogoType ?? 'workspace'])
-      })
-    )
+    appState.currentMfe$
+      .pipe(
+        map((mfe) =>
+          Utils.prepareUrlPath(mfe.remoteBaseUrl, this.defaultLogoPaths[this.defaultLogoType ?? 'workspace'])
+        )
+      )
+      .subscribe((data) => (this.defaultImageUrl = data))
   }
 
   /**

@@ -48,10 +48,7 @@ describe('OneCXVerticalMainMenuComponent', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        {
-          provide: BASE_URL,
-          useValue: baseUrlSubject
-        },
+        { provide: BASE_URL, useValue: baseUrlSubject },
         provideRouter([{ path: 'admin/welcome', component: OneCXVerticalMainMenuComponent }]),
         provideShellCapabilityServiceMock(),
         { provide: MenuService, useValue: menuServiceSpy }
@@ -541,6 +538,7 @@ describe('OneCXVerticalMainMenuComponent', () => {
       menuItemApiSpy.getMenuItems.and.returnValue(
         of({
           workspaceName: 'test-workspace',
+          workspaceBaseUrl: '/base-path',
           menu: [
             {
               key: 'my-item',
@@ -564,6 +562,7 @@ describe('OneCXVerticalMainMenuComponent', () => {
       )
       component.menuItems$.next({
         workspaceName: 'test-workspace',
+        workspaceBaseUrl: '/base-path',
         items: [
           {
             id: 'my-item',
@@ -620,6 +619,7 @@ describe('OneCXVerticalMainMenuComponent', () => {
       )
       component.menuItems$.next({
         workspaceName: 'test-workspace',
+        workspaceBaseUrl: '/base-path',
         items: [
           {
             id: 'my-item',

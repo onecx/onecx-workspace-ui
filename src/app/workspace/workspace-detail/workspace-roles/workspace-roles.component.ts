@@ -6,11 +6,10 @@ import {
   SimpleChanges,
   OnChanges,
   OnInit,
-  ViewChild
+  OnDestroy
 } from '@angular/core'
-import { Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
-import { Observable, catchError, finalize, map, of } from 'rxjs'
+import { Observable, Subject, catchError, finalize, map, of } from 'rxjs'
 import { SelectItem } from 'primeng/api'
 import { DataView } from 'primeng/dataview'
 
@@ -45,18 +44,18 @@ export function slotInitializer(slotService: SlotService) {
     { provide: SLOT_SERVICE, useExisting: SlotService }
   ]
 })
-export class WorkspaceRolesComponent implements OnInit, OnChanges {
+export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
   @Input() workspace!: Workspace | undefined
   // data: the receiving of workspace and iam roles are complete decoupled (no combineLatest possible)
+  private readonly destroy$ = new Subject()
   public wRoles$!: Observable<WorkspaceRole[]>
   public wRoles: WorkspaceRole[] = []
   public iamRoles: IAMRole[] = []
   public roles: Role[] = [] // target collection used in HTML
   public role: Role | undefined // for detail
-  public limitText = Utils.limitText
+  public Utils = Utils
 
   // dialog
-  @ViewChild(DataView) dv: DataView | undefined
   public dataViewControlsTranslations$: Observable<DataViewControlTranslations> | undefined
   public filterValue = 'WORKSPACE'
   public filterByDefault = 'name,type'
@@ -85,7 +84,6 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   public componentPermissions: string[] = []
 
   constructor(
-    private readonly router: Router,
     private readonly workspaceService: WorkspaceService,
     private readonly user: UserService,
     private readonly slotService: SlotService,
@@ -114,6 +112,10 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
         this.loadingIamRoles = false
       }
     }, 5000)
+  }
+  public ngOnDestroy(): void {
+    this.destroy$.next(undefined)
+    this.destroy$.complete()
   }
 
   /**
@@ -207,7 +209,6 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
     this.roles = []
     this.wRolesLoaded = false
     this.iamRolesLoaded = false
-    this.onQuickFilterChange({ value: 'ALL' }) // includes reload
     this.refreshIamRoles = !this.refreshIamRoles // trigger iam role refresh
     this.loadingIamRoles = true
     this.searchRoles(true)
@@ -291,22 +292,22 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   /**
    * UI Events
    */
-  public onQuickFilterChange(ev: any): void {
+  public onQuickFilterChange(ev: any, dv: DataView): void {
     if (ev.value === 'ALL') {
       this.filterBy = this.filterByDefault
-      this.dv?.filter('')
+      dv.filter('')
     } else {
       this.filterBy = 'type'
-      this.dv?.filter(ev.value)
+      dv.filter(ev.value)
     }
     this.quickFilterValue = ev.value
   }
-  public onFilterChange(filter: string): void {
+  public onFilterChange(filter: string, dv: DataView): void {
     if (filter === '') {
-      this.onQuickFilterChange({ value: 'ALL' })
+      this.onQuickFilterChange({ value: 'ALL' }, dv)
     } else {
       this.filterBy = 'name'
-      this.dv?.filter(filter)
+      dv?.filter(filter)
     }
   }
 
@@ -321,11 +322,10 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
     }
   }
 
-  public onGoToPermission(): void {
-    Utils.goToEndpoint(
+  public onGoToPermission$(): Observable<string> {
+    return Utils.getEndpointUrl(
       this.workspaceService,
       this.msgService,
-      this.router,
       'onecx-permission',
       'onecx-permission-ui',
       'workspace',
