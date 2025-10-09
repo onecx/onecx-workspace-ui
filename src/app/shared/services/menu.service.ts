@@ -11,7 +11,10 @@ import {
   debounceTime,
   pairwise,
   filter,
-  mergeMap
+  mergeMap,
+  distinctUntilChanged,
+  from,
+  tap
 } from 'rxjs'
 import { StaticMenuStateTopic } from '../topics/static-menu-visible.topic'
 
@@ -56,6 +59,7 @@ export class MenuService {
     const mobileBreakpointVar = getComputedStyle(document.documentElement).getPropertyValue('--mobile-break-point')
     this.isMobile$ = this.onResize$.pipe(
       map(() => window.matchMedia(`(max-width: ${mobileBreakpointVar})`).matches),
+      // Force first value
       startWith(
         !window.matchMedia(`(max-width: ${mobileBreakpointVar})`).matches,
         window.matchMedia(`(max-width: ${mobileBreakpointVar})`).matches
@@ -137,7 +141,12 @@ export class MenuService {
 
   private isStaticMenuVisible(): Observable<boolean> {
     if (this.capabilityService.hasCapability(Capability.ACTIVENESS_AWARE_MENUS)) {
-      return this.staticMenuState$.pipe(map((state) => state.isVisible))
+      return from(this.staticMenuState$.isInitialized).pipe(
+        mergeMap(() => this.staticMenuState$.asObservable()),
+        map((state) => state.isVisible),
+        distinctUntilChanged(),
+        startWith(false)
+      )
     }
 
     return of(true)
