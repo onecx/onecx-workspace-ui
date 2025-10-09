@@ -71,10 +71,6 @@ describe('WorkspacePropsComponent', () => {
   const wProductServiceSpy = {
     getProductsByWorkspaceId: jasmine.createSpy('getProductsByWorkspaceId').and.returnValue(of({}))
   }
-  const workspaceServiceMock: jasmine.SpyObj<WorkspaceService> = jasmine.createSpyObj('WorkspaceService', [
-    'doesUrlExistFor',
-    'getUrl'
-  ])
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -95,7 +91,6 @@ describe('WorkspacePropsComponent', () => {
         { provide: ImagesInternalAPIService, useValue: imageServiceSpy },
         { provide: WorkspaceAPIService, useValue: apiServiceSpy },
         { provide: WorkspaceProductAPIService, useValue: wProductServiceSpy },
-        { provide: WorkspaceService, useValue: workspaceServiceMock },
         { provide: Accelerator, useValue: accSpy }
       ],
       teardown: { destroyAfterEach: false }
@@ -108,9 +103,7 @@ describe('WorkspacePropsComponent', () => {
     component = fixture.componentInstance
     component.workspace = workspace
     fixture.detectChanges()
-  })
 
-  afterAll(() => {
     // reset
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
@@ -530,10 +523,10 @@ describe('WorkspacePropsComponent', () => {
   })
 
   it('should follow link to current theme', () => {
-    spyOn(Utils, 'goToEndpoint')
+    spyOn(Utils, 'getEndpointUrl')
 
-    component.onGoToTheme('themeName')
+    component.onGoToTheme$('themeName')
 
-    expect(Utils.goToEndpoint).toHaveBeenCalled()
+    expect(Utils.getEndpointUrl).toHaveBeenCalled()
   })
 })

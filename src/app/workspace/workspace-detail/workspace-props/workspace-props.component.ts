@@ -65,7 +65,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   public themeFormValues$ = new ReplaySubject<{ theme: string }>(1) // async storage of formgroup value to manage change detection
 
   constructor(
-    private readonly router: Router,
     private readonly slotService: SlotService,
     private readonly workspaceService: WorkspaceService,
     private readonly msgService: PortalMessageService,
@@ -334,14 +333,14 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     return refType === RefType.Logo ? theme?.logoUrl : theme?.faviconUrl
   }
 
-  public onGoToTheme(name?: string): Observable<string> {
+  public onGoToTheme$(name: string): Observable<string> {
     return Utils.getEndpointUrl(
       this.workspaceService,
       this.msgService,
       'onecx-theme',
       'onecx-theme-ui',
       'theme-detail',
-      { 'theme-name': name }
+      { 'theme-name': 'name' }
     )
   }
 }

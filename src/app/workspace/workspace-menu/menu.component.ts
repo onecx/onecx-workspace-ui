@@ -50,10 +50,7 @@ type Column = { name: string; headerKey: string; tooltipKey: string; css?: strin
 })
 export class MenuComponent implements OnInit, OnDestroy {
   Object = Object
-  public limitText = Utils.limitText // utils declarations
-  public sortByLocale = Utils.sortByLocale
-  public getEndpointUrl = Utils.getEndpointUrl
-  public console = console
+  public Utils = Utils
   private readonly destroy$ = new Subject()
   // dialog
   public actions$: Observable<Action[]> | undefined
@@ -168,6 +165,8 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.stateService.updateState({
       workspaceMenuItems: this.menuItems
     })
+    this.destroy$.next(undefined)
+    this.destroy$.complete()
   }
 
   /**

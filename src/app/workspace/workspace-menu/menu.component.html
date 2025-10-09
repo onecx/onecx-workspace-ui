@@ -2,7 +2,9 @@
   <ocx-page-header
     *ngIf="workspace$ | async as workspace"
     [header]="
-      workspace?.displayName ? limitText(workspace.displayName, 50) + ': ' + ('DIALOG.MENU.LABEL' | translate) : ''
+      workspace?.displayName
+        ? Utils.limitText(workspace.displayName, 50) + ': ' + ('DIALOG.MENU.LABEL' | translate)
+        : ''
     "
     [subheader]="'DIALOG.MENU.SUBHEADER' | translate"
     [actions]="(actions$ | async) ?? []"
@@ -450,7 +452,7 @@
                 tooltipPosition="top"
                 tooltipEvent="hover"
               >
-                {{ Object.keys(rowData.i18n).sort(sortByLocale).join(', ') }}
+                {{ Object.keys(rowData.i18n).sort(Utils.sortByLocale).join(', ') }}
               </div>
             </td>
             <td class="p-2 text-center hidden-md">

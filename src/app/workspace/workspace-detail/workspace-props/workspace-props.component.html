@@ -88,7 +88,7 @@
             tabindex="0"
             id="ws_detail_props_item_theme_link"
             class="flex-grow-0 p-inputgroup-addon bg-primary pseudo-button pi pi-link"
-            [routerLink]="[onGoToTheme(wsThemeName.value) | async]"
+            [routerLink]="[onGoToTheme$(wsThemeName.value) | async]"
             [ngClass]="
               !editMode && inputBaseUrl.value && (themeProductRegistered$ | async) ? 'cursor-pointer' : 'p-disabled'
             "
@@ -127,7 +127,7 @@
           tabindex="0"
           id="ws_detail_props_item_theme_link"
           class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
-          [routerLink]="[onGoToTheme(wsThemeNameReadonly.value) | async]"
+          [routerLink]="[onGoToTheme$(wsThemeNameReadonly.value) | async]"
           [ngClass]="
             !editMode && inputBaseUrl.value && (themeProductRegistered$ | async) ? 'cursor-pointer' : 'p-disabled'
           "
@@ -179,7 +179,13 @@
       >
       </a>
     </div>
-    <label *ngIf="editMode" class="ocx-control-hint block" for="ws_detail_props_item_base_url_link" aria-hidden="true">
+    <label
+      *ngIf="editMode"
+      class="ocx-control-hint block"
+      style="color: var(--emphasis-medium)"
+      for="ws_detail_props_item_base_url_link"
+      aria-hidden="true"
+    >
       {{ ('VALIDATION.HINTS.FORMAT_URL' | translate) + urlPatternRelative }}
     </label>
   </article>
