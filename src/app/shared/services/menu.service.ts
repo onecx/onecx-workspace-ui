@@ -13,8 +13,7 @@ import {
   filter,
   mergeMap,
   distinctUntilChanged,
-  from,
-  tap
+  from
 } from 'rxjs'
 import { StaticMenuStateTopic } from '../topics/static-menu-visible.topic'
 
