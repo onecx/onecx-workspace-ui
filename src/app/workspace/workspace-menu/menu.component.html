@@ -2,7 +2,9 @@
   <ocx-page-header
     *ngIf="workspace$ | async as workspace"
     [header]="
-      workspace?.displayName ? limitText(workspace.displayName, 50) + ': ' + ('DIALOG.MENU.LABEL' | translate) : ''
+      workspace?.displayName
+        ? Utils.limitText(workspace.displayName, 50) + ': ' + ('DIALOG.MENU.LABEL' | translate)
+        : ''
     "
     [subheader]="'DIALOG.MENU.SUBHEADER' | translate"
     [actions]="(actions$ | async) ?? []"
@@ -113,7 +115,7 @@
               id="ws_menu_table_action_goto_permissions"
               styleClass="button-min-height"
               icon="pi pi-lock"
-              [routerLink]="[endpointUrl$ | async]"
+              [routerLink]="[endpointUrlPermission$ | async]"
               [ariaLabel]="'ACTIONS.NAVIGATION.GOTO_WORKSPACE_PERMISSIONS' | translate"
               [pTooltip]="'ACTIONS.NAVIGATION.GOTO_WORKSPACE_PERMISSIONS' | translate"
               tooltipPosition="top"
@@ -232,7 +234,11 @@
           </div>
         </section>
         <!-- MESSAGES -->
-        <section class="pt-3" [attr.aria-label]="'DIALOG.MENU.SECTIONS.MESSAGES' | translate">
+        <section
+          *ngIf="loading || loadingMenu || (!loadingMenu && menuNodes.length === 0)"
+          class="pt-2"
+          [attr.aria-label]="'DIALOG.MENU.SECTIONS.MESSAGES' | translate"
+        >
           <p-message *ngIf="loading" severity="info" [text]="'ACTIONS.LOADING' | translate"></p-message>
           <p-message
             *ngIf="!loading && loadingMenu"
@@ -446,7 +452,7 @@
                 tooltipPosition="top"
                 tooltipEvent="hover"
               >
-                {{ Object.keys(rowData.i18n).sort(sortByLocale).join(', ') }}
+                {{ Object.keys(rowData.i18n).sort(Utils.sortByLocale).join(', ') }}
               </div>
             </td>
             <td class="p-2 text-center hidden-md">

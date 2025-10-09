@@ -152,10 +152,7 @@ const Utils = {
           console.error(
             'Routing not possible for product: ' + productName + '  app: ' + appId + '  endpoint: ' + endpointName
           )
-          msgService.error({
-            summaryKey: 'EXCEPTIONS.ENDPOINT.NOT_EXIST',
-            detailKey: 'EXCEPTIONS.CONTACT_ADMIN'
-          })
+          msgService.error({ summaryKey: 'EXCEPTIONS.ENDPOINT.NOT_EXIST', detailKey: 'EXCEPTIONS.CONTACT_ADMIN' })
         }
       }),
       filter((exists) => exists), // stop on not exists

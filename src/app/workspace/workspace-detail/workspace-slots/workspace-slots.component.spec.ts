@@ -21,8 +21,9 @@ import {
   MicrofrontendPS,
   MicrofrontendType
 } from 'src/app/shared/generated'
-import { CombinedSlot, WorkspaceSlotsComponent } from './workspace-slots.component'
 import { Utils } from 'src/app/shared/utils'
+
+import { CombinedSlot, WorkspaceSlotsComponent } from './workspace-slots.component'
 
 const workspace: Workspace = {
   id: 'wid',
@@ -326,29 +327,33 @@ describe('WorkspaceSlotsComponent', () => {
    */
   describe('filtering', () => {
     it('should reset filter to default when ALL is selected', () => {
-      component.onQuickFilterChange({ value: 'ALL' })
+      const dv = jasmine.createSpyObj('DataView', ['filter'])
+
+      component.onQuickFilterChange({ value: 'ALL' }, dv)
 
       expect(component.filterBy).toEqual(component.filterByDefault)
       expect(component.quickFilterValue).toEqual('ALL')
     })
 
     it('should set filter by specific type', () => {
-      component.onQuickFilterChange({ value: 'UNREGISTERED' })
+      const dv = jasmine.createSpyObj('DataView', ['filter'])
+      component.onQuickFilterChange({ value: 'UNREGISTERED' }, dv)
 
       expect(component.filterBy).toEqual('type')
       expect(component.quickFilterValue).toEqual('UNREGISTERED')
     })
 
     it('should set filterBy to name,type when filter is empty', () => {
-      component.onFilterChange('')
+      const dv = jasmine.createSpyObj('DataView', ['filter'])
+      component.onFilterChange('', dv)
 
       expect(component.filterBy).toEqual(component.filterByDefault)
     })
 
     it('should call filter method with "contains" when filter has a value', () => {
-      component.dv = jasmine.createSpyObj('DataView', ['filter'])
+      const dv = jasmine.createSpyObj('DataView', ['filter'])
 
-      component.onFilterChange('testFilter')
+      component.onFilterChange('testFilter', dv)
     })
   })
 
@@ -625,11 +630,11 @@ describe('WorkspaceSlotsComponent', () => {
   })
 
   it('should go to product slots', () => {
-    spyOn(Utils, 'goToEndpoint')
+    spyOn(Utils, 'getEndpointUrl')
 
-    component.onGoToProductSlots()
+    component.onGoToProductStoreSlots$()
 
-    expect(Utils.goToEndpoint).toHaveBeenCalled()
+    expect(Utils.getEndpointUrl).toHaveBeenCalled()
   })
 
   describe('Test translations', () => {

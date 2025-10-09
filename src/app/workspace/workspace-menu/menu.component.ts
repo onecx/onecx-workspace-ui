@@ -50,10 +50,7 @@ type Column = { name: string; headerKey: string; tooltipKey: string; css?: strin
 })
 export class MenuComponent implements OnInit, OnDestroy {
   Object = Object
-  public limitText = Utils.limitText // utils declarations
-  public sortByLocale = Utils.sortByLocale
-  public getEndpointUrl = Utils.getEndpointUrl
-  public console = console
+  public Utils = Utils
   private readonly destroy$ = new Subject()
   // dialog
   public actions$: Observable<Action[]> | undefined
@@ -74,7 +71,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   public treeFilteredRows = 0
   public currentLogoUrl: string | undefined = undefined
   public roleFilterValue: string[] = []
-  public endpointUrl$: Observable<string>
+  public endpointUrlPermission$: Observable<string>
 
   // data
   public workspace$!: Observable<Workspace | undefined>
@@ -111,7 +108,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     private readonly msgService: PortalMessageService,
     private readonly userService: UserService
   ) {
-    this.endpointUrl$ = Utils.getEndpointUrl(
+    this.endpointUrlPermission$ = Utils.getEndpointUrl(
       this.workspaceService,
       this.msgService,
       'onecx-permission',
@@ -168,6 +165,8 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.stateService.updateState({
       workspaceMenuItems: this.menuItems
     })
+    this.destroy$.next(undefined)
+    this.destroy$.complete()
   }
 
   /**

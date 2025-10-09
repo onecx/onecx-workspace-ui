@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, OnChanges, Output, SimpleChanges } from '@angular/core'
 import { Location } from '@angular/common'
-import { Router } from '@angular/router'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { BehaviorSubject, map, Observable, of, ReplaySubject } from 'rxjs'
 
@@ -37,8 +36,8 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   @Output() headerImageUrl = new EventEmitter<string>() // send logo url to detail header
 
   // make it available in HTML
+  public Utils = Utils
   public getLocation = getLocation
-  public copyToClipboard = Utils.copyToClipboard
 
   // logo
   public RefType = RefType
@@ -65,7 +64,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   public themeFormValues$ = new ReplaySubject<{ theme: string }>(1) // async storage of formgroup value to manage change detection
 
   constructor(
-    private readonly router: Router,
     private readonly slotService: SlotService,
     private readonly workspaceService: WorkspaceService,
     private readonly msgService: PortalMessageService,
@@ -74,7 +72,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   ) {
     this.themeProductRegistered$ = workspaceService.doesUrlExistFor('onecx-theme', 'onecx-theme-ui', 'theme-detail')
     this.isThemeComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.themeSlotName)
-
     this.formGroup = new FormGroup({
       displayName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(100)]),
       theme: new FormControl(null),
@@ -335,17 +332,14 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     return refType === RefType.Logo ? theme?.logoUrl : theme?.faviconUrl
   }
 
-  public onGoToTheme(name?: string): void {
-    Utils.goToEndpoint(
+  public onGoToTheme$(name: string): Observable<string> {
+    return Utils.getEndpointUrl(
       this.workspaceService,
       this.msgService,
-      this.router,
       'onecx-theme',
       'onecx-theme-ui',
       'theme-detail',
-      {
-        'theme-name': name
-      }
+      { 'theme-name': 'name' }
     )
   }
 }

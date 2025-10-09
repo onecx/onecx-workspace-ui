@@ -665,13 +665,13 @@ describe('MenuComponent', () => {
    */
 
   it('should empty menuTreeFilter and reset filter onTreeFilterClear', () => {
-    const mockMenuTreeFilter = { nativeElement: jasmine.createSpyObj('nativeElement', ['value']) }
-    const mockMenuTree = jasmine.createSpyObj('menuTree', ['filterGlobal'])
+    const menuTreeFilter = { nativeElement: jasmine.createSpyObj('nativeElement', ['value']) }
+    const menuTree = jasmine.createSpyObj('menuTree', ['filterGlobal'])
 
-    component.onTreeFilterClear(mockMenuTree, mockMenuTreeFilter.nativeElement)
+    component.onTreeFilterClear(menuTree, menuTreeFilter.nativeElement)
 
-    expect(mockMenuTreeFilter.nativeElement.value).toBe('')
-    expect(mockMenuTree.filterGlobal).toHaveBeenCalledWith('', 'contains')
+    expect(menuTreeFilter.nativeElement.value).toBe('')
+    expect(menuTree.filterGlobal).toHaveBeenCalledWith('', 'contains')
   })
 
   it('should change filtered row count', () => {
