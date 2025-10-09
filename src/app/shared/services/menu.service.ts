@@ -11,8 +11,7 @@ import {
   debounceTime,
   pairwise,
   filter,
-  mergeMap,
-  withLatestFrom
+  mergeMap
 } from 'rxjs'
 import { StaticMenuStateTopic } from '../topics/static-menu-visible.topic'
 
