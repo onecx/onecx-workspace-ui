@@ -133,7 +133,7 @@ describe('WorkspaceSearchComponent', () => {
 
     component.onFilterChange(ev, dv)
 
-    expect(dv.filter).toHaveBeenCalledWith(ev, 'contains')
+    expect(dv.filter).toHaveBeenCalledWith(ev)
   })
 
   it('should set correct values onLayoutChange', () => {
