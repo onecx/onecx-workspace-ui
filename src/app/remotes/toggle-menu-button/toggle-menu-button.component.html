@@ -4,7 +4,7 @@
     isStaticMenuVisible: isStaticMenuVisible$ | async
   } as state"
 >
-  <ng-container *ngIf="state.isStaticMenuActive">
+  <ng-container *ngIf="state.isStaticMenuActive && state.isStaticMenuVisible !== null">
     <button
       id="ocx_vertical_menu_action_toggle"
       class="onecx-toggle-menu-button border-none"
