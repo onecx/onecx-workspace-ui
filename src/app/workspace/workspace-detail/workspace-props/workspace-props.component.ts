@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, OnChanges, Output, SimpleChanges } from '@angular/core'
 import { Location } from '@angular/common'
-import { Router } from '@angular/router'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { BehaviorSubject, map, Observable, of, ReplaySubject } from 'rxjs'
 

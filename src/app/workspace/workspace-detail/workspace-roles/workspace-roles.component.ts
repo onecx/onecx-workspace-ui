@@ -1,4 +1,13 @@
-import { APP_INITIALIZER, Component, EventEmitter, Input, SimpleChanges, OnChanges, OnInit } from '@angular/core'
+import {
+  APP_INITIALIZER,
+  Component,
+  EventEmitter,
+  Input,
+  SimpleChanges,
+  OnChanges,
+  OnInit,
+  OnDestroy
+} from '@angular/core'
 import { TranslateService } from '@ngx-translate/core'
 import { Observable, Subject, catchError, finalize, map, of } from 'rxjs'
 import { SelectItem } from 'primeng/api'
@@ -35,7 +44,7 @@ export function slotInitializer(slotService: SlotService) {
     { provide: SLOT_SERVICE, useExisting: SlotService }
   ]
 })
-export class WorkspaceRolesComponent implements OnInit, OnChanges {
+export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
   @Input() workspace!: Workspace | undefined
   // data: the receiving of workspace and iam roles are complete decoupled (no combineLatest possible)
   private readonly destroy$ = new Subject()
