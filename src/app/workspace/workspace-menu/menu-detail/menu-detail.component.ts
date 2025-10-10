@@ -385,33 +385,34 @@ export class MenuDetailComponent implements OnChanges {
   private loadMfeUrls(): void {
     if (this.mfeItems?.length > 0) return
     this.mfeItems = [{ mfePath: '', product: 'MENU_ITEM.URL.EMPTY' }]
-    this.wProductApi
-      .getProductsByWorkspaceId({ id: this.workspaceId! })
-      .pipe(
-        map((products) => {
-          if (products?.length > 0) {
-            for (const p of products) {
-              if (p.microfrontends) {
-                for (const mfe of p.microfrontends) {
-                  this.mfeItems.push({
-                    ...mfe,
-                    mfePath: Location.joinWithSlash(mfe.basePath ?? '', p.baseUrl ?? ''),
-                    product: p.displayName!,
-                    isSpecial: false
-                  })
+    firstValueFrom(
+      this.wProductApi
+        .getProductsByWorkspaceId({ id: this.workspaceId! })
+        .pipe(
+          map((products) => {
+            if (products?.length > 0) {
+              for (const p of products) {
+                if (p.microfrontends) {
+                  for (const mfe of p.microfrontends) {
+                    this.mfeItems.push({
+                      ...mfe,
+                      mfePath: Location.joinWithSlash(mfe.basePath ?? '', p.baseUrl ?? ''),
+                      product: p.displayName!,
+                      isSpecial: false
+                    })
+                  }
                 }
               }
+              this.mfeItems.sort(this.sortMfesByPath)
             }
-            this.mfeItems.sort(this.sortMfesByPath)
-          }
-        }),
-        catchError((err) => {
-          console.error('getProductsByWorkspaceId', err)
-          return of([] as SelectItem[])
-        })
-      )
-      .pipe(takeUntil(this.destroy$))
-      .subscribe()
+          }),
+          catchError((err) => {
+            console.error('getProductsByWorkspaceId', err)
+            return of([] as SelectItem[])
+          })
+        )
+        .pipe(takeUntil(this.destroy$))
+    )
   }
   public sortMfesByPath(a: MenuURL, b: MenuURL): number {
     return (a.mfePath ?? '').localeCompare(b.mfePath ?? '')
