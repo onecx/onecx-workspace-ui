@@ -14,8 +14,7 @@ import {
   mergeMap,
   distinctUntilChanged,
   shareReplay,
-  Subject,
-  tap
+  Subject
 } from 'rxjs'
 import { StaticMenuStateTopic } from '../topics/static-menu-state.topic'
 

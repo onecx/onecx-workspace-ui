@@ -10,7 +10,7 @@ import {
 import { Capability, UserService } from '@onecx/angular-integration-interface'
 import { UserProfile } from '@onecx/integration-interface'
 import { Topic } from '@onecx/accelerator'
-import { of, timeout } from 'rxjs'
+import { timeout } from 'rxjs'
 
 describe('MenuService', () => {
   let service: MenuService
