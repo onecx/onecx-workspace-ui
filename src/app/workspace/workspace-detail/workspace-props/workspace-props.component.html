@@ -282,17 +282,18 @@
     </section>
     <app-image-container
       id="ws_detail_props_form_logo_image"
-      [imageUrl]="imageUrl[RefType.Logo]"
       styleClass="max-h-3rem max-w-5rem border-round-sm"
-      (imageLoadResult)="onImageLoadResult($event, RefType.Logo)"
+      [bffUrl]="bffUrl[RefType.Logo]"
+      [imageUrl]="formGroup.controls['logoUrl'].value"
+      [cascadeUse]="!editMode"
+      (imageLoadResult)="onImageLoadResult($event, RefType.Logo, formGroup.controls['logoUrl'].value)"
     ></app-image-container>
-
     <p-button
       *ocxIfPermission="'WORKSPACE#EDIT'"
       id="ws_detail_props_item_remove_logo"
       styleClass="button-min-height"
       icon="pi pi-trash"
-      [disabled]="!(imageUrl[RefType.Logo] && !imageUrlExists[RefType.Logo] && !editMode)"
+      [disabled]="editMode || !(bffUrl[RefType.Logo] && !formGroup.controls['logoUrl'].value)"
       (onClick)="onRemoveImage(RefType.Logo)"
       [ariaLabel]="'IMAGE.TOOLTIPS.REMOVE' | translate"
       [pTooltip]="'IMAGE.TOOLTIPS.REMOVE' | translate"
@@ -303,7 +304,7 @@
       *ocxIfPermission="'WORKSPACE#EDIT'"
       id="ws_detail_props_item_upload_logo"
       icon="pi pi-upload"
-      [disabled]="editMode || imageUrlExists[RefType.Logo]"
+      [disabled]="editMode || formGroup.controls['logoUrl'].value"
       (onClick)="fileUploadLogo.click()"
       [ariaLabel]="'IMAGE.TOOLTIPS.UPLOAD' | translate"
       [pTooltip]="'IMAGE.TOOLTIPS.UPLOAD' | translate"
@@ -314,12 +315,12 @@
       <div class="p-inputgroup">
         <span class="p-float-label">
           <input
+            #LogoUrlInput
             pInputText
             type="text"
             class="w-full pt-3 pb-2 text-responsive"
             id="ws_detail_props_item_logo_url"
             formControlName="logoUrl"
-            (input)="onInputChange($event, RefType.Logo)"
             [ariaLabel]="'IMAGE.LOGO_URL' | translate"
             [pTooltip]="'IMAGE.TOOLTIPS.URL' | translate"
             tooltipPosition="top"
@@ -330,7 +331,7 @@
         <button
           id="ws_detail_props_item_logo_url_remove"
           class="p-inputgroup-addon bg-primary pseudo-button"
-          [ngClass]="editMode && imageUrlExists[RefType.Logo] ? 'cursor-pointer' : 'p-disabled'"
+          [ngClass]="editMode && LogoUrlInput.value ? 'cursor-pointer' : 'p-disabled'"
           (click)="onRemoveImageUrl(RefType.Logo)"
           [attr.aria-label]="'IMAGE.TOOLTIPS.REMOVE.URL' | translate"
           [pTooltip]="'IMAGE.TOOLTIPS.REMOVE.URL' | translate"
@@ -377,15 +378,17 @@
     </section>
     <app-image-container
       id="ws_detail_props_form_logo_small_image"
-      [imageUrl]="imageUrl[RefType.LogoSmall]"
       styleClass="max-h-3rem max-w-5rem border-round-sm"
-      (imageLoadResult)="onImageLoadResult($event, RefType.LogoSmall)"
+      [bffUrl]="bffUrl[RefType.LogoSmall]"
+      [imageUrl]="formGroup.controls['smallLogoUrl'].value"
+      [cascadeUse]="!editMode"
+      (imageLoadResult)="onImageLoadResult($event, RefType.LogoSmall, formGroup.controls['smallLogoUrl'].value)"
     ></app-image-container>
     <p-button
       *ocxIfPermission="'WORKSPACE#EDIT'"
       id="ws_detail_props_item_remove_logo_small"
       icon="pi pi-trash"
-      [disabled]="!(imageUrl[RefType.LogoSmall] && !imageUrlExists[RefType.LogoSmall] && !editMode)"
+      [disabled]="editMode || !(bffUrl[RefType.LogoSmall] && !formGroup.controls['smallLogoUrl'].value)"
       (onClick)="onRemoveImage(RefType.LogoSmall)"
       [ariaLabel]="'IMAGE.TOOLTIPS.REMOVE' | translate"
       [pTooltip]="'IMAGE.TOOLTIPS.REMOVE' | translate"
@@ -396,7 +399,7 @@
       *ocxIfPermission="'WORKSPACE#EDIT'"
       id="ws_detail_props_item_upload_logo"
       icon="pi pi-upload"
-      [disabled]="editMode || imageUrlExists[RefType.LogoSmall]"
+      [disabled]="editMode || formGroup.controls['smallLogoUrl'].value"
       (onClick)="fileUploadLogoSmall.click()"
       [ariaLabel]="'IMAGE.TOOLTIPS.UPLOAD' | translate"
       [pTooltip]="'IMAGE.TOOLTIPS.UPLOAD' | translate"
@@ -407,12 +410,12 @@
       <div class="p-inputgroup">
         <span class="p-float-label">
           <input
+            #SmallLogoUrlInput
             pInputText
             type="text"
             class="w-full pt-3 pb-2 text-responsive"
             id="ws_detail_props_item_logo_small_url"
             formControlName="smallLogoUrl"
-            (input)="onInputChange($event, RefType.LogoSmall)"
             [attr.aria-label]="'IMAGE.LOGO_URL' | translate"
             [pTooltip]="'IMAGE.TOOLTIPS.URL' | translate"
             tooltipPosition="top"
@@ -425,7 +428,7 @@
         <button
           id="ws_detail_props_item_logo_small-url_remove"
           class="p-inputgroup-addon bg-primary pseudo-button"
-          [ngClass]="editMode && imageUrlExists[RefType.LogoSmall] ? 'cursor-pointer' : 'p-disabled'"
+          [ngClass]="editMode && SmallLogoUrlInput.value ? 'cursor-pointer' : 'p-disabled'"
           (click)="onRemoveImageUrl(RefType.LogoSmall)"
           [attr.aria-label]="'IMAGE.TOOLTIPS.REMOVE.URL' | translate"
           [pTooltip]="'IMAGE.TOOLTIPS.REMOVE.URL' | translate"

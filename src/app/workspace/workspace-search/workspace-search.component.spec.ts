@@ -16,7 +16,7 @@ describe('WorkspaceSearchComponent', () => {
   let component: WorkspaceSearchComponent
   let fixture: ComponentFixture<WorkspaceSearchComponent>
 
-  const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['info', 'error'])
+  const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['error'])
   const wApiServiceSpy = {
     searchWorkspaces: jasmine.createSpy('searchWorkspaces').and.returnValue(of({})),
     getWorkspaceByName: jasmine.createSpy('getWorkspaceByName').and.returnValue(of({}))
@@ -51,7 +51,6 @@ describe('WorkspaceSearchComponent', () => {
     initTestComponent()
 
     // to spy data: reset
-    msgServiceSpy.info.calls.reset()
     msgServiceSpy.error.calls.reset()
     wApiServiceSpy.searchWorkspaces.calls.reset()
     // to spy data: refill with neutral data
@@ -86,78 +85,106 @@ describe('WorkspaceSearchComponent', () => {
     })
   })
 
-  it('should search workspaces with results', (done) => {
-    const w: WorkspaceAbstract = {
-      name: 'name',
-      theme: 'theme',
-      baseUrl: 'url',
-      displayName: ''
-    }
-    wApiServiceSpy.searchWorkspaces.and.returnValue(of({ stream: [w] } as SearchWorkspacesResponse))
+  describe('Search', () => {
+    it('should search workspaces - success with results', (done) => {
+      const w: WorkspaceAbstract = {
+        name: 'name',
+        theme: 'theme',
+        baseUrl: 'url',
+        displayName: ''
+      }
+      wApiServiceSpy.searchWorkspaces.and.returnValue(of({ stream: [w] } as SearchWorkspacesResponse))
 
-    component.search()
+      component.search()
 
-    component.workspaces$.subscribe({
-      next: (result) => {
-        if (result) {
-          expect(result.length).toBe(1)
-          result.forEach((w) => {
-            expect(w.name).toEqual('name')
-          })
+      component.workspaces$.subscribe({
+        next: (result) => {
+          if (result) {
+            expect(result.length).toBe(1)
+            result.forEach((w) => {
+              expect(w.name).toEqual('name')
+            })
+          }
+          done()
+        },
+        error: done.fail
+      })
+    })
+
+    it('should search workspaces - success without results', (done) => {
+      wApiServiceSpy.searchWorkspaces.and.returnValue(of({ stream: [] } as SearchWorkspacesResponse))
+
+      component.search()
+
+      component.workspaces$.subscribe({
+        next: (result) => {
+          if (result) {
+            expect(result.length).toBe(0)
+          }
+          done()
+        },
+        error: done.fail
+      })
+    })
+
+    it('should search workspaces - failed', (done) => {
+      const errorResponse = { status: 403, statusText: 'no permissions' }
+      wApiServiceSpy.searchWorkspaces.and.returnValue(throwError(() => errorResponse))
+      spyOn(console, 'error')
+
+      component.search()
+
+      component.workspaces$.subscribe({
+        next: (result) => {
+          if (result) {
+            expect(result.length).toBe(0)
+          }
+          done()
+        },
+        error: (err) => {
+          expect(component.exceptionKey).toEqual('EXCEPTIONS.HTTP_STATUS_' + errorResponse.status + '.WORKSPACES')
+          expect(console.error).toHaveBeenCalledWith('searchWorkspaces', err)
+          done.fail
         }
-        done()
-      },
-      error: done.fail
+      })
     })
   })
 
-  it('should search workspaces without results', (done) => {
-    wApiServiceSpy.searchWorkspaces.and.returnValue(of({ stream: [] } as SearchWorkspacesResponse))
+  describe('table actions', () => {
+    it('should call filter table onFilterChange', () => {
+      const dv = jasmine.createSpyObj('nativeElement', ['filter']) as DataView
+      const ev = 'filter'
 
-    component.search()
+      component.onFilterChange(ev, dv)
 
-    component.workspaces$.subscribe({
-      next: (result) => {
-        if (result) {
-          expect(result.length).toBe(0)
-        }
-        done()
-      },
-      error: done.fail
+      expect(dv.filter).toHaveBeenCalledWith(ev)
     })
-  })
 
-  it('should call filter table onFilterChange', () => {
-    const dv = jasmine.createSpyObj('nativeElement', ['filter']) as DataView
-    const ev = 'filter'
+    it('should set correct values onLayoutChange', () => {
+      component.onLayoutChange('list')
 
-    component.onFilterChange(ev, dv)
+      expect(component.viewMode).toEqual('list')
+    })
 
-    expect(dv.filter).toHaveBeenCalledWith(ev)
-  })
+    describe('sorting', () => {
+      it('should set correct values onSortChange', () => {
+        component.onSortChange('field')
 
-  it('should set correct values onLayoutChange', () => {
-    component.onLayoutChange('list')
+        expect(component.sortField).toEqual('field')
+      })
 
-    expect(component.viewMode).toEqual('list')
-  })
+      it('should set correct values onSortDirChange', () => {
+        component.onSortDirChange(true)
 
-  it('should set correct values onSortChange', () => {
-    component.onSortChange('field')
+        expect(component.sortOrder).toEqual(-1)
+      })
 
-    expect(component.sortField).toEqual('field')
-  })
+      it('should set correct values onSortDirChange', () => {
+        component.onSortDirChange(false)
 
-  it('should set correct values onSortDirChange', () => {
-    component.onSortDirChange(true)
-
-    expect(component.sortOrder).toEqual(-1)
-  })
-
-  it('should set correct values onSortDirChange', () => {
-    component.onSortDirChange(false)
-
-    expect(component.sortOrder).toEqual(1)
+        expect(component.sortOrder).toEqual(1)
+      })
+    })
   })
 
   describe('page actions', () => {
@@ -188,41 +215,21 @@ describe('WorkspaceSearchComponent', () => {
         })
       }
     })
-  })
 
-  it('should toggle showCreateDialog from false to true', () => {
-    component.showCreateDialog = false
+    it('should toggle showCreateDialog from false to true', () => {
+      component.showCreateDialog = false
 
-    component.toggleShowCreateDialog()
+      component.toggleShowCreateDialog()
 
-    expect(component.showCreateDialog).toBeTrue()
-  })
+      expect(component.showCreateDialog).toBeTrue()
+    })
 
-  it('should toggle showImportDialog from true to false', () => {
-    component.showImportDialog = true
+    it('should toggle showImportDialog from true to false', () => {
+      component.showImportDialog = true
 
-    component.toggleShowImportDialog()
+      component.toggleShowImportDialog()
 
-    expect(component.showImportDialog).toBeFalse()
-  })
-
-  it('should search workspaces but display error if API call fails', (done) => {
-    const errorResponse = { status: 403, statusText: 'no permissions' }
-    wApiServiceSpy.searchWorkspaces.and.returnValue(throwError(() => errorResponse))
-    spyOn(console, 'error')
-
-    component.search()
-
-    component.workspaces$.subscribe({
-      next: (result) => {
-        if (result) {
-          expect(result.length).toBe(0)
-          expect(component.exceptionKey).toEqual('EXCEPTIONS.HTTP_STATUS_' + errorResponse.status + '.WORKSPACES')
-          expect(console.error).toHaveBeenCalledWith('searchWorkspaces', errorResponse)
-        }
-        done()
-      },
-      error: done.fail
+      expect(component.showImportDialog).toBeFalse()
     })
   })
 

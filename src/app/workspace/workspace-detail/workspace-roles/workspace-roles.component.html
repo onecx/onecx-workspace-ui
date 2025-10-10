@@ -105,7 +105,7 @@
           id="ws_roles_header_action_slot_link"
           styleClass="h-full"
           icon="pi pi-lock"
-          [routerLink]="[onGoToPermission$() | async]"
+          [routerLink]="[permissionUrl$ | async]"
           [ariaLabel]="'ACTIONS.NAVIGATION.GOTO_WORKSPACE_PERMISSIONS' | translate"
           [pTooltip]="'ACTIONS.NAVIGATION.GOTO_WORKSPACE_PERMISSIONS' | translate"
           tooltipPosition="top"
