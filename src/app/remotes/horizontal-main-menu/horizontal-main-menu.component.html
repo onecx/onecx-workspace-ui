@@ -1,8 +1,10 @@
-<p-menubar
-  *ngIf="isActive$ | async"
-  [hidden]="isHidden$ | async"
-  autoHide="true"
-  breakpoint="767"
-  [model]="(menuItems$ | async) ?? []"
-  styleClass="layout-menubar-horizontal-main-menu fadeinup"
-></p-menubar>
+<ng-container *ngIf="{ isActive: isActive$ | async, isHidden: false, menuItems: menuItems$ | async } as state">
+  <p-menubar
+    *ngIf="state.isActive"
+    [hidden]="state.isHidden"
+    autoHide="true"
+    breakpoint="767"
+    [model]="state.menuItems ?? []"
+    styleClass="layout-menubar-horizontal-main-menu fadeinup"
+  ></p-menubar>
+</ng-container>

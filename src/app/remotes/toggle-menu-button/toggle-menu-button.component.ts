@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http'
 import { Component, inject, Inject, Input } from '@angular/core'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
-import { map, Observable, ReplaySubject } from 'rxjs'
+import { Observable, ReplaySubject } from 'rxjs'
 
 import {
   BASE_URL,
@@ -46,10 +46,8 @@ const MENU_MODE = 'static'
 @UntilDestroy()
 export class OneCXToggleMenuButtonComponent implements ocxRemoteWebcomponent {
   private menuService = inject(MenuService)
-  public isStaticMenuActive$ = this.menuService.isActive(MENU_MODE)
+  public isStaticMenuActive$: Observable<boolean>
   public isStaticMenuVisible$: Observable<boolean>
-
-  public icon$: Observable<'pi-chevron-left' | 'pi-chevron-right'>
 
   constructor(
     @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
@@ -57,16 +55,10 @@ export class OneCXToggleMenuButtonComponent implements ocxRemoteWebcomponent {
     private readonly translateService: TranslateService
   ) {
     this.userService.lang$.pipe(untilDestroyed(this)).subscribe((lang) => this.translateService.use(lang))
-    this.isStaticMenuVisible$ = this.menuService.isVisible(MENU_MODE).pipe(untilDestroyed(this))
-    this.icon$ = this.isStaticMenuVisible$.pipe(
-      map((isVisible) => {
-        if (document.documentElement.dir === 'rtl') {
-          return isVisible ? 'pi-chevron-right' : 'pi-chevron-left'
-        }
 
-        return isVisible ? 'pi-chevron-left' : 'pi-chevron-right'
-      })
-    )
+    this.isStaticMenuActive$ = this.menuService.isActive(MENU_MODE).pipe(untilDestroyed(this))
+
+    this.isStaticMenuVisible$ = this.menuService.isVisible(MENU_MODE).pipe(untilDestroyed(this))
   }
 
   @Input() set ocxRemoteComponentConfig(remoteComponentConfig: RemoteComponentConfig) {
@@ -76,5 +68,13 @@ export class OneCXToggleMenuButtonComponent implements ocxRemoteWebcomponent {
   onMenuButtonClick(isVisible: boolean | null): void {
     if (isVisible === null) return
     new StaticMenuStatePublisher().publish({ isVisible: !isVisible })
+  }
+
+  getIcon(isStaticMenuVisible: boolean) {
+    if (document.documentElement.dir === 'rtl') {
+      return isStaticMenuVisible ? 'pi-chevron-right' : 'pi-chevron-left'
+    }
+
+    return isStaticMenuVisible ? 'pi-chevron-left' : 'pi-chevron-right'
   }
 }

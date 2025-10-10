@@ -13,7 +13,8 @@ import {
   filter,
   mergeMap,
   distinctUntilChanged,
-  from
+  shareReplay,
+  Subject
 } from 'rxjs'
 import { StaticMenuStateTopic } from '../topics/static-menu-visible.topic'
 
@@ -52,30 +53,35 @@ export class MenuService {
 
   private readonly onResize$: Observable<Event>
   private isMobile$: Observable<boolean>
+  private isMobileDistinct$: Observable<boolean>
 
   constructor() {
-    this.onResize$ = fromEvent(window, 'resize').pipe(debounceTime(100), untilDestroyed(this))
     const mobileBreakpointVar = getComputedStyle(document.documentElement).getPropertyValue('--mobile-break-point')
+
+    this.onResize$ = fromEvent(window, 'resize').pipe(
+      // Debounce to avoid excessive emissions during window resizing
+      debounceTime(100),
+      untilDestroyed(this)
+    )
+
     this.isMobile$ = this.onResize$.pipe(
       map(() => window.matchMedia(`(max-width: ${mobileBreakpointVar})`).matches),
-      // Force first value
+      // Force first value emission for pairwise operator
       startWith(
         !window.matchMedia(`(max-width: ${mobileBreakpointVar})`).matches,
         window.matchMedia(`(max-width: ${mobileBreakpointVar})`).matches
       )
     )
 
-    // Update static menu visibility on breakpoint change
-    combineLatest([
-      this.isMobile$.pipe(
-        pairwise(),
-        filter(([oldIsMobile, newIsMobile]) => {
-          return oldIsMobile !== newIsMobile
-        }),
-        map(([, isMobile]) => isMobile)
-      ),
-      this.menuMode$
-    ]).subscribe(([isMobile, userSelctedMenuMode]) => {
+    this.isMobileDistinct$ = this.isMobile$.pipe(
+      pairwise(),
+      filter(([oldIsMobile, newIsMobile]) => {
+        return oldIsMobile !== newIsMobile
+      }),
+      map(([, isMobile]) => isMobile)
+    )
+
+    combineLatest([this.isMobileDistinct$, this.menuMode$]).subscribe(([isMobile, userSelctedMenuMode]) => {
       this.handleViewportChange(userSelctedMenuMode, isMobile)
     })
   }
@@ -86,7 +92,7 @@ export class MenuService {
    * @returns Observable that emits true if the specified menu mode is active, false otherwise
    */
   public isActive(menuMode: MenuMode): Observable<boolean> {
-    return combineLatest([this.isMobile$, this.menuMode$]).pipe(
+    return combineLatest([this.isMobileDistinct$, this.menuMode$]).pipe(
       mergeMap(([isMobile, userSelectedMenuMode]) => {
         switch (userSelectedMenuMode) {
           case 'horizontal':
@@ -96,6 +102,16 @@ export class MenuService {
           default:
             return of(menuMode === userSelectedMenuMode)
         }
+      }),
+      // Set timeout for returning the active state to allow visibility state to be updated first
+      // Setting timeout without delay makes sure that the emitting of this value is scheduled after the processing of new value of the topic
+      mergeMap((isActive) => {
+        const s = new Subject<boolean>()
+        setTimeout(() => {
+          s.next(isActive)
+          s.complete()
+        })
+        return s.asObservable()
       })
     )
   }
@@ -140,11 +156,10 @@ export class MenuService {
 
   private isStaticMenuVisible(): Observable<boolean> {
     if (this.capabilityService.hasCapability(Capability.ACTIVENESS_AWARE_MENUS)) {
-      return from(this.staticMenuState$.isInitialized).pipe(
-        mergeMap(() => this.staticMenuState$.asObservable()),
+      return this.staticMenuState$.pipe(
+        distinctUntilChanged((prevState, currState) => prevState.isVisible === currState.isVisible),
         map((state) => state.isVisible),
-        distinctUntilChanged(),
-        startWith(false)
+        shareReplay(1)
       )
     }
 
