@@ -1,1 +1,10 @@
-<p-panelMenu multiple="true" [model]="(menuItems$ | async)?.items ?? []"></p-panelMenu>
+<ng-container
+  *ngIf="{ isActive: isActive$ | async, isHidden: isHidden$ | async, menuItems: menuItems$ | async } as state"
+>
+  <p-panelMenu
+    *ngIf="state.isActive"
+    [hidden]="state.isHidden"
+    multiple="true"
+    [model]="state.menuItems?.items ?? []"
+  ></p-panelMenu>
+</ng-container>

@@ -1,6 +1,6 @@
 import { CommonModule, Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { Component, inject, Inject, Input, OnDestroy, OnInit } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
@@ -39,12 +39,15 @@ import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
 import { SharedModule } from 'src/app/shared/shared.module'
 import { environment } from 'src/environments/environment'
+import { MenuService } from 'src/app/shared/services/menu.service'
 
 export interface WorkspaceMenuItems {
   items: MenuItem[]
   workspaceName: string | undefined
   workspaceBaseUrl: string | undefined
 }
+
+const MENU_MODE = 'static'
 
 @Component({
   selector: 'app-vertical-main-menu',
@@ -79,6 +82,13 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRe
   )
   activeItemClass = 'ocx-vertical-menu-active-item'
   eventsTopic$ = new EventsTopic()
+
+  private readonly menuService = inject(MenuService)
+  public isActive$ = this.menuService.isActive(MENU_MODE).pipe(untilDestroyed(this))
+  public isHidden$ = this.menuService
+    .isVisible(MENU_MODE)
+    .pipe(map((isVisible) => !isVisible))
+    .pipe(untilDestroyed(this))
 
   constructor(
     @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,

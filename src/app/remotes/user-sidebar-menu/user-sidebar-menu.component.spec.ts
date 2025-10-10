@@ -20,9 +20,11 @@ import { UserProfile } from '@onecx/integration-interface'
 import { MenuItemAPIService } from 'src/app/shared/generated'
 import { OneCXUserSidebarMenuHarness } from './user-sidebar-menu.harness'
 import { OneCXUserSidebarMenuComponent, slotInitializer } from './user-sidebar-menu.component'
+import { MenuService } from 'src/app/shared/services/menu.service'
 
 describe('OneCXUserSidebarMenuComponent', () => {
   const menuItemApiSpy = jasmine.createSpyObj<MenuItemAPIService>('MenuItemAPIService', ['getMenuItems'])
+  const menuServiceSpy = jasmine.createSpyObj<MenuService>('MenuService', ['isVisible', 'isActive'])
 
   const appConfigSpy = jasmine.createSpyObj<AppConfigService>('AppConfigService', ['init'])
 
@@ -62,7 +64,8 @@ describe('OneCXUserSidebarMenuComponent', () => {
           provide: AppConfigService,
           useValue: appConfigSpy
         },
-        provideRouter([{ path: 'admin/user-profile', component: OneCXUserSidebarMenuComponent }])
+        provideRouter([{ path: 'admin/user-profile', component: OneCXUserSidebarMenuComponent }]),
+        { provide: MenuService, useValue: menuServiceSpy }
       ]
     })
       .overrideComponent(OneCXUserSidebarMenuComponent, {
@@ -75,7 +78,8 @@ describe('OneCXUserSidebarMenuComponent', () => {
       .compileComponents()
 
     baseUrlSubject.next('base_url_mock')
-
+    menuServiceSpy.isActive.and.returnValue(of(true))
+    menuServiceSpy.isVisible.and.returnValue(of(true))
     menuItemApiSpy.getMenuItems.calls.reset()
   })
 
