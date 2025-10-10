@@ -10,7 +10,6 @@ import { SlotService } from '@onecx/angular-remote-components'
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 
 import { Workspace, WorkspaceRole, WorkspaceRolesAPIService, WorkspaceRolePageResult } from 'src/app/shared/generated'
-import { Utils } from 'src/app/shared/utils'
 
 import { IAMRole, Role, slotInitializer, WorkspaceRolesComponent } from './workspace-roles.component'
 

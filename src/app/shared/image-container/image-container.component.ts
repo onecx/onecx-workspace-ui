@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core'
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core'
 import { map } from 'rxjs'
 
 import { AppStateService } from '@onecx/angular-integration-interface'
@@ -16,7 +16,7 @@ import { Utils } from 'src/app/shared/utils'
   selector: 'app-image-container',
   templateUrl: './image-container.component.html'
 })
-export class ImageContainerComponent {
+export class ImageContainerComponent implements OnChanges {
   // HTML properties
   @Input() public id = 'ws_image_container'
   @Input() public title: string | undefined
