@@ -46,6 +46,7 @@ const MENU_MODE = 'static'
 @UntilDestroy()
 export class OneCXToggleMenuButtonComponent implements ocxRemoteWebcomponent {
   private readonly menuService = inject(MenuService)
+  private staticMenuStatePublisher = new StaticMenuStatePublisher()
   public isStaticMenuActive$: Observable<boolean>
   public isStaticMenuVisible$: Observable<boolean>
 
@@ -67,7 +68,7 @@ export class OneCXToggleMenuButtonComponent implements ocxRemoteWebcomponent {
 
   onMenuButtonClick(isVisible: boolean | null): void {
     if (isVisible === null) return
-    new StaticMenuStatePublisher().publish({ isVisible: !isVisible })
+    this.staticMenuStatePublisher.publish({ isVisible: !isVisible })
   }
 
   getIcon(isStaticMenuVisible: boolean) {
