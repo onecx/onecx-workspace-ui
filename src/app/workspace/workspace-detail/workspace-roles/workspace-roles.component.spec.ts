@@ -370,16 +370,6 @@ describe('WorkspaceRolesComponent', () => {
     })
   })
 
-  describe('UI events', () => {
-    it('should go to permissions', () => {
-      spyOn(Utils, 'getEndpointUrl')
-
-      component.onGoToPermission$()
-
-      expect(Utils.getEndpointUrl).toHaveBeenCalled()
-    })
-  })
-
   describe('Test translations', () => {
     it('dataview translations', (done) => {
       const translationData = {

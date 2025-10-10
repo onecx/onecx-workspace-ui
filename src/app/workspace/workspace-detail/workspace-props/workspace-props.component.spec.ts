@@ -23,16 +23,25 @@ import {
 } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
 
-const workspace: Workspace = {
-  id: 'id',
-  disabled: false,
-  name: 'name',
+const basePath = '/basepath'
+const basePathLogo = basePath + '/images/name/logo'
+const basePathLogoSmall = basePath + '/images/name/logo-small'
+const workspaceForm = {
   displayName: 'name',
-  theme: 'theme',
+  theme: 'theme1',
   baseUrl: '/some/base/url',
   homePage: '/welcome',
   logoUrl: 'https://host:port/site/logo.png',
-  smallLogoUrl: 'https://host:port/site/logo-small.png'
+  smallLogoUrl: 'https://host:port/site/logo-small.png',
+  rssFeedUrl: undefined,
+  footerLabel: undefined,
+  description: undefined
+}
+const workspace: Workspace = {
+  ...workspaceForm,
+  id: 'id',
+  disabled: false,
+  name: 'name'
 }
 const changes: SimpleChanges = {
   workspace: {
@@ -60,11 +69,19 @@ describe('WorkspacePropsComponent', () => {
     getImage: jasmine.createSpy('getImage').and.returnValue(of({})),
     deleteImage: jasmine.createSpy('deleteImage').and.returnValue(of({})),
     uploadImage: jasmine.createSpy('uploadImage').and.returnValue(of({})),
-    configuration: { basePath: 'basepath' }
+    configuration: { basePath: basePath }
   }
   const themeService = jasmine.createSpyObj<ThemeService>('ThemeService', ['apply'])
   const wProductServiceSpy = {
     getProductsByWorkspaceId: jasmine.createSpy('getProductsByWorkspaceId').and.returnValue(of({}))
+  }
+
+  function initTestComponent(): void {
+    fixture = TestBed.createComponent(WorkspacePropsComponent)
+    accSpy.getLocation()
+    component = fixture.componentInstance
+    component.workspace = workspace
+    fixture.detectChanges()
   }
 
   beforeEach(waitForAsync(() => {
@@ -93,11 +110,7 @@ describe('WorkspacePropsComponent', () => {
   }))
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(WorkspacePropsComponent)
-    accSpy.getLocation()
-    component = fixture.componentInstance
-    component.workspace = workspace
-    fixture.detectChanges()
+    initTestComponent()
 
     // reset
     msgServiceSpy.success.calls.reset()
@@ -238,8 +251,7 @@ describe('WorkspacePropsComponent', () => {
 
       expect(component.workspace).toEqual(workspace)
       expect(component.formGroup.enabled).toBeTrue()
-      expect(component.imageUrl[RefType.Logo]).toEqual(workspace.logoUrl)
-      expect(component.imageUrl[RefType.LogoSmall]).toEqual(workspace.smallLogoUrl)
+      expect(component.formGroup.value).toEqual(workspaceForm)
     })
 
     it('should enable formGroup in edit mode - without ext. logo URL', () => {
@@ -249,8 +261,7 @@ describe('WorkspacePropsComponent', () => {
       component.ngOnChanges(changes)
 
       expect(component.formGroup.enabled).toBeTrue()
-      expect(component.imageUrl[RefType.Logo]).toBe('basepath/images/name/logo')
-      expect(component.imageUrl[RefType.LogoSmall]).toEqual(workspace.smallLogoUrl)
+      expect(component.bffUrl[RefType.Logo]).toBe(basePathLogo)
     })
 
     it('should reset formGroup when workspace is empty', () => {
@@ -308,41 +319,45 @@ describe('WorkspacePropsComponent', () => {
     })
 
     describe('Loading image', () => {
-      it('should switch to upload image URL if the loading of external URL failed - VIEW mode', () => {
-        expect(component.imageUrl[RefType.Logo]).toBe(workspace.logoUrl)
-        expect(component.imageUrlExists[RefType.Logo]).toBeTrue()
+      // initially the used workspace has both external logo URLs
+      const bffLogoUrl = Utils.bffImageUrl(basePath, workspace.name, RefType.Logo)
 
-        component.editMode = false
-        component.onImageLoadResult(false, RefType.Logo)
-
-        expect(component.imageUrl[RefType.Logo]).toBe('basepath/images/name/logo')
-      })
-
-      it('should stop image displaying if the loading of external URL failed - EDIT mode', () => {
-        expect(component.imageUrl[RefType.Logo]).toBe(workspace.logoUrl)
-        expect(component.imageUrlExists[RefType.Logo]).toBeTrue()
-
-        component.editMode = true
-        component.onImageLoadResult(false, RefType.Logo)
-
-        expect(component.imageUrl[RefType.Logo]).toBeUndefined()
-      })
-
-      it('should set image URL to undefined if the uploaded URL could not be loaded', () => {
-        component.imageUrl[RefType.Logo] = 'basepath/images/name/logo'
-        component.imageUrlExists[RefType.Logo] = false
-        component.onImageLoadResult(false, RefType.Logo)
-
-        expect(component.imageUrl[RefType.Logo]).toBeUndefined()
-      })
-
-      it('should use logo URL on image loading success', () => {
-        expect(component.imageUrl[RefType.Logo]).toBe(workspace.logoUrl)
-        expect(component.imageUrlExists[RefType.Logo]).toBeTrue()
+      it('should use bff URL if no external URL was used - on image loading success', () => {
+        expect(component.bffUrl[RefType.Logo]).toBe(bffLogoUrl)
+        spyOn(component.headerImageUrl, 'emit')
 
         component.onImageLoadResult(true, RefType.Logo)
 
-        expect(component.imageUrl[RefType.Logo]).toEqual(workspace.logoUrl)
+        expect(component.headerImageUrl.emit).toHaveBeenCalledWith(bffLogoUrl)
+      })
+
+      it('should use bff URL if external URL was used - on image loading success', () => {
+        expect(component.bffUrl[RefType.Logo]).toBe(bffLogoUrl)
+        spyOn(component.headerImageUrl, 'emit')
+
+        component.onImageLoadResult(true, RefType.Logo, workspace.logoUrl)
+
+        expect(component.headerImageUrl.emit).toHaveBeenCalledWith(workspace.logoUrl)
+      })
+
+      it('should not change bff URL if external URL was used - on image loading failed', () => {
+        expect(component.bffUrl[RefType.Logo]).toBe(bffLogoUrl)
+        spyOn(component.headerImageUrl, 'emit')
+
+        component.onImageLoadResult(false, RefType.Logo, workspace.logoUrl)
+
+        expect(component.headerImageUrl.emit).toHaveBeenCalledWith(undefined)
+        expect(component.bffUrl[RefType.Logo]).toBe(bffLogoUrl)
+      })
+
+      it('should reset bff URL if external URL was not used - on image loading failed', () => {
+        expect(component.bffUrl[RefType.Logo]).toBe(bffLogoUrl)
+        spyOn(component.headerImageUrl, 'emit')
+
+        component.onImageLoadResult(false, RefType.Logo)
+
+        expect(component.headerImageUrl.emit).toHaveBeenCalledWith(undefined)
+        expect(component.bffUrl[RefType.Logo]).toBeUndefined()
       })
     })
 
@@ -436,37 +451,32 @@ describe('WorkspacePropsComponent', () => {
 
     describe('Remove image or URL', () => {
       it('should remove the real logo URL - successful', () => {
-        expect(component.imageUrl[RefType.Logo]).toBe(workspace.logoUrl)
-        expect(component.imageUrlExists[RefType.Logo]).toBeTrue()
-
         component.editMode = true
         component.onRemoveImageUrl(RefType.Logo)
 
-        expect(component.imageUrl[RefType.Logo]).toBe('basepath/images/name/logo')
+        expect(component.bffUrl[RefType.Logo]).toBe(basePathLogo)
 
         component.onRemoveImageUrl(RefType.LogoSmall)
 
-        expect(component.imageUrl[RefType.LogoSmall]).toBe('basepath/images/name/logo-small')
+        expect(component.bffUrl[RefType.LogoSmall]).toBe(basePathLogoSmall)
       })
 
       it('should remove the used logo URL - successful', () => {
         //if (component.workspace) component.workspace.logoUrl = undefined // no real URL
         imageServiceSpy.deleteImage.and.returnValue(of({}))
         component.editMode = false
-        component.imageUrl[RefType.Logo] = 'basepath/images/name/logo'
-        component.imageUrlExists[RefType.Logo] = false
+        component.bffUrl[RefType.Logo] = basePathLogo
 
         component.onRemoveImage(RefType.Logo)
 
-        expect(component.imageUrl[RefType.Logo]).toBeUndefined()
+        expect(component.bffUrl[RefType.Logo]).toBeUndefined()
       })
 
       it('should remove the log - failed', () => {
         const errorResponse = { status: 400, statusText: 'Error on image deletion' }
         imageServiceSpy.deleteImage.and.returnValue(throwError(() => errorResponse))
         component.editMode = false
-        component.imageUrl[RefType.Logo] = 'basepath/images/name/logo'
-        component.imageUrlExists[RefType.Logo] = false
+        component.bffUrl[RefType.Logo] = basePathLogo
         spyOn(console, 'error')
 
         component.onRemoveImage(RefType.Logo)
@@ -474,46 +484,11 @@ describe('WorkspacePropsComponent', () => {
         expect(console.error).toHaveBeenCalledWith('deleteImage', errorResponse)
       })
     })
-
-    describe('onInputChange', () => {
-      it('should edit a logo URL on inputChange: valid value', fakeAsync(() => {
-        const url = 'https://host.com/logo-url'
-        const event = { target: { value: url } } as unknown as Event
-
-        component.onInputChange(event, RefType.Logo)
-        tick(1000)
-
-        expect(component.imageUrl[RefType.Logo]).toBe(url)
-        expect(component.imageUrlExists[RefType.Logo]).toBeTrue()
-      }))
-
-      it('should edit a logo URL on inputChange: invalid value', fakeAsync(() => {
-        const url = 'https://host'
-        const event = { target: { value: url } } as unknown as Event
-
-        component.onInputChange(event, RefType.Logo)
-        tick(1000)
-
-        expect(component.imageUrl[RefType.Logo]).toBeUndefined()
-      }))
-
-      it('should switch to upload URL if no URL was entered', fakeAsync(() => {
-        const url = ''
-        const event = { target: { value: url } } as unknown as Event
-        const currentUrl = component.imageUrl[RefType.Logo]
-
-        component.onInputChange(event, RefType.Logo)
-        tick(1000)
-
-        expect(component.imageUrl[RefType.Logo]).toBe(currentUrl) // url remains
-        expect(component.imageUrlExists[RefType.Logo]).toBeFalse()
-      }))
-    })
   })
 
   describe('setImageUrl', () => {
     it('call with undefined workspace', () => {
-      expect(component.setImageUrl(undefined, RefType.Logo)).toBeUndefined()
+      expect(component.setBffImageUrl(undefined, RefType.Logo)).toBeUndefined()
     })
   })
 

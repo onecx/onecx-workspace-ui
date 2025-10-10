@@ -73,7 +73,8 @@
             <app-image-container
               [id]="'ws_search_data_list_row_' + i + '_logo'"
               styleClass="h-4rem sm:h-5rem max-h-4rem sm:max-h-5rem max-w-4rem sm:max-w-6rem border-round-sm"
-              [imageUrl]="workspace.logoUrl ?? Utils.bffImageUrl(this.imageBasePath, workspace.name, RefType.Logo)"
+              [bffUrl]="Utils.bffImageUrl(imageBasePath, workspace.name, RefType.Logo)"
+              [imageUrl]="workspace.logoUrl"
               aria-hidden="true"
             ></app-image-container>
           </div>
@@ -158,11 +159,8 @@
                 <app-image-container
                   [id]="'ws_search_data_grid_row_' + i + '_logo'"
                   styleClass="max-h-5rem sm:max-h-10rem border-round-sm"
-                  [imageUrl]="
-                    workspace.logoUrl && workspace.logoUrl !== ''
-                      ? workspace.logoUrl
-                      : Utils.bffImageUrl(this.imageBasePath, workspace.name, RefType.Logo)
-                  "
+                  [bffUrl]="Utils.bffImageUrl(imageBasePath, workspace.name, RefType.Logo)"
+                  [imageUrl]="workspace.logoUrl"
                   aria-hidden="true"
                 ></app-image-container>
                 <!-- BADGES -->

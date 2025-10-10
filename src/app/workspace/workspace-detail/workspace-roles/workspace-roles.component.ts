@@ -64,6 +64,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
   public wRolesLoaded = false
   public iamRolesLoaded = false
   public iamAvailable = false
+  public permissionUrl$!: Observable<string>
   public exceptionKey: string | undefined = undefined
   public quickFilterValue: RoleFilterType = 'ALL'
   public quickFilterOptions$: Observable<SelectItem[]> | undefined
@@ -105,6 +106,14 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
     if (this.workspace && changes['workspace']) {
       this.prepareWorkspaceRoleSearch()
       this.searchRoles()
+      this.permissionUrl$ = Utils.getEndpointUrl(
+        this.workspaceService,
+        this.msgService,
+        'onecx-permission',
+        'onecx-permission-ui',
+        'workspace',
+        { 'workspace-name': this.workspace?.name }
+      )
     }
     // after 5s we assume IAM product is not running
     setTimeout(() => {
@@ -320,17 +329,6 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
       default:
         return '' + this.roles.length
     }
-  }
-
-  public onGoToPermission$(): Observable<string> {
-    return Utils.getEndpointUrl(
-      this.workspaceService,
-      this.msgService,
-      'onecx-permission',
-      'onecx-permission-ui',
-      'workspace',
-      { 'workspace-name': this.workspace?.name }
-    )
   }
 
   public prepareQuickFilter(): void {
