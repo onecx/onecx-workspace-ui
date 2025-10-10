@@ -90,6 +90,15 @@ describe('MenuService', () => {
     window.dispatchEvent(event)
   })
 
+  it('should use static mode if profile does not contain menu mode', (done) => {
+    userServiceMock.profile$.publish({} as UserProfile)
+
+    service.isActive('static').subscribe((isActive) => {
+      expect(isActive).toBeTrue()
+      done()
+    })
+  })
+
   describe('activation', () => {
     describe('on desktop', () => {
       beforeEach(() => {
