@@ -42,7 +42,8 @@ export type MenuMode = 'horizontal' | 'static' | 'overlay' | 'slim' | 'slimplus'
 @Injectable({ providedIn: 'root' })
 export class MenuService {
   private readonly userService = inject(UserService)
-  private capabilityService = inject(ShellCapabilityService)
+  private readonly capabilityService = inject(ShellCapabilityService)
+  // eslint-disable-next-line @typescript-eslint/prefer-readonly
   private staticMenuState$ = new StaticMenuStateTopic()
 
   private readonly menuMode$: Observable<MenuMode> = this.userService.profile$.pipe(
@@ -52,8 +53,8 @@ export class MenuService {
   )
 
   private readonly onResize$: Observable<Event>
-  private isMobile$: Observable<boolean>
-  private isMobileDistinct$: Observable<boolean>
+  private readonly isMobile$: Observable<boolean>
+  private readonly isMobileDistinct$: Observable<boolean>
 
   constructor() {
     const mobileBreakpointVar = getComputedStyle(document.documentElement).getPropertyValue('--mobile-break-point')

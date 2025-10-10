@@ -91,7 +91,7 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
   public logoUrl: Partial<Record<RefType, string | undefined>> = {}
 
   @ViewChild('container', { static: true }) container!: ElementRef
-  private eventsTopic = new EventsTopic()
+  private readonly eventsTopic = new EventsTopic()
 
   constructor(
     @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
@@ -206,7 +206,7 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
   }
 
   private remToPx(): number {
-    return parseFloat(getComputedStyle(document.documentElement).fontSize)
+    return Number.parseFloat(getComputedStyle(document.documentElement).fontSize)
   }
 
   private setDefaultWidth() {
