@@ -91,7 +91,7 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
   public logoUrl: Partial<Record<RefType, string | undefined>> = {}
 
   @ViewChild('container', { static: true }) container!: ElementRef
-  private eventsTopic = new EventsTopic()
+  private eventsTopic = new EventsTopic() // NOSONAR
 
   constructor(
     @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,

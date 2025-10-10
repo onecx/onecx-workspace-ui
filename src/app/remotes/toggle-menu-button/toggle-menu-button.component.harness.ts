@@ -2,7 +2,7 @@ import { ComponentHarness } from '@angular/cdk/testing'
 import { ButtonHarness } from '@onecx/angular-testing'
 
 export class ToggleMenuButtonHarness extends ComponentHarness {
-  static hostSelector = 'app-toggle-menu-button'
+  static readonly hostSelector = 'app-toggle-menu-button'
 
   getButton = this.locatorForOptional(
     ButtonHarness.with({
