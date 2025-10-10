@@ -14,7 +14,8 @@ import {
   mergeMap,
   distinctUntilChanged,
   shareReplay,
-  Subject
+  Subject,
+  tap
 } from 'rxjs'
 import { StaticMenuStateTopic } from '../topics/static-menu-state.topic'
 
@@ -78,7 +79,9 @@ export class MenuService {
       filter(([oldIsMobile, newIsMobile]) => {
         return oldIsMobile !== newIsMobile
       }),
-      map(([, isMobile]) => isMobile)
+      map(([, isMobile]) => {
+        return isMobile
+      })
     )
 
     combineLatest([this.isMobileDistinct$, this.menuMode$]).subscribe(([isMobile, userSelctedMenuMode]) => {
@@ -90,6 +93,15 @@ export class MenuService {
    * Compares the specified menu mode with the user's selected menu mode and determines if it is active based on viewport size.
    * @param menuMode Menu mode to check if it is active
    * @returns Observable that emits true if the specified menu mode is active, false otherwise
+   *
+   * Static menu is active:
+   * - in static mode
+   * - in horizontal mode and viewport is mobile
+   *
+   * Horizontal menu is active:
+   * - in horizontal mode and viewport is desktop
+   *
+   * Overlay, Slim and Slimplus menus are active if user selected them, regardless of viewport size.
    */
   public isActive(menuMode: MenuMode): Observable<boolean> {
     return combineLatest([this.isMobileDistinct$, this.menuMode$]).pipe(
@@ -138,6 +150,20 @@ export class MenuService {
    * Determines if the specified menu mode is visible.
    * @param menuMode Menu mode to check visibility for
    * @returns Observable that emits true if the menu mode is visible, false otherwise
+   *
+   * Static menu is visible:
+   * - if shell does not support activeness aware menus
+   * - if shell supports activeness aware menus and static menu state topic indicates it is visible
+   *
+   * Static menu state is managed based on viewport size in static and horizontal modes:
+   * - viewport desktop, static menu is visible
+   * - viewport mobile, static menu is hidden
+   *
+   * Static menu state can also be managed by other components by publishing to the StaticMenuStateTopic.
+   *
+   * Horizontal menu is always visible.
+   *
+   * Overlay, Slim and Slimplus menus are always visible.
    */
   public isVisible(menuMode: MenuMode): Observable<boolean> {
     switch (menuMode) {
