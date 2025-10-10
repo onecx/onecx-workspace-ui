@@ -162,9 +162,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.stateService.updateState({
-      workspaceMenuItems: this.menuItems
-    })
+    this.stateService.updateState({ workspaceMenuItems: this.menuItems })
     this.destroy$.next(undefined)
     this.destroy$.complete()
   }
@@ -647,7 +645,7 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   public loadMenu(restore: boolean): void {
     if (!this.workspace) return
-    this.menuItems = []
+    //this.menuItems = []
     this.menuItem = undefined
     this.loadingMenu = true
     this.treeFilteredRows = 0

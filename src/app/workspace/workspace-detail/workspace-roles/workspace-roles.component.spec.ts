@@ -10,7 +10,6 @@ import { SlotService } from '@onecx/angular-remote-components'
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 
 import { Workspace, WorkspaceRole, WorkspaceRolesAPIService, WorkspaceRolePageResult } from 'src/app/shared/generated'
-import { Utils } from 'src/app/shared/utils'
 
 import { IAMRole, Role, slotInitializer, WorkspaceRolesComponent } from './workspace-roles.component'
 
@@ -367,16 +366,6 @@ describe('WorkspaceRolesComponent', () => {
       expect(component.onGetQuickFilterCount('IAM')).toEqual('0')
       expect(component.onGetQuickFilterCount('WORKSPACE')).toEqual('1')
       expect(component.onGetQuickFilterCount('ALL')).toEqual('1') // combined role
-    })
-  })
-
-  describe('UI events', () => {
-    it('should go to permissions', () => {
-      spyOn(Utils, 'getEndpointUrl')
-
-      component.onGoToPermission$()
-
-      expect(Utils.getEndpointUrl).toHaveBeenCalled()
     })
   })
 

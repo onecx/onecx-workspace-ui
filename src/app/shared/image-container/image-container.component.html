@@ -1,7 +1,7 @@
 <img
   [id]="id"
   [class]="'max-w-full ' + (styleClass ?? '')"
-  [ocxSrc]="imageUrl ?? defaultImageUrl"
+  [ocxSrc]="url"
   (error)="onImageLoadError()"
   (load)="onImageLoadSuccess()"
   [alt]="'Logo Workspace'"
