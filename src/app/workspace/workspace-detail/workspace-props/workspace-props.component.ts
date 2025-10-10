@@ -316,7 +316,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       'onecx-theme',
       'onecx-theme-ui',
       'theme-detail',
-      { 'theme-name': 'name' }
+      { 'theme-name': name }
     )
   }
 }
