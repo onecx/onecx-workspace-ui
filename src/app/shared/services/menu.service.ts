@@ -16,7 +16,7 @@ import {
   shareReplay,
   Subject
 } from 'rxjs'
-import { StaticMenuStateTopic } from '../topics/static-menu-visible.topic'
+import { StaticMenuStateTopic } from '../topics/static-menu-state.topic'
 
 export type MenuMode = 'horizontal' | 'static' | 'overlay' | 'slim' | 'slimplus'
 

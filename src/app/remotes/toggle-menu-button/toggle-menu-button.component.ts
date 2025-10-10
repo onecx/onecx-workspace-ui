@@ -17,7 +17,7 @@ import { MenuService } from 'src/app/shared/services/menu.service'
 import { TooltipModule } from 'primeng/tooltip'
 import { RippleModule } from 'primeng/ripple'
 import { createTranslateLoader, provideTranslationPathFromMeta } from '@onecx/angular-utils'
-import { StaticMenuStatePublisher } from 'src/app/shared/topics/static-menu-visible.topic'
+import { StaticMenuStatePublisher } from 'src/app/shared/topics/static-menu-state.topic'
 
 const MENU_MODE = 'static'
 
