@@ -12,7 +12,7 @@ import {
 } from '@angular/core'
 import { Router } from '@angular/router'
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
-import { catchError, finalize, map, Observable, of, Subject, switchMap, takeUntil } from 'rxjs'
+import { catchError, finalize, firstValueFrom, map, Observable, of, Subject, switchMap, takeUntil } from 'rxjs'
 import { TranslateService } from '@ngx-translate/core'
 
 import { MfeInfo } from '@onecx/integration-interface'
@@ -155,22 +155,22 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     this.onHideItemDetails()
     this.searchPsProducts()
     this.searchWProducts()
-    this.wProducts$
-      .pipe(
-        switchMap((wProducts) => {
+    firstValueFrom(
+      this.wProducts$.pipe(
+        switchMap(() => {
           return this.psProducts$
         })
       )
-      .subscribe()
+    )
   }
 
   public onLoadPsProducts(): void {
     this.onHideItemDetails()
-    this.psProducts$.subscribe()
+    firstValueFrom(this.psProducts$)
   }
   public onLoadWProducts(): void {
     this.onHideItemDetails()
-    this.wProducts$.subscribe()
+    firstValueFrom(this.wProducts$)
   }
   private searchWProducts(): void {
     this.wpLoading = true

@@ -1,6 +1,17 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
 import { TranslateService } from '@ngx-translate/core'
-import { Subject, catchError, finalize, map, mergeMap, of, switchMap, takeUntil, Observable } from 'rxjs'
+import {
+  Subject,
+  catchError,
+  finalize,
+  map,
+  mergeMap,
+  of,
+  switchMap,
+  takeUntil,
+  Observable,
+  firstValueFrom
+} from 'rxjs'
 import { SelectItem } from 'primeng/api'
 import { DataView } from 'primeng/dataview'
 
@@ -119,12 +130,12 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     this.declareWorkspaceProducts()
     this.declareWorkspaceSlots()
     this.declarePsProducts()
-    this.wSlots$
-      .pipe(
+    firstValueFrom(
+      this.wSlots$.pipe(
         mergeMap(() => this.wProducts$),
         switchMap(() => this.psSlots$)
       )
-      .subscribe()
+    )
   }
 
   // get registered products
