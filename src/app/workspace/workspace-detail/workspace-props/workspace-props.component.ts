@@ -119,7 +119,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       if (this.editMode) this.formGroup.enable()
       // if a home page value exists then fill it into drop down list for displaying
       if (this.workspace.homePage) this.productPaths$ = of([this.workspace.homePage])
-      // check theme detail endpoint exists
+      // check detail endpoint exists
       this.themeEndpointExist = Utils.doesEndpointExist(
         this.workspaceService,
         this.msgService,
@@ -315,8 +315,8 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     return theme?.logoUrl
   }
 
-  public getThemeEndpointUrl$(name: string): Observable<string | undefined> {
-    if (this.themeEndpointExist)
+  public getThemeEndpointUrl$(name?: string): Observable<string | undefined> {
+    if (this.themeEndpointExist && name)
       return this.workspaceService.getUrl('onecx-theme', 'onecx-theme-ui', 'theme-detail', { 'theme-name': name })
     return of(undefined)
   }

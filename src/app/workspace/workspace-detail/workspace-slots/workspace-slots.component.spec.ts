@@ -6,7 +6,7 @@ import { TranslateService } from '@ngx-translate/core'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of, throwError } from 'rxjs'
 
-import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+import { PortalMessageService, UserService, WorkspaceService } from '@onecx/angular-integration-interface'
 
 import {
   ProductAPIService,
@@ -170,6 +170,12 @@ describe('WorkspaceSlotsComponent', () => {
   let component: WorkspaceSlotsComponent
   let fixture: ComponentFixture<WorkspaceSlotsComponent>
 
+  function initializeComponent(): void {
+    fixture = TestBed.createComponent(WorkspaceSlotsComponent)
+    component = fixture.componentInstance
+    fixture.detectChanges()
+  }
+
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
   const wProductServiceSpy = {
     getProductsByWorkspaceId: jasmine.createSpy('getProductsByWorkspaceId').and.returnValue(of({}))
@@ -182,6 +188,7 @@ describe('WorkspaceSlotsComponent', () => {
   const productServiceSpy = {
     searchAvailableProducts: jasmine.createSpy('searchAvailableProducts').and.returnValue(of({}))
   }
+  const workspaceServiceSpy = jasmine.createSpyObj<WorkspaceService>('WorkspaceService', ['doesUrlExistFor', 'getUrl'])
   const mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
   mockUserService.hasPermission.and.callFake((permission: string) => {
     return ['WORKSPACE_SLOT#EDIT', 'WORKSPACE_SLOT#CREATE', 'WORKSPACE_SLOT#DELETE'].includes(permission)
@@ -204,9 +211,15 @@ describe('WorkspaceSlotsComponent', () => {
         { provide: WorkspaceProductAPIService, useValue: wProductServiceSpy },
         { provide: ProductAPIService, useValue: productServiceSpy },
         { provide: SlotAPIService, useValue: slotServiceSpy },
+        { provide: WorkspaceService, useValue: workspaceServiceSpy },
         { provide: UserService, useValue: mockUserService }
       ]
     }).compileComponents()
+  }))
+
+  beforeEach(() => {
+    initializeComponent()
+
     // to spy data: reset
     wProductServiceSpy.getProductsByWorkspaceId.calls.reset()
     slotServiceSpy.getSlotsForWorkspace.calls.reset()
@@ -220,16 +233,8 @@ describe('WorkspaceSlotsComponent', () => {
     slotServiceSpy.getSlotsForWorkspace.and.returnValue(of({}))
     slotServiceSpy.createSlot.and.returnValue(of({}))
     productServiceSpy.searchAvailableProducts.and.returnValue(of({}))
-  }))
-
-  function initializeComponent(): void {
-    fixture = TestBed.createComponent(WorkspaceSlotsComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
-  }
-
-  beforeEach(() => {
-    initializeComponent()
+    // used in ngOnChanges
+    workspaceServiceSpy.doesUrlExistFor.and.returnValue(of(true))
   })
 
   describe('initialize', () => {
@@ -629,14 +634,6 @@ describe('WorkspaceSlotsComponent', () => {
     })
   })
 
-  it('should go to product slots', () => {
-    spyOn(Utils, 'getEndpointUrl')
-
-    component.onGoToProductStoreSlots$()
-
-    expect(Utils.getEndpointUrl).toHaveBeenCalled()
-  })
-
   describe('Test translations', () => {
     it('dataview translations', (done) => {
       const translationData = {
@@ -669,6 +666,47 @@ describe('WorkspaceSlotsComponent', () => {
       items[0].value
 
       expect(items[0].value).toEqual('ALL')
+    })
+  })
+
+  describe('getEndpointUrl', () => {
+    beforeEach(() => {
+      component.workspace = workspace
+    })
+
+    it('should productEndpointExist - exist', (done) => {
+      component.productEndpointExist = true
+      workspaceServiceSpy.getUrl.and.returnValue(of('/url'))
+
+      const eu$ = component.getProductEndpointUrl$('name')
+
+      eu$.subscribe({
+        next: (data) => {
+          if (data) {
+            expect(data).toBe('/url')
+          }
+          done()
+        },
+        error: done.fail
+      })
+    })
+
+    it('should productEndpointExist - not exist', (done) => {
+      component.productEndpointExist = false
+      const errorResponse = { status: 400, statusText: 'Error on check endpoint' }
+      workspaceServiceSpy.getUrl.and.returnValue(throwError(() => errorResponse))
+
+      const eu$ = component.getProductEndpointUrl$('name')
+
+      eu$.subscribe({
+        next: (data) => {
+          if (data) {
+            expect(data).toBeFalse()
+          }
+          done()
+        },
+        error: done.fail
+      })
     })
   })
 })

@@ -112,7 +112,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
         this.msgService,
         'onecx-permission',
         'onecx-permission-ui',
-        'workspacea'
+        'workspace'
       )
     }
     // after 5s we assume IAM product is not running
