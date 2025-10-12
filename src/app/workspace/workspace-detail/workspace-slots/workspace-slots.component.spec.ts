@@ -21,7 +21,6 @@ import {
   MicrofrontendPS,
   MicrofrontendType
 } from 'src/app/shared/generated'
-import { Utils } from 'src/app/shared/utils'
 
 import { CombinedSlot, WorkspaceSlotsComponent } from './workspace-slots.component'
 

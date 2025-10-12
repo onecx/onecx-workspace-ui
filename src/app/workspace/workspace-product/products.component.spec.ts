@@ -26,7 +26,6 @@ import {
   SlotAPIService,
   UIEndpoint
 } from 'src/app/shared/generated'
-import { Utils } from 'src/app/shared/utils'
 
 import { AppType, ExtendedMicrofrontend, ExtendedProduct, ExtendedSlot, ProductComponent } from './products.component'
 
