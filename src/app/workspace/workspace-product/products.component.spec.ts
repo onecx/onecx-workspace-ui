@@ -986,7 +986,7 @@ describe('ProductComponent', () => {
     })
   })
 
-  describe('getEndpointUrl', () => {
+  describe('getProductEndpointUrl', () => {
     beforeEach(() => {
       component.workspace = workspace
     })

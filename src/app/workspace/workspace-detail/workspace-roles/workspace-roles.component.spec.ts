@@ -410,12 +410,12 @@ describe('WorkspaceRolesComponent', () => {
     })
   })
 
-  describe('getEndpointUrl', () => {
+  describe('getPermisionEndpointUrl', () => {
     beforeEach(() => {
       component.workspace = workspace
     })
 
-    it('should workspaceEndpointExist - exist', (done) => {
+    it('should permissionEndpointExist - exist', (done) => {
       component.permissionEndpointExist = true
       workspaceServiceSpy.getUrl.and.returnValue(of('/url'))
 

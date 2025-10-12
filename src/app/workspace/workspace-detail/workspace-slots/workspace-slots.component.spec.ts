@@ -668,7 +668,7 @@ describe('WorkspaceSlotsComponent', () => {
     })
   })
 
-  describe('getEndpointUrl', () => {
+  describe('getProductEndpointUrl', () => {
     beforeEach(() => {
       component.workspace = workspace
     })
@@ -677,7 +677,7 @@ describe('WorkspaceSlotsComponent', () => {
       component.productEndpointExist = true
       workspaceServiceSpy.getUrl.and.returnValue(of('/url'))
 
-      const eu$ = component.getProductEndpointUrl$('name')
+      const eu$ = component.getProductEndpointUrl$()
 
       eu$.subscribe({
         next: (data) => {
@@ -695,7 +695,7 @@ describe('WorkspaceSlotsComponent', () => {
       const errorResponse = { status: 400, statusText: 'Error on check endpoint' }
       workspaceServiceSpy.getUrl.and.returnValue(throwError(() => errorResponse))
 
-      const eu$ = component.getProductEndpointUrl$('name')
+      const eu$ = component.getProductEndpointUrl$()
 
       eu$.subscribe({
         next: (data) => {

@@ -138,28 +138,6 @@ const Utils = {
       })
   },
 
-  getEndpointUrl(
-    workspaceService: WorkspaceService,
-    msgService: PortalMessageService,
-    productName: string,
-    appId: string,
-    endpointName: string,
-    params?: Record<string, unknown>
-  ): Observable<string> {
-    return workspaceService.doesUrlExistFor(productName, appId, endpointName).pipe(
-      tap((exists) => {
-        if (!exists) {
-          console.error(
-            'Routing not possible for product: ' + productName + '  app: ' + appId + '  endpoint: ' + endpointName
-          )
-          msgService.error({ summaryKey: 'EXCEPTIONS.ENDPOINT.NOT_EXIST', detailKey: 'EXCEPTIONS.CONTACT_ADMIN' })
-        }
-      }),
-      filter((exists) => exists), // stop on not exists
-      mergeMap(() => workspaceService.getUrl(productName, appId, endpointName, params))
-    )
-  },
-
   /**
    * Endpoints
    */

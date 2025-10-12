@@ -501,12 +501,12 @@ describe('WorkspacePropsComponent', () => {
     })
   })
 
-  describe('getEndpointUrl', () => {
+  describe('getThemeEndpointUrl', () => {
     beforeEach(() => {
       component.workspace = workspace
     })
 
-    it('should workspaceEndpointExist - exist', (done) => {
+    it('should themeEndpointExist - exist', (done) => {
       component.themeEndpointExist = true
       workspaceServiceSpy.getUrl.and.returnValue(of('/url'))
 

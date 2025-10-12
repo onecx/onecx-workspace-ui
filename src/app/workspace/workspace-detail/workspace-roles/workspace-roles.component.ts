@@ -106,7 +106,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
     if (this.workspace && changes['workspace']) {
       this.prepareWorkspaceRoleSearch()
       this.searchRoles()
-      // check permission detail endpoint exists
+      // check detail endpoint exists
       this.permissionEndpointExist = Utils.doesEndpointExist(
         this.workspaceService,
         this.msgService,
