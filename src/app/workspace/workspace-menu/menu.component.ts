@@ -71,7 +71,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   public treeFilteredRows = 0
   public currentLogoUrl: string | undefined = undefined
   public roleFilterValue: string[] = []
-  public endpointUrlPermission$: Observable<string>
+  public permissionEndpointExist = false
 
   // data
   public workspace$!: Observable<Workspace | undefined>
@@ -108,14 +108,6 @@ export class MenuComponent implements OnInit, OnDestroy {
     private readonly msgService: PortalMessageService,
     private readonly userService: UserService
   ) {
-    this.endpointUrlPermission$ = Utils.getEndpointUrl(
-      this.workspaceService,
-      this.msgService,
-      'onecx-permission',
-      'onecx-permission-ui',
-      'workspace',
-      { 'workspace-name': this.workspaceName }
-    )
     const state = this.stateService.getState()
     this.menuItems = state.workspaceMenuItems // reestablish menu state
     // simplify permission checks
@@ -159,6 +151,14 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.prepareTreeNodeLabelSwitch()
     this.prepareActionButtons()
     this.loadAllData()
+    // check detail endpoint exists
+    this.permissionEndpointExist = Utils.doesEndpointExist(
+      this.workspaceService,
+      this.msgService,
+      'onecx-permission',
+      'onecx-permission-ui',
+      'workspace'
+    )
   }
 
   public ngOnDestroy(): void {
@@ -788,5 +788,13 @@ export class MenuComponent implements OnInit, OnDestroy {
         console.error('deleteAssignment', err)
       }
     })
+  }
+
+  public getPermisionEndpointUrl$(name: string): Observable<string | undefined> {
+    if (this.permissionEndpointExist)
+      return this.workspaceService.getUrl('onecx-permission', 'onecx-permission-ui', 'workspace', {
+        'workspace-name': name
+      })
+    return of(undefined)
   }
 }

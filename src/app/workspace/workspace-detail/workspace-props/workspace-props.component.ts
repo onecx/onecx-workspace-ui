@@ -21,7 +21,6 @@ export type Theme = {
   name: string
   displayName: string
   logoUrl?: string
-  faviconUrl?: string
 }
 
 @Component({
@@ -49,9 +48,9 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   // data
   public formGroup: FormGroup
   public productPaths$: Observable<string[]> = of([]) // to fill drop down with product paths
-  public themeProductRegistered$!: Observable<boolean>
   public deploymentPath: string | undefined = undefined
   public urlPatternRelative = '/base-path-to-workspace'
+  public themeEndpointExist = false
 
   // slot configuration: get theme data
   public themeSlotName = 'onecx-theme-data'
@@ -70,7 +69,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     private readonly imageApi: ImagesInternalAPIService,
     private readonly wProductApi: WorkspaceProductAPIService
   ) {
-    this.themeProductRegistered$ = workspaceService.doesUrlExistFor('onecx-theme', 'onecx-theme-ui', 'theme-detail')
     this.isThemeComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.themeSlotName)
     this.formGroup = new FormGroup({
       displayName: new FormControl<string | null>(null, [
@@ -121,6 +119,14 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       if (this.editMode) this.formGroup.enable()
       // if a home page value exists then fill it into drop down list for displaying
       if (this.workspace.homePage) this.productPaths$ = of([this.workspace.homePage])
+      // check detail endpoint exists
+      this.themeEndpointExist = Utils.doesEndpointExist(
+        this.workspaceService,
+        this.msgService,
+        'onecx-theme',
+        'onecx-theme-ui',
+        'theme-detail'
+      )
     } else {
       this.formGroup.reset()
     }
@@ -158,46 +164,46 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
 
   // UPLOAD
   public onFileUpload(ev: Event, refType: RefType): void {
-    if (ev.target && (ev.target as HTMLInputElement).files) {
+    if (ev.target) {
       const files = (ev.target as HTMLInputElement).files
-      const regex = /^.*.(jpg|jpeg|png|svg)$/
-      if (files) {
-        if (files[0].size > this.imageMaxSize) {
-          this.msgService.error({ summaryKey: 'IMAGE.CONSTRAINT.FAILED', detailKey: 'IMAGE.CONSTRAINT.SIZE' })
-        } else if (!regex.exec(files[0].name)) {
-          this.msgService.error({ summaryKey: 'IMAGE.CONSTRAINT.FAILED', detailKey: 'IMAGE.CONSTRAINT.FILE_TYPE' })
-        } else if (this.workspace) {
-          this.saveImage(this.workspace.name, files, refType) // store image
-        }
+      if (files && files.length === 1) this.proccessFile(files[0], refType)
+      else {
+        this.msgService.error({ summaryKey: 'IMAGE.CONSTRAINT.FAILED', detailKey: 'IMAGE.CONSTRAINT.FILE_MISSING' })
       }
-    } else {
-      this.msgService.error({ summaryKey: 'IMAGE.CONSTRAINT.FAILED', detailKey: 'IMAGE.CONSTRAINT.FILE_MISSING' })
     }
   }
-  private mapMimeType(type: string): MimeType {
-    switch (type) {
-      case 'image/x-icon':
-        return MimeType.XIcon
-      case 'image/svg+xml':
-        return MimeType.Svgxml
-      case 'image/jpg':
-        return MimeType.Jpg
-      case 'image/jpeg':
-        return MimeType.Jpeg
-      case 'image/png':
-        return MimeType.Png
-      default:
-        return MimeType.Png
+  private proccessFile(file: File, refType: RefType): void {
+    const regex = /^.*.(jpg|jpeg|png|svg)$/
+    if (file.size > this.imageMaxSize) {
+      this.msgService.error({ summaryKey: 'IMAGE.CONSTRAINT.FAILED', detailKey: 'IMAGE.CONSTRAINT.SIZE' })
+    } else if (!regex.exec(file.name)) {
+      this.msgService.error({ summaryKey: 'IMAGE.CONSTRAINT.FAILED', detailKey: 'IMAGE.CONSTRAINT.FILE_TYPE' })
+    } else if (this.workspace) {
+      this.saveImage(this.workspace.name, file, refType) // store image
     }
   }
 
   // SAVE image
-  private saveImage(name: string, files: FileList, refType: RefType) {
+  private saveImage(name: string, file: File, refType: RefType) {
     this.bffUrl[refType] = undefined // reset - important to trigger the change in UI (props)
     if (refType === RefType.Logo) this.headerImageUrl.emit(undefined) // trigger the change in UI (header)
+    function mapMimeType(type: string): MimeType {
+      switch (type) {
+        case 'image/svg+xml':
+          return MimeType.Svgxml
+        case 'image/jpg':
+          return MimeType.Jpg
+        case 'image/jpeg':
+          return MimeType.Jpeg
+        case 'image/png':
+          return MimeType.Png
+        default:
+          return MimeType.Png
+      }
+    }
     // prepare request
-    const mType = this.mapMimeType(files[0].type)
-    const data = mType === MimeType.Svgxml ? files[0] : new Blob([files[0]], { type: files[0].type })
+    const mType = mapMimeType(file.type)
+    const data = mType === MimeType.Svgxml ? file : new Blob([file], { type: file.type })
     const requestParameter: UploadImageRequestParams = {
       refId: name,
       refType: refType,
@@ -306,17 +312,12 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
 
   public getThemeImageUrl(themes: Theme[], themeName: string, refType: RefType): string | undefined {
     const theme = themes.find((t) => t.name === themeName)
-    return refType === RefType.Logo ? theme?.logoUrl : theme?.faviconUrl
+    return theme?.logoUrl
   }
 
-  public onGoToTheme$(name: string): Observable<string> {
-    return Utils.getEndpointUrl(
-      this.workspaceService,
-      this.msgService,
-      'onecx-theme',
-      'onecx-theme-ui',
-      'theme-detail',
-      { 'theme-name': name }
-    )
+  public getThemeEndpointUrl$(name?: string): Observable<string | undefined> {
+    if (this.themeEndpointExist && name)
+      return this.workspaceService.getUrl('onecx-theme', 'onecx-theme-ui', 'theme-detail', { 'theme-name': name })
+    return of(undefined)
   }
 }

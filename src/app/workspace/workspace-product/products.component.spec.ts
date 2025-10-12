@@ -6,7 +6,12 @@ import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { ReactiveFormsModule, FormBuilder, FormArray, FormControl, FormGroup } from '@angular/forms'
 
-import { AppStateService, PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+import {
+  AppStateService,
+  PortalMessageService,
+  UserService,
+  WorkspaceService
+} from '@onecx/angular-integration-interface'
 import { MfeInfo } from '@onecx/integration-interface'
 
 import {
@@ -21,7 +26,6 @@ import {
   SlotAPIService,
   UIEndpoint
 } from 'src/app/shared/generated'
-import { Utils } from 'src/app/shared/utils'
 
 import { AppType, ExtendedMicrofrontend, ExtendedProduct, ExtendedSlot, ProductComponent } from './products.component'
 
@@ -142,6 +146,7 @@ describe('ProductComponent', () => {
     searchAvailableProducts: jasmine.createSpy('searchAvailableProducts').and.returnValue(of({}))
   }
   const slotApiServiceSpy = { createSlot: jasmine.createSpy('createSlot').and.returnValue(of({})) }
+  const workspaceServiceSpy = jasmine.createSpyObj<WorkspaceService>('WorkspaceService', ['doesUrlExistFor', 'getUrl'])
   const mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
   mockUserService.hasPermission.and.callFake((permission: string) => {
     return ['WORKSPACE_PRODUCTS#REGISTER'].includes(permission)
@@ -167,27 +172,10 @@ describe('ProductComponent', () => {
         { provide: ProductAPIService, useValue: productServiceSpy },
         { provide: AppStateService, useValue: mockAppState },
         { provide: SlotAPIService, useValue: slotApiServiceSpy },
+        { provide: WorkspaceService, useValue: workspaceServiceSpy },
         { provide: UserService, useValue: mockUserService }
       ]
     }).compileComponents()
-    // to spy data: reset
-    msgServiceSpy.success.calls.reset()
-    msgServiceSpy.error.calls.reset()
-    wProductServiceSpy.getProductById.calls.reset()
-    wProductServiceSpy.getProductsByWorkspaceId.calls.reset()
-    wProductServiceSpy.updateProductById.calls.reset()
-    wProductServiceSpy.createProductInWorkspace.calls.reset()
-    wProductServiceSpy.deleteProductById.calls.reset()
-    productServiceSpy.searchAvailableProducts.calls.reset()
-    slotApiServiceSpy.createSlot.calls.reset()
-    // to spy data: refill with neutral data
-    wProductServiceSpy.getProductById.and.returnValue(of({}))
-    wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of({}))
-    wProductServiceSpy.updateProductById.and.returnValue(of({}))
-    wProductServiceSpy.createProductInWorkspace.and.returnValue(of({}))
-    wProductServiceSpy.deleteProductById.and.returnValue(of({}))
-    productServiceSpy.searchAvailableProducts.and.returnValue(of({}))
-    slotApiServiceSpy.createSlot.and.returnValue(of({}))
   }))
 
   beforeEach(() => {
@@ -208,6 +196,26 @@ describe('ProductComponent', () => {
     component.psProducts = []
     component.psProductsOrg = new Map()
     fixture.detectChanges()
+    // to spy data: reset
+    msgServiceSpy.success.calls.reset()
+    msgServiceSpy.error.calls.reset()
+    wProductServiceSpy.getProductById.calls.reset()
+    wProductServiceSpy.getProductsByWorkspaceId.calls.reset()
+    wProductServiceSpy.updateProductById.calls.reset()
+    wProductServiceSpy.createProductInWorkspace.calls.reset()
+    wProductServiceSpy.deleteProductById.calls.reset()
+    productServiceSpy.searchAvailableProducts.calls.reset()
+    slotApiServiceSpy.createSlot.calls.reset()
+    // to spy data: refill with neutral data
+    wProductServiceSpy.getProductById.and.returnValue(of({}))
+    wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of({}))
+    wProductServiceSpy.updateProductById.and.returnValue(of({}))
+    wProductServiceSpy.createProductInWorkspace.and.returnValue(of({}))
+    wProductServiceSpy.deleteProductById.and.returnValue(of({}))
+    productServiceSpy.searchAvailableProducts.and.returnValue(of({}))
+    slotApiServiceSpy.createSlot.and.returnValue(of({}))
+    // used in ngOnChanges
+    workspaceServiceSpy.doesUrlExistFor.and.returnValue(of(true))
   })
 
   describe('initialize', () => {
@@ -704,24 +712,6 @@ describe('ProductComponent', () => {
     })
   })
 
-  describe('on go to other pages', () => {
-    it('should follow link to current product detail in product store', () => {
-      spyOn(Utils, 'goToEndpoint')
-
-      component.onGoToProduct('name')
-
-      expect(Utils.goToEndpoint).toHaveBeenCalled()
-    })
-
-    it('should follow link to current product detail in permission UI', () => {
-      spyOn(Utils, 'goToEndpoint')
-
-      component.onGoToProductPermission('name')
-
-      expect(Utils.goToEndpoint).toHaveBeenCalled()
-    })
-  })
-
   describe('picklist reloads', () => {
     it('should subscribe to psProducts$', () => {
       const mockPsProducts$ = jasmine.createSpyObj('Observable', ['subscribe'])
@@ -993,6 +983,82 @@ describe('ProductComponent', () => {
       event = { icon: 'grid-icon', mode: 'grid' }
       component.onTargetViewModeChange(event)
       expect(mockRenderer.addClass).toHaveBeenCalledWith(component.targetList, 'tile-view')
+    })
+  })
+
+  describe('getProductEndpointUrl', () => {
+    beforeEach(() => {
+      component.workspace = workspace
+    })
+
+    it('should productEndpointExist - exist', (done) => {
+      component.productEndpointExist = true
+      workspaceServiceSpy.getUrl.and.returnValue(of('/url'))
+
+      const eu$ = component.getProductEndpointUrl$('name')
+
+      eu$.subscribe({
+        next: (data) => {
+          if (data) {
+            expect(data).toBe('/url')
+          }
+          done()
+        },
+        error: done.fail
+      })
+    })
+
+    it('should productEndpointExist - not exist', (done) => {
+      component.productEndpointExist = false
+      const errorResponse = { status: 400, statusText: 'Error on check endpoint' }
+      workspaceServiceSpy.getUrl.and.returnValue(throwError(() => errorResponse))
+
+      const eu$ = component.getProductEndpointUrl$('name')
+
+      eu$.subscribe({
+        next: (data) => {
+          if (data) {
+            expect(data).toBeFalse()
+          }
+          done()
+        },
+        error: done.fail
+      })
+    })
+
+    it('should permissionEndpointExist - exist', (done) => {
+      component.permissionEndpointExist = true
+      workspaceServiceSpy.getUrl.and.returnValue(of('/url'))
+
+      const eu$ = component.getPermissionEndpointUrl$('name')
+
+      eu$.subscribe({
+        next: (data) => {
+          if (data) {
+            expect(data).toBe('/url')
+          }
+          done()
+        },
+        error: done.fail
+      })
+    })
+
+    it('should permissionEndpointExist - not exist', (done) => {
+      component.permissionEndpointExist = false
+      const errorResponse = { status: 400, statusText: 'Error on check endpoint' }
+      workspaceServiceSpy.getUrl.and.returnValue(throwError(() => errorResponse))
+
+      const eu$ = component.getPermissionEndpointUrl$('name')
+
+      eu$.subscribe({
+        next: (data) => {
+          if (data) {
+            expect(data).toBeFalse()
+          }
+          done()
+        },
+        error: done.fail
+      })
     })
   })
 })
