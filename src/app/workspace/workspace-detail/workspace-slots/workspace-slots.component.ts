@@ -495,8 +495,8 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
       )
   }
 
-  public getProductEndpointUrl$(name?: string): Observable<string | undefined> {
-    if (this.productEndpointExist && name)
+  public getProductEndpointUrl$(): Observable<string | undefined> {
+    if (this.productEndpointExist)
       return this.workspaceService.getUrl('onecx-product-store', 'onecx-product-store-ui', 'slots')
     return of(undefined)
   }
