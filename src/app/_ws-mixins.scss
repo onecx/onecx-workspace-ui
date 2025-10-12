@@ -161,12 +161,14 @@
         top: 35px;
       }
     }
+
     .card-badge-right {
-      right: 1px;
+      right: -1px;
     }
     .card-badge-left {
-      left: 1px;
+      left: -1px;
     }
+
     /* correct colors on clickable badges */
     .card-primary-color {
       background-color: var(--primary-color);

@@ -76,7 +76,7 @@
         [enableSorting]="true"
         [sortingOptions]="[{ label: 'SLOT.NAME' | translate, value: 'name' }]"
         [defaultSortOption]="sortField"
-        [defaultSortDirection]="sortOrder === -1"
+        [defaultSortDirection]="false"
         (sortChange)="onSortChange($event)"
         (sortDirectionChange)="onSortDirChange($event)"
         [translations]="(dataViewControlsTranslations$ | async) ?? {}"

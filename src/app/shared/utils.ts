@@ -2,7 +2,7 @@
 import { AbstractControl, FormArray, FormGroup } from '@angular/forms'
 import { Location } from '@angular/common'
 import { Router } from '@angular/router'
-import { filter, mergeMap, Observable, tap } from 'rxjs'
+import { catchError, filter, first, mergeMap, Observable, of, tap } from 'rxjs'
 import { SelectItem } from 'primeng/api'
 
 import { PortalMessageService, WorkspaceService } from '@onecx/angular-integration-interface'
@@ -158,6 +158,40 @@ const Utils = {
       filter((exists) => exists), // stop on not exists
       mergeMap(() => workspaceService.getUrl(productName, appId, endpointName, params))
     )
+  },
+
+  /**
+   * Endpoints
+   */
+  doesEndpointExist(
+    workspaceService: WorkspaceService,
+    msgService: PortalMessageService,
+    productName: string,
+    appId: string,
+    endpointName: string
+  ): boolean {
+    let exist = false
+    workspaceService
+      .doesUrlExistFor(productName, appId, endpointName)
+      .pipe(
+        first(),
+        tap((exists) => {
+          if (!exists) {
+            console.error(`Routing not possible to workspace for endpoint: ${productName} ${appId} ${endpointName}`)
+            msgService.error({
+              summaryKey: 'EXCEPTIONS.ENDPOINT.NOT_EXIST',
+              summaryParameters: { product: productName, endpoint: endpointName },
+              detailKey: 'EXCEPTIONS.CONTACT_ADMIN'
+            })
+          }
+        }),
+        catchError((err) => {
+          console.error('doesUrlExistFor', err)
+          return of(false)
+        })
+      )
+      .subscribe((ex) => (exist = ex))
+    return exist
   }
 }
 

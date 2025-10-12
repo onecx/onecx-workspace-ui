@@ -7,7 +7,7 @@ import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of, throwError } from 'rxjs'
 
 import { SlotService } from '@onecx/angular-remote-components'
-import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+import { PortalMessageService, UserService, WorkspaceService } from '@onecx/angular-integration-interface'
 
 import { Workspace, WorkspaceRole, WorkspaceRolesAPIService, WorkspaceRolePageResult } from 'src/app/shared/generated'
 
@@ -34,6 +34,13 @@ describe('WorkspaceRolesComponent', () => {
   let component: WorkspaceRolesComponent
   let fixture: ComponentFixture<WorkspaceRolesComponent>
 
+  function initTestComponent(): void {
+    fixture = TestBed.createComponent(WorkspaceRolesComponent)
+    component = fixture.componentInstance
+    component.workspace = workspace
+    fixture.detectChanges()
+  }
+
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
   const wRoleServiceSpy = {
     searchWorkspaceRoles: jasmine.createSpy('searchWorkspaceRoles').and.returnValue(of({})),
@@ -46,6 +53,7 @@ describe('WorkspaceRolesComponent', () => {
   const slotServiceSpy = {
     isSomeComponentDefinedForSlot: jasmine.createSpy('isSomeComponentDefinedForSlot').and.returnValue(of(true))
   }
+  const workspaceServiceSpy = jasmine.createSpyObj<WorkspaceService>('WorkspaceService', ['doesUrlExistFor', 'getUrl'])
   const mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
   mockUserService.hasPermission.and.callFake((permission: string) => {
     return ['WORKSPACE_ROLE#EDIT', 'WORKSPACE_ROLE#CREATE', 'WORKSPACE_ROLE#DELETE'].includes(permission)
@@ -67,18 +75,14 @@ describe('WorkspaceRolesComponent', () => {
         { provide: SlotService, useValue: slotServiceSpy },
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: WorkspaceRolesAPIService, useValue: wRoleServiceSpy },
+        { provide: WorkspaceService, useValue: workspaceServiceSpy },
         { provide: UserService, useValue: mockUserService }
       ]
     }).compileComponents()
-    msgServiceSpy.success.calls.reset()
-    msgServiceSpy.error.calls.reset()
   }))
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(WorkspaceRolesComponent)
-    component = fixture.componentInstance
-    component.workspace = workspace
-    fixture.detectChanges()
+    initTestComponent()
 
     // to spy data: reset
     slotServiceSpy.isSomeComponentDefinedForSlot.calls.reset()
@@ -90,6 +94,8 @@ describe('WorkspaceRolesComponent', () => {
     msgServiceSpy.error.calls.reset()
     // to spy data: refill with neutral data
     wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({}))
+    // used in ngOnChanges
+    workspaceServiceSpy.doesUrlExistFor.and.returnValue(of(true))
   })
 
   describe('initialize', () => {
@@ -401,6 +407,47 @@ describe('WorkspaceRolesComponent', () => {
       items[0].value
 
       expect(items[0].value).toEqual('ALL')
+    })
+  })
+
+  describe('getEndpointUrl', () => {
+    beforeEach(() => {
+      component.workspace = workspace
+    })
+
+    it('should workspaceEndpointExist - exist', (done) => {
+      component.permissionEndpointExist = true
+      workspaceServiceSpy.getUrl.and.returnValue(of('/url'))
+
+      const eu$ = component.getPermisionEndpointUrl$('name')
+
+      eu$.subscribe({
+        next: (data) => {
+          if (data) {
+            expect(data).toBe('/url')
+          }
+          done()
+        },
+        error: done.fail
+      })
+    })
+
+    it('should permissionEndpointExist - not exist', (done) => {
+      component.permissionEndpointExist = false
+      const errorResponse = { status: 400, statusText: 'Error on check endpoint' }
+      workspaceServiceSpy.getUrl.and.returnValue(throwError(() => errorResponse))
+
+      const eu$ = component.getPermisionEndpointUrl$('name')
+
+      eu$.subscribe({
+        next: (data) => {
+          if (data) {
+            expect(data).toBeFalse()
+          }
+          done()
+        },
+        error: done.fail
+      })
     })
   })
 })

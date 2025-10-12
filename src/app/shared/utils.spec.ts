@@ -1,6 +1,6 @@
 import { FormGroup, FormControl } from '@angular/forms'
 import { SelectItem } from 'primeng/api'
-import { of } from 'rxjs'
+import { of, throwError } from 'rxjs'
 
 import { RefType } from './generated'
 import { Utils } from './utils'
@@ -444,6 +444,50 @@ describe('util functions', () => {
         expect(url).toBe(expectedUrl)
         done()
       })
+    })
+  })
+
+  describe('getEndpointUrl', () => {
+    let workspaceServiceMock: any
+    let msgServiceMock: any
+    const productName = 'testProduct'
+    const appId = 'testApp'
+    const endpointName = 'testEndpoint'
+
+    beforeEach(() => {
+      workspaceServiceMock = {
+        doesUrlExistFor: jasmine.createSpy('doesUrlExistFor')
+      }
+      msgServiceMock = { error: jasmine.createSpy('error') }
+      spyOn(console, 'error')
+    })
+
+    it('should endpoint exist', () => {
+      workspaceServiceMock.doesUrlExistFor.and.returnValue(of(true))
+
+      const exist = Utils.doesEndpointExist(workspaceServiceMock, msgServiceMock, productName, appId, endpointName)
+
+      expect(exist).toBeTrue()
+    })
+
+    it('should endpoint NOT exist', () => {
+      workspaceServiceMock.doesUrlExistFor.and.returnValue(of(false))
+
+      const exist = Utils.doesEndpointExist(workspaceServiceMock, msgServiceMock, productName, appId, endpointName)
+
+      expect(exist).toBeFalse()
+      expect(console.error).toHaveBeenCalled()
+      expect(msgServiceMock.error).toHaveBeenCalled()
+    })
+
+    it('should get endpoint failed', () => {
+      const errorResponse = { status: 403, statusText: 'No permissions' }
+      workspaceServiceMock.doesUrlExistFor.and.returnValue(throwError(() => errorResponse))
+
+      const exist = Utils.doesEndpointExist(workspaceServiceMock, msgServiceMock, productName, appId, endpointName)
+
+      expect(exist).toBeFalse()
+      expect(console.error).toHaveBeenCalledWith('doesUrlExistFor', errorResponse)
     })
   })
 })

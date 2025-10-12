@@ -6,7 +6,12 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of, throwError } from 'rxjs'
 
-import { ConfigurationService, PortalMessageService, ThemeService } from '@onecx/angular-integration-interface'
+import {
+  ConfigurationService,
+  PortalMessageService,
+  ThemeService,
+  WorkspaceService
+} from '@onecx/angular-integration-interface'
 import * as Accelerator from '@onecx/accelerator'
 
 import {
@@ -14,7 +19,6 @@ import {
   WorkspacePropsComponent
 } from 'src/app/workspace/workspace-detail/workspace-props/workspace-props.component'
 import {
-  MimeType,
   ImagesInternalAPIService,
   Workspace,
   WorkspaceAPIService,
@@ -53,7 +57,7 @@ const changes: SimpleChanges = {
 }
 
 const themesOrg: Theme[] = [
-  { name: 'theme1', displayName: 'Theme 1', logoUrl: '/logo', faviconUrl: '/favicon' },
+  { name: 'theme1', displayName: 'Theme 1', logoUrl: '/logo' },
   { name: 'theme2', displayName: 'Theme 2' }
 ]
 
@@ -72,6 +76,7 @@ describe('WorkspacePropsComponent', () => {
     configuration: { basePath: basePath }
   }
   const themeService = jasmine.createSpyObj<ThemeService>('ThemeService', ['apply'])
+  const workspaceServiceSpy = jasmine.createSpyObj<WorkspaceService>('WorkspaceService', ['doesUrlExistFor', 'getUrl'])
   const wProductServiceSpy = {
     getProductsByWorkspaceId: jasmine.createSpy('getProductsByWorkspaceId').and.returnValue(of({}))
   }
@@ -103,6 +108,7 @@ describe('WorkspacePropsComponent', () => {
         { provide: ImagesInternalAPIService, useValue: imageServiceSpy },
         { provide: WorkspaceAPIService, useValue: apiServiceSpy },
         { provide: WorkspaceProductAPIService, useValue: wProductServiceSpy },
+        { provide: WorkspaceService, useValue: workspaceServiceSpy },
         { provide: Accelerator, useValue: accSpy }
       ],
       teardown: { destroyAfterEach: false }
@@ -121,6 +127,8 @@ describe('WorkspacePropsComponent', () => {
     imageServiceSpy.getImage.calls.reset()
     imageServiceSpy.deleteImage.calls.reset()
     imageServiceSpy.uploadImage.calls.reset()
+    // used in ngOnChanges
+    workspaceServiceSpy.doesUrlExistFor.and.returnValue(of(true))
   })
 
   describe('initialize', () => {
@@ -173,16 +181,6 @@ describe('WorkspacePropsComponent', () => {
         const url = component.getThemeImageUrl(themesOrg, 'theme1', RefType.Logo)
 
         expect(url).toBe(themesOrg[0].logoUrl)
-      }
-    })
-
-    it('should get url if defined - favicon', () => {
-      if (component.workspace) {
-        component.workspace.theme = 'theme1'
-
-        const url = component.getThemeImageUrl(themesOrg, 'theme1', RefType.Favicon)
-
-        expect(url).toBe(themesOrg[0].faviconUrl)
       }
     })
   })
@@ -411,6 +409,28 @@ describe('WorkspacePropsComponent', () => {
         expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'IMAGE.UPLOAD.OK' })
       })
 
+      it('should upload file - successful with other formats', () => {
+        imageServiceSpy.uploadImage.and.returnValue(of({}))
+
+        let file = new File(['file content'], 'test.jpg', { type: 'image/jpg' })
+        let event = { target: { files: [file] } }
+        component.onFileUpload(event as any, RefType.Logo)
+
+        expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'IMAGE.UPLOAD.OK' })
+
+        file = new File(['file content'], 'test.jpeg', { type: 'image/jpeg' })
+        event = { target: { files: [file] } }
+        component.onFileUpload(event as any, RefType.Logo)
+
+        expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'IMAGE.UPLOAD.OK' })
+
+        file = new File(['file content'], 'test.png', { type: 'image/tiff' })
+        event = { target: { files: [file] } }
+        component.onFileUpload(event as any, RefType.Logo)
+
+        expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'IMAGE.UPLOAD.OK' })
+      })
+
       it('should upload file - failed with unsupported format', () => {
         imageServiceSpy.uploadImage.and.returnValue(of({}))
         const file = new File(['file content'], 'test.tiff', { type: 'image/tiff' })
@@ -435,17 +455,6 @@ describe('WorkspacePropsComponent', () => {
 
         expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'IMAGE.UPLOAD.NOK' })
         expect(console.error).toHaveBeenCalledWith('uploadImage', errorResponse)
-      })
-
-      it('should map mime-types', () => {
-        let mt = component['mapMimeType']('image/x-icon')
-        expect(mt).toBe(MimeType.XIcon)
-        mt = component['mapMimeType']('image/jpg')
-        expect(mt).toBe(MimeType.Jpg)
-        mt = component['mapMimeType']('image/jpeg')
-        expect(mt).toBe(MimeType.Jpeg)
-        mt = component['mapMimeType']('image/tiff') // unknown for OneCX
-        expect(mt).toBe(MimeType.Png)
       })
     })
 
@@ -492,11 +501,44 @@ describe('WorkspacePropsComponent', () => {
     })
   })
 
-  it('should follow link to current theme', () => {
-    spyOn(Utils, 'getEndpointUrl')
+  describe('getEndpointUrl', () => {
+    beforeEach(() => {
+      component.workspace = workspace
+    })
 
-    component.onGoToTheme$('themeName')
+    it('should workspaceEndpointExist - exist', (done) => {
+      component.themeEndpointExist = true
+      workspaceServiceSpy.getUrl.and.returnValue(of('/url'))
 
-    expect(Utils.getEndpointUrl).toHaveBeenCalled()
+      const eu$ = component.getThemeEndpointUrl$('name')
+
+      eu$.subscribe({
+        next: (data) => {
+          if (data) {
+            expect(data).toBe('/url')
+          }
+          done()
+        },
+        error: done.fail
+      })
+    })
+
+    it('should themeEndpointExist - not exist', (done) => {
+      component.themeEndpointExist = false
+      const errorResponse = { status: 400, statusText: 'Error on check endpoint' }
+      workspaceServiceSpy.getUrl.and.returnValue(throwError(() => errorResponse))
+
+      const eu$ = component.getThemeEndpointUrl$('name')
+
+      eu$.subscribe({
+        next: (data) => {
+          if (data) {
+            expect(data).toBeFalse()
+          }
+          done()
+        },
+        error: done.fail
+      })
+    })
   })
 })

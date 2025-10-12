@@ -65,14 +65,15 @@
         <article
           *ngFor="let workspace of workspaces; index as i"
           class="sm:mx-3 py-1 px-3 flex flex-row flex-nowrap justify-content-start align-items-center column-gap-3 hover:bg-gray-200 cursor-pointer"
+          [ngStyle]="i % 2 === 0 ? { 'background-color': 'var(--table-body-row-even-bg)' } : {}"
           [id]="'ws_search_data_list_row_' + i"
           [routerLink]="['./' + workspace.name]"
           [attr.aria-label]="workspace.displayName"
         >
-          <div class="p-0 col-4 sm:col-3 md:col-2 flex justify-content-around align-items-center">
+          <div class="p-0 h-3rem sm:h-4rem col-4 sm:col-3 md:col-2 flex justify-content-around align-items-center">
             <app-image-container
               [id]="'ws_search_data_list_row_' + i + '_logo'"
-              styleClass="h-4rem sm:h-5rem max-h-4rem sm:max-h-5rem max-w-4rem sm:max-w-6rem border-round-sm"
+              styleClass="max-h-4rem sm:max-h-5rem max-w-4rem sm:max-w-6rem border-round-sm"
               [bffUrl]="Utils.bffImageUrl(imageBasePath, workspace.name, RefType.Logo)"
               [imageUrl]="workspace.logoUrl"
               aria-hidden="true"
@@ -158,7 +159,7 @@
               <div class="relative w-full h-5rem sm:h-10rem px-4 flex justify-content-center align-items-center">
                 <app-image-container
                   [id]="'ws_search_data_grid_row_' + i + '_logo'"
-                  styleClass="max-h-5rem sm:max-h-10rem border-round-sm"
+                  styleClass="max-h-5rem sm:max-h-10rem p-2 border-round-sm"
                   [bffUrl]="Utils.bffImageUrl(imageBasePath, workspace.name, RefType.Logo)"
                   [imageUrl]="workspace.logoUrl"
                   aria-hidden="true"
@@ -167,7 +168,7 @@
                 <div
                   *ngIf="workspace.disabled"
                   [id]="'ws_search_data_grid_row_' + i + '_disabled'"
-                  class="card-badge-right badge-1 text-xl pi pi-ban danger-action-text font-bold"
+                  class="card-badge-right badge-1 text-lg md:text-xl pi pi-ban danger-action-text font-bold"
                   [attr.aria-label]="'WORKSPACE.DISABLED' | translate"
                   [pTooltip]="'WORKSPACE.TOOLTIPS.DISABLED' | translate"
                   tooltipPosition="right"
@@ -188,7 +189,7 @@
                   *ngIf="!workspace.disabled"
                   tabindex="0"
                   [id]="'ws_search_data_grid_row_' + i + '_goto_workspace'"
-                  class="card-badge-right badge-1 text-xl p-2 pi pi-external-link button-icon-only"
+                  class="card-badge-right badge-1 text-lg sm:text-xl pi pi-external-link button-icon-only"
                   [routerLink]="[workspace.name]"
                   target="_blank"
                   (click)="$event.stopPropagation()"
@@ -202,7 +203,7 @@
                   *ocxIfPermission="'MENU#VIEW'"
                   tabindex="0"
                   [id]="'ws_search_data_grid_row_' + i + '_goto_menu'"
-                  class="card-badge-right badge-2 text-xl p-2 pi pi-sitemap button-icon-only"
+                  class="card-badge-right badge-2 text-lg sm:text-xl pi pi-sitemap button-icon-only"
                   [routerLink]="[workspace.name, 'menu']"
                   target="_self"
                   (click)="$event.stopPropagation()"
