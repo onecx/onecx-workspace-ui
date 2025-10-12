@@ -9,7 +9,7 @@ import { TranslateTestingModule } from 'ngx-translate-testing'
 import { TreeNode } from 'primeng/api'
 import { TreeTableNodeExpandEvent } from 'primeng/treetable'
 
-import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+import { PortalMessageService, UserService, WorkspaceService } from '@onecx/angular-integration-interface'
 
 import {
   Workspace,
@@ -99,7 +99,7 @@ describe('MenuComponent', () => {
   let fixture: ComponentFixture<MenuComponent>
 
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
-  const workspaceServiceSpy = {
+  const workspaceApiSpy = {
     getWorkspaceByName: jasmine.createSpy('getWorkspaceByName').and.returnValue(of({}))
   }
   const menuApiServiceSpy = {
@@ -118,6 +118,7 @@ describe('MenuComponent', () => {
     createAssignment: jasmine.createSpy('createAssignment').and.returnValue(of(assgmt)),
     deleteAssignment: jasmine.createSpy('deleteAssignment').and.returnValue(of({}))
   }
+  const workspaceServiceSpy = jasmine.createSpyObj<WorkspaceService>('WorkspaceService', ['doesUrlExistFor', 'getUrl'])
   const translateServiceSpy = jasmine.createSpyObj('TranslateService', ['get'])
   const stateServiceSpy = jasmine.createSpyObj<MenuStateService>('MenuStateService', ['getState', 'updateState'])
   const locationSpy = jasmine.createSpyObj<Location>('Location', ['back'])
@@ -148,7 +149,8 @@ describe('MenuComponent', () => {
         provideHttpClient(),
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: PortalMessageService, useValue: msgServiceSpy },
-        { provide: WorkspaceAPIService, useValue: workspaceServiceSpy },
+        { provide: WorkspaceService, useValue: workspaceServiceSpy },
+        { provide: WorkspaceAPIService, useValue: workspaceApiSpy },
         { provide: WorkspaceRolesAPIService, useValue: wRoleServiceSpy },
         { provide: MenuItemAPIService, useValue: menuApiServiceSpy },
         { provide: AssignmentAPIService, useValue: assgmtApiServiceSpy },
@@ -163,7 +165,7 @@ describe('MenuComponent', () => {
     // to spy data: reset
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
-    workspaceServiceSpy.getWorkspaceByName.calls.reset()
+    workspaceApiSpy.getWorkspaceByName.calls.reset()
     menuApiServiceSpy.getMenuItemById.calls.reset()
     menuApiServiceSpy.getMenuStructure.calls.reset()
     menuApiServiceSpy.bulkPatchMenuItems.calls.reset()
@@ -175,12 +177,15 @@ describe('MenuComponent', () => {
     translateServiceSpy.get.calls.reset()
     stateServiceSpy.getState.calls.reset()
     // to spy data: refill with neutral data
-    workspaceServiceSpy.getWorkspaceByName.and.returnValue(of({}))
+    workspaceApiSpy.getWorkspaceByName.and.returnValue(of({}))
     menuApiServiceSpy.getMenuStructure.and.returnValue(of({}))
     wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({}))
     assgmtApiServiceSpy.searchAssignments.and.returnValue(of({}))
 
     stateServiceSpy.getState.and.returnValue(state)
+    // used in ngOnChanges
+    workspaceServiceSpy.doesUrlExistFor.and.returnValue(of(true))
+
     fixture = TestBed.createComponent(MenuComponent)
     component = fixture.componentInstance
     component.workspace = workspace
@@ -743,7 +748,7 @@ describe('MenuComponent', () => {
    */
   describe('load data', () => {
     it('should load all - success', () => {
-      workspaceServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
+      workspaceApiSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
       menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
       component.workspaceName = 'workspace-name'
       component.wRoles = [{ name: 'role1' }]
@@ -758,7 +763,7 @@ describe('MenuComponent', () => {
 
     it('should display error message if loading workspace failed', () => {
       const errorResponse = { status: 404, statusText: 'Workspace not found' }
-      workspaceServiceSpy.getWorkspaceByName.and.returnValue(throwError(() => errorResponse))
+      workspaceApiSpy.getWorkspaceByName.and.returnValue(throwError(() => errorResponse))
       spyOn(console, 'error')
 
       component.loadAllData()
@@ -1137,5 +1142,46 @@ describe('MenuComponent', () => {
     const result = component['getLogoUrl']({ name: 'name', displayName: 'name', logoUrl: 'url' })
 
     expect(result).toBe('url')
+  })
+
+  describe('getPermisionEndpointUrl', () => {
+    beforeEach(() => {
+      component.workspace = workspace
+    })
+
+    it('should permissionEndpointExist - exist', (done) => {
+      component.permissionEndpointExist = true
+      workspaceServiceSpy.getUrl.and.returnValue(of('/url'))
+
+      const eu$ = component.getPermisionEndpointUrl$('name')
+
+      eu$.subscribe({
+        next: (data) => {
+          if (data) {
+            expect(data).toBe('/url')
+          }
+          done()
+        },
+        error: done.fail
+      })
+    })
+
+    it('should permissionEndpointExist - not exist', (done) => {
+      component.permissionEndpointExist = false
+      const errorResponse = { status: 400, statusText: 'Error on check endpoint' }
+      workspaceServiceSpy.getUrl.and.returnValue(throwError(() => errorResponse))
+
+      const eu$ = component.getPermisionEndpointUrl$('name')
+
+      eu$.subscribe({
+        next: (data) => {
+          if (data) {
+            expect(data).toBeFalse()
+          }
+          done()
+        },
+        error: done.fail
+      })
+    })
   })
 })
