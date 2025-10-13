@@ -1,18 +1,13 @@
 // menu item styles
 .slim-menu-list-item {
-  color: var(--menu-item-text-color, var(--text-secondary-color, #000000));
+  color: var(--menu-item-text-color, var(--menu-text-color, var(--text-secondary-color, #000000)));
   background-color: var(--menu-item-bg-color, var(--menu-bg-color), #f7f7f7);
   width: 100%;
+  height: 100%;
   // hover and focus styles
   & :hover,
   & :focus {
     background-color: var(--menu-item-hover-bg-color, #e0e0e0);
-  }
-  // first item styles
-  :first-child {
-    > * {
-      padding-top: 0;
-    }
   }
   // children styles
   > * {
@@ -23,7 +18,8 @@
     text-align: center;
     padding: 1rem 0;
     width: 100%;
-    color: var(--menu-item-text-color, var(--text-secondary-color, #000000));
+    height: 100%;
+    color: var(--menu-item-text-color, var(--menu-text-color, var(--text-secondary-color, #000000)));
     background-color: var(--menu-item-bg-color, var(--menu-bg-color), #f7f7f7);
   }
   // icon styles
@@ -32,6 +28,7 @@
   }
   .slim-menu-list-item-text {
     width: 100%;
+    height: 100%;
     overflow-wrap: break-word;
     font-size: var(--font-size);
     margin-top: 0.25rem;
@@ -40,11 +37,17 @@
 }
 // active item styles
 .slim-menu-list-item-active {
-  color: var(--menu-active-item-text-color, var(--text-secondary-color, #000000));
+  color: var(
+    --menu-active-item-text-color,
+    var(--menu-item-text-color, var(--menu-text-color, var(--text-secondary-color, #000000)))
+  );
   background-color: var(--menu-active-item-bg-color, var(--menu-item-hover-bg-color, #e0e0e0));
   // children styles
   > * {
-    color: var(--menu-active-item-text-color, var(--text-secondary-color, #000000));
+    color: var(
+      --menu-active-item-text-color,
+      var(--menu-item-text-color, var(--menu-text-color, var(--text-secondary-color, #000000)))
+    );
     background-color: var(--menu-active-item-bg-color, var(--menu-item-hover-bg-color, #e0e0e0));
   }
 }

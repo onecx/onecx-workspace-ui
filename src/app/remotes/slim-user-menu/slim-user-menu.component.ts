@@ -41,11 +41,6 @@ import { TooltipModule } from 'primeng/tooltip'
 import { RippleModule } from 'primeng/ripple'
 import { AccordionModule } from 'primeng/accordion'
 
-enum DisplayMode {
-  HEADER_ONLY = 'HEADER_ONLY',
-  FULL = 'FULL'
-}
-
 @Component({
   selector: 'app-slim-user-main-menu',
   templateUrl: './slim-user-menu.component.html',
@@ -79,7 +74,6 @@ enum DisplayMode {
 @UntilDestroy()
 export class OneCXSlimUserMenuComponent implements ocxRemoteWebcomponent {
   Mode = SlimMenuMode
-  DisplayMode = DisplayMode
 
   private readonly menuService = inject(MenuService)
 
@@ -91,7 +85,6 @@ export class OneCXSlimUserMenuComponent implements ocxRemoteWebcomponent {
   public avatarImageLoaded$: BehaviorSubject<boolean | undefined> = new BehaviorSubject<boolean | undefined>(undefined)
   // slot: avatar image
   public avatarImageLoadedEmitter = new EventEmitter<boolean>()
-  public displayMode: DisplayMode = DisplayMode.HEADER_ONLY
 
   // Assumption: only one menu can be active at a time
   public activeMode$ = combineLatest([this.isSlimMenuActive$, this.isSlimPlusMenuActive$]).pipe(
@@ -156,14 +149,6 @@ export class OneCXSlimUserMenuComponent implements ocxRemoteWebcomponent {
 
   logout() {
     new EventsPublisher().publish({ type: 'authentication#logoutButtonClicked' })
-  }
-
-  toggleDisplayMode() {
-    if (this.displayMode === DisplayMode.HEADER_ONLY) {
-      this.displayMode = DisplayMode.FULL
-    } else {
-      this.displayMode = DisplayMode.HEADER_ONLY
-    }
   }
 
   private determineDisplayName(userProfile: UserProfile): Observable<string> {

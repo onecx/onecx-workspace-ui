@@ -1,7 +1,7 @@
 <ng-container *ngIf="item as item">
   <li
     [id]="id"
-    class="slim-menu-list-item flex align-items-center justify-content-center"
+    class="slim-menu-list-item flex flex-column align-items-center justify-content-center"
     [ngClass]="{
       'slim-menu-list-item-active': item.active,
       'slim-menu-list-item-plus': activeMode === SlimMenuMode.SLIM_PLUS
@@ -34,7 +34,7 @@
       [pTooltip]="item.label"
       tooltipPosition="right"
       tooltipEvent="both"
-      class="slim-menu-list-item-link flex align-items-center justify-content-center outline-none cursor-pointer"
+      class="slim-menu-list-item-link outline-none cursor-pointer"
     >
       <ng-container *ngTemplateOutlet="iconTemplate; context: { $implicit: item }"></ng-container>
       <ng-container *ngTemplateOutlet="textTemplate; context: { $implicit: item }"></ng-container>
@@ -50,7 +50,7 @@
       [pTooltip]="item.label"
       tooltipPosition="right"
       tooltipEvent="both"
-      class="slim-menu-list-item-link flex align-items-center justify-content-center outline-none cursor-pointer"
+      class="slim-menu-list-item-link outline-none cursor-pointer"
     >
       <ng-container *ngTemplateOutlet="iconTemplate; context: { $implicit: item }"></ng-container>
       <ng-container *ngTemplateOutlet="textTemplate; context: { $implicit: item }"></ng-container>
@@ -60,7 +60,7 @@
   <ng-template #actionTemplate let-item let-i="index">
     <button
       tabIndex="0"
-      class="slim-menu-list-item-button flex align-items-center justify-content-center outline-none cursor-pointer border-none"
+      class="slim-menu-list-item-button outline-none cursor-pointer border-none"
       [id]="'ws_slim_vertical_main_menu_list_item_' + (i + 1) + '_button'"
       pRipple
       [pTooltip]="item.label"
@@ -76,11 +76,15 @@
 
   <ng-template #textTemplate let-item>
     <ng-container *ngIf="activeMode === SlimMenuMode.SLIM_PLUS">
-      <span class="slim-menu-list-item-text">{{ item.label }}</span>
+      <div class="flex justify-content-center align-items-center">
+        <span class="slim-menu-list-item-text">{{ item.label }}</span>
+      </div>
     </ng-container>
   </ng-template>
 
   <ng-template #iconTemplate let-item>
-    <i class="slim-menu-list-item-icon" [ngClass]="item.icon ?? 'pi-question'" aria-hidden="true"></i>
+    <div class="flex justify-content-center align-items-center">
+      <i class="slim-menu-list-item-icon" [ngClass]="item.icon ?? 'pi-question'" aria-hidden="true"></i>
+    </div>
   </ng-template>
 </ng-container>

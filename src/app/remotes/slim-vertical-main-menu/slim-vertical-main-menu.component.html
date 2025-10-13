@@ -17,7 +17,10 @@
       [id]="'ws_slim_vertical_main_menu_list_item_' + (i + 1)"
       [index]="i"
       [activeMode]="vm.activeMode"
-      style="width: 100%"
+      [ngStyle]="{
+        width: '100%',
+        height: vm.activeMode === Mode.SLIM ? '4rem' : '7rem'
+      }"
     ></app-slim-menu-item>
   </ul>
 </ng-container>
