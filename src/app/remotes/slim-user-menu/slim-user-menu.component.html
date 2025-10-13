@@ -16,48 +16,63 @@
     }"
     [hidden]="vm.isHidden"
   >
-    <div class="slim-user-menu-header flex flex-column align-items-center justify-content-center">
-      <button
-        tabIndex="0"
-        class="slim-user-menu-header-button flex flex-column align-items-center justify-content-center outline-none cursor-pointer border-none pt-3 pb-3"
-        [ngClass]="{
-          'slim-user-menu-header-button-plus': vm.activeMode === Mode.SLIM_PLUS
-        }"
-        id="ws_slim_user_menu_header_button"
-        pRipple
-        [pTooltip]="
-          (displayMode === DisplayMode.FULL
-            ? 'REMOTES.SLIM_USER_MENU.HIDE_TOOLTIP'
-            : 'REMOTES.SLIM_USER_MENU.DISPLAY_TOOLTIP'
-          ) | translate
-        "
-        tooltipPosition="right"
-        tooltipEvent="both"
-        (click)="toggleDisplayMode()"
-      >
-        <ocx-slot name="onecx-avatar-image" [outputs]="{ imageLoaded: avatarImageLoadedEmitter }"> </ocx-slot>
-        <i *ngIf="vm.avatarImageLoaded === undefined" class="slim-user-menu-header-button-icon pi pi-user"></i>
-        <ng-container *ngIf="vm.activeMode === Mode.SLIM_PLUS">
-          <span *ngIf="vm.displayName" id="ws_slim_user_menu_display_name" class="slim-user-menu-header-button-text">
-            {{ vm.displayName }}
-          </span>
-        </ng-container>
-      </button>
-    </div>
-    <ul
-      *ngIf="vm.menuItems"
-      id="ws_slim_user_menu_list"
-      class="slim-user-menu-list flex flex-column align-items-center justify-content-center list-none m-0 p-0"
-      [ngClass]="{ 'slim-user-menu-list-hidden': displayMode === DisplayMode.HEADER_ONLY }"
-    >
-      <app-slim-menu-item
-        *ngFor="let item of vm.menuItems; let i = index"
-        [item]="item"
-        [id]="'ws_slim_user_menu_list_item_' + (i + 1)"
-        [index]="i"
-        [activeMode]="vm.activeMode"
-        style="width: 100%"
-      ></app-slim-menu-item>
-    </ul>
+    <p-accordion>
+      <p-accordionTab>
+        <ng-template pTemplate="header">
+          <div class="slim-user-menu-header flex flex-column align-items-center justify-content-center">
+            <button
+              tabIndex="0"
+              class="slim-user-menu-header-button flex flex-column align-items-center justify-content-center outline-none cursor-pointer border-none pt-3 pb-3"
+              [ngClass]="{
+                'slim-user-menu-header-button-plus': vm.activeMode === Mode.SLIM_PLUS
+              }"
+              id="ws_slim_user_menu_header_button"
+              pRipple
+              [pTooltip]="
+                (displayMode === DisplayMode.FULL
+                  ? 'REMOTES.SLIM_USER_MENU.HIDE_TOOLTIP'
+                  : 'REMOTES.SLIM_USER_MENU.DISPLAY_TOOLTIP'
+                ) | translate
+              "
+              tooltipPosition="right"
+              tooltipEvent="both"
+              (click)="toggleDisplayMode()"
+            >
+              <ocx-slot name="onecx-avatar-image" [outputs]="{ imageLoaded: avatarImageLoadedEmitter }"> </ocx-slot>
+              <i *ngIf="vm.avatarImageLoaded === undefined" class="slim-user-menu-header-button-icon pi pi-user"></i>
+              <ng-container *ngIf="vm.activeMode === Mode.SLIM_PLUS">
+                <span
+                  *ngIf="vm.displayName"
+                  id="ws_slim_user_menu_display_name"
+                  class="slim-user-menu-header-button-text"
+                >
+                  {{ vm.displayName }}
+                </span>
+              </ng-container>
+            </button>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="content">
+          <ul
+            *ngIf="vm.menuItems"
+            id="ws_slim_user_menu_list"
+            class="slim-user-menu-list flex flex-column align-items-center justify-content-center list-none m-0 p-0"
+            [ngClass]="{ 'slim-user-menu-list-hidden': displayMode === DisplayMode.HEADER_ONLY }"
+          >
+            <app-slim-menu-item
+              *ngFor="let item of vm.menuItems; let i = index"
+              [item]="item"
+              [id]="'ws_slim_user_menu_list_item_' + (i + 1)"
+              [index]="i"
+              [activeMode]="vm.activeMode"
+              style="width: 100%"
+            ></app-slim-menu-item>
+          </ul>
+        </ng-template>
+        <ng-template pTemplate="icon">
+          <!-- Display nothing -->
+        </ng-template>
+      </p-accordionTab>
+    </p-accordion>
   </div>
 </ng-container>

@@ -39,6 +39,7 @@ import { SlimMenuItems } from 'src/app/shared/model/slim-menu-item'
 import { SlimMenuItemComponent } from 'src/app/shared/components/slim-menu-item/slim-menu-item.component'
 import { TooltipModule } from 'primeng/tooltip'
 import { RippleModule } from 'primeng/ripple'
+import { AccordionModule } from 'primeng/accordion'
 
 enum DisplayMode {
   HEADER_ONLY = 'HEADER_ONLY',
@@ -56,7 +57,8 @@ enum DisplayMode {
     AngularRemoteComponentsModule,
     SlimMenuItemComponent,
     TooltipModule,
-    RippleModule
+    RippleModule,
+    AccordionModule
   ],
   providers: [
     {

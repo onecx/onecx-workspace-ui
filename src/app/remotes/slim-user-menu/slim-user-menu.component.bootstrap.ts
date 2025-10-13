@@ -10,10 +10,18 @@ import { bootstrapRemoteComponent } from '@onecx/angular-webcomponents'
 import { environment } from 'src/environments/environment'
 import { OneCXSlimUserMenuComponent } from './slim-user-menu.component'
 
-bootstrapRemoteComponent(OneCXSlimUserMenuComponent, 'ocx-slim-user-menu-component', environment.production, [
-  provideHttpClient(withInterceptorsFromDi()),
-  importProvidersFrom(AngularAuthModule),
-  importProvidersFrom(BrowserModule),
-  importProvidersFrom(BrowserAnimationsModule),
-  provideRouter([{ path: '**', children: [] }])
-])
+bootstrapRemoteComponent(
+  OneCXSlimUserMenuComponent,
+  'ocx-slim-user-menu-component',
+  environment.production,
+  [
+    provideHttpClient(withInterceptorsFromDi()),
+    importProvidersFrom(AngularAuthModule),
+    importProvidersFrom(BrowserModule),
+    importProvidersFrom(BrowserAnimationsModule),
+    provideRouter([{ path: '**', children: [] }])
+  ],
+  {
+    usePortalLayoutStyles: false
+  }
+)
