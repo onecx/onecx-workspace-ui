@@ -9,7 +9,7 @@ import { TranslateTestingModule } from 'ngx-translate-testing'
 import { TreeNode } from 'primeng/api'
 import { TreeTableNodeExpandEvent } from 'primeng/treetable'
 
-import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+import { PortalMessageService, UserService, WorkspaceService } from '@onecx/angular-integration-interface'
 
 import {
   Workspace,
@@ -21,7 +21,6 @@ import {
   Assignment,
   WorkspaceRole
 } from 'src/app/shared/generated'
-import { Utils } from 'src/app/shared/utils'
 import { MenuStateService, MenuState } from './services/menu-state.service'
 import { MenuComponent, MenuItemNodeData } from './menu.component'
 
@@ -100,7 +99,7 @@ describe('MenuComponent', () => {
   let fixture: ComponentFixture<MenuComponent>
 
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
-  const workspaceServiceSpy = {
+  const workspaceApiSpy = {
     getWorkspaceByName: jasmine.createSpy('getWorkspaceByName').and.returnValue(of({}))
   }
   const menuApiServiceSpy = {
@@ -119,6 +118,7 @@ describe('MenuComponent', () => {
     createAssignment: jasmine.createSpy('createAssignment').and.returnValue(of(assgmt)),
     deleteAssignment: jasmine.createSpy('deleteAssignment').and.returnValue(of({}))
   }
+  const workspaceServiceSpy = jasmine.createSpyObj<WorkspaceService>('WorkspaceService', ['doesUrlExistFor', 'getUrl'])
   const translateServiceSpy = jasmine.createSpyObj('TranslateService', ['get'])
   const stateServiceSpy = jasmine.createSpyObj<MenuStateService>('MenuStateService', ['getState', 'updateState'])
   const locationSpy = jasmine.createSpyObj<Location>('Location', ['back'])
@@ -149,7 +149,8 @@ describe('MenuComponent', () => {
         provideHttpClient(),
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: PortalMessageService, useValue: msgServiceSpy },
-        { provide: WorkspaceAPIService, useValue: workspaceServiceSpy },
+        { provide: WorkspaceService, useValue: workspaceServiceSpy },
+        { provide: WorkspaceAPIService, useValue: workspaceApiSpy },
         { provide: WorkspaceRolesAPIService, useValue: wRoleServiceSpy },
         { provide: MenuItemAPIService, useValue: menuApiServiceSpy },
         { provide: AssignmentAPIService, useValue: assgmtApiServiceSpy },
@@ -158,10 +159,13 @@ describe('MenuComponent', () => {
         { provide: UserService, useValue: mockUserService }
       ]
     }).compileComponents()
+  }))
+
+  beforeEach(() => {
     // to spy data: reset
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
-    workspaceServiceSpy.getWorkspaceByName.calls.reset()
+    workspaceApiSpy.getWorkspaceByName.calls.reset()
     menuApiServiceSpy.getMenuItemById.calls.reset()
     menuApiServiceSpy.getMenuStructure.calls.reset()
     menuApiServiceSpy.bulkPatchMenuItems.calls.reset()
@@ -173,21 +177,22 @@ describe('MenuComponent', () => {
     translateServiceSpy.get.calls.reset()
     stateServiceSpy.getState.calls.reset()
     // to spy data: refill with neutral data
-    workspaceServiceSpy.getWorkspaceByName.and.returnValue(of({}))
+    workspaceApiSpy.getWorkspaceByName.and.returnValue(of({}))
     menuApiServiceSpy.getMenuStructure.and.returnValue(of({}))
     wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({}))
     assgmtApiServiceSpy.searchAssignments.and.returnValue(of({}))
-  }))
 
-  beforeEach(() => {
     stateServiceSpy.getState.and.returnValue(state)
+    // used in ngOnChanges
+    workspaceServiceSpy.doesUrlExistFor.and.returnValue(of(true))
+
     fixture = TestBed.createComponent(MenuComponent)
     component = fixture.componentInstance
     component.workspace = workspace
     fixture.detectChanges()
   })
 
-  describe('Initialize:', () => {
+  describe('Initialize', () => {
     it('should create', () => {
       expect(component).toBeTruthy()
     })
@@ -225,7 +230,7 @@ describe('MenuComponent', () => {
     })
   })
 
-  describe('Page actions:', () => {
+  describe('Page actions', () => {
     beforeEach(() => {
       component.ngOnInit()
     })
@@ -589,91 +594,98 @@ describe('MenuComponent', () => {
     })
   })
 
-  it('should removeNodeFromTree if key is present and refresh menuNodes if delete displayed onMenuItemChanged', () => {
-    component.displayMenuDelete = true
-    const item = { key: 'key' }
-    component.menuItem = item
-    const nodes = [{ key: 'key' }, { key: 'key2' }]
-    component.menuNodes = nodes
+  describe('delete menu item', () => {
+    it('should removeTreeNode if key is present and refresh menuNodes if delete displayed onMenuItemChanged', () => {
+      component.displayMenuDelete = true
+      const item = { key: 'key2' }
+      component.menuItem = item
+      const nodes = [{ key: 'key' }, { key: 'key2', children: [{ key: 'child key' }] }]
+      component.menuNodes = nodes
 
-    component.onMenuItemChanged(true)
+      component.onMenuItemChanged(true)
 
-    expect(component.menuNodes).not.toContain(item)
-  })
+      expect(component.menuNodes).not.toContain(item)
+    })
 
-  it('should removeNodeFromTree if key is present in node children', () => {
-    component.displayMenuDelete = true
-    const item = { key: 'child key' }
-    component.menuItem = item
-    const nodes = [{ key: 'key2', children: [{ key: 'child key' }] }]
-    component.menuNodes = nodes
+    it('should removeTreeNode if key is present in node children', () => {
+      component.displayMenuDelete = true
+      const item = { key: 'child key' }
+      component.menuItem = item
+      const nodes = [{ key: 'key2', children: [{ key: 'child key' }] }]
+      component.menuNodes = nodes
 
-    component.onMenuItemChanged(true)
+      component.onMenuItemChanged(true)
 
-    expect(component.menuNodes).not.toContain(item)
-  })
+      expect(component.menuNodes).not.toContain(item)
+    })
 
-  it('should not removeNodeFromTree if no key present', () => {
-    component.displayMenuDelete = true
-    const key = undefined
-    const item = { key: key }
-    component.menuItem = item
-    const nodes = [item, { key: 'key2' }]
-    component.menuNodes = nodes
+    it('should not removeTreeNode if no key present', () => {
+      component.displayMenuDelete = true
+      const key = undefined
+      const item = { key: key }
+      component.menuItem = item
+      const nodes = [item, { key: 'key2' }]
+      component.menuNodes = nodes
 
-    component.onMenuItemChanged(true)
+      component.onMenuItemChanged(true)
 
-    expect(component.menuNodes).toContain(item)
-  })
+      expect(component.menuNodes).toContain(item)
+    })
 
-  it('should loadMenu if detail displayed onMenuItemChanged', () => {
-    component.displayMenuDelete = false
-    component.displayMenuDetail = true
-    spyOn(component, 'loadMenu')
+    it('should loadMenu if detail displayed onMenuItemChanged', () => {
+      component.displayMenuDelete = false
+      component.displayMenuDetail = true
+      spyOn(component, 'loadMenu')
 
-    component.onMenuItemChanged(true)
+      component.onMenuItemChanged(true)
 
-    expect(component.loadMenu).toHaveBeenCalled()
-  })
+      expect(component.loadMenu).toHaveBeenCalled()
+    })
 
-  it('should set correct values if nothing changed onMenuItemChanged', () => {
-    component.onMenuItemChanged(false)
+    it('should set correct values if nothing changed onMenuItemChanged', () => {
+      component.onMenuItemChanged(false)
 
-    expect(component.displayMenuDetail).toBeFalse()
-    expect(component.displayMenuDelete).toBeFalse()
-    expect(component.menuItem).toBeUndefined()
-  })
+      expect(component.displayMenuDetail).toBeFalse()
+      expect(component.displayMenuDelete).toBeFalse()
+      expect(component.menuItem).toBeUndefined()
+    })
 
-  it('should display delete pop up with item', () => {
-    const event: MouseEvent = new MouseEvent('click')
-    const item = {
-      key: 'key'
-    }
-    component.menuItem = item
+    it('should display delete pop up with item', () => {
+      const event: MouseEvent = new MouseEvent('click')
+      const item = {
+        key: 'key'
+      }
+      component.menuItem = item
 
-    component.onDeleteMenu(event, item)
+      component.onDeleteMenu(event, item)
 
-    expect(component.changeMode).toBe('DELETE')
-    expect(component.menuItem).toBe(item)
-    expect(component.displayMenuDelete).toBeTrue()
+      expect(component.changeMode).toBe('DELETE')
+      expect(component.menuItem).toBe(item)
+      expect(component.displayMenuDelete).toBeTrue()
+    })
   })
 
   /****************************************************************************
    * TREE + DIALOG
    */
 
-  it('should empty menuTreeFiler and reset filter onClearFilterMenuTable', () => {
-    const mockMenuTreeFilter = {
-      nativeElement: jasmine.createSpyObj('nativeElement', ['value'])
-    }
-    const mockMenuTree = jasmine.createSpyObj('menuTree', ['filterGlobal'])
-    component.menuTreeFilter = mockMenuTreeFilter
-    component.menuTree = mockMenuTree
+  it('should empty menuTreeFilter and reset filter onTreeFilterClear', () => {
+    const menuTreeFilter = { nativeElement: jasmine.createSpyObj('nativeElement', ['value']) }
+    const menuTree = jasmine.createSpyObj('menuTree', ['filterGlobal'])
 
-    component.onClearFilterMenuTable()
+    component.onTreeFilterClear(menuTree, menuTreeFilter.nativeElement)
 
-    expect(mockMenuTreeFilter.nativeElement.value).toBe('')
-    expect(mockMenuTree.filterGlobal).toHaveBeenCalledWith('', 'contains')
+    expect(menuTreeFilter.nativeElement.value).toBe('')
+    expect(menuTree.filterGlobal).toHaveBeenCalledWith('', 'contains')
+  })
+
+  it('should change filtered row count', () => {
+    const ev: any = { filteredValue: [] }
+    component.treeFilteredRows = 23
+
+    component.onTreeFilterChange(ev)
+
+    expect(component.treeFilteredRows).toBe(0)
   })
 
   it('should toggle tree view mode and update tree nodes', () => {
@@ -735,13 +747,13 @@ describe('MenuComponent', () => {
    * DATA
    */
   describe('load data', () => {
-    it('should load all', () => {
-      workspaceServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
+    it('should load all - success', () => {
+      workspaceApiSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
       menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
       component.workspaceName = 'workspace-name'
       component.wRoles = [{ name: 'role1' }]
 
-      component.loadData()
+      component.loadAllData()
       component.workspace$.subscribe()
 
       expect(component.workspace).toEqual(workspace)
@@ -751,10 +763,10 @@ describe('MenuComponent', () => {
 
     it('should display error message if loading workspace failed', () => {
       const errorResponse = { status: 404, statusText: 'Workspace not found' }
-      workspaceServiceSpy.getWorkspaceByName.and.returnValue(throwError(() => errorResponse))
+      workspaceApiSpy.getWorkspaceByName.and.returnValue(throwError(() => errorResponse))
       spyOn(console, 'error')
 
-      component.loadData()
+      component.loadAllData()
       component.workspace$.subscribe()
 
       expect(console.error).toHaveBeenCalledWith('getWorkspaceByName', errorResponse)
@@ -822,7 +834,6 @@ describe('MenuComponent', () => {
   /****************************************************************************
    * ROLES + ASSIGNMENTS
    */
-
   describe('load roles and assignments', () => {
     beforeEach(() => {
       component.workspace = workspace
@@ -1043,47 +1054,50 @@ describe('MenuComponent', () => {
     })
   })
 
-  it('should deletel assignment onRevokePermission', () => {
-    assgmtApiServiceSpy.deleteAssignment.and.returnValue(of(assgmt))
+  describe('onRevokePermission', () => {
+    it('should delete assignment', () => {
+      assgmtApiServiceSpy.deleteAssignment.and.returnValue(of(assgmt))
 
-    component.onRevokePermission(nodeData, 'role', assgmt.id!)
+      component.onRevokePermission(nodeData, 'role', assgmt.id!)
 
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.REVOKE_OK' })
-    expect(nodeData.roles['role']).toBeUndefined()
-  })
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.REVOKE_OK' })
+      expect(nodeData.roles['role']).toBeUndefined()
+    })
 
-  it('should display error onRevokePermission', () => {
-    const errorResponse = { status: 400, statusText: 'Error on delete assignment' }
-    assgmtApiServiceSpy.deleteAssignment.and.returnValue(throwError(() => errorResponse))
-    spyOn(console, 'error')
+    it('should display error', () => {
+      const errorResponse = { status: 400, statusText: 'Error on delete assignment' }
+      assgmtApiServiceSpy.deleteAssignment.and.returnValue(throwError(() => errorResponse))
+      spyOn(console, 'error')
 
-    component.onRevokePermission(nodeData, 'role', assgmt.id!)
+      component.onRevokePermission(nodeData, 'role', assgmt.id!)
 
-    expect(console.error).toHaveBeenCalledWith('deleteAssignment', errorResponse)
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.REVOKE_NOK' })
+      expect(console.error).toHaveBeenCalledWith('deleteAssignment', errorResponse)
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.REVOKE_NOK' })
+    })
   })
 
   /****************************************************************************
    *  EXPORT / IMPORT
    */
+  describe('Export/Import', () => {
+    it('should export a menu', () => {
+      menuApiServiceSpy.exportMenuByWorkspaceName.and.returnValue(of(mockMenuItems))
+      component.workspaceName = 'name'
+      component.workspace = workspace
+      component.onExportMenu()
+    })
 
-  it('should export a menu', () => {
-    menuApiServiceSpy.exportMenuByWorkspaceName.and.returnValue(of(mockMenuItems))
-    component.workspaceName = 'name'
-    component.workspace = workspace
-    component.onExportMenu()
-  })
+    it('should set displayMenuImport to true', () => {
+      component.onImportMenu()
 
-  it('should set displayMenuImport to true', () => {
-    component.onImportMenu()
+      expect(component.displayMenuImport).toBeTrue()
+    })
 
-    expect(component.displayMenuImport).toBeTrue()
-  })
+    it('should set displayMenuImport to false', () => {
+      component.onImportMenuHide()
 
-  it('should set displayMenuImport to false', () => {
-    component.onHideMenuImport()
-
-    expect(component.displayMenuImport).toBeFalse()
+      expect(component.displayMenuImport).toBeFalse()
+    })
   })
 
   it('should set displayRoles to true when displayRoles is false and wRoles is empty', () => {
@@ -1130,11 +1144,44 @@ describe('MenuComponent', () => {
     expect(result).toBe('url')
   })
 
-  it('should go to workspace permissions', () => {
-    spyOn(Utils, 'goToEndpoint')
+  describe('getPermisionEndpointUrl', () => {
+    beforeEach(() => {
+      component.workspace = workspace
+    })
 
-    component.onGoToWorkspacePermission()
+    it('should permissionEndpointExist - exist', (done) => {
+      component.permissionEndpointExist = true
+      workspaceServiceSpy.getUrl.and.returnValue(of('/url'))
 
-    expect(Utils.goToEndpoint).toHaveBeenCalled()
+      const eu$ = component.getPermisionEndpointUrl$('name')
+
+      eu$.subscribe({
+        next: (data) => {
+          if (data) {
+            expect(data).toBe('/url')
+          }
+          done()
+        },
+        error: done.fail
+      })
+    })
+
+    it('should permissionEndpointExist - not exist', (done) => {
+      component.permissionEndpointExist = false
+      const errorResponse = { status: 400, statusText: 'Error on check endpoint' }
+      workspaceServiceSpy.getUrl.and.returnValue(throwError(() => errorResponse))
+
+      const eu$ = component.getPermisionEndpointUrl$('name')
+
+      eu$.subscribe({
+        next: (data) => {
+          if (data) {
+            expect(data).toBeFalse()
+          }
+          done()
+        },
+        error: done.fail
+      })
+    })
   })
 })

@@ -1,12 +1,10 @@
-import { Component, OnInit, ViewChild } from '@angular/core'
-import { Location } from '@angular/common'
-import { ActivatedRoute, Router } from '@angular/router'
+import { Component, OnInit } from '@angular/core'
 import { TranslateService } from '@ngx-translate/core'
 import { Observable, catchError, finalize, map, of } from 'rxjs'
+import { DataView } from 'primeng/dataview'
 
 import { Action } from '@onecx/angular-accelerator'
 import { DataViewControlTranslations } from '@onecx/portal-integration-angular'
-import { getLocation } from '@onecx/accelerator'
 
 import {
   ImagesInternalAPIService,
@@ -23,27 +21,26 @@ import { Utils } from 'src/app/shared/utils'
   styleUrls: ['./workspace-search.component.scss']
 })
 export class WorkspaceSearchComponent implements OnInit {
+  // dialog
   public loading = false
   public exceptionKey: string | undefined = undefined
   public actions$: Observable<Action[]> | undefined
   public showCreateDialog = false
   public showImportDialog = false
-  public limitText = Utils.limitText
-  public getLocation = getLocation
+  public RefType = RefType
+  public Utils = Utils
+  public dataViewControlsTranslations$: Observable<DataViewControlTranslations> | undefined
 
+  // data
   public workspaces$!: Observable<Workspace[]>
   public viewMode: 'list' | 'grid' = 'grid'
   public filter: string | undefined
   public sortField = 'displayName'
   public sortOrder = 1
-  public dataViewControlsTranslations$: Observable<DataViewControlTranslations> | undefined
-
-  @ViewChild('table', { static: false }) table!: any
+  public imageBasePath = this.imageApi.configuration.basePath
 
   constructor(
     private readonly workspaceApi: WorkspaceAPIService,
-    public readonly route: ActivatedRoute,
-    private readonly router: Router,
     private readonly translate: TranslateService,
     private readonly imageApi: ImagesInternalAPIService
   ) {}
@@ -61,7 +58,7 @@ export class WorkspaceSearchComponent implements OnInit {
       catchError((err) => {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.WORKSPACES'
         console.error('searchWorkspaces', err)
-        return of([] as Workspace[])
+        return of([])
       }),
       finalize(() => (this.loading = false))
     )
@@ -138,8 +135,8 @@ export class WorkspaceSearchComponent implements OnInit {
     this.showImportDialog = !this.showImportDialog
   }
 
-  public onFilterChange(event: string): void {
-    this.table.filter(event, 'contains')
+  public onFilterChange(event: string, dv: DataView): void {
+    dv.filter(event)
   }
 
   public onLayoutChange(viewMode: 'list' | 'grid') {
@@ -151,28 +148,5 @@ export class WorkspaceSearchComponent implements OnInit {
   }
   public onSortDirChange(asc: boolean) {
     this.sortOrder = asc ? -1 : 1
-  }
-
-  public onGotoWorkspace(ev: any, workspace: Workspace, deploymentPath: string): void {
-    ev.stopPropagation()
-    if (!workspace.baseUrl) return
-    const url = Location.joinWithSlash(
-      Location.joinWithSlash(window.document.location.origin, deploymentPath),
-      workspace.baseUrl
-    )
-    window.open(url, '_blank')
-  }
-
-  public onGotoMenu(ev: any, workspace: Workspace): void {
-    ev.stopPropagation()
-    this.router.navigate(['./', workspace.name, 'menu'], { relativeTo: this.route })
-  }
-
-  public getLogoUrl(workspace: Workspace | undefined): string | undefined {
-    if (!workspace) return undefined
-    if (workspace.logoUrl && workspace.logoUrl != '') {
-      return workspace.logoUrl
-    }
-    return Utils.bffImageUrl(this.imageApi.configuration.basePath, workspace.name, RefType.Logo)
   }
 }

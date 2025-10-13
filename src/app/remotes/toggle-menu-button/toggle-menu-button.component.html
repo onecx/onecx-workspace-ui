@@ -1,14 +1,26 @@
-<ng-container *ngIf="isStaticMenuActive$ | async">
-  <button
-    id="ocx_vertical_menu_action_toggle"
-    class="onecx-toggle-menu-button border-none"
-    pRipple
-    (click)="onMenuButtonClick()"
-    [attr.aria-label]="'REMOTES.TOGGLE_MENU.ARIA_LABEL' | translate"
-    [pTooltip]="'REMOTES.TOGGLE_MENU.TOOLTIP' | translate"
-    tooltipPosition="top"
-    tooltipEvent="hover"
-  >
-    <span id="ocx_vertical_menu_action_toggle_icon" class="pi" [ngClass]="icon$ | async" aria-hidden="true"></span>
-  </button>
+<ng-container
+  *ngIf="{
+    isStaticMenuActive: isStaticMenuActive$ | async,
+    isStaticMenuVisible: isStaticMenuVisible$ | async
+  } as state"
+>
+  <ng-container *ngIf="state.isStaticMenuActive && state.isStaticMenuVisible !== null">
+    <button
+      id="ocx_vertical_menu_action_toggle"
+      class="onecx-toggle-menu-button border-none"
+      pRipple
+      (click)="onMenuButtonClick(state.isStaticMenuVisible)"
+      [attr.aria-label]="'REMOTES.TOGGLE_MENU.ARIA_LABEL' | translate"
+      [pTooltip]="'REMOTES.TOGGLE_MENU.TOOLTIP' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
+    >
+      <span
+        id="ocx_vertical_menu_action_toggle_icon"
+        class="pi"
+        [ngClass]="getIcon(state.isStaticMenuVisible)"
+        aria-hidden="true"
+      ></span>
+    </button>
+  </ng-container>
 </ng-container>

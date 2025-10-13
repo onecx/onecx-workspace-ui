@@ -1,7 +1,6 @@
 @import 'src/app/_ws-mixins.scss';
 
 @include invisible;
-@include danger-action;
 @include cursor-default;
 @include displaying-text-responsive;
 @include readable-disabled-components;
@@ -16,6 +15,10 @@
     padding-bottom: 0;
     overflow-y: hidden;
   }
+  .text-ellipsis-2-lines {
+    @include displaying-text-ellipsis(2);
+  }
+
   /* togglebuttons should look like buttons */
   .p-togglebutton.p-button:not(.p-highlight),
   .p-togglebutton.p-button.p-highlight {
@@ -41,7 +44,7 @@
       }
     }
     text-align: center;
-    padding: 0.3rem 0.8rem;
+    padding: 0.6rem 0.8rem;
     font-weight: var(--font-weight);
   }
 
@@ -118,7 +121,7 @@
   }
 
   .button-min-height {
-    min-height: 33.2px;
+    height: 33.2px;
   }
 
   @media screen and (min-width: 567px) {

@@ -16,6 +16,7 @@
 ></p-message>
 
 <p-dataView
+  #rolesDataView
   id="ws_roles_dataview"
   [value]="roles"
   [emptyMessage]="'ACTIONS.SEARCH.NO_DATA' | translate"
@@ -58,7 +59,7 @@
           inputid="ws_roles_quick_filter"
           [options]="(quickFilterOptions$ | async) ?? []"
           [(ngModel)]="quickFilterValue"
-          (onChange)="onQuickFilterChange($event)"
+          (onChange)="onQuickFilterChange($event, rolesDataView)"
           [allowEmpty]="false"
           [ariaLabel]="'DIALOG.ROLE.QUICK_FILTER.LABEL' | translate"
           [pTooltip]="'DIALOG.ROLE.QUICK_FILTER.TOOLTIP' | translate"
@@ -88,7 +89,7 @@
         [initialViewMode]="'grid'"
         [filterValue]="filterValue"
         [enableFiltering]="true"
-        (filterChange)="onFilterChange($event)"
+        (filterChange)="onFilterChange($event, rolesDataView)"
         [filterColumns]="['ROLE.NAME' | translate, 'ROLE.TYPE' | translate]"
         [enableSorting]="false"
         [translations]="(dataViewControlsTranslations$ | async) ?? {}"
@@ -103,8 +104,9 @@
           *ocxIfPermission="'WORKSPACE#GOTO_PERMISSION'"
           id="ws_roles_header_action_slot_link"
           styleClass="h-full"
-          icon="pi pi-cog"
-          (onClick)="onGoToPermission()"
+          icon="pi pi-lock"
+          [disabled]="!permissionEndpointExist"
+          [routerLink]="[getPermisionEndpointUrl$(workspace?.name!) | async]"
           [ariaLabel]="'ACTIONS.NAVIGATION.GOTO_WORKSPACE_PERMISSIONS' | translate"
           [pTooltip]="'ACTIONS.NAVIGATION.GOTO_WORKSPACE_PERMISSIONS' | translate"
           tooltipPosition="top"
@@ -127,8 +129,9 @@
           *ocxIfPermission="'WORKSPACE_ROLE#VIEW'"
           id="ws_roles_header_reload"
           styleClass="h-full"
-          icon="pi pi-refresh"
-          (onClick)="onReload()"
+          [icon]="'pi ' + (wsLoading || loadingIamRoles ? 'pi-spin pi-spinner' : 'pi-refresh')"
+          [disabled]="wsLoading || loadingIamRoles"
+          (onClick)="onQuickFilterChange({ value: 'ALL' }, rolesDataView); onReload()"
           [ariaLabel]="'ACTIONS.SEARCH.RELOAD' | translate"
           [pTooltip]="'ACTIONS.SEARCH.RELOAD' | translate"
           tooltipPosition="top"
@@ -189,7 +192,7 @@
               tooltipPosition="top"
               tooltipEvent="hover"
             >
-              {{ limitText(role.name, 40) }}
+              {{ Utils.limitText(role.name, 40) }}
             </div>
             <div
               [id]="'ws_roles_grid_data_row_' + i + '_workspace'"

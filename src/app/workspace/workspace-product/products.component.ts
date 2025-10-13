@@ -12,7 +12,7 @@ import {
 } from '@angular/core'
 import { Router } from '@angular/router'
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
-import { catchError, finalize, map, Observable, of, Subject, switchMap, takeUntil } from 'rxjs'
+import { catchError, finalize, firstValueFrom, map, Observable, of, Subject, switchMap, takeUntil } from 'rxjs'
 import { TranslateService } from '@ngx-translate/core'
 
 import { MfeInfo } from '@onecx/integration-interface'
@@ -86,6 +86,9 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   public wpLoading = false
   public editMode = false
   public hasRegisterPermission = false
+  public permissionEndpointExist = false
+  public productEndpointExist = false
+
   public displayDetails = false
   public displayedDetailItem: ExtendedProduct | undefined = undefined
   public formGroup: FormGroup
@@ -143,7 +146,25 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     this.targetList = (<HTMLElement>this.elem.nativeElement).querySelector('.p-picklist-list.p-picklist-target')
   }
   public ngOnChanges(changes: SimpleChanges): void {
-    if (this.workspace && changes['workspace']) this.loadData()
+    if (this.workspace && changes['workspace']) {
+      this.loadData()
+      // check detail endpoint exists
+      this.productEndpointExist = Utils.doesEndpointExist(
+        this.workspaceService,
+        this.msgService,
+        'onecx-product-store',
+        'onecx-product-store-ui',
+        'product-detail'
+      )
+      // check detail endpoint exists
+      this.permissionEndpointExist = Utils.doesEndpointExist(
+        this.workspaceService,
+        this.msgService,
+        'onecx-permission',
+        'onecx-permission-ui',
+        'product'
+      )
+    }
   }
   public ngOnDestroy(): void {
     this.destroy$.next(undefined)
@@ -155,22 +176,22 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     this.onHideItemDetails()
     this.searchPsProducts()
     this.searchWProducts()
-    this.wProducts$
-      .pipe(
-        switchMap((wProducts) => {
+    firstValueFrom(
+      this.wProducts$.pipe(
+        switchMap(() => {
           return this.psProducts$
         })
       )
-      .subscribe()
+    )
   }
 
   public onLoadPsProducts(): void {
     this.onHideItemDetails()
-    this.psProducts$.subscribe()
+    firstValueFrom(this.psProducts$)
   }
   public onLoadWProducts(): void {
     this.onHideItemDetails()
-    this.wProducts$.subscribe()
+    firstValueFrom(this.wProducts$)
   }
   private searchWProducts(): void {
     this.wpLoading = true
@@ -656,26 +677,18 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
         })
   }
 
-  public onGoToProduct(name?: string): void {
-    Utils.goToEndpoint(
-      this.workspaceService,
-      this.msgService,
-      this.router,
-      'onecx-product-store',
-      'onecx-product-store-ui',
-      'product-detail',
-      { 'product-name': name }
-    )
+  public getProductEndpointUrl$(name?: string): Observable<string | undefined> {
+    if (this.productEndpointExist && name)
+      return this.workspaceService.getUrl('onecx-product-store', 'onecx-product-store-ui', 'product-detail', {
+        'product-name': name
+      })
+    return of(undefined)
   }
-  public onGoToProductPermission(name?: string): void {
-    Utils.goToEndpoint(
-      this.workspaceService,
-      this.msgService,
-      this.router,
-      'onecx-permission',
-      'onecx-permission-ui',
-      'product',
-      { 'product-name': name }
-    )
+  public getPermissionEndpointUrl$(name?: string): Observable<string | undefined> {
+    if (this.permissionEndpointExist && name)
+      return this.workspaceService.getUrl('onecx-permission', 'onecx-permission-ui', 'product', {
+        'product-name': name
+      })
+    return of(undefined)
   }
 }

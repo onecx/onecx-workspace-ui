@@ -99,8 +99,11 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent, ocxRem
   public avatarImageLoaded: boolean | undefined = undefined // getting true/false from response, then component managed
 
   private readonly menuService = inject(MenuService)
-  public isActive$ = this.menuService.isActive(MENU_MODE)
-  public isHidden$ = this.menuService.isVisible(MENU_MODE).pipe(map((isVisible) => !isVisible))
+  public isActive$ = this.menuService.isActive(MENU_MODE).pipe(untilDestroyed(this))
+  public isHidden$ = this.menuService
+    .isVisible(MENU_MODE)
+    .pipe(map((isVisible) => !isVisible))
+    .pipe(untilDestroyed(this))
 
   constructor(
     @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
@@ -144,6 +147,11 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent, ocxRem
             }
           })
           .pipe(
+            map((response) => ({
+              data: response,
+              workspaceName: currentWorkspace.workspaceName,
+              workspaceBaseUrl: currentWorkspace.baseUrl
+            })),
             retry({ delay: 500, count: 3 }),
             catchError(() => {
               console.error('Unable to load menu items for user profile menu.')
@@ -152,7 +160,13 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent, ocxRem
           )
       ),
       withLatestFrom(this.userService.lang$),
-      map(([data, userLang]) => this.menuItemService.constructMenuItems(data?.menu?.[0]?.children, userLang)),
+      map(([menuData, userLang]) =>
+        this.menuItemService.constructMenuItems(
+          menuData?.data?.menu?.[0]?.children,
+          userLang,
+          menuData?.workspaceBaseUrl
+        )
+      ),
       mergeMap((currentMenu) => {
         return this.translateService.get('REMOTES.USER_SIDEBAR_MENU.LOGOUT').pipe(
           catchError(() => {

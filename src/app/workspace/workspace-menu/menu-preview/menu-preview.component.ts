@@ -1,11 +1,10 @@
-import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core'
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core'
 import { SelectItem, TreeNode } from 'primeng/api'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 
 import { Utils } from 'src/app/shared/utils'
 import { MenuItemAPIService, WorkspaceMenuItem } from 'src/app/shared/generated'
-import { MenuTreeService } from '../services/menu-tree.service'
 import { MenuStateService } from '../services/menu-state.service'
 import { TreeTableNodeExpandEvent } from 'primeng/treetable'
 import { TreeNodeDropEvent } from 'primeng/tree'
@@ -23,8 +22,6 @@ export class MenuPreviewComponent implements OnChanges {
   @Output() public hideDialog = new EventEmitter()
   @Output() public reorderEmitter = new EventEmitter<boolean>()
 
-  @ViewChild('previewTree') previewTree!: ElementRef
-
   public menuNodes!: TreeNode<WorkspaceMenuItem>[]
   public treeExpanded = false
   public languagesPreviewValue: string
@@ -41,9 +38,7 @@ export class MenuPreviewComponent implements OnChanges {
   }
 
   constructor(
-    private readonly elementRef: ElementRef,
     private readonly stateService: MenuStateService,
-    private readonly treeService: MenuTreeService,
     private readonly userService: UserService,
     private readonly msgService: PortalMessageService,
     private readonly menuApi: MenuItemAPIService
@@ -139,17 +134,23 @@ export class MenuPreviewComponent implements OnChanges {
    */
   public onDrop(event: TreeNodeDropEvent): void {
     if (event.dragNode && event.dropNode) {
-      const menuItem = event.dragNode.data
-      const targetPos = event.dropNode.data?.position ?? 0
-      const parentItem = event.dropNode.parent?.data
+      const menuItem = event.dragNode.data as WorkspaceMenuItem
+      const targetPos = event.index ?? 0
+      let targetItem = event.dropNode.data as WorkspaceMenuItem // moved to node
+
+      // drop between existing nodes => after move: the drop node is the node before the moved node
+      if (event.dropPoint === 'between') {
+        targetItem = event.dropNode.parent?.data as WorkspaceMenuItem
+      }
+
       if (menuItem) {
         this.menuApi
           .updateMenuItemParent({
             menuItemId: menuItem.id!,
             updateMenuItemParentRequest: {
               modificationCount: menuItem.modificationCount!,
-              position: targetPos,
-              parentItemId: parentItem?.id
+              parentItemId: targetItem?.id,
+              position: targetPos
             }
           })
           .subscribe({

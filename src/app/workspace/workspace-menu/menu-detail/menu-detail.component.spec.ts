@@ -17,7 +17,8 @@ import {
   MenuItem,
   Product,
   Microfrontend,
-  Scope
+  Scope,
+  Target
 } from 'src/app/shared/generated'
 import { MenuURL } from './menu-detail.component'
 
@@ -28,6 +29,7 @@ const form = new FormGroup({
   position: new FormControl('1'),
   disabled: new FormControl<boolean>(false),
   external: new FormControl<boolean>(false),
+  target: new FormControl<string>('_self'),
   url: new FormControl('url'),
   badge: new FormControl('badge'),
   scope: new FormControl('scope'),
@@ -43,6 +45,7 @@ const mockMenuItems: MenuItem[] = [
     name: 'menu name',
     position: 0,
     external: false,
+    target: Target.Self,
     disabled: false,
     badge: 'badge',
     scope: Scope.App,
@@ -66,6 +69,7 @@ const mockMenuItems: MenuItem[] = [
     name: 'menu name',
     position: 0,
     external: false,
+    target: Target.Blank,
     disabled: false,
     badge: 'badge',
     scope: Scope.App,
@@ -80,6 +84,7 @@ const mockMenuItems: MenuItem[] = [
     name: 'menu name',
     position: 0,
     external: false,
+    target: Target.Self,
     disabled: false,
     badge: 'badge',
     scope: Scope.App,
@@ -94,6 +99,7 @@ const mockMenuItems: MenuItem[] = [
     name: 'menu name',
     position: 0,
     external: false,
+    target: Target.Self,
     disabled: false,
     badge: 'badge',
     scope: Scope.App,
@@ -179,7 +185,7 @@ describe('MenuDetailComponent', () => {
 
   beforeEach(() => {
     initTestComponent()
-    component.formGroup = form
+    component.menuItemForm = form
   })
 
   it('should create', () => {
@@ -187,20 +193,20 @@ describe('MenuDetailComponent', () => {
   })
 
   describe('ngOnChanges', () => {
-    it('should init menuItem and set formGroup in create mode onChanges', () => {
+    it('should init menuItem and set menuItemForm in create mode onChanges', () => {
       component.changeMode = 'CREATE'
-      spyOn(component.formGroup, 'reset')
+      spyOn(component.menuItemForm, 'reset')
       component.menuItemOrg = { id: 'menuItemId' }
       component.displayDetailDialog = true
 
       component.ngOnChanges()
 
-      expect(component.formGroup.reset).toHaveBeenCalled()
+      expect(component.menuItemForm.reset).toHaveBeenCalled()
       expect(component.menuItem?.parentItemId).toBe('menuItemId')
-      expect(component.formGroup.controls['parentItemId'].value).toBe('menuItemId')
+      expect(component.menuItemForm.controls['parentItemId'].value).toBe('menuItemId')
     })
 
-    it('should init menuItem and set formGroup in create mode onChanges - no parent', () => {
+    it('should init menuItem and set menuItemForm in create mode onChanges - no parent', () => {
       component.changeMode = 'CREATE'
       component.menuItemOrg = undefined
       component.displayDetailDialog = true
@@ -213,7 +219,7 @@ describe('MenuDetailComponent', () => {
       expect(component.getMaxChildrenPosition).toHaveBeenCalledTimes(0)
     })
 
-    it('should init menuItem and set formGroup in create mode onChanges - no children', () => {
+    it('should init menuItem and set menuItemForm in create mode onChanges - no children', () => {
       const item: WorkspaceMenuItem = {
         id: 'id',
         position: 0,
@@ -222,7 +228,7 @@ describe('MenuDetailComponent', () => {
       expect(component.getMaxChildrenPosition(item)).toEqual(0)
     })
 
-    it('should init menuItem and set formGroup in create mode onChanges - 1 children', () => {
+    it('should init menuItem and set menuItemForm in create mode onChanges - 1 children', () => {
       const item: WorkspaceMenuItem = {
         id: 'id',
         position: 0,
@@ -285,7 +291,7 @@ describe('MenuDetailComponent', () => {
       expect(component.menuItems?.length).toEqual(5)
     })
 
-    it('should call getMenu in view mode onChanges and fetch undefined menuItem', () => {
+    it('should call getMenuItem in view mode onChanges and fetch undefined menuItem', () => {
       menuApiServiceSpy.getMenuItemById.and.returnValue(of(undefined))
       component.changeMode = 'VIEW'
       component.menuItemOrg = { id: 'menuItemId' }
@@ -296,7 +302,7 @@ describe('MenuDetailComponent', () => {
       expect(component.menuItem).toBeUndefined()
     })
 
-    it('should call getMenu in view mode onChanges and catch error if api call fails', () => {
+    it('should call getMenuItem in view mode onChanges and catch error if api call fails', () => {
       const errorResponse = { status: 400, statusText: 'Error on getting menu items' }
       menuApiServiceSpy.getMenuItemById.and.returnValue(throwError(() => errorResponse))
       component.changeMode = 'VIEW'
@@ -446,12 +452,12 @@ describe('MenuDetailComponent', () => {
     })
     form.controls['key'].setValue('')
     form.controls['key'].setErrors({ minLength: true })
-    component.formGroup = form
+    component.menuItemForm = form
     spyOn(console, 'error')
 
     component.onMenuSave()
 
-    expect(console.error).toHaveBeenCalledWith('invalid form', component.formGroup)
+    expect(console.error).toHaveBeenCalledWith('invalid form', component.menuItemForm)
   })
 
   it('should retrieve mfePath from url form control if it is an object onMenuSave', () => {
@@ -462,6 +468,7 @@ describe('MenuDetailComponent', () => {
       position: new FormControl('1'),
       disabled: new FormControl<boolean>(false),
       external: new FormControl<boolean>(false),
+      target: new FormControl<string>('_self'),
       url: new FormControl({
         mfePath: 'url mfePath'
       }),
@@ -469,7 +476,7 @@ describe('MenuDetailComponent', () => {
       scope: new FormControl('scope'),
       description: new FormControl('description')
     })
-    component.formGroup = form
+    component.menuItemForm = form
     component.menuItem = mockMenuItems[0]
 
     component.onMenuSave()
@@ -480,13 +487,14 @@ describe('MenuDetailComponent', () => {
   describe('creation', () => {
     it('should save a menu: create', () => {
       menuApiServiceSpy.createMenuItemForWorkspace.and.returnValue(of({}))
-      component.formGroup = new FormGroup({
+      component.menuItemForm = new FormGroup({
         parentItemId: new FormControl('some parent id'),
         key: new FormControl('key', Validators.minLength(2)),
         name: new FormControl('name'),
         position: new FormControl('1'),
         disabled: new FormControl<boolean>(false),
         external: new FormControl<boolean>(false),
+        target: new FormControl<string>('_self'),
         url: new FormControl('url'),
         badge: new FormControl('badge'),
         scope: new FormControl('scope'),
@@ -504,7 +512,7 @@ describe('MenuDetailComponent', () => {
     it('should display error message on save menu: create', () => {
       const errorResponse = { status: 400, statusText: 'Error on creating a menu item' }
       menuApiServiceSpy.createMenuItemForWorkspace.and.returnValue(throwError(() => errorResponse))
-      component.formGroup = form
+      component.menuItemForm = form
       component.menuItem = mockMenuItems[0]
       component.changeMode = 'CREATE'
       spyOn(console, 'error')
@@ -519,7 +527,7 @@ describe('MenuDetailComponent', () => {
   describe('editing', () => {
     it('should save a menu: edit', () => {
       menuApiServiceSpy.updateMenuItem.and.returnValue(of(mockMenuItems))
-      component.formGroup = form
+      component.menuItemForm = form
       component.menuItem = mockMenuItems[0]
       component.menuItems = mockMenuItems
       component.menuItemOrg = { id: 'id' }
@@ -534,7 +542,7 @@ describe('MenuDetailComponent', () => {
       const errorResponse = { status: 400, statusText: 'Error on creating a menu item' }
       menuApiServiceSpy.updateMenuItem.and.returnValue(throwError(() => errorResponse))
       spyOn(console, 'error')
-      component.formGroup = form
+      component.menuItemForm = form
       component.menuItem = mockMenuItems[0]
       component.changeMode = 'EDIT'
       component.menuItemOrg = { id: 'menuItemId' }
@@ -712,23 +720,16 @@ describe('MenuDetailComponent', () => {
       component.mfeItems = controlMfeItems
       component.onClearUrl()
 
-      expect(component.formGroup.controls['url'].value).toEqual(controlMfeItems[0])
+      expect(component.menuItemForm.controls['url'].value).toEqual(controlMfeItems[0])
     })
   })
 
   describe('Closing dialog', () => {
-    it('should emit false when onCloseDetailDialog is called', () => {
+    it('should emit false when onCloseDialog is called', () => {
       spyOn(component.dataChanged, 'emit')
+      component.menuItemOrg = mockMenuItems[0]
 
-      component.onCloseDetailDialog()
-
-      expect(component.dataChanged.emit).toHaveBeenCalledWith(false)
-    })
-
-    it('should emit false when onCloseDeleteDialog is called', () => {
-      spyOn(component.dataChanged, 'emit')
-
-      component.onCloseDeleteDialog()
+      component.onCloseDialog()
 
       expect(component.dataChanged.emit).toHaveBeenCalledWith(false)
     })
@@ -762,9 +763,10 @@ describe('MenuDetailComponent', () => {
      */
     it('should filter when query is empty', () => {
       const mockEvent = { originalEvent: new Event('filter'), query: undefined! }
-      component.formGroup = new FormGroup({
+      component.menuItemForm = new FormGroup({
         url: new FormControl(''),
-        external: new FormControl(false)
+        external: new FormControl(false),
+        target: new FormControl<string>('_self')
       })
       component.mfeItems = [microfrontend]
 
@@ -789,7 +791,7 @@ describe('MenuDetailComponent', () => {
     })
 
     it('should use url object mfePath if query is not provided', () => {
-      component.formGroup.controls['url'].setValue({ mfePath: '/path' })
+      component.menuItemForm.controls['url'].setValue({ mfePath: '/path' })
       const mockEvent = { originalEvent: new Event('filter'), query: '' }
 
       component.mfeItems = [{ id: 'id1', appId: 'appId1', basePath: '/base1', mfePath: '/path' }]
@@ -802,9 +804,10 @@ describe('MenuDetailComponent', () => {
 
     it('should filter MenuURL items based on the query', () => {
       const mockEvent = { originalEvent: new Event('filter'), query: '/pa' }
-      component.formGroup = new FormGroup({
+      component.menuItemForm = new FormGroup({
         url: new FormControl(''),
-        external: new FormControl(false)
+        external: new FormControl(false),
+        target: new FormControl<string>('_self')
       })
       const microfrontendNoId: Microfrontend = {
         appId: 'appId',

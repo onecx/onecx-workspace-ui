@@ -9,6 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { Target } from './target';
 import { Scope } from './scope';
 
 
@@ -23,6 +24,7 @@ export interface CreateMenuItem {
     badge?: string;
     scope?: Scope;
     external?: boolean;
+    target?: Target;
     parentItemId?: string;
     i18n?: { [key: string]: string; };
 }

@@ -123,9 +123,10 @@
       "GOTO_THEME": "Go to Theme",
       "GOTO_PRODUCT": "Go to Product",
       "GOTO_PRODUCT_PERMISSIONS": "Go to Product Permissions",
-      "GOTO_PRODUCT_SLOTS": "Go to Slots within Application Store",
+      "GOTO_PRODUCT_SLOTS": "Go to Slot overview within Application Store",
       "GOTO_WORKSPACE_PERMISSIONS": "Go to Workspace Permissions",
       "GOTO_WORKSPACE_ROLES": "Go to Workspace Roles",
+      "OPEN": "Open in this TAB",
       "OPEN_IN_NEW_TAB": "Open in a new TAB",
       "MOVE_UP": "Move up",
       "MOVE_DOWN": "Move down"
@@ -135,7 +136,8 @@
       "NO_DATA": "No Data",
       "RELOAD": "Reload data",
       "RELOAD.OK": "Data successfully reloaded",
-      "OF": "of"
+      "OF": "of",
+      "FILTER.NOT_MATCHING": "No data matching filter"
     },
     "TREE": {
       "COLLAPSE_ALL": "Collapse all",
@@ -262,6 +264,7 @@
     "ENABLED": "Activated (visible)",
     "DISABLED": "Deactivated",
     "EXTERN": "External Link",
+    "TARGET": "Open in new TAB",
     "MENU_ID": "Menu ID",
     "MENU_NAME": "Menu Name",
     "PARENT_ID": "Parent Menu ID",
@@ -278,7 +281,8 @@
       "BADGE": "Icon from the PrimeNG library which should be displayed next to the Menu name",
       "DESCRIPTION": "Additional informationen",
       "DISABLED": "If set, then the Menu Item is not displayed.",
-      "EXTERN": "If set, the target will be opened in a new TAB when the Menu Item is used. Requires a value in Path/URL.",
+      "EXTERN": "If set, the OneCX Shell will be exited when the Menu Item is used. Requires a value in Path/URL.",
+      "TARGET": "If set, the target will be opened in a new TAB when the Menu Item is used. Requires a value in Path/URL.",
       "MENU_ID": "A unique identifier of the Menu Item",
       "MENU_NAME": "Displayed Name",
       "PARENT_ID": "The identifier of the parent Menu Item",
@@ -300,6 +304,7 @@
         "SEARCH": "Workspace Management",
         "SEARCH.SUBHEADER": "Creation and editing of Workspaces",
         "DETAIL": "Display and editing of the Workspace properties",
+        "CREATE": "Create Workspace",
         "DELETE": "Delete Workspace",
         "EXPORT": "Export Workspace"
       },
@@ -424,8 +429,16 @@
       },
       "SUBHEADER": "Manage details and Role assignments of the Workspace Menu",
       "ACTION": {
+        "LOAD": "Load Menu",
+        "RELOAD": "Reload Menu",
         "VIEW": "Display details",
         "EDIT": "Edit details"
+      },
+      "SECTIONS": {
+        "ACTIONS": "Actions: Move menu items, filter, go to other pages",
+        "OPTIONS": "Display options: Expand/collapse tree, select menu item text, choose whether to display details or roles",
+        "LINKS": "Links and Reload",
+        "MESSAGES": "Messages"
       },
       "TABS": {
         "DETAILS": "Properties",
@@ -446,7 +459,9 @@
         "URL.TOOLTIP": "The URL to be called upon activation",
         "PRODUCT.TOOLTIP": "Indicator whether the Menu URL is offered by a registered Application ",
         "EXTERN": "X",
-        "EXTERN.TOOLTIP": "If checked then the Workspace is exit"
+        "EXTERN.TOOLTIP": "If this option is enabled, the OneCX Shell will be exited",
+        "TARGET": "T",
+        "TARGET.TOOLTIP": "If this option is enabled, the destination will be opened in a new TAB."
       },
       "ROLE": {
         "FILTER": "Role filter: Display Menu Items according to the selected Roles",
@@ -685,7 +700,7 @@
   "EXCEPTIONS": {
     "CONTACT_ADMIN": "Please contact your administrator.",
     "ENDPOINT": {
-      "NOT_EXIST": "Routing not possible because target is not configured correctly."
+      "NOT_EXIST": "Routing not possible because target is not configured correctly. Application: {{product}}, Endpoint: {{endpoint}}"
     },
     "NOT_FOUND": {
       "IAM_COMPONENT": "No component provided that provides IDM Roles."

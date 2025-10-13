@@ -7,16 +7,11 @@ import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of, throwError } from 'rxjs'
 
 import { SlotService } from '@onecx/angular-remote-components'
-import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+import { PortalMessageService, UserService, WorkspaceService } from '@onecx/angular-integration-interface'
 
-import {
-  IAMRole,
-  Role,
-  slotInitializer,
-  WorkspaceRolesComponent
-} from 'src/app/workspace/workspace-detail/workspace-roles/workspace-roles.component'
 import { Workspace, WorkspaceRole, WorkspaceRolesAPIService, WorkspaceRolePageResult } from 'src/app/shared/generated'
-import { Utils } from 'src/app/shared/utils'
+
+import { IAMRole, Role, slotInitializer, WorkspaceRolesComponent } from './workspace-roles.component'
 
 const workspace: Workspace = {
   id: 'id',
@@ -39,6 +34,13 @@ describe('WorkspaceRolesComponent', () => {
   let component: WorkspaceRolesComponent
   let fixture: ComponentFixture<WorkspaceRolesComponent>
 
+  function initTestComponent(): void {
+    fixture = TestBed.createComponent(WorkspaceRolesComponent)
+    component = fixture.componentInstance
+    component.workspace = workspace
+    fixture.detectChanges()
+  }
+
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
   const wRoleServiceSpy = {
     searchWorkspaceRoles: jasmine.createSpy('searchWorkspaceRoles').and.returnValue(of({})),
@@ -51,6 +53,7 @@ describe('WorkspaceRolesComponent', () => {
   const slotServiceSpy = {
     isSomeComponentDefinedForSlot: jasmine.createSpy('isSomeComponentDefinedForSlot').and.returnValue(of(true))
   }
+  const workspaceServiceSpy = jasmine.createSpyObj<WorkspaceService>('WorkspaceService', ['doesUrlExistFor', 'getUrl'])
   const mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
   mockUserService.hasPermission.and.callFake((permission: string) => {
     return ['WORKSPACE_ROLE#EDIT', 'WORKSPACE_ROLE#CREATE', 'WORKSPACE_ROLE#DELETE'].includes(permission)
@@ -72,18 +75,15 @@ describe('WorkspaceRolesComponent', () => {
         { provide: SlotService, useValue: slotServiceSpy },
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: WorkspaceRolesAPIService, useValue: wRoleServiceSpy },
+        { provide: WorkspaceService, useValue: workspaceServiceSpy },
         { provide: UserService, useValue: mockUserService }
       ]
     }).compileComponents()
-    msgServiceSpy.success.calls.reset()
-    msgServiceSpy.error.calls.reset()
   }))
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(WorkspaceRolesComponent)
-    component = fixture.componentInstance
-    component.workspace = workspace
-    fixture.detectChanges()
+    initTestComponent()
+
     // to spy data: reset
     slotServiceSpy.isSomeComponentDefinedForSlot.calls.reset()
     wRoleServiceSpy.searchWorkspaceRoles.calls.reset()
@@ -94,6 +94,8 @@ describe('WorkspaceRolesComponent', () => {
     msgServiceSpy.error.calls.reset()
     // to spy data: refill with neutral data
     wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({}))
+    // used in ngOnChanges
+    workspaceServiceSpy.doesUrlExistFor.and.returnValue(of(true))
   })
 
   describe('initialize', () => {
@@ -328,29 +330,32 @@ describe('WorkspaceRolesComponent', () => {
 
   describe('filtering', () => {
     it('should reset filter to default when ALL is selected', () => {
-      component.onQuickFilterChange({ value: 'ALL' })
+      const dv = jasmine.createSpyObj('DataView', ['filter'])
+      component.onQuickFilterChange({ value: 'ALL' }, dv)
 
       expect(component.filterBy).toEqual('name,type')
       expect(component.quickFilterValue).toEqual('ALL')
     })
 
     it('should set filter by specific type', () => {
-      component.onQuickFilterChange({ value: 'IAM' })
+      const dv = jasmine.createSpyObj('DataView', ['filter'])
+      component.onQuickFilterChange({ value: 'IAM' }, dv)
 
       expect(component.filterBy).toEqual('type')
       expect(component.quickFilterValue).toEqual('IAM')
     })
 
     it('should set filterBy to name,type when filter is empty', () => {
-      component.onFilterChange('')
+      const dv = jasmine.createSpyObj('DataView', ['filter'])
+      component.onFilterChange('', dv)
 
       expect(component.filterBy).toEqual('name,type')
     })
 
     it('should call filter method with "contains" when filter has a value', () => {
-      component.dv = jasmine.createSpyObj('DataView', ['filter'])
+      const dv = jasmine.createSpyObj('DataView', ['filter'])
 
-      component.onFilterChange('testFilter')
+      component.onFilterChange('testFilter', dv)
     })
 
     it('should quick filter after searching', () => {
@@ -367,16 +372,6 @@ describe('WorkspaceRolesComponent', () => {
       expect(component.onGetQuickFilterCount('IAM')).toEqual('0')
       expect(component.onGetQuickFilterCount('WORKSPACE')).toEqual('1')
       expect(component.onGetQuickFilterCount('ALL')).toEqual('1') // combined role
-    })
-  })
-
-  describe('UI events', () => {
-    it('should go to permissions', () => {
-      spyOn(Utils, 'goToEndpoint')
-
-      component.onGoToPermission()
-
-      expect(Utils.goToEndpoint).toHaveBeenCalled()
     })
   })
 
@@ -412,6 +407,47 @@ describe('WorkspaceRolesComponent', () => {
       items[0].value
 
       expect(items[0].value).toEqual('ALL')
+    })
+  })
+
+  describe('getPermisionEndpointUrl', () => {
+    beforeEach(() => {
+      component.workspace = workspace
+    })
+
+    it('should permissionEndpointExist - exist', (done) => {
+      component.permissionEndpointExist = true
+      workspaceServiceSpy.getUrl.and.returnValue(of('/url'))
+
+      const eu$ = component.getPermisionEndpointUrl$('name')
+
+      eu$.subscribe({
+        next: (data) => {
+          if (data) {
+            expect(data).toBe('/url')
+          }
+          done()
+        },
+        error: done.fail
+      })
+    })
+
+    it('should permissionEndpointExist - not exist', (done) => {
+      component.permissionEndpointExist = false
+      const errorResponse = { status: 400, statusText: 'Error on check endpoint' }
+      workspaceServiceSpy.getUrl.and.returnValue(throwError(() => errorResponse))
+
+      const eu$ = component.getPermisionEndpointUrl$('name')
+
+      eu$.subscribe({
+        next: (data) => {
+          if (data) {
+            expect(data).toBeFalse()
+          }
+          done()
+        },
+        error: done.fail
+      })
     })
   })
 })

@@ -18,6 +18,12 @@ describe('ImageContainerComponent', () => {
   let fixture: ComponentFixture<ImageContainerComponent>
   let mockAppStateService: MockAppStateService
 
+  function initTestComponent(): void {
+    fixture = TestBed.createComponent(ImageContainerComponent)
+    component = fixture.componentInstance
+    fixture.detectChanges()
+  }
+
   beforeEach(waitForAsync(() => {
     mockAppStateService = new MockAppStateService()
 
@@ -35,43 +41,100 @@ describe('ImageContainerComponent', () => {
   }))
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ImageContainerComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    initTestComponent()
   })
 
-  describe('construction', () => {
-    it('should create', () => {
-      expect(component).toBeTruthy()
+  it('should create', () => {
+    expect(component).toBeTruthy()
+    expect(component['defaultImageUrl']).toBe('/base/assets/images/workspace.png')
+  })
+
+  describe('on changes', () => {
+    it('should use imageUrl as URL if was set', () => {
+      component.imageUrl = 'https://host/path-to-image'
+
+      component.ngOnChanges()
+
+      expect(component.url).toBe(component.imageUrl)
     })
 
-    it('should set defaultImageUrl$ to the correct value', (done) => {
-      const expectedUrl = '/base/assets/images/workspace.png'
+    it('should use default URL if image URL is invalid', () => {
+      component.imageUrl = 'https://host'
 
-      component.defaultImageUrl$.subscribe((url) => {
-        expect(url).toBe(expectedUrl)
-        done()
-      })
+      component.ngOnChanges()
+
+      expect(component.url).toBe(component['defaultImageUrl'])
+    })
+
+    it('should use imageUrl as URL if was set', () => {
+      component.bffUrl = '/basePath/path-to-logo'
+
+      component.ngOnChanges()
+
+      expect(component.url).toBe(component.bffUrl)
+    })
+
+    it('should use default URL if no URL is provided', () => {
+      component.imageUrl = undefined
+      component.bffUrl = undefined
+
+      component.ngOnChanges()
+
+      expect(component.url).toBe(component['defaultImageUrl'])
     })
   })
 
   describe('loading results', () => {
-    it('should emit an error if image could not be loaded', () => {
-      spyOn(component.imageLoadResult, 'emit')
-
-      component.imageUrl = '/url'
-      component.onImageLoadError()
-
-      expect(component.imageLoadResult.emit).toHaveBeenCalledWith(false)
-    })
-
     it('should emit a success if image could be loaded', () => {
       spyOn(component.imageLoadResult, 'emit')
 
-      component.imageUrl = '/url'
+      component.url = '/bff-url'
       component.onImageLoadSuccess()
 
       expect(component.imageLoadResult.emit).toHaveBeenCalledWith(true)
+    })
+
+    it('should use bff URL and emit an error if external image could not be loaded', () => {
+      spyOn(component.imageLoadResult, 'emit')
+
+      component.url = '/external/url'
+      component['urlType'] === 'ext-url'
+      component.bffUrl = '/bff/url'
+
+      component.onImageLoadError()
+
+      expect(component.url).toBe(component.bffUrl)
+      expect(component['urlType']).toBe('bff-url')
+      expect(component.imageLoadResult.emit).toHaveBeenCalledWith(false)
+    })
+
+    it('should use default URL and emit an error if external image could not be loaded and no bff URL', () => {
+      spyOn(component.imageLoadResult, 'emit')
+
+      component['defaultImageUrl'] = 'default-url'
+      component.url = '/external/url'
+      component['urlType'] === 'ext-url'
+      component.bffUrl = undefined
+
+      component.onImageLoadError()
+
+      expect(component.url).toBe(component['defaultImageUrl'])
+      expect(component['urlType']).toBe('def-url')
+      expect(component.imageLoadResult.emit).toHaveBeenCalledWith(false)
+    })
+
+    it('should use default URL and emit an error if bff image could not be loaded', () => {
+      spyOn(component.imageLoadResult, 'emit')
+
+      component.url = '/bff/url'
+      component['urlType'] = 'bff-url'
+      component['defaultImageUrl'] = '/default/url'
+
+      component.onImageLoadError()
+
+      expect(component.url).toBe(component['defaultImageUrl'])
+      expect(component['urlType']).toBe('def-url')
+      expect(component.imageLoadResult.emit).toHaveBeenCalledWith(false)
     })
   })
 })

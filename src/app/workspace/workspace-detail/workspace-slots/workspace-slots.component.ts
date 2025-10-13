@@ -1,7 +1,17 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core'
-import { Router } from '@angular/router'
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
 import { TranslateService } from '@ngx-translate/core'
-import { Subject, catchError, finalize, map, mergeMap, of, switchMap, takeUntil, Observable } from 'rxjs'
+import {
+  Subject,
+  catchError,
+  finalize,
+  map,
+  mergeMap,
+  of,
+  switchMap,
+  takeUntil,
+  Observable,
+  firstValueFrom
+} from 'rxjs'
 import { SelectItem } from 'primeng/api'
 import { DataView } from 'primeng/dataview'
 
@@ -63,16 +73,16 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   public psSlots$!: Observable<string[]>
   public psComponents: ExtendedComponent[] = []
   public item4Detail: CombinedSlot | undefined
+  public productEndpointExist = false
 
   // dialog
-  @ViewChild(DataView) dv: DataView | undefined
   public dataViewControlsTranslations$: Observable<DataViewControlTranslations> | undefined
 
   public filterValue: string | undefined
   public filterByDefault = 'name,type'
   public filterBy = this.filterByDefault
   public sortField = 'name'
-  public sortOrder = -1
+  public sortOrder = 1
   public quickFilterValue: SlotFilterType = 'ALL'
   public quickFilterOptions$: Observable<SelectItem[]> | undefined
   public quickFilterCount = ''
@@ -88,7 +98,6 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   public showSlotDeleteDialog = false
 
   constructor(
-    private readonly router: Router,
     private readonly workspaceService: WorkspaceService,
     private readonly user: UserService,
     private readonly slotApi: SlotAPIService,
@@ -107,7 +116,17 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     this.prepareTranslations()
   }
   public ngOnChanges(changes: SimpleChanges): void {
-    if (this.workspace && changes['workspace']) this.loadData()
+    if (this.workspace && changes['workspace']) {
+      this.loadData()
+      // check detail endpoint exists
+      this.productEndpointExist = Utils.doesEndpointExist(
+        this.workspaceService,
+        this.msgService,
+        'onecx-product-store',
+        'onecx-product-store-ui',
+        'slots'
+      )
+    }
   }
   public ngOnDestroy(): void {
     this.destroy$.next(undefined)
@@ -115,7 +134,6 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public onReload() {
-    this.onQuickFilterChange({ value: 'ALL' })
     this.loadData()
   }
   public loadData(): void {
@@ -123,12 +141,12 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     this.declareWorkspaceProducts()
     this.declareWorkspaceSlots()
     this.declarePsProducts()
-    this.wSlots$
-      .pipe(
+    firstValueFrom(
+      this.wSlots$.pipe(
         mergeMap(() => this.wProducts$),
         switchMap(() => this.psSlots$)
       )
-      .subscribe()
+    )
   }
 
   // get registered products
@@ -384,22 +402,22 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   /**
    * UI Events
    */
-  public onQuickFilterChange(ev: any): void {
+  public onQuickFilterChange(ev: any, dv: DataView): void {
     if (ev.value === 'ALL') {
       this.filterBy = this.filterByDefault
-      this.dv?.filter('')
+      dv.filter('')
     } else {
       this.filterBy = 'type'
-      this.dv?.filter(ev.value)
+      dv.filter(ev.value)
     }
     this.quickFilterValue = ev.value
   }
-  public onFilterChange(filter: string): void {
+  public onFilterChange(filter: string, dv: DataView): void {
     if (filter === '') {
-      this.onQuickFilterChange({ value: 'ALL' })
+      this.onQuickFilterChange({ value: 'ALL' }, dv)
     } else {
       this.filterBy = 'name'
-      this.dv?.filter(filter)
+      dv.filter(filter)
     }
   }
   public onSortChange(field: string): void {
@@ -441,17 +459,6 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     this.showSlotDeleteDialog = false
   }
 
-  public onGoToProductSlots(): void {
-    Utils.goToEndpoint(
-      this.workspaceService,
-      this.msgService,
-      this.router,
-      'onecx-product-store',
-      'onecx-product-store-ui',
-      'slots'
-    )
-  }
-
   /**
    * Dialog preparation
    */
@@ -486,5 +493,11 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
           ]
         })
       )
+  }
+
+  public getProductEndpointUrl$(): Observable<string | undefined> {
+    if (this.productEndpointExist)
+      return this.workspaceService.getUrl('onecx-product-store', 'onecx-product-store-ui', 'slots')
+    return of(undefined)
   }
 }
