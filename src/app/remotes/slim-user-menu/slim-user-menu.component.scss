@@ -10,13 +10,15 @@
         border-radius: 0 !important;
         background-color: var(--menu-item-bg-color, var(--menu-bg-color), #f7f7f7) !important;
         .p-accordion-header {
-          & :hover,
-          & :focus {
+          & :hover {
             background-color: var(--menu-item-hover-bg-color, #e0e0e0);
           }
           .p-accordion-header-link {
             border-radius: 0 !important;
             background-color: var(--menu-item-bg-color, var(--menu-bg-color), #f7f7f7) !important;
+          }
+          .p-accordion-header-link:focus {
+            background: var(--menu-item-hover-bg-color, #e0e0e0) !important;
           }
         }
         .p-accordion-content {
