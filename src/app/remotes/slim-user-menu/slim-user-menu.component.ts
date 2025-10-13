@@ -181,10 +181,17 @@ export class OneCXSlimUserMenuComponent implements ocxRemoteWebcomponent {
 
   private getMenuItems(): Observable<MenuItem[]> {
     return this.appStateService.currentWorkspace$.pipe(
-      mergeMap((currentWorkspace) => this.getUserMenuItems(currentWorkspace)),
+      mergeMap((currentWorkspace) =>
+        this.getUserMenuItems(currentWorkspace).pipe(
+          map((menuItemsResponse) => ({
+            items: menuItemsResponse?.menu?.[0]?.children,
+            workspaceBaseUrl: currentWorkspace.baseUrl
+          }))
+        )
+      ),
       withLatestFrom(this.userService.lang$),
-      map(([workspaceItems, userLang]): MenuItem[] =>
-        this.menuItemService.constructMenuItems(workspaceItems?.menu?.[0]?.children, userLang)
+      map(([{ items, workspaceBaseUrl }, userLang]): MenuItem[] =>
+        this.menuItemService.constructMenuItems(items, userLang, workspaceBaseUrl)
       ),
       mergeMap((currentMenu) => {
         return this.translateService.get('REMOTES.SLIM_USER_MENU.LOGOUT').pipe(
