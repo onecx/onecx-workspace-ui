@@ -59,18 +59,18 @@ export class MenuService {
   constructor() {
     const mobileBreakpointVar = getComputedStyle(document.documentElement).getPropertyValue('--mobile-break-point')
 
-    this.onResize$ = fromEvent(window, 'resize').pipe(
-      // Debounce to avoid excessive emissions during window resizing
+    this.onResize$ = fromEvent(globalThis, 'resize').pipe(
+      // Debounce to avoid excessive emissions during globalThis resizing
       debounceTime(100),
       untilDestroyed(this)
     )
 
     this.isMobile$ = this.onResize$.pipe(
-      map(() => window.matchMedia(`(max-width: ${mobileBreakpointVar})`).matches),
+      map(() => globalThis.matchMedia(`(max-width: ${mobileBreakpointVar})`).matches),
       // Force first value emission for pairwise operator
       startWith(
-        !window.matchMedia(`(max-width: ${mobileBreakpointVar})`).matches,
-        window.matchMedia(`(max-width: ${mobileBreakpointVar})`).matches
+        !globalThis.matchMedia(`(max-width: ${mobileBreakpointVar})`).matches,
+        globalThis.matchMedia(`(max-width: ${mobileBreakpointVar})`).matches
       )
     )
 
