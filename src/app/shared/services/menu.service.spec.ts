@@ -23,7 +23,7 @@ describe('MenuService', () => {
    */
   function mockMatchMedia() {
     // console.log('Will mock matchMedia')
-    ;(window.matchMedia as any) = (query: string) => {
+    ;(globalThis.matchMedia as any) = (query: string) => {
       // console.log('Mocking for mode:', mode)
       return {
         matches: mode === 'DESKTOP' ? false : true
@@ -46,13 +46,13 @@ describe('MenuService', () => {
   }
 
   beforeAll(() => {
-    realWindowMatchMedia = window.matchMedia
+    realWindowMatchMedia = globalThis.matchMedia
 
     mockMatchMedia()
   })
 
   afterAll(() => {
-    window.matchMedia = realWindowMatchMedia
+    globalThis.matchMedia = realWindowMatchMedia
   })
 
   beforeEach(() => {
@@ -87,7 +87,7 @@ describe('MenuService', () => {
 
     mockMobile()
     const event = new Event('resize')
-    window.dispatchEvent(event)
+    globalThis.dispatchEvent(event)
   })
 
   it('should use static mode if profile does not contain menu mode', (done) => {
