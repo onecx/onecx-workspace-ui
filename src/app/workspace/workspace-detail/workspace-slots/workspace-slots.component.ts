@@ -73,6 +73,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   public psSlots$!: Observable<string[]>
   public psComponents: ExtendedComponent[] = []
   public item4Detail: CombinedSlot | undefined
+  public productEndpointExist = false
 
   // dialog
   public dataViewControlsTranslations$: Observable<DataViewControlTranslations> | undefined
@@ -115,7 +116,17 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     this.prepareTranslations()
   }
   public ngOnChanges(changes: SimpleChanges): void {
-    if (this.workspace && changes['workspace']) this.loadData()
+    if (this.workspace && changes['workspace']) {
+      this.loadData()
+      // check detail endpoint exists
+      this.productEndpointExist = Utils.doesEndpointExist(
+        this.workspaceService,
+        this.msgService,
+        'onecx-product-store',
+        'onecx-product-store-ui',
+        'slots'
+      )
+    }
   }
   public ngOnDestroy(): void {
     this.destroy$.next(undefined)
@@ -448,16 +459,6 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     this.showSlotDeleteDialog = false
   }
 
-  public onGoToProductStoreSlots$(): Observable<string> {
-    return Utils.getEndpointUrl(
-      this.workspaceService,
-      this.msgService,
-      'onecx-product-store',
-      'onecx-product-store-ui',
-      'slots'
-    )
-  }
-
   /**
    * Dialog preparation
    */
@@ -492,5 +493,11 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
           ]
         })
       )
+  }
+
+  public getProductEndpointUrl$(): Observable<string | undefined> {
+    if (this.productEndpointExist)
+      return this.workspaceService.getUrl('onecx-product-store', 'onecx-product-store-ui', 'slots')
+    return of(undefined)
   }
 }

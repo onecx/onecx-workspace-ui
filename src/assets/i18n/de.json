@@ -694,7 +694,7 @@
   "EXCEPTIONS": {
     "CONTACT_ADMIN": "Wenden Sie sich bitte an Ihren Administrator.",
     "ENDPOINT": {
-      "NOT_EXIST": "Routing nicht möglich da Ziel nicht korrekt konfiguriert."
+      "NOT_EXIST": "Routing nicht möglich da Ziel nicht korrekt konfiguriert. Applikation: {{product}}, Endpunkt: {{endpoint}}"
     },
     "NOT_FOUND": {
       "IAM_COMPONENT": "Keine Komponente bereitgestellt, die IDM Rollen liefert."

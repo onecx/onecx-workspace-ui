@@ -54,6 +54,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
   public roles: Role[] = [] // target collection used in HTML
   public role: Role | undefined // for detail
   public Utils = Utils
+  public permissionEndpointExist = false
 
   // dialog
   public dataViewControlsTranslations$: Observable<DataViewControlTranslations> | undefined
@@ -64,7 +65,6 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
   public wRolesLoaded = false
   public iamRolesLoaded = false
   public iamAvailable = false
-  public permissionUrl$!: Observable<string>
   public exceptionKey: string | undefined = undefined
   public quickFilterValue: RoleFilterType = 'ALL'
   public quickFilterOptions$: Observable<SelectItem[]> | undefined
@@ -106,13 +106,13 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
     if (this.workspace && changes['workspace']) {
       this.prepareWorkspaceRoleSearch()
       this.searchRoles()
-      this.permissionUrl$ = Utils.getEndpointUrl(
+      // check detail endpoint exists
+      this.permissionEndpointExist = Utils.doesEndpointExist(
         this.workspaceService,
         this.msgService,
         'onecx-permission',
         'onecx-permission-ui',
-        'workspace',
-        { 'workspace-name': this.workspace?.name }
+        'workspace'
       )
     }
     // after 5s we assume IAM product is not running
@@ -343,5 +343,13 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
           ]
         })
       )
+  }
+
+  public getPermisionEndpointUrl$(name: string): Observable<string | undefined> {
+    if (this.permissionEndpointExist)
+      return this.workspaceService.getUrl('onecx-permission', 'onecx-permission-ui', 'workspace', {
+        'workspace-name': name
+      })
+    return of(undefined)
   }
 }

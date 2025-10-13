@@ -13,16 +13,31 @@
       *ngIf="exceptionKey"
       id="ws_detail_error_message"
       severity="error"
-      styleClass="m-3 p-2"
+      styleClass="m-3"
       [text]="exceptionKey | translate"
     ></p-message>
     <p-message
       *ngIf="loading"
       id="ws_detail_loading_message"
       severity="info"
-      styleClass="m-3 p-2"
+      styleClass="m-3"
       [text]="'ACTIONS.LOADING' | translate"
     ></p-message>
+
+    <!-- showOperatorMessage -->
+    <ng-container *ocxIfPermission="'WORKSPACE#EDIT'">
+      <!-- PrimeNG  17: Using p-messages uses the correct alert role (aria)
+           PrimeNG >17: Try again with p-message - check correct use of aria role
+      -->
+      <p-messages
+        *ngIf="workspace?.operator && showOperatorMessage"
+        [(value)]="messages"
+        [enableService]="false"
+        [style]="{ 'margin-top': '35px', right: '22px', left: '22px' }"
+        styleClass="absolute z-1"
+      >
+      </p-messages>
+    </ng-container>
 
     <p-tabView *ngIf="!exceptionKey" (onChange)="onTabChange($event, workspace)" [activeIndex]="selectedTabIndex">
       <p-tabPanel
@@ -33,20 +48,6 @@
         [attr.aria-label]="'TABS.WORKSPACE.DETAILS' | translate"
         [tooltip]="'TABS.WORKSPACE.TOOLTIPS.DETAILS' | translate"
       >
-        <!-- showOperatorMessage -->
-        <ng-container *ocxIfPermission="'WORKSPACE#EDIT'">
-          <!-- PrimeNG  17: Using p-messages uses the correct alert role (aria)
-               PrimeNG >17: Try again with p-message - check correct use of aria role
-          -->
-          <p-messages
-            *ngIf="workspace?.operator && showOperatorMessage"
-            [(value)]="messages"
-            [enableService]="false"
-            [style]="{ 'margin-top': '-20px' }"
-            styleClass="absolute z-1"
-          >
-          </p-messages>
-        </ng-container>
         <app-workspace-props
           [workspace]="workspace"
           [editMode]="editMode"

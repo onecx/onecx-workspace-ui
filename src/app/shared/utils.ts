@@ -1,8 +1,7 @@
 // import { MicrofrontendDTO } from '@onecx/portal-integration-angular'
 import { AbstractControl, FormArray, FormGroup } from '@angular/forms'
 import { Location } from '@angular/common'
-import { Router } from '@angular/router'
-import { filter, mergeMap, Observable, tap } from 'rxjs'
+import { catchError, first, of, tap } from 'rxjs'
 import { SelectItem } from 'primeng/api'
 
 import { PortalMessageService, WorkspaceService } from '@onecx/angular-integration-interface'
@@ -106,58 +105,38 @@ const Utils = {
     return !name ? '' : basePath + '/images/product/' + name
   },
 
-  // goto
-  goToEndpoint(
+  /**
+   * Endpoints
+   */
+  doesEndpointExist(
     workspaceService: WorkspaceService,
     msgService: PortalMessageService,
-    router: Router,
     productName: string,
     appId: string,
-    endpointName: string,
-    params?: Record<string, unknown>
-  ): void {
+    endpointName: string
+  ): boolean {
+    let exist = false
     workspaceService
       .doesUrlExistFor(productName, appId, endpointName)
       .pipe(
+        first(),
         tap((exists) => {
           if (!exists) {
-            console.error(
-              'Routing not possible for product: ' + productName + '  app: ' + appId + '  endpoint: ' + endpointName
-            )
+            console.error(`Routing not possible to workspace for endpoint: ${productName} ${appId} ${endpointName}`)
             msgService.error({
               summaryKey: 'EXCEPTIONS.ENDPOINT.NOT_EXIST',
+              summaryParameters: { product: productName, endpoint: endpointName },
               detailKey: 'EXCEPTIONS.CONTACT_ADMIN'
             })
           }
         }),
-        filter((exists) => exists), // stop on not exists
-        mergeMap(() => workspaceService.getUrl(productName, appId, endpointName, params))
+        catchError((err) => {
+          console.error('doesUrlExistFor', err)
+          return of(false)
+        })
       )
-      .subscribe((url) => {
-        router.navigateByUrl(url)
-      })
-  },
-
-  getEndpointUrl(
-    workspaceService: WorkspaceService,
-    msgService: PortalMessageService,
-    productName: string,
-    appId: string,
-    endpointName: string,
-    params?: Record<string, unknown>
-  ): Observable<string> {
-    return workspaceService.doesUrlExistFor(productName, appId, endpointName).pipe(
-      tap((exists) => {
-        if (!exists) {
-          console.error(
-            'Routing not possible for product: ' + productName + '  app: ' + appId + '  endpoint: ' + endpointName
-          )
-          msgService.error({ summaryKey: 'EXCEPTIONS.ENDPOINT.NOT_EXIST', detailKey: 'EXCEPTIONS.CONTACT_ADMIN' })
-        }
-      }),
-      filter((exists) => exists), // stop on not exists
-      mergeMap(() => workspaceService.getUrl(productName, appId, endpointName, params))
-    )
+      .subscribe((ex) => (exist = ex))
+    return exist
   }
 }
 
