@@ -84,8 +84,8 @@ export class MenuService {
       })
     )
 
-    combineLatest([this.isMobileDistinct$, this.menuMode$]).subscribe(([isMobile, userSelctedMenuMode]) => {
-      this.handleViewportChange(userSelctedMenuMode, isMobile)
+    combineLatest([this.isMobileDistinct$, this.menuMode$]).subscribe(([isMobile, userSelectedMenuMode]) => {
+      this.handleViewportChange(userSelectedMenuMode, isMobile)
     })
   }
 
@@ -110,7 +110,7 @@ export class MenuService {
           case 'horizontal':
             return this.isMenuModeActiveForHorizontalMode(menuMode, isMobile)
           case 'static':
-            return this.isMenuModeActiveForStaticMode(menuMode, isMobile)
+            return this.isMenuModeActiveForStaticMode(menuMode)
           default:
             return of(menuMode === userSelectedMenuMode)
         }
@@ -142,7 +142,7 @@ export class MenuService {
     return of(menuMode === 'horizontal')
   }
 
-  private isMenuModeActiveForStaticMode(menuMode: MenuMode, isMobile: boolean): Observable<boolean> {
+  private isMenuModeActiveForStaticMode(menuMode: MenuMode): Observable<boolean> {
     return of(menuMode === 'static')
   }
 
