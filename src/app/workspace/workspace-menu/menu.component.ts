@@ -26,7 +26,6 @@ import {
 } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
 import { MenuStateService } from './services/menu-state.service'
-import { dataAppStylesAttribute } from '@onecx/angular-utils'
 
 export type ChangeMode = 'VIEW' | 'CREATE' | 'EDIT' | 'COPY' | 'DELETE'
 export type RoleAssignments = { [key: string]: string | undefined } // assignment id or undefined
