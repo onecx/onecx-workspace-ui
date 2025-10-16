@@ -8,14 +8,22 @@ import { of, throwError } from 'rxjs'
 import { DataView } from 'primeng/dataview'
 
 import { PortalMessageService } from '@onecx/angular-integration-interface'
+import { AppStateServiceMock, provideAppStateServiceMock } from '@onecx/angular-integration-interface/mocks'
+import { Workspace } from '@onecx/integration-interface'
 
 import { WorkspaceAbstract, WorkspaceAPIService, SearchWorkspacesResponse } from 'src/app/shared/generated'
 import { WorkspaceSearchComponent } from './workspace-search.component'
+
+const currentWorkspace: Partial<Workspace> = {
+  workspaceName: 'workspace1',
+  displayName: 'Workspace 1'
+}
 
 describe('WorkspaceSearchComponent', () => {
   let component: WorkspaceSearchComponent
   let fixture: ComponentFixture<WorkspaceSearchComponent>
 
+  let mockAppStateService: AppStateServiceMock
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['error'])
   const wApiServiceSpy = {
     searchWorkspaces: jasmine.createSpy('searchWorkspaces').and.returnValue(of({})),
@@ -41,10 +49,16 @@ describe('WorkspaceSearchComponent', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
+        provideAppStateServiceMock(),
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: WorkspaceAPIService, useValue: wApiServiceSpy }
       ]
     }).compileComponents()
+
+    mockAppStateService = TestBed.inject(AppStateServiceMock)
+    mockAppStateService.currentWorkspace$.publish({
+      workspaceName: currentWorkspace.workspaceName
+    } as Workspace)
   }))
 
   beforeEach(() => {
