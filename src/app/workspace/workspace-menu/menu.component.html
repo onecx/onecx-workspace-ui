@@ -110,7 +110,6 @@
               [pTooltip]="'ACTIONS.NAVIGATION.GOTO_WORKSPACE_ROLES' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
-              role="link"
             />
             <p-button
               *ocxIfPermission="'WORKSPACE#GOTO_PERMISSION'"
@@ -123,7 +122,6 @@
               [pTooltip]="'ACTIONS.NAVIGATION.GOTO_WORKSPACE_PERMISSIONS' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
-              role="link"
             />
             <p-button
               id="ws_menu_table_action_reload"
@@ -264,10 +262,10 @@
             </th>
           }
           <!-- HEADER ROW: ROLE Columns, filtered -->
-          @if (displayRoles && !loadingMenu) {
+          @if (displayRoles) {
             <!-- ROLE FILTER actions -->
             <th
-              id="ws_menu_table_header_row_1"
+              id="ws_menu_table_header_row_role_filter"
               class="p-0 text-right vertical-align-bottom border-transparent border-bottom-2 menu-name"
             >
               @if (!loadingRoles && columns.length > 0) {
@@ -294,7 +292,7 @@
                     [rounded]="true"
                     [icon]="'pi pi-filter-slash'"
                     [id]="'ws_menu_table_header_roles_action_filter_clear'"
-                    (click)="onRoleColumnFilterReset()"
+                    (onClick)="onRoleColumnFilterReset()"
                     [attr.aria-label]="'DIALOG.MENU.ROLE.FILTER.CLEAR' | translate"
                     [pTooltip]="'DIALOG.MENU.ROLE.FILTER.CLEAR' | translate"
                     tooltipPosition="top"
@@ -305,7 +303,7 @@
             </th>
             <!-- ROLE MESSAGES -->
             @if (columns.length === 0) {
-              <th class="p-1 pt-0 border-bottom-2 border-transparent">
+              <th id="ws_menu_table_header_row_role_messages" class="p-1 pt-0 border-bottom-2 border-transparent">
                 @if (loadingRoles) {
                   <p-message severity="info" [text]="'DIALOG.MENU.HEADER.ROLES.LOADING' | translate"></p-message>
                 } @else {
@@ -320,6 +318,7 @@
               <!-- ROLE COLUMNS - filtered columns => no match = no columns -->
               <th
                 *ngFor="let role of columns"
+                [id]="'ws_menu_table_header_row_role_' + role.name"
                 class="pt-2 pb-1 px-1 hidden-xs text-center border-bottom-2 border-right-1 role-name"
               >
                 <button
