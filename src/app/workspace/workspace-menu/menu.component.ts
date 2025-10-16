@@ -70,7 +70,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   public treeNodeLabelSwitchValueOrg = '' // prevent bug in PrimeNG SelectButton
   public treeFilteredRows = 0
   public currentLogoUrl: string | undefined = undefined
-  public roleFilterValue: string[] = []
+  public roleColumnFilterValue: string[] = []
   public permissionEndpointExist = false
 
   // data
@@ -326,7 +326,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
   public onToggleTreeTableContent(ev: any): void {
     this.displayRoles = ev.value === 'ROLES'
-    if (!this.displayRoles) this.onColumnRoleFilterReset()
+    if (!this.displayRoles) this.onRoleColumnFilterReset()
     this.loadRolesAndAssignments()
   }
   // change visibility of menu item by click in tree
@@ -392,18 +392,20 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   // ROLES
-  public onRoleFilterChange(val: string): void {
+  //   filter role name
+  public onRoleNameFilterChange(val: string): void {
     this.wRolesFiltered = this.wRoles.filter((r) => r.name!.indexOf(val) >= 0)
   }
-  public onColumnRoleFilterReset(): void {
-    if (this.roleFilterValue.length > 0) {
-      this.roleFilterValue = []
+  public onRoleColumnFilterReset(): void {
+    if (this.roleColumnFilterValue.length > 0) {
+      this.roleColumnFilterValue = []
       this.loadMenu(true)
     }
   }
-  public onColumnRoleFilterChange(role: string): void {
-    if (this.roleFilterValue.includes(role)) this.roleFilterValue = this.roleFilterValue.filter((r) => r !== role)
-    else this.roleFilterValue.push(role)
+  public onRoleColumnFilterChange(role: string): void {
+    if (this.roleColumnFilterValue.includes(role))
+      this.roleColumnFilterValue = this.roleColumnFilterValue.filter((r) => r !== role)
+    else this.roleColumnFilterValue.push(role)
     this.loadMenu(true)
   }
   public onDisplayRoles(): void {
@@ -644,14 +646,13 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   public loadMenu(restore: boolean): void {
     if (!this.workspace) return
-    //this.menuItems = []
     this.menuItem = undefined
     this.loadingMenu = true
     this.treeFilteredRows = 0
 
     this.menuApi
       .getMenuStructure({
-        menuStructureSearchCriteria: { workspaceId: this.workspace.id!, roles: this.roleFilterValue }
+        menuStructureSearchCriteria: { workspaceId: this.workspace.id!, roles: this.roleColumnFilterValue }
       })
       .pipe(
         map((result) => result.menuItems),
@@ -666,7 +667,9 @@ export class MenuComponent implements OnInit, OnDestroy {
         next: (data) => {
           this.menuItems = data
           this.treeFilteredRows = this.menuItems.length
-          if (this.menuItems.length > 0) {
+          if (this.menuItems.length === 0) {
+            this.menuNodes = []
+          } else {
             this.menuNodes = this.mapToTreeNodes(this.menuItems)
             this.prepareTreeNodeHelper(restore)
             if (this.wRoles.length > 0) this.assignNode2Role(this.wAssignments)
@@ -723,8 +726,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   private loadRolesAndAssignments() {
     if (!this.displayRoles || this.wRoles.length > 0) return
     this.loadingRoles = true
-    this.wRoles = this.wRolesFiltered = []
-    this.wAssignments = []
+    this.wRoles = this.wRolesFiltered = this.wAssignments = []
     combineLatest([this.searchRoles(), this.searchAssignments()]).subscribe(([roles, ass]) => {
       if (roles.length > 0) {
         roles.sort(this.sortRoleByName)
@@ -755,6 +757,10 @@ export class MenuComponent implements OnInit, OnDestroy {
     return treeNode
   }
 
+  /****************************************************************************
+   * GRANT ACCESS
+   *   => assign a menu item to a role ... and do it also for the hierarchy upwards
+   */
   public onGrantPermission(rowNode: TreeNode, rowData: MenuItemNodeData, roleId: string): void {
     if (!rowData?.roles[roleId]) {
       this.assApi
@@ -765,6 +771,8 @@ export class MenuComponent implements OnInit, OnDestroy {
           next: (data) => {
             this.msgService.success({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.GRANT_OK' })
             rowData.roles[roleId] = data.id
+            this.wAssignments.push(data) // sync assignment store!
+            // grant parent too so that the menu item is accessible
             if (rowNode.parent) {
               this.onGrantPermission(rowNode.parent, rowNode.parent.data, roleId)
             }
@@ -776,11 +784,16 @@ export class MenuComponent implements OnInit, OnDestroy {
         })
     } else if (rowNode.parent) this.onGrantPermission(rowNode.parent, rowNode.parent.data, roleId)
   }
+
+  /****************************************************************************
+   * REVOKE ACCESS
+   */
   public onRevokePermission(rowData: MenuItemNodeData, roleId: string, assId: string): void {
     this.assApi.deleteAssignment({ id: assId }).subscribe({
       next: () => {
         this.msgService.success({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.REVOKE_OK' })
         rowData.roles[roleId] = undefined
+        this.wAssignments = this.wAssignments.filter((ass) => ass.id !== assId) // sync assignment store!
       },
       error: (err) => {
         this.msgService.error({ summaryKey: 'DIALOG.MENU.ASSIGNMENT.REVOKE_NOK' })
