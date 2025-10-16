@@ -4,7 +4,7 @@ import { Location } from '@angular/common'
 import { catchError, first, of, tap } from 'rxjs'
 import { SelectItem } from 'primeng/api'
 
-import { PortalMessageService, WorkspaceService } from '@onecx/angular-integration-interface'
+import { WorkspaceService } from '@onecx/angular-integration-interface'
 
 import { RefType } from 'src/app/shared/generated'
 

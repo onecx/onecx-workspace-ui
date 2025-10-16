@@ -10,7 +10,6 @@ import {
   OnChanges,
   SimpleChanges
 } from '@angular/core'
-import { Router } from '@angular/router'
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { catchError, finalize, firstValueFrom, map, Observable, of, Subject, switchMap, takeUntil } from 'rxjs'
 import { TranslateService } from '@ngx-translate/core'
