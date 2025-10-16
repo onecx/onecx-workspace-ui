@@ -182,81 +182,102 @@
       for="ws_detail_props_item_base_url_link"
       aria-hidden="true"
     >
-      {{ ('VALIDATION.HINTS.FORMAT_URL' | translate) + urlPatternRelative }}
+      {{ 'VALIDATION.HINTS.FORMAT_BASE_URL' | translate }}
     </label>
   </article>
 
   <article
     *ngIf="(productPaths$ | async) ?? [] as paths"
-    class="p-inputgroup mb-1 w-full"
-    controlErrorAnchor
+    class="w-full"
     [attr.aria-label]="'WORKSPACE.HOME_PAGE' | translate"
   >
-    <span class="p-float-label">
-      <p-dropdown
-        #inputHomePage
-        id="ws_detail_props_item_home_page"
-        formControlName="homePage"
-        styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
-        (onClick)="onOpenProductPaths(paths); $event.stopPropagation()"
-        [options]="paths"
-        [editable]="true"
-        [showClear]="true"
-        [ariaLabel]="'WORKSPACE.HOME_PAGE' | translate"
-        [pTooltip]="'WORKSPACE.TOOLTIPS.HOME_PAGE' | translate"
-        tooltipPosition="top"
+    <div class="p-inputgroup mb-1" controlErrorAnchor>
+      <span class="p-float-label">
+        <p-dropdown
+          #inputHomePage
+          id="ws_detail_props_item_home_page"
+          formControlName="homePage"
+          styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
+          (onClick)="onOpenProductPaths(paths); $event.stopPropagation()"
+          [options]="paths"
+          [editable]="true"
+          [showClear]="true"
+          [ariaLabel]="'WORKSPACE.HOME_PAGE' | translate"
+          [pTooltip]="'WORKSPACE.TOOLTIPS.HOME_PAGE' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        >
+        </p-dropdown>
+        <label for="ws_detail_props_item_home_page" aria-hidden="true">{{ 'WORKSPACE.HOME_PAGE' | translate }} </label>
+      </span>
+      <a
+        tabindex="0"
+        id="ws_detail_props_item_home_page_link"
+        class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
+        [ngClass]="!editMode && !workspace?.disabled && inputHomePage.value ? 'cursor-pointer' : 'p-disabled'"
+        target="_blank"
+        [href]="prepareProductUrl(inputHomePage.value)"
+        (click)="$event.stopPropagation()"
+        [attr.aria-label]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
+        [pTooltip]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
+        tooltipPosition="right"
         tooltipEvent="hover"
+        role="link"
       >
-      </p-dropdown>
-      <label for="ws_detail_props_item_home_page" aria-hidden="true">{{ 'WORKSPACE.HOME_PAGE' | translate }} </label>
-    </span>
-    <a
-      tabindex="0"
-      id="ws_detail_props_item_homePage_link"
-      class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
-      [ngClass]="!editMode && !workspace?.disabled && inputHomePage.value ? 'cursor-pointer' : 'p-disabled'"
-      target="_blank"
-      [href]="prepareProductUrl(inputHomePage.value)"
-      (click)="$event.stopPropagation()"
-      [attr.aria-label]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
-      [pTooltip]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
-      tooltipPosition="right"
-      tooltipEvent="hover"
-      role="link"
+      </a>
+    </div>
+    <label
+      *ngIf="editMode"
+      class="ocx-control-hint block"
+      style="color: var(--emphasis-medium)"
+      for="ws_detail_props_item_home_page_link"
+      aria-hidden="true"
     >
-    </a>
+      {{ 'VALIDATION.HINTS.FORMAT_HOME_PAGE' | translate }}
+    </label>
   </article>
 
-  <article class="p-inputgroup mb-1 w-full" controlErrorAnchor [attr.aria-label]="'WORKSPACE.RSS_FEED_URL' | translate">
-    <span class="p-float-label">
-      <input
-        #inputRssFeedUrl
-        pInputText
-        type="text"
-        id="ws_detail_props_item_rssFeedUrl"
-        class="w-full pt-3 pb-2 text-responsive"
-        formControlName="rssFeedUrl"
-        [attr.aria-label]="'WORKSPACE.RSS_FEED_URL' | translate"
-        [pTooltip]="'WORKSPACE.TOOLTIPS.RSS_FEED_URL' | translate"
-        tooltipPosition="top"
+  <article class="w-full" controlErrorAnchor [attr.aria-label]="'WORKSPACE.RSS_FEED_URL' | translate">
+    <div class="p-inputgroup mb-1" controlErrorAnchor>
+      <span class="p-float-label">
+        <input
+          #inputRssFeedUrl
+          pInputText
+          type="text"
+          id="ws_detail_props_item_rssFeedUrl"
+          class="w-full pt-3 pb-2 text-responsive"
+          formControlName="rssFeedUrl"
+          [attr.aria-label]="'WORKSPACE.RSS_FEED_URL' | translate"
+          [pTooltip]="'WORKSPACE.TOOLTIPS.RSS_FEED_URL' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        />
+        <label for="ws_detail_props_item_rssFeedUrl" aria-hidden="true">
+          {{ 'WORKSPACE.RSS_FEED_URL' | translate }}
+        </label>
+      </span>
+      <button
+        id="ws_detail_props_item_rssFeedUrl_link"
+        class="p-inputgroup-addon bg-primary pseudo-button"
+        [ngClass]="inputRssFeedUrl.value ? 'cursor-pointer' : 'p-disabled'"
+        (click)="Utils.copyToClipboard(workspace?.rssFeedUrl)"
+        [attr.aria-label]="'ACTIONS.COPY.CLIPBOARD' | translate"
+        [pTooltip]="'ACTIONS.COPY.CLIPBOARD' | translate"
+        tooltipPosition="right"
         tooltipEvent="hover"
-      />
-      <label for="ws_detail_props_item_rssFeedUrl" aria-hidden="true">
-        {{ 'WORKSPACE.RSS_FEED_URL' | translate }}
-      </label>
-    </span>
-    <button
-      id="ws_detail_props_item_rssFeedUrl_link"
-      class="p-inputgroup-addon bg-primary pseudo-button"
-      [ngClass]="inputRssFeedUrl.value ? 'cursor-pointer' : 'p-disabled'"
-      (click)="Utils.copyToClipboard(workspace?.rssFeedUrl)"
-      [attr.aria-label]="'ACTIONS.COPY.CLIPBOARD' | translate"
-      [pTooltip]="'ACTIONS.COPY.CLIPBOARD' | translate"
-      tooltipPosition="right"
-      tooltipEvent="hover"
+      >
+        <span class="pi pi-copy" aria-hidden="true"></span>
+      </button>
+    </div>
+    <label
+      *ngIf="editMode"
+      class="ocx-control-hint block"
+      style="color: var(--emphasis-medium)"
+      for="ws_detail_props_item_home_page_link"
+      aria-hidden="true"
     >
-      <span class="pi pi-copy" aria-hidden="true"></span>
-    </button>
+      {{ 'VALIDATION.HINTS.FORMAT_FEED_URL' | translate }}
+    </label>
   </article>
 
   <!-- LOGO -->
@@ -344,7 +365,7 @@
         for="ws_detail_props_item_logo_url"
         aria-hidden="true"
       >
-        {{ ('VALIDATION.HINTS.FORMAT_URL' | translate) + urlPatternAbsolute }}
+        {{ 'VALIDATION.HINTS.FORMAT_IMAGE_URL' | translate }}
       </label>
     </div>
   </article>
@@ -441,7 +462,7 @@
         for="ws_detail_props_item_logo_small_url"
         aria-hidden="true"
       >
-        {{ ('VALIDATION.HINTS.FORMAT_URL' | translate) + urlPatternAbsolute }}
+        {{ 'VALIDATION.HINTS.FORMAT_IMAGE_URL' | translate }}
       </label>
     </div>
   </article>

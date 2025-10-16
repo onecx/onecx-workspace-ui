@@ -109,7 +109,6 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
       // check detail endpoint exists
       this.permissionEndpointExist = Utils.doesEndpointExist(
         this.workspaceService,
-        this.msgService,
         'onecx-permission',
         'onecx-permission-ui',
         'workspace'

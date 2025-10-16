@@ -43,13 +43,11 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   public bffUrl: Partial<Record<RefType, string | undefined>> = {}
   public imageBasePath = this.imageApi.configuration.basePath
   public imageMaxSize = 1000000
-  public urlPatternAbsolute = 'http(s)://path-to-image'
 
   // data
   public formGroup: FormGroup
   public productPaths$: Observable<string[]> = of([]) // to fill drop down with product paths
   public deploymentPath: string | undefined = undefined
-  public urlPatternRelative = '/base-path-to-workspace'
   public themeEndpointExist = false
 
   // slot configuration: get theme data
@@ -82,7 +80,11 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
         Validators.minLength(1),
         Validators.pattern('^/.*')
       ]),
-      homePage: new FormControl<string | null>(null),
+      homePage: new FormControl<string | null>(null, [
+        Validators.required,
+        Validators.minLength(1),
+        Validators.pattern('^/.*')
+      ]),
       logoUrl: new FormControl<string | null>(null, [
         Validators.minLength(7),
         Validators.maxLength(255),
@@ -122,7 +124,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       // check detail endpoint exists
       this.themeEndpointExist = Utils.doesEndpointExist(
         this.workspaceService,
-        this.msgService,
         'onecx-theme',
         'onecx-theme-ui',
         'theme-detail'

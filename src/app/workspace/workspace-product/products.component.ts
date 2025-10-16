@@ -10,7 +10,6 @@ import {
   OnChanges,
   SimpleChanges
 } from '@angular/core'
-import { Router } from '@angular/router'
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { catchError, finalize, firstValueFrom, map, Observable, of, Subject, switchMap, takeUntil } from 'rxjs'
 import { TranslateService } from '@ngx-translate/core'
@@ -40,8 +39,6 @@ import {
   WorkspaceProductAPIService,
   UIEndpoint
 } from 'src/app/shared/generated'
-
-import { environment } from 'src/environments/environment'
 import { Utils } from 'src/app/shared/utils'
 
 export type ExtendedMicrofrontend = Microfrontend & {
@@ -81,6 +78,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   @Output() changed = new EventEmitter()
 
   private readonly destroy$ = new Subject()
+  // dialog
   public exceptionKey: string | undefined = undefined
   public psLoading = false
   public wpLoading = false
@@ -88,7 +86,6 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   public hasRegisterPermission = false
   public permissionEndpointExist = false
   public productEndpointExist = false
-
   public displayDetails = false
   public displayedDetailItem: ExtendedProduct | undefined = undefined
   public formGroup: FormGroup
@@ -102,10 +99,6 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   public displayDeregisterConfirmation = false
   private deregisterItems: ExtendedProduct[] = []
 
-  limitText = Utils.limitText
-  environment = environment
-  prepareUrlPath = Utils.prepareUrlPath
-
   // data
   public wProducts$!: Observable<ExtendedProduct[]>
   public wProducts: ExtendedProduct[] = [] // registered products
@@ -115,7 +108,6 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   public currentMfe!: MfeInfo
 
   constructor(
-    private readonly router: Router,
     private readonly workspaceService: WorkspaceService,
     private readonly wProductApi: WorkspaceProductAPIService,
     private readonly psProductApi: ProductAPIService,
@@ -151,15 +143,12 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
       // check detail endpoint exists
       this.productEndpointExist = Utils.doesEndpointExist(
         this.workspaceService,
-        this.msgService,
         'onecx-product-store',
         'onecx-product-store-ui',
         'product-detail'
       )
-      // check detail endpoint exists
       this.permissionEndpointExist = Utils.doesEndpointExist(
         this.workspaceService,
-        this.msgService,
         'onecx-permission',
         'onecx-permission-ui',
         'product'
