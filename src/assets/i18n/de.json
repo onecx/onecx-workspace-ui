@@ -247,7 +247,8 @@
     "TOOLTIPS": {
       "BASE_URL": "Basispfad in der Webadresse des Workspace",
       "DESCRIPTION": "Detaillierte Beschreibung des Workspace",
-      "DISABLED": "Wenn gesetzt dann kann der Workspace zwar konfiguriert werden aber eine Benutzung ist nicht möglich.",
+      "DISABLED": "Wenn gesetzt dann kann der Workspace nicht Benutzung ist nicht möglich.",
+      "DISABLED.DISPLAY": "Der Workspace kann nicht benutzt werden.",
       "DISPLAY_NAME": "Angezeigter Name, der beliebig verändert werden kann",
       "FOOTER_LABEL": "Text in der Fußzeile der Seite",
       "HOME_PAGE": "Startseite vom Workspace, die angezeigt wird, wenn zu keiner speziellen Applikation navigiert wird.",
@@ -675,7 +676,11 @@
   "VALIDATION": {
     "FORM_INVALID": "Das Formular enthält ungültige Werte.",
     "HINTS": {
-      "FORMAT_URL": "Format: "
+      "FORMAT_URL": "Format: ",
+      "FORMAT_BASE_URL": "Format: /pfad-zum-workspace",
+      "FORMAT_FEED_URL": "Format: /pfad-zum-feed",
+      "FORMAT_IMAGE_URL": "Format: http(s)://pfad-zum-bild",
+      "FORMAT_HOME_PAGE": "Format: /pfad-zur-registrierten-app"
     },
     "ERRORS": {
       "PARSE_ERROR": "Parserfehler: Die enthaltene Struktur entspricht nicht dem erwarteten Format.",

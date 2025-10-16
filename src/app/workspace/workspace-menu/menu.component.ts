@@ -154,7 +154,6 @@ export class MenuComponent implements OnInit, OnDestroy {
     // check detail endpoint exists
     this.permissionEndpointExist = Utils.doesEndpointExist(
       this.workspaceService,
-      this.msgService,
       'onecx-permission',
       'onecx-permission-ui',
       'workspace'
