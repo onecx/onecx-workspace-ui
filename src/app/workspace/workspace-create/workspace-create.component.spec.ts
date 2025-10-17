@@ -15,7 +15,6 @@ import { APP_CONFIG } from '@onecx/portal-integration-angular'
 import { ProductAPIService, Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
 import { environment } from 'src/environments/environment'
 import { Theme, WorkspaceCreateComponent } from './workspace-create.component'
-import { CurrentThemeTopic } from '@onecx/integration-interface'
 
 const workspace: Workspace = {
   id: 'id',

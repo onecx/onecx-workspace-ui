@@ -2,10 +2,10 @@ import { Component, EventEmitter, Input, Output, OnInit, ViewChild, ElementRef }
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
-import { BehaviorSubject, catchError, map, Observable, of, tap } from 'rxjs'
+import { BehaviorSubject, catchError, map, Observable, of } from 'rxjs'
 
 import { SlotService } from '@onecx/angular-remote-components'
-import { PortalMessageService, Theme as CurrTheme, ThemeService } from '@onecx/angular-integration-interface'
+import { PortalMessageService, ThemeService } from '@onecx/angular-integration-interface'
 
 import { Utils } from 'src/app/shared/utils'
 import { WorkspaceAPIService, ProductAPIService } from 'src/app/shared/generated'
