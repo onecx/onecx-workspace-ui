@@ -1,0 +1,90 @@
+<ng-container *ngIf="item as item">
+  <li
+    [id]="id"
+    class="slim-menu-list-item flex flex-column align-items-center justify-content-center"
+    [ngClass]="{
+      'slim-menu-list-item-active': item.active,
+      'slim-menu-list-item-plus': activeMode === SlimMenuMode.SLIM_PLUS
+    }"
+  >
+    <ng-container
+      [ngTemplateOutlet]="itemTemplate"
+      [ngTemplateOutletContext]="{ $implicit: item, i: index }"
+    ></ng-container>
+  </li>
+
+  <ng-template #itemTemplate let-item let-i="index">
+    <ng-container *ngIf="item.type === ItemType.ROUTER_LINK">
+      <ng-container *ngTemplateOutlet="routerLinkTemplate; context: { $implicit: item, i: i }"></ng-container>
+    </ng-container>
+    <ng-container *ngIf="item.type === ItemType.URL">
+      <ng-container *ngTemplateOutlet="urlTemplate; context: { $implicit: item, i: i }"></ng-container>
+    </ng-container>
+    <ng-container *ngIf="item.type === ItemType.ACTION">
+      <ng-container *ngTemplateOutlet="actionTemplate; context: { $implicit: item, i: i }"></ng-container>
+    </ng-container>
+  </ng-template>
+
+  <ng-template #routerLinkTemplate let-item let-i="index">
+    <a
+      tabIndex="0"
+      [id]="'ws_slim_vertical_main_menu_list_item_' + (i + 1) + '_link'"
+      pRipple
+      [routerLink]="item.routerLink"
+      [pTooltip]="item.label"
+      tooltipPosition="right"
+      tooltipEvent="both"
+      class="slim-menu-list-item-link outline-none cursor-pointer"
+    >
+      <ng-container *ngTemplateOutlet="iconTemplate; context: { $implicit: item }"></ng-container>
+      <ng-container *ngTemplateOutlet="textTemplate; context: { $implicit: item }"></ng-container>
+    </a>
+  </ng-template>
+
+  <ng-template #urlTemplate let-item let-i="index">
+    <a
+      tabIndex="0"
+      [id]="'ws_slim_vertical_main_menu_list_item_' + (i + 1) + '_link'"
+      pRipple
+      [attr.href]="item.url"
+      [pTooltip]="item.label"
+      tooltipPosition="right"
+      tooltipEvent="both"
+      class="slim-menu-list-item-link outline-none cursor-pointer"
+    >
+      <ng-container *ngTemplateOutlet="iconTemplate; context: { $implicit: item }"></ng-container>
+      <ng-container *ngTemplateOutlet="textTemplate; context: { $implicit: item }"></ng-container>
+    </a>
+  </ng-template>
+
+  <ng-template #actionTemplate let-item let-i="index">
+    <button
+      tabIndex="0"
+      class="slim-menu-list-item-button outline-none cursor-pointer border-none"
+      [id]="'ws_slim_vertical_main_menu_list_item_' + (i + 1) + '_button'"
+      pRipple
+      [pTooltip]="item.label"
+      tooltipPosition="right"
+      tooltipEvent="both"
+      (click)="item.command({})"
+      (keydown.enter)="item.command({})"
+    >
+      <ng-container *ngTemplateOutlet="iconTemplate; context: { $implicit: item }"></ng-container>
+      <ng-container *ngTemplateOutlet="textTemplate; context: { $implicit: item }"></ng-container>
+    </button>
+  </ng-template>
+
+  <ng-template #textTemplate let-item>
+    <ng-container *ngIf="activeMode === SlimMenuMode.SLIM_PLUS">
+      <div class="flex justify-content-center align-items-center">
+        <span class="slim-menu-list-item-text">{{ item.label }}</span>
+      </div>
+    </ng-container>
+  </ng-template>
+
+  <ng-template #iconTemplate let-item>
+    <div class="flex justify-content-center align-items-center">
+      <i class="slim-menu-list-item-icon" [ngClass]="item.icon ?? 'pi-question'" aria-hidden="true"></i>
+    </div>
+  </ng-template>
+</ng-container>

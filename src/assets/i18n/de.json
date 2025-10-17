@@ -675,6 +675,11 @@
     "TOGGLE_MENU": {
       "ARIA_LABEL": "Menü ein/aus",
       "TOOLTIP": "Menü ein/aus"
+    },
+    "SLIM_USER_MENU": {
+      "GUEST": "Guest",
+      "LOGOUT": "Abmelden",
+      "TOOLTIP": "User menu"
     }
   },
   "VALIDATION": {
