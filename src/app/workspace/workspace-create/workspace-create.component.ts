@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnInit, ViewChild, ElementRef } from '@angular/core'
+import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
@@ -33,7 +33,6 @@ export class WorkspaceCreateComponent implements OnInit {
   public minimumImageHeight = 150
   public fetchingLogoUrl?: string
   public currentTheme$: Observable<Theme>
-  @ViewChild('themeDropDown', { static: true }) themeDropDown!: ElementRef
 
   // slot configuration: get theme infos
   public slotName = 'onecx-theme-data'
@@ -61,7 +60,7 @@ export class WorkspaceCreateComponent implements OnInit {
       displayName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
       theme: new FormControl(null, [Validators.required]),
       homePage: new FormControl(null, [Validators.maxLength(255)]),
-      logoUrl: new FormControl('', [Validators.maxLength(255)]),
+      logoUrl: new FormControl('', [Validators.minLength(2), Validators.maxLength(255), Validators.pattern('^/.*')]),
       baseUrl: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.pattern('^/.*')]),
       footerLabel: new FormControl(null, [Validators.maxLength(255)]),
       description: new FormControl(null, [Validators.maxLength(255)])
