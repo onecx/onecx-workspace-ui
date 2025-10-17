@@ -4,7 +4,7 @@ import { Location } from '@angular/common'
 import { catchError, first, of, tap } from 'rxjs'
 import { SelectItem } from 'primeng/api'
 
-import { PortalMessageService, WorkspaceService } from '@onecx/angular-integration-interface'
+import { WorkspaceService } from '@onecx/angular-integration-interface'
 
 import { RefType } from 'src/app/shared/generated'
 
@@ -92,11 +92,13 @@ const Utils = {
     return `${year}-${month}-${day}_${hours}${minutes}${seconds}`
   },
 
-  // paths, bff etc.
-  prepareUrlPath(url?: string, path?: string): string {
+  /**
+   * Paths
+   */
+  prepareUrlPath(url?: string, path?: string): string | undefined {
     if (url && path) return Location.joinWithSlash(url, path)
     else if (url) return url
-    else return ''
+    else return undefined
   },
   bffImageUrl(basePath: string | undefined, name: string | undefined, refType: RefType): string {
     return !name ? '' : basePath + '/images/' + name + '/' + refType
@@ -110,7 +112,6 @@ const Utils = {
    */
   doesEndpointExist(
     workspaceService: WorkspaceService,
-    msgService: PortalMessageService,
     productName: string,
     appId: string,
     endpointName: string
@@ -121,14 +122,7 @@ const Utils = {
       .pipe(
         first(),
         tap((exists) => {
-          if (!exists) {
-            console.error(`Routing not possible to workspace for endpoint: ${productName} ${appId} ${endpointName}`)
-            msgService.error({
-              summaryKey: 'EXCEPTIONS.ENDPOINT.NOT_EXIST',
-              summaryParameters: { product: productName, endpoint: endpointName },
-              detailKey: 'EXCEPTIONS.CONTACT_ADMIN'
-            })
-          }
+          if (!exists) console.error(`Routing not possible for endpoint: ${productName} ${appId} ${endpointName}`)
         }),
         catchError((err) => {
           console.error('doesUrlExistFor', err)

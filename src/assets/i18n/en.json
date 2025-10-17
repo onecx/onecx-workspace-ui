@@ -248,6 +248,7 @@
       "BASE_URL": "Base path in the workspace's web address",
       "DESCRIPTION": "Detailed description of the workspace",
       "DISABLED": "If set then the workspace can be configured but cannot be used.",
+      "DISABLED.DISPLAY": "The workspace cannot be used.",
       "DISPLAY_NAME": "Displayed name of this workspace, can be changed",
       "FOOTER_LABEL": "Label text displayed in the footer of the page",
       "HOME_PAGE": "Home page of the workspace, which is displayed when no specific Application is navigated to.",
@@ -684,7 +685,11 @@
   "VALIDATION": {
     "FORM_INVALID": "The form contains invalid values.",
     "HINTS": {
-      "FORMAT_URL": "Format: "
+      "FORMAT_URL": "Format: ",
+      "FORMAT_BASE_URL": "Format: /path-to-workspace",
+      "FORMAT_FEED_URL": "Format: /pfad-zum-feed",
+      "FORMAT_IMAGE_URL": "Format: http(s)://path-to-image",
+      "FORMAT_HOME_PAGE": "Format: /path-to-registered-app"
     },
     "ERRORS": {
       "PARSE_ERROR": "Parse error: The contained structure does not match the expected format.",
