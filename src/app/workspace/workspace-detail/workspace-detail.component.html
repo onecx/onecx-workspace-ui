@@ -25,21 +25,19 @@
     ></p-message>
 
     <!-- showOperatorMessage -->
-    <ng-container *ocxIfPermission="'WORKSPACE#EDIT'">
+    <div *ocxIfPermission="'WORKSPACE#EDIT'" class="relative">
       <!-- PrimeNG  17: Using p-messages uses the correct alert role (aria)
            PrimeNG >17: Try again with p-message - check correct use of aria role
       -->
-      <div class="relative">
-        <p-messages
-          *ngIf="workspace?.operator && showOperatorMessage"
-          [(value)]="messages"
-          [enableService]="false"
-          [style]="{ 'margin-top': '35px', right: '22px', left: '22px' }"
-          styleClass="absolute z-1"
-        >
-        </p-messages>
-      </div>
-    </ng-container>
+      <p-messages
+        *ngIf="workspace?.operator && showOperatorMessage"
+        [(value)]="messages"
+        [enableService]="false"
+        [style]="{ 'margin-top': '35px', right: '10px', left: '10px' }"
+        styleClass="absolute z-1"
+      >
+      </p-messages>
+    </div>
 
     <p-tabView *ngIf="!exceptionKey" (onChange)="onTabChange($event, workspace)" [activeIndex]="selectedTabIndex">
       <p-tabPanel
@@ -151,7 +149,6 @@
         *ngIf="workspace?.mandatory"
         id="th_delete_reject_mandatory_message"
         severity="info"
-        styleClass="p-2"
         [text]="'ACTIONS.DELETE.WORKSPACE.MESSAGE_REJECT_MANDATORY' | translate"
       ></p-message>
       <div *ngIf="!workspace?.mandatory" class="flex flex-column row-gap-2">
@@ -162,7 +159,7 @@
           *ngIf="workspace?.operator"
           id="ws_delete_operator_hint"
           severity="info"
-          styleClass="mt-1 p-2"
+          styleClass="mt-1"
           [text]="'ACTIONS.DELETE.WORKSPACE.MESSAGE_INFO_OPERATOR' | translate"
         ></p-message>
       </div>
