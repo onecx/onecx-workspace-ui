@@ -1,18 +1,18 @@
-import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core'
+import { Component, EventEmitter, Input, Output, OnInit, ViewChild, ElementRef } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
-import { BehaviorSubject, catchError, map, Observable, of } from 'rxjs'
+import { BehaviorSubject, catchError, map, Observable, of, tap } from 'rxjs'
 
 import { SlotService } from '@onecx/angular-remote-components'
-import { PortalMessageService } from '@onecx/angular-integration-interface'
+import { PortalMessageService, Theme as CurrTheme, ThemeService } from '@onecx/angular-integration-interface'
 
 import { Utils } from 'src/app/shared/utils'
 import { WorkspaceAPIService, ProductAPIService } from 'src/app/shared/generated'
 
 export type Theme = {
   name: string
-  displayName: string
+  displayName?: string
   logoUrl?: string
   faviconUrl?: string
 }
@@ -32,6 +32,8 @@ export class WorkspaceCreateComponent implements OnInit {
   public minimumImageWidth = 150
   public minimumImageHeight = 150
   public fetchingLogoUrl?: string
+  public currentTheme$: Observable<Theme>
+  @ViewChild('themeDropDown', { static: true }) themeDropDown!: ElementRef
 
   // slot configuration: get theme infos
   public slotName = 'onecx-theme-data'
@@ -44,16 +46,20 @@ export class WorkspaceCreateComponent implements OnInit {
     private readonly router: Router,
     private readonly route: ActivatedRoute,
     private readonly slotService: SlotService,
+    private readonly themeService: ThemeService,
     private readonly workspaceApi: WorkspaceAPIService,
     private readonly message: PortalMessageService,
     private readonly translate: TranslateService,
     private readonly productApi: ProductAPIService
   ) {
+    this.currentTheme$ = this.themeService.currentTheme$
+      .asObservable()
+      .pipe(map((t) => ({ ...t, displayName: t.name }) as Theme))
     this.isThemeComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.slotName)
     this.formGroup = new FormGroup({
       name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
       displayName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
-      theme: new FormControl(null),
+      theme: new FormControl(null, [Validators.required]),
       homePage: new FormControl(null, [Validators.maxLength(255)]),
       logoUrl: new FormControl('', [Validators.maxLength(255)]),
       baseUrl: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.pattern('^/.*')]),

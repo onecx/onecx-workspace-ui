@@ -9,12 +9,13 @@ import { of, throwError } from 'rxjs'
 import { ConfirmationService } from 'primeng/api'
 import { DropdownModule } from 'primeng/dropdown'
 
-import { PortalMessageService } from '@onecx/angular-integration-interface'
+import { PortalMessageService, ThemeService } from '@onecx/angular-integration-interface'
 import { APP_CONFIG } from '@onecx/portal-integration-angular'
 
 import { ProductAPIService, Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
 import { environment } from 'src/environments/environment'
 import { Theme, WorkspaceCreateComponent } from './workspace-create.component'
+import { CurrentThemeTopic } from '@onecx/integration-interface'
 
 const workspace: Workspace = {
   id: 'id',
@@ -33,17 +34,19 @@ class MockRouter {
   navigate = jasmine.createSpy('navigate')
 }
 
-describe('WorkspaceCreateComponent', () => {
+fdescribe('WorkspaceCreateComponent', () => {
   let component: WorkspaceCreateComponent
   let fixture: ComponentFixture<WorkspaceCreateComponent>
   const mockRouter = new MockRouter()
 
-  const wApiServiceSpy = {
-    createWorkspace: jasmine.createSpy('createWorkspace').and.returnValue(of({}))
-  }
+  const wApiServiceSpy = { createWorkspace: jasmine.createSpy('createWorkspace').and.returnValue(of({})) }
   const productServiceSpy = {
     searchAvailableProducts: jasmine.createSpy('searchAvailableProducts').and.returnValue(of({}))
   }
+  class MockThemeService {
+    currentTheme$ = { asObservable: () => of({ name: 'theme' }) }
+  }
+  let mockThemeService: MockThemeService
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
   const mockActivatedRouteSnapshot: Partial<ActivatedRouteSnapshot> = { params: { id: 'mockId' } }
   const mockActivatedRoute: Partial<ActivatedRoute> = {
@@ -51,6 +54,7 @@ describe('WorkspaceCreateComponent', () => {
   }
 
   beforeEach(waitForAsync(() => {
+    mockThemeService = new MockThemeService()
     TestBed.configureTestingModule({
       declarations: [WorkspaceCreateComponent],
       imports: [
@@ -66,11 +70,12 @@ describe('WorkspaceCreateComponent', () => {
         provideHttpClient(),
         provideRouter([{ path: '', component: WorkspaceCreateComponent }]),
         { provide: APP_CONFIG, useValue: environment },
+        { provide: Router, useValue: mockRouter },
+        { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: WorkspaceAPIService, useValue: wApiServiceSpy },
         { provide: ProductAPIService, useValue: productServiceSpy },
-        { provide: ActivatedRoute, useValue: mockActivatedRoute },
-        { provide: Router, useValue: mockRouter },
+        { provide: ThemeService, useValue: mockThemeService },
         ConfirmationService
       ],
       schemas: [NO_ERRORS_SCHEMA]
@@ -105,7 +110,10 @@ describe('WorkspaceCreateComponent', () => {
   })
 
   it('should create', () => {
+    mockThemeService.currentTheme$ = { asObservable: () => of({ name: 'theme' }) }
     expect(component).toBeTruthy()
+
+    component.currentTheme$.subscribe()
   })
 
   it('should create a workspace', () => {
