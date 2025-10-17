@@ -2,14 +2,14 @@
   *ngIf="wpLoading || psLoading"
   id="ws_products_message_loading"
   severity="info"
-  styleClass="m-2 p-2"
+  styleClass="m-2"
   [text]="'ACTIONS.LOADING' | translate"
 ></p-message>
 <p-message
   *ngIf="exceptionKey"
   id="ws_products_message_error"
   severity="error"
-  styleClass="m-2 p-2"
+  styleClass="m-2"
   [text]="exceptionKey | translate"
 ></p-message>
 
