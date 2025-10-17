@@ -1,10 +1,13 @@
-<img
-  *ngIf="imageUrl$ | async as url"
-  [id]="imageId ?? 'ws_logo_' + workspaceName"
-  [class]="'border-round-sm ' + (imageStyleClass ?? '')"
-  [ocxSrc]="url"
-  (error)="onImageLoadError(url)"
-  (load)="onImageLoadSuccess()"
-  [alt]="'Logo Workspace ' + workspaceName"
-  [attr.aria-label]="'Logo Workspace ' + workspaceName"
-/>
+<!-- LOGO -->
+<div #container class="current-workspace-logo-container">
+  <img
+    *ngIf="imageUrl$ | async as url"
+    [id]="imageId ?? 'ws_logo_' + workspaceName"
+    [class]="'border-round-sm ' + (imageStyleClass ?? '')"
+    [ocxSrc]="url"
+    (error)="onImageLoadError(url)"
+    (load)="onImageLoadSuccess()"
+    [alt]="'Logo Workspace ' + workspaceName"
+    [attr.aria-label]="'Logo Workspace ' + workspaceName"
+  />
+</div>

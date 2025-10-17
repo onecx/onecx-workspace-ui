@@ -1,0 +1,18 @@
+.onecx-toggle-menu-button {
+  display: flex;
+  width: 2.5rem;
+  height: 2.5rem;
+  cursor: pointer;
+  border-radius: 50%;
+  color: var(--topbar-menu-button-text-color, #ffffff);
+  background-color: var(--topbar-menu-button-bg-color);
+  justify-content: center;
+  align-items: center;
+  i {
+    transition: transform var(--p-transition-duration);
+  }
+
+  & .hidden {
+    display: none;
+  }
+}

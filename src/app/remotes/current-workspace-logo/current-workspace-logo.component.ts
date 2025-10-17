@@ -1,7 +1,17 @@
-import { Component, EventEmitter, inject, Inject, Input, NO_ERRORS_SCHEMA } from '@angular/core'
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  inject,
+  Inject,
+  Input,
+  NO_ERRORS_SCHEMA,
+  OnDestroy,
+  ViewChild
+} from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
-import { UntilDestroy } from '@ngneat/until-destroy'
-import { BehaviorSubject, ReplaySubject } from 'rxjs'
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
+import { BehaviorSubject, filter, ReplaySubject } from 'rxjs'
 
 import {
   AngularRemoteComponentsModule,
@@ -16,10 +26,37 @@ import { PortalCoreModule } from '@onecx/portal-integration-angular'
 import { Configuration, RefType, WorkspaceAPIService } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
 import { environment } from 'src/environments/environment'
+import { EventsTopic } from '@onecx/integration-interface'
 
+// Copied over from libs v7. Remove once migrating to v7.
+enum EventType {
+  NAVIGATED = 'navigated',
+  AUTH_LOGOUT_BUTTON_CLICKED = 'authentication#logoutButtonClicked',
+  SLOT_RESIZED = 'slot#resized'
+}
+// Copied over from libs v7. Remove once migrating to v7.
+type SlotResizedDetails = {
+  width: number
+  height: number
+}
+// Copied over from libs v7. Remove once migrating to v7.
+type SlotResizedEventPayload = {
+  slotName: string
+  slotDetails: SlotResizedDetails
+}
+// Copied over from libs v7. Remove once migrating to v7.
+type SlotResizedEvent = {
+  type: EventType.SLOT_RESIZED
+  payload: SlotResizedEventPayload
+}
+
+const RESIZE_OBSERVED_SLOT_NAME = 'onecx-shell-vertical-menu'
+const DEFAULT_WIDTH_REM = 17
+const TOGGLE_MENU_BUTTON_WIDTH_REM = 1.25
 @Component({
   selector: 'app-current-workspace-logo',
   templateUrl: './current-workspace-logo.component.html',
+  styleUrls: ['./current-workspace-logo.component.scss'],
   standalone: true,
   imports: [AngularRemoteComponentsModule, CommonModule, PortalCoreModule],
   providers: [
@@ -31,7 +68,7 @@ import { environment } from 'src/environments/environment'
   schemas: [NO_ERRORS_SCHEMA]
 })
 @UntilDestroy()
-export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
+export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, ocxRemoteWebcomponent, OnDestroy {
   // input
   @Input() imageId: string | undefined = undefined
   @Input() imageUrl: string | undefined = undefined
@@ -53,6 +90,9 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
   public defaultImageUrl: string | undefined = undefined
   public logoUrl: Partial<Record<RefType, string | undefined>> = {}
 
+  @ViewChild('container', { static: true }) container!: ElementRef
+  private eventsTopic = new EventsTopic() // NOSONAR
+
   constructor(
     @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
     private readonly workspaceApi: WorkspaceAPIService
@@ -66,6 +106,9 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
     })
     this.log('getImageUrl => ' + this.imageUrl)
   }
+  ngOnDestroy(): void {
+    this.eventsTopic.destroy()
+  }
 
   ocxInitRemoteComponent(remoteComponentConfig: RemoteComponentConfig) {
     this.baseUrl.next(remoteComponentConfig.baseUrl)
@@ -74,6 +117,8 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
     })
     if (environment.DEFAULT_LOGO_PATH)
       this.defaultImageUrl = Utils.prepareUrlPath(remoteComponentConfig.baseUrl, environment.DEFAULT_LOGO_PATH)
+
+    this.initializeContainerStyles()
   }
 
   /**
@@ -134,6 +179,38 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
     this.log('getImageUrl => stop')
     this.imageLoadingFailed.emit(true) // finally inform caller about impossibility
     return undefined
+  }
+
+  private initializeContainerStyles() {
+    this.setDefaultWidth()
+    this.initializeVerticalMenuSlotResizeListener()
+  }
+
+  private initializeVerticalMenuSlotResizeListener() {
+    this.eventsTopic
+      .pipe(
+        filter(
+          (e): e is SlotResizedEvent =>
+            e.type === EventType.SLOT_RESIZED && (e as SlotResizedEvent).payload.slotName === RESIZE_OBSERVED_SLOT_NAME
+        ),
+        untilDestroyed(this)
+      )
+      .subscribe((e) => {
+        const slotWidth = e.payload.slotDetails.width
+        if (slotWidth > 0) {
+          const widthWithSpaceForToggleButton =
+            e.payload.slotDetails.width - this.remToPx() * TOGGLE_MENU_BUTTON_WIDTH_REM
+          this.container.nativeElement.style.width = widthWithSpaceForToggleButton + 'px'
+        }
+      })
+  }
+
+  private remToPx(): number {
+    return Number.parseFloat(getComputedStyle(document.documentElement).fontSize)
+  }
+
+  private setDefaultWidth() {
+    this.container.nativeElement.style.width = DEFAULT_WIDTH_REM - TOGGLE_MENU_BUTTON_WIDTH_REM + 'rem'
   }
 
   private log(text: string) {

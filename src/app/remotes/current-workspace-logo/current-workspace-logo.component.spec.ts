@@ -7,11 +7,12 @@ import { TranslateTestingModule } from 'ngx-translate-testing'
 import { ReplaySubject } from 'rxjs'
 
 import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
-import { AppStateServiceMock, provideAppStateServiceMock } from '@onecx/angular-integration-interface/mocks'
+import { AppStateServiceMock, FakeTopic, provideAppStateServiceMock } from '@onecx/angular-integration-interface/mocks'
 import { Workspace } from '@onecx/integration-interface'
 
 import { OneCXCurrentWorkspaceLogoComponent } from './current-workspace-logo.component'
 import { RefType } from 'src/app/shared/generated'
+import { Topic } from '@onecx/accelerator'
 
 const workspace1: Partial<Workspace> = {
   id: 'w1',
@@ -22,11 +23,14 @@ const workspace1: Partial<Workspace> = {
 
 describe('OneCXCurrentWorkspaceLogoComponent', () => {
   let mockAppStateService: AppStateServiceMock
+  let fakeEventsTopic: FakeTopic<any>
 
   function setUp() {
     const fixture = TestBed.createComponent(OneCXCurrentWorkspaceLogoComponent)
     const component = fixture.componentInstance
     fixture.detectChanges()
+    fakeEventsTopic = new FakeTopic()
+    component['eventsTopic'] = fakeEventsTopic as unknown as Topic<any>
     return { fixture, component }
   }
 
@@ -197,6 +201,74 @@ describe('OneCXCurrentWorkspaceLogoComponent', () => {
 
         expect(url).toBeUndefined()
       })
+    })
+  })
+
+  describe('dynamic width', () => {
+    it('should have default width', () => {
+      const { component } = setUp()
+
+      const mockConfig: RemoteComponentConfig = {
+        appId: 'appId',
+        productName: 'prodName',
+        permissions: ['permission'],
+        baseUrl: 'base'
+      }
+
+      component.ocxRemoteComponentConfig = mockConfig
+
+      expect(component.container.nativeElement.style.width).toEqual('15.75rem')
+    })
+
+    it('should not change if slotWidth is not set', () => {
+      const { component } = setUp()
+
+      const mockConfig: RemoteComponentConfig = {
+        appId: 'appId',
+        productName: 'prodName',
+        permissions: ['permission'],
+        baseUrl: 'base'
+      }
+
+      component.ocxRemoteComponentConfig = mockConfig
+      fakeEventsTopic.publish({
+        type: 'slot#resized',
+        payload: {
+          slotName: 'onecx-shell-vertical-menu',
+          slotDetails: {
+            height: 800
+          }
+        }
+      })
+
+      expect(component.container.nativeElement.style.width).toEqual('15.75rem')
+    })
+
+    it('should change if slotWidth is set', () => {
+      document.documentElement.style.fontSize = '16px' // 1rem = 16px
+      const { component } = setUp()
+
+      const mockConfig: RemoteComponentConfig = {
+        appId: 'appId',
+        productName: 'prodName',
+        permissions: ['permission'],
+        baseUrl: 'base'
+      }
+
+      component.ocxRemoteComponentConfig = mockConfig
+      fakeEventsTopic.publish({
+        type: 'slot#resized',
+        payload: {
+          slotName: 'onecx-shell-vertical-menu',
+          slotDetails: {
+            width: 400,
+            height: 800
+          }
+        }
+      })
+
+      const expectedWidth = 400 - 16 * 1.25 + 'px'
+      expect(component.container.nativeElement.style.width).toEqual(expectedWidth)
     })
   })
 })

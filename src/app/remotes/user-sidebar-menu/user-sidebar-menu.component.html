@@ -1,36 +1,44 @@
-<p-accordion [activeIndex]="null" expandIcon="pi pi-chevron-right" collapseIcon="pi pi-chevron-down">
-  <p-accordionTab>
-    <ng-template pTemplate="header">
-      <div
-        class="flex flex-row align-items-center"
-        [ngClass]="avatarImageLoaded === true ? 'with-image' : 'without-image'"
-      >
-        <ocx-slot
-          name="onecx-avatar-image"
-          [inputs]="{
-            id: 'ocx_sidebar_action_user_avatar_image',
-            imageType: 'medium',
-            imageStyle: 'max-height: 2.5rem; max-width: 2.5rem'
-          }"
-          [outputs]="{ imageLoaded: avatarImageLoadedEmitter }"
-        ></ocx-slot>
-        <span *ngIf="avatarImageLoaded === undefined" class="font-bold text-lg pi pi-user"></span>
-        <span *ngIf="displayName$ | async as name" class="ml-2 flex flex-column row-gap-0">
-          <span
-            id="ws_user_sidebar_display_name"
-            class="font-bold"
-            [ngClass]="name.length > 30 ? 'text-sm' : ''"
-            [ngStyle]="{ 'word-break': name.length > 30 ? 'break-all' : 'normal' }"
-          >
-            {{ name }}
+<ng-container *ngIf="{ isActive: isActive$ | async, isHidden: isHidden$ | async } as state">
+  <p-accordion
+    *ngIf="state.isActive"
+    [hidden]="state.isHidden"
+    [activeIndex]="null"
+    expandIcon="pi pi-chevron-right"
+    collapseIcon="pi pi-chevron-down"
+  >
+    <p-accordionTab>
+      <ng-template pTemplate="header">
+        <div
+          class="flex flex-row align-items-center"
+          [ngClass]="avatarImageLoaded === true ? 'with-image' : 'without-image'"
+        >
+          <ocx-slot
+            name="onecx-avatar-image"
+            [inputs]="{
+              id: 'ocx_sidebar_action_user_avatar_image',
+              imageType: 'medium',
+              imageStyle: 'max-height: 2.5rem; max-width: 2.5rem'
+            }"
+            [outputs]="{ imageLoaded: avatarImageLoadedEmitter }"
+          ></ocx-slot>
+          <span *ngIf="avatarImageLoaded === undefined" class="font-bold text-lg pi pi-user"></span>
+          <span *ngIf="displayName$ | async as name" class="ml-2 flex flex-column row-gap-0">
+            <span
+              id="ws_user_sidebar_display_name"
+              class="font-bold"
+              [ngClass]="name.length > 30 ? 'text-sm' : ''"
+              [ngStyle]="{ 'word-break': name.length > 30 ? 'break-all' : 'normal' }"
+            >
+              {{ name }}
+            </span>
+            <span *ngIf="organization$ | async as orgId" id="ws_user_sidebar_orgid" class="text-sm">{{ orgId }}</span>
           </span>
-          <span *ngIf="organization$ | async as orgId" id="ws_user_sidebar_orgid" class="text-sm">{{ orgId }}</span>
-        </span>
-      </div>
-    </ng-template>
-    <ng-template pTemplate="content">
-      <p-panelMenu *ngIf="userMenu$ | async as menu" [model]="menu" styleClass="shadow-none"></p-panelMenu>
-    </ng-template>
-  </p-accordionTab>
-</p-accordion>
-<hr class="m-0" />
+        </div>
+      </ng-template>
+      <ng-template pTemplate="content">
+        <p-panelMenu *ngIf="userMenu$ | async as menu" [model]="menu" styleClass="shadow-none"></p-panelMenu>
+      </ng-template>
+    </p-accordionTab>
+  </p-accordion>
+  <hr class="m-0" />
+</ng-container>
