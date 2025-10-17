@@ -3,7 +3,9 @@ import { TranslateService } from '@ngx-translate/core'
 import { Observable, catchError, finalize, map, of } from 'rxjs'
 import { DataView } from 'primeng/dataview'
 
+import { getLocation } from '@onecx/accelerator'
 import { Action } from '@onecx/angular-accelerator'
+import { AppStateService } from '@onecx/angular-integration-interface'
 import { DataViewControlTranslations } from '@onecx/portal-integration-angular'
 
 import {
@@ -29,10 +31,12 @@ export class WorkspaceSearchComponent implements OnInit {
   public showImportDialog = false
   public RefType = RefType
   public Utils = Utils
+  public getLocation = getLocation
   public dataViewControlsTranslations$: Observable<DataViewControlTranslations> | undefined
 
   // data
   public workspaces$!: Observable<Workspace[]>
+  public currentWorkspaceName: string | undefined
   public viewMode: 'list' | 'grid' = 'grid'
   public filter: string | undefined
   public sortField = 'displayName'
@@ -42,8 +46,13 @@ export class WorkspaceSearchComponent implements OnInit {
   constructor(
     private readonly workspaceApi: WorkspaceAPIService,
     private readonly translate: TranslateService,
+    private readonly appState: AppStateService,
     private readonly imageApi: ImagesInternalAPIService
-  ) {}
+  ) {
+    this.appState.currentWorkspace$.asObservable().subscribe((workspace) => {
+      this.currentWorkspaceName = workspace?.workspaceName
+    })
+  }
 
   ngOnInit() {
     this.prepareDialogTranslations()

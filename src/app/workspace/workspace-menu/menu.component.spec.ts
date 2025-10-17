@@ -341,23 +341,23 @@ describe('MenuComponent', () => {
     })
 
     it('should change the tree table content: display of roles', () => {
-      spyOn(component, 'onColumnRoleFilterReset')
+      spyOn(component, 'onRoleColumnFilterReset')
       const event = { value: 'ROLES' }
 
       component.onToggleTreeTableContent(event)
 
       expect(component.displayRoles).toBeTrue()
-      expect(component.onColumnRoleFilterReset).not.toHaveBeenCalled()
+      expect(component.onRoleColumnFilterReset).not.toHaveBeenCalled()
     })
 
     it('should change the tree table content: display of roles', () => {
-      spyOn(component, 'onColumnRoleFilterReset')
+      spyOn(component, 'onRoleColumnFilterReset')
       const event = { value: 'DETAILS' }
 
       component.onToggleTreeTableContent(event)
 
       expect(component.displayRoles).toBeFalse()
-      expect(component.onColumnRoleFilterReset).toHaveBeenCalled()
+      expect(component.onRoleColumnFilterReset).toHaveBeenCalled()
     })
 
     it('should return true if an object is empty', () => {
@@ -404,32 +404,32 @@ describe('MenuComponent', () => {
 
         spyOn(component, 'loadMenu')
         //spyOn<any>(component, 'assignNode2Role')
-        component.roleFilterValue = ['role1']
+        component.roleColumnFilterValue = ['role1']
 
-        component.onColumnRoleFilterChange('role2')
+        component.onRoleColumnFilterChange('role2')
 
-        expect(component.roleFilterValue).toEqual(['role1', 'role2'])
+        expect(component.roleColumnFilterValue).toEqual(['role1', 'role2'])
         expect(component.loadMenu).toHaveBeenCalledWith(true)
         expect(component.wRoles).toEqual([wRole])
       })
 
       it('should remove role name to filter array and reload', () => {
         spyOn(component, 'loadMenu')
-        component.roleFilterValue = ['role1', 'role2']
+        component.roleColumnFilterValue = ['role1', 'role2']
 
-        component.onColumnRoleFilterChange('role2')
+        component.onRoleColumnFilterChange('role2')
 
-        expect(component.roleFilterValue).toEqual(['role1'])
+        expect(component.roleColumnFilterValue).toEqual(['role1'])
         expect(component.loadMenu).toHaveBeenCalledWith(true)
       })
 
       it('should reset filter array and reload', () => {
         spyOn(component, 'loadMenu')
-        component.roleFilterValue = ['role1', 'role2']
+        component.roleColumnFilterValue = ['role1', 'role2']
 
-        component.onColumnRoleFilterReset()
+        component.onRoleColumnFilterReset()
 
-        expect(component.roleFilterValue).toEqual([])
+        expect(component.roleColumnFilterValue).toEqual([])
         expect(component.loadMenu).toHaveBeenCalledWith(true)
       })
     })
@@ -868,7 +868,7 @@ describe('MenuComponent', () => {
 
       expect(component.wRoles).toEqual([wRole1, wRole2])
 
-      component.onRoleFilterChange('2')
+      component.onRoleNameFilterChange('2')
 
       expect(component.wRolesFiltered).toEqual([wRole2])
     })

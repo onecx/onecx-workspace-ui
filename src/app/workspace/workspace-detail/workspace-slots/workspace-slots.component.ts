@@ -121,7 +121,6 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
       // check detail endpoint exists
       this.productEndpointExist = Utils.doesEndpointExist(
         this.workspaceService,
-        this.msgService,
         'onecx-product-store',
         'onecx-product-store-ui',
         'slots'
