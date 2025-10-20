@@ -217,7 +217,7 @@ describe('OneCXCurrentWorkspaceLogoComponent', () => {
 
       component.ocxRemoteComponentConfig = mockConfig
 
-      expect(component.container.nativeElement.style.width).toEqual('15.75rem')
+      expect(component.container.nativeElement.style.width).toEqual('14.5rem')
     })
 
     it('should not change if slotWidth is not set', () => {
@@ -241,7 +241,7 @@ describe('OneCXCurrentWorkspaceLogoComponent', () => {
         }
       })
 
-      expect(component.container.nativeElement.style.width).toEqual('15.75rem')
+      expect(component.container.nativeElement.style.width).toEqual('14.5rem')
     })
 
     it('should change if slotWidth is set', () => {
@@ -267,7 +267,7 @@ describe('OneCXCurrentWorkspaceLogoComponent', () => {
         }
       })
 
-      const expectedWidth = 400 - 16 * 1.25 + 'px'
+      const expectedWidth = 400 - 16 * 2.5 + 'px'
       expect(component.container.nativeElement.style.width).toEqual(expectedWidth)
     })
   })
