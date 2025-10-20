@@ -77,12 +77,12 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       theme: new FormControl(null),
       baseUrl: new FormControl<string | null>(null, [
         Validators.required,
-        Validators.minLength(1),
+        Validators.minLength(2),
         Validators.pattern('^/.*')
       ]),
       homePage: new FormControl<string | null>(null, [
         Validators.required,
-        Validators.minLength(1),
+        Validators.minLength(2),
         Validators.pattern('^/.*')
       ]),
       logoUrl: new FormControl<string | null>(null, [

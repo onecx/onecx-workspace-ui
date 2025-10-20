@@ -687,7 +687,7 @@
     "HINTS": {
       "FORMAT_URL": "Format: ",
       "FORMAT_BASE_URL": "Format: /pfad-zum-workspace",
-      "FORMAT_FEED_URL": "Format: /pfad-zum-feed",
+      "FORMAT_FEED_URL": "Format: http(s)://pfad-zum-feed",
       "FORMAT_IMAGE_URL": "Format: http(s)://pfad-zum-bild",
       "FORMAT_HOME_PAGE": "Format: /pfad-zur-registrierten-app"
     },
