@@ -117,6 +117,13 @@ describe('OneCXToggleMenuButtonComponent', () => {
   })
 
   describe('icon state', () => {
+    it('should have no class if menu visibility is unknown', () => {
+      const fixture = TestBed.createComponent(OneCXToggleMenuButtonComponent)
+      const component = fixture.componentInstance
+
+      expect(component.getIcon(null as any)).toBe('')
+    })
+
     describe('rtl', () => {
       beforeEach(() => {
         document.documentElement.dir = 'rtl'
