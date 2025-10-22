@@ -13,6 +13,11 @@ import { RippleModule } from 'primeng/ripple'
 import { OneCXToggleMenuButtonComponent } from './toggle-menu-button.component'
 import { ToggleMenuButtonHarness } from './toggle-menu-button.component.harness'
 import { MenuService } from 'src/app/shared/services/menu.service'
+import {
+  provideShellCapabilityServiceMock,
+  ShellCapabilityServiceMock
+} from '@onecx/angular-integration-interface/mocks'
+import { Capability } from '@onecx/angular-integration-interface'
 
 describe('OneCXToggleMenuButtonComponent', () => {
   const menuServiceSpy = jasmine.createSpyObj<MenuService>('MenuService', ['isVisible', 'isActive'])
@@ -29,7 +34,12 @@ describe('OneCXToggleMenuButtonComponent', () => {
         }).withDefaultLanguage('en'),
         NoopAnimationsModule
       ],
-      providers: [provideHttpClient(), provideHttpClientTesting(), { provide: BASE_URL, useValue: baseUrlSubject }]
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideShellCapabilityServiceMock(),
+        { provide: BASE_URL, useValue: baseUrlSubject }
+      ]
     })
       .overrideComponent(OneCXToggleMenuButtonComponent, {
         set: {
@@ -42,6 +52,7 @@ describe('OneCXToggleMenuButtonComponent', () => {
     baseUrlSubject.next('base_url_mock')
     menuServiceSpy.isActive.and.returnValue(of(true))
     menuServiceSpy.isVisible.and.returnValue(of(true))
+    ShellCapabilityServiceMock.setCapabilities([Capability.ACTIVENESS_AWARE_MENUS])
   })
 
   it('should create', () => {
@@ -67,6 +78,22 @@ describe('OneCXToggleMenuButtonComponent', () => {
     expect(baseUrlSubject.next).toHaveBeenCalledWith('base')
   })
 
+  it('should be not displayed if not active', async () => {
+    menuServiceSpy.isActive.and.returnValue(of(false))
+    const fixture = TestBed.createComponent(OneCXToggleMenuButtonComponent)
+    const toggleButton = await TestbedHarnessEnvironment.harnessForFixture(fixture, ToggleMenuButtonHarness)
+    const button = await toggleButton.getButton()
+    expect(button).toBeNull()
+  })
+
+  it('should be not displayed if shell has no capability', async () => {
+    ShellCapabilityServiceMock.setCapabilities([])
+    const fixture = TestBed.createComponent(OneCXToggleMenuButtonComponent)
+    const toggleButton = await TestbedHarnessEnvironment.harnessForFixture(fixture, ToggleMenuButtonHarness)
+    const button = await toggleButton.getButton()
+    expect(button).toBeNull()
+  })
+
   it('should publish static menu state on click', async () => {
     const fixture = TestBed.createComponent(OneCXToggleMenuButtonComponent)
     const component = fixture.componentInstance
@@ -90,6 +117,13 @@ describe('OneCXToggleMenuButtonComponent', () => {
   })
 
   describe('icon state', () => {
+    it('should have no class if menu visibility is unknown', () => {
+      const fixture = TestBed.createComponent(OneCXToggleMenuButtonComponent)
+      const component = fixture.componentInstance
+
+      expect(component.getIcon(null as any)).toBe('')
+    })
+
     describe('rtl', () => {
       beforeEach(() => {
         document.documentElement.dir = 'rtl'
