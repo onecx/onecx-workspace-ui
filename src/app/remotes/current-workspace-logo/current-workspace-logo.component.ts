@@ -52,7 +52,7 @@ type SlotResizedEvent = {
 
 const RESIZE_OBSERVED_SLOT_NAME = 'onecx-shell-vertical-menu'
 const DEFAULT_WIDTH_REM = 17
-const TOGGLE_MENU_BUTTON_WIDTH_REM = 1.25
+const TOGGLE_MENU_BUTTON_WIDTH_REM = 2.5
 @Component({
   selector: 'app-current-workspace-logo',
   templateUrl: './current-workspace-logo.component.html',
