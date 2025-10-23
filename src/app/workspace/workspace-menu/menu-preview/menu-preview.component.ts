@@ -49,6 +49,19 @@ export class MenuPreviewComponent implements OnChanges {
   public ngOnChanges(changes: SimpleChanges): void {
     if (changes['menuItems'] || this.displayDialog) {
       this.menuNodes = this.mapToTree(this.menuItems, this.languagesPreviewValue)
+      // Dummy-Node nur auf Root-Ebene anhängen
+      this.menuNodes.push({
+        key: '__DUMMY__',
+        label: '',
+        data: { id: '__DUMMY__', position: this.menuNodes.length + 1 } as WorkspaceMenuItem,
+        droppable: false,
+        selectable: false,
+        styleClass: 'hidden',
+        expanded: false,
+        icon: '',
+        children: []
+      })
+
       this.treeExpanded = false
       if (this.menuNodes.length > 1 && this.menuNodes[0].key) {
         this.menuNodes[0].expanded = true
@@ -101,19 +114,42 @@ export class MenuPreviewComponent implements OnChanges {
 
   private mapToTree(items: WorkspaceMenuItem[], lang: string): TreeNode<WorkspaceMenuItem>[] {
     items.sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
-    return items.map((mi) => {
+
+    const mappedNodes: TreeNode<WorkspaceMenuItem>[] = items.map((mi) => {
       const langExists = mi.i18n && Object.keys(mi.i18n).length > 0 && mi.i18n[lang]
-      return {
-        children: mi.children ? this.mapToTree(mi.children, lang) : undefined,
+
+      const node: TreeNode<WorkspaceMenuItem> = {
         data: mi,
         droppable: true,
         key: mi.id,
         label: mi.i18n && langExists ? mi.i18n[lang] : mi.name,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         expanded: this.stateService.getState().treeExpansionState.get(mi.id!),
         icon: this.setIcon(mi, langExists)
       }
+
+      if (mi.children && mi.children.length > 0) {
+        const childNodes = this.mapToTree(mi.children, lang)
+
+        // Dummy-Node nur anhängen, wenn es bereits Kinder gibt
+        childNodes.push({
+          key: `__DUMMY__-${mi.id}`,
+          label: '',
+          data: { id: `__DUMMY__-${mi.id}`, position: childNodes.length + 1 } as WorkspaceMenuItem,
+          droppable: false,
+          selectable: false,
+          styleClass: 'hidden',
+          expanded: false,
+          icon: '',
+          children: []
+        })
+
+        node.children = childNodes
+      }
+
+      return node
     })
+
+    return mappedNodes
   }
 
   private setIcon(mi: WorkspaceMenuItem, langExists: any): string {
@@ -135,12 +171,36 @@ export class MenuPreviewComponent implements OnChanges {
   public onDrop(event: TreeNodeDropEvent): void {
     if (event.dragNode && event.dropNode) {
       const menuItem = event.dragNode.data as WorkspaceMenuItem
-      const targetPos = event.index ?? 0
-      let targetItem = event.dropNode.data as WorkspaceMenuItem // moved to node
+      let targetPos = event.index ?? 0
 
-      // drop between existing nodes => after move: the drop node is the node before the moved node
+      const siblings = this.menuItems
+      const dragIndex = siblings.findIndex((item) => item.id === menuItem.id)
+
+      let targetItem = event.dropNode.data as WorkspaceMenuItem
+      let parentItemId: string | undefined = targetItem.id
+
       if (event.dropPoint === 'between') {
-        targetItem = event.dropNode.parent?.data as WorkspaceMenuItem
+        targetItem = event.dropNode?.parent?.data as WorkspaceMenuItem
+        parentItemId = targetItem?.id ?? undefined
+
+        if (targetPos > dragIndex) {
+          targetPos -= 1
+        }
+      }
+
+      targetPos = Math.max(0, targetPos)
+
+      // Dummy-Node auf Root- oder Child-Ebene erkannt
+      if (event.dropNode.data.id.startsWith('__DUMMY__')) {
+        // Parent ermitteln (falls vorhanden)
+        if (event.dropNode.parent) {
+          parentItemId = event.dropNode.parent.data.id
+          const parent = this.menuItems.find((item) => item.id === parentItemId)
+          targetPos = parent?.children?.length ?? 0
+        } else {
+          parentItemId = undefined
+          targetPos = this.menuItems.length
+        }
       }
 
       if (menuItem) {
@@ -149,7 +209,7 @@ export class MenuPreviewComponent implements OnChanges {
             menuItemId: menuItem.id!,
             updateMenuItemParentRequest: {
               modificationCount: menuItem.modificationCount!,
-              parentItemId: targetItem?.id,
+              parentItemId: parentItemId,
               position: targetPos
             }
           })
