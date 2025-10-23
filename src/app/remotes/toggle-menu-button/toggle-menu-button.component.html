@@ -1,10 +1,11 @@
 <ng-container
   *ngIf="{
     isStaticMenuActive: isStaticMenuActive$ | async,
-    isStaticMenuVisible: isStaticMenuVisible$ | async
+    isStaticMenuVisible: isStaticMenuVisible$ | async,
+    isActive: isActive$ | async
   } as state"
 >
-  <ng-container *ngIf="state.isStaticMenuActive && state.isStaticMenuVisible !== null">
+  <ng-container *ngIf="state.isActive">
     <button
       id="ocx_vertical_menu_action_toggle"
       class="onecx-toggle-menu-button border-none"
