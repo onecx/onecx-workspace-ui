@@ -11,7 +11,7 @@ import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { MenuPreviewComponent } from './menu-preview.component'
 import { MenuTreeService } from '../services/menu-tree.service'
 import { MenuStateService, MenuState } from '../services/menu-state.service'
-import { MenuItemAPIService } from 'src/app/shared/generated'
+import { MenuItemAPIService, WorkspaceMenuItem } from 'src/app/shared/generated'
 import { of, throwError } from 'rxjs'
 
 const state: MenuState = {
@@ -106,13 +106,25 @@ describe('MenuPreviewComponent', () => {
 
   describe('on Drop', () => {
     it('should update menu item - drag on node', () => {
+      const items: WorkspaceMenuItem[] = [
+        { id: 'item1', modificationCount: 1, children: [] },
+        { id: 'item2', modificationCount: 1, children: [] }
+      ]
+
+      component.menuItems = [...items]
+
       menuApiService.updateMenuItemParent.and.returnValue(of({}))
       spyOn(component.reorderEmitter, 'emit')
       const event: TreeNodeDropEvent = {
         dropPoint: 'node',
         index: 1,
         dragNode: { key: 'draggedNodeId', parent: { key: 'oldParentNodeId' }, data: items[0] },
-        dropNode: { key: 'newParentNodeId', children: [{ key: 'draggedNodeId' }], parent: { key: 'parent key' } }
+        dropNode: {
+          key: 'newParentNodeId',
+          children: [{ key: 'draggedNodeId' }],
+          parent: { key: 'parent key' },
+          data: items[1]
+        }
       }
 
       component.onDrop(event)
@@ -122,11 +134,22 @@ describe('MenuPreviewComponent', () => {
     })
 
     it('should update menu item - drag between nodes', () => {
+      const items: WorkspaceMenuItem[] = [
+        { id: 'item1', modificationCount: 1, children: [] },
+        { id: 'item2', modificationCount: 1, children: [] }
+      ]
+
+      component.menuItems = [...items]
       const event: TreeNodeDropEvent = {
         dropPoint: 'between',
         index: 1,
         dragNode: { key: 'draggedNodeId', parent: { key: 'oldParentNodeId' }, data: items[0] },
-        dropNode: { key: 'newParentNodeId', children: [{ key: 'draggedNodeId' }], parent: { key: 'parent key' } }
+        dropNode: {
+          key: 'newParentNodeId',
+          children: [{ key: 'draggedNodeId' }],
+          parent: { key: 'parent key' },
+          data: items[1]
+        }
       }
       menuApiService.updateMenuItemParent.and.returnValue(of({}))
 
@@ -136,10 +159,21 @@ describe('MenuPreviewComponent', () => {
     })
 
     it('should update menu items onDrop: return before pushing items', () => {
+      const items: WorkspaceMenuItem[] = [
+        { id: 'item1', modificationCount: 1, children: [] },
+        { id: 'item2', modificationCount: 1, children: [] }
+      ]
+
+      component.menuItems = [...items]
       const errorResponse = { status: 400, statusText: 'Error on change parent' }
       const event = {
         dragNode: { key: 'draggedNodeId', parent: { key: 'oldParentNodeId' }, data: items[0] },
-        dropNode: { key: 'newParentNodeId', children: [{ key: 'draggedNodeId' }], parent: { key: 'parent key' } }
+        dropNode: {
+          key: 'newParentNodeId',
+          children: [{ key: 'draggedNodeId' }],
+          parent: { key: 'parent key' },
+          data: items[1]
+        }
       }
       menuApiService.updateMenuItemParent.and.returnValue(throwError(() => errorResponse))
       spyOn(console, 'error')
@@ -149,6 +183,75 @@ describe('MenuPreviewComponent', () => {
       expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
       expect(console.error).toHaveBeenCalledWith('updateMenuItemParent', errorResponse)
     })
+  })
+
+  it('should update menu item - drop on dummy node with parent but no children', () => {
+    const items: WorkspaceMenuItem[] = [
+      { id: 'item1', modificationCount: 1, children: [] },
+      { id: 'parentItem', modificationCount: 1 } // <-- keine children definiert
+    ]
+
+    component.menuItems = [...items]
+
+    menuApiService.updateMenuItemParent.and.returnValue(of(items[0]))
+    spyOn(component.reorderEmitter, 'emit')
+
+    const event: TreeNodeDropEvent = {
+      dropPoint: 'node',
+      index: 0,
+      dragNode: {
+        key: 'draggedNodeId',
+        parent: { key: 'oldParentNodeId' },
+        data: items[0]
+      },
+      dropNode: {
+        key: '__DUMMY__newItem',
+        data: { id: '__DUMMY__newItem' },
+        parent: {
+          key: 'parentItem',
+          data: items[1]
+        },
+        children: []
+      }
+    }
+
+    component.onDrop(event)
+
+    expect(component.reorderEmitter.emit).toHaveBeenCalledWith(true)
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' })
+  })
+
+  it('should update menu item - drop on dummy node without parent (root level)', () => {
+    const items: WorkspaceMenuItem[] = [
+      { id: 'item1', modificationCount: 1, children: [] },
+      { id: 'item2', modificationCount: 1, children: [] }
+    ]
+
+    component.menuItems = [...items]
+
+    menuApiService.updateMenuItemParent.and.returnValue(of(items[0]))
+    spyOn(component.reorderEmitter, 'emit')
+
+    const event: TreeNodeDropEvent = {
+      dropPoint: 'node',
+      index: 0,
+      dragNode: {
+        key: 'draggedNodeId',
+        parent: { key: 'oldParentNodeId' },
+        data: items[0]
+      },
+      dropNode: {
+        key: '__DUMMY__newItem',
+        data: { id: '__DUMMY__newItem' },
+        parent: undefined,
+        children: []
+      }
+    }
+
+    component.onDrop(event)
+
+    expect(component.reorderEmitter.emit).toHaveBeenCalledWith(true)
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' })
   })
 
   describe('toggle tree view', () => {
