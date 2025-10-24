@@ -42,7 +42,7 @@ import { RippleModule } from 'primeng/ripple'
 import { AccordionModule } from 'primeng/accordion'
 
 @Component({
-  selector: 'app-slim-user-main-menu',
+  selector: 'app-slim-user-menu',
   templateUrl: './slim-user-menu.component.html',
   styleUrl: './slim-user-menu.component.scss',
   standalone: true,
@@ -76,6 +76,7 @@ export class OneCXSlimUserMenuComponent implements ocxRemoteWebcomponent {
   Mode = SlimMenuMode
 
   private readonly menuService = inject(MenuService)
+  private eventsPublisher = new EventsPublisher()
 
   private isSlimMenuActive$ = this.menuService.isActive('slim')
   private isSlimPlusMenuActive$ = this.menuService.isActive('slimplus')
@@ -103,7 +104,7 @@ export class OneCXSlimUserMenuComponent implements ocxRemoteWebcomponent {
   public isHidden$ = this.activeMode$.pipe(
     mergeMap((mode) => {
       if (mode === SlimMenuMode.INACTIVE) {
-        return of(true)
+        return of(false)
       }
 
       return this.menuService.isVisible(mode)
@@ -148,21 +149,17 @@ export class OneCXSlimUserMenuComponent implements ocxRemoteWebcomponent {
   }
 
   logout() {
-    new EventsPublisher().publish({ type: 'authentication#logoutButtonClicked' })
+    this.eventsPublisher.publish({ type: 'authentication#logoutButtonClicked' })
   }
 
   private determineDisplayName(userProfile: UserProfile): Observable<string> {
-    if (userProfile) {
-      const person = userProfile.person
-      if (person.displayName) {
-        return of(person.displayName)
-      } else if (person.firstName && person.lastName) {
-        return of(person.firstName + ' ' + person.lastName)
-      } else {
-        return of(userProfile.userId)
-      }
+    const person = userProfile.person
+    if (person.displayName) {
+      return of(person.displayName)
+    } else if (person.firstName && person.lastName) {
+      return of(person.firstName + ' ' + person.lastName)
     } else {
-      return this.translateService.get('REMOTES.SLIM_USER_MENU.GUEST').pipe(catchError(() => of('Guest')))
+      return of(userProfile.userId)
     }
   }
 

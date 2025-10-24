@@ -9,26 +9,26 @@
   >
     <ng-container
       [ngTemplateOutlet]="itemTemplate"
-      [ngTemplateOutletContext]="{ $implicit: item, i: index }"
+      [ngTemplateOutletContext]="{ $implicit: item, index: index }"
     ></ng-container>
   </li>
 
-  <ng-template #itemTemplate let-item let-i="index">
+  <ng-template #itemTemplate let-item let-index="index">
     <ng-container *ngIf="item.type === ItemType.ROUTER_LINK">
-      <ng-container *ngTemplateOutlet="routerLinkTemplate; context: { $implicit: item, i: i }"></ng-container>
+      <ng-container *ngTemplateOutlet="routerLinkTemplate; context: { $implicit: item, index: index }"></ng-container>
     </ng-container>
     <ng-container *ngIf="item.type === ItemType.URL">
-      <ng-container *ngTemplateOutlet="urlTemplate; context: { $implicit: item, i: i }"></ng-container>
+      <ng-container *ngTemplateOutlet="urlTemplate; context: { $implicit: item, index: index }"></ng-container>
     </ng-container>
     <ng-container *ngIf="item.type === ItemType.ACTION">
-      <ng-container *ngTemplateOutlet="actionTemplate; context: { $implicit: item, i: i }"></ng-container>
+      <ng-container *ngTemplateOutlet="actionTemplate; context: { $implicit: item, index: index }"></ng-container>
     </ng-container>
   </ng-template>
 
-  <ng-template #routerLinkTemplate let-item let-i="index">
+  <ng-template #routerLinkTemplate let-item let-index="index">
     <a
       tabIndex="0"
-      [id]="'ws_slim_vertical_main_menu_list_item_' + (i + 1) + '_link'"
+      [id]="'ws_slim_vertical_main_menu_list_item_' + (index + 1) + '_link'"
       pRipple
       [routerLink]="item.routerLink"
       [pTooltip]="item.label"
@@ -41,10 +41,10 @@
     </a>
   </ng-template>
 
-  <ng-template #urlTemplate let-item let-i="index">
+  <ng-template #urlTemplate let-item let-index="index">
     <a
       tabIndex="0"
-      [id]="'ws_slim_vertical_main_menu_list_item_' + (i + 1) + '_link'"
+      [id]="'ws_slim_vertical_main_menu_list_item_' + (index + 1) + '_link'"
       pRipple
       [attr.href]="item.url"
       [pTooltip]="item.label"
@@ -57,11 +57,11 @@
     </a>
   </ng-template>
 
-  <ng-template #actionTemplate let-item let-i="index">
+  <ng-template #actionTemplate let-item let-index="index">
     <button
       tabIndex="0"
       class="slim-menu-list-item-button outline-none cursor-pointer border-none"
-      [id]="'ws_slim_vertical_main_menu_list_item_' + (i + 1) + '_button'"
+      [id]="'ws_slim_vertical_main_menu_list_item_' + (index + 1) + '_button'"
       pRipple
       [pTooltip]="item.label"
       tooltipPosition="right"

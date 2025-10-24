@@ -33,7 +33,7 @@ import { EventsTopic, NavigatedEventPayload, Workspace } from '@onecx/integratio
 import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
 import { environment } from 'src/environments/environment'
-import { ItemType, SlimMenuItems } from 'src/app/shared/model/slim-menu-item'
+import { SlimMenuItems } from 'src/app/shared/model/slim-menu-item'
 import { SlimMenuMode } from 'src/app/shared/model/slim-menu-mode'
 import { SlimMenuItemComponent } from 'src/app/shared/components/slim-menu-item/slim-menu-item.component'
 import { MenuItem } from 'primeng/api'
@@ -86,7 +86,7 @@ export class OneCXSlimVerticalMainMenuComponent implements ocxRemoteWebcomponent
   public isHidden$ = this.activeMode$.pipe(
     mergeMap((mode) => {
       if (mode === SlimMenuMode.INACTIVE) {
-        return of(true)
+        return of(false)
       }
 
       return this.menuService.isVisible(mode)
@@ -133,21 +133,7 @@ export class OneCXSlimVerticalMainMenuComponent implements ocxRemoteWebcomponent
     }
 
     combineLatest([location$, this.getMenuItems()])
-      .pipe(
-        map(([url, workspaceItems]) => this.menuItemService.mapMenuItemsToSlimMenuItems(workspaceItems, url)),
-        // TODO: Remove
-        map((items) =>
-          items.concat([
-            {
-              type: ItemType.ACTION,
-              icon: 'pi pi-fw pi-cog',
-              command: () => console.log('asd'),
-              active: false,
-              label: 'Settings'
-            }
-          ])
-        )
-      )
+      .pipe(map(([url, workspaceItems]) => this.menuItemService.mapMenuItemsToSlimMenuItems(workspaceItems, url)))
       .subscribe(this.menuItems$)
   }
 
