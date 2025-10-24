@@ -8,14 +8,13 @@ import { of, ReplaySubject, throwError } from 'rxjs'
 import { OneCXSlimUserMenuComponent } from './slim-user-menu.component'
 import { provideHttpClient } from '@angular/common/http'
 import {
-  AppStateServiceMock,
   provideAppStateServiceMock,
   provideShellCapabilityServiceMock,
   provideUserServiceMock,
   ShellCapabilityServiceMock,
   UserServiceMock
 } from '@onecx/angular-integration-interface/mocks'
-import { AppStateService, Capability, UserService } from '@onecx/angular-integration-interface'
+import { Capability, UserService } from '@onecx/angular-integration-interface'
 import { MenuService } from 'src/app/shared/services/menu.service'
 import { MenuItemAPIService } from 'src/app/shared/generated'
 import { TestbedHarnessEnvironment } from '@onecx/angular-testing'
