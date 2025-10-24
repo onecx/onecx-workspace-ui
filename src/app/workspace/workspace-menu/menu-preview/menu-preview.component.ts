@@ -49,7 +49,7 @@ export class MenuPreviewComponent implements OnChanges {
   public ngOnChanges(changes: SimpleChanges): void {
     if (changes['menuItems'] || this.displayDialog) {
       this.menuNodes = this.mapToTree(this.menuItems, this.languagesPreviewValue)
-      // Dummy-Node nur auf Root-Ebene anhängen
+      // add dummy-node to root-level
       this.menuNodes.push({
         key: '__DUMMY__',
         label: '',
@@ -130,7 +130,7 @@ export class MenuPreviewComponent implements OnChanges {
       if (mi.children && mi.children.length > 0) {
         const childNodes = this.mapToTree(mi.children, lang)
 
-        // Dummy-Node nur anhängen, wenn es bereits Kinder gibt
+        // add dummy-node if children exist
         childNodes.push({
           key: `__DUMMY__-${mi.id}`,
           label: '',
@@ -190,9 +190,9 @@ export class MenuPreviewComponent implements OnChanges {
 
       targetPos = Math.max(0, targetPos)
 
-      // Dummy-Node auf Root- oder Child-Ebene erkannt
+      // dummy-node on root or child-level detected
       if (event.dropNode.data.id.startsWith('__DUMMY__')) {
-        // Parent ermitteln (falls vorhanden)
+        // set parent if existing
         if (event.dropNode.parent) {
           parentItemId = event.dropNode.parent.data.id
           const parent = this.menuItems.find((item) => item.id === parentItemId)
