@@ -66,8 +66,8 @@ export class OneCXSlimVerticalMainMenuComponent implements ocxRemoteWebcomponent
 
   private readonly menuService = inject(MenuService)
 
-  private isSlimMenuActive$ = this.menuService.isActive('slim')
-  private isSlimPlusMenuActive$ = this.menuService.isActive('slimplus')
+  private readonly isSlimMenuActive$ = this.menuService.isActive('slim')
+  private readonly isSlimPlusMenuActive$ = this.menuService.isActive('slimplus')
 
   // Assumption: only one menu can be active at a time
   public activeMode$ = combineLatest([this.isSlimMenuActive$, this.isSlimPlusMenuActive$]).pipe(

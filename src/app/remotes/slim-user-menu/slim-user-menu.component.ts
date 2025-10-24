@@ -76,10 +76,10 @@ export class OneCXSlimUserMenuComponent implements ocxRemoteWebcomponent {
   Mode = SlimMenuMode
 
   private readonly menuService = inject(MenuService)
-  private eventsPublisher = new EventsPublisher()
+  private eventsPublisher = new EventsPublisher() //NOSONAR
 
-  private isSlimMenuActive$ = this.menuService.isActive('slim')
-  private isSlimPlusMenuActive$ = this.menuService.isActive('slimplus')
+  private readonly isSlimMenuActive$ = this.menuService.isActive('slim')
+  private readonly isSlimPlusMenuActive$ = this.menuService.isActive('slimplus')
 
   public currentUser$: Observable<UserProfile>
   public displayName$: Observable<string>
