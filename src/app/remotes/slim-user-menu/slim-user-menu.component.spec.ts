@@ -41,7 +41,6 @@ describe('OneCXSlimUserMenuComponent', () => {
   }
 
   let baseUrlSubject: ReplaySubject<any>
-  let appStateServiceMock: AppStateServiceMock
   let userServiceMock: UserServiceMock
   beforeEach(() => {
     baseUrlSubject = new ReplaySubject<any>(1)
@@ -77,7 +76,6 @@ describe('OneCXSlimUserMenuComponent', () => {
       }
     })
 
-    appStateServiceMock = TestBed.inject(AppStateService) as unknown as AppStateServiceMock
     userServiceMock = TestBed.inject(UserService) as unknown as UserServiceMock
     userServiceMock.lang$.next('en')
     baseUrlSubject.next('base_url_mock')

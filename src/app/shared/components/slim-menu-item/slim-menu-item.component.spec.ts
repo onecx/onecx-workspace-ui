@@ -1,4 +1,4 @@
-import { ComponentFixture, ComponentFixtureAutoDetect, TestBed } from '@angular/core/testing'
+import { TestBed } from '@angular/core/testing'
 import { SlimMenuItemComponent } from './slim-menu-item.component'
 import { SlimMenuItemHarness } from './slim-menu-item.component.harness'
 import { provideRouter } from '@angular/router'
