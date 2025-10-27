@@ -179,9 +179,6 @@ export class OneCXSlimUserMenuComponent implements ocxRemoteWebcomponent {
       ),
       mergeMap((currentMenu) => {
         return this.translateService.get('REMOTES.SLIM_USER_MENU.LOGOUT').pipe(
-          catchError(() => {
-            return of('Logout')
-          }),
           map((translatedLabel) => {
             const newMenuItem: MenuItem = {
               id: 'ws_slim_user_menu_logout',

@@ -1,4 +1,5 @@
 import { ComponentHarness } from '@angular/cdk/testing'
+import { SlimMenuItemHarness } from 'src/app/shared/components/slim-menu-item/slim-menu-item.component.harness'
 
 export class OneCXSlimUserMenuHarness extends ComponentHarness {
   static readonly hostSelector = 'app-slim-user-menu'
@@ -6,7 +7,7 @@ export class OneCXSlimUserMenuHarness extends ComponentHarness {
   getWrapper = this.locatorForOptional('.slim-user-menu')
   getHeader = this.locatorForOptional('.slim-user-menu-header')
   getHeaderIcon = this.locatorForOptional('.slim-user-menu-header-icon')
-  getItems = this.locatorForAll('app-slim-menu-item')
+  getItems = this.locatorForAll(SlimMenuItemHarness)
 
   async isHidden(): Promise<boolean> {
     const wrapperElement = await this.getWrapper()

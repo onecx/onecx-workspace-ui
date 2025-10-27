@@ -23,6 +23,8 @@ import { MenuItemService } from 'src/app/shared/services/menu-item.service'
 import { SlimMenuMode } from 'src/app/shared/model/slim-menu-mode'
 import { AccordionModule } from 'primeng/accordion'
 import { TooltipModule } from 'primeng/tooltip'
+import { SlimMenuItemComponent } from 'src/app/shared/components/slim-menu-item/slim-menu-item.component'
+import { ItemType } from 'src/app/shared/model/slim-menu-item'
 
 describe('OneCXSlimUserMenuComponent', () => {
   const menuItemApiSpy = jasmine.createSpyObj<MenuItemAPIService>('MenuItemAPIService', ['getMenuItems'])
@@ -47,6 +49,7 @@ describe('OneCXSlimUserMenuComponent', () => {
       declarations: [],
       imports: [
         OneCXSlimUserMenuComponent,
+        SlimMenuItemComponent,
         TranslateTestingModule.withTranslations({
           en: require('../../../assets/i18n/en.json')
         }).withDefaultLanguage('en'),
@@ -193,11 +196,32 @@ describe('OneCXSlimUserMenuComponent', () => {
     expect(items.length).toBe(4)
   })
 
-  it('should publish on logout', () => {
-    const { component } = setUp()
+  it('should publish on logout', async () => {
+    const fakeResponse = {
+      workspaceName: 'workspace',
+      menu: [
+        {
+          children: [{ id: 'fake' }]
+        }
+      ]
+    } as any
+    menuItemApiSpy.getMenuItems.and.callFake(() => {
+      return of(fakeResponse)
+    })
+    menuItemServiceSpy.constructMenuItems.and.returnValue([])
+    menuItemServiceSpy.mapMenuItemsToSlimMenuItems.and.callFake((items) => {
+      return [...items.map((item) => ({ ...item, active: false, type: ItemType.ACTION }))]
+    })
+
+    const { component, fixture } = setUp()
     spyOn(component['eventsPublisher'], 'publish')
 
-    component.logout()
+    const slimUserMenu = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXSlimUserMenuHarness)
+    await slimUserMenu.open()
+    const items = await slimUserMenu.getItems()
+    expect(items.length).toBe(1) // Only logout item
+    await items[items.length - 1].click() // Click logout item
+
     expect(component['eventsPublisher'].publish).toHaveBeenCalledWith({ type: 'authentication#logoutButtonClicked' })
   })
 
@@ -243,7 +267,7 @@ describe('OneCXSlimUserMenuComponent', () => {
       const items = await slimUserMenu.getItems()
       expect(items.length).toBe(4)
       const item = items[0]
-      expect(await item.getCssValue('height')).toEqual(4 * 16 + 'px') // 4 rem in px
+      expect(await (await item.host()).getCssValue('height')).toEqual(4 * 16 + 'px') // 4 rem in px
     })
 
     it('should have correct header style', async () => {
@@ -300,7 +324,7 @@ describe('OneCXSlimUserMenuComponent', () => {
       const items = await slimUserMenu.getItems()
       expect(items.length).toBe(4)
       const item = items[0]
-      expect(await item.getCssValue('height')).toEqual(7 * 16 + 'px') // 4 rem in px
+      expect(await (await item.host()).getCssValue('height')).toEqual(7 * 16 + 'px') // 4 rem in px
     })
 
     it('should have correct header style', async () => {
