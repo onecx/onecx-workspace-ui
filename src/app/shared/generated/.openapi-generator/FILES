@@ -40,9 +40,6 @@ model/importMenuResponse.ts
 model/importResponseStatus.ts
 model/importWorkspaceResponse.ts
 model/menuItem.ts
-model/menuItemPageResult.ts
-model/menuItemResult.ts
-model/menuItemSearchCriteria.ts
 model/menuItemStructure.ts
 model/menuSnapshot.ts
 model/menuStructureSearchCriteria.ts
