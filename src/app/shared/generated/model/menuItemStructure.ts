@@ -13,7 +13,6 @@ import { WorkspaceMenuItem } from './workspaceMenuItem';
 
 
 export interface MenuItemStructure { 
-    workspaceId: string;
     menuItems: Array<WorkspaceMenuItem>;
 }
 
