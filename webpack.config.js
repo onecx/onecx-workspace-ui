@@ -15,7 +15,10 @@ const config = withModuleFederationPlugin({
     './OneCXVersionInfoComponent': 'src/app/remotes/version-info/version-info.component.main.ts',
     './OneCXCurrentWorkspaceLogoComponent':
       'src/app/remotes/current-workspace-logo/current-workspace-logo.component.main.ts',
-    './OneCXToggleMenuButtonComponent': 'src/app/remotes/toggle-menu-button/toggle-menu-button.component.main.ts'
+    './OneCXToggleMenuButtonComponent': 'src/app/remotes/toggle-menu-button/toggle-menu-button.component.main.ts',
+    './OneCXSlimVerticalMainMenuComponent':
+      'src/app/remotes/slim-vertical-main-menu/slim-vertical-main-menu.component.main.ts',
+    './OneCXSlimUserMenuComponent': 'src/app/remotes/slim-user-menu/slim-user-menu.component.main.ts'
   },
   shared: share({
     '@angular/core': { requiredVersion: 'auto', includeSecondaries: true },
