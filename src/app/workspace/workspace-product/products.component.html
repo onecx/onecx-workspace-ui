@@ -477,34 +477,50 @@
                           ></div>
                         </div>
                         <!-- Path Input Control -->
-                        <div
-                          *ngIf="mfe.value.id || mfe.value.new"
-                          class="flex flex-row align-items-center column-gap-3"
-                        >
-                          <span controlErrorAnchor class="flex-grow-1 p-float-label">
-                            <input
-                              pInputText
-                              type="text"
-                              class="w-full text-responsive"
-                              [id]="'ws_products_detail_mfe_' + mfe.value.index + '_base_path'"
-                              formControlName="basePath"
-                              [attr.aria-label]="'PRODUCT.MFE.BASE_PATH' | translate"
-                              [pTooltip]="'PRODUCT.MFE.BASE_PATH.TOOLTIP' | translate"
-                              tooltipPosition="top"
-                              tooltipEvent="hover"
-                            />
+                        <div *ngIf="mfe.value.id || mfe.value.new" class="flex flex-row align-items-start column-gap-3">
+                          <div class="flex-grow-1 flex flex-column row-gap-1">
+                            <span controlErrorAnchor class="flex-grow-1 p-float-label">
+                              <input
+                                pInputText
+                                type="text"
+                                class="w-full text-responsive"
+                                [id]="'ws_products_detail_mfe_' + mfe.value.index + '_base_path'"
+                                formControlName="basePath"
+                                [attr.aria-label]="'PRODUCT.MFE.BASE_PATH' | translate"
+                                [pTooltip]="'PRODUCT.MFE.BASE_PATH.TOOLTIP' | translate"
+                                tooltipPosition="top"
+                                tooltipEvent="hover"
+                              />
+                              <label
+                                class="ocx-required-label"
+                                [for]="'ws_products_detail_mfe_' + mfe.value.index + '_base_path'"
+                                aria-hidden="true"
+                              >
+                                {{ 'PRODUCT.MFE.BASE_PATH' | translate }}
+                              </label>
+                            </span>
                             <label
-                              class="ocx-required-label"
+                              *ngIf="mfe.controls['basePath'].errors?.hasOwnProperty('basePathRequired')"
+                              class="control-error"
                               [for]="'ws_products_detail_mfe_' + mfe.value.index + '_base_path'"
-                              aria-hidden="true"
+                              role="note"
                             >
-                              {{ 'PRODUCT.MFE.BASE_PATH' | translate }}
+                              {{ 'VALIDATION.ERRORS.EMPTY_REQUIRED_FIELD' | translate }}
                             </label>
-                          </span>
+                            <label
+                              *ngIf="mfe.controls['basePath'].errors?.hasOwnProperty('basePathsNotUnique')"
+                              class="control-error"
+                              [for]="'ws_products_detail_mfe_' + mfe.value.index + '_base_path'"
+                              role="note"
+                            >
+                              {{ 'VALIDATION.ERRORS.APP_MODULE.PATH_ALREADY_USED' | translate }}
+                            </label>
+                          </div>
                           <p-button
                             *ngIf="mfe.value.new && mfe.value.change !== 'create'"
                             [icon]="'pi pi-plus-circle'"
                             [id]="'ws_products_detail_mfe_' + mfe.value.index + '_new'"
+                            [disabled]="!mfe.controls['basePath'].valid"
                             (onClick)="mfe.value.change = 'create'; formChanged = true"
                             [ariaLabel]="'DIALOG.PRODUCTS.MFES.NEW' | translate"
                             [pTooltip]="'DIALOG.PRODUCTS.MFES.NEW' | translate"
@@ -515,6 +531,7 @@
                             *ngIf="mfe.value.id && mfe.value.change !== 'delete'"
                             [icon]="'pi pi-trash'"
                             [id]="'ws_products_detail_mfe_' + mfe.value.index + '_remove'"
+                            [disabled]="!mfe.controls['basePath'].valid"
                             (onClick)="mfe.value.change = 'delete'; formChanged = true"
                             [ariaLabel]="'DIALOG.PRODUCTS.MFES.REMOVED' | translate"
                             [pTooltip]="'DIALOG.PRODUCTS.MFES.REMOVED' | translate"

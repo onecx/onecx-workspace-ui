@@ -10,7 +10,15 @@ import {
   OnChanges,
   SimpleChanges
 } from '@angular/core'
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
+import {
+  FormArray,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  ValidationErrors,
+  ValidatorFn,
+  Validators
+} from '@angular/forms'
 import { catchError, finalize, firstValueFrom, map, Observable, of, Subject, switchMap, takeUntil } from 'rxjs'
 import { TranslateService } from '@ngx-translate/core'
 
@@ -67,6 +75,19 @@ const ALL_VIEW_MODES = [
   { icon: 'pi pi-list', mode: 'list', titleKey: 'DIALOG.DATAVIEW.VIEW_MODE_LIST' },
   { icon: 'pi pi-th-large', mode: 'grid', titleKey: 'DIALOG.DATAVIEW.VIEW_MODE_GRID' }
 ]
+
+export function ValidateModuleBasePath(fa: FormArray): ValidatorFn {
+  return (): ValidationErrors | null => {
+    const paths: string[] = []
+    for (const m of fa.controls) {
+      const bp = m.get('basePath')?.value
+      if (!bp) return { basePathRequired: true }
+      if (paths.includes(bp)) return { basePathsNotUnique: true }
+      else paths.push(bp)
+    }
+    return null
+  }
+}
 
 @Component({
   selector: 'app-products',
@@ -450,7 +471,13 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
               index: new FormControl(null),
               id: new FormControl(null),
               appId: new FormControl(null),
-              basePath: new FormControl(null, [Validators.required, Validators.maxLength(255)]),
+              basePath: new FormControl(null, [
+                Validators.required,
+                Validators.maxLength(255),
+                Validators.minLength(1),
+                Validators.pattern('^/.*'),
+                ValidateModuleBasePath(modules)
+              ]),
               exposedModule: new FormControl(null),
               deprecated: new FormControl(null),
               undeployed: new FormControl(null),
@@ -531,7 +558,13 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
           },
           error: (err) => {
             console.error('updateProductById', err)
-            this.msgService.error({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.UPDATE_NOK' })
+            if (err.error?.errorCode) {
+              if (err.error?.errorCode === 'MERGE_ENTITY_FAILED') modules.markAsDirty()
+              this.msgService.error({
+                summaryKey: 'DIALOG.PRODUCTS.MESSAGES.UPDATE_NOK',
+                detailKey: 'VALIDATION.ERRORS.APP_MODULE.' + err.error?.errorCode
+              })
+            } else this.msgService.error({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.UPDATE_NOK' })
           },
           complete() {}
         })

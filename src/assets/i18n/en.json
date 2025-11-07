@@ -694,6 +694,8 @@
       "FORMAT_HOME_PAGE": "Format: /path-to-registered-app"
     },
     "ERRORS": {
+      "APP_MODULE.PATH_ALREADY_USED": "This module path has already been used. Please choose a path that is unique to the application.",
+      "APP_MODULE.MERGE_ENTITY_FAILED": "The used module paths are not unique.",
       "PARSE_ERROR": "Parse error: The contained structure does not match the expected format.",
       "INTERNAL_ERROR": "Internal error",
       "EMPTY_REQUIRED_FIELD": "This field is required.",

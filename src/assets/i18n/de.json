@@ -694,6 +694,8 @@
       "FORMAT_HOME_PAGE": "Format: /pfad-zur-registrierten-app"
     },
     "ERRORS": {
+      "APP_MODULE.PATH_ALREADY_USED": "Dieser Modulpfade wurde bereits verwendet. Bitte einen Pfad wählen der für die Applikation eindeutig ist.",
+      "APP_MODULE.MERGE_ENTITY_FAILED": "Die verwendeten Modulpfade sind nicht eindeutig.",
       "PARSE_ERROR": "Parserfehler: Die enthaltene Struktur entspricht nicht dem erwarteten Format.",
       "INTERNAL_ERROR": "Interner Fehler",
       "EMPTY_REQUIRED_FIELD": "Dieses Feld ist ein Pflichtfeld.",
