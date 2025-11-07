@@ -27,7 +27,7 @@ import {
   UIEndpoint
 } from 'src/app/shared/generated'
 
-import { AppType, ExtendedMicrofrontend, ExtendedProduct, ExtendedSlot, ProductComponent } from './products.component'
+import { ExtendedApp, ExtendedProduct, ExtendedSlot, ProductComponent } from './products.component'
 
 const workspace: Workspace = {
   id: 'workspace id',
@@ -69,7 +69,7 @@ const mfeComponent: Microfrontend = {
   deprecated: false,
   undeployed: false
 }
-const appWithAll: AppType = {
+const appWithAll: ExtendedApp = {
   appId: 'appId',
   modules: [mfeModule, mfeModuleDeprecated, mfeModuleUndeployed],
   components: [mfeComponent]
@@ -781,9 +781,9 @@ describe('ProductComponent', () => {
 
     describe('sortMfesByExposedModule', () => {
       it('should sort mfes by exposedModule ', () => {
-        const a: ExtendedMicrofrontend = { exposedModule: 'a' }
-        const b: ExtendedMicrofrontend = { exposedModule: 'b' }
-        const c: ExtendedMicrofrontend = { exposedModule: 'c' }
+        const a: Microfrontend = { exposedModule: 'a' }
+        const b: Microfrontend = { exposedModule: 'b' }
+        const c: Microfrontend = { exposedModule: 'c' }
         const eMfes = [b, c, a]
 
         eMfes.sort((x, y) => component.sortMfesByExposedModule(x, y))
@@ -792,9 +792,9 @@ describe('ProductComponent', () => {
       })
 
       it('should sort mfes by appId: some empty exposedModule ', () => {
-        const a: ExtendedMicrofrontend = { exposedModule: 'a' }
-        const b: ExtendedMicrofrontend = { exposedModule: '' }
-        const c: ExtendedMicrofrontend = { exposedModule: '' }
+        const a: Microfrontend = { exposedModule: 'a' }
+        const b: Microfrontend = { exposedModule: '' }
+        const c: Microfrontend = { exposedModule: '' }
         const eMfes = [b, c, a]
 
         eMfes.sort((x, y) => component.sortMfesByExposedModule(x, y))
@@ -803,9 +803,9 @@ describe('ProductComponent', () => {
       })
 
       it('should sort mfes by appId: all empty exposedModule ', () => {
-        const a: ExtendedMicrofrontend = { exposedModule: '' }
-        const b: ExtendedMicrofrontend = { exposedModule: '' }
-        const c: ExtendedMicrofrontend = { exposedModule: '' }
+        const a: Microfrontend = { exposedModule: '' }
+        const b: Microfrontend = { exposedModule: '' }
+        const c: Microfrontend = { exposedModule: '' }
         const eMfes = [b, c, a]
 
         eMfes.sort((x, y) => component.sortMfesByExposedModule(x, y))
@@ -814,9 +814,9 @@ describe('ProductComponent', () => {
       })
 
       it('should sort mfes by appId: special char exposedModule ', () => {
-        const a: ExtendedMicrofrontend = { exposedModule: 'a' }
-        const b: ExtendedMicrofrontend = { exposedModule: 'b' }
-        const c: ExtendedMicrofrontend = { exposedModule: '$' }
+        const a: Microfrontend = { exposedModule: 'a' }
+        const b: Microfrontend = { exposedModule: 'b' }
+        const c: Microfrontend = { exposedModule: '$' }
         const eMfes = [b, c, a]
 
         eMfes.sort((x, y) => component.sortMfesByExposedModule(x, y))
