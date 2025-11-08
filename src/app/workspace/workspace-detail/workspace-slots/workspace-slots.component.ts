@@ -246,6 +246,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   // essential for listing products which using a slot:
   // collect all such products (-slots) and assign to workspace slot
   private extractPsSlots(products: ProductStoreItem[]): CombinedSlot[] {
+    if (!products) return []
     const psSlots: CombinedSlot[] = []
     for (const p of products) {
       // 1. collect product slots
@@ -264,7 +265,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
           //
           // select workspace slot with same name (there is no productname for slots in workspace)
           const wsSlot = this.wSlotsIntern.find((s) => s.name === ps.name)
-          if (wsSlot) {
+          if (wsSlot && wsSlot.psSlots) {
             wsSlot.psSlots.push({ ...ps, pName: p.productName!, pDisplayName: p.displayName! })
             // consolidate slot state (aware of the state of current ps together with previous ones)
             wsSlot.changes = wsSlot.changes || ps.changes

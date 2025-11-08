@@ -1,21 +1,23 @@
-<p-message
-  *ngIf="wpLoading || psLoading"
-  id="ws_products_message_loading"
-  severity="info"
-  styleClass="m-2"
-  [text]="'ACTIONS.LOADING' | translate"
-></p-message>
-<p-message
-  *ngIf="exceptionKey"
-  id="ws_products_message_error"
-  severity="error"
-  styleClass="m-2"
-  [text]="exceptionKey | translate"
-></p-message>
+<!-- MESSSAGES on small screens -->
+<section class="block md:hidden mb-2">
+  <p-message
+    *ngIf="wpLoading || psLoading"
+    id="ws_products_message_loading"
+    severity="info"
+    [text]="'ACTIONS.LOADING' | translate"
+  ></p-message>
+  <p-message
+    *ngIf="exceptionKey"
+    id="ws_products_message_error"
+    severity="error"
+    [text]="exceptionKey | translate"
+  ></p-message>
+</section>
 
-<div *ngIf="!exceptionKey" class="p-0 flex flex-row column-gap-2 align-items-start">
-  <div class="pt-1">
+<div class="p-0 flex flex-row column-gap-2 align-items-start">
+  <section class="pt-1 flex flex-row column-gap-4">
     <p-pickList
+      *ngIf="!exceptionKey"
       #picklist
       id="ws_products_picklist"
       [filterBy]="'displayName,classifications'"
@@ -206,12 +208,12 @@
               class="h-1rem sm:h-2rem md:h-3rem w-1rem sm:w-2rem md:w-3rem flex align-items-center"
               aria-hidden="true"
             >
-              <app-image-container
+              <!--app-image-container
                 [id]="'ws_products_picklist_' + product.productName + '_logo'"
                 [imageUrl]="getImageUrl(product)"
                 [defaultLogoType]="'product'"
                 styleClass="max-h-1rem sm:max-h-2rem md:max-h-3rem max-w-1rem sm:max-w-2rem md:max-w-3rem tile-view-optional border-round-sm"
-              ></app-image-container>
+              ></app-image-container-->
             </div>
             <div class="flex flex-column row-gap-1">
               <div
@@ -254,21 +256,48 @@
               role="note"
             ></div>
           } @else {
-            <div
-              *ngIf="product?.changedComponents"
-              [id]="'ws_products_picklist_' + product.productName + '_changed'"
-              class="card-badge-right badge-1 tile-view-optional danger-action-text sm:text-xl pi pi-exclamation-circle"
-              [attr.aria-label]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
-              [pTooltip]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-              role="note"
-            ></div>
+            @if (!product?.exists) {
+              <div
+                [id]="'ws_products_picklist_' + product.productName + '_not_exist'"
+                class="card-badge-right badge-1 tile-view-optional danger-action-text sm:text-xl pi pi-trash"
+                [attr.aria-label]="'DIALOG.PRODUCTS.REMOVED' | translate"
+                [pTooltip]="'DIALOG.PRODUCTS.REMOVED' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+                role="note"
+              ></div>
+            } @else {
+              <div
+                *ngIf="product?.changedComponents"
+                [id]="'ws_products_picklist_' + product.productName + '_changed'"
+                class="card-badge-right badge-1 tile-view-optional danger-action-text sm:text-xl pi pi-exclamation-circle"
+                [attr.aria-label]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
+                [pTooltip]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+                role="note"
+              ></div>
+            }
           }
         </div>
       </ng-template>
     </p-pickList>
-  </div>
+    <!-- MESSSAGES on bigger screens -->
+    <section class="hidden md:block">
+      <p-message
+        *ngIf="wpLoading || psLoading"
+        id="ws_products_message_loading"
+        severity="info"
+        [text]="'ACTIONS.LOADING' | translate"
+      ></p-message>
+      <p-message
+        *ngIf="exceptionKey"
+        id="ws_products_message_error"
+        severity="error"
+        [text]="exceptionKey | translate"
+      ></p-message>
+    </section>
+  </section>
 
   <!--
     PRODUCT DETAIL
@@ -408,7 +437,7 @@
                Some of the displayed data are not available in Workspace database.
                Such data are picked up from product store product.
           -->
-        <section [attr.aria-label]="'Microfrontends'">
+        <section *ngIf="displayedDetailItem.microfrontends" [attr.aria-label]="'Microfrontends'">
           <dl class="w-full my-0 flex flex-column row-gap-3">
             <dt *ngFor="let app of displayedDetailItem.apps | keyvalue; let i = index" class="w-full">
               <div class="m-auto text-center max-w-20rem">
@@ -539,17 +568,20 @@
                             tooltipEvent="hover"
                           />
                         </div>
-                        <!-- mfe end points -->
-                        <!--div *ngIf="mfe.controls['endpoints'] && mfe.controls['endpoints'].value.length > 0">
-                        <div class="mt-2 font-bold">UI Endpoints</div>
-                        <div
-                          *ngFor="let ep of mfe.controls['endpoints'].value; let j = index"
-                          [id]="'ws_products_detail_mfe_' + i + '_endpoint_' + j"
-                          class="max-w-20rem text-responsive"
+                        <!-- End points -->
+                        <section
+                          *ngIf="mfe.value.endpoints && mfe.value.endpoints.length > 0"
+                          [attr.aria-label]="'UI Endpoints'"
                         >
-                          {{ ep.name }} => {{ ep.path }}
-                        </div>
-                      </div-->
+                          <div class="mt-2 font-bold">UI Endpoints</div>
+                          <div
+                            *ngFor="let ep of mfe.value.endpoints; let j = index"
+                            [id]="'ws_products_detail_mfe_' + i + '_endpoint_' + j"
+                            class="pl-2 max-w-20rem text-responsive"
+                          >
+                            {{ ep.name }} => {{ ep.path }}
+                          </div>
+                        </section>
                       </div>
                     </dt>
                   </div>
@@ -623,49 +655,51 @@
           </dl>
         </section>
 
-        <dl *ngIf="displayedDetailItem.slots" class="my-0" [attr.aria-label]="'TABS.WORKSPACE.SLOTS' | translate">
-          <p-divider align="center" styleClass="mt-0 mb-1">
-            <div class="px-3 font-bold text-primary">Slots</div>
-          </p-divider>
-          <dt
-            *ngFor="let item of displayedDetailItem.slots; let i = index"
-            class="ml-2 flex flex-row align-items-center column-gap-3 text-sm"
-          >
-            <span [id]="'ws_products_detail_slot_' + i + '_name'" class="max-w-20rem text-responsive">
-              {{ item.name }}
-            </span>
-            <div
-              *ngIf="item.undeployed"
-              [id]="'ws_products_detail_slot_' + i + '_undeployed'"
-              class="text-sm danger-action-text pi pi-ban"
-              [attr.aria-label]="'DIALOG.SLOT.UNDEPLOYED' | translate"
-              [pTooltip]="'DIALOG.SLOT.UNDEPLOYED' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-              role="note"
-            ></div>
-            <div
-              *ngIf="item.deprecated"
-              [id]="'ws_products_detail_slot_' + i + '_deprecated'"
-              class="text-sm danger-action-text pi pi-exclamation-circle"
-              [attr.aria-label]="'DIALOG.SLOT.DEPRECATED' | translate"
-              [pTooltip]="'DIALOG.SLOT.DEPRECATED' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-              role="note"
-            ></div>
-            <button
-              *ngIf="item.new"
-              [id]="'ws_products_detail_slot_' + i + '_new'"
-              class="text-sm danger-action-text pi pi-plus-circle border-none button-icon-only"
-              (click)="onAddSlot($event, item)"
-              [attr.aria-label]="'DIALOG.SLOT.CREATE.TOOLTIP' | translate"
-              [pTooltip]="'DIALOG.SLOT.CREATE.TOOLTIP' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            ></button>
-          </dt>
-        </dl>
+        <section *ngIf="displayedDetailItem.slots" [attr.aria-label]="'TABS.WORKSPACE.SLOTS' | translate">
+          <dl class="my-0">
+            <p-divider align="center" styleClass="mt-0 mb-1">
+              <div class="px-3 font-bold text-primary">Slots</div>
+            </p-divider>
+            <dt
+              *ngFor="let item of displayedDetailItem.slots; let i = index"
+              class="ml-2 flex flex-row align-items-center column-gap-3 text-sm"
+            >
+              <span [id]="'ws_products_detail_slot_' + i + '_name'" class="max-w-20rem text-responsive">
+                {{ item.name }}
+              </span>
+              <div
+                *ngIf="item.undeployed"
+                [id]="'ws_products_detail_slot_' + i + '_undeployed'"
+                class="text-sm danger-action-text pi pi-ban"
+                [attr.aria-label]="'DIALOG.SLOT.UNDEPLOYED' | translate"
+                [pTooltip]="'DIALOG.SLOT.UNDEPLOYED' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+                role="note"
+              ></div>
+              <div
+                *ngIf="item.deprecated"
+                [id]="'ws_products_detail_slot_' + i + '_deprecated'"
+                class="text-sm danger-action-text pi pi-exclamation-circle"
+                [attr.aria-label]="'DIALOG.SLOT.DEPRECATED' | translate"
+                [pTooltip]="'DIALOG.SLOT.DEPRECATED' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+                role="note"
+              ></div>
+              <div
+                *ngIf="!item.exists"
+                [id]="'ws_products_detail_slot_' + i + '_new'"
+                class="text-sm danger-action-text pi pi-plus-circle"
+                [attr.aria-label]="'DIALOG.PRODUCTS.SLOTS.NEW' | translate"
+                [pTooltip]="'DIALOG.PRODUCTS.SLOTS.NEW' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+                role="note"
+              ></div>
+            </dt>
+          </dl>
+        </section>
       </section>
 
       <footer

@@ -515,6 +515,7 @@
       "ORIGIN.SOURCE": "Application Store",
       "UNDEPLOYED": "Diese Applikation ist nicht länger nutzbar. Eine weitere Benutzung führt zu Fehlermeldungen.",
       "CHANGED_MFE": "Es gibt wichtige Änderungen in der Applikation.",
+      "REMOVED": "Diese Applikation existiert nicht mehr im Applikation Store.",
       "MFES": {
         "CHANGED": "Änderungen noch nicht gespeichert",
         "NEW": "Modul registrieren",
@@ -523,6 +524,10 @@
         "REMOVED": "Modul löschen",
         "DEPRECATED": "Veraltet",
         "UNDEPLOYED": "Unverfügbar"
+      },
+      "SLOTS": {
+        "NEW": "Slot nicht für den Workspace registriert",
+        "REMOVED": "Slot existiert nicht mehr im Applikation Store"
       },
       "MESSAGES": {
         "NOTHING_REGISTERED": "Keine Applikation registriert",

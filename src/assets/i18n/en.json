@@ -515,6 +515,7 @@
       "ORIGIN.SOURCE": "Application Store",
       "UNDEPLOYED": "This Application can no longer be used. Further use leads to error messages.",
       "CHANGED_MFE": "There are important changes in the Application.",
+      "REMOVED": "Application does not exist in Application Store.",
       "MFES": {
         "CHANGED": "Changes not yet saved",
         "NEW": "Register Module",
@@ -523,6 +524,10 @@
         "REMOVED": "Remove Module",
         "DEPRECATED": "Outdated",
         "UNDEPLOYED": "Unavailable"
+      },
+      "SLOTS": {
+        "NEW": "Slot not registered for the Workspace",
+        "REMOVED": "Slot does not exist anymore in Application Store"
       },
       "MESSAGES": {
         "NOTHING_REGISTERED": "No Application registered",

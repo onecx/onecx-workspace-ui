@@ -183,7 +183,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
 
   // If product registration change then refresh slot TAB data
   public onProductChanges() {
-    this.workspaceForSlots = { ...this.workspace! }
+    if (this.workspaceForSlots) this.workspaceForSlots = { ...this.workspace! }
   }
 
   public onClose(): void {
