@@ -12,9 +12,9 @@ import { ChangeMode, CombinedSlot, ExtendedComponent, PSSlot } from '../workspac
   styleUrls: ['./workspace-slot-detail.component.scss']
 })
 export class WorkspaceSlotDetailComponent implements OnChanges {
-  @Input() slotOrg: CombinedSlot | undefined
-  @Input() psComponentsOrg: ExtendedComponent[] = []
-  @Input() wProductNames: string[] = []
+  @Input() slotOrg: CombinedSlot | undefined // displayed slot
+  @Input() psComponentsOrg: ExtendedComponent[] = [] // all PS slots
+  @Input() wProductNames: string[] = [] // names of all products registered in workspace
   @Input() changeMode: ChangeMode = 'VIEW'
   @Input() displayDetailDialog = false
   @Input() displayDeleteDialog = false
@@ -22,7 +22,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
 
   public dateFormat: string
   public slot: CombinedSlot | undefined
-  public wComponents: ExtendedComponent[] = []
+  public wComponents: ExtendedComponent[] = [] // used/assigned components
   public psComponents: ExtendedComponent[] = [] // org ps components reduced by used in slot
   public hasEditPermission = false
   public displayDeregisterConfirmation = false
@@ -46,7 +46,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
     if (this.displayDetailDialog && this.slotOrg && this.slot === undefined) {
       this.slot = { ...this.slotOrg }
       this.wComponents = []
-      // extract ps components
+      // extract components assigned to the slot with PS infos
       if (this.slot.psComponents) this.wComponents = [...this.slot.psComponents]
       this.wComponentsOrg = [...this.wComponents] // to be able to restore
       this.psComponents = []
@@ -56,15 +56,17 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
     }
   }
 
+  // Collect available but not yet registered components from product store
   private collectPsComponents() {
-    // collect available but not yet registered components from product store
     for (const psComp of this.psComponentsOrg)
       if (
         !this.wComponents.some(
           (wc) => wc.productName === psComp.productName && wc.appId === psComp.appId && wc.name === psComp.name
         )
       )
-        if (this.wProductNames.includes(psComp.productName)) this.psComponents.push(psComp)
+        if (this.wProductNames.includes(psComp.productName))
+          // registered products only
+          this.psComponents.push(psComp)
   }
 
   public sortComponents(a: ExtendedComponent, b: ExtendedComponent): number {

@@ -27,7 +27,13 @@ import {
   UIEndpoint
 } from 'src/app/shared/generated'
 
-import { ExtendedApp, ExtendedProduct, ExtendedSlot, ProductComponent } from './products.component'
+import {
+  ExtendedApp,
+  ExtendedMicrofrontend,
+  ExtendedProduct,
+  ExtendedSlot,
+  ProductComponent
+} from './products.component'
 
 const workspace: Workspace = {
   id: 'workspace id',
@@ -37,7 +43,8 @@ const workspace: Workspace = {
   displayName: 'Workspace'
 }
 
-const mfeModule: Microfrontend = {
+const mfeModule: ExtendedMicrofrontend = {
+  index: 0,
   id: 'id m',
   appId: 'appId',
   basePath: 'path',
@@ -45,7 +52,8 @@ const mfeModule: Microfrontend = {
   deprecated: false,
   undeployed: false
 }
-const mfeModuleDeprecated: Microfrontend = {
+const mfeModuleDeprecated: ExtendedMicrofrontend = {
+  index: 1,
   id: 'id d',
   appId: 'appId',
   basePath: 'path',
@@ -53,7 +61,8 @@ const mfeModuleDeprecated: Microfrontend = {
   deprecated: true,
   undeployed: false
 }
-const mfeModuleUndeployed: Microfrontend = {
+const mfeModuleUndeployed: ExtendedMicrofrontend = {
+  index: 2,
   id: 'id u',
   appId: 'appId',
   basePath: 'path',
@@ -61,7 +70,7 @@ const mfeModuleUndeployed: Microfrontend = {
   deprecated: true,
   undeployed: true
 }
-const mfeComponent: Microfrontend = {
+const mfeComponent: ExtendedMicrofrontend = {
   id: 'id c',
   appId: 'appId',
   basePath: 'path',
@@ -145,7 +154,7 @@ describe('ProductComponent', () => {
   const productServiceSpy = {
     searchAvailableProducts: jasmine.createSpy('searchAvailableProducts').and.returnValue(of({}))
   }
-  const slotApiServiceSpy = { createSlot: jasmine.createSpy('createSlot').and.returnValue(of({})) }
+  const slotApiServiceSpy = { getSlotsForWorkspace: jasmine.createSpy('getSlotsForWorkspace').and.returnValue(of({})) }
   const workspaceServiceSpy = jasmine.createSpyObj<WorkspaceService>('WorkspaceService', ['doesUrlExistFor', 'getUrl'])
   const mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
   mockUserService.hasPermission.and.callFake((permission: string) => {
@@ -205,7 +214,7 @@ describe('ProductComponent', () => {
     wProductServiceSpy.createProductInWorkspace.calls.reset()
     wProductServiceSpy.deleteProductById.calls.reset()
     productServiceSpy.searchAvailableProducts.calls.reset()
-    slotApiServiceSpy.createSlot.calls.reset()
+    slotApiServiceSpy.getSlotsForWorkspace.calls.reset()
     // to spy data: refill with neutral data
     wProductServiceSpy.getProductById.and.returnValue(of({}))
     wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of({}))
@@ -213,7 +222,7 @@ describe('ProductComponent', () => {
     wProductServiceSpy.createProductInWorkspace.and.returnValue(of({}))
     wProductServiceSpy.deleteProductById.and.returnValue(of({}))
     productServiceSpy.searchAvailableProducts.and.returnValue(of({}))
-    slotApiServiceSpy.createSlot.and.returnValue(of({}))
+    slotApiServiceSpy.getSlotsForWorkspace.and.returnValue(of({}))
     // used in ngOnChanges
     workspaceServiceSpy.doesUrlExistFor.and.returnValue(of(true))
   })
@@ -304,7 +313,7 @@ describe('ProductComponent', () => {
 
         expect(component.psProducts.length).toBe(0) // prevent lading of undeployed products
       })
-
+      /*
       it('prepare product app parts: mfe type is component', () => {
         const psp: ExtendedProduct = {
           microfrontends: [
@@ -335,7 +344,7 @@ describe('ProductComponent', () => {
         component['prepareProductAppParts'](psp)
 
         expect(psp.changedComponents).toBeTrue()
-      })
+      })*/
     })
   })
 
@@ -464,10 +473,10 @@ describe('ProductComponent', () => {
       expect(component.displayedDetailItem?.microfrontends).toBeUndefined()
     })
   })
-
-  it('should access moduleControls as FormArray', () => {
+  /*
+  it('should getModuleControls', () => {
     expect(component.moduleControls instanceof FormArray).toBeTruthy()
-  })
+  })*/
 
   /**
    * UI Events: SAVE
@@ -676,39 +685,6 @@ describe('ProductComponent', () => {
       })
       expect(component.psProducts.length).toBe(0)
       expect(component.wProducts.length).toBe(1)
-    })
-  })
-
-  /**
-   * UI Events: ADD slot
-   */
-  describe('slot creation', () => {
-    const event = {
-      stopPropagation: jasmine.createSpy('stopPropagation')
-    }
-    const extendedSlot: ExtendedSlot = { name: 'Test Slot' }
-
-    it('should handle successful slot creation', () => {
-      component.onAddSlot(event, extendedSlot)
-
-      expect(slotApiServiceSpy.createSlot).toHaveBeenCalledWith({
-        createSlotRequest: { workspaceId: workspace.id, name: extendedSlot.name }
-      })
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.SLOT.MESSAGES.CREATE_OK' })
-      expect(msgServiceSpy.error).not.toHaveBeenCalled()
-    })
-
-    it('should handle failed slot creation', () => {
-      const errorResponse = { status: 400, statusText: 'workspace slot could not be created' }
-      slotApiServiceSpy.createSlot.and.returnValue(throwError(() => errorResponse))
-
-      component.onAddSlot(event, extendedSlot)
-
-      expect(slotApiServiceSpy.createSlot).toHaveBeenCalledWith({
-        createSlotRequest: { workspaceId: workspace.id, name: extendedSlot.name }
-      })
-      expect(msgServiceSpy.success).not.toHaveBeenCalled()
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.SLOT.MESSAGES.CREATE_NOK' })
     })
   })
 

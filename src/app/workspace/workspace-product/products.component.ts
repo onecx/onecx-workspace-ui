@@ -1,7 +1,6 @@
 import {
   AfterViewInit,
   Component,
-  ChangeDetectorRef,
   ElementRef,
   EventEmitter,
   Renderer2,
@@ -61,7 +60,7 @@ import {
 import { Utils } from 'src/app/shared/utils'
 
 type ChangeStatus = {
-  index: number
+  index?: number
   new?: boolean
   change?: boolean
   exists?: boolean
@@ -73,7 +72,7 @@ export type ExtendedSlot = SlotPS & ChangeStatus
 export type ExtendedApp = {
   appId: string
   modules?: ExtendedMicrofrontend[]
-  components?: ExtendedMicrofrontend[]
+  components?: ExtendedMicrofrontend[] // type is only needed to use the same sort method
 }
 export type WorkspaceData = { slots: Slot[]; products: ExtendedProduct[] }
 
@@ -151,7 +150,6 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   public currentMfe!: MfeInfo
 
   constructor(
-    private cdr: ChangeDetectorRef,
     private readonly workspaceService: WorkspaceService,
     private readonly wProductApi: WorkspaceProductAPIService,
     private readonly psProductApi: ProductAPIService,

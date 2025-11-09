@@ -220,6 +220,7 @@
   },
   "SLOT": {
     "NAME": "Slotname",
+    "CHANGES": "Änderungen?",
     "PRODUCT": "Applikation",
     "APP_ID": "App ID",
     "COMPONENT": "Komponente",
@@ -383,6 +384,7 @@
       "UNDEPLOYED": "Unverfügbar",
       "UNDEPLOYED.TOOLTIP": "Dieser Slot ist nicht länger nutzbar.",
       "UNDEPLOYED.COMPONENT.TOOLTIP": "Diese Komponente ist nicht länger nutzbar.",
+      "PRODUCT_UNREGISTERED": "Applikation nicht mehr im Workspace registriert. Komponente nicht länger nutzbar",
       "PRODUCTS": "Registrierende Applikationen",
       "PRODUCTS.NOT_EXIST": "Keine",
       "PRODUCTS.TOOLTIP": "Applikationen die den Slot registriert haben:",
