@@ -27,13 +27,7 @@ import {
   UIEndpoint
 } from 'src/app/shared/generated'
 
-import {
-  ExtendedApp,
-  ExtendedMicrofrontend,
-  ExtendedProduct,
-  ExtendedSlot,
-  ProductComponent
-} from './products.component'
+import { ExtendedApp, ExtendedMicrofrontend, ExtendedProduct, ProductComponent } from './products.component'
 
 const workspace: Workspace = {
   id: 'workspace id',
