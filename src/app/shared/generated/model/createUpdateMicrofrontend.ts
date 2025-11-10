@@ -14,5 +14,6 @@
 export interface CreateUpdateMicrofrontend { 
     appId: string;
     basePath: string;
+    exposedModule?: string;
 }
 

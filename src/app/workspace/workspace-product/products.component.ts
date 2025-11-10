@@ -10,8 +10,27 @@ import {
   OnChanges,
   SimpleChanges
 } from '@angular/core'
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
-import { catchError, finalize, firstValueFrom, map, Observable, of, Subject, switchMap, takeUntil } from 'rxjs'
+import {
+  FormArray,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  ValidationErrors,
+  ValidatorFn,
+  Validators
+} from '@angular/forms'
+import {
+  catchError,
+  combineLatest,
+  finalize,
+  firstValueFrom,
+  map,
+  Observable,
+  of,
+  Subject,
+  switchMap,
+  takeUntil
+} from 'rxjs'
 import { TranslateService } from '@ngx-translate/core'
 
 import { MfeInfo } from '@onecx/integration-interface'
@@ -23,8 +42,6 @@ import {
 } from '@onecx/angular-integration-interface'
 
 import {
-  CreateSlot,
-  CreateSlotRequest,
   ImagesInternalAPIService,
   Microfrontend,
   MicrofrontendType,
@@ -36,28 +53,38 @@ import {
   SlotPS,
   SlotAPIService,
   Workspace,
+  Slot,
   WorkspaceProductAPIService,
   UIEndpoint
 } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
 
-export type ExtendedMicrofrontend = Microfrontend & {
-  exposedModule?: string // MicrofrontendPS
+type ChangeStatus = {
+  index?: number
+  new?: boolean
+  change?: boolean
+  exists?: boolean
+  deprecated?: boolean
+  undeployed?: boolean
 }
-export type AppType = {
+export type ExtendedMicrofrontend = Microfrontend & ChangeStatus
+export type ExtendedSlot = SlotPS & ChangeStatus
+export type ExtendedApp = {
   appId: string
   modules?: ExtendedMicrofrontend[]
-  components?: ExtendedMicrofrontend[]
+  components?: ExtendedMicrofrontend[] // type is only needed to use the same sort method
 }
-export type ExtendedSlot = SlotPS & { new?: boolean }
+export type WorkspaceData = { slots: Slot[]; products: ExtendedProduct[] }
+
 // combine Workspace Product with properties from product store (ProductStoreItem)
 // => bucket is used to recognize the origin within HTML
-export type ExtendedProduct = Product & {
-  bucket: 'SOURCE' | 'TARGET' // target: workspace product = registered
-  changedComponents: boolean // true if there is a MFE with deprecated or undeployed
-  apps?: Map<string, AppType> // key: appId
-  slots?: Array<ExtendedSlot> // from ProductStoreItem
-}
+export type ExtendedProduct = Product &
+  ChangeStatus & {
+    bucket: 'SOURCE' | 'TARGET' // target: workspace product = registered
+    changedComponents: boolean // true if there is a MFE with deprecated or undeployed
+    apps?: Map<string, ExtendedApp> // key: appId
+    slots?: Array<ExtendedSlot> // from ProductStoreItem
+  }
 interface ViewingModes {
   icon: string
   mode: string
@@ -67,6 +94,19 @@ const ALL_VIEW_MODES = [
   { icon: 'pi pi-list', mode: 'list', titleKey: 'DIALOG.DATAVIEW.VIEW_MODE_LIST' },
   { icon: 'pi pi-th-large', mode: 'grid', titleKey: 'DIALOG.DATAVIEW.VIEW_MODE_GRID' }
 ]
+
+export function ValidateModuleBasePath(fa: FormArray): ValidatorFn {
+  return (): ValidationErrors | null => {
+    const paths: string[] = []
+    for (const m of fa.controls) {
+      const bp = m.get('basePath')?.value
+      if (!bp) return { basePathRequired: true }
+      if (paths.includes(bp)) return { basePathsNotUnique: true }
+      else paths.push(bp)
+    }
+    return null
+  }
+}
 
 @Component({
   selector: 'app-products',
@@ -89,6 +129,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   public displayDetails = false
   public displayedDetailItem: ExtendedProduct | undefined = undefined
   public formGroup: FormGroup
+  public formChanged = false
   public sourceFilterValue: string | undefined // product store
   public targetFilterValue: string | undefined // workspace
   public sourceList!: HTMLElement | null
@@ -100,6 +141,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   private deregisterItems: ExtendedProduct[] = []
 
   // data
+  public wSlots$!: Observable<Slot[]>
   public wProducts$!: Observable<ExtendedProduct[]>
   public wProducts: ExtendedProduct[] = [] // registered products
   public psProducts: ExtendedProduct[] = [] // not registered product store products
@@ -126,7 +168,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     this.formGroup = this.fb.group({
       displayName: new FormControl({ value: null, disabled: true }),
       baseUrl: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(200)]),
-      modules: this.fb.array(['a', 'b'])
+      modules: this.fb.array([])
     })
     this.viewingModes = ALL_VIEW_MODES
     this.sourceListViewMode = this.viewingModes.find((v) => v.mode === 'list')
@@ -163,23 +205,27 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   public loadData(): void {
     this.exceptionKey = undefined
     this.onHideItemDetails()
-    this.searchPsProducts()
     this.searchWProducts()
+    this.searchWSlots()
     firstValueFrom(
-      this.wProducts$.pipe(
-        switchMap(() => {
-          return this.psProducts$
-        })
+      combineLatest([this.wSlots$, this.wProducts$]).pipe(
+        switchMap((data) => this.searchPsProducts({ slots: data[0], products: data[1] } as WorkspaceData))
       )
     )
   }
 
+  /**************************************************
+   * Searching
+   *   * Product Store products inlc. ms, mfe (modules, components, endpoints), slots
+   *   * Workspace products (registered)
+   *   * Workspace slots
+   */
   public onLoadPsProducts(): void {
-    this.onHideItemDetails()
-    firstValueFrom(this.psProducts$)
+    this.loadData()
   }
   public onLoadWProducts(): void {
     this.onHideItemDetails()
+    this.wpLoading = true
     firstValueFrom(this.wProducts$)
   }
   private searchWProducts(): void {
@@ -191,7 +237,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
           map((products) => {
             this.wProducts = []
             for (const p of products)
-              this.wProducts.push({ ...p, bucket: 'TARGET', changedComponents: false } as ExtendedProduct)
+              this.wProducts.push({ ...p, bucket: 'TARGET', exists: true, changedComponents: false } as ExtendedProduct)
             return this.wProducts.sort(this.sortProductsByDisplayName)
           }),
           catchError((err) => {
@@ -203,13 +249,20 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
         )
         .pipe(takeUntil(this.destroy$))
   }
-
-  /**
-   * GET all (!) Product Store products (which are not yet registered)
-   */
-  private searchPsProducts(): void {
+  private searchWSlots(): void {
+    if (this.workspace?.id)
+      this.wSlots$ = this.slotApi.getSlotsForWorkspace({ id: this.workspace?.id }).pipe(
+        map((response) => response.slots ?? []),
+        catchError((err) => {
+          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.PRODUCTS'
+          console.error('getSlotsForWorkspace', err)
+          return of([] as Slot[])
+        })
+      )
+  }
+  private searchPsProducts(workspaceData: WorkspaceData): any {
     this.psLoading = true
-    this.psProducts$ = this.psProductApi
+    return this.psProductApi
       .searchAvailableProducts({ productStoreSearchCriteria: { pageSize: 1000 } })
       .pipe(
         map((result) => {
@@ -218,17 +271,16 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
           this.psProductsOrg = new Map()
           if (result.stream)
             for (const p of result.stream) {
-              const psp = { ...p, bucket: 'SOURCE', changedComponents: false } as ExtendedProduct
-              this.prepareProductApps(psp)
-              this.psProductsOrg.set(psp.productName!, psp)
+              const psP = { ...p, bucket: 'SOURCE', exists: true, changedComponents: false } as ExtendedProduct
+              this.prepareProductApps(psP, workspaceData.slots)
+              this.psProductsOrg.set(psP.productName!, psP)
+              const wP = workspaceData.products.find((wp) => wp.productName === psP.productName)
+              if (wP) this.syncProductState(wP, psP)
               // add product to SOURCE picklist only if not yet registered
-              const wp = this.wProducts.filter((wp) => wp.productName === psp.productName)
-              if (wp.length === 0 && !psp.undeployed) this.psProducts.push(psp)
-              if (wp.length === 1) {
-                wp[0].changedComponents = psp.changedComponents
-                wp[0].undeployed = psp.undeployed
-              }
+              else if (!psP.undeployed) this.psProducts.push(psP)
             }
+          // mark workspace products which are not longer exist in product store
+          for (const wP of workspaceData.products) wP.exists = this.psProductsOrg.get(wP.productName!) !== undefined
           return this.psProducts.sort(this.sortProductsByDisplayName)
         }),
         catchError((err) => {
@@ -241,53 +293,52 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
       .pipe(takeUntil(this.destroy$))
   }
 
-  // build map of apps, which containing modules and components
-  private prepareProductApps(psp: ExtendedProduct): void {
-    if (psp.microfrontends) {
-      psp.apps = new Map()
-      psp.microfrontends.forEach((mfe) => {
-        if (mfe.appId && !psp.apps?.has(mfe.appId)) psp.apps?.set(mfe.appId, { appId: mfe.appId })
-      })
-    }
-    if (psp.microfrontends || psp.slots) this.prepareProductAppParts(psp)
-  }
-  private prepareProductAppParts(psp: ExtendedProduct) {
-    // step through mfe array and pick modules and components
-    if (psp.microfrontends)
-      for (const mfe of psp.microfrontends) {
-        this.prepareProductAppPart(mfe, psp)
+  /**************************************************
+   * Prepare apps (modules, components) to be displayed
+   */
+  private prepareProductApps(eP: ExtendedProduct, slots: Slot[]): void {
+    if (eP.microfrontends) {
+      eP.apps = new Map()
+      for (const mfe of eP.microfrontends) {
+        if (mfe.appId && !eP.apps?.has(mfe.appId)) eP.apps?.set(mfe.appId, { appId: mfe.appId })
+        this.prepareProductAppPart(mfe, eP)
         // mark product if there are important changes on microfrontends
-        psp.changedComponents = mfe.undeployed || mfe.deprecated || psp.changedComponents
+        eP.changedComponents = mfe.undeployed || mfe.deprecated || eP.changedComponents
       }
-    if (psp.slots)
-      for (const slot of psp.slots) {
-        psp.changedComponents = slot.undeployed || slot.deprecated || psp.changedComponents
+    }
+    if (eP.slots)
+      for (const slot of eP.slots) {
+        eP.changedComponents = slot.undeployed || slot.deprecated || eP.changedComponents
+        // mark PS slots as exist in workspace
+        slot.exists = slots.some((sl) => sl.name === slot.name) !== undefined
       }
   }
-  private prepareProductAppPart(mfe: Microfrontend, psp: ExtendedProduct): void {
-    const app = psp.apps?.get(mfe.appId!)
-    if (app && mfe.type === MicrofrontendType.Module) {
-      app.modules = app.modules ?? []
-      app.modules.push(mfe as ExtendedMicrofrontend)
-    }
-    if (app && mfe.type === MicrofrontendType.Component) {
-      app.components = app.components ?? []
-      app.components.push(mfe as ExtendedMicrofrontend)
-      app.components.sort(this.sortMfesByExposedModule)
+  private prepareProductAppPart(mfe: Microfrontend, eP: ExtendedProduct): void {
+    const app = eP.apps?.get(mfe.appId!)
+    if (app) {
+      if (mfe.type === MicrofrontendType.Module) {
+        app.modules = app.modules ?? []
+        app.modules.push(mfe as ExtendedMicrofrontend)
+      }
+      app.modules?.sort(this.sortMicrofrontends)
+      if (mfe.type === MicrofrontendType.Component) {
+        app.components = app.components ?? []
+        app.components.push(mfe as ExtendedMicrofrontend)
+      }
+      app.components?.sort(this.sortMicrofrontends)
     }
   }
 
+  /**************************************************
+   * Sorting
+   */
   public sortProductsByDisplayName(a: Product, b: Product): number {
-    return (a.displayName ? a.displayName.toUpperCase() : '').localeCompare(
-      b.displayName ? b.displayName.toUpperCase() : ''
-    )
+    return (a.displayName ?? '').toUpperCase().localeCompare((b.displayName ?? '').toUpperCase())
   }
-  public sortMfesByAppId(a: Microfrontend, b: Microfrontend): number {
-    return (a.appId ? a.appId.toUpperCase() : '').localeCompare(b.appId ? b.appId.toUpperCase() : '')
-  }
-  public sortMfesByExposedModule(a: ExtendedMicrofrontend, b: ExtendedMicrofrontend): number {
-    return (a.exposedModule ? a.exposedModule.toUpperCase() : '').localeCompare(
-      b.exposedModule ? b.exposedModule.toUpperCase() : ''
+  public sortMicrofrontends(a: ExtendedMicrofrontend, b: ExtendedMicrofrontend): number {
+    return (
+      (a.appId?.toUpperCase() ?? '').localeCompare(b.appId?.toUpperCase() ?? '') ||
+      (a.exposedModule?.toUpperCase() ?? '').localeCompare(b.exposedModule?.toUpperCase() ?? '')
     )
   }
   public sortSlotsByName(a: SlotPS, b: SlotPS): number {
@@ -302,8 +353,8 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     return Utils.bffProductImageUrl(this.imageApi.configuration.basePath, product.productName)
   }
 
-  /**
-   * UI Events
+  /**************************************************
+   * UI Events: Picklist
    */
   public getFilterValue(ev: any): string {
     return ev.target.value
@@ -311,6 +362,8 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   public onHideItemDetails() {
     this.displayDetails = false
     this.displayedDetailItem = undefined
+    this.formChanged = false
+    this.formGroup.reset()
   }
   public onSourceViewModeChange(ev: { icon: string; mode: string }): void {
     if (ev) {
@@ -327,38 +380,36 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     }
   }
 
-  /**
-   * UI Events: DETAIL
+  /**************************************************
+   * UI Events: Detail
    */
   return(event: any) {
     event.stopPropagation()
   }
+  // on picklist item clicks: ev.items is collection
   public onSourceSelect(ev: any): void {
-    if (ev.items[0] && this.psProductsOrg.has(ev.items[0].productName)) {
-      const pspOrg = this.psProductsOrg.get(ev.items[0].productName)
-      if (pspOrg) this.fillForm(pspOrg)
-    } else this.onHideItemDetails()
+    if (ev.items.length === 0) this.onHideItemDetails()
+    if (ev.items.length === 1) this.fillForm(this.psProductsOrg.get(ev.items[0].productName))
   }
   public onTargetSelect(ev: any): void {
-    if (ev.items[0]) this.getWProduct(ev.items[0])
-    else this.onHideItemDetails()
+    if (ev.items.length === 0) this.onHideItemDetails()
+    if (ev.items.length === 1) this.getWProduct(ev.items[0])
   }
 
+  /**************************************************
+   * DETAIL
+   */
   private getWProduct(wProduct: ExtendedProduct): void {
     this.wProductApi
       .getProductById({ id: this.workspace?.id, productId: wProduct.id } as GetProductByIdRequestParams)
       .subscribe({
         next: (data) => {
           const item = data as ExtendedProduct
-          item.bucket = wProduct.bucket
-          item.displayName = item.displayName ?? wProduct.displayName
-          item.microfrontends?.sort(this.sortMfesByAppId)
           this.prepareWProduct(item)
           this.fillForm(item)
         },
         error: (err) => {
-          this.displayedDetailItem = undefined
-          this.displayDetails = false
+          this.onHideItemDetails()
           console.error('getProductById', err)
           this.msgService.error({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.LOAD_ERROR' })
         },
@@ -366,116 +417,141 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
       })
   }
 
-  // enrich workspace product with info from product store
+  // Enrich workspace product with data from product store
+  // (a) no structure change => update up-to-date info
+  // (b) new/removed Apps/Modules in PS
   private prepareWProduct(item: ExtendedProduct) {
+    item.bucket = 'TARGET'
+    item.displayName = item.displayName ?? item.productName
     if (this.psProductsOrg.has(item.productName!)) {
       const pspOrg = this.psProductsOrg.get(item.productName!)
       if (pspOrg) {
         item.undeployed = pspOrg.undeployed
         item.changedComponents = pspOrg.changedComponents
-        item.slots = pspOrg.slots
-        item.apps = pspOrg.apps
-        if (item.microfrontends && pspOrg.microfrontends) {
-          this.syncMfeState(item.microfrontends, pspOrg.microfrontends)
-        }
+        item.slots = pspOrg.slots // copy, slot management in separate TAB
+        item.apps = pspOrg.apps // copy, to be analyzed and prepared for displaying
+        this.syncProductState(item, pspOrg)
       }
     }
   }
-  // take over the deprecated/undeployed states on MFEs from PS
-  private syncMfeState(itemMfes: Microfrontend[], pspOrgMfes: Microfrontend[]): void {
-    for (const iMfe of itemMfes) {
-      if (iMfe.type === MicrofrontendType.Module) {
-        for (const mfe of pspOrgMfes) {
-          // the workspace knows only modules
-          if (mfe.appId === iMfe.appId && mfe.type === MicrofrontendType.Module) {
-            iMfe.deprecated = mfe.deprecated
-            iMfe.undeployed = mfe.undeployed
-          }
+  // take over the deprecated/undeployed states on MFE Modules and Slots
+  private syncProductState(wP: ExtendedProduct, psP: ExtendedProduct): void {
+    let pspModules = 0
+    wP.changedComponents = psP.changedComponents
+    wP.undeployed = psP.undeployed
+    if (wP.microfrontends) {
+      for (const wMfe of wP.microfrontends) pspModules = pspModules + this.syncModuleState(wMfe, psP.microfrontends)
+      wP.changedComponents = wP.changedComponents || wP.microfrontends.length !== pspModules
+    }
+  }
+  private syncModuleState(wMfe: Microfrontend, mfes: Microfrontend[] | undefined): number {
+    let n = 0
+    if (mfes)
+      for (const psMfe of mfes.filter((mfe) => mfe.type === MicrofrontendType.Module)) {
+        n++
+        // reg. MFEs without exposed module
+        if (!wMfe.exposedModule) wMfe.exposedModule = psMfe.exposedModule
+        if (psMfe.appId === wMfe.appId && psMfe.exposedModule === wMfe.exposedModule) {
+          wMfe.deprecated = psMfe.deprecated
+          wMfe.undeployed = psMfe.undeployed
         }
       }
-    }
+    return n
   }
 
-  private fillForm(item: ExtendedProduct) {
+  /**************************************************
+   * DETAIL FORM
+   *
+   * Build a dynamic form array for all microfrontend modules for a TARGET product
+   */
+  private fillForm(item: ExtendedProduct | undefined): void {
+    if (!item) return
+    this.formChanged = false
     this.displayedDetailItem = item
     this.displayedDetailItem.slots?.sort(this.sortSlotsByName)
     this.formGroup.controls['displayName'].setValue(this.displayedDetailItem.displayName)
     this.formGroup.controls['baseUrl'].setValue(this.displayedDetailItem.baseUrl)
-    // build a dynamic form array for all microfrontend modules for a TARGET product
     if (item.bucket === 'TARGET') {
       this.formGroup.enable()
       const modules = this.formGroup.get('modules') as FormArray
       while (modules.length > 0) modules.removeAt(0) // clear form
-      if (this.displayedDetailItem.microfrontends) {
-        if (this.displayedDetailItem.microfrontends.length === 0) {
-          this.displayedDetailItem.microfrontends = undefined
-        }
-        this.prepareFormForModulesAndComponents(this.displayedDetailItem, modules)
-      }
+      if (this.displayedDetailItem.microfrontends)
+        if (this.displayedDetailItem.microfrontends.length === 0) this.displayedDetailItem.microfrontends = undefined
+      this.fillFormForModules(this.displayedDetailItem, modules)
     }
     if (item.bucket === 'SOURCE') this.formGroup.disable()
-
     this.displayDetails = true
   }
-  private prepareFormForModulesAndComponents(item: ExtendedProduct, modules: FormArray): void {
-    if (!item || !item.microfrontends) return
-    item.microfrontends?.forEach((mfe, i) => {
-      const psMfeModule = this.getProductStoreMfeData(item, mfe.appId!)
-      modules.push(
-        this.fb.group({
-          id: new FormControl(null),
-          appId: new FormControl(null),
-          basePath: new FormControl(null, [Validators.required, Validators.maxLength(255)]),
-          deprecated: new FormControl(null),
-          undeployed: new FormControl(null),
-          exposedModule: new FormControl(null),
-          endpoints: new FormControl(null)
-        })
-      )
-      modules.at(i).patchValue({
-        id: mfe.id,
-        appId: mfe.appId,
-        basePath: mfe.basePath,
-        deprecated: psMfeModule?.deprecated,
-        undeployed: psMfeModule?.undeployed,
-        exposedModule: psMfeModule?.exposedModule,
-        endpoints: mfe.endpoints?.sort(this.sortEndpointsByName)
-      })
-    })
+  private fillFormForModules(item: ExtendedProduct, modules: FormArray): void {
+    let moduleIndex = 0
+    if (item && item.apps)
+      // 1. Prepare so much forms as app modules exist in PS
+      for (const [appId, app] of item.apps) {
+        if (app.modules)
+          for (const m of app.modules) {
+            // mfe is undefined for "new" modules
+            const mfe = item.microfrontends?.find((mf) => mf.appId === appId && mf.exposedModule === m.exposedModule)
+            modules.push(
+              this.fb.group({
+                index: new FormControl(null),
+                id: new FormControl(null),
+                appId: new FormControl(null),
+                basePath: new FormControl(null, [
+                  Validators.required,
+                  Validators.maxLength(255),
+                  Validators.minLength(1),
+                  Validators.pattern('^/.*'),
+                  ValidateModuleBasePath(modules)
+                ]),
+                exposedModule: new FormControl(null),
+                deprecated: new FormControl(null),
+                undeployed: new FormControl(null),
+                new: new FormControl(null),
+                change: new FormControl(null),
+                endpoints: new FormControl(null)
+              })
+            )
+            modules.at(-1).patchValue({
+              index: moduleIndex,
+              id: mfe?.id,
+              appId: m?.appId,
+              basePath: mfe?.basePath ?? '/' + moduleIndex,
+              exposedModule: m?.exposedModule,
+              deprecated: m.deprecated,
+              undeployed: m.undeployed,
+              new: mfe?.id === undefined,
+              change: undefined, // user can set: 'create' for creation, 'delete' for deletion
+              endpoints: mfe?.endpoints?.sort(this.sortEndpointsByName)
+            })
+            moduleIndex++
+          }
+      }
+    // 2. Add form? for non-existing (in PS) modules
   }
   private sortEndpointsByName(a: UIEndpoint, b: UIEndpoint): number {
     return (a.name ? a.name.toUpperCase() : '').localeCompare(b.name ? b.name.toUpperCase() : '')
   }
 
-  private getProductStoreMfeData(item: ExtendedProduct, appId: string): ExtendedMicrofrontend | undefined {
-    let module: ExtendedMicrofrontend | undefined
-    if (item.apps?.has(appId)) {
-      const a = item.apps.get(appId)
-      if (a?.modules) module = a.modules[0]
-    }
-    return module
+  public getModuleControls(appId: string): any {
+    const fa = this.formGroup.get('modules') as FormArray
+    return fa.controls.filter((m) => m.value.appId === appId)
   }
 
-  private clearForm() {
-    this.onHideItemDetails()
-    this.formGroup.reset()
-  }
-  get moduleControls(): any {
-    return this.formGroup.get('modules') as FormArray
-  }
-
-  /**
-   * UI Events: SAVE
+  /****************************************************************************
+   * UI Event: SAVE
    */
   public onProductSave(): void {
     this.editMode = false
     if (this.workspace?.id && this.formGroup.valid && this.displayedDetailItem?.id) {
       this.displayedDetailItem.displayName = this.formGroup.controls['displayName'].value
       this.displayedDetailItem.baseUrl = this.formGroup.controls['baseUrl'].value
+      // MFE modules to be saved:
       this.displayedDetailItem.microfrontends = [] // clear
       const modules = this.formGroup.get('modules') as FormArray
       modules.controls.forEach((item) => {
-        this.displayedDetailItem?.microfrontends?.push(item.value)
+        // ignore item if id is undefined and "new" = false and formChanged
+        if ((item.value.id && item.value.change === undefined) || (!item.value.id && item.value.change === 'create'))
+          this.displayedDetailItem?.microfrontends?.push(item.value)
       })
       this.wProductApi
         .updateProductById({
@@ -487,54 +563,58 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
             displayName: this.displayedDetailItem.displayName,
             microfrontends: this.displayedDetailItem.microfrontends?.map((m) => ({
               appId: m.appId,
-              basePath: m.basePath
+              basePath: m.basePath,
+              exposedModule: m.exposedModule
             }))
           } as UpdateProductRequest
         })
         .subscribe({
           next: (data) => {
-            if (this.displayedDetailItem) {
-              this.displayedDetailItem.modificationCount = data.resource.modificationCount
-              const wps: ExtendedProduct[] = this.wProducts.filter((wp) => wp.id === this.displayedDetailItem?.id)
-              if (wps.length === 1) {
-                wps[0].displayName = this.displayedDetailItem.displayName
-                wps[0].baseUrl = this.displayedDetailItem.baseUrl
-              }
-            }
+            const item = data.resource as ExtendedProduct
+            this.prepareWProduct(item)
+            this.fillForm(item)
             this.msgService.success({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.UPDATE_OK' })
           },
           error: (err) => {
             console.error('updateProductById', err)
-            this.msgService.error({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.UPDATE_NOK' })
+            if (err.error?.errorCode) {
+              if (err.error?.errorCode === 'MERGE_ENTITY_FAILED') modules.markAsDirty()
+              this.msgService.error({
+                summaryKey: 'DIALOG.PRODUCTS.MESSAGES.UPDATE_NOK',
+                detailKey: 'VALIDATION.ERRORS.APP_MODULE.' + err.error?.errorCode
+              })
+            } else this.msgService.error({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.UPDATE_NOK' })
           },
           complete() {}
         })
     }
   }
 
-  /**
+  /****************************************************************************
    * REGISTER
    *
    * This event fires after the items were moved from source to target => PrimeNG
    * Afterwards, Step through the list and on each error roll back the move.
    */
-  private prepareMfePaths(mfes: any): any[] | undefined {
+  private prepareMfePaths(mfes: Microfrontend[]): Microfrontend[] | undefined {
     return mfes.length === 0
       ? undefined
       : mfes.map((m: any, i: number) => ({
           appId: m.appId,
-          basePath: '/' + (mfes.length > 1 ? i + 1 : '') // create initial unique base paths
+          basePath: '/' + (mfes.length > 1 ? i + 1 : ''), // create initial unique base paths
+          exposedModule: m.exposedModule
         }))
   }
 
   public onMoveToTarget(ev: any): void {
-    this.clearForm()
+    this.onHideItemDetails()
     const itemCount = ev.items.length
     let successCounter = 0
     let errorCounter = 0
-    for (const p of ev.items) {
-      // register modules only
-      const mfes = p.microfrontends?.filter((m: Microfrontend) => m.type === MicrofrontendType.Module) ?? []
+    for (const p of ev.items as ExtendedProduct[]) {
+      // register modules only (ignore undeployed modules)
+      const mfes =
+        p.microfrontends?.filter((m: Microfrontend) => m.type === MicrofrontendType.Module && !m.undeployed) ?? []
       if (this.workspace) {
         this.wProductApi
           .createProductInWorkspace({
@@ -543,21 +623,19 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
               productName: p.productName,
               baseUrl: p.baseUrl,
               displayName: p.displayName,
-              microfrontends: this.prepareMfePaths(mfes),
-              slots: p.slots
-                ? p.slots.filter((s: SlotPS) => !s.undeployed).map((s: SlotPS) => ({ name: s.name }) as CreateSlot)
-                : undefined
+              microfrontends: this.prepareMfePaths(mfes)
             } as CreateProductRequest
           })
           .subscribe({
             next: (data) => {
               successCounter++
               // update id of the workspace item to be used on select
-              const wp = this.wProducts.filter((wp) => wp.productName === p.productName)[0]
-              wp.id = data.resource.id
-              wp.bucket = 'TARGET'
-              wp.modificationCount = 0
-              wp.apps = p.apps
+              const wP = this.wProducts.find((wp) => wp.productName === p.productName)
+              if (wP) {
+                wP.id = data.resource.id
+                wP.modificationCount = 0
+                this.prepareWProduct(wP)
+              }
               this.changed.emit()
               if (itemCount === successCounter + errorCounter)
                 this.displayRegisterMessages('REGISTRATION', successCounter, errorCounter)
@@ -576,16 +654,17 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     }
   }
 
-  /**
+  /****************************************************************************
    * DEREGISTER
    *
-   * This event fires after the items were moved from source to target => PrimeNG
+   * This event fires after the items were moved (visible) from source to target => PrimeNG
+   * BUT: This movement is not permanent
    * Afterwards, ask for confirmation:
    *   accepted: delete product from workspace, on each error roll back the moved item
    *   rejected: roll back the moved items
    */
   public onMoveToSource(event: any): void {
-    this.deregisterItems = [...event.items]
+    this.deregisterItems = event.items
     this.displayDeregisterConfirmation = true
   }
   public onDeregisterCancellation() {
@@ -601,44 +680,45 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   }
   public onDeregisterConfirmation(): void {
     this.displayDeregisterConfirmation = false
-    this.clearForm()
+    this.onHideItemDetails()
     const itemCount = this.deregisterItems.length
     let successCounter = 0
     let errorCounter = 0
-    if (this.workspace) {
-      for (const p of this.deregisterItems) {
-        this.wProductApi
-          .deleteProductById({
-            id: this.workspace.id!,
-            productId: p.id!
-          })
-          .subscribe({
-            next: () => {
-              successCounter++
-              const psp = this.psProducts.filter((psp) => psp.productName === p.productName)[0]
-              psp.bucket = 'SOURCE'
-              this.changed.emit()
-              if (itemCount === successCounter + errorCounter)
-                this.displayRegisterMessages('DEREGISTRATION', successCounter, errorCounter)
-            },
-            error: (err) => {
-              errorCounter++
-              // Revert change: remove item in source + add item in target list
+    for (const p of this.deregisterItems)
+      if (this.workspace?.id && p.id) {
+        this.wProductApi.deleteProductById({ id: this.workspace.id, productId: p.id }).subscribe({
+          next: () => {
+            successCounter++
+            // remove a non-existing product of adjust bucket
+            if (p.exists) {
+              p.bucket = 'SOURCE'
+              // sometimes the component has already the product - then do not add
+              if (!this.psProducts.some((psp) => psp.productName === p.productName)) this.psProducts.push(p)
+            } else {
               this.psProducts = this.psProducts.filter((psp) => psp.productName !== p.productName)
-              this.wProducts.push(p)
-              console.error('deleteProductById', err)
-              if (itemCount === successCounter + errorCounter)
-                this.displayRegisterMessages('DEREGISTRATION', successCounter, errorCounter)
             }
-          })
+            this.wProducts = this.wProducts.filter((psp) => psp.productName !== p.productName)
+            if (itemCount === successCounter + errorCounter)
+              this.displayRegisterMessages('DEREGISTRATION', successCounter, errorCounter)
+          },
+          error: (err) => {
+            errorCounter++
+            // Revert change: remove item in source + add item in target list
+            this.psProducts = this.psProducts.filter((psp) => psp.productName !== p.productName)
+            this.wProducts.push(p)
+            console.error('deleteProductById', err)
+            if (itemCount === successCounter + errorCounter)
+              this.displayRegisterMessages('DEREGISTRATION', successCounter, errorCounter)
+          }
+        })
       }
-    }
   }
 
   private displayRegisterMessages(type: string, success: number, error: number) {
     this.deregisterItems = []
     this.psProducts.sort(this.sortProductsByDisplayName)
     this.wProducts.sort(this.sortProductsByDisplayName)
+    this.changed.emit() // inform slot TAB via detail component
     if (success > 0) {
       if (success === 1) this.msgService.success({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.' + type + '_OK' })
       else this.msgService.success({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.' + type + 'S_OK' })
@@ -648,24 +728,9 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
       else this.msgService.error({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.' + type + 'S_NOK' })
   }
 
-  /**
-   * UI Events
+  /****************************************************************************
+   * ENDPOINTS
    */
-  public onAddSlot(ev: any, item: ExtendedSlot) {
-    ev.stopPropagation()
-    if (this.workspace?.id)
-      this.slotApi
-        .createSlot({ createSlotRequest: { workspaceId: this.workspace.id, name: item.name } as CreateSlotRequest })
-        .subscribe({
-          next: () => {
-            this.msgService.success({ summaryKey: 'DIALOG.SLOT.MESSAGES.CREATE_OK' })
-          },
-          error: () => {
-            this.msgService.error({ summaryKey: 'DIALOG.SLOT.MESSAGES.CREATE_NOK' })
-          }
-        })
-  }
-
   public getProductEndpointUrl$(name?: string): Observable<string | undefined> {
     if (this.productEndpointExist && name)
       return this.workspaceService.getUrl('onecx-product-store', 'onecx-product-store-ui', 'product-detail', {

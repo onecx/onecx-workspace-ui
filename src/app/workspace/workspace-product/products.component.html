@@ -1,21 +1,23 @@
-<p-message
-  *ngIf="wpLoading || psLoading"
-  id="ws_products_message_loading"
-  severity="info"
-  styleClass="m-2"
-  [text]="'ACTIONS.LOADING' | translate"
-></p-message>
-<p-message
-  *ngIf="exceptionKey"
-  id="ws_products_message_error"
-  severity="error"
-  styleClass="m-2"
-  [text]="exceptionKey | translate"
-></p-message>
+<!-- MESSSAGES on small screens -->
+<section class="block md:hidden mb-2">
+  <p-message
+    *ngIf="wpLoading || psLoading"
+    id="ws_products_message_loading_sm"
+    severity="info"
+    [text]="'ACTIONS.LOADING' | translate"
+  ></p-message>
+  <p-message
+    *ngIf="exceptionKey"
+    id="ws_products_message_error_sm"
+    severity="error"
+    [text]="exceptionKey | translate"
+  ></p-message>
+</section>
 
-<div *ngIf="!exceptionKey" class="p-0 flex flex-row column-gap-2 align-items-start">
-  <div class="pt-1">
+<div class="p-0 flex flex-row column-gap-2 align-items-start">
+  <section class="pt-1 flex flex-row column-gap-4">
     <p-pickList
+      *ngIf="!exceptionKey"
       #picklist
       id="ws_products_picklist"
       [filterBy]="'displayName,classifications'"
@@ -217,7 +219,7 @@
               <div
                 [id]="'ws_products_picklist_' + product.productName + '_display_name'"
                 class="tile-view-mandatory sm:font-semibold text-sm lg:text-md max-w-10rem xl:max-w-15rem text-responsive"
-                [class.danger-action-text]="product?.undeployed || product?.changedComponents"
+                [class.danger-action-text]="product?.undeployed"
                 role="note"
               >
                 {{ product.displayName ?? product.productName }}
@@ -243,30 +245,59 @@
             </div>
           </div>
           <!-- BADGES -->
-          <div
-            *ngIf="product?.undeployed"
-            [id]="'ws_products_picklist_' + product.productName + '_undeployed'"
-            class="card-badge-right badge-1 tile-view-optional danger-action-text sm:text-xl pi pi-ban"
-            [attr.aria-label]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
-            [pTooltip]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-            role="note"
-          ></div>
-          <div
-            *ngIf="!product?.undeployed && product?.changedComponents"
-            [id]="'ws_products_picklist_' + product.productName + '_changed_mfe'"
-            class="card-badge-right badge-1 tile-view-optional danger-action-text sm:text-xl pi pi-exclamation-circle"
-            [attr.aria-label]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
-            [pTooltip]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-            role="note"
-          ></div>
+          @if (product?.undeployed === true) {
+            <div
+              [id]="'ws_products_picklist_' + product.productName + '_undeployed'"
+              class="card-badge-right badge-1 tile-view-optional danger-action-text sm:text-xl pi pi-ban"
+              [attr.aria-label]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
+              [pTooltip]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+              role="note"
+            ></div>
+          } @else {
+            @if (!product?.exists) {
+              <div
+                [id]="'ws_products_picklist_' + product.productName + '_not_exist'"
+                class="card-badge-right badge-1 tile-view-optional danger-action-text sm:text-xl pi pi-trash"
+                [attr.aria-label]="'DIALOG.PRODUCTS.REMOVED' | translate"
+                [pTooltip]="'DIALOG.PRODUCTS.REMOVED' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+                role="note"
+              ></div>
+            } @else {
+              <div
+                *ngIf="product?.changedComponents"
+                [id]="'ws_products_picklist_' + product.productName + '_changed'"
+                class="card-badge-right badge-1 tile-view-optional danger-action-text sm:text-xl pi pi-exclamation-circle"
+                [attr.aria-label]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
+                [pTooltip]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+                role="note"
+              ></div>
+            }
+          }
         </div>
       </ng-template>
     </p-pickList>
-  </div>
+    <!-- MESSSAGES on bigger screens -->
+    <section class="hidden md:block">
+      <p-message
+        *ngIf="wpLoading || psLoading"
+        id="ws_products_message_loading"
+        severity="info"
+        [text]="'ACTIONS.LOADING' | translate"
+      ></p-message>
+      <p-message
+        *ngIf="exceptionKey"
+        id="ws_products_message_error"
+        severity="error"
+        [text]="exceptionKey | translate"
+      ></p-message>
+    </section>
+  </section>
 
   <!--
     PRODUCT DETAIL
@@ -277,8 +308,8 @@
     [attr.aria-label]="'DIALOG.PRODUCTS.DETAILS' | translate"
   >
     <!-- 
-           Product Header
-           Displaying of some meta data: origin (workspace/products store), logo, state
+        Product Header
+        Displaying of some meta data: origin (workspace/products store), logo, state
       -->
     <header class="mb-3 w-full flex flex-row flex-wrap gap-2 justify-content-between align-items-start">
       <div class="flex flex-column cursor-default">
@@ -290,28 +321,31 @@
             <div class="text-sm max-w-15rem text-responsive">{{ displayedDetailItem.productName }}</div>
             <div class="text-sm max-w-15rem text-responsive">{{ displayedDetailItem.version }}</div>
           </div>
-          <div
-            *ngIf="displayedDetailItem.undeployed"
-            id="ws_products_detail_header_undeployed"
-            class="p-2 text-lg danger-action-text pi pi-ban"
-            [attr.aria-label]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
-            [pTooltip]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-            role="note"
-          ></div>
-          <div
-            *ngIf="!displayedDetailItem.undeployed && displayedDetailItem.changedComponents"
-            id="ws_products_detail_header_changed_mfe"
-            class="p-2 text-lg danger-action-text pi pi-exclamation-circle"
-            [attr.aria-label]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
-            [pTooltip]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-            role="note"
-          ></div>
+          @if (displayedDetailItem.undeployed) {
+            <div
+              id="ws_products_detail_header_undeployed"
+              class="p-2 text-lg danger-action-text pi pi-ban"
+              [attr.aria-label]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
+              [pTooltip]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+              role="note"
+            ></div>
+          } @else {
+            <div
+              *ngIf="displayedDetailItem.changedComponents"
+              id="ws_products_detail_header_changed"
+              class="p-2 text-lg danger-action-text pi pi-exclamation-circle"
+              [attr.aria-label]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
+              [pTooltip]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+              role="note"
+            ></div>
+          }
         </div>
       </div>
+      <!-- IMAGE -->
       <div class="hidden xl:block">
         <div class="h-2rem md:h-3rem md:h-4rem flex align-items-center" aria-hidden="true">
           <app-image-container
@@ -322,6 +356,7 @@
           ></app-image-container>
         </div>
       </div>
+      <!-- LINKS -->
       <div class="hidden xl:block">
         <div class="flex flex-column">
           <a
@@ -357,7 +392,7 @@
     </header>
 
     <!-- 
-          Product Config: Displaying and Editing
+        Product Config: Displaying and Editing
       -->
     <form [formGroup]="formGroup">
       <section
@@ -402,223 +437,301 @@
                Some of the displayed data are not available in Workspace database.
                Such data are picked up from product store product.
           -->
-        <section [attr.aria-label]="'Microfrontends'">
-          <dl class="my-0">
-            <dt *ngFor="let app of displayedDetailItem.apps | keyvalue; let i = index">
-              <p-divider align="center" styleClass="m-0 p-0">
-                <div class="font-bold text-primary max-w-20rem text-responsive">{{ app.key }}</div>
+        <section *ngIf="displayedDetailItem.microfrontends" [attr.aria-label]="'Microfrontends'">
+          <dl class="w-full my-0 flex flex-column row-gap-3">
+            <dt *ngFor="let app of displayedDetailItem.apps | keyvalue; let i = index" class="w-full">
+              <div class="m-auto text-center max-w-20rem">
+                <div class="font-bold text-primary text-responsive">{{ app.key }}</div>
                 <div class="text-xs">Microfrontend</div>
-              </p-divider>
+              </div>
+              <!-- MODULES -->
+              <div class="flex flex-column row-gap-3">
+                <dl *ngIf="app.value.modules" class="my-0 text-sm">
+                  <div class="mb-1 font-bold">Modules</div>
+                  <div
+                    *ngIf="app.value.modules && displayedDetailItem.bucket === 'TARGET'"
+                    formArrayName="modules"
+                    class="flex flex-column row-gap-2"
+                  >
+                    <dt *ngFor="let mfe of getModuleControls(app.key)">
+                      <div [formGroupName]="mfe.value.index" class="ml-2 flex flex-column row-gap-2">
+                        <!-- Exposed Module + flags -->
+                        <div class="flex flex-row align-items-center column-gap-2">
+                          <span
+                            [id]="'ws_products_detail_mfe_' + i + '_exposed_module'"
+                            class="mr-2 max-w-20rem text-responsive"
+                          >
+                            {{ mfe.controls['exposedModule'].value }}
+                          </span>
+                          <!-- BADGES: mfe state -->
+                          <div
+                            *ngIf="mfe.value.undeployed"
+                            [id]="'ws_products_detail_mfe_' + i + '_undeployed'"
+                            class="danger-action-text pi pi-ban"
+                            [attr.aria-label]="'DIALOG.PRODUCTS.MFES.UNDEPLOYED' | translate"
+                            [pTooltip]="'DIALOG.PRODUCTS.MFES.UNDEPLOYED' | translate"
+                            tooltipPosition="top"
+                            tooltipEvent="hover"
+                            role="note"
+                          ></div>
+                          <div
+                            *ngIf="mfe.value.deprecated"
+                            [id]="'ws_products_detail_mfe_' + i + '_deprecated'"
+                            class="danger-action-text pi pi-exclamation-circle"
+                            [attr.aria-label]="'DIALOG.PRODUCTS.MFES.DEPRECATED' | translate"
+                            [pTooltip]="'DIALOG.PRODUCTS.MFES.DEPRECATED' | translate"
+                            tooltipPosition="top"
+                            tooltipEvent="hover"
+                            role="note"
+                          ></div>
+                          <div
+                            *ngIf="!mfe.value.id && mfe.value.change === 'create'"
+                            [id]="'ws_products_detail_mfe_' + i + '_create'"
+                            class="danger-action-text pi pi-plus-circle"
+                            [attr.aria-label]="'DIALOG.PRODUCTS.MFES.CREATE' | translate"
+                            [pTooltip]="'DIALOG.PRODUCTS.MFES.CREATE' | translate"
+                            tooltipPosition="top"
+                            tooltipEvent="hover"
+                            role="note"
+                          ></div>
+                          <div
+                            *ngIf="mfe.value.id && mfe.value.change === 'delete'"
+                            [id]="'ws_products_detail_mfe_' + i + '_remove'"
+                            class="danger-action-text pi pi-trash"
+                            [attr.aria-label]="'DIALOG.PRODUCTS.MFES.DELETE' | translate"
+                            [pTooltip]="'DIALOG.PRODUCTS.MFES.DELETE' | translate"
+                            tooltipPosition="top"
+                            tooltipEvent="hover"
+                            role="note"
+                          ></div>
+                        </div>
+                        <!-- Path Input Control -->
+                        <div *ngIf="mfe.value.id || mfe.value.new" class="flex flex-row align-items-start column-gap-3">
+                          <div class="flex-grow-1 flex flex-column row-gap-1">
+                            <span controlErrorAnchor class="flex-grow-1 p-float-label">
+                              <input
+                                pInputText
+                                type="text"
+                                class="w-full text-responsive"
+                                [id]="'ws_products_detail_mfe_' + mfe.value.index + '_base_path'"
+                                formControlName="basePath"
+                                [attr.aria-label]="'PRODUCT.MFE.BASE_PATH' | translate"
+                                [pTooltip]="'PRODUCT.MFE.BASE_PATH.TOOLTIP' | translate"
+                                tooltipPosition="top"
+                                tooltipEvent="hover"
+                              />
+                              <label
+                                class="ocx-required-label"
+                                [for]="'ws_products_detail_mfe_' + mfe.value.index + '_base_path'"
+                                aria-hidden="true"
+                              >
+                                {{ 'PRODUCT.MFE.BASE_PATH' | translate }}
+                              </label>
+                            </span>
+                            <label
+                              *ngIf="mfe.controls['basePath'].errors?.hasOwnProperty('basePathRequired')"
+                              class="control-error"
+                              [for]="'ws_products_detail_mfe_' + mfe.value.index + '_base_path'"
+                              role="note"
+                            >
+                              {{ 'VALIDATION.ERRORS.EMPTY_REQUIRED_FIELD' | translate }}
+                            </label>
+                            <label
+                              *ngIf="mfe.controls['basePath'].errors?.hasOwnProperty('basePathsNotUnique')"
+                              class="control-error"
+                              [for]="'ws_products_detail_mfe_' + mfe.value.index + '_base_path'"
+                              role="note"
+                            >
+                              {{ 'VALIDATION.ERRORS.APP_MODULE.PATH_ALREADY_USED' | translate }}
+                            </label>
+                          </div>
+                          <p-button
+                            *ngIf="mfe.value.new && mfe.value.change !== 'create'"
+                            [icon]="'pi pi-plus-circle'"
+                            [id]="'ws_products_detail_mfe_' + mfe.value.index + '_new'"
+                            [disabled]="!mfe.controls['basePath'].valid"
+                            (onClick)="mfe.value.change = 'create'; formChanged = true"
+                            [ariaLabel]="'DIALOG.PRODUCTS.MFES.NEW' | translate"
+                            [pTooltip]="'DIALOG.PRODUCTS.MFES.NEW' | translate"
+                            tooltipPosition="top"
+                            tooltipEvent="hover"
+                          />
+                          <p-button
+                            *ngIf="mfe.value.id && mfe.value.change !== 'delete'"
+                            [icon]="'pi pi-trash'"
+                            [id]="'ws_products_detail_mfe_' + mfe.value.index + '_remove'"
+                            [disabled]="!mfe.controls['basePath'].valid"
+                            (onClick)="mfe.value.change = 'delete'; formChanged = true"
+                            [ariaLabel]="'DIALOG.PRODUCTS.MFES.REMOVED' | translate"
+                            [pTooltip]="'DIALOG.PRODUCTS.MFES.REMOVED' | translate"
+                            tooltipPosition="top"
+                            tooltipEvent="hover"
+                          />
+                        </div>
+                        <!-- End points -->
+                        <section
+                          *ngIf="mfe.value.endpoints && mfe.value.endpoints.length > 0"
+                          [attr.aria-label]="'UI Endpoints'"
+                        >
+                          <div class="mt-2 font-bold">UI Endpoints</div>
+                          <div
+                            *ngFor="let ep of mfe.value.endpoints; let j = index"
+                            [id]="'ws_products_detail_mfe_' + i + '_endpoint_' + j"
+                            class="pl-2 max-w-20rem text-responsive"
+                          >
+                            {{ ep.name }} => {{ ep.path }}
+                          </div>
+                        </section>
+                      </div>
+                    </dt>
+                  </div>
 
-              <dl *ngIf="app.value.modules" class="my-0 text-sm">
-                <div class="mb-1 font-bold">Modules</div>
-                <div *ngIf="app.value.modules && displayedDetailItem.bucket === 'TARGET'" formArrayName="modules">
-                  <dt *ngFor="let mfe of moduleControls.controls; let i = index">
-                    <div
-                      [formGroupName]="i"
-                      [class.mb-4]="i < moduleControls.controls.length - 2"
-                      class="ml-2 flex flex-column row-gap-0"
-                    >
-                      <div class="mb-1 flex flex-row column-gap-2">
+                  <div *ngIf="app.value.modules && displayedDetailItem.bucket === 'SOURCE'">
+                    <dt *ngFor="let smfe of app.value.modules; let i = index" class="flex flex-column row-gap-2">
+                      <div class="ml-2 flex flex-row flex-nowrap column-gap-2">
                         <span
-                          [id]="'ws_products_detail_mfe_' + i + '_exposed_module'"
+                          [id]="'ws_products_detail_component_' + i + '_exposed_module'"
                           class="mr-2 max-w-20rem text-responsive"
                         >
-                          {{ mfe.controls['exposedModule'].value }}</span
+                          {{ smfe.exposedModule }}</span
                         >
-                        <!-- mfe state -->
                         <div
-                          *ngIf="mfe.controls['undeployed'].value"
-                          [id]="'ws_products_detail_mfe_' + i + '_undeployed'"
+                          *ngIf="smfe.undeployed"
+                          [id]="'ws_products_detail_mfe_' + i + '_deprecated'"
                           class="danger-action-text pi pi-ban"
-                          [attr.aria-label]="'DIALOG.PRODUCTS.MFES.UNDEPLOYED' | translate"
                           [pTooltip]="'DIALOG.PRODUCTS.MFES.UNDEPLOYED' | translate"
                           tooltipPosition="top"
                           tooltipEvent="hover"
                           role="note"
                         ></div>
                         <div
-                          *ngIf="mfe.controls['deprecated'].value"
+                          *ngIf="smfe.deprecated"
                           [id]="'ws_products_detail_mfe_' + i + '_deprecated'"
                           class="danger-action-text pi pi-exclamation-circle"
-                          [attr.aria-label]="'DIALOG.PRODUCTS.MFES.DEPRECATED' | translate"
                           [pTooltip]="'DIALOG.PRODUCTS.MFES.DEPRECATED' | translate"
                           tooltipPosition="top"
                           tooltipEvent="hover"
                           role="note"
                         ></div>
                       </div>
-                      <!-- mfe path - used as suffix ot the product base URL -->
-                      <span controlErrorAnchor class="mt-2 p-float-label">
-                        <input
-                          pInputText
-                          type="text"
-                          class="w-full text-responsive"
-                          [id]="'ws_products_detail_mfe_' + i + '_base_path'"
-                          formControlName="basePath"
-                          [attr.aria-label]="'PRODUCT.MFE.BASE_PATH' | translate"
-                          [pTooltip]="'PRODUCT.MFE.BASE_PATH.TOOLTIP' | translate"
-                          tooltipPosition="top"
-                          tooltipEvent="hover"
-                        />
-                        <label
-                          class="ocx-required-label"
-                          [for]="'ws_products_detail_mfe_' + i + '_base_path'"
-                          aria-hidden="true"
-                        >
-                          {{ 'PRODUCT.MFE.BASE_PATH' | translate }}
-                        </label>
-                      </span>
-                      <!-- mfe end points -->
-                      <div *ngIf="mfe.controls['endpoints'] && mfe.controls['endpoints'].value.length > 0">
-                        <div class="mt-2 font-bold">UI Endpoints</div>
-                        <div
-                          *ngFor="let ep of mfe.controls['endpoints'].value; let j = index"
-                          [id]="'ws_products_detail_mfe_' + i + '_endpoint_' + j"
-                          class="max-w-20rem text-responsive"
-                        >
-                          {{ ep.name }} => {{ ep.path }}
-                        </div>
-                      </div>
-                    </div>
-                  </dt>
-                </div>
-
-                <div *ngIf="app.value.modules && displayedDetailItem.bucket === 'SOURCE'">
-                  <dt *ngFor="let smfe of app.value.modules; let i = index" class="flex flex-column row-gap-2">
-                    <div class="flex flex-row flex-nowrap column-gap-2">
-                      <span
-                        [id]="'ws_products_detail_component_' + i + '_exposed_module'"
-                        class="mr-2 max-w-20rem text-responsive"
-                      >
-                        {{ smfe.exposedModule }}</span
-                      >
-                      <div
-                        *ngIf="smfe.undeployed"
-                        [id]="'ws_products_detail_mfe_' + i + '_deprecated'"
-                        class="danger-action-text pi pi-ban"
-                        [pTooltip]="'DIALOG.PRODUCTS.MFES.UNDEPLOYED' | translate"
-                        tooltipPosition="top"
-                        tooltipEvent="hover"
-                        role="note"
-                      ></div>
-                      <div
-                        *ngIf="smfe.deprecated"
-                        [id]="'ws_products_detail_mfe_' + i + '_deprecated'"
-                        class="danger-action-text pi pi-exclamation-circle"
-                        [pTooltip]="'DIALOG.PRODUCTS.MFES.DEPRECATED' | translate"
-                        tooltipPosition="top"
-                        tooltipEvent="hover"
-                        role="note"
-                      ></div>
-                    </div>
-                  </dt>
-                </div>
-              </dl>
-
-              <dl *ngIf="app.value.components" class="my-0 text-sm">
-                <div class="mt-3 mb-1 font-bold">Components</div>
-                <dt
-                  *ngFor="let item of app.value.components; let i = index"
-                  class="ml-2 flex flex-row align-items-center column-gap-2"
-                >
-                  <span
-                    [id]="'ws_products_detail_component_' + i + '_exposed_module'"
-                    class="mr-2 max-w-20rem text-responsive"
+                    </dt>
+                  </div>
+                </dl>
+                <!-- COMPONENTS -->
+                <dl *ngIf="app.value.components" class="my-0 text-sm">
+                  <div class="mb-1 font-bold">Components</div>
+                  <dt
+                    *ngFor="let item of app.value.components; let i = index"
+                    class="ml-2 flex flex-row align-items-center column-gap-2"
                   >
-                    {{ item.exposedModule }}</span
-                  >
-                  <div
-                    *ngIf="item.undeployed"
-                    [id]="'ws_products_detail_component_' + i + '_undeployed'"
-                    class="text-sm danger-action-text pi pi-ban"
-                    [pTooltip]="'DIALOG.PRODUCTS.MFES.UNDEPLOYED' | translate"
-                    tooltipPosition="top"
-                    tooltipEvent="hover"
-                    role="note"
-                  ></div>
-                  <div
-                    *ngIf="item.deprecated"
-                    [id]="'ws_products_detail_component_' + i + '_deprecated'"
-                    class="text-sm danger-action-text pi pi-exclamation-circle"
-                    [pTooltip]="'DIALOG.PRODUCTS.MFES.DEPRECATED' | translate"
-                    tooltipPosition="top"
-                    tooltipEvent="hover"
-                    role="note"
-                  ></div>
-                </dt>
-              </dl>
+                    <span
+                      [id]="'ws_products_detail_component_' + i + '_exposed_module'"
+                      class="mr-2 max-w-20rem text-responsive"
+                    >
+                      {{ item.exposedModule }}</span
+                    >
+                    <div
+                      *ngIf="item.undeployed"
+                      [id]="'ws_products_detail_component_' + i + '_undeployed'"
+                      class="text-sm danger-action-text pi pi-ban"
+                      [pTooltip]="'DIALOG.PRODUCTS.MFES.UNDEPLOYED' | translate"
+                      tooltipPosition="top"
+                      tooltipEvent="hover"
+                      role="note"
+                    ></div>
+                    <div
+                      *ngIf="item.deprecated"
+                      [id]="'ws_products_detail_component_' + i + '_deprecated'"
+                      class="text-sm danger-action-text pi pi-exclamation-circle"
+                      [pTooltip]="'DIALOG.PRODUCTS.MFES.DEPRECATED' | translate"
+                      tooltipPosition="top"
+                      tooltipEvent="hover"
+                      role="note"
+                    ></div>
+                  </dt>
+                </dl>
+              </div>
             </dt>
           </dl>
         </section>
 
-        <dl *ngIf="displayedDetailItem.slots" class="my-0" [attr.aria-label]="'TABS.WORKSPACE.SLOTS' | translate">
-          <p-divider align="center" styleClass="mt-0 mb-1">
-            <div class="px-3 font-bold text-primary">Slots</div>
-          </p-divider>
-          <dt
-            *ngFor="let item of displayedDetailItem.slots; let i = index"
-            class="ml-2 flex flex-row align-items-center column-gap-3 text-sm"
-          >
-            <span [id]="'ws_products_detail_slot_' + i + '_name'" class="max-w-20rem text-responsive">
-              {{ item.name }}
-            </span>
-            <div
-              *ngIf="item.undeployed"
-              [id]="'ws_products_detail_slot_' + i + '_undeployed'"
-              class="text-sm danger-action-text pi pi-ban"
-              [attr.aria-label]="'DIALOG.SLOT.UNDEPLOYED' | translate"
-              [pTooltip]="'DIALOG.SLOT.UNDEPLOYED' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-              role="note"
-            ></div>
-            <div
-              *ngIf="item.deprecated"
-              [id]="'ws_products_detail_slot_' + i + '_deprecated'"
-              class="text-sm danger-action-text pi pi-exclamation-circle"
-              [attr.aria-label]="'DIALOG.SLOT.DEPRECATED' | translate"
-              [pTooltip]="'DIALOG.SLOT.DEPRECATED' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-              role="note"
-            ></div>
-            <button
-              *ngIf="item.new"
-              [id]="'ws_products_detail_slot_' + i + '_new'"
-              class="text-sm danger-action-text pi pi-plus-circle border-none button-icon-only"
-              (click)="onAddSlot($event, item)"
-              [attr.aria-label]="'DIALOG.SLOT.CREATE.TOOLTIP' | translate"
-              [pTooltip]="'DIALOG.SLOT.CREATE.TOOLTIP' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            ></button>
-          </dt>
-        </dl>
+        <section *ngIf="displayedDetailItem.slots" [attr.aria-label]="'TABS.WORKSPACE.SLOTS' | translate">
+          <dl class="my-0">
+            <p-divider align="center" styleClass="mt-0 mb-1">
+              <div class="px-3 font-bold text-primary">Slots</div>
+            </p-divider>
+            <dt
+              *ngFor="let item of displayedDetailItem.slots; let i = index"
+              class="ml-2 flex flex-row align-items-center column-gap-3 text-sm"
+            >
+              <span [id]="'ws_products_detail_slot_' + i + '_name'" class="max-w-20rem text-responsive">
+                {{ item.name }}
+              </span>
+              <div
+                *ngIf="item.undeployed"
+                [id]="'ws_products_detail_slot_' + i + '_undeployed'"
+                class="text-sm danger-action-text pi pi-ban"
+                [attr.aria-label]="'DIALOG.SLOT.UNDEPLOYED' | translate"
+                [pTooltip]="'DIALOG.SLOT.UNDEPLOYED' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+                role="note"
+              ></div>
+              <div
+                *ngIf="item.deprecated"
+                [id]="'ws_products_detail_slot_' + i + '_deprecated'"
+                class="text-sm danger-action-text pi pi-exclamation-circle"
+                [attr.aria-label]="'DIALOG.SLOT.DEPRECATED' | translate"
+                [pTooltip]="'DIALOG.SLOT.DEPRECATED' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+                role="note"
+              ></div>
+              <div
+                *ngIf="!item.exists"
+                [id]="'ws_products_detail_slot_' + i + '_new'"
+                class="text-sm danger-action-text pi pi-plus-circle"
+                [attr.aria-label]="'DIALOG.PRODUCTS.SLOTS.NEW' | translate"
+                [pTooltip]="'DIALOG.PRODUCTS.SLOTS.NEW' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+                role="note"
+              ></div>
+            </dt>
+          </dl>
+        </section>
       </section>
 
-      <footer class="mt-4 flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
-        <p-button
-          id="ws_products_detail_action_close"
-          icon="pi pi-times"
-          (onClick)="onHideItemDetails()"
-          [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
-          [ariaLabel]="'ACTIONS.NAVIGATION.CLOSE' | translate"
-          [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        ></p-button>
-        <p-button
-          *ngIf="hasRegisterPermission && displayedDetailItem.bucket === 'TARGET' && formGroup.valid"
-          id="ws_products_detail_action_save"
-          icon="pi pi-save"
-          (onClick)="onProductSave()"
-          [label]="'ACTIONS.SAVE' | translate"
-          [ariaLabel]="'ACTIONS.SAVE' | translate"
-          [pTooltip]="'ACTIONS.TOOLTIPS.SAVE' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        ></p-button>
+      <footer
+        class="mt-4 flex flex-row flex-wrap column-gap-2 row-gap-1"
+        [ngClass]="formChanged ? 'justify-content-between' : 'justify-content-end'"
+      >
+        <div *ngIf="formChanged" class="max-w-5rem danger-action-text text-sm">
+          {{ 'DIALOG.PRODUCTS.MFES.CHANGED' | translate }}
+        </div>
+        <div class="flex flex-row column-gap-2 row-gap-1 justify-content-end">
+          <p-button
+            id="ws_products_detail_action_close"
+            icon="pi pi-times"
+            (onClick)="onHideItemDetails()"
+            [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+            [ariaLabel]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+            [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          ></p-button>
+          <p-button
+            *ngIf="hasRegisterPermission && displayedDetailItem.bucket === 'TARGET' && formGroup.valid"
+            id="ws_products_detail_action_save"
+            icon="pi pi-save"
+            (onClick)="onProductSave()"
+            [label]="'ACTIONS.SAVE' | translate"
+            [ariaLabel]="'ACTIONS.SAVE' | translate"
+            [pTooltip]="'ACTIONS.TOOLTIPS.SAVE' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          ></p-button>
+        </div>
       </footer>
     </form>
   </section>

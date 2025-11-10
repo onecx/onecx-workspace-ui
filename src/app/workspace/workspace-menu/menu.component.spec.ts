@@ -1057,6 +1057,7 @@ describe('MenuComponent', () => {
   describe('onRevokePermission', () => {
     it('should delete assignment', () => {
       assgmtApiServiceSpy.deleteAssignment.and.returnValue(of(assgmt))
+      component.wAssignments = [assgmt]
 
       component.onRevokePermission(nodeData, 'role', assgmt.id!)
 

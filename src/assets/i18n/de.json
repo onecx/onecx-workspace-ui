@@ -42,11 +42,13 @@
       "INFO": "Diese Aktion kann nicht rückgängig gemacht werden!",
       "WORKSPACE": {
         "HEADER": "Workspace löschen",
-        "MESSAGE": "Möchten Sie diesen Workspace löschen?",
-        "MESSAGE_INFO_OPERATOR": "Dieser Workspace wurde automatisiert erstellt. Er ist löschbar wird aber automatisiert wiederhergestellt.",
-        "MESSAGE_REJECT_MANDATORY": "Der Workspace ist gekennzeichnet als erforderlich für den Betrieb und kann deshalb nicht gelöscht werden.",
-        "MESSAGE_OK": "Workspace erfolgreich gelöscht",
-        "MESSAGE_NOK": "Workspace konnte nicht gelöscht werden"
+        "MESSAGE": {
+          "QUESTION": "Möchten Sie diesen Workspace löschen?",
+          "INFO_OPERATOR": "Dieser Workspace wurde automatisiert erstellt. Er ist löschbar wird aber automatisiert wiederhergestellt.",
+          "REJECT_MANDATORY": "Der Workspace ist gekennzeichnet als erforderlich für den Betrieb und kann deshalb nicht gelöscht werden.",
+          "OK": "Workspace erfolgreich gelöscht",
+          "NOK": "Workspace konnte nicht gelöscht werden"
+        }
       },
       "MENU": {
         "HEADER": "Menüpunkt löschen",
@@ -218,6 +220,7 @@
   },
   "SLOT": {
     "NAME": "Slotname",
+    "CHANGES": "Änderungen?",
     "PRODUCT": "Applikation",
     "APP_ID": "App ID",
     "COMPONENT": "Komponente",
@@ -283,7 +286,7 @@
       "DESCRIPTION": "Zusatzinformationen",
       "DISABLED": "Wenn gesetzt, dann wird der Menüpunkt nicht angezeigt",
       "EXTERN": "Wenn gesetzt, dann wird bei der Benutzung die OneCX Shell verlassen. Erfordert einen Wert in Path/URL.",
-      "TARGET": "Wenn gesetzt, dann wird bei der Benutzung des Menüpunkts das Ziel in einem neuen TAB geöffnet. Erfordert einen Wert in Path/URL.",
+      "TARGET": "Wenn gesetzt, dann wird bei der Benutzung das Ziel in einem neuen TAB geöffnet. Erfordert einen Wert in Path/URL.",
       "MENU_ID": "Ein eindeutiger Identifikator des Menüpunkts",
       "MENU_NAME": "Angezeigter Name",
       "PARENT_ID": "Der Identifier des übergeordneten Menüpunkts",
@@ -381,6 +384,7 @@
       "UNDEPLOYED": "Unverfügbar",
       "UNDEPLOYED.TOOLTIP": "Dieser Slot ist nicht länger nutzbar.",
       "UNDEPLOYED.COMPONENT.TOOLTIP": "Diese Komponente ist nicht länger nutzbar.",
+      "PRODUCT_UNREGISTERED": "Applikation nicht mehr im Workspace registriert. Komponente nicht länger nutzbar",
       "PRODUCTS": "Registrierende Applikationen",
       "PRODUCTS.NOT_EXIST": "Keine",
       "PRODUCTS.TOOLTIP": "Applikationen die den Slot registriert haben:",
@@ -430,7 +434,7 @@
       },
       "SUBHEADER": "Die Details und Rollenberechtigungen des Workspace Menüs verwalten",
       "ACTION": {
-        "LOAD": "Menüdaten laden",
+        "LOAD": "...Menüdaten laden",
         "RELOAD": "Menüdaten neu laden",
         "VIEW": "Details anzeigen",
         "EDIT": "Details bearbeiten"
@@ -513,9 +517,19 @@
       "ORIGIN.SOURCE": "Application Store",
       "UNDEPLOYED": "Diese Applikation ist nicht länger nutzbar. Eine weitere Benutzung führt zu Fehlermeldungen.",
       "CHANGED_MFE": "Es gibt wichtige Änderungen in der Applikation.",
+      "REMOVED": "Diese Applikation existiert nicht mehr im Applikation Store.",
       "MFES": {
+        "CHANGED": "Änderungen noch nicht gespeichert",
+        "NEW": "Modul registrieren",
+        "CREATE": "Modul wird beim Speichern gelöscht",
+        "DELETE": "Modul wird beim Speichern erstellt",
+        "REMOVED": "Modul löschen",
         "DEPRECATED": "Veraltet",
         "UNDEPLOYED": "Unverfügbar"
+      },
+      "SLOTS": {
+        "NEW": "Slot nicht für den Workspace registriert",
+        "REMOVED": "Slot existiert nicht mehr im Applikation Store"
       },
       "MESSAGES": {
         "NOTHING_REGISTERED": "Keine Applikation registriert",
@@ -687,6 +701,8 @@
       "FORMAT_HOME_PAGE": "Format: /pfad-zur-registrierten-app"
     },
     "ERRORS": {
+      "APP_MODULE.PATH_ALREADY_USED": "Dieser Modulpfade wurde bereits verwendet. Bitte einen Pfad wählen der für die Applikation eindeutig ist.",
+      "APP_MODULE.MERGE_ENTITY_FAILED": "Die verwendeten Modulpfade sind nicht eindeutig.",
       "PARSE_ERROR": "Parserfehler: Die enthaltene Struktur entspricht nicht dem erwarteten Format.",
       "INTERNAL_ERROR": "Interner Fehler",
       "EMPTY_REQUIRED_FIELD": "Dieses Feld ist ein Pflichtfeld.",

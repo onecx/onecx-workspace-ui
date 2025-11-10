@@ -42,11 +42,13 @@
       "INFO": "This action cannot be undone!",
       "WORKSPACE": {
         "HEADER": "Delete Workspace",
-        "MESSAGE": "Do you want to delete this Workspace?",
-        "MESSAGE_INFO_OPERATOR": "This Workspace was created by automation. It is deletable but it will be recreated by automation.",
-        "MESSAGE_REJECT_MANDATORY": "The Workspace is marked as required for operation and therefore cannot be deleted.",
-        "MESSAGE_OK": "The Workspace was deleted successfully",
-        "MESSAGE_NOK": "An error has occurred. The Workspace could not be deleted."
+        "MESSAGE": {
+          "QUESTION": "Do you want to delete this Workspace?",
+          "INFO_OPERATOR": "This Workspace was created by automation. It is deletable but it will be recreated by automation.",
+          "REJECT_MANDATORY": "The Workspace is marked as required for operation and therefore cannot be deleted.",
+          "OK": "The Workspace was deleted successfully",
+          "NOK": "An error has occurred. The Workspace could not be deleted."
+        }
       },
       "MENU": {
         "HEADER": "Delete Menu Item",
@@ -218,6 +220,7 @@
   },
   "SLOT": {
     "NAME": "Slot Name",
+    "CHANGES": "Changes?",
     "PRODUCT": "Application",
     "APP_ID": "App ID",
     "COMPONENT": "Component",
@@ -282,8 +285,8 @@
       "BADGE": "Icon from the PrimeNG library which should be displayed next to the Menu name",
       "DESCRIPTION": "Additional informationen",
       "DISABLED": "If set, then the Menu Item is not displayed.",
-      "EXTERN": "If set, the OneCX Shell will be exited when the Menu Item is used. Requires a value in Path/URL.",
-      "TARGET": "If set, the target will be opened in a new TAB when the Menu Item is used. Requires a value in Path/URL.",
+      "EXTERN": "If set, the OneCX Shell will be exited. Requires a value in Path/URL.",
+      "TARGET": "If set, the target will be opened in a new TAB. Requires a value in Path/URL.",
       "MENU_ID": "A unique identifier of the Menu Item",
       "MENU_NAME": "Displayed Name",
       "PARENT_ID": "The identifier of the parent Menu Item",
@@ -381,6 +384,7 @@
       "UNDEPLOYED": "Unavailable",
       "UNDEPLOYED.TOOLTIP": "This Slot is no longer usable.",
       "UNDEPLOYED.COMPONENT.TOOLTIP": "This Component is no longer usable.",
+      "PRODUCT_UNREGISTERED": "Application no longer registered in the workspace. Component no longer usable.",
       "PRODUCTS": "Registered by Applications",
       "PRODUCTS.NOT_EXIST": "Not available",
       "PRODUCTS.TOOLTIP": "Applications that have registered this Slot:",
@@ -430,7 +434,7 @@
       },
       "SUBHEADER": "Manage details and Role assignments of the Workspace Menu",
       "ACTION": {
-        "LOAD": "Load Menu",
+        "LOAD": "...loading Menu",
         "RELOAD": "Reload Menu",
         "VIEW": "Display details",
         "EDIT": "Edit details"
@@ -513,9 +517,19 @@
       "ORIGIN.SOURCE": "Application Store",
       "UNDEPLOYED": "This Application can no longer be used. Further use leads to error messages.",
       "CHANGED_MFE": "There are important changes in the Application.",
+      "REMOVED": "Application does not exist in Application Store.",
       "MFES": {
+        "CHANGED": "Changes not yet saved",
+        "NEW": "Register Module",
+        "CREATE": "Modul will be create on saving",
+        "DELETE": "Module will be deleted on saving",
+        "REMOVED": "Remove Module",
         "DEPRECATED": "Outdated",
         "UNDEPLOYED": "Unavailable"
+      },
+      "SLOTS": {
+        "NEW": "Slot not registered for the Workspace",
+        "REMOVED": "Slot does not exist anymore in Application Store"
       },
       "MESSAGES": {
         "NOTHING_REGISTERED": "No Application registered",
@@ -687,6 +701,8 @@
       "FORMAT_HOME_PAGE": "Format: /path-to-registered-app"
     },
     "ERRORS": {
+      "APP_MODULE.PATH_ALREADY_USED": "This module path has already been used. Please choose a path that is unique to the application.",
+      "APP_MODULE.MERGE_ENTITY_FAILED": "The used module paths are not unique.",
       "PARSE_ERROR": "Parse error: The contained structure does not match the expected format.",
       "INTERNAL_ERROR": "Internal error",
       "EMPTY_REQUIRED_FIELD": "This field is required.",
