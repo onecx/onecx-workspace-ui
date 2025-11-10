@@ -58,7 +58,6 @@ import {
   UIEndpoint
 } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
-import { ModuleType } from '@onecx/portal-integration-angular'
 
 type ChangeStatus = {
   index?: number
@@ -443,9 +442,8 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     wP.undeployed = psP.undeployed
     if (wP.microfrontends) {
       let pspModules = 0
-      let wModules = wP.microfrontends.filter((mfe) => mfe.type === MicrofrontendType.Module).length
+      const wModules = wP.microfrontends.filter((mfe) => mfe.type === MicrofrontendType.Module).length
       for (const wMfe of wP.microfrontends.filter((mfe) => mfe.type === MicrofrontendType.Module)) {
-        //wModules++
         pspModules = pspModules + this.syncModuleState(wMfe, psP.microfrontends)
       }
       wP.changedComponents = wP.changedComponents || wModules !== pspModules
@@ -479,10 +477,11 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     this.displayedDetailItem.slots?.sort(this.sortSlotsByName)
     if (item.bucket === 'SOURCE') this.formGroup.disable()
     if (item.bucket === 'TARGET') {
-      if (this.displayedDetailItem.displayName === this.displayedDetailItem.productName)
-        this.displayedDetailItem.displayName = this.psProductsOrg.get(
-          this.displayedDetailItem?.productName!
-        )?.displayName
+      if (
+        this.displayedDetailItem.productName &&
+        this.displayedDetailItem.productName === this.displayedDetailItem.displayName
+      )
+        this.displayedDetailItem.displayName = this.psProductsOrg.get(this.displayedDetailItem.productName)?.displayName
       this.formGroup.enable()
       const modules = this.formGroup.get('modules') as FormArray
       while (modules.length > 0) modules.removeAt(0) // clear form
