@@ -437,7 +437,7 @@
                Some of the displayed data are not available in Workspace database.
                Such data are picked up from product store product.
           -->
-        <section *ngIf="displayedDetailItem.microfrontends" [attr.aria-label]="'Microfrontends'">
+        <section *ngIf="displayedDetailItem.apps" [attr.aria-label]="'Microfrontends'">
           <dl class="w-full my-0 flex flex-column row-gap-3">
             <dt *ngFor="let app of displayedDetailItem.apps | keyvalue; let i = index" class="w-full">
               <div class="m-auto text-center max-w-20rem">
