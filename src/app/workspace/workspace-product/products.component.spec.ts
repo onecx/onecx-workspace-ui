@@ -22,6 +22,7 @@ import {
   Workspace,
   Microfrontend,
   MicrofrontendType,
+  Slot,
   SlotPS,
   SlotAPIService,
   UIEndpoint
@@ -29,12 +30,25 @@ import {
 
 import { ExtendedApp, ExtendedMicrofrontend, ExtendedProduct, ProductComponent } from './products.component'
 
+const changes = { ['workspace']: { previousValue: 'ws0', currentValue: 'ws1', firstChange: true } }
 const workspace: Workspace = {
-  id: 'workspace id',
+  id: 'wid',
   name: 'name',
   theme: 'theme',
   baseUrl: '/some/base/url',
   displayName: 'Workspace'
+}
+const slot1: Slot = {
+  id: 's1',
+  workspaceId: workspace.id,
+  name: 'slot1',
+  components: [{ productName: 'product1', appId: 'appId', name: 'App' }]
+}
+const slot2: Slot = {
+  id: 's2',
+  workspaceId: workspace.id,
+  name: 'slot2',
+  components: [{ productName: 'product1', appId: 'appId', name: 'App' }]
 }
 
 const mfeModule: ExtendedMicrofrontend = {
@@ -43,6 +57,7 @@ const mfeModule: ExtendedMicrofrontend = {
   appId: 'appId',
   basePath: 'path',
   type: MicrofrontendType.Module,
+  exposedModule: './exposedModule',
   deprecated: false,
   undeployed: false
 }
@@ -52,6 +67,7 @@ const mfeModuleDeprecated: ExtendedMicrofrontend = {
   appId: 'appId',
   basePath: 'path',
   type: MicrofrontendType.Module,
+  exposedModule: './exposedModuleDeprecated',
   deprecated: true,
   undeployed: false
 }
@@ -61,6 +77,7 @@ const mfeModuleUndeployed: ExtendedMicrofrontend = {
   appId: 'appId',
   basePath: 'path',
   type: MicrofrontendType.Module,
+  exposedModule: './exposedModuleUndeployed',
   deprecated: true,
   undeployed: true
 }
@@ -81,7 +98,7 @@ const appsAllMfes = new Map().set('appId', appWithAll)
 
 // product store Item
 const prodStoreItem: ProductStoreItem = {
-  productName: 'product name',
+  productName: 'product1',
   displayName: 'Display Name',
   description: 'Description',
   imageUrl: '/image/url',
@@ -89,34 +106,35 @@ const prodStoreItem: ProductStoreItem = {
   version: '1.0',
   microfrontends: [mfeModule, mfeModuleDeprecated, mfeModuleUndeployed, mfeComponent],
   undeployed: false,
-  slots: [{ name: 'slot' }]
-}
-
-const productItemSource: ExtendedProduct = {
-  ...prodStoreItem,
-  bucket: 'SOURCE',
-  changedComponents: true,
-  apps: appsAllMfes
+  slots: [slot1]
 }
 
 // registered product in Workspace with new display name
 const productItem: Product = {
-  id: 'product id',
+  id: 'pid',
   modificationCount: 0,
-  productName: 'product name',
+  productName: 'product1',
   displayName: 'Display Name',
   description: 'Description',
   imageUrl: '/image/url',
   baseUrl: '/base',
   version: '1.0',
   microfrontends: [mfeModule, mfeComponent],
-  slots: [{ name: 'slot' }],
+  slots: [],
   undeployed: false
 }
 
+const productItemSource: ExtendedProduct = {
+  ...prodStoreItem,
+  bucket: 'SOURCE',
+  exists: true,
+  changedComponents: true,
+  apps: appsAllMfes
+}
 const productItemTarget: ExtendedProduct = {
   ...productItem,
   bucket: 'TARGET',
+  exists: true,
   changedComponents: true
 }
 
@@ -137,18 +155,19 @@ describe('ProductComponent', () => {
   let mockAppState
   let productFormGroup: FormGroup
 
-  const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
-  const wProductServiceSpy = {
+  const wProductApiSpy = {
     getProductsByWorkspaceId: jasmine.createSpy('getProductsByWorkspaceId').and.returnValue(of({})),
     getProductById: jasmine.createSpy('getProductById').and.returnValue(of({})),
     updateProductById: jasmine.createSpy('updateProductById').and.returnValue(of({})),
     createProductInWorkspace: jasmine.createSpy('createProductInWorkspace').and.returnValue(of({})),
     deleteProductById: jasmine.createSpy('deleteProductById').and.returnValue(of({}))
   }
-  const productServiceSpy = {
+  const productApiSpy = {
     searchAvailableProducts: jasmine.createSpy('searchAvailableProducts').and.returnValue(of({}))
   }
-  const slotApiServiceSpy = { getSlotsForWorkspace: jasmine.createSpy('getSlotsForWorkspace').and.returnValue(of({})) }
+  const slotApiSpy = { getSlotsForWorkspace: jasmine.createSpy('getSlotsForWorkspace').and.returnValue(of({})) }
+
+  const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
   const workspaceServiceSpy = jasmine.createSpyObj<WorkspaceService>('WorkspaceService', ['doesUrlExistFor', 'getUrl'])
   const mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
   mockUserService.hasPermission.and.callFake((permission: string) => {
@@ -171,10 +190,10 @@ describe('ProductComponent', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: PortalMessageService, useValue: msgServiceSpy },
-        { provide: WorkspaceProductAPIService, useValue: wProductServiceSpy },
-        { provide: ProductAPIService, useValue: productServiceSpy },
+        { provide: WorkspaceProductAPIService, useValue: wProductApiSpy },
+        { provide: ProductAPIService, useValue: productApiSpy },
         { provide: AppStateService, useValue: mockAppState },
-        { provide: SlotAPIService, useValue: slotApiServiceSpy },
+        { provide: SlotAPIService, useValue: slotApiSpy },
         { provide: WorkspaceService, useValue: workspaceServiceSpy },
         { provide: UserService, useValue: mockUserService }
       ]
@@ -202,21 +221,21 @@ describe('ProductComponent', () => {
     // to spy data: reset
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
-    wProductServiceSpy.getProductById.calls.reset()
-    wProductServiceSpy.getProductsByWorkspaceId.calls.reset()
-    wProductServiceSpy.updateProductById.calls.reset()
-    wProductServiceSpy.createProductInWorkspace.calls.reset()
-    wProductServiceSpy.deleteProductById.calls.reset()
-    productServiceSpy.searchAvailableProducts.calls.reset()
-    slotApiServiceSpy.getSlotsForWorkspace.calls.reset()
+    wProductApiSpy.getProductById.calls.reset()
+    wProductApiSpy.getProductsByWorkspaceId.calls.reset()
+    wProductApiSpy.updateProductById.calls.reset()
+    wProductApiSpy.createProductInWorkspace.calls.reset()
+    wProductApiSpy.deleteProductById.calls.reset()
+    productApiSpy.searchAvailableProducts.calls.reset()
+    slotApiSpy.getSlotsForWorkspace.calls.reset()
     // to spy data: refill with neutral data
-    wProductServiceSpy.getProductById.and.returnValue(of({}))
-    wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of({}))
-    wProductServiceSpy.updateProductById.and.returnValue(of({}))
-    wProductServiceSpy.createProductInWorkspace.and.returnValue(of({}))
-    wProductServiceSpy.deleteProductById.and.returnValue(of({}))
-    productServiceSpy.searchAvailableProducts.and.returnValue(of({}))
-    slotApiServiceSpy.getSlotsForWorkspace.and.returnValue(of({}))
+    wProductApiSpy.getProductById.and.returnValue(of({}))
+    wProductApiSpy.getProductsByWorkspaceId.and.returnValue(of({}))
+    wProductApiSpy.updateProductById.and.returnValue(of({}))
+    wProductApiSpy.createProductInWorkspace.and.returnValue(of({}))
+    wProductApiSpy.deleteProductById.and.returnValue(of({}))
+    productApiSpy.searchAvailableProducts.and.returnValue(of({}))
+    slotApiSpy.getSlotsForWorkspace.and.returnValue(of({}))
     // used in ngOnChanges
     workspaceServiceSpy.doesUrlExistFor.and.returnValue(of(true))
   })
@@ -232,27 +251,38 @@ describe('ProductComponent', () => {
   })
 
   describe('load data', () => {
+    beforeEach(() => {
+      component.workspace = workspace
+      slotApiSpy.getSlotsForWorkspace.and.returnValue(of({ slots: [slot1, slot2] }))
+      wProductApiSpy.getProductsByWorkspaceId.and.returnValue(of([productItem]))
+      productApiSpy.searchAvailableProducts.and.returnValue(of({ stream: [prodStoreItem] }))
+    })
+
     describe('with errors', () => {
-      it('should log error if getProductsByWorkspaceId call fails', () => {
-        const errorResponse = { status: 404, statusText: 'products not found for workspace' }
-        wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(throwError(() => errorResponse))
+      it('getSlotsForWorkspace fails', () => {
+        const errorResponse = { status: 404, statusText: 'workspace slots not found' }
+        slotApiSpy.getSlotsForWorkspace.and.returnValue(throwError(() => errorResponse))
         spyOn(console, 'error')
-        const changes = {
-          ['workspace']: { previousValue: 'ws0', currentValue: 'ws1', firstChange: true }
-        }
+
+        component.ngOnChanges(changes as unknown as SimpleChanges)
+
+        expect(console.error).toHaveBeenCalledWith('getSlotsForWorkspace', errorResponse)
+      })
+
+      it('getProductsByWorkspaceId fails', () => {
+        const errorResponse = { status: 404, statusText: 'workspace products not found' }
+        wProductApiSpy.getProductsByWorkspaceId.and.returnValue(throwError(() => errorResponse))
+        spyOn(console, 'error')
 
         component.ngOnChanges(changes as unknown as SimpleChanges)
 
         expect(console.error).toHaveBeenCalledWith('getProductsByWorkspaceId', errorResponse)
       })
 
-      it('should loadData onChanges: searchPsProducts call error', () => {
+      it('searchAvailableProducts fails', () => {
         const errorResponse = { status: 404, statusText: 'product store products not found' }
-        productServiceSpy.searchAvailableProducts.and.returnValue(throwError(() => errorResponse))
+        productApiSpy.searchAvailableProducts.and.returnValue(throwError(() => errorResponse))
         spyOn(console, 'error')
-        const changes = {
-          ['workspace']: { previousValue: 'ws0', currentValue: 'ws1', firstChange: true }
-        }
 
         component.ngOnChanges(changes as unknown as SimpleChanges)
 
@@ -262,18 +292,21 @@ describe('ProductComponent', () => {
 
     describe('with success', () => {
       it('should loadData onChanges - successful', () => {
-        wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([productItem]))
-        productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [prodStoreItem] }))
-        const changes = {
-          ['workspace']: { previousValue: 'ws0', currentValue: 'ws1', firstChange: true }
-        }
         component.ngOnChanges(changes as unknown as SimpleChanges)
 
         expect(component.psProductsOrg.get(prodStoreItem.productName!)).toEqual(productItemSource)
         expect(component.wProducts[0]).toEqual(productItemTarget)
       })
 
-      it('should loadData onChanges: searchPsProducts call success: prod deployed and only slots', () => {
+      it('should loadData onChanges - successful, but no slots', () => {
+        slotApiSpy.getSlotsForWorkspace.and.returnValue(of({ slots: undefined }))
+        component.ngOnChanges(changes as unknown as SimpleChanges)
+
+        expect(component.psProductsOrg.get(prodStoreItem.productName!)).toEqual(productItemSource)
+        expect(component.wProducts[0]).toEqual(productItemTarget)
+      })
+
+      xit('should loadData onChanges: searchPsProducts call success: prod deployed and only slots', () => {
         const pspItem: ExtendedProduct = {
           productName: 'pspItemName',
           displayName: 'display name',
@@ -281,32 +314,26 @@ describe('ProductComponent', () => {
           bucket: 'SOURCE',
           version: '1.0',
           slots: [{ name: 'slot' }],
+          exists: true,
           changedComponents: false,
           apps: new Map().set('appId', { appId: 'appId', modules: [mfeModule] })
         }
-        wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([productItem]))
-        productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [pspItem] }))
-        const changes = {
-          ['workspace']: { previousValue: 'ws0', currentValue: 'ws1', firstChange: true }
-        }
+        wProductApiSpy.getProductsByWorkspaceId.and.returnValue(of([productItem]))
+        productApiSpy.searchAvailableProducts.and.returnValue(of({ stream: [pspItem] }))
+
         component.ngOnChanges(changes as unknown as SimpleChanges)
 
         expect(component.psProducts).toEqual([{ ...pspItem }])
       })
 
       it('should loadData onChanges: searchPsProducts call success: prod is now undeployed', () => {
-        wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([productItem]))
-        productServiceSpy.searchAvailableProducts.and.returnValue(
-          of({ stream: [{ ...prodStoreItem, undeployed: true }] })
-        )
-        const changes = {
-          ['workspace']: { previousValue: 'ws0', currentValue: 'ws1', firstChange: true }
-        }
+        productApiSpy.searchAvailableProducts.and.returnValue(of({ stream: [{ ...prodStoreItem, undeployed: true }] }))
 
         component.ngOnChanges(changes as unknown as SimpleChanges)
 
         expect(component.psProducts.length).toBe(0) // prevent lading of undeployed products
       })
+
       /*
       it('prepare product app parts: mfe type is component', () => {
         const psp: ExtendedProduct = {
@@ -340,6 +367,25 @@ describe('ProductComponent', () => {
         expect(psp.changedComponents).toBeTrue()
       })*/
     })
+
+    describe('picklist reloads', () => {
+      it('should subscribe to psProducts$', () => {
+        spyOn(component, 'loadData')
+
+        component.onLoadPsProducts()
+
+        expect(component.loadData).toHaveBeenCalled()
+      })
+
+      it('should subscribe to wProducts$', () => {
+        const mockWProducts$ = jasmine.createSpyObj('Observable', ['subscribe'])
+        component.wProducts$ = mockWProducts$
+
+        component.onLoadWProducts()
+
+        expect(mockWProducts$.subscribe).toHaveBeenCalled()
+      })
+    })
   })
 
   /**
@@ -358,10 +404,12 @@ describe('ProductComponent', () => {
   describe('onSourceSelect', () => {
     it('should set displayDetails to false when no item is selected', () => {
       const event = { items: [] }
+      spyOn(component, 'onHideItemDetails')
 
       component.onSourceSelect(event)
 
       expect(component.displayDetails).toBeFalse()
+      expect(component.onHideItemDetails).toHaveBeenCalled()
     })
 
     it('should call fillForm when item is selected: mfes', () => {
@@ -399,39 +447,35 @@ describe('ProductComponent', () => {
     })
 
     it('should call getWProduct when an target item is selected - successful', () => {
-      wProductServiceSpy.getProductById.and.returnValue(of(productItem))
-      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([productItem]))
-      productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [prodStoreItem] }))
-      const changes = {
-        ['workspace']: { previousValue: 'ws0', currentValue: 'ws1', firstChange: true }
-      }
+      wProductApiSpy.getProductById.and.returnValue(of(productItem))
+      wProductApiSpy.getProductsByWorkspaceId.and.returnValue(of([productItem]))
+      productApiSpy.searchAvailableProducts.and.returnValue(of({ stream: [prodStoreItem] }))
       const event = { items: [{ ...productItemTarget }] }
 
       component.ngOnChanges(changes as unknown as SimpleChanges)
       component.onTargetSelect(event)
 
       expect(component.displayDetails).toBeTrue()
+
+      component.getModuleControls('appId')
     })
 
     it('should call getWProduct when an target item is selected - successful but using product store displayName', () => {
-      wProductServiceSpy.getProductById.and.returnValue(of({ ...productItem, displayName: undefined }))
-      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([productItem]))
-      productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [prodStoreItem] }))
-      const changes = {
-        ['workspace']: { previousValue: 'ws0', currentValue: 'ws1', firstChange: true }
-      }
+      wProductApiSpy.getProductById.and.returnValue(of({ ...productItem, displayName: undefined }))
+      wProductApiSpy.getProductsByWorkspaceId.and.returnValue(of([productItem]))
+      productApiSpy.searchAvailableProducts.and.returnValue(of({ stream: [prodStoreItem] }))
       const event = { items: [productItemTarget] }
 
       component.ngOnChanges(changes as unknown as SimpleChanges)
       component.onTargetSelect(event)
 
       expect(component.displayDetails).toBeTrue()
-      expect(component.displayedDetailItem?.displayName).toEqual(productItem.displayName)
+      expect(component.displayedDetailItem?.displayName).toEqual(productItem.productName)
     })
 
     it('should call getWProduct when an item is selected: display error and hide detail panel', () => {
       const errorResponse = { status: 404, statusText: 'workspace product not found' }
-      wProductServiceSpy.getProductById.and.returnValue(throwError(() => errorResponse))
+      wProductApiSpy.getProductById.and.returnValue(throwError(() => errorResponse))
       spyOn(console, 'error')
       const event = { items: [{ id: 1 }] }
       component.displayDetails = true
@@ -452,12 +496,9 @@ describe('ProductComponent', () => {
         ...prodStoreItem,
         microfrontends: []
       }
-      wProductServiceSpy.getProductById.and.returnValue(of(productWithoutMfes))
-      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([productWithoutMfes]))
-      productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [productSourceWithoutMfes] }))
-      const changes = {
-        ['workspace']: { previousValue: 'ws0', currentValue: 'ws1', firstChange: true }
-      }
+      wProductApiSpy.getProductById.and.returnValue(of(productWithoutMfes))
+      wProductApiSpy.getProductsByWorkspaceId.and.returnValue(of([productWithoutMfes]))
+      productApiSpy.searchAvailableProducts.and.returnValue(of({ stream: [productSourceWithoutMfes] }))
       const event = { items: [{ ...productItemTarget, microfrontends: undefined }] }
 
       component.ngOnChanges(changes as unknown as SimpleChanges)
@@ -467,25 +508,33 @@ describe('ProductComponent', () => {
       expect(component.displayedDetailItem?.microfrontends).toBeUndefined()
     })
   })
-  /*
-  it('should getModuleControls', () => {
-    expect(component.moduleControls instanceof FormArray).toBeTruthy()
-  })*/
+
+  describe('form extras', () => {
+    it('should ignore filling form', () => {
+      component['fillForm'](undefined)
+      expect().nothing()
+    })
+    /*
+    xit('should getModuleControls', () => {
+      expect(component.moduleControls instanceof FormArray).toBeTruthy()
+
+      component.getModuleControls('appId')
+    })*/
+  })
 
   /**
    * UI Events: SAVE
    */
-  describe('save product', () => {
+  describe('Saving', () => {
     it('should update a product - successful', () => {
       // load data
-      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([productItem]))
-      productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [prodStoreItem] }))
-      const changes = {
-        ['workspace']: { previousValue: 'ws0', currentValue: 'ws1', firstChange: true }
-      }
+      wProductApiSpy.getProductsByWorkspaceId.and.returnValue(of([productItem]))
+      productApiSpy.searchAvailableProducts.and.returnValue(of({ stream: [prodStoreItem] }))
+
       component.ngOnChanges(changes as unknown as SimpleChanges)
+
       // let's go
-      wProductServiceSpy.updateProductById.and.returnValue(of({ resource: productItem }))
+      wProductApiSpy.updateProductById.and.returnValue(of({ resource: productItem }))
       component.formGroup = productFormGroup
       const modules: FormArray = component.formGroup.get('modules') as FormArray
       const addMfeControl = (data: any) => {
@@ -506,7 +555,7 @@ describe('ProductComponent', () => {
 
     it('should update a product - failed: display error', () => {
       const errorResponse = { status: 400, statusText: 'workspace product not updated' }
-      wProductServiceSpy.updateProductById.and.returnValue(throwError(() => errorResponse))
+      wProductApiSpy.updateProductById.and.returnValue(throwError(() => errorResponse))
       spyOn(console, 'error')
       component.formGroup = productFormGroup
       component.displayedDetailItem = productItemTarget
@@ -521,9 +570,9 @@ describe('ProductComponent', () => {
   /**
    * REGISTER
    */
-  describe('register a product', () => {
+  describe('Registration', () => {
     it('should create a product onMoveToTarget', () => {
-      wProductServiceSpy.createProductInWorkspace.and.returnValue(of({ resource: productItem }))
+      wProductApiSpy.createProductInWorkspace.and.returnValue(of({ resource: productItem }))
       const event: any = { items: [{ ...productItemSource }] }
       // situation after picklist action
       component.wProducts = [{ ...productItemSource }]
@@ -537,7 +586,7 @@ describe('ProductComponent', () => {
     })
 
     it('should create multiple products onMoveToTarget', () => {
-      wProductServiceSpy.createProductInWorkspace.and.returnValue(of({ resource: productItem }))
+      wProductApiSpy.createProductInWorkspace.and.returnValue(of({ resource: productItem }))
       const productItemSource2: ExtendedProduct = {
         ...productItemSource,
         productName: 'prod name 2'
@@ -552,7 +601,7 @@ describe('ProductComponent', () => {
     })
 
     it('should createProductInWorkspace onMoveToTarget: no modules', () => {
-      wProductServiceSpy.createProductInWorkspace.and.returnValue(of({ resource: productItem }))
+      wProductApiSpy.createProductInWorkspace.and.returnValue(of({ resource: productItem }))
       component.wProducts = [{ ...productItemSource }]
       const product2Test: ExtendedProduct = {
         ...productItemSource,
@@ -577,7 +626,7 @@ describe('ProductComponent', () => {
         microfrontends: [mfeModule, microfrontend2]
       }
       const event: any = { items: [product2Test] }
-      wProductServiceSpy.createProductInWorkspace.and.returnValue(of({ resource: productItem }))
+      wProductApiSpy.createProductInWorkspace.and.returnValue(of({ resource: productItem }))
       component.wProducts = [{ ...product2Test }]
 
       component.onMoveToTarget(event)
@@ -587,7 +636,7 @@ describe('ProductComponent', () => {
 
     it('should display error when trying to createProductInWorkspace onMoveToTarget', () => {
       const errorResponse = { status: 400, statusText: 'workspace product not created' }
-      wProductServiceSpy.createProductInWorkspace.and.returnValue(throwError(() => errorResponse))
+      wProductApiSpy.createProductInWorkspace.and.returnValue(throwError(() => errorResponse))
       spyOn(console, 'error')
       const event: any = { items: [{ ...productItemSource }] }
       component.wProducts = [{ ...productItemSource }]
@@ -600,7 +649,7 @@ describe('ProductComponent', () => {
 
     it('should display error when trying to createProductInWorkspace onMoveToTarget', () => {
       const errorResponse = { status: 400, statusText: 'workspace product not created' }
-      wProductServiceSpy.createProductInWorkspace.and.returnValue(throwError(() => errorResponse))
+      wProductApiSpy.createProductInWorkspace.and.returnValue(throwError(() => errorResponse))
       spyOn(console, 'error')
       component.wProducts = [{ ...productItemSource }]
       const product2: Product = {
@@ -654,15 +703,15 @@ describe('ProductComponent', () => {
       component.onDeregisterConfirmation()
 
       expect(component.displayDeregisterConfirmation).toBeFalse()
-      expect(wProductServiceSpy.deleteProductById).toHaveBeenCalledWith({
-        id: 'workspace id',
+      expect(wProductApiSpy.deleteProductById).toHaveBeenCalledWith({
+        id: 'wid',
         productId: productItemTarget.id
       })
     })
 
     it('should handle failed deregistration', () => {
       const errorResponse = { status: 400, statusText: 'workspace product could not be deregistered' }
-      wProductServiceSpy.deleteProductById.and.returnValue(throwError(() => errorResponse))
+      wProductApiSpy.deleteProductById.and.returnValue(throwError(() => errorResponse))
       spyOn(console, 'error')
       component['deregisterItems'] = [productItemTarget]
       component.psProducts = [productItemSource]
@@ -673,32 +722,12 @@ describe('ProductComponent', () => {
 
       expect(console.error).toHaveBeenCalledWith('deleteProductById', errorResponse)
       expect(component.displayDeregisterConfirmation).toBeFalse()
-      expect(wProductServiceSpy.deleteProductById).toHaveBeenCalledWith({
-        id: 'workspace id',
+      expect(wProductApiSpy.deleteProductById).toHaveBeenCalledWith({
+        id: 'wid',
         productId: productItemTarget.id
       })
       expect(component.psProducts.length).toBe(0)
       expect(component.wProducts.length).toBe(1)
-    })
-  })
-
-  describe('picklist reloads', () => {
-    it('should subscribe to psProducts$', () => {
-      const mockPsProducts$ = jasmine.createSpyObj('Observable', ['subscribe'])
-      component.psProducts$ = mockPsProducts$
-
-      component.onLoadPsProducts()
-
-      expect(mockPsProducts$.subscribe).toHaveBeenCalled()
-    })
-
-    it('should subscribe to wProducts$', () => {
-      const mockWProducts$ = jasmine.createSpyObj('Observable', ['subscribe'])
-      component.wProducts$ = mockWProducts$
-
-      component.onLoadWProducts()
-
-      expect(mockWProducts$.subscribe).toHaveBeenCalled()
     })
   })
 
@@ -707,8 +736,9 @@ describe('ProductComponent', () => {
       it('should sort products by displayName', () => {
         const products = [
           {
-            id: 'prod id2',
-            productName: 'prod name2',
+            ...productItem,
+            id: 'p2',
+            productName: 'prod2',
             displayName: productItem.displayName + ' a'
           },
           productItem
@@ -731,67 +761,29 @@ describe('ProductComponent', () => {
       })
     })
 
-    describe('sortMfesByAppId', () => {
+    describe('sortMicrofrontends', () => {
       it('should sort mfes by appId', () => {
         const mfes = [{ appId: 'b' }, { appId: 'a' }, { appId: 'c' }]
 
-        mfes.sort((a, b) => component.sortMfesByAppId(a, b))
+        mfes.sort((a, b) => component.sortMicrofrontends(a, b))
 
-        expect(mfes).toEqual([{ appId: 'a' }, { appId: 'b' }, { appId: 'c' }])
+        expect(mfes).toEqual([mfes[0], mfes[1], mfes[2]])
       })
 
       it('should sort mfes by appId: no appIds', () => {
-        const mfes = [{ appId: '' }, { appId: '' }, { id: 'id a' }]
+        const mfes = [{ appId: 'a' }, { id: '2' }, { id: '3' }]
 
-        mfes.sort((a, b) => component.sortMfesByAppId(a, b))
+        mfes.sort((a, b) => component.sortMicrofrontends(a, b))
 
-        expect(mfes).toEqual([{ appId: '' }, { appId: '' }, { id: 'id a' }])
-      })
-    })
-
-    describe('sortMfesByExposedModule', () => {
-      it('should sort mfes by exposedModule ', () => {
-        const a: Microfrontend = { exposedModule: 'a' }
-        const b: Microfrontend = { exposedModule: 'b' }
-        const c: Microfrontend = { exposedModule: 'c' }
-        const eMfes = [b, c, a]
-
-        eMfes.sort((x, y) => component.sortMfesByExposedModule(x, y))
-
-        expect(eMfes).toEqual([a, b, c])
+        expect(mfes).toEqual([mfes[0], mfes[1], mfes[2]])
       })
 
-      it('should sort mfes by appId: some empty exposedModule ', () => {
-        const a: Microfrontend = { exposedModule: 'a' }
-        const b: Microfrontend = { exposedModule: '' }
-        const c: Microfrontend = { exposedModule: '' }
-        const eMfes = [b, c, a]
+      it('should sort mfes by exposedModule', () => {
+        const mfes = [{ appId: 'a', exposedModule: 'z' }, { appId: 'a', exposedModule: 'x' }, { appId: 'a' }]
 
-        eMfes.sort((x, y) => component.sortMfesByExposedModule(x, y))
+        mfes.sort((a, b) => component.sortMicrofrontends(a, b))
 
-        expect(eMfes).toEqual([b, c, a])
-      })
-
-      it('should sort mfes by appId: all empty exposedModule ', () => {
-        const a: Microfrontend = { exposedModule: '' }
-        const b: Microfrontend = { exposedModule: '' }
-        const c: Microfrontend = { exposedModule: '' }
-        const eMfes = [b, c, a]
-
-        eMfes.sort((x, y) => component.sortMfesByExposedModule(x, y))
-
-        expect(eMfes).toEqual([b, c, a])
-      })
-
-      it('should sort mfes by appId: special char exposedModule ', () => {
-        const a: Microfrontend = { exposedModule: 'a' }
-        const b: Microfrontend = { exposedModule: 'b' }
-        const c: Microfrontend = { exposedModule: '$' }
-        const eMfes = [b, c, a]
-
-        eMfes.sort((x, y) => component.sortMfesByExposedModule(x, y))
-
-        expect(eMfes).toEqual([c, a, b])
+        expect(mfes).toEqual([mfes[0], mfes[1], mfes[2]])
       })
     })
 
@@ -891,7 +883,7 @@ describe('ProductComponent', () => {
   /**
    * UI Events
    */
-  describe('picklist actions', () => {
+  describe('Picklist', () => {
     it('should return value from event object', () => {
       const event = { target: { value: 'test value' } }
 

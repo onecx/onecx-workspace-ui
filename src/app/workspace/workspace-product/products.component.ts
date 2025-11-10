@@ -221,12 +221,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
    *   * Workspace slots
    */
   public onLoadPsProducts(): void {
-    this.onHideItemDetails()
-    firstValueFrom(
-      combineLatest([this.wSlots$, this.wProducts$]).pipe(
-        switchMap((data) => this.searchPsProducts({ slots: data[0], products: data[1] } as WorkspaceData))
-      )
-    )
+    this.loadData()
   }
   public onLoadWProducts(): void {
     this.onHideItemDetails()
@@ -260,7 +255,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
         map((response) => response.slots ?? []),
         catchError((err) => {
           this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.PRODUCTS'
-          console.error('getProductsByWorkspaceId', err)
+          console.error('getSlotsForWorkspace', err)
           return of([] as Slot[])
         })
       )
@@ -325,12 +320,12 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
         app.modules = app.modules ?? []
         app.modules.push(mfe as ExtendedMicrofrontend)
       }
-      app.modules?.sort(this.sortMfesByAppId)
+      app.modules?.sort(this.sortMicrofrontends)
       if (mfe.type === MicrofrontendType.Component) {
         app.components = app.components ?? []
         app.components.push(mfe as ExtendedMicrofrontend)
       }
-      app.components?.sort(this.sortMfesByAppId)
+      app.components?.sort(this.sortMicrofrontends)
     }
   }
 
@@ -338,18 +333,13 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
    * Sorting
    */
   public sortProductsByDisplayName(a: Product, b: Product): number {
-    return (a.displayName ? a.displayName.toUpperCase() : '').localeCompare(
-      b.displayName ? b.displayName.toUpperCase() : ''
-    )
+    return (a.displayName ?? '').toUpperCase().localeCompare((b.displayName ?? '').toUpperCase())
   }
-  public sortMfesByAppId(a: ExtendedMicrofrontend, b: ExtendedMicrofrontend): number {
+  public sortMicrofrontends(a: ExtendedMicrofrontend, b: ExtendedMicrofrontend): number {
     return (
       (a.appId?.toUpperCase() ?? '').localeCompare(b.appId?.toUpperCase() ?? '') ||
       (a.exposedModule?.toUpperCase() ?? '').localeCompare(b.exposedModule?.toUpperCase() ?? '')
     )
-  }
-  public sortMfesByExposedModule(a: Microfrontend, b: Microfrontend): number {
-    return (a.exposedModule?.toUpperCase() ?? '').localeCompare(b.exposedModule?.toUpperCase() ?? '')
   }
   public sortSlotsByName(a: SlotPS, b: SlotPS): number {
     return (a.name ? a.name.toUpperCase() : '').localeCompare(b.name ? b.name.toUpperCase() : '')
@@ -489,49 +479,49 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     this.displayDetails = true
   }
   private fillFormForModules(item: ExtendedProduct, modules: FormArray): void {
-    if (!item || !item.apps) return
-    // 1. Prepare so much forms as app modules exist in PS
     let moduleIndex = 0
-    for (const [appId, app] of item.apps) {
-      if (app.modules)
-        for (const m of app.modules) {
-          // mfe is undefined for "new" modules
-          const mfe = item.microfrontends?.find((mf) => mf.appId === appId && mf.exposedModule === m.exposedModule)
-          modules.push(
-            this.fb.group({
-              index: new FormControl(null),
-              id: new FormControl(null),
-              appId: new FormControl(null),
-              basePath: new FormControl(null, [
-                Validators.required,
-                Validators.maxLength(255),
-                Validators.minLength(1),
-                Validators.pattern('^/.*'),
-                ValidateModuleBasePath(modules)
-              ]),
-              exposedModule: new FormControl(null),
-              deprecated: new FormControl(null),
-              undeployed: new FormControl(null),
-              new: new FormControl(null),
-              change: new FormControl(null),
-              endpoints: new FormControl(null)
+    if (item && item.apps)
+      // 1. Prepare so much forms as app modules exist in PS
+      for (const [appId, app] of item.apps) {
+        if (app.modules)
+          for (const m of app.modules) {
+            // mfe is undefined for "new" modules
+            const mfe = item.microfrontends?.find((mf) => mf.appId === appId && mf.exposedModule === m.exposedModule)
+            modules.push(
+              this.fb.group({
+                index: new FormControl(null),
+                id: new FormControl(null),
+                appId: new FormControl(null),
+                basePath: new FormControl(null, [
+                  Validators.required,
+                  Validators.maxLength(255),
+                  Validators.minLength(1),
+                  Validators.pattern('^/.*'),
+                  ValidateModuleBasePath(modules)
+                ]),
+                exposedModule: new FormControl(null),
+                deprecated: new FormControl(null),
+                undeployed: new FormControl(null),
+                new: new FormControl(null),
+                change: new FormControl(null),
+                endpoints: new FormControl(null)
+              })
+            )
+            modules.at(modules.length - 1).patchValue({
+              index: moduleIndex,
+              id: mfe?.id,
+              appId: m?.appId,
+              basePath: mfe?.basePath ?? '/' + moduleIndex,
+              exposedModule: m?.exposedModule,
+              deprecated: m.deprecated,
+              undeployed: m.undeployed,
+              new: mfe?.id === undefined,
+              change: undefined, // user can set: 'create' for creation, 'delete' for deletion
+              endpoints: mfe?.endpoints?.sort(this.sortEndpointsByName)
             })
-          )
-          modules.at(modules.length - 1).patchValue({
-            index: moduleIndex,
-            id: mfe?.id,
-            appId: m?.appId,
-            basePath: mfe?.basePath ?? '/' + moduleIndex,
-            exposedModule: m?.exposedModule,
-            deprecated: m.deprecated,
-            undeployed: m.undeployed,
-            new: mfe?.id === undefined,
-            change: undefined, // user can set: 'create' for creation, 'delete' for deletion
-            endpoints: mfe?.endpoints?.sort(this.sortEndpointsByName)
-          })
-          moduleIndex++
-        }
-    }
+            moduleIndex++
+          }
+      }
     // 2. Add form? for non-existing (in PS) modules
   }
   private sortEndpointsByName(a: UIEndpoint, b: UIEndpoint): number {
@@ -539,7 +529,6 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   }
 
   public getModuleControls(appId: string): any {
-    if (!appId) return
     const fa = this.formGroup.get('modules') as FormArray
     return fa.controls.filter((m) => m.value.appId === appId)
   }

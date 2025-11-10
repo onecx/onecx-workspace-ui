@@ -237,6 +237,7 @@ describe('WorkspaceDetailComponent', () => {
   })
 
   it('should on product changes', () => {
+    component.workspaceForSlots = { name: '', displayName: '' }
     component.workspace = workspace
 
     component.onProductChanges()
