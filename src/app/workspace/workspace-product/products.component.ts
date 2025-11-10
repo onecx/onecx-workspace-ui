@@ -58,6 +58,7 @@ import {
   UIEndpoint
 } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
+import { ModuleType } from '@onecx/portal-integration-angular'
 
 type ChangeStatus = {
   index?: number
@@ -71,6 +72,7 @@ export type ExtendedMicrofrontend = Microfrontend & ChangeStatus
 export type ExtendedSlot = SlotPS & ChangeStatus
 export type ExtendedApp = {
   appId: string
+  appName: string
   modules?: ExtendedMicrofrontend[]
   components?: ExtendedMicrofrontend[] // type is only needed to use the same sort method
 }
@@ -300,7 +302,8 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     if (eP.microfrontends) {
       eP.apps = new Map()
       for (const mfe of eP.microfrontends) {
-        if (mfe.appId && !eP.apps?.has(mfe.appId)) eP.apps?.set(mfe.appId, { appId: mfe.appId })
+        if (mfe.appId && !eP.apps?.has(mfe.appId))
+          eP.apps?.set(mfe.appId, { appId: mfe.appId, appName: mfe.appName ?? mfe.appId })
         this.prepareProductAppPart(mfe, eP)
         // mark product if there are important changes on microfrontends
         eP.changedComponents = mfe.undeployed || mfe.deprecated || eP.changedComponents
@@ -436,22 +439,26 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   }
   // take over the deprecated/undeployed states on MFE Modules and Slots
   private syncProductState(wP: ExtendedProduct, psP: ExtendedProduct): void {
-    let pspModules = 0
     wP.changedComponents = psP.changedComponents
     wP.undeployed = psP.undeployed
     if (wP.microfrontends) {
-      for (const wMfe of wP.microfrontends) pspModules = pspModules + this.syncModuleState(wMfe, psP.microfrontends)
-      wP.changedComponents = wP.changedComponents || wP.microfrontends.length !== pspModules
+      let pspModules = 0
+      let wModules = wP.microfrontends.filter((mfe) => mfe.type === MicrofrontendType.Module).length
+      for (const wMfe of wP.microfrontends.filter((mfe) => mfe.type === MicrofrontendType.Module)) {
+        //wModules++
+        pspModules = pspModules + this.syncModuleState(wMfe, psP.microfrontends)
+      }
+      wP.changedComponents = wP.changedComponents || wModules !== pspModules
     }
   }
-  private syncModuleState(wMfe: Microfrontend, mfes: Microfrontend[] | undefined): number {
+  private syncModuleState(wMfe: Microfrontend, psMfes: Microfrontend[] | undefined): number {
     let n = 0
-    if (mfes)
-      for (const psMfe of mfes.filter((mfe) => mfe.type === MicrofrontendType.Module)) {
-        n++
+    if (psMfes)
+      for (const psMfe of psMfes.filter((mfe) => mfe.type === MicrofrontendType.Module)) {
         // reg. MFEs without exposed module
         if (!wMfe.exposedModule) wMfe.exposedModule = psMfe.exposedModule
         if (psMfe.appId === wMfe.appId && psMfe.exposedModule === wMfe.exposedModule) {
+          n++
           wMfe.deprecated = psMfe.deprecated
           wMfe.undeployed = psMfe.undeployed
         }
@@ -466,12 +473,16 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
    */
   private fillForm(item: ExtendedProduct | undefined): void {
     if (!item) return
+    this.displayDetails = true
     this.formChanged = false
     this.displayedDetailItem = item
     this.displayedDetailItem.slots?.sort(this.sortSlotsByName)
-    this.formGroup.controls['displayName'].setValue(this.displayedDetailItem.displayName)
-    this.formGroup.controls['baseUrl'].setValue(this.displayedDetailItem.baseUrl)
+    if (item.bucket === 'SOURCE') this.formGroup.disable()
     if (item.bucket === 'TARGET') {
+      if (this.displayedDetailItem.displayName === this.displayedDetailItem.productName)
+        this.displayedDetailItem.displayName = this.psProductsOrg.get(
+          this.displayedDetailItem?.productName!
+        )?.displayName
       this.formGroup.enable()
       const modules = this.formGroup.get('modules') as FormArray
       while (modules.length > 0) modules.removeAt(0) // clear form
@@ -479,8 +490,8 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
         if (this.displayedDetailItem.microfrontends.length === 0) this.displayedDetailItem.microfrontends = undefined
       this.fillFormForModules(this.displayedDetailItem, modules)
     }
-    if (item.bucket === 'SOURCE') this.formGroup.disable()
-    this.displayDetails = true
+    this.formGroup.controls['displayName'].setValue(this.displayedDetailItem.displayName)
+    this.formGroup.controls['baseUrl'].setValue(this.displayedDetailItem.baseUrl)
   }
   private fillFormForModules(item: ExtendedProduct, modules: FormArray): void {
     let moduleIndex = 0
@@ -692,6 +703,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
             // remove a non-existing product of adjust bucket
             if (p.exists) {
               p.bucket = 'SOURCE'
+              p.changedComponents = false
               // sometimes the component has already the product - then do not add
               if (!this.psProducts.some((psp) => psp.productName === p.productName)) this.psProducts.push(p)
             } else {

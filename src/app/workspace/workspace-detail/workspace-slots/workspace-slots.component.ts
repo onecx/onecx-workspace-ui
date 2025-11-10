@@ -244,34 +244,33 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     if (!products) return []
     const psSlots: CombinedSlot[] = []
     for (const p of products) {
-      // 1. collect product slots
-      // 2. enrich wSlotsIntern with deployment information from product store
-      if (p.slots)
-        for (const sps of p.slots) {
-          const ps: CombinedSlot = {
-            ...sps,
-            productName: p.productName,
-            // state
-            changes: sps.undeployed === true || sps.deprecated === true, // any change?
-            undeployed: sps.undeployed === true,
-            deprecated: sps.deprecated === true
-          } as CombinedSlot
-          psSlots.push(ps)
-          //
-          // select workspace slot with same name (there is no productname for slots in workspace)
-          const wsSlot = this.wSlotsIntern.find((s) => s.name === ps.name)
-          if (wsSlot && wsSlot.psSlots) {
-            wsSlot.psSlots.push({ ...ps, pName: p.productName!, pDisplayName: p.displayName! })
-            // consolidate slot state (aware of the state of current ps together with previous ones)
-            wsSlot.exists = true
-            wsSlot.changes = wsSlot.changes || ps.changes // inherit change status
-            wsSlot.deprecated = wsSlot.deprecated || ps.deprecated
-            wsSlot.undeployed = wsSlot.undeployed || ps.undeployed
-            if (wsSlot.changes) wsSlot.type = 'WORKSPACE,OUTDATED'
-          }
-        }
+      if (p.slots) for (const psS of p.slots) this.addPsSlot(p, psS, psSlots)
     }
     return psSlots
+  }
+
+  private addPsSlot(p: ProductStoreItem, psS: SlotPS, psSlots: CombinedSlot[]): void {
+    const ps: CombinedSlot = {
+      ...psS,
+      productName: p.productName,
+      // state
+      changes: psS.undeployed === true || psS.deprecated === true, // any change?
+      undeployed: psS.undeployed === true,
+      deprecated: psS.deprecated === true
+    } as CombinedSlot
+    psSlots.push(ps)
+    //
+    // select workspace slot with same name (there is no productname for slots in workspace)
+    const wsSlot = this.wSlotsIntern.find((s) => s.name === ps.name)
+    if (wsSlot && wsSlot.psSlots) {
+      wsSlot.psSlots.push({ ...ps, pName: p.productName!, pDisplayName: p.displayName! })
+      // consolidate slot state (aware of the state of current ps together with previous ones)
+      wsSlot.exists = true
+      wsSlot.changes = wsSlot.changes || ps.changes // inherit change status
+      wsSlot.deprecated = wsSlot.deprecated || ps.deprecated
+      wsSlot.undeployed = wsSlot.undeployed || ps.undeployed
+      if (wsSlot.changes) wsSlot.type = 'WORKSPACE,OUTDATED'
+    }
   }
 
   // Collect PS components

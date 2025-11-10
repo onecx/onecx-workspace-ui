@@ -55,6 +55,7 @@ const mfeModule: ExtendedMicrofrontend = {
   index: 0,
   id: 'id m',
   appId: 'appId',
+  appName: 'appName',
   basePath: 'path',
   type: MicrofrontendType.Module,
   exposedModule: './exposedModule',
@@ -65,6 +66,7 @@ const mfeModuleDeprecated: ExtendedMicrofrontend = {
   index: 1,
   id: 'id d',
   appId: 'appId',
+  appName: 'appName',
   basePath: 'path',
   type: MicrofrontendType.Module,
   exposedModule: './exposedModuleDeprecated',
@@ -84,6 +86,7 @@ const mfeModuleUndeployed: ExtendedMicrofrontend = {
 const mfeComponent: ExtendedMicrofrontend = {
   id: 'id c',
   appId: 'appId',
+  appName: 'appName',
   basePath: 'path',
   type: MicrofrontendType.Component,
   deprecated: false,
@@ -91,6 +94,7 @@ const mfeComponent: ExtendedMicrofrontend = {
 }
 const appWithAll: ExtendedApp = {
   appId: 'appId',
+  appName: 'appName',
   modules: [mfeModule, mfeModuleDeprecated, mfeModuleUndeployed],
   components: [mfeComponent]
 }
@@ -147,7 +151,7 @@ const mfeInfo: MfeInfo = {
   productName: 'prodName'
 }
 
-describe('ProductComponent', () => {
+fdescribe('ProductComponent', () => {
   let component: ProductComponent
   let fixture: ComponentFixture<ProductComponent>
   let mockRenderer: Renderer2
