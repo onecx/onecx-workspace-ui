@@ -306,6 +306,7 @@ describe('ProductComponent', () => {
         expect(component.wProducts[0]).toEqual(productItemTarget)
       })
 
+      // ignored
       xit('should loadData onChanges: searchPsProducts call success: prod deployed and only slots', () => {
         const pspItem: ExtendedProduct = {
           productName: 'pspItemName',
@@ -334,8 +335,8 @@ describe('ProductComponent', () => {
         expect(component.psProducts.length).toBe(0) // prevent lading of undeployed products
       })
 
-      /*
-      it('prepare product app parts: mfe type is component', () => {
+      // ignored
+      xit('prepare product app parts: mfe type is component', () => {
         const psp: ExtendedProduct = {
           microfrontends: [
             { appId: 'app1', type: MicrofrontendType.Module },
@@ -350,22 +351,23 @@ describe('ProductComponent', () => {
         } as ExtendedProduct
         spyOn<any>(component, 'prepareProductAppParts').and.callThrough()
 
-        component['prepareProductAppParts'](psp)
+        //component['prepareProductAppParts'](psp)
 
         expect(psp.changedComponents).toBeTrue()
       })
 
-      it('should handle slots and mark product as changed if undeployed or deprecated', () => {
+      // ignored
+      xit('should handle slots and mark product as changed if undeployed or deprecated', () => {
         const psp: ExtendedProduct = {
           apps: new Map<string, any>(),
           slots: [{ undeployed: true }, { deprecated: true }]
         } as ExtendedProduct
         spyOn<any>(component, 'prepareProductAppParts').and.callThrough()
 
-        component['prepareProductAppParts'](psp)
+        //component['prepareProductAppParts'](psp)
 
         expect(psp.changedComponents).toBeTrue()
-      })*/
+      })
     })
 
     describe('picklist reloads', () => {

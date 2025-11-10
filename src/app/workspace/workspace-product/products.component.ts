@@ -310,7 +310,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
       for (const slot of eP.slots) {
         eP.changedComponents = slot.undeployed || slot.deprecated || eP.changedComponents
         // mark PS slots as exist in workspace
-        slot.exists = slots.find((sl) => sl.name === slot.name) !== undefined
+        slot.exists = slots.some((sl) => sl.name === slot.name) !== undefined
       }
   }
   private prepareProductAppPart(mfe: Microfrontend, eP: ExtendedProduct): void {
@@ -434,25 +434,29 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
       }
     }
   }
-  // take over the deprecated/undeployed states on MFE Modules and Slots => TODO
+  // take over the deprecated/undeployed states on MFE Modules and Slots
   private syncProductState(wP: ExtendedProduct, psP: ExtendedProduct): void {
     let pspModules = 0
     wP.changedComponents = psP.changedComponents
     wP.undeployed = psP.undeployed
     if (wP.microfrontends) {
-      for (const wMfe of wP.microfrontends)
-        if (psP.microfrontends)
-          for (const psMfe of psP.microfrontends.filter((mfe) => mfe.type === MicrofrontendType.Module)) {
-            pspModules++
-            // reg. MFEs without exposed module
-            if (!wMfe.exposedModule) wMfe.exposedModule = psMfe.exposedModule
-            if (psMfe.appId === wMfe.appId && psMfe.exposedModule === wMfe.exposedModule) {
-              wMfe.deprecated = psMfe.deprecated
-              wMfe.undeployed = psMfe.undeployed
-            }
-          }
+      for (const wMfe of wP.microfrontends) pspModules = pspModules + this.syncModuleState(wMfe, psP.microfrontends)
       wP.changedComponents = wP.changedComponents || wP.microfrontends.length !== pspModules
     }
+  }
+  private syncModuleState(wMfe: Microfrontend, mfes: Microfrontend[] | undefined): number {
+    let n = 0
+    if (mfes)
+      for (const psMfe of mfes.filter((mfe) => mfe.type === MicrofrontendType.Module)) {
+        n++
+        // reg. MFEs without exposed module
+        if (!wMfe.exposedModule) wMfe.exposedModule = psMfe.exposedModule
+        if (psMfe.appId === wMfe.appId && psMfe.exposedModule === wMfe.exposedModule) {
+          wMfe.deprecated = psMfe.deprecated
+          wMfe.undeployed = psMfe.undeployed
+        }
+      }
+    return n
   }
 
   /**************************************************
@@ -507,7 +511,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
                 endpoints: new FormControl(null)
               })
             )
-            modules.at(modules.length - 1).patchValue({
+            modules.at(-1).patchValue({
               index: moduleIndex,
               id: mfe?.id,
               appId: m?.appId,
@@ -681,7 +685,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     let successCounter = 0
     let errorCounter = 0
     for (const p of this.deregisterItems)
-      if (this.workspace && this.workspace.id && p.id) {
+      if (this.workspace?.id && p.id) {
         this.wProductApi.deleteProductById({ id: this.workspace.id, productId: p.id }).subscribe({
           next: () => {
             successCounter++
@@ -689,7 +693,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
             if (p.exists) {
               p.bucket = 'SOURCE'
               // sometimes the component has already the product - then do not add
-              if (!this.psProducts.find((psp) => psp.productName === p.productName)) this.psProducts.push(p)
+              if (!this.psProducts.some((psp) => psp.productName === p.productName)) this.psProducts.push(p)
             } else {
               this.psProducts = this.psProducts.filter((psp) => psp.productName !== p.productName)
             }

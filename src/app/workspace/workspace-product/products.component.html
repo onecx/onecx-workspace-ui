@@ -2,13 +2,13 @@
 <section class="block md:hidden mb-2">
   <p-message
     *ngIf="wpLoading || psLoading"
-    id="ws_products_message_loading"
+    id="ws_products_message_loading_sm"
     severity="info"
     [text]="'ACTIONS.LOADING' | translate"
   ></p-message>
   <p-message
     *ngIf="exceptionKey"
-    id="ws_products_message_error"
+    id="ws_products_message_error_sm"
     severity="error"
     [text]="exceptionKey | translate"
   ></p-message>
@@ -208,12 +208,12 @@
               class="h-1rem sm:h-2rem md:h-3rem w-1rem sm:w-2rem md:w-3rem flex align-items-center"
               aria-hidden="true"
             >
-              <!--app-image-container
+              <app-image-container
                 [id]="'ws_products_picklist_' + product.productName + '_logo'"
                 [imageUrl]="getImageUrl(product)"
                 [defaultLogoType]="'product'"
                 styleClass="max-h-1rem sm:max-h-2rem md:max-h-3rem max-w-1rem sm:max-w-2rem md:max-w-3rem tile-view-optional border-round-sm"
-              ></app-image-container-->
+              ></app-image-container>
             </div>
             <div class="flex flex-column row-gap-1">
               <div
