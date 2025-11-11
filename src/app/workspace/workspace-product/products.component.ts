@@ -524,20 +524,25 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
       while (modules.length > 0) modules.removeAt(0) // clear form
       if (this.displayedDetailItem.microfrontends)
         if (this.displayedDetailItem.microfrontends.length === 0) this.displayedDetailItem.microfrontends = undefined
-      this.fillFormForModules(this.displayedDetailItem, modules)
+      if (item.apps) this.fillFormForModules(item.microfrontends, item.apps, modules)
     }
     this.formGroup.controls['displayName'].setValue(this.displayedDetailItem.displayName)
     this.formGroup.controls['baseUrl'].setValue(this.displayedDetailItem.baseUrl)
   }
-  private fillFormForModules(item: ExtendedProduct, modules: FormArray): void {
+  private fillFormForModules(
+    mfes: Microfrontend[] | undefined,
+    appModules: Map<string, ExtendedApp> | undefined,
+    modules: FormArray
+  ): void {
     let moduleIndex = 0
-    if (item && item.apps)
+    if (appModules)
       // 1. Prepare so much forms as app modules exist in PS
-      for (const [appId, app] of item.apps) {
+      //this.addFormControlsForModules(mfes, app, modules, moduleIndex)
+      for (const [appId, app] of appModules)
         if (app.modules)
           for (const m of app.modules) {
             // mfe is undefined for "new" modules
-            const mfe = item.microfrontends?.find((mf) => mf.appId === appId && mf.exposedModule === m.exposedModule)
+            const mfe = mfes?.find((mf) => mf.appId === app.appId && mf.exposedModule === m.exposedModule)
             AddMfeModuleFormControl(this.fb, modules, moduleIndex, {
               id: mfe?.id,
               appId: m?.appId,
@@ -551,9 +556,34 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
             })
             moduleIndex++
           }
-      }
+
     // 2. Add form? for non-existing (in PS) modules
   }
+  private addFormControlsForModules(
+    mfes: Microfrontend[] | undefined,
+    app: ExtendedApp,
+    modules: FormArray,
+    idx: number
+  ): void {
+    if (app.modules)
+      for (const m of app.modules) {
+        // mfe is undefined for "new" modules
+        const mfe = mfes?.find((mf) => mf.appId === app.appId && mf.exposedModule === m.exposedModule)
+        AddMfeModuleFormControl(this.fb, modules, idx, {
+          id: mfe?.id,
+          appId: m?.appId,
+          basePath: mfe?.basePath ?? '/' + (app.modules.length === 1 ? '' : idx + 1),
+          exposedModule: m?.exposedModule,
+          deprecated: m.deprecated,
+          undeployed: m.undeployed,
+          new: mfe?.id === undefined,
+          change: undefined, // user can set: 'create' for creation, 'delete' for deletion
+          endpoints: m?.endpoints?.sort(this.sortEndpointsByName)
+        })
+        idx++
+      }
+  }
+
   private sortEndpointsByName(a: UIEndpoint, b: UIEndpoint): number {
     return (a.name ? a.name.toUpperCase() : '').localeCompare(b.name ? b.name.toUpperCase() : '')
   }
