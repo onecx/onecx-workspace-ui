@@ -108,6 +108,43 @@ export function ValidateModuleBasePath(fa: FormArray): ValidatorFn {
     return null
   }
 }
+export function BuildModuleFormGroup(fb: FormBuilder, modules: FormArray) {
+  return fb.group({
+    index: new FormControl(null),
+    id: new FormControl(null),
+    appId: new FormControl(null),
+    basePath: new FormControl(null, [
+      Validators.required,
+      Validators.maxLength(255),
+      Validators.minLength(1),
+      Validators.pattern('^/.*'),
+      ValidateModuleBasePath(modules)
+    ]),
+    exposedModule: new FormControl(null),
+    deprecated: new FormControl(null),
+    undeployed: new FormControl(null),
+    new: new FormControl(null),
+    change: new FormControl(null),
+    endpoints: new FormControl(null)
+  })
+}
+export function AddMfeModuleFormControl(fb: FormBuilder, modules: FormArray, idx: number, mfeControl: any) {
+  if (mfeControl) {
+    modules.push(BuildModuleFormGroup(fb, modules))
+    modules.at(-1).patchValue({
+      index: idx,
+      id: mfeControl?.id,
+      appId: mfeControl?.appId,
+      basePath: mfeControl?.basePath,
+      exposedModule: mfeControl?.exposedModule,
+      deprecated: mfeControl.deprecated,
+      undeployed: mfeControl.undeployed,
+      new: mfeControl?.id === undefined,
+      change: mfeControl.change,
+      endpoints: mfeControl?.endpoints
+    })
+  }
+}
 
 @Component({
   selector: 'app-products',
@@ -501,37 +538,16 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
           for (const m of app.modules) {
             // mfe is undefined for "new" modules
             const mfe = item.microfrontends?.find((mf) => mf.appId === appId && mf.exposedModule === m.exposedModule)
-            modules.push(
-              this.fb.group({
-                index: new FormControl(null),
-                id: new FormControl(null),
-                appId: new FormControl(null),
-                basePath: new FormControl(null, [
-                  Validators.required,
-                  Validators.maxLength(255),
-                  Validators.minLength(1),
-                  Validators.pattern('^/.*'),
-                  ValidateModuleBasePath(modules)
-                ]),
-                exposedModule: new FormControl(null),
-                deprecated: new FormControl(null),
-                undeployed: new FormControl(null),
-                new: new FormControl(null),
-                change: new FormControl(null),
-                endpoints: new FormControl(null)
-              })
-            )
-            modules.at(-1).patchValue({
-              index: moduleIndex,
+            AddMfeModuleFormControl(this.fb, modules, moduleIndex, {
               id: mfe?.id,
               appId: m?.appId,
-              basePath: mfe?.basePath ?? '/' + moduleIndex,
+              basePath: m?.basePath ?? '/' + moduleIndex,
               exposedModule: m?.exposedModule,
               deprecated: m.deprecated,
               undeployed: m.undeployed,
               new: mfe?.id === undefined,
               change: undefined, // user can set: 'create' for creation, 'delete' for deletion
-              endpoints: mfe?.endpoints?.sort(this.sortEndpointsByName)
+              endpoints: m?.endpoints?.sort(this.sortEndpointsByName)
             })
             moduleIndex++
           }
@@ -560,7 +576,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
       const modules = this.formGroup.get('modules') as FormArray
       modules.controls.forEach((item) => {
         // ignore item if id is undefined and "new" = false and formChanged
-        if ((item.value.id && item.value.change === undefined) || (!item.value.id && item.value.change === 'create'))
+        if ((item.value.id && !item.value.change) || (!item.value.id && item.value.change === 'create'))
           this.displayedDetailItem?.microfrontends?.push(item.value)
       })
       this.wProductApi

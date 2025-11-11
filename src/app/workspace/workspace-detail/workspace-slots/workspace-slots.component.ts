@@ -133,7 +133,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     this.exceptionKey = undefined
     this.declareWorkspaceProducts()
     this.declareWorkspaceSlots()
-    this.getPsSlots()
+    this.getPsSlotsAndComponents()
     firstValueFrom(
       this.wSlots$.pipe(
         mergeMap(() => this.wProducts$),
@@ -208,7 +208,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   // All declared Slots of product store products: containing deployment information
-  private getPsSlots(): void {
+  private getPsSlotsAndComponents(): void {
     this.psLoading = true
     this.psSlots$ = this.psProductApi.searchAvailableProducts({ productStoreSearchCriteria: { pageSize: 1000 } }).pipe(
       map((res) => {
@@ -241,7 +241,6 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   // Collect PS Slots
   // essential for listing products which using a slot
   private extractPsSlots(products: ProductStoreItem[]): CombinedSlot[] {
-    if (!products) return []
     const psSlots: CombinedSlot[] = []
     for (const p of products) {
       if (p.slots) for (const psS of p.slots) this.addPsSlot(p, psS, psSlots)
