@@ -529,61 +529,34 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     this.formGroup.controls['displayName'].setValue(this.displayedDetailItem.displayName)
     this.formGroup.controls['baseUrl'].setValue(this.displayedDetailItem.baseUrl)
   }
+
   private fillFormForModules(
     mfes: Microfrontend[] | undefined,
-    appModules: Map<string, ExtendedApp> | undefined,
+    appModules: Map<string, ExtendedApp>,
     modules: FormArray
   ): void {
     let moduleIndex = 0
-    if (appModules)
-      // 1. Prepare so much forms as app modules exist in PS
-      //this.addFormControlsForModules(mfes, app, modules, moduleIndex)
-      for (const [appId, app] of appModules)
-        if (app.modules)
-          for (const m of app.modules) {
-            // mfe is undefined for "new" modules
-            const mfe = mfes?.find((mf) => mf.appId === appId && mf.exposedModule === m.exposedModule)
-            AddMfeModuleFormControl(this.fb, modules, moduleIndex, {
-              id: mfe?.id,
-              appId: m?.appId,
-              basePath: mfe?.basePath ?? '/' + (app.modules.length === 1 ? '' : moduleIndex + 1),
-              exposedModule: m?.exposedModule,
-              deprecated: m.deprecated,
-              undeployed: m.undeployed,
-              new: mfe?.id === undefined,
-              change: undefined, // user can set: 'create' for creation, 'delete' for deletion
-              endpoints: m?.endpoints?.sort(this.sortEndpointsByName)
-            })
-            moduleIndex++
-          }
-
-    // 2. Add form? for non-existing (in PS) modules
+    // 1. Prepare so much forms as app modules exist in PS
+    for (const [appId, app] of appModules)
+      if (app.modules)
+        for (const m of app.modules) {
+          // mfe is undefined for "new" modules
+          const mfe = mfes?.find((mf) => mf.appId === appId && mf.exposedModule === m.exposedModule)
+          AddMfeModuleFormControl(this.fb, modules, moduleIndex, {
+            id: mfe?.id,
+            appId: m?.appId,
+            basePath: mfe?.basePath ?? '/' + (app.modules.length === 1 ? '' : moduleIndex + 1),
+            exposedModule: m?.exposedModule,
+            deprecated: m.deprecated,
+            undeployed: m.undeployed,
+            new: mfe?.id === undefined,
+            change: undefined, // user can set: 'create' for creation, 'delete' for deletion
+            endpoints: m?.endpoints?.sort(this.sortEndpointsByName)
+          })
+          moduleIndex++
+        }
+    // 2. Add form for non-existing (in PS) modules?
   }
-  private addFormControlsForModules(
-    mfes: Microfrontend[] | undefined,
-    app: ExtendedApp,
-    modules: FormArray,
-    idx: number
-  ): void {
-    if (app.modules)
-      for (const m of app.modules) {
-        // mfe is undefined for "new" modules
-        const mfe = mfes?.find((mf) => mf.appId === app.appId && mf.exposedModule === m.exposedModule)
-        AddMfeModuleFormControl(this.fb, modules, idx, {
-          id: mfe?.id,
-          appId: m?.appId,
-          basePath: mfe?.basePath ?? '/' + (app.modules.length === 1 ? '' : idx + 1),
-          exposedModule: m?.exposedModule,
-          deprecated: m.deprecated,
-          undeployed: m.undeployed,
-          new: mfe?.id === undefined,
-          change: undefined, // user can set: 'create' for creation, 'delete' for deletion
-          endpoints: m?.endpoints?.sort(this.sortEndpointsByName)
-        })
-        idx++
-      }
-  }
-
   private sortEndpointsByName(a: UIEndpoint, b: UIEndpoint): number {
     return (a.name ? a.name.toUpperCase() : '').localeCompare(b.name ? b.name.toUpperCase() : '')
   }
