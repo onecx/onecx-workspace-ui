@@ -542,7 +542,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
         if (app.modules)
           for (const m of app.modules) {
             // mfe is undefined for "new" modules
-            const mfe = mfes?.find((mf) => mf.appId === app.appId && mf.exposedModule === m.exposedModule)
+            const mfe = mfes?.find((mf) => mf.appId === appId && mf.exposedModule === m.exposedModule)
             AddMfeModuleFormControl(this.fb, modules, moduleIndex, {
               id: mfe?.id,
               appId: m?.appId,
