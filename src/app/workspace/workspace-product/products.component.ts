@@ -55,7 +55,8 @@ import {
   Workspace,
   Slot,
   WorkspaceProductAPIService,
-  UIEndpoint
+  UIEndpoint,
+  SlotComponent
 } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
 
@@ -68,9 +69,10 @@ type ChangeStatus = {
   undeployed?: boolean
 }
 export type ExtendedMicrofrontend = Microfrontend & ChangeStatus
-export type ExtendedSlot = SlotPS & ChangeStatus
+export type ExtendedSlot = SlotPS & ChangeStatus & { components?: SlotComponent[] }
 export type ExtendedApp = {
   appId: string
+  appName: string
   modules?: ExtendedMicrofrontend[]
   components?: ExtendedMicrofrontend[] // type is only needed to use the same sort method
 }
@@ -105,6 +107,43 @@ export function ValidateModuleBasePath(fa: FormArray): ValidatorFn {
       else paths.push(bp)
     }
     return null
+  }
+}
+export function BuildModuleFormGroup(fb: FormBuilder, modules: FormArray) {
+  return fb.group({
+    index: new FormControl(null),
+    id: new FormControl(null),
+    appId: new FormControl(null),
+    basePath: new FormControl(null, [
+      Validators.required,
+      Validators.maxLength(255),
+      Validators.minLength(1),
+      Validators.pattern('^/.*'),
+      ValidateModuleBasePath(modules)
+    ]),
+    exposedModule: new FormControl(null),
+    deprecated: new FormControl(null),
+    undeployed: new FormControl(null),
+    new: new FormControl(null),
+    change: new FormControl(null),
+    endpoints: new FormControl(null)
+  })
+}
+export function AddMfeModuleFormControl(fb: FormBuilder, modules: FormArray, idx: number, mfeControl: any) {
+  if (mfeControl) {
+    modules.push(BuildModuleFormGroup(fb, modules))
+    modules.at(-1).patchValue({
+      index: idx,
+      id: mfeControl?.id,
+      appId: mfeControl?.appId,
+      basePath: mfeControl?.basePath,
+      exposedModule: mfeControl?.exposedModule,
+      deprecated: mfeControl.deprecated,
+      undeployed: mfeControl.undeployed,
+      new: mfeControl?.id === undefined,
+      change: mfeControl.change,
+      endpoints: mfeControl?.endpoints
+    })
   }
 }
 
@@ -300,7 +339,8 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     if (eP.microfrontends) {
       eP.apps = new Map()
       for (const mfe of eP.microfrontends) {
-        if (mfe.appId && !eP.apps?.has(mfe.appId)) eP.apps?.set(mfe.appId, { appId: mfe.appId })
+        if (mfe.appId && !eP.apps?.has(mfe.appId))
+          eP.apps?.set(mfe.appId, { appId: mfe.appId, appName: mfe.appName ?? mfe.appId })
         this.prepareProductAppPart(mfe, eP)
         // mark product if there are important changes on microfrontends
         eP.changedComponents = mfe.undeployed || mfe.deprecated || eP.changedComponents
@@ -309,8 +349,11 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     if (eP.slots)
       for (const slot of eP.slots) {
         eP.changedComponents = slot.undeployed || slot.deprecated || eP.changedComponents
-        // mark PS slots as exist in workspace
-        slot.exists = slots.some((sl) => sl.name === slot.name) !== undefined
+        const wSlot = slots.find((sl) => sl.name === slot.name)
+        if (wSlot) {
+          slot.exists = true
+          slot.components = wSlot.components
+        }
       }
   }
   private prepareProductAppPart(mfe: Microfrontend, eP: ExtendedProduct): void {
@@ -422,10 +465,10 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   // (b) new/removed Apps/Modules in PS
   private prepareWProduct(item: ExtendedProduct) {
     item.bucket = 'TARGET'
-    item.displayName = item.displayName ?? item.productName
     if (this.psProductsOrg.has(item.productName!)) {
       const pspOrg = this.psProductsOrg.get(item.productName!)
       if (pspOrg) {
+        if (!item.displayName) item.displayName = pspOrg.displayName
         item.undeployed = pspOrg.undeployed
         item.changedComponents = pspOrg.changedComponents
         item.slots = pspOrg.slots // copy, slot management in separate TAB
@@ -433,25 +476,29 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
         this.syncProductState(item, pspOrg)
       }
     }
+    if (!item.displayName) item.displayName = item.productName // product does no exist in product store
   }
   // take over the deprecated/undeployed states on MFE Modules and Slots
   private syncProductState(wP: ExtendedProduct, psP: ExtendedProduct): void {
-    let pspModules = 0
     wP.changedComponents = psP.changedComponents
     wP.undeployed = psP.undeployed
     if (wP.microfrontends) {
-      for (const wMfe of wP.microfrontends) pspModules = pspModules + this.syncModuleState(wMfe, psP.microfrontends)
-      wP.changedComponents = wP.changedComponents || wP.microfrontends.length !== pspModules
+      let pspModules = 0
+      const wModules = wP.microfrontends.filter((mfe) => mfe.type === MicrofrontendType.Module).length
+      for (const wMfe of wP.microfrontends.filter((mfe) => mfe.type === MicrofrontendType.Module)) {
+        pspModules = pspModules + this.syncModuleState(wMfe, psP.microfrontends)
+      }
+      wP.changedComponents = wP.changedComponents || wModules !== pspModules
     }
   }
-  private syncModuleState(wMfe: Microfrontend, mfes: Microfrontend[] | undefined): number {
+  private syncModuleState(wMfe: Microfrontend, psMfes: Microfrontend[] | undefined): number {
     let n = 0
-    if (mfes)
-      for (const psMfe of mfes.filter((mfe) => mfe.type === MicrofrontendType.Module)) {
-        n++
+    if (psMfes)
+      for (const psMfe of psMfes.filter((mfe) => mfe.type === MicrofrontendType.Module)) {
         // reg. MFEs without exposed module
         if (!wMfe.exposedModule) wMfe.exposedModule = psMfe.exposedModule
         if (psMfe.appId === wMfe.appId && psMfe.exposedModule === wMfe.exposedModule) {
+          n++
           wMfe.deprecated = psMfe.deprecated
           wMfe.undeployed = psMfe.undeployed
         }
@@ -466,67 +513,49 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
    */
   private fillForm(item: ExtendedProduct | undefined): void {
     if (!item) return
+    this.displayDetails = true
     this.formChanged = false
     this.displayedDetailItem = item
     this.displayedDetailItem.slots?.sort(this.sortSlotsByName)
-    this.formGroup.controls['displayName'].setValue(this.displayedDetailItem.displayName)
-    this.formGroup.controls['baseUrl'].setValue(this.displayedDetailItem.baseUrl)
+    if (item.bucket === 'SOURCE') this.formGroup.disable()
     if (item.bucket === 'TARGET') {
       this.formGroup.enable()
       const modules = this.formGroup.get('modules') as FormArray
       while (modules.length > 0) modules.removeAt(0) // clear form
       if (this.displayedDetailItem.microfrontends)
         if (this.displayedDetailItem.microfrontends.length === 0) this.displayedDetailItem.microfrontends = undefined
-      this.fillFormForModules(this.displayedDetailItem, modules)
+      if (item.apps) this.fillFormForModules(item.microfrontends, item.apps, modules)
     }
-    if (item.bucket === 'SOURCE') this.formGroup.disable()
-    this.displayDetails = true
+    this.formGroup.controls['displayName'].setValue(this.displayedDetailItem.displayName)
+    this.formGroup.controls['baseUrl'].setValue(this.displayedDetailItem.baseUrl)
   }
-  private fillFormForModules(item: ExtendedProduct, modules: FormArray): void {
+
+  private fillFormForModules(
+    mfes: Microfrontend[] | undefined,
+    appModules: Map<string, ExtendedApp>,
+    modules: FormArray
+  ): void {
     let moduleIndex = 0
-    if (item && item.apps)
-      // 1. Prepare so much forms as app modules exist in PS
-      for (const [appId, app] of item.apps) {
-        if (app.modules)
-          for (const m of app.modules) {
-            // mfe is undefined for "new" modules
-            const mfe = item.microfrontends?.find((mf) => mf.appId === appId && mf.exposedModule === m.exposedModule)
-            modules.push(
-              this.fb.group({
-                index: new FormControl(null),
-                id: new FormControl(null),
-                appId: new FormControl(null),
-                basePath: new FormControl(null, [
-                  Validators.required,
-                  Validators.maxLength(255),
-                  Validators.minLength(1),
-                  Validators.pattern('^/.*'),
-                  ValidateModuleBasePath(modules)
-                ]),
-                exposedModule: new FormControl(null),
-                deprecated: new FormControl(null),
-                undeployed: new FormControl(null),
-                new: new FormControl(null),
-                change: new FormControl(null),
-                endpoints: new FormControl(null)
-              })
-            )
-            modules.at(-1).patchValue({
-              index: moduleIndex,
-              id: mfe?.id,
-              appId: m?.appId,
-              basePath: mfe?.basePath ?? '/' + moduleIndex,
-              exposedModule: m?.exposedModule,
-              deprecated: m.deprecated,
-              undeployed: m.undeployed,
-              new: mfe?.id === undefined,
-              change: undefined, // user can set: 'create' for creation, 'delete' for deletion
-              endpoints: mfe?.endpoints?.sort(this.sortEndpointsByName)
-            })
-            moduleIndex++
-          }
-      }
-    // 2. Add form? for non-existing (in PS) modules
+    // 1. Prepare so much forms as app modules exist in PS
+    for (const [appId, app] of appModules)
+      if (app.modules)
+        for (const m of app.modules) {
+          // mfe is undefined for "new" modules
+          const mfe = mfes?.find((mf) => mf.appId === appId && mf.exposedModule === m.exposedModule)
+          AddMfeModuleFormControl(this.fb, modules, moduleIndex, {
+            id: mfe?.id,
+            appId: m?.appId,
+            basePath: mfe?.basePath ?? '/' + (app.modules.length === 1 ? '' : moduleIndex + 1),
+            exposedModule: m?.exposedModule,
+            deprecated: m.deprecated,
+            undeployed: m.undeployed,
+            new: mfe?.id === undefined,
+            change: undefined, // user can set: 'create' for creation, 'delete' for deletion
+            endpoints: m?.endpoints?.sort(this.sortEndpointsByName)
+          })
+          moduleIndex++
+        }
+    // 2. Add form for non-existing (in PS) modules?
   }
   private sortEndpointsByName(a: UIEndpoint, b: UIEndpoint): number {
     return (a.name ? a.name.toUpperCase() : '').localeCompare(b.name ? b.name.toUpperCase() : '')
@@ -550,7 +579,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
       const modules = this.formGroup.get('modules') as FormArray
       modules.controls.forEach((item) => {
         // ignore item if id is undefined and "new" = false and formChanged
-        if ((item.value.id && item.value.change === undefined) || (!item.value.id && item.value.change === 'create'))
+        if ((item.value.id && !item.value.change) || (!item.value.id && item.value.change === 'create'))
           this.displayedDetailItem?.microfrontends?.push(item.value)
       })
       this.wProductApi
@@ -692,6 +721,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
             // remove a non-existing product of adjust bucket
             if (p.exists) {
               p.bucket = 'SOURCE'
+              p.changedComponents = false
               // sometimes the component has already the product - then do not add
               if (!this.psProducts.some((psp) => psp.productName === p.productName)) this.psProducts.push(p)
             } else {

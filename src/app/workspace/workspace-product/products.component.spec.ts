@@ -25,10 +25,17 @@ import {
   Slot,
   SlotPS,
   SlotAPIService,
-  UIEndpoint
+  UIEndpoint,
+  SlotComponent
 } from 'src/app/shared/generated'
 
-import { ExtendedApp, ExtendedMicrofrontend, ExtendedProduct, ProductComponent } from './products.component'
+import {
+  AddMfeModuleFormControl,
+  ExtendedApp,
+  ExtendedMicrofrontend,
+  ExtendedProduct,
+  ProductComponent
+} from './products.component'
 
 const changes = { ['workspace']: { previousValue: 'ws0', currentValue: 'ws1', firstChange: true } }
 const workspace: Workspace = {
@@ -38,112 +45,143 @@ const workspace: Workspace = {
   baseUrl: '/some/base/url',
   displayName: 'Workspace'
 }
+// 2 modules and 1 component for app 1
+const mfeModule1: ExtendedMicrofrontend = {
+  index: 0,
+  id: 'id1',
+  appId: 'app1',
+  appName: 'appName1',
+  basePath: '/path1',
+  type: MicrofrontendType.Module,
+  exposedModule: './mfeModule1',
+  deprecated: false,
+  undeployed: false
+}
+const mfeModule2: ExtendedMicrofrontend = {
+  index: 1,
+  id: 'id2',
+  appId: 'app1',
+  appName: 'appName1',
+  basePath: '/path2',
+  type: MicrofrontendType.Module,
+  exposedModule: './mfeModule2',
+  deprecated: true,
+  undeployed: false
+}
+const mfeComponent1: ExtendedMicrofrontend = {
+  id: 'id4',
+  appId: 'app1',
+  appName: 'appName1',
+  basePath: '/path11',
+  type: MicrofrontendType.Component,
+  exposedModule: './mfeComponent1',
+  deprecated: false,
+  undeployed: false
+}
+const mfeSlotComponent1: SlotComponent = {
+  appId: 'app1',
+  productName: 'appName1',
+  name: 'slotComponent1'
+}
+// 1 module for another app
+const mfeModule3: ExtendedMicrofrontend = {
+  index: 2,
+  id: 'id3',
+  appId: 'app2',
+  basePath: '/path3',
+  type: MicrofrontendType.Module,
+  exposedModule: './mfeModule3',
+  deprecated: true,
+  undeployed: true
+}
+const app1: ExtendedApp = {
+  appId: 'app1',
+  appName: 'appName1',
+  modules: [mfeModule1, mfeModule2],
+  components: [mfeComponent1]
+}
+const app2: ExtendedApp = {
+  appId: 'app2',
+  appName: 'app2',
+  modules: [mfeModule3]
+}
+const allAppMap = new Map().set(app1.appId, app1).set(app2.appId, app2)
+
 const slot1: Slot = {
   id: 's1',
   workspaceId: workspace.id,
   name: 'slot1',
-  components: [{ productName: 'product1', appId: 'appId', name: 'App' }]
+  components: [mfeSlotComponent1]
 }
 const slot2: Slot = {
   id: 's2',
   workspaceId: workspace.id,
   name: 'slot2',
-  components: [{ productName: 'product1', appId: 'appId', name: 'App' }]
+  components: [mfeSlotComponent1]
 }
 
-const mfeModule: ExtendedMicrofrontend = {
-  index: 0,
-  id: 'id m',
-  appId: 'appId',
-  basePath: 'path',
-  type: MicrofrontendType.Module,
-  exposedModule: './exposedModule',
-  deprecated: false,
-  undeployed: false
-}
-const mfeModuleDeprecated: ExtendedMicrofrontend = {
-  index: 1,
-  id: 'id d',
-  appId: 'appId',
-  basePath: 'path',
-  type: MicrofrontendType.Module,
-  exposedModule: './exposedModuleDeprecated',
-  deprecated: true,
-  undeployed: false
-}
-const mfeModuleUndeployed: ExtendedMicrofrontend = {
-  index: 2,
-  id: 'id u',
-  appId: 'appId',
-  basePath: 'path',
-  type: MicrofrontendType.Module,
-  exposedModule: './exposedModuleUndeployed',
-  deprecated: true,
-  undeployed: true
-}
-const mfeComponent: ExtendedMicrofrontend = {
-  id: 'id c',
-  appId: 'appId',
-  basePath: 'path',
-  type: MicrofrontendType.Component,
-  deprecated: false,
-  undeployed: false
-}
-const appWithAll: ExtendedApp = {
-  appId: 'appId',
-  modules: [mfeModule, mfeModuleDeprecated, mfeModuleUndeployed],
-  components: [mfeComponent]
-}
-const appsAllMfes = new Map().set('appId', appWithAll)
-
-// product store Item
-const prodStoreItem: ProductStoreItem = {
+// product store Item: 3 Modules in 2 Apps, 1 Component
+const psProduct1: ProductStoreItem = {
   productName: 'product1',
   displayName: 'Display Name',
   description: 'Description',
   imageUrl: '/image/url',
   baseUrl: '/base',
   version: '1.0',
-  microfrontends: [mfeModule, mfeModuleDeprecated, mfeModuleUndeployed, mfeComponent],
-  undeployed: false,
-  slots: [slot1]
+  microfrontends: [mfeModule1, mfeModule2, mfeModule3, mfeComponent1],
+  slots: [slot1, slot2],
+  undeployed: false
 }
 
-// registered product in Workspace with new display name
-const productItem: Product = {
-  id: 'pid',
+// registered product in Workspace: 1 Module in 1 App, 1 Component => outdated
+const wProduct1: Product = {
+  ...psProduct1,
+  id: 'pid1',
   modificationCount: 0,
-  productName: 'product1',
-  displayName: 'Display Name',
+  microfrontends: [mfeModule1, { ...mfeModule2, exposedModule: undefined }, mfeComponent1],
+  slots: [],
+  undeployed: false
+}
+// empty workspace product which has no pendant in product store
+const wProduct2: Product = {
+  id: 'pid2',
+  modificationCount: 0,
+  productName: 'product2',
   description: 'Description',
   imageUrl: '/image/url',
   baseUrl: '/base',
   version: '1.0',
-  microfrontends: [mfeModule, mfeComponent],
+  microfrontends: [],
   slots: [],
   undeployed: false
 }
 
-const productItemSource: ExtendedProduct = {
-  ...prodStoreItem,
+const product1Source: ExtendedProduct = {
+  ...psProduct1,
   bucket: 'SOURCE',
   exists: true,
   changedComponents: true,
-  apps: appsAllMfes
+  apps: allAppMap
 }
-const productItemTarget: ExtendedProduct = {
-  ...productItem,
+const product1Target: ExtendedProduct = {
+  ...wProduct1,
   bucket: 'TARGET',
   exists: true,
   changedComponents: true
 }
-
+const product2Target: ExtendedProduct = {
+  ...wProduct2,
+  bucket: 'TARGET',
+  exists: false,
+  changedComponents: true
+}
+// current MFE
 const mfeInfo: MfeInfo = {
   mountPath: 'path',
   remoteBaseUrl: 'url',
   baseHref: 'href',
   shellName: 'shell',
-  appId: 'appId',
+  appId: 'app1',
   productName: 'prodName'
 }
 
@@ -166,7 +204,6 @@ describe('ProductComponent', () => {
     searchAvailableProducts: jasmine.createSpy('searchAvailableProducts').and.returnValue(of({}))
   }
   const slotApiSpy = { getSlotsForWorkspace: jasmine.createSpy('getSlotsForWorkspace').and.returnValue(of({})) }
-
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
   const workspaceServiceSpy = jasmine.createSpyObj<WorkspaceService>('WorkspaceService', ['doesUrlExistFor', 'getUrl'])
   const mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
@@ -254,8 +291,8 @@ describe('ProductComponent', () => {
     beforeEach(() => {
       component.workspace = workspace
       slotApiSpy.getSlotsForWorkspace.and.returnValue(of({ slots: [slot1, slot2] }))
-      wProductApiSpy.getProductsByWorkspaceId.and.returnValue(of([productItem]))
-      productApiSpy.searchAvailableProducts.and.returnValue(of({ stream: [prodStoreItem] }))
+      wProductApiSpy.getProductsByWorkspaceId.and.returnValue(of([wProduct1, wProduct2]))
+      productApiSpy.searchAvailableProducts.and.returnValue(of({ stream: [psProduct1] }))
     })
 
     describe('with errors', () => {
@@ -294,79 +331,29 @@ describe('ProductComponent', () => {
       it('should loadData onChanges - successful', () => {
         component.ngOnChanges(changes as unknown as SimpleChanges)
 
-        expect(component.psProductsOrg.get(prodStoreItem.productName!)).toEqual(productItemSource)
-        expect(component.wProducts[0]).toEqual(productItemTarget)
+        const psOrg = component.psProductsOrg.get(psProduct1.productName!)
+        expect(psOrg?.microfrontends).toEqual(product1Source.microfrontends)
+        expect(psOrg?.slots).toEqual(product1Source.slots)
+        expect(psOrg?.apps?.get('app1')).toEqual(product1Source.apps?.get('app1'))
+        expect(psOrg?.apps?.get('app2')).toEqual(product1Source.apps?.get('app2'))
+
+        expect(component.wProducts[1]).toEqual(product1Target)
       })
 
       it('should loadData onChanges - successful, but no slots', () => {
         slotApiSpy.getSlotsForWorkspace.and.returnValue(of({ slots: undefined }))
         component.ngOnChanges(changes as unknown as SimpleChanges)
 
-        expect(component.psProductsOrg.get(prodStoreItem.productName!)).toEqual(productItemSource)
-        expect(component.wProducts[0]).toEqual(productItemTarget)
-      })
-
-      // ignored
-      xit('should loadData onChanges: searchPsProducts call success: prod deployed and only slots', () => {
-        const pspItem: ExtendedProduct = {
-          productName: 'pspItemName',
-          displayName: 'display name',
-          description: 'description',
-          bucket: 'SOURCE',
-          version: '1.0',
-          slots: [{ name: 'slot' }],
-          exists: true,
-          changedComponents: false,
-          apps: new Map().set('appId', { appId: 'appId', modules: [mfeModule] })
-        }
-        wProductApiSpy.getProductsByWorkspaceId.and.returnValue(of([productItem]))
-        productApiSpy.searchAvailableProducts.and.returnValue(of({ stream: [pspItem] }))
-
-        component.ngOnChanges(changes as unknown as SimpleChanges)
-
-        expect(component.psProducts).toEqual([{ ...pspItem }])
+        expect(component.psProductsOrg.get(psProduct1.productName!)).toEqual(product1Source)
+        expect(component.wProducts[1]).toEqual(product1Target)
       })
 
       it('should loadData onChanges: searchPsProducts call success: prod is now undeployed', () => {
-        productApiSpy.searchAvailableProducts.and.returnValue(of({ stream: [{ ...prodStoreItem, undeployed: true }] }))
+        productApiSpy.searchAvailableProducts.and.returnValue(of({ stream: [{ ...psProduct1, undeployed: true }] }))
 
         component.ngOnChanges(changes as unknown as SimpleChanges)
 
         expect(component.psProducts.length).toBe(0) // prevent lading of undeployed products
-      })
-
-      // ignored
-      xit('prepare product app parts: mfe type is component', () => {
-        const psp: ExtendedProduct = {
-          microfrontends: [
-            { appId: 'app1', type: MicrofrontendType.Module },
-            { appId: 'app2', type: MicrofrontendType.Component, undeployed: true },
-            { appId: 'app2', type: MicrofrontendType.Component, deprecated: true }
-          ],
-          apps: new Map<string, any>([
-            ['app1', {}],
-            ['app2', {}]
-          ]),
-          slots: [{ name: 'slot1', undeployed: true }, { name: 'slot2', deprecated: true }, { name: 'slot3' }]
-        } as ExtendedProduct
-        spyOn<any>(component, 'prepareProductAppParts').and.callThrough()
-
-        //component['prepareProductAppParts'](psp)
-
-        expect(psp.changedComponents).toBeTrue()
-      })
-
-      // ignored
-      xit('should handle slots and mark product as changed if undeployed or deprecated', () => {
-        const psp: ExtendedProduct = {
-          apps: new Map<string, any>(),
-          slots: [{ undeployed: true }, { deprecated: true }]
-        } as ExtendedProduct
-        spyOn<any>(component, 'prepareProductAppParts').and.callThrough()
-
-        //component['prepareProductAppParts'](psp)
-
-        expect(psp.changedComponents).toBeTrue()
       })
     })
 
@@ -416,28 +403,19 @@ describe('ProductComponent', () => {
 
     it('should call fillForm when item is selected: mfes', () => {
       component.formGroup = productFormGroup
-      const modules: FormArray = component.formGroup.get('modules') as FormArray
-      const addMfeControl = (data: any) => {
-        const formGroup = fb.group({
-          id: [data.id],
-          appId: [data.appId],
-          basePath: [data.basePath]
-        })
-        modules.push(formGroup)
-      }
-      addMfeControl({ mfeModule })
-      const event = { items: [productItemSource] }
+      const modules = component.formGroup.get('modules') as FormArray
+      AddMfeModuleFormControl(fb, modules, 0, mfeModule1)
+      const event = { items: [product1Source] }
       component.displayDetails = true
       component.psProductsOrg = new Map()
-      component.psProductsOrg.set(productItemSource.productName!, productItemSource)
+      component.psProductsOrg.set(product1Source.productName!, product1Source)
 
       component.onSourceSelect(event)
 
       expect(component.displayDetails).toBeTrue()
-      expect(component.displayedDetailItem).toEqual(productItemSource)
+      expect(component.displayedDetailItem).toEqual(product1Source)
     })
   })
-
   describe('onTargetSelect', () => {
     it('should set displayDetails to false when no item is selected', () => {
       const event = { items: [] }
@@ -449,30 +427,43 @@ describe('ProductComponent', () => {
     })
 
     it('should call getWProduct when an target item is selected - successful', () => {
-      wProductApiSpy.getProductById.and.returnValue(of(productItem))
-      wProductApiSpy.getProductsByWorkspaceId.and.returnValue(of([productItem]))
-      productApiSpy.searchAvailableProducts.and.returnValue(of({ stream: [prodStoreItem] }))
-      const event = { items: [{ ...productItemTarget }] }
+      wProductApiSpy.getProductById.and.returnValue(of(wProduct1))
+      wProductApiSpy.getProductsByWorkspaceId.and.returnValue(of([wProduct1]))
+      productApiSpy.searchAvailableProducts.and.returnValue(of({ stream: [psProduct1] }))
+      const event = { items: [{ ...product1Target }] }
 
       component.ngOnChanges(changes as unknown as SimpleChanges)
       component.onTargetSelect(event)
 
       expect(component.displayDetails).toBeTrue()
 
-      component.getModuleControls('appId')
+      component.getModuleControls('app1')
     })
 
-    it('should call getWProduct when an target item is selected - successful but using product store displayName', () => {
-      wProductApiSpy.getProductById.and.returnValue(of({ ...productItem, displayName: undefined }))
-      wProductApiSpy.getProductsByWorkspaceId.and.returnValue(of([productItem]))
-      productApiSpy.searchAvailableProducts.and.returnValue(of({ stream: [prodStoreItem] }))
-      const event = { items: [productItemTarget] }
+    it('should call getWProduct when an target item is selected - successful - using product store displayName', () => {
+      wProductApiSpy.getProductById.and.returnValue(of({ ...wProduct1, displayName: undefined }))
+      wProductApiSpy.getProductsByWorkspaceId.and.returnValue(of([wProduct1]))
+      productApiSpy.searchAvailableProducts.and.returnValue(of({ stream: [psProduct1] }))
+      const event = { items: [product1Target] }
 
       component.ngOnChanges(changes as unknown as SimpleChanges)
       component.onTargetSelect(event)
 
       expect(component.displayDetails).toBeTrue()
-      expect(component.displayedDetailItem?.displayName).toEqual(productItem.productName)
+      expect(component.displayedDetailItem?.displayName).toEqual(wProduct1.displayName)
+    })
+
+    it('should call getWProduct when an target item is selected - successful - using product name', () => {
+      wProductApiSpy.getProductById.and.returnValue(of({ ...wProduct2 }))
+      wProductApiSpy.getProductsByWorkspaceId.and.returnValue(of([wProduct1, wProduct2]))
+      productApiSpy.searchAvailableProducts.and.returnValue(of({ stream: [psProduct1] }))
+      const event = { items: [product1Target] }
+
+      component.ngOnChanges(changes as unknown as SimpleChanges)
+      component.onTargetSelect(event)
+
+      expect(component.displayDetails).toBeTrue()
+      expect(component.displayedDetailItem?.displayName).toEqual(wProduct2.productName)
     })
 
     it('should call getWProduct when an item is selected: display error and hide detail panel', () => {
@@ -489,19 +480,19 @@ describe('ProductComponent', () => {
       expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.LOAD_ERROR' })
     })
 
-    it('should call getWProduct when an item is selected: call getProductById forTARGET product', () => {
+    it('should call getWProduct when an item is selected: call getProductById for TARGET product', () => {
       const productWithoutMfes: Product = {
-        ...productItem,
+        ...wProduct1,
         microfrontends: []
       }
       const productSourceWithoutMfes: ProductStoreItem = {
-        ...prodStoreItem,
+        ...psProduct1,
         microfrontends: []
       }
       wProductApiSpy.getProductById.and.returnValue(of(productWithoutMfes))
       wProductApiSpy.getProductsByWorkspaceId.and.returnValue(of([productWithoutMfes]))
       productApiSpy.searchAvailableProducts.and.returnValue(of({ stream: [productSourceWithoutMfes] }))
-      const event = { items: [{ ...productItemTarget, microfrontends: undefined }] }
+      const event = { items: [{ ...product1Target, microfrontends: undefined }] }
 
       component.ngOnChanges(changes as unknown as SimpleChanges)
       component.onTargetSelect(event)
@@ -516,68 +507,124 @@ describe('ProductComponent', () => {
       component['fillForm'](undefined)
       expect().nothing()
     })
-    /*
-    xit('should getModuleControls', () => {
-      expect(component.moduleControls instanceof FormArray).toBeTruthy()
-
-      component.getModuleControls('appId')
-    })*/
   })
 
-  /**
-   * UI Events: SAVE
-   */
   describe('Saving', () => {
-    it('should update a product - successful', () => {
+    beforeEach(() => {
+      component.workspace = workspace
       // load data
-      wProductApiSpy.getProductsByWorkspaceId.and.returnValue(of([productItem]))
-      productApiSpy.searchAvailableProducts.and.returnValue(of({ stream: [prodStoreItem] }))
-
+      wProductApiSpy.getProductsByWorkspaceId.and.returnValue(of([wProduct1, wProduct2]))
+      productApiSpy.searchAvailableProducts.and.returnValue(of({ stream: [psProduct1] }))
       component.ngOnChanges(changes as unknown as SimpleChanges)
+    })
 
-      // let's go
-      wProductApiSpy.updateProductById.and.returnValue(of({ resource: productItem }))
+    it('should save product with existing and new MFE - successful - simulation', () => {
+      // let's go...prepare form
+      wProductApiSpy.updateProductById.and.returnValue(of({ resource: wProduct1 }))
       component.formGroup = productFormGroup
       const modules: FormArray = component.formGroup.get('modules') as FormArray
-      const addMfeControl = (data: any) => {
-        const formGroup = fb.group({
-          id: [data.id],
-          appId: [data.appId],
-          basePath: [data.basePath]
-        })
-        modules.push(formGroup)
+      component.displayedDetailItem = product1Target
+      if (product1Target.microfrontends) {
+        AddMfeModuleFormControl(fb, modules, 0, mfeModule1)
+        AddMfeModuleFormControl(fb, modules, 1, { ...mfeModule2, id: undefined, change: 'create' })
       }
-      addMfeControl({ mfeModule })
-      component.displayedDetailItem = productItemTarget
 
       component.onProductSave()
 
       expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.UPDATE_OK' })
     })
 
-    it('should update a product - failed: display error', () => {
+    it('should save product - successful - user interaction', () => {
+      const psProduct: Product = {
+        ...psProduct1,
+        microfrontends: [mfeModule1, { ...mfeModule2, basePath: undefined }, mfeComponent1]
+      }
+      productApiSpy.searchAvailableProducts.and.returnValue(of({ stream: [psProduct] }))
+      wProductApiSpy.getProductById.and.returnValue(of(wProduct1))
+      wProductApiSpy.updateProductById.and.returnValue(of({ resource: wProduct1 }))
+      component.formGroup = productFormGroup
+
+      component.ngOnChanges(changes as unknown as SimpleChanges)
+      component.onTargetSelect({ items: [product1Target] }) // and fill form
+
+      component.onProductSave()
+
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.UPDATE_OK' })
+    })
+
+    it('should save product - failed: form invalid - missing basePath', () => {
+      // let's go...prepare form
+      wProductApiSpy.updateProductById.and.returnValue(of({ resource: wProduct1 }))
+      component.formGroup = productFormGroup
+      const modules: FormArray = component.formGroup.get('modules') as FormArray
+      component.displayedDetailItem = product1Target
+      if (product1Target.microfrontends) {
+        // missing basePath => form will be invalid
+        AddMfeModuleFormControl(fb, modules, 0, { ...mfeModule2, id: undefined, basePath: undefined })
+      }
+
+      component.onProductSave()
+
+      expect(msgServiceSpy.success).not.toHaveBeenCalled()
+    })
+
+    it('should save product - failed: form invalid - non-unique basePath', () => {
+      // let's go...prepare form
+      wProductApiSpy.updateProductById.and.returnValue(of({ resource: wProduct1 }))
+      component.formGroup = productFormGroup
+      const modules: FormArray = component.formGroup.get('modules') as FormArray
+      component.displayedDetailItem = product1Target
+      if (product1Target.microfrontends) {
+        // missing basePath => form will be invalid
+        AddMfeModuleFormControl(fb, modules, 0, { ...mfeModule1, basePath: '/abc' })
+        AddMfeModuleFormControl(fb, modules, 1, { ...mfeModule2, basePath: '/abc' })
+      }
+
+      component.onProductSave()
+
+      expect(msgServiceSpy.success).not.toHaveBeenCalled()
+    })
+
+    it('should save product - failed: common display error', () => {
       const errorResponse = { status: 400, statusText: 'workspace product not updated' }
       wProductApiSpy.updateProductById.and.returnValue(throwError(() => errorResponse))
       spyOn(console, 'error')
       component.formGroup = productFormGroup
-      component.displayedDetailItem = productItemTarget
+      component.displayedDetailItem = product1Target
 
       component.onProductSave()
 
       expect(console.error).toHaveBeenCalledWith('updateProductById', errorResponse)
       expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.UPDATE_NOK' })
     })
+
+    it('should save product - failed: constraint violation', () => {
+      const errorResponse = {
+        status: 400,
+        statusText: 'workspace product not updated',
+        error: { errorCode: 'MERGE_ENTITY_FAILED' }
+      }
+      wProductApiSpy.updateProductById.and.returnValue(throwError(() => errorResponse))
+      spyOn(console, 'error')
+      component.formGroup = productFormGroup
+      component.displayedDetailItem = product1Target
+
+      component.onProductSave()
+
+      expect(console.error).toHaveBeenCalledWith('updateProductById', errorResponse)
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({
+        summaryKey: 'DIALOG.PRODUCTS.MESSAGES.UPDATE_NOK',
+        detailKey: 'VALIDATION.ERRORS.APP_MODULE.' + errorResponse.error?.errorCode
+      })
+    })
   })
 
-  /**
-   * REGISTER
-   */
   describe('Registration', () => {
     it('should create a product onMoveToTarget', () => {
-      wProductApiSpy.createProductInWorkspace.and.returnValue(of({ resource: productItem }))
-      const event: any = { items: [{ ...productItemSource }] }
+      wProductApiSpy.createProductInWorkspace.and.returnValue(of({ resource: wProduct1 }))
+      const event: any = { items: [{ ...product1Source }] }
       // situation after picklist action
-      component.wProducts = [{ ...productItemSource }]
+      component.wProducts = [{ ...product1Source }]
       component.psProducts = []
 
       component.onMoveToTarget(event)
@@ -588,14 +635,14 @@ describe('ProductComponent', () => {
     })
 
     it('should create multiple products onMoveToTarget', () => {
-      wProductApiSpy.createProductInWorkspace.and.returnValue(of({ resource: productItem }))
+      wProductApiSpy.createProductInWorkspace.and.returnValue(of({ resource: wProduct1 }))
       const productItemSource2: ExtendedProduct = {
-        ...productItemSource,
+        ...product1Source,
         productName: 'prod name 2'
       }
-      const event: any = { items: [{ ...productItemSource }, productItemSource2] }
+      const event: any = { items: [{ ...product1Source }, productItemSource2] }
       // situation after picklist action
-      component.wProducts = [{ ...productItemSource }, productItemSource2]
+      component.wProducts = [{ ...product1Source }, productItemSource2]
 
       component.onMoveToTarget(event)
 
@@ -603,10 +650,10 @@ describe('ProductComponent', () => {
     })
 
     it('should createProductInWorkspace onMoveToTarget: no modules', () => {
-      wProductApiSpy.createProductInWorkspace.and.returnValue(of({ resource: productItem }))
-      component.wProducts = [{ ...productItemSource }]
+      wProductApiSpy.createProductInWorkspace.and.returnValue(of({ resource: wProduct1 }))
+      component.wProducts = [{ ...product1Source }]
       const product2Test: ExtendedProduct = {
-        ...productItemSource,
+        ...product1Source,
         microfrontends: undefined
       }
       const event: any = { items: [product2Test] }
@@ -624,11 +671,11 @@ describe('ProductComponent', () => {
         type: MicrofrontendType.Module
       }
       const product2Test: ExtendedProduct = {
-        ...productItemSource,
-        microfrontends: [mfeModule, microfrontend2]
+        ...product1Source,
+        microfrontends: [mfeModule1, microfrontend2]
       }
       const event: any = { items: [product2Test] }
-      wProductApiSpy.createProductInWorkspace.and.returnValue(of({ resource: productItem }))
+      wProductApiSpy.createProductInWorkspace.and.returnValue(of({ resource: wProduct1 }))
       component.wProducts = [{ ...product2Test }]
 
       component.onMoveToTarget(event)
@@ -640,8 +687,8 @@ describe('ProductComponent', () => {
       const errorResponse = { status: 400, statusText: 'workspace product not created' }
       wProductApiSpy.createProductInWorkspace.and.returnValue(throwError(() => errorResponse))
       spyOn(console, 'error')
-      const event: any = { items: [{ ...productItemSource }] }
-      component.wProducts = [{ ...productItemSource }]
+      const event: any = { items: [{ ...product1Source }] }
+      component.wProducts = [{ ...product1Source }]
 
       component.onMoveToTarget(event)
 
@@ -653,15 +700,15 @@ describe('ProductComponent', () => {
       const errorResponse = { status: 400, statusText: 'workspace product not created' }
       wProductApiSpy.createProductInWorkspace.and.returnValue(throwError(() => errorResponse))
       spyOn(console, 'error')
-      component.wProducts = [{ ...productItemSource }]
+      component.wProducts = [{ ...product1Source }]
       const product2: Product = {
         productName: 'prod name',
         displayName: 'display name',
         description: 'description',
-        microfrontends: [mfeModule],
+        microfrontends: [mfeModule1],
         modificationCount: 1
       }
-      const event: any = { items: [productItem, product2] }
+      const event: any = { items: [wProduct1, product2] }
 
       component.onMoveToTarget(event)
 
@@ -672,19 +719,19 @@ describe('ProductComponent', () => {
 
   describe('Deregistration', () => {
     it('should display confirmation dialog', () => {
-      const event: any = { items: [productItemTarget] }
+      const event: any = { items: [product1Target] }
 
       component.onMoveToSource(event)
 
-      expect(component['deregisterItems']).toEqual([productItemTarget])
+      expect(component['deregisterItems']).toEqual([product1Target])
       expect(component.displayDeregisterConfirmation).toBeTrue()
     })
 
     it('should restore items on deregister cancellation', () => {
-      component['deregisterItems'] = [productItemTarget]
+      component['deregisterItems'] = [product1Target]
       component.displayDeregisterConfirmation = true
       // situation after move
-      component.psProducts = [productItemSource]
+      component.psProducts = [product1Source]
       component.wProducts = []
 
       component.onDeregisterCancellation()
@@ -693,12 +740,12 @@ describe('ProductComponent', () => {
       expect(component['deregisterItems']).toEqual([])
       // reestablish old state
       expect(component.psProducts).toEqual([])
-      expect(component.wProducts).toEqual([productItemTarget])
+      expect(component.wProducts).toEqual([product1Target])
     })
 
-    it('should handle successful deregistration', () => {
-      component['deregisterItems'] = [productItemTarget]
-      component.psProducts = [productItemSource]
+    it('should handle successful deregistration - product exists in product store', () => {
+      component['deregisterItems'] = [product1Target]
+      component.psProducts = [{ ...product1Source, productName: 'other' }]
       component.wProducts = []
       spyOn(component as any, 'displayRegisterMessages')
 
@@ -707,7 +754,22 @@ describe('ProductComponent', () => {
       expect(component.displayDeregisterConfirmation).toBeFalse()
       expect(wProductApiSpy.deleteProductById).toHaveBeenCalledWith({
         id: 'wid',
-        productId: productItemTarget.id
+        productId: product1Target.id
+      })
+    })
+
+    it('should handle successful deregistration - product does not exist in product store', () => {
+      component['deregisterItems'] = [product2Target]
+      component.psProducts = [product1Source]
+      component.wProducts = [product1Target, product2Target]
+      spyOn(component as any, 'displayRegisterMessages')
+
+      component.onDeregisterConfirmation()
+
+      expect(component.displayDeregisterConfirmation).toBeFalse()
+      expect(wProductApiSpy.deleteProductById).toHaveBeenCalledWith({
+        id: 'wid',
+        productId: product2Target.id
       })
     })
 
@@ -715,8 +777,8 @@ describe('ProductComponent', () => {
       const errorResponse = { status: 400, statusText: 'workspace product could not be deregistered' }
       wProductApiSpy.deleteProductById.and.returnValue(throwError(() => errorResponse))
       spyOn(console, 'error')
-      component['deregisterItems'] = [productItemTarget]
-      component.psProducts = [productItemSource]
+      component['deregisterItems'] = [product1Target]
+      component.psProducts = [product1Source]
       component.wProducts = []
       spyOn(component as any, 'displayRegisterMessages')
 
@@ -726,7 +788,7 @@ describe('ProductComponent', () => {
       expect(component.displayDeregisterConfirmation).toBeFalse()
       expect(wProductApiSpy.deleteProductById).toHaveBeenCalledWith({
         id: 'wid',
-        productId: productItemTarget.id
+        productId: product1Target.id
       })
       expect(component.psProducts.length).toBe(0)
       expect(component.wProducts.length).toBe(1)
@@ -738,28 +800,28 @@ describe('ProductComponent', () => {
       it('should sort products by displayName', () => {
         const products = [
           {
-            ...productItem,
+            ...wProduct1,
             id: 'p2',
             productName: 'prod2',
-            displayName: productItem.displayName + ' a'
+            displayName: wProduct1.displayName + ' a'
           },
-          productItem
+          wProduct1
         ]
 
         products.sort((a, b) => component.sortProductsByDisplayName(a, b))
 
-        expect(products[0]).toEqual(productItem)
+        expect(products[0]).toEqual(wProduct1)
       })
 
       it('should sort products by displayName: no display name', () => {
         const products = [
           { id: 'prod id2', productName: 'prod name2' },
-          { ...productItem, displayName: undefined }
+          { ...wProduct1, displayName: undefined }
         ]
 
         products.sort((a, b) => component.sortProductsByDisplayName(a, b))
 
-        expect(products[1]).toEqual({ ...productItem, displayName: undefined })
+        expect(products[1]).toEqual({ ...wProduct1, displayName: undefined })
       })
     })
 

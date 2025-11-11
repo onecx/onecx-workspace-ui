@@ -1,7 +1,7 @@
 <!-- MESSSAGES on small screens -->
 <section class="block md:hidden mb-2">
   <p-message
-    *ngIf="wpLoading || psLoading"
+    *ngIf="!exceptionKey && (wpLoading || psLoading)"
     id="ws_products_message_loading_sm"
     severity="info"
     [text]="'ACTIONS.LOADING' | translate"
@@ -285,7 +285,7 @@
     <!-- MESSSAGES on bigger screens -->
     <section class="hidden md:block">
       <p-message
-        *ngIf="wpLoading || psLoading"
+        *ngIf="!exceptionKey && (wpLoading || psLoading)"
         id="ws_products_message_loading"
         severity="info"
         [text]="'ACTIONS.LOADING' | translate"
@@ -441,8 +441,8 @@
           <dl class="w-full my-0 flex flex-column row-gap-3">
             <dt *ngFor="let app of displayedDetailItem.apps | keyvalue; let i = index" class="w-full">
               <div class="m-auto text-center max-w-20rem">
-                <div class="font-bold text-primary text-responsive">{{ app.key }}</div>
-                <div class="text-xs">Microfrontend</div>
+                <div class="font-bold text-primary text-responsive">{{ app.value.appName }}</div>
+                <div class="text-xs">Microfrontend / App</div>
               </div>
               <!-- MODULES -->
               <div class="flex flex-column row-gap-3">
@@ -655,20 +655,34 @@
           </dl>
         </section>
 
-        <section *ngIf="displayedDetailItem.slots" [attr.aria-label]="'TABS.WORKSPACE.SLOTS' | translate">
+        <section
+          *ngIf="displayedDetailItem.slots && displayedDetailItem.slots.length > 0"
+          [attr.aria-label]="'TABS.WORKSPACE.SLOTS' | translate"
+        >
           <dl class="my-0">
             <p-divider align="center" styleClass="mt-0 mb-1">
               <div class="px-3 font-bold text-primary">Slots</div>
             </p-divider>
             <dt
-              *ngFor="let item of displayedDetailItem.slots; let i = index"
+              *ngFor="let slot of displayedDetailItem.slots; let i = index"
               class="ml-2 flex flex-row align-items-center column-gap-3 text-sm"
             >
               <span [id]="'ws_products_detail_slot_' + i + '_name'" class="max-w-20rem text-responsive">
-                {{ item.name }}
+                {{ slot.name }}
               </span>
               <div
-                *ngIf="item.undeployed"
+                *ngIf="slot.components"
+                [id]="'ws_products_detail_slot_' + i + '_components'"
+                [attr.aria-label]="'SLOT.COMPONENTS' | translate"
+                [pTooltip]="'SLOT.COMPONENTS' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+                role="note"
+              >
+                {{ slot.components.length }}
+              </div>
+              <div
+                *ngIf="slot.undeployed"
                 [id]="'ws_products_detail_slot_' + i + '_undeployed'"
                 class="text-sm danger-action-text pi pi-ban"
                 [attr.aria-label]="'DIALOG.SLOT.UNDEPLOYED' | translate"
@@ -678,7 +692,7 @@
                 role="note"
               ></div>
               <div
-                *ngIf="item.deprecated"
+                *ngIf="slot.deprecated"
                 [id]="'ws_products_detail_slot_' + i + '_deprecated'"
                 class="text-sm danger-action-text pi pi-exclamation-circle"
                 [attr.aria-label]="'DIALOG.SLOT.DEPRECATED' | translate"
@@ -688,7 +702,7 @@
                 role="note"
               ></div>
               <div
-                *ngIf="!item.exists"
+                *ngIf="!slot.exists"
                 [id]="'ws_products_detail_slot_' + i + '_new'"
                 class="text-sm danger-action-text pi pi-plus-circle"
                 [attr.aria-label]="'DIALOG.PRODUCTS.SLOTS.NEW' | translate"
