@@ -55,7 +55,8 @@ import {
   Workspace,
   Slot,
   WorkspaceProductAPIService,
-  UIEndpoint
+  UIEndpoint,
+  SlotComponent
 } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
 
@@ -68,7 +69,7 @@ type ChangeStatus = {
   undeployed?: boolean
 }
 export type ExtendedMicrofrontend = Microfrontend & ChangeStatus
-export type ExtendedSlot = SlotPS & ChangeStatus
+export type ExtendedSlot = SlotPS & ChangeStatus & { components?: SlotComponent[] }
 export type ExtendedApp = {
   appId: string
   appName: string
@@ -348,8 +349,11 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     if (eP.slots)
       for (const slot of eP.slots) {
         eP.changedComponents = slot.undeployed || slot.deprecated || eP.changedComponents
-        // mark PS slots as exist in workspace
-        slot.exists = slots.some((sl) => sl.name === slot.name) !== undefined
+        const wSlot = slots.find((sl) => sl.name === slot.name)
+        if (wSlot) {
+          slot.exists = true
+          slot.components = wSlot.components
+        }
       }
   }
   private prepareProductAppPart(mfe: Microfrontend, eP: ExtendedProduct): void {
@@ -461,10 +465,10 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   // (b) new/removed Apps/Modules in PS
   private prepareWProduct(item: ExtendedProduct) {
     item.bucket = 'TARGET'
-    item.displayName = item.displayName ?? item.productName
     if (this.psProductsOrg.has(item.productName!)) {
       const pspOrg = this.psProductsOrg.get(item.productName!)
       if (pspOrg) {
+        if (!item.displayName) item.displayName = pspOrg.displayName
         item.undeployed = pspOrg.undeployed
         item.changedComponents = pspOrg.changedComponents
         item.slots = pspOrg.slots // copy, slot management in separate TAB
@@ -472,6 +476,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
         this.syncProductState(item, pspOrg)
       }
     }
+    if (!item.displayName) item.displayName = item.productName // product does no exist in product store
   }
   // take over the deprecated/undeployed states on MFE Modules and Slots
   private syncProductState(wP: ExtendedProduct, psP: ExtendedProduct): void {
@@ -514,11 +519,6 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     this.displayedDetailItem.slots?.sort(this.sortSlotsByName)
     if (item.bucket === 'SOURCE') this.formGroup.disable()
     if (item.bucket === 'TARGET') {
-      if (
-        this.displayedDetailItem.productName &&
-        this.displayedDetailItem.productName === this.displayedDetailItem.displayName
-      )
-        this.displayedDetailItem.displayName = this.psProductsOrg.get(this.displayedDetailItem.productName)?.displayName
       this.formGroup.enable()
       const modules = this.formGroup.get('modules') as FormArray
       while (modules.length > 0) modules.removeAt(0) // clear form
@@ -541,7 +541,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
             AddMfeModuleFormControl(this.fb, modules, moduleIndex, {
               id: mfe?.id,
               appId: m?.appId,
-              basePath: m?.basePath ?? '/' + moduleIndex,
+              basePath: mfe?.basePath ?? '/' + (app.modules.length === 1 ? '' : moduleIndex + 1),
               exposedModule: m?.exposedModule,
               deprecated: m.deprecated,
               undeployed: m.undeployed,
