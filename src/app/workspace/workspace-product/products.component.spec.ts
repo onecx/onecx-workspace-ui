@@ -440,7 +440,7 @@ describe('ProductComponent', () => {
       component.getModuleControls('app1')
     })
 
-    it('should call getWProduct when an target item is selected - successful but using product store displayName', () => {
+    it('should call getWProduct when an target item is selected - successful - using product store displayName', () => {
       wProductApiSpy.getProductById.and.returnValue(of({ ...wProduct1, displayName: undefined }))
       wProductApiSpy.getProductsByWorkspaceId.and.returnValue(of([wProduct1]))
       productApiSpy.searchAvailableProducts.and.returnValue(of({ stream: [psProduct1] }))
@@ -451,6 +451,19 @@ describe('ProductComponent', () => {
 
       expect(component.displayDetails).toBeTrue()
       expect(component.displayedDetailItem?.displayName).toEqual(wProduct1.displayName)
+    })
+
+    it('should call getWProduct when an target item is selected - successful - using product name', () => {
+      wProductApiSpy.getProductById.and.returnValue(of({ ...wProduct2 }))
+      wProductApiSpy.getProductsByWorkspaceId.and.returnValue(of([wProduct1, wProduct2]))
+      productApiSpy.searchAvailableProducts.and.returnValue(of({ stream: [psProduct1] }))
+      const event = { items: [product1Target] }
+
+      component.ngOnChanges(changes as unknown as SimpleChanges)
+      component.onTargetSelect(event)
+
+      expect(component.displayDetails).toBeTrue()
+      expect(component.displayedDetailItem?.displayName).toEqual(wProduct2.productName)
     })
 
     it('should call getWProduct when an item is selected: display error and hide detail panel', () => {
