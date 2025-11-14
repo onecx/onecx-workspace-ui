@@ -689,6 +689,10 @@
     "TOGGLE_MENU": {
       "ARIA_LABEL": "Menu on/off",
       "TOOLTIP": "Menu on/off"
+    },
+    "SLIM_USER_MENU": {
+      "LOGOUT": "Log out",
+      "TOOLTIP": "User menu"
     }
   },
   "VALIDATION": {
