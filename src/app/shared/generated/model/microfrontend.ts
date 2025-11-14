@@ -21,6 +21,7 @@ export interface Microfrontend {
     basePath?: string;
     deprecated?: boolean;
     undeployed?: boolean;
+    exposedModule?: string;
     type?: MicrofrontendType;
     endpoints?: Array<UIEndpoint>;
 }

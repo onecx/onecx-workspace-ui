@@ -2,7 +2,7 @@
   *ngIf="exceptionKey"
   id="ws_slots_message_error"
   severity="error"
-  styleClass="m-2"
+  styleClass="mb-2"
   [text]="exceptionKey | translate"
 ></p-message>
 
@@ -74,8 +74,11 @@
         (filterChange)="onFilterChange($event, slotsDataView)"
         [filterColumns]="['SLOT.NAME' | translate]"
         [enableSorting]="true"
-        [sortingOptions]="[{ label: 'SLOT.NAME' | translate, value: 'name' }]"
-        [defaultSortOption]="sortField"
+        [sortingOptions]="[
+          { label: 'SLOT.NAME' | translate, value: 'name' },
+          { label: 'SLOT.CHANGES' | translate, value: 'changes' }
+        ]"
+        [defaultSortOption]="'name'"
         [defaultSortDirection]="false"
         (sortChange)="onSortChange($event)"
         (sortDirectionChange)="onSortDirChange($event)"
@@ -130,7 +133,6 @@
       >
         <a
           [id]="'ws_slots_grid_data_row_' + i + '_action_detail'"
-          [attr.slotid]="slot.id"
           class="block card relative py-1 px-4 p-button p-button-text"
           [ngClass]="{ 'hover:bg-gray-200 cursor-pointer': !slot.new, 'cursor-auto p-button-info': slot.new }"
           (click)="onSlotDetail($event, slot)"
@@ -180,9 +182,9 @@
           >
             {{ slot.components.length }}
           </div>
-          <ng-container *ngIf="slot.changes">
+          <!-- BADGES: slot status -->
+          @if (slot.undeployed) {
             <div
-              *ngIf="slot.undeployed"
               [id]="'ws_slots_grid_data_row_' + i + '_undeployed'"
               class="card-badge-left badge-2 pi pi-ban danger-action-text"
               [attr.aria-label]="'DIALOG.SLOT.UNDEPLOYED' | translate"
@@ -191,8 +193,8 @@
               tooltipEvent="hover"
               role="note"
             ></div>
+          } @else if (slot.deprecated) {
             <div
-              *ngIf="!slot.undeployed && slot.deprecated"
               [id]="'ws_slots_grid_data_row_' + i + '_deprecated'"
               class="card-badge-left badge-2 pi pi-exclamation-circle danger-action-text"
               [attr.aria-label]="'DIALOG.SLOT.DEPRECATED' | translate"
@@ -201,8 +203,8 @@
               tooltipEvent="hover"
               role="note"
             ></div>
+          } @else if (slot.changes) {
             <div
-              *ngIf="!slot.undeployed && !slot.deprecated && slot.changed"
               [id]="'ws_slots_grid_data_row_' + i + '_changed'"
               class="card-badge-left badge-2 pi pi-exclamation-circle danger-action-text"
               [attr.aria-label]="'DIALOG.SLOT.CHANGED' | translate"
@@ -211,7 +213,7 @@
               tooltipEvent="hover"
               role="note"
             ></div>
-          </ng-container>
+          }
           <!-- CONTENT -->
           <div class="flex flex-column justify-content-between row-gap-2 text-center" aria-hidden="true">
             <div
@@ -228,29 +230,25 @@
               [id]="'ws_roles_grid_data_row_' + i + '_workspace'"
               class="flex flex-row justify-content-center align-items-center column-gap-3 text-xs sm:text-sm"
             >
-              <app-ocx-chip
-                *ngIf="!slot.new"
-                [id]="'ws_roles_grid_data_row_' + i + '_workspace'"
-                class="py-1"
-                [styleClass]="slot.changes ? 'danger-action-bg' : 'bg-primary'"
-                [label]="'Workspace'"
-                [title]="'DIALOG.SLOT.WORKSPACE' | translate"
-              />
-              <app-ocx-chip
-                *ngIf="slot.new"
-                [id]="'ws_roles_grid_data_row_' + i + '_new'"
-                class="py-1"
-                [ngClass]="{ 'danger-action-text': slot.changes }"
-                [label]="
-                  (slot.undeployed
-                    ? 'DIALOG.SLOT.UNDEPLOYED'
-                    : slot.deprecated
-                      ? 'DIALOG.SLOT.DEPRECATED'
-                      : 'DIALOG.SLOT.UNREGISTERED'
-                  ) | translate
-                "
-                [title]="'DIALOG.SLOT.UNREGISTERED.TOOLTIP' | translate"
-              />
+              @if (slot.new) {
+                @let labelKey =
+                  'DIALOG.SLOT.' + (slot.undeployed ? 'UNDEPLOYED' : slot.deprecated ? 'DEPRECATED' : 'UNREGISTERED');
+                <app-ocx-chip
+                  [id]="'ws_roles_grid_data_row_' + i + '_new'"
+                  class="py-1"
+                  [ngClass]="{ 'danger-action-text': slot.changes }"
+                  [label]="labelKey | translate"
+                  [title]="'DIALOG.SLOT.UNREGISTERED.TOOLTIP' | translate"
+                />
+              } @else {
+                <app-ocx-chip
+                  [id]="'ws_roles_grid_data_row_' + i + '_workspace'"
+                  class="py-1"
+                  [styleClass]="'bg-primary'"
+                  [label]="'Workspace'"
+                  [title]="'DIALOG.SLOT.WORKSPACE' | translate"
+                />
+              }
             </div>
           </div>
         </a>

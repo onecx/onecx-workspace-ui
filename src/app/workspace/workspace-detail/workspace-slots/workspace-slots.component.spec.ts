@@ -303,7 +303,7 @@ describe('WorkspaceSlotsComponent', () => {
       const errorResponse = { status: '404', statusText: 'Not found' }
       wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of(wProducts))
       slotServiceSpy.getSlotsForWorkspace.and.returnValue(throwError(() => errorResponse))
-      spyOn(component as any, 'declarePsProducts').and.callFake(() => {})
+      spyOn(component as any, 'getPsSlotsAndComponents').and.callFake(() => {})
       spyOn(console, 'error')
 
       component.loadData()

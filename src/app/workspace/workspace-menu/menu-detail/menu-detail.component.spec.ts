@@ -339,7 +339,7 @@ describe('MenuDetailComponent', () => {
         const controlMfeItems: MenuURL[] = []
         controlMfeItems.push({ mfePath: '/workspace', product: 'MENU_ITEM.URL.UNKNOWN.PRODUCT', isSpecial: true })
         controlMfeItems.push({ mfePath: '', product: 'MENU_ITEM.URL.EMPTY' })
-        controlMfeItems.push({ ...microfrontend, mfePath: '/path/base', product: 'display name', isSpecial: false })
+        controlMfeItems.push({ ...microfrontend, mfePath: '/base/path', product: 'display name', isSpecial: false })
         expect(component.mfeItems).toEqual(controlMfeItems)
       }))
 
