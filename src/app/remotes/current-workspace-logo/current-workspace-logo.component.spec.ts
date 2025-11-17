@@ -4,7 +4,7 @@ import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'
 import { TranslateTestingModule } from 'ngx-translate-testing'
-import { ReplaySubject } from 'rxjs'
+import { of, ReplaySubject } from 'rxjs'
 
 import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
 import { AppStateServiceMock, FakeTopic, provideAppStateServiceMock } from '@onecx/angular-integration-interface/mocks'
@@ -13,6 +13,7 @@ import { Workspace } from '@onecx/integration-interface'
 import { OneCXCurrentWorkspaceLogoComponent } from './current-workspace-logo.component'
 import { RefType } from 'src/app/shared/generated'
 import { Topic } from '@onecx/accelerator'
+import { MenuService } from 'src/app/shared/services/menu.service'
 
 const workspace1: Partial<Workspace> = {
   id: 'w1',
@@ -24,6 +25,7 @@ const workspace1: Partial<Workspace> = {
 describe('OneCXCurrentWorkspaceLogoComponent', () => {
   let mockAppStateService: AppStateServiceMock
   let fakeEventsTopic: FakeTopic<any>
+  const menuServiceSpy = jasmine.createSpyObj<MenuService>('MenuService', ['isVisible', 'isActive'])
 
   function setUp() {
     const fixture = TestBed.createComponent(OneCXCurrentWorkspaceLogoComponent)
@@ -50,7 +52,8 @@ describe('OneCXCurrentWorkspaceLogoComponent', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         provideAppStateServiceMock(),
-        { provide: BASE_URL, useValue: baseUrlSubject }
+        { provide: BASE_URL, useValue: baseUrlSubject },
+        { provide: MenuService, useValue: menuServiceSpy }
       ]
     })
       .overrideComponent(OneCXCurrentWorkspaceLogoComponent, {
@@ -67,6 +70,8 @@ describe('OneCXCurrentWorkspaceLogoComponent', () => {
       workspaceName: workspace1.workspaceName,
       logoUrl: workspace1.logoUrl
     } as Workspace)
+    menuServiceSpy.isActive.and.returnValue(of(true))
+    menuServiceSpy.isVisible.and.returnValue(of(true))
   })
 
   describe('initialize', () => {
@@ -269,6 +274,34 @@ describe('OneCXCurrentWorkspaceLogoComponent', () => {
 
       const expectedWidth = 400 - 16 * 2.5 + 'px'
       expect(component.container.nativeElement.style.width).toEqual(expectedWidth)
+    })
+
+    it('should not change if static menu is not active', () => {
+      document.documentElement.style.fontSize = '16px' // 1rem = 16px
+      menuServiceSpy.isActive.and.returnValue(of(false))
+
+      const { component } = setUp()
+
+      const mockConfig: RemoteComponentConfig = {
+        appId: 'appId',
+        productName: 'prodName',
+        permissions: ['permission'],
+        baseUrl: 'base'
+      }
+
+      component.ocxRemoteComponentConfig = mockConfig
+      fakeEventsTopic.publish({
+        type: 'slot#resized',
+        payload: {
+          slotName: 'onecx-shell-vertical-menu',
+          slotDetails: {
+            width: 400,
+            height: 800
+          }
+        }
+      })
+
+      expect(component.container.nativeElement.style.width).toEqual('14.5rem')
     })
   })
 })

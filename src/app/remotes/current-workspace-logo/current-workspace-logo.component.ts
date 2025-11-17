@@ -11,7 +11,7 @@ import {
 } from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
-import { BehaviorSubject, filter, ReplaySubject } from 'rxjs'
+import { BehaviorSubject, combineLatest, filter, map, Observable, ReplaySubject } from 'rxjs'
 
 import {
   AngularRemoteComponentsModule,
@@ -27,6 +27,7 @@ import { Configuration, RefType, WorkspaceAPIService } from 'src/app/shared/gene
 import { Utils } from 'src/app/shared/utils'
 import { environment } from 'src/environments/environment'
 import { EventsTopic } from '@onecx/integration-interface'
+import { MenuMode, MenuService } from 'src/app/shared/services/menu.service'
 
 // Copied over from libs v7. Remove once migrating to v7.
 enum EventType {
@@ -84,6 +85,7 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
   @Input() imageLoadingFailed = new EventEmitter<boolean>()
 
   private readonly appState = inject(AppStateService)
+  private readonly menuService = inject(MenuService)
 
   public workspaceName: string | undefined
   public imageUrl$ = new BehaviorSubject<string | undefined>(undefined)
@@ -92,6 +94,9 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
 
   @ViewChild('container', { static: true }) container!: ElementRef
   private eventsTopic = new EventsTopic() // NOSONAR
+  public isStaticMenuActive$: Observable<boolean>
+  public isStaticMenuVisible$: Observable<boolean>
+  private staticMenuMode: MenuMode = 'static'
 
   constructor(
     @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
@@ -105,6 +110,10 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
       this.imageUrl$.next(this.getImageUrl(this.workspaceName, 'url', this.imageType))
     })
     this.log('getImageUrl => ' + this.imageUrl)
+
+    this.isStaticMenuActive$ = this.menuService.isActive(this.staticMenuMode).pipe(untilDestroyed(this))
+
+    this.isStaticMenuVisible$ = this.menuService.isVisible(this.staticMenuMode).pipe(untilDestroyed(this))
   }
   ngOnDestroy(): void {
     this.eventsTopic.destroy()
@@ -187,19 +196,25 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
   }
 
   private initializeVerticalMenuSlotResizeListener() {
-    this.eventsTopic
-      .pipe(
-        filter(
-          (e): e is SlotResizedEvent =>
-            e.type === EventType.SLOT_RESIZED && (e as SlotResizedEvent).payload.slotName === RESIZE_OBSERVED_SLOT_NAME
-        ),
-        untilDestroyed(this)
-      )
-      .subscribe((e) => {
-        const slotWidth = e.payload.slotDetails.width
+    const slotResized$ = this.eventsTopic.pipe(
+      filter(
+        (e): e is SlotResizedEvent =>
+          e.type === EventType.SLOT_RESIZED && (e as SlotResizedEvent).payload.slotName === RESIZE_OBSERVED_SLOT_NAME
+      ),
+      map((e) => e.payload),
+      untilDestroyed(this)
+    )
+    combineLatest([slotResized$, this.isStaticMenuActive$, this.isStaticMenuVisible$])
+      .pipe(untilDestroyed(this))
+      .subscribe(([slotResized, isStaticMenuActive, _isStaticMenuVisible]) => {
+        if (!isStaticMenuActive) {
+          return
+        }
+        const slotWidth = slotResized.slotDetails.width
+        console.log('slot resized event received for', RESIZE_OBSERVED_SLOT_NAME, 'new width:', slotWidth)
         if (slotWidth > 0) {
           const widthWithSpaceForToggleButton =
-            e.payload.slotDetails.width - this.remToPx() * TOGGLE_MENU_BUTTON_WIDTH_REM
+            slotResized.slotDetails.width - this.remToPx() * TOGGLE_MENU_BUTTON_WIDTH_REM
           this.container.nativeElement.style.width = widthWithSpaceForToggleButton + 'px'
         }
       })
