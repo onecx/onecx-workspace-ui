@@ -96,7 +96,7 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
   private eventsTopic = new EventsTopic() // NOSONAR
   public isStaticMenuActive$: Observable<boolean>
   public isStaticMenuVisible$: Observable<boolean>
-  private staticMenuMode: MenuMode = 'static'
+  private readonly staticMenuMode: MenuMode = 'static'
 
   constructor(
     @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
