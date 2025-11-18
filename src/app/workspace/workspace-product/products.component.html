@@ -362,7 +362,7 @@
           <a
             *ocxIfPermission="'WORKSPACE#GOTO_PERMISSION'"
             tabindex="0"
-            id="ws_products_detail_product_name_link"
+            id="ws_products_detail_link_product_permissions"
             class="p-2 pi pi-lock cursor-pointer button-icon-only"
             [ngClass]="permissionEndpointExist ? 'cursor-pointer' : 'p-disabled'"
             [routerLink]="[getPermissionEndpointUrl$(displayedDetailItem.productName) | async]"
@@ -376,7 +376,7 @@
           <a
             *ocxIfPermission="'WORKSPACE#GOTO_APP_STORE'"
             tabindex="0"
-            id="ws_products_detail_product_name_link"
+            id="ws_products_detail_link_product"
             class="p-2 pi pi-cog cursor-pointer button-icon-only"
             [ngClass]="productEndpointExist ? 'cursor-pointer' : 'p-disabled'"
             [routerLink]="[getProductEndpointUrl$(displayedDetailItem.productName) | async]"
