@@ -151,10 +151,10 @@ describe('OneCXSlimUserMenuComponent', () => {
   })
 
   it('should log error when getMenuItems fails', async () => {
-    spyOn(console, 'error').and.callThrough()
     menuItemServiceSpy.mapMenuItemsToSlimMenuItems.and.returnValue([])
     menuItemServiceSpy.constructMenuItems.and.returnValue([])
     menuItemApiSpy.getMenuItems.and.returnValue(throwError(() => new Error('API error')))
+    spyOn(console, 'error')
 
     const { fixture } = setUp()
     const slimUserMenu = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXSlimUserMenuHarness)
