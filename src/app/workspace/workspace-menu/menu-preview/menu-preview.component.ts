@@ -154,7 +154,7 @@ export class MenuPreviewComponent implements OnChanges {
 
   private setIcon(mi: WorkspaceMenuItem, langExists: any): string {
     let iconBase = mi.disabled ? 'item-disabled ' : ' '
-    iconBase += !langExists ? 'lang-not-exists ' : ' '
+    iconBase += langExists ? ' ' : 'lang-not-exists '
 
     let iconType: string
     if (mi.badge) {

@@ -730,6 +730,7 @@
       "PRODUCTS": "Unbekanntes Problem beim Abrufen von Applikation-Daten.",
       "IAM_ROLES": "Unbekanntes Problem beim Abrufen von Rollen aus dem IDM.",
       "WS_ROLES": "Unbekanntes Problem beim Abrufen von Workspace-Rollen.",
+      "ROLE_ASSIGNMENTS": "Unbekanntes Problem beim Abrufen von Rollen-Zuweisungen.",
       "SLOTS": "Unbekanntes Problem beim Abrufen von Slot-Daten.",
       "MENUS": "Unbekanntes Problem beim Abrufen von Menü-Daten."
     },
@@ -740,6 +741,7 @@
       "IAM_ROLES": "Unbekanntes Problem beim Abrufen von Rollen aus dem IDM - Bitte versuchen sie es noch einmal.",
       "WS_ROLES": "Unbekanntes Problem beim Abrufen von Workspace-Rollen - Bitte versuchen sie es noch einmal.",
       "SLOTS": "Unbekanntes Problem beim Abrufen von Slot-Daten - Bitte versuchen sie es noch einmal.",
+      "ROLE_ASSIGNMENTS": "Unbekanntes Problem beim Abrufen von Rollen-Zuweisungen.",
       "MENUS": "Unbekanntes Problem beim Abrufen von Menü-Daten - Bitte versuchen sie es noch einmal."
     },
     "HTTP_STATUS_400": {
@@ -749,6 +751,7 @@
       "IAM_ROLES": "Ihre Anfrage konnte nicht bearbeitet werden.",
       "WS_ROLES": "Ihre Anfrage konnte nicht bearbeitet werden.",
       "SLOTS": "Ihre Anfrage konnte nicht bearbeitet werden.",
+      "ROLE_ASSIGNMENTS": "Ihre Anfrage konnte nicht bearbeitet werden.",
       "MENUS": "Ihre Anfrage konnte nicht bearbeitet werden."
     },
     "HTTP_STATUS_401": {
@@ -758,6 +761,7 @@
       "IAM_ROLES": "Sie sind nicht autorisiert um Rollen aus dem IDM zu sehen.",
       "WS_ROLES": "Sie sind nicht autorisiert um Workspace-Rollen zu sehen.",
       "SLOTS": "Sie sind nicht autorisiert um Slots zu sehen.",
+      "ROLE_ASSIGNMENTS": "Sie sind nicht autorisiert um Rollen-Zuweisungen zu sehen.",
       "MENUS": "Sie sind nicht autorisiert um Menüs zu sehen."
     },
     "HTTP_STATUS_403": {
@@ -767,6 +771,7 @@
       "IAM_ROLES": "Sie haben keine Rechte um Rollen aus dem IDM zu sehen.",
       "WS_ROLES": "Sie haben keine Rechte um Workspace-Rollen zu sehen.",
       "SLOTS": "Sie haben keine Rechte um Slots zu sehen.",
+      "ROLE_ASSIGNMENTS": "Sie haben keine Rechte um Rollen-Zuweisungen zu sehen.",
       "MENUS": "Sie haben keine Rechte um Menüs zu sehen."
     },
     "HTTP_STATUS_404": {
@@ -776,6 +781,7 @@
       "IAM_ROLES": "Es konnten keine Rollen aus dem IDM gefunden werden.",
       "WS_ROLES": "Es konnten keine Workspace-Rollen gefunden werden.",
       "SLOTS": "Es konnten keine Slots gefunden werden.",
+      "ROLE_ASSIGNMENTS": "Es konnten keine Rollen-Zuweisungen gefunden werden.",
       "MENUS": "Es konnten keine Menüs gefunden werden."
     },
     "HTTP_STATUS_418": {
@@ -788,6 +794,7 @@
       "IAM_ROLES": "Unbekanntes Server-Problem beim Abrufen von Rollen aus dem IDM - Bitte versuchen sie es noch einmal.",
       "WS_ROLES": "Unbekanntes Server-Problem beim Abrufen von Workspace-Rollen - Bitte versuchen sie es noch einmal.",
       "SLOTS": "Unbekanntes Server-Problem beim Abrufen von Slots - Bitte versuchen sie es noch einmal.",
+      "ROLE_ASSIGNMENTS": "Unbekanntes Server-Problem beim Abrufen von Rollen-Zuweisungen - Bitte versuchen sie es noch einmal.",
       "MENUS": "Unbekanntes Server-Problem beim Abrufen von Menüdaten - Bitte versuchen sie es noch einmal."
     }
   }

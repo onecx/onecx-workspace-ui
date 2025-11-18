@@ -81,9 +81,10 @@ export class ChooseFileComponent implements OnInit {
     const dto: any = obj
     if (dto.workspaces) {
       const key: string[] = Object.keys(dto.workspaces)
-      if (!dto.workspaces[key[0]]) {
+      if (dto.workspaces[key[0]]) this.checkMenuItems(dto, data)
+      else {
         this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION.WORKSPACE.MISSING']
-      } else this.checkMenuItems(dto, data)
+      }
     } else {
       this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION.WORKSPACE.MISSING']
     }

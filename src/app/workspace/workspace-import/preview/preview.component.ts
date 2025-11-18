@@ -88,15 +88,15 @@ export class PreviewComponent implements OnInit {
     if (this.importRequestDTO.workspaces) {
       const key: string[] = Object.keys(this.importRequestDTO.workspaces)
       // if workspace name was changed then change the also the key:
-      if (key[0] !== this.formGroup.controls['name'].value) {
+      if (key[0] === this.formGroup.controls['name'].value) {
+        this.workspaceName = key[0]
+      } else {
         // save the workspace properties to be reassigned on new key
         const workspace = Object.getOwnPropertyDescriptor(this.importRequestDTO.workspaces, key[0])
         if (workspace)
           Object.defineProperty(this.importRequestDTO.workspaces, this.formGroup.controls['name'].value, workspace)
         delete this.importRequestDTO.workspaces[key[0]]
         this.workspaceName = this.formGroup.controls['name'].value
-      } else {
-        this.workspaceName = key[0]
       }
       this.displayName = this.formGroup.controls['displayName'].value
       if (this.formGroup.controls['theme'].value) this.theme.name = this.formGroup.controls['theme'].value
@@ -151,7 +151,7 @@ export class PreviewComponent implements OnInit {
   // sometimes the imported theme is unknown, then add to the list
   public checkAndExtendThemes(themes: Theme[]): Theme[] {
     // if not included (why ever) then add the used value to make it visible
-    if (!themes.find((t) => t.name === this.theme.name)) {
+    if (!themes.some((t) => t.name === this.theme.name)) {
       themes.push({ name: this.theme.name, displayName: this.theme.name } as Theme)
     }
     return themes
