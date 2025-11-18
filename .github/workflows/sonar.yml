@@ -1,0 +1,11 @@
+name: Run Sonar
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 15 * * SUN"   # 16:00 CET
+
+jobs:
+  sonar:
+    uses: onecx/ci-angular/.github/workflows/angular-sonar-main.yml@v1
+    secrets: inherit
