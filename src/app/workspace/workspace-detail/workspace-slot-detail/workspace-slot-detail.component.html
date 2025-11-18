@@ -277,7 +277,7 @@
             <input
               pInputText
               type="text"
-              id="ws_slot_detail_item_creation_date"
+              id="ws_slot_detail_intern_item_creation_date"
               class="w-full sm:w-13rem pt-3 pb-2 text-responsive"
               [disabled]="true"
               [value]="slot ? (slot.creationDate | date: dateFormat) : ''"
@@ -286,7 +286,7 @@
               tooltipPosition="top"
               tooltipEvent="hover"
             />
-            <label for="ws_slot_detail_item_creation_date">{{ 'INTERNAL.CREATION_DATE' | translate }}</label>
+            <label for="ws_slot_detail_intern_item_creation_date">{{ 'INTERNAL.CREATION_DATE' | translate }}</label>
           </span>
           <span class="flex-grow-1 p-float-label">
             <input
@@ -310,7 +310,7 @@
             <input
               pInputText
               type="text"
-              id="ws_slot_detail_item_creation_date"
+              id="ws_slot_detail_intern_item_modification_date"
               class="w-full sm:w-13rem pt-3 pb-2 text-responsive"
               [disabled]="true"
               [value]="slot ? (slot.modificationDate | date: dateFormat) : ''"
@@ -319,7 +319,9 @@
               tooltipPosition="top"
               tooltipEvent="hover"
             />
-            <label for="ws_slot_detail_item_creation_date">{{ 'INTERNAL.MODIFICATION_DATE' | translate }}</label>
+            <label for="ws_slot_detail_intern_item_modification_date">{{
+              'INTERNAL.MODIFICATION_DATE' | translate
+            }}</label>
           </span>
           <span class="flex-grow-1 p-float-label">
             <input
