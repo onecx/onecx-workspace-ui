@@ -902,20 +902,32 @@ describe('MenuComponent', () => {
       expect(component.wAssignments).toEqual([assgmt2])
     })
 
-    it('should throw errors for seachRoles and searchAssignments on loadMenu', () => {
-      const errorResponse1 = { status: 404, statusText: 'Roles not found' }
-      const errorResponse2 = { status: 404, statusText: 'Assignments not found' }
-      wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(throwError(() => errorResponse1))
-      assgmtApiServiceSpy.searchAssignments.and.returnValue(throwError(() => errorResponse2))
+    it('should throw errors for seachRoles on loadMenu', () => {
+      const errorResponse = { status: 404, statusText: 'Roles not found' }
+      wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(throwError(() => errorResponse))
+      assgmtApiServiceSpy.searchAssignments.and.returnValue(of({ stream: [{}] }))
       menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
       spyOn(console, 'error')
 
       component.displayRoles = true
       component.loadMenu(true)
 
-      expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + errorResponse1.status + '.WS_ROLES')
-      expect(console.error).toHaveBeenCalledWith('searchWorkspaceRoles', errorResponse1)
-      expect(console.error).toHaveBeenCalledWith('searchAssignments', errorResponse2)
+      expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + errorResponse.status + '.WS_ROLES')
+      expect(console.error).toHaveBeenCalledWith('searchWorkspaceRoles', errorResponse)
+    })
+
+    it('should throw errors for searchAssignments on loadMenu', () => {
+      const errorResponse = { status: 404, statusText: 'Assignments not found' }
+      wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: [wRole] }))
+      assgmtApiServiceSpy.searchAssignments.and.returnValue(throwError(() => errorResponse))
+      menuApiServiceSpy.getMenuStructure.and.returnValue(of({ id: workspace.id, menuItems: mockMenuItems }))
+      spyOn(console, 'error')
+
+      component.displayRoles = true
+      component.loadMenu(true)
+
+      expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + errorResponse.status + '.ROLE_ASSIGNMENTS')
+      expect(console.error).toHaveBeenCalledWith('searchAssignments', errorResponse)
     })
   })
 

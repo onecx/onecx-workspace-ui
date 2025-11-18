@@ -100,6 +100,7 @@ describe('SlimMenuItemComponent', () => {
       const content = await anchor?.text()
       expect(content).toEqual('')
     })
+
     it('should display anchor with icon and label in SLIM_PLUS mode', async () => {
       const fixture = TestBed.createComponent(SlimMenuItemComponent)
       const component = fixture.componentInstance
@@ -151,6 +152,7 @@ describe('SlimMenuItemComponent', () => {
       const content = await anchor?.text()
       expect(content).toEqual('')
     })
+
     it('should display anchor with icon and label in SLIM_PLUS mode', async () => {
       const fixture = TestBed.createComponent(SlimMenuItemComponent)
       const component = fixture.componentInstance
@@ -176,6 +178,7 @@ describe('SlimMenuItemComponent', () => {
       expect(content).toContain('Another Link')
     })
   })
+
   describe('ACTION', () => {
     it('should display button with icon only in SLIM mode', async () => {
       const fixture = TestBed.createComponent(SlimMenuItemComponent)
@@ -183,7 +186,6 @@ describe('SlimMenuItemComponent', () => {
       const command = () => {
         console.log('Action executed')
       }
-      spyOn(console, 'log')
       component.item = {
         command: command,
         label: 'Action Item',
@@ -191,6 +193,7 @@ describe('SlimMenuItemComponent', () => {
         active: false,
         type: ItemType.ACTION
       }
+      spyOn(console, 'log')
       component.activeMode = SlimMenuMode.SLIM
       component.index = 4
 
@@ -207,6 +210,7 @@ describe('SlimMenuItemComponent', () => {
       button?.click()
       expect(console.log).toHaveBeenCalledWith('Action executed')
     })
+
     it('should display button with icon and label in SLIM_PLUS mode', async () => {
       const fixture = TestBed.createComponent(SlimMenuItemComponent)
       const component = fixture.componentInstance

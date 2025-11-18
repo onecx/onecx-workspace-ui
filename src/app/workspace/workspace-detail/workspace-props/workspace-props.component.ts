@@ -167,21 +167,17 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   public onFileUpload(ev: Event, refType: RefType): void {
     if (ev.target) {
       const files = (ev.target as HTMLInputElement).files
-      if (files && files.length === 1) this.proccessFile(files[0], refType)
-      else {
-        this.msgService.error({ summaryKey: 'IMAGE.CONSTRAINT.FAILED', detailKey: 'IMAGE.CONSTRAINT.FILE_MISSING' })
-      }
+      if (files?.length === 1) this.proccessFile(files[0], refType)
+      else this.msgService.error({ summaryKey: 'IMAGE.CONSTRAINT.FAILED', detailKey: 'IMAGE.CONSTRAINT.FILE_MISSING' })
     }
   }
   private proccessFile(file: File, refType: RefType): void {
     const regex = /^.*.(jpg|jpeg|png|svg)$/
-    if (file.size > this.imageMaxSize) {
+    if (file.size > this.imageMaxSize)
       this.msgService.error({ summaryKey: 'IMAGE.CONSTRAINT.FAILED', detailKey: 'IMAGE.CONSTRAINT.SIZE' })
-    } else if (!regex.exec(file.name)) {
+    else if (!regex.exec(file.name))
       this.msgService.error({ summaryKey: 'IMAGE.CONSTRAINT.FAILED', detailKey: 'IMAGE.CONSTRAINT.FILE_TYPE' })
-    } else if (this.workspace) {
-      this.saveImage(this.workspace.name, file, refType) // store image
-    }
+    else if (this.workspace) this.saveImage(this.workspace.name, file, refType) // store image
   }
 
   // SAVE image
@@ -305,9 +301,8 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   // sometimes the theme is unknown, then add to the list
   public checkAndExtendThemes(themes: Theme[]): Theme[] {
     // if not included (why ever) then add the used value to make it visible
-    if (!themes.find((t) => t.name === this.workspace?.theme)) {
+    if (!themes.some((t) => t.name === this.workspace?.theme))
       themes.push({ name: this.workspace?.theme, displayName: this.workspace?.theme } as Theme)
-    }
     return themes
   }
 

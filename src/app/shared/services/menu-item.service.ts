@@ -147,7 +147,7 @@ export class MenuItemService {
 
   private stripBaseHref(url: string | undefined): string | undefined {
     const basePath = document.getElementsByTagName('base')[0]?.href
-    const baseUrl = new URL(basePath, window.location.origin).toString()
+    const baseUrl = new URL(basePath, globalThis.location.origin).toString()
     return url?.replace(baseUrl, '')
   }
 

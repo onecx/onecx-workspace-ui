@@ -101,10 +101,10 @@ const Utils = {
     else return undefined
   },
   bffImageUrl(basePath: string | undefined, name: string | undefined, refType: RefType): string {
-    return !name ? '' : basePath + '/images/' + name + '/' + refType
+    return name ? basePath + '/images/' + name + '/' + refType : ''
   },
   bffProductImageUrl(basePath: string | undefined, name: string | undefined): string {
-    return !name ? '' : basePath + '/images/product/' + name
+    return name ? basePath + '/images/product/' + name : ''
   },
 
   /**

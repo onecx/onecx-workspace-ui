@@ -731,6 +731,7 @@
       "IAM_ROLES": "Unknown problem retrieving IDM Roles.",
       "WS_ROLES": "Unknown problem retrieving Workspace Role data.",
       "SLOTS": "Unknown problem retrieving Slot data.",
+      "ROLE_ASSIGNMENTS": "Unknown problem retrieving Role-Assigment data.",
       "MENUS": "Unknown problem retrieving Menu data."
     },
     "HTTP_STATUS_0": {
@@ -740,6 +741,7 @@
       "IAM_ROLES": "Unknown problem retrieving IDM Roles - please try again.",
       "WS_ROLES": "Unknown problem retrieving Workspace Role data - please try again.",
       "SLOTS": "Unknown problem retrieving Slot data - please try again.",
+      "ROLE_ASSIGNMENTS": "Unknown problem retrieving Role-Assigment data - please try again.",
       "MENUS": "Unknown problem retrieving Menu data - please try again."
     },
     "HTTP_STATUS_400": {
@@ -749,6 +751,7 @@
       "IAM_ROLES": "Your request could not be processed.",
       "WS_ROLES": "Your request could not be processed.",
       "SLOTS": "Your request could not be processed.",
+      "ROLE_ASSIGNMENTS": "Your request could not be processed.",
       "MENUS": "Your request could not be processed."
     },
     "HTTP_STATUS_401": {
@@ -758,6 +761,7 @@
       "IAM_ROLES": "You are not authorized to see IDM Roles.",
       "WS_ROLES": "You are not authorized to see Workspace Roles.",
       "SLOTS": "You are not authorized to see Slots.",
+      "ROLE_ASSIGNMENTS": "You are not authorized to see Role-Assigment.",
       "MENUS": "You are not authorized to see Menus."
     },
     "HTTP_STATUS_403": {
@@ -767,6 +771,7 @@
       "IAM_ROLES": "You have no permissions to see IDM Roles.",
       "WS_ROLES": "You have no permissions to see Workspace Roles.",
       "SLOTS": "You have no permissions to see Slots.",
+      "ROLE_ASSIGNMENTS": "You have no permissions to see Role-Assigment.",
       "MENUS": "You have no permissions to see Menus."
     },
     "HTTP_STATUS_404": {
@@ -776,6 +781,7 @@
       "IAM_ROLES": "No IDM Roles could be load.",
       "WS_ROLES": "No Workspace Roles could be load.",
       "SLOTS": "No Slots could be load.",
+      "ROLE_ASSIGNMENTS": "No Role-Assigment could be load.",
       "MENUS": "No Menus could be found."
     },
     "HTTP_STATUS_418": {
@@ -788,6 +794,7 @@
       "IAM_ROLES": "Unknown server problem retrieving IDM Role data - please try again.",
       "WS_ROLES": "Unknown server problem retrieving Workspace Role data - please try again.",
       "SLOTS": "Unknown server problem retrieving Slot data - please try again.",
+      "ROLE_ASSIGNMENTS": "Unknown server problem retrieving Role-Assigment data - please try again.",
       "MENUS": "Unknown server problem retrieving Menu data - please try again."
     }
   }

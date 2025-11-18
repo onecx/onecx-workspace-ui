@@ -394,7 +394,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   // ROLES
   //   filter role name
   public onRoleNameFilterChange(val: string): void {
-    this.wRolesFiltered = this.wRoles.filter((r) => r.name!.indexOf(val) >= 0)
+    this.wRolesFiltered = this.wRoles.filter((r) => r.name!.includes(val))
   }
   public onRoleColumnFilterReset(): void {
     if (this.roleColumnFilterValue.length > 0) {
@@ -691,9 +691,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     return this.wRoleApi
       .searchWorkspaceRoles({ workspaceRoleSearchCriteria: { workspaceId: this.workspace?.id, pageSize: 1000 } })
       .pipe(
-        map((result) => {
-          return result.stream ?? []
-        }),
+        map((result) => result.stream ?? []),
         catchError((err) => {
           this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.WS_ROLES'
           console.error('searchWorkspaceRoles', err)
@@ -705,15 +703,9 @@ export class MenuComponent implements OnInit, OnDestroy {
     return this.assApi
       .searchAssignments({ assignmentSearchCriteria: { workspaceId: this.workspace?.id, pageSize: 3000 } })
       .pipe(
-        map((result) => {
-          return result.stream
-            ? result.stream?.map((ass) => {
-                this.wAssignments.push(ass)
-                return this.wAssignments[this.wAssignments.length - 1]
-              })
-            : []
-        }),
+        map((result) => result.stream ?? []),
         catchError((err) => {
+          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.ROLE_ASSIGNMENTS'
           console.error('searchAssignments', err)
           return of([])
         })
@@ -732,6 +724,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         roles.sort(this.sortRoleByName)
         this.wRoles = roles
         this.wRolesFiltered = roles // displayed columns
+        this.wAssignments = ass
         this.assignNode2Role(ass)
       }
       this.loadingRoles = false
