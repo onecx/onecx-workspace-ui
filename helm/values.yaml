@@ -85,6 +85,21 @@ app:
           technology: WEBCOMPONENTMODULE
           remoteName: onecx-workspace
           tagName: ocx-toggle-menu-button-component
+        slim-user-menu:
+          exposedModule: ./OneCXSlimUserMenuComponent
+          description: 'Creates the slim user menu in vertical orientation.'
+          type: COMPONENT
+          technology: WEBCOMPONENTMODULE
+          remoteName: onecx-workspace
+          tagName: ocx-slim-user-menu-component
+        slim-vertical-menu:
+          exposedModule: ./OneCXSlimVerticalMainMenuComponent
+          description: 'Creates the slim main menu in vertical orientation.'
+          type: COMPONENT
+          technology: WEBCOMPONENTMODULE
+          remoteName: onecx-workspace
+          tagName: ocx-slim-vertical-main-menu-component
+          
     # Microservice
     microservice:
       spec:

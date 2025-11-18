@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core'
 import { Location } from '@angular/common'
 import { MenuItem } from 'primeng/api'
+import { ItemType, SlimMenuItem } from '../model/slim-menu-item'
 
 import { getLocation } from '@onecx/accelerator'
 
@@ -55,6 +56,40 @@ export class MenuItemService {
     }
 
     return bestMatch
+  }
+
+  hasAction(item: MenuItem): boolean {
+    return !!item.routerLink || !!item.url || !!item.command
+  }
+
+  getItemType(item: MenuItem): ItemType | undefined {
+    if (item.routerLink) {
+      return ItemType.ROUTER_LINK
+    }
+    if (item.url) {
+      return ItemType.URL
+    }
+    if (item.command) {
+      return ItemType.ACTION
+    }
+    return undefined
+  }
+
+  mapMenuItemsToSlimMenuItems(items: MenuItem[], currentUrl?: string): SlimMenuItem[] {
+    const actionItems = items.flatMap((item) => [item, ...(item.items ?? [])]).filter((item) => this.hasAction(item))
+    const bestMatch = currentUrl ? this.findActiveItemBestMatch(items, currentUrl) : undefined
+    return actionItems.map((item) => {
+      return {
+        active: item === bestMatch?.item,
+        type: this.getItemType(item),
+        label: item.label ?? item.title,
+        icon: item.icon,
+        command: item.command,
+        routerLink: item.routerLink,
+        url: item.url,
+        tooltip: item.tooltip ?? item.label ?? item.title
+      }
+    })
   }
 
   private getMatchedSegments(item: MenuItem, strippedPath: string): number {

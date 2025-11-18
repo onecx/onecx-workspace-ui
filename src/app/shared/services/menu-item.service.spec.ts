@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing'
 import { MenuItemService } from './menu-item.service'
 import { Target, UserWorkspaceMenuItem } from '../generated'
 import { MenuItem } from 'primeng/api'
+import { ItemType } from '../model/slim-menu-item'
 
 const storageMock = (initialStorage: { [key: string]: string }) => {
   let storage: { [key: string]: string } = initialStorage
@@ -717,5 +718,216 @@ describe('MenuItemService', () => {
     expect(result?.matchedSegments).toEqual(3)
     expect(result?.parents.length).toBe(1)
     expect(result?.parents[0].label).toBe('Parent2')
+  })
+
+  describe('hasAction', () => {
+    it('should return true if routerLink is defined', () => {
+      const item: MenuItem = { routerLink: '/path' }
+      expect(service.hasAction(item)).toBeTrue()
+    })
+
+    it('should return true if url is defined', () => {
+      const item: MenuItem = { url: 'http://example.com' }
+      expect(service.hasAction(item)).toBeTrue()
+    })
+
+    it('should return true if command is defined', () => {
+      const item: MenuItem = {
+        command: () => {
+          console.log('Action')
+        }
+      }
+      expect(service.hasAction(item)).toBeTrue()
+    })
+  })
+
+  describe('getItemType', () => {
+    it('should return ROUTER_LINK if routerLink is defined', () => {
+      const item: MenuItem = { routerLink: '/path' }
+      expect(service.getItemType(item)).toBe(ItemType.ROUTER_LINK)
+    })
+
+    it('should return URL if url is defined', () => {
+      const item: MenuItem = { url: 'http://example.com' }
+      expect(service.getItemType(item)).toBe(ItemType.URL)
+    })
+
+    it('should return ACTION if command is defined', () => {
+      const item: MenuItem = {
+        command: () => {
+          console.log('Action')
+        }
+      }
+      expect(service.getItemType(item)).toBe(ItemType.ACTION)
+    })
+
+    it('should return undefined if no action is defined', () => {
+      const item: MenuItem = { label: 'No Action' }
+      expect(service.getItemType(item)).toBeUndefined()
+    })
+  })
+
+  describe('mapMenuItemsToSlimMenuItems', () => {
+    beforeEach(() => {
+      service.findActiveItemBestMatch = (() => {
+        return {}
+      }) as any
+    })
+    it('should map item', () => {
+      const baseItem: MenuItem = {
+        label: 'Base Item',
+        icon: 'pi pi-base',
+        tooltip: 'Base Tooltip',
+        command: () => {
+          console.log('baseItem')
+        }
+      }
+
+      const result = service.mapMenuItemsToSlimMenuItems([baseItem])
+      expect(result[0]).toEqual({
+        active: false,
+        type: ItemType.ACTION,
+        label: baseItem.label,
+        icon: baseItem.icon,
+        command: baseItem.command,
+        routerLink: baseItem.routerLink,
+        url: baseItem.url,
+        tooltip: baseItem.tooltip
+      })
+    })
+
+    it('should map active item', () => {
+      const activeItem = {
+        label: 'Active Item',
+        // needs to have an action to be considered
+        command: () => {
+          console.log('activeItem')
+        }
+      }
+      const inactiveItem = {
+        label: 'Inactive Item',
+        // needs to have an action to be considered
+        command: () => {
+          console.log('inactiveItem')
+        }
+      }
+      service.findActiveItemBestMatch = (() => {
+        return { item: activeItem as MenuItem }
+      }) as any
+      const items = [activeItem, inactiveItem] as MenuItem[]
+
+      const result = service.mapMenuItemsToSlimMenuItems(items, '/url')
+      expect(result[0].active).toBeTrue()
+      expect(result[1].active).toBeFalse()
+    })
+
+    it('should map item types correctly', () => {
+      const routerLinkItem: MenuItem = {
+        routerLink: '/router-link'
+      }
+      const urlItem: MenuItem = {
+        url: '/url'
+      }
+      const actionItem: MenuItem = {
+        command: () => {
+          console.log('actionItem')
+        }
+      }
+      const items: MenuItem[] = [routerLinkItem, urlItem, actionItem]
+
+      const result = service.mapMenuItemsToSlimMenuItems(items)
+      expect(result[0].type).toBe(ItemType.ROUTER_LINK)
+      expect(result[1].type).toBe(ItemType.URL)
+      expect(result[2].type).toBe(ItemType.ACTION)
+    })
+
+    it('should map label fallbacks correctly', () => {
+      const withTitleFallback: MenuItem = {
+        title: 'Title Fallback',
+        command: () => {
+          console.log('titleFallback')
+        }
+      }
+
+      const result = service.mapMenuItemsToSlimMenuItems([withTitleFallback])
+      expect(result[0].label).toBe(withTitleFallback.title)
+    })
+
+    it('should map tooltip fallbacks correctly', () => {
+      const withTooltipLabelFallback: MenuItem = {
+        label: 'Label Fallback',
+        command: () => {
+          console.log('labelFallback')
+        }
+      }
+      const withTooltipTitleFallback: MenuItem = {
+        title: 'Title Tooltip Fallback',
+        command: () => {
+          console.log('titleTooltipFallback')
+        }
+      }
+
+      const result = service.mapMenuItemsToSlimMenuItems([withTooltipLabelFallback, withTooltipTitleFallback])
+      expect(result[0].tooltip).toBe(withTooltipLabelFallback.label)
+      expect(result[1].tooltip).toBe(withTooltipTitleFallback.title)
+    })
+
+    it('should not contain items without action', () => {
+      const noActionItem: MenuItem = {
+        label: 'No Action'
+      }
+      const actionItem: MenuItem = {
+        label: 'Action Item',
+        command: () => {
+          console.log('actionItem')
+        }
+      }
+
+      const result = service.mapMenuItemsToSlimMenuItems([noActionItem, actionItem])
+      expect(result.length).toBe(1)
+      expect(result[0].label).toBe(actionItem.label)
+    })
+
+    it('should flatten items and their children', () => {
+      const parentItem: MenuItem = {
+        label: 'Parent Item',
+        items: [
+          {
+            label: 'Child Item 1',
+            command: () => {
+              console.log('childItem1')
+            }
+          },
+          {
+            label: 'Child Item 2',
+            command: () => {
+              console.log('childItem2')
+            }
+          }
+        ]
+      }
+
+      const parentItemWithAction: MenuItem = {
+        label: 'Parent Item With Action',
+        command: () => {
+          console.log('parentItemWithAction')
+        },
+        items: [
+          {
+            label: 'Child Item 3',
+            command: () => {
+              console.log('childItem1')
+            }
+          }
+        ]
+      }
+
+      const result = service.mapMenuItemsToSlimMenuItems([parentItem, parentItemWithAction])
+      expect(result.length).toBe(4)
+      expect(result[0].label).toBe('Child Item 1')
+      expect(result[1].label).toBe('Child Item 2')
+      expect(result[2].label).toBe('Parent Item With Action')
+      expect(result[3].label).toBe('Child Item 3')
+    })
   })
 })

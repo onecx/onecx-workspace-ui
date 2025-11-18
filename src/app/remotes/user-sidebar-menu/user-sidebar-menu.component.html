@@ -40,5 +40,5 @@
       </ng-template>
     </p-accordionTab>
   </p-accordion>
-  <hr class="m-0" />
+  <hr *ngIf="state.isActive" [hidden]="state.isHidden" class="m-0" />
 </ng-container>

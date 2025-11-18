@@ -1,0 +1,71 @@
+// Overriding styles since
+// user sidebar menu component overrides with ::ng-deep
+// and workspace UI uses portal layout styles
+// but we need to ensure our styles take precedence
+::ng-deep {
+  .slim-user-menu {
+    .p-accordion {
+      width: 100%;
+      .p-accordion-tab {
+        border-radius: 0 !important;
+        background-color: var(--menu-item-bg-color, var(--menu-bg-color), #f7f7f7) !important;
+        .p-accordion-header {
+          & :hover {
+            background-color: var(--menu-item-hover-bg-color, #e0e0e0);
+          }
+          .p-accordion-header-link {
+            border-radius: 0 !important;
+            background-color: var(--menu-item-bg-color, var(--menu-bg-color), #f7f7f7) !important;
+          }
+          .p-accordion-header-link:focus {
+            background: var(--menu-item-hover-bg-color, #e0e0e0) !important;
+          }
+        }
+        .p-accordion-content {
+          background-color: var(--menu-item-bg-color, var(--menu-bg-color), #f7f7f7) !important;
+        }
+      }
+      .p-accordion-tab-active {
+        margin-bottom: 0 !important;
+      }
+    }
+  }
+}
+
+.slim-user-menu {
+  border-top: 1px solid var(--divider-color, #0003);
+  border-bottom: 1px solid var(--divider-color, #0003);
+}
+
+.slim-user-menu-slim {
+  width: 4rem;
+}
+
+.slim-user-menu-slim-plus {
+  width: 7rem;
+}
+
+.slim-user-menu-header {
+  width: 100%;
+  height: 100%;
+  color: var(--menu-item-text-color, var(--menu-text-color, var(--text-secondary-color, #000000)));
+  background-color: var(--menu-item-bg-color, var(--menu-bg-color), #f7f7f7);
+}
+
+.slim-user-menu-header-icon {
+  width: 100%;
+  font-size: calc(var(--font-size, var(--font-size-default, 1.25rem)) * 1.5);
+}
+
+.slim-user-menu-header-text {
+  width: 100%;
+  overflow-wrap: break-word;
+  font-size: var(--font-size);
+  display: block;
+  text-align: center;
+}
+
+.slim-user-menu-header-plus {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}

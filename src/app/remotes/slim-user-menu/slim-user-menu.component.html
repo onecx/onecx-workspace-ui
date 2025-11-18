@@ -1,0 +1,73 @@
+<ng-container
+  *ngIf="{
+    activeMode: activeMode$ | async,
+    isHidden: isHidden$ | async,
+    avatarImageLoaded: avatarImageLoaded$ | async,
+    displayName: displayName$ | async,
+    menuItems: menuItems$ | async
+  } as vm"
+>
+  <div
+    *ngIf="vm.activeMode && vm.activeMode !== Mode.INACTIVE"
+    class="slim-user-menu"
+    [ngClass]="{
+      'slim-user-menu-slim': vm.activeMode === Mode.SLIM,
+      'slim-user-menu-slim-plus': vm.activeMode === Mode.SLIM_PLUS
+    }"
+    [hidden]="vm.isHidden"
+  >
+    <p-accordion>
+      <p-accordionTab>
+        <ng-template pTemplate="header">
+          <div
+            class="slim-user-menu-header flex flex-column align-items-center justify-content-center"
+            [pTooltip]="'REMOTES.SLIM_USER_MENU.TOOLTIP' | translate"
+            tooltipPosition="right"
+            tooltipEvent="both"
+            [ngClass]="{
+              'slim-user-menu-header-plus': vm.activeMode === Mode.SLIM_PLUS
+            }"
+            [ngStyle]="{
+              width: '100%',
+              height: vm.activeMode === Mode.SLIM ? '4rem' : '7rem'
+            }"
+          >
+            <ocx-slot name="onecx-avatar-image" [outputs]="{ imageLoaded: avatarImageLoadedEmitter }"> </ocx-slot>
+            <div class="flex justify-content-center align-items-center">
+              <i *ngIf="vm.avatarImageLoaded === undefined" class="slim-user-menu-header-icon pi pi-user"></i>
+            </div>
+            <ng-container *ngIf="vm.activeMode === Mode.SLIM_PLUS">
+              <div class="flex justify-content-center align-items-center">
+                <span *ngIf="vm.displayName" id="ws_slim_user_menu_display_name" class="slim-user-menu-header-text">
+                  {{ vm.displayName }}
+                </span>
+              </div>
+            </ng-container>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="content">
+          <ul
+            *ngIf="vm.menuItems"
+            id="ws_slim_user_menu_list"
+            class="slim-user-menu-list flex flex-column align-items-center justify-content-center list-none m-0 p-0"
+          >
+            <app-slim-menu-item
+              *ngFor="let item of vm.menuItems; let i = index"
+              [item]="item"
+              [id]="'ws_slim_user_menu_list_item_' + (i + 1)"
+              [index]="i"
+              [activeMode]="vm.activeMode"
+              [ngStyle]="{
+                width: '100%',
+                height: vm.activeMode === Mode.SLIM ? '4rem' : '7rem'
+              }"
+            ></app-slim-menu-item>
+          </ul>
+        </ng-template>
+        <ng-template pTemplate="icon">
+          <!-- Display nothing -->
+        </ng-template>
+      </p-accordionTab>
+    </p-accordion>
+  </div>
+</ng-container>

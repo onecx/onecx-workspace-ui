@@ -17,6 +17,7 @@ import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-component
 import { MenuItemAPIService } from 'src/app/shared/generated'
 import { OneCXVerticalMainMenuComponent } from './vertical-main-menu.component'
 import {
+  FakeTopic,
   provideShellCapabilityServiceMock,
   ShellCapabilityServiceMock
 } from '@onecx/angular-integration-interface/mocks'
@@ -436,6 +437,88 @@ describe('OneCXVerticalMainMenuComponent', () => {
     expect((await secondItemChildren[0].getChildren()).length).toBe(0)
     expect(await secondItemChildren[1].getText()).toEqual('Help Items')
     expect((await secondItemChildren[1].getChildren()).length).toBe(0)
+  })
+
+  it('should use eventsTopic to determine active item if capability is not set', async () => {
+    ShellCapabilityServiceMock.setCapabilities([])
+    const appStateService = TestBed.inject(AppStateService)
+    spyOn(appStateService.currentWorkspace$, 'asObservable').and.returnValue(
+      of({
+        workspaceName: 'test-workspace'
+      }) as any
+    )
+    spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(of({} as any))
+    menuItemApiSpy.getMenuItems.and.returnValue(
+      of({
+        workspaceName: 'test-workspace',
+        menu: [
+          {
+            key: 'PORTAL_MAIN_MENU',
+            name: 'Main Menu',
+            children: [
+              {
+                key: 'CORE_WELCOME',
+                name: 'Welcome Page',
+                url: '/admin/welcome',
+                position: 0,
+                external: false,
+                i18n: {},
+                children: []
+              },
+              {
+                key: 'CORE_AH_MGMT',
+                name: 'Announcement & Help',
+                url: 'page-url',
+                position: 1,
+                external: false,
+                i18n: {},
+                children: [
+                  {
+                    key: 'CORE_AH_MGMT_A',
+                    name: 'Announcements',
+                    url: '/admin/announcement',
+                    position: 1,
+                    external: false,
+                    i18n: {},
+                    children: []
+                  },
+                  {
+                    key: 'CORE_AH_MGMT_HI',
+                    name: 'Help Items',
+                    url: '/admin/help',
+                    position: 2,
+                    external: false,
+                    i18n: {},
+                    children: []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      } as any)
+    )
+
+    const { fixture, component } = setUp()
+
+    component['eventsTopic$'] = new FakeTopic() as any
+    component['eventsTopic$'].publish({
+      type: 'navigated',
+      payload: {
+        url: '/admin/help'
+      }
+    })
+    await component.ngOnInit()
+
+    const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PPanelMenuHarness)
+    const panels = await menu.getAllPanels()
+    expect(panels.length).toEqual(2)
+
+    expect((await panels[0].getChildren()).length).toBe(0)
+    const secondItemChildren = await panels[1].getChildren()
+    expect(secondItemChildren.length).toBe(2)
+    expect(await secondItemChildren[0].getText()).toEqual('Announcements')
+    expect(await (await secondItemChildren[0].host()).hasClass(component.activeItemClass)).toBeFalse()
   })
 
   describe('on router changes', () => {

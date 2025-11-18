@@ -1,0 +1,26 @@
+<ng-container
+  *ngIf="{ activeMode: activeMode$ | async, isHidden: isHidden$ | async, menuItems: menuItems$ | async } as vm"
+>
+  <ul
+    *ngIf="vm.activeMode && vm.activeMode !== Mode.INACTIVE"
+    [hidden]="vm.isHidden"
+    id="ws_slim_vertical_main_menu_list"
+    class="slim-vertical-menu-list flex flex-column align-items-center justify-content-center list-none m-0 p-0"
+    [ngClass]="{
+      'slim-vertical-menu-list-slim': vm.activeMode === Mode.SLIM,
+      'slim-vertical-menu-list-slim-plus': vm.activeMode === Mode.SLIM_PLUS
+    }"
+  >
+    <app-slim-menu-item
+      *ngFor="let item of vm.menuItems ?? []; let i = index"
+      [item]="item"
+      [id]="'ws_slim_vertical_main_menu_list_item_' + (i + 1)"
+      [index]="i"
+      [activeMode]="vm.activeMode"
+      [ngStyle]="{
+        width: '100%',
+        height: vm.activeMode === Mode.SLIM ? '4rem' : '7rem'
+      }"
+    ></app-slim-menu-item>
+  </ul>
+</ng-container>
