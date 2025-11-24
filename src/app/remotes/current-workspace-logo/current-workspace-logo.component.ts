@@ -249,10 +249,11 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
             : resizedEventPayload.slotGroupDetails.width
 
         if (resizedEventPayloadWidth > 0) {
-          const correction = isStaticMenuActive ? this.remToPx() * TOGGLE_MENU_BUTTON_WIDTH_REM : 0
-          const adjustedWidth = resizedEventPayloadWidth - correction
-
-          this.container.nativeElement.style.width = adjustedWidth + 'px'
+          if (isStaticMenuActive) {
+            const correction = this.remToPx() * TOGGLE_MENU_BUTTON_WIDTH_REM
+            const adjustedWidth = resizedEventPayloadWidth - correction
+            this.container.nativeElement.style.width = adjustedWidth + 'px'
+          }
 
           if (resizedEventPayloadWidth < SMALL_LOGO_THRESHOLD_PX && this.imageType !== RefType.LogoSmall) {
             this.imageType = RefType.LogoSmall
