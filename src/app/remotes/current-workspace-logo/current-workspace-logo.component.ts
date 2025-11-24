@@ -11,7 +11,7 @@ import {
 } from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
-import { BehaviorSubject, combineLatest, filter, map, Observable, ReplaySubject } from 'rxjs'
+import { BehaviorSubject, combineLatest, filter, map, Observable, ReplaySubject, merge, startWith } from 'rxjs'
 
 import {
   AngularRemoteComponentsModule,
@@ -33,7 +33,8 @@ import { MenuMode, MenuService } from 'src/app/shared/services/menu.service'
 enum EventType {
   NAVIGATED = 'navigated',
   AUTH_LOGOUT_BUTTON_CLICKED = 'authentication#logoutButtonClicked',
-  SLOT_RESIZED = 'slot#resized'
+  SLOT_RESIZED = 'slot#resized',
+  SLOT_GROUP_RESIZED = 'slot#resized_group' // should be renamed to slotGroup#resized
 }
 // Copied over from libs v7. Remove once migrating to v7.
 type SlotResizedDetails = {
@@ -50,10 +51,29 @@ type SlotResizedEvent = {
   type: EventType.SLOT_RESIZED
   payload: SlotResizedEventPayload
 }
+// Copied over from libs v7. Remove once migrating to v7.
+type SlotGroupResizedDetails = {
+  width: number
+  height: number
+}
+// Copied over from libs v7. Remove once migrating to v7.
+type SlotGroupResizedEventPayload = {
+  slotGroupName: string
+  slotGroupDetails: SlotGroupResizedDetails
+}
+// Copied over from libs v7. Remove once migrating to v7.
+type SlotGroupResizedEvent = {
+  type: EventType.SLOT_GROUP_RESIZED
+  payload: SlotGroupResizedEventPayload
+}
 
-const RESIZE_OBSERVED_SLOT_NAME = 'onecx-shell-vertical-menu'
+const RESIZE_OBSERVED_SLOT_NAME_OLD = 'onecx-shell-vertical-menu'
+const RESIZE_OBSERVED_SLOT_NAME_NEW = 'onecx-shell-body-start.start'
+const RESIZE_OBSERVED_SLOT_GROUP_NAME = 'onecx-shell-body-start'
 const DEFAULT_WIDTH_REM = 17
 const TOGGLE_MENU_BUTTON_WIDTH_REM = 2.5
+const SMALL_LOGO_THRESHOLD_PX = 235
+
 @Component({
   selector: 'app-current-workspace-logo',
   templateUrl: './current-workspace-logo.component.html',
@@ -113,7 +133,10 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
 
     this.isStaticMenuActive$ = this.menuService.isActive(this.staticMenuMode).pipe(untilDestroyed(this))
 
-    this.isStaticMenuVisible$ = this.menuService.isVisible(this.staticMenuMode).pipe(untilDestroyed(this))
+    this.isStaticMenuVisible$ = this.menuService.isVisible(this.staticMenuMode).pipe(
+      startWith(true), // initial value is required
+      untilDestroyed(this)
+    )
   }
   ngOnDestroy(): void {
     this.eventsTopic.destroy()
@@ -199,23 +222,42 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
     const slotResized$ = this.eventsTopic.pipe(
       filter(
         (e): e is SlotResizedEvent =>
-          e.type === EventType.SLOT_RESIZED && (e as SlotResizedEvent).payload.slotName === RESIZE_OBSERVED_SLOT_NAME
+          e.type === EventType.SLOT_RESIZED &&
+          ((e as SlotResizedEvent).payload.slotName === RESIZE_OBSERVED_SLOT_NAME_OLD ||
+            (e as SlotResizedEvent).payload.slotName === RESIZE_OBSERVED_SLOT_NAME_NEW)
       ),
       map((e) => e.payload),
       untilDestroyed(this)
     )
-    combineLatest([slotResized$, this.isStaticMenuActive$, this.isStaticMenuVisible$])
+
+    const slotGroupResized$ = this.eventsTopic.pipe(
+      filter(
+        (e): e is SlotGroupResizedEvent =>
+          e.type === EventType.SLOT_GROUP_RESIZED &&
+          (e as SlotGroupResizedEvent).payload.slotGroupName === RESIZE_OBSERVED_SLOT_GROUP_NAME
+      ),
+      map((e) => e.payload),
+      untilDestroyed(this)
+    )
+
+    combineLatest([merge(slotResized$, slotGroupResized$), this.isStaticMenuActive$, this.isStaticMenuVisible$])
       .pipe(untilDestroyed(this))
-      .subscribe(([slotResized, isStaticMenuActive, _isStaticMenuVisible]) => {
-        if (!isStaticMenuActive) {
-          return
-        }
-        const slotWidth = slotResized.slotDetails.width
-        console.log('slot resized event received for', RESIZE_OBSERVED_SLOT_NAME, 'new width:', slotWidth)
-        if (slotWidth > 0) {
-          const widthWithSpaceForToggleButton =
-            slotResized.slotDetails.width - this.remToPx() * TOGGLE_MENU_BUTTON_WIDTH_REM
-          this.container.nativeElement.style.width = widthWithSpaceForToggleButton + 'px'
+      .subscribe(([resizedEventPayload, isStaticMenuActive, _isStaticMenuVisible]) => {
+        const resizedEventPayloadWidth =
+          'slotDetails' in resizedEventPayload
+            ? resizedEventPayload.slotDetails.width
+            : resizedEventPayload.slotGroupDetails.width
+
+        if (resizedEventPayloadWidth > 0) {
+          const correction = isStaticMenuActive ? this.remToPx() * TOGGLE_MENU_BUTTON_WIDTH_REM : 0
+          const adjustedWidth = resizedEventPayloadWidth - correction
+
+          this.container.nativeElement.style.width = adjustedWidth + 'px'
+
+          if (resizedEventPayloadWidth < SMALL_LOGO_THRESHOLD_PX && this.imageType !== RefType.LogoSmall) {
+            this.imageType = RefType.LogoSmall
+            this.imageUrl$.next(this.getImageUrl(this.workspaceName, 'url', this.imageType))
+          }
         }
       })
   }
