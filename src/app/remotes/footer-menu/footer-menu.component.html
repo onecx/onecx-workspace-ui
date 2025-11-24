@@ -2,7 +2,7 @@
   *ngIf="menuItems$ | async as menuItems"
   class="m-0 p-0 sm:ml-2 p-panelmenu list-none flex flex-row column-gap-3 row-gap-2 align-items-center"
 >
-  <li *ngFor="let item of menuItems" class="p-menuitem">
+  <li *ngFor="let item of menuItems" class="p-menuitem flex">
     <a
       *ngIf="!item.routerLink && item.url"
       id="ws_footer_menu_{{ item.id }}_href"
