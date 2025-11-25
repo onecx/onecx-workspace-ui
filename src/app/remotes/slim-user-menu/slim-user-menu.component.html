@@ -20,16 +20,12 @@
       <p-accordionTab>
         <ng-template pTemplate="header">
           <div
-            class="slim-user-menu-header flex flex-column align-items-center justify-content-center"
+            class="slim-user-menu-header flex flex-column row-gap-1 align-items-center justify-content-center"
             [pTooltip]="'REMOTES.SLIM_USER_MENU.TOOLTIP' | translate"
             tooltipPosition="right"
             tooltipEvent="both"
             [ngClass]="{
               'slim-user-menu-header-plus': vm.activeMode === Mode.SLIM_PLUS
-            }"
-            [ngStyle]="{
-              width: '100%',
-              height: vm.activeMode === Mode.SLIM ? '4rem' : '7rem'
             }"
           >
             <ocx-slot
@@ -66,10 +62,6 @@
               [id]="'ws_slim_user_menu_list_item_' + (i + 1)"
               [index]="i"
               [activeMode]="vm.activeMode"
-              [ngStyle]="{
-                width: '100%',
-                height: vm.activeMode === Mode.SLIM ? '4rem' : '7rem'
-              }"
             ></app-slim-menu-item>
           </ul>
         </ng-template>

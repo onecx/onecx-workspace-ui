@@ -77,15 +77,15 @@
 
   <ng-template #textTemplate let-item>
     <ng-container *ngIf="activeMode === SlimMenuMode.SLIM_PLUS">
-      <div class="flex justify-content-center align-items-center">
-        <span class="slim-menu-list-item-text">{{ item.label }}</span>
-      </div>
+      <div class="slim-menu-list-item-text text-center">{{ item.label }}</div>
     </ng-container>
   </ng-template>
 
   <ng-template #iconTemplate let-item>
-    <div class="flex justify-content-center align-items-center">
-      <i class="slim-menu-list-item-icon" [ngClass]="item.icon ?? 'pi-question'" aria-hidden="true"></i>
-    </div>
+    <i
+      class="slim-menu-list-item-icon block text-center"
+      [ngClass]="item.icon ?? 'pi pi-question'"
+      aria-hidden="true"
+    ></i>
   </ng-template>
 </ng-container>
