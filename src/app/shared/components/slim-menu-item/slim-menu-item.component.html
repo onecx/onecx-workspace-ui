@@ -77,7 +77,13 @@
 
   <ng-template #textTemplate let-item>
     <ng-container *ngIf="activeMode === SlimMenuMode.SLIM_PLUS">
-      <div class="slim-menu-list-item-text text-center">{{ item.label }}</div>
+      @let whitespace_included = item.label?.match(wsRegExp);
+      <div
+        class="slim-menu-list-item-text text-center"
+        [ngClass]="{ 'slim-menu-list-item-text-ellipsis': !whitespace_included }"
+      >
+        {{ item.label }}
+      </div>
     </ng-container>
   </ng-template>
 

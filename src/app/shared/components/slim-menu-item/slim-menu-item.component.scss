@@ -28,6 +28,12 @@
     font-size: var(--font-size);
     display: block;
   }
+  .slim-menu-list-item-text-ellipsis {
+    max-width: 6rem; /* force ellipsis */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 // active item styles
@@ -53,5 +59,8 @@
     width: 7rem;
     padding-left: 0.5rem;
     padding-right: 0.5rem;
+  }
+  .slim-menu-list-item-link {
+    row-gap: 0.4rem;
   }
 }
