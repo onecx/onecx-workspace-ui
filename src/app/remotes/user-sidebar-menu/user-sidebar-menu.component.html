@@ -23,14 +23,12 @@
           ></ocx-slot>
           <span *ngIf="avatarImageLoaded === undefined" class="font-bold text-lg pi pi-user"></span>
           <span *ngIf="displayName$ | async as name" class="ml-2 flex flex-column row-gap-0">
-            <span
-              id="ws_user_sidebar_display_name"
-              class="font-bold"
-              [ngClass]="name.length > 30 ? 'text-sm' : ''"
-              [ngStyle]="{ 'word-break': name.length > 30 ? 'break-all' : 'normal' }"
-            >
+            <span id="ws_user_sidebar_display_name" class="font-bold" [ngClass]="name.length > 30 ? 'text-sm' : ''">
               {{ name }}
             </span>
+            <!--
+              [ngStyle]="{ 'word-break': name.length > 30 ? 'break-all' : 'normal' }"
+            -->
             <span *ngIf="organization$ | async as orgId" id="ws_user_sidebar_orgid" class="text-sm">{{ orgId }}</span>
           </span>
         </div>
