@@ -11,7 +11,7 @@ import {
 } from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
-import { BehaviorSubject, combineLatest, filter, map, Observable, ReplaySubject, merge, startWith } from 'rxjs'
+import { BehaviorSubject, combineLatest, filter, map, Observable, ReplaySubject, merge } from 'rxjs'
 
 import {
   AngularRemoteComponentsModule,
@@ -34,7 +34,7 @@ enum EventType {
   NAVIGATED = 'navigated',
   AUTH_LOGOUT_BUTTON_CLICKED = 'authentication#logoutButtonClicked',
   SLOT_RESIZED = 'slot#resized',
-  SLOT_GROUP_RESIZED = 'slot#resized_group' // should be renamed to slotGroup#resized
+  SLOT_GROUP_RESIZED = 'slotGroup#resized'
 }
 // Copied over from libs v7. Remove once migrating to v7.
 type SlotResizedDetails = {
@@ -68,7 +68,6 @@ type SlotGroupResizedEvent = {
 }
 
 const RESIZE_OBSERVED_SLOT_NAME_OLD = 'onecx-shell-vertical-menu'
-const RESIZE_OBSERVED_SLOT_NAME_NEW = 'onecx-shell-body-start.start'
 const RESIZE_OBSERVED_SLOT_GROUP_NAME = 'onecx-shell-body-start'
 const DEFAULT_WIDTH_REM = 17
 const TOGGLE_MENU_BUTTON_WIDTH_REM = 2.5
@@ -133,10 +132,7 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
 
     this.isStaticMenuActive$ = this.menuService.isActive(this.staticMenuMode).pipe(untilDestroyed(this))
 
-    this.isStaticMenuVisible$ = this.menuService.isVisible(this.staticMenuMode).pipe(
-      startWith(true), // initial value is required
-      untilDestroyed(this)
-    )
+    this.isStaticMenuVisible$ = this.menuService.isVisible(this.staticMenuMode).pipe(untilDestroyed(this))
   }
   ngOnDestroy(): void {
     this.eventsTopic.destroy()
@@ -223,8 +219,7 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
       filter(
         (e): e is SlotResizedEvent =>
           e.type === EventType.SLOT_RESIZED &&
-          ((e as SlotResizedEvent).payload.slotName === RESIZE_OBSERVED_SLOT_NAME_OLD ||
-            (e as SlotResizedEvent).payload.slotName === RESIZE_OBSERVED_SLOT_NAME_NEW)
+          (e as SlotResizedEvent).payload.slotName === RESIZE_OBSERVED_SLOT_NAME_OLD
       ),
       map((e) => e.payload),
       untilDestroyed(this)
@@ -253,6 +248,8 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
             const correction = this.remToPx() * TOGGLE_MENU_BUTTON_WIDTH_REM
             const adjustedWidth = resizedEventPayloadWidth - correction
             this.container.nativeElement.style.width = adjustedWidth + 'px'
+          } else {
+            this.container.nativeElement.style.width = resizedEventPayloadWidth + 'px'
           }
 
           if (resizedEventPayloadWidth < SMALL_LOGO_THRESHOLD_PX && this.imageType !== RefType.LogoSmall) {
