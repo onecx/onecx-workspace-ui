@@ -11,7 +11,7 @@ import { Capability, UserService } from '@onecx/angular-integration-interface'
 import { UserProfile } from '@onecx/integration-interface'
 import { Topic } from '@onecx/accelerator'
 
-fdescribe('MenuService', () => {
+describe('MenuService', () => {
   let service: MenuService
   let userServiceMock: UserServiceMock
   let realWindowMatchMedia: (query: string) => MediaQueryList
@@ -87,10 +87,8 @@ fdescribe('MenuService', () => {
     })
 
     mockMobile()
-    setTimeout(() => {
-      const event = new Event('resize')
-      globalThis.dispatchEvent(event)
-    }, 150)
+    const event = new Event('resize')
+    globalThis.dispatchEvent(event)
   })
 
   it('should use static mode if profile does not contain menu mode', (done) => {
