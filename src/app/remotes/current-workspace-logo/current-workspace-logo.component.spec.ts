@@ -301,7 +301,180 @@ describe('OneCXCurrentWorkspaceLogoComponent', () => {
         }
       })
 
+      expect(component.container.nativeElement.style.width).toEqual('400px')
+    })
+
+    it('should handle slot group resized event', () => {
+      document.documentElement.style.fontSize = '16px' // 1rem = 16px
+      const { component } = setUp()
+
+      const mockConfig: RemoteComponentConfig = {
+        appId: 'appId',
+        productName: 'prodName',
+        permissions: ['permission'],
+        baseUrl: 'base'
+      }
+
+      component.ocxRemoteComponentConfig = mockConfig
+      fakeEventsTopic.publish({
+        type: 'slotGroup#resized',
+        payload: {
+          slotGroupName: 'onecx-shell-body-start',
+          slotGroupDetails: {
+            width: 300,
+            height: 800
+          }
+        }
+      })
+
+      const expectedWidth = 300 - 16 * 2.5 + 'px'
+      expect(component.container.nativeElement.style.width).toEqual(expectedWidth)
+    })
+
+    it('should handle slot group resized event when static menu is not active', () => {
+      document.documentElement.style.fontSize = '16px' // 1rem = 16px
+      menuServiceSpy.isActive.and.returnValue(of(false))
+
+      const { component } = setUp()
+
+      const mockConfig: RemoteComponentConfig = {
+        appId: 'appId',
+        productName: 'prodName',
+        permissions: ['permission'],
+        baseUrl: 'base'
+      }
+
+      component.ocxRemoteComponentConfig = mockConfig
+      fakeEventsTopic.publish({
+        type: 'slotGroup#resized',
+        payload: {
+          slotGroupName: 'onecx-shell-body-start',
+          slotGroupDetails: {
+            width: 300,
+            height: 800
+          }
+        }
+      })
+
+      expect(component.container.nativeElement.style.width).toEqual('300px')
+    })
+
+    it('should keep default width when slot width is zero', () => {
+      const { component } = setUp()
+
+      const mockConfig: RemoteComponentConfig = {
+        appId: 'appId',
+        productName: 'prodName',
+        permissions: ['permission'],
+        baseUrl: 'base'
+      }
+
+      component.ocxRemoteComponentConfig = mockConfig
+      fakeEventsTopic.publish({
+        type: 'slot#resized',
+        payload: {
+          slotName: 'onecx-shell-vertical-menu',
+          slotDetails: {
+            width: 0,
+            height: 800
+          }
+        }
+      })
+
       expect(component.container.nativeElement.style.width).toEqual('14.5rem')
+    })
+
+    it('should switch to small logo when width is below threshold', () => {
+      document.documentElement.style.fontSize = '16px' // 1rem = 16px
+      const { component } = setUp()
+      component.imageType = RefType.Logo
+
+      const mockConfig: RemoteComponentConfig = {
+        appId: 'appId',
+        productName: 'prodName',
+        permissions: ['permission'],
+        baseUrl: 'base'
+      }
+
+      component.ocxRemoteComponentConfig = mockConfig
+
+      const imageUrlSpy = spyOn(component.imageUrl$, 'next')
+
+      fakeEventsTopic.publish({
+        type: 'slot#resized',
+        payload: {
+          slotName: 'onecx-shell-vertical-menu',
+          slotDetails: {
+            width: 200,
+            height: 800
+          }
+        }
+      })
+
+      expect(component.imageType).toEqual(RefType.LogoSmall)
+      expect(imageUrlSpy).toHaveBeenCalled()
+    })
+
+    it('should not switch to small logo when already using small logo', () => {
+      document.documentElement.style.fontSize = '16px' // 1rem = 16px
+      const { component } = setUp()
+      component.imageType = RefType.LogoSmall
+
+      const mockConfig: RemoteComponentConfig = {
+        appId: 'appId',
+        productName: 'prodName',
+        permissions: ['permission'],
+        baseUrl: 'base'
+      }
+
+      component.ocxRemoteComponentConfig = mockConfig
+
+      const imageUrlSpy = spyOn(component.imageUrl$, 'next')
+
+      fakeEventsTopic.publish({
+        type: 'slot#resized',
+        payload: {
+          slotName: 'onecx-shell-vertical-menu',
+          slotDetails: {
+            width: 200,
+            height: 800
+          }
+        }
+      })
+
+      expect(component.imageType).toEqual(RefType.LogoSmall)
+      expect(imageUrlSpy).not.toHaveBeenCalled()
+    })
+
+    it('should not switch to small logo when width is above threshold', () => {
+      document.documentElement.style.fontSize = '16px' // 1rem = 16px
+      const { component } = setUp()
+      component.imageType = RefType.Logo
+
+      const mockConfig: RemoteComponentConfig = {
+        appId: 'appId',
+        productName: 'prodName',
+        permissions: ['permission'],
+        baseUrl: 'base'
+      }
+
+      component.ocxRemoteComponentConfig = mockConfig
+
+      const imageUrlSpy = spyOn(component.imageUrl$, 'next')
+
+      fakeEventsTopic.publish({
+        type: 'slot#resized',
+        payload: {
+          slotName: 'onecx-shell-vertical-menu',
+          slotDetails: {
+            width: 400,
+            height: 800
+          }
+        }
+      })
+
+      expect(component.imageType).toEqual(RefType.Logo)
+      expect(imageUrlSpy).not.toHaveBeenCalled()
     })
   })
 })
