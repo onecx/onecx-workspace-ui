@@ -16,8 +16,8 @@ import { SlimMenuMode } from 'src/app/shared/model/slim-menu-mode'
 })
 @UntilDestroy()
 export class SlimMenuItemComponent {
-  ItemType = ItemType
-  SlimMenuMode = SlimMenuMode
+  public ItemType = ItemType
+  public SlimMenuMode = SlimMenuMode
   public wsRegExp = new RegExp('\\s', 'g')
 
   @Input() id: string = 'ws_slim_menu_item_'

@@ -22,6 +22,7 @@ import {
   AngularRemoteComponentsModule,
   BASE_URL,
   RemoteComponentConfig,
+  SlotService,
   ocxRemoteWebcomponent,
   provideTranslateServiceForRoot
 } from '@onecx/angular-remote-components'

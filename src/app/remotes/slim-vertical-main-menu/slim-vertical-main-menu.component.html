@@ -1,11 +1,13 @@
-<ng-container
+<!-- force scrolling by limit height -->
+<div
   *ngIf="{ activeMode: activeMode$ | async, isHidden: isHidden$ | async, menuItems: menuItems$ | async } as vm"
+  class="slim-vertical-menu-parent"
 >
   <ul
     *ngIf="vm.activeMode && vm.activeMode !== Mode.INACTIVE"
     [hidden]="vm.isHidden"
     id="ws_slim_vertical_main_menu_list"
-    class="slim-vertical-menu-list flex flex-column align-items-center justify-content-center list-none m-0 p-0"
+    class="m-0 p-0 overflow-auto flex flex-column align-items-center justify-content-center list-none"
     [ngClass]="{
       'slim-vertical-menu-list-slim': vm.activeMode === Mode.SLIM,
       'slim-vertical-menu-list-slim-plus': vm.activeMode === Mode.SLIM_PLUS
@@ -19,4 +21,4 @@
       [activeMode]="vm.activeMode"
     ></app-slim-menu-item>
   </ul>
-</ng-container>
+</div>

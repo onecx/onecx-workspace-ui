@@ -4,6 +4,8 @@
 // but we need to ensure our styles take precedence
 ::ng-deep {
   .slim-user-menu {
+    border-top: 2px solid var(--divider-color, #0003);
+    border-bottom: 2px solid var(--divider-color, #0003);
     .p-accordion {
       width: 100%;
       .p-accordion-tab {
@@ -36,38 +38,33 @@
   }
 }
 
-.slim-user-menu {
-  border-top: 1px solid var(--divider-color, #0003);
-  border-bottom: 1px solid var(--divider-color, #0003);
-}
-
 .slim-user-menu-slim {
   width: 4rem;
+  overflow: hidden;
 }
-
 .slim-user-menu-slim-plus {
   width: 7rem;
+  overflow: hidden;
 }
 
+.slim-user-menu-header-plus {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
 .slim-user-menu-header {
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
 
   color: var(--menu-item-text-color, var(--menu-text-color, var(--text-secondary-color, #000000)));
   background-color: var(--menu-item-bg-color, var(--menu-bg-color), #f7f7f7);
-}
 
-.slim-user-menu-header-icon {
-  font-size: calc(var(--font-size, var(--font-size-default, 1.25rem)) * 1.5);
-}
+  .slim-user-menu-header-icon {
+    font-size: calc(var(--font-size, var(--font-size-default, 1rem)) * 1.5);
+  }
 
-.slim-user-menu-header-text {
-  font-size: var(--font-size);
-  display: block;
-  text-align: center;
-}
-
-.slim-user-menu-header-plus {
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
+  .slim-user-menu-header-text {
+    font-size: var(--font-size, var(--font-size-default, 1rem));
+    display: block;
+    text-align: center;
+  }
 }

@@ -21,33 +21,33 @@
         <ng-template pTemplate="header">
           <div
             class="slim-user-menu-header flex flex-column row-gap-1 align-items-center justify-content-center"
-            [pTooltip]="'REMOTES.SLIM_USER_MENU.TOOLTIP' | translate"
-            tooltipPosition="right"
-            tooltipEvent="both"
             [ngClass]="{
               'slim-user-menu-header-plus': vm.activeMode === Mode.SLIM_PLUS
             }"
+            [style]="'height: 3.5rem;'"
+            [pTooltip]="('REMOTES.SLIM_USER_MENU.TOOLTIP' | translate) + ': ' + vm.displayName"
+            tooltipPosition="right"
+            tooltipEvent="both"
           >
             <ocx-slot
               name="onecx-avatar-image"
               [inputs]="{
                 id: 'ocx_slim_user_sidebar_action_user_avatar_image',
                 imageType: 'medium',
-                imageStyle: 'max-height: 2.5rem; max-width: 2.5rem'
+                imageStyle: 'max-height: 2.5rem; max-width: 2.5rem; '
               }"
               [outputs]="{ imageLoaded: avatarImageLoadedEmitter }"
             >
             </ocx-slot>
-            <div class="flex justify-content-center align-items-center">
-              <i *ngIf="vm.avatarImageLoaded === undefined" class="slim-user-menu-header-icon pi pi-user"></i>
-            </div>
-            <ng-container *ngIf="vm.activeMode === Mode.SLIM_PLUS">
+            <div *ngIf="vm.avatarImageLoaded === undefined" class="p-2 slim-user-menu-header-icon pi pi-user"></div>
+
+            <!--ng-container *ngIf="vm.activeMode === Mode.SLIM_PLUS">
               <div class="flex justify-content-center align-items-center">
                 <span *ngIf="vm.displayName" id="ws_slim_user_menu_display_name" class="slim-user-menu-header-text">
                   {{ vm.displayName }}
                 </span>
               </div>
-            </ng-container>
+            </ng-container-->
           </div>
         </ng-template>
         <ng-template pTemplate="content">
