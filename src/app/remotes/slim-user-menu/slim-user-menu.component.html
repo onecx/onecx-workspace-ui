@@ -25,7 +25,8 @@
               'slim-user-menu-header-plus': vm.activeMode === Mode.SLIM_PLUS
             }"
             [style]="'height: 3.5rem;'"
-            [pTooltip]="('REMOTES.SLIM_USER_MENU.TOOLTIP' | translate) + ': ' + vm.displayName"
+            [pTooltip]="('REMOTES.SLIM_USER_MENU.TOOLTIP' | translate) + '<br/>' + vm.displayName"
+            [escape]="false"
             tooltipPosition="right"
             tooltipEvent="both"
           >
