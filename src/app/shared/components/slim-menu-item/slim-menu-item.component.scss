@@ -22,11 +22,10 @@
   }
   // icon styles
   .slim-menu-list-item-icon {
-    font-size: calc(var(--font-size, var(--font-size-default, 1.25rem)) * 1.5);
+    font-size: calc(var(--font-size, var(--font-size-default, 1rem)) * 1.5);
   }
   .slim-menu-list-item-text {
-    font-size: var(--font-size);
-    display: block;
+    font-size: calc(var(--font-size, var(--font-size-default, 1rem)) * 0.875);
   }
   .slim-menu-list-item-text-ellipsis {
     max-width: 6rem; /* force ellipsis */
@@ -61,6 +60,6 @@
     padding-right: 0.5rem;
   }
   .slim-menu-list-item-link {
-    row-gap: 0.4rem;
+    row-gap: 0.3rem;
   }
 }
