@@ -339,7 +339,8 @@ describe('OneCXSlimUserMenuComponent', () => {
       expect(await header!.getAttribute('class')).toContain('slim-user-menu-header-plus')
     })
 
-    describe('Header Display Name', () => {
+    // user name removed from displaying
+    xdescribe('Header Display Name', () => {
       it('should display displayName', async () => {
         userServiceMock.profile$.publish({
           person: {

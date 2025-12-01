@@ -26,9 +26,6 @@
             <span id="ws_user_sidebar_display_name" class="font-bold" [ngClass]="name.length > 30 ? 'text-sm' : ''">
               {{ name }}
             </span>
-            <!--
-              [ngStyle]="{ 'word-break': name.length > 30 ? 'break-all' : 'normal' }"
-            -->
             <span *ngIf="organization$ | async as orgId" id="ws_user_sidebar_orgid" class="text-sm">{{ orgId }}</span>
           </span>
         </div>
