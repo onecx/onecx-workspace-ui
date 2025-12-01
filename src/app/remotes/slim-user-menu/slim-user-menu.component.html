@@ -9,6 +9,7 @@
 >
   <div
     *ngIf="vm.activeMode && vm.activeMode !== Mode.INACTIVE"
+    id="ws_slim_user_sidebar"
     class="slim-user-menu"
     [ngClass]="{
       'slim-user-menu-slim': vm.activeMode === Mode.SLIM,
@@ -20,6 +21,7 @@
       <p-accordionTab>
         <ng-template pTemplate="header">
           <div
+            id="ws_slim_user_sidebar_header"
             class="slim-user-menu-header flex flex-column row-gap-1 align-items-center justify-content-center"
             [ngClass]="{
               'slim-user-menu-header-plus': vm.activeMode === Mode.SLIM_PLUS
@@ -33,7 +35,7 @@
             <ocx-slot
               name="onecx-avatar-image"
               [inputs]="{
-                id: 'ocx_slim_user_sidebar_action_user_avatar_image',
+                id: 'ws_slim_user_sidebar_action_user_avatar_image',
                 imageType: 'medium',
                 imageStyle: 'max-height: 2.5rem; max-width: 2.5rem; '
               }"
@@ -41,26 +43,18 @@
             >
             </ocx-slot>
             <div *ngIf="vm.avatarImageLoaded === undefined" class="p-2 slim-user-menu-header-icon pi pi-user"></div>
-
-            <!--ng-container *ngIf="vm.activeMode === Mode.SLIM_PLUS">
-              <div class="flex justify-content-center align-items-center">
-                <span *ngIf="vm.displayName" id="ws_slim_user_menu_display_name" class="slim-user-menu-header-text">
-                  {{ vm.displayName }}
-                </span>
-              </div>
-            </ng-container-->
           </div>
         </ng-template>
         <ng-template pTemplate="content">
           <ul
             *ngIf="vm.menuItems"
-            id="ws_slim_user_menu_list"
-            class="slim-user-menu-list flex flex-column align-items-center justify-content-center list-none m-0 p-0"
+            id="ws_slim_user_sidebar_menu_list"
+            class="m-0 p-0 slim-user-menu-list flex flex-column align-items-center justify-content-center list-none"
           >
             <app-slim-menu-item
               *ngFor="let item of vm.menuItems; let i = index"
               [item]="item"
-              [id]="'ws_slim_user_menu_list_item_' + (i + 1)"
+              [id]="'ws_slim_user_sidebar_menu_list_item_' + (i + 1)"
               [index]="i"
               [activeMode]="vm.activeMode"
             ></app-slim-menu-item>
