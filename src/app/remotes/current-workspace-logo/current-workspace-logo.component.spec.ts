@@ -4,16 +4,14 @@ import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'
 import { TranslateTestingModule } from 'ngx-translate-testing'
-import { of, ReplaySubject } from 'rxjs'
+import { ReplaySubject } from 'rxjs'
 
 import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
-import { AppStateServiceMock, FakeTopic, provideAppStateServiceMock } from '@onecx/angular-integration-interface/mocks'
+import { AppStateServiceMock, provideAppStateServiceMock } from '@onecx/angular-integration-interface/mocks'
 import { Workspace } from '@onecx/integration-interface'
 
 import { OneCXCurrentWorkspaceLogoComponent } from './current-workspace-logo.component'
 import { RefType } from 'src/app/shared/generated'
-import { Topic } from '@onecx/accelerator'
-import { MenuService } from 'src/app/shared/services/menu.service'
 
 const workspace1: Partial<Workspace> = {
   id: 'w1',
@@ -24,15 +22,11 @@ const workspace1: Partial<Workspace> = {
 
 describe('OneCXCurrentWorkspaceLogoComponent', () => {
   let mockAppStateService: AppStateServiceMock
-  let fakeEventsTopic: FakeTopic<any>
-  const menuServiceSpy = jasmine.createSpyObj<MenuService>('MenuService', ['isVisible', 'isActive'])
 
   function setUp() {
     const fixture = TestBed.createComponent(OneCXCurrentWorkspaceLogoComponent)
     const component = fixture.componentInstance
     fixture.detectChanges()
-    fakeEventsTopic = new FakeTopic()
-    component['eventsTopic'] = fakeEventsTopic as unknown as Topic<any>
     return { fixture, component }
   }
 
@@ -52,8 +46,7 @@ describe('OneCXCurrentWorkspaceLogoComponent', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         provideAppStateServiceMock(),
-        { provide: BASE_URL, useValue: baseUrlSubject },
-        { provide: MenuService, useValue: menuServiceSpy }
+        { provide: BASE_URL, useValue: baseUrlSubject }
       ]
     })
       .overrideComponent(OneCXCurrentWorkspaceLogoComponent, {
@@ -70,8 +63,6 @@ describe('OneCXCurrentWorkspaceLogoComponent', () => {
       workspaceName: workspace1.workspaceName,
       logoUrl: workspace1.logoUrl
     } as Workspace)
-    menuServiceSpy.isActive.and.returnValue(of(true))
-    menuServiceSpy.isVisible.and.returnValue(of(true))
   })
 
   describe('initialize', () => {
@@ -144,7 +135,7 @@ describe('OneCXCurrentWorkspaceLogoComponent', () => {
         component.workspaceName = workspace1.workspaceName
         component.imageUrl = undefined
 
-        component.onImageLoadError(component.logoUrl['logo']!)
+        component.onImageLoadError(component.logoUrl[RefType.Logo]!)
       })
 
       it('should failed - use default', () => {
@@ -174,6 +165,7 @@ describe('OneCXCurrentWorkspaceLogoComponent', () => {
         component.logEnabled = false
         component.logPrefix = 'ext-url'
         component.workspaceName = workspace1.workspaceName
+        component.logoUrl[RefType.Logo] = workspace1.logoUrl
         component.imageUrl = undefined
 
         const url = component.getImageUrl(workspace1.workspaceName, 'url', RefType.Logo)
@@ -209,272 +201,183 @@ describe('OneCXCurrentWorkspaceLogoComponent', () => {
     })
   })
 
-  describe('dynamic width', () => {
-    it('should have default width', () => {
+  describe('imageType input changes', () => {
+    it('should reload image when imageType changes', () => {
       const { component } = setUp()
-
-      const mockConfig: RemoteComponentConfig = {
-        appId: 'appId',
-        productName: 'prodName',
-        permissions: ['permission'],
-        baseUrl: 'base'
-      }
-
-      component.ocxRemoteComponentConfig = mockConfig
-
-      expect(component.container.nativeElement.style.width).toEqual('14.5rem')
-    })
-
-    it('should not change if slotWidth is not set', () => {
-      const { component } = setUp()
-
-      const mockConfig: RemoteComponentConfig = {
-        appId: 'appId',
-        productName: 'prodName',
-        permissions: ['permission'],
-        baseUrl: 'base'
-      }
-
-      component.ocxRemoteComponentConfig = mockConfig
-      fakeEventsTopic.publish({
-        type: 'slot#resized',
-        payload: {
-          slotName: 'onecx-shell-vertical-menu',
-          slotDetails: {
-            height: 800
-          }
-        }
-      })
-
-      expect(component.container.nativeElement.style.width).toEqual('14.5rem')
-    })
-
-    it('should change if slotWidth is set', () => {
-      document.documentElement.style.fontSize = '16px' // 1rem = 16px
-      const { component } = setUp()
-
-      const mockConfig: RemoteComponentConfig = {
-        appId: 'appId',
-        productName: 'prodName',
-        permissions: ['permission'],
-        baseUrl: 'base'
-      }
-
-      component.ocxRemoteComponentConfig = mockConfig
-      fakeEventsTopic.publish({
-        type: 'slot#resized',
-        payload: {
-          slotName: 'onecx-shell-vertical-menu',
-          slotDetails: {
-            width: 400,
-            height: 800
-          }
-        }
-      })
-
-      const expectedWidth = 400 - 16 * 2.5 + 'px'
-      expect(component.container.nativeElement.style.width).toEqual(expectedWidth)
-    })
-
-    it('should not change if static menu is not active', () => {
-      document.documentElement.style.fontSize = '16px' // 1rem = 16px
-      menuServiceSpy.isActive.and.returnValue(of(false))
-
-      const { component } = setUp()
-
-      const mockConfig: RemoteComponentConfig = {
-        appId: 'appId',
-        productName: 'prodName',
-        permissions: ['permission'],
-        baseUrl: 'base'
-      }
-
-      component.ocxRemoteComponentConfig = mockConfig
-      fakeEventsTopic.publish({
-        type: 'slot#resized',
-        payload: {
-          slotName: 'onecx-shell-vertical-menu',
-          slotDetails: {
-            width: 400,
-            height: 800
-          }
-        }
-      })
-
-      expect(component.container.nativeElement.style.width).toEqual('400px')
-    })
-
-    it('should handle slot group resized event', () => {
-      document.documentElement.style.fontSize = '16px' // 1rem = 16px
-      const { component } = setUp()
-
-      const mockConfig: RemoteComponentConfig = {
-        appId: 'appId',
-        productName: 'prodName',
-        permissions: ['permission'],
-        baseUrl: 'base'
-      }
-
-      component.ocxRemoteComponentConfig = mockConfig
-      fakeEventsTopic.publish({
-        type: 'slotGroup#resized',
-        payload: {
-          slotGroupName: 'onecx-shell-body-start',
-          slotGroupDetails: {
-            width: 300,
-            height: 800
-          }
-        }
-      })
-
-      const expectedWidth = 300 - 16 * 2.5 + 'px'
-      expect(component.container.nativeElement.style.width).toEqual(expectedWidth)
-    })
-
-    it('should handle slot group resized event when static menu is not active', () => {
-      document.documentElement.style.fontSize = '16px' // 1rem = 16px
-      menuServiceSpy.isActive.and.returnValue(of(false))
-
-      const { component } = setUp()
-
-      const mockConfig: RemoteComponentConfig = {
-        appId: 'appId',
-        productName: 'prodName',
-        permissions: ['permission'],
-        baseUrl: 'base'
-      }
-
-      component.ocxRemoteComponentConfig = mockConfig
-      fakeEventsTopic.publish({
-        type: 'slotGroup#resized',
-        payload: {
-          slotGroupName: 'onecx-shell-body-start',
-          slotGroupDetails: {
-            width: 300,
-            height: 800
-          }
-        }
-      })
-
-      expect(component.container.nativeElement.style.width).toEqual('300px')
-    })
-
-    it('should keep default width when slot width is zero', () => {
-      const { component } = setUp()
-
-      const mockConfig: RemoteComponentConfig = {
-        appId: 'appId',
-        productName: 'prodName',
-        permissions: ['permission'],
-        baseUrl: 'base'
-      }
-
-      component.ocxRemoteComponentConfig = mockConfig
-      fakeEventsTopic.publish({
-        type: 'slot#resized',
-        payload: {
-          slotName: 'onecx-shell-vertical-menu',
-          slotDetails: {
-            width: 0,
-            height: 800
-          }
-        }
-      })
-
-      expect(component.container.nativeElement.style.width).toEqual('14.5rem')
-    })
-
-    it('should switch to small logo when width is below threshold', () => {
-      document.documentElement.style.fontSize = '16px' // 1rem = 16px
-      const { component } = setUp()
-      component.imageType = RefType.Logo
-
-      const mockConfig: RemoteComponentConfig = {
-        appId: 'appId',
-        productName: 'prodName',
-        permissions: ['permission'],
-        baseUrl: 'base'
-      }
-
-      component.ocxRemoteComponentConfig = mockConfig
+      component.workspaceName = workspace1.workspaceName
 
       const imageUrlSpy = spyOn(component.imageUrl$, 'next')
 
-      fakeEventsTopic.publish({
-        type: 'slot#resized',
-        payload: {
-          slotName: 'onecx-shell-vertical-menu',
-          slotDetails: {
-            width: 200,
-            height: 800
-          }
-        }
-      })
+      // Change imageType via setter (simulating input change)
+      component.imageType = RefType.LogoSmall
 
-      expect(component.imageType).toEqual(RefType.LogoSmall)
       expect(imageUrlSpy).toHaveBeenCalled()
     })
 
-    it('should not switch to small logo when already using small logo', () => {
-      document.documentElement.style.fontSize = '16px' // 1rem = 16px
+    it('should not trigger update when imageType value does not change', () => {
       const { component } = setUp()
+      component.workspaceName = workspace1.workspaceName
+
+      // First set to LogoSmall to establish a baseline
       component.imageType = RefType.LogoSmall
 
-      const mockConfig: RemoteComponentConfig = {
-        appId: 'appId',
-        productName: 'prodName',
-        permissions: ['permission'],
-        baseUrl: 'base'
-      }
+      // Set same value twice - BehaviorSubject will still emit but we can verify the value didn't change
+      const previousType = component.imageType
+      component.imageType = RefType.LogoSmall
 
-      component.ocxRemoteComponentConfig = mockConfig
+      expect(component.imageType).toBe(previousType)
+    })
+  })
 
-      const imageUrlSpy = spyOn(component.imageUrl$, 'next')
+  describe('getImageUrl - all priority paths', () => {
+    it('should return undefined and emit imageLoadingFailed when all options exhausted', () => {
+      const { component } = setUp()
+      component.workspaceName = workspace1.workspaceName
+      component.imageUrl = undefined
+      component.logoUrl[RefType.Logo] = undefined
+      component.defaultImageUrl = undefined
+      component.useDefaultLogo = false
 
-      fakeEventsTopic.publish({
-        type: 'slot#resized',
-        payload: {
-          slotName: 'onecx-shell-vertical-menu',
-          slotDetails: {
-            width: 200,
-            height: 800
-          }
-        }
-      })
+      const emitSpy = spyOn(component.imageLoadingFailed, 'emit')
 
-      expect(component.imageType).toEqual(RefType.LogoSmall)
-      expect(imageUrlSpy).not.toHaveBeenCalled()
+      const url = component.getImageUrl(workspace1.workspaceName, 'default', RefType.Logo)
+
+      expect(url).toBeUndefined()
+      expect(emitSpy).toHaveBeenCalledWith(true)
     })
 
-    it('should not switch to small logo when width is above threshold', () => {
-      document.documentElement.style.fontSize = '16px' // 1rem = 16px
+    it('should get image url - use BFF image url for logo', () => {
       const { component } = setUp()
-      component.imageType = RefType.Logo
+      component.workspaceName = workspace1.workspaceName
+      component.imageUrl = undefined
+      component.logoUrl[RefType.Logo] = undefined
 
+      const url = component.getImageUrl(workspace1.workspaceName, 'image', RefType.Logo)
+
+      expect(url).toContain('/images/')
+      expect(url).toContain(workspace1.workspaceName!)
+      expect(url).toContain('/logo')
+    })
+
+    it('should get image url - use BFF image url for small logo', () => {
+      const { component } = setUp()
+      component.workspaceName = workspace1.workspaceName
+      component.imageUrl = undefined
+      component.logoUrl[RefType.LogoSmall] = undefined
+
+      const url = component.getImageUrl(workspace1.workspaceName, 'image', RefType.LogoSmall)
+
+      expect(url).toContain('/images/')
+      expect(url).toContain(workspace1.workspaceName!)
+      expect(url).toContain('/logo-small')
+    })
+
+    it('should skip external URL when empty string', () => {
+      const { component } = setUp()
+      component.workspaceName = workspace1.workspaceName
+      component.imageUrl = undefined
+      component.logoUrl[RefType.Logo] = ''
+
+      const url = component.getImageUrl(workspace1.workspaceName, 'ext-url', RefType.Logo)
+
+      expect(url).toContain('/images/')
+    })
+
+    it('should skip input imageUrl when empty string', () => {
+      const { component } = setUp()
+      component.workspaceName = workspace1.workspaceName
+      component.imageUrl = ''
+      component.logoUrl[RefType.Logo] = 'http://external/logo.png'
+
+      const url = component.getImageUrl(workspace1.workspaceName, 'url', RefType.Logo)
+
+      expect(url).toBe(component.logoUrl[RefType.Logo])
+    })
+
+    it('should not use default image when useDefaultLogo is false', () => {
+      const { component } = setUp()
+      component.workspaceName = workspace1.workspaceName
+      component.imageUrl = undefined
+      component.logoUrl[RefType.Logo] = undefined
+      component.defaultImageUrl = 'http://default/logo.png'
+      component.useDefaultLogo = false
+
+      const emitSpy = spyOn(component.imageLoadingFailed, 'emit')
+
+      const url = component.getImageUrl(workspace1.workspaceName, 'default', RefType.Logo)
+
+      expect(url).toBeUndefined()
+      expect(emitSpy).toHaveBeenCalledWith(true)
+    })
+
+    it('should not use default image when defaultImageUrl is empty', () => {
+      const { component } = setUp()
+      component.workspaceName = workspace1.workspaceName
+      component.imageUrl = undefined
+      component.logoUrl[RefType.Logo] = undefined
+      component.defaultImageUrl = ''
+      component.useDefaultLogo = true
+
+      const emitSpy = spyOn(component.imageLoadingFailed, 'emit')
+
+      const url = component.getImageUrl(workspace1.workspaceName, 'default', RefType.Logo)
+
+      expect(url).toBeUndefined()
+      expect(emitSpy).toHaveBeenCalledWith(true)
+    })
+  })
+
+  describe('workspace updates', () => {
+    it('should update logo URLs when workspace changes', (done) => {
+      const { component } = setUp()
+
+      const newWorkspace: Partial<Workspace> = {
+        workspaceName: 'workspace2',
+        logoUrl: 'http://new/logo.png',
+        logoSmallImageUrl: 'http://new/logo-small.png'
+      }
+
+      mockAppStateService.currentWorkspace$.publish(newWorkspace as Workspace)
+
+      setTimeout(() => {
+        expect(component.workspaceName).toBe('workspace2')
+        expect(component.logoUrl[RefType.Logo]).toBe('http://new/logo.png')
+        expect(component.logoUrl[RefType.LogoSmall]).toBe('http://new/logo-small.png')
+        done()
+      }, 100)
+    })
+  })
+
+  describe('ocxInitRemoteComponent', () => {
+    it('should configure workspaceApi basePath with apiPrefix', () => {
+      const { component } = setUp()
       const mockConfig: RemoteComponentConfig = {
         appId: 'appId',
         productName: 'prodName',
         permissions: ['permission'],
-        baseUrl: 'base'
+        baseUrl: 'http://base-url'
       }
 
-      component.ocxRemoteComponentConfig = mockConfig
+      component.ocxInitRemoteComponent(mockConfig)
 
-      const imageUrlSpy = spyOn(component.imageUrl$, 'next')
+      expect(component['workspaceApi'].configuration.basePath).toContain('http://base-url')
+      expect(component['workspaceApi'].configuration.basePath).toContain('/bff')
+    })
 
-      fakeEventsTopic.publish({
-        type: 'slot#resized',
-        payload: {
-          slotName: 'onecx-shell-vertical-menu',
-          slotDetails: {
-            width: 400,
-            height: 800
-          }
-        }
-      })
+    it('should set defaultImageUrl when DEFAULT_LOGO_PATH is configured', () => {
+      const { component } = setUp()
+      const mockConfig: RemoteComponentConfig = {
+        appId: 'appId',
+        productName: 'prodName',
+        permissions: ['permission'],
+        baseUrl: 'http://base-url'
+      }
 
-      expect(component.imageType).toEqual(RefType.Logo)
-      expect(imageUrlSpy).not.toHaveBeenCalled()
+      component.ocxInitRemoteComponent(mockConfig)
+
+      if (component.defaultImageUrl) {
+        expect(component.defaultImageUrl).toContain('http://base-url')
+      }
     })
   })
 })

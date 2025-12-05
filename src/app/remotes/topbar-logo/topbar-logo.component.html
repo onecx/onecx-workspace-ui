@@ -1,0 +1,14 @@
+<div #container class="topbar-logo-container">
+  @if (remoteComponentConfig) {
+    <app-current-workspace-logo
+      [imageId]="imageId"
+      [imageUrl]="imageUrl"
+      [imageStyleClass]="imageStyleClass"
+      [imageType]="currentImageType"
+      [useDefaultLogo]="useDefaultLogo"
+      [logPrefix]="logPrefix"
+      [logEnabled]="logEnabled"
+      [ocxRemoteComponentConfig]="remoteComponentConfig"
+    ></app-current-workspace-logo>
+  }
+</div>

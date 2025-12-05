@@ -1,17 +1,7 @@
-import {
-  Component,
-  ElementRef,
-  EventEmitter,
-  inject,
-  Inject,
-  Input,
-  NO_ERRORS_SCHEMA,
-  OnDestroy,
-  ViewChild
-} from '@angular/core'
+import { Component, EventEmitter, inject, Inject, Input, NO_ERRORS_SCHEMA, Output } from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
-import { BehaviorSubject, combineLatest, filter, map, Observable, ReplaySubject, merge } from 'rxjs'
+import { BehaviorSubject, ReplaySubject } from 'rxjs'
 
 import {
   AngularRemoteComponentsModule,
@@ -26,52 +16,6 @@ import { PortalCoreModule } from '@onecx/portal-integration-angular'
 import { Configuration, RefType, WorkspaceAPIService } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
 import { environment } from 'src/environments/environment'
-import { EventsTopic } from '@onecx/integration-interface'
-import { MenuMode, MenuService } from 'src/app/shared/services/menu.service'
-
-// Copied over from libs v7. Remove once migrating to v7.
-enum EventType {
-  NAVIGATED = 'navigated',
-  AUTH_LOGOUT_BUTTON_CLICKED = 'authentication#logoutButtonClicked',
-  SLOT_RESIZED = 'slot#resized',
-  SLOT_GROUP_RESIZED = 'slotGroup#resized'
-}
-// Copied over from libs v7. Remove once migrating to v7.
-type SlotResizedDetails = {
-  width: number
-  height: number
-}
-// Copied over from libs v7. Remove once migrating to v7.
-type SlotResizedEventPayload = {
-  slotName: string
-  slotDetails: SlotResizedDetails
-}
-// Copied over from libs v7. Remove once migrating to v7.
-type SlotResizedEvent = {
-  type: EventType.SLOT_RESIZED
-  payload: SlotResizedEventPayload
-}
-// Copied over from libs v7. Remove once migrating to v7.
-type SlotGroupResizedDetails = {
-  width: number
-  height: number
-}
-// Copied over from libs v7. Remove once migrating to v7.
-type SlotGroupResizedEventPayload = {
-  slotGroupName: string
-  slotGroupDetails: SlotGroupResizedDetails
-}
-// Copied over from libs v7. Remove once migrating to v7.
-type SlotGroupResizedEvent = {
-  type: EventType.SLOT_GROUP_RESIZED
-  payload: SlotGroupResizedEventPayload
-}
-
-const RESIZE_OBSERVED_SLOT_NAME_OLD = 'onecx-shell-vertical-menu'
-const RESIZE_OBSERVED_SLOT_GROUP_NAME = 'onecx-shell-body-start'
-const DEFAULT_WIDTH_REM = 17
-const TOGGLE_MENU_BUTTON_WIDTH_REM = 2.5
-const SMALL_LOGO_THRESHOLD_PX = 235
 
 @Component({
   selector: 'app-current-workspace-logo',
@@ -88,12 +32,19 @@ const SMALL_LOGO_THRESHOLD_PX = 235
   schemas: [NO_ERRORS_SCHEMA]
 })
 @UntilDestroy()
-export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, ocxRemoteWebcomponent, OnDestroy {
-  // input
+export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
+  // Inputs
   @Input() imageId: string | undefined = undefined
   @Input() imageUrl: string | undefined = undefined
   @Input() imageStyleClass: string | undefined = undefined
-  @Input() imageType: RefType = RefType.Logo
+  @Input()
+  get imageType(): RefType {
+    return this.imageType$.value
+  }
+  set imageType(value: RefType) {
+    this.imageType$.next(value)
+    this.updateImageUrl()
+  }
   @Input() useDefaultLogo = false // used if logo loading failed
   @Input() logPrefix: string | undefined = undefined
   @Input() logEnabled = false
@@ -101,41 +52,35 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
     this.ocxInitRemoteComponent(config)
   }
   // output
-  @Input() imageLoadingFailed = new EventEmitter<boolean>()
+  @Output() imageLoadingFailed = new EventEmitter<boolean>()
 
   private readonly appState = inject(AppStateService)
-  private readonly menuService = inject(MenuService)
-
   public workspaceName: string | undefined
   public imageUrl$ = new BehaviorSubject<string | undefined>(undefined)
   public defaultImageUrl: string | undefined = undefined
   public logoUrl: Partial<Record<RefType, string | undefined>> = {}
 
-  @ViewChild('container', { static: true }) container!: ElementRef
-  private eventsTopic = new EventsTopic() // NOSONAR
-  public isStaticMenuActive$: Observable<boolean>
-  public isStaticMenuVisible$: Observable<boolean>
-  private readonly staticMenuMode: MenuMode = 'static'
+  private readonly imageType$ = new BehaviorSubject<RefType>(RefType.Logo)
 
   constructor(
     @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
     private readonly workspaceApi: WorkspaceAPIService
   ) {
-    this.appState.currentWorkspace$.asObservable().subscribe((workspace) => {
-      this.workspaceName = workspace?.workspaceName
-      this.logoUrl[RefType.Logo] = workspace.logoUrl
-      this.logoUrl[RefType.LogoSmall] = workspace.logoSmallImageUrl
-      // start testing image loading
-      this.imageUrl$.next(this.getImageUrl(this.workspaceName, 'url', this.imageType))
-    })
+    this.appState.currentWorkspace$
+      .asObservable()
+      .pipe(untilDestroyed(this))
+      .subscribe((workspace) => {
+        this.workspaceName = workspace?.workspaceName
+        this.logoUrl[RefType.Logo] = workspace.logoUrl
+        this.logoUrl[RefType.LogoSmall] = workspace.logoSmallImageUrl
+        // start testing image loading
+        this.updateImageUrl()
+      })
     this.log('getImageUrl => ' + this.imageUrl)
-
-    this.isStaticMenuActive$ = this.menuService.isActive(this.staticMenuMode).pipe(untilDestroyed(this))
-
-    this.isStaticMenuVisible$ = this.menuService.isVisible(this.staticMenuMode).pipe(untilDestroyed(this))
   }
-  ngOnDestroy(): void {
-    this.eventsTopic.destroy()
+
+  updateImageUrl(): void {
+    this.imageUrl$.next(this.getImageUrl(this.workspaceName, 'url', this.imageType))
   }
 
   ocxInitRemoteComponent(remoteComponentConfig: RemoteComponentConfig) {
@@ -143,10 +88,9 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
     this.workspaceApi.configuration = new Configuration({
       basePath: Location.joinWithSlash(remoteComponentConfig.baseUrl, environment.apiPrefix)
     })
-    if (environment.DEFAULT_LOGO_PATH)
+    if (environment.DEFAULT_LOGO_PATH) {
       this.defaultImageUrl = Utils.prepareUrlPath(remoteComponentConfig.baseUrl, environment.DEFAULT_LOGO_PATH)
-
-    this.initializeContainerStyles()
+    }
   }
 
   /**
@@ -159,17 +103,19 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
 
   // try next prio level depending on previous used URL
   public onImageLoadError(usedUrl: string): void {
+    const currentImageType = this.imageType$.value
+
     this.log('onImageLoadError using => ' + usedUrl)
-    if (usedUrl === this.logoUrl[RefType.Logo]) {
+    if (usedUrl === this.logoUrl[currentImageType]) {
       // external URL
       this.log('onImageLoadError using => ext-url')
       this.imageUrl$.next(this.imageUrl)
     } else if (usedUrl === this.imageUrl) {
       this.log('onImageLoadError using => image')
-      this.imageUrl$.next(this.getImageUrl(this.workspaceName, 'image', RefType.Logo))
-    } else if (usedUrl === this.getImageUrl(this.workspaceName, 'image', RefType.Logo)) {
+      this.imageUrl$.next(this.getImageUrl(this.workspaceName, 'image', currentImageType))
+    } else if (usedUrl === this.getImageUrl(this.workspaceName, 'image', currentImageType)) {
       this.log('onImageLoadError using => default')
-      this.imageUrl$.next(this.getImageUrl(this.workspaceName, 'default', RefType.Logo))
+      this.imageUrl$.next(this.getImageUrl(this.workspaceName, 'default', currentImageType))
     }
   }
 
@@ -182,9 +128,9 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
       return this.imageUrl
     }
     // URL as external URL
-    if (['url', 'ext-url'].includes(prioType) && this.logoUrl[RefType.Logo] && this.logoUrl[RefType.Logo] !== '') {
-      this.log('getImageUrl => ext-url ' + this.logoUrl[RefType.Logo])
-      return this.logoUrl[RefType.Logo]
+    if (['url', 'ext-url'].includes(prioType) && this.logoUrl[refType] && this.logoUrl[refType] !== '') {
+      this.log('getImageUrl => ext-url ' + this.logoUrl[refType])
+      return this.logoUrl[refType]
     }
     // URL for uploaded image
     if (['url', 'ext-url', 'image'].includes(prioType)) {
@@ -207,65 +153,6 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
     this.log('getImageUrl => stop')
     this.imageLoadingFailed.emit(true) // finally inform caller about impossibility
     return undefined
-  }
-
-  private initializeContainerStyles() {
-    this.setDefaultWidth()
-    this.initializeVerticalMenuSlotResizeListener()
-  }
-
-  private initializeVerticalMenuSlotResizeListener() {
-    const slotResized$ = this.eventsTopic.pipe(
-      filter(
-        (e): e is SlotResizedEvent =>
-          e.type === EventType.SLOT_RESIZED &&
-          (e as SlotResizedEvent).payload.slotName === RESIZE_OBSERVED_SLOT_NAME_OLD
-      ),
-      map((e) => e.payload),
-      untilDestroyed(this)
-    )
-
-    const slotGroupResized$ = this.eventsTopic.pipe(
-      filter(
-        (e): e is SlotGroupResizedEvent =>
-          e.type === EventType.SLOT_GROUP_RESIZED &&
-          (e as SlotGroupResizedEvent).payload.slotGroupName === RESIZE_OBSERVED_SLOT_GROUP_NAME
-      ),
-      map((e) => e.payload),
-      untilDestroyed(this)
-    )
-
-    combineLatest([merge(slotResized$, slotGroupResized$), this.isStaticMenuActive$, this.isStaticMenuVisible$])
-      .pipe(untilDestroyed(this))
-      .subscribe(([resizedEventPayload, isStaticMenuActive, _isStaticMenuVisible]) => {
-        const resizedEventPayloadWidth =
-          'slotDetails' in resizedEventPayload
-            ? resizedEventPayload.slotDetails.width
-            : resizedEventPayload.slotGroupDetails.width
-
-        if (resizedEventPayloadWidth > 0) {
-          if (isStaticMenuActive) {
-            const correction = this.remToPx() * TOGGLE_MENU_BUTTON_WIDTH_REM
-            const adjustedWidth = resizedEventPayloadWidth - correction
-            this.container.nativeElement.style.width = adjustedWidth + 'px'
-          } else {
-            this.container.nativeElement.style.width = resizedEventPayloadWidth + 'px'
-          }
-
-          if (resizedEventPayloadWidth < SMALL_LOGO_THRESHOLD_PX && this.imageType !== RefType.LogoSmall) {
-            this.imageType = RefType.LogoSmall
-            this.imageUrl$.next(this.getImageUrl(this.workspaceName, 'url', this.imageType))
-          }
-        }
-      })
-  }
-
-  private remToPx(): number {
-    return Number.parseFloat(getComputedStyle(document.documentElement).fontSize)
-  }
-
-  private setDefaultWidth() {
-    this.container.nativeElement.style.width = DEFAULT_WIDTH_REM - TOGGLE_MENU_BUTTON_WIDTH_REM + 'rem'
   }
 
   private log(text: string) {
