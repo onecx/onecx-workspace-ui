@@ -152,7 +152,9 @@
         [text]="'ACTIONS.DELETE.WORKSPACE.MESSAGE.REJECT_MANDATORY' | translate"
       ></p-message>
       <div *ngIf="!workspace?.mandatory" class="flex flex-column row-gap-2">
-        <div id="ws_delete_message" class="font-bold">{{ 'ACTIONS.DELETE.WORKSPACE.MESSAGE' | translate }}</div>
+        <div id="ws_delete_message" class="font-bold">
+          {{ 'ACTIONS.DELETE.WORKSPACE.MESSAGE.QUESTION' | translate }}
+        </div>
         <div id="ws_delete_workspace_name" class="font-bold text-center danger-action-text">{{ workspace?.name }}</div>
         <div *ngIf="!workspace?.operator">{{ 'ACTIONS.DELETE.INFO' | translate }}</div>
         <p-message
