@@ -99,7 +99,14 @@ app:
           technology: WEBCOMPONENTMODULE
           remoteName: onecx-workspace
           tagName: ocx-slim-vertical-main-menu-component
-          
+        topbar-logo:
+          exposedModule: ./OneCXTopbarLogoComponent
+          description: 'Display the logo of the current workspace in the top bar.'
+          type: COMPONENT
+          technology: WEBCOMPONENTMODULE
+          remoteName: onecx-workspace
+          tagName: ocx-topbar-logo-component
+
     # Microservice
     microservice:
       spec:
