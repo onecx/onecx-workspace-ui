@@ -10,7 +10,6 @@ import {
 import { Capability, UserService } from '@onecx/angular-integration-interface'
 import { UserProfile } from '@onecx/integration-interface'
 import { Topic } from '@onecx/accelerator'
-import { timeout } from 'rxjs'
 
 describe('MenuService', () => {
   let service: MenuService
@@ -62,7 +61,9 @@ describe('MenuService', () => {
 
     service = TestBed.inject(MenuService)
     userServiceMock = TestBed.inject(UserService) as unknown as UserServiceMock
-    service['staticMenuState$'] = new FakeTopic() as unknown as Topic<{ isVisible: boolean }>
+    const fakeTopic = new FakeTopic() as unknown as Topic<{ isVisible: boolean }>
+    service['staticMenuState$'] = fakeTopic
+    fakeTopic.publish({ isVisible: true })
   })
 
   it('should react to resize events', (done) => {
@@ -320,30 +321,6 @@ describe('MenuService', () => {
             done()
           })
         })
-
-        it('should be not defined on user selected other mode', (done) => {
-          ShellCapabilityServiceMock.setCapabilities([Capability.ACTIVENESS_AWARE_MENUS])
-          userServiceMock.profile$.publish({
-            accountSettings: {
-              layoutAndThemeSettings: {
-                menuMode: 'OVERLAY'
-              }
-            }
-          } as UserProfile)
-          // Subscribe and wait until timeout for test to succeed
-          service
-            .isVisible('static')
-            .pipe(timeout(100))
-            .subscribe({
-              next: (isVisible) => {
-                fail('Got value ' + isVisible)
-              },
-              error: (err) => {
-                expect(err.name).toBe('TimeoutError')
-                done()
-              }
-            })
-        })
       })
 
       describe('for horizontal mode', () => {
@@ -388,10 +365,28 @@ describe('MenuService', () => {
               }
             }
           } as UserProfile)
+
+          const results: boolean[] = []
+
           service.isVisible('static').subscribe((isVisible) => {
-            expect(isVisible).toBeFalse()
-            done()
+            results.push(isVisible)
+            if (results.length === 2) {
+              expect(results).toEqual([true, false])
+              done()
+            }
           })
+
+          mockDesktop()
+          setTimeout(() => {
+            const event1 = new Event('resize')
+            globalThis.dispatchEvent(event1)
+
+            setTimeout(() => {
+              mockMobile()
+              const event2 = new Event('resize')
+              globalThis.dispatchEvent(event2)
+            }, 150)
+          }, 50)
         })
 
         it('should be not visible on user selected horizontal', (done) => {
@@ -403,34 +398,29 @@ describe('MenuService', () => {
               }
             }
           } as UserProfile)
-          service.isVisible('static').subscribe((isVisible) => {
-            expect(isVisible).toBeFalse()
-            done()
-          })
-        })
 
-        it('should be not defined on user selected other mode', (done) => {
-          ShellCapabilityServiceMock.setCapabilities([Capability.ACTIVENESS_AWARE_MENUS])
-          userServiceMock.profile$.publish({
-            accountSettings: {
-              layoutAndThemeSettings: {
-                menuMode: 'OVERLAY'
-              }
+          const results: boolean[] = []
+
+          service.isVisible('static').subscribe((isVisible) => {
+            results.push(isVisible)
+            if (results.length === 2) {
+              expect(results).toEqual([true, false])
+              done()
             }
-          } as UserProfile)
-          // Subscribe and wait until timeout for test to succeed
-          service
-            .isVisible('static')
-            .pipe(timeout(100))
-            .subscribe({
-              next: (isVisible) => {
-                fail('Got value ' + isVisible)
-              },
-              error: (err) => {
-                expect(err.name).toBe('TimeoutError')
-                done()
-              }
-            })
+          })
+
+          mockDesktop()
+          setTimeout(() => {
+            const event1 = new Event('resize')
+            globalThis.dispatchEvent(event1)
+
+            // Now switch to mobile
+            setTimeout(() => {
+              mockMobile()
+              const event2 = new Event('resize')
+              globalThis.dispatchEvent(event2)
+            }, 150)
+          }, 50)
         })
       })
       describe('for horizontal mode', () => {

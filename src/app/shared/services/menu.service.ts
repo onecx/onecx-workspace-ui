@@ -84,8 +84,8 @@ export class MenuService {
       })
     )
 
-    combineLatest([this.isMobileDistinct$, this.menuMode$]).subscribe(([isMobile, userSelectedMenuMode]) => {
-      this.handleViewportChange(userSelectedMenuMode, isMobile)
+    this.isMobileDistinct$.pipe(untilDestroyed(this)).subscribe((isMobile) => {
+      this.staticMenuState$.publish({ isVisible: !isMobile })
     })
   }
 
@@ -190,24 +190,5 @@ export class MenuService {
     }
 
     return of(true)
-  }
-
-  private handleViewportChange(userSelectedMenuMode: MenuMode, isMobile: boolean): void {
-    switch (userSelectedMenuMode) {
-      case 'horizontal':
-        return this.handleHorizontalMenuViewportChange(isMobile)
-      case 'static':
-        return this.handleStaticMenuViewportChange(isMobile)
-      default:
-        return
-    }
-  }
-
-  private handleHorizontalMenuViewportChange(isMobile: boolean): void {
-    this.staticMenuState$.publish({ isVisible: !isMobile })
-  }
-
-  private handleStaticMenuViewportChange(isMobile: boolean): void {
-    this.staticMenuState$.publish({ isVisible: !isMobile })
   }
 }
