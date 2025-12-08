@@ -96,7 +96,7 @@ describe('OneCXTopbarLogoComponent', () => {
     })
   })
 
-  describe('dynamic width and logo type switching', () => {
+  describe('dynamic width', () => {
     it('should have default width', () => {
       const { component } = setUp()
 
@@ -270,7 +270,9 @@ describe('OneCXTopbarLogoComponent', () => {
 
       expect(component.container.nativeElement.style.width).toEqual('14.5rem')
     })
+  })
 
+  describe('logo type switching', () => {
     it('should switch to small logo when width is below threshold', () => {
       document.documentElement.style.fontSize = '16px' // 1rem = 16px
       const { component } = setUp()

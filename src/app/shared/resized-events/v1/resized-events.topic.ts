@@ -1,3 +1,5 @@
+// Copied over from libs v7. Remove once migrating to v7.
+
 import { Topic, TopicPublisher } from '@onecx/accelerator'
 import { TopicResizedEventType } from './topic-resized-event-type'
 import { ResizedEventType } from './resized-event-type'

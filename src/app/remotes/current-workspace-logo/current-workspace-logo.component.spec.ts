@@ -17,7 +17,8 @@ const workspace1: Partial<Workspace> = {
   id: 'w1',
   workspaceName: 'workspace1',
   displayName: 'Workspace 1',
-  logoUrl: 'https://host:port/site/logo.png'
+  logoUrl: 'https://host:port/site/logo.png',
+  logoSmallImageUrl: 'https://host:port/site/logo-small.png'
 }
 
 describe('OneCXCurrentWorkspaceLogoComponent', () => {
@@ -99,231 +100,315 @@ describe('OneCXCurrentWorkspaceLogoComponent', () => {
     })
   })
 
-  describe('provide logo', () => {
-    it('should load - initially', (done) => {
-      const { component } = setUp()
-      component.logEnabled = true
-      component.logPrefix = 'prefix'
-      component.workspaceName = workspace1.workspaceName
+  describe('image loading lifecycle', () => {
+    describe('successful image load', () => {
+      it('should emit success event when image loads successfully', () => {
+        const { component } = setUp()
+        const emitSpy = spyOn(component.imageLoadingFailed, 'emit')
 
-      component.onImageLoadSuccess()
+        component.onImageLoadSuccess()
 
-      component.imageUrl$?.subscribe({
-        next: (data) => {
-          if (data) {
-            expect(data).toBe(workspace1.logoUrl!)
-          }
-          done()
-        },
-        error: done.fail
+        expect(emitSpy).toHaveBeenCalledWith(false)
       })
     })
 
-    describe('on load error', () => {
-      it('should failed - use image url', () => {
+    describe('image load error', () => {
+      it('should fall back from workspace external URL to custom input URL', () => {
         const { component } = setUp()
-        component.logEnabled = true // log without prefix !
         component.workspaceName = workspace1.workspaceName
-        component.imageUrl = 'http://image/url'
+        component.imageUrl = 'http://custom/logo.png'
+        component.logoUrl[RefType.Logo] = 'http://external/logo.png'
 
-        component.onImageLoadError(component.imageUrl)
+        const imageUrlSpy = spyOn(component.imageUrl$, 'next')
+
+        component.onImageLoadError('http://external/logo.png')
+
+        expect(imageUrlSpy).toHaveBeenCalledWith('http://custom/logo.png')
       })
 
-      it('should failed - use external URL', () => {
+      it('should fall back from custom input URL to BFF server endpoint', () => {
         const { component } = setUp()
-        component.logEnabled = false
         component.workspaceName = workspace1.workspaceName
-        component.imageUrl = undefined
+        component.imageUrl = 'http://custom/logo.png'
 
-        component.onImageLoadError(component.logoUrl[RefType.Logo]!)
+        const imageUrlSpy = spyOn(component.imageUrl$, 'next')
+
+        component.onImageLoadError('http://custom/logo.png')
+
+        expect(imageUrlSpy).toHaveBeenCalledWith(
+          `${component['workspaceApi'].configuration.basePath}/images/${workspace1.workspaceName}/logo`
+        )
       })
 
-      it('should failed - use default', () => {
+      it('should fall back from BFF server endpoint to default asset', () => {
         const { component } = setUp()
-        component.logEnabled = false
         component.workspaceName = workspace1.workspaceName
+        component.defaultImageUrl = '/assets/default-logo.png'
+        component.useDefaultLogo = true
 
-        component.onImageLoadError('http://onecx-workspace-bff:8080/images/' + workspace1.workspaceName + '/logo')
-      })
-    })
+        const bffImageUrl = `${component['workspaceApi'].configuration.basePath}/images/${workspace1.workspaceName}/logo`
+        const imageUrlSpy = spyOn(component.imageUrl$, 'next')
 
-    describe('provide logo - get url', () => {
-      it('should get image url - use input image url', () => {
-        const { component } = setUp()
-        component.logEnabled = false
-        component.logPrefix = 'url'
-        component.workspaceName = workspace1.workspaceName
-        component.imageUrl = '/url'
+        component.onImageLoadError(bffImageUrl)
 
-        const url = component.getImageUrl(workspace1.workspaceName, 'url', RefType.Logo)
-
-        expect(url).toBe(component.imageUrl)
+        expect(imageUrlSpy).toHaveBeenCalledWith('/assets/default-logo.png')
       })
 
-      it('should get image url without input URL - use the external URL', () => {
+      it('should maintain imageType context throughout fallback sequence', () => {
         const { component } = setUp()
-        component.logEnabled = false
-        component.logPrefix = 'ext-url'
+
         component.workspaceName = workspace1.workspaceName
-        component.logoUrl[RefType.Logo] = workspace1.logoUrl
-        component.imageUrl = undefined
+        component.imageType = RefType.LogoSmall
+        component.logoUrl[RefType.LogoSmall] = 'http://external/logo-small.png'
 
-        const url = component.getImageUrl(workspace1.workspaceName, 'url', RefType.Logo)
+        const imageUrlSpy = spyOn(component.imageUrl$, 'next')
 
-        expect(url).toBe(workspace1.logoUrl)
-      })
+        component.onImageLoadError('http://external/logo-small.png')
 
-      it('should get image url - use default image url', () => {
-        const { component } = setUp()
-        component.logEnabled = false
-        component.logPrefix = 'default url'
-        component.workspaceName = workspace1.workspaceName
-        component.defaultImageUrl = '/default/url'
-        component.useDefaultLogo = true // enable use of default image
-
-        const url = component.getImageUrl(workspace1.workspaceName, 'default', RefType.Logo)
-
-        expect(url).toBe(component.defaultImageUrl)
-      })
-
-      it('should get url - unknown prio type', () => {
-        const { component } = setUp()
-        component.logEnabled = false
-        component.logPrefix = 'default url'
-        component.workspaceName = workspace1.workspaceName
-        component.defaultImageUrl = '/default/url'
-        component.useDefaultLogo = false // enable use of default image
-
-        const url = component.getImageUrl(workspace1.workspaceName, 'unknown', RefType.Logo)
-
-        expect(url).toBeUndefined()
+        expect(imageUrlSpy).toHaveBeenCalled()
       })
     })
   })
 
-  describe('imageType input changes', () => {
-    it('should reload image when imageType changes', () => {
+  describe('imageType property', () => {
+    it('should trigger URL recalculation when imageType changes', () => {
       const { component } = setUp()
       component.workspaceName = workspace1.workspaceName
-
       const imageUrlSpy = spyOn(component.imageUrl$, 'next')
 
-      // Change imageType via setter (simulating input change)
       component.imageType = RefType.LogoSmall
 
       expect(imageUrlSpy).toHaveBeenCalled()
     })
 
-    it('should not trigger update when imageType value does not change', () => {
+    it('should invoke updateImageUrl method through setter', () => {
       const { component } = setUp()
       component.workspaceName = workspace1.workspaceName
+      const updateSpy = spyOn(component, 'updateImageUrl')
 
-      // First set to LogoSmall to establish a baseline
       component.imageType = RefType.LogoSmall
 
-      // Set same value twice - BehaviorSubject will still emit but we can verify the value didn't change
-      const previousType = component.imageType
-      component.imageType = RefType.LogoSmall
+      expect(updateSpy).toHaveBeenCalledTimes(1)
+    })
 
-      expect(component.imageType).toBe(previousType)
+    it('should support switching between logo variants', () => {
+      const { component } = setUp()
+
+      component.imageType = RefType.LogoSmall
+      expect(component.imageType).toBe(RefType.LogoSmall)
+
+      component.imageType = RefType.Logo
+      expect(component.imageType).toBe(RefType.Logo)
     })
   })
 
-  describe('getImageUrl - all priority paths', () => {
-    it('should return undefined and emit imageLoadingFailed when all options exhausted', () => {
-      const { component } = setUp()
-      component.workspaceName = workspace1.workspaceName
-      component.imageUrl = undefined
-      component.logoUrl[RefType.Logo] = undefined
-      component.defaultImageUrl = undefined
-      component.useDefaultLogo = false
+  describe('image URL resolving strategy', () => {
+    describe('priority 1 (url): custom imageUrl input property', () => {
+      it('should prefer custom input URL for standard logo', () => {
+        const { component } = setUp()
+        component.workspaceName = workspace1.workspaceName
+        component.imageUrl = '/custom/logo.png'
 
-      const emitSpy = spyOn(component.imageLoadingFailed, 'emit')
+        const url = component.getImageUrl(workspace1.workspaceName, 'url', RefType.Logo)
 
-      const url = component.getImageUrl(workspace1.workspaceName, 'default', RefType.Logo)
+        expect(url).toBe('/custom/logo.png')
+      })
 
-      expect(url).toBeUndefined()
-      expect(emitSpy).toHaveBeenCalledWith(true)
+      it('should prefer custom input URL for small logo variant', () => {
+        const { component } = setUp()
+        component.workspaceName = workspace1.workspaceName
+        component.imageUrl = '/custom/small-logo.png'
+
+        const url = component.getImageUrl(workspace1.workspaceName, 'url', RefType.LogoSmall)
+
+        expect(url).toBe('/custom/small-logo.png')
+      })
+
+      it('should skip to next priority when input property is empty', () => {
+        const { component } = setUp()
+        component.workspaceName = workspace1.workspaceName
+        component.imageUrl = ''
+        component.logoUrl[RefType.Logo] = 'http://external/logo.png'
+
+        const url = component.getImageUrl(workspace1.workspaceName, 'url', RefType.Logo)
+
+        expect(url).toBe('http://external/logo.png')
+      })
+
+      it('should skip to next priority when input property is undefined', () => {
+        const { component } = setUp()
+        component.workspaceName = workspace1.workspaceName
+        component.imageUrl = undefined
+        component.logoUrl[RefType.Logo] = 'http://external/logo.png'
+
+        const url = component.getImageUrl(workspace1.workspaceName, 'url', RefType.Logo)
+
+        expect(url).toBe('http://external/logo.png')
+      })
     })
 
-    it('should get image url - use BFF image url for logo', () => {
-      const { component } = setUp()
-      component.workspaceName = workspace1.workspaceName
-      component.imageUrl = undefined
-      component.logoUrl[RefType.Logo] = undefined
+    describe('priority 2 (ext-url): external URL', () => {
+      it('should use workspace-configured external URL for standard logo', () => {
+        const { component } = setUp()
+        component.workspaceName = workspace1.workspaceName
+        component.imageUrl = undefined
+        component.logoUrl[RefType.Logo] = workspace1.logoUrl
 
-      const url = component.getImageUrl(workspace1.workspaceName, 'image', RefType.Logo)
+        const url = component.getImageUrl(workspace1.workspaceName, 'ext-url', RefType.Logo)
 
-      expect(url).toContain('/images/')
-      expect(url).toContain(workspace1.workspaceName!)
-      expect(url).toContain('/logo')
+        expect(url).toBe(workspace1.logoUrl)
+      })
+
+      it('should use workspace-configured external URL for small logo variant', () => {
+        const { component } = setUp()
+        component.workspaceName = workspace1.workspaceName
+        component.imageUrl = undefined
+        component.logoUrl[RefType.LogoSmall] = workspace1.logoSmallImageUrl
+
+        const url = component.getImageUrl(workspace1.workspaceName, 'ext-url', RefType.LogoSmall)
+
+        expect(url).toBe(workspace1.logoSmallImageUrl)
+      })
+
+      it('should skip to next priority when external URL is empty', () => {
+        const { component } = setUp()
+        component.workspaceName = workspace1.workspaceName
+        component.imageUrl = undefined
+        component.logoUrl[RefType.Logo] = ''
+
+        const url = component.getImageUrl(workspace1.workspaceName, 'ext-url', RefType.Logo)
+
+        expect(url).toBe(`${component['workspaceApi'].configuration.basePath}/images/${workspace1.workspaceName}/logo`)
+      })
+
+      it('should skip to next priority when external URL is undefined', () => {
+        const { component } = setUp()
+        component.workspaceName = workspace1.workspaceName
+        component.imageUrl = undefined
+        component.logoUrl[RefType.Logo] = undefined
+
+        const url = component.getImageUrl(workspace1.workspaceName, 'ext-url', RefType.Logo)
+
+        expect(url).toBe(`${component['workspaceApi'].configuration.basePath}/images/${workspace1.workspaceName}/logo`)
+      })
     })
 
-    it('should get image url - use BFF image url for small logo', () => {
-      const { component } = setUp()
-      component.workspaceName = workspace1.workspaceName
-      component.imageUrl = undefined
-      component.logoUrl[RefType.LogoSmall] = undefined
+    describe('priority 3 (image): BFF server-uploaded image', () => {
+      it('should construct BFF endpoint URL for standard logo', () => {
+        const { component } = setUp()
+        component.workspaceName = workspace1.workspaceName
+        component.imageUrl = undefined
+        component.logoUrl[RefType.Logo] = undefined
 
-      const url = component.getImageUrl(workspace1.workspaceName, 'image', RefType.LogoSmall)
+        const url = component.getImageUrl(workspace1.workspaceName, 'image', RefType.Logo)
 
-      expect(url).toContain('/images/')
-      expect(url).toContain(workspace1.workspaceName!)
-      expect(url).toContain('/logo-small')
+        expect(url).toBe(`${component['workspaceApi'].configuration.basePath}/images/${workspace1.workspaceName}/logo`)
+      })
+
+      it('should construct BFF endpoint URL for small logo variant', () => {
+        const { component } = setUp()
+        component.workspaceName = workspace1.workspaceName
+        component.imageUrl = undefined
+        component.logoUrl[RefType.LogoSmall] = undefined
+
+        const url = component.getImageUrl(workspace1.workspaceName, 'image', RefType.LogoSmall)
+
+        expect(url).toBe(
+          `${component['workspaceApi'].configuration.basePath}/images/${workspace1.workspaceName}/logo-small`
+        )
+      })
+
+      it('should always provide BFF URL regardless of previous priority states', () => {
+        const { component } = setUp()
+        component.workspaceName = workspace1.workspaceName
+        // Priorities 1 and 2 are set but should be ignored
+        component.imageUrl = 'http://custom/logo.png'
+        component.logoUrl[RefType.Logo] = 'http://external/logo.png'
+
+        const url = component.getImageUrl(workspace1.workspaceName, 'image', RefType.Logo)
+
+        expect(url).toBe(`${component['workspaceApi'].configuration.basePath}/images/${workspace1.workspaceName}/logo`)
+      })
     })
 
-    it('should skip external URL when empty string', () => {
-      const { component } = setUp()
-      component.workspaceName = workspace1.workspaceName
-      component.imageUrl = undefined
-      component.logoUrl[RefType.Logo] = ''
+    describe('priority 4: default fallback asset', () => {
+      it('should use default asset when enabled and all other sources unavailable', () => {
+        const { component } = setUp()
+        component.workspaceName = workspace1.workspaceName
+        component.imageUrl = undefined
+        component.logoUrl[RefType.Logo] = undefined
+        component.defaultImageUrl = '/assets/default-logo.png'
+        component.useDefaultLogo = true
 
-      const url = component.getImageUrl(workspace1.workspaceName, 'ext-url', RefType.Logo)
+        const url = component.getImageUrl(workspace1.workspaceName, 'default', RefType.Logo)
 
-      expect(url).toContain('/images/')
+        expect(url).toBe('/assets/default-logo.png')
+      })
+
+      it('should skip default asset when feature flag is disabled', () => {
+        const { component } = setUp()
+        component.workspaceName = workspace1.workspaceName
+        component.imageUrl = undefined
+        component.logoUrl[RefType.Logo] = undefined
+        component.defaultImageUrl = '/assets/default-logo.png'
+        component.useDefaultLogo = false
+
+        const emitSpy = spyOn(component.imageLoadingFailed, 'emit')
+
+        const url = component.getImageUrl(workspace1.workspaceName, 'default', RefType.Logo)
+
+        expect(url).toBeUndefined()
+        expect(emitSpy).toHaveBeenCalledWith(true)
+      })
+
+      it('should skip default asset when path property is empty', () => {
+        const { component } = setUp()
+        component.workspaceName = workspace1.workspaceName
+        component.imageUrl = undefined
+        component.logoUrl[RefType.Logo] = undefined
+        component.defaultImageUrl = ''
+        component.useDefaultLogo = true
+
+        const emitSpy = spyOn(component.imageLoadingFailed, 'emit')
+
+        const url = component.getImageUrl(workspace1.workspaceName, 'default', RefType.Logo)
+
+        expect(url).toBeUndefined()
+        expect(emitSpy).toHaveBeenCalledWith(true)
+      })
+
+      it('should skip default asset when path property is undefined', () => {
+        const { component } = setUp()
+        component.workspaceName = workspace1.workspaceName
+        component.imageUrl = undefined
+        component.logoUrl[RefType.Logo] = undefined
+        component.defaultImageUrl = undefined
+        component.useDefaultLogo = true
+
+        const emitSpy = spyOn(component.imageLoadingFailed, 'emit')
+
+        const url = component.getImageUrl(workspace1.workspaceName, 'default', RefType.Logo)
+
+        expect(url).toBeUndefined()
+        expect(emitSpy).toHaveBeenCalledWith(true)
+      })
     })
 
-    it('should skip input imageUrl when empty string', () => {
-      const { component } = setUp()
-      component.workspaceName = workspace1.workspaceName
-      component.imageUrl = ''
-      component.logoUrl[RefType.Logo] = 'http://external/logo.png'
+    describe('all priorities failed', () => {
+      it('should return undefined and emit failure event when all strategies fail', () => {
+        const { component } = setUp()
+        component.workspaceName = workspace1.workspaceName
+        component.imageUrl = undefined
+        component.logoUrl[RefType.Logo] = undefined
+        component.defaultImageUrl = undefined
+        component.useDefaultLogo = false
+        const emitSpy = spyOn(component.imageLoadingFailed, 'emit')
 
-      const url = component.getImageUrl(workspace1.workspaceName, 'url', RefType.Logo)
+        const url = component.getImageUrl(workspace1.workspaceName, 'default', RefType.Logo)
 
-      expect(url).toBe(component.logoUrl[RefType.Logo])
-    })
-
-    it('should not use default image when useDefaultLogo is false', () => {
-      const { component } = setUp()
-      component.workspaceName = workspace1.workspaceName
-      component.imageUrl = undefined
-      component.logoUrl[RefType.Logo] = undefined
-      component.defaultImageUrl = 'http://default/logo.png'
-      component.useDefaultLogo = false
-
-      const emitSpy = spyOn(component.imageLoadingFailed, 'emit')
-
-      const url = component.getImageUrl(workspace1.workspaceName, 'default', RefType.Logo)
-
-      expect(url).toBeUndefined()
-      expect(emitSpy).toHaveBeenCalledWith(true)
-    })
-
-    it('should not use default image when defaultImageUrl is empty', () => {
-      const { component } = setUp()
-      component.workspaceName = workspace1.workspaceName
-      component.imageUrl = undefined
-      component.logoUrl[RefType.Logo] = undefined
-      component.defaultImageUrl = ''
-      component.useDefaultLogo = true
-
-      const emitSpy = spyOn(component.imageLoadingFailed, 'emit')
-
-      const url = component.getImageUrl(workspace1.workspaceName, 'default', RefType.Logo)
-
-      expect(url).toBeUndefined()
-      expect(emitSpy).toHaveBeenCalledWith(true)
+        expect(url).toBeUndefined()
+        expect(emitSpy).toHaveBeenCalledWith(true)
+      })
     })
   })
 

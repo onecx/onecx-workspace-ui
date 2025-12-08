@@ -1,3 +1,5 @@
+// Copied over from libs v7. Remove once migrating to v7.
+
 import { ResizedEventType } from './resized-event-type'
 
 export type SlotGroupResizedDetails = {

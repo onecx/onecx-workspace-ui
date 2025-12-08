@@ -143,6 +143,7 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
     if (
       ['url', 'ext-url', 'image', 'default'].includes(prioType) &&
       this.useDefaultLogo &&
+      this.defaultImageUrl &&
       this.defaultImageUrl !== ''
     ) {
       this.log(

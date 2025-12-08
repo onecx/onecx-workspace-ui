@@ -20,10 +20,16 @@ import { SlotGroupResizedEvent } from '../../shared/resized-events/v1/slot-group
 import { SlotResizedEvent } from '../../shared/resized-events/v1/slots-resized-type'
 import { OneCXCurrentWorkspaceLogoComponent } from '../current-workspace-logo/current-workspace-logo.component'
 
+// Name of the slot (deprecated) and name of the slot-group being observed for resize events
+// The deprecated slot is required for workspaces which still use the old slot
 const RESIZE_OBSERVED_SLOT_NAME_OLD = 'onecx-shell-vertical-menu'
 const RESIZE_OBSERVED_SLOT_GROUP_NAME = 'onecx-shell-body-start'
+
 const DEFAULT_WIDTH_REM = 17
 const TOGGLE_MENU_BUTTON_WIDTH_REM = 2.5
+
+// This value is the width of the sidebar
+// When the resizedEventPayloadWidth is less than this value then switch to the small logo
 const SMALL_LOGO_THRESHOLD_PX = 235
 
 @Component({
