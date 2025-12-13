@@ -122,7 +122,7 @@ describe('WorkspaceImportComponent', () => {
   it('should display error msg if no importRequestDTO', () => {
     component.importRequestDTO = undefined
 
-    component.importWorkspace()
+    component.saveWorkspace()
 
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'WORKSPACE_IMPORT.VALIDATION.WORKSPACE.MISSING' })
   })
@@ -142,7 +142,7 @@ describe('WorkspaceImportComponent', () => {
       component.confirmComponent.workspaceNameExists = false
     }
 
-    component.importWorkspace()
+    component.saveWorkspace()
 
     expect(component.isLoading).toBeFalse()
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'WORKSPACE_IMPORT.RESPONSE.UPDATED' })
@@ -161,7 +161,7 @@ describe('WorkspaceImportComponent', () => {
       component.confirmComponent.workspaceNameExists = true
     }
 
-    component.importWorkspace()
+    component.saveWorkspace()
 
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'WORKSPACE_IMPORT.RESPONSE.CREATED' })
     expect(mockRouter.navigate).toHaveBeenCalledWith(['./', 'name'], { relativeTo: mockActivatedRoute })
@@ -192,7 +192,7 @@ describe('WorkspaceImportComponent', () => {
     component.baseUrl = 'http://newbaseurl'
 
     component.next()
-    component.importWorkspace()
+    component.saveWorkspace()
 
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'WORKSPACE_IMPORT.RESPONSE.UPDATED' })
     expect(mockRouter.navigate).toHaveBeenCalledWith(['./', 'name'], { relativeTo: mockActivatedRoute })
@@ -211,7 +211,7 @@ describe('WorkspaceImportComponent', () => {
       component.confirmComponent.workspaceNameExists = true
     }
 
-    component.importWorkspace()
+    component.saveWorkspace()
 
     expect(msgServiceSpy.warning).toHaveBeenCalledWith({ summaryKey: 'WORKSPACE_IMPORT.RESPONSE.SKIPPED' })
   })
@@ -223,7 +223,7 @@ describe('WorkspaceImportComponent', () => {
     component.hasPermission = true
     spyOn(console, 'error')
 
-    component.importWorkspace()
+    component.saveWorkspace()
 
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'WORKSPACE_IMPORT.IMPORT_NOK' })
     expect(console.error).toHaveBeenCalledWith('importWorkspaces', errorResponse)
@@ -239,7 +239,7 @@ describe('WorkspaceImportComponent', () => {
     component.importRequestDTO = { workspaces: { WS1: { name: 'name' } } }
     component.hasPermission = true
 
-    component.importWorkspace()
+    component.saveWorkspace()
 
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'WORKSPACE_IMPORT.RESPONSE.ERROR' })
   })

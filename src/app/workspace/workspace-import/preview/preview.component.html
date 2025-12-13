@@ -28,7 +28,7 @@
       >
       </ocx-slot>
 
-      <div *ngIf="(themes$ | async) ?? [theme] as themes">
+      <div *ngIf="(themes$ | async) ?? [importTheme] as themes">
         <span class="p-float-label" controlErrorAnchor>
           <p-dropdown
             id="ws_import_preview_theme"
