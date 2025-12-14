@@ -7,14 +7,23 @@ import { of } from 'rxjs'
 
 import { WorkspaceAPIService, WorkspaceAbstract } from 'src/app/shared/generated'
 import { ConfirmComponent } from './confirm.component'
+import { ImportWorkspace } from '../workspace-import.component'
 
-const workspace: WorkspaceAbstract = {
+const impWorkspace: ImportWorkspace = {
+  name: 'impname',
+  displayName: 'Import Display Name',
   theme: 'theme',
-  baseUrl: 'url',
-  description: 'descr',
-  name: 'name',
-  displayName: ''
+  baseUrl: 'url'
 }
+const workspaces: WorkspaceAbstract[] = [
+  {
+    name: 'name',
+    displayName: 'Display Name',
+    description: 'descr',
+    theme: 'theme',
+    baseUrl: 'url'
+  }
+]
 
 describe('ConfirmComponent', () => {
   let component: ConfirmComponent
@@ -50,39 +59,49 @@ describe('ConfirmComponent', () => {
     fixture.detectChanges()
   })
 
-  it('should create', () => {
-    expect(component).toBeTruthy()
+  describe('initialize', () => {
+    it('should create', () => {
+      expect(component).toBeTruthy()
+    })
   })
 
-  it('should reflect missing baseUrl and fetch portals OnInit', () => {
-    apiServiceSpy.searchWorkspaces.and.returnValue(of([]))
-    component.baseUrl = ''
-    spyOn(component, 'checkWorkspaceUniqueness')
+  describe('on init', () => {
+    it('should set baseUrlExists to true in checkWorkspaceUniqueness onInit', () => {
+      apiServiceSpy.searchWorkspaces.and.returnValue(of({ stream: workspaces }))
+      component.importWorkspace = { ...impWorkspace }
 
-    component.ngOnInit()
+      component.ngOnInit()
+    })
 
-    expect(component.checkWorkspaceUniqueness).toHaveBeenCalled()
-    expect(component.baseUrlIsMissing).toBeTrue()
-  })
+    it('should reflect missing baseUrl and fetch portals OnInit', () => {
+      apiServiceSpy.searchWorkspaces.and.returnValue(of([]))
+      component.importWorkspace = { ...impWorkspace, baseUrl: undefined }
+      spyOn(component, 'checkWorkspaceUniqueness')
 
-  it('should set workspaceNameExists to true in checkWorkspaceUniqueness onInit if no permission', () => {
-    apiServiceSpy.searchWorkspaces.and.returnValue(of({ stream: [workspace] }))
+      component.ngOnInit()
 
-    component.hasPermission = false
-    component.workspaceName = 'name'
+      expect(component.checkWorkspaceUniqueness).toHaveBeenCalled()
+      expect(component.baseUrlIsMissing).toBeTrue()
+    })
 
-    component.ngOnInit()
+    it('should set workspaceNameExists to true in checkWorkspaceUniqueness onInit if no permission', () => {
+      apiServiceSpy.searchWorkspaces.and.returnValue(of({ stream: workspaces }))
 
-    expect(component.workspaceNameExists).toBeTrue()
-  })
+      component.importWorkspace = { ...impWorkspace, name: workspaces[0].name }
+      component.hasPermission = false
 
-  it('should set baseUrlExists to true in checkWorkspaceUniqueness onInit', () => {
-    apiServiceSpy.searchWorkspaces.and.returnValue(of({ stream: [workspace] }))
-    component.baseUrl = 'url'
-    component.baseUrlIsMissing = false
+      component.ngOnInit()
 
-    component.ngOnInit()
+      expect(component.workspaceNameExists).toBeTrue()
+    })
 
-    expect(component.baseUrlExists).toBeTrue()
+    it('should set baseUrlExists to true in checkWorkspaceUniqueness onInit', () => {
+      apiServiceSpy.searchWorkspaces.and.returnValue(of({ stream: workspaces }))
+      component.importWorkspace = { ...impWorkspace, baseUrl: workspaces[0].baseUrl }
+
+      component.ngOnInit()
+
+      expect(component.baseUrlExists).toBeTrue()
+    })
   })
 })

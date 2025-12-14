@@ -15,14 +15,13 @@ import { Theme, ImportWorkspace } from '../workspace-import.component'
   styleUrls: ['./preview.component.scss']
 })
 export class PreviewComponent implements OnInit {
-  @Input() public importRequestDTO: any
   @Input() public importWorkspace: ImportWorkspace | undefined
   @Input() public hasPermission = false
   @Output() public isFormValide = new EventEmitter<boolean>()
 
-  public formGroup!: FormGroup
-  public importWorkspaceName!: string // original imported
-  public importTheme!: Theme // original imported
+  public formGroup: FormGroup
+  public importWorkspaceName!: string
+  public importTheme!: Theme
   public themeProperties: any = null
   public menuItems!: TreeNode[]
   public workspaceRoles: string[] = []
@@ -48,7 +47,7 @@ export class PreviewComponent implements OnInit {
   public ngOnInit(): void {
     if (this.importWorkspace) {
       // extras
-      this.importTheme = this.importWorkspace.themeObject
+      this.importTheme = this.importWorkspace.themeObject ?? {}
       this.menuItems = this.mapToTreeNodes(this.importWorkspace.menuItems)
       this.workspaceRoles = this.extractRoleNames(this.importWorkspace.roles)
       this.workspaceProducts = this.extractProductNames(this.importWorkspace.products)
@@ -120,11 +119,8 @@ export class PreviewComponent implements OnInit {
 
   // sometimes the imported theme is unknown, then add to the list
   public checkAndExtendThemes(themes: Theme[]): Theme[] {
-    if (themes && this.importWorkspace)
-      if (!themes.some((t) => t.name === this.importTheme.name)) {
-        // if not included (why ever) then add the used value to make it visible
-        themes.push({ name: this.importTheme.name, displayName: this.importTheme.displayName } as Theme)
-      }
+    if (themes && this.importTheme)
+      if (!themes.some((t) => t.name === this.importTheme?.name)) themes.push(this.importTheme)
     return themes
   }
 }

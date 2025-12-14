@@ -15,7 +15,6 @@
       <app-import-choose-file *ngSwitchCase="0" (importFileSelected)="next($event)"></app-import-choose-file>
       <app-import-preview
         *ngSwitchCase="1"
-        [importRequestDTO]="importRequestDTO!"
         [importWorkspace]="importWorkspace"
         [hasPermission]="hasPermission"
         (isFormValide)="handleFormValidation($event)"

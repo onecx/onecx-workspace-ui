@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, Input, Output, EventEmitter, OnChanges } from '@angular/core'
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 import { MenuItem } from 'primeng/api'
@@ -6,11 +6,8 @@ import { MenuItem } from 'primeng/api'
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 import { ImportResponseStatus, Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
 
-import { PreviewComponent } from './preview/preview.component'
-import { ConfirmComponent } from './confirm/confirm.component'
-
 export type ImportResponse = { workspace: ImportResponseStatus; menu: ImportResponseStatus }
-export type ImportWorkspace = Workspace & { themeObject: Theme; menuItems: any; roles: any; products: any }
+export type ImportWorkspace = Workspace & { themeObject?: Theme; menuItems?: any; roles?: any; products?: any }
 export type Theme = {
   name?: string
   displayName?: string
@@ -27,27 +24,14 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
   @Input() displayDialog = false
   @Input() resetDialog = true // provoke the onChange
   @Output() toggleImportDialogEvent = new EventEmitter<boolean>()
-  @ViewChild(PreviewComponent) public previewComponent?: PreviewComponent
-  @ViewChild(ConfirmComponent) public confirmComponent?: ConfirmComponent
 
   public themeCheckboxEnabled = false
   public isFormValid = true
   public steps: MenuItem[] = []
   public activeIndex = 0
   public isLoading = false
-  // original, read by import
-  public importWorkspaceOrg: ImportWorkspace | undefined // imported with user changes
-  public importWorkspace: ImportWorkspace | undefined // current state
-
-  public workspaceNameOrg: string | undefined = undefined
-  public displayNameOrg: string | undefined = undefined
-  public themeNameOrg: string | undefined = undefined
-  public baseUrlOrg: string | undefined = undefined // the original
-  //
-  // public workspaceName: string | undefined
-  // public displayName: string | undefined
-  // public themeName: string | undefined
-  // public baseUrl: string | undefined
+  public importWorkspaceOrg: ImportWorkspace | undefined // imported, not changed
+  public importWorkspace: ImportWorkspace | undefined // imported with user changes
   public importRequestDTO?: any
   public activeThemeCheckboxInFirstStep = true
   public hasPermission = false
@@ -84,11 +68,6 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
   public reset(): void {
     this.importWorkspace = undefined
     this.importWorkspaceOrg = undefined
-    this.baseUrlOrg = undefined
-    this.workspaceNameOrg = undefined
-    this.displayNameOrg = undefined
-    this.themeNameOrg = undefined
-    //
     this.isFormValid = true
     this.importRequestDTO = undefined
     this.activeIndex = 0
@@ -106,6 +85,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
 
   // NAVIGATE import step : NEXT
   public next(importRequestDTO?: any): void {
+    // read file content
     if (this.activeIndex === 0 && importRequestDTO?.workspaces) {
       this.importRequestDTO = importRequestDTO
       let keys: string[] = []
@@ -114,10 +94,11 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
         if (keys.length > 0) {
           this.importWorkspace = this.importRequestDTO.workspaces[keys[0]] as ImportWorkspace
           this.importWorkspace.name = keys[0]
-          this.importWorkspace.themeObject = {
-            name: this.importWorkspace.theme,
-            displayName: this.importWorkspace.theme
-          } as Theme
+          if (this.importWorkspace.theme)
+            this.importWorkspace.themeObject = {
+              name: this.importWorkspace.theme,
+              displayName: this.importWorkspace.theme
+            } as Theme
           this.importWorkspaceOrg = { ...this.importWorkspace } // clone
         }
       }
