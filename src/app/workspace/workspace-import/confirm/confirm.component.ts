@@ -11,6 +11,7 @@ export class ConfirmComponent implements OnInit {
   @Input() public hasPermission = false
   // eslint-disable-next-line @typescript-eslint/ban-types
   @Input() public importResponse: {} | undefined
+
   @Output() public isLoading = new EventEmitter<boolean>(true)
   @Output() public isFormValide = new EventEmitter<boolean>()
 
@@ -23,6 +24,7 @@ export class ConfirmComponent implements OnInit {
   public displayName?: string
   public themeName?: string
   public baseUrl?: string
+  public mandatory?: boolean
 
   constructor(private readonly workspaceApi: WorkspaceAPIService) {}
 
@@ -31,6 +33,7 @@ export class ConfirmComponent implements OnInit {
       this.workspaceName = this.importWorkspace?.name
       this.displayName = this.importWorkspace?.displayName
       this.themeName = this.importWorkspace?.theme
+      this.mandatory = this.importWorkspace?.mandatory
       this.baseUrl = this.importWorkspace?.baseUrl
       this.baseUrlIsMissing = this.baseUrl === undefined || this.baseUrl.length === 0
       this.fetchWorkspace()

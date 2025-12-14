@@ -38,7 +38,8 @@ export class PreviewComponent implements OnInit {
       name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
       displayName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
       theme: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
-      baseUrl: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(100)])
+      baseUrl: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(100)]),
+      mandatory: new FormControl(null)
     })
     this.isThemeComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.slotName)
     this.themesEmitter.subscribe(this.themes$)
@@ -63,6 +64,7 @@ export class PreviewComponent implements OnInit {
       this.formGroup.controls['displayName'].setValue(ws.displayName)
       this.formGroup.controls['theme'].setValue(ws.theme)
       this.formGroup.controls['baseUrl'].setValue(ws.baseUrl)
+      this.formGroup.controls['mandatory'].setValue(ws.mandatory)
       // trigger validation to be up-to-date
       Utils.forceFormValidation(this.formGroup)
     }
@@ -75,6 +77,7 @@ export class PreviewComponent implements OnInit {
       this.importWorkspace.name = this.formGroup.controls['name'].value
       this.importWorkspace.theme = this.formGroup.controls['theme'].value
       this.importWorkspace.baseUrl = this.formGroup.controls['baseUrl'].value
+      this.importWorkspace.mandatory = this.formGroup.controls['mandatory'].value
     }
     this.isFormValide.emit(this.formGroup.valid)
   }

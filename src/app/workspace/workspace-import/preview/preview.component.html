@@ -86,6 +86,26 @@
         </label>
       </span>
     </div>
+    <div class="flex justify-content-center align-items-center">
+      <p-checkbox
+        #checkMandatory
+        inputId="ws_import_preview_mandatory"
+        styleClass="cursor-pointer shadow-none"
+        formControlName="mandatory"
+        (onChange)="onModelChange()"
+        [binary]="true"
+        [label]="'INTERNAL.MANDATORY' | translate"
+        [ariaLabel]="'INTERNAL.MANDATORY' | translate"
+        [pTooltip]="'INTERNAL.TOOLTIPS.MANDATORY' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      >
+        <!-- simplifies aria appearance-->
+        <ng-template pTemplate="icon">
+          <span class="pi" [ngClass]="checkMandatory.value ? 'pi-check-square' : 'pi-check'"></span>
+        </ng-template>
+      </p-checkbox>
+    </div>
   </div>
 
   <p-tabView styleClass="mt-4 mb-2">
