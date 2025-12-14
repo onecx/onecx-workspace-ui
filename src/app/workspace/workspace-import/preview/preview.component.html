@@ -1,5 +1,5 @@
-<form [formGroup]="formGroup" errorTailor>
-  <div class="mt-3 flex flex-wrap align-items-top gap-4">
+<div class="my-3">
+  <form [formGroup]="formGroup" errorTailor class="flex flex-wrap align-items-top gap-4">
     <div>
       <span class="p-float-label" controlErrorAnchor>
         <input
@@ -106,9 +106,9 @@
         </ng-template>
       </p-checkbox>
     </div>
-  </div>
-
-  <p-tabView styleClass="mt-4 mb-2">
+  </form>
+  <!-- Workspace Collections: Menu, Roles, Products -->
+  <p-tabView styleClass="mt-4">
     <p-tabPanel
       [header]="'TABS.WORKSPACE.MENU' | translate"
       [attr.aria-label]="'TABS.WORKSPACE.MENU' | translate"
@@ -164,4 +164,4 @@
       ></p-message>
     </p-tabPanel>
   </p-tabView>
-</form>
+</div>
