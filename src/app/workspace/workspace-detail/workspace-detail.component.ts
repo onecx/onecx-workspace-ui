@@ -143,6 +143,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
   }
 
   public onConfirmDeleteWorkspace(): void {
+    this.workspaceDeleteVisible = false
     this.workspaceApi.deleteWorkspace({ id: this.workspace?.id ?? '' }).subscribe({
       next: () => {
         this.msgService.success({ summaryKey: 'ACTIONS.DELETE.WORKSPACE.MESSAGE_OK' })

@@ -15,17 +15,14 @@
       <app-import-choose-file *ngSwitchCase="0" (importFileSelected)="next($event)"></app-import-choose-file>
       <app-import-preview
         *ngSwitchCase="1"
-        [importRequestDTO]="importRequestDTO!"
         [hasPermission]="hasPermission"
+        [importWorkspace]="importWorkspace"
         (isFormValide)="handleFormValidation($event)"
       ></app-import-preview>
       <app-import-confirm
         *ngSwitchCase="2"
         [hasPermission]="hasPermission"
-        [workspaceName]="workspaceName"
-        [displayName]="displayName"
-        [baseUrl]="baseUrl"
-        [themeName]="themeName"
+        [importWorkspace]="importWorkspace"
         [importResponse]="importResponse"
         (isLoading)="handleIsLoading($event)"
         (isFormValide)="handleFormValidation($event)"
@@ -73,7 +70,7 @@
         id="ws_import_action_import"
         [icon]="isLoading ? 'pi pi-spin pi-spinner' : 'pi pi-check'"
         [disabled]="isLoading || !isFormValid"
-        (onClick)="importWorkspace()"
+        (onClick)="saveWorkspace()"
         [label]="'WORKSPACE_IMPORT.START_IMPORT' | translate"
         [ariaLabel]="'WORKSPACE_IMPORT.START_IMPORT' | translate"
         [pTooltip]="'WORKSPACE_IMPORT.START_IMPORT.TOOLTIP' | translate"

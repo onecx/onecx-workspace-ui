@@ -1,4 +1,4 @@
-<div class="mt-3 flex flex-wrap align-items-top gap-4">
+<div class="my-3 flex flex-wrap align-items-top gap-4">
   <div>
     <span class="p-float-label">
       <input
@@ -69,31 +69,52 @@
       <label for="ws_import_confirm_display_name" aria-hidden="true">{{ 'WORKSPACE.DISPLAY_NAME' | translate }}</label>
     </span>
   </div>
-</div>
+  <div class="flex justify-content-center align-items-center">
+    <p-checkbox
+      #checkMandatory
+      inputId="ws_import_preview_mandatory"
+      styleClass="cursor-pointer shadow-none"
+      [(ngModel)]="mandatory"
+      [disabled]="true"
+      [binary]="true"
+      [label]="'INTERNAL.MANDATORY' | translate"
+      [ariaLabel]="'INTERNAL.MANDATORY' | translate"
+      [pTooltip]="'INTERNAL.TOOLTIPS.MANDATORY' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
+    >
+      <!-- simplifies aria appearance-->
+      <ng-template pTemplate="icon">
+        <span class="pi" [ngClass]="checkMandatory.value ? 'pi-check-square' : 'pi-check'"></span>
+      </ng-template>
+    </p-checkbox>
+  </div>
 
-<div class="mt-4 flex flex-wrap align-items-center row-gap-2 mt-1 mb-4">
-  <p-message
-    *ngIf="workspaceNameExists"
-    id="ws_import_confirm_message_workspace_exists"
-    severity="error"
-    [text]="'WORKSPACE_IMPORT.VALIDATION.WORKSPACE.EXISTS_MESSAGE' | translate"
-  ></p-message>
-  <p-message
-    *ngIf="baseUrlExists"
-    id="ws_import_confirm_message_base_url_exists"
-    severity="error"
-    [text]="'WORKSPACE_IMPORT.VALIDATION.BASE_URL.EXISTS_MESSAGE' | translate"
-  ></p-message>
-  <p-message
-    *ngIf="baseUrlIsMissing"
-    id="ws_import_confirm_message_base_url_missing"
-    severity="error"
-    [text]="'WORKSPACE_IMPORT.VALIDATION.BASE_URL.MISSING' | translate"
-  ></p-message>
-  <p-message
-    *ngIf="importResponse"
-    id="ws_import_confirm_message_import_error"
-    severity="error"
-    [text]="'WORKSPACE_IMPORT.RESPONSE.ERROR' | translate"
-  ></p-message>
+  <!-- MESSAGES -->
+  <div class="flex flex-wrap align-items-center row-gap-2">
+    <p-message
+      *ngIf="workspaceNameExists"
+      id="ws_import_confirm_message_workspace_exists"
+      severity="error"
+      [text]="'WORKSPACE_IMPORT.VALIDATION.WORKSPACE.EXISTS_MESSAGE' | translate"
+    ></p-message>
+    <p-message
+      *ngIf="baseUrlExists"
+      id="ws_import_confirm_message_base_url_exists"
+      severity="error"
+      [text]="'WORKSPACE_IMPORT.VALIDATION.BASE_URL.EXISTS_MESSAGE' | translate"
+    ></p-message>
+    <p-message
+      *ngIf="baseUrlIsMissing"
+      id="ws_import_confirm_message_base_url_missing"
+      severity="error"
+      [text]="'WORKSPACE_IMPORT.VALIDATION.BASE_URL.MISSING' | translate"
+    ></p-message>
+    <p-message
+      *ngIf="importResponse"
+      id="ws_import_confirm_message_import_error"
+      severity="error"
+      [text]="'WORKSPACE_IMPORT.RESPONSE.ERROR' | translate"
+    ></p-message>
+  </div>
 </div>

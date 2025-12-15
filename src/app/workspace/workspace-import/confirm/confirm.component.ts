@@ -1,31 +1,43 @@
 import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core'
 import { WorkspaceAPIService, SearchWorkspacesResponse, WorkspaceAbstract } from 'src/app/shared/generated'
+import { ImportWorkspace } from '../workspace-import.component'
 
 @Component({
   selector: 'app-import-confirm',
   templateUrl: './confirm.component.html'
 })
 export class ConfirmComponent implements OnInit {
-  @Input() public workspaceName?: string
-  @Input() public displayName?: string
-  @Input() public themeName?: string
+  @Input() public importWorkspace: ImportWorkspace | undefined
   @Input() public hasPermission = false
-  @Input() public baseUrl?: string
   // eslint-disable-next-line @typescript-eslint/ban-types
   @Input() public importResponse: {} | undefined
+
   @Output() public isLoading = new EventEmitter<boolean>(true)
   @Output() public isFormValide = new EventEmitter<boolean>()
 
-  private workspaces!: WorkspaceAbstract[] | undefined
+  private workspaces: WorkspaceAbstract[] | undefined = undefined
   public workspaceNameExists = false
   public baseUrlExists = false
   public baseUrlIsMissing = false
 
+  public workspaceName?: string
+  public displayName?: string
+  public themeName?: string
+  public baseUrl?: string
+  public mandatory?: boolean
+
   constructor(private readonly workspaceApi: WorkspaceAPIService) {}
 
   public ngOnInit(): void {
-    this.baseUrlIsMissing = this.baseUrl === undefined || this.baseUrl.length === 0
-    this.fetchWorkspace()
+    if (this.importWorkspace) {
+      this.workspaceName = this.importWorkspace?.name
+      this.displayName = this.importWorkspace?.displayName
+      this.themeName = this.importWorkspace?.theme
+      this.mandatory = this.importWorkspace?.mandatory
+      this.baseUrl = this.importWorkspace?.baseUrl
+      this.baseUrlIsMissing = this.baseUrl === undefined || this.baseUrl.length === 0
+      this.fetchWorkspace()
+    }
   }
 
   private fetchWorkspace(): void {
