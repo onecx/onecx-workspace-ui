@@ -29,12 +29,12 @@
         "MESSAGE.NOK": "Ein Fehler ist aufgetreten. Der Slot wurde nicht erstellt."
       },
       "MESSAGE": {
-        "CREATE_OK": "Der Workspace wurde erfolgreich erstellt",
-        "CREATE_NOK": "Ein Fehler ist aufgetreten. Der Workspace wurde nicht erstellt.",
+        "CREATE.OK": "Der Workspace wurde erfolgreich erstellt",
+        "CREATE.NOK": "Ein Fehler ist aufgetreten. Der Workspace wurde nicht erstellt.",
         "ROLE_ALREADY_EXISTS": "Eine Rolle mit diesem Namen existiert schon.",
         "MENU_ALREADY_EXIST": "Ein Menüpunkt mit diesem Namen/ID existiert schon.",
-        "MENU_CREATE_OK": "Der Menüpunkt wurde erfolgreich erstellt",
-        "MENU_CREATE_NOK": "Ein Fehler ist aufgetreten. Der Menüpunkt wurde nicht erstellt."
+        "MENU_CREATE.OK": "Der Menüpunkt wurde erfolgreich erstellt",
+        "MENU_CREATE.NOK": "Ein Fehler ist aufgetreten. Der Menüpunkt wurde nicht erstellt."
       }
     },
     "DELETE": {
@@ -395,8 +395,8 @@
       "COMPONENTS.NOT_USED": "Verfügbare Komponenten",
       "COMPONENTS.NOT_USED.TOOLTIP": "Liste der verfügbaren Komponenten, die über die registrierten Applikationen deklariert worden sind.",
       "MESSAGES": {
-        "CREATE_OK": "Der Slot wurde erfolgreich registriert",
-        "CREATE_NOK": "Bei der Registrierung des Slots ist ein Fehler aufgetreten",
+        "CREATE.OK": "Der Slot wurde erfolgreich registriert",
+        "CREATE.NOK": "Bei der Registrierung des Slots ist ein Fehler aufgetreten",
         "REGISTRATION_OK": "Die Komponente wurde erfolgreich registriert",
         "REGISTRATION_NOK": "Bei der Registrierung der Komponente ist ein Fehler aufgetreten",
         "REGISTRATIONS_OK": "Die Komponenteen wurden erfolgreich registriert",

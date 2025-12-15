@@ -506,7 +506,7 @@ describe('MenuDetailComponent', () => {
 
       component.onMenuSave()
 
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.MESSAGE.MENU_CREATE_OK' })
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.MESSAGE.MENU_CREATE.OK' })
     })
 
     it('should display error message on save menu: create', () => {
@@ -519,7 +519,7 @@ describe('MenuDetailComponent', () => {
 
       component.onMenuSave()
 
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.MESSAGE.MENU_CREATE_NOK' })
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.MESSAGE.MENU_CREATE.NOK' })
       expect(console.error).toHaveBeenCalledWith('createMenuItemForWorkspace', errorResponse)
     })
   })
