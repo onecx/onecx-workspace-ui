@@ -11,7 +11,8 @@ const formValue = {
   name: 'ADMIN',
   displayName: 'Admin',
   theme: 'default',
-  baseUrl: '/admin'
+  baseUrl: '/admin',
+  mandatory: false
 }
 const importWorkspace: ImportWorkspace = {
   ...formValue,
@@ -125,7 +126,8 @@ describe('PreviewComponent', () => {
         name: 'ADMIN2',
         displayName: 'Admin 2',
         theme: 'default',
-        baseUrl: '/' // too short
+        baseUrl: '/', // too short
+        mandatory: false
       }
       const importWorkspace2: any = {
         ...formValue_2,
