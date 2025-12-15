@@ -234,44 +234,44 @@ describe('WorkspacePropsComponent', () => {
   })
 
   describe('ngOnChanges', () => {
-    it('should disable formGroup in view mode', () => {
+    it('should disable propsForm in view mode', () => {
       component.editMode = false
 
       component.ngOnChanges(changes)
 
-      expect(component.formGroup.disabled).toBeTrue()
+      expect(component.propsForm.disabled).toBeTrue()
     })
 
-    it('should enable formGroup in edit mode - with ext. logo URL', () => {
+    it('should enable propsForm in edit mode - with ext. logo URL', () => {
       component.editMode = true
 
       component.ngOnChanges(changes)
 
       expect(component.workspace).toEqual(workspace)
-      expect(component.formGroup.enabled).toBeTrue()
-      expect(component.formGroup.value).toEqual(workspaceForm)
+      expect(component.propsForm.enabled).toBeTrue()
+      expect(component.propsForm.value).toEqual(workspaceForm)
     })
 
-    it('should enable formGroup in edit mode - without ext. logo URL', () => {
+    it('should enable propsForm in edit mode - without ext. logo URL', () => {
       component.editMode = true
       component.workspace = { ...workspace, logoUrl: undefined }
 
       component.ngOnChanges(changes)
 
-      expect(component.formGroup.enabled).toBeTrue()
+      expect(component.propsForm.enabled).toBeTrue()
       expect(component.bffUrl[RefType.Logo]).toBe(basePathLogo)
     })
 
-    it('should reset formGroup when workspace is empty', () => {
+    it('should reset propsForm when workspace is empty', () => {
       component.editMode = true
       component.workspace = undefined
 
       component.ngOnChanges(changes)
 
-      expect(component.formGroup.controls['displayName'].value).toBeNull()
-      expect(component.formGroup.controls['theme'].value).toBeNull()
-      expect(component.formGroup.controls['baseUrl'].value).toBeNull()
-      expect(component.formGroup.disabled).toBeTrue()
+      expect(component.propsForm.controls['displayName'].value).toBeNull()
+      expect(component.propsForm.controls['theme'].value).toBeNull()
+      expect(component.propsForm.controls['baseUrl'].value).toBeNull()
+      expect(component.propsForm.disabled).toBeTrue()
     })
   })
 
@@ -297,9 +297,9 @@ describe('WorkspacePropsComponent', () => {
 
       it('should detect changes on workspaces', () => {
         const url = 'https://abc.de'
-        component.formGroup.controls['logoUrl'].setValue(url) // change
+        component.propsForm.controls['logoUrl'].setValue(url) // change
 
-        expect(component.formGroup.valid).toBeTrue() // valid form
+        expect(component.propsForm.valid).toBeTrue() // valid form
 
         const change = component.getWorkspaceChangesFromForm()
 
@@ -307,11 +307,11 @@ describe('WorkspacePropsComponent', () => {
       })
 
       it('should display error msg if form is invalid', () => {
-        component.formGroup.controls['logoUrl'].setValue('http://abc') // invalid: too short
+        component.propsForm.controls['logoUrl'].setValue('http://abc') // invalid: too short
 
         component.onSave()
 
-        expect(component.formGroup.valid).toBeFalse()
+        expect(component.propsForm.valid).toBeFalse()
         expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'VALIDATION.FORM_INVALID' })
       })
     })

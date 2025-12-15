@@ -111,7 +111,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
       }
       case 1: {
         this.workspaceContactComponent.onSave()
-        if (this.workspaceContactComponent.contactForm.valid) workspaceData = this.workspacePropsComponent.workspace
+        if (this.workspaceContactComponent.contactForm.valid) workspaceData = this.workspaceContactComponent.workspace
         else return
         workspaceData = this.workspaceContactComponent.workspace
         break

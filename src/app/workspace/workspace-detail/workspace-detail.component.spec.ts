@@ -29,9 +29,13 @@ const workspace: Workspace = {
 }
 class MockWorkspacePropsComponent {
   public onSave(): void {}
+  public propsForm = { valid: true }
+  public workspace = workspace
 }
 class MockWorkspaceContactComponent {
   public onSave(): void {}
+  public contactForm = { valid: true }
+  public workspace = workspace
 }
 class MockWorkspaceInternComponent {
   public onSave(): void {}
