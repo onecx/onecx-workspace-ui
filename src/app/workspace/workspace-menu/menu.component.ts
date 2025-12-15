@@ -358,10 +358,10 @@ export class MenuComponent implements OnInit, OnDestroy {
           item.disabled = data.disabled
           item.modificationCount = data.modificationCount
           item.modificationDate = data.modificationDate
-          this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' })
+          this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU.OK' })
         },
         error: (err) => {
-          this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
+          this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU.NOK' })
           console.error('updateMenuItem', err)
         }
       })

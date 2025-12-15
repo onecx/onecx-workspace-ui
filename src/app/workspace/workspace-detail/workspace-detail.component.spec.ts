@@ -29,9 +29,13 @@ const workspace: Workspace = {
 }
 class MockWorkspacePropsComponent {
   public onSave(): void {}
+  public propsForm = { valid: true }
+  public workspace = workspace
 }
 class MockWorkspaceContactComponent {
   public onSave(): void {}
+  public contactForm = { valid: true }
+  public workspace = workspace
 }
 class MockWorkspaceInternComponent {
   public onSave(): void {}
@@ -50,14 +54,8 @@ describe('WorkspaceDetailComponent', () => {
     exportWorkspaces: jasmine.createSpy('exportWorkspaces').and.returnValue(of({})),
     updateWorkspace: jasmine.createSpy('updateWorkspace').and.returnValue(of({}))
   }
-
   const locationSpy = jasmine.createSpyObj<Location>('Location', ['back'])
-
-  const mockActivatedRouteSnapshot: Partial<ActivatedRouteSnapshot> = {
-    params: {
-      id: 'mockId'
-    }
-  }
+  const mockActivatedRouteSnapshot: Partial<ActivatedRouteSnapshot> = { params: { id: 'mockId' } }
   const mockActivatedRoute: Partial<ActivatedRoute> = {
     snapshot: mockActivatedRouteSnapshot as ActivatedRouteSnapshot
   }
@@ -194,7 +192,7 @@ describe('WorkspaceDetailComponent', () => {
 
       component.onConfirmDeleteWorkspace()
 
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.WORKSPACE.MESSAGE_OK' })
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.WORKSPACE.MESSAGE.OK' })
     })
 
     it('should delete workspace on onConfirmDeleteWorkspace: no workspace', () => {
@@ -203,7 +201,7 @@ describe('WorkspaceDetailComponent', () => {
 
       component.onConfirmDeleteWorkspace()
 
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.WORKSPACE.MESSAGE_OK' })
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.WORKSPACE.MESSAGE.OK' })
     })
 
     it('should display error msg if delete api call fails', () => {
@@ -213,7 +211,7 @@ describe('WorkspaceDetailComponent', () => {
 
       component.onConfirmDeleteWorkspace()
 
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.WORKSPACE.MESSAGE_NOK' })
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.WORKSPACE.MESSAGE.NOK' })
       expect(console.error).toHaveBeenCalledWith('deleteWorkspace', errorResponse)
     })
   })
@@ -307,17 +305,23 @@ describe('WorkspaceDetailComponent', () => {
       expect(component.editMode).toBeTrue()
     })
 
-    it('should have prepared action buttons onInit: update workspace props', () => {
+    it('should have prepared action buttons onInit: update workspace props - valid data', () => {
       apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
       component.workspacePropsComponent = new MockWorkspacePropsComponent() as unknown as WorkspacePropsComponent
       component.selectedTabIndex = 0
       component.ngOnInit()
       let actions: any = []
       component.actions$!.subscribe((act) => (actions = act))
-
       actions[3].actionCallback()
 
       expect(component.editMode).toBeFalse()
+
+      // if data are invalid
+      component.editMode = true
+      component.workspacePropsComponent.propsForm = { valid: false } as any
+      actions[3].actionCallback()
+
+      expect(component.editMode).toBeTrue()
     })
 
     it('should have prepared action buttons onInit: update workspace contact', () => {
@@ -331,6 +335,13 @@ describe('WorkspaceDetailComponent', () => {
       actions[3].actionCallback()
 
       expect(component.editMode).toBeFalse()
+
+      // if data are invalid
+      component.editMode = true
+      component.workspaceContactComponent.contactForm = { valid: false } as any
+      actions[3].actionCallback()
+
+      expect(component.editMode).toBeTrue()
     })
 
     it('should have prepared action buttons onInit: update workspace intern', () => {
@@ -409,7 +420,7 @@ describe('WorkspaceDetailComponent', () => {
       actions[3].actionCallback()
 
       expect(console.error).toHaveBeenCalledWith("Couldn't assign tab to component")
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_OK' })
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.WORKSPACE.OK' })
       component.workspace$.subscribe((data) => {
         expect(data).toEqual(workspace)
         done()
@@ -427,7 +438,7 @@ describe('WorkspaceDetailComponent', () => {
       component.actions$!.subscribe((act) => (actions = act))
       actions[3].actionCallback()
 
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_NOK' })
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.WORKSPACE.NOK' })
       expect(console.error).toHaveBeenCalledWith('updateWorkspace', errorResponse)
     })
   })

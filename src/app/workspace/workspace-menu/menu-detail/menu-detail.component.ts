@@ -265,11 +265,11 @@ export class MenuDetailComponent implements OnChanges {
         })
         .subscribe({
           next: () => {
-            this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' })
+            this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU.OK' })
             this.dataChanged.emit(true)
           },
           error: (err) => {
-            this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
+            this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU.NOK' })
             console.error('updateMenuItem', err)
           }
         })
@@ -306,11 +306,11 @@ export class MenuDetailComponent implements OnChanges {
     this.displayDeleteDialog = false
     this.menuApi.deleteMenuItemById({ menuItemId: this.menuItemOrg?.id ?? '' }).subscribe({
       next: () => {
-        this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MENU.MESSAGE_OK' })
+        this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MENU.MESSAGE.OK' })
         this.dataChanged.emit(true)
       },
       error: (err) => {
-        this.msgService.error({ summaryKey: 'ACTIONS.DELETE.MENU.MESSAGE_NOK' })
+        this.msgService.error({ summaryKey: 'ACTIONS.DELETE.MENU.MESSAGE.NOK' })
         console.error('deleteMenuItemById', err)
       }
     })

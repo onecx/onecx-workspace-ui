@@ -45,7 +45,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   public imageMaxSize = 1000000
 
   // data
-  public formGroup: FormGroup
+  public propsForm: FormGroup
   public productPaths$: Observable<string[]> = of([]) // to fill drop down with product paths
   public deploymentPath: string | undefined = undefined
   public themeEndpointExist = false
@@ -68,7 +68,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     private readonly wProductApi: WorkspaceProductAPIService
   ) {
     this.isThemeComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.themeSlotName)
-    this.formGroup = new FormGroup({
+    this.propsForm = new FormGroup({
       displayName: new FormControl<string | null>(null, [
         Validators.required,
         Validators.minLength(2),
@@ -80,11 +80,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
         Validators.minLength(2),
         Validators.pattern('^/.*')
       ]),
-      homePage: new FormControl<string | null>(null, [
-        Validators.required,
-        Validators.minLength(2),
-        Validators.pattern('^/.*')
-      ]),
+      homePage: new FormControl<string | null>(null, [Validators.minLength(2), Validators.pattern('^/.*')]),
       logoUrl: new FormControl<string | null>(null, [
         Validators.minLength(7),
         Validators.maxLength(255),
@@ -103,7 +99,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       footerLabel: new FormControl<string | null>(null, [Validators.maxLength(255)]),
       description: new FormControl<string | null>(null, [Validators.maxLength(255)])
     })
-    this.formGroup.valueChanges.subscribe(this.themeFormValues$)
+    this.propsForm.valueChanges.subscribe(this.themeFormValues$)
   }
 
   public ngOnInit(): void {
@@ -114,11 +110,11 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
-    this.formGroup.disable()
+    this.propsForm.disable()
 
     if (this.workspace) {
       if (changes['workspace']) this.fillForm(this.workspace)
-      if (this.editMode) this.formGroup.enable()
+      if (this.editMode) this.propsForm.enable()
       // if a home page value exists then fill it into drop down list for displaying
       if (this.workspace.homePage) this.productPaths$ = of([this.workspace.homePage])
       // check detail endpoint exists
@@ -129,12 +125,12 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
         'theme-detail'
       )
     } else {
-      this.formGroup.reset()
+      this.propsForm.reset()
     }
   }
 
   private fillForm(workspace: Workspace): void {
-    this.formGroup.patchValue(workspace)
+    this.propsForm.patchValue(workspace)
     // initialize image variables: used URLs and if logo URLs exist
     this.setBffImageUrl(this.workspace, RefType.Logo)
     this.setBffImageUrl(this.workspace, RefType.LogoSmall)
@@ -225,11 +221,11 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
 
   // REMOVING
   public onRemoveImageUrl(refType: RefType) {
-    if (refType === RefType.Logo && this.formGroup.get('logoUrl')?.value) {
-      this.formGroup.get('logoUrl')?.setValue(null)
+    if (refType === RefType.Logo && this.propsForm.get('logoUrl')?.value) {
+      this.propsForm.get('logoUrl')?.setValue(null)
     }
-    if (refType === RefType.LogoSmall && this.formGroup.get('smallLogoUrl')?.value) {
-      this.formGroup.get('smallLogoUrl')?.setValue(null)
+    if (refType === RefType.LogoSmall && this.propsForm.get('smallLogoUrl')?.value) {
+      this.propsForm.get('smallLogoUrl')?.setValue(null)
     }
     this.bffUrl[refType] = Utils.bffImageUrl(this.imageBasePath, this.workspace?.name, refType)
   }
@@ -254,17 +250,17 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   // called by workspace detail dialog: returns form values to workspace
   public onSave(): void {
     if (!this.workspace) return
-    if (this.formGroup.valid) Object.assign(this.workspace, this.getWorkspaceChangesFromForm())
+    if (this.propsForm.valid) Object.assign(this.workspace, this.getFormData())
     else this.msgService.error({ summaryKey: 'VALIDATION.FORM_INVALID' })
   }
 
-  //return the values that are different in form than in PortalDTO
-  public getWorkspaceChangesFromForm(): any {
+  // return the values that are different
+  private getFormData(): any {
     const changes: any = {}
-    Object.keys(this.formGroup.controls).forEach((key) => {
-      if (this.formGroup.value[key] !== undefined) {
-        if (this.formGroup.value[key] !== (this.workspace as any)[key]) {
-          changes[key] = this.formGroup.value[key]
+    Object.keys(this.propsForm.controls).forEach((key) => {
+      if (this.propsForm.value[key] !== undefined) {
+        if (this.propsForm.value[key] !== (this.workspace as any)[key]) {
+          changes[key] = this.propsForm.value[key]
         }
       }
     })

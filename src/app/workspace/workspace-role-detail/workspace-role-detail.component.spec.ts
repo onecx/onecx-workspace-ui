@@ -125,7 +125,7 @@ describe('WorkspaceRoleDetailComponent', () => {
 
     component.onDeleteRoleConfirmation()
 
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.ROLE.MESSAGE_OK' })
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.ROLE.MESSAGE.OK' })
     expect(component.dataChanged.emit).toHaveBeenCalledWith(true)
   })
 
@@ -319,7 +319,7 @@ describe('WorkspaceRoleDetailComponent', () => {
     component.onDeleteRoleConfirmation()
 
     expect(console.error).toHaveBeenCalledWith('deleteWorkspaceRole', errorResponse)
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.ROLE.MESSAGE_NOK' })
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.ROLE.MESSAGE.NOK' })
   })
 
   /**
