@@ -11,12 +11,12 @@ import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { Workspace } from 'src/app/shared/generated'
 import { WorkspaceContactComponent } from './workspace-contact.component'
 
-const portal: Workspace = {
+const workspace: Workspace = {
+  id: 'id',
   name: 'name',
   theme: 'theme',
   baseUrl: '/some/base/url',
-  id: 'id',
-  displayName: ''
+  displayName: 'Display Name'
 }
 
 const contactForm = new FormGroup({
@@ -67,7 +67,7 @@ describe('WorkspaceContactComponent', () => {
   it('should disable contactForm if editMode false', () => {
     component.editMode = false
     component.contactForm = contactForm
-    component.workspace = portal
+    component.workspace = workspace
     component.workspace.address = {
       country: 'detail country',
       city: 'detail city',
@@ -84,7 +84,7 @@ describe('WorkspaceContactComponent', () => {
   it('should fillForm onChanges: no address', () => {
     component.editMode = true
     component.contactForm = contactForm
-    component.workspace = portal
+    component.workspace = workspace
     component.workspace.address = undefined
 
     component.ngOnChanges()
@@ -94,7 +94,7 @@ describe('WorkspaceContactComponent', () => {
 
   it('should fillForm onChanges: address', () => {
     component.contactForm = contactForm
-    component.workspace = portal
+    component.workspace = workspace
     component.workspace.address = {
       country: 'detail country',
       city: 'detail city',
@@ -108,7 +108,7 @@ describe('WorkspaceContactComponent', () => {
     expect(component.contactForm.controls['street'].value).toEqual('detail street')
   })
 
-  it('should update portal onSave', () => {
+  it('should update workspace onSave', () => {
     component.contactForm = new FormGroup({
       phoneNumber: new FormControl('123456789'),
       country: new FormControl('Some country'),
@@ -117,7 +117,7 @@ describe('WorkspaceContactComponent', () => {
       street: new FormControl('Some street'),
       streetNo: new FormControl('123')
     })
-    component.workspace = portal
+    component.workspace = workspace
     component.workspace.address = {
       country: 'detail country',
       city: 'detail city',
@@ -131,18 +131,34 @@ describe('WorkspaceContactComponent', () => {
     expect(component.editMode).toBeFalse()
   })
 
-  it('should update portal onSave: no address', () => {
-    const newPortal: Workspace = {
-      name: 'name',
-      theme: 'theme',
-      baseUrl: '/some/base/url',
-      id: 'id',
-      displayName: ''
-    }
-    component.workspace = { ...newPortal, address: undefined }
+  it('should update workspace onSave: no address', () => {
+    component.workspace = workspace
 
     component.onSave()
 
     expect(component.workspace.address).toBeDefined()
+  })
+
+  it('should display error msg if form is invalid', () => {
+    component.workspace = undefined
+
+    component.onSave()
+
+    expect().nothing()
+  })
+
+  it('should display error msg if form is invalid', () => {
+    component.editMode = true
+    component.workspace = workspace
+    component.workspace.address = {}
+
+    component.ngOnChanges()
+    component.contactForm.controls['street'].setValue(
+      '89_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789_'
+    )
+
+    component.onSave()
+
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'VALIDATION.FORM_INVALID' })
   })
 })

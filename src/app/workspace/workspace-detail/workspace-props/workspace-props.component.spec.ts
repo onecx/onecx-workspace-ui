@@ -280,7 +280,7 @@ describe('WorkspacePropsComponent', () => {
       component.ngOnChanges(changes)
     })
 
-    describe('Saving image', () => {
+    describe('Saving', () => {
       it('should return if no workspace to save', () => {
         component.workspace = undefined
 
