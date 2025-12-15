@@ -1,11 +1,11 @@
-import { Component, inject, Inject, Input, OnInit } from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
+import { Component, Inject, Input, OnInit, inject } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
-import { Observable, ReplaySubject, catchError, map, mergeMap, of, retry, shareReplay, withLatestFrom } from 'rxjs'
 import { MenuItem } from 'primeng/api'
+import { Observable, ReplaySubject, catchError, map, mergeMap, of, retry, shareReplay, withLatestFrom } from 'rxjs'
 
 import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
 import {
@@ -16,13 +16,13 @@ import {
   ocxRemoteWebcomponent,
   provideTranslateServiceForRoot
 } from '@onecx/angular-remote-components'
-import { AppStateService, PortalCoreModule, UserService } from '@onecx/portal-integration-angular'
+import { AppStateService, UserService } from '@onecx/portal-integration-angular'
 
+import { MenubarModule } from 'primeng/menubar'
 import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
-import { SharedModule } from 'src/app/shared/shared.module'
-import { environment } from 'src/environments/environment'
 import { MenuService } from 'src/app/shared/services/menu.service'
+import { environment } from 'src/environments/environment'
 
 const MENU_MODE = 'horizontal'
 
@@ -31,7 +31,7 @@ const MENU_MODE = 'horizontal'
   standalone: true,
   templateUrl: './horizontal-main-menu.component.html',
   styleUrls: ['./horizontal-main-menu.component.scss'],
-  imports: [AngularRemoteComponentsModule, CommonModule, PortalCoreModule, RouterModule, TranslateModule, SharedModule],
+  imports: [AngularRemoteComponentsModule, CommonModule, RouterModule, TranslateModule, MenubarModule],
   providers: [
     {
       provide: BASE_URL,

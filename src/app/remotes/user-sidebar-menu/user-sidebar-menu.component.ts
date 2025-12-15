@@ -1,6 +1,6 @@
-import { APP_INITIALIZER, Component, EventEmitter, inject, Inject, Input } from '@angular/core'
-import { Location } from '@angular/common'
+import { CommonModule, Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
+import { APP_INITIALIZER, Component, EventEmitter, Inject, Input, inject } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
@@ -20,6 +20,8 @@ import {
   withLatestFrom
 } from 'rxjs'
 
+import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
+import { AppConfigService, AppStateService, UserService } from '@onecx/angular-integration-interface'
 import {
   AngularRemoteComponentsModule,
   BASE_URL,
@@ -31,15 +33,11 @@ import {
   provideTranslateServiceForRoot
 } from '@onecx/angular-remote-components'
 import { EventsPublisher, UserProfile } from '@onecx/integration-interface'
-import { AppConfigService, AppStateService, UserService } from '@onecx/angular-integration-interface'
-import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
-import { PortalCoreModule } from '@onecx/portal-integration-angular'
 
 import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
-import { SharedModule } from 'src/app/shared/shared.module'
-import { environment } from 'src/environments/environment'
 import { MenuService } from 'src/app/shared/services/menu.service'
+import { environment } from 'src/environments/environment'
 
 export function slotInitializer(slotService: SlotService) {
   return () => slotService.init()
@@ -50,9 +48,8 @@ const MENU_MODE = 'static'
   selector: 'app-user-sidebar-menu',
   standalone: true,
   imports: [
+    CommonModule,
     AngularRemoteComponentsModule,
-    SharedModule,
-    PortalCoreModule,
     RouterModule,
     AccordionModule,
     TranslateModule,
@@ -60,6 +57,7 @@ const MENU_MODE = 'static'
   ],
 
   providers: [
+    AppConfigService,
     {
       provide: BASE_URL,
       useValue: new ReplaySubject<string>(1)
