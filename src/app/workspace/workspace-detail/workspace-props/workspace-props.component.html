@@ -163,12 +163,15 @@
         class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
         [ngClass]="!editMode && inputBaseUrl.value ? 'cursor-pointer' : 'p-disabled'"
         target="_blank"
-        [href]="
-          (getLocation().deploymentPath === '/' ? '' : getLocation().deploymentPath.slice(0, -1)) + inputBaseUrl.value
-        "
+        [href]="Utils.prepareUrlPath(getLocation().deploymentPath, inputBaseUrl.value)"
         (click)="$event.stopPropagation()"
+        [escape]="false"
         [attr.aria-label]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
-        [pTooltip]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
+        [pTooltip]="
+          ('ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate) +
+          '<br/>' +
+          Utils.prepareUrlPath(getLocation().deploymentPath, inputBaseUrl.value)
+        "
         tooltipPosition="right"
         tooltipEvent="hover"
         role="link"
