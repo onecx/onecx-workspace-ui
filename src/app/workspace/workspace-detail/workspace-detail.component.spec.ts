@@ -194,7 +194,7 @@ describe('WorkspaceDetailComponent', () => {
 
       component.onConfirmDeleteWorkspace()
 
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.WORKSPACE.MESSAGE_OK' })
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.WORKSPACE.MESSAGE.OK' })
     })
 
     it('should delete workspace on onConfirmDeleteWorkspace: no workspace', () => {
@@ -203,7 +203,7 @@ describe('WorkspaceDetailComponent', () => {
 
       component.onConfirmDeleteWorkspace()
 
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.WORKSPACE.MESSAGE_OK' })
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.WORKSPACE.MESSAGE.OK' })
     })
 
     it('should display error msg if delete api call fails', () => {
@@ -213,7 +213,7 @@ describe('WorkspaceDetailComponent', () => {
 
       component.onConfirmDeleteWorkspace()
 
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.WORKSPACE.MESSAGE_NOK' })
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.WORKSPACE.MESSAGE.NOK' })
       expect(console.error).toHaveBeenCalledWith('deleteWorkspace', errorResponse)
     })
   })
@@ -409,7 +409,7 @@ describe('WorkspaceDetailComponent', () => {
       actions[3].actionCallback()
 
       expect(console.error).toHaveBeenCalledWith("Couldn't assign tab to component")
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_OK' })
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.WORKSPACE.OK' })
       component.workspace$.subscribe((data) => {
         expect(data).toEqual(workspace)
         done()
@@ -427,7 +427,7 @@ describe('WorkspaceDetailComponent', () => {
       component.actions$!.subscribe((act) => (actions = act))
       actions[3].actionCallback()
 
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_NOK' })
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.WORKSPACE.NOK' })
       expect(console.error).toHaveBeenCalledWith('updateWorkspace', errorResponse)
     })
   })

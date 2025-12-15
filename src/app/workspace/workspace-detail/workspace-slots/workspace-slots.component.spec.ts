@@ -540,7 +540,7 @@ describe('WorkspaceSlotsComponent', () => {
       component.onAddSlot(mockEvent, slot)
 
       expect(mockEvent.stopPropagation).toHaveBeenCalled()
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.SLOT.MESSAGE_OK' })
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.SLOT.MESSAGE.OK' })
       expect(slotServiceSpy.createSlot).toHaveBeenCalledWith({
         createSlotRequest: { workspaceId: component.workspace?.id, name: slot.name }
       })
@@ -553,7 +553,7 @@ describe('WorkspaceSlotsComponent', () => {
 
       component.onAddSlot(mockEvent, slot)
 
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.SLOT.MESSAGE_NOK' })
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.SLOT.MESSAGE.NOK' })
       expect(console.error).toHaveBeenCalledWith('createSlot', errorResponse)
     })
   })
@@ -592,7 +592,7 @@ describe('WorkspaceSlotsComponent', () => {
       component.onDeleteSlot(mockEvent, slot)
 
       expect(mockEvent.stopPropagation).toHaveBeenCalled()
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.SLOT.MESSAGE_OK' })
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.SLOT.MESSAGE.OK' })
       expect(slotServiceSpy.deleteSlotById).toHaveBeenCalledWith({ id: slot.id })
     })
 
@@ -603,7 +603,7 @@ describe('WorkspaceSlotsComponent', () => {
 
       component.onDeleteSlot(mockEvent, slot)
 
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.SLOT.MESSAGE_NOK' })
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.SLOT.MESSAGE.NOK' })
       expect(console.error).toHaveBeenCalledWith('deleteSlotById', errorResponse)
     })
   })

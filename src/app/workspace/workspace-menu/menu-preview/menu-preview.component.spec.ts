@@ -130,7 +130,7 @@ describe('MenuPreviewComponent', () => {
       component.onDrop(event)
 
       expect(component.reorderEmitter.emit).toHaveBeenCalledWith(true)
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' })
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU.OK' })
     })
 
     it('should update menu item - drag between nodes', () => {
@@ -155,7 +155,7 @@ describe('MenuPreviewComponent', () => {
 
       component.onDrop(event)
 
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' })
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU.OK' })
     })
 
     it('should update menu items onDrop: return before pushing items', () => {
@@ -180,7 +180,7 @@ describe('MenuPreviewComponent', () => {
 
       component.onDrop(event)
 
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU.NOK' })
       expect(console.error).toHaveBeenCalledWith('updateMenuItemParent', errorResponse)
     })
   })
@@ -218,7 +218,7 @@ describe('MenuPreviewComponent', () => {
     component.onDrop(event)
 
     expect(component.reorderEmitter.emit).toHaveBeenCalledWith(true)
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' })
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU.OK' })
   })
 
   it('should update menu item - drop on dummy node without parent (root level)', () => {
@@ -251,7 +251,7 @@ describe('MenuPreviewComponent', () => {
     component.onDrop(event)
 
     expect(component.reorderEmitter.emit).toHaveBeenCalledWith(true)
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' })
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU.OK' })
   })
 
   describe('toggle tree view', () => {

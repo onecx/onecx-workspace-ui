@@ -125,7 +125,7 @@ describe('WorkspaceRoleDetailComponent', () => {
 
     component.onDeleteRoleConfirmation()
 
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.ROLE.MESSAGE_OK' })
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.ROLE.MESSAGE.OK' })
     expect(component.dataChanged.emit).toHaveBeenCalledWith(true)
   })
 

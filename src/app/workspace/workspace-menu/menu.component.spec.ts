@@ -378,7 +378,7 @@ describe('MenuComponent', () => {
       expect(component.displayMenuDelete).toBe(false)
       expect(mockMenuItems[0].disabled).toBe(true)
       expect(mockMenuItems[0].modificationCount).toBe(updatedItem.modificationCount)
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' })
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU.OK' })
     })
 
     it('should call updateMenuItem and handle error', () => {
@@ -391,7 +391,7 @@ describe('MenuComponent', () => {
 
       expect(event.stopPropagation).toHaveBeenCalled()
       expect(console.error).toHaveBeenCalledWith('updateMenuItem', errorResponse)
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU.NOK' })
     })
 
     describe('Role Filter', () => {

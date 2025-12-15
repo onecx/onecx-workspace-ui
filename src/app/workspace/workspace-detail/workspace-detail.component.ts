@@ -105,11 +105,14 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
     switch (this.selectedTabIndex) {
       case 0: {
         this.workspacePropsComponent.onSave()
-        workspaceData = this.workspacePropsComponent.workspace
+        if (this.workspacePropsComponent.propsForm.valid) workspaceData = this.workspacePropsComponent.workspace
+        else return
         break
       }
       case 1: {
         this.workspaceContactComponent.onSave()
+        if (this.workspaceContactComponent.contactForm.valid) workspaceData = this.workspacePropsComponent.workspace
+        else return
         workspaceData = this.workspaceContactComponent.workspace
         break
       }
@@ -130,14 +133,14 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
       })
       .subscribe({
         next: (data) => {
-          this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_OK' })
+          this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.WORKSPACE.OK' })
           this.toggleEditMode('view')
           // update observable with response data
           this.workspace$ = new Observable((sub) => sub.next(data))
         },
         error: (err) => {
           console.error('updateWorkspace', err)
-          this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.CHANGE_NOK' })
+          this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.WORKSPACE.NOK' })
         }
       })
   }
@@ -146,12 +149,12 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
     this.workspaceDeleteVisible = false
     this.workspaceApi.deleteWorkspace({ id: this.workspace?.id ?? '' }).subscribe({
       next: () => {
-        this.msgService.success({ summaryKey: 'ACTIONS.DELETE.WORKSPACE.MESSAGE_OK' })
+        this.msgService.success({ summaryKey: 'ACTIONS.DELETE.WORKSPACE.MESSAGE.OK' })
         this.onClose()
       },
       error: (err) => {
         console.error('deleteWorkspace', err)
-        this.msgService.error({ summaryKey: 'ACTIONS.DELETE.WORKSPACE.MESSAGE_NOK' })
+        this.msgService.error({ summaryKey: 'ACTIONS.DELETE.WORKSPACE.MESSAGE.NOK' })
       }
     })
   }

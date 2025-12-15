@@ -535,7 +535,7 @@ describe('MenuDetailComponent', () => {
 
       component.onMenuSave()
 
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_OK' })
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU.OK' })
     })
 
     it('should display error message on save menu: edit', () => {
@@ -549,7 +549,7 @@ describe('MenuDetailComponent', () => {
 
       component.onMenuSave()
 
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU_CHANGE_NOK' })
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU.NOK' })
       expect(console.error).toHaveBeenCalledWith('updateMenuItem', errorResponse)
     })
   })
@@ -561,7 +561,7 @@ describe('MenuDetailComponent', () => {
 
       component.onMenuDelete()
 
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MENU.MESSAGE_OK' })
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MENU.MESSAGE.OK' })
     })
 
     it('should display error message on delete menu item', () => {
@@ -571,7 +571,7 @@ describe('MenuDetailComponent', () => {
 
       component.onMenuDelete()
 
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MENU.MESSAGE_NOK' })
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MENU.MESSAGE.NOK' })
       expect(console.error).toHaveBeenCalledWith('deleteMenuItemById', errorResponse)
     })
 

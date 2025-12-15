@@ -347,11 +347,11 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
       })
       .subscribe({
         next: (data) => {
-          this.msgService.success({ summaryKey: 'ACTIONS.CREATE.SLOT.MESSAGE_OK' })
+          this.msgService.success({ summaryKey: 'ACTIONS.CREATE.SLOT.MESSAGE.OK' })
           this.ps2wTransferSlot(data)
         },
         error: (err) => {
-          this.msgService.error({ summaryKey: 'ACTIONS.CREATE.SLOT.MESSAGE_NOK' })
+          this.msgService.error({ summaryKey: 'ACTIONS.CREATE.SLOT.MESSAGE.NOK' })
           console.error('createSlot', err)
         }
       })
@@ -377,11 +377,11 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     if (slot)
       this.slotApi.deleteSlotById({ id: slot.id! }).subscribe({
         next: () => {
-          this.msgService.success({ summaryKey: 'ACTIONS.DELETE.SLOT.MESSAGE_OK' })
+          this.msgService.success({ summaryKey: 'ACTIONS.DELETE.SLOT.MESSAGE.OK' })
           this.w2psTransferSlot(slot)
         },
         error: (err) => {
-          this.msgService.error({ summaryKey: 'ACTIONS.DELETE.SLOT.MESSAGE_NOK' })
+          this.msgService.error({ summaryKey: 'ACTIONS.DELETE.SLOT.MESSAGE.NOK' })
           console.error('deleteSlotById', err)
         }
       })

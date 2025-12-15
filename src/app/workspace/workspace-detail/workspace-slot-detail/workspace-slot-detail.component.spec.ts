@@ -467,7 +467,7 @@ describe('WorkspaceSlotDetailComponent', () => {
       component.onDeleteSlot()
 
       expect(slotServiceSpy.deleteSlotById).toHaveBeenCalledWith({ id: '1' })
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.SLOT.MESSAGE_OK' })
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.SLOT.MESSAGE.OK' })
       expect(component.detailClosed.emit).toHaveBeenCalledWith(true)
     })
 
@@ -481,7 +481,7 @@ describe('WorkspaceSlotDetailComponent', () => {
       component.onDeleteSlot()
 
       expect(slotServiceSpy.deleteSlotById).toHaveBeenCalledWith({ id: '1' })
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.SLOT.MESSAGE_NOK' })
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.SLOT.MESSAGE.NOK' })
       expect(console.error).toHaveBeenCalledWith('deleteSlotById', errorResponse)
       expect(component.detailClosed.emit).not.toHaveBeenCalled()
     })

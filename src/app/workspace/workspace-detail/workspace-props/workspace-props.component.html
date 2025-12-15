@@ -1,6 +1,6 @@
 <form
   class="mt-3 mx-2 sm:mx-3 flex flex-wrap flex-column row-gap-3 sm:row-gap-4 lg:w-10 xl:w-8"
-  [formGroup]="formGroup"
+  [formGroup]="propsForm"
   errorTailor
 >
   <span class="p-float-label mb-1 w-full" controlErrorAnchor>
@@ -301,16 +301,16 @@
       id="ws_detail_props_form_logo_image"
       styleClass="max-h-3rem max-w-5rem border-round-sm"
       [bffUrl]="bffUrl[RefType.Logo]"
-      [imageUrl]="formGroup.controls['logoUrl'].value"
+      [imageUrl]="propsForm.controls['logoUrl'].value"
       [cascadeUse]="!editMode"
-      (imageLoadResult)="onImageLoadResult($event, RefType.Logo, formGroup.controls['logoUrl'].value)"
+      (imageLoadResult)="onImageLoadResult($event, RefType.Logo, propsForm.controls['logoUrl'].value)"
     ></app-image-container>
     <p-button
       *ocxIfPermission="'WORKSPACE#EDIT'"
       id="ws_detail_props_item_remove_logo"
       styleClass="button-min-height"
       icon="pi pi-trash"
-      [disabled]="editMode || !(bffUrl[RefType.Logo] && !formGroup.controls['logoUrl'].value)"
+      [disabled]="editMode || !(bffUrl[RefType.Logo] && !propsForm.controls['logoUrl'].value)"
       (onClick)="onRemoveImage(RefType.Logo)"
       [ariaLabel]="'IMAGE.TOOLTIPS.REMOVE' | translate"
       [pTooltip]="'IMAGE.TOOLTIPS.REMOVE' | translate"
@@ -321,7 +321,7 @@
       *ocxIfPermission="'WORKSPACE#EDIT'"
       id="ws_detail_props_item_upload_logo"
       icon="pi pi-upload"
-      [disabled]="editMode || formGroup.controls['logoUrl'].value"
+      [disabled]="editMode || propsForm.controls['logoUrl'].value"
       (onClick)="fileUploadLogo.click()"
       [ariaLabel]="'IMAGE.TOOLTIPS.UPLOAD' | translate"
       [pTooltip]="'IMAGE.TOOLTIPS.UPLOAD' | translate"
@@ -397,15 +397,15 @@
       id="ws_detail_props_form_logo_small_image"
       styleClass="max-h-3rem max-w-5rem border-round-sm"
       [bffUrl]="bffUrl[RefType.LogoSmall]"
-      [imageUrl]="formGroup.controls['smallLogoUrl'].value"
+      [imageUrl]="propsForm.controls['smallLogoUrl'].value"
       [cascadeUse]="!editMode"
-      (imageLoadResult)="onImageLoadResult($event, RefType.LogoSmall, formGroup.controls['smallLogoUrl'].value)"
+      (imageLoadResult)="onImageLoadResult($event, RefType.LogoSmall, propsForm.controls['smallLogoUrl'].value)"
     ></app-image-container>
     <p-button
       *ocxIfPermission="'WORKSPACE#EDIT'"
       id="ws_detail_props_item_remove_logo_small"
       icon="pi pi-trash"
-      [disabled]="editMode || !(bffUrl[RefType.LogoSmall] && !formGroup.controls['smallLogoUrl'].value)"
+      [disabled]="editMode || !(bffUrl[RefType.LogoSmall] && !propsForm.controls['smallLogoUrl'].value)"
       (onClick)="onRemoveImage(RefType.LogoSmall)"
       [ariaLabel]="'IMAGE.TOOLTIPS.REMOVE' | translate"
       [pTooltip]="'IMAGE.TOOLTIPS.REMOVE' | translate"
@@ -416,7 +416,7 @@
       *ocxIfPermission="'WORKSPACE#EDIT'"
       id="ws_detail_props_item_upload_logo_small"
       icon="pi pi-upload"
-      [disabled]="editMode || formGroup.controls['smallLogoUrl'].value"
+      [disabled]="editMode || propsForm.controls['smallLogoUrl'].value"
       (onClick)="fileUploadLogoSmall.click()"
       [ariaLabel]="'IMAGE.TOOLTIPS.UPLOAD' | translate"
       [pTooltip]="'IMAGE.TOOLTIPS.UPLOAD' | translate"
