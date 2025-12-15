@@ -185,6 +185,7 @@ describe('MenuComponent', () => {
     stateServiceSpy.getState.and.returnValue(state)
     // used in ngOnChanges
     workspaceServiceSpy.doesUrlExistFor.and.returnValue(of(true))
+    workspaceServiceSpy.getUrl.and.returnValue(of('/url'))
 
     fixture = TestBed.createComponent(MenuComponent)
     component = fixture.componentInstance
@@ -1155,46 +1156,5 @@ describe('MenuComponent', () => {
     const result = component['getLogoUrl']({ name: 'name', displayName: 'name', logoUrl: 'url' })
 
     expect(result).toBe('url')
-  })
-
-  describe('getPermisionEndpointUrl', () => {
-    beforeEach(() => {
-      component.workspace = workspace
-    })
-
-    it('should permissionEndpointExist - exist', (done) => {
-      component.permissionEndpointExist = true
-      workspaceServiceSpy.getUrl.and.returnValue(of('/url'))
-
-      const eu$ = component.getPermisionEndpointUrl$('name')
-
-      eu$.subscribe({
-        next: (data) => {
-          if (data) {
-            expect(data).toBe('/url')
-          }
-          done()
-        },
-        error: done.fail
-      })
-    })
-
-    it('should permissionEndpointExist - not exist', (done) => {
-      component.permissionEndpointExist = false
-      const errorResponse = { status: 400, statusText: 'Error on check endpoint' }
-      workspaceServiceSpy.getUrl.and.returnValue(throwError(() => errorResponse))
-
-      const eu$ = component.getPermisionEndpointUrl$('name')
-
-      eu$.subscribe({
-        next: (data) => {
-          if (data) {
-            expect(data).toBeFalse()
-          }
-          done()
-        },
-        error: done.fail
-      })
-    })
   })
 })

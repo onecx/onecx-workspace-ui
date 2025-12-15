@@ -72,6 +72,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   public currentLogoUrl: string | undefined = undefined
   public roleColumnFilterValue: string[] = []
   public permissionEndpointExist = false
+  public permissionUrl: string | undefined
 
   // data
   public workspace$!: Observable<Workspace | undefined>
@@ -158,6 +159,14 @@ export class MenuComponent implements OnInit, OnDestroy {
       'onecx-permission-ui',
       'workspace'
     )
+    if (this.permissionEndpointExist)
+      this.workspaceService
+        .getUrl('onecx-permission', 'onecx-permission-ui', 'workspace', {
+          'workspace-name': this.workspace?.name
+        })
+        .subscribe((url) => {
+          this.permissionUrl = url
+        })
   }
 
   public ngOnDestroy(): void {
@@ -793,13 +802,5 @@ export class MenuComponent implements OnInit, OnDestroy {
         console.error('deleteAssignment', err)
       }
     })
-  }
-
-  public getPermisionEndpointUrl$(name: string): Observable<string | undefined> {
-    if (this.permissionEndpointExist)
-      return this.workspaceService.getUrl('onecx-permission', 'onecx-permission-ui', 'workspace', {
-        'workspace-name': name
-      })
-    return of(undefined)
   }
 }

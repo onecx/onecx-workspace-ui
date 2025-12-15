@@ -35,7 +35,6 @@ export class WorkspaceContactComponent implements OnChanges {
   private fillForm(): void {
     Object.keys(this.contactForm.controls).forEach((element) => {
       if (['street', 'streetNo', 'city', 'postalCode', 'country'].includes(element) && this.workspace?.address) {
-        console.log('fillForm', element, (this.workspace?.address as any)[element])
         this.contactForm.controls[element].setValue((this.workspace?.address as any)[element])
       } else {
         this.contactForm.controls[element].setValue((this.workspace as any)[element])
