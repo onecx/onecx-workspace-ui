@@ -41,7 +41,7 @@ class MockWorkspaceInternComponent {
   public onSave(): void {}
 }
 
-describe('WorkspaceDetailComponent', () => {
+fdescribe('WorkspaceDetailComponent', () => {
   let component: WorkspaceDetailComponent
   let fixture: ComponentFixture<WorkspaceDetailComponent>
   const mockRouter = new MockRouter()
@@ -54,14 +54,8 @@ describe('WorkspaceDetailComponent', () => {
     exportWorkspaces: jasmine.createSpy('exportWorkspaces').and.returnValue(of({})),
     updateWorkspace: jasmine.createSpy('updateWorkspace').and.returnValue(of({}))
   }
-
   const locationSpy = jasmine.createSpyObj<Location>('Location', ['back'])
-
-  const mockActivatedRouteSnapshot: Partial<ActivatedRouteSnapshot> = {
-    params: {
-      id: 'mockId'
-    }
-  }
+  const mockActivatedRouteSnapshot: Partial<ActivatedRouteSnapshot> = { params: { id: 'mockId' } }
   const mockActivatedRoute: Partial<ActivatedRoute> = {
     snapshot: mockActivatedRouteSnapshot as ActivatedRouteSnapshot
   }
@@ -311,17 +305,23 @@ describe('WorkspaceDetailComponent', () => {
       expect(component.editMode).toBeTrue()
     })
 
-    it('should have prepared action buttons onInit: update workspace props', () => {
+    it('should have prepared action buttons onInit: update workspace props - valid data', () => {
       apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
       component.workspacePropsComponent = new MockWorkspacePropsComponent() as unknown as WorkspacePropsComponent
       component.selectedTabIndex = 0
       component.ngOnInit()
       let actions: any = []
       component.actions$!.subscribe((act) => (actions = act))
-
       actions[3].actionCallback()
 
       expect(component.editMode).toBeFalse()
+
+      // if data are invalid
+      component.editMode = true
+      component.workspacePropsComponent.propsForm = { valid: false } as any
+      actions[3].actionCallback()
+
+      expect(component.editMode).toBeTrue()
     })
 
     it('should have prepared action buttons onInit: update workspace contact', () => {
@@ -335,6 +335,13 @@ describe('WorkspaceDetailComponent', () => {
       actions[3].actionCallback()
 
       expect(component.editMode).toBeFalse()
+
+      // if data are invalid
+      component.editMode = true
+      component.workspaceContactComponent.contactForm = { valid: false } as any
+      actions[3].actionCallback()
+
+      expect(component.editMode).toBeTrue()
     })
 
     it('should have prepared action buttons onInit: update workspace intern', () => {
