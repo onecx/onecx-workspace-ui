@@ -29,12 +29,12 @@
         "MESSAGE.NOK": "An error has occurred. The Slot was not created."
       },
       "MESSAGE": {
-        "CREATE_OK": "The Workspace was created successfully",
-        "CREATE_NOK": "An error has occurred. The Workspace was not created.",
+        "CREATE.OK": "The Workspace was created successfully",
+        "CREATE.NOK": "An error has occurred. The Workspace was not created.",
         "ROLE_ALREADY_EXISTS": "A Role with this name already exists",
         "MENU_ALREADY_EXIST": "A Menu Item with that name/id already exists",
-        "MENU_CREATE_OK": "The Menu Item was created successfully",
-        "MENU_CREATE_NOK": "An error has occurred. The Menu Item was not created."
+        "MENU_CREATE.OK": "The Menu Item was created successfully",
+        "MENU_CREATE.NOK": "An error has occurred. The Menu Item was not created."
       }
     },
     "DELETE": {
@@ -395,8 +395,8 @@
       "COMPONENTS.NOT_USED": "Available Components",
       "COMPONENTS.NOT_USED.TOOLTIP": "List of available components declared via the registered Applications.",
       "MESSAGES": {
-        "CREATE_OK": "The Slot was successfully registered",
-        "CREATE_NOK": "An error has occurred during Slot registration",
+        "CREATE.OK": "The Slot was successfully registered",
+        "CREATE.NOK": "An error has occurred during Slot registration",
         "REGISTRATION_OK": "The Component was successfully registered",
         "REGISTRATION_NOK": "An error has occurred during Component registration",
         "REGISTRATIONS_OK": "The Components wer successfully registered",

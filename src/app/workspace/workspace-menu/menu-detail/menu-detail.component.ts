@@ -248,11 +248,11 @@ export class MenuDetailComponent implements OnChanges {
         })
         .subscribe({
           next: () => {
-            this.msgService.success({ summaryKey: 'ACTIONS.CREATE.MESSAGE.MENU_CREATE_OK' })
+            this.msgService.success({ summaryKey: 'ACTIONS.CREATE.MESSAGE.MENU_CREATE.OK' })
             this.dataChanged.emit(true)
           },
           error: (err) => {
-            this.msgService.error({ summaryKey: 'ACTIONS.CREATE.MESSAGE.MENU_CREATE_NOK' })
+            this.msgService.error({ summaryKey: 'ACTIONS.CREATE.MESSAGE.MENU_CREATE.NOK' })
             console.error('createMenuItemForWorkspace', err)
           }
         })

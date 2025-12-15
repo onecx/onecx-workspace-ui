@@ -117,7 +117,7 @@
               styleClass="button-min-height"
               icon="pi pi-lock"
               [disabled]="!permissionEndpointExist"
-              [routerLink]="[getPermisionEndpointUrl$(workspace?.name!) | async]"
+              [routerLink]="permissionUrl"
               [ariaLabel]="'ACTIONS.NAVIGATION.GOTO_WORKSPACE_PERMISSIONS' | translate"
               [pTooltip]="'ACTIONS.NAVIGATION.GOTO_WORKSPACE_PERMISSIONS' | translate"
               tooltipPosition="top"

@@ -120,7 +120,7 @@ describe('WorkspaceCreateComponent', () => {
 
     component.saveWorkspace()
 
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.MESSAGE.CREATE_OK' })
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.MESSAGE.CREATE.OK' })
     expect(mockRouter.navigate).toHaveBeenCalledWith(['./name'], { relativeTo: mockActivatedRoute })
   })
 
@@ -131,7 +131,7 @@ describe('WorkspaceCreateComponent', () => {
 
     component.saveWorkspace()
 
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.MESSAGE.CREATE_NOK' })
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.MESSAGE.CREATE.NOK' })
     expect(console.error).toHaveBeenCalledWith('createWorkspace', errorResponse)
   })
 

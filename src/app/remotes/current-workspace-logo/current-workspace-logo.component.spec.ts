@@ -1,3 +1,4 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { CommonModule } from '@angular/common'
 import { provideHttpClient } from '@angular/common/http'
@@ -43,6 +44,7 @@ describe('OneCXCurrentWorkspaceLogoComponent', () => {
         }).withDefaultLanguage('en'),
         NoopAnimationsModule
       ],
+      schemas: [NO_ERRORS_SCHEMA],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
