@@ -105,14 +105,13 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
     switch (this.selectedTabIndex) {
       case 0: {
         this.workspacePropsComponent.onSave()
-        if (this.workspacePropsComponent.propsForm.valid) workspaceData = this.workspacePropsComponent.workspace
-        else return
+        if (!this.workspacePropsComponent.propsForm.valid) return
+        workspaceData = this.workspacePropsComponent.workspace
         break
       }
       case 1: {
         this.workspaceContactComponent.onSave()
-        if (this.workspaceContactComponent.contactForm.valid) workspaceData = this.workspaceContactComponent.workspace
-        else return
+        if (!this.workspaceContactComponent.contactForm.valid) return
         workspaceData = this.workspaceContactComponent.workspace
         break
       }

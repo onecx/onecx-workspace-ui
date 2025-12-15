@@ -1,6 +1,8 @@
 import { Component, Input, OnChanges } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 
+import { PortalMessageService } from '@onecx/angular-integration-interface'
+
 import { Workspace } from 'src/app/shared/generated'
 
 @Component({
@@ -13,7 +15,7 @@ export class WorkspaceContactComponent implements OnChanges {
 
   public contactForm: FormGroup
 
-  constructor() {
+  constructor(private readonly msgService: PortalMessageService) {
     this.contactForm = new FormGroup({
       companyName: new FormControl(null, [Validators.maxLength(255)]),
       phoneNumber: new FormControl(null, [Validators.maxLength(255)]),
@@ -41,10 +43,9 @@ export class WorkspaceContactComponent implements OnChanges {
   }
 
   public onSave(): void {
-    if (this.contactForm.valid) {
-      Object.assign(this.workspace, this.getFormData())
-      this.editMode = false
-    }
+    if (!this.workspace) return
+    if (this.contactForm.valid) Object.assign(this.workspace, this.getFormData())
+    else this.msgService.error({ summaryKey: 'VALIDATION.FORM_INVALID' })
   }
 
   // read form values
