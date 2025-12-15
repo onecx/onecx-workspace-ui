@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, ElementRef, inject, Inject, Input, NO_ERRORS_SCHEMA, OnDestroy, ViewChild } from '@angular/core'
+import { Component, ElementRef, inject, Inject, Input, OnDestroy, ViewChild } from '@angular/core'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { combineLatest, filter, map, merge, Observable, ReplaySubject } from 'rxjs'
 
@@ -10,7 +10,6 @@ import {
   ocxRemoteWebcomponent,
   RemoteComponentConfig
 } from '@onecx/angular-remote-components'
-import { PortalCoreModule } from '@onecx/portal-integration-angular'
 
 import { RefType } from 'src/app/shared/generated'
 import { MenuMode, MenuService } from 'src/app/shared/services/menu.service'
@@ -37,14 +36,13 @@ const SMALL_LOGO_THRESHOLD_PX = 235
   templateUrl: './topbar-logo.component.html',
   styleUrls: ['./topbar-logo.component.scss'],
   standalone: true,
-  imports: [AngularRemoteComponentsModule, CommonModule, PortalCoreModule, OneCXCurrentWorkspaceLogoComponent],
+  imports: [AngularRemoteComponentsModule, CommonModule, OneCXCurrentWorkspaceLogoComponent],
   providers: [
     {
       provide: BASE_URL,
       useValue: new ReplaySubject<string>(1)
     }
-  ],
-  schemas: [NO_ERRORS_SCHEMA]
+  ]
 })
 @UntilDestroy()
 export class OneCXTopbarLogoComponent implements ocxRemoteComponent, ocxRemoteWebcomponent, OnDestroy {

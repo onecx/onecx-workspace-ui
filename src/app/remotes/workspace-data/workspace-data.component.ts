@@ -1,29 +1,27 @@
-import { Component, EventEmitter, Inject, Input, OnChanges } from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
+import { Component, EventEmitter, Inject, Input, OnChanges } from '@angular/core'
 import { UntilDestroy } from '@ngneat/until-destroy'
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { BehaviorSubject, catchError, map, Observable, of, ReplaySubject } from 'rxjs'
 
+import { AngularAcceleratorModule, createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
 import {
   AngularRemoteComponentsModule,
   BASE_URL,
-  RemoteComponentConfig,
   ocxRemoteComponent,
   ocxRemoteWebcomponent,
-  provideTranslateServiceForRoot
+  provideTranslateServiceForRoot,
+  RemoteComponentConfig
 } from '@onecx/angular-remote-components'
-import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
-import { PortalCoreModule } from '@onecx/portal-integration-angular'
 
 import {
   Configuration,
   RefType,
+  SearchWorkspacesRequest,
   Workspace,
-  WorkspaceAPIService,
-  SearchWorkspacesRequest
+  WorkspaceAPIService
 } from 'src/app/shared/generated'
-import { SharedModule } from 'src/app/shared/shared.module'
 import { Utils } from 'src/app/shared/utils'
 import { environment } from 'src/environments/environment'
 
@@ -33,7 +31,7 @@ type DataType = 'logo' | 'workspaces' | 'workspace'
   selector: 'app-workspace-data',
   templateUrl: './workspace-data.component.html',
   standalone: true,
-  imports: [AngularRemoteComponentsModule, CommonModule, PortalCoreModule, TranslateModule, SharedModule],
+  imports: [AngularRemoteComponentsModule, CommonModule, TranslateModule, AngularAcceleratorModule],
   providers: [
     {
       provide: BASE_URL,

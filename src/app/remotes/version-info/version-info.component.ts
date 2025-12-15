@@ -1,16 +1,16 @@
-import { Component, Input, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core'
 import { CommonModule } from '@angular/common'
+import { Component, inject, Input } from '@angular/core'
 import { UntilDestroy } from '@ngneat/until-destroy'
 import { combineLatest, from, map, Observable, ReplaySubject } from 'rxjs'
 
-import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
+import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
+import { AppStateService, CONFIG_KEY, ConfigurationService } from '@onecx/angular-integration-interface'
 import {
   AngularRemoteComponentsModule,
   ocxRemoteComponent,
   ocxRemoteWebcomponent
 } from '@onecx/angular-remote-components'
-import { AppStateService, CONFIG_KEY, ConfigurationService } from '@onecx/angular-integration-interface'
-import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
+import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
 
 export type Version = {
   workspaceName: string
@@ -24,8 +24,7 @@ export type Version = {
   templateUrl: './version-info.component.html',
   standalone: true,
   imports: [AngularRemoteComponentsModule, CommonModule, AngularAcceleratorModule],
-  providers: [{ provide: REMOTE_COMPONENT_CONFIG, useValue: new ReplaySubject<string>(1) }],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  providers: [{ provide: REMOTE_COMPONENT_CONFIG, useValue: new ReplaySubject<string>(1) }]
 })
 @UntilDestroy()
 export class OneCXVersionInfoComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
