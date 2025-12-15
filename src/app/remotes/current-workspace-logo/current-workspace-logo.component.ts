@@ -1,17 +1,17 @@
-import { Component, EventEmitter, inject, Inject, Input, NO_ERRORS_SCHEMA, Output } from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
+import { Component, EventEmitter, inject, Inject, Input, Output } from '@angular/core'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { BehaviorSubject, ReplaySubject } from 'rxjs'
 
+import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
+import { AppStateService } from '@onecx/angular-integration-interface'
 import {
   AngularRemoteComponentsModule,
   BASE_URL,
-  RemoteComponentConfig,
   ocxRemoteComponent,
-  ocxRemoteWebcomponent
+  ocxRemoteWebcomponent,
+  RemoteComponentConfig
 } from '@onecx/angular-remote-components'
-import { AppStateService } from '@onecx/angular-integration-interface'
-import { PortalCoreModule } from '@onecx/portal-integration-angular'
 
 import { Configuration, RefType, WorkspaceAPIService } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
@@ -22,14 +22,13 @@ import { environment } from 'src/environments/environment'
   templateUrl: './current-workspace-logo.component.html',
   styleUrls: ['./current-workspace-logo.component.scss'],
   standalone: true,
-  imports: [AngularRemoteComponentsModule, CommonModule, PortalCoreModule],
+  imports: [AngularRemoteComponentsModule, CommonModule, AngularAcceleratorModule],
   providers: [
     {
       provide: BASE_URL,
       useValue: new ReplaySubject<string>(1)
     }
-  ],
-  schemas: [NO_ERRORS_SCHEMA]
+  ]
 })
 @UntilDestroy()
 export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {

@@ -17,11 +17,9 @@ import {
   provideTranslateServiceForRoot
 } from '@onecx/angular-remote-components'
 import { AppStateService, UserService } from '@onecx/angular-integration-interface'
-import { PortalCoreModule } from '@onecx/portal-integration-angular'
 
 import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
-import { SharedModule } from 'src/app/shared/shared.module'
 import { environment } from 'src/environments/environment'
 
 @Component({
@@ -29,7 +27,7 @@ import { environment } from 'src/environments/environment'
   standalone: true,
   templateUrl: './footer-menu.component.html',
   styleUrls: ['./footer-menu.component.scss'],
-  imports: [AngularRemoteComponentsModule, CommonModule, PortalCoreModule, RouterModule, TranslateModule, SharedModule],
+  imports: [AngularRemoteComponentsModule, CommonModule, RouterModule, TranslateModule],
   providers: [
     {
       provide: BASE_URL,

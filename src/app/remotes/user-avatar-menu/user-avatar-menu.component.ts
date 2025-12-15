@@ -1,10 +1,14 @@
-import { AfterViewInit, Component, EventEmitter, Inject, Input, OnDestroy, Renderer2 } from '@angular/core'
-import { Location } from '@angular/common'
+import { CommonModule, Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
+import { AfterViewInit, Component, EventEmitter, Inject, Input, OnDestroy, Renderer2 } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
+import { MenuItem, PrimeIcons } from 'primeng/api'
+import { AvatarModule } from 'primeng/avatar'
+import { MenuModule } from 'primeng/menu'
+import { RippleModule } from 'primeng/ripple'
 import {
   Observable,
   ReplaySubject,
@@ -17,11 +21,9 @@ import {
   shareReplay,
   withLatestFrom
 } from 'rxjs'
-import { MenuItem, PrimeIcons } from 'primeng/api'
-import { AvatarModule } from 'primeng/avatar'
-import { MenuModule } from 'primeng/menu'
-import { RippleModule } from 'primeng/ripple'
 
+import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
+import { AppConfigService, AppStateService, UserService } from '@onecx/angular-integration-interface'
 import {
   AngularRemoteComponentsModule,
   BASE_URL,
@@ -33,9 +35,6 @@ import {
   provideTranslateServiceForRoot
 } from '@onecx/angular-remote-components'
 import { EventsPublisher, UserProfile } from '@onecx/integration-interface'
-import { AppConfigService, AppStateService, UserService } from '@onecx/angular-integration-interface'
-import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
-import { PortalCoreModule } from '@onecx/portal-integration-angular'
 
 import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
@@ -52,17 +51,18 @@ export type MenuAnchorPositionConfig = 'right' | 'left'
   imports: [
     AngularRemoteComponentsModule,
     FormsModule,
+    CommonModule,
     SharedModule,
     MenuModule,
     AvatarModule,
     RippleModule,
-    PortalCoreModule,
     RouterModule,
     TranslateModule
   ],
   providers: [
     { provide: BASE_URL, useValue: new ReplaySubject<string>(1) },
     { provide: SLOT_SERVICE, useExisting: SlotService },
+    AppConfigService,
     provideTranslateServiceForRoot({
       isolate: true,
       loader: {
