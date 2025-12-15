@@ -1,15 +1,19 @@
-import { Component, OnInit, ViewChild, Input, Output, EventEmitter, OnChanges } from '@angular/core'
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 import { MenuItem } from 'primeng/api'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
-import { ImportResponseStatus, WorkspaceAPIService } from 'src/app/shared/generated'
-
-import { PreviewComponent } from './preview/preview.component'
-import { ConfirmComponent } from './confirm/confirm.component'
+import { ImportResponseStatus, Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
 
 export type ImportResponse = { workspace: ImportResponseStatus; menu: ImportResponseStatus }
+export type ImportWorkspace = Workspace & { themeObject?: Theme; menuItems?: any; roles?: any; products?: any }
+export type Theme = {
+  name?: string
+  displayName?: string
+  logoUrl?: string
+  faviconUrl?: string
+}
 
 @Component({
   selector: 'app-workspace-import',
@@ -20,21 +24,14 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
   @Input() displayDialog = false
   @Input() resetDialog = true // provoke the onChange
   @Output() toggleImportDialogEvent = new EventEmitter<boolean>()
-  @ViewChild(PreviewComponent) public previewComponent?: PreviewComponent
-  @ViewChild(ConfirmComponent) public confirmComponent?: ConfirmComponent
 
   public themeCheckboxEnabled = false
   public isFormValid = true
   public steps: MenuItem[] = []
   public activeIndex = 0
   public isLoading = false
-  public workspaceName = ''
-  public workspaceNameOrg = ''
-  public displayName = ''
-  public displayNameOrg = ''
-  public themeName: string | undefined
-  public baseUrl = ''
-  public baseUrlOrg: string | undefined = undefined // the original
+  public importWorkspaceOrg: ImportWorkspace | undefined // imported, not changed
+  public importWorkspace: ImportWorkspace | undefined // imported with user changes
   public importRequestDTO?: any
   public activeThemeCheckboxInFirstStep = true
   public hasPermission = false
@@ -69,12 +66,8 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
   }
 
   public reset(): void {
-    this.workspaceName = ''
-    this.themeName = undefined
-    this.baseUrl = ''
-    this.baseUrlOrg = ''
-    this.workspaceNameOrg = ''
-    this.displayNameOrg = ''
+    this.importWorkspace = undefined
+    this.importWorkspaceOrg = undefined
     this.isFormValid = true
     this.importRequestDTO = undefined
     this.activeIndex = 0
@@ -88,6 +81,34 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
   // triggered by CONFIRM => IMPORT button enabled?
   public handleIsLoading(load: boolean): void {
     this.isLoading = load
+  }
+
+  // NAVIGATE import step : NEXT
+  public next(importRequestDTO?: any): void {
+    // read file content
+    if (this.activeIndex === 0 && importRequestDTO?.workspaces) {
+      this.importRequestDTO = importRequestDTO
+      let keys: string[] = []
+      if (this.importRequestDTO?.workspaces) {
+        keys = Object.keys(this.importRequestDTO.workspaces)
+        if (keys.length > 0) {
+          this.importWorkspace = this.importRequestDTO.workspaces[keys[0]] as ImportWorkspace
+          this.importWorkspace.name = keys[0]
+          if (this.importWorkspace.theme)
+            this.importWorkspace.themeObject = {
+              name: this.importWorkspace.theme,
+              displayName: this.importWorkspace.theme
+            } as Theme
+          this.importWorkspaceOrg = { ...this.importWorkspace } // clone
+        }
+      }
+    }
+    this.activeIndex++
+  }
+
+  // NAVIGATE import step : BACK
+  public back(): void {
+    this.activeIndex--
   }
 
   /**
@@ -128,69 +149,30 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
     }
   }
 
-  public importWorkspace(): void {
-    if (!this.importRequestDTO?.workspaces) {
+  public saveWorkspace(): void {
+    if (!this.importWorkspace) {
       this.msgService.error({ summaryKey: 'WORKSPACE_IMPORT.VALIDATION.WORKSPACE.MISSING' })
       return
     }
     this.isLoading = true
     const keys: string[] = Object.keys(this.importRequestDTO.workspaces)
-    if (keys.length > 0) {
-      const ws = this.importRequestDTO.workspaces[keys[0]]
-      this.workspaceApi
-        .importWorkspaces({
-          body: this.importRequestDTO
-        })
-        .subscribe({
-          next: (response) => {
-            this.isLoading = false
-            this.importResponseParse(response)
-            this.importResponseResult(ws.name)
-          },
-          error: (err) => {
-            this.isLoading = false
-            this.msgService.error({ summaryKey: 'WORKSPACE_IMPORT.IMPORT_NOK' })
-            console.error('importWorkspaces', err)
-          }
-        })
-    }
-  }
-
-  // NAVIGATE import step : NEXT
-  public next(importRequestDTO?: any): void {
-    if (this.activeIndex === 0 && importRequestDTO?.workspaces) {
-      this.importRequestDTO = importRequestDTO
-      let keys: string[] = []
-      if (this.importRequestDTO?.workspaces) {
-        keys = Object.keys(this.importRequestDTO.workspaces)
-        if (keys.length > 0) {
-          const ws = this.importRequestDTO.workspaces[keys[0]]
-          this.workspaceNameOrg = ws.name
-          this.displayNameOrg = ws.displayName ?? ''
-          this.themeName = ws.theme
-          this.baseUrlOrg = ws.baseUrl
+    if (this.importWorkspaceOrg && this.importWorkspace && keys.length > 0) {
+      this.importRequestDTO.created = undefined
+      this.importRequestDTO.workspaces[this.importWorkspace.name] = this.importWorkspace // add new
+      if (this.importWorkspace.name !== this.importWorkspaceOrg.name)
+        this.importRequestDTO.workspaces[this.importWorkspaceOrg.name] = undefined // remove old
+      this.workspaceApi.importWorkspaces({ body: this.importRequestDTO }).subscribe({
+        next: (response) => {
+          this.isLoading = false
+          this.importResponseParse(response)
+          if (this.importWorkspace) this.importResponseResult(this.importWorkspace.name)
+        },
+        error: (err) => {
+          this.isLoading = false
+          this.msgService.error({ summaryKey: 'WORKSPACE_IMPORT.IMPORT_NOK' })
+          console.error('importWorkspaces', err)
         }
-      }
-    } else if (this.activeIndex === 1) {
-      this.workspaceName = this.previewComponent?.workspaceName ?? ''
-      this.displayName = this.previewComponent?.displayName ?? ''
-      this.themeName = this.previewComponent?.theme.name
-      this.baseUrl = this.previewComponent?.baseUrl ?? ''
+      })
     }
-    this.activeIndex++
-  }
-
-  // NAVIGATE import step : BACK
-  public back(): void {
-    if (this.importRequestDTO?.workspaces) {
-      const key: string[] = Object.keys(this.importRequestDTO.workspaces)
-      if (this.activeIndex === 2 && this.importRequestDTO?.workspaces) {
-        this.importRequestDTO.workspaces[key[0]].name = this.confirmComponent?.workspaceName ?? ''
-        this.importRequestDTO.workspaces[key[0]].displayName = this.confirmComponent?.displayName ?? ''
-        this.importRequestDTO.workspaces[key[0]].baseUrl = this.confirmComponent?.baseUrl ?? ''
-        this.importRequestDTO.workspaces[key[0]].theme = this.confirmComponent?.themeName ?? ''
-      }
-    }
-    this.activeIndex--
   }
 }

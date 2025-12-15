@@ -155,7 +155,14 @@
         <div id="ws_delete_message" class="font-bold">
           {{ 'ACTIONS.DELETE.WORKSPACE.MESSAGE.QUESTION' | translate }}
         </div>
-        <div id="ws_delete_workspace_name" class="font-bold text-center danger-action-text">{{ workspace?.name }}</div>
+        <div>
+          <div id="ws_delete_workspace_display_name" class="font-bold text-center danger-action-text">
+            {{ workspace?.displayName }}
+          </div>
+          <div id="ws_delete_workspace_name" class="font-bold text-center danger-action-text text-sm">
+            ({{ workspace?.name }})
+          </div>
+        </div>
         <div *ngIf="!workspace?.operator">{{ 'ACTIONS.DELETE.INFO' | translate }}</div>
         <p-message
           *ngIf="workspace?.operator"
@@ -169,7 +176,7 @@
   </div>
 
   <ng-template pTemplate="footer">
-    <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
+    <div class="mt-3 flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
       <p-button
         *ngIf="workspace?.mandatory"
         id="ws_delete_action_close"

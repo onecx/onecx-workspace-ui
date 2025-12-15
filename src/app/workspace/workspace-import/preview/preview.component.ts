@@ -7,14 +7,7 @@ import { SlotService } from '@onecx/angular-remote-components'
 
 import { EximWorkspaceMenuItem, Product } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
-
-// All properties could be empty in case the import file does not contain a theme
-export type Theme = {
-  name?: string
-  displayName?: string
-  logoUrl?: string
-  faviconUrl?: string
-}
+import { Theme, ImportWorkspace } from '../workspace-import.component'
 
 @Component({
   selector: 'app-import-preview',
@@ -22,15 +15,13 @@ export type Theme = {
   styleUrls: ['./preview.component.scss']
 })
 export class PreviewComponent implements OnInit {
-  @Input() public importRequestDTO: any
+  @Input() public importWorkspace: ImportWorkspace | undefined
   @Input() public hasPermission = false
   @Output() public isFormValide = new EventEmitter<boolean>()
 
-  public formGroup!: FormGroup
-  public workspaceName = ''
-  public displayName = ''
-  public theme!: Theme
-  public baseUrl = ''
+  public formGroup: FormGroup
+  public importWorkspaceName!: string
+  public importTheme!: Theme
   public themeProperties: any = null
   public menuItems!: TreeNode[]
   public workspaceRoles: string[] = []
@@ -47,28 +38,23 @@ export class PreviewComponent implements OnInit {
       name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
       displayName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
       theme: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
-      baseUrl: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(100)])
+      baseUrl: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(100)]),
+      mandatory: new FormControl(null)
     })
     this.isThemeComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.slotName)
     this.themesEmitter.subscribe(this.themes$)
   }
 
   public ngOnInit(): void {
-    if (this.importRequestDTO?.workspaces) {
-      let keys: string[] = []
-      keys = Object.keys(this.importRequestDTO.workspaces)
-      if (keys.length > 0) {
-        const ws = this.importRequestDTO.workspaces[keys[0]]
-        this.workspaceName = ws.name
-        this.displayName = ws.displayName
-        this.theme = { name: ws.theme, displayName: ws.theme } as Theme
-        this.baseUrl = ws.baseUrl
-        this.menuItems = this.mapToTreeNodes(ws.menuItems)
-        this.workspaceRoles = this.extractRoleNames(ws.roles)
-        this.workspaceProducts = this.extractProductNames(ws.products)
-        this.fillForm(ws)
-        this.onModelChange()
-      }
+    if (this.importWorkspace) {
+      // extras
+      this.importTheme = this.importWorkspace.themeObject ?? {}
+      this.menuItems = this.mapToTreeNodes(this.importWorkspace.menuItems)
+      this.workspaceRoles = this.extractRoleNames(this.importWorkspace.roles)
+      this.workspaceProducts = this.extractProductNames(this.importWorkspace.products)
+      //
+      this.fillForm(this.importWorkspace)
+      this.onModelChange()
     }
   }
 
@@ -78,34 +64,20 @@ export class PreviewComponent implements OnInit {
       this.formGroup.controls['displayName'].setValue(ws.displayName)
       this.formGroup.controls['theme'].setValue(ws.theme)
       this.formGroup.controls['baseUrl'].setValue(ws.baseUrl)
+      this.formGroup.controls['mandatory'].setValue(ws.mandatory)
       // trigger validation to be up-to-date
       Utils.forceFormValidation(this.formGroup)
     }
   }
 
-  // fired on each keyup/paste event
+  // fired on each keyup/paste event => update workspace
   public onModelChange(): void {
-    if (this.importRequestDTO.workspaces) {
-      const key: string[] = Object.keys(this.importRequestDTO.workspaces)
-      // if workspace name was changed then change the also the key:
-      if (key[0] === this.formGroup.controls['name'].value) {
-        this.workspaceName = key[0]
-      } else {
-        // save the workspace properties to be reassigned on new key
-        const workspace = Object.getOwnPropertyDescriptor(this.importRequestDTO.workspaces, key[0])
-        if (workspace)
-          Object.defineProperty(this.importRequestDTO.workspaces, this.formGroup.controls['name'].value, workspace)
-        delete this.importRequestDTO.workspaces[key[0]]
-        this.workspaceName = this.formGroup.controls['name'].value
-      }
-      this.displayName = this.formGroup.controls['displayName'].value
-      if (this.formGroup.controls['theme'].value) this.theme.name = this.formGroup.controls['theme'].value
-      this.baseUrl = this.formGroup.controls['baseUrl'].value
-
-      this.importRequestDTO.workspaces[this.workspaceName].name = this.workspaceName
-      this.importRequestDTO.workspaces[this.workspaceName].displayName = this.displayName
-      this.importRequestDTO.workspaces[this.workspaceName].theme = this.theme.name
-      this.importRequestDTO.workspaces[this.workspaceName].baseUrl = this.baseUrl
+    if (this.importWorkspace) {
+      this.importWorkspace.displayName = this.formGroup.controls['displayName'].value
+      this.importWorkspace.name = this.formGroup.controls['name'].value
+      this.importWorkspace.theme = this.formGroup.controls['theme'].value
+      this.importWorkspace.baseUrl = this.formGroup.controls['baseUrl'].value
+      this.importWorkspace.mandatory = this.formGroup.controls['mandatory'].value
     }
     this.isFormValide.emit(this.formGroup.valid)
   }
@@ -150,10 +122,8 @@ export class PreviewComponent implements OnInit {
 
   // sometimes the imported theme is unknown, then add to the list
   public checkAndExtendThemes(themes: Theme[]): Theme[] {
-    // if not included (why ever) then add the used value to make it visible
-    if (!themes.some((t) => t.name === this.theme.name)) {
-      themes.push({ name: this.theme.name, displayName: this.theme.name } as Theme)
-    }
+    if (themes && this.importTheme)
+      if (!themes.some((t) => t.name === this.importTheme?.name)) themes.push(this.importTheme)
     return themes
   }
 }
