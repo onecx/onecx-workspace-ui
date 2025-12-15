@@ -250,12 +250,12 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   // called by workspace detail dialog: returns form values to workspace
   public onSave(): void {
     if (!this.workspace) return
-    if (this.propsForm.valid) Object.assign(this.workspace, this.getWorkspaceChangesFromForm())
+    if (this.propsForm.valid) Object.assign(this.workspace, this.getFormData())
     else this.msgService.error({ summaryKey: 'VALIDATION.FORM_INVALID' })
   }
 
   // return the values that are different
-  public getWorkspaceChangesFromForm(): any {
+  private getFormData(): any {
     const changes: any = {}
     Object.keys(this.propsForm.controls).forEach((key) => {
       if (this.propsForm.value[key] !== undefined) {

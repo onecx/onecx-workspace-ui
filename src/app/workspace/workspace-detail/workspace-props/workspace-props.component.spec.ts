@@ -288,11 +288,11 @@ describe('WorkspacePropsComponent', () => {
       })
 
       it('should update workspace onSave', () => {
-        spyOn(component, 'getWorkspaceChangesFromForm')
+        spyOn<any>(component, 'getFormData')
 
         component.onSave()
 
-        expect(component.getWorkspaceChangesFromForm).toHaveBeenCalled()
+        expect(component['getFormData']).toHaveBeenCalled()
       })
 
       it('should detect changes on workspaces', () => {
@@ -301,7 +301,7 @@ describe('WorkspacePropsComponent', () => {
 
         expect(component.propsForm.valid).toBeTrue() // valid form
 
-        const change = component.getWorkspaceChangesFromForm()
+        const change = component['getFormData']()
 
         expect(change).toEqual({ logoUrl: url })
       })
