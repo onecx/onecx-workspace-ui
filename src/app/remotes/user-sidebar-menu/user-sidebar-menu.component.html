@@ -1,7 +1,9 @@
-<ng-container *ngIf="{ isActive: isActive$ | async, isHidden: isHidden$ | async } as state">
+@let active = isActive$ | async;
+@let hidden = isHidden$ | async;
+
+@if (active) {
   <p-accordion
-    *ngIf="state.isActive"
-    [hidden]="state.isHidden"
+    [hidden]="hidden"
     [activeIndex]="null"
     expandIcon="pi pi-chevron-right"
     collapseIcon="pi pi-chevron-down"
@@ -35,5 +37,5 @@
       </ng-template>
     </p-accordionTab>
   </p-accordion>
-  <hr *ngIf="state.isActive" [hidden]="state.isHidden" class="m-0" />
-</ng-container>
+  <hr [hidden]="hidden" class="m-0" />
+}
