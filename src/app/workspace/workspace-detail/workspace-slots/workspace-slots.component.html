@@ -86,6 +86,7 @@
       >
       </ocx-data-view-controls>
       <!-- Additional Actions -->
+      @let productEndpointOK = (productEndpointExist$ | async) ?? false;
       <nav
         class="pl-1 flex flex-wrap align-items-center column-gap-2 row-gap-1"
         [attr.aria-label]="'ACTIONS.NAVIGATION.RELATED_TOPICS' | translate"
@@ -95,8 +96,8 @@
           id="ws_slots_header_action_slot_link"
           styleClass="h-full"
           icon="pi pi-cog"
-          [disabled]="!productEndpointExist"
-          [routerLink]="[getProductEndpointUrl$() | async]"
+          [disabled]="!productEndpointOK"
+          [routerLink]="[getProductEndpointUrl$(productEndpointOK) | async]"
           [ariaLabel]="'ACTIONS.NAVIGATION.GOTO_PRODUCT_SLOTS' | translate"
           [pTooltip]="'ACTIONS.NAVIGATION.GOTO_PRODUCT_SLOTS' | translate"
           tooltipPosition="top"

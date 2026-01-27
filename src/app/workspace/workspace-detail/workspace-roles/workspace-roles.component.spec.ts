@@ -416,10 +416,10 @@ describe('WorkspaceRolesComponent', () => {
     })
 
     it('should permissionEndpointExist - exist', (done) => {
-      component.permissionEndpointExist = true
+      component.permissionEndpointExist$ = of(true)
       workspaceServiceSpy.getUrl.and.returnValue(of('/url'))
 
-      const eu$ = component.getPermisionEndpointUrl$('name')
+      const eu$ = component.getPermisionEndpointUrl$('name', true)
 
       eu$.subscribe({
         next: (data) => {
@@ -433,11 +433,11 @@ describe('WorkspaceRolesComponent', () => {
     })
 
     it('should permissionEndpointExist - not exist', (done) => {
-      component.permissionEndpointExist = false
+      component.permissionEndpointExist$ = of(false)
       const errorResponse = { status: 400, statusText: 'Error on check endpoint' }
       workspaceServiceSpy.getUrl.and.returnValue(throwError(() => errorResponse))
 
-      const eu$ = component.getPermisionEndpointUrl$('name')
+      const eu$ = component.getPermisionEndpointUrl$('name', false)
 
       eu$.subscribe({
         next: (data) => {

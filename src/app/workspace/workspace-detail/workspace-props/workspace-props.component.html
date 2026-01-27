@@ -84,12 +84,13 @@
               {{ 'WORKSPACE.THEME' | translate }}
             </label>
           </span>
+          @let endpointOK = (themeEndpointExist$ | async) ?? false;
           <a
             tabindex="0"
             id="ws_detail_props_item_theme_link"
             class="flex-grow-0 p-inputgroup-addon bg-primary pseudo-button pi pi-link"
-            [ngClass]="!editMode && inputBaseUrl.value && themeEndpointExist ? 'cursor-pointer' : 'p-disabled'"
-            [routerLink]="[getThemeEndpointUrl$(wsThemeName.value) | async]"
+            [ngClass]="!editMode && inputBaseUrl.value && endpointOK ? 'cursor-pointer' : 'p-disabled'"
+            [routerLink]="[getThemeEndpointUrl$(wsThemeName.value, endpointOK) | async]"
             [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
             [pTooltip]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
             tooltipPosition="right"
@@ -126,7 +127,7 @@
           id="ws_detail_props_item_theme_link2"
           class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
           [routerLink]="[getThemeEndpointUrl$(wsThemeNameReadonly.value) | async]"
-          [ngClass]="!editMode && inputBaseUrl.value && themeEndpointExist ? 'cursor-pointer' : 'p-disabled'"
+          [ngClass]="!editMode && inputBaseUrl.value ? 'cursor-pointer' : 'p-disabled'"
           [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
           [pTooltip]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
           tooltipPosition="right"

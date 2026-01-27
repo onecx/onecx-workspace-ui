@@ -96,6 +96,7 @@
       >
       </ocx-data-view-controls>
       <!-- Additional Actions -->
+      @let endpointOK = (permissionEndpointExist$ | async) ?? false;
       <nav
         class="flex flex-wrap align-is-center column-gap-2 row-gap-1"
         [attr.aria-label]="'ACTIONS.NAVIGATION.RELATED_TOPICS' | translate"
@@ -105,8 +106,8 @@
           id="ws_roles_header_action_slot_link"
           styleClass="h-full"
           icon="pi pi-lock"
-          [disabled]="!permissionEndpointExist"
-          [routerLink]="[getPermisionEndpointUrl$(workspace?.name!) | async]"
+          [disabled]="!endpointOK"
+          [routerLink]="[getPermisionEndpointUrl$(workspace?.name!, endpointOK) | async]"
           [ariaLabel]="'ACTIONS.NAVIGATION.GOTO_WORKSPACE_PERMISSIONS' | translate"
           [pTooltip]="'ACTIONS.NAVIGATION.GOTO_WORKSPACE_PERMISSIONS' | translate"
           tooltipPosition="top"

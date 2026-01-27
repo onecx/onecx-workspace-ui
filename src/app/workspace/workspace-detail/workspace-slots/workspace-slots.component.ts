@@ -67,7 +67,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   public psSlots$!: Observable<string[]>
   public psComponents: ExtendedComponent[] = []
   public item4Detail: CombinedSlot | undefined
-  public productEndpointExist = false
+  public productEndpointExist$: Observable<boolean> = of(false)
 
   // dialog
   public dataViewControlsTranslations$: Observable<DataViewControlTranslations> | undefined
@@ -113,7 +113,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     if (this.workspace && changes['workspace']) {
       this.loadData()
       // check detail endpoint exists
-      this.productEndpointExist = Utils.doesEndpointExist(
+      this.productEndpointExist$ = Utils.doesEndpointExist(
         this.workspaceService,
         'onecx-product-store',
         'onecx-product-store-ui',
@@ -498,9 +498,8 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
       )
   }
 
-  public getProductEndpointUrl$(): Observable<string | undefined> {
-    if (this.productEndpointExist)
-      return this.workspaceService.getUrl('onecx-product-store', 'onecx-product-store-ui', 'slots')
+  public getProductEndpointUrl$(endpointOK: boolean): Observable<string | undefined> {
+    if (endpointOK) return this.workspaceService.getUrl('onecx-product-store', 'onecx-product-store-ui', 'slots')
     return of(undefined)
   }
 }

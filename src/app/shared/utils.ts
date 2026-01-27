@@ -1,7 +1,7 @@
 // import { MicrofrontendDTO } from '@onecx/portal-integration-angular'
 import { AbstractControl, FormArray, FormGroup } from '@angular/forms'
 import { Location } from '@angular/common'
-import { catchError, first, of, tap } from 'rxjs'
+import { catchError, first, Observable, of, shareReplay, tap } from 'rxjs'
 import { SelectItem } from 'primeng/api'
 
 import { WorkspaceService } from '@onecx/angular-integration-interface'
@@ -115,22 +115,18 @@ const Utils = {
     productName: string,
     appId: string,
     endpointName: string
-  ): boolean {
-    let exist = false
-    workspaceService
-      .doesUrlExistFor(productName, appId, endpointName)
-      .pipe(
-        first(),
-        tap((exists) => {
-          if (!exists) console.error(`Routing not possible for endpoint: ${productName} ${appId} ${endpointName}`)
-        }),
-        catchError((err) => {
-          console.error('doesUrlExistFor', err)
-          return of(false)
-        })
-      )
-      .subscribe((ex) => (exist = ex))
-    return exist
+  ): Observable<boolean> {
+    return workspaceService.doesUrlExistFor(productName, appId, endpointName).pipe(
+      first(),
+      tap((exists) => {
+        if (!exists) console.error(`Routing not possible for endpoint: ${productName} ${appId} ${endpointName}`)
+      }),
+      catchError((err) => {
+        console.error('doesUrlExistFor', err)
+        return of(false)
+      }),
+      shareReplay()
+    )
   }
 }
 

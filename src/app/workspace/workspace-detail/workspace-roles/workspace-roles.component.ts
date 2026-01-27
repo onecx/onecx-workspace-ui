@@ -54,7 +54,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
   public roles: Role[] = [] // target collection used in HTML
   public role: Role | undefined // for detail
   public Utils = Utils
-  public permissionEndpointExist = false
+  public permissionEndpointExist$: Observable<boolean> = of(false)
 
   // dialog
   public dataViewControlsTranslations$: Observable<DataViewControlTranslations> | undefined
@@ -107,7 +107,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
       this.prepareWorkspaceRoleSearch()
       this.searchRoles()
       // check detail endpoint exists
-      this.permissionEndpointExist = Utils.doesEndpointExist(
+      this.permissionEndpointExist$ = Utils.doesEndpointExist(
         this.workspaceService,
         'onecx-permission',
         'onecx-permission-ui',
@@ -344,8 +344,8 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
       )
   }
 
-  public getPermisionEndpointUrl$(name: string): Observable<string | undefined> {
-    if (this.permissionEndpointExist)
+  public getPermisionEndpointUrl$(name: string, endpointOK: boolean): Observable<string | undefined> {
+    if (endpointOK)
       return this.workspaceService.getUrl('onecx-permission', 'onecx-permission-ui', 'workspace', {
         'workspace-name': name
       })

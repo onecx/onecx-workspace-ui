@@ -674,10 +674,10 @@ describe('WorkspaceSlotsComponent', () => {
     })
 
     it('should productEndpointExist - exist', (done) => {
-      component.productEndpointExist = true
+      component.productEndpointExist$ = of(true)
       workspaceServiceSpy.getUrl.and.returnValue(of('/url'))
 
-      const eu$ = component.getProductEndpointUrl$()
+      const eu$ = component.getProductEndpointUrl$(true)
 
       eu$.subscribe({
         next: (data) => {
@@ -691,11 +691,11 @@ describe('WorkspaceSlotsComponent', () => {
     })
 
     it('should productEndpointExist - not exist', (done) => {
-      component.productEndpointExist = false
+      component.productEndpointExist$ = of(false)
       const errorResponse = { status: 400, statusText: 'Error on check endpoint' }
       workspaceServiceSpy.getUrl.and.returnValue(throwError(() => errorResponse))
 
-      const eu$ = component.getProductEndpointUrl$()
+      const eu$ = component.getProductEndpointUrl$(false)
 
       eu$.subscribe({
         next: (data) => {

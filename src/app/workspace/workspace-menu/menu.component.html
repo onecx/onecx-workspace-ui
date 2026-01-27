@@ -111,13 +111,14 @@
               tooltipPosition="top"
               tooltipEvent="hover"
             />
+            @let endpointOK = (permissionEndpointExist$ | async) ?? false;
             <p-button
               *ocxIfPermission="'WORKSPACE#GOTO_PERMISSION'"
               id="ws_menu_table_action_goto_permissions"
               styleClass="button-min-height"
               icon="pi pi-lock"
-              [disabled]="!permissionEndpointExist"
-              [routerLink]="permissionUrl"
+              [disabled]="!endpointOK"
+              [routerLink]="[getPermisionEndpointUrl$(workspace?.name!, endpointOK) | async]"
               [ariaLabel]="'ACTIONS.NAVIGATION.GOTO_WORKSPACE_PERMISSIONS' | translate"
               [pTooltip]="'ACTIONS.NAVIGATION.GOTO_WORKSPACE_PERMISSIONS' | translate"
               tooltipPosition="top"

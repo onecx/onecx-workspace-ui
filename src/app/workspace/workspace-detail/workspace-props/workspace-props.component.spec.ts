@@ -507,10 +507,10 @@ describe('WorkspacePropsComponent', () => {
     })
 
     it('should themeEndpointExist - exist', (done) => {
-      component.themeEndpointExist = true
+      component.themeEndpointExist$ = of(true)
       workspaceServiceSpy.getUrl.and.returnValue(of('/url'))
 
-      const eu$ = component.getThemeEndpointUrl$('name')
+      const eu$ = component.getThemeEndpointUrl$('name', true)
 
       eu$.subscribe({
         next: (data) => {
@@ -524,11 +524,11 @@ describe('WorkspacePropsComponent', () => {
     })
 
     it('should themeEndpointExist - not exist', (done) => {
-      component.themeEndpointExist = false
+      component.themeEndpointExist$ = of(false)
       const errorResponse = { status: 400, statusText: 'Error on check endpoint' }
       workspaceServiceSpy.getUrl.and.returnValue(throwError(() => errorResponse))
 
-      const eu$ = component.getThemeEndpointUrl$('name')
+      const eu$ = component.getThemeEndpointUrl$('name', false)
 
       eu$.subscribe({
         next: (data) => {

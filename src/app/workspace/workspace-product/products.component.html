@@ -357,6 +357,8 @@
         </div>
       </div>
       <!-- LINKS -->
+      @let permEndpointOK = (permissionEndpointExist$ | async) ?? false;
+      @let productEndpointOK = (productEndpointExist$ | async) ?? false;
       <div class="hidden xl:block">
         <div class="flex flex-column">
           <a
@@ -364,8 +366,8 @@
             tabindex="0"
             id="ws_products_detail_link_product_permissions"
             class="p-2 pi pi-lock cursor-pointer button-icon-only"
-            [ngClass]="permissionEndpointExist ? 'cursor-pointer' : 'p-disabled'"
-            [routerLink]="[getPermissionEndpointUrl$(displayedDetailItem.productName) | async]"
+            [ngClass]="permEndpointOK ? 'cursor-pointer' : 'p-disabled'"
+            [routerLink]="[getPermissionEndpointUrl$(displayedDetailItem.productName, permEndpointOK) | async]"
             [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_PRODUCT_PERMISSIONS' | translate"
             [pTooltip]="'ACTIONS.NAVIGATION.GOTO_PRODUCT_PERMISSIONS' | translate"
             tooltipPosition="top"
@@ -378,8 +380,8 @@
             tabindex="0"
             id="ws_products_detail_link_product"
             class="p-2 pi pi-cog cursor-pointer button-icon-only"
-            [ngClass]="productEndpointExist ? 'cursor-pointer' : 'p-disabled'"
-            [routerLink]="[getProductEndpointUrl$(displayedDetailItem.productName) | async]"
+            [ngClass]="productEndpointOK ? 'cursor-pointer' : 'p-disabled'"
+            [routerLink]="[getProductEndpointUrl$(displayedDetailItem.productName, productEndpointOK) | async]"
             [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_PRODUCT' | translate"
             [pTooltip]="'ACTIONS.NAVIGATION.GOTO_PRODUCT' | translate"
             tooltipPosition="top"

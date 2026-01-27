@@ -48,7 +48,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   public propsForm: FormGroup
   public productPaths$: Observable<string[]> = of([]) // to fill drop down with product paths
   public deploymentPath: string | undefined = undefined
-  public themeEndpointExist = false
+  public themeEndpointExist$: Observable<boolean> = of(false)
 
   // slot configuration: get theme data
   public themeSlotName = 'onecx-theme-data'
@@ -118,7 +118,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       // if a home page value exists then fill it into drop down list for displaying
       if (this.workspace.homePage) this.productPaths$ = of([this.workspace.homePage])
       // check detail endpoint exists
-      this.themeEndpointExist = Utils.doesEndpointExist(
+      this.themeEndpointExist$ = Utils.doesEndpointExist(
         this.workspaceService,
         'onecx-theme',
         'onecx-theme-ui',
@@ -307,8 +307,8 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     return theme?.logoUrl
   }
 
-  public getThemeEndpointUrl$(name?: string): Observable<string | undefined> {
-    if (this.themeEndpointExist && name)
+  public getThemeEndpointUrl$(name?: string, themeEndpointOK?: boolean): Observable<string | undefined> {
+    if (themeEndpointOK && name)
       return this.workspaceService.getUrl('onecx-theme', 'onecx-theme-ui', 'theme-detail', { 'theme-name': name })
     return of(undefined)
   }

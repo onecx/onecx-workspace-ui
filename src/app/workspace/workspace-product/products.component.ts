@@ -163,8 +163,8 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   public wpLoading = false
   public editMode = false
   public hasRegisterPermission = false
-  public permissionEndpointExist = false
-  public productEndpointExist = false
+  public permissionEndpointExist$: Observable<boolean> = of(false)
+  public productEndpointExist$: Observable<boolean> = of(false)
   public displayDetails = false
   public displayedDetailItem: ExtendedProduct | undefined = undefined
   public formGroup: FormGroup
@@ -222,13 +222,13 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     if (this.workspace && changes['workspace']) {
       this.loadData()
       // check detail endpoint exists
-      this.productEndpointExist = Utils.doesEndpointExist(
+      this.productEndpointExist$ = Utils.doesEndpointExist(
         this.workspaceService,
         'onecx-product-store',
         'onecx-product-store-ui',
         'product-detail'
       )
-      this.permissionEndpointExist = Utils.doesEndpointExist(
+      this.permissionEndpointExist$ = Utils.doesEndpointExist(
         this.workspaceService,
         'onecx-permission',
         'onecx-permission-ui',
@@ -236,6 +236,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
       )
     }
   }
+
   public ngOnDestroy(): void {
     this.destroy$.next(undefined)
     this.destroy$.complete()
@@ -761,15 +762,15 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   /****************************************************************************
    * ENDPOINTS
    */
-  public getProductEndpointUrl$(name?: string): Observable<string | undefined> {
-    if (this.productEndpointExist && name)
+  public getProductEndpointUrl$(name: string | undefined, endpointOK: boolean): Observable<string | undefined> {
+    if (endpointOK && name)
       return this.workspaceService.getUrl('onecx-product-store', 'onecx-product-store-ui', 'product-detail', {
         'product-name': name
       })
     return of(undefined)
   }
-  public getPermissionEndpointUrl$(name?: string): Observable<string | undefined> {
-    if (this.permissionEndpointExist && name)
+  public getPermissionEndpointUrl$(name: string | undefined, endpointOK: boolean): Observable<string | undefined> {
+    if (endpointOK && name)
       return this.workspaceService.getUrl('onecx-permission', 'onecx-permission-ui', 'product', {
         'product-name': name
       })
