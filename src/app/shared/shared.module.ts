@@ -25,6 +25,7 @@ import { TabViewModule } from 'primeng/tabview'
 import { TableModule } from 'primeng/table'
 import { ToastModule } from 'primeng/toast'
 import { ToggleButtonModule } from 'primeng/togglebutton'
+import { TooltipModule } from 'primeng/tooltip'
 import { TreeModule } from 'primeng/tree'
 
 import { PortalCoreModule, PortalDialogService } from '@onecx/portal-integration-angular'
@@ -60,6 +61,7 @@ import { OcxChipComponent } from './ocx-chip/ocx-chip.component'
     TableModule,
     ToastModule,
     ToggleButtonModule,
+    TooltipModule,
     TreeModule,
     FileUploadModule,
     TranslateModule,
@@ -89,6 +91,7 @@ import { OcxChipComponent } from './ocx-chip/ocx-chip.component'
     TableModule,
     ToastModule,
     ToggleButtonModule,
+    TooltipModule,
     TreeModule,
     TranslateModule,
     ImageContainerComponent,

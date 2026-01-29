@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common'
 import { Component, inject, Input } from '@angular/core'
+import { CommonModule } from '@angular/common'
 import { UntilDestroy } from '@ngneat/until-destroy'
 import { combineLatest, from, map, Observable, ReplaySubject } from 'rxjs'
 
@@ -12,6 +12,8 @@ import {
 } from '@onecx/angular-remote-components'
 import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
 
+import { SharedModule } from 'src/app/shared/shared.module'
+
 export type Version = {
   workspaceName: string
   shellInfo?: string
@@ -23,7 +25,7 @@ export type Version = {
   selector: 'app-ocx-version-info',
   templateUrl: './version-info.component.html',
   standalone: true,
-  imports: [AngularRemoteComponentsModule, CommonModule, AngularAcceleratorModule],
+  imports: [AngularRemoteComponentsModule, CommonModule, AngularAcceleratorModule, SharedModule],
   providers: [{ provide: REMOTE_COMPONENT_CONFIG, useValue: new ReplaySubject<string>(1) }]
 })
 @UntilDestroy()
