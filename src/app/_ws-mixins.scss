@@ -468,7 +468,8 @@
 }
 @mixin table-zebra-rows {
   :host ::ng-deep {
-    .p-datatable .p-datatable-tbody > tr:nth-child(even) > td {
+    /* this works only on non-frozen columns (table.p-datatable-striped does not work) */
+    .p-datatable .p-datatable-tbody > tr:nth-child(even) > td:not(.p-frozen-column) {
       background-color: var(--table-body-row-even-bg);
     }
   }

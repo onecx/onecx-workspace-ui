@@ -11,14 +11,14 @@
       *ngIf="loading"
       id="ws_search_message_loading"
       severity="info"
-      styleClass="m-3 p-2"
+      styleClass="m-3"
       [text]="'ACTIONS.LOADING' | translate"
     ></p-message>
     <p-message
       *ngIf="exceptionKey"
       id="ws_search_message_error"
       severity="error"
-      styleClass="m-3 p-2"
+      styleClass="m-3"
       [text]="exceptionKey | translate"
     ></p-message>
     <p-dataView
@@ -73,7 +73,7 @@
           <div class="p-0 h-3rem sm:h-4rem col-4 sm:col-3 md:col-2 flex justify-content-around align-items-center">
             <app-image-container
               [id]="'ws_search_data_list_row_' + i + '_logo'"
-              styleClass="max-h-4rem sm:max-h-5rem max-w-4rem sm:max-w-6rem border-round-sm"
+              styleClass="max-h-4rem max-w-4rem sm:max-w-6rem border-round-sm"
               [bffUrl]="Utils.bffImageUrl(imageBasePath, workspace.name, RefType.Logo)"
               [imageUrl]="workspace.logoUrl"
               aria-hidden="true"

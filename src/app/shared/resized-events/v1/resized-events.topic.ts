@@ -23,7 +23,7 @@ export class ResizedEventsPublisher extends TopicPublisher<TopicResizedEventType
     super('resizedEvents', 1)
   }
 
-  //NOSONAR
+  // NOSONAR
   override publish(event: TopicResizedEventType): Promise<void> {
     if (![ResizedEventType.SLOT_GROUP_RESIZED, ResizedEventType.SLOT_RESIZED].includes(event.type)) {
       return super.publish(event)
@@ -72,7 +72,7 @@ export class ResizedEventsTopic extends Topic<TopicResizedEventType> {
     })
   }
 
-  //NOSONAR
+  // NOSONAR
   override publish(event: TopicResizedEventType): Promise<void> {
     if (![ResizedEventType.SLOT_GROUP_RESIZED, ResizedEventType.SLOT_RESIZED].includes(event.type)) {
       return super.publish(event)
