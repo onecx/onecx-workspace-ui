@@ -8,7 +8,7 @@
   </ocx-page-header>
   <ocx-page-content *ngIf="workspaces$ | async as workspaces">
     <p-message
-      *ngIf="loading"
+      *ngIf="loading && !exceptionKey"
       id="ws_search_message_loading"
       severity="info"
       styleClass="m-3"
@@ -62,72 +62,76 @@
 
       <!-- LIST -->
       <ng-template let-workspaces pTemplate="listItem">
-        <article
-          *ngFor="let workspace of workspaces; index as i"
-          class="sm:mx-3 py-1 px-3 flex flex-row flex-nowrap justify-content-start align-items-center column-gap-3 hover:bg-gray-200 cursor-pointer"
-          [id]="'ws_search_data_list_row_' + i"
-          [routerLink]="['./' + workspace.name]"
-          [attr.aria-label]="workspace.displayName"
-        >
-          <div class="p-0 h-3rem sm:h-4rem col-4 sm:col-3 md:col-2 flex justify-content-around align-items-center">
-            <app-image-container
-              [id]="'ws_search_data_list_row_' + i + '_logo'"
-              styleClass="max-h-3rem max-w-4rem sm:max-w-6rem border-round-sm"
-              [bffUrl]="Utils.bffImageUrl(imageBasePath, workspace.name, RefType.Logo)"
-              [imageUrl]="workspace.logoUrl"
-              aria-hidden="true"
-            ></app-image-container>
-          </div>
-          <div
-            [id]="'ws_search_data_list_row_' + i + '_display_name'"
-            class="p-0 col-8 sm:col-6 md:col-6 lg:col-5 xl:col-3 sm:font-bold text-base sm:text-md md:text-lg"
-            aria-label="Workspace"
-            [pTooltip]="workspace.displayName"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-            role="note"
+        <section [attr.aria-label]="('DIALOG.SEARCH.RESULTS' | translate) + ': Workspaces'">
+          <article
+            *ngFor="let workspace of workspaces; index as i"
+            class="sm:mx-3 py-1 px-3 flex flex-row flex-nowrap justify-content-start align-items-center column-gap-3 hover:bg-gray-200 cursor-pointer"
+            [id]="'ws_search_data_list_row_' + i"
+            [routerLink]="['./' + workspace.name]"
+            [attr.aria-label]="workspace.displayName"
           >
-            {{ Utils.limitText(workspace.displayName, 60) }}
-          </div>
-          <div class="p-0 hidden sm:block col-3 md:col-2">
-            <a
-              target="_blank"
-              [routerLink]="workspace.baseUrl"
-              [id]="'ws_search_data_list_row_' + i + '_goto_workspace'"
-              (click)="$event.stopPropagation()"
-              class="text-primary"
-              [attr.aria-label]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
-              [pTooltip]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
+            <div
+              class="p-0 h-3rem sm:h-4rem col-4 sm:col-3 md:col-2 flex justify-content-around align-items-center"
+              aria-hidden="true"
+            >
+              <app-image-container
+                [id]="'ws_search_data_list_row_' + i + '_logo'"
+                styleClass="max-h-3rem max-w-4rem sm:max-w-6rem border-round-sm"
+                [bffUrl]="Utils.bffImageUrl(imageBasePath, workspace.name, RefType.Logo)"
+                [imageUrl]="workspace.logoUrl"
+              ></app-image-container>
+            </div>
+            <div
+              [id]="'ws_search_data_list_row_' + i + '_display_name'"
+              class="p-0 col-8 sm:col-6 md:col-6 lg:col-5 xl:col-3 sm:font-bold text-base sm:text-md md:text-lg"
+              aria-label="Workspace"
+              [pTooltip]="workspace.displayName"
               tooltipPosition="top"
               tooltipEvent="hover"
-              role="link"
+              role="note"
             >
-              {{ Utils.limitText(workspace.baseUrl, 30) }}
-            </a>
-          </div>
-          <div
-            [id]="'ws_search_data_list_row_' + i + '_theme'"
-            class="p-0 hidden md:block col-2"
-            aria-label="Theme"
-            [pTooltip]="('WORKSPACE.THEME' | translate) + (workspace.theme.length < 40 ? '' : ' ' + workspace.theme)"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-            role="note"
-          >
-            {{ Utils.limitText(workspace.theme, 40) }}
-          </div>
-          <div
-            [id]="'ws_search_data_list_row_' + i + '_description'"
-            class="p-0 hidden xl:block col-2"
-            [attr.aria-label]="'WORKSPACE.DESCRIPTION' | translate"
-            [pTooltip]="workspace.description < 50 ? '' : workspace.description"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-            role="note"
-          >
-            {{ Utils.limitText(workspace.description, 50) }}
-          </div>
-        </article>
+              {{ Utils.limitText(workspace.displayName, 60) }}
+            </div>
+            <div class="p-0 hidden sm:block col-3 md:col-2">
+              <a
+                target="_blank"
+                [routerLink]="workspace.baseUrl"
+                [id]="'ws_search_data_list_row_' + i + '_goto_workspace'"
+                (click)="$event.stopPropagation()"
+                class="text-primary"
+                [attr.aria-label]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
+                [pTooltip]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+                role="link"
+              >
+                {{ Utils.limitText(workspace.baseUrl, 30) }}
+              </a>
+            </div>
+            <div
+              [id]="'ws_search_data_list_row_' + i + '_theme'"
+              class="p-0 hidden md:block col-2"
+              aria-label="Theme"
+              [pTooltip]="('WORKSPACE.THEME' | translate) + (workspace.theme.length < 40 ? '' : ' ' + workspace.theme)"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+              role="note"
+            >
+              {{ Utils.limitText(workspace.theme, 40) }}
+            </div>
+            <div
+              [id]="'ws_search_data_list_row_' + i + '_description'"
+              class="p-0 hidden xl:block col-2"
+              [attr.aria-label]="'WORKSPACE.DESCRIPTION' | translate"
+              [pTooltip]="workspace.description < 50 ? '' : workspace.description"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+              role="note"
+            >
+              {{ Utils.limitText(workspace.description, 50) }}
+            </div>
+          </article>
+        </section>
       </ng-template>
 
       <!-- GRID -->

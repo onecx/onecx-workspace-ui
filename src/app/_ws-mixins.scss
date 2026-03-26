@@ -445,7 +445,7 @@
 }
 @mixin dataview-list-flex-zebra-rows {
   :host ::ng-deep {
-    .p-dataview-list .p-dataview-content > * {
+    .p-dataview-list .p-dataview-content section > article {
       &:nth-child(even) {
         background-color: var(--table-body-row-even-bg);
       }
