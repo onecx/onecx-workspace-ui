@@ -422,10 +422,21 @@
   }
 }
 
+@mixin correct-ocx-interactive-data-view {
+  :host ::ng-deep {
+    ocx-interactive-data-view > div {
+      padding: 0 0 0.2rem 0 !important;
+      &.surface-border {
+        border-bottom: var(--table-header-border) !important;
+      }
+    }
+  }
+}
+
 /* ZEBRA rows */
 @mixin dataview-list-zebra-rows {
   :host ::ng-deep {
-    .p-dataview-list .p-dataview-content .p-grid > div {
+    .p-dataview-list .p-dataview-content .p-grid > * {
       &:nth-child(even) {
         background-color: var(--table-body-row-even-bg);
       }
@@ -434,7 +445,7 @@
 }
 @mixin dataview-list-flex-zebra-rows {
   :host ::ng-deep {
-    .p-dataview-list .p-dataview-content > div {
+    .p-dataview-list .p-dataview-content > * {
       &:nth-child(even) {
         background-color: var(--table-body-row-even-bg);
       }
@@ -451,6 +462,11 @@
 @mixin listbox-zebra-rows {
   :host ::ng-deep {
     .p-listbox:not(.p-disabled) .p-listbox-item:not(.p-highlight):not(.p-disabled) {
+      &:nth-child(even) {
+        background-color: var(--table-body-row-even-bg);
+      }
+    }
+    .p-orderlist:not(.p-disabled) .p-orderlist-item:not(.p-highlight):not(.p-disabled) {
       &:nth-child(even) {
         background-color: var(--table-body-row-even-bg);
       }
@@ -532,12 +548,7 @@
 }
 @mixin tabview-fix-color-selected-tab {
   :host ::ng-deep {
-    --primary-color-rgb: 39, 75, 95;
-
-    // correct the background color on inital selected tab
-    .p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link[aria-selected='true'] {
-      background-color: rgba(var(--primary-color-rgb), 0.12);
-    }
+    --tabview-header-active-bg: rgb(from var(--primary-color) r g b / 0.12) !important;
   }
 }
 

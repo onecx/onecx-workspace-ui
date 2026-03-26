@@ -65,7 +65,6 @@
         <article
           *ngFor="let workspace of workspaces; index as i"
           class="sm:mx-3 py-1 px-3 flex flex-row flex-nowrap justify-content-start align-items-center column-gap-3 hover:bg-gray-200 cursor-pointer"
-          [ngStyle]="i % 2 === 0 ? { 'background-color': 'var(--table-body-row-even-bg)' } : {}"
           [id]="'ws_search_data_list_row_' + i"
           [routerLink]="['./' + workspace.name]"
           [attr.aria-label]="workspace.displayName"
@@ -73,7 +72,7 @@
           <div class="p-0 h-3rem sm:h-4rem col-4 sm:col-3 md:col-2 flex justify-content-around align-items-center">
             <app-image-container
               [id]="'ws_search_data_list_row_' + i + '_logo'"
-              styleClass="max-h-4rem max-w-4rem sm:max-w-6rem border-round-sm"
+              styleClass="max-h-3rem max-w-4rem sm:max-w-6rem border-round-sm"
               [bffUrl]="Utils.bffImageUrl(imageBasePath, workspace.name, RefType.Logo)"
               [imageUrl]="workspace.logoUrl"
               aria-hidden="true"
