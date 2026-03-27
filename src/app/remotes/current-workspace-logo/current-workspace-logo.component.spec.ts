@@ -114,12 +114,13 @@ describe('OneCXCurrentWorkspaceLogoComponent', () => {
       })
     })
 
-    describe('image load error', () => {
+    describe('image load error, with log', () => {
       it('should fall back from workspace external URL to custom input URL', () => {
         const { component } = setUp()
         component.workspaceName = workspace1.workspaceName
         component.imageUrl = 'http://custom/logo.png'
         component.logoUrl[RefType.Logo] = 'http://external/logo.png'
+        component.logEnabled = true
 
         const imageUrlSpy = spyOn(component.imageUrl$, 'next')
 
