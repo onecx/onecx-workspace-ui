@@ -127,6 +127,19 @@ describe('OneCXSlimVerticalMainMenuComponent', () => {
     expect(content).toBe('')
   })
 
+  it('should return false from isHidden when list element is absent (INACTIVE MODE)', async () => {
+    menuServiceSpy.isActive.and.returnValue(of(false))
+
+    const { fixture } = setUp()
+
+    const slimVerticalMenu = await TestbedHarnessEnvironment.harnessForFixture(
+      fixture,
+      OneCXSlimVerticalMainMenuHarness
+    )
+    const isHidden = await slimVerticalMenu.isHidden()
+    expect(isHidden).toBeFalse()
+  })
+
   it('should be hidden in INACTIVE MODE', (doneFn: DoneFn) => {
     menuServiceSpy.isActive.and.returnValue(of(false))
 
