@@ -128,6 +128,26 @@ describe('OneCXSlimUserMenuComponent', () => {
     expect(content).toBe('')
   })
 
+  it('should return false from isHidden when wrapper element is absent (INACTIVE MODE)', async () => {
+    menuServiceSpy.isActive.and.returnValue(of(false))
+
+    const { fixture } = setUp()
+
+    const slimUserMenu = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXSlimUserMenuHarness)
+    const isHidden = await slimUserMenu.isHidden()
+    expect(isHidden).toBeFalse()
+  })
+
+  it('should return null from getHeaderText when header element is absent (INACTIVE MODE)', async () => {
+    menuServiceSpy.isActive.and.returnValue(of(false))
+
+    const { fixture } = setUp()
+
+    const slimUserMenu = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXSlimUserMenuHarness)
+    const headerText = await slimUserMenu.getHeaderText()
+    expect(headerText).toBeNull()
+  })
+
   it('should be hidden in INACTIVE MODE', (doneFn: DoneFn) => {
     menuServiceSpy.isActive.and.returnValue(of(false))
 
@@ -135,6 +155,18 @@ describe('OneCXSlimUserMenuComponent', () => {
 
     component.isHidden$.subscribe((isHidden) => {
       expect(isHidden).toBeTrue()
+      doneFn()
+    })
+  })
+
+  it('should not be hidden when active and visible', (doneFn: DoneFn) => {
+    menuServiceSpy.isActive.and.returnValue(of(true))
+    menuServiceSpy.isVisible.and.returnValue(of(true))
+
+    const { component } = setUp()
+
+    component.isHidden$.subscribe((isHidden) => {
+      expect(isHidden).toBeFalse()
       doneFn()
     })
   })
@@ -223,6 +255,45 @@ describe('OneCXSlimUserMenuComponent', () => {
     await items[items.length - 1].click() // Click logout item
 
     expect(component['eventsPublisher'].publish).toHaveBeenCalledWith({ type: 'authentication#logoutButtonClicked' })
+  })
+
+  describe('displayName$', () => {
+    beforeEach(() => {
+      menuServiceSpy.isActive.and.returnValue(of(false))
+    })
+
+    it('should use displayName when available', (doneFn: DoneFn) => {
+      userServiceMock.profile$.publish({ person: { displayName: 'John Doe' } } as any)
+
+      const { component } = setUp()
+
+      component.displayName$.subscribe((name) => {
+        expect(name).toBe('John Doe')
+        doneFn()
+      })
+    })
+
+    it('should concatenate firstName and lastName when displayName is absent', (doneFn: DoneFn) => {
+      userServiceMock.profile$.publish({ person: { firstName: 'Mary', lastName: 'Jane' } } as any)
+
+      const { component } = setUp()
+
+      component.displayName$.subscribe((name) => {
+        expect(name).toBe('Mary Jane')
+        doneFn()
+      })
+    })
+
+    it('should fall back to userId when no name fields are available', (doneFn: DoneFn) => {
+      userServiceMock.profile$.publish({ person: {}, userId: 'user1' } as any)
+
+      const { component } = setUp()
+
+      component.displayName$.subscribe((name) => {
+        expect(name).toBe('user1')
+        doneFn()
+      })
+    })
   })
 
   describe('SLIM MODE', () => {
@@ -410,6 +481,26 @@ describe('OneCXSlimUserMenuComponent', () => {
       const headerIcon = await slimUserMenu.getHeaderIcon()
       expect(headerIcon).not.toBeNull()
       expect(await headerIcon!.getAttribute('class')).toContain('pi pi-user')
+    })
+
+    it('should not display icon if avatar image is loaded', async () => {
+      const { fixture, component } = setUp()
+
+      const slimUserMenu = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXSlimUserMenuHarness)
+
+      component.avatarImageLoadedEmitter.emit(true)
+      fixture.detectChanges()
+
+      const headerIcon = await slimUserMenu.getHeaderIcon()
+      expect(headerIcon).toBeNull()
+    })
+
+    it('should return text from getHeaderText when header element is present', async () => {
+      const { fixture } = setUp()
+
+      const slimUserMenu = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXSlimUserMenuHarness)
+      const headerText = await slimUserMenu.getHeaderText()
+      expect(headerText).not.toBeNull()
     })
   })
 })
