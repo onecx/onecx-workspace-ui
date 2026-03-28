@@ -122,26 +122,34 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
       }
       default: {
         console.error("Couldn't assign tab to component")
-        break
+        return
       }
     }
-    this.workspaceApi
-      .updateWorkspace({
-        id: workspaceData?.id ?? '',
-        updateWorkspaceRequest: { resource: workspaceData! }
-      })
-      .subscribe({
-        next: (data) => {
-          this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.WORKSPACE.OK' })
-          this.toggleEditMode('view')
-          // update observable with response data
-          this.workspace$ = new Observable((sub) => sub.next(data))
-        },
-        error: (err) => {
-          console.error('updateWorkspace', err)
-          this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.WORKSPACE.NOK' })
-        }
-      })
+    if (workspaceData) {
+      workspaceData = {
+        ...workspaceData,
+        logoUrl: workspaceData.logoUrl === '' ? undefined : workspaceData.logoUrl,
+        smallLogoUrl: workspaceData.smallLogoUrl === '' ? undefined : workspaceData.smallLogoUrl
+      }
+      if (workspaceData.id)
+        this.workspaceApi
+          .updateWorkspace({
+            id: workspaceData.id,
+            updateWorkspaceRequest: { resource: workspaceData! }
+          })
+          .subscribe({
+            next: (data) => {
+              this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.WORKSPACE.OK' })
+              this.toggleEditMode('view')
+              // update observable with response data
+              this.workspace$ = new Observable((sub) => sub.next(data))
+            },
+            error: (err) => {
+              console.error('updateWorkspace', err)
+              this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.WORKSPACE.NOK' })
+            }
+          })
+    }
   }
 
   public onConfirmDeleteWorkspace(): void {

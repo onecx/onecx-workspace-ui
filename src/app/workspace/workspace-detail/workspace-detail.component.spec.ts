@@ -409,17 +409,31 @@ describe('WorkspaceDetailComponent', () => {
   })
 
   describe('update workspace data', () => {
-    it('it should display success on update workspace', (done) => {
-      apiServiceSpy.updateWorkspace.and.returnValue(of(workspace))
+    it('it should log an error if non-related TAB is used', () => {
       spyOn(console, 'error')
       component.selectedTabIndex = 99
       component.ngOnInit()
       let actions: any = []
       component.actions$!.subscribe((act) => (actions = act))
-
       actions[3].actionCallback()
 
       expect(console.error).toHaveBeenCalledWith("Couldn't assign tab to component")
+    })
+
+    it('it should update workspace successfully and display message', (done) => {
+      apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
+      apiServiceSpy.updateWorkspace.and.returnValue(of(workspace))
+      component.workspacePropsComponent = new MockWorkspacePropsComponent() as unknown as WorkspacePropsComponent
+      component.selectedTabIndex = 0
+
+      component.ngOnInit()
+      component.editMode = true
+
+      // trigger save action
+      let actions: any = []
+      component.actions$!.subscribe((act) => (actions = act))
+      actions[3].actionCallback()
+
       expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.WORKSPACE.OK' })
       component.workspace$.subscribe((data) => {
         expect(data).toEqual(workspace)
@@ -427,13 +441,43 @@ describe('WorkspaceDetailComponent', () => {
       })
     })
 
-    it('it should display error on update workspace', () => {
+    it('it should update workspace successfully with undefined logos and display message', (done) => {
+      apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
+      apiServiceSpy.updateWorkspace.and.returnValue(of(workspace))
+      component.workspacePropsComponent = new MockWorkspacePropsComponent() as unknown as WorkspacePropsComponent
+      if (component.workspacePropsComponent.workspace) {
+        component.workspacePropsComponent.workspace.logoUrl = ''
+        component.workspacePropsComponent.workspace.smallLogoUrl = ''
+      }
+      component.selectedTabIndex = 0
+
+      component.ngOnInit()
+      component.editMode = true
+
+      // trigger save action
+      let actions: any = []
+      component.actions$!.subscribe((act) => (actions = act))
+      actions[3].actionCallback()
+
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.WORKSPACE.OK' })
+      component.workspace$.subscribe((data) => {
+        expect(data).toEqual(workspace)
+        done()
+      })
+    })
+
+    it('it should display error on failed updating workspace', () => {
+      apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
       const errorResponse = { status: 400, statusText: 'Error on updating a workspace' }
       apiServiceSpy.updateWorkspace.and.returnValue(throwError(() => errorResponse))
-      component.selectedTabIndex = 99
+      component.workspaceContactComponent = new MockWorkspaceContactComponent() as unknown as WorkspaceContactComponent
+      component.selectedTabIndex = 1
       spyOn(console, 'error')
 
       component.ngOnInit()
+      component.editMode = true
+
+      // trigger save action
       let actions: any = []
       component.actions$!.subscribe((act) => (actions = act))
       actions[3].actionCallback()
