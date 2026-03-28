@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing'
 import { SlimMenuItemComponent } from './slim-menu-item.component'
 import { SlimMenuItemHarness } from './slim-menu-item.component.harness'
-import { provideRouter } from '@angular/router'
+import { provideRouter, Router } from '@angular/router'
 import { TestbedHarnessEnvironment } from '@onecx/angular-testing'
 import { SlimMenuMode } from '../../model/slim-menu-mode'
 import { ItemType } from '../../model/slim-menu-item'
@@ -73,6 +73,50 @@ describe('SlimMenuItemComponent', () => {
     const list = await slimItem.getList()
     expect(list).toBeTruthy()
     expect(await list?.getAttribute('class')).toContain('slim-menu-list-item-plus')
+  })
+
+  describe('click()', () => {
+    it('should click the anchor when an anchor is present', async () => {
+      const fixture = TestBed.createComponent(SlimMenuItemComponent)
+      const component = fixture.componentInstance
+      component.item = {
+        routerLink: '/route1',
+        label: 'Menu Item 1',
+        icon: 'pi pi-home',
+        active: false,
+        type: ItemType.ROUTER_LINK
+      }
+      component.activeMode = SlimMenuMode.SLIM
+      component.index = 0
+
+      const slimItem = await TestbedHarnessEnvironment.harnessForFixture(fixture, SlimMenuItemHarness)
+      const router = TestBed.inject(Router)
+      spyOn(router, 'navigateByUrl').and.returnValue(Promise.resolve(true))
+
+      await slimItem.click()
+
+      expect(router.navigateByUrl).toHaveBeenCalled()
+    })
+
+    it('should click the button when no anchor is present', async () => {
+      const fixture = TestBed.createComponent(SlimMenuItemComponent)
+      const component = fixture.componentInstance
+      const command = jasmine.createSpy('command')
+      component.item = {
+        command,
+        label: 'Action Item',
+        icon: 'pi pi-cog',
+        active: false,
+        type: ItemType.ACTION
+      }
+      component.activeMode = SlimMenuMode.SLIM
+      component.index = 0
+
+      const slimItem = await TestbedHarnessEnvironment.harnessForFixture(fixture, SlimMenuItemHarness)
+      await slimItem.click()
+
+      expect(command).toHaveBeenCalled()
+    })
   })
 
   describe('ROUTER_LINK', () => {

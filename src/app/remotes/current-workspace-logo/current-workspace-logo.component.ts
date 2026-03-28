@@ -37,6 +37,9 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
   @Input() imageId: string | undefined = undefined
   @Input() imageUrl: string | undefined = undefined
   @Input() imageStyleClass: string | undefined = undefined
+  @Input() useDefaultLogo = false // used if logo loading failed
+  @Input() logPrefix: string | undefined = undefined
+  @Input() logEnabled = false
   @Input()
   get imageType(): RefType {
     return this.imageType$.value
@@ -45,9 +48,6 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
     this.imageType$.next(value)
     this.updateImageUrl()
   }
-  @Input() useDefaultLogo = false // used if logo loading failed
-  @Input() logPrefix: string | undefined = undefined
-  @Input() logEnabled = false
   @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
     this.ocxInitRemoteComponent(config)
   }

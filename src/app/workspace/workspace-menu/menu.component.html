@@ -583,8 +583,8 @@
   [menuItems]="menuItems"
   [parentItems]="parentItems"
   [changeMode]="changeMode"
-  [displayDetailDialog]="displayMenuDetail"
-  [displayDeleteDialog]="displayMenuDelete"
+  [(displayDetailDialog)]="displayDetailDialog"
+  [(displayDeleteDialog)]="displayDeleteDialog"
   (dataChanged)="onMenuItemChanged($event)"
 ></app-menu-detail>
 

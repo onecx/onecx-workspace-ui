@@ -51,6 +51,8 @@ export class MenuDetailComponent implements OnChanges {
   @Input() changeMode: ChangeMode = 'VIEW'
   @Input() displayDetailDialog = false
   @Input() displayDeleteDialog = false
+  @Output() displayDetailDialogChange: EventEmitter<boolean> = new EventEmitter()
+  @Output() displayDeleteDialogChange: EventEmitter<boolean> = new EventEmitter()
   @Output() dataChanged: EventEmitter<boolean> = new EventEmitter()
 
   @ViewChild('panelDetail') panelDetail: TabView | undefined
@@ -223,7 +225,8 @@ export class MenuDetailComponent implements OnChanges {
    * CLOSE
    **************************************************************************/
   public onCloseDialog(): void {
-    if (this.menuItemOrg) this.dataChanged.emit(false)
+    //if (this.menuItemOrg)
+    this.dataChanged.emit(false)
   }
 
   /***************************************************************************

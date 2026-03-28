@@ -258,7 +258,7 @@ describe('MenuComponent', () => {
           expect(action.permission).toEqual('MENU#CREATE')
           //expect(component.changeMode).toEqual('CREATE')
           expect(component.onCreateMenu).toHaveBeenCalled()
-          //expect(component.displayMenuDetail).toBeTrue()
+          //expect(component.displayDetailDialog).toBeTrue()
         })
       }
     })
@@ -375,8 +375,8 @@ describe('MenuComponent', () => {
       component.onToggleDisable(event, mockMenuItems[0])
 
       expect(event.stopPropagation).toHaveBeenCalled()
-      expect(component.displayMenuDetail).toBe(false)
-      expect(component.displayMenuDelete).toBe(false)
+      expect(component.displayDetailDialog).toBe(false)
+      expect(component.displayDeleteDialog).toBe(false)
       expect(mockMenuItems[0].disabled).toBe(true)
       expect(mockMenuItems[0].modificationCount).toBe(updatedItem.modificationCount)
       expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU.OK' })
@@ -539,7 +539,7 @@ describe('MenuComponent', () => {
    * CREATE + EDIT + DELETE
    */
 
-  it('should displayMenuDetail and change mode onGoToDetails: edit permission', () => {
+  it('should displayDetailDialog and change mode onGoToDetails: edit permission', () => {
     const event: MouseEvent = new MouseEvent('type')
     const item = {
       id: 'id1'
@@ -547,12 +547,12 @@ describe('MenuComponent', () => {
 
     component.onGotoDetails(event, item)
 
-    expect(component.displayMenuDetail).toBeTrue()
+    expect(component.displayDetailDialog).toBeTrue()
     expect(component.changeMode).toBe('EDIT')
     expect(component.menuItem).toBe(item)
   })
 
-  it('should displayMenuDetail and change mode onGoToDetails: no edit permission', () => {
+  it('should displayDetailDialog and change mode onGoToDetails: no edit permission', () => {
     const event: MouseEvent = new MouseEvent('type')
     const item = {
       id: 'id1'
@@ -561,11 +561,11 @@ describe('MenuComponent', () => {
 
     component.onGotoDetails(event, item)
 
-    expect(component.displayMenuDetail).toBeTrue()
+    expect(component.displayDetailDialog).toBeTrue()
     expect(component.changeMode).toBe('VIEW')
   })
 
-  it('should not displayMenuDetail: no item id', () => {
+  it('should not displayDetailDialog: no item id', () => {
     const event: MouseEvent = new MouseEvent('type')
     const item = {
       name: 'name'
@@ -573,7 +573,7 @@ describe('MenuComponent', () => {
 
     component.onGotoDetails(event, item)
 
-    expect(component.displayMenuDetail).toBeFalse()
+    expect(component.displayDetailDialog).toBeFalse()
   })
 
   describe('create menu item', () => {
@@ -583,7 +583,7 @@ describe('MenuComponent', () => {
 
       expect(component.changeMode).toEqual('CREATE')
       expect(component.menuItem).toEqual(mockParent)
-      expect(component.displayMenuDetail).toBeTrue()
+      expect(component.displayDetailDialog).toBeTrue()
     })
 
     it('should handle onCreateMenu correctly: without parent', () => {
@@ -591,13 +591,13 @@ describe('MenuComponent', () => {
 
       expect(component.changeMode).toEqual('CREATE')
       expect(component.menuItem).toEqual(undefined)
-      expect(component.displayMenuDetail).toBeTrue()
+      expect(component.displayDetailDialog).toBeTrue()
     })
   })
 
   describe('delete menu item', () => {
     it('should removeTreeNode if key is present and refresh menuNodes if delete displayed onMenuItemChanged', () => {
-      component.displayMenuDelete = true
+      component.displayDeleteDialog = true
       const item = { key: 'key2' }
       component.menuItem = item
       const nodes = [{ key: 'key' }, { key: 'key2', children: [{ key: 'child key' }] }]
@@ -609,7 +609,7 @@ describe('MenuComponent', () => {
     })
 
     it('should removeTreeNode if key is present in node children', () => {
-      component.displayMenuDelete = true
+      component.displayDeleteDialog = true
       const item = { key: 'child key' }
       component.menuItem = item
       const nodes = [{ key: 'key2', children: [{ key: 'child key' }] }]
@@ -621,7 +621,7 @@ describe('MenuComponent', () => {
     })
 
     it('should not removeTreeNode if no key present', () => {
-      component.displayMenuDelete = true
+      component.displayDeleteDialog = true
       const key = undefined
       const item = { key: key }
       component.menuItem = item
@@ -634,8 +634,8 @@ describe('MenuComponent', () => {
     })
 
     it('should loadMenu if detail displayed onMenuItemChanged', () => {
-      component.displayMenuDelete = false
-      component.displayMenuDetail = true
+      component.displayDeleteDialog = false
+      component.displayDetailDialog = true
       spyOn(component, 'loadMenu')
 
       component.onMenuItemChanged(true)
@@ -646,8 +646,8 @@ describe('MenuComponent', () => {
     it('should set correct values if nothing changed onMenuItemChanged', () => {
       component.onMenuItemChanged(false)
 
-      expect(component.displayMenuDetail).toBeFalse()
-      expect(component.displayMenuDelete).toBeFalse()
+      expect(component.displayDetailDialog).toBeFalse()
+      expect(component.displayDeleteDialog).toBeFalse()
       expect(component.menuItem).toBeUndefined()
     })
 
@@ -662,7 +662,7 @@ describe('MenuComponent', () => {
 
       expect(component.changeMode).toBe('DELETE')
       expect(component.menuItem).toBe(item)
-      expect(component.displayMenuDelete).toBeTrue()
+      expect(component.displayDeleteDialog).toBeTrue()
     })
   })
 

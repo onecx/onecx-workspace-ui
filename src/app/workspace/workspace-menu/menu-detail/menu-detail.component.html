@@ -2,6 +2,7 @@
   #menuDetailDialog
   [header]="'DIALOG.MENU.HEADER.' + changeMode | translate"
   [(visible)]="displayDetailDialog"
+  (visibleChange)="displayDetailDialogChange.emit($event)"
   [modal]="true"
   [closable]="true"
   [draggable]="true"
@@ -383,6 +384,7 @@
 <p-dialog
   [header]="'DIALOG.MENU.HEADER.DELETE' | translate"
   [(visible)]="displayDeleteDialog"
+  (visibleChange)="displayDeleteDialogChange.emit($event)"
   [modal]="true"
   [closable]="true"
   [draggable]="true"

@@ -88,9 +88,9 @@ export class MenuComponent implements OnInit, OnDestroy {
   public usedLanguages: Map<string, number> = new Map()
   // detail
   public changeMode: ChangeMode = 'VIEW'
-  public displayMenuDetail = false
+  public displayDetailDialog = false
+  public displayDeleteDialog = false
   public displayMenuImport = false
-  public displayMenuDelete = false
   public displayMenuPreview = false
   public displayRoles = false
 
@@ -341,8 +341,8 @@ export class MenuComponent implements OnInit, OnDestroy {
   // change visibility of menu item by click in tree
   public onToggleDisable(ev: any, item: WorkspaceMenuItem): void {
     ev.stopPropagation()
-    this.displayMenuDetail = false // prevent detail dialog activation
-    this.displayMenuDelete = false
+    this.displayDetailDialog = false // prevent detail dialog activation
+    this.displayDeleteDialog = false
     this.menuApi
       .updateMenuItem({
         menuItemId: item.id!,
@@ -447,32 +447,32 @@ export class MenuComponent implements OnInit, OnDestroy {
     if (item.id === undefined) return
     this.changeMode = this.myPermissions.includes('MENU#EDIT') ? 'EDIT' : 'VIEW'
     this.menuItem = item
-    this.displayMenuDetail = true
+    this.displayDetailDialog = true
   }
   public onCreateMenu(parent?: WorkspaceMenuItem): void {
     this.changeMode = 'CREATE'
     this.menuItem = parent
-    this.displayMenuDetail = true
+    this.displayDetailDialog = true
   }
   public onDeleteMenu($event: MouseEvent, item: WorkspaceMenuItem): void {
     $event.stopPropagation()
     this.changeMode = 'DELETE'
     this.menuItem = item
-    this.displayMenuDelete = true
+    this.displayDeleteDialog = true
   }
   // triggered by change event from menu detail dialog
   public onMenuItemChanged(changed: boolean): void {
     if (changed) {
-      if (this.displayMenuDelete) {
+      if (this.displayDeleteDialog) {
         this.removeTreeNode(this.menuNodes, this.menuItem?.key)
         this.menuNodes = [...this.menuNodes] // refresh UI
       }
-      if (this.displayMenuDetail) {
+      if (this.displayDetailDialog) {
         this.loadMenu(true)
       }
     }
-    this.displayMenuDetail = false
-    this.displayMenuDelete = false
+    this.displayDetailDialog = false
+    this.displayDeleteDialog = false
     this.menuItem = undefined
   }
 
