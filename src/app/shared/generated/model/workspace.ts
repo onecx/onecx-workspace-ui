@@ -35,5 +35,6 @@ export interface Workspace {
     mandatory?: boolean;
     operator?: boolean;
     disabled?: boolean;
+    i18n?: { [key: string]: { [key: string]: string; }; };
 }
 

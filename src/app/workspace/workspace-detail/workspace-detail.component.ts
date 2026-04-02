@@ -135,7 +135,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
         this.workspaceApi
           .updateWorkspace({
             id: workspaceData.id,
-            updateWorkspaceRequest: { resource: workspaceData! }
+            updateWorkspaceRequest: { resource: workspaceData }
           })
           .subscribe({
             next: (data) => {
