@@ -36,6 +36,8 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
 
   public displayI18nDialog = false
   public i18nPropertyName: string | undefined = undefined
+  public i18nPropertyKey: string | undefined = undefined
+
   // make it available in HTML
   public Utils = Utils
   public getLocation = getLocation
@@ -315,8 +317,11 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     return of(undefined)
   }
 
-  public openI18nDialog(propName: string): void {
+  public openI18nDialog(propName: string, propKey: string): void {
     this.displayI18nDialog = true
-    this.i18nPropertyName = propName
+    if (propName && propKey) {
+      this.i18nPropertyName = propName
+      this.i18nPropertyKey = propKey
+    }
   }
 }

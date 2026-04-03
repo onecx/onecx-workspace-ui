@@ -90,6 +90,8 @@
       "MESSAGE": {
         "WORKSPACE.OK": "Der Workspace wurde erfolgreich geändert.",
         "WORKSPACE.NOK": "Ein Fehler ist aufgetreten. Der Workspace wurde nicht geändert.",
+        "WORKSPACE.I18N.OK": "Die Übersetzungen wurden erfolgreich gespeichert.",
+        "WORKSPACE.I18N.NOK": "Ein Fehler ist aufgetreten. Die Übersetzungen konnten nicht gespeichert werden.",
         "ROLE_ALREADY_EXISTS": "Eine Rolle mit diesem Namen existiert schon.",
         "MENU.OK": "Der Menüpunkt wurde erfolgreich geändert.",
         "MENU.NOK": "Ein Fehler ist aufgetreten. Der Menüpunkt wurde nicht geändert."
@@ -564,8 +566,16 @@
       "VIEW_MODE_TREE": "Baumansicht"
     },
     "I18N": {
-      "HEADER": "Übersetzungen",
-      "TOOLTIP": "Übersetzungen verwalten"
+      "HEADER": "Übersetzungen bearbeiten",
+      "TOOLTIP": "Übersetzungen verwalten",
+      "TRANSLATIONS": "Übersetzungen",
+      "NO_TRANSLATIONS": "Noch keine Übersetzungen definiert.",
+      "ADD_LANGUAGE": "Sprache hinzufügen",
+      "PROPERTY_NAME": "Eigenschaft",
+      "PROPERTY_VALUE": "Wert",
+      "LANGUAGE": "Sprache",
+      "LANGUAGE.PLACEHOLDER": "Sprache auswählen",
+      "VALUE": "Übersetzung"
     },
     "LOGO": {
       "LABEL": "Workspace Logo",

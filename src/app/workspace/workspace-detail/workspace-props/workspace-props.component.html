@@ -23,7 +23,7 @@
     <button
       id="ws_detail_props_item_display_name_i18n"
       class="p-inputgroup-addon bg-primary pseudo-button"
-      (click)="openI18nDialog('displayName')"
+      (click)="openI18nDialog('displayName', 'WORKSPACE.DISPLAY_NAME')"
       [attr.aria-label]="'DIALOG.I18N.TOOLTIP' | translate"
       [pTooltip]="'DIALOG.I18N.TOOLTIP' | translate"
       tooltipPosition="right"
@@ -523,4 +523,5 @@
   [(workspaceI18nVisible)]="displayI18nDialog"
   [workspace]="workspace!"
   [propertyName]="i18nPropertyName"
+  [propertyKey]="i18nPropertyKey"
 ></app-workspace-i18n>

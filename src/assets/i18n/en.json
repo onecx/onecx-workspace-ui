@@ -90,6 +90,8 @@
       "MESSAGE": {
         "WORKSPACE.OK": "The Workspace was changed successfully",
         "WORKSPACE.NOK": "An error has occurred. The Workspace was not changed.",
+        "WORKSPACE.I18N.OK": "The translations were saved successfully",
+        "WORKSPACE.I18N.NOK": "An error has occurred. The translations could not be saved.",
         "ROLE_ALREADY_EXISTS": "A Role with this name already exists",
         "MENU.OK": "The Menu Item was changed successfully",
         "MENU.NOK": "An error has occurred. The Menu Item was not changed."
@@ -564,8 +566,16 @@
       "VIEW_MODE_TREE": "Tree view"
     },
     "I18N": {
-      "HEADER": "Translations",
-      "TOOLTIP": "Manage translations"
+      "HEADER": "Manage Translations",
+      "TOOLTIP": "Manage translations",
+      "TRANSLATIONS": "Translations",
+      "NO_TRANSLATIONS": "No translations defined yet.",
+      "ADD_LANGUAGE": "Add Language",
+      "PROPERTY_NAME": "Property Name",
+      "PROPERTY_VALUE": "Value",
+      "LANGUAGE": "Language",
+      "LANGUAGE.PLACEHOLDER": "Select language",
+      "VALUE": "Translation"
     },
     "LOGO": {
       "LABEL": "Logo Workspace",

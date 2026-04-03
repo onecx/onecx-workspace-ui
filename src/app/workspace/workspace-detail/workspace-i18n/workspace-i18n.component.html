@@ -5,34 +5,182 @@
   [resizable]="true"
   [draggable]="true"
   [dismissableMask]="true"
-  [style]="{ width: '400px' }"
+  [style]="{ width: '550px' }"
   styleClass="disable-max-height-preset"
 >
-  <div class="flex flex-row flex-nowrap column-gap-4 row-gap-1 justify-content-start align-items-center">
-    <span class="pi pi-info-circle text-2xl"></span>
-    <p class="m-0">
-      {{ propertyName }}
-    </p>
+  <div class="mt-1 mb-3 w-full flex flex-column flex-wrap row-gap-3 sm:row-gap-4 align-items-center">
+    <span class="p-float-label w-full">
+      <input
+        pInputText
+        type="text"
+        id="ws_detail_i18n_property_name"
+        class="w-full pt-3 pb-2 text-responsive"
+        readonly
+        [value]="propertyKey ? (propertyKey | translate) : ''"
+        [attr.aria-label]="'DIALOG.I18N.PROPERTY_NAME' | translate"
+        [pTooltip]="'DIALOG.I18N.PROPERTY_NAME' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      />
+      <label for="ws_detail_i18n_property_name" aria-hidden="true">
+        {{ 'DIALOG.I18N.PROPERTY_NAME' | translate }}
+      </label>
+    </span>
+    <span class="p-float-label w-full">
+      <input
+        pInputText
+        type="text"
+        id="ws_detail_i18n_property_value"
+        class="w-full pt-3 pb-2 text-responsive"
+        readonly
+        [value]="workspace['displayName']"
+        [attr.aria-label]="'DIALOG.I18N.PROPERTY_VALUE' | translate"
+        [pTooltip]="'DIALOG.I18N.PROPERTY_VALUE' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      />
+      <label for="ws_detail_i18n_property_value" aria-hidden="true">
+        {{ 'DIALOG.I18N.PROPERTY_VALUE' | translate }}
+      </label>
+    </span>
+
+    <p-divider align="center" styleClass="my-0">
+      <div class="px-3 font-bold text-primary">{{ 'DIALOG.I18N.TRANSLATIONS' | translate }}</div>
+    </p-divider>
+
+    @if (translationsForm.length > 0) {
+      <ng-container *ngFor="let row of translationsForm.controls; let i = index" [formGroup]="$any(row)">
+        <div class="p-inputgroup mb-1 w-full" controlErrorAnchor>
+          <p-inputGroupAddon>
+            <i class="pi pi-language"></i>
+          </p-inputGroupAddon>
+          <span class="p-float-label w-full">
+            <input
+              pInputText
+              type="text"
+              id="ws_detail_i18n_value_{{ i }}"
+              class="w-full pt-3 pb-2 text-responsive"
+              formControlName="value"
+              [attr.aria-label]="getLangLabel(row.get('language')?.value)"
+              [pTooltip]="getLangLabel(row.get('language')?.value)"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            />
+            <label for="ws_detail_i18n_value_{{ i }}" aria-hidden="true">
+              {{ getLangLabel(row.get('language')?.value) }}
+            </label>
+          </span>
+          <button
+            pButton
+            pRipple
+            id="ws_detail_i18n_action_remove_{{ i }}"
+            class="p-inputgroup-addon bg-primary pseudo-button"
+            (click)="onRemoveTranslation(i)"
+            [attr.aria-label]="'ACTIONS.DELETE.LABEL' | translate"
+            [pTooltip]="'ACTIONS.DELETE.LABEL' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          >
+            <span class="pi pi-trash" aria-hidden="true"></span>
+          </button>
+        </div>
+      </ng-container>
+    }
   </div>
+
+  <p-message
+    *ngIf="translationsForm.length === 0 && !showAddRow"
+    id="ws_detail_i18n_message_no_translations"
+    severity="info"
+    styleClass="m-3"
+    [text]="'DIALOG.I18N.NO_TRANSLATIONS' | translate"
+  ></p-message>
+
+  <div
+    *ngIf="showAddRow"
+    class="flex flex-row flex-nowrap column-gap-2 align-items-center mb-2 mt-2 pt-2 border-top-1 surface-border"
+  >
+    <p-dropdown
+      id="ws_detail_i18n_new_language"
+      [(ngModel)]="newLanguage"
+      [options]="availableLanguages"
+      optionLabel="label"
+      optionValue="value"
+      [placeholder]="'DIALOG.I18N.LANGUAGE.PLACEHOLDER' | translate"
+      styleClass="w-9rem"
+      [attr.aria-label]="'DIALOG.I18N.LANGUAGE' | translate"
+    ></p-dropdown>
+    <div class="p-inputgroup mb-1 w-full" controlErrorAnchor>
+      <input
+        pInputText
+        id="ws_detail_i18n_new_value"
+        [(ngModel)]="newValue"
+        class="flex-1"
+        [attr.aria-label]="'DIALOG.I18N.VALUE' | translate"
+        [placeholder]="'DIALOG.I18N.VALUE' | translate"
+      />
+      <button
+        pButton
+        pRipple
+        id="ws_detail_i18n_action_add_confirm"
+        class="p-inputgroup-addon bg-primary pseudo-button"
+        (click)="onAddLanguage()"
+        [disabled]="!newLanguage"
+        [attr.aria-label]="'ACTIONS.CONFIRMATION.YES' | translate"
+        [pTooltip]="'ACTIONS.CONFIRMATION.YES' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      >
+        <span class="pi pi-check" aria-hidden="true"></span>
+      </button>
+      <button
+        pButton
+        pRipple
+        id="ws_detail_i18n_action_add_cancel"
+        class="p-inputgroup-addon bg-primary pseudo-button"
+        (click)="onCancelAdd()"
+        [attr.aria-label]="'ACTIONS.CONFIRMATION.NO' | translate"
+        [pTooltip]="'ACTIONS.CONFIRMATION.NO' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      >
+        <span class="pi pi-times" aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="!showAddRow && availableLanguages.length > 0" class="mt-3">
+    <button
+      pButton
+      pRipple
+      id="ws_detail_i18n_action_add_language"
+      icon="pi pi-plus"
+      class="p-button-text p-button-sm"
+      (click)="onShowAddRow()"
+      [label]="'DIALOG.I18N.ADD_LANGUAGE' | translate"
+      [attr.aria-label]="'DIALOG.I18N.ADD_LANGUAGE' | translate"
+    ></button>
+  </div>
+
   <ng-template pTemplate="footer">
     <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
       <p-button
-        id="ws_i18n_action_no"
+        id="ws_detail_i18n_action_cancel"
         icon="pi pi-times"
         (onClick)="onClose()"
-        [label]="'ACTIONS.CONFIRMATION.NO' | translate"
-        [ariaLabel]="'ACTIONS.CONFIRMATION.NO' | translate"
-        [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
+        [label]="'ACTIONS.CANCEL' | translate"
+        [ariaLabel]="'ACTIONS.CANCEL' | translate"
+        [pTooltip]="'ACTIONS.TOOLTIPS.CANCEL' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       ></p-button>
       <p-button
-        id="ws_i18n_action_yes"
-        icon="pi pi-check"
+        id="ws_detail_i18n_action_save"
+        icon="pi pi-save"
         (onClick)="onSave()"
-        [label]="'ACTIONS.CONFIRMATION.YES' | translate"
-        [ariaLabel]="'ACTIONS.CONFIRMATION.YES' | translate"
-        [pTooltip]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
+        [label]="'ACTIONS.SAVE' | translate"
+        [ariaLabel]="'ACTIONS.SAVE' | translate"
+        [pTooltip]="'ACTIONS.TOOLTIPS.SAVE' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       ></p-button>
