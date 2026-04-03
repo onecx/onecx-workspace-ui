@@ -483,23 +483,38 @@
     </div>
   </article>
 
-  <!-- FOOTER -->
-  <span class="p-float-label mb-1 w-full" controlErrorAnchor>
-    <input
-      pInputText
-      type="text"
-      id="ws_detail_props_item_footer-label"
-      class="w-full pt-3 pb-2 text-responsive"
-      formControlName="footerLabel"
-      [attr.aria-label]="'WORKSPACE.FOOTER_LABEL' | translate"
-      [pTooltip]="'WORKSPACE.TOOLTIPS.FOOTER_LABEL' | translate"
-      tooltipPosition="top"
+  <!-- FOOTER LABEL -->
+  <div class="p-inputgroup mb-1 w-full" controlErrorAnchor>
+    <span class="p-float-label">
+      <input
+        #footerLabelInput
+        pInputText
+        type="text"
+        id="ws_detail_props_item_footer_label"
+        class="w-full pt-3 pb-2 text-responsive"
+        formControlName="footerLabel"
+        [attr.aria-label]="'WORKSPACE.FOOTER_LABEL' | translate"
+        [pTooltip]="'WORKSPACE.TOOLTIPS.FOOTER_LABEL' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      />
+      <label for="ws_detail_props_item_footer_label" aria-hidden="true">
+        {{ 'WORKSPACE.FOOTER_LABEL' | translate }}
+      </label>
+    </span>
+    <button
+      [ngClass]="footerLabelInput.value && !editMode ? 'cursor-pointer' : 'p-disabled'"
+      id="ws_detail_props_item_footer_label_i18n"
+      class="p-inputgroup-addon bg-primary pseudo-button"
+      (click)="openI18nDialog('footerLabel', 'WORKSPACE.FOOTER_LABEL')"
+      [attr.aria-label]="'DIALOG.I18N.TOOLTIP' | translate"
+      [pTooltip]="'DIALOG.I18N.TOOLTIP' | translate"
+      tooltipPosition="right"
       tooltipEvent="hover"
-    />
-    <label for="ws_detail_props_item_footer_label" aria-hidden="true"
-      >{{ 'WORKSPACE.FOOTER_LABEL' | translate }}
-    </label>
-  </span>
+    >
+      <span class="pi pi-language" aria-hidden="true"></span>
+    </button>
+  </div>
 
   <span class="p-float-label mb-1 w-full" controlErrorAnchor>
     <textarea

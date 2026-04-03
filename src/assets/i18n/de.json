@@ -575,6 +575,8 @@
       "PROPERTY_VALUE": "Wert",
       "LANGUAGE": "Sprache",
       "LANGUAGE.PLACEHOLDER": "Sprache auswählen",
+      "TRANSLATION.ADD": "Übersetzung hinzufügen",
+      "TRANSLATION.REMOVE": "Übersetzung entfernen",
       "VALUE": "Übersetzung"
     },
     "LOGO": {

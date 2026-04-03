@@ -26,6 +26,8 @@ export class WorkspaceI18nComponent implements OnChanges {
   public newLanguage: string | undefined = undefined
   public newValue = ''
 
+  private initialSnapshot = ''
+
   public readonly allLanguages: LanguageOption[] = [
     { value: 'ar', label: 'Arabic (ar)' },
     { value: 'cs', label: 'Czech (cs)' },
@@ -73,6 +75,10 @@ export class WorkspaceI18nComponent implements OnChanges {
     }
   }
 
+  get hasChanges(): boolean {
+    return this.buildSnapshot() !== this.initialSnapshot
+  }
+
   get availableLanguages(): LanguageOption[] {
     const used = new Set(this.translationsForm.controls.map((c) => c.get('language')?.value))
     return this.allLanguages.filter((l) => !used.has(l.value))
@@ -80,6 +86,10 @@ export class WorkspaceI18nComponent implements OnChanges {
 
   public getLangLabel(code: string): string {
     return this.allLanguages.find((l) => l.value === code)?.label ?? code
+  }
+  public getPropertyValue(object: unknown, prop: string | undefined): string {
+    if (!prop) return ''
+    return (object as any)?.[prop] ?? ''
   }
 
   public onShowAddRow(): void {
@@ -135,6 +145,13 @@ export class WorkspaceI18nComponent implements OnChanges {
       })
   }
 
+  private buildSnapshot(): string {
+    const entries = this.translationsForm.controls
+      .map((c) => ({ language: c.get('language')?.value ?? '', value: c.get('value')?.value ?? '' }))
+      .sort((a, b) => a.language.localeCompare(b.language))
+    return JSON.stringify(entries)
+  }
+
   private initForm(): void {
     const existing = this.workspace.i18n?.[this.propertyName!] ?? {}
     this.translationsForm.clear()
@@ -144,5 +161,6 @@ export class WorkspaceI18nComponent implements OnChanges {
     this.showAddRow = false
     this.newLanguage = undefined
     this.newValue = ''
+    this.initialSnapshot = this.buildSnapshot()
   }
 }
