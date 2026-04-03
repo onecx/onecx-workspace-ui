@@ -20,6 +20,7 @@ import { WorkspaceRoleDetailComponent } from '../workspace-role-detail/workspace
 import { WorkspaceSlotsComponent } from './workspace-slots/workspace-slots.component'
 import { WorkspaceSlotDetailComponent } from './workspace-slot-detail/workspace-slot-detail.component'
 import { ProductComponent } from '../workspace-product/products.component'
+import { WorkspaceI18nComponent } from './workspace-i18n/workspace-i18n.component'
 
 const routes: Routes = [
   {
@@ -49,7 +50,8 @@ const routes: Routes = [
     WorkspaceRoleDetailComponent,
     WorkspaceSlotsComponent,
     WorkspaceSlotDetailComponent,
-    ProductComponent
+    ProductComponent,
+    WorkspaceI18nComponent
   ],
   imports: [
     CommonModule,

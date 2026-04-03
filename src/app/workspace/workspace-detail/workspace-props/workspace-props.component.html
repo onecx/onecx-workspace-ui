@@ -3,22 +3,35 @@
   [formGroup]="propsForm"
   errorTailor
 >
-  <span class="p-float-label mb-1 w-full" controlErrorAnchor>
-    <input
-      pInputText
-      type="text"
-      id="ws_detail_props_item_display_name"
-      class="w-full pt-3 pb-2 text-responsive"
-      formControlName="displayName"
-      [attr.aria-label]="'WORKSPACE.DISPLAY_NAME' | translate"
-      [pTooltip]="'WORKSPACE.TOOLTIPS.DISPLAY_NAME' | translate"
-      tooltipPosition="top"
+  <div class="p-inputgroup mb-1 w-full" controlErrorAnchor>
+    <span class="p-float-label">
+      <input
+        pInputText
+        type="text"
+        id="ws_detail_props_item_display_name"
+        class="w-full pt-3 pb-2 text-responsive"
+        formControlName="displayName"
+        [attr.aria-label]="'WORKSPACE.DISPLAY_NAME' | translate"
+        [pTooltip]="'WORKSPACE.TOOLTIPS.DISPLAY_NAME' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      />
+      <label class="ocx-required-label" for="ws_detail_props_item_display_name" aria-hidden="true">
+        {{ 'WORKSPACE.DISPLAY_NAME' | translate }}
+      </label>
+    </span>
+    <button
+      id="ws_detail_props_item_display_name_i18n"
+      class="p-inputgroup-addon bg-primary pseudo-button"
+      (click)="openI18nDialog('displayName')"
+      [attr.aria-label]="'DIALOG.I18N.TOOLTIP' | translate"
+      [pTooltip]="'DIALOG.I18N.TOOLTIP' | translate"
+      tooltipPosition="right"
       tooltipEvent="hover"
-    />
-    <label class="ocx-required-label" for="ws_detail_props_item_display_name" aria-hidden="true">
-      {{ 'WORKSPACE.DISPLAY_NAME' | translate }}
-    </label>
-  </span>
+    >
+      <span class="pi pi-language" aria-hidden="true"></span>
+    </button>
+  </div>
 
   <!-- THEMES -->
   <article [ariaLabel]="'WORKSPACE.THEME' | translate" class="w-full">
@@ -505,3 +518,9 @@
     <label for="ws_detail_props_item_description" aria-hidden="true">{{ 'WORKSPACE.DESCRIPTION' | translate }} </label>
   </span>
 </form>
+
+<app-workspace-i18n
+  [(workspaceI18nVisible)]="displayI18nDialog"
+  [workspace]="workspace!"
+  [propertyName]="i18nPropertyName"
+></app-workspace-i18n>

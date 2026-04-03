@@ -34,6 +34,8 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   @Input() isLoading = false
   @Output() headerImageUrl = new EventEmitter<string>() // send logo url to detail header
 
+  public displayI18nDialog = false
+  public i18nPropertyName: string | undefined = undefined
   // make it available in HTML
   public Utils = Utils
   public getLocation = getLocation
@@ -311,5 +313,10 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     if (this.themeEndpointExist && name)
       return this.workspaceService.getUrl('onecx-theme', 'onecx-theme-ui', 'theme-detail', { 'theme-name': name })
     return of(undefined)
+  }
+
+  public openI18nDialog(propName: string): void {
+    this.displayI18nDialog = true
+    this.i18nPropertyName = propName
   }
 }

@@ -563,6 +563,10 @@
       "VIEW_MODE_TABLE": "Table view",
       "VIEW_MODE_TREE": "Tree view"
     },
+    "I18N": {
+      "HEADER": "Translations",
+      "TOOLTIP": "Manage translations"
+    },
     "LOGO": {
       "LABEL": "Logo Workspace",
       "PLACEHOLDER": "Logo Placeholder"

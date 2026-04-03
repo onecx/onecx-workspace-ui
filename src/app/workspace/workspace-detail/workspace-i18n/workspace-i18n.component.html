@@ -1,0 +1,41 @@
+<p-dialog
+  [(visible)]="workspaceI18nVisible"
+  [header]="'DIALOG.I18N.HEADER' | translate"
+  [modal]="true"
+  [resizable]="true"
+  [draggable]="true"
+  [dismissableMask]="true"
+  [style]="{ width: '400px' }"
+  styleClass="disable-max-height-preset"
+>
+  <div class="flex flex-row flex-nowrap column-gap-4 row-gap-1 justify-content-start align-items-center">
+    <span class="pi pi-info-circle text-2xl"></span>
+    <p class="m-0">
+      {{ propertyName }}
+    </p>
+  </div>
+  <ng-template pTemplate="footer">
+    <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
+      <p-button
+        id="ws_i18n_action_no"
+        icon="pi pi-times"
+        (onClick)="onClose()"
+        [label]="'ACTIONS.CONFIRMATION.NO' | translate"
+        [ariaLabel]="'ACTIONS.CONFIRMATION.NO' | translate"
+        [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      ></p-button>
+      <p-button
+        id="ws_i18n_action_yes"
+        icon="pi pi-check"
+        (onClick)="onSave()"
+        [label]="'ACTIONS.CONFIRMATION.YES' | translate"
+        [ariaLabel]="'ACTIONS.CONFIRMATION.YES' | translate"
+        [pTooltip]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      ></p-button>
+    </div>
+  </ng-template>
+</p-dialog>
