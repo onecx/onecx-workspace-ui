@@ -318,8 +318,8 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   }
 
   public openI18nDialog(propName: string, propKey: string): void {
-    this.displayI18nDialog = true
     if (propName && propKey) {
+      this.displayI18nDialog = true
       this.i18nPropertyName = propName
       this.i18nPropertyKey = propKey
     }
