@@ -6,6 +6,7 @@
   <div class="p-inputgroup mb-1 w-full" controlErrorAnchor>
     <span class="p-float-label">
       <input
+        #displayNameInput
         pInputText
         type="text"
         id="ws_detail_props_item_display_name"
@@ -23,6 +24,7 @@
     <button
       id="ws_detail_props_item_display_name_i18n"
       class="p-inputgroup-addon bg-primary pseudo-button"
+      [ngClass]="displayNameInput.value && !editMode ? 'cursor-pointer' : 'p-disabled'"
       (click)="openI18nDialog('displayName', 'WORKSPACE.DISPLAY_NAME')"
       [attr.aria-label]="'DIALOG.I18N.TOOLTIP' | translate"
       [pTooltip]="'DIALOG.I18N.TOOLTIP' | translate"
@@ -503,9 +505,9 @@
       </label>
     </span>
     <button
-      [ngClass]="footerLabelInput.value && !editMode ? 'cursor-pointer' : 'p-disabled'"
       id="ws_detail_props_item_footer_label_i18n"
       class="p-inputgroup-addon bg-primary pseudo-button"
+      [ngClass]="footerLabelInput.value && !editMode ? 'cursor-pointer' : 'p-disabled'"
       (click)="openI18nDialog('footerLabel', 'WORKSPACE.FOOTER_LABEL')"
       [attr.aria-label]="'DIALOG.I18N.TOOLTIP' | translate"
       [pTooltip]="'DIALOG.I18N.TOOLTIP' | translate"

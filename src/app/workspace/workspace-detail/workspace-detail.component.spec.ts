@@ -119,7 +119,7 @@ describe('WorkspaceDetailComponent', () => {
         apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
         component.workspaceName = 'name'
 
-        component.getWorkspace()
+        component.getWorkspace(true)
 
         component.workspace$.subscribe({
           next: (data) => {

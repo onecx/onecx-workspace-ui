@@ -117,8 +117,9 @@
           <input
             pInputText
             id="ws_detail_i18n_new_value"
-            [(ngModel)]="newValue"
             class="w-full pt-3 pb-2 text-responsive"
+            [(ngModel)]="newValue"
+            [disabled]="!newLanguage"
             [attr.aria-label]="'DIALOG.I18N.VALUE' | translate"
           />
           <label for="ws_detail_i18n_new_value" aria-hidden="true">

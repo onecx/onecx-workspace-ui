@@ -77,7 +77,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
   }
 
   // prepare Observable - trigger request in HTML with async
-  public getWorkspace() {
+  public getWorkspace(switchToEdit?: boolean) {
     this.loading = true
     this.exceptionKey = undefined
     this.workspace$ = this.workspaceApi.getWorkspaceByName({ workspaceName: this.workspaceName }).pipe(
@@ -94,6 +94,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
       }),
       finalize(() => {
         this.loading = false
+        if (switchToEdit === true) this.editMode = true
         this.prepareActionButtons()
       })
     )
@@ -208,7 +209,10 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
 
   private toggleEditMode(forcedMode?: 'edit' | 'view'): void {
     if (forcedMode === 'view') this.editMode = false
-    else this.editMode = !this.editMode
+    else {
+      this.editMode = !this.editMode
+      this.getWorkspace(this.editMode)
+    }
     this.prepareActionButtons()
   }
 
