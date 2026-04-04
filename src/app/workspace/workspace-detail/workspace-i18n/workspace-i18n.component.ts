@@ -21,12 +21,12 @@ export class WorkspaceI18nComponent implements OnChanges {
   @Input() propertyKey: string | undefined = undefined
   @Output() workspaceI18nVisibleChange = new EventEmitter<boolean>()
 
+  private initialSnapshot = ''
+
   public translationsForm: FormArray
   public showAddRow = false
   public newLanguage: string | undefined = undefined
   public newValue = ''
-
-  private initialSnapshot = ''
 
   public readonly allLanguages: LanguageOption[] = [
     { value: 'ar', label: 'Arabic (ar)' },
@@ -128,9 +128,7 @@ export class WorkspaceI18nComponent implements OnChanges {
       const val: string = ctrl.get('value')?.value ?? ''
       if (lang) translations[lang] = val
     })
-    if (!this.workspace.i18n) {
-      this.workspace.i18n = {}
-    }
+    this.workspace.i18n = this.workspace.i18n ?? {}
     this.workspace.i18n[this.propertyName] = translations
     this.workspaceApi
       .updateWorkspace({ id: this.workspace.id!, updateWorkspaceRequest: { resource: this.workspace } })

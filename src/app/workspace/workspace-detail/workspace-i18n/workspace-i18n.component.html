@@ -91,7 +91,6 @@
       *ngIf="translationsForm.length === 0 && !showAddRow"
       id="ws_detail_i18n_message_no_translations"
       severity="info"
-      styleClass="m-3"
       [text]="'DIALOG.I18N.NO_TRANSLATIONS' | translate"
     ></p-message>
 
@@ -156,14 +155,14 @@
       </div>
     </div>
 
-    <div *ngIf="!showAddRow && availableLanguages.length > 0" class="mt-3">
+    <div *ngIf="!showAddRow && availableLanguages.length > 0">
       <p-button
         id="ws_detail_i18n_action_add_language"
         icon="pi pi-plus"
         (onClick)="onShowAddRow()"
-        [label]="'DIALOG.I18N.ADD_LANGUAGE' | translate"
-        [ariaLabel]="'DIALOG.I18N.ADD_LANGUAGE' | translate"
-        [pTooltip]="'DIALOG.I18N.ADD_LANGUAGE' | translate"
+        [label]="'DIALOG.I18N.TRANSLATION.ADD' | translate"
+        [ariaLabel]="'DIALOG.I18N.TRANSLATION.ADD' | translate"
+        [pTooltip]="'DIALOG.I18N.TRANSLATION.ADD' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       >
