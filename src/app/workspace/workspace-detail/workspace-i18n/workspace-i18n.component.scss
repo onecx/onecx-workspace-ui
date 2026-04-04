@@ -1,0 +1,8 @@
+@import '/src/app/_ws-mixins.scss';
+
+@include prepare-inputgroup;
+@include dropdown-zebra-rows;
+
+.p-inputgroup button {
+  min-width: unset !important;
+}

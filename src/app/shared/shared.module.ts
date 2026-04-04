@@ -15,6 +15,8 @@ import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog'
 import { DropdownModule } from 'primeng/dropdown'
 import { FloatLabelModule } from 'primeng/floatlabel'
 import { FileUploadModule } from 'primeng/fileupload'
+import { InputGroupModule } from 'primeng/inputgroup'
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon'
 import { InputTextModule } from 'primeng/inputtext'
 import { InputTextareaModule } from 'primeng/inputtextarea'
 import { KeyFilterModule } from 'primeng/keyfilter'
@@ -50,6 +52,8 @@ import { OcxChipComponent } from './ocx-chip/ocx-chip.component'
     FloatLabelModule,
     FileUploadModule,
     FormsModule,
+    InputGroupModule,
+    InputGroupAddonModule,
     InputTextModule,
     InputTextareaModule,
     KeyFilterModule,
@@ -80,6 +84,8 @@ import { OcxChipComponent } from './ocx-chip/ocx-chip.component'
     FloatLabelModule,
     FileUploadModule,
     FormsModule,
+    InputGroupModule,
+    InputGroupAddonModule,
     InputTextModule,
     InputTextareaModule,
     KeyFilterModule,

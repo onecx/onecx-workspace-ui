@@ -541,4 +541,40 @@ describe('WorkspacePropsComponent', () => {
       })
     })
   })
+
+  describe('openI18nDialog', () => {
+    it('should set displayI18nDialog, i18nPropertyName and i18nPropertyKey when both arguments are provided', () => {
+      component.displayI18nDialog = false
+
+      component.openI18nDialog('displayName', 'WORKSPACE.DISPLAY_NAME')
+
+      expect(component.displayI18nDialog).toBeTrue()
+      expect(component.i18nPropertyName).toBe('displayName')
+      expect(component.i18nPropertyKey).toBe('WORKSPACE.DISPLAY_NAME')
+    })
+
+    it('should set displayI18nDialog to true but not update property fields when propName is empty', () => {
+      component.displayI18nDialog = false
+      component.i18nPropertyName = 'old'
+      component.i18nPropertyKey = 'old.key'
+
+      component.openI18nDialog('', 'WORKSPACE.DISPLAY_NAME')
+
+      expect(component.displayI18nDialog).toBeFalse()
+      expect(component.i18nPropertyName).toBe('old')
+      expect(component.i18nPropertyKey).toBe('old.key')
+    })
+
+    it('should set displayI18nDialog to true but not update property fields when propKey is empty', () => {
+      component.displayI18nDialog = false
+      component.i18nPropertyName = 'old'
+      component.i18nPropertyKey = 'old.key'
+
+      component.openI18nDialog('displayName', '')
+
+      expect(component.displayI18nDialog).toBeFalse()
+      expect(component.i18nPropertyName).toBe('old')
+      expect(component.i18nPropertyKey).toBe('old.key')
+    })
+  })
 })

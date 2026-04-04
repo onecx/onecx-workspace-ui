@@ -261,7 +261,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     //
     // select workspace slot with same name (there is no productname for slots in workspace)
     const wsSlot = this.wSlotsIntern.find((s) => s.name === ps.name)
-    if (wsSlot && wsSlot.psSlots) {
+    if (wsSlot?.psSlots) {
       wsSlot.psSlots.push({ ...ps, pName: p.productName!, pDisplayName: p.displayName! })
       // consolidate slot state (aware of the state of current ps together with previous ones)
       wsSlot.exists = true
