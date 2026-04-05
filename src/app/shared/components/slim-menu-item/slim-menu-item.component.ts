@@ -11,7 +11,7 @@ import { SlimMenuMode } from 'src/app/shared/model/slim-menu-mode'
   // eslint-disable-next-line @angular-eslint/component-selector
   selector: 'li[app-slim-menu-item]',
   templateUrl: './slim-menu-item.component.html',
-  styleUrl: './slim-menu-item.component.scss',
+  styleUrls: ['./slim-menu-item.component.scss'],
   standalone: true,
   imports: [CommonModule, RouterModule, TooltipModule, RippleModule],
   host: {
@@ -25,7 +25,7 @@ import { SlimMenuMode } from 'src/app/shared/model/slim-menu-mode'
 export class SlimMenuItemComponent {
   public ItemType = ItemType
   public SlimMenuMode = SlimMenuMode
-  public wsRegExp = new RegExp(String.raw`\s`, 'g')
+  public wsRegExp = /\s/g
 
   @Input() id: string = 'ws_slim_menu_item_'
   @Input() item: SlimMenuItem | undefined
