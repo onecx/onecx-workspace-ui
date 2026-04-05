@@ -722,16 +722,15 @@ describe('OneCXVerticalMainMenuComponent', () => {
 
   it('should return 0 panels when unable to load them', async () => {
     const appStateService = TestBed.inject(AppStateService)
-    spyOn(console, 'error')
     spyOn(appStateService.currentWorkspace$, 'asObservable').and.returnValue(
       of({
         workspaceName: 'test-workspace'
       }) as any
     )
-    menuItemApiSpy.getMenuItems.and.returnValue(throwError(() => {}))
-
-    const { fixture, component } = setUp()
-    await component.ngOnInit()
+    const errorResponse = { status: 400, statusText: 'An error occur' }
+    menuItemApiSpy.getMenuItems.and.returnValue(throwError(() => errorResponse))
+    spyOn(console, 'error')
+    const { fixture } = setUp()
 
     const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PPanelMenuHarness)
     const panels = await menu.getAllPanels()
