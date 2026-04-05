@@ -75,13 +75,25 @@ export class WorkspaceI18nComponent implements OnChanges {
     }
   }
 
+  private initForm(): void {
+    const existing = this.workspace.i18n?.[this.propertyName!] ?? {}
+    this.translationsForm.clear()
+    Object.entries(existing).forEach(([lang, val]) => {
+      this.translationsForm.push(this.fb.group({ language: [lang], value: [val] }))
+    })
+    this.showAddRow = false
+    this.newLanguage = undefined
+    this.newValue = ''
+    this.initialSnapshot = this.buildSnapshot()
+  }
+
   get hasChanges(): boolean {
     return this.buildSnapshot() !== this.initialSnapshot
   }
 
   get availableLanguages(): LanguageOption[] {
     const used = new Set(this.translationsForm.controls.map((c) => c.get('language')?.value))
-    return this.allLanguages.filter((l) => !used.has(l.value))
+    return this.allLanguages.filter((l) => !used.has(l.value)).sort((a, b) => a.label.localeCompare(b.label))
   }
 
   public getLangLabel(code: string): string {
@@ -133,9 +145,10 @@ export class WorkspaceI18nComponent implements OnChanges {
     this.workspaceApi
       .updateWorkspace({ id: this.workspace.id!, updateWorkspaceRequest: { resource: this.workspace } })
       .subscribe({
-        next: () => {
+        next: (data) => {
           this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.WORKSPACE.I18N.OK' })
           this.workspaceI18nVisibleChange.emit(false)
+          this.workspace = data // get current server-side settings (modification count, etc.)
         },
         error: () => {
           this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.WORKSPACE.I18N.NOK' })
@@ -148,17 +161,5 @@ export class WorkspaceI18nComponent implements OnChanges {
       .map((c) => ({ language: c.get('language')?.value ?? '', value: c.get('value')?.value ?? '' }))
       .sort((a, b) => a.language.localeCompare(b.language))
     return JSON.stringify(entries)
-  }
-
-  private initForm(): void {
-    const existing = this.workspace.i18n?.[this.propertyName!] ?? {}
-    this.translationsForm.clear()
-    Object.entries(existing).forEach(([lang, val]) => {
-      this.translationsForm.push(this.fb.group({ language: [lang], value: [val] }))
-    })
-    this.showAddRow = false
-    this.newLanguage = undefined
-    this.newValue = ''
-    this.initialSnapshot = this.buildSnapshot()
   }
 }

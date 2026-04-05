@@ -344,11 +344,13 @@ describe('WorkspaceI18nComponent', () => {
       component.newLanguage = 'fr'
       component.newValue = 'Nom'
       component.onAddLanguage()
-      apiServiceSpy.updateWorkspace.and.returnValue(of({}))
+      const updatedWorkspace = { ...component.workspace, i18n: { displayName: { fr: 'Nom' } } }
+      apiServiceSpy.updateWorkspace.and.returnValue(of(updatedWorkspace))
 
       component.onSave()
 
       expect(component.workspace.i18n).toBeTruthy()
+      expect(component.workspace).toBe(updatedWorkspace)
       expect(apiServiceSpy.updateWorkspace).toHaveBeenCalled()
     })
 
