@@ -62,13 +62,13 @@ describe('WorkspaceSearchComponent', () => {
   }))
 
   beforeEach(() => {
-    initTestComponent()
-
     // to spy data: reset
     msgServiceSpy.error.calls.reset()
     wApiServiceSpy.searchWorkspaces.calls.reset()
     // to spy data: refill with neutral data
     wApiServiceSpy.searchWorkspaces.and.returnValue(of({}))
+
+    initTestComponent()
   })
 
   describe('initialize', () => {

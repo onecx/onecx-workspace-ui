@@ -51,13 +51,14 @@
             id="ws_slim_user_sidebar_menu_list"
             class="m-0 p-0 slim-user-menu-list flex flex-column align-items-center justify-content-center list-none"
           >
-            <app-slim-menu-item
+            <li
+              app-slim-menu-item
               *ngFor="let item of vm.menuItems; let i = index"
               [item]="item"
               [id]="'ws_slim_user_sidebar_menu_list_item_' + (i + 1)"
               [index]="i"
               [activeMode]="vm.activeMode"
-            ></app-slim-menu-item>
+            ></li>
           </ul>
         </ng-template>
         <ng-template pTemplate="icon">

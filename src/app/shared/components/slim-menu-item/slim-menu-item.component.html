@@ -1,18 +1,10 @@
 <ng-container *ngIf="item as item">
-  <!-- NOSONAR -->
-  <li
-    [id]="id"
-    class="slim-menu-list-item flex flex-column align-items-center justify-content-center"
-    [ngClass]="{
-      'slim-menu-list-item-active': item.active,
-      'slim-menu-list-item-plus': activeMode === SlimMenuMode.SLIM_PLUS
-    }"
-  >
-    <ng-container
-      [ngTemplateOutlet]="itemTemplate"
-      [ngTemplateOutletContext]="{ $implicit: item, index: index }"
-    ></ng-container>
-  </li>
+  <ng-container
+    [ngTemplateOutlet]="itemTemplate"
+    [ngTemplateOutletContext]="{ $implicit: item, index: index }"
+  ></ng-container>
+
+  <!-- ITEM CONTENT via TEMPLATE -->
 
   <ng-template #itemTemplate let-item let-index="index">
     <ng-container *ngIf="item.type === ItemType.ROUTER_LINK">
@@ -26,16 +18,18 @@
     </ng-container>
   </ng-template>
 
+  <!-- TEMPLATE DEFINITIONS -->
+
   <ng-template #routerLinkTemplate let-item let-index="index">
     <a
-      tabIndex="0"
-      [id]="'ws_slim_vertical_main_menu_list_item_' + (index + 1) + '_link'"
       pRipple
+      tabIndex="0"
+      [id]="'ws_slim_vertical_main_menu_item_' + (index + 1) + '_link'"
+      class="slim-menu-list-item-link outline-none cursor-pointer"
       [routerLink]="item.routerLink"
       [pTooltip]="item.label"
       tooltipPosition="right"
       tooltipEvent="both"
-      class="slim-menu-list-item-link outline-none cursor-pointer"
     >
       <ng-container *ngTemplateOutlet="iconTemplate; context: { $implicit: item }"></ng-container>
       <ng-container *ngTemplateOutlet="textTemplate; context: { $implicit: item }"></ng-container>
@@ -44,14 +38,14 @@
 
   <ng-template #urlTemplate let-item let-index="index">
     <a
-      tabIndex="0"
-      [id]="'ws_slim_vertical_main_menu_list_item_' + (index + 1) + '_link'"
       pRipple
+      tabIndex="0"
+      [id]="'ws_slim_vertical_main_menu_item_' + (index + 1) + '_link'"
+      class="slim-menu-list-item-link outline-none cursor-pointer"
       [attr.href]="item.url"
       [pTooltip]="item.label"
       tooltipPosition="right"
       tooltipEvent="both"
-      class="slim-menu-list-item-link outline-none cursor-pointer"
     >
       <ng-container *ngTemplateOutlet="iconTemplate; context: { $implicit: item }"></ng-container>
       <ng-container *ngTemplateOutlet="textTemplate; context: { $implicit: item }"></ng-container>
@@ -60,15 +54,15 @@
 
   <ng-template #actionTemplate let-item let-index="index">
     <button
-      tabIndex="0"
-      class="slim-menu-list-item-button outline-none cursor-pointer border-none"
-      [id]="'ws_slim_vertical_main_menu_list_item_' + (index + 1) + '_button'"
       pRipple
+      tabIndex="0"
+      [id]="'ws_slim_vertical_main_menu_item_' + (index + 1) + '_button'"
+      class="slim-menu-list-item-button outline-none cursor-pointer border-none"
+      (click)="item.command({})"
+      (keydown.enter)="item.command({})"
       [pTooltip]="item.label"
       tooltipPosition="right"
       tooltipEvent="both"
-      (click)="item.command({})"
-      (keydown.enter)="item.command({})"
     >
       <ng-container *ngTemplateOutlet="iconTemplate; context: { $implicit: item }"></ng-container>
       <ng-container *ngTemplateOutlet="textTemplate; context: { $implicit: item }"></ng-container>

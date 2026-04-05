@@ -161,8 +161,8 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRe
               workspaceBaseUrl: currentWorkspace.baseUrl
             })),
             retry({ delay: 500, count: 3 }),
-            catchError(() => {
-              console.error('Unable to load menu items for vertical main menu.')
+            catchError((err) => {
+              console.error('Unable to load menu items for vertical main menu.', err)
               return of(undefined)
             })
           )

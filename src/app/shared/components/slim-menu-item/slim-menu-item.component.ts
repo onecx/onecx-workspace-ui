@@ -8,17 +8,24 @@ import { ItemType, SlimMenuItem } from 'src/app/shared/model/slim-menu-item'
 import { SlimMenuMode } from 'src/app/shared/model/slim-menu-mode'
 
 @Component({
-  selector: 'app-slim-menu-item',
+  // eslint-disable-next-line @angular-eslint/component-selector
+  selector: 'li[app-slim-menu-item]',
   templateUrl: './slim-menu-item.component.html',
-  styleUrl: './slim-menu-item.component.scss',
+  styleUrls: ['./slim-menu-item.component.scss'],
   standalone: true,
-  imports: [CommonModule, RouterModule, TooltipModule, RippleModule]
+  imports: [CommonModule, RouterModule, TooltipModule, RippleModule],
+  host: {
+    class: 'slim-menu-list-item flex flex-column align-items-center justify-content-center',
+    '[class.slim-menu-list-item-active]': 'item?.active',
+    '[class.slim-menu-list-item-plus]': 'activeMode === SlimMenuMode.SLIM_PLUS',
+    '[id]': 'id'
+  }
 })
 @UntilDestroy()
 export class SlimMenuItemComponent {
   public ItemType = ItemType
   public SlimMenuMode = SlimMenuMode
-  public wsRegExp = new RegExp('\\s', 'g')
+  public wsRegExp = /\s/g
 
   @Input() id: string = 'ws_slim_menu_item_'
   @Input() item: SlimMenuItem | undefined

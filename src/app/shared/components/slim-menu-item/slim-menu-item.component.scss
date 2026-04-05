@@ -1,5 +1,5 @@
 // menu item styles
-.slim-menu-list-item {
+:host {
   width: 4rem;
   color: var(--menu-item-text-color, var(--menu-text-color, var(--text-secondary-color, #000000)));
   background-color: var(--menu-item-bg-color, var(--menu-bg-color), #f7f7f7);
@@ -36,7 +36,7 @@
 }
 
 // active item styles
-.slim-menu-list-item-active {
+:host(.slim-menu-list-item-active) {
   color: var(
     --menu-active-item-text-color,
     var(--menu-item-text-color, var(--menu-text-color, var(--text-secondary-color, #000000)))
@@ -52,7 +52,7 @@
   }
 }
 
-.slim-menu-list-item-plus {
+:host(.slim-menu-list-item-plus) {
   width: 7rem;
   > * {
     width: 7rem;
