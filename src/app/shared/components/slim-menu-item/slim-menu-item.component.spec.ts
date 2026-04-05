@@ -1,81 +1,83 @@
-import { TestBed } from '@angular/core/testing'
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
+import { provideRouter, Router, withDisabledInitialNavigation } from '@angular/router'
+
+import { TestbedHarnessEnvironment } from '@onecx/angular-testing'
+
 import { SlimMenuItemComponent } from './slim-menu-item.component'
 import { SlimMenuItemHarness } from './slim-menu-item.component.harness'
-import { provideRouter, Router } from '@angular/router'
-import { TestbedHarnessEnvironment } from '@onecx/angular-testing'
 import { SlimMenuMode } from '../../model/slim-menu-mode'
 import { ItemType } from '../../model/slim-menu-item'
 
 describe('SlimMenuItemComponent', () => {
+  let fixture: ComponentFixture<SlimMenuItemComponent>
+  let component: SlimMenuItemComponent
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [],
       imports: [SlimMenuItemComponent],
       providers: [
-        provideRouter([
-          { path: 'route1', component: {} as any },
-          { path: 'route2', component: {} as any }
-        ])
+        provideRouter(
+          [
+            { path: 'route1', component: {} as any },
+            { path: 'route2', component: {} as any }
+          ],
+          withDisabledInitialNavigation()
+        )
       ]
     })
+    fixture = TestBed.createComponent(SlimMenuItemComponent)
+    component = fixture.componentInstance
   })
 
   it('should create', () => {
-    const fixture = TestBed.createComponent(SlimMenuItemComponent)
-    const component = fixture.componentInstance
     expect(component).toBeTruthy()
   })
 
-  it('should have id', async () => {
-    const fixture = TestBed.createComponent(SlimMenuItemComponent)
-    const component = fixture.componentInstance
+  it('should have id', waitForAsync(async () => {
     component.id = 'test_id'
     component.item = {} as any
+    fixture.detectChanges()
 
     const slimItem = await TestbedHarnessEnvironment.harnessForFixture(fixture, SlimMenuItemHarness)
     const host = await slimItem.host()
     expect(await host.getAttribute('id')).toEqual('test_id')
-  })
+  }))
 
-  it('should not display if item is undefined', async () => {
-    const fixture = TestBed.createComponent(SlimMenuItemComponent)
-    const component = fixture.componentInstance
+  it('should not display if item is undefined', waitForAsync(async () => {
     component.item = undefined
+    fixture.detectChanges()
 
     const slimItem = await TestbedHarnessEnvironment.harnessForFixture(fixture, SlimMenuItemHarness)
     const icon = await slimItem.getIcon()
     expect(icon).toBeNull()
-  })
+  }))
 
-  it('should have active style when active is true', async () => {
-    const fixture = TestBed.createComponent(SlimMenuItemComponent)
-    const component = fixture.componentInstance
+  it('should have active style when active is true', waitForAsync(async () => {
     component.item = {
       active: true
     }
+    fixture.detectChanges()
 
     const slimItem = await TestbedHarnessEnvironment.harnessForFixture(fixture, SlimMenuItemHarness)
     const host = await slimItem.host()
     expect(await host.getAttribute('class')).toContain('slim-menu-list-item-active')
-  })
+  }))
 
-  it('should have slim plus style when activeMode is SLIM_PLUS', async () => {
-    const fixture = TestBed.createComponent(SlimMenuItemComponent)
-    const component = fixture.componentInstance
+  it('should have slim plus style when activeMode is SLIM_PLUS', waitForAsync(async () => {
     component.activeMode = SlimMenuMode.SLIM_PLUS
     component.item = {
       active: false
     }
+    fixture.detectChanges()
 
     const slimItem = await TestbedHarnessEnvironment.harnessForFixture(fixture, SlimMenuItemHarness)
     const host = await slimItem.host()
     expect(await host.getAttribute('class')).toContain('slim-menu-list-item-plus')
-  })
+  }))
 
   describe('click()', () => {
-    it('should click the anchor when an anchor is present', async () => {
-      const fixture = TestBed.createComponent(SlimMenuItemComponent)
-      const component = fixture.componentInstance
+    it('should click the anchor when an anchor is present', waitForAsync(async () => {
       component.item = {
         routerLink: '/route1',
         label: 'Menu Item 1',
@@ -85,19 +87,18 @@ describe('SlimMenuItemComponent', () => {
       }
       component.activeMode = SlimMenuMode.SLIM
       component.index = 0
+      fixture.detectChanges()
 
-      const slimItem = await TestbedHarnessEnvironment.harnessForFixture(fixture, SlimMenuItemHarness)
       const router = TestBed.inject(Router)
       spyOn(router, 'navigateByUrl').and.returnValue(Promise.resolve(true))
 
+      const slimItem = await TestbedHarnessEnvironment.harnessForFixture(fixture, SlimMenuItemHarness)
       await slimItem.click()
 
       expect(router.navigateByUrl).toHaveBeenCalled()
-    })
+    }))
 
-    it('should click the button when no anchor is present', async () => {
-      const fixture = TestBed.createComponent(SlimMenuItemComponent)
-      const component = fixture.componentInstance
+    it('should click the button when no anchor is present', waitForAsync(async () => {
       const command = jasmine.createSpy('command')
       component.item = {
         command,
@@ -108,18 +109,17 @@ describe('SlimMenuItemComponent', () => {
       }
       component.activeMode = SlimMenuMode.SLIM
       component.index = 0
+      fixture.detectChanges()
 
       const slimItem = await TestbedHarnessEnvironment.harnessForFixture(fixture, SlimMenuItemHarness)
       await slimItem.click()
 
       expect(command).toHaveBeenCalled()
-    })
+    }))
   })
 
   describe('ROUTER_LINK', () => {
-    it('should display anchor with icon only in SLIM mode', async () => {
-      const fixture = TestBed.createComponent(SlimMenuItemComponent)
-      const component = fixture.componentInstance
+    it('should display anchor with icon only in SLIM mode', waitForAsync(async () => {
       component.item = {
         routerLink: '/route1',
         label: 'Menu Item 1',
@@ -129,6 +129,7 @@ describe('SlimMenuItemComponent', () => {
       }
       component.activeMode = SlimMenuMode.SLIM
       component.index = 0
+      fixture.detectChanges()
 
       const slimItem = await TestbedHarnessEnvironment.harnessForFixture(fixture, SlimMenuItemHarness)
       const anchor = await slimItem.getAnchor()
@@ -140,11 +141,9 @@ describe('SlimMenuItemComponent', () => {
       expect(await icon?.getAttribute('class')).toContain('pi pi-home')
       const content = await anchor?.text()
       expect(content).toEqual('')
-    })
+    }))
 
-    it('should display anchor with icon and label in SLIM_PLUS mode', async () => {
-      const fixture = TestBed.createComponent(SlimMenuItemComponent)
-      const component = fixture.componentInstance
+    it('should display anchor with icon and label in SLIM_PLUS mode', waitForAsync(async () => {
       component.item = {
         routerLink: '/route2',
         label: 'Menu Item 2',
@@ -154,6 +153,7 @@ describe('SlimMenuItemComponent', () => {
       }
       component.activeMode = SlimMenuMode.SLIM_PLUS
       component.index = 1
+      fixture.detectChanges()
 
       const slimItem = await TestbedHarnessEnvironment.harnessForFixture(fixture, SlimMenuItemHarness)
       const anchor = await slimItem.getAnchor()
@@ -165,13 +165,11 @@ describe('SlimMenuItemComponent', () => {
       expect(await icon?.getAttribute('class')).toContain('pi pi-user')
       const content = await anchor?.text()
       expect(content).toContain('Menu Item 2')
-    })
+    }))
   })
 
   describe('URL', () => {
-    it('should display anchor with icon only in SLIM mode', async () => {
-      const fixture = TestBed.createComponent(SlimMenuItemComponent)
-      const component = fixture.componentInstance
+    it('should display anchor with icon only in SLIM mode', waitForAsync(async () => {
       component.item = {
         url: 'https://example.com',
         label: 'External Link',
@@ -181,6 +179,7 @@ describe('SlimMenuItemComponent', () => {
       }
       component.activeMode = SlimMenuMode.SLIM
       component.index = 2
+      fixture.detectChanges()
 
       const slimItem = await TestbedHarnessEnvironment.harnessForFixture(fixture, SlimMenuItemHarness)
       const anchor = await slimItem.getAnchor()
@@ -192,11 +191,9 @@ describe('SlimMenuItemComponent', () => {
       expect(await icon?.getAttribute('class')).toContain('pi pi-external-link')
       const content = await anchor?.text()
       expect(content).toEqual('')
-    })
+    }))
 
-    it('should display anchor with icon and label in SLIM_PLUS mode', async () => {
-      const fixture = TestBed.createComponent(SlimMenuItemComponent)
-      const component = fixture.componentInstance
+    it('should display anchor with icon and label in SLIM_PLUS mode', waitForAsync(async () => {
       component.item = {
         url: 'https://example.org',
         label: 'Another Link',
@@ -206,6 +203,7 @@ describe('SlimMenuItemComponent', () => {
       }
       component.activeMode = SlimMenuMode.SLIM_PLUS
       component.index = 3
+      fixture.detectChanges()
 
       const slimItem = await TestbedHarnessEnvironment.harnessForFixture(fixture, SlimMenuItemHarness)
       const anchor = await slimItem.getAnchor()
@@ -217,16 +215,15 @@ describe('SlimMenuItemComponent', () => {
       expect(await icon?.getAttribute('class')).toContain('pi pi-globe')
       const content = await anchor?.text()
       expect(content).toContain('Another Link')
-    })
+    }))
   })
 
   describe('ACTION', () => {
-    it('should display button with icon only in SLIM mode', async () => {
-      const fixture = TestBed.createComponent(SlimMenuItemComponent)
-      const component = fixture.componentInstance
+    it('should display button with icon only in SLIM mode', waitForAsync(async () => {
       const command = () => {
         console.log('Action executed')
       }
+      spyOn(console, 'log')
       component.item = {
         command: command,
         label: 'Action Item',
@@ -234,9 +231,9 @@ describe('SlimMenuItemComponent', () => {
         active: false,
         type: ItemType.ACTION
       }
-      spyOn(console, 'log')
       component.activeMode = SlimMenuMode.SLIM
       component.index = 4
+      fixture.detectChanges()
 
       const slimItem = await TestbedHarnessEnvironment.harnessForFixture(fixture, SlimMenuItemHarness)
       const button = await slimItem.getButton()
@@ -250,11 +247,9 @@ describe('SlimMenuItemComponent', () => {
 
       button?.click()
       expect(console.log).toHaveBeenCalledWith('Action executed')
-    })
+    }))
 
-    it('should display button with icon and label in SLIM_PLUS mode', async () => {
-      const fixture = TestBed.createComponent(SlimMenuItemComponent)
-      const component = fixture.componentInstance
+    it('should display button with icon and label in SLIM_PLUS mode', waitForAsync(async () => {
       const command = () => {
         console.log('Another action executed')
       }
@@ -268,6 +263,7 @@ describe('SlimMenuItemComponent', () => {
       }
       component.activeMode = SlimMenuMode.SLIM_PLUS
       component.index = 5
+      fixture.detectChanges()
 
       const slimItem = await TestbedHarnessEnvironment.harnessForFixture(fixture, SlimMenuItemHarness)
       const button = await slimItem.getButton()
@@ -281,6 +277,6 @@ describe('SlimMenuItemComponent', () => {
 
       button?.click()
       expect(console.log).toHaveBeenCalledWith('Another action executed')
-    })
+    }))
   })
 })
