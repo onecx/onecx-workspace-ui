@@ -13,12 +13,13 @@
       'slim-vertical-menu-list-slim-plus': vm.activeMode === Mode.SLIM_PLUS
     }"
   >
-    <app-slim-menu-item
+    <li
+      app-slim-menu-item
       *ngFor="let item of vm.menuItems ?? []; let i = index"
       [item]="item"
       [id]="'ws_slim_vertical_main_menu_list_item_' + (i + 1)"
       [index]="i"
       [activeMode]="vm.activeMode"
-    ></app-slim-menu-item>
+    ></li>
   </ul>
 </div>

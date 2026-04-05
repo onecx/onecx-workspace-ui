@@ -33,9 +33,8 @@ describe('SlimMenuItemComponent', () => {
     component.item = {} as any
 
     const slimItem = await TestbedHarnessEnvironment.harnessForFixture(fixture, SlimMenuItemHarness)
-    const list = await slimItem.getList()
-    expect(list).toBeTruthy()
-    expect(await list?.getAttribute('id')).toEqual('test_id')
+    const host = await slimItem.host()
+    expect(await host.getAttribute('id')).toEqual('test_id')
   })
 
   it('should not display if item is undefined', async () => {
@@ -44,8 +43,8 @@ describe('SlimMenuItemComponent', () => {
     component.item = undefined
 
     const slimItem = await TestbedHarnessEnvironment.harnessForFixture(fixture, SlimMenuItemHarness)
-    const list = await slimItem.getList()
-    expect(list).toBeNull()
+    const icon = await slimItem.getIcon()
+    expect(icon).toBeNull()
   })
 
   it('should have active style when active is true', async () => {
@@ -56,9 +55,8 @@ describe('SlimMenuItemComponent', () => {
     }
 
     const slimItem = await TestbedHarnessEnvironment.harnessForFixture(fixture, SlimMenuItemHarness)
-    const list = await slimItem.getList()
-    expect(list).toBeTruthy()
-    expect(await list?.getAttribute('class')).toContain('slim-menu-list-item-active')
+    const host = await slimItem.host()
+    expect(await host.getAttribute('class')).toContain('slim-menu-list-item-active')
   })
 
   it('should have slim plus style when activeMode is SLIM_PLUS', async () => {
@@ -70,9 +68,8 @@ describe('SlimMenuItemComponent', () => {
     }
 
     const slimItem = await TestbedHarnessEnvironment.harnessForFixture(fixture, SlimMenuItemHarness)
-    const list = await slimItem.getList()
-    expect(list).toBeTruthy()
-    expect(await list?.getAttribute('class')).toContain('slim-menu-list-item-plus')
+    const host = await slimItem.host()
+    expect(await host.getAttribute('class')).toContain('slim-menu-list-item-plus')
   })
 
   describe('click()', () => {
