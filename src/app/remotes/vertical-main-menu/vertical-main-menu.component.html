@@ -3,5 +3,16 @@
 @let menu = menuItems$ | async;
 
 @if (active) {
-  <p-panelMenu [hidden]="hidden" multiple="true" [model]="menu?.items ?? []"></p-panelMenu>
+  <p-panelMenu
+    [style]="{
+      '--panelmenu-header-bg': 'var(--menu-bg-color)',
+      '--panelmenu-header-hover-bg': 'var(--menu-item-hover-bg-color)',
+      '--panelmenu-header-active-bg': 'var(--menu-active-item-bg-color)',
+      '--panelmenu-header-active-hover-bg': 'var(--menu-item-hover-bg-color)',
+      '--panelmenu-content-bg': 'var(--menu-bg-color)'
+    }"
+    [hidden]="hidden"
+    multiple="true"
+    [model]="menu?.items ?? []"
+  ></p-panelMenu>
 }

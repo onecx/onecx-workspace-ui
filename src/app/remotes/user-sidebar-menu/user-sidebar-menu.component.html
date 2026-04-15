@@ -7,6 +7,13 @@
     [activeIndex]="null"
     expandIcon="pi pi-chevron-right"
     collapseIcon="pi pi-chevron-down"
+    [style]="{
+      '--accordion-header-bg': 'var(--menu-bg-color)',
+      '--accordion-header-hover-bg': 'var(--menu-item-hover-bg-color)',
+      '--accordion-header-active-bg': 'var(--menu-active-item-bg-color)',
+      '--accordion-header-active-hover-bg': 'var(--menu-item-hover-bg-color)',
+      '--accordion-content-bg': 'var(--menu-bg-color)'
+    }"
   >
     <p-accordionTab>
       <ng-template pTemplate="header">
@@ -33,7 +40,18 @@
         </div>
       </ng-template>
       <ng-template pTemplate="content">
-        <p-panelMenu *ngIf="userMenu$ | async as menu" [model]="menu" styleClass="shadow-none"></p-panelMenu>
+        <p-panelMenu
+          *ngIf="userMenu$ | async as menu"
+          [model]="menu"
+          styleClass="shadow-none"
+          [style]="{
+            '--panelmenu-header-bg': 'var(--menu-bg-color)',
+            '--panelmenu-header-hover-bg': 'var(--menu-item-hover-bg-color)',
+            '--panelmenu-header-active-bg': 'var(--menu-active-item-bg-color)',
+            '--panelmenu-header-active-hover-bg': 'var(--menu-item-hover-bg-color)',
+            '--panelmenu-content-bg': 'var(--menu-bg-color)'
+          }"
+        ></p-panelMenu>
       </ng-template>
     </p-accordionTab>
   </p-accordion>
