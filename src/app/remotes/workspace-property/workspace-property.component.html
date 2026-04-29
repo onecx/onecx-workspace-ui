@@ -1,0 +1,11 @@
+<div
+  *ngIf="property$ | async as property"
+  class="w-full pr-2 text-right"
+  attr.aria-label="Property Information"
+  pTooltip="Property"
+  tooltipPosition="top"
+  tooltipEvent="hover"
+  role="note"
+>
+  {{ property }}
+</div>
