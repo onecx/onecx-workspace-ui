@@ -197,7 +197,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
       } else roles.push({ ...r, isIamRole: true, isWorkspaceRole: false, type: 'IAM' })
     }
     const sortByRoleName = function (a: Role, b: Role): number {
-      return (a.name ? a.name.toUpperCase() : '').localeCompare(b.name ? b.name.toUpperCase() : '')
+      return (a.name?.toUpperCase() ?? '').localeCompare(b.name?.toUpperCase() ?? '')
     }
     roles.sort(sortByRoleName)
     this.roles = roles
