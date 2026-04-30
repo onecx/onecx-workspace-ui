@@ -399,4 +399,24 @@ describe('OneCXHorizontalMainMenuComponent', () => {
     expect(menuItems.length).toEqual(0)
     expect(console.error).toHaveBeenCalled()
   })
+
+  it('should call menubar.hide() on mouseleave event', () => {
+    const { component } = setUp()
+    const hideSpyMethod = spyOn(component.menubar, 'hide')
+    let mouseleaveCallback: ((event: any) => boolean | void) | undefined
+
+    spyOn(component['renderer'], 'listen').and.callFake(
+      (el: any, event: string, callback: (event: any) => boolean | void) => {
+        if (event === 'mouseleave') {
+          mouseleaveCallback = callback
+        }
+        return () => {}
+      }
+    )
+
+    component.ngAfterViewInit()
+    mouseleaveCallback?.({})
+
+    expect(hideSpyMethod).toHaveBeenCalled()
+  })
 })
