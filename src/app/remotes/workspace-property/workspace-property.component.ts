@@ -39,7 +39,7 @@ import { SharedModule } from 'src/app/shared/shared.module'
 })
 @UntilDestroy()
 export class OneCXDisplayWorkspacePropertyComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
-  @Input() propertyName = 'displayName'
+  @Input() public propertyName = 'displayName'
   @Input() public title: string | undefined
   @Input() public styleClass: string | undefined
 
@@ -56,6 +56,10 @@ export class OneCXDisplayWorkspacePropertyComponent implements ocxRemoteComponen
     this.ocxInitRemoteComponent(rcConfig)
   }
 
+  public ocxInitRemoteComponent(rcConfig: RemoteComponentConfig) {
+    this.rcConfig.next(rcConfig)
+  }
+
   public property$: Observable<string | undefined> = combineLatest([
     this.appState.currentWorkspace$.asObservable(),
     this.userService.lang$.asObservable(),
@@ -64,15 +68,11 @@ export class OneCXDisplayWorkspacePropertyComponent implements ocxRemoteComponen
     map(([workspace, lang]) => {
       // example i18n
       // i18n: {displayName: {de: "Ein Text in Deutsch"}}
-      if (workspace && workspace.i18n) {
+      if (workspace?.i18n) {
         const i18n = Reflect.get(workspace.i18n, this.propertyName) ?? {}
         return i18n[lang] ?? Reflect.get(workspace, this.propertyName)
       }
       return undefined
     })
   )
-
-  public ocxInitRemoteComponent(rcConfig: RemoteComponentConfig) {
-    this.rcConfig.next(rcConfig)
-  }
 }
