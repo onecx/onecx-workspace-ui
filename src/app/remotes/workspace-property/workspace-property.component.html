@@ -1,8 +1,8 @@
 <div
   *ngIf="property$ | async as property"
-  class="w-full pr-2 text-right"
-  attr.aria-label="Property Information"
-  pTooltip="Property"
+  [class]="'max-w-full ' + (styleClass ?? '')"
+  [attr.aria-label]="title"
+  [pTooltip]="title"
   tooltipPosition="top"
   tooltipEvent="hover"
   role="note"

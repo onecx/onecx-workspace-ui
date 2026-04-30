@@ -1,7 +1,10 @@
 import { Component, inject, Input } from '@angular/core'
 import { CommonModule } from '@angular/common'
+import { HttpClient } from '@angular/common/http'
 import { UntilDestroy } from '@ngneat/until-destroy'
+import { TranslateLoader, TranslateService } from '@ngx-translate/core'
 import { combineLatest, from, map, Observable, ReplaySubject } from 'rxjs'
+import { TooltipModule } from 'primeng/tooltip'
 
 import { AngularAcceleratorModule, createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
 import { AppStateService, ConfigurationService, UserService } from '@onecx/angular-integration-interface'
@@ -15,14 +18,12 @@ import {
 import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
 
 import { SharedModule } from 'src/app/shared/shared.module'
-import { HttpClient } from '@angular/common/http'
-import { TranslateLoader, TranslateService } from '@ngx-translate/core'
 
 @Component({
   selector: 'app-ocx-display-workspace-property',
   templateUrl: './workspace-property.component.html',
   standalone: true,
-  imports: [AngularRemoteComponentsModule, CommonModule, AngularAcceleratorModule, SharedModule],
+  imports: [AngularRemoteComponentsModule, CommonModule, AngularAcceleratorModule, SharedModule, TooltipModule],
   providers: [
     { provide: REMOTE_COMPONENT_CONFIG, useValue: new ReplaySubject<string>(1) },
     { provide: BASE_URL, useValue: new ReplaySubject<string>(1) },
@@ -39,6 +40,8 @@ import { TranslateLoader, TranslateService } from '@ngx-translate/core'
 @UntilDestroy()
 export class OneCXDisplayWorkspacePropertyComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
   @Input() propertyName = 'displayName'
+  @Input() public title: string | undefined
+  @Input() public styleClass: string | undefined
 
   private readonly rcConfig = inject<ReplaySubject<RemoteComponentConfig>>(REMOTE_COMPONENT_CONFIG)
   private readonly appState = inject(AppStateService)
