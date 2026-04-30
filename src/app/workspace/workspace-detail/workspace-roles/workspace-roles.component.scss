@@ -33,6 +33,11 @@
       font-size: 0.7rem !important;
     }
   }
+  .card-badge-right {
+    &.badge-1 {
+      right: 1px;
+    }
+  }
   .word-wrap-break {
     word-wrap: break-word;
   }

@@ -1,0 +1,11 @@
+<div
+  *ngIf="property$ | async as property"
+  [class]="'max-w-full ' + (styleClass ?? '')"
+  [attr.aria-label]="title"
+  [pTooltip]="title"
+  tooltipPosition="top"
+  tooltipEvent="hover"
+  role="note"
+>
+  {{ property }}
+</div>

@@ -19,7 +19,9 @@ const config = withModuleFederationPlugin({
     './OneCXSlimVerticalMainMenuComponent':
       'src/app/remotes/slim-vertical-main-menu/slim-vertical-main-menu.component.main.ts',
     './OneCXSlimUserMenuComponent': 'src/app/remotes/slim-user-menu/slim-user-menu.component.main.ts',
-    './OneCXTopbarLogoComponent': 'src/app/remotes/topbar-logo/topbar-logo.component.main.ts'
+    './OneCXTopbarLogoComponent': 'src/app/remotes/topbar-logo/topbar-logo.component.main.ts',
+    './OneCXDisplayWorkspacePropertyComponent':
+      'src/app/remotes/workspace-property/workspace-property.component.main.ts'
   },
   shared: share({
     '@angular/core': { requiredVersion: 'auto', includeSecondaries: true },

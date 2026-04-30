@@ -190,6 +190,22 @@ describe('WorkspaceRolesComponent', () => {
   })
 
   describe('search ALL roles', () => {
+    it('should sort named role after nameless role (covers b.name falsy branch)', () => {
+      // Place nameless role at index 0 so sort comparator is called as (named, nameless),
+      // covering the b.name falsy branch on line 200.
+      const wRolesNameless: WorkspaceRole[] = [{}, { name: 'role1' }]
+      wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: wRolesNameless as WorkspaceRolePageResult }))
+      const changes = { ['workspace']: { previousValue: 'ws0', currentValue: 'ws1', firstChange: true } }
+      component.quickFilterValue = 'WORKSPACE'
+      component.wRolesLoaded = false
+
+      component.ngOnChanges(changes as unknown as SimpleChanges)
+
+      expect(component.roles.length).toEqual(2)
+      expect(component.roles[0].name).toBeUndefined()
+      expect(component.roles[1].name).toEqual('role1')
+    })
+
     it('should combine roles', () => {
       const changes = { ['workspace']: { previousValue: 'ws0', currentValue: 'ws1', firstChange: true } }
       const wRoles: WorkspaceRole[] = [{ name: 'role1', description: 'desc' }, { description: 'desc' }]

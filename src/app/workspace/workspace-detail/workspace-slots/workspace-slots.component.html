@@ -134,8 +134,10 @@
         <a
           [id]="'ws_slots_grid_data_row_' + i + '_action_detail'"
           class="block card relative py-1 px-4 p-button p-button-text"
+          tabindex="0"
           [ngClass]="{ 'hover:bg-gray-200 cursor-pointer': !slot.new, 'cursor-auto p-button-info': slot.new }"
           (click)="onSlotDetail($event, slot)"
+          (keydown.enter)="onSlotDetail($event, slot)"
           [attr.aria-label]="'DIALOG.SLOT.HEADER.' + (hasEditPermission ? 'EDIT' : 'VIEW') | translate"
         >
           <!-- right badges -->
@@ -144,6 +146,7 @@
             [id]="'ws_slots_grid_data_row_' + i + '_action_new'"
             class="card-badge-right badge-1 p-1 pi pi-plus bg-transparent border-none button-icon-only"
             (click)="onAddSlot($event, slot)"
+            (keydown.enter)="onAddSlot($event, slot)"
             [attr.aria-label]="'DIALOG.SLOT.CREATE.TOOLTIP' | translate"
             [pTooltip]="'DIALOG.SLOT.CREATE.TOOLTIP' | translate"
             tooltipPosition="top"
@@ -154,6 +157,7 @@
             [id]="'ws_slots_grid_data_row_' + i + '_action_delete'"
             class="card-badge-right badge-1 p-1 pi pi-trash bg-transparent border-none button-icon-only"
             (click)="onDeleteSlot($event, slot)"
+            (keydown.enter)="onDeleteSlot($event, slot)"
             [attr.aria-label]="'ACTIONS.DELETE.SLOT.LABEL' | translate"
             [pTooltip]="'ACTIONS.DELETE.SLOT.LABEL' | translate"
             tooltipPosition="top"
