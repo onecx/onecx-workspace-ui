@@ -156,7 +156,9 @@
         <a
           [id]="'ws_roles_grid_data_row_' + i"
           class="block card relative py-1 px-4 hover:bg-gray-200 cursor-pointer"
+          tabindex="0"
           (click)="onEditRole($event, role)"
+          (keydown.enter)="onEditRole($event, role)"
           [attr.aria-label]="'DIALOG.ROLE.HEADER.' + (hasEditPermission ? 'EDIT' : 'VIEW') | translate"
           role="link"
         >

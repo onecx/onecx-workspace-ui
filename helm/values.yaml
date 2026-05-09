@@ -22,13 +22,6 @@ app:
           endpoints:
             - name: workspace-detail
               path: /{workspace-name}
-        workspace-data:
-          exposedModule: "./OneCXWorkspaceDataComponent"
-          description: "Provide workspace data like workspaces, workspace, logo"
-          type: COMPONENT
-          technology: WEBCOMPONENTMODULE
-          remoteName: onecx-workspace
-          tagName: ocx-workspace-data-component
         user-avatar-menu:
           exposedModule: "./OneCXUserAvatarMenuComponent"
           description: "User avatar menu component"
@@ -71,13 +64,6 @@ app:
           technology: WEBCOMPONENTMODULE
           remoteName: onecx-workspace
           tagName: ocx-version-info-component
-        workspace-logo:
-          exposedModule: ./OneCXCurrentWorkspaceLogoComponent
-          description: 'Display the logo of the current workspace. Use imageStyleClass as slot input parameter to adjust the image style.'
-          type: COMPONENT
-          technology: WEBCOMPONENTMODULE
-          remoteName: onecx-workspace
-          tagName: ocx-current-workspace-logo-component
         toggle-menu-button:
           exposedModule: ./OneCXToggleMenuButtonComponent
           description: 'Display the toggle menu button to hide and show the sidebar menu.'
@@ -106,6 +92,27 @@ app:
           technology: WEBCOMPONENTMODULE
           remoteName: onecx-workspace
           tagName: ocx-topbar-logo-component
+        workspace-data:
+          exposedModule: "./OneCXWorkspaceDataComponent"
+          description: "Provide workspace data like workspaces, workspace, logo"
+          type: COMPONENT
+          technology: WEBCOMPONENTMODULE
+          remoteName: onecx-workspace
+          tagName: ocx-workspace-data-component
+        workspace-logo:
+          exposedModule: ./OneCXCurrentWorkspaceLogoComponent
+          description: 'Display the logo of the current workspace. Use imageStyleClass as slot input parameter to adjust the image style.'
+          type: COMPONENT
+          technology: WEBCOMPONENTMODULE
+          remoteName: onecx-workspace
+          tagName: ocx-current-workspace-logo-component
+        workspace-property:
+          exposedModule: ./OneCXDisplayWorkspacePropertyComponent
+          description: 'Display a translated property of the current workspace.'
+          type: COMPONENT
+          technology: WEBCOMPONENTMODULE
+          remoteName: onecx-workspace
+          tagName: ocx-display-workspace-property-component
 
     # Microservice
     microservice:
