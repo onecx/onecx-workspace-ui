@@ -6,7 +6,7 @@ import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { provideRouter, Router, RouterModule } from '@angular/router'
 import { ReplaySubject, of, throwError } from 'rxjs'
 import { TranslateTestingModule } from 'ngx-translate-testing'
-import { MenubarModule } from 'primeng/menubar'
+import { Menubar, MenubarModule } from 'primeng/menubar'
 import { PrimeIcons } from 'primeng/api'
 
 import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
@@ -402,21 +402,31 @@ describe('OneCXHorizontalMainMenuComponent', () => {
 
   it('should call menubar.hide() on mouseleave event', () => {
     const { component } = setUp()
-    const hideSpyMethod = spyOn(component.menubar, 'hide')
-    let mouseleaveCallback: ((event: any) => boolean | void) | undefined
+    const mockMenubar = {
+      el: { nativeElement: {} },
+      hide: jasmine.createSpy('hide')
+    } as unknown as Menubar
+    let mouseleaveCallback: ((event: any) => void) | undefined
 
-    spyOn(component['renderer'], 'listen').and.callFake(
-      (el: any, event: string, callback: (event: any) => boolean | void) => {
-        if (event === 'mouseleave') {
-          mouseleaveCallback = callback
-        }
-        return () => {}
+    spyOn(component['renderer'], 'listen').and.callFake((_el: any, event: string, callback: (event: any) => void) => {
+      if (event === 'mouseleave') {
+        mouseleaveCallback = callback
       }
-    )
+      return () => {}
+    })
 
-    component.ngAfterViewInit()
+    component['menubarSetter'] = mockMenubar
     mouseleaveCallback?.({})
 
-    expect(hideSpyMethod).toHaveBeenCalled()
+    expect(mockMenubar.hide).toHaveBeenCalled()
+  })
+
+  it('should not register listener when menubar is undefined', () => {
+    const { component } = setUp()
+    const listenSpy = spyOn(component['renderer'], 'listen')
+
+    component['menubarSetter'] = undefined
+
+    expect(listenSpy).not.toHaveBeenCalled()
   })
 })

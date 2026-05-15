@@ -1,6 +1,6 @@
 import { CommonModule, Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { AfterViewInit, Component, Inject, Input, OnInit, OnDestroy, ViewChild, inject, Renderer2 } from '@angular/core'
+import { Component, Inject, Input, OnInit, OnDestroy, ViewChild, inject, Renderer2 } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
@@ -48,12 +48,11 @@ const MENU_MODE = 'horizontal'
   ]
 })
 @UntilDestroy()
-export class OneCXHorizontalMainMenuComponent
-  implements OnInit, AfterViewInit, OnDestroy, ocxRemoteComponent, ocxRemoteWebcomponent
-{
+export class OneCXHorizontalMainMenuComponent implements OnInit, OnDestroy, ocxRemoteComponent, ocxRemoteWebcomponent {
   menuItems$: Observable<MenuItem[]> | undefined
 
   private readonly menuService = inject(MenuService)
+  public isActive$ = this.menuService.isActive(MENU_MODE).pipe(untilDestroyed(this))
   private readonly renderer = inject(Renderer2)
 
   private removeMouseLeaveListener?: () => void
@@ -77,16 +76,19 @@ export class OneCXHorizontalMainMenuComponent
   @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
     this.ocxInitRemoteComponent(config)
   }
-  @ViewChild('menubar') menubar!: Menubar
+  @ViewChild('menubar')
+  set menubarSetter(menubar: Menubar | undefined) {
+    if (!menubar) return
+
+    this.removeMouseLeaveListener?.()
+
+    this.removeMouseLeaveListener = this.renderer.listen(menubar.el.nativeElement, 'mouseleave', () => {
+      menubar.hide()
+    })
+  }
 
   ngOnInit(): void {
     this.getMenuItems()
-  }
-
-  ngAfterViewInit(): void {
-    this.removeMouseLeaveListener = this.renderer.listen(this.menubar.el.nativeElement, 'mouseleave', () => {
-      this.menubar.hide()
-    })
   }
 
   ngOnDestroy(): void {
