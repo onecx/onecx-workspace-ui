@@ -76,7 +76,7 @@ export class OneCXHorizontalMainMenuComponent implements OnInit, OnDestroy, ocxR
   @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
     this.ocxInitRemoteComponent(config)
   }
-  // TODO: Remove this listener when PrimeNG fixes the p-menubar autoHide component
+  // Remove this listener when PrimeNG fixes the p-menubar autoHide component
   @ViewChild('menubar')
   set menubarSetter(menubar: Menubar | undefined) {
     if (!menubar) return
