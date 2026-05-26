@@ -218,7 +218,8 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
           this.addLostSlotComponents(this.slotsInternal)
           // finalize
           this.slotsInternal.sort(this.sortSlotsByName)
-          this.slotsFiltered = this.slots = this.slotsInternal // to be displayed final slot list
+          this.slots = this.slotsInternal // to be displayed final slot list
+          this.onQuickFilterChange({ value: this.quickFilterValue })
         }
         return []
       }),
@@ -280,7 +281,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
       wSlot.changes = wSlot.changes || ps.changes // inherit change status
       wSlot.deprecated = wSlot.deprecated || ps.deprecated
       wSlot.undeployed = wSlot.undeployed || ps.undeployed
-      if (wSlot.changes) wSlot.type.push('CHANGES')
+      if (wSlot.changes && !wSlot.type.includes('CHANGES')) wSlot.type.push('CHANGES')
     }
   }
 
@@ -330,7 +331,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
       ws.psComponents.push(psc)
       // extend consolidated slot state with component state
       ws.changes = ws.changes || psc.undeployed || psc.deprecated
-      if (!ws.type.includes('CHANGES')) ws.type.push('CHANGES')
+      if (ws.changes && !ws.type.includes('CHANGES')) ws.type.push('CHANGES')
     }
   }
 
@@ -360,16 +361,8 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
    * UI Events
    */
   public onQuickFilterChange(ev: any): void {
-    if (ev.value === 'ALL') {
-      this.slotsFiltered = this.slots
-    } else {
-      this.slotsFiltered = this.slots.filter((s) => s.type.includes(ev.value))
-    }
+    this.slotsFiltered = this.slots.filter((s) => (ev.value === 'ALL' ? s : s.type.includes(ev.value)))
     this.quickFilterValue = ev.value
-  }
-  public onFilterChange(filter: string, dv: DataView): void {
-    this.filterBy = 'name'
-    dv.filter(filter)
   }
   public onSortChange(field: string): void {
     this.sortField = field
@@ -390,7 +383,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
 
   // detail dialog closed - on changes: reload data
   public onSlotDetailClosed(changed: boolean) {
-    if (changed && this.changeMode === 'EDIT' && this.item4Detail?.id) {
+    if (changed && this.changeMode === 'EDIT') {
       this.loadData()
     }
     this.item4Detail = undefined

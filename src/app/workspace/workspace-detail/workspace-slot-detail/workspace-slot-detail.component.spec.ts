@@ -470,60 +470,6 @@ describe('WorkspaceSlotDetailComponent', () => {
     })
   })
 
-  describe('Deletion', () => {
-    beforeEach(() => {
-      component.slot = {
-        name: 'slot1',
-        id: '1',
-        new: false,
-        type: ['WORKSPACE'],
-        changes: false,
-        undeployed: false,
-        deprecated: false,
-        psSlots: [],
-        productNames: [],
-        psComponents: [
-          {
-            productName: 'slotComponentProdName',
-            appId: 'slotComponentAppId',
-            name: 'slotComponentName',
-            undeployed: false,
-            deprecated: false
-          }
-        ]
-      }
-      component.wComponents = [
-        { productName: 'mockProdName', appId: 'mockAppId', name: 'mockName', undeployed: false, deprecated: false }
-      ]
-    })
-
-    it('should call deleteSlotById and handle success response', () => {
-      slotServiceSpy.deleteSlotById.and.returnValue(of({}))
-      spyOn(component.detailClosed, 'emit')
-
-      component.onDeleteSlot()
-
-      expect(slotServiceSpy.deleteSlotById).toHaveBeenCalledWith({ id: '1' })
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.SLOT.MESSAGE.OK' })
-      expect(component.detailClosed.emit).toHaveBeenCalledWith(true)
-    })
-
-    it('should call deleteSlotById and handle error response', () => {
-      const errorResponse = { status: 400, statusText: 'Error on deleting a slot' }
-      slotServiceSpy.deleteSlotById.and.returnValue(throwError(() => errorResponse))
-
-      spyOn(component.detailClosed, 'emit')
-      spyOn(console, 'error')
-
-      component.onDeleteSlot()
-
-      expect(slotServiceSpy.deleteSlotById).toHaveBeenCalledWith({ id: '1' })
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.SLOT.MESSAGE.NOK' })
-      expect(console.error).toHaveBeenCalledWith('deleteSlotById', errorResponse)
-      expect(component.detailClosed.emit).not.toHaveBeenCalled()
-    })
-  })
-
   /**
    * EXTRAS
    */

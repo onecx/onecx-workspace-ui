@@ -71,7 +71,7 @@
         [supportedViews]="['grid']"
         [initialViewMode]="'grid'"
         [enableFiltering]="true"
-        (filterChange)="onFilterChange($event, slotsDataView)"
+        (filterChange)="slotsDataView.filter($event)"
         [filterColumns]="['SLOT.NAME' | translate]"
         [enableSorting]="true"
         [sortingOptions]="[
@@ -133,9 +133,8 @@
       >
         <a
           [id]="'ws_slots_grid_data_row_' + i + '_action_detail'"
-          class="block card relative py-1 px-1 p-button p-button-text"
+          class="block card relative py-1 px-1 p-button p-button-text hover:bg-gray-200 cursor-pointer"
           tabindex="0"
-          [ngClass]="{ 'hover:bg-gray-200 cursor-pointer': !slot.new, 'cursor-auto p-button-info': slot.new }"
           (click)="onSlotDetail($event, slot)"
           (keydown.enter)="onSlotDetail($event, slot)"
           [attr.aria-label]="'DIALOG.SLOT.HEADER.' + (hasEditPermission ? 'EDIT' : 'VIEW') | translate"
@@ -241,6 +240,7 @@
 <!-- DETAIL -->
 <app-workspace-slot-detail
   [slot]="item4Detail"
+  [workspace_id]="workspace?.id!"
   [psComponentsOrg]="psComponents"
   [wProductNames]="wProductNames"
   [changeMode]="changeMode"
