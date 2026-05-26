@@ -13,7 +13,6 @@ import {
   firstValueFrom
 } from 'rxjs'
 import { SelectItem } from 'primeng/api'
-import { DataView } from 'primeng/dataview'
 
 import { DataViewControlTranslations } from '@onecx/portal-integration-angular'
 import { PortalMessageService, UserService, WorkspaceService } from '@onecx/angular-integration-interface'
