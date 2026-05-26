@@ -18,7 +18,7 @@
 
   .card-badge-left {
     &.badge-2 {
-      top: 28px;
+      top: 26px;
       left: 1px;
     }
 
@@ -31,6 +31,10 @@
   .card-badge-right {
     &.badge-1 {
       right: 1px;
+    }
+    &.badge-2-number {
+      top: 26px;
+      right: 3px;
     }
   }
 }

@@ -10,12 +10,12 @@
   *ngIf="!exceptionKey"
   #slotsDataView
   id="ws_slots_dataview"
-  [value]="wSlots"
+  [value]="slotsFiltered"
   [emptyMessage]="'ACTIONS.SEARCH.NO_DATA' | translate"
   [paginator]="true"
   [alwaysShowPaginator]="true"
-  [rowsPerPageOptions]="[20, 60, 100]"
-  [rows]="20"
+  [rowsPerPageOptions]="[30, 60, 100]"
+  [rows]="30"
   [layout]="'grid'"
   [filterBy]="filterBy"
   [sortField]="sortField"
@@ -45,7 +45,7 @@
           inputid="ws_roles_quick_filter"
           [options]="(quickFilterOptions$ | async) ?? []"
           [(ngModel)]="quickFilterValue"
-          (onChange)="onQuickFilterChange($event, slotsDataView)"
+          (onChange)="onQuickFilterChange($event)"
           [allowEmpty]="false"
           [ariaLabel]="'DIALOG.SLOT.QUICK_FILTER.LABEL' | translate"
           [pTooltip]="'DIALOG.SLOT.QUICK_FILTER.TOOLTIP' | translate"
@@ -109,7 +109,7 @@
           styleClass="h-full"
           [icon]="'pi ' + (psLoading || wsLoading || wpLoading ? 'pi-spin pi-spinner' : 'pi-refresh')"
           [disabled]="psLoading || wsLoading || wpLoading"
-          (onClick)="onQuickFilterChange({ value: 'ALL' }, slotsDataView); onReload()"
+          (onClick)="onQuickFilterChange({ value: 'ALL' }); onReload()"
           [ariaLabel]="'ACTIONS.SEARCH.RELOAD' | translate"
           [pTooltip]="'ACTIONS.SEARCH.RELOAD' | translate"
           tooltipPosition="top"
@@ -133,66 +133,30 @@
       >
         <a
           [id]="'ws_slots_grid_data_row_' + i + '_action_detail'"
-          class="block card relative py-1 px-4 p-button p-button-text"
+          class="block card relative py-1 px-1 p-button p-button-text"
           tabindex="0"
           [ngClass]="{ 'hover:bg-gray-200 cursor-pointer': !slot.new, 'cursor-auto p-button-info': slot.new }"
           (click)="onSlotDetail($event, slot)"
           (keydown.enter)="onSlotDetail($event, slot)"
           [attr.aria-label]="'DIALOG.SLOT.HEADER.' + (hasEditPermission ? 'EDIT' : 'VIEW') | translate"
         >
-          <!-- right badges -->
-          <button
-            *ngIf="slot.new && hasCreatePermission"
-            [id]="'ws_slots_grid_data_row_' + i + '_action_new'"
-            class="card-badge-right badge-1 p-1 pi pi-plus bg-transparent border-none button-icon-only"
-            (click)="onAddSlot($event, slot)"
-            (keydown.enter)="onAddSlot($event, slot)"
-            [attr.aria-label]="'DIALOG.SLOT.CREATE.TOOLTIP' | translate"
-            [pTooltip]="'DIALOG.SLOT.CREATE.TOOLTIP' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          ></button>
-          <button
-            *ngIf="!slot.new && hasDeletePermission && slot.components.length === 0"
-            [id]="'ws_slots_grid_data_row_' + i + '_action_delete'"
-            class="card-badge-right badge-1 p-1 pi pi-trash bg-transparent border-none button-icon-only"
-            (click)="onDeleteSlot($event, slot)"
-            (keydown.enter)="onDeleteSlot($event, slot)"
-            [attr.aria-label]="'ACTIONS.DELETE.SLOT.LABEL' | translate"
-            [pTooltip]="'ACTIONS.DELETE.SLOT.LABEL' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          ></button>
-          <div
-            *ngIf="!slot.new && hasDeletePermission && slot.components.length > 0"
-            [id]="'ws_slots_grid_data_row_' + i + '_action_delete_blocked'"
-            class="card-badge-right badge-1 p-1 pi pi-trash cursor-auto"
-            [attr.aria-label]="'ACTIONS.DELETE.SLOT.LABEL.COMPONENTS' | translate"
-            [pTooltip]="'ACTIONS.DELETE.SLOT.LABEL.COMPONENTS' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-            role="note"
-          ></div>
-          <!-- left badges -->
-          <div
-            *ngIf="slot.components"
-            [id]="'ws_slots_grid_data_row_' + i + '_components'"
-            class="card-badge-left badge-1-number p-1 text-color"
-            [attr.aria-label]="'SLOT.COMPONENTS' | translate"
-            [pTooltip]="'SLOT.COMPONENTS' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-            role="note"
-          >
-            {{ slot.components.length }}
-          </div>
-          <!-- BADGES: slot status -->
+          <!-- LEFT BADGES: slot status -->
           @if (slot.undeployed) {
             <div
               [id]="'ws_slots_grid_data_row_' + i + '_undeployed'"
               class="card-badge-left badge-2 pi pi-ban danger-action-text"
               [attr.aria-label]="'DIALOG.SLOT.UNDEPLOYED' | translate"
               [pTooltip]="'DIALOG.SLOT.UNDEPLOYED.TOOLTIP' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+              role="note"
+            ></div>
+          } @else if (slot.productNames?.length === 0) {
+            <div
+              [id]="'ws_slots_grid_data_row_' + i + '_no_registration'"
+              class="card-badge-left badge-2 pi pi-ban danger-action-text"
+              [attr.aria-label]="'DIALOG.SLOT.PRODUCTS.NOT_FOUND' | translate"
+              [pTooltip]="'DIALOG.SLOT.PRODUCTS.NOT_FOUND' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
               role="note"
@@ -218,6 +182,19 @@
               role="note"
             ></div>
           }
+          <!-- RIGHT BADGES: number of assigned components -->
+          <div
+            *ngIf="slot.components"
+            [id]="'ws_slots_grid_data_row_' + i + '_components'"
+            class="card-badge-right badge-2-number p-1 text-color"
+            [attr.aria-label]="'SLOT.COMPONENTS' | translate"
+            [pTooltip]="'SLOT.COMPONENTS' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+            role="note"
+          >
+            {{ slot.components.length }}
+          </div>
           <!-- CONTENT -->
           <div class="flex flex-column justify-content-between row-gap-2 text-center" aria-hidden="true">
             <div
@@ -236,13 +213,13 @@
             >
               @if (slot.new) {
                 @let labelKey =
-                  'DIALOG.SLOT.' + (slot.undeployed ? 'UNDEPLOYED' : slot.deprecated ? 'DEPRECATED' : 'UNREGISTERED');
+                  'DIALOG.SLOT.' + (slot.undeployed ? 'UNDEPLOYED' : slot.deprecated ? 'DEPRECATED' : 'UNUSED');
                 <app-ocx-chip
                   [id]="'ws_roles_grid_data_row_' + i + '_new'"
                   class="py-1"
                   [ngClass]="{ 'danger-action-text': slot.changes }"
                   [label]="labelKey | translate"
-                  [title]="'DIALOG.SLOT.UNREGISTERED.TOOLTIP' | translate"
+                  [title]="'DIALOG.SLOT.UNUSED.TOOLTIP' | translate"
                 />
               } @else {
                 <app-ocx-chip
@@ -268,6 +245,5 @@
   [wProductNames]="wProductNames"
   [changeMode]="changeMode"
   [displayDetailDialog]="showSlotDetailDialog"
-  [displayDeleteDialog]="showSlotDeleteDialog"
   (detailClosed)="onSlotDetailClosed($event)"
 ></app-workspace-slot-detail>

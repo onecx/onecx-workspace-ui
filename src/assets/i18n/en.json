@@ -349,23 +349,22 @@
     },
     "SLOT": {
       "HEADER": {
-        "DELETE": "Delete Slot",
         "EDIT": "Change Slot",
         "VIEW": "Slot Details",
         "COMPONENTS.DEREGISTER": "Deregister Components"
       },
       "QUICK_FILTER": {
-        "LABEL": "Registration",
+        "LABEL": "Filter",
         "TOOLTIP": "Filter for Slot registration",
         "SELECTED": "Selected",
         "ALL": "All",
-        "ALL.TOOLTIP": "All = Regardless of the status of registration",
-        "OUTDATED": "Outdated",
-        "OUTDATED.TOOLTIP": "Marked as outdated - please do not use anymore",
-        "UNREGISTERED": "Not registered",
-        "UNREGISTERED.TOOLTIP": "Not registered for the workspace",
+        "ALL.TOOLTIP": "All Slots",
+        "CHANGES": "Changes",
+        "CHANGES.TOOLTIP": "There are changes (Slot changed or outdated).",
+        "UNUSED": "Not used",
+        "UNUSED.TOOLTIP": "Not used in the workspace",
         "WORKSPACE": "Workspace",
-        "WORKSPACE.TOOLTIP": "Registered for the workspace"
+        "WORKSPACE.TOOLTIP": "Used in the workspace"
       },
       "TABS": {
         "COMPONENTS": "Components",
@@ -376,11 +375,9 @@
         }
       },
       "CHANGED": "There are important changes.",
-      "WORKSPACE": "Slot is registered for the Workspace",
-      "UNREGISTERED": "Not registered",
-      "UNREGISTERED.TOOLTIP": "Slot is not registered for the Workspace",
-      "CREATE": "Register",
-      "CREATE.TOOLTIP": "Register this Slot for the Workspace.",
+      "WORKSPACE": "Slot is used in the Workspace",
+      "UNUSED": "Not used",
+      "UNUSED.TOOLTIP": "Slot is not used in the Workspace",
       "DEPRECATED": "Outdated",
       "DEPRECATED.TOOLTIP": "This Slot is outdated and will no longer be usable in the foreseeable future.",
       "UNDEPLOYED": "Unavailable",
@@ -390,7 +387,7 @@
       "PRODUCTS": "Registered by Applications",
       "PRODUCTS.NOT_EXIST": "Not available",
       "PRODUCTS.TOOLTIP": "Applications that have registered this Slot:",
-      "NO_PRODUCTS": "No Application found which has registered this Slot",
+      "PRODUCTS.NOT_FOUND": "This Slot has no registered Applications. To remove it from the workspace, detach all connected components.",
       "COMPONENTS": "Content-forming Components",
       "COMPONENTS.USED": "Used Components",
       "COMPONENTS.USED.TOOLTIP": "Components used in the slot, in order from top to bottom.",
@@ -401,7 +398,7 @@
         "CREATE.NOK": "An error has occurred during Slot registration",
         "REGISTRATION_OK": "The Component was successfully registered",
         "REGISTRATION_NOK": "An error has occurred during Component registration",
-        "REGISTRATIONS_OK": "The Components wer successfully registered",
+        "REGISTRATIONS_OK": "The Components were successfully registered",
         "REGISTRATIONS_NOK": "An error has occurred during Component registration",
         "DEREGISTRATION_OK": "The Component was successfully deregistered",
         "DEREGISTRATION_NOK": "An error has occurred during Component deregistration",

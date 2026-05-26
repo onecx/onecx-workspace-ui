@@ -4,7 +4,7 @@ import { TranslateService } from '@ngx-translate/core'
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 
 import { SlotAPIService, SlotComponent, UpdateSlotRequest } from 'src/app/shared/generated'
-import { ChangeMode, CombinedSlot, ExtendedComponent, PSSlot } from '../workspace-slots/workspace-slots.component'
+import { ChangeMode, ExtendedSlot, ExtendedComponent, PSSlot } from '../workspace-slots/workspace-slots.component'
 
 @Component({
   selector: 'app-workspace-slot-detail',
@@ -12,7 +12,7 @@ import { ChangeMode, CombinedSlot, ExtendedComponent, PSSlot } from '../workspac
   styleUrls: ['./workspace-slot-detail.component.scss']
 })
 export class WorkspaceSlotDetailComponent implements OnChanges {
-  @Input() slotOrg: CombinedSlot | undefined // displayed slot
+  @Input() slotOrg: ExtendedSlot | undefined // displayed slot
   @Input() psComponentsOrg: ExtendedComponent[] = [] // all PS slots
   @Input() wProductNames: string[] = [] // names of all products registered in workspace
   @Input() changeMode: ChangeMode = 'VIEW'
@@ -21,11 +21,12 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   @Output() detailClosed: EventEmitter<boolean> = new EventEmitter()
 
   public dateFormat: string
-  public slot: CombinedSlot | undefined
+  public slot: ExtendedSlot | undefined
   public wComponents: ExtendedComponent[] = [] // used/assigned components
   public psComponents: ExtendedComponent[] = [] // org ps components reduced by used in slot
   public hasEditPermission = false
   public displayDeregisterConfirmation = false
+  public selectedTabIndex = 0
   private deregisterItems: ExtendedComponent[] = [] // moved items
   private wComponentsOrg: ExtendedComponent[] = [] // used for restore
   public showTargetControls = false // manage visibility of target controls due to picklist bug
@@ -51,8 +52,9 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
       this.wComponentsOrg = [...this.wComponents] // to be able to restore
       this.psComponents = []
       this.collectPsComponents()
-      this.psComponents.sort(this.sortComponents)
-      this.slot.psSlots.sort(this.sortProducts)
+      if (this.slot.psSlots) this.slot.psSlots.sort(this.sortProducts)
+      if (this.slot.productNames) this.slot.productNames.sort()
+      this.selectedTabIndex = this.slot.productNames?.length === 0 ? 1 : 0
     }
   }
 
@@ -67,6 +69,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
         if (this.wProductNames.includes(psComp.productName))
           // registered products only
           this.psComponents.push(psComp)
+    if (this.psComponents) this.psComponents.sort(this.sortComponents)
   }
 
   public sortComponents(a: ExtendedComponent, b: ExtendedComponent): number {

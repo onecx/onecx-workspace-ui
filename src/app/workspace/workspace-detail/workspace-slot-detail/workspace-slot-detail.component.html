@@ -38,7 +38,7 @@
     </span>
   </ng-container>
 
-  <p-tabView>
+  <p-tabView [(activeIndex)]="selectedTabIndex">
     <p-tabPanel
       id="ws_slot_detail_components"
       [header]="'DIALOG.SLOT.TABS.COMPONENTS' | translate"
@@ -224,19 +224,19 @@
     >
       <div [style]="{ 'min-width': '35rem', 'min-height': '7rem' }">
         <p-message
-          *ngIf="slot?.psSlots?.length === 0; else ProductsWithSlots"
+          *ngIf="slot?.productNames?.length === 0; else ProductsWithSlots"
           id="ws_slot_detail_no_products_message"
-          severity="info"
-          styleClass="mx-2"
-          [text]="'DIALOG.SLOT.NO_PRODUCTS' | translate"
+          severity="warn"
+          styleClass="mx-2 w-30rem"
+          [text]="'DIALOG.SLOT.PRODUCTS.NOT_FOUND' | translate"
         ></p-message>
         <ng-template #ProductsWithSlots>
           <div>{{ 'DIALOG.SLOT.PRODUCTS.TOOLTIP' | translate }}</div>
           <ul class="ml-0 mt-2">
-            <li *ngFor="let slot of slot?.psSlots; let i = index" class="">
+            <li *ngFor="let productName of slot?.productNames; let i = index" class="">
               <div class="p-1 flex flex-row column-gap-2">
                 <div [id]="'ws_slot_detail_product_' + i + '_name'" class="text-md max-w-30rem text-responsive">
-                  {{ slot?.pDisplayName }}
+                  {{ productName }}
                 </div>
                 <div
                   *ngIf="slot?.undeployed"
@@ -262,87 +262,6 @@
         </ng-template>
       </div>
     </p-tabPanel>
-
-    <p-tabPanel
-      id="ws_slot_detail_intern"
-      [header]="'INTERNAL.HEADER' | translate"
-      [attr.aria-label]="'INTERNAL.HEADER' | translate"
-      [tooltip]="'INTERNAL.TOOLTIP' | translate"
-      tooltipPosition="top"
-      tooltipEvent="hover"
-    >
-      <div class="mt-2 flex flex-column justify-content-between gap-4">
-        <div class="flex flex-row flex-wrap gap-4">
-          <span class="flex-grow-1 sm:flex-grow-0 p-float-label">
-            <input
-              pInputText
-              type="text"
-              id="ws_slot_detail_intern_item_creation_date"
-              class="w-full sm:w-13rem pt-3 pb-2 text-responsive"
-              [disabled]="true"
-              [value]="slot ? (slot.creationDate | date: dateFormat) : ''"
-              [attr.aria-label]="'INTERNAL.CREATION_DATE' | translate"
-              [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_DATE' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            />
-            <label for="ws_slot_detail_intern_item_creation_date">{{ 'INTERNAL.CREATION_DATE' | translate }}</label>
-          </span>
-          <span class="flex-grow-1 p-float-label">
-            <input
-              pInputText
-              type="text"
-              id="ws_slot_detail_intern_item_creation-user"
-              class="w-full sm:w-21rem pt-3 pb-2 text-responsive"
-              [value]="slot?.creationUser"
-              [disabled]="true"
-              [attr.aria-label]="'INTERNAL.CREATION_USER' | translate"
-              [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_USER' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            />
-            <label for="ws_slot_detail_intern_item_creation-user">{{ 'INTERNAL.CREATION_USER' | translate }}</label>
-          </span>
-        </div>
-
-        <div class="flex flex-row flex-wrap gap-4">
-          <span class="flex-grow-1 sm:flex-grow-0 p-float-label">
-            <input
-              pInputText
-              type="text"
-              id="ws_slot_detail_intern_item_modification_date"
-              class="w-full sm:w-13rem pt-3 pb-2 text-responsive"
-              [disabled]="true"
-              [value]="slot ? (slot.modificationDate | date: dateFormat) : ''"
-              [attr.aria-label]="'INTERNAL.MODIFICATION_DATE' | translate"
-              [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_DATE' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            />
-            <label for="ws_slot_detail_intern_item_modification_date">{{
-              'INTERNAL.MODIFICATION_DATE' | translate
-            }}</label>
-          </span>
-          <span class="flex-grow-1 p-float-label">
-            <input
-              pInputText
-              type="text"
-              id="ws_slot_detail_intern_item_modification-user"
-              class="w-full sm:w-21rem pt-3 pb-2 text-responsive"
-              [value]="slot?.modificationUser"
-              [disabled]="true"
-              [attr.aria-label]="'INTERNAL.MODIFICATION_USER' | translate"
-              [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_USER' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            />
-            <label for="ws_slot_detail_intern_item_modification-user">
-              {{ 'INTERNAL.MODIFICATION_USER' | translate }}</label
-            >
-          </span>
-        </div>
-      </div>
-    </p-tabPanel>
   </p-tabView>
 
   <ng-template pTemplate="footer">
@@ -354,52 +273,6 @@
         [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
         [ariaLabel]="'ACTIONS.NAVIGATION.CLOSE' | translate"
         [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      ></p-button>
-    </div>
-  </ng-template>
-</p-dialog>
-
-<!-- DELETE -->
-<p-dialog
-  [header]="'DIALOG.SLOT.HEADER.DELETE' | translate"
-  [(visible)]="displayDeleteDialog"
-  (onHide)="onClose()"
-  [modal]="true"
-  [closable]="true"
-  [resizable]="false"
-  [dismissableMask]="true"
-  [style]="{ width: '450px' }"
-  styleClass="disable-max-height-preset"
->
-  <div class="my-2 flex column-gap-4 row-gap-1 justify-content-start align-items-center">
-    <div class="pi pi-question-circle text-3xl danger-action-text"></div>
-    <div class="flex flex-column row-gap-2">
-      <div id="ws_slot_delete_message" class="font-bold">{{ 'ACTIONS.DELETE.SLOT.MESSAGE' | translate }}</div>
-      <div id="ws_slot_delete_slot_name" class="font-bold text-center danger-action-text">{{ slotOrg?.name }}</div>
-      <div>{{ 'ACTIONS.DELETE.INFO' | translate }}</div>
-    </div>
-  </div>
-  <ng-template pTemplate="footer">
-    <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
-      <p-button
-        id="ws_slot_delete_action_no"
-        icon="pi pi-times"
-        (onClick)="onClose()"
-        [label]="'ACTIONS.CONFIRMATION.NO' | translate"
-        [ariaLabel]="'ACTIONS.CONFIRMATION.NO' | translate"
-        [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      ></p-button>
-      <p-button
-        id="ws_slot_delete_action_yes"
-        icon="pi pi-check"
-        (onClick)="onDeleteSlot()"
-        [label]="'ACTIONS.CONFIRMATION.YES' | translate"
-        [ariaLabel]="'ACTIONS.CONFIRMATION.YES' | translate"
-        [pTooltip]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       ></p-button>

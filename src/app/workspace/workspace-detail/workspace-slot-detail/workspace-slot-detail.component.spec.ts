@@ -8,7 +8,7 @@ import { BehaviorSubject, of, throwError } from 'rxjs'
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 
 import { Slot, SlotAPIService } from 'src/app/shared/generated'
-import { CombinedSlot, ExtendedComponent, PSSlot } from '../workspace-slots/workspace-slots.component'
+import { ExtendedSlot, ExtendedComponent, PSSlot } from '../workspace-slots/workspace-slots.component'
 import { WorkspaceSlotDetailComponent } from './workspace-slot-detail.component'
 
 describe('WorkspaceSlotDetailComponent', () => {
@@ -91,11 +91,63 @@ describe('WorkspaceSlotDetailComponent', () => {
           deprecated: false
         }
       ]
-      const slotOrg: CombinedSlot = {
+      const slotOrg: ExtendedSlot = {
         name: 'slot1',
-        productName: 'productA',
+        productNames: ['productA'],
         new: false,
-        type: 'WORKSPACE',
+        type: ['WORKSPACE'],
+        changes: false,
+        undeployed: false,
+        deprecated: false,
+        psSlots: psSlots,
+        psComponents: psComponentsOrg
+      }
+      component.slotOrg = slotOrg
+      component.psComponentsOrg = [
+        { name: 'compA', appId: 'appId1', productName: 'productA', undeployed: false, deprecated: false },
+        { name: 'compB', appId: 'appId1', productName: 'productA', undeployed: false, deprecated: false },
+        { name: 'compA', appId: 'appId2', productName: 'productB', undeployed: false, deprecated: false },
+        { name: 'compB', appId: 'appId3', productName: 'productB', undeployed: false, deprecated: false }
+      ]
+      component.wProductNames = ['productA', 'productB', 'productC']
+
+      component.ngOnChanges()
+
+      expect(component.slot).toEqual(slotOrg)
+      expect(component.wComponents).toEqual(slotOrg.psComponents)
+      // this is the reduced set of components in alphabetical order (minus slotOrg)
+      expect(component.psComponents).toEqual([
+        { name: 'compA', productName: 'productB', appId: 'appId2', undeployed: false, deprecated: false },
+        { name: 'compB', productName: 'productA', appId: 'appId1', undeployed: false, deprecated: false },
+        { name: 'compB', productName: 'productB', appId: 'appId3', undeployed: false, deprecated: false }
+      ])
+    })
+
+    it('should initialize component state when slotOrg is provided, but slot is a lost slot', () => {
+      component.displayDetailDialog = true
+      // products which using the slot
+      const psSlots: PSSlot[] = [
+        {
+          name: 'slot1',
+          pName: 'productB',
+          pDisplayName: 'Product B'
+        }
+      ]
+      // original product store data of the assigned components
+      const psComponentsOrg: ExtendedComponent[] = [
+        {
+          name: 'compA',
+          appId: 'appId1',
+          productName: 'productA',
+          undeployed: false,
+          deprecated: false
+        }
+      ]
+      const slotOrg: ExtendedSlot = {
+        name: 'slot1',
+        productNames: [], // slot is a lost slot if productNames is empty
+        new: false,
+        type: ['WORKSPACE'],
         changes: false,
         undeployed: false,
         deprecated: false,
@@ -126,11 +178,12 @@ describe('WorkspaceSlotDetailComponent', () => {
 
   describe('Closing', () => {
     beforeEach(() => {
-      const slotOrg: CombinedSlot = {
+      const slotOrg: ExtendedSlot = {
         modificationCount: 0,
         name: 'slot1',
+        productNames: ['productA'],
         new: false,
-        type: 'WORKSPACE',
+        type: ['WORKSPACE'],
         changes: false,
         undeployed: false,
         deprecated: false,
@@ -157,11 +210,12 @@ describe('WorkspaceSlotDetailComponent', () => {
     })
 
     it('should emit detailClosed event with false if there is no change ', () => {
-      const slot: CombinedSlot = {
+      const slot: ExtendedSlot = {
         modificationCount: 1,
         name: 'slot1',
+        productNames: ['productA'],
         new: false,
-        type: 'WORKSPACE',
+        type: ['WORKSPACE'],
         changes: false,
         undeployed: false,
         deprecated: false,
@@ -291,7 +345,8 @@ describe('WorkspaceSlotDetailComponent', () => {
       component.slot = {
         name: 'slot1',
         new: false,
-        type: 'WORKSPACE',
+        productNames: ['productA'],
+        type: ['WORKSPACE'],
         changes: false,
         undeployed: false,
         deprecated: false,
@@ -392,11 +447,12 @@ describe('WorkspaceSlotDetailComponent', () => {
       component.slot = {
         name: 'slot1',
         new: false,
-        type: 'WORKSPACE',
+        type: ['WORKSPACE'],
         changes: false,
         undeployed: false,
         deprecated: false,
         psSlots: [],
+        productNames: [],
         components: [{ productName: 'Product', appId: 'AppId', name: 'Component Name' }],
         psComponents: [
           { productName: 'Product', appId: 'AppId', name: 'Component Name', undeployed: false, deprecated: false }
@@ -413,11 +469,12 @@ describe('WorkspaceSlotDetailComponent', () => {
       component.slot = {
         name: 'slot1',
         new: false,
-        type: 'WORKSPACE',
+        type: ['WORKSPACE'],
         changes: false,
         undeployed: false,
         deprecated: false,
         psSlots: [],
+        productNames: [],
         components: [
           { productName: 'Product', appId: 'AppId', name: 'Component Name 1' },
           { productName: 'Product', appId: 'AppId', name: 'Component Name 2' }
@@ -440,11 +497,12 @@ describe('WorkspaceSlotDetailComponent', () => {
         name: 'slot1',
         id: '1',
         new: false,
-        type: 'WORKSPACE',
+        type: ['WORKSPACE'],
         changes: false,
         undeployed: false,
         deprecated: false,
         psSlots: [],
+        productNames: [],
         psComponents: [
           {
             productName: 'slotComponentProdName',

@@ -221,7 +221,7 @@ describe('SlimMenuItemComponent', () => {
   describe('ACTION', () => {
     it('should display button with icon only in SLIM mode', waitForAsync(async () => {
       const command = () => {
-        console.log('Action executed')
+        console.log('Slim menu action executed')
       }
       spyOn(console, 'log')
       component.item = {
@@ -246,12 +246,12 @@ describe('SlimMenuItemComponent', () => {
       expect(content).toEqual('')
 
       button?.click()
-      expect(console.log).toHaveBeenCalledWith('Action executed')
+      expect(console.log).toHaveBeenCalledWith('Slim menu action executed')
     }))
 
     it('should display button with icon and label in SLIM_PLUS mode', waitForAsync(async () => {
       const command = () => {
-        console.log('Another action executed')
+        console.log('slim menu another action executed')
       }
       spyOn(console, 'log')
       component.item = {
@@ -276,7 +276,7 @@ describe('SlimMenuItemComponent', () => {
       expect(content).toContain('Action Plus')
 
       button?.click()
-      expect(console.log).toHaveBeenCalledWith('Another action executed')
+      expect(console.log).toHaveBeenCalledWith('slim menu another action executed')
     }))
   })
 })
