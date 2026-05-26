@@ -311,24 +311,20 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
       if (ws.components) {
         for (const wc of ws.components) {
           // component product still registered?
-          let productUnregistered = false
           if (!this.wProductNames.includes(wc.productName)) {
-            // product not registered anymore
             ws.changes = true
             if (!ws.type.includes('CHANGES')) ws.type.push('CHANGES')
-            productUnregistered = true
           }
-          // assigned components
-          this.assignPSComponents(ws, wc, psComponents)
+          this.assignPSComponent(
+            ws,
+            psComponents.find((pc) => pc.productName === wc.productName && pc.appId === wc.appId && pc.name === wc.name)
+          )
         }
       }
     }
   }
 
-  private assignPSComponents(ws: ExtendedSlot, wc: ExtendedComponent, psComponents: ExtendedComponent[]): void {
-    const psc = psComponents.find(
-      (pc) => pc.productName === wc.productName && pc.appId === wc.appId && pc.name === wc.name
-    )
+  private assignPSComponent(ws: ExtendedSlot, psc: ExtendedComponent | undefined): void {
     if (psc) {
       psc.productUnregistered = !this.wProductNames.includes(psc.productName)
       ws.psComponents.push(psc)
