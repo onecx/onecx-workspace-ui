@@ -703,7 +703,7 @@ describe('WorkspaceSlotsComponent', () => {
       component.onSlotDetail(mockEvent, mockSlot)
 
       expect(mockEvent.stopPropagation).toHaveBeenCalled()
-      expect(component.item4Detail).toBe(mockSlot)
+      expect(component.item4Detail).toEqual(mockSlot)
       expect(component.changeMode).toBe('EDIT')
       expect(component.showSlotDetailDialog).toBeTrue()
     })
@@ -725,7 +725,7 @@ describe('WorkspaceSlotsComponent', () => {
       component.onSlotDetail(mockEvent, mockSlot)
 
       expect(mockEvent.stopPropagation).toHaveBeenCalled()
-      expect(component.item4Detail).toBe(mockSlot)
+      expect(component.item4Detail).toEqual(mockSlot)
       expect(component.changeMode).toBe('VIEW')
       expect(component.showSlotDetailDialog).toBeTrue()
     })
@@ -747,7 +747,7 @@ describe('WorkspaceSlotsComponent', () => {
       component.onSlotDetail(mockEvent, mockSlot)
 
       expect(mockEvent.stopPropagation).toHaveBeenCalled()
-      expect(component.item4Detail).toBe(mockSlot)
+      expect(component.item4Detail).toEqual(mockSlot)
       expect(component.changeMode).toBe('EDIT')
       expect(component.showSlotDetailDialog).toBeTrue()
     })

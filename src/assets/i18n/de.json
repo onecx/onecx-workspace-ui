@@ -328,8 +328,8 @@
       },
       "EDIT.TOOLTIP": "Rollentyp",
       "QUICK_FILTER": {
-        "LABEL": "Rollentyp",
-        "TOOLTIP": "Filter für Rollentyp",
+        "LABEL": "Herkunft",
+        "TOOLTIP": "Filter für Herkunft der Rollen",
         "SELECTED": "Ausgewählt",
         "COUNT": "Anzahl",
         "ALL": "Alle",

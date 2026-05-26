@@ -12,8 +12,8 @@ import { ChangeMode, ExtendedSlot, ExtendedComponent, PSSlot } from '../workspac
   styleUrls: ['./workspace-slot-detail.component.scss']
 })
 export class WorkspaceSlotDetailComponent implements OnChanges {
-  @Input() slotOrg: ExtendedSlot | undefined // displayed slot
-  @Input() psComponentsOrg: ExtendedComponent[] = [] // all PS slots
+  @Input() slot: ExtendedSlot | undefined // displayed slot
+  @Input() psComponentsOrg: ExtendedComponent[] = [] // all PS components
   @Input() wProductNames: string[] = [] // names of all products registered in workspace
   @Input() changeMode: ChangeMode = 'VIEW'
   @Input() displayDetailDialog = false
@@ -21,7 +21,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   @Output() detailClosed: EventEmitter<boolean> = new EventEmitter()
 
   public dateFormat: string
-  public slot: ExtendedSlot | undefined
+  //public slot: ExtendedSlot | undefined
   public wComponents: ExtendedComponent[] = [] // used/assigned components
   public psComponents: ExtendedComponent[] = [] // org ps components reduced by used in slot
   public hasEditPermission = false
@@ -44,8 +44,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   }
 
   public ngOnChanges(): void {
-    if (this.displayDetailDialog && this.slotOrg && this.slot === undefined) {
-      this.slot = { ...this.slotOrg }
+    if (this.displayDetailDialog && this.slot) {
       this.wComponents = []
       // extract components assigned to the slot with PS infos
       if (this.slot.psComponents) this.wComponents = [...this.slot.psComponents]
@@ -53,7 +52,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
       this.psComponents = []
       this.collectPsComponents()
       if (this.slot.psSlots) this.slot.psSlots.sort(this.sortProducts)
-      if (this.slot.productNames) this.slot.productNames.sort()
+      if (this.slot.productNames) this.slot.productNames.sort((a, b) => a.toUpperCase().localeCompare(b.toUpperCase()))
       this.selectedTabIndex = this.slot.productNames?.length === 0 ? 1 : 0
     }
   }
@@ -84,11 +83,8 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   }
 
   public onClose(): void {
-    if (this.slotOrg)
-      if (this.slot) this.detailClosed.emit(this.slotOrg.modificationCount !== this.slot?.modificationCount)
-      else this.detailClosed.emit(false)
-    this.slot = undefined
-    this.slotOrg = undefined
+    if (this.slot) this.detailClosed.emit(this.slot.modificationCount !== this.slot?.modificationCount)
+    else this.detailClosed.emit(false)
   }
 
   /**
@@ -167,8 +163,8 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   }
 
   public onDeleteSlot() {
-    if (this.slotOrg) {
-      this.slotApi.deleteSlotById({ id: this.slotOrg.id! }).subscribe({
+    if (this.slot) {
+      this.slotApi.deleteSlotById({ id: this.slot.id! }).subscribe({
         next: () => {
           this.msgService.success({ summaryKey: 'ACTIONS.DELETE.SLOT.MESSAGE.OK' })
           this.detailClosed.emit(true)

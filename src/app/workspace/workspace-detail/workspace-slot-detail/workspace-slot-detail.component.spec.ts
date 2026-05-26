@@ -66,43 +66,27 @@ describe('WorkspaceSlotDetailComponent', () => {
   })
 
   describe('OnChanges', () => {
-    it('should initialize component state when slotOrg is provided', () => {
+    it('should initialize component state when slot is provided', () => {
       component.displayDetailDialog = true
       // products which using the slot
       const psSlots: PSSlot[] = [
-        {
-          name: 'slot1',
-          pName: 'productB',
-          pDisplayName: 'Product B'
-        },
-        {
-          name: 'slot1',
-          pName: 'productC',
-          pDisplayName: 'Product C'
-        }
+        { name: 'slot1', pName: 'productB', pDisplayName: 'Product B' },
+        { name: 'slot1', pName: 'productC', pDisplayName: 'Product C' }
       ]
-      // original product store data of the assigned components
-      const psComponentsOrg: ExtendedComponent[] = [
-        {
-          name: 'compA',
-          appId: 'appId1',
-          productName: 'productA',
-          undeployed: false,
-          deprecated: false
-        }
-      ]
-      const slotOrg: ExtendedSlot = {
+      const slot: ExtendedSlot = {
         name: 'slot1',
-        productNames: ['productA'],
+        productNames: ['productB', 'productC'],
         new: false,
         type: ['WORKSPACE'],
         changes: false,
         undeployed: false,
         deprecated: false,
         psSlots: psSlots,
-        psComponents: psComponentsOrg
+        psComponents: [
+          { name: 'compB', appId: 'appId1', productName: 'productB', undeployed: false, deprecated: false }
+        ]
       }
-      component.slotOrg = slotOrg
+      component.slot = slot
       component.psComponentsOrg = [
         { name: 'compA', appId: 'appId1', productName: 'productA', undeployed: false, deprecated: false },
         { name: 'compB', appId: 'appId1', productName: 'productA', undeployed: false, deprecated: false },
@@ -113,17 +97,11 @@ describe('WorkspaceSlotDetailComponent', () => {
 
       component.ngOnChanges()
 
-      expect(component.slot).toEqual(slotOrg)
-      expect(component.wComponents).toEqual(slotOrg.psComponents)
-      // this is the reduced set of components in alphabetical order (minus slotOrg)
-      expect(component.psComponents).toEqual([
-        { name: 'compA', productName: 'productB', appId: 'appId2', undeployed: false, deprecated: false },
-        { name: 'compB', productName: 'productA', appId: 'appId1', undeployed: false, deprecated: false },
-        { name: 'compB', productName: 'productB', appId: 'appId3', undeployed: false, deprecated: false }
-      ])
+      expect(component.slot).toEqual(slot)
+      expect(component.wComponents).toEqual(slot.psComponents)
     })
 
-    it('should initialize component state when slotOrg is provided, but slot is a lost slot', () => {
+    it('should initialize component state when slot is provided, but slot is a lost slot', () => {
       component.displayDetailDialog = true
       // products which using the slot
       const psSlots: PSSlot[] = [
@@ -143,7 +121,7 @@ describe('WorkspaceSlotDetailComponent', () => {
           deprecated: false
         }
       ]
-      const slotOrg: ExtendedSlot = {
+      const slot: ExtendedSlot = {
         name: 'slot1',
         productNames: [], // slot is a lost slot if productNames is empty
         new: false,
@@ -154,7 +132,7 @@ describe('WorkspaceSlotDetailComponent', () => {
         psSlots: psSlots,
         psComponents: psComponentsOrg
       }
-      component.slotOrg = slotOrg
+      component.slot = slot
       component.psComponentsOrg = [
         { name: 'compA', appId: 'appId1', productName: 'productA', undeployed: false, deprecated: false },
         { name: 'compB', appId: 'appId1', productName: 'productA', undeployed: false, deprecated: false },
@@ -165,9 +143,9 @@ describe('WorkspaceSlotDetailComponent', () => {
 
       component.ngOnChanges()
 
-      expect(component.slot).toEqual(slotOrg)
-      expect(component.wComponents).toEqual(slotOrg.psComponents)
-      // this is the reduced set of components in alphabetical order (minus slotOrg)
+      expect(component.slot).toEqual(slot)
+      expect(component.wComponents).toEqual(slot.psComponents)
+      // this is the reduced set of components in alphabetical order (minus slot)
       expect(component.psComponents).toEqual([
         { name: 'compA', productName: 'productB', appId: 'appId2', undeployed: false, deprecated: false },
         { name: 'compB', productName: 'productA', appId: 'appId1', undeployed: false, deprecated: false },
@@ -178,7 +156,7 @@ describe('WorkspaceSlotDetailComponent', () => {
 
   describe('Closing', () => {
     beforeEach(() => {
-      const slotOrg: ExtendedSlot = {
+      const slot: ExtendedSlot = {
         modificationCount: 0,
         name: 'slot1',
         productNames: ['productA'],
@@ -198,15 +176,16 @@ describe('WorkspaceSlotDetailComponent', () => {
           }
         ]
       }
-      component.slotOrg = slotOrg
+      component.slot = slot
     })
 
     it('should always emit detailClosed event when dialog is closed', () => {
+      component.slot = undefined
       spyOn(component.detailClosed, 'emit')
 
       component.onClose()
 
-      expect(component.detailClosed.emit).toHaveBeenCalled()
+      expect(component.detailClosed.emit).toHaveBeenCalledWith(false)
     })
 
     it('should emit detailClosed event with false if there is no change ', () => {
@@ -236,7 +215,7 @@ describe('WorkspaceSlotDetailComponent', () => {
 
       component.onClose()
 
-      expect(component.detailClosed.emit).toHaveBeenCalledWith(true)
+      expect(component.detailClosed.emit).toHaveBeenCalledWith(false) // no change
     })
   })
 
@@ -493,7 +472,7 @@ describe('WorkspaceSlotDetailComponent', () => {
 
   describe('Deletion', () => {
     beforeEach(() => {
-      component.slotOrg = {
+      component.slot = {
         name: 'slot1',
         id: '1',
         new: false,

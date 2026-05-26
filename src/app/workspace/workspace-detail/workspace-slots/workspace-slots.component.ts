@@ -383,7 +383,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
    */
   public onSlotDetail(ev: Event, slot: ExtendedSlot): void {
     ev.stopPropagation()
-    this.item4Detail = slot
+    this.item4Detail = { ...slot }
     this.changeMode = this.hasEditPermission ? 'EDIT' : 'VIEW'
     this.showSlotDetailDialog = true
   }
