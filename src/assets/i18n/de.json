@@ -742,8 +742,8 @@
       "PRODUCTS": "Unbekanntes Problem beim Abrufen von Applikation-Daten.",
       "IAM_ROLES": "Unbekanntes Problem beim Abrufen von Rollen aus dem IDM.",
       "WS_ROLES": "Unbekanntes Problem beim Abrufen von Workspace-Rollen.",
-      "ROLE_ASSIGNMENTS": "Unbekanntes Problem beim Abrufen von Rollen-Zuweisungen.",
       "SLOTS": "Unbekanntes Problem beim Abrufen von Slot-Daten.",
+      "ROLE_ASSIGNMENTS": "Unbekanntes Problem beim Abrufen von Rollen-Zuweisungen.",
       "MENUS": "Unbekanntes Problem beim Abrufen von Menü-Daten."
     },
     "HTTP_STATUS_0": {

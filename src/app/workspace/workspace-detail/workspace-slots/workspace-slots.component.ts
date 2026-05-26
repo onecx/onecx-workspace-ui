@@ -319,19 +319,22 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
             productUnregistered = true
           }
           // assigned components
-          // get ps components with the same product/app and component name to get their current state
-          const psc = psComponents.find(
-            (pc) => pc.productName === wc.productName && pc.appId === wc.appId && pc.name === wc.name
-          )
-          if (psc) {
-            psc.productUnregistered = productUnregistered
-            ws.psComponents.push(psc)
-            // extend consolidated slot state with component state
-            ws.changes = ws.changes || psc.undeployed || psc.deprecated
-            if (!ws.type.includes('CHANGES')) ws.type.push('CHANGES')
-          }
+          this.assignPSComponents(ws, wc, psComponents)
         }
       }
+    }
+  }
+
+  private assignPSComponents(ws: ExtendedSlot, wc: ExtendedComponent, psComponents: ExtendedComponent[]): void {
+    const psc = psComponents.find(
+      (pc) => pc.productName === wc.productName && pc.appId === wc.appId && pc.name === wc.name
+    )
+    if (psc) {
+      psc.productUnregistered = !this.wProductNames.includes(psc.productName)
+      ws.psComponents.push(psc)
+      // extend consolidated slot state with component state
+      ws.changes = ws.changes || psc.undeployed || psc.deprecated
+      if (!ws.type.includes('CHANGES')) ws.type.push('CHANGES')
     }
   }
 
