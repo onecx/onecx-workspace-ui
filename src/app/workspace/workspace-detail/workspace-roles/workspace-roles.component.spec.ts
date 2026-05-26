@@ -27,7 +27,7 @@ const wRole: Role = {
   description: 'role descr',
   isWorkspaceRole: false,
   isIamRole: false,
-  type: 'WORKSPACE'
+  origin: ['WORKSPACE']
 }
 
 describe('WorkspaceRolesComponent', () => {
@@ -94,6 +94,7 @@ describe('WorkspaceRolesComponent', () => {
     msgServiceSpy.error.calls.reset()
     // to spy data: refill with neutral data
     wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({}))
+    iamRoleServiceSpy.searchAvailableRoles.and.returnValue(of({}))
     // used in ngOnChanges
     workspaceServiceSpy.doesUrlExistFor.and.returnValue(of(true))
   })
@@ -166,7 +167,7 @@ describe('WorkspaceRolesComponent', () => {
 
       component.ngOnChanges(changes as unknown as SimpleChanges)
 
-      expect(console.error).toHaveBeenCalledWith('searchAvailableRoles', errorResponse)
+      expect(console.error).toHaveBeenCalledWith('searchWorkspaceRoles', errorResponse)
       expect(component.exceptionKey).toEqual('EXCEPTIONS.HTTP_STATUS_' + errorResponse.status + '.WS_ROLES')
     })
   })
@@ -346,26 +347,35 @@ describe('WorkspaceRolesComponent', () => {
 
   describe('filtering', () => {
     it('should reset filter to default when ALL is selected', () => {
-      const dv = jasmine.createSpyObj('DataView', ['filter'])
-      component.onQuickFilterChange({ value: 'ALL' }, dv)
+      const iamRoles: IAMRole[] = [{ name: 'role1' }, { name: 'role2' }]
+      component.quickFilterValue = 'IAM'
+      component.isComponentDefined = false
+      slotServiceSpy.isSomeComponentDefinedForSlot.and.returnValue(of(true))
+      const wRoles: WorkspaceRole[] = [{ name: 'role1', description: 'desc' }]
+      wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: wRoles as WorkspaceRolePageResult }))
+      const change1 = { ['workspace']: { previousValue: 'ws0', currentValue: 'ws1', firstChange: true } }
+      const change2 = { ['workspace']: { previousValue: 'ws1', currentValue: 'ws2', firstChange: true } }
 
-      expect(component.filterBy).toEqual('name,type')
+      component.ngOnChanges(change1 as unknown as SimpleChanges)
+      component.roleListEmitter.emit(iamRoles)
+
+      component.onQuickFilterChange({ value: 'ALL' })
+
       expect(component.quickFilterValue).toEqual('ALL')
+      expect(component.rolesFiltered).toEqual(component.roles)
+
+      component.ngOnChanges(change2 as unknown as SimpleChanges)
+      component.onQuickFilterChange({ value: 'WORKSPACE' })
+
+      expect(component.quickFilterValue).toEqual('WORKSPACE')
+      expect(component.rolesFiltered).toEqual([component.roles[0]])
     })
 
-    it('should set filter by specific type', () => {
-      const dv = jasmine.createSpyObj('DataView', ['filter'])
-      component.onQuickFilterChange({ value: 'IAM' }, dv)
-
-      expect(component.filterBy).toEqual('type')
-      expect(component.quickFilterValue).toEqual('IAM')
-    })
-
-    it('should set filterBy to name,type when filter is empty', () => {
+    it('should set filterBy to name when filter is empty', () => {
       const dv = jasmine.createSpyObj('DataView', ['filter'])
       component.onFilterChange('', dv)
 
-      expect(component.filterBy).toEqual('name,type')
+      expect(component.filterBy).toEqual('name')
     })
 
     it('should call filter method with "contains" when filter has a value', () => {

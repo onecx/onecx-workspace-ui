@@ -22,7 +22,7 @@ import {
   MicrofrontendType
 } from 'src/app/shared/generated'
 
-import { CombinedSlot, WorkspaceSlotsComponent } from './workspace-slots.component'
+import { ExtendedSlot, WorkspaceSlotsComponent } from './workspace-slots.component'
 
 const workspace: Workspace = {
   id: 'wid',
@@ -180,9 +180,7 @@ describe('WorkspaceSlotsComponent', () => {
     getProductsByWorkspaceId: jasmine.createSpy('getProductsByWorkspaceId').and.returnValue(of({}))
   }
   const slotServiceSpy = {
-    getSlotsForWorkspace: jasmine.createSpy('getSlotsForWorkspace').and.returnValue(of({})),
-    createSlot: jasmine.createSpy('createSlot').and.returnValue(of({})),
-    deleteSlotById: jasmine.createSpy('deleteSlotById').and.returnValue(of({}))
+    getSlotsForWorkspace: jasmine.createSpy('getSlotsForWorkspace').and.returnValue(of({}))
   }
   const productServiceSpy = {
     searchAvailableProducts: jasmine.createSpy('searchAvailableProducts').and.returnValue(of({}))
@@ -222,15 +220,12 @@ describe('WorkspaceSlotsComponent', () => {
     // to spy data: reset
     wProductServiceSpy.getProductsByWorkspaceId.calls.reset()
     slotServiceSpy.getSlotsForWorkspace.calls.reset()
-    slotServiceSpy.createSlot.calls.reset()
-    slotServiceSpy.deleteSlotById.calls.reset()
     productServiceSpy.searchAvailableProducts.calls.reset()
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
     // to spy data: refill with neutral data
     wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of({}))
     slotServiceSpy.getSlotsForWorkspace.and.returnValue(of({}))
-    slotServiceSpy.createSlot.and.returnValue(of({}))
     productServiceSpy.searchAvailableProducts.and.returnValue(of({}))
     // used in ngOnChanges
     workspaceServiceSpy.doesUrlExistFor.and.returnValue(of(true))
@@ -239,6 +234,22 @@ describe('WorkspaceSlotsComponent', () => {
   describe('initialize', () => {
     it('should create', () => {
       expect(component).toBeTruthy()
+    })
+
+    it('should set hasEditPermission from user service', () => {
+      expect(component.hasEditPermission).toBeTrue()
+    })
+  })
+
+  describe('ngOnDestroy', () => {
+    it('should complete the destroy$ subject', () => {
+      spyOn(component['destroy$'], 'next')
+      spyOn(component['destroy$'], 'complete')
+
+      component.ngOnDestroy()
+
+      expect(component['destroy$'].next).toHaveBeenCalledWith(undefined)
+      expect(component['destroy$'].complete).toHaveBeenCalled()
     })
   })
 
@@ -257,6 +268,31 @@ describe('WorkspaceSlotsComponent', () => {
       })
 
       expect(component.loadData).toHaveBeenCalled()
+    })
+
+    it('should not load data when workspace is undefined', () => {
+      component.workspace = undefined
+      spyOn(component, 'loadData')
+
+      component.ngOnChanges({
+        workspace: {
+          currentValue: undefined,
+          previousValue: null,
+          firstChange: true,
+          isFirstChange: () => true
+        }
+      })
+
+      expect(component.loadData).not.toHaveBeenCalled()
+    })
+
+    it('should not load data when changes do not include workspace', () => {
+      component.workspace = workspace
+      spyOn(component, 'loadData')
+
+      component.ngOnChanges({})
+
+      expect(component.loadData).not.toHaveBeenCalled()
     })
 
     it('should load data onReload', () => {
@@ -281,7 +317,7 @@ describe('WorkspaceSlotsComponent', () => {
       component.loadData()
 
       expect(component.wProductNames.length).toBe(2)
-      expect(component.wSlots.length).toBe(5)
+      expect(component.slots.length).toBe(5)
       expect(component.psComponents.length).toBe(4)
     })
 
@@ -324,6 +360,231 @@ describe('WorkspaceSlotsComponent', () => {
       expect(console.error).toHaveBeenCalledWith('searchAvailableProducts', errorResponse)
       expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + errorResponse.status + '.PRODUCTS')
     })
+
+    it('should handle empty stream from product store', () => {
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of(wProducts))
+      slotServiceSpy.getSlotsForWorkspace.and.returnValue(of({ slots: wSlots }))
+      productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: undefined }))
+
+      component.loadData()
+
+      expect(component.psComponents.length).toBe(0)
+    })
+
+    it('should handle empty slots from workspace', () => {
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of(wProducts))
+      slotServiceSpy.getSlotsForWorkspace.and.returnValue(of({ slots: undefined }))
+      productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: psProducts }))
+
+      component.loadData()
+
+      expect(component.slotsInternal.length).toBeGreaterThan(0) // only PS unregistered slots
+    })
+
+    it('should skip products without productName in workspace products', () => {
+      const productsWithMissing = [{ productName: 'product1' }, { productName: undefined }, { productName: 'product2' }]
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of(productsWithMissing))
+      slotServiceSpy.getSlotsForWorkspace.and.returnValue(of({ slots: [] }))
+      productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [] }))
+
+      component.loadData()
+
+      expect(component.wProductNames).toEqual(['product1', 'product2'])
+    })
+
+    it('should handle PS product without slots property', () => {
+      const psProductNoSlots: ProductStoreItem = {
+        productName: 'product-no-slots',
+        displayName: 'No Slots',
+        microfrontends: [psComp1]
+        // no slots property
+      }
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of(wProducts))
+      slotServiceSpy.getSlotsForWorkspace.and.returnValue(of({ slots: wSlots }))
+      productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [psProductNoSlots] }))
+
+      component.loadData()
+
+      // No PS slots extracted, but components are still extracted
+      expect(component.psComponents.length).toBe(1)
+    })
+
+    it('should handle PS product without microfrontends', () => {
+      const psProductNoMfe: ProductStoreItem = {
+        productName: 'product-no-mfe',
+        displayName: 'No MFE',
+        microfrontends: [],
+        slots: [psSlot1]
+      }
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of(wProducts))
+      slotServiceSpy.getSlotsForWorkspace.and.returnValue(of({ slots: wSlots }))
+      productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [psProductNoMfe] }))
+
+      component.loadData()
+
+      expect(component.psComponents.length).toBe(0)
+    })
+
+    it('should mark component as productUnregistered when product is not in wProductNames', () => {
+      // workspace slot with component from an unregistered product
+      const unregComp: SlotComponent = { productName: 'unregistered-product', appId: 'app-x', name: 'comp-x' }
+      const slotWithUnregComp: Slot = {
+        id: 'ws-unreg',
+        workspaceId: 'wid',
+        name: 'slot-unreg',
+        components: [unregComp]
+      }
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([{ productName: 'product1' }]))
+      slotServiceSpy.getSlotsForWorkspace.and.returnValue(of({ slots: [slotWithUnregComp] }))
+      productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [] }))
+
+      component.loadData()
+
+      const slot = component.slotsInternal.find((s) => s.name === 'slot-unreg')
+      expect(slot!.changes).toBeTrue()
+      expect(slot!.type).toContain('WORKSPACE')
+      expect(slot!.type).toContain('CHANGES')
+    })
+
+    it('should handle two PS products declaring the same slot name and slot used in workspace', () => {
+      // Both products have a slot named 'shared-slot'
+      const sharedSlot: SlotPS = { name: 'shared-slot', deprecated: false, undeployed: false }
+      const sharedSlotDeprecated: SlotPS = { name: 'shared-slot', deprecated: true, undeployed: false }
+      const product1: ProductStoreItem = {
+        productName: 'prodA',
+        displayName: 'Prod A',
+        microfrontends: [],
+        slots: [sharedSlot]
+      }
+      const product2: ProductStoreItem = {
+        productName: 'prodB',
+        displayName: 'Prod B',
+        microfrontends: [],
+        slots: [sharedSlotDeprecated]
+      }
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(
+        of([{ productName: 'prodA' }, { productName: 'prodB' }])
+      )
+      slotServiceSpy.getSlotsForWorkspace.and.returnValue(of({ slots: [{ name: sharedSlot.name }] }))
+      productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [product1, product2] }))
+
+      component.loadData()
+
+      // shared-slot should appear once with both product names and changes=true (deprecated from prod2)
+      const slot = component.slots.find((s) => s.name === sharedSlot.name)
+      expect(slot).toBeDefined()
+      expect(slot!.productNames).toContain('prodA')
+      expect(slot!.productNames).toContain('prodB')
+      expect(slot!.changes).toBeTrue()
+      expect(slot!.type).toContain('WORKSPACE')
+      expect(slot!.type).toContain('CHANGES')
+    })
+
+    it('should handle two PS products declaring the same slot name and slot NOT used in workspace', () => {
+      // Both products have a slot named 'shared-slot'
+      const sharedSlot: SlotPS = { name: 'shared-slot', deprecated: false, undeployed: false }
+      const sharedSlotDeprecated: SlotPS = { name: 'shared-slot', deprecated: true, undeployed: false }
+      const product1: ProductStoreItem = {
+        productName: 'prodA',
+        displayName: 'Prod A',
+        microfrontends: [],
+        slots: [sharedSlot]
+      }
+      const product2: ProductStoreItem = {
+        productName: 'prodB',
+        displayName: 'Prod B',
+        microfrontends: [],
+        slots: [sharedSlotDeprecated]
+      }
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(
+        of([{ productName: 'prodA' }, { productName: 'prodB' }])
+      )
+      slotServiceSpy.getSlotsForWorkspace.and.returnValue(of({ slots: [] })) // empty = not used
+      productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [product1, product2] }))
+
+      component.loadData()
+
+      // shared-slot should appear once with both product names and changes=true (deprecated from prod2)
+      const slot = component.slots.find((s) => s.name === sharedSlot.name)
+      expect(slot).toBeDefined()
+      expect(slot!.productNames).toContain('prodA')
+      expect(slot!.productNames).toContain('prodB')
+      expect(slot!.changes).toBeTrue()
+      expect(slot!.type).toContain('UNUSED')
+      expect(slot!.type).toContain('CHANGES')
+    })
+
+    it('should mark lost components on workspace slots', () => {
+      // wSlotComp with name not existing in PS components
+      const lostComp: SlotComponent = { productName: 'product1', appId: 'app-lost', name: 'lost-comp' }
+      const slotWithLostComp: Slot = { id: 'ws-lost', workspaceId: 'wid', name: 'slot-lost', components: [lostComp] }
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([{ productName: 'product1' }]))
+      slotServiceSpy.getSlotsForWorkspace.and.returnValue(of({ slots: [slotWithLostComp] }))
+      productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [] }))
+
+      component.loadData()
+
+      const slot = component.slotsInternal.find((s) => s.name === 'slot-lost')
+      expect(slot!.changes).toBeTrue()
+      expect(slot!.type).toContain('WORKSPACE')
+      expect(slot!.type).toContain('CHANGES')
+      expect(slot!.psComponents!.length).toBe(1)
+      expect(slot!.psComponents![0].exists).toBeFalse()
+    })
+
+    it('should set slot to WORKSPACE,CHANGES when component is deprecated in PS', () => {
+      const comp: SlotComponent = { productName: 'product1', appId: 'app1', name: 'comp1' }
+      const wsSlot: Slot = { id: 'ws-dep', workspaceId: 'wid', name: 'slot-dep', components: [comp] }
+      const psProd: ProductStoreItem = {
+        productName: 'product1',
+        displayName: 'Product 1',
+        microfrontends: [
+          { appId: 'app1', exposedModule: 'comp1', type: MicrofrontendType.Component, deprecated: true }
+        ],
+        slots: [{ name: 'slot-dep', deprecated: false, undeployed: false }]
+      }
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([{ productName: 'product1' }]))
+      slotServiceSpy.getSlotsForWorkspace.and.returnValue(of({ slots: [wsSlot] }))
+      productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [psProd] }))
+
+      component.loadData()
+
+      const slot = component.slotsInternal.find((s) => s.name === 'slot-dep')
+      expect(slot!.changes).toBeTrue()
+      expect(slot!.type).toContain('WORKSPACE')
+      expect(slot!.type).toContain('CHANGES')
+      expect(slot!.psComponents!.length).toBe(1)
+      expect(slot!.psComponents![0].deprecated).toBeTrue()
+    })
+
+    it('should not set changes when slot component is found and has no state issues', () => {
+      const comp: SlotComponent = { productName: 'product1', appId: 'app1', name: 'comp-ok' }
+      const wsSlot: Slot = { id: 'ws-ok', workspaceId: 'wid', name: 'slot-ok', components: [comp] }
+      const psProd: ProductStoreItem = {
+        productName: 'product1',
+        displayName: 'Product 1',
+        microfrontends: [
+          {
+            appId: 'app1',
+            exposedModule: 'comp-ok',
+            type: MicrofrontendType.Component,
+            deprecated: false,
+            undeployed: false
+          }
+        ],
+        slots: [{ name: 'slot-ok', deprecated: false, undeployed: false }]
+      }
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([{ productName: 'product1' }]))
+      slotServiceSpy.getSlotsForWorkspace.and.returnValue(of({ slots: [wsSlot] }))
+      productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: [psProd] }))
+
+      component.loadData()
+
+      const slot = component.slotsInternal.find((s) => s.name === 'slot-ok')
+      expect(slot!.changes).toBeFalse()
+      expect(slot!.type).toContain('WORKSPACE')
+      expect(slot!.psComponents!.length).toBe(1)
+    })
   })
 
   /**
@@ -331,33 +592,56 @@ describe('WorkspaceSlotsComponent', () => {
    */
   describe('filtering', () => {
     it('should reset filter to default when ALL is selected', () => {
-      const dv = jasmine.createSpyObj('DataView', ['filter'])
+      component.slots = [{ name: 'slot-1', type: ['WORKSPACE'] } as ExtendedSlot]
+      component.onQuickFilterChange({ value: 'ALL' })
 
-      component.onQuickFilterChange({ value: 'ALL' }, dv)
-
-      expect(component.filterBy).toEqual(component.filterByDefault)
       expect(component.quickFilterValue).toEqual('ALL')
+      expect(component.slotsFiltered).toEqual(component.slots)
     })
 
-    it('should set filter by specific type', () => {
-      const dv = jasmine.createSpyObj('DataView', ['filter'])
-      component.onQuickFilterChange({ value: 'UNREGISTERED' }, dv)
+    it('should filter slots by type WORKSPACE', () => {
+      component.slots = [
+        { name: 'slot-1', type: ['WORKSPACE'] } as ExtendedSlot,
+        { name: 'slot-2', type: ['UNUSED'] } as ExtendedSlot,
+        { name: 'slot-3', type: ['WORKSPACE', 'CHANGES'] } as ExtendedSlot
+      ]
 
-      expect(component.filterBy).toEqual('type')
-      expect(component.quickFilterValue).toEqual('UNREGISTERED')
+      component.onQuickFilterChange({ value: 'WORKSPACE' })
+
+      expect(component.quickFilterValue).toEqual('WORKSPACE')
+      expect(component.slotsFiltered.length).toBe(2)
+      expect(component.slotsFiltered[0].name).toBe('slot-1')
+      expect(component.slotsFiltered[1].name).toBe('slot-3')
     })
 
-    it('should set filterBy to name,type when filter is empty', () => {
+    it('should filter slots by type CHANGES', () => {
+      component.slots = [
+        { name: 'slot-1', type: ['WORKSPACE'] } as ExtendedSlot,
+        { name: 'slot-2', type: ['UNUSED', 'CHANGES'] } as ExtendedSlot,
+        { name: 'slot-3', type: ['WORKSPACE', 'CHANGES'] } as ExtendedSlot
+      ]
+
+      component.onQuickFilterChange({ value: 'CHANGES' })
+
+      expect(component.quickFilterValue).toEqual('CHANGES')
+      expect(component.slotsFiltered.length).toBe(2)
+    })
+
+    it('should set filterBy to name and call dv.filter when filter is empty', () => {
       const dv = jasmine.createSpyObj('DataView', ['filter'])
       component.onFilterChange('', dv)
 
-      expect(component.filterBy).toEqual(component.filterByDefault)
+      expect(component.filterBy).toEqual('name')
+      expect(dv.filter).toHaveBeenCalledWith('')
     })
 
-    it('should call filter method with "contains" when filter has a value', () => {
+    it('should set filterBy to name and call dv.filter with the value', () => {
       const dv = jasmine.createSpyObj('DataView', ['filter'])
 
       component.onFilterChange('testFilter', dv)
+
+      expect(component.filterBy).toEqual('name')
+      expect(dv.filter).toHaveBeenCalledWith('testFilter')
     })
   })
 
@@ -368,6 +652,15 @@ describe('WorkspaceSlotsComponent', () => {
       component.onSortChange(testField)
 
       expect(component.sortField).toBe(testField)
+    })
+
+    it('should sort slots by name case-insensitive', () => {
+      const slotA = { name: 'alpha' } as ExtendedSlot
+      const slotB = { name: 'Beta' } as ExtendedSlot
+
+      expect(component.sortSlotsByName(slotA, slotB)).toBeLessThan(0)
+      expect(component.sortSlotsByName(slotB, slotA)).toBeGreaterThan(0)
+      expect(component.sortSlotsByName(slotA, slotA)).toBe(0)
     })
 
     describe('onSortDirChange', () => {
@@ -394,66 +687,69 @@ describe('WorkspaceSlotsComponent', () => {
     })
 
     it('should handle slot detail event and update the component state', () => {
-      const mockSlot: CombinedSlot = {
+      const mockSlot: ExtendedSlot = {
         id: '123',
         new: false,
-        type: 'WORKSPACE',
+        type: ['WORKSPACE'],
         changes: false,
         psSlots: [],
         psComponents: [],
         undeployed: false,
-        deprecated: false
+        deprecated: false,
+        productNames: ['product1']
       }
       component.hasEditPermission = true
 
       component.onSlotDetail(mockEvent, mockSlot)
 
       expect(mockEvent.stopPropagation).toHaveBeenCalled()
-      expect(component.item4Detail).toBe(mockSlot)
+      expect(component.item4Detail).toEqual(mockSlot)
       expect(component.changeMode).toBe('EDIT')
       expect(component.showSlotDetailDialog).toBeTrue()
     })
 
     it('should handle slot detail event and set change mode to VIEW', () => {
-      const mockSlot: CombinedSlot = {
+      const mockSlot: ExtendedSlot = {
         id: '123',
         new: false,
-        type: 'WORKSPACE',
+        type: ['WORKSPACE'],
         changes: false,
         psSlots: [],
         psComponents: [],
         undeployed: false,
-        deprecated: false
+        deprecated: false,
+        productNames: ['product1']
       }
       component.hasEditPermission = false
 
       component.onSlotDetail(mockEvent, mockSlot)
 
       expect(mockEvent.stopPropagation).toHaveBeenCalled()
-      expect(component.item4Detail).toBe(mockSlot)
+      expect(component.item4Detail).toEqual(mockSlot)
       expect(component.changeMode).toBe('VIEW')
       expect(component.showSlotDetailDialog).toBeTrue()
     })
 
-    it('should not update state if slot is new', () => {
-      const mockSlot: CombinedSlot = {
+    it('should open detail dialog if slot is new and has EDIT permission', () => {
+      const mockSlot: ExtendedSlot = {
         id: '123',
         new: true,
-        type: 'WORKSPACE',
+        type: ['WORKSPACE'],
         changes: false,
         psSlots: [],
         psComponents: [],
         undeployed: false,
-        deprecated: false
+        deprecated: false,
+        productNames: ['product1']
       }
       component.hasEditPermission = true
 
       component.onSlotDetail(mockEvent, mockSlot)
 
       expect(mockEvent.stopPropagation).toHaveBeenCalled()
-      expect(component.item4Detail).toBeUndefined()
-      expect(component.changeMode).toBe('VIEW')
-      expect(component.showSlotDetailDialog).toBeFalse()
+      expect(component.item4Detail).toEqual(mockSlot)
+      expect(component.changeMode).toBe('EDIT')
+      expect(component.showSlotDetailDialog).toBeTrue()
     })
   })
 
@@ -488,148 +784,28 @@ describe('WorkspaceSlotsComponent', () => {
       expect(component.loadData).not.toHaveBeenCalled() // NOT called
     })
 
-    it('should adjust slot array after a slot was deleted', () => {
+    it('should not call loadData when changeMode is DELETE even if changed', () => {
       component.item4Detail = { id: '123', new: false } as any
       component.changeMode = 'DELETE'
-      component.showSlotDeleteDialog = true
 
       component.onSlotDetailClosed(true) // changes
 
       expect(component.item4Detail).toBeUndefined()
       expect(component.changeMode).toBe('VIEW')
-      expect(component.showSlotDeleteDialog).toBeFalse()
-    })
-  })
-
-  describe('onAddSlot', () => {
-    let mockEvent: any
-    const slot: CombinedSlot = {
-      id: 'id5',
-      name: 'slot-5',
-      new: true,
-      type: 'UNREGISTERED',
-      changes: false,
-      psSlots: [],
-      psComponents: [],
-      undeployed: false,
-      deprecated: false
-    }
-
-    beforeEach(() => {
-      mockEvent = new Event('click')
-      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of(wProducts))
-      slotServiceSpy.getSlotsForWorkspace.and.returnValue(of({ slots: wSlots }))
-      productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: psProducts }))
-      component.workspace = workspace
-      component.loadData()
+      expect(component.showSlotDetailDialog).toBeFalse()
+      expect(component.loadData).not.toHaveBeenCalled()
     })
 
-    it('should create a slot ', () => {
-      slotServiceSpy.createSlot.and.returnValue(
-        of({
-          ...slot,
-          id: 'id',
-          creationDate: 'date',
-          creationUser: 'test',
-          modificationDate: 'date',
-          modificationUser: 'test'
-        })
-      )
-      spyOn(mockEvent, 'stopPropagation')
+    it('should not call loadData when item4Detail has no id', () => {
+      component.item4Detail = { new: true } as any // no id
+      component.changeMode = 'EDIT'
 
-      component.onAddSlot(mockEvent, slot)
+      component.onSlotDetailClosed(true) // changes
 
-      expect(mockEvent.stopPropagation).toHaveBeenCalled()
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.SLOT.MESSAGE.OK' })
-      expect(slotServiceSpy.createSlot).toHaveBeenCalledWith({
-        createSlotRequest: { workspaceId: component.workspace?.id, name: slot.name }
-      })
-    })
-
-    it('should display error if slot creation fails', () => {
-      const errorResponse = { status: 400, statusText: 'Error on creating a slot' }
-      slotServiceSpy.createSlot.and.returnValue(throwError(() => errorResponse))
-      spyOn(console, 'error')
-
-      component.onAddSlot(mockEvent, slot)
-
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.SLOT.MESSAGE.NOK' })
-      expect(console.error).toHaveBeenCalledWith('createSlot', errorResponse)
-    })
-  })
-
-  describe('onDeleteSlot', () => {
-    let mockEvent: any
-    const slot: CombinedSlot = {
-      id: 'id5',
-      name: 'slot-5',
-      new: false,
-      type: 'WORKSPACE',
-      changes: false,
-      psSlots: [],
-      psComponents: [],
-      undeployed: false,
-      deprecated: false,
-      creationDate: 'date',
-      creationUser: 'test',
-      modificationDate: 'date',
-      modificationUser: 'test'
-    }
-
-    beforeEach(() => {
-      mockEvent = new Event('click')
-      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of(wProducts))
-      slotServiceSpy.getSlotsForWorkspace.and.returnValue(of({ slots: wSlots }))
-      productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: psProducts }))
-      component.workspace = workspace
-      component.loadData()
-    })
-
-    it('should delete a slot ', () => {
-      slotServiceSpy.deleteSlotById.and.returnValue(of({}))
-      spyOn(mockEvent, 'stopPropagation')
-
-      component.onDeleteSlot(mockEvent, slot)
-
-      expect(mockEvent.stopPropagation).toHaveBeenCalled()
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.SLOT.MESSAGE.OK' })
-      expect(slotServiceSpy.deleteSlotById).toHaveBeenCalledWith({ id: slot.id })
-    })
-
-    it('should display error if slot creation fails', () => {
-      const errorResponse = { status: 400, statusText: 'Error on creating a slot' }
-      slotServiceSpy.deleteSlotById.and.returnValue(throwError(() => errorResponse))
-      spyOn(console, 'error')
-
-      component.onDeleteSlot(mockEvent, slot)
-
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.SLOT.MESSAGE.NOK' })
-      expect(console.error).toHaveBeenCalledWith('deleteSlotById', errorResponse)
-    })
-  })
-
-  describe('deletion', () => {
-    let mockEvent: any
-    const mockSlot: CombinedSlot = {
-      id: '123',
-      new: true,
-      type: 'WORKSPACE',
-      changes: false,
-      psSlots: [],
-      psComponents: [],
-      undeployed: false,
-      deprecated: false
-    }
-
-    it('should call deletion dialog for a slot', () => {
-      mockEvent = new Event('click')
-      spyOn(mockEvent, 'stopPropagation')
-
-      component.onSlotDelete(mockEvent, mockSlot)
-
-      expect(mockEvent.stopPropagation).toHaveBeenCalled()
-      expect(component.changeMode).toBe('DELETE')
-      expect(component.showSlotDeleteDialog).toBeTrue()
+      expect(component.item4Detail).toBeUndefined()
+      expect(component.changeMode).toBe('VIEW')
+      expect(component.showSlotDetailDialog).toBeFalse()
+      expect(component.loadData).not.toHaveBeenCalled()
     })
   })
 
@@ -692,16 +868,12 @@ describe('WorkspaceSlotsComponent', () => {
 
     it('should productEndpointExist - not exist', (done) => {
       component.productEndpointExist = false
-      const errorResponse = { status: 400, statusText: 'Error on check endpoint' }
-      workspaceServiceSpy.getUrl.and.returnValue(throwError(() => errorResponse))
 
       const eu$ = component.getProductEndpointUrl$()
 
       eu$.subscribe({
         next: (data) => {
-          if (data) {
-            expect(data).toBeFalse()
-          }
+          expect(data).toBeUndefined()
           done()
         },
         error: done.fail
