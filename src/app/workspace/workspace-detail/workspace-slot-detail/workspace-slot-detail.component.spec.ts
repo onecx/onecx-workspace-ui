@@ -16,16 +16,19 @@ describe('WorkspaceSlotDetailComponent', () => {
   let fixture: ComponentFixture<WorkspaceSlotDetailComponent>
 
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
-  const slotServiceSpy = {
-    updateSlot: jasmine.createSpy('updateSlot').and.returnValue(of({})),
-    deleteSlotById: jasmine.createSpy('deleteSlotById').and.returnValue(of({}))
-  }
+  const slotServiceSpy = { addOrUpdateSlot: jasmine.createSpy('addOrUpdateSlot').and.returnValue(of({})) }
 
   const mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
   mockUserService.hasPermission.and.callFake((permission: string) => {
     return ['WORKSPACE_SLOT#EDIT'].includes(permission)
   })
   mockUserService.lang$ = new BehaviorSubject('de')
+
+  function initializeComponent(): void {
+    fixture = TestBed.createComponent(WorkspaceSlotDetailComponent)
+    component = fixture.componentInstance
+    fixture.detectChanges()
+  }
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -47,15 +50,8 @@ describe('WorkspaceSlotDetailComponent', () => {
     }).compileComponents()
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
-    slotServiceSpy.updateSlot.calls.reset()
-    slotServiceSpy.deleteSlotById.calls.reset()
+    slotServiceSpy.addOrUpdateSlot.calls.reset()
   }))
-
-  function initializeComponent(): void {
-    fixture = TestBed.createComponent(WorkspaceSlotDetailComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
-  }
 
   beforeEach(() => {
     initializeComponent()
@@ -67,7 +63,7 @@ describe('WorkspaceSlotDetailComponent', () => {
 
   describe('OnChanges', () => {
     it('should initialize component state when slot is provided', () => {
-      component.displayDetailDialog = true
+      component.displayDialog = true
       // products which using the slot
       const psSlots: PSSlot[] = [
         { name: 'slot1', pName: 'productB', pDisplayName: 'Product B' },
@@ -102,7 +98,7 @@ describe('WorkspaceSlotDetailComponent', () => {
     })
 
     it('should initialize component state when slot is provided, but slot is a lost slot', () => {
-      component.displayDetailDialog = true
+      component.displayDialog = true
       // products which using the slot
       const psSlots: PSSlot[] = [
         {
@@ -155,67 +151,53 @@ describe('WorkspaceSlotDetailComponent', () => {
   })
 
   describe('Closing', () => {
+    const slot: ExtendedSlot = {
+      modificationCount: 0,
+      name: 'slot1',
+      productNames: ['productA'],
+      new: false,
+      type: ['WORKSPACE'],
+      changes: false,
+      undeployed: false,
+      deprecated: false,
+      psSlots: [],
+      psComponents: [
+        {
+          productName: 'slotComponentProdName',
+          appId: 'slotComponentAppId',
+          name: 'slotComponentName',
+          undeployed: false,
+          deprecated: false
+        }
+      ]
+    }
     beforeEach(() => {
-      const slot: ExtendedSlot = {
-        modificationCount: 0,
-        name: 'slot1',
-        productNames: ['productA'],
-        new: false,
-        type: ['WORKSPACE'],
-        changes: false,
-        undeployed: false,
-        deprecated: false,
-        psSlots: [],
-        psComponents: [
-          {
-            productName: 'slotComponentProdName',
-            appId: 'slotComponentAppId',
-            name: 'slotComponentName',
-            undeployed: false,
-            deprecated: false
-          }
-        ]
-      }
       component.slot = slot
+      component.workspace_id = 'workspace1'
+      component.displayDialog = true
+      component.ngOnChanges()
     })
 
-    it('should always emit detailClosed event when dialog is closed', () => {
+    it('should emit detailClosed event with false if there is no change ', () => {
       component.slot = undefined
       spyOn(component.detailClosed, 'emit')
 
       component.onClose()
 
-      expect(component.detailClosed.emit).toHaveBeenCalledWith(false)
+      expect(component.detailClosed.emit).not.toHaveBeenCalled()
     })
 
-    it('should emit detailClosed event with false if there is no change ', () => {
-      const slot: ExtendedSlot = {
-        modificationCount: 1,
-        name: 'slot1',
-        productNames: ['productA'],
-        new: false,
-        type: ['WORKSPACE'],
-        changes: false,
-        undeployed: false,
-        deprecated: false,
-        psSlots: [],
-        psComponents: [
-          {
-            productName: 'slotComponentProdName',
-            appId: 'slotComponentAppId',
-            name: 'slotComponentName',
-            undeployed: false,
-            deprecated: false
-          }
-        ]
+    it('should emit detailClosed event with true if there is a change ', () => {
+      const slot2: ExtendedSlot = {
+        ...slot,
+        modificationCount: 1 // changed
       }
-      component.slot = slot
-
+      component.slot = slot2
       spyOn(component.detailClosed, 'emit')
 
       component.onClose()
 
-      expect(component.detailClosed.emit).toHaveBeenCalledWith(false) // no change
+      expect(component.detailClosed.emit).toHaveBeenCalledWith(true)
     })
   })
 
@@ -321,6 +303,7 @@ describe('WorkspaceSlotDetailComponent', () => {
 
   describe('Saving', () => {
     beforeEach(() => {
+      component.workspace_id = 'workspace1'
       component.slot = {
         name: 'slot1',
         new: false,
@@ -351,11 +334,11 @@ describe('WorkspaceSlotDetailComponent', () => {
         modificationDate: 'date',
         components: [{ productName: 'product1', appId: 'app1', name: 'comp1' }]
       }
-      slotServiceSpy.updateSlot.and.returnValue(of(slotResponse))
+      slotServiceSpy.addOrUpdateSlot.and.returnValue(of(slotResponse))
 
       component.onSaveSlot(false)
 
-      expect(slotServiceSpy.updateSlot).toHaveBeenCalled()
+      expect(slotServiceSpy.addOrUpdateSlot).toHaveBeenCalled()
       if (component.slot) {
         expect(component.slot.modificationCount).toBe(slotResponse.modificationCount)
         expect(component.slot.modificationDate).toBe(slotResponse.modificationDate)
@@ -366,14 +349,14 @@ describe('WorkspaceSlotDetailComponent', () => {
 
     it('should save slot and handle error response', () => {
       const errorResponse = { status: 400, statusText: 'Error on import menu items' }
-      slotServiceSpy.updateSlot.and.returnValue(throwError(() => errorResponse))
+      slotServiceSpy.addOrUpdateSlot.and.returnValue(throwError(() => errorResponse))
       spyOn(console, 'error')
 
       component.onSaveSlot(false)
 
-      expect(slotServiceSpy.updateSlot).toHaveBeenCalled()
+      expect(slotServiceSpy.addOrUpdateSlot).toHaveBeenCalled()
       expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.SLOT_NOK' })
-      expect(console.error).toHaveBeenCalledWith('updateSlot', errorResponse)
+      expect(console.error).toHaveBeenCalledWith('addOrUpdateSlot', errorResponse)
     })
 
     it('should save slot on deregister confirmation', fakeAsync(() => {
@@ -408,12 +391,7 @@ describe('WorkspaceSlotDetailComponent', () => {
         { name: 'comp2', productName: 'product1', appId: 'appId1', undeployed: false, deprecated: false },
         { name: 'comp2', productName: 'product2', appId: 'appId1', undeployed: false, deprecated: false }
       ]
-      const slotResponse: Slot = {
-        modificationCount: 1,
-        modificationDate: 'date',
-        components: [{ productName: 'product1', appId: 'app1', name: 'comp1' }]
-      }
-      slotServiceSpy.updateSlot.and.returnValue(of(slotResponse))
+      slotServiceSpy.addOrUpdateSlot.and.returnValue(of(undefined))
 
       component.onSaveSlot(false)
 
@@ -437,11 +415,11 @@ describe('WorkspaceSlotDetailComponent', () => {
           { productName: 'Product', appId: 'AppId', name: 'Component Name', undeployed: false, deprecated: false }
         ]
       }
-      slotServiceSpy.updateSlot.and.returnValue(of({}))
+      slotServiceSpy.addOrUpdateSlot.and.returnValue(of({}))
 
       component.onSaveSlot(true)
 
-      expect(slotServiceSpy.updateSlot).not.toHaveBeenCalled()
+      expect(slotServiceSpy.addOrUpdateSlot).not.toHaveBeenCalled()
     })
 
     it('should ignore saving if slot has no or one component', () => {
@@ -462,65 +440,11 @@ describe('WorkspaceSlotDetailComponent', () => {
           { productName: 'Product', appId: 'AppId', name: 'Component Name', undeployed: false, deprecated: false }
         ]
       }
-      slotServiceSpy.updateSlot.and.returnValue(of({}))
+      slotServiceSpy.addOrUpdateSlot.and.returnValue(of({}))
 
       component.onSaveSlot(true)
 
-      expect(slotServiceSpy.updateSlot).toHaveBeenCalled()
-    })
-  })
-
-  describe('Deletion', () => {
-    beforeEach(() => {
-      component.slot = {
-        name: 'slot1',
-        id: '1',
-        new: false,
-        type: ['WORKSPACE'],
-        changes: false,
-        undeployed: false,
-        deprecated: false,
-        psSlots: [],
-        productNames: [],
-        psComponents: [
-          {
-            productName: 'slotComponentProdName',
-            appId: 'slotComponentAppId',
-            name: 'slotComponentName',
-            undeployed: false,
-            deprecated: false
-          }
-        ]
-      }
-      component.wComponents = [
-        { productName: 'mockProdName', appId: 'mockAppId', name: 'mockName', undeployed: false, deprecated: false }
-      ]
-    })
-
-    it('should call deleteSlotById and handle success response', () => {
-      slotServiceSpy.deleteSlotById.and.returnValue(of({}))
-      spyOn(component.detailClosed, 'emit')
-
-      component.onDeleteSlot()
-
-      expect(slotServiceSpy.deleteSlotById).toHaveBeenCalledWith({ id: '1' })
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.SLOT.MESSAGE.OK' })
-      expect(component.detailClosed.emit).toHaveBeenCalledWith(true)
-    })
-
-    it('should call deleteSlotById and handle error response', () => {
-      const errorResponse = { status: 400, statusText: 'Error on deleting a slot' }
-      slotServiceSpy.deleteSlotById.and.returnValue(throwError(() => errorResponse))
-
-      spyOn(component.detailClosed, 'emit')
-      spyOn(console, 'error')
-
-      component.onDeleteSlot()
-
-      expect(slotServiceSpy.deleteSlotById).toHaveBeenCalledWith({ id: '1' })
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.SLOT.MESSAGE.NOK' })
-      expect(console.error).toHaveBeenCalledWith('deleteSlotById', errorResponse)
-      expect(component.detailClosed.emit).not.toHaveBeenCalled()
+      expect(slotServiceSpy.addOrUpdateSlot).toHaveBeenCalled()
     })
   })
 

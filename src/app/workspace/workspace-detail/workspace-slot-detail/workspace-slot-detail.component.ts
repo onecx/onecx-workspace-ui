@@ -13,15 +13,15 @@ import { ChangeMode, ExtendedSlot, ExtendedComponent, PSSlot } from '../workspac
 })
 export class WorkspaceSlotDetailComponent implements OnChanges {
   @Input() slot: ExtendedSlot | undefined // displayed slot
+  @Input() workspace_id!: string // only id is needed for API calls
   @Input() psComponentsOrg: ExtendedComponent[] = [] // all PS components
   @Input() wProductNames: string[] = [] // names of all products registered in workspace
   @Input() changeMode: ChangeMode = 'VIEW'
-  @Input() displayDetailDialog = false
-  @Input() displayDeleteDialog = false
+  @Input() displayDialog = false
   @Output() detailClosed: EventEmitter<boolean> = new EventEmitter()
 
   public dateFormat: string
-  //public slot: ExtendedSlot | undefined
+  public slotOrg: ExtendedSlot | undefined // used for restore
   public wComponents: ExtendedComponent[] = [] // used/assigned components
   public psComponents: ExtendedComponent[] = [] // org ps components reduced by used in slot
   public hasEditPermission = false
@@ -44,7 +44,8 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   }
 
   public ngOnChanges(): void {
-    if (this.displayDetailDialog && this.slot) {
+    if (this.displayDialog && this.slot) {
+      this.slotOrg = { ...this.slot } // to be able to restore and compare
       this.wComponents = []
       // extract components assigned to the slot with PS infos
       if (this.slot.psComponents) this.wComponents = [...this.slot.psComponents]
@@ -83,8 +84,9 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   }
 
   public onClose(): void {
-    if (this.slot) this.detailClosed.emit(this.slot.modificationCount !== this.slot?.modificationCount)
-    else this.detailClosed.emit(false)
+    if (this.slot) {
+      this.detailClosed.emit(this.slotOrg?.modificationCount !== this.slot?.modificationCount)
+    }
   }
 
   /**
@@ -132,10 +134,10 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
       // picklist bug: ignore change if only one component is in list
       if (reorder && this.slot.components && this.slot.components.length < 2) return
       this.slotApi
-        .updateSlot({
-          id: this.slot.id!,
+        .addOrUpdateSlot({
+          id: this.workspace_id,
           updateSlotRequest: {
-            modificationCount: this.slot.modificationCount!,
+            modificationCount: this.slot.modificationCount,
             name: this.slot.name,
             components: this.wComponents.map((ec) => {
               return { productName: ec.productName, appId: ec.appId, name: ec.name } as SlotComponent
@@ -144,11 +146,19 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
         })
         .subscribe({
           next: (data) => {
-            if (this.slot) {
-              this.slot.modificationCount = data.modificationCount
-              this.slot.modificationDate = data.modificationDate
-              this.slot.components = data.components
-            }
+            if (this.slot)
+              if (data) {
+                this.slot.modificationCount = data.modificationCount
+                this.slot.modificationDate = data.modificationDate
+                this.slot.components = data.components
+              } else {
+                this.slot = {
+                  ...this.slot,
+                  id: undefined,
+                  modificationCount: undefined,
+                  modificationDate: undefined
+                }
+              }
             if (this.deregisterItems.length > 0) this.psComponents.sort(this.sortComponents)
             this.deregisterItems = []
             this.wComponentsOrg = [...this.wComponents]
@@ -156,24 +166,9 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
           },
           error: (err) => {
             this.msgService.error({ summaryKey: 'ACTIONS.EDIT.SLOT_NOK' })
-            console.error('updateSlot', err)
+            console.error('addOrUpdateSlot', err)
           }
         })
-    }
-  }
-
-  public onDeleteSlot() {
-    if (this.slot) {
-      this.slotApi.deleteSlotById({ id: this.slot.id! }).subscribe({
-        next: () => {
-          this.msgService.success({ summaryKey: 'ACTIONS.DELETE.SLOT.MESSAGE.OK' })
-          this.detailClosed.emit(true)
-        },
-        error: (err) => {
-          this.msgService.error({ summaryKey: 'ACTIONS.DELETE.SLOT.MESSAGE.NOK' })
-          console.error('deleteSlotById', err)
-        }
-      })
     }
   }
 }
