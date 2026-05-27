@@ -196,7 +196,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
     }
     roles.sort(sortByRoleName)
     this.roles = roles
-    this.onQuickFilterChange({ value: this.quickFilterValue })
+    this.onQuickFilterChange({ value: this.quickFilterValue }) // reestablish filter after data change
   }
 
   private searchRoles(force: boolean = false): void {
