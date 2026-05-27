@@ -38,7 +38,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
   public selectedTabIndex = 0
   public dateFormat = 'M/d/yy, hh:mm:ss a'
   public objectDetails!: ObjectDetailItem[]
-  public workspace$!: Observable<Workspace>
+  public workspace$!: Observable<Workspace | undefined>
   public workspace: Workspace | undefined
   public workspaceForRoles: Workspace | undefined
   public workspaceForSlots: Workspace | undefined
@@ -82,15 +82,15 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
     this.exceptionKey = undefined
     this.workspace$ = this.workspaceApi.getWorkspaceByName({ workspaceName: this.workspaceName }).pipe(
       map((data: GetWorkspaceResponse) => {
-        if (data.resource) this.workspace = data.resource
-        this.currentLogoUrl = this.getLogoUrl(data.resource)
-        this.goToTab(data.resource)
-        return data.resource ?? ({} as Workspace)
+        this.workspace = data.resource ?? undefined
+        this.currentLogoUrl = this.getLogoUrl(this.workspace)
+        this.goToTab(this.workspace)
+        return this.workspace
       }),
       catchError((err) => {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.WORKSPACE'
         console.error('getWorkspaceByName', err)
-        return of({} as Workspace)
+        return of(undefined)
       }),
       finalize(() => {
         this.loading = false

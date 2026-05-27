@@ -177,6 +177,8 @@ describe('WorkspaceCreateComponent', () => {
       const paths = ['/productBaseUrl-1', '/productBaseUrl-2']
 
       component.onOpenProductPathes(paths)
+
+      expect().nothing()
     })
 
     it('should load product paths failed', () => {

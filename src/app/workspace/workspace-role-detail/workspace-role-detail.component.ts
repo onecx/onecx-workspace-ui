@@ -90,7 +90,7 @@ export class WorkspaceRoleDetailComponent implements OnChanges {
             workspaceId: this.workspace?.id ?? '',
             name: role.name,
             description: role.description
-          } as CreateWorkspaceRoleRequest
+          }
         })
         .subscribe({
           next: (data) => {

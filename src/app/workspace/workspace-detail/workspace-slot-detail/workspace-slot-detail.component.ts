@@ -140,7 +140,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
             modificationCount: this.slot.modificationCount,
             name: this.slot.name,
             components: this.wComponents.map((ec) => {
-              return { productName: ec.productName, appId: ec.appId, name: ec.name } as SlotComponent
+              return { productName: ec.productName, appId: ec.appId, name: ec.name }
             })
           } as UpdateSlotRequest
         })

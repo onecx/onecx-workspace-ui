@@ -69,11 +69,11 @@ export class OneCXWorkspaceDataComponent implements ocxRemoteComponent, ocxRemot
   }
   // output
   @Input() workspaces = new EventEmitter<Workspace[]>()
-  @Input() workspace = new EventEmitter<Workspace>()
+  @Input() workspace = new EventEmitter<Workspace | undefined>()
   @Input() imageLoadingFailed = new EventEmitter<boolean>()
 
   public workspaces$: Observable<Workspace[]> | undefined
-  public workspace$: Observable<Workspace> | undefined
+  public workspace$: Observable<Workspace | undefined> | undefined
   public imageUrl$ = new BehaviorSubject<string | undefined>(undefined)
   public defaultImageUrl: string | undefined = undefined
 
@@ -132,12 +132,11 @@ export class OneCXWorkspaceDataComponent implements ocxRemoteComponent, ocxRemot
    */
   private getWorkspace() {
     if (!this.workspaceName) return
-
     this.workspace$ = this.workspaceApi.getWorkspaceByName({ workspaceName: this.workspaceName }).pipe(
-      map((data) => data.resource),
+      map((response) => response.resource),
       catchError((err) => {
         console.error('onecx-workspace-data.getWorkspaceByName', err)
-        return of({} as Workspace)
+        return of(undefined)
       })
     )
     this.workspace$.subscribe(this.workspace)

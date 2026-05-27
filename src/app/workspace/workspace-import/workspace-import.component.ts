@@ -98,7 +98,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
             this.importWorkspace.themeObject = {
               name: this.importWorkspace.theme,
               displayName: this.importWorkspace.theme
-            } as Theme
+            }
           this.importWorkspaceOrg = { ...this.importWorkspace } // clone
         }
       }

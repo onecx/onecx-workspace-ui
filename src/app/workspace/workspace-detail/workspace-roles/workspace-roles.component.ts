@@ -234,7 +234,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
           workspaceId: this.workspace?.id ?? '',
           name: role.name,
           description: role.description
-        } as CreateWorkspaceRoleRequest
+        }
       })
       .subscribe({
         next: (data) => {
@@ -290,10 +290,6 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
       this.rolesFiltered = this.roles.filter((s) => s.origin.includes(ev.value))
     }
     this.quickFilterValue = ev.value
-  }
-  public onFilterChange(filter: string, dv: DataView): void {
-    this.filterBy = 'name'
-    dv?.filter(filter)
   }
 
   public onGetQuickFilterCount(roleType: RoleFilterType): string {

@@ -371,19 +371,6 @@ describe('WorkspaceRolesComponent', () => {
       expect(component.rolesFiltered).toEqual([component.roles[0]])
     })
 
-    it('should set filterBy to name when filter is empty', () => {
-      const dv = jasmine.createSpyObj('DataView', ['filter'])
-      component.onFilterChange('', dv)
-
-      expect(component.filterBy).toEqual('name')
-    })
-
-    it('should call filter method with "contains" when filter has a value', () => {
-      const dv = jasmine.createSpyObj('DataView', ['filter'])
-
-      component.onFilterChange('testFilter', dv)
-    })
-
     it('should quick filter after searching', () => {
       const wRoles: WorkspaceRole[] = [{ name: 'role1', description: 'desc' }]
       wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: wRoles as WorkspaceRolePageResult }))

@@ -94,6 +94,8 @@ describe('OneCXUserSidebarMenuComponent', () => {
       const { component } = setUp()
 
       component.avatarImageLoadedEmitter.emit(true)
+
+      expect().nothing()
     })
   })
 

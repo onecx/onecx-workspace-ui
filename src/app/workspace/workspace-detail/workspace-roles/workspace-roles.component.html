@@ -89,7 +89,7 @@
         [initialViewMode]="'grid'"
         [filterValue]="filterValue"
         [enableFiltering]="true"
-        (filterChange)="onFilterChange($event, rolesDataView)"
+        (filterChange)="rolesDataView?.filter($event)"
         [filterColumns]="['ROLE.NAME' | translate, 'ROLE.TYPE' | translate]"
         [enableSorting]="false"
         [translations]="(dataViewControlsTranslations$ | async) ?? {}"
