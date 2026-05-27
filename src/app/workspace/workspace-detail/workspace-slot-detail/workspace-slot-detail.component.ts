@@ -17,7 +17,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   @Input() psComponentsOrg: ExtendedComponent[] = [] // all PS components
   @Input() wProductNames: string[] = [] // names of all products registered in workspace
   @Input() changeMode: ChangeMode = 'VIEW'
-  @Input() displayDetailDialog = false
+  @Input() displayDialog = false
   @Output() detailClosed: EventEmitter<boolean> = new EventEmitter()
 
   public dateFormat: string
@@ -44,7 +44,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   }
 
   public ngOnChanges(): void {
-    if (this.displayDetailDialog && this.slot) {
+    if (this.displayDialog && this.slot) {
       this.slotOrg = { ...this.slot } // to be able to restore and compare
       this.wComponents = []
       // extract components assigned to the slot with PS infos
@@ -84,8 +84,9 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   }
 
   public onClose(): void {
-    if (this.slot) this.detailClosed.emit(this.slotOrg?.modificationCount !== this.slot?.modificationCount)
-    else this.detailClosed.emit(false)
+    if (this.slot) {
+      this.detailClosed.emit(this.slotOrg?.modificationCount !== this.slot?.modificationCount)
+    }
   }
 
   /**
@@ -145,7 +146,6 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
         })
         .subscribe({
           next: (data) => {
-            console.log('updateSlot', data)
             if (this.slot)
               if (data) {
                 this.slot.modificationCount = data.modificationCount
@@ -166,7 +166,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
           },
           error: (err) => {
             this.msgService.error({ summaryKey: 'ACTIONS.EDIT.SLOT_NOK' })
-            console.error('updateSlot', err)
+            console.error('addOrUpdateSlot', err)
           }
         })
     }

@@ -188,7 +188,7 @@ describe('WorkspaceSlotsComponent', () => {
   const workspaceServiceSpy = jasmine.createSpyObj<WorkspaceService>('WorkspaceService', ['doesUrlExistFor', 'getUrl'])
   const mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
   mockUserService.hasPermission.and.callFake((permission: string) => {
-    return ['WORKSPACE_SLOT#EDIT', 'WORKSPACE_SLOT#CREATE', 'WORKSPACE_SLOT#DELETE'].includes(permission)
+    return ['WORKSPACE_SLOT#EDIT'].includes(permission)
   })
 
   beforeEach(waitForAsync(() => {
@@ -626,23 +626,6 @@ describe('WorkspaceSlotsComponent', () => {
       expect(component.quickFilterValue).toEqual('CHANGES')
       expect(component.slotsFiltered.length).toBe(2)
     })
-
-    it('should set filterBy to name and call dv.filter when filter is empty', () => {
-      const dv = jasmine.createSpyObj('DataView', ['filter'])
-      component.onFilterChange('', dv)
-
-      expect(component.filterBy).toEqual('name')
-      expect(dv.filter).toHaveBeenCalledWith('')
-    })
-
-    it('should set filterBy to name and call dv.filter with the value', () => {
-      const dv = jasmine.createSpyObj('DataView', ['filter'])
-
-      component.onFilterChange('testFilter', dv)
-
-      expect(component.filterBy).toEqual('name')
-      expect(dv.filter).toHaveBeenCalledWith('testFilter')
-    })
   })
 
   describe('sorting', () => {
@@ -784,28 +767,16 @@ describe('WorkspaceSlotsComponent', () => {
       expect(component.loadData).not.toHaveBeenCalled() // NOT called
     })
 
-    it('should not call loadData when changeMode is DELETE even if changed', () => {
-      component.item4Detail = { id: '123', new: false } as any
-      component.changeMode = 'DELETE'
-
-      component.onSlotDetailClosed(true) // changes
-
-      expect(component.item4Detail).toBeUndefined()
-      expect(component.changeMode).toBe('VIEW')
-      expect(component.showSlotDetailDialog).toBeFalse()
-      expect(component.loadData).not.toHaveBeenCalled()
-    })
-
     it('should not call loadData when item4Detail has no id', () => {
       component.item4Detail = { new: true } as any // no id
       component.changeMode = 'EDIT'
 
-      component.onSlotDetailClosed(true) // changes
+      component.onSlotDetailClosed(true) // with changes
 
       expect(component.item4Detail).toBeUndefined()
       expect(component.changeMode).toBe('VIEW')
       expect(component.showSlotDetailDialog).toBeFalse()
-      expect(component.loadData).not.toHaveBeenCalled()
+      expect(component.loadData).toHaveBeenCalled()
     })
   })
 

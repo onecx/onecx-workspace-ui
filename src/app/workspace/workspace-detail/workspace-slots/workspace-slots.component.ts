@@ -34,7 +34,7 @@ type ChangeStatus = { changes?: boolean; new?: boolean; exists?: boolean; deprec
 export type SlotType = 'WORKSPACE' | 'UNUSED' | 'CHANGES'
 export type SlotFilterType = 'ALL' | SlotType
 export type ExtendedSelectItem = SelectItem & { tooltipKey?: string }
-export type ChangeMode = 'VIEW' | 'CREATE' | 'EDIT' | 'COPY' | 'DELETE'
+export type ChangeMode = 'VIEW' | 'EDIT'
 export type PSSlot = SlotPS & { pName: string; pDisplayName: string }
 
 // workspace slot data extended with status from product store
