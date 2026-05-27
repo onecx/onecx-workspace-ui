@@ -76,7 +76,7 @@ export class MenuTreeService {
           ;(menuItem as any)[key] = (structureItem as any)[key]
         }
       })
-      list.push(menuItem as WorkspaceMenuItem)
+      list.push(menuItem)
       if (structureItem.children && structureItem?.children.length > 0) {
         this.parseItemsFromStructure(structureItem.children, list)
       }

@@ -3,7 +3,7 @@ import { TranslateService } from '@ngx-translate/core'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 
-import { SlotAPIService, SlotComponent, UpdateSlotRequest } from 'src/app/shared/generated'
+import { SlotAPIService, UpdateSlotRequest } from 'src/app/shared/generated'
 import { ChangeMode, ExtendedSlot, ExtendedComponent, PSSlot } from '../workspace-slots/workspace-slots.component'
 
 @Component({
@@ -140,7 +140,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
             modificationCount: this.slot.modificationCount,
             name: this.slot.name,
             components: this.wComponents.map((ec) => {
-              return { productName: ec.productName, appId: ec.appId, name: ec.name } as SlotComponent
+              return { productName: ec.productName, appId: ec.appId, name: ec.name }
             })
           } as UpdateSlotRequest
         })

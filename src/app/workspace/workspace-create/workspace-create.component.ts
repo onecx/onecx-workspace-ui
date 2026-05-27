@@ -122,7 +122,7 @@ export class WorkspaceCreateComponent implements OnInit {
       }),
       catchError((err) => {
         console.error('searchAvailableProducts', err)
-        return of([] as string[])
+        return of([])
       })
     )
   }

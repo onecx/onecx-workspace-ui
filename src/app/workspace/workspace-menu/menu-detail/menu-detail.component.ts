@@ -173,7 +173,7 @@ export class MenuDetailComponent implements OnChanges {
     let item: MenuURL | null = null
     let itemCreated = false
     if (url?.match(/^(http|https)/g)) {
-      item = { mfePath: url, product: 'MENU_ITEM.URL.HTTP', isSpecial: true } as MenuURL
+      item = { mfePath: url, product: 'MENU_ITEM.URL.HTTP', isSpecial: true }
       itemCreated = true
     } else if (url) {
       // search for mfe with best match of base path
@@ -215,7 +215,7 @@ export class MenuDetailComponent implements OnChanges {
         mfePath: url,
         product: 'MENU_ITEM.URL.' + type + '.PRODUCT',
         isSpecial: true
-      } as MenuURL
+      }
       itemCreated = true
     }
     return [item, itemCreated]

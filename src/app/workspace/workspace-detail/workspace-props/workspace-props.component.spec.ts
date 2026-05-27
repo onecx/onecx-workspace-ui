@@ -203,6 +203,8 @@ describe('WorkspacePropsComponent', () => {
 
       component.workspace = { ...workspace, homePage: undefined }
       component.onOpenProductPaths(paths)
+
+      expect().nothing()
     })
   })
 
@@ -285,6 +287,8 @@ describe('WorkspacePropsComponent', () => {
         component.workspace = undefined
 
         component.onSave()
+
+        expect().nothing()
       })
 
       it('should update workspace onSave', () => {

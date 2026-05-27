@@ -11,18 +11,12 @@ import {
 import { TranslateService } from '@ngx-translate/core'
 import { Observable, Subject, catchError, finalize, map, of } from 'rxjs'
 import { SelectItem } from 'primeng/api'
-import { DataView } from 'primeng/dataview'
 
 import { DataViewControlTranslations } from '@onecx/portal-integration-angular'
 import { SLOT_SERVICE, SlotService } from '@onecx/angular-remote-components'
 import { PortalMessageService, UserService, WorkspaceService } from '@onecx/angular-integration-interface'
 
-import {
-  Workspace,
-  WorkspaceRole,
-  WorkspaceRolesAPIService,
-  CreateWorkspaceRoleRequest
-} from 'src/app/shared/generated'
+import { Workspace, WorkspaceRole, WorkspaceRolesAPIService } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
 
 export type IAMRole = { name?: string; description?: string }
@@ -201,7 +195,8 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
       return (a.name?.toUpperCase() ?? '').localeCompare(b.name?.toUpperCase() ?? '')
     }
     roles.sort(sortByRoleName)
-    this.rolesFiltered = this.roles = roles
+    this.roles = roles
+    this.onQuickFilterChange({ value: this.quickFilterValue }) // reestablish filter after data change
   }
 
   private searchRoles(force: boolean = false): void {
@@ -234,7 +229,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
           workspaceId: this.workspace?.id ?? '',
           name: role.name,
           description: role.description
-        } as CreateWorkspaceRoleRequest
+        }
       })
       .subscribe({
         next: (data) => {
@@ -284,16 +279,8 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
    * UI Events: FILTERING
    */
   public onQuickFilterChange(ev: any): void {
-    if (ev.value === 'ALL') {
-      this.rolesFiltered = this.roles
-    } else {
-      this.rolesFiltered = this.roles.filter((s) => s.origin.includes(ev.value))
-    }
+    this.rolesFiltered = this.roles.filter((s) => (ev.value === 'ALL' ? s : s.origin.includes(ev.value)))
     this.quickFilterValue = ev.value
-  }
-  public onFilterChange(filter: string, dv: DataView): void {
-    this.filterBy = 'name'
-    dv?.filter(filter)
   }
 
   public onGetQuickFilterCount(roleType: RoleFilterType): string {

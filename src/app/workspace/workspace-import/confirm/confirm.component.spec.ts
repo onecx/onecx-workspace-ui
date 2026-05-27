@@ -69,8 +69,11 @@ describe('ConfirmComponent', () => {
     it('should set baseUrlExists to true in checkWorkspaceUniqueness onInit', () => {
       apiServiceSpy.searchWorkspaces.and.returnValue(of({ stream: workspaces }))
       component.importWorkspace = { ...impWorkspace }
+      spyOn<any>(component, 'fetchWorkspace')
 
       component.ngOnInit()
+
+      expect(component['fetchWorkspace']).toHaveBeenCalled()
     })
 
     it('should reflect missing baseUrl and fetch portals OnInit', () => {
