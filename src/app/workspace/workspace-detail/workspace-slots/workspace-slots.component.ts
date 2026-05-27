@@ -218,7 +218,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
           // finalize
           this.slotsInternal.sort(this.sortSlotsByName)
           this.slots = this.slotsInternal // to be displayed final slot list
-          this.onQuickFilterChange({ value: this.quickFilterValue })
+          this.onQuickFilterChange({ value: this.quickFilterValue }) // reestablish filter after data change
         }
         return []
       }),

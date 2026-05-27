@@ -131,7 +131,7 @@
           styleClass="h-full"
           [icon]="'pi ' + (wsLoading || loadingIamRoles ? 'pi-spin pi-spinner' : 'pi-refresh')"
           [disabled]="wsLoading || loadingIamRoles"
-          (onClick)="onQuickFilterChange({ value: 'ALL' }); onReload()"
+          (onClick)="onReload()"
           [ariaLabel]="'ACTIONS.SEARCH.RELOAD' | translate"
           [pTooltip]="'ACTIONS.SEARCH.RELOAD' | translate"
           tooltipPosition="top"
