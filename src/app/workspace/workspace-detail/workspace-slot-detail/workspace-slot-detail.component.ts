@@ -157,7 +157,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
                   id: undefined,
                   modificationCount: undefined,
                   modificationDate: undefined
-                } as ExtendedSlot
+                }
               }
             if (this.deregisterItems.length > 0) this.psComponents.sort(this.sortComponents)
             this.deregisterItems = []
