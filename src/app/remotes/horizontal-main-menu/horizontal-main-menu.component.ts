@@ -81,8 +81,6 @@ export class OneCXHorizontalMainMenuComponent implements OnInit, OnDestroy, ocxR
   set menubarSetter(menubar: Menubar | undefined) {
     if (!menubar) return
 
-    this.removeMouseLeaveListener?.()
-
     this.removeMouseLeaveListener = this.renderer.listen(menubar.el.nativeElement, 'mouseleave', () => {
       menubar.hide()
     })
