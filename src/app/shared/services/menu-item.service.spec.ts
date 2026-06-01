@@ -734,7 +734,7 @@ describe('MenuItemService', () => {
     it('should return true if command is defined', () => {
       const item: MenuItem = {
         command: () => {
-          console.log('Action')
+          console.log('Menu item action')
         }
       }
       expect(service.hasAction(item)).toBeTrue()
@@ -755,7 +755,7 @@ describe('MenuItemService', () => {
     it('should return ACTION if command is defined', () => {
       const item: MenuItem = {
         command: () => {
-          console.log('Action')
+          console.log('Menu item action')
         }
       }
       expect(service.getItemType(item)).toBe(ItemType.ACTION)
@@ -779,7 +779,7 @@ describe('MenuItemService', () => {
         icon: 'pi pi-base',
         tooltip: 'Base Tooltip',
         command: () => {
-          console.log('baseItem')
+          console.log('Menu baseItem action')
         }
       }
 
@@ -801,14 +801,14 @@ describe('MenuItemService', () => {
         label: 'Active Item',
         // needs to have an action to be considered
         command: () => {
-          console.log('activeItem')
+          console.log('Menu activeItem action')
         }
       }
       const inactiveItem = {
         label: 'Inactive Item',
         // needs to have an action to be considered
         command: () => {
-          console.log('inactiveItem')
+          console.log('Menu inactiveItem action')
         }
       }
       service.findActiveItemBestMatch = (() => {
@@ -895,13 +895,13 @@ describe('MenuItemService', () => {
           {
             label: 'Child Item 1',
             command: () => {
-              console.log('childItem1')
+              console.log('Menu childItem1 action')
             }
           },
           {
             label: 'Child Item 2',
             command: () => {
-              console.log('childItem2')
+              console.log('Menu childItem2 action')
             }
           }
         ]
@@ -910,13 +910,13 @@ describe('MenuItemService', () => {
       const parentItemWithAction: MenuItem = {
         label: 'Parent Item With Action',
         command: () => {
-          console.log('parentItemWithAction')
+          console.log('Menu parentItemWithAction action')
         },
         items: [
           {
             label: 'Child Item 3',
             command: () => {
-              console.log('childItem1')
+              console.log('Menu childItem3 action')
             }
           }
         ]

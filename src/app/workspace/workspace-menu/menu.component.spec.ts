@@ -1099,6 +1099,8 @@ describe('MenuComponent', () => {
       component.workspaceName = 'name'
       component.workspace = workspace
       component.onExportMenu()
+
+      expect().nothing()
     })
 
     it('should set displayMenuImport to true', () => {

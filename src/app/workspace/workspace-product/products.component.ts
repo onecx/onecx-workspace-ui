@@ -248,7 +248,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     this.searchWSlots()
     firstValueFrom(
       combineLatest([this.wSlots$, this.wProducts$]).pipe(
-        switchMap((data) => this.searchPsProducts({ slots: data[0], products: data[1] } as WorkspaceData))
+        switchMap((data) => this.searchPsProducts({ slots: data[0], products: data[1] }))
       )
     )
   }
@@ -361,12 +361,12 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     if (app) {
       if (mfe.type === MicrofrontendType.Module) {
         app.modules = app.modules ?? []
-        app.modules.push(mfe as ExtendedMicrofrontend)
+        app.modules.push(mfe)
       }
       app.modules?.sort(this.sortMicrofrontends)
       if (mfe.type === MicrofrontendType.Component) {
         app.components = app.components ?? []
-        app.components.push(mfe as ExtendedMicrofrontend)
+        app.components.push(mfe)
       }
       app.components?.sort(this.sortMicrofrontends)
     }

@@ -25,7 +25,7 @@ const wRole: Role = {
   description: 'role descr',
   isWorkspaceRole: false,
   isIamRole: false,
-  type: 'WORKSPACE'
+  origin: ['WORKSPACE']
 }
 
 describe('WorkspaceRoleDetailComponent', () => {
@@ -152,7 +152,7 @@ describe('WorkspaceRoleDetailComponent', () => {
       name: 'role name',
       isWorkspaceRole: false,
       isIamRole: false,
-      type: 'WORKSPACE'
+      origin: ['WORKSPACE']
     }
 
     component.onSaveRole()
@@ -177,7 +177,7 @@ describe('WorkspaceRoleDetailComponent', () => {
       description: 'role descr',
       isWorkspaceRole: false,
       isIamRole: false,
-      type: 'WORKSPACE'
+      origin: ['WORKSPACE']
     }
 
     component.onSaveRole()
@@ -280,7 +280,7 @@ describe('WorkspaceRoleDetailComponent', () => {
       description: 'role descr',
       isWorkspaceRole: false,
       isIamRole: false,
-      type: 'WORKSPACE'
+      origin: ['WORKSPACE']
     }
 
     component.onSaveRole()

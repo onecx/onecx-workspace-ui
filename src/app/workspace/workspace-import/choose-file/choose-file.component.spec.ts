@@ -279,7 +279,5 @@ describe('ChooseFileComponent', () => {
       expect(component.isWorkspaceImportValid(obj, mockData)).toBeFalse()
       expect(component.validationErrorCause).toContain('Invalid menu item external state')
     })
-
-    it('should validate a request DTO: menu absent error', () => {})
   })
 })

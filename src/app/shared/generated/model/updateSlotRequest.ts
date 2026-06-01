@@ -13,7 +13,7 @@ import { SlotComponent } from './slotComponent';
 
 
 export interface UpdateSlotRequest { 
-    modificationCount: number;
+    modificationCount?: number;
     name: string;
     components?: Array<SlotComponent>;
 }

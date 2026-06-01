@@ -28,7 +28,6 @@ export class WorkspaceRoleDetailComponent implements OnChanges {
 
   public dateFormat = 'M/d/yy, hh:mm:ss a'
   public formGroupRole: FormGroup
-  private orgRoleName: string | undefined
 
   constructor(
     private readonly wRoleApi: WorkspaceRolesAPIService,
@@ -47,7 +46,6 @@ export class WorkspaceRoleDetailComponent implements OnChanges {
   public ngOnChanges(): void {
     this.formGroupRole.reset()
     if (this.role) {
-      this.orgRoleName = this.role?.name
       this.formGroupRole.controls['name'].patchValue(this.role.name)
       this.formGroupRole.controls['description'].patchValue(this.role.description)
       this.changeMode === 'VIEW' ? this.formGroupRole.disable() : this.formGroupRole.enable()
@@ -92,7 +90,7 @@ export class WorkspaceRoleDetailComponent implements OnChanges {
             workspaceId: this.workspace?.id ?? '',
             name: role.name,
             description: role.description
-          } as CreateWorkspaceRoleRequest
+          }
         })
         .subscribe({
           next: (data) => {

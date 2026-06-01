@@ -3,8 +3,8 @@ import { TranslateService } from '@ngx-translate/core'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 
-import { SlotAPIService, SlotComponent, UpdateSlotRequest } from 'src/app/shared/generated'
-import { ChangeMode, CombinedSlot, ExtendedComponent, PSSlot } from '../workspace-slots/workspace-slots.component'
+import { SlotAPIService, UpdateSlotRequest } from 'src/app/shared/generated'
+import { ChangeMode, ExtendedSlot, ExtendedComponent, PSSlot } from '../workspace-slots/workspace-slots.component'
 
 @Component({
   selector: 'app-workspace-slot-detail',
@@ -12,20 +12,21 @@ import { ChangeMode, CombinedSlot, ExtendedComponent, PSSlot } from '../workspac
   styleUrls: ['./workspace-slot-detail.component.scss']
 })
 export class WorkspaceSlotDetailComponent implements OnChanges {
-  @Input() slotOrg: CombinedSlot | undefined // displayed slot
-  @Input() psComponentsOrg: ExtendedComponent[] = [] // all PS slots
+  @Input() slot: ExtendedSlot | undefined // displayed slot
+  @Input() workspace_id!: string // only id is needed for API calls
+  @Input() psComponentsOrg: ExtendedComponent[] = [] // all PS components
   @Input() wProductNames: string[] = [] // names of all products registered in workspace
   @Input() changeMode: ChangeMode = 'VIEW'
-  @Input() displayDetailDialog = false
-  @Input() displayDeleteDialog = false
+  @Input() displayDialog = false
   @Output() detailClosed: EventEmitter<boolean> = new EventEmitter()
 
   public dateFormat: string
-  public slot: CombinedSlot | undefined
+  public slotOrg: ExtendedSlot | undefined // used for restore
   public wComponents: ExtendedComponent[] = [] // used/assigned components
   public psComponents: ExtendedComponent[] = [] // org ps components reduced by used in slot
   public hasEditPermission = false
   public displayDeregisterConfirmation = false
+  public selectedTabIndex = 0
   private deregisterItems: ExtendedComponent[] = [] // moved items
   private wComponentsOrg: ExtendedComponent[] = [] // used for restore
   public showTargetControls = false // manage visibility of target controls due to picklist bug
@@ -43,16 +44,17 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   }
 
   public ngOnChanges(): void {
-    if (this.displayDetailDialog && this.slotOrg && this.slot === undefined) {
-      this.slot = { ...this.slotOrg }
+    if (this.displayDialog && this.slot) {
+      this.slotOrg = { ...this.slot } // to be able to restore and compare
       this.wComponents = []
       // extract components assigned to the slot with PS infos
       if (this.slot.psComponents) this.wComponents = [...this.slot.psComponents]
       this.wComponentsOrg = [...this.wComponents] // to be able to restore
       this.psComponents = []
       this.collectPsComponents()
-      this.psComponents.sort(this.sortComponents)
-      this.slot.psSlots.sort(this.sortProducts)
+      if (this.slot.psSlots) this.slot.psSlots.sort(this.sortProducts)
+      if (this.slot.productNames) this.slot.productNames.sort((a, b) => a.toUpperCase().localeCompare(b.toUpperCase()))
+      this.selectedTabIndex = this.slot.productNames?.length === 0 ? 1 : 0
     }
   }
 
@@ -67,6 +69,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
         if (this.wProductNames.includes(psComp.productName))
           // registered products only
           this.psComponents.push(psComp)
+    if (this.psComponents) this.psComponents.sort(this.sortComponents)
   }
 
   public sortComponents(a: ExtendedComponent, b: ExtendedComponent): number {
@@ -81,11 +84,9 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   }
 
   public onClose(): void {
-    if (this.slotOrg)
-      if (this.slot) this.detailClosed.emit(this.slotOrg.modificationCount !== this.slot?.modificationCount)
-      else this.detailClosed.emit(false)
-    this.slot = undefined
-    this.slotOrg = undefined
+    if (this.slot) {
+      this.detailClosed.emit(this.slotOrg?.modificationCount !== this.slot?.modificationCount)
+    }
   }
 
   /**
@@ -133,23 +134,31 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
       // picklist bug: ignore change if only one component is in list
       if (reorder && this.slot.components && this.slot.components.length < 2) return
       this.slotApi
-        .updateSlot({
-          id: this.slot.id!,
+        .addOrUpdateSlot({
+          id: this.workspace_id,
           updateSlotRequest: {
-            modificationCount: this.slot.modificationCount!,
+            modificationCount: this.slot.modificationCount,
             name: this.slot.name,
             components: this.wComponents.map((ec) => {
-              return { productName: ec.productName, appId: ec.appId, name: ec.name } as SlotComponent
+              return { productName: ec.productName, appId: ec.appId, name: ec.name }
             })
           } as UpdateSlotRequest
         })
         .subscribe({
           next: (data) => {
-            if (this.slot) {
-              this.slot.modificationCount = data.modificationCount
-              this.slot.modificationDate = data.modificationDate
-              this.slot.components = data.components
-            }
+            if (this.slot)
+              if (data) {
+                this.slot.modificationCount = data.modificationCount
+                this.slot.modificationDate = data.modificationDate
+                this.slot.components = data.components
+              } else {
+                this.slot = {
+                  ...this.slot,
+                  id: undefined,
+                  modificationCount: undefined,
+                  modificationDate: undefined
+                }
+              }
             if (this.deregisterItems.length > 0) this.psComponents.sort(this.sortComponents)
             this.deregisterItems = []
             this.wComponentsOrg = [...this.wComponents]
@@ -157,24 +166,9 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
           },
           error: (err) => {
             this.msgService.error({ summaryKey: 'ACTIONS.EDIT.SLOT_NOK' })
-            console.error('updateSlot', err)
+            console.error('addOrUpdateSlot', err)
           }
         })
-    }
-  }
-
-  public onDeleteSlot() {
-    if (this.slotOrg) {
-      this.slotApi.deleteSlotById({ id: this.slotOrg.id! }).subscribe({
-        next: () => {
-          this.msgService.success({ summaryKey: 'ACTIONS.DELETE.SLOT.MESSAGE.OK' })
-          this.detailClosed.emit(true)
-        },
-        error: (err) => {
-          this.msgService.error({ summaryKey: 'ACTIONS.DELETE.SLOT.MESSAGE.NOK' })
-          console.error('deleteSlotById', err)
-        }
-      })
     }
   }
 }
