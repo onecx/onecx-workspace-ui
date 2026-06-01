@@ -1,6 +1,6 @@
 import { CommonModule, Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { Component, Inject, Input, OnInit, inject } from '@angular/core'
+import { Component, Inject, Input, OnInit, OnDestroy, ViewChild, inject, Renderer2 } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
@@ -18,7 +18,7 @@ import {
 } from '@onecx/angular-remote-components'
 import { AppStateService, UserService } from '@onecx/portal-integration-angular'
 
-import { MenubarModule } from 'primeng/menubar'
+import { Menubar, MenubarModule } from 'primeng/menubar'
 import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
 import { MenuService } from 'src/app/shared/services/menu.service'
@@ -48,11 +48,15 @@ const MENU_MODE = 'horizontal'
   ]
 })
 @UntilDestroy()
-export class OneCXHorizontalMainMenuComponent implements OnInit, ocxRemoteComponent, ocxRemoteWebcomponent {
+export class OneCXHorizontalMainMenuComponent implements OnInit, OnDestroy, ocxRemoteComponent, ocxRemoteWebcomponent {
   menuItems$: Observable<MenuItem[]> | undefined
 
   private readonly menuService = inject(MenuService)
   public isActive$ = this.menuService.isActive(MENU_MODE).pipe(untilDestroyed(this))
+  private readonly renderer = inject(Renderer2)
+
+  private removeMouseLeaveListener?: () => void
+
   public isHidden$ = this.menuService
     .isVisible(MENU_MODE)
     .pipe(map((isVisible) => !isVisible))
@@ -72,16 +76,29 @@ export class OneCXHorizontalMainMenuComponent implements OnInit, ocxRemoteCompon
   @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
     this.ocxInitRemoteComponent(config)
   }
+  // Remove this listener when PrimeNG fixes the p-menubar autoHide component
+  @ViewChild('menubar')
+  set menubarSetter(menubar: Menubar | undefined) {
+    if (!menubar) return
+
+    this.removeMouseLeaveListener = this.renderer.listen(menubar.el.nativeElement, 'mouseleave', () => {
+      menubar.hide()
+    })
+  }
+
+  ngOnInit(): void {
+    this.getMenuItems()
+  }
+
+  ngOnDestroy(): void {
+    this.removeMouseLeaveListener?.()
+  }
 
   ocxInitRemoteComponent(remoteComponentConfig: RemoteComponentConfig) {
     this.baseUrl.next(remoteComponentConfig.baseUrl)
     this.menuItemApiService.configuration = new Configuration({
       basePath: Location.joinWithSlash(remoteComponentConfig.baseUrl, environment.apiPrefix)
     })
-  }
-
-  ngOnInit(): void {
-    this.getMenuItems()
   }
 
   getMenuItems() {

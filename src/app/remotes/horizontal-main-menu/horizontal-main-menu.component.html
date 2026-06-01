@@ -2,9 +2,9 @@
   *ngIf="{ isActive: isActive$ | async, isHidden: isHidden$ | async, menuItems: menuItems$ | async } as state"
 >
   <p-menubar
+    #menubar
     *ngIf="state.isActive"
     [hidden]="state.isHidden"
-    autoHide="true"
     breakpoint="767"
     [model]="state.menuItems ?? []"
     styleClass="layout-menubar-horizontal-main-menu fadeinup"
