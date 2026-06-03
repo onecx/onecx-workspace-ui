@@ -427,10 +427,12 @@ describe('ProductComponent', () => {
     })
 
     it('should call getWProduct when an target item is selected - successful', () => {
-      wProductApiSpy.getProductById.and.returnValue(of(wProduct1))
-      wProductApiSpy.getProductsByWorkspaceId.and.returnValue(of([wProduct1]))
-      productApiSpy.searchAvailableProducts.and.returnValue(of({ stream: [psProduct1] }))
-      const event = { items: [{ ...product1Target }] }
+      wProductApiSpy.getProductById.and.returnValue(of({ ...wProduct1, productName: 'onecx-shell' }))
+      wProductApiSpy.getProductsByWorkspaceId.and.returnValue(of([{ ...wProduct1, productName: 'onecx-shell' }]))
+      productApiSpy.searchAvailableProducts.and.returnValue(
+        of({ stream: [{ ...psProduct1, productName: 'onecx-shell' }] })
+      )
+      const event = { items: [{ ...product1Target, productName: 'onecx-shell' }] }
 
       component.ngOnChanges(changes as unknown as SimpleChanges)
       component.onTargetSelect(event)

@@ -704,13 +704,14 @@
               <div
                 *ngIf="!slot.exists"
                 [id]="'ws_products_detail_slot_' + i + '_new'"
-                class="text-sm danger-action-text pi pi-plus-circle"
                 [attr.aria-label]="'DIALOG.PRODUCTS.SLOTS.NEW' | translate"
                 [pTooltip]="'DIALOG.PRODUCTS.SLOTS.NEW' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
                 role="note"
-              ></div>
+              >
+                0
+              </div>
             </dt>
           </dl>
         </section>

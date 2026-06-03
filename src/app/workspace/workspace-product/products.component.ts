@@ -206,7 +206,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     this.appState.currentMfe$.pipe(map((mfe) => (this.currentMfe = mfe))).subscribe()
     this.formGroup = this.fb.group({
       displayName: new FormControl({ value: null, disabled: true }),
-      baseUrl: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(200)]),
+      baseUrl: new FormControl(null, [Validators.required, Validators.maxLength(200)]),
       modules: this.fb.array([])
     })
     this.viewingModes = ALL_VIEW_MODES
@@ -515,19 +515,28 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     if (!item) return
     this.displayDetails = true
     this.formChanged = false
-    this.displayedDetailItem = item
-    this.displayedDetailItem.slots?.sort(this.sortSlotsByName)
-    if (item.bucket === 'SOURCE') this.formGroup.disable()
+    this.formGroup = this.fb.group({
+      displayName: new FormControl({ value: null, disabled: true }),
+      baseUrl: new FormControl(null, [Validators.required, Validators.maxLength(200), Validators.pattern('^/.*')]),
+      modules: this.fb.array([])
+    })
+    this.formGroup.disable()
     if (item.bucket === 'TARGET') {
       this.formGroup.enable()
+      // for shell only: base url can be only a slash: '/'
+      if (item.productName === 'onecx-shell')
+        this.formGroup.controls['baseUrl'].addValidators([Validators.minLength(1)])
+      else this.formGroup.controls['baseUrl'].addValidators([Validators.minLength(2)])
+
       const modules = this.formGroup.get('modules') as FormArray
-      while (modules.length > 0) modules.removeAt(0) // clear form
-      if (this.displayedDetailItem.microfrontends)
-        if (this.displayedDetailItem.microfrontends.length === 0) this.displayedDetailItem.microfrontends = undefined
+      //while (modules.length > 0) modules.removeAt(0) // clear form
+      if (item.microfrontends) if (item.microfrontends.length === 0) item.microfrontends = undefined
       if (item.apps) this.fillFormForModules(item.microfrontends, item.apps, modules)
     }
-    this.formGroup.controls['displayName'].setValue(this.displayedDetailItem.displayName)
-    this.formGroup.controls['baseUrl'].setValue(this.displayedDetailItem.baseUrl)
+    this.formGroup.controls['displayName'].setValue(item.displayName)
+    this.formGroup.controls['baseUrl'].setValue(item.baseUrl)
+    item.slots?.sort(this.sortSlotsByName)
+    this.displayedDetailItem = item
   }
 
   private fillFormForModules(
