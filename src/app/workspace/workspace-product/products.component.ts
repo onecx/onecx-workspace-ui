@@ -529,7 +529,6 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
       else this.formGroup.controls['baseUrl'].addValidators([Validators.minLength(2)])
 
       const modules = this.formGroup.get('modules') as FormArray
-      //while (modules.length > 0) modules.removeAt(0) // clear form
       if (item.microfrontends) if (item.microfrontends.length === 0) item.microfrontends = undefined
       if (item.apps) this.fillFormForModules(item.microfrontends, item.apps, modules)
     }
