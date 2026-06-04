@@ -18,16 +18,19 @@ declare global {
   }
 }
 
-function publish(event: TopicResizedEventType, tp: TopicPublisher<TopicResizedEventType>): Promise<void> {
+function publishing(
+  event: TopicResizedEventType,
+  func: (event: TopicResizedEventType) => Promise<void>
+): Promise<void> {
   if (![ResizedEventType.SLOT_GROUP_RESIZED, ResizedEventType.SLOT_RESIZED].includes(event.type)) {
-    return tp.publish(event)
+    return func(event)
   }
 
   const resizedEvent = event as SlotResizedEvent | SlotGroupResizedEvent
   const entityName = eventToEntityName(resizedEvent)
 
   if (window['@onecx/integration-interface']['resizedEvents']?.[resizedEvent.type]?.includes(entityName)) {
-    return tp.publish(event)
+    return func(event)
   }
 
   return Promise.resolve()
@@ -39,7 +42,7 @@ export class ResizedEventsPublisher extends TopicPublisher<TopicResizedEventType
   }
 
   override publish(event: TopicResizedEventType): Promise<void> {
-    return publish(event, this)
+    return publishing(event, () => super.publish(event))
   }
 }
 export class ResizedEventsTopic extends Topic<TopicResizedEventType> {
@@ -75,9 +78,8 @@ export class ResizedEventsTopic extends Topic<TopicResizedEventType> {
     })
   }
 
-  // NOSONAR
   override publish(event: TopicResizedEventType): Promise<void> {
-    return publish(event, this)
+    return publishing(event, () => super.publish(event))
   }
 }
 
