@@ -524,9 +524,8 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     if (item.bucket === 'TARGET') {
       this.formGroup.enable()
       // for shell only: base url can be only a slash: '/'
-      if (item.productName === 'onecx-shell')
-        this.formGroup.controls['baseUrl'].addValidators([Validators.minLength(1)])
-      else this.formGroup.controls['baseUrl'].addValidators([Validators.minLength(2)])
+      const allowedMinLength = item.productName === 'onecx-shell' ? 1 : 2
+      this.formGroup.controls['baseUrl'].addValidators([Validators.minLength(allowedMinLength)])
 
       const modules = this.formGroup.get('modules') as FormArray
       if (item.microfrontends) if (item.microfrontends.length === 0) item.microfrontends = undefined
