@@ -18,25 +18,31 @@ declare global {
   }
 }
 
+function publishing(
+  event: TopicResizedEventType,
+  func: (event: TopicResizedEventType) => Promise<void>
+): Promise<void> {
+  if (![ResizedEventType.SLOT_GROUP_RESIZED, ResizedEventType.SLOT_RESIZED].includes(event.type)) {
+    return func(event)
+  }
+
+  const resizedEvent = event as SlotResizedEvent | SlotGroupResizedEvent
+  const entityName = eventToEntityName(resizedEvent)
+
+  if (window['@onecx/integration-interface']['resizedEvents']?.[resizedEvent.type]?.includes(entityName)) {
+    return func(event)
+  }
+
+  return Promise.resolve()
+}
+
 export class ResizedEventsPublisher extends TopicPublisher<TopicResizedEventType> {
   constructor() {
     super('resizedEvents', 1)
   }
 
-  // NOSONAR
   override publish(event: TopicResizedEventType): Promise<void> {
-    if (![ResizedEventType.SLOT_GROUP_RESIZED, ResizedEventType.SLOT_RESIZED].includes(event.type)) {
-      return super.publish(event)
-    }
-
-    const resizedEvent = event as SlotResizedEvent | SlotGroupResizedEvent
-    const entityName = eventToEntityName(resizedEvent)
-
-    if (window['@onecx/integration-interface']['resizedEvents']?.[resizedEvent.type]?.includes(entityName)) {
-      return super.publish(event)
-    }
-
-    return Promise.resolve()
+    return publishing(event, () => super.publish(event))
   }
 }
 export class ResizedEventsTopic extends Topic<TopicResizedEventType> {
@@ -72,20 +78,8 @@ export class ResizedEventsTopic extends Topic<TopicResizedEventType> {
     })
   }
 
-  // NOSONAR
   override publish(event: TopicResizedEventType): Promise<void> {
-    if (![ResizedEventType.SLOT_GROUP_RESIZED, ResizedEventType.SLOT_RESIZED].includes(event.type)) {
-      return super.publish(event)
-    }
-
-    const resizedEvent = event as SlotResizedEvent | SlotGroupResizedEvent
-    const entityName = eventToEntityName(resizedEvent)
-
-    if (window['@onecx/integration-interface']['resizedEvents']?.[resizedEvent.type]?.includes(entityName)) {
-      return super.publish(event)
-    }
-
-    return Promise.resolve()
+    return publishing(event, () => super.publish(event))
   }
 }
 
