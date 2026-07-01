@@ -1,0 +1,3 @@
+# Test run artifacts produced by the onecx-it-runner.
+# These are uploaded to GitHub Actions as workflow artifacts and must NOT be committed.
+artifacts/

@@ -1,0 +1,15 @@
+{
+  "$schema": "../../node_modules/@onecx/integration-tests/lib/models/schemas/integration-tests.schema.json",
+  "platformConfig": {
+    "importData": true,
+    "withLoggingEnabled": true,
+    "heartbeat": { "enabled": true },
+    "container": {
+      "e2e": {
+        "image": "onecx-workspace-e2e:latest",
+        "networkAlias": "onecx-workspace-e2e",
+        "baseUrl": "http://onecx-shell-ui:8080/onecx-shell/admin/workspace"
+      }
+    }
+  }
+}

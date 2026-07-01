@@ -1,0 +1,162 @@
+# E2E Runner Capacity Check
+#
+# One-time diagnostic workflow to verify the GitHub-hosted runner can handle
+# the full platform stack (~17+ Docker containers) before committing to the
+# standard ubuntu-latest (7 GB RAM) runner.
+#
+# Run this once, review the output, and then decide:
+#   - RAM peak < 5.5 GB  → ubuntu-latest is fine
+#   - RAM peak > 5.5 GB  → switch to ubuntu-22.04-4core in e2e-tests.yml
+#
+# This workflow does NOT run actual tests — it only pulls images and inspects
+# resource usage, then cleans up. Safe to run at any time.
+
+name: E2E Capacity Check
+
+on:
+  workflow_dispatch:
+
+jobs:
+  capacity-check:
+    name: Check runner capacity for E2E platform stack
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: System info (before)
+        run: |
+          echo "## System info (before image pulls)" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo "### CPU" | tee -a "$GITHUB_STEP_SUMMARY"
+          nproc
+          echo "### Memory" | tee -a "$GITHUB_STEP_SUMMARY"
+          free -h | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "### Disk" | tee -a "$GITHUB_STEP_SUMMARY"
+          df -h / | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull all platform images
+        run: |
+          echo "Pulling platform images..."
+          # External images (docker.io — subject to pull quota without auth)
+          docker pull docker.io/library/postgres:13.4
+          docker pull quay.io/keycloak/keycloak:23.0.4
+          docker pull docker.io/library/node:20
+
+          # OneCX service images (ghcr.io — generous limits)
+          docker pull ghcr.io/onecx/onecx-iam-kc-svc:main
+          docker pull ghcr.io/onecx/onecx-parameter-svc:main
+          docker pull ghcr.io/onecx/onecx-permission-svc:main
+          docker pull ghcr.io/onecx/onecx-product-store-svc:main
+          docker pull ghcr.io/onecx/onecx-tenant-svc:main
+          docker pull ghcr.io/onecx/onecx-theme-svc:main
+          docker pull ghcr.io/onecx/onecx-workspace-svc:main
+          docker pull ghcr.io/onecx/onecx-user-profile-svc:main
+
+          # OneCX BFF images
+          docker pull ghcr.io/onecx/onecx-parameter-bff:main
+          docker pull ghcr.io/onecx/onecx-shell-bff:main
+          docker pull ghcr.io/onecx/onecx-workspace-bff:main
+
+          # OneCX UI images
+          docker pull ghcr.io/onecx/onecx-shell-ui:2.x
+          docker pull ghcr.io/onecx/onecx-workspace-ui:main
+
+          # Playwright base image (for e2e container build)
+          docker pull mcr.microsoft.com/playwright:v1.59.1-noble
+
+          echo "All images pulled successfully."
+
+      - name: Disk usage after image pulls
+        run: |
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "## Disk usage after image pulls" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          df -h / | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "## Docker image sizes" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          docker images --format "table {{.Repository}}:{{.Tag}}\t{{.Size}}" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Start all containers and measure RAM
+        run: |
+          # Create a shared network (mirrors what testcontainers does)
+          docker network create e2e-capacity-test
+
+          # Start all containers with their typical configs
+          # (no volume mounts / env vars — just checking if they start and how much RAM they use)
+          docker run -d --network e2e-capacity-test --name postgres \
+            -e POSTGRES_PASSWORD=onecx \
+            docker.io/library/postgres:13.4
+
+          docker run -d --network e2e-capacity-test --name keycloak \
+            -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin \
+            quay.io/keycloak/keycloak:23.0.4 start-dev
+
+          # Start all svc containers (environment-light, will fail health checks but that's fine)
+          for IMAGE in \
+            "ghcr.io/onecx/onecx-iam-kc-svc:main" \
+            "ghcr.io/onecx/onecx-parameter-svc:main" \
+            "ghcr.io/onecx/onecx-permission-svc:main" \
+            "ghcr.io/onecx/onecx-product-store-svc:main" \
+            "ghcr.io/onecx/onecx-tenant-svc:main" \
+            "ghcr.io/onecx/onecx-theme-svc:main" \
+            "ghcr.io/onecx/onecx-workspace-svc:main" \
+            "ghcr.io/onecx/onecx-user-profile-svc:main" \
+            "ghcr.io/onecx/onecx-parameter-bff:main" \
+            "ghcr.io/onecx/onecx-shell-bff:main" \
+            "ghcr.io/onecx/onecx-workspace-bff:main" \
+            "ghcr.io/onecx/onecx-shell-ui:2.x" \
+            "ghcr.io/onecx/onecx-workspace-ui:main"; do
+            NAME=$(echo "$IMAGE" | sed 's|.*/||' | sed 's|:.*||')
+            docker run -d --network e2e-capacity-test --name "$NAME" "$IMAGE" || true
+          done
+
+          echo "Waiting 30s for containers to settle..."
+          sleep 30
+
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "## Container memory usage (peak simulation)" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          docker stats --no-stream --format "table {{.Name}}\t{{.MemUsage}}\t{{.MemPerc}}\t{{.CPUPerc}}" \
+            | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "## Host memory after all containers started" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          free -h | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Cleanup
+        if: always()
+        run: |
+          docker stop $(docker ps -q) 2>/dev/null || true
+          docker rm $(docker ps -aq) 2>/dev/null || true
+          docker network rm e2e-capacity-test 2>/dev/null || true
+
+      - name: Capacity verdict
+        run: |
+          AVAILABLE_MEM_MB=$(free -m | awk '/^Mem:/{print $7}')
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "## Verdict" >> "$GITHUB_STEP_SUMMARY"
+          echo "Available memory after test: **${AVAILABLE_MEM_MB} MB**" >> "$GITHUB_STEP_SUMMARY"
+
+          if [ "$AVAILABLE_MEM_MB" -gt 1500 ]; then
+            echo "✅ **Standard runner (ubuntu-latest) is sufficient.**" >> "$GITHUB_STEP_SUMMARY"
+            echo "   Keep \`runs-on: ubuntu-latest\` in e2e-tests.yml" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "⚠️ **Memory is tight — consider upgrading to a larger runner.**" >> "$GITHUB_STEP_SUMMARY"
+            echo "   Change \`runs-on: ubuntu-latest\` to \`runs-on: ubuntu-22.04-4core\` in e2e-tests.yml" >> "$GITHUB_STEP_SUMMARY"
+            echo "   Note: Larger runners require a GitHub Team or Enterprise plan." >> "$GITHUB_STEP_SUMMARY"
+          fi

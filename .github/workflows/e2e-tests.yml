@@ -1,0 +1,178 @@
+# OneCX Workspace UI — E2E Integration Tests
+#
+# Runs the full platform stack (via @onecx/integration-tests / Testcontainers)
+# and executes Playwright E2E tests against it.
+#
+# Triggers:
+#   - workflow_dispatch  : manual on-demand run (lenient — reports failure but job stays green)
+#   - schedule           : nightly at 00:00 UTC (strict — test failure fails the job)
+#
+name: E2E Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      # TODO: Decide inputs when generalizing the workflow
+      verbose:
+        description: 'Enable verbose runner output'
+        type: boolean
+        default: false
+      capture_logs:
+        description: 'Capture per-container logs to files'
+        type: boolean
+        default: true
+
+  # schedule:
+  #   # Nightly at midnight UTC
+  #   - cron: '0 0 * * *'
+
+env:
+  NODE_VERSION: '24'
+  ARTIFACTS_DIR: integration-tests/artifacts
+  # TODO: It should use the already-built image or build a new one depending on the workflow input
+  E2E_DOCKERFILE: integration-tests/e2e-tests/playwright/workspace.Dockerfile
+  E2E_CONTEXT: integration-tests/e2e-tests/playwright
+  E2E_IMAGE: onecx-workspace-e2e:latest
+
+jobs:
+  e2e-tests:
+    name: E2E Tests (${{ github.event_name == 'schedule' && 'nightly' || 'on-demand' }})
+    # See runner sizing note above.
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Restore Docker image cache
+        id: cache-docker
+        uses: actions/cache@v5
+        with:
+          path: /tmp/docker-images.tar.gz
+          key: docker-images-${{ hashFiles('integration-tests/platform/platform.json') }}
+          restore-keys: |
+            docker-images-
+
+      - name: Load Docker images from cache
+        if: steps.cache-docker.outputs.cache-hit == 'true'
+        run: |
+          echo "Cache hit — loading images from /tmp/docker-images.tar.gz"
+          docker load < /tmp/docker-images.tar.gz
+          echo "Images loaded:"
+          docker images --format "table {{.Repository}}:{{.Tag}}\t{{.Size}}"
+
+      # # TODO: Do it later in the workflow when testContainers already pulled the images, so we don't pull them twice
+      # - name: Save Docker images to cache (cache miss)
+      #   if: steps.cache-docker.outputs.cache-hit != 'true'
+      #   run: |
+      #     echo "Saving images to cache archive..."
+      #     docker save $(docker images --format '{{.Repository}}:{{.Tag}}' | grep -v '<none>') \
+      #       | gzip > /tmp/docker-images.tar.gz
+      #     du -sh /tmp/docker-images.tar.gz
+
+      - name: Build E2E test container image
+        run: |
+          echo "Building E2E container image: ${{ env.E2E_IMAGE }}"
+          docker build \
+            -f "${{ env.E2E_DOCKERFILE }}" \
+            -t "${{ env.E2E_IMAGE }}" \
+            "${{ env.E2E_CONTEXT }}"
+          echo "E2E image built:"
+          docker images "${{ env.E2E_IMAGE }}"
+
+      - name: Install dependencies
+      # TODO: Remove when fixed library versions
+        run: npm ci --legacy-peer-deps
+
+      - name: Run E2E tests
+        id: run-e2e
+        continue-on-error: ${{ github.event_name == 'workflow_dispatch' }}
+        run: npm run e2e
+        env:
+          IT_VERBOSE: ${{ github.event.inputs.verbose || 'false' }}
+          IT_CAPTURE_LOGS: ${{ github.event.inputs.capture_logs || 'true' }}
+          # Expose GITHUB_TOKEN so Testcontainers can pull ghcr.io images at runtime
+          # if any image is not already in the local Docker daemon cache.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Report test results
+        if: always()
+        run: |
+          SUMMARY_FILE=$(find "${{ env.ARTIFACTS_DIR }}" -name "summary.json" 2>/dev/null | head -1)
+
+          echo "## E2E Test Results" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+
+          if [ -z "$SUMMARY_FILE" ]; then
+            echo "⚠️ **No summary.json found** — the runner may have crashed before producing output." \
+              >> "$GITHUB_STEP_SUMMARY"
+            echo "| Field | Value |" >> "$GITHUB_STEP_SUMMARY"
+            echo "|---|---|" >> "$GITHUB_STEP_SUMMARY"
+            echo "| Status | unknown |" >> "$GITHUB_STEP_SUMMARY"
+            echo "| Trigger | ${{ github.event_name }} |" >> "$GITHUB_STEP_SUMMARY"
+
+            if [ "${{ github.event_name }}" = "schedule" ]; then
+              echo "::error::E2E run produced no summary.json on a scheduled run."
+              exit 1
+            fi
+            exit 0
+          fi
+
+          STATUS=$(jq -r '.status // "unknown"' "$SUMMARY_FILE")
+          DURATION_MS=$(jq -r '.durationMs // 0' "$SUMMARY_FILE")
+          EXIT_CODE=$(jq -r '.exitCode // 1' "$SUMMARY_FILE")
+          MODE=$(jq -r '.mode // "unknown"' "$SUMMARY_FILE")
+          DURATION_S=$(( DURATION_MS / 1000 ))
+
+          if [ "$STATUS" = "success" ]; then
+            STATUS_ICON="✅"
+          else
+            STATUS_ICON="❌"
+          fi
+
+          echo "| Field | Value |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|---|---|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Result | ${STATUS_ICON} **${STATUS}** |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Duration | ${DURATION_S}s |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Exit code | ${EXIT_CODE} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Mode | ${MODE} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Trigger | ${{ github.event_name }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Run ID | ${{ github.run_id }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Test artifacts are available in the **Artifacts** section below." \
+            >> "$GITHUB_STEP_SUMMARY"
+
+          # Failure policy:
+          #   - Scheduled (nightly): strict — fail the job so the team is alerted.
+          #   - On-demand (workflow_dispatch): lenient — show result but keep job green.
+          if [ "$STATUS" != "success" ] && [ "${{ github.event_name }}" = "schedule" ]; then
+            echo "::error::E2E tests FAILED on scheduled run (status=${STATUS}, exitCode=${EXIT_CODE})"
+            exit 1
+          fi
+
+          if [ "$STATUS" != "success" ] && [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "::warning::E2E tests FAILED on on-demand run (status=${STATUS}, exitCode=${EXIT_CODE}). Job kept green per policy."
+          fi
+
+      - name: Upload test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-artifacts-${{ github.run_id }}
+          path: ${{ env.ARTIFACTS_DIR }}/
+          retention-days: 14
+          if-no-files-found: warn
