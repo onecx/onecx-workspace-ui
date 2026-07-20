@@ -22,6 +22,8 @@ app:
           endpoints:
             - name: workspace-detail
               path: /{workspace-name}
+            - name: workspace-menu
+              path: /{workspace-name}/menu
         user-avatar-menu:
           exposedModule: "./OneCXUserAvatarMenuComponent"
           description: "User avatar menu component"
