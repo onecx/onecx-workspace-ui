@@ -140,8 +140,14 @@
       "NO_DATA": "No Data",
       "RELOAD": "Reload data",
       "RELOAD.OK": "Data successfully reloaded",
-      "OF": "of",
-      "FILTER.NOT_MATCHING": "No data matching filter"
+      "FILTER": {
+        "LABEL": "Filter",
+        "THEME": "Theme",
+        "OF": "of",
+        "CLEAR": "Clear Filter",
+        "PLACEHOLDER": "Filter",
+        "NOT_MATCHING": "No data matching filter"
+      }
     },
     "TREE": {
       "COLLAPSE_ALL": "Collapse all",

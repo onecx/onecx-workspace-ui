@@ -140,8 +140,14 @@
       "NO_DATA": "Keine Daten",
       "RELOAD": "Daten neu laden",
       "RELOAD.OK": "Daten erfolgreich geladen",
-      "OF": "von",
-      "FILTER.NOT_MATCHING": "Keine Daten entsprechend Filter"
+      "FILTER": {
+        "LABEL": "Filter",
+        "THEME": "Theme",
+        "OF": "für",
+        "CLEAR": "Filter entfernen",
+        "PLACEHOLDER": "Filter",
+        "NOT_MATCHING": "Keine Daten entsprechend Filter"
+      }
     },
     "TREE": {
       "COLLAPSE_ALL": "Alles zu",

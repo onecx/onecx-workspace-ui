@@ -1,6 +1,6 @@
 <ocx-portal-page permission="WORKSPACE#VIEW" helpArticleId="PAGE_WORKSPACE_DETAIL" pageName="PAGE_WORKSPACE_DETAIL">
   <ocx-page-header
-    [header]="workspace?.displayName ? limitText(workspace?.displayName, 70) : ''"
+    [header]="Utils.limitText(workspace?.displayName, 70)"
     [subheader]="'DIALOG.WORKSPACE.HEADER.DETAIL' | translate"
     [actions]="(actions$ | async) ?? []"
     [figureImage]="currentLogoUrl"
@@ -169,7 +169,7 @@
           id="ws_delete_operator_hint"
           severity="info"
           styleClass="mt-1"
-          [text]="'ACTIONS.DELETE.WORKSPACE.MESSAGE_INFO_OPERATOR' | translate"
+          [text]="'ACTIONS.DELETE.WORKSPACE.MESSAGE.INFO_OPERATOR' | translate"
         ></p-message>
       </div>
     </div>

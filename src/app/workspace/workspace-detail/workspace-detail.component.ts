@@ -49,7 +49,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
   public workspaceExportVisible = false
   public currentLogoUrl: string | undefined = undefined
   public showOperatorMessage = true // display initially only
-  public limitText = Utils.limitText
+  public Utils = Utils
   private translations$: Observable<Message[]> | undefined
   public messages: Message[] = []
 
