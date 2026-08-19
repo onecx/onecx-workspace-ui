@@ -168,17 +168,15 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRe
           )
       ),
       withLatestFrom(this.userService.lang$),
-      map(
-        ([menuData, userLang]): WorkspaceMenuItems => ({
-          workspaceBaseUrl: menuData?.workspaceBaseUrl,
-          workspaceName: menuData?.workspaceName,
-          items: this.menuItemService.constructMenuItems(
-            menuData?.data?.menu?.[0]?.children,
-            userLang,
-            menuData?.workspaceBaseUrl
-          )
-        })
-      ),
+      map(([menuData, userLang]): WorkspaceMenuItems => ({
+        workspaceBaseUrl: menuData?.workspaceBaseUrl,
+        workspaceName: menuData?.workspaceName,
+        items: this.menuItemService.constructMenuItems(
+          menuData?.data?.menu?.[0]?.children,
+          userLang,
+          menuData?.workspaceBaseUrl
+        )
+      })),
       shareReplay(),
       untilDestroyed(this)
     )
