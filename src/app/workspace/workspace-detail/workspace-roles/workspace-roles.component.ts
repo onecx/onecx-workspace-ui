@@ -155,7 +155,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
       .pipe(
         map((result) => result.stream ?? []),
         catchError((err) => {
-          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.WS_ROLES'
+          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + Utils.mapping_error_status(err.status) + '.WS_ROLES'
           console.error('searchWorkspaceRoles', err)
           return of([])
         }),

@@ -88,7 +88,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
         return this.workspace
       }),
       catchError((err) => {
-        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.WORKSPACE'
+        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + Utils.mapping_error_status(err.status) + '.WORKSPACE'
         console.error('getWorkspaceByName', err)
         return of(undefined)
       }),

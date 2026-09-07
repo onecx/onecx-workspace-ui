@@ -149,7 +149,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
             return []
           }),
           catchError((err) => {
-            this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.PRODUCTS'
+            this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + Utils.mapping_error_status(err.status) + '.PRODUCTS'
             console.error('getProductsByWorkspaceId', err)
             return of([])
           }),
@@ -193,7 +193,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
             return []
           }),
           catchError((err) => {
-            this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.SLOTS'
+            this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + Utils.mapping_error_status(err.status) + '.SLOTS'
             console.error('getSlotsForWorkspace', err)
             return of([])
           }),
@@ -223,7 +223,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
         return []
       }),
       catchError((err) => {
-        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.PRODUCTS'
+        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + Utils.mapping_error_status(err.status) + '.PRODUCTS'
         console.error('searchAvailableProducts', err)
         return of([])
       }),
