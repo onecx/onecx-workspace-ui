@@ -280,7 +280,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
             return this.wProducts.sort(this.sortProductsByDisplayName)
           }),
           catchError((err) => {
-            this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.PRODUCTS'
+            this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + Utils.mapping_error_status(err.status) + '.PRODUCTS'
             console.error('getProductsByWorkspaceId', err)
             return of([] as ExtendedProduct[])
           }),
@@ -293,7 +293,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
       this.wSlots$ = this.slotApi.getSlotsForWorkspace({ id: this.workspace?.id }).pipe(
         map((response) => response.slots ?? []),
         catchError((err) => {
-          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.PRODUCTS'
+          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + Utils.mapping_error_status(err.status) + '.PRODUCTS'
           console.error('getSlotsForWorkspace', err)
           return of([] as Slot[])
         })
@@ -323,7 +323,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
           return this.psProducts.sort(this.sortProductsByDisplayName)
         }),
         catchError((err) => {
-          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.PRODUCTS'
+          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + Utils.mapping_error_status(err.status) + '.PRODUCTS'
           console.error('searchAvailableProducts', err)
           return of([] as ExtendedProduct[])
         }),

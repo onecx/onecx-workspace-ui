@@ -322,7 +322,7 @@ describe('WorkspaceSlotsComponent', () => {
     })
 
     it('should load data - workspace products failed', () => {
-      const errorResponse = { status: '404', statusText: 'Not found' }
+      const errorResponse = { status: 404, statusText: 'Not found' }
       wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(throwError(() => errorResponse))
       slotServiceSpy.getSlotsForWorkspace.and.returnValue(of({ slots: wSlots }))
       productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: psProducts }))
@@ -336,7 +336,7 @@ describe('WorkspaceSlotsComponent', () => {
 
     it('should load data - workspace slot failed', () => {
       component.psSlots$ = of([])
-      const errorResponse = { status: '404', statusText: 'Not found' }
+      const errorResponse = { status: 404, statusText: 'Not found' }
       wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of(wProducts))
       slotServiceSpy.getSlotsForWorkspace.and.returnValue(throwError(() => errorResponse))
       spyOn(component as any, 'getPsSlotsAndComponents').and.callFake(() => {})
@@ -349,7 +349,7 @@ describe('WorkspaceSlotsComponent', () => {
     })
 
     it('should load data - product store products failed', () => {
-      const errorResponse = { status: '404', statusText: 'Not found' }
+      const errorResponse = { status: 404, statusText: 'Not found' }
       wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of(wProducts))
       slotServiceSpy.getSlotsForWorkspace.and.returnValue(of({ slots: wSlots }))
       productServiceSpy.searchAvailableProducts.and.returnValue(throwError(() => errorResponse))

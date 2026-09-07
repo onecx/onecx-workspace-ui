@@ -645,7 +645,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         return ws
       }),
       catchError((err) => {
-        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.WORKSPACE'
+        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + Utils.mapping_error_status(err.status) + '.WORKSPACE'
         console.error('getWorkspaceByName', err)
         return of(undefined)
       }),
@@ -666,7 +666,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       .pipe(
         map((result) => result.menuItems),
         catchError((err) => {
-          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.MENUS'
+          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + Utils.mapping_error_status(err.status) + '.MENUS'
           console.error('getMenuStructure', err)
           return of([] as WorkspaceMenuItem[])
         }),
@@ -702,7 +702,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       .pipe(
         map((result) => result.stream ?? []),
         catchError((err) => {
-          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.WS_ROLES'
+          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + Utils.mapping_error_status(err.status) + '.WS_ROLES'
           console.error('searchWorkspaceRoles', err)
           return of([])
         })
@@ -714,7 +714,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       .pipe(
         map((result) => result.stream ?? []),
         catchError((err) => {
-          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.ROLE_ASSIGNMENTS'
+          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + Utils.mapping_error_status(err.status) + '.ROLE_ASSIGNMENTS'
           console.error('searchAssignments', err)
           return of([])
         })
