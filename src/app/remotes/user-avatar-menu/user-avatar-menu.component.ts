@@ -1,6 +1,16 @@
 import { CommonModule, Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { AfterViewInit, Component, EventEmitter, Inject, Input, OnDestroy, Renderer2 } from '@angular/core'
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Inject,
+  Input,
+  OnDestroy,
+  Renderer2,
+  ViewChild
+} from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
@@ -77,6 +87,9 @@ export type MenuAnchorPositionConfig = 'right' | 'left'
 export class OneCXUserAvatarMenuComponent
   implements ocxRemoteComponent, ocxRemoteWebcomponent, AfterViewInit, OnDestroy
 {
+  @ViewChild('userAvatarMenuButton')
+  private readonly userAvatarMenuButton!: ElementRef<HTMLButtonElement>
+
   public userProfile$: Observable<UserProfile>
   public userMenu$: Observable<MenuItem[]>
   public eventsPublisher$: EventsPublisher = new EventsPublisher()
@@ -167,8 +180,13 @@ export class OneCXUserAvatarMenuComponent
   }
 
   ngAfterViewInit() {
-    this.removeDocumentClickListener = this.renderer.listen('body', 'click', () => {
-      this.menuOpen = false
+    this.removeDocumentClickListener = this.renderer.listen('body', 'click', (event: Event) => {
+      const target = event.target
+      const buttonElement = this.userAvatarMenuButton?.nativeElement
+
+      if (!(target instanceof Node) || !buttonElement?.contains(target)) {
+        this.menuOpen = false
+      }
     })
   }
 
@@ -211,7 +229,6 @@ export class OneCXUserAvatarMenuComponent
 
   public handleAvatarClick(event: Event): void {
     event.preventDefault()
-    event.stopPropagation()
     this.menuOpen = !this.menuOpen
   }
 
