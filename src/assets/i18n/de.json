@@ -554,12 +554,14 @@
       }
     },
     "DATAVIEW": {
-      "FILTER": "Filter",
+      "FILTER": {
+        "LABEL": "Filter",
+        "OF": "Filter für ",
+        "CLEAR": "Filter entfernen",
+        "PLACEHOLDER": "Filter"
+      },
       "PRODUCT_FILTER_TOOLTIP": "Filtern nach Applikation und Klassifikation",
       "SLOT_FILTER_TOOLTIP": "Filtern nach Komponenten",
-      "FILTER_OF": "Filter für ",
-      "FILTER_CLEAR": "Filter entfernen",
-      "FILTER_PLACEHOLDER": "Filter",
       "SORT_BY": "Sortiert nach",
       "SORT_DIRECTION_ASC": "aufsteigend",
       "SORT_DIRECTION_DESC": "absteigend",

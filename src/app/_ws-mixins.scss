@@ -2,45 +2,35 @@
  *  FORM - Control Improvements
  * **********************************************/
 
-/* displaying text like an input field with floating label */
-@mixin float-label-textbox {
-  :host {
-    .p-float-label {
-      display: block;
-      position: relative;
-      .ocx-float-label-textbox {
-        font-family: var(--font-family);
-        font-size: var(--input-text-font-size);
-        color: var(--emphasis-high);
-        background: var(--input-bg);
-        padding: var(--input-padding);
-        border: var(--input-border);
-        transition: var(--form-element-transition);
-        appearance: none;
-        border-radius: var(--border-radius);
-      }
-      .ocx-float-label {
-        position: absolute;
-        left: 0.75rem;
-        top: -0.5rem !important;
-        padding: 2px 4px;
-        margin-left: -4px;
-        margin-top: 0;
-        line-height: 1;
-        font-size: 12px;
-        pointer-events: none;
-        color: var(--emphasis-medium);
-        background-color: var(--input-bg);
-        transition-property: all;
-        transition-timing-function: ease;
-        transition-duration: var(--transition-duration);
+// Manipulate PrimeNG p-floatlabel
+@mixin ocx-p-floatlabel {
+  .p-floatlabel {
+    // Move the label only if embedded input control (input, textarea etc.) is filled or focussed
+    &.p-floatlabel-over {
+      &:has(.p-filled) label,
+      &:has(.p-focus) label {
+        top: -5px !important;
+        background-color: white;
+        padding: 0 0.5rem;
       }
     }
   }
 }
 
-@mixin displaying-text-responsive {
+@mixin ocx-required-label {
+  // Keep a visible required marker even when external theme styles are missing.
   :host ::ng-deep {
+    .p-floatlabel > label.ocx-required-label::after {
+      content: ' *';
+      color: var(--red-500, #ef4444);
+      font-weight: 600;
+    }
+  }
+}
+
+@mixin ocx-text-responsive {
+  :host ::ng-deep {
+    --disabled-opacity: 0.7;
     .text-responsive {
       white-space: nowrap;
       overflow: hidden;
@@ -337,9 +327,43 @@
 }
 
 /* **********************************************
- *  OneCX Widget - Layout Corrections
+ *  OCX Widgets
  * **********************************************/
-@mixin correct-search-criteria {
+@mixin ocx-interactive-data-view-fixes {
+  :host ::ng-deep {
+    /* fix base layout of interactive data view */
+    ocx-interactive-data-view > {
+      :first-child {
+        padding-top: 0 !important;
+      }
+      :not(:first-child) {
+        padding: 0.5rem 0 0 0 !important;
+      }
+    }
+    /* correct header layouting by lib */
+    .table-header-wrapper {
+      flex-direction: row !important;
+      justify-content: flex-start !important;
+      flex-wrap: nowrap !important;
+    }
+    .table-header-wrapper span:first-child {
+      margin-right: 10px !important;
+    }
+
+    /* establish grid-nogutter */
+    .p-dataview .p-dataview-content {
+      margin: 0;
+      padding: 0;
+      border-top: var(--table-header-border);
+      > .grid {
+        gap: 0 !important;
+        padding: 0;
+      }
+    }
+  }
+}
+
+@mixin ocx-search-criteria-fixes {
   :host ::ng-deep {
     .search-criteria-container > div {
       display: flex;
@@ -371,7 +395,6 @@
         font-weight: var(--font-weight);
         padding: 0.3rem 0.8rem;
         border: var(--input-border);
-        min-width: unset;
       }
       .p-selectbutton-subtitle {
         font-size: 0.8rem;
@@ -417,17 +440,6 @@
           border-color: var(--toggle-button-hover-border-color);
           background-color: var(--button-hover-bg);
         }
-      }
-    }
-  }
-}
-
-@mixin correct-ocx-interactive-data-view {
-  :host ::ng-deep {
-    ocx-interactive-data-view > div {
-      padding: 0 0 0.2rem 0 !important;
-      &.surface-border {
-        border-bottom: var(--table-header-border) !important;
       }
     }
   }
@@ -501,6 +513,15 @@
       button:nth-child(4) {
         display: none !important;
       }
+    }
+  }
+}
+
+@mixin ocx-p-message {
+  :host ::ng-deep {
+    .p-message {
+      display: inline-grid;
+      min-width: 20rem;
     }
   }
 }

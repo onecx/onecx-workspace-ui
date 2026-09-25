@@ -404,12 +404,12 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   /*
   private prepareTranslations(): void {
     this.dataViewControlsTranslations$ = this.translate
-      .get(['SLOT.NAME', 'ROLE.TYPE', 'DIALOG.DATAVIEW.FILTER', 'DIALOG.DATAVIEW.FILTER_OF', 'DIALOG.DATAVIEW.SORT_BY'])
+      .get(['SLOT.NAME', 'ROLE.TYPE', 'DIALOG.DATAVIEW.FILTER', 'DIALOG.DATAVIEW.FILTER.OF', 'DIALOG.DATAVIEW.SORT_BY'])
       .pipe(
         map((data) => {
           return {
             filterInputPlaceholder: data['DIALOG.DATAVIEW.FILTER'],
-            filterInputTooltip: data['DIALOG.DATAVIEW.FILTER_OF'] + data['SLOT.NAME'],
+            filterInputTooltip: data['DIALOG.DATAVIEW.FILTER.OF'] + data['SLOT.NAME'],
             sortDropdownTooltip: data['DIALOG.DATAVIEW.SORT_BY'],
             sortDropdownPlaceholder: data['DIALOG.DATAVIEW.SORT_BY']
           } as DataViewControlTranslations

@@ -57,7 +57,7 @@
             <span class="p-inputgroup-addon pi pi-filter" aria-hidden="true"> </span>
             <span class="p-float-label">
               @let tooltipText =
-                ('DIALOG.DATAVIEW.FILTER_OF' | translate) +
+                ('DIALOG.DATAVIEW.FILTER.OF' | translate) +
                 ('MENU_ITEM.MENU_NAME' | translate) +
                 ', ' +
                 ('MENU_ITEM.URL' | translate);
@@ -78,7 +78,7 @@
                 for="ws_menu_table_header_menu_filter"
                 [ngStyle]="menuItems?.length === 0 ? { color: 'var(--emphasis-low)' } : null"
               >
-                {{ 'DIALOG.DATAVIEW.FILTER_PLACEHOLDER' | translate }}
+                {{ 'DIALOG.DATAVIEW.FILTER.PLACEHOLDER' | translate }}
               </label>
             </span>
             <button
@@ -88,8 +88,8 @@
               [ngStyle]="menuTreeFilter.value === '' ? filterEmptyStyle : null"
               (keydown.space)="onTreeFilterClear(menuTree, menuTreeFilter)"
               (click)="onTreeFilterClear(menuTree, menuTreeFilter)"
-              [attr.aria-label]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
-              [pTooltip]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
+              [attr.aria-label]="'DIALOG.DATAVIEW.FILTER.CLEAR' | translate"
+              [pTooltip]="'DIALOG.DATAVIEW.FILTER.CLEAR' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
             ></button>
