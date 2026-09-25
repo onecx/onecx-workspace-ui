@@ -9,6 +9,8 @@ import { PortalMessageService, ThemeService } from '@onecx/angular-integration-i
 
 import { Utils } from 'src/app/shared/utils'
 import { WorkspaceAPIService, ProductAPIService } from 'src/app/shared/generated'
+import { SharedModule } from 'src/app/shared/shared.module'
+import { ImageContainerComponent } from 'src/app/shared/image-container/image-container.component'
 
 export type Theme = {
   name: string
@@ -19,6 +21,8 @@ export type Theme = {
 
 @Component({
   selector: 'app-workspace-create',
+  standalone: true,
+  imports: [SharedModule, ImageContainerComponent],
   templateUrl: './workspace-create.component.html',
   styleUrls: ['./workspace-create.component.scss']
 })

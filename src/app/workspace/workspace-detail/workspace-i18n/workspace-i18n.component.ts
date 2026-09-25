@@ -3,6 +3,7 @@ import { FormArray, FormBuilder } from '@angular/forms'
 
 import { Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
+import { SharedModule } from 'src/app/shared/shared.module'
 
 export type LanguageOption = {
   label: string
@@ -11,6 +12,8 @@ export type LanguageOption = {
 
 @Component({
   selector: 'app-workspace-i18n',
+  standalone: true,
+  imports: [SharedModule],
   templateUrl: './workspace-i18n.component.html',
   styleUrls: ['./workspace-i18n.component.scss']
 })

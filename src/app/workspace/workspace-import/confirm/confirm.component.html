@@ -77,7 +77,6 @@
       [(ngModel)]="mandatory"
       [disabled]="true"
       [binary]="true"
-      [label]="'INTERNAL.MANDATORY' | translate"
       [ariaLabel]="'INTERNAL.MANDATORY' | translate"
       [pTooltip]="'INTERNAL.TOOLTIPS.MANDATORY' | translate"
       tooltipPosition="top"
@@ -88,6 +87,9 @@
         <span class="pi" [ngClass]="checkMandatory.value ? 'pi-check-square' : 'pi-check'"></span>
       </ng-template>
     </p-checkbox>
+    <label class="ocx-required-label" for="ws_import_preview_mandatory">
+      {{ 'INTERNAL.MANDATORY' | translate }}
+    </label>
   </div>
 
   <!-- MESSAGES -->

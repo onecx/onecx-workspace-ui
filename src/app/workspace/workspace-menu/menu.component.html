@@ -14,7 +14,7 @@
   </ocx-page-header>
   <ocx-page-header *ngIf="!workspace" [subheader]="'DIALOG.MENU.SUBHEADER' | translate"> </ocx-page-header>
 
-  <ocx-page-content>
+  <ocx-content>
     <p-message *ngIf="exceptionKey" severity="error" styleClass="m-3" [text]="exceptionKey | translate"></p-message>
 
     <p-treeTable
@@ -571,7 +571,7 @@
         </section>
       </ng-template>
     </p-treeTable>
-  </ocx-page-content>
+  </ocx-content>
 </ocx-portal-page>
 
 <!--

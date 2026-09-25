@@ -8,9 +8,12 @@ import { SlotService } from '@onecx/angular-remote-components'
 import { EximWorkspaceMenuItem, Product } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
 import { Theme, ImportWorkspace } from '../workspace-import.component'
+import { SharedModule } from 'src/app/shared/shared.module'
 
 @Component({
   selector: 'app-import-preview',
+  standalone: true,
+  imports: [SharedModule],
   templateUrl: './preview.component.html',
   styleUrls: ['./preview.component.scss']
 })

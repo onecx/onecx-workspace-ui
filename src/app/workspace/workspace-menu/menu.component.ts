@@ -10,7 +10,10 @@ import { SelectItem, TreeNode } from 'primeng/api'
 
 import { getLocation } from '@onecx/accelerator'
 import { Action } from '@onecx/angular-accelerator'
+import { PortalPageComponent } from '@onecx/angular-utils'
 import { PortalMessageService, UserService, WorkspaceService } from '@onecx/angular-integration-interface'
+
+import { SharedModule } from 'src/app/shared/shared.module'
 import {
   AssignmentAPIService,
   Assignment,
@@ -26,6 +29,10 @@ import {
 } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
 import { MenuStateService } from './services/menu-state.service'
+
+import { MenuDetailComponent } from './menu-detail/menu-detail.component'
+import { MenuImportComponent } from './menu-import/menu-import.component'
+import { MenuPreviewComponent } from './menu-preview/menu-preview.component'
 
 export type ChangeMode = 'VIEW' | 'CREATE' | 'EDIT' | 'COPY' | 'DELETE'
 export type RoleAssignments = { [key: string]: string | undefined } // assignment id or undefined
@@ -45,6 +52,8 @@ type Column = { name: string; headerKey: string; tooltipKey: string; css?: strin
 
 @Component({
   selector: 'app-menu',
+  standalone: true,
+  imports: [SharedModule, MenuDetailComponent, MenuImportComponent, MenuPreviewComponent, PortalPageComponent],
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.scss']
 })
@@ -107,16 +116,26 @@ export class MenuComponent implements OnInit, OnDestroy {
     private readonly stateService: MenuStateService,
     private readonly translate: TranslateService,
     private readonly msgService: PortalMessageService,
-    private readonly userService: UserService
+    private readonly user: UserService
   ) {
     const state = this.stateService.getState()
     this.menuItems = state.workspaceMenuItems // reestablish menu state
-    // simplify permission checks
-    if (this.userService.hasPermission('MENU#VIEW')) this.myPermissions.push('MENU#VIEW')
-    if (this.userService.hasPermission('MENU#VIEW')) this.myPermissions.push('MENU#CREATE')
-    if (this.userService.hasPermission('MENU#EDIT')) this.myPermissions.push('MENU#EDIT')
-    if (this.userService.hasPermission('MENU#GRANT')) this.myPermissions.push('MENU#GRANT')
-    if (this.userService.hasPermission('WORKSPACE_ROLE#EDIT')) this.myPermissions.push('WORKSPACE_ROLE#EDIT')
+
+    // translate and collect permissions
+    Promise.all([
+      this.user.hasPermission('MENU#VIEW'),
+      this.user.hasPermission('MENU#CREATE'),
+      this.user.hasPermission('MENU#EDIT'),
+      this.user.hasPermission('MENU#GRANT'),
+      this.user.hasPermission('WORKSPACE_ROLE#EDIT')
+    ]).then(([mview, mcreate, medit, mgrant, wroleedit]) => {
+      if (mview) this.myPermissions.push('MENU#VIEW')
+      if (mcreate) this.myPermissions.push('MENU#CREATE')
+      if (medit) this.myPermissions.push('MENU#EDIT')
+      if (mgrant) this.myPermissions.push('MENU#GRANT')
+      if (wroleedit) this.myPermissions.push('WORKSPACE_ROLE#EDIT')
+    })
+
     this.treeFrozenColumns = [{ name: 'node label', headerKey: '', tooltipKey: '' }]
     this.treeDetailColumns = [
       { name: 'actions', headerKey: 'ACTIONS.LABEL', tooltipKey: 'ACTIONS.TOOLTIP', css: 'hidden-xs border-right-1' },

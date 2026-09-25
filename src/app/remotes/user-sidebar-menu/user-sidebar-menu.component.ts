@@ -20,11 +20,10 @@ import {
   withLatestFrom
 } from 'rxjs'
 
-import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
+//import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
 import { AppConfigService, AppStateService, UserService } from '@onecx/angular-integration-interface'
 import {
   AngularRemoteComponentsModule,
-  BASE_URL,
   RemoteComponentConfig,
   SLOT_SERVICE,
   SlotService,
@@ -55,7 +54,7 @@ const MENU_MODE = 'static'
     TranslateModule,
     PanelMenuModule
   ],
-
+  /*
   providers: [
     AppConfigService,
     {
@@ -80,7 +79,7 @@ const MENU_MODE = 'static'
       provide: SLOT_SERVICE,
       useExisting: SlotService
     }
-  ],
+  ],*/
   templateUrl: './user-sidebar-menu.component.html',
   styleUrls: ['./user-sidebar-menu.component.scss']
 })
@@ -104,7 +103,6 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent, ocxRem
     .pipe(untilDestroyed(this))
 
   constructor(
-    @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
     private readonly translateService: TranslateService,
     private readonly appConfigService: AppConfigService,
     private readonly appStateService: AppStateService,
@@ -191,7 +189,7 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent, ocxRem
   }
 
   ocxInitRemoteComponent(config: RemoteComponentConfig): void {
-    this.baseUrl.next(config.baseUrl)
+    // this.baseUrl.next(config.baseUrl)
     this.appConfigService.init(config.baseUrl)
     this.menuItemApiService.configuration = new Configuration({
       basePath: Location.joinWithSlash(config.baseUrl, environment.apiPrefix)

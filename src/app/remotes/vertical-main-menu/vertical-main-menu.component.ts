@@ -22,15 +22,15 @@ import {
   withLatestFrom
 } from 'rxjs'
 
-import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
+//import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
 import { AppStateService, Capability, ShellCapabilityService, UserService } from '@onecx/angular-integration-interface'
+
 import {
   AngularRemoteComponentsModule,
-  BASE_URL,
-  RemoteComponentConfig,
   ocxRemoteComponent,
   ocxRemoteWebcomponent,
-  provideTranslateServiceForRoot
+  REMOTE_COMPONENT_CONFIG,
+  RemoteComponentConfig
 } from '@onecx/angular-remote-components'
 import { EventsTopic, NavigatedEventPayload } from '@onecx/integration-interface'
 
@@ -49,10 +49,9 @@ const MENU_MODE = 'static'
 
 @Component({
   selector: 'app-vertical-main-menu',
-  templateUrl: './vertical-main-menu.component.html',
-  styleUrl: './vertical-main-menu.component.scss',
   standalone: true,
   imports: [AngularRemoteComponentsModule, CommonModule, RouterModule, TranslateModule, PanelMenuModule],
+  /*
   providers: [
     { provide: BASE_URL, useValue: new ReplaySubject<string>(1) },
     provideTranslateServiceForRoot({
@@ -63,10 +62,19 @@ const MENU_MODE = 'static'
         deps: [HttpClient, BASE_URL]
       }
     })
-  ]
+  ],*/
+  templateUrl: './vertical-main-menu.component.html',
+  styleUrl: './vertical-main-menu.component.scss'
 })
 @UntilDestroy()
 export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRemoteWebcomponent, OnInit, OnDestroy {
+  private readonly userService = inject(UserService)
+  private readonly translateService = inject(TranslateService)
+  private readonly appStateService = inject(AppStateService)
+  private readonly menuItemApiService = inject(MenuItemAPIService)
+  private readonly menuItemService = inject(MenuItemService)
+  private readonly capabilityService = inject(ShellCapabilityService)
+
   menuItems$: BehaviorSubject<WorkspaceMenuItems | undefined> = new BehaviorSubject<WorkspaceMenuItems | undefined>(
     undefined
   )
@@ -80,15 +88,7 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRe
     .pipe(map((isVisible) => !isVisible))
     .pipe(untilDestroyed(this))
 
-  constructor(
-    @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
-    private readonly userService: UserService,
-    private readonly translateService: TranslateService,
-    private readonly appStateService: AppStateService,
-    private readonly menuItemApiService: MenuItemAPIService,
-    private readonly menuItemService: MenuItemService,
-    private readonly capabilityService: ShellCapabilityService
-  ) {
+  constructor() {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
   }
 
@@ -97,7 +97,7 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRe
   }
 
   ocxInitRemoteComponent(remoteComponentConfig: RemoteComponentConfig) {
-    this.baseUrl.next(remoteComponentConfig.baseUrl)
+    //this.baseUrl.next(remoteComponentConfig.baseUrl)
     this.menuItemApiService.configuration = new Configuration({
       basePath: Location.joinWithSlash(remoteComponentConfig.baseUrl, environment.apiPrefix)
     })

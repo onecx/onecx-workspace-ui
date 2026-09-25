@@ -2,9 +2,12 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core'
 import { HttpHeaders } from '@angular/common/http'
 import { TranslateService } from '@ngx-translate/core'
 import { FileSelectEvent } from 'primeng/fileupload'
+import { SharedModule } from 'src/app/shared/shared.module'
 
 @Component({
   selector: 'app-import-choose-file',
+  standalone: true,
+  imports: [SharedModule],
   templateUrl: './choose-file.component.html'
 })
 export class ChooseFileComponent implements OnInit {

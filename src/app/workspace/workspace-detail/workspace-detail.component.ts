@@ -3,10 +3,11 @@ import { Location } from '@angular/common'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 import { catchError, finalize, map, Observable, of } from 'rxjs'
-import { Message } from 'primeng/api'
 
 import { Action, ObjectDetailItem } from '@onecx/angular-accelerator'
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+import { PortalPageComponent } from '@onecx/angular-utils'
+
 import {
   GetWorkspaceResponse,
   Workspace,
@@ -16,12 +17,29 @@ import {
 } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
 
+import { WorkspaceExportComponent } from './workspace-export/workspace-export.component'
 import { WorkspacePropsComponent } from './workspace-props/workspace-props.component'
 import { WorkspaceContactComponent } from './workspace-contact/workspace-contact.component'
 import { WorkspaceInternComponent } from './workspace-intern/workspace-intern.component'
+import { WorkspaceRolesComponent } from './workspace-roles/workspace-roles.component'
+import { WorkspaceSlotsComponent } from './workspace-slots/workspace-slots.component'
+import { ProductComponent } from '../workspace-product/products.component'
+import { SharedModule } from 'src/app/shared/shared.module'
 
 @Component({
   selector: 'app-workspace-detail',
+  standalone: true,
+  imports: [
+    SharedModule,
+    PortalPageComponent,
+    WorkspacePropsComponent,
+    WorkspaceContactComponent,
+    WorkspaceInternComponent,
+    WorkspaceRolesComponent,
+    WorkspaceSlotsComponent,
+    ProductComponent,
+    WorkspaceExportComponent
+  ],
   templateUrl: './workspace-detail.component.html',
   styleUrls: ['./workspace-detail.component.scss']
 })
@@ -50,8 +68,6 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
   public currentLogoUrl: string | undefined = undefined
   public showOperatorMessage = true // display initially only
   public Utils = Utils
-  private translations$: Observable<Message[]> | undefined
-  public messages: Message[] = []
 
   constructor(
     public readonly route: ActivatedRoute,
@@ -68,7 +84,6 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    this.prepareDialogTranslations()
     this.getWorkspace()
   }
 
@@ -327,23 +342,5 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
           ]
         })
       )
-  }
-
-  private prepareDialogTranslations(): void {
-    this.translations$ = this.translate.get(['INTERNAL.OPERATOR_MESSAGE', 'INTERNAL.OPERATOR_HINT']).pipe(
-      map((data) => {
-        return [
-          {
-            id: 'ws_detail_operator_message',
-            severity: 'warn',
-            life: 5000,
-            closable: true,
-            summary: data['INTERNAL.OPERATOR_HINT'],
-            detail: data['INTERNAL.OPERATOR_MESSAGE']
-          }
-        ]
-      })
-    )
-    this.translations$.subscribe((data) => (this.messages = data))
   }
 }

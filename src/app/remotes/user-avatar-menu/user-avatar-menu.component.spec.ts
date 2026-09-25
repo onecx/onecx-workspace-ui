@@ -19,7 +19,7 @@ import { SlotServiceMock } from '@onecx/angular-remote-components/mocks'
 import { AppStateService, UserService } from '@onecx/angular-integration-interface'
 
 import { IfPermissionDirective } from '@onecx/angular-accelerator'
-import { AppConfigService } from '@onecx/portal-integration-angular'
+import { AppConfigService } from '@onecx/angular-accelerator'
 
 import { MenuItemAPIService } from 'src/app/shared/generated'
 import { OneCXUserAvatarMenuHarness } from './user-avatar-menu.harness'

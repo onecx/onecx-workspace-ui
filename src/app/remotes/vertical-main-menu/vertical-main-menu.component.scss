@@ -1,4 +1,4 @@
-@import './../../shared/sidebar-panelmenu.scss';
+@use 'src/app/shared/sidebar-panelmenu.scss' as *;
 
 :host ::ng-deep {
   .p-panelmenu {

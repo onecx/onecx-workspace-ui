@@ -18,12 +18,12 @@
         [(ngModel)]="exportMenu"
         [binary]="true"
         styleClass="cursor-auto shadow-none ml-3"
-        [label]="'WORKSPACE_EXPORT.MENU' | translate"
         [ariaLabel]="'WORKSPACE_EXPORT.MENU' | translate"
         [pTooltip]="'WORKSPACE_EXPORT.MENU_TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
-      ></p-checkbox>
+      />
+      <label class="ml-3">{{ 'WORKSPACE_EXPORT.MENU' | translate }}</label>
     </div>
   </div>
   <ng-template pTemplate="footer">

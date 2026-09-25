@@ -6,18 +6,22 @@ import {
   SimpleChanges,
   OnChanges,
   OnInit,
-  OnDestroy
+  OnDestroy,
+  NO_ERRORS_SCHEMA
 } from '@angular/core'
 import { TranslateService } from '@ngx-translate/core'
 import { Observable, Subject, catchError, finalize, map, of } from 'rxjs'
 import { SelectItem } from 'primeng/api'
 
-import { DataViewControlTranslations } from '@onecx/portal-integration-angular'
+//import { DataViewControlTranslations } from '@onecx/angular-accelerator'
 import { SLOT_SERVICE, SlotService } from '@onecx/angular-remote-components'
 import { PortalMessageService, UserService, WorkspaceService } from '@onecx/angular-integration-interface'
 
 import { Workspace, WorkspaceRole, WorkspaceRolesAPIService } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
+import { SharedModule } from 'src/app/shared/shared.module'
+import { OcxChipComponent } from 'src/app/shared/ocx-chip/ocx-chip.component'
+import { WorkspaceRoleDetailComponent } from '../../workspace-role-detail/workspace-role-detail.component'
 
 export type IAMRole = { name?: string; description?: string }
 export type RoleType = 'WORKSPACE' | 'IAM'
@@ -31,12 +35,15 @@ export function slotInitializer(slotService: SlotService) {
 
 @Component({
   selector: 'app-workspace-roles',
-  templateUrl: './workspace-roles.component.html',
-  styleUrls: ['./workspace-roles.component.scss'],
+  standalone: true,
+  schemas: [NO_ERRORS_SCHEMA],
+  imports: [SharedModule, OcxChipComponent, WorkspaceRoleDetailComponent],
   providers: [
     { provide: APP_INITIALIZER, useFactory: slotInitializer, deps: [SLOT_SERVICE], multi: true },
     { provide: SLOT_SERVICE, useExisting: SlotService }
-  ]
+  ],
+  templateUrl: './workspace-roles.component.html',
+  styleUrls: ['./workspace-roles.component.scss']
 })
 export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
   @Input() workspace!: Workspace | undefined
@@ -52,7 +59,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
   public permissionEndpointExist = false
 
   // dialog
-  public dataViewControlsTranslations$: Observable<DataViewControlTranslations> | undefined
+  //public dataViewControlsTranslations$: Observable<DataViewControlTranslations> | undefined
   public filterValue = 'WORKSPACE'
   public filterByDefault = 'name'
   public filterBy = this.filterByDefault
@@ -87,15 +94,20 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
     private readonly translate: TranslateService,
     private readonly msgService: PortalMessageService
   ) {
-    this.hasEditPermission = this.user.hasPermission('WORKSPACE_ROLE#EDIT')
-    this.hasCreatePermission = this.user.hasPermission('WORKSPACE_ROLE#CREATE')
-    this.hasDeletePermission = this.user.hasPermission('WORKSPACE_ROLE#DELETE')
+    Promise.all([
+      this.user.hasPermission('WORKSPACE_ROLE#EDIT'),
+      this.user.hasPermission('WORKSPACE_ROLE#CREATE'),
+      this.user.hasPermission('WORKSPACE_ROLE#DELETE')
+    ]).then(([permEdit, permCreate, permDelete]) => {
+      this.hasEditPermission = permEdit
+      this.hasCreatePermission = permCreate
+      this.hasDeletePermission = permDelete
+    })
+
     this.prepareQuickFilter()
   }
 
-  public ngOnInit(): void {
-    this.prepareTranslations()
-  }
+  public ngOnInit(): void {}
 
   public ngOnChanges(changes: SimpleChanges): void {
     if (this.workspace && changes['workspace']) {
@@ -297,6 +309,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
   /**
    * DIALOG preparation and handling
    */
+  /*
   private prepareTranslations(): void {
     this.dataViewControlsTranslations$ = this.translate
       .get(['ROLE.NAME', 'DIALOG.DATAVIEW.FILTER', 'DIALOG.DATAVIEW.FILTER_OF', 'DIALOG.DATAVIEW.SORT_BY'])
@@ -310,7 +323,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
           } as DataViewControlTranslations
         })
       )
-  }
+  }*/
 
   public prepareQuickFilter(): void {
     this.quickFilterOptions$ = this.translate

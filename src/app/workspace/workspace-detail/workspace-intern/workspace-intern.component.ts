@@ -2,9 +2,12 @@ import { Component, Input, OnChanges } from '@angular/core'
 import { FormControl, FormGroup } from '@angular/forms'
 
 import { Workspace } from 'src/app/shared/generated'
+import { SharedModule } from 'src/app/shared/shared.module'
 
 @Component({
   selector: 'app-workspace-intern',
+  standalone: true,
+  imports: [SharedModule],
   templateUrl: './workspace-intern.component.html'
 })
 export class WorkspaceInternComponent implements OnChanges {

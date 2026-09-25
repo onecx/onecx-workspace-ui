@@ -1,15 +1,15 @@
-import { CommonModule } from '@angular/common'
 import { Component, ElementRef, inject, Inject, Input, OnDestroy, ViewChild } from '@angular/core'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { combineLatest, filter, map, merge, Observable, ReplaySubject } from 'rxjs'
 
 import {
   AngularRemoteComponentsModule,
-  BASE_URL,
   ocxRemoteComponent,
   ocxRemoteWebcomponent,
+  REMOTE_COMPONENT_CONFIG,
   RemoteComponentConfig
 } from '@onecx/angular-remote-components'
+import { AppConfigService } from '@onecx/angular-integration-interface'
 
 import { RefType } from 'src/app/shared/generated'
 import { MenuMode, MenuService } from 'src/app/shared/services/menu.service'
@@ -17,6 +17,7 @@ import { ResizedEventType } from '../../shared/resized-events/v1/resized-event-t
 import { ResizedEventsTopic } from '../../shared/resized-events/v1/resized-events.topic'
 import { SlotGroupResizedEvent } from '../../shared/resized-events/v1/slot-groups-resized-type'
 import { SlotResizedEvent } from '../../shared/resized-events/v1/slots-resized-type'
+
 import { OneCXCurrentWorkspaceLogoComponent } from '../current-workspace-logo/current-workspace-logo.component'
 
 // Name of the slot (deprecated) and name of the slot-group being observed for resize events
@@ -33,19 +34,15 @@ const SMALL_LOGO_THRESHOLD_PX = 235
 
 @Component({
   selector: 'app-topbar-logo',
-  templateUrl: './topbar-logo.component.html',
-  styleUrls: ['./topbar-logo.component.scss'],
   standalone: true,
-  imports: [AngularRemoteComponentsModule, CommonModule, OneCXCurrentWorkspaceLogoComponent],
-  providers: [
-    {
-      provide: BASE_URL,
-      useValue: new ReplaySubject<string>(1)
-    }
-  ]
+  imports: [AngularRemoteComponentsModule, OneCXCurrentWorkspaceLogoComponent],
+  templateUrl: './topbar-logo.component.html',
+  styleUrls: ['./topbar-logo.component.scss']
 })
 @UntilDestroy()
 export class OneCXTopbarLogoComponent implements ocxRemoteComponent, ocxRemoteWebcomponent, OnDestroy {
+  public readonly remoteComponentConfig = inject<ReplaySubject<RemoteComponentConfig>>(REMOTE_COMPONENT_CONFIG)
+  private readonly appConfigService = inject(AppConfigService)
   // input
   @Input() imageId: string | undefined = undefined
   @Input() imageUrl: string | undefined = undefined
@@ -54,36 +51,38 @@ export class OneCXTopbarLogoComponent implements ocxRemoteComponent, ocxRemoteWe
   @Input() logPrefix: string | undefined = undefined
   @Input() logEnabled = false
   @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
-    this.remoteComponentConfig = config
     this.ocxInitRemoteComponent(config)
   }
+  @ViewChild('container', { static: true }) container!: ElementRef
 
   private readonly menuService = inject(MenuService)
-
   public currentImageType: RefType = RefType.Logo
-  public remoteComponentConfig: RemoteComponentConfig | undefined
-
-  @ViewChild('container', { static: true }) container!: ElementRef
   private resizedEventsTopic = new ResizedEventsTopic() // NOSONAR
   public isStaticMenuActive$: Observable<boolean>
   public isStaticMenuVisible$: Observable<boolean>
-
   private readonly staticMenuMode: MenuMode = 'static'
 
-  constructor(@Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>) {
+  constructor() {
     this.isStaticMenuActive$ = this.menuService.isActive(this.staticMenuMode).pipe(untilDestroyed(this))
     this.isStaticMenuVisible$ = this.menuService.isVisible(this.staticMenuMode).pipe(untilDestroyed(this))
-
     ResizedEventsTopic.requestEvent(ResizedEventType.SLOT_RESIZED, RESIZE_OBSERVED_SLOT_NAME_OLD)
     ResizedEventsTopic.requestEvent(ResizedEventType.SLOT_GROUP_RESIZED, RESIZE_OBSERVED_SLOT_GROUP_NAME)
   }
+
   ngOnDestroy(): void {
     this.resizedEventsTopic.destroy()
   }
 
-  ocxInitRemoteComponent(remoteComponentConfig: RemoteComponentConfig) {
-    this.baseUrl.next(remoteComponentConfig.baseUrl)
+  // initialize this component as remote
+  public ocxInitRemoteComponent(config: RemoteComponentConfig): void {
+    this.appConfigService.init(config.baseUrl)
+    this.remoteComponentConfig.next(config)
     this.initializeContainerStyles()
+    /*
+    this.baseUrl.next(remoteComponentConfig.baseUrl)
+    this.themeApi.configuration = new Configuration({
+      basePath: Location.joinWithSlash(config.baseUrl, environment.apiPrefix)
+    })*/
   }
 
   private initializeContainerStyles() {

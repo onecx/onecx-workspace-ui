@@ -1,4 +1,7 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
+import { Component, Input, NO_ERRORS_SCHEMA, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
+import { SharedModule } from 'src/app/shared/shared.module'
+import { OcxChipComponent } from 'src/app/shared/ocx-chip/ocx-chip.component'
+import { WorkspaceSlotDetailComponent } from '../workspace-slot-detail/workspace-slot-detail.component'
 import { TranslateService } from '@ngx-translate/core'
 import {
   Subject,
@@ -14,7 +17,7 @@ import {
 } from 'rxjs'
 import { SelectItem } from 'primeng/api'
 
-import { DataViewControlTranslations } from '@onecx/portal-integration-angular'
+//import { DataViewControlTranslations } from '@onecx/angular-accelerator'
 import { PortalMessageService, UserService, WorkspaceService } from '@onecx/angular-integration-interface'
 
 import {
@@ -49,6 +52,9 @@ export type ExtendedSlot = Slot &
 
 @Component({
   selector: 'app-workspace-slots',
+  standalone: true,
+  schemas: [NO_ERRORS_SCHEMA],
+  imports: [SharedModule, OcxChipComponent, WorkspaceSlotDetailComponent],
   templateUrl: './workspace-slots.component.html',
   styleUrls: ['./workspace-slots.component.scss']
 })
@@ -69,7 +75,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   public productEndpointExist = false
 
   // dialog
-  public dataViewControlsTranslations$: Observable<DataViewControlTranslations> | undefined
+  //public dataViewControlsTranslations$: Observable<DataViewControlTranslations> | undefined
 
   public filterValue: string | undefined
   public filterByDefault = 'name'
@@ -96,12 +102,14 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     private readonly translate: TranslateService,
     private readonly msgService: PortalMessageService
   ) {
-    this.hasEditPermission = this.user.hasPermission('WORKSPACE_SLOT#EDIT')
+    Promise.all([this.user.hasPermission('WORKSPACE_SLOT#EDIT')]).then(([permRegister]) => {
+      this.hasEditPermission = permRegister
+    })
   }
 
   public ngOnInit() {
     this.prepareQuickFilter()
-    this.prepareTranslations()
+    //this.prepareTranslations()
   }
   public ngOnChanges(changes: SimpleChanges): void {
     if (this.workspace && changes['workspace']) {
@@ -393,6 +401,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   /**
    * Dialog preparation
    */
+  /*
   private prepareTranslations(): void {
     this.dataViewControlsTranslations$ = this.translate
       .get(['SLOT.NAME', 'ROLE.TYPE', 'DIALOG.DATAVIEW.FILTER', 'DIALOG.DATAVIEW.FILTER_OF', 'DIALOG.DATAVIEW.SORT_BY'])
@@ -406,7 +415,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
           } as DataViewControlTranslations
         })
       )
-  }
+  }*/
 
   public prepareQuickFilter(): void {
     this.quickFilterOptions$ = this.translate

@@ -3,6 +3,7 @@ import { Location } from '@angular/common'
 import { DefaultValueAccessor, FormControl, FormGroup, Validators } from '@angular/forms'
 import { TranslateService } from '@ngx-translate/core'
 import { firstValueFrom, catchError, map, of, Subject, takeUntil } from 'rxjs'
+
 import { TabView } from 'primeng/tabview'
 import { SelectItem } from 'primeng/api'
 
@@ -19,8 +20,11 @@ import {
   Target
 } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
+import { SharedModule } from 'src/app/shared/shared.module'
+
 import { ChangeMode } from '../menu.component'
 import { IconService } from '../services/iconservice'
+import { MenuInternComponent } from '../menu-intern/menu-intern.component'
 
 type I18N = { [key: string]: string }
 type LanguageItem = SelectItem & { data: string }
@@ -40,6 +44,8 @@ DefaultValueAccessor.prototype.registerOnChange = function (fn) {
 
 @Component({
   selector: 'app-menu-detail',
+  standalone: true,
+  imports: [SharedModule, MenuInternComponent],
   templateUrl: './menu-detail.component.html',
   styleUrls: ['./menu-detail.component.scss']
 })

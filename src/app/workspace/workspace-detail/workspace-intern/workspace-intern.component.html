@@ -3,57 +3,64 @@
     class="ml-2 sm:ml-3 mb-1 flex flex-row flex-wrap justify-content-start align-items-center column-gap-7 row-gap-2"
     [formGroup]="formGroup"
   >
-    <p-checkbox
-      #check1
-      inputId="ws_detail_intern_item_operator"
-      styleClass="cursor-auto shadow-none"
-      formControlName="operator"
-      [binary]="true"
-      [label]="'INTERNAL.OPERATOR' | translate"
-      [ariaLabel]="'INTERNAL.OPERATOR' | translate"
-      [pTooltip]="'INTERNAL.TOOLTIPS.OPERATOR' | translate"
-      tooltipPosition="top"
-      tooltipEvent="hover"
-    >
-      <!-- simplifies aria appearance-->
-      <ng-template pTemplate="icon">
-        <span class="pi" [ngClass]="check1.value ? 'pi-check-square' : 'pi-check'"></span>
-      </ng-template>
-    </p-checkbox>
-    <p-checkbox
-      #check2
-      inputId="ws_detail_props_item_mandatory"
-      styleClass="cursor-pointer shadow-none"
-      formControlName="mandatory"
-      [binary]="true"
-      [label]="'INTERNAL.MANDATORY' | translate"
-      [ariaLabel]="'INTERNAL.MANDATORY' | translate"
-      [pTooltip]="'INTERNAL.TOOLTIPS.MANDATORY' | translate"
-      tooltipPosition="top"
-      tooltipEvent="hover"
-    >
-      <!-- simplifies aria appearance-->
-      <ng-template pTemplate="icon">
-        <span class="pi" [ngClass]="check2.value ? 'pi-check-square' : 'pi-check'"></span>
-      </ng-template>
-    </p-checkbox>
-    <p-checkbox
-      #check3
-      inputId="ws_detail_props_item_disabled"
-      styleClass="cursor-pointer shadow-none"
-      formControlName="disabled"
-      [binary]="true"
-      [label]="'WORKSPACE.DISABLED' | translate"
-      [ariaLabel]="'WORKSPACE.DISABLED' | translate"
-      [pTooltip]="'WORKSPACE.TOOLTIPS.DISABLED' | translate"
-      tooltipPosition="top"
-      tooltipEvent="hover"
-    >
-      <!-- simplifies aria appearance-->
-      <ng-template pTemplate="icon">
-        <span class="pi" [ngClass]="check3.value ? 'pi-check-square' : 'pi-check'"></span>
-      </ng-template>
-    </p-checkbox>
+    <div>
+      <p-checkbox
+        #check1
+        inputId="ws_detail_intern_item_operator"
+        styleClass="cursor-auto shadow-none"
+        formControlName="operator"
+        [binary]="true"
+        [ariaLabel]="'INTERNAL.OPERATOR' | translate"
+        [pTooltip]="'INTERNAL.TOOLTIPS.OPERATOR' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      >
+        <!-- simplifies aria appearance-->
+        <ng-template pTemplate="icon">
+          <span class="pi" [ngClass]="check1.value ? 'pi-check-square' : 'pi-check'"></span>
+        </ng-template>
+      </p-checkbox>
+      <label for="ws_detail_intern_item_operator" class="ml-3">{{ 'INTERNAL.OPERATOR' | translate }}</label>
+    </div>
+    <div>
+      <p-checkbox
+        #check2
+        inputId="ws_detail_intern_item_mandatory"
+        styleClass="cursor-pointer shadow-none"
+        formControlName="mandatory"
+        [binary]="true"
+        [ariaLabel]="'INTERNAL.MANDATORY' | translate"
+        [pTooltip]="'INTERNAL.TOOLTIPS.MANDATORY' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      >
+        <!-- simplifies aria appearance-->
+        <ng-template pTemplate="icon">
+          <span class="pi" [ngClass]="check2.value ? 'pi-check-square' : 'pi-check'"></span>
+        </ng-template>
+      </p-checkbox>
+      <label for="ws_detail_intern_item_mandatory" class="ml-3">{{ 'INTERNAL.MANDATORY' | translate }}</label>
+    </div>
+
+    <div>
+      <p-checkbox
+        #check3
+        inputId="ws_detail_intern_item_disabled"
+        styleClass="cursor-pointer shadow-none"
+        formControlName="disabled"
+        [binary]="true"
+        [ariaLabel]="'WORKSPACE.DISABLED' | translate"
+        [pTooltip]="'WORKSPACE.TOOLTIPS.DISABLED' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      >
+        <!-- simplifies aria appearance-->
+        <ng-template pTemplate="icon">
+          <span class="pi" [ngClass]="check3.value ? 'pi-check-square' : 'pi-check'"></span>
+        </ng-template>
+      </p-checkbox>
+      <label for="ws_detail_intern_item_disabled" class="ml-3">{{ 'WORKSPACE.DISABLED' | translate }}</label>
+    </div>
   </form>
 
   <div class="w-12 mb-1 p-float-label">

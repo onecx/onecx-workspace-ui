@@ -1,15 +1,18 @@
 import { NgModule } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { RouterModule } from '@angular/router'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
-import { provideErrorTailorConfig, errorTailorImports } from '@ngneat/error-tailor'
 
 import { AutoCompleteModule } from 'primeng/autocomplete'
+import { ButtonModule } from 'primeng/button'
+import { MessageModule } from 'primeng/message'
 import { CheckboxModule } from 'primeng/checkbox'
 import { ConfirmDialogModule } from 'primeng/confirmdialog'
 import { ConfirmPopupModule } from 'primeng/confirmpopup'
 import { ConfirmationService } from 'primeng/api'
 import { DataViewModule } from 'primeng/dataview'
+import { DividerModule } from 'primeng/divider'
 import { DialogModule } from 'primeng/dialog'
 import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog'
 import { DropdownModule } from 'primeng/dropdown'
@@ -18,10 +21,11 @@ import { FileUploadModule } from 'primeng/fileupload'
 import { InputGroupModule } from 'primeng/inputgroup'
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon'
 import { InputTextModule } from 'primeng/inputtext'
-import { InputTextareaModule } from 'primeng/inputtextarea'
+import { TextareaModule } from 'primeng/textarea'
 import { KeyFilterModule } from 'primeng/keyfilter'
 import { ListboxModule } from 'primeng/listbox'
 import { PanelModule } from 'primeng/panel'
+import { PickListModule } from 'primeng/picklist'
 import { SelectButtonModule } from 'primeng/selectbutton'
 import { TabViewModule } from 'primeng/tabview'
 import { TableModule } from 'primeng/table'
@@ -29,18 +33,19 @@ import { ToastModule } from 'primeng/toast'
 import { ToggleButtonModule } from 'primeng/togglebutton'
 import { TooltipModule } from 'primeng/tooltip'
 import { TreeModule } from 'primeng/tree'
+import { TreeTableModule } from 'primeng/treetable'
+import { StepsModule } from 'primeng/steps'
 
-import { PortalCoreModule, PortalDialogService } from '@onecx/portal-integration-angular'
+import { AngularAcceleratorModule, PortalDialogService } from '@onecx/angular-accelerator'
 
 import { LabelResolver } from './label.resolver'
-import { ImageContainerComponent } from './image-container/image-container.component'
-import { OcxChipComponent } from './ocx-chip/ocx-chip.component'
 
 @NgModule({
-  declarations: [ImageContainerComponent, OcxChipComponent],
   imports: [
-    PortalCoreModule.forMicroFrontend(),
+    DividerModule,
+    AngularAcceleratorModule,
     AutoCompleteModule,
+    PickListModule,
     CheckboxModule,
     CommonModule,
     ConfirmDialogModule,
@@ -55,11 +60,12 @@ import { OcxChipComponent } from './ocx-chip/ocx-chip.component'
     InputGroupModule,
     InputGroupAddonModule,
     InputTextModule,
-    InputTextareaModule,
+    TextareaModule,
     KeyFilterModule,
     ListboxModule,
     PanelModule,
     ReactiveFormsModule,
+    RouterModule,
     SelectButtonModule,
     TabViewModule,
     TableModule,
@@ -67,16 +73,22 @@ import { OcxChipComponent } from './ocx-chip/ocx-chip.component'
     ToggleButtonModule,
     TooltipModule,
     TreeModule,
+    TreeTableModule,
+    StepsModule,
     FileUploadModule,
     TranslateModule,
-    errorTailorImports
+    ButtonModule,
+    MessageModule
   ],
   exports: [
+    AngularAcceleratorModule,
     AutoCompleteModule,
+    PickListModule,
     CheckboxModule,
     CommonModule,
     ConfirmDialogModule,
     ConfirmPopupModule,
+    DividerModule,
     DataViewModule,
     DialogModule,
     DropdownModule,
@@ -87,7 +99,7 @@ import { OcxChipComponent } from './ocx-chip/ocx-chip.component'
     InputGroupModule,
     InputGroupAddonModule,
     InputTextModule,
-    InputTextareaModule,
+    TextareaModule,
     KeyFilterModule,
     ListboxModule,
     PanelModule,
@@ -99,37 +111,15 @@ import { OcxChipComponent } from './ocx-chip/ocx-chip.component'
     ToggleButtonModule,
     TooltipModule,
     TreeModule,
+    TreeTableModule,
     TranslateModule,
-    ImageContainerComponent,
+    RouterModule,
     FileUploadModule,
-    errorTailorImports,
-    OcxChipComponent
+    StepsModule,
+    ButtonModule,
+    MessageModule
   ],
   //this is not elegant, for some reason the injection token from primeng does not work across federated module
-  providers: [
-    ConfirmationService,
-    LabelResolver,
-    { provide: DialogService, useClass: PortalDialogService },
-    provideErrorTailorConfig({
-      controlErrorsOn: { async: true, blur: true, change: true },
-      errors: {
-        useFactory: (i18n: TranslateService) => {
-          return {
-            required: () => i18n.instant('VALIDATION.ERRORS.EMPTY_REQUIRED_FIELD'),
-            maxlength: ({ requiredLength }) =>
-              i18n.instant('VALIDATION.ERRORS.MAXIMUM_LENGTH').replace('{{chars}}', requiredLength),
-            minlength: ({ requiredLength }) =>
-              i18n.instant('VALIDATION.ERRORS.MINIMUM_LENGTH').replace('{{chars}}', requiredLength),
-            pattern: () => i18n.instant('VALIDATION.ERRORS.PATTERN_ERROR')
-          }
-        },
-        deps: [TranslateService]
-      },
-      //this is required because primeng calendar wraps things in an ugly way
-      blurPredicate: (element: Element) => {
-        return ['INPUT', 'TEXTAREA', 'SELECT', 'CUSTOM-DATE', 'P-CALENDAR', 'P-DROPDOWN'].includes(element.tagName)
-      }
-    })
-  ]
+  providers: [ConfirmationService, LabelResolver, { provide: DialogService, useClass: PortalDialogService }]
 })
 export class SharedModule {}

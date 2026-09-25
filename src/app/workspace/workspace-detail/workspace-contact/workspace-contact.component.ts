@@ -4,9 +4,12 @@ import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 
 import { Workspace } from 'src/app/shared/generated'
+import { SharedModule } from 'src/app/shared/shared.module'
 
 @Component({
   selector: 'app-workspace-contact',
+  standalone: true,
+  imports: [SharedModule],
   templateUrl: './workspace-contact.component.html'
 })
 export class WorkspaceContactComponent implements OnChanges {

@@ -1,19 +1,18 @@
-import { CommonModule, Location } from '@angular/common'
-import { HttpClient } from '@angular/common/http'
-import { Component, EventEmitter, Inject, Input, OnChanges } from '@angular/core'
-import { UntilDestroy } from '@ngneat/until-destroy'
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
-import { BehaviorSubject, catchError, map, Observable, of, ReplaySubject } from 'rxjs'
+import { ChangeDetectionStrategy, Component, DestroyRef, EventEmitter, inject, Input, OnChanges } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { AsyncPipe, Location } from '@angular/common'
+import { BehaviorSubject, catchError, first, map, Observable, of, ReplaySubject } from 'rxjs'
 
-import { AngularAcceleratorModule, createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
 import {
   AngularRemoteComponentsModule,
-  BASE_URL,
   ocxRemoteComponent,
   ocxRemoteWebcomponent,
-  provideTranslateServiceForRoot,
-  RemoteComponentConfig
+  SLOT_SERVICE,
+  SlotService
 } from '@onecx/angular-remote-components'
+import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
+import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
+import { AppConfigService } from '@onecx/angular-integration-interface'
 
 import {
   Configuration,
@@ -29,26 +28,18 @@ type DataType = 'logo' | 'workspaces' | 'workspace'
 
 @Component({
   selector: 'app-workspace-data',
-  templateUrl: './workspace-data.component.html',
   standalone: true,
-  imports: [AngularRemoteComponentsModule, CommonModule, TranslateModule, AngularAcceleratorModule],
-  providers: [
-    {
-      provide: BASE_URL,
-      useValue: new ReplaySubject<string>(1)
-    },
-    provideTranslateServiceForRoot({
-      isolate: true,
-      loader: {
-        provide: TranslateLoader,
-        useFactory: createRemoteComponentTranslateLoader,
-        deps: [HttpClient, BASE_URL]
-      }
-    })
-  ]
+  imports: [AngularAcceleratorModule, AngularRemoteComponentsModule, AsyncPipe],
+  providers: [{ provide: SLOT_SERVICE, useExisting: SlotService }],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './workspace-data.component.html'
 })
-@UntilDestroy()
 export class OneCXWorkspaceDataComponent implements ocxRemoteComponent, ocxRemoteWebcomponent, OnChanges {
+  private readonly rcConfig = inject<ReplaySubject<RemoteComponentConfig>>(REMOTE_COMPONENT_CONFIG)
+  private readonly appConfigService = inject(AppConfigService)
+  private readonly destroyRef = inject(DestroyRef)
+  private readonly slotService = inject(SlotService)
+  private readonly workspaceApi = inject(WorkspaceAPIService)
   // input
   @Input() refresh: boolean | undefined = false // on any change here a reload is triggered
   @Input() dataType: DataType | undefined = undefined // which response data is expected
@@ -77,18 +68,16 @@ export class OneCXWorkspaceDataComponent implements ocxRemoteComponent, ocxRemot
   public imageUrl$ = new BehaviorSubject<string | undefined>(undefined)
   public defaultImageUrl: string | undefined = undefined
 
-  constructor(
-    @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
-    private readonly workspaceApi: WorkspaceAPIService
-  ) {}
-
-  ocxInitRemoteComponent(remoteComponentConfig: RemoteComponentConfig) {
-    this.baseUrl.next(remoteComponentConfig.baseUrl)
+  // initialize this component as remote
+  public ocxInitRemoteComponent(config: RemoteComponentConfig): void {
+    this.appConfigService.init(config.baseUrl)
+    this.rcConfig.next(config)
+    this.slotService.init()
     this.workspaceApi.configuration = new Configuration({
-      basePath: Location.joinWithSlash(remoteComponentConfig.baseUrl, environment.apiPrefix)
+      basePath: Location.joinWithSlash(config.baseUrl, environment.apiPrefix)
     })
     if (environment.DEFAULT_LOGO_PATH)
-      this.defaultImageUrl = Utils.prepareUrlPath(remoteComponentConfig.baseUrl, environment.DEFAULT_LOGO_PATH)
+      this.defaultImageUrl = Utils.prepareUrlPath(config.baseUrl, environment.DEFAULT_LOGO_PATH)
   }
 
   /**
@@ -116,6 +105,7 @@ export class OneCXWorkspaceDataComponent implements ocxRemoteComponent, ocxRemot
     }
     this.log(criteria)
     this.workspaces$ = this.workspaceApi.searchWorkspaces({ searchWorkspacesRequest: criteria }).pipe(
+      first(),
       map((response) => {
         return response.stream?.sort(Utils.sortByDisplayName) ?? []
       }),
@@ -124,7 +114,7 @@ export class OneCXWorkspaceDataComponent implements ocxRemoteComponent, ocxRemot
         return of([])
       })
     )
-    this.workspaces$.subscribe(this.workspaces)
+    this.workspaces$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(this.workspaces)
   }
 
   /**
@@ -139,7 +129,7 @@ export class OneCXWorkspaceDataComponent implements ocxRemoteComponent, ocxRemot
         return of(undefined)
       })
     )
-    this.workspace$.subscribe(this.workspace)
+    this.workspace$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(this.workspace)
   }
 
   /**

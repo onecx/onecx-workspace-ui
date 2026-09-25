@@ -1,4 +1,4 @@
-@import '/src/app/_ws-mixins.scss';
+@use 'src/app/_ws-mixins.scss' as *;
 
 @include invisible;
 @include card-badges;

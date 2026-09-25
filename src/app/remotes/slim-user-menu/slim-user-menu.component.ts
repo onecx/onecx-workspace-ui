@@ -1,6 +1,6 @@
+import { Component, EventEmitter, inject, Inject, Input } from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { Component, EventEmitter, inject, Inject, Input } from '@angular/core'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
 import {
@@ -18,33 +18,32 @@ import {
   withLatestFrom
 } from 'rxjs'
 
+import { TooltipModule } from 'primeng/tooltip'
+import { RippleModule } from 'primeng/ripple'
+import { AccordionModule } from 'primeng/accordion'
+
 import {
   AngularRemoteComponentsModule,
-  BASE_URL,
   RemoteComponentConfig,
   ocxRemoteWebcomponent,
   provideTranslateServiceForRoot
 } from '@onecx/angular-remote-components'
 import { AppStateService, UserService } from '@onecx/angular-integration-interface'
-
 import { createTranslateLoader, provideTranslationPathFromMeta } from '@onecx/angular-utils'
+import { EventsPublisher, UserProfile, Workspace } from '@onecx/integration-interface'
+
 import { MenuService } from 'src/app/shared/services/menu.service'
 import { SlimMenuMode } from 'src/app/shared/model/slim-menu-mode'
-import { EventsPublisher, UserProfile, Workspace } from '@onecx/integration-interface'
 import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
 import { environment } from 'src/environments/environment'
 import { MenuItem, PrimeIcons } from 'primeng/api'
 import { SlimMenuItems } from 'src/app/shared/model/slim-menu-item'
+
 import { SlimMenuItemComponent } from 'src/app/shared/components/slim-menu-item/slim-menu-item.component'
-import { TooltipModule } from 'primeng/tooltip'
-import { RippleModule } from 'primeng/ripple'
-import { AccordionModule } from 'primeng/accordion'
 
 @Component({
   selector: 'app-slim-user-menu',
-  templateUrl: './slim-user-menu.component.html',
-  styleUrl: './slim-user-menu.component.scss',
   standalone: true,
   imports: [
     CommonModule,
@@ -55,6 +54,7 @@ import { AccordionModule } from 'primeng/accordion'
     RippleModule,
     AccordionModule
   ],
+  /*
   providers: [
     {
       provide: BASE_URL,
@@ -69,7 +69,9 @@ import { AccordionModule } from 'primeng/accordion'
       }
     }),
     provideTranslationPathFromMeta(import.meta.url, 'assets/i18n/')
-  ]
+  ],*/
+  templateUrl: './slim-user-menu.component.html',
+  styleUrl: './slim-user-menu.component.scss'
 })
 @UntilDestroy()
 export class OneCXSlimUserMenuComponent implements ocxRemoteWebcomponent {
@@ -115,7 +117,7 @@ export class OneCXSlimUserMenuComponent implements ocxRemoteWebcomponent {
   menuItems$: BehaviorSubject<SlimMenuItems | undefined> = new BehaviorSubject<SlimMenuItems | undefined>(undefined)
 
   constructor(
-    @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
+    //@Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
     private readonly userService: UserService,
     private readonly translateService: TranslateService,
     private readonly appStateService: AppStateService,
@@ -142,7 +144,7 @@ export class OneCXSlimUserMenuComponent implements ocxRemoteWebcomponent {
   }
 
   @Input() set ocxRemoteComponentConfig(remoteComponentConfig: RemoteComponentConfig) {
-    this.baseUrl.next(remoteComponentConfig.baseUrl)
+    //this.baseUrl.next(remoteComponentConfig.baseUrl)
     this.menuItemApiService.configuration = new Configuration({
       basePath: Location.joinWithSlash(remoteComponentConfig.baseUrl, environment.apiPrefix)
     })

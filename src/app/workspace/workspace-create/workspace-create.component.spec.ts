@@ -10,7 +10,7 @@ import { ConfirmationService } from 'primeng/api'
 import { DropdownModule } from 'primeng/dropdown'
 
 import { PortalMessageService, ThemeService } from '@onecx/angular-integration-interface'
-import { APP_CONFIG } from '@onecx/portal-integration-angular'
+import { APP_CONFIG } from '@onecx/angular-accelerator'
 
 import { ProductAPIService, Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
 import { environment } from 'src/environments/environment'

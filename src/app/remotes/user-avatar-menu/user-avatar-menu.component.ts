@@ -1,24 +1,21 @@
-import { CommonModule, Location } from '@angular/common'
-import { HttpClient } from '@angular/common/http'
 import {
   AfterViewInit,
   Component,
   ElementRef,
   EventEmitter,
+  inject,
   Inject,
   Input,
   OnDestroy,
   Renderer2,
   ViewChild
 } from '@angular/core'
+import { CommonModule, Location } from '@angular/common'
+import { HttpClient } from '@angular/common/http'
 import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
-import { MenuItem, PrimeIcons } from 'primeng/api'
-import { AvatarModule } from 'primeng/avatar'
-import { MenuModule } from 'primeng/menu'
-import { RippleModule } from 'primeng/ripple'
 import {
   Observable,
   ReplaySubject,
@@ -32,11 +29,15 @@ import {
   withLatestFrom
 } from 'rxjs'
 
-import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
+import { MenuItem, PrimeIcons } from 'primeng/api'
+import { AvatarModule } from 'primeng/avatar'
+import { MenuModule } from 'primeng/menu'
+import { RippleModule } from 'primeng/ripple'
+
+//import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
 import { AppConfigService, AppStateService, UserService } from '@onecx/angular-integration-interface'
 import {
   AngularRemoteComponentsModule,
-  BASE_URL,
   RemoteComponentConfig,
   SLOT_SERVICE,
   SlotService,
@@ -55,8 +56,6 @@ export type MenuAnchorPositionConfig = 'right' | 'left'
 
 @Component({
   selector: 'app-user-avatar-menu',
-  templateUrl: './user-avatar-menu.component.html',
-  styleUrls: ['./user-avatar-menu.component.scss'],
   standalone: true,
   imports: [
     AngularRemoteComponentsModule,
@@ -69,6 +68,7 @@ export type MenuAnchorPositionConfig = 'right' | 'left'
     RouterModule,
     TranslateModule
   ],
+  /*
   providers: [
     { provide: BASE_URL, useValue: new ReplaySubject<string>(1) },
     { provide: SLOT_SERVICE, useExisting: SlotService },
@@ -81,12 +81,23 @@ export type MenuAnchorPositionConfig = 'right' | 'left'
         deps: [HttpClient, BASE_URL]
       }
     })
-  ]
+  ],*/
+  templateUrl: './user-avatar-menu.component.html',
+  styleUrls: ['./user-avatar-menu.component.scss']
 })
 @UntilDestroy()
 export class OneCXUserAvatarMenuComponent
   implements ocxRemoteComponent, ocxRemoteWebcomponent, AfterViewInit, OnDestroy
 {
+  private readonly renderer = inject(Renderer2)
+  private readonly userService: UserService = inject(UserService)
+  private readonly slotService: SlotService = inject(SlotService)
+  private readonly menuItemApiService: MenuItemAPIService = inject(MenuItemAPIService)
+  private readonly appStateService: AppStateService = inject(AppStateService)
+  private readonly appConfigService: AppConfigService = inject(AppConfigService)
+  private readonly translateService: TranslateService = inject(TranslateService)
+  private readonly menuItemService: MenuItemService = inject(MenuItemService)
+
   @ViewChild('userAvatarMenuButton')
   private readonly userAvatarMenuButton!: ElementRef<HTMLButtonElement>
 
@@ -106,17 +117,7 @@ export class OneCXUserAvatarMenuComponent
   public slotNameCustomUserInfo = 'onecx-custom-user-info'
   public isCustomUserInfoComponentDefined$: Observable<boolean> = of(false) // check if a component was assigned
 
-  constructor(
-    private readonly renderer: Renderer2,
-    private readonly userService: UserService,
-    private readonly slotService: SlotService,
-    private readonly menuItemApiService: MenuItemAPIService,
-    private readonly appStateService: AppStateService,
-    private readonly appConfigService: AppConfigService,
-    @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
-    private readonly translateService: TranslateService,
-    private readonly menuItemService: MenuItemService
-  ) {
+  constructor() {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
     this.isCustomUserInfoComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.slotNameCustomUserInfo)
     this.isAvatarImageComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.slotNameAvatarImage)
@@ -201,7 +202,7 @@ export class OneCXUserAvatarMenuComponent
   }
 
   ocxInitRemoteComponent(config: RemoteComponentConfig): void {
-    this.baseUrl.next(config.baseUrl)
+    // this.baseUrl.next(config.baseUrl)
     this.permissions = config.permissions
     this.menuItemApiService.configuration = new Configuration({
       basePath: Location.joinWithSlash(config.baseUrl, environment.apiPrefix)

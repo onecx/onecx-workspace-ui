@@ -1,24 +1,24 @@
+import { Component, Inject, Input, OnInit, OnDestroy, ViewChild, inject, Renderer2 } from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { Component, Inject, Input, OnInit, OnDestroy, ViewChild, inject, Renderer2 } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
-import { MenuItem } from 'primeng/api'
 import { Observable, ReplaySubject, catchError, map, mergeMap, of, retry, shareReplay, withLatestFrom } from 'rxjs'
 
-import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
+import { MenuItem } from 'primeng/api'
+import { Menubar, MenubarModule } from 'primeng/menubar'
+
+//import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
 import {
   AngularRemoteComponentsModule,
-  BASE_URL,
   RemoteComponentConfig,
   ocxRemoteComponent,
   ocxRemoteWebcomponent,
   provideTranslateServiceForRoot
 } from '@onecx/angular-remote-components'
-import { AppStateService, UserService } from '@onecx/portal-integration-angular'
+import { AppStateService, UserService } from '@onecx/angular-integration-interface'
 
-import { Menubar, MenubarModule } from 'primeng/menubar'
 import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
 import { MenuService } from 'src/app/shared/services/menu.service'
@@ -29,9 +29,8 @@ const MENU_MODE = 'horizontal'
 @Component({
   selector: 'app-horizontal-main-menu',
   standalone: true,
-  templateUrl: './horizontal-main-menu.component.html',
-  styleUrls: ['./horizontal-main-menu.component.scss'],
   imports: [AngularRemoteComponentsModule, CommonModule, RouterModule, TranslateModule, MenubarModule],
+  /*
   providers: [
     {
       provide: BASE_URL,
@@ -45,10 +44,18 @@ const MENU_MODE = 'horizontal'
         deps: [HttpClient, BASE_URL]
       }
     })
-  ]
+  ]*/
+  templateUrl: './horizontal-main-menu.component.html',
+  styleUrls: ['./horizontal-main-menu.component.scss']
 })
 @UntilDestroy()
 export class OneCXHorizontalMainMenuComponent implements OnInit, OnDestroy, ocxRemoteComponent, ocxRemoteWebcomponent {
+  private readonly userService = inject(UserService)
+  private readonly translateService = inject(TranslateService)
+  private readonly appStateService = inject(AppStateService)
+  private readonly menuItemApiService = inject(MenuItemAPIService)
+  private readonly menuItemService = inject(MenuItemService)
+
   menuItems$: Observable<MenuItem[]> | undefined
 
   private readonly menuService = inject(MenuService)
@@ -62,14 +69,7 @@ export class OneCXHorizontalMainMenuComponent implements OnInit, OnDestroy, ocxR
     .pipe(map((isVisible) => !isVisible))
     .pipe(untilDestroyed(this))
 
-  constructor(
-    @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
-    private readonly userService: UserService,
-    private readonly translateService: TranslateService,
-    private readonly appStateService: AppStateService,
-    private readonly menuItemApiService: MenuItemAPIService,
-    private readonly menuItemService: MenuItemService
-  ) {
+  constructor() {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
   }
 
@@ -95,7 +95,7 @@ export class OneCXHorizontalMainMenuComponent implements OnInit, OnDestroy, ocxR
   }
 
   ocxInitRemoteComponent(remoteComponentConfig: RemoteComponentConfig) {
-    this.baseUrl.next(remoteComponentConfig.baseUrl)
+    //this.baseUrl.next(remoteComponentConfig.baseUrl)
     this.menuItemApiService.configuration = new Configuration({
       basePath: Location.joinWithSlash(remoteComponentConfig.baseUrl, environment.apiPrefix)
     })

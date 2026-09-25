@@ -7,7 +7,6 @@ import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
 import { AppStateService } from '@onecx/angular-integration-interface'
 import {
   AngularRemoteComponentsModule,
-  BASE_URL,
   ocxRemoteComponent,
   ocxRemoteWebcomponent,
   RemoteComponentConfig
@@ -19,20 +18,22 @@ import { environment } from 'src/environments/environment'
 
 @Component({
   selector: 'app-current-workspace-logo',
-  templateUrl: './current-workspace-logo.component.html',
-  styleUrls: ['./current-workspace-logo.component.scss'],
   standalone: true,
   imports: [AngularRemoteComponentsModule, CommonModule, AngularAcceleratorModule],
   schemas: [NO_ERRORS_SCHEMA],
+  /*
   providers: [
     {
       provide: BASE_URL,
       useValue: new ReplaySubject<string>(1)
     }
-  ]
+  ]*/
+  templateUrl: './current-workspace-logo.component.html',
+  styleUrls: ['./current-workspace-logo.component.scss']
 })
 @UntilDestroy()
 export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
+  private readonly workspaceApi = inject(WorkspaceAPIService)
   // Inputs
   @Input() imageId: string | undefined = undefined
   @Input() imageUrl: string | undefined = undefined
@@ -62,10 +63,7 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
 
   private readonly imageType$ = new BehaviorSubject<RefType>(RefType.Logo)
 
-  constructor(
-    @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
-    private readonly workspaceApi: WorkspaceAPIService
-  ) {
+  constructor() {
     this.appState.currentWorkspace$
       .asObservable()
       .pipe(untilDestroyed(this))
@@ -84,7 +82,7 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
   }
 
   ocxInitRemoteComponent(remoteComponentConfig: RemoteComponentConfig) {
-    this.baseUrl.next(remoteComponentConfig.baseUrl)
+    //this.baseUrl.next(remoteComponentConfig.baseUrl)
     this.workspaceApi.configuration = new Configuration({
       basePath: Location.joinWithSlash(remoteComponentConfig.baseUrl, environment.apiPrefix)
     })

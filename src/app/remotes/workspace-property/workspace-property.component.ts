@@ -1,52 +1,39 @@
-import { Component, inject, Input } from '@angular/core'
-import { CommonModule } from '@angular/common'
-import { HttpClient } from '@angular/common/http'
-import { UntilDestroy } from '@ngneat/until-destroy'
-import { TranslateLoader, TranslateService } from '@ngx-translate/core'
+import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core'
+import { AsyncPipe } from '@angular/common'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { combineLatest, from, map, Observable, ReplaySubject } from 'rxjs'
+
 import { TooltipModule } from 'primeng/tooltip'
 
-import { AngularAcceleratorModule, createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
-import { AppStateService, ConfigurationService, UserService } from '@onecx/angular-integration-interface'
 import {
   AngularRemoteComponentsModule,
-  BASE_URL,
   ocxRemoteComponent,
   ocxRemoteWebcomponent,
-  provideTranslateServiceForRoot
+  SLOT_SERVICE,
+  SlotService
 } from '@onecx/angular-remote-components'
+import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
 import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
-
-import { SharedModule } from 'src/app/shared/shared.module'
+import { AppStateService, ConfigurationService, UserService } from '@onecx/angular-integration-interface'
 
 @Component({
   selector: 'app-ocx-display-workspace-property',
-  templateUrl: './workspace-property.component.html',
   standalone: true,
-  imports: [AngularRemoteComponentsModule, CommonModule, AngularAcceleratorModule, SharedModule, TooltipModule],
-  providers: [
-    { provide: REMOTE_COMPONENT_CONFIG, useValue: new ReplaySubject<string>(1) },
-    { provide: BASE_URL, useValue: new ReplaySubject<string>(1) },
-    provideTranslateServiceForRoot({
-      isolate: true,
-      loader: {
-        provide: TranslateLoader,
-        useFactory: createRemoteComponentTranslateLoader,
-        deps: [HttpClient, BASE_URL]
-      }
-    })
-  ]
+  imports: [AngularAcceleratorModule, AngularRemoteComponentsModule, AsyncPipe, TooltipModule, TranslateModule],
+  providers: [{ provide: SLOT_SERVICE, useExisting: SlotService }],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './workspace-property.component.html'
 })
-@UntilDestroy()
 export class OneCXDisplayWorkspacePropertyComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
-  @Input() public propertyName = 'displayName'
-  @Input() public title: string | undefined
-  @Input() public styleClass: string | undefined
-
   private readonly rcConfig = inject<ReplaySubject<RemoteComponentConfig>>(REMOTE_COMPONENT_CONFIG)
+  private readonly slotService = inject(SlotService)
   private readonly appState = inject(AppStateService)
   public readonly config = inject(ConfigurationService)
   public readonly userService = inject(UserService)
+  // input
+  @Input() public propertyName = 'displayName'
+  @Input() public title: string | undefined
+  @Input() public styleClass: string | undefined
 
   constructor(private readonly translateService: TranslateService) {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
@@ -56,8 +43,10 @@ export class OneCXDisplayWorkspacePropertyComponent implements ocxRemoteComponen
     this.ocxInitRemoteComponent(rcConfig)
   }
 
-  public ocxInitRemoteComponent(rcConfig: RemoteComponentConfig) {
-    this.rcConfig.next(rcConfig)
+  // initialize this component as remote
+  public ocxInitRemoteComponent(config: RemoteComponentConfig): void {
+    this.rcConfig.next(config)
+    this.slotService.init()
   }
 
   public property$: Observable<string | undefined> = combineLatest([
