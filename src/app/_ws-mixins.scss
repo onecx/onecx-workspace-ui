@@ -94,6 +94,25 @@
   }
 }
 
+@mixin ocx-p-inputgroup {
+  :host ::ng-deep {
+    .p-inputgroupaddon {
+      > p-button {
+        display: flex;
+        height: 100%;
+        width: 100%;
+        > .p-button {
+          flex-grow: 1;
+        }
+      }
+      /* Manipulate the addon wrapper depends on button state inside */
+      &:has(.p-button.p-button-primary) {
+        border: none;
+      }
+    }
+  }
+}
+
 @mixin compact-dropdown-list-items {
   :host ::ng-deep {
     .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
@@ -552,6 +571,22 @@
     }
   }
 }
+@mixin dialog-non-full-size-modal {
+  :host ::ng-deep {
+    @media (max-width: 991px) {
+      .p-dialog.p-dialog {
+        max-height: unset !important;
+        height: unset !important;
+      }
+    }
+    @media (max-width: 576px) {
+      .p-dialog.p-dialog {
+        max-height: inherit !important;
+        height: inherit !important;
+      }
+    }
+  }
+}
 @mixin dialog-footer-buttons {
   :host ::ng-deep {
     .p-dialog .p-dialog-footer button {
@@ -560,16 +595,25 @@
   }
 }
 
-@mixin tabview-reduce-padding {
+/* **********************************************
+ *  TABs
+ * **********************************************/
+@mixin ocx-p-tabs {
   :host ::ng-deep {
-    .p-tabview .p-tabview-panels {
-      padding: 1.4rem 0 0 0;
+    .p-tabs {
+      .p-tablist {
+        border-bottom: 1px solid var(--surface-300);
+      }
+      .p-tab {
+        padding: 0.75rem 1rem;
+        &.p-tab-active {
+          background-color: rgb(from var(--primary-color) r g b / 0.1);
+        }
+      }
+      .p-tabpanels {
+        padding: 1.5rem 0 0 0;
+      }
     }
-  }
-}
-@mixin tabview-fix-color-selected-tab {
-  :host ::ng-deep {
-    --tabview-header-active-bg: rgb(from var(--primary-color) r g b / 0.12) !important;
   }
 }
 

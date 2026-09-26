@@ -3,36 +3,36 @@
   [formGroup]="propsForm"
   errorTailor
 >
-  <div class="p-inputgroup mb-1 w-full" controlErrorAnchor>
-    <span class="p-float-label">
-      <input
-        #displayNameInput
-        pInputText
-        type="text"
-        id="ws_detail_props_item_display_name"
-        class="w-full pt-3 pb-2 text-responsive"
-        formControlName="displayName"
-        [attr.aria-label]="'WORKSPACE.DISPLAY_NAME' | translate"
-        [pTooltip]="'WORKSPACE.TOOLTIPS.DISPLAY_NAME' | translate"
+  <div class="flex flex-column row-gap-1 flex-grow-1">
+    <p-inputgroup class="w-auto">
+      <p-floatlabel variant="on">
+        <input
+          #displayNameInput
+          pInputText
+          type="text"
+          id="ws_detail_props_item_display_name"
+          class="w-full pt-3 pb-2 text-responsive"
+          formControlName="displayName"
+          [attr.aria-label]="'WORKSPACE.DISPLAY_NAME' | translate"
+          [pTooltip]="'WORKSPACE.TOOLTIPS.DISPLAY_NAME' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        />
+        <label class="ocx-required-label" for="ws_detail_props_item_display_name" aria-hidden="true">
+          {{ 'WORKSPACE.DISPLAY_NAME' | translate }}
+        </label>
+      </p-floatlabel>
+      <p-button
+        id="ws_detail_props_item_display_name_i18n"
+        icon="pi pi-language"
+        [ngClass]="displayNameInput.value && !editMode ? 'cursor-pointer' : 'p-disabled'"
+        (onClick)="openI18nDialog('displayName', 'WORKSPACE.DISPLAY_NAME')"
+        [ariaLabel]="'DIALOG.I18N.TOOLTIP' | translate"
+        [pTooltip]="'DIALOG.I18N.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       />
-      <label class="ocx-required-label" for="ws_detail_props_item_display_name" aria-hidden="true">
-        {{ 'WORKSPACE.DISPLAY_NAME' | translate }}
-      </label>
-    </span>
-    <button
-      id="ws_detail_props_item_display_name_i18n"
-      class="p-inputgroup-addon bg-primary pseudo-button"
-      [ngClass]="displayNameInput.value && !editMode ? 'cursor-pointer' : 'p-disabled'"
-      (click)="openI18nDialog('displayName', 'WORKSPACE.DISPLAY_NAME')"
-      [attr.aria-label]="'DIALOG.I18N.TOOLTIP' | translate"
-      [pTooltip]="'DIALOG.I18N.TOOLTIP' | translate"
-      tooltipPosition="right"
-      tooltipEvent="hover"
-    >
-      <span class="pi pi-language" aria-hidden="true"></span>
-    </button>
+    </p-inputgroup>
   </div>
 
   <!-- THEMES -->
@@ -44,13 +44,14 @@
       [outputs]="{ themes: themesEmitter }"
     >
     </ocx-slot>
-    <ng-container *ngIf="isThemeComponentDefined$ | async; else noThemesAvailable">
-      <div
-        *ngIf="{
+    @if (isThemeComponentDefined$ | async) {
+      @let data =
+        {
           themes: (themes$ | async) ?? [],
           formValues: themeFormValues$ | async,
           themeLogoUrl: getThemeImageUrl((themes$ | async) ?? [], (themeFormValues$ | async)?.theme ?? '', RefType.Logo)
-        } as data"
+        };
+      <div
         class="w-full flex flex-row flex-wrap sm:flex-nowrap align-items-center"
         [ngClass]="{
           'row-gap-2 column-gap-3 sm:column-gap-4': (themeLogoLoadingFailed$ | async) !== undefined || data.themeLogoUrl
@@ -114,10 +115,8 @@
           </a>
         </div>
       </div>
-    </ng-container>
-
-    <!-- THEME readonly (no change possible) -->
-    <ng-template #noThemesAvailable>
+    } @else {
+      <!-- THEME readonly (no change possible) -->
       <div class="p-inputgroup mb-1 w-full" controlErrorAnchor>
         <span class="p-float-label">
           <input
@@ -149,7 +148,7 @@
         >
         </a>
       </div>
-    </ng-template>
+    }
     <!-- end of theme row -->
   </article>
 

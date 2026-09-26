@@ -5,9 +5,8 @@
 @include prepare-inputgroup;
 @include picklist-zebra-rows;
 @include ocx-text-responsive;
+@include ocx-p-tabs;
 @include dialog-modal-disable-full-height;
-@include tabview-fix-color-selected-tab;
-@include tabview-reduce-padding;
 
 :host ::ng-deep {
   @media screen and (min-width: 962px) {

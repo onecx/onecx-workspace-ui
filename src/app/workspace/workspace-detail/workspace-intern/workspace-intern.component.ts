@@ -11,7 +11,7 @@ import { SharedModule } from 'src/app/shared/shared.module'
   templateUrl: './workspace-intern.component.html'
 })
 export class WorkspaceInternComponent implements OnChanges {
-  @Input() workspace!: Workspace
+  @Input() workspace: Workspace | undefined
   @Input() editMode = false
   @Input() dateFormat = 'M/d/yy, hh:mm:ss a'
 
@@ -38,7 +38,7 @@ export class WorkspaceInternComponent implements OnChanges {
   }
 
   public onSave(): void {
-    if (this.formGroup.valid) {
+    if (this.workspace && this.formGroup.valid) {
       this.workspace.mandatory = this.formGroup.controls['mandatory'].value
       this.workspace.disabled = this.formGroup.controls['disabled'].value
       this.editMode = false

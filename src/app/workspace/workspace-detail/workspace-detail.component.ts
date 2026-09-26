@@ -1,12 +1,18 @@
-import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core'
-import { Location } from '@angular/common'
+import { AfterViewInit, ChangeDetectorRef, Component, inject, OnInit, ViewChild } from '@angular/core'
+import { AsyncPipe, Location } from '@angular/common'
 import { ActivatedRoute, Router } from '@angular/router'
-import { TranslateService } from '@ngx-translate/core'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { catchError, finalize, map, Observable, of } from 'rxjs'
 
-import { Action, ObjectDetailItem } from '@onecx/angular-accelerator'
-import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+import { ButtonModule } from 'primeng/button'
+import { DialogModule } from 'primeng/dialog'
+import { MessageModule } from 'primeng/message'
+import { Tabs, TabsModule } from 'primeng/tabs'
+import { TooltipModule } from 'primeng/tooltip'
+
+import { Action, AngularAcceleratorModule, ObjectDetailItem } from '@onecx/angular-accelerator'
 import { PortalPageComponent } from '@onecx/angular-utils'
+import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 
 import {
   GetWorkspaceResponse,
@@ -24,13 +30,20 @@ import { WorkspaceInternComponent } from './workspace-intern/workspace-intern.co
 import { WorkspaceRolesComponent } from './workspace-roles/workspace-roles.component'
 import { WorkspaceSlotsComponent } from './workspace-slots/workspace-slots.component'
 import { ProductComponent } from '../workspace-product/products.component'
-import { SharedModule } from 'src/app/shared/shared.module'
 
 @Component({
   selector: 'app-workspace-detail',
   standalone: true,
   imports: [
-    SharedModule,
+    AsyncPipe,
+    AngularAcceleratorModule,
+    ButtonModule,
+    DialogModule,
+    MessageModule,
+    TabsModule,
+    TooltipModule,
+    TranslateModule,
+    // components
     PortalPageComponent,
     WorkspacePropsComponent,
     WorkspaceContactComponent,
@@ -44,6 +57,16 @@ import { SharedModule } from 'src/app/shared/shared.module'
   styleUrls: ['./workspace-detail.component.scss']
 })
 export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
+  public readonly route = inject(ActivatedRoute)
+  private readonly user = inject(UserService)
+  private readonly router = inject(Router)
+  private readonly location = inject(Location)
+  private readonly translate = inject(TranslateService)
+  private readonly msgService = inject(PortalMessageService)
+  private readonly workspaceApi = inject(WorkspaceAPIService)
+  private readonly imageApi = inject(ImagesInternalAPIService)
+  private readonly cd = inject(ChangeDetectorRef)
+
   @ViewChild(WorkspacePropsComponent, { static: false }) workspacePropsComponent!: WorkspacePropsComponent
   @ViewChild(WorkspaceContactComponent, { static: false }) workspaceContactComponent!: WorkspaceContactComponent
   @ViewChild(WorkspaceInternComponent, { static: false }) workspaceInternComponent!: WorkspaceInternComponent
@@ -53,7 +76,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
   public loading = false
   public exceptionKey: string | undefined = undefined
   public headerImageUrl?: string
-  public selectedTabIndex = 0
+  public selectedTabIndex = '0'
   public dateFormat = 'M/d/yy, hh:mm:ss a'
   public objectDetails!: ObjectDetailItem[]
   public workspace$!: Observable<Workspace | undefined>
@@ -69,17 +92,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
   public showOperatorMessage = true // display initially only
   public Utils = Utils
 
-  constructor(
-    public readonly route: ActivatedRoute,
-    private readonly user: UserService,
-    private readonly router: Router,
-    private readonly location: Location,
-    private readonly translate: TranslateService,
-    private readonly msgService: PortalMessageService,
-    private readonly workspaceApi: WorkspaceAPIService,
-    private readonly imageApi: ImagesInternalAPIService,
-    private readonly cd: ChangeDetectorRef
-  ) {
+  constructor() {
     this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm:ss' : 'M/d/yy, hh:mm:ss a'
   }
 
@@ -119,19 +132,19 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
     // Trigger update on the form of the currently selected tab
     let workspaceData: Workspace | undefined
     switch (this.selectedTabIndex) {
-      case 0: {
+      case '0': {
         this.workspacePropsComponent.onSave()
         if (!this.workspacePropsComponent.propsForm.valid) return
         workspaceData = this.workspacePropsComponent.workspace
         break
       }
-      case 1: {
+      case '1': {
         this.workspaceContactComponent.onSave()
         if (!this.workspaceContactComponent.contactForm.valid) return
         workspaceData = this.workspaceContactComponent.workspace
         break
       }
-      case 2: {
+      case '2': {
         this.workspaceInternComponent.onSave()
         workspaceData = this.workspaceInternComponent.workspace
         break
@@ -200,10 +213,10 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
   public onTabChange($event: any, workspace: Workspace | undefined) {
     if (workspace) {
       this.showOperatorMessage = false
-      this.selectedTabIndex = $event.index
-      if (this.selectedTabIndex === 3) this.workspaceForRoles = workspace
-      if (this.selectedTabIndex === 4) this.workspaceForSlots = workspace
-      if (this.selectedTabIndex === 5) this.workspaceForProducts = workspace
+      this.selectedTabIndex = String($event.index)
+      if (this.selectedTabIndex === '3') this.workspaceForRoles = workspace
+      if (this.selectedTabIndex === '4') this.workspaceForSlots = workspace
+      if (this.selectedTabIndex === '5') this.workspaceForProducts = workspace
     }
     this.prepareActionButtons()
   }
@@ -325,7 +338,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
               show: 'always',
               permission: 'WORKSPACE#EDIT',
               conditional: true,
-              showCondition: this.workspace != null && !this.editMode && [0, 1, 2].includes(this.selectedTabIndex)
+              showCondition: this.workspace != null && !this.editMode && ['0', '1', '2'].includes(this.selectedTabIndex)
             },
             {
               label: data['ACTIONS.DELETE.LABEL'],
