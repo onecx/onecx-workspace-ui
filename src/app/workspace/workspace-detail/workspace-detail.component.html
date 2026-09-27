@@ -102,22 +102,28 @@
       <p-tabpanels>
         <!-- PROPS -->
         <p-tabpanel value="0">
-          <app-workspace-props
-            [workspace]="workspace"
-            [editMode]="editMode"
-            [isLoading]="loading"
-            (headerImageUrl)="onUpdateHeaderImageUrl($event)"
-          ></app-workspace-props>
+          <div class="pt-2 pb-4 px-0 sm:px-3">
+            <app-workspace-props
+              [workspace]="workspace"
+              [editMode]="editMode"
+              [isLoading]="loading"
+              (headerImageUrl)="onUpdateHeaderImageUrl($event)"
+            ></app-workspace-props>
+          </div>
         </p-tabpanel>
         <p-tabpanel value="1">
-          <app-workspace-contact [workspace]="workspace" [editMode]="editMode"></app-workspace-contact>
+          <div class="pt-2 pb-4 px-0 sm:px-3">
+            <app-workspace-contact [workspace]="workspace" [editMode]="editMode"></app-workspace-contact>
+          </div>
         </p-tabpanel>
         <p-tabpanel value="2">
-          <app-workspace-intern
-            [workspace]="workspace"
-            [editMode]="editMode"
-            [dateFormat]="dateFormat"
-          ></app-workspace-intern>
+          <div class="pt-2 pb-4 px-0 sm:px-3">
+            <app-workspace-intern
+              [workspace]="workspace"
+              [editMode]="editMode"
+              [dateFormat]="dateFormat"
+            ></app-workspace-intern>
+          </div>
         </p-tabpanel>
         <p-tabpanel value="3">
           <app-workspace-roles [workspace]="workspaceForRoles"></app-workspace-roles>

@@ -105,6 +105,13 @@
           flex-grow: 1;
         }
       }
+      .pseudo-button:hover {
+        background: var(--button-hover-bg) !important;
+        cursor: pointer;
+        * {
+          background: var(--button-hover-bg) !important;
+        }
+      }
       /* Manipulate the addon wrapper depends on button state inside */
       &:has(.p-button.p-button-primary) {
         border: none;

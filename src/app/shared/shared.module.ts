@@ -26,6 +26,7 @@ import { KeyFilterModule } from 'primeng/keyfilter'
 import { ListboxModule } from 'primeng/listbox'
 import { PanelModule } from 'primeng/panel'
 import { PickListModule } from 'primeng/picklist'
+import { SelectModule } from 'primeng/select'
 import { SelectButtonModule } from 'primeng/selectbutton'
 import { TabViewModule } from 'primeng/tabview'
 import { TableModule } from 'primeng/table'
@@ -66,6 +67,7 @@ import { LabelResolver } from './label.resolver'
     PanelModule,
     ReactiveFormsModule,
     RouterModule,
+    SelectModule,
     SelectButtonModule,
     TabViewModule,
     TableModule,
@@ -104,6 +106,7 @@ import { LabelResolver } from './label.resolver'
     ListboxModule,
     PanelModule,
     ReactiveFormsModule,
+    SelectModule,
     SelectButtonModule,
     TabViewModule,
     TableModule,
