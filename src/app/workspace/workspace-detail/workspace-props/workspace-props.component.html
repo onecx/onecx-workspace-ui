@@ -95,21 +95,19 @@
                 {{ 'WORKSPACE.THEME' | translate }}
               </label>
             </p-floatlabel>
-            <p-inputgroup-addon class="bg-primary">
-              <a
-                tabindex="0"
-                id="ws_detail_props_item_theme_link"
-                class="flex-grow-0 bg-primary pseudo-button pi pi-link"
-                [ngClass]="!editMode && inputBaseUrl.value && themeEndpointExist ? 'cursor-pointer' : 'p-disabled'"
-                [routerLink]="[getThemeEndpointUrl$(wsThemeName.value) | async]"
-                [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
-                [pTooltip]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
-                tooltipPosition="right"
-                tooltipEvent="hover"
-                role="link"
-              >
-              </a>
-            </p-inputgroup-addon>
+            <a
+              tabindex="0"
+              id="ws_detail_props_item_theme_link"
+              class="flex-grow-0 bg-primary p-inputgroupaddon pseudo-button pi pi-link"
+              [ngClass]="!editMode && inputBaseUrl.value && themeEndpointExist ? 'cursor-pointer' : 'p-disabled'"
+              [routerLink]="[getThemeEndpointUrl$(wsThemeName.value) | async]"
+              [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
+              [pTooltip]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
+              tooltipPosition="right"
+              tooltipEvent="hover"
+              role="link"
+            >
+            </a>
           </p-inputgroup>
         </div>
       </div>
@@ -133,20 +131,18 @@
             {{ 'WORKSPACE.THEME' | translate }}
           </label>
         </p-floatlabel>
-        <p-inputgroup-addon class="bg-primary">
-          <a
-            tabindex="0"
-            id="ws_detail_props_item_theme_link2"
-            class="bg-primary pseudo-button pi pi-link"
-            [routerLink]="[getThemeEndpointUrl$(wsThemeNameReadonly.value) | async]"
-            [ngClass]="!editMode && inputBaseUrl.value && themeEndpointExist ? 'cursor-pointer' : 'p-disabled'"
-            [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
-            [pTooltip]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
-            tooltipPosition="right"
-            tooltipEvent="hover"
-          >
-          </a>
-        </p-inputgroup-addon>
+        <a
+          tabindex="0"
+          id="ws_detail_props_item_theme_link2"
+          class="bg-primary p-inputgroupaddon pseudo-button pi pi-link"
+          [routerLink]="[getThemeEndpointUrl$(wsThemeNameReadonly.value) | async]"
+          [ngClass]="!editMode && inputBaseUrl.value && themeEndpointExist ? 'cursor-pointer' : 'p-disabled'"
+          [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
+          [pTooltip]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
+          tooltipPosition="right"
+          tooltipEvent="hover"
+        >
+        </a>
       </p-inputgroup>
     }
     <!-- end of theme row -->
@@ -171,28 +167,28 @@
           {{ 'WORKSPACE.BASE_URL' | translate }}
         </label>
       </p-floatlabel>
-      <p-inputgroup-addon class="bg-primary">
-        <a
-          tabindex="0"
-          id="ws_detail_props_item_base_url_link"
-          class="bg-primary pseudo-button pi pi-link"
-          [ngClass]="!editMode && inputBaseUrl.value ? 'cursor-pointer' : 'p-disabled'"
-          target="_blank"
-          [href]="Utils.prepareUrlPath(getLocation().deploymentPath, inputBaseUrl.value)"
-          (click)="$event.stopPropagation()"
-          [escape]="false"
-          [attr.aria-label]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
-          [pTooltip]="
-            ('ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate) +
-            '<br/>' +
-            Utils.prepareUrlPath(getLocation().deploymentPath, inputBaseUrl.value)
-          "
-          tooltipPosition="right"
-          tooltipEvent="hover"
-          role="link"
-        >
-        </a>
-      </p-inputgroup-addon>
+      <a
+        tabindex="0"
+        id="ws_detail_props_item_base_url_link"
+        class="bg-primary p-inputgroupaddon pseudo-button pi pi-link"
+        [ngClass]="!editMode && inputBaseUrl.value ? 'cursor-pointer' : 'p-disabled'"
+        target="_blank"
+        [href]="Utils.prepareUrlPath(getLocation().deploymentPath, inputBaseUrl.value)"
+        (click)="$event.stopPropagation()"
+        [escape]="false"
+        [attr.aria-label]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
+        [pTooltip]="
+          ('ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate) +
+          '<br/>' +
+          Utils.prepareUrlPath(getLocation().deploymentPath, inputBaseUrl.value)
+        "
+        tooltipPosition="right"
+        tooltipEvent="hover"
+        role="link"
+      >
+      </a>
+      <!--p-inputgroup-addon class="bg-primary">
+      </p-inputgroup-addon-->
     </p-inputgroup>
     <label
       *ngIf="editMode"
@@ -228,23 +224,21 @@
         </p-select>
         <label for="ws_detail_props_item_home_page" aria-hidden="true">{{ 'WORKSPACE.HOME_PAGE' | translate }} </label>
       </p-floatlabel>
-      <p-inputgroup-addon class="bg-primary">
-        <a
-          tabindex="0"
-          id="ws_detail_props_item_home_page_link"
-          class="bg-primary pseudo-button pi pi-link"
-          [ngClass]="!editMode && !workspace?.disabled && inputHomePage.value ? 'cursor-pointer' : 'p-disabled'"
-          target="_blank"
-          [href]="prepareProductUrl(inputHomePage.value)"
-          (click)="$event.stopPropagation()"
-          [attr.aria-label]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
-          [pTooltip]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
-          tooltipPosition="right"
-          tooltipEvent="hover"
-          role="link"
-        >
-        </a>
-      </p-inputgroup-addon>
+      <a
+        tabindex="0"
+        id="ws_detail_props_item_home_page_link"
+        class="bg-primary p-inputgroupaddon pseudo-button pi pi-link"
+        [ngClass]="!editMode && !workspace?.disabled && inputHomePage.value ? 'cursor-pointer' : 'p-disabled'"
+        target="_blank"
+        [href]="prepareProductUrl(inputHomePage.value)"
+        (click)="$event.stopPropagation()"
+        [attr.aria-label]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
+        [pTooltip]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
+        tooltipPosition="right"
+        tooltipEvent="hover"
+        role="link"
+      >
+      </a>
     </p-inputgroup>
     <label
       *ngIf="editMode"
