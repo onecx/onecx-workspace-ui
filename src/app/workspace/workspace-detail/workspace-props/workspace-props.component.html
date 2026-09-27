@@ -1,7 +1,4 @@
-<form
-  class="mt-3 mx-2 sm:mx-3 flex flex-wrap flex-column row-gap-3 sm:row-gap-4 lg:w-10 xl:w-8"
-  [formGroup]="propsForm"
->
+<form [formGroup]="propsForm" class="lg:w-10 xl:w-8 flex flex-wrap flex-column row-gap-3 sm:row-gap-4">
   <p-inputgroup class="w-auto">
     <p-floatlabel variant="on">
       <input
@@ -33,7 +30,7 @@
   </p-inputgroup>
 
   <!-- THEMES -->
-  <article [ariaLabel]="'WORKSPACE.THEME' | translate" class="w-full">
+  <article class="w-full" [ariaLabel]="'WORKSPACE.THEME' | translate">
     <ocx-slot
       class="hidden"
       [name]="themeSlotName"
@@ -155,7 +152,7 @@
     <!-- end of theme row -->
   </article>
 
-  <article [attr.aria-label]="'WORKSPACE.BASE_URL' | translate" class="w-full">
+  <article class="w-full" [attr.aria-label]="'WORKSPACE.BASE_URL' | translate">
     <p-inputgroup class="mb-1">
       <p-floatlabel variant="on">
         <input

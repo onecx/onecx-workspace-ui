@@ -9,7 +9,7 @@
   styleClass="disable-max-height-preset"
 >
   <div class="mt-1 mb-3 w-full flex flex-column flex-wrap row-gap-3 sm:row-gap-4 align-items-center">
-    <span class="p-float-label w-full">
+    <p-floatlabel variant="on" class="w-full">
       <input
         pInputText
         type="text"
@@ -25,8 +25,8 @@
       <label for="ws_detail_i18n_property_name" aria-hidden="true">
         {{ 'DIALOG.I18N.PROPERTY_NAME' | translate }}
       </label>
-    </span>
-    <span class="p-float-label w-full">
+    </p-floatlabel>
+    <p-floatlabel variant="on" class="w-full">
       <input
         pInputText
         type="text"
@@ -42,7 +42,7 @@
       <label for="ws_detail_i18n_property_value" aria-hidden="true">
         {{ 'DIALOG.I18N.PROPERTY_VALUE' | translate }}
       </label>
-    </span>
+    </p-floatlabel>
 
     <p-divider align="center" styleClass="my-0">
       <div class="px-3 font-bold text-primary">{{ 'DIALOG.I18N.TRANSLATIONS' | translate }}</div>

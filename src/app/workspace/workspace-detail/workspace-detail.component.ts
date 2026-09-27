@@ -7,7 +7,7 @@ import { catchError, finalize, map, Observable, of } from 'rxjs'
 import { ButtonModule } from 'primeng/button'
 import { DialogModule } from 'primeng/dialog'
 import { MessageModule } from 'primeng/message'
-import { Tabs, TabsModule } from 'primeng/tabs'
+import { TabsModule } from 'primeng/tabs'
 import { TooltipModule } from 'primeng/tooltip'
 
 import { Action, AngularAcceleratorModule, ObjectDetailItem } from '@onecx/angular-accelerator'
@@ -202,22 +202,22 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
   private goToTab(workspace: Workspace | undefined) {
     if (workspace && this.uriFragment) {
       const tabMap = new Map([
-        ['roles', 3],
-        ['slots', 4],
-        ['products', 5]
+        ['roles', '3'],
+        ['slots', '4'],
+        ['products', '5']
       ])
-      this.onTabChange({ index: tabMap.get(this.uriFragment) }, workspace)
+      this.onTabChange(String(tabMap.get(this.uriFragment)), workspace)
     }
   }
   // activate TAB
-  public onTabChange($event: any, workspace: Workspace | undefined) {
+  public onTabChange(tabValue: string | number, workspace?: Workspace) {
     if (workspace) {
       this.showOperatorMessage = false
-      this.selectedTabIndex = String($event.index)
+      this.selectedTabIndex = typeof tabValue === 'number' ? tabValue.toString() : tabValue
       if (this.selectedTabIndex === '3') this.workspaceForRoles = workspace
       if (this.selectedTabIndex === '4') this.workspaceForSlots = workspace
       if (this.selectedTabIndex === '5') this.workspaceForProducts = workspace
-    }
+    } else this.selectedTabIndex = '0'
     this.prepareActionButtons()
   }
 

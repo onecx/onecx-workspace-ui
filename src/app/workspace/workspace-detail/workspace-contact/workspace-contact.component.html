@@ -1,8 +1,5 @@
-<form
-  class="mt-3 mx-2 sm:mx-3 flex flex-wrap flex-column row-gap-3 sm:row-gap-4 md:w-10 lg:w-8 xl:w-6"
-  [formGroup]="contactForm"
->
-  <span class="p-float-label mb-1">
+<form [formGroup]="contactForm" class="md:w-10 lg:w-8 xl:w-6 flex flex-wrap flex-column row-gap-3 sm:row-gap-4">
+  <p-floatlabel variant="on">
     <input
       pInputText
       type="text"
@@ -15,9 +12,9 @@
       tooltipEvent="hover"
     />
     <label for="ws_detail_item_companyName" aria-hidden="true">{{ 'WORKSPACE.COMPANY_NAME' | translate }}</label>
-  </span>
+  </p-floatlabel>
 
-  <span class="p-float-label mb-1">
+  <p-floatlabel variant="on">
     <input
       pInputText
       type="text"
@@ -30,9 +27,9 @@
       tooltipEvent="hover"
     />
     <label for="ws_detail_item_phoneNumber" aria-hidden="true">{{ 'WORKSPACE.PHONE_NUMBER' | translate }}</label>
-  </span>
+  </p-floatlabel>
 
-  <span class="p-float-label mb-1">
+  <p-floatlabel variant="on">
     <input
       pInputText
       type="text"
@@ -45,9 +42,9 @@
       tooltipEvent="hover"
     />
     <label for="ws_detail_item_street" aria-hidden="true">{{ 'WORKSPACE.STREET' | translate }}</label>
-  </span>
+  </p-floatlabel>
 
-  <span class="p-float-label mb-1">
+  <p-floatlabel variant="on">
     <input
       pInputText
       type="text"
@@ -60,9 +57,9 @@
       tooltipEvent="hover"
     />
     <label for="ws_detail_item_street_no" aria-hidden="true">{{ 'WORKSPACE.STREET_NO' | translate }}</label>
-  </span>
+  </p-floatlabel>
 
-  <span class="p-float-label mb-1">
+  <p-floatlabel variant="on">
     <input
       pInputText
       type="text"
@@ -75,9 +72,9 @@
       tooltipEvent="hover"
     />
     <label for="ws_detail_item_city" aria-hidden="true">{{ 'WORKSPACE.CITY' | translate }}</label>
-  </span>
+  </p-floatlabel>
 
-  <span class="p-float-label mb-1">
+  <p-floatlabel variant="on">
     <input
       pInputText
       type="text"
@@ -90,9 +87,9 @@
       tooltipEvent="hover"
     />
     <label for="ws_detail_item_postalCode" aria-hidden="true">{{ 'WORKSPACE.POSTAL_CODE' | translate }}</label>
-  </span>
+  </p-floatlabel>
 
-  <span class="p-float-label mb-1">
+  <p-floatlabel variant="on">
     <input
       pInputText
       type="text"
@@ -105,5 +102,5 @@
       tooltipEvent="hover"
     />
     <label for="ws_detail_item_country" aria-hidden="true">{{ 'WORKSPACE.COUNTRY' | translate }}</label>
-  </span>
+  </p-floatlabel>
 </form>
