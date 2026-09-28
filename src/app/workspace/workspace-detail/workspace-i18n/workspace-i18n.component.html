@@ -52,40 +52,42 @@
       </p-divider>
 
       @if (translationsForm.length > 0) {
-        <ng-container *ngFor="let row of translationsForm.controls; let i = index" [formGroup]="$any(row)">
-          <p-inputgroup>
-            <p-inputGroupAddon>
-              <i class="pi pi-language"></i>
-            </p-inputGroupAddon>
-            <p-floatlabel variant="on" class="w-full">
-              <input
-                pInputText
-                type="text"
-                id="ws_detail_i18n_value_{{ i }}"
-                class="w-full text-responsive"
-                formControlName="value"
-                [attr.aria-label]="getLangLabel(row.get('language')?.value)"
-                [pTooltip]="getLangLabel(row.get('language')?.value)"
-                tooltipPosition="top"
-                tooltipEvent="hover"
-              />
-              <label for="ws_detail_i18n_value_{{ i }}" aria-hidden="true">
-                {{ getLangLabel(row.get('language')?.value) }}
-              </label>
-            </p-floatlabel>
-            <p-inputgroup-addon>
-              <p-button
-                id="ws_detail_i18n_action_remove_{{ i }}"
-                icon="pi pi-trash"
-                (onClick)="onRemoveTranslation(i)"
-                [ariaLabel]="'DIALOG.I18N.TRANSLATION.REMOVE' | translate"
-                [pTooltip]="'DIALOG.I18N.TRANSLATION.REMOVE' | translate"
-                tooltipPosition="top"
-                tooltipEvent="hover"
-              />
-            </p-inputgroup-addon>
-          </p-inputgroup>
-        </ng-container>
+        @for (row of translationsForm.controls; track $index; let i = $index) {
+          <form [formGroup]="$any(row)" class="w-full">
+            <p-inputgroup>
+              <p-inputGroupAddon>
+                <i class="pi pi-language"></i>
+              </p-inputGroupAddon>
+              <p-floatlabel variant="on" class="w-full">
+                <input
+                  pInputText
+                  type="text"
+                  [id]="'ws_detail_i18n_value_' + i"
+                  class="w-full text-responsive"
+                  formControlName="value"
+                  [attr.aria-label]="getLangLabel(row.get('language')?.value)"
+                  [pTooltip]="getLangLabel(row.get('language')?.value)"
+                  tooltipPosition="top"
+                  tooltipEvent="hover"
+                />
+                <label [for]="'ws_detail_i18n_value_' + i" aria-hidden="true">
+                  {{ getLangLabel(row.get('language')?.value) }}
+                </label>
+              </p-floatlabel>
+              <p-inputgroup-addon>
+                <p-button
+                  [id]="'ws_detail_i18n_action_remove_' + i"
+                  icon="pi pi-trash"
+                  (onClick)="onRemoveTranslation(i)"
+                  [ariaLabel]="'DIALOG.I18N.TRANSLATION.REMOVE' | translate"
+                  [pTooltip]="'DIALOG.I18N.TRANSLATION.REMOVE' | translate"
+                  tooltipPosition="top"
+                  tooltipEvent="hover"
+                />
+              </p-inputgroup-addon>
+            </p-inputgroup>
+          </form>
+        }
       }
 
       @if (translationsForm.length === 0 && !showAddRow) {
