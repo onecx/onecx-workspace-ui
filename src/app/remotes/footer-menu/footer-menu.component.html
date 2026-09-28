@@ -1,23 +1,23 @@
-footer-menu
-@let menuItems = (menuItems$ | async) ?? [];
-@if (menuItems.length > 0) {
-  <ul class="m-0 p-0 sm:ml-2 p-panelmenu list-none flex flex-row column-gap-3 row-gap-2 align-items-center">
-    @for (item of menuItems; track $index; let i = $index) {
-      <li class="p-menuitem flex">
-        {{ i }}
-        {{ item.id }} {{ item.routerLink }}
+@let items = menuItems();
+@if (items.length > 0) {
+  <ul class="m-0 p-0 sm:ml-2 ap-panelmenu list-none flex flex-row column-gap-3 row-gap-2 align-items-center">
+    @for (item of items; track $index; let i = $index) {
+      <li class="ap-menuitem flex">
+        <!-- Angular 19 issue with routerLink, using click handler instead -->
         @if (item.routerLink) {
-          hallo
           <a
             [id]="'ws_footer_menu_' + item.id + '_link'"
-            class="p-2 p-menuitem-link"
-            [routerLink]="item.routerLink"
-            [target]="item.target"
+            class="p-2 p-menuitem-link cursor-pointer"
+            [safeRouterLink]="item.routerLink"
+            [target]="item.target ?? '_self'"
           >
+            <!--
+            (click)="Utils.navigate(router, $event, item.routerLink, item.target)"
+          -->
             {{ item.label }}
           </a>
-        } @else if (item.url) {
-          huhu
+        }
+        @if (item.url) {
           <a
             [id]="'ws_footer_menu_' + item.id + '_href'"
             class="p-2 p-menuitem-link"

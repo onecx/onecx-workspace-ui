@@ -1,6 +1,7 @@
-import { Component, inject, Input, OnInit } from '@angular/core'
-import { AsyncPipe, Location } from '@angular/common'
-import { RouterModule } from '@angular/router'
+import { ChangeDetectionStrategy, Component, inject, Input, OnInit } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
+import { Location } from '@angular/common'
+import { Router } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { Observable, ReplaySubject, catchError, map, mergeMap, of, retry, shareReplay, withLatestFrom } from 'rxjs'
@@ -19,18 +20,21 @@ import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
 
 import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
+import { Utils } from 'src/app/shared/utils'
+import { SafeLinkDirective } from 'src/app/shared/safe-link.directive'
 import { environment } from 'src/environments/environment'
 
 @Component({
   selector: 'app-ocx-footer-menu',
   standalone: true,
-  imports: [AsyncPipe, AngularAcceleratorModule, AngularRemoteComponentsModule, RouterModule, TranslateModule],
+  imports: [AngularAcceleratorModule, AngularRemoteComponentsModule, TranslateModule, SafeLinkDirective],
   providers: [{ provide: REMOTE_COMPONENT_CONFIG, useValue: new ReplaySubject<string>(1) }],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './footer-menu.component.html',
   styleUrls: ['./footer-menu.component.scss']
 })
 @UntilDestroy()
-export class OneCXFooterMenuComponent implements OnInit, ocxRemoteComponent, ocxRemoteWebcomponent {
+export class OneCXFooterMenuComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
   private readonly remoteComponentConfig = inject<ReplaySubject<RemoteComponentConfig>>(REMOTE_COMPONENT_CONFIG)
   private readonly appConfigService = inject(AppConfigService)
   private readonly userService = inject(UserService)
@@ -38,8 +42,12 @@ export class OneCXFooterMenuComponent implements OnInit, ocxRemoteComponent, ocx
   private readonly appStateService = inject(AppStateService)
   private readonly menuItemApiService = inject(MenuItemAPIService)
   private readonly menuItemService = inject(MenuItemService)
+  public readonly router = inject(Router)
 
-  menuItems$: Observable<MenuItem[]> | undefined
+  SafeLinkDirective = SafeLinkDirective
+  menuItems$ = this.getMenuItems()
+  menuItems = toSignal(this.menuItems$ ?? of([]), { initialValue: [] })
+  public Utils = Utils
 
   constructor() {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
@@ -57,12 +65,8 @@ export class OneCXFooterMenuComponent implements OnInit, ocxRemoteComponent, ocx
     })
   }
 
-  ngOnInit(): void {
-    this.getMenuItems()
-  }
-
-  getMenuItems() {
-    this.menuItems$ = this.appStateService.currentWorkspace$.pipe(
+  getMenuItems(): Observable<MenuItem[]> | undefined {
+    return this.appStateService.currentWorkspace$.pipe(
       mergeMap((currentWorkspace) =>
         this.menuItemApiService
           .getMenuItems({
