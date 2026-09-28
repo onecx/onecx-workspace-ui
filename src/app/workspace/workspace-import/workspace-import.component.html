@@ -1,6 +1,8 @@
+@if (displayDialog) {}
 <p-dialog
+  [visible]="true"
+  (visibleChange)="onClose()"
   [header]="'WORKSPACE_IMPORT.HEADER' | translate"
-  [(visible)]="displayDialog"
   [modal]="true"
   [closable]="true"
   [draggable]="true"
@@ -8,7 +10,7 @@
   [style]="{ width: '783px' }"
   styleClass="disable-max-height-preset"
 >
-  <div class="border-solid border-1 border-black-alpha-20 border-round-sm bg-gray-50 px-3">
+  <div class="py-1 px-3 border-solid border-1 border-black-alpha-20 border-round-sm bg-gray-50">
     <p-steps [model]="steps" [activeIndex]="activeIndex"></p-steps>
 
     <div [ngSwitch]="activeIndex" class="p-0 mx-0 mb-2">

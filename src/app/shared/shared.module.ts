@@ -28,6 +28,7 @@ import { PanelModule } from 'primeng/panel'
 import { PickListModule } from 'primeng/picklist'
 import { SelectModule } from 'primeng/select'
 import { SelectButtonModule } from 'primeng/selectbutton'
+import { TabsModule } from 'primeng/tabs'
 import { TabViewModule } from 'primeng/tabview'
 import { TableModule } from 'primeng/table'
 import { ToastModule } from 'primeng/toast'
@@ -70,6 +71,7 @@ import { LabelResolver } from './label.resolver'
     SelectModule,
     SelectButtonModule,
     TabViewModule,
+    TabsModule,
     TableModule,
     ToastModule,
     ToggleButtonModule,

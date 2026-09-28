@@ -1,10 +1,10 @@
-<div class="my-3 flex flex-wrap align-items-top gap-4">
+<div class="mt-5 mb-2 flex flex-wrap align-items-top gap-4">
   <div>
-    <span class="p-float-label">
+    <p-floatlabel variant="on" class="w-16rem">
       <input
         pInputText
         type="text"
-        class="w-16rem"
+        class="w-full pt-3 pb-2"
         id="ws_import_confirm_workspace_name"
         [(ngModel)]="workspaceName"
         [disabled]="true"
@@ -16,14 +16,14 @@
       <label for="ws_import_confirm_workspace_name" aria-hidden="true">
         {{ 'WORKSPACE_IMPORT.WORKSPACE_NAME' | translate }}
       </label>
-    </span>
+    </p-floatlabel>
   </div>
   <div>
-    <span class="p-float-label">
+    <p-floatlabel variant="on" class="w-16rem">
       <input
         pInputText
         type="text"
-        class="w-16rem"
+        class="w-full pt-3 pb-2"
         id="ws_import_confirm_theme_name"
         [(ngModel)]="themeName"
         [disabled]="true"
@@ -33,14 +33,14 @@
         tooltipEvent="hover"
       />
       <label for="ws_import_confirm_theme_name" aria-hidden="true">{{ 'WORKSPACE.THEME' | translate }}</label>
-    </span>
+    </p-floatlabel>
   </div>
   <div>
-    <span class="p-float-label">
+    <p-floatlabel variant="on" class="w-16rem">
       <input
         pInputText
         type="text"
-        class="w-16rem"
+        class="w-full pt-3 pb-2"
         id="ws_import_confirm_base_url"
         [(ngModel)]="baseUrl"
         [disabled]="true"
@@ -50,14 +50,14 @@
         tooltipEvent="hover"
       />
       <label for="ws_import_confirm_base_url" aria-hidden="true">{{ 'WORKSPACE.BASE_URL' | translate }}</label>
-    </span>
+    </p-floatlabel>
   </div>
   <div>
-    <span class="p-float-label">
+    <p-floatlabel variant="on" class="w-16rem">
       <input
         pInputText
         type="text"
-        class="w-16rem"
+        class="w-full pt-3 pb-2"
         id="ws_import_confirm_display_name"
         [(ngModel)]="displayName"
         [disabled]="true"
@@ -67,12 +67,12 @@
         tooltipEvent="hover"
       />
       <label for="ws_import_confirm_display_name" aria-hidden="true">{{ 'WORKSPACE.DISPLAY_NAME' | translate }}</label>
-    </span>
+    </p-floatlabel>
   </div>
   <div class="flex justify-content-center align-items-center">
     <p-checkbox
       #checkMandatory
-      inputId="ws_import_preview_mandatory"
+      inputId="ws_import_confirm_mandatory"
       styleClass="cursor-pointer shadow-none"
       [(ngModel)]="mandatory"
       [disabled]="true"
@@ -81,13 +81,8 @@
       [pTooltip]="'INTERNAL.TOOLTIPS.MANDATORY' | translate"
       tooltipPosition="top"
       tooltipEvent="hover"
-    >
-      <!-- simplifies aria appearance-->
-      <ng-template pTemplate="icon">
-        <span class="pi" [ngClass]="checkMandatory.value ? 'pi-check-square' : 'pi-check'"></span>
-      </ng-template>
-    </p-checkbox>
-    <label class="ocx-required-label" for="ws_import_preview_mandatory">
+    />
+    <label class="ml-2" for="ws_import_confirm_mandatory">
       {{ 'INTERNAL.MANDATORY' | translate }}
     </label>
   </div>

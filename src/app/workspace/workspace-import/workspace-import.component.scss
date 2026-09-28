@@ -1,5 +1,6 @@
 @use 'src/app/_ws-mixins.scss' as *;
 
+@include ocx-p-message;
 @include correct-file-upload;
 @include readable-disabled-components;
 @include dialog-footer-buttons;
