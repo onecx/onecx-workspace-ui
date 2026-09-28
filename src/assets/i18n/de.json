@@ -205,7 +205,7 @@
     "MODIFICATION_DATE": "Geändert am",
     "MODIFICATION_USER": "Geändert von",
     "MANDATORY": "Notwendig",
-    "MANDATORY_TRUE": "Dieser Workspace ist notwendig für den Betrieb. Der Workspace kann somit nicht gelöscht werden.",
+    "MANDATORY_TRUE": "Dieser Workspace ist notwendig für den Betrieb. Der Workspace kann somit nicht so einfach gelöscht werden.",
     "OPERATOR": "Automatisiert erstellt",
     "OPERATOR_HINT": "Hinweis",
     "OPERATOR_MESSAGE": "Dieser Workspace wurde automatisiert erstellt. Alle Änderungen gehen beim nächsten Deployment verloren.",
@@ -214,7 +214,7 @@
       "CREATION_USER": "ID des Benutzers der Erstellung",
       "MODIFICATION_DATE": "Zeitpunkt der letzten Änderung",
       "MODIFICATION_USER": "ID des Benutzers der letzten Änderung",
-      "MANDATORY": "Wenn gesetzt, dann ist dieser Workspace notwendig für den Betrieb. Der Workspace kann somit nicht gelöscht werden.",
+      "MANDATORY": "Wenn gesetzt, dann ist dieser Workspace notwendig für den Betrieb. Der Workspace kann somit nicht so einfach gelöscht werden.",
       "OPERATOR": "Wenn gesetzt, dann wurde der Workspace automatisiert erstellt. Alle Änderungen gehen beim beim nächsten Deployment verloren."
     }
   },

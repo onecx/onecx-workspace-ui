@@ -205,7 +205,7 @@
     "MODIFICATION_DATE": "Changed on",
     "MODIFICATION_USER": "Changed by",
     "MANDATORY": "Mandatory",
-    "MANDATORY_TRUE": "This workspace is required for operation. Therefore, it cannot be deleted.",
+    "MANDATORY_TRUE": "This workspace is required for operation. Therefore, it cannot be easily deleted.",
     "OPERATOR": "Created by automation",
     "OPERATOR_HINT": "Hint",
     "OPERATOR_MESSAGE": "This Workspace was created by automation. All changes will be lost on the next deployment.",
@@ -214,7 +214,7 @@
       "CREATION_USER": "ID of the user of the creation",
       "MODIFICATION_DATE": "Timestamp of the last change",
       "MODIFICATION_USER": "ID of the user of the last change",
-      "MANDATORY": "If set then this Workspace is required for operation and therefore the Workspace cannot be deleted.",
+      "MANDATORY": "If set then this Workspace is required for operation and therefore the Workspace cannot be easily deleted.",
       "OPERATOR": "If set, the Workspace was created by automation. All changes will be lost during the next deployment."
     }
   },
