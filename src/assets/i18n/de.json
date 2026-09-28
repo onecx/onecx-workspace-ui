@@ -100,10 +100,10 @@
     "EXPORT": {
       "LABEL": "Export",
       "TOOLTIP": "Definition im JSON Format herunterladen",
-      "MENU": "Die Menü-Definition im JSON Format herunterladen",
-      "WORKSPACE": "Die Workspace-Definition im JSON Format herunterladen",
+      "MENU": "Die Menü-Definition im JSON Format herunterladen.",
+      "WORKSPACE": "Die Workspace-Definition im JSON Format herunterladen.",
       "MESSAGE": {
-        "NOK": "Workspace konnte nicht exportiert werden"
+        "NOK": "Workspace konnte nicht exportiert werden."
       }
     },
     "IMPORT": {
@@ -602,12 +602,8 @@
     }
   },
   "WORKSPACE_EXPORT": {
-    "THEME_CHECKBOX_HEADER": "Export Workspace-Definition",
-    "THEME_CHECKBOX_MESSAGE": "Die Workspace-Definition im JSON Format herunterladen.",
-    "THEME_LOADING": "...lädt",
-    "THEME_NOT_AVALIABLE": "keine verfügbaren Themes ",
     "MENU": "Menü-Definition aufnehmen",
-    "MENU_TOOLTIP": "Menü in die Definition des Workspace aufnehmen"
+    "MENU_TOOLTIP": "Menü in die Definition des Workspace aufnehmen."
   },
   "WORKSPACE_IMPORT": {
     "HEADER": "Workspace Import",

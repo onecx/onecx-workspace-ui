@@ -1,7 +1,7 @@
 @if (workspaceI18nVisible) {
   <p-dialog
     [visible]="true"
-    (onVisibleChange)="workspaceI18nVisible = false"
+    (visibleChange)="workspaceI18nVisible = false"
     [header]="'DIALOG.I18N.HEADER' | translate"
     [modal]="true"
     [closable]="true"

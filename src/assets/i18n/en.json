@@ -602,10 +602,6 @@
     }
   },
   "WORKSPACE_EXPORT": {
-    "THEME_CHECKBOX_HEADER": "Export Workspace definition",
-    "THEME_CHECKBOX_MESSAGE": "Download the Workspace definition as JSON file.",
-    "THEME_LOADING": "...is loading",
-    "THEME_NOT_AVALIABLE": "no available Themes",
     "MENU": "Include the Menu definition",
     "MENU_TOOLTIP": "Include Menu in Workspace definition"
   },
