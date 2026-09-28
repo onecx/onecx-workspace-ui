@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core'
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
@@ -58,6 +58,7 @@ import { WorkspaceImportComponent } from '../workspace-import/workspace-import.c
     WorkspaceImportComponent,
     ImageContainerComponent
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './workspace-search.component.html',
   styleUrls: ['./workspace-search.component.scss']
 })
@@ -95,7 +96,7 @@ export class WorkspaceSearchComponent implements OnInit {
           label: data['ACTIONS.CREATE.WORKSPACE'],
           title: data['ACTIONS.CREATE.WORKSPACE.TOOLTIP'],
           actionCallback: () => this.workspaceCreateVisible.set(true),
-          permission: 'THEME#CREATE',
+          permission: 'WORKSPACE#CREATE',
           icon: 'pi pi-plus',
           show: 'always'
         },
@@ -103,7 +104,7 @@ export class WorkspaceSearchComponent implements OnInit {
           label: data['ACTIONS.IMPORT.LABEL'],
           title: data['ACTIONS.IMPORT.TOOLTIP'],
           actionCallback: () => this.onImportWorkspaceClick(),
-          permission: 'THEME#IMPORT',
+          permission: 'WORKSPACE#IMPORT',
           icon: 'pi pi-upload',
           show: 'always'
         }
