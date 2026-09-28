@@ -115,7 +115,6 @@ describe('WorkspaceDetailComponent', () => {
 
     describe('onTabChange', () => {
       it('should set selectedTabIndex onChange', (done) => {
-        const event = { index: 1 }
         apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
         component.workspaceName = 'name'
 
@@ -129,16 +128,16 @@ describe('WorkspaceDetailComponent', () => {
           error: done.fail
         })
 
-        component.onTabChange(event, component.workspace)
-        expect(component.selectedTabIndex).toEqual(1)
+        component.onTabChange('1', component.workspace)
+        expect(component.selectedTabIndex).toEqual('1')
 
-        component.onTabChange({ index: 3 }, component.workspace)
+        component.onTabChange('3', component.workspace)
         expect(component.workspaceForRoles).toBe(workspace)
 
-        component.onTabChange({ index: 4 }, component.workspace)
+        component.onTabChange('4', component.workspace)
         expect(component.workspaceForSlots).toBe(workspace)
 
-        component.onTabChange({ index: 5 }, component.workspace)
+        component.onTabChange('5', component.workspace)
         expect(component.workspaceForProducts).toBe(workspace)
       })
     })
@@ -147,7 +146,7 @@ describe('WorkspaceDetailComponent', () => {
   describe('search workspace Data and go to roles', () => {
     it('should getWorkspaceData onInit', (done) => {
       apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
-      spyOn(component, 'prepareActionButtons')
+      spyOn(component, 'preparePageActions')
       spyOn(component, 'onTabChange')
       component.workspaceName = 'name'
       component.uriFragment = 'roles'
@@ -162,7 +161,7 @@ describe('WorkspaceDetailComponent', () => {
         error: done.fail
       })
       expect(component.loading).toBeFalsy()
-      expect(component.prepareActionButtons).toHaveBeenCalled()
+      expect(component.preparePageActions).toHaveBeenCalled()
       expect(component.onTabChange).toHaveBeenCalled()
     })
 
@@ -259,14 +258,6 @@ describe('WorkspaceDetailComponent', () => {
     })
   })
 
-  describe('test message translations', () => {
-    it('should have prepared messages', () => {
-      component.ngOnInit()
-
-      expect(component.messages.length).toBe(1)
-    })
-  })
-
   describe('test action buttons', () => {
     it('should have prepared action buttons onInit: close', () => {
       apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
@@ -308,7 +299,7 @@ describe('WorkspaceDetailComponent', () => {
     it('should have prepared action buttons onInit: update workspace props - valid data', () => {
       apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
       component.workspacePropsComponent = new MockWorkspacePropsComponent() as unknown as WorkspacePropsComponent
-      component.selectedTabIndex = 0
+      component.selectedTabIndex = '0'
       component.ngOnInit()
       let actions: any = []
       component.actions$!.subscribe((act) => (actions = act))
@@ -327,7 +318,7 @@ describe('WorkspaceDetailComponent', () => {
     it('should have prepared action buttons onInit: update workspace contact', () => {
       apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
       component.workspaceContactComponent = new MockWorkspaceContactComponent() as unknown as WorkspaceContactComponent
-      component.selectedTabIndex = 1
+      component.selectedTabIndex = '1'
       component.ngOnInit()
       let actions: any = []
       component.actions$!.subscribe((act) => (actions = act))
@@ -347,7 +338,7 @@ describe('WorkspaceDetailComponent', () => {
     it('should have prepared action buttons onInit: update workspace intern', () => {
       apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
       component.workspaceInternComponent = new MockWorkspaceInternComponent() as unknown as WorkspaceInternComponent
-      component.selectedTabIndex = 2
+      component.selectedTabIndex = '2'
       component.ngOnInit()
       let actions: any = []
       component.actions$!.subscribe((act) => (actions = act))
@@ -359,7 +350,7 @@ describe('WorkspaceDetailComponent', () => {
 
     it('should have prepared action buttons onInit: update workspace: default', () => {
       apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
-      component.selectedTabIndex = 99
+      component.selectedTabIndex = '99'
       spyOn(console, 'error')
       component.ngOnInit()
       let actions: any = []
@@ -411,7 +402,7 @@ describe('WorkspaceDetailComponent', () => {
   describe('update workspace data', () => {
     it('it should log an error if non-related TAB is used', () => {
       spyOn(console, 'error')
-      component.selectedTabIndex = 99
+      component.selectedTabIndex = '99'
       component.ngOnInit()
       let actions: any = []
       component.actions$!.subscribe((act) => (actions = act))
@@ -424,7 +415,7 @@ describe('WorkspaceDetailComponent', () => {
       apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
       apiServiceSpy.updateWorkspace.and.returnValue(of(workspace))
       component.workspacePropsComponent = new MockWorkspacePropsComponent() as unknown as WorkspacePropsComponent
-      component.selectedTabIndex = 0
+      component.selectedTabIndex = '0'
 
       component.ngOnInit()
       component.editMode = true
@@ -449,7 +440,7 @@ describe('WorkspaceDetailComponent', () => {
         component.workspacePropsComponent.workspace.logoUrl = ''
         component.workspacePropsComponent.workspace.smallLogoUrl = ''
       }
-      component.selectedTabIndex = 0
+      component.selectedTabIndex = '0'
 
       component.ngOnInit()
       component.editMode = true
@@ -471,7 +462,7 @@ describe('WorkspaceDetailComponent', () => {
       const errorResponse = { status: 400, statusText: 'Error on updating a workspace' }
       apiServiceSpy.updateWorkspace.and.returnValue(throwError(() => errorResponse))
       component.workspaceContactComponent = new MockWorkspaceContactComponent() as unknown as WorkspaceContactComponent
-      component.selectedTabIndex = 1
+      component.selectedTabIndex = '1'
       spyOn(console, 'error')
 
       component.ngOnInit()

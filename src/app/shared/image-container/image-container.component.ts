@@ -1,15 +1,11 @@
-import { ChangeDetectionStrategy, Component, effect, inject, input, output, signal } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
-import { TranslateModule } from '@ngx-translate/core'
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core'
 import { map } from 'rxjs'
 
-import { TooltipModule } from 'primeng/tooltip'
-
 import { AppStateService } from '@onecx/angular-integration-interface'
-import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
 
 import { environment } from 'src/environments/environment'
 import { Utils } from 'src/app/shared/utils'
+import { SharedModule } from '../shared.module'
 
 /**
  * This component displays the image with given imageURL.
@@ -20,68 +16,80 @@ import { Utils } from 'src/app/shared/utils'
 @Component({
   selector: 'app-image-container',
   standalone: true,
-  imports: [AngularAcceleratorModule, TooltipModule, TranslateModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [SharedModule],
   templateUrl: './image-container.component.html'
 })
-export class ImageContainerComponent {
-  // signals: HTML properties
-  public readonly id = input<string>('th_image_container')
-  public readonly title = input<string | undefined>()
-  public readonly styleClass = input<string | undefined>('')
-  // signals: image data + behavior
-  public readonly bffUrl = input<string | undefined>() // uploaded image
-  public readonly imageUrl = input<string | undefined>() // external URL
-  public readonly cascadeUse = input<boolean>(true) // if false then only the default logo is used if loading failed
+export class ImageContainerComponent implements OnChanges {
+  // HTML properties
+  @Input() public id = 'ws_image_container'
+  @Input() public title: string | undefined
+  @Input() public styleClass: string | undefined
+  // image data + behavior
+  @Input() public bffUrl: string | undefined // uploaded image
+  @Input() public imageUrl: string | undefined // external URL
+  @Input() public cascadeUse: boolean = true // if false then only the default logo is used if loading failed
+  @Input() public defaultLogoType: 'workspace' | 'product' | undefined
+  @Output() public imageLoadResult = new EventEmitter<boolean>() // inform caller
 
-  public readonly imageLoadResult = output<boolean>() // inform caller
-
-  private readonly defaultImageUrl = toSignal(
-    inject(AppStateService).currentMfe$.pipe(
-      map((mfe) => Utils.prepareUrlPath(mfe.remoteBaseUrl, environment.DEFAULT_LOGO_PATH))
-    )
-  )
-  private readonly _url = signal<string | undefined>(undefined)
-  public readonly url = this._url.asReadonly()
+  public url: string | undefined = undefined
   private urlType: 'ext-url' | 'bff-url' | 'def-url' = 'ext-url'
-
-  constructor() {
-    effect(() => {
-      const imageUrl = this.imageUrl()
-      const bffUrl = this.bffUrl()
-      const defaultUrl = this.defaultImageUrl()
-      if (imageUrl && /^(http|https):\/\/.{6,245}$/.exec(imageUrl)) {
-        this._url.set(imageUrl)
-        this.urlType = 'ext-url'
-      } else if (bffUrl) {
-        this._url.set(bffUrl)
-        this.urlType = 'bff-url'
-      } else {
-        this._url.set(defaultUrl)
-        this.urlType = 'def-url'
-      }
-    })
+  private defaultImageUrl: string | undefined = undefined
+  private readonly defaultLogoPaths = {
+    workspace: environment.DEFAULT_LOGO_PATH,
+    product: environment.DEFAULT_PRODUCT_PATH
   }
 
-  public onImageLoadSuccess(): void {
-    if (this.url() !== undefined && this.url() !== this.defaultImageUrl()) {
-      this.imageLoadResult.emit(true)
+  constructor(appState: AppStateService) {
+    appState.currentMfe$
+      .pipe(
+        map((mfe) =>
+          Utils.prepareUrlPath(mfe.remoteBaseUrl, this.defaultLogoPaths[this.defaultLogoType ?? 'workspace'])
+        )
+      )
+      .subscribe((data) => (this.defaultImageUrl = data))
+  }
+
+  public ngOnChanges(): void {
+    if (this.imageUrl) {
+      if (/^(http|https):\/\/.{6,245}$/.exec(this.imageUrl)) {
+        this.url = this.imageUrl
+        this.urlType = 'ext-url'
+      } else {
+        this.url = this.defaultImageUrl
+        this.urlType = 'def-url'
+      }
+    } else if (this.bffUrl) {
+      this.url = this.bffUrl
+      this.urlType = 'bff-url'
+    } else {
+      this.url = this.defaultImageUrl
+      this.urlType = 'def-url'
     }
   }
 
-  public onImageLoadError(): void {
-    if (this.url() !== undefined) this.imageLoadResult.emit(false)
+  /**
+   * Emit image loading results
+   */
+  public onImageLoadSuccess(): void {
+    if (this.url !== undefined && this.url !== this.defaultImageUrl) this.imageLoadResult.emit(true)
+  }
 
-    if (this.urlType === 'ext-url' && this.cascadeUse()) {
-      if (this.bffUrl()) {
-        this._url.set(this.bffUrl())
+  // on loading error switch URL
+  public onImageLoadError(): void {
+    if (this.url !== undefined) this.imageLoadResult.emit(false)
+
+    // using ext-url not possible, use bff URL
+    if (this.urlType === 'ext-url' && this.cascadeUse) {
+      if (this.bffUrl) {
+        this.url = this.bffUrl
         this.urlType = 'bff-url'
       } else {
-        this._url.set(this.defaultImageUrl())
+        this.url = this.defaultImageUrl
         this.urlType = 'def-url'
       }
-    } else if (this.defaultImageUrl()) {
-      this._url.set(this.defaultImageUrl())
+      // using bff-url not possible, use default URL
+    } else if (this.defaultImageUrl) {
+      this.url = this.defaultImageUrl
       this.urlType = 'def-url'
     }
   }

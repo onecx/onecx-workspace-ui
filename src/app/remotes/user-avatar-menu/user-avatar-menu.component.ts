@@ -38,6 +38,7 @@ import { RippleModule } from 'primeng/ripple'
 import { AppConfigService, AppStateService, UserService } from '@onecx/angular-integration-interface'
 import {
   AngularRemoteComponentsModule,
+  REMOTE_COMPONENT_CONFIG,
   RemoteComponentConfig,
   SLOT_SERVICE,
   SlotService,
@@ -89,6 +90,7 @@ export type MenuAnchorPositionConfig = 'right' | 'left'
 export class OneCXUserAvatarMenuComponent
   implements ocxRemoteComponent, ocxRemoteWebcomponent, AfterViewInit, OnDestroy
 {
+  private readonly remoteComponentConfig = inject<ReplaySubject<RemoteComponentConfig>>(REMOTE_COMPONENT_CONFIG)
   private readonly renderer = inject(Renderer2)
   private readonly userService: UserService = inject(UserService)
   private readonly slotService: SlotService = inject(SlotService)
@@ -202,16 +204,16 @@ export class OneCXUserAvatarMenuComponent
   }
 
   ocxInitRemoteComponent(config: RemoteComponentConfig): void {
-    // this.baseUrl.next(config.baseUrl)
-    this.permissions = config.permissions
-    this.menuItemApiService.configuration = new Configuration({
-      basePath: Location.joinWithSlash(config.baseUrl, environment.apiPrefix)
-    })
+    this.remoteComponentConfig.next(config)
     this.appConfigService.init(config.baseUrl).then(() => {
       const menuAnchorPositionConfig = this.appConfigService.getProperty('USER_AVATAR_MENU_ANCHOR_POSITION')
       if (menuAnchorPositionConfig) {
         this.menuAnchorPosition = menuAnchorPositionConfig as MenuAnchorPositionConfig
       }
+    })
+    this.permissions = config.permissions
+    this.menuItemApiService.configuration = new Configuration({
+      basePath: Location.joinWithSlash(config.baseUrl, environment.apiPrefix)
     })
   }
 

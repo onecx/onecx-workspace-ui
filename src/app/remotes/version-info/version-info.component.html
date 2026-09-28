@@ -4,12 +4,13 @@
     <span aria-label="Workspace" pTooltip="Workspace" tooltipPosition="top" tooltipEvent="hover" role="note">
       {{ version.workspaceName }}
     </span>
+    <span aria-hidden="true">{{ version.separator }}</span>
     <span aria-label="Shell" pTooltip="Shell" tooltipPosition="top" tooltipEvent="hover" role="note">
-      {{ version.shellInfo }}
+      Shell: {{ version.shellInfo }}
     </span>
     <span aria-hidden="true">{{ version.separator }}</span>
     <span aria-label="Microfrontend" pTooltip="Microfrontend" tooltipPosition="top" tooltipEvent="hover" role="note">
-      info: {{ version.mfeInfo }}
+      App: {{ version.mfeInfo }}
     </span>
   </div>
 }

@@ -8,9 +8,10 @@ import { AppStateService, CONFIG_KEY, ConfigurationService } from '@onecx/angula
 import {
   AngularRemoteComponentsModule,
   ocxRemoteComponent,
-  ocxRemoteWebcomponent
+  ocxRemoteWebcomponent,
+  REMOTE_COMPONENT_CONFIG,
+  RemoteComponentConfig
 } from '@onecx/angular-remote-components'
-import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
 
 export type Version = {
   workspaceName: string
@@ -21,10 +22,10 @@ export type Version = {
 
 @Component({
   selector: 'app-ocx-version-info',
-  templateUrl: './version-info.component.html',
   standalone: true,
-  imports: [AngularRemoteComponentsModule, AngularAcceleratorModule, AsyncPipe],
-  providers: [{ provide: REMOTE_COMPONENT_CONFIG, useValue: new ReplaySubject<string>(1) }]
+  imports: [AsyncPipe, AngularAcceleratorModule, AngularRemoteComponentsModule],
+  providers: [{ provide: REMOTE_COMPONENT_CONFIG, useValue: new ReplaySubject<string>(1) }],
+  templateUrl: './version-info.component.html'
 })
 @UntilDestroy()
 export class OneCXVersionInfoComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
@@ -34,6 +35,9 @@ export class OneCXVersionInfoComponent implements ocxRemoteComponent, ocxRemoteW
 
   @Input() set ocxRemoteComponentConfig(rcConfig: RemoteComponentConfig) {
     this.ocxInitRemoteComponent(rcConfig)
+  }
+  public ocxInitRemoteComponent(rcConfig: RemoteComponentConfig) {
+    this.rcConfig.next(rcConfig)
   }
 
   public versionInfo$: Observable<Version | undefined> = combineLatest([
@@ -54,8 +58,4 @@ export class OneCXVersionInfoComponent implements ocxRemoteComponent, ocxRemoteW
       return version
     })
   )
-
-  public ocxInitRemoteComponent(rcConfig: RemoteComponentConfig) {
-    this.rcConfig.next(rcConfig)
-  }
 }

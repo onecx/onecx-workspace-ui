@@ -1,21 +1,21 @@
-import { CommonModule, Location } from '@angular/common'
-import { HttpClient } from '@angular/common/http'
-import { Component, inject, Inject, Input, OnInit } from '@angular/core'
+import { Component, inject, Input, OnInit } from '@angular/core'
+import { AsyncPipe, Location } from '@angular/common'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
-import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { Observable, ReplaySubject, catchError, map, mergeMap, of, retry, shareReplay, withLatestFrom } from 'rxjs'
+
 import { MenuItem } from 'primeng/api'
 
-//import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
 import {
   AngularRemoteComponentsModule,
+  REMOTE_COMPONENT_CONFIG,
   RemoteComponentConfig,
   ocxRemoteComponent,
-  ocxRemoteWebcomponent,
-  provideTranslateServiceForRoot
+  ocxRemoteWebcomponent
 } from '@onecx/angular-remote-components'
-import { AppStateService, UserService } from '@onecx/angular-integration-interface'
+import { AppConfigService, AppStateService, UserService } from '@onecx/angular-integration-interface'
+import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
 
 import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
@@ -24,27 +24,15 @@ import { environment } from 'src/environments/environment'
 @Component({
   selector: 'app-ocx-footer-menu',
   standalone: true,
-  imports: [AngularRemoteComponentsModule, CommonModule, RouterModule, TranslateModule],
-  /*
-  providers: [
-    {
-      provide: BASE_URL,
-      useValue: new ReplaySubject<string>(1)
-    },
-    provideTranslateServiceForRoot({
-      isolate: true,
-      loader: {
-        provide: TranslateLoader,
-        useFactory: createRemoteComponentTranslateLoader,
-        deps: [HttpClient, BASE_URL]
-      }
-    })
-  ]*/
+  imports: [AsyncPipe, AngularAcceleratorModule, AngularRemoteComponentsModule, RouterModule, TranslateModule],
+  providers: [{ provide: REMOTE_COMPONENT_CONFIG, useValue: new ReplaySubject<string>(1) }],
   templateUrl: './footer-menu.component.html',
   styleUrls: ['./footer-menu.component.scss']
 })
 @UntilDestroy()
 export class OneCXFooterMenuComponent implements OnInit, ocxRemoteComponent, ocxRemoteWebcomponent {
+  private readonly remoteComponentConfig = inject<ReplaySubject<RemoteComponentConfig>>(REMOTE_COMPONENT_CONFIG)
+  private readonly appConfigService = inject(AppConfigService)
   private readonly userService = inject(UserService)
   private readonly translateService = inject(TranslateService)
   private readonly appStateService = inject(AppStateService)
@@ -57,14 +45,15 @@ export class OneCXFooterMenuComponent implements OnInit, ocxRemoteComponent, ocx
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
   }
 
-  @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
-    this.ocxInitRemoteComponent(config)
+  @Input() set ocxRemoteComponentConfig(rcConfig: RemoteComponentConfig) {
+    this.ocxInitRemoteComponent(rcConfig)
   }
 
-  ocxInitRemoteComponent(config: RemoteComponentConfig): void {
-    //this.baseUrl.next(config.baseUrl)
+  ocxInitRemoteComponent(rcConfig: RemoteComponentConfig): void {
+    this.appConfigService.init(rcConfig.baseUrl)
+    this.remoteComponentConfig.next(rcConfig)
     this.menuItemApiService.configuration = new Configuration({
-      basePath: Location.joinWithSlash(config.baseUrl, environment.apiPrefix)
+      basePath: Location.joinWithSlash(rcConfig.baseUrl, environment.apiPrefix)
     })
   }
 

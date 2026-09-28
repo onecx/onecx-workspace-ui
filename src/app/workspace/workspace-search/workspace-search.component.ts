@@ -1,4 +1,5 @@
 import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core'
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { BehaviorSubject, Observable, Subject, catchError, finalize, map, of, switchMap } from 'rxjs'
@@ -32,10 +33,9 @@ import {
   WorkspaceAbstract
 } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
-import { ImageContainerComponent } from 'src/app/shared/image-container.old/image-container.component'
+import { ImageContainerComponent } from 'src/app/shared/image-container/image-container.component'
 import { WorkspaceCreateComponent } from '../workspace-create/workspace-create.component'
 import { WorkspaceImportComponent } from '../workspace-import/workspace-import.component'
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
 
 @Component({
   selector: 'app-workspace-search',
@@ -110,8 +110,6 @@ export class WorkspaceSearchComponent implements OnInit {
       ])
     )
   public readonly actions = toSignal(this.actions$, { initialValue: [] as Action[] })
-  public showCreateDialog = false
-  public showImportDialog = false
   public RefType = RefType
   public getLocation = getLocation
   // data

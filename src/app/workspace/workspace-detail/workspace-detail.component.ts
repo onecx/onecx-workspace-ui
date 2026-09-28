@@ -123,7 +123,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
       finalize(() => {
         this.loading = false
         if (switchToEdit === true) this.editMode = true
-        this.prepareActionButtons()
+        this.preparePageActions()
       })
     )
   }
@@ -218,7 +218,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
       if (this.selectedTabIndex === '4') this.workspaceForSlots = workspace
       if (this.selectedTabIndex === '5') this.workspaceForProducts = workspace
     } else this.selectedTabIndex = '0'
-    this.prepareActionButtons()
+    this.preparePageActions()
   }
 
   // If product registration change then refresh slot TAB data
@@ -241,7 +241,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
       this.editMode = !this.editMode
       this.getWorkspace(this.editMode)
     }
-    this.prepareActionButtons()
+    this.preparePageActions()
   }
 
   public getLogoUrl(workspace: Workspace | undefined): string | undefined {
@@ -259,7 +259,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
     this.router.navigate(['./menu'], { relativeTo: this.route })
   }
 
-  public prepareActionButtons(): void {
+  public preparePageActions(): void {
     this.actions$ = this.translate
       .get([
         'DIALOG.MENU.LABEL',

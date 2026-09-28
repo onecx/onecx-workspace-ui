@@ -1,11 +1,8 @@
-import { CommonModule, Location } from '@angular/common'
-import { HttpClient } from '@angular/common/http'
-import { Component, Inject, Input, OnDestroy, OnInit, inject } from '@angular/core'
+import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core'
+import { AsyncPipe, Location } from '@angular/common'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
-import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
-import { MenuItem } from 'primeng/api'
-import { PanelMenuModule } from 'primeng/panelmenu'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import {
   BehaviorSubject,
   Observable,
@@ -22,9 +19,17 @@ import {
   withLatestFrom
 } from 'rxjs'
 
-//import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
-import { AppStateService, Capability, ShellCapabilityService, UserService } from '@onecx/angular-integration-interface'
+import { MenuItem } from 'primeng/api'
+import { PanelMenuModule } from 'primeng/panelmenu'
 
+import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
+import {
+  AppConfigService,
+  AppStateService,
+  Capability,
+  ShellCapabilityService,
+  UserService
+} from '@onecx/angular-integration-interface'
 import {
   AngularRemoteComponentsModule,
   ocxRemoteComponent,
@@ -50,24 +55,22 @@ const MENU_MODE = 'static'
 @Component({
   selector: 'app-vertical-main-menu',
   standalone: true,
-  imports: [AngularRemoteComponentsModule, CommonModule, RouterModule, TranslateModule, PanelMenuModule],
-  /*
-  providers: [
-    { provide: BASE_URL, useValue: new ReplaySubject<string>(1) },
-    provideTranslateServiceForRoot({
-      isolate: true,
-      loader: {
-        provide: TranslateLoader,
-        useFactory: createRemoteComponentTranslateLoader,
-        deps: [HttpClient, BASE_URL]
-      }
-    })
-  ],*/
+  imports: [
+    AsyncPipe,
+    AngularAcceleratorModule,
+    AngularRemoteComponentsModule,
+    RouterModule,
+    TranslateModule,
+    PanelMenuModule
+  ],
+  providers: [{ provide: REMOTE_COMPONENT_CONFIG, useValue: new ReplaySubject<string>(1) }],
   templateUrl: './vertical-main-menu.component.html',
-  styleUrl: './vertical-main-menu.component.scss'
+  styleUrls: ['./vertical-main-menu.component.scss']
 })
 @UntilDestroy()
 export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRemoteWebcomponent, OnInit, OnDestroy {
+  private readonly remoteComponentConfig = inject<ReplaySubject<RemoteComponentConfig>>(REMOTE_COMPONENT_CONFIG)
+  private readonly appConfigService = inject(AppConfigService)
   private readonly userService = inject(UserService)
   private readonly translateService = inject(TranslateService)
   private readonly appStateService = inject(AppStateService)
@@ -92,14 +95,15 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRe
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
   }
 
-  @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
-    this.ocxInitRemoteComponent(config)
+  @Input() set ocxRemoteComponentConfig(rcConfig: RemoteComponentConfig) {
+    this.ocxInitRemoteComponent(rcConfig)
   }
 
-  ocxInitRemoteComponent(remoteComponentConfig: RemoteComponentConfig) {
-    //this.baseUrl.next(remoteComponentConfig.baseUrl)
+  ocxInitRemoteComponent(rcConfig: RemoteComponentConfig) {
+    this.remoteComponentConfig.next(rcConfig)
+    this.appConfigService.init(rcConfig.baseUrl)
     this.menuItemApiService.configuration = new Configuration({
-      basePath: Location.joinWithSlash(remoteComponentConfig.baseUrl, environment.apiPrefix)
+      basePath: Location.joinWithSlash(rcConfig.baseUrl, environment.apiPrefix)
     })
   }
 

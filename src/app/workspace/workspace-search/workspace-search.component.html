@@ -278,15 +278,13 @@
   </ocx-content>
 </ocx-portal-page>
 
-<!--
 <app-workspace-create
-  [(visible)]="workspaceCreateVisible"
-  (created)="onThemeCreation($event)"
+  [displayDialog]="workspaceCreateVisible()"
+  (toggleCreationDialogEvent)="workspaceCreateVisible.set(false)"
 ></app-workspace-create>
 
 <app-workspace-import
-  [displayDialog]="showImportDialog"
-  [resetDialog]="showImportDialog"
-  (toggleImportDialogEvent)="toggleShowImportDialog()"
+  [displayDialog]="workspaceImportVisible()"
+  [resetDialog]="workspaceImportVisible()"
+  (toggleImportDialogEvent)="workspaceImportVisible.set(false)"
 ></app-workspace-import>
--->

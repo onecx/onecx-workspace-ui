@@ -60,7 +60,7 @@ import {
   SlotComponent
 } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
-import { ImageContainerComponent } from 'src/app/shared/image-container.old/image-container.component'
+import { ImageContainerComponent } from 'src/app/shared/image-container/image-container.component'
 
 type ChangeStatus = {
   index?: number
