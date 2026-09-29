@@ -44,7 +44,6 @@ export class OneCXFooterMenuComponent implements ocxRemoteComponent, ocxRemoteWe
   private readonly menuItemService = inject(MenuItemService)
   public readonly router = inject(Router)
 
-  SafeLinkDirective = SafeLinkDirective
   menuItems$ = this.getMenuItems()
   menuItems = toSignal(this.menuItems$ ?? of([]), { initialValue: [] })
   public Utils = Utils

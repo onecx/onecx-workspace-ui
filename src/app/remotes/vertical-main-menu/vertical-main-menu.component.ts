@@ -1,5 +1,5 @@
 import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core'
-import { AsyncPipe, Location } from '@angular/common'
+import { AsyncPipe, JsonPipe, Location } from '@angular/common'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
@@ -42,6 +42,7 @@ import { EventsTopic, NavigatedEventPayload } from '@onecx/integration-interface
 import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
 import { MenuService } from 'src/app/shared/services/menu.service'
+import { SafeLinkDirective } from 'src/app/shared/safe-link.directive'
 import { environment } from 'src/environments/environment'
 
 export interface WorkspaceMenuItems {
@@ -59,9 +60,9 @@ const MENU_MODE = 'static'
     AsyncPipe,
     AngularAcceleratorModule,
     AngularRemoteComponentsModule,
-    RouterModule,
     TranslateModule,
-    PanelMenuModule
+    PanelMenuModule,
+    SafeLinkDirective
   ],
   providers: [{ provide: REMOTE_COMPONENT_CONFIG, useValue: new ReplaySubject<string>(1) }],
   templateUrl: './vertical-main-menu.component.html',

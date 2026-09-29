@@ -1,10 +1,30 @@
 :host ::ng-deep {
+  .p-2x {
+    padding: 0.928rem; // 2.5 * 0.25rem
+  }
+
   .p-panelmenu {
+    .p-panelmenu-panel {
+      box-shadow: none;
+      border-style: none;
+      border-radius: 0;
+      padding: 0;
+    }
+    .p-panelmenu-item-content {
+      border-radius: 0;
+    }
+    /* overwrite general style from "body a" */
+    .ocx-vertical-menu-item {
+      color: var(--menu-item-text-color);
+    }
+
+    /*
     // panel menu items
     .p-panelmenu-header {
       .p-panelmenu-header-content {
         color: var(--menu-item-text-color);
         background: var(--panelmenu-header-bg);
+        border-radius: 0;
         .p-panelmenu-header-action {
           color: var(--menu-item-text-color);
 
@@ -122,5 +142,6 @@
         }
       }
     }
+    */
   }
 }
