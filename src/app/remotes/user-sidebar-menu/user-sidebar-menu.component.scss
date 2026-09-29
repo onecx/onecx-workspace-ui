@@ -20,6 +20,9 @@
     }
 
     .p-accordionpanel:not(.p-disabled) {
+      > .p-accordionheader {
+        border-radius: 0;
+      }
       &.p-accordionpanel-active > .p-accordionheader {
         background: var(--menu-item-bg-color);
         color: var(--menu-item-text-color);

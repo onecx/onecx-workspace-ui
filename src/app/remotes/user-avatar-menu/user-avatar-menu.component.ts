@@ -11,11 +11,10 @@ import {
   ViewChild
 } from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
-import { HttpClient } from '@angular/common/http'
 import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
-import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import {
   Observable,
   ReplaySubject,
@@ -34,7 +33,6 @@ import { AvatarModule } from 'primeng/avatar'
 import { MenuModule } from 'primeng/menu'
 import { RippleModule } from 'primeng/ripple'
 
-//import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
 import { AppConfigService, AppStateService, UserService } from '@onecx/angular-integration-interface'
 import {
   AngularRemoteComponentsModule,
@@ -43,14 +41,14 @@ import {
   SLOT_SERVICE,
   SlotService,
   ocxRemoteComponent,
-  ocxRemoteWebcomponent,
-  provideTranslateServiceForRoot
+  ocxRemoteWebcomponent
 } from '@onecx/angular-remote-components'
 import { EventsPublisher, UserProfile } from '@onecx/integration-interface'
 
 import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
 import { SharedModule } from 'src/app/shared/shared.module'
+import { VerticalMenuItemComponent } from 'src/app/shared/vertical-menu-item/vertical-menu-item.component'
 import { environment } from 'src/environments/environment'
 
 export type MenuAnchorPositionConfig = 'right' | 'left'
@@ -67,22 +65,10 @@ export type MenuAnchorPositionConfig = 'right' | 'left'
     AvatarModule,
     RippleModule,
     RouterModule,
-    TranslateModule
+    TranslateModule,
+    VerticalMenuItemComponent
   ],
-  /*
-  providers: [
-    { provide: BASE_URL, useValue: new ReplaySubject<string>(1) },
-    { provide: SLOT_SERVICE, useExisting: SlotService },
-    AppConfigService,
-    provideTranslateServiceForRoot({
-      isolate: true,
-      loader: {
-        provide: TranslateLoader,
-        useFactory: createRemoteComponentTranslateLoader,
-        deps: [HttpClient, BASE_URL]
-      }
-    })
-  ],*/
+  providers: [{ provide: SLOT_SERVICE, useExisting: SlotService }, AppConfigService],
   templateUrl: './user-avatar-menu.component.html',
   styleUrls: ['./user-avatar-menu.component.scss']
 })

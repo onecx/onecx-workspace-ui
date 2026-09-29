@@ -1,13 +1,16 @@
 @let itm = item();
 @if (itm) {
   <!-- general look&feel of the menu items -->
-  @let menuItemStyle = 'p-2x flex w-full ocx-vertical-menu-item ';
+  @let menuItemStyle = ' p-2x flex w-full ocx-vertical-menu-item ';
   @if (itm.routerLink) {
     <a
-      [id]="itm.id"
-      [class]="menuItemStyle + 'cursor-pointer'"
+      [id]="id() ?? itm.id"
+      [class]="(styleClass() ?? '') + menuItemStyle + 'cursor-pointer'"
       [safeRouterLink]="itm.routerLink"
       [target]="itm.target ?? '_self'"
+      [pTooltip]="title() ?? ''"
+      tooltipPosition="bottom"
+      tooltipEvent="hover"
     >
       @if (itm.icon) {
         <span [class]="itm.icon" class="mr-2"></span>
@@ -15,15 +18,28 @@
       <span>{{ itm.label }}</span>
     </a>
   } @else if (itm.url) {
-    <a [id]="itm.id" [class]="menuItemStyle + 'items-center'" [attr.href]="itm.url" [target]="itm.target">
+    <a
+      [id]="id() ?? itm.id"
+      [class]="(styleClass() ?? '') + menuItemStyle + 'items-center'"
+      [attr.href]="itm.url"
+      [target]="itm.target"
+      [pTooltip]="title() ?? ''"
+      tooltipPosition="bottom"
+      tooltipEvent="hover"
+    >
       @if (itm.icon) {
         <span [class]="itm.icon" class="mr-2"></span>
       }
       <span>{{ itm.label }}</span>
     </a>
   } @else {
-    <div [class]="menuItemStyle + 'flex-row justify-content-between align-items-center'">
-      <span class="flex flex-row align-items-center">
+    <div
+      [class]="(styleClass() ?? '') + menuItemStyle + 'flex-row justify-content-between align-items-center'"
+      [pTooltip]="title() ?? ''"
+      tooltipPosition="bottom"
+      tooltipEvent="hover"
+    >
+      <span [id]="id() ?? itm.id" class="flex flex-row align-items-center">
         @if (itm.icon) {
           <span [class]="itm.icon" class="mr-2"></span>
         }

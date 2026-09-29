@@ -1,3 +1,13 @@
+@use 'src/app/shared/sidebar-panelmenu.scss' as *;
+
+:host ::ng-deep {
+  .layout-topbar-action-item-padded {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    padding-right: 1rem;
+  }
+}
+
 .layout-topbar-item {
   display: flex;
   align-items: center;
