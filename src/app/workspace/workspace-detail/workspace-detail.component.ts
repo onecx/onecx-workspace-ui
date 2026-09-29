@@ -4,8 +4,6 @@ import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { catchError, finalize, map, Observable, of } from 'rxjs'
 
-import { ButtonModule } from 'primeng/button'
-import { DialogModule } from 'primeng/dialog'
 import { MessageModule } from 'primeng/message'
 import { TabsModule } from 'primeng/tabs'
 import { TooltipModule } from 'primeng/tooltip'
@@ -30,6 +28,7 @@ import { WorkspaceInternComponent } from './workspace-intern/workspace-intern.co
 import { WorkspaceRolesComponent } from './workspace-roles/workspace-roles.component'
 import { WorkspaceSlotsComponent } from './workspace-slots/workspace-slots.component'
 import { ProductComponent } from '../workspace-product/products.component'
+import { WorkspaceDeleteComponent } from './workspace-delete/workspace-delete.component'
 
 @Component({
   selector: 'app-workspace-detail',
@@ -37,8 +36,6 @@ import { ProductComponent } from '../workspace-product/products.component'
   imports: [
     AsyncPipe,
     AngularAcceleratorModule,
-    ButtonModule,
-    DialogModule,
     MessageModule,
     TabsModule,
     TooltipModule,
@@ -51,10 +48,11 @@ import { ProductComponent } from '../workspace-product/products.component'
     WorkspaceRolesComponent,
     WorkspaceSlotsComponent,
     ProductComponent,
-    WorkspaceExportComponent
+    WorkspaceExportComponent,
+    WorkspaceDeleteComponent
   ],
   templateUrl: './workspace-detail.component.html',
-  styleUrls: ['./workspace-detail.component.scss']
+  styleUrls: ['./workspace-detail.component.scss', './workspace-delete/workspace-delete.component.scss']
 })
 export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
   public readonly route = inject(ActivatedRoute)
