@@ -5,7 +5,10 @@
 @if (active) {
   <p-panelMenu [hidden]="hidden" [model]="menu?.items ?? []" multiple="true">
     <ng-template #item let-item>
-      <app-vertical-menu-item [item]="item"></app-vertical-menu-item>
+      <app-vertical-menu-item [item]="item" styleClassLabel="w-12rem"></app-vertical-menu-item>
+      <!--
+       white-space-nowrap overflow-hidden text-overflow-ellipsis
+       -->
     </ng-template>
   </p-panelMenu>
 }

@@ -1,9 +1,8 @@
-import { Component, Inject, Input, OnInit, OnDestroy, ViewChild, inject, Renderer2 } from '@angular/core'
+import { Component, Input, OnInit, OnDestroy, ViewChild, inject, Renderer2 } from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
-import { HttpClient } from '@angular/common/http'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
-import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { Observable, ReplaySubject, catchError, map, mergeMap, of, retry, shareReplay, withLatestFrom } from 'rxjs'
 
 import { MenuItem } from 'primeng/api'
@@ -12,10 +11,10 @@ import { Menubar, MenubarModule } from 'primeng/menubar'
 //import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
 import {
   AngularRemoteComponentsModule,
+  REMOTE_COMPONENT_CONFIG,
   RemoteComponentConfig,
   ocxRemoteComponent,
-  ocxRemoteWebcomponent,
-  provideTranslateServiceForRoot
+  ocxRemoteWebcomponent
 } from '@onecx/angular-remote-components'
 import { AppStateService, UserService } from '@onecx/angular-integration-interface'
 
@@ -30,26 +29,12 @@ const MENU_MODE = 'horizontal'
   selector: 'app-horizontal-main-menu',
   standalone: true,
   imports: [AngularRemoteComponentsModule, CommonModule, RouterModule, TranslateModule, MenubarModule],
-  /*
-  providers: [
-    {
-      provide: BASE_URL,
-      useValue: new ReplaySubject<string>(1)
-    },
-    provideTranslateServiceForRoot({
-      isolate: true,
-      loader: {
-        provide: TranslateLoader,
-        useFactory: createRemoteComponentTranslateLoader,
-        deps: [HttpClient, BASE_URL]
-      }
-    })
-  ]*/
   templateUrl: './horizontal-main-menu.component.html',
   styleUrls: ['./horizontal-main-menu.component.scss']
 })
 @UntilDestroy()
 export class OneCXHorizontalMainMenuComponent implements OnInit, OnDestroy, ocxRemoteComponent, ocxRemoteWebcomponent {
+  public readonly remoteComponentConfig = inject<ReplaySubject<RemoteComponentConfig>>(REMOTE_COMPONENT_CONFIG)
   private readonly userService = inject(UserService)
   private readonly translateService = inject(TranslateService)
   private readonly appStateService = inject(AppStateService)
@@ -73,14 +58,13 @@ export class OneCXHorizontalMainMenuComponent implements OnInit, OnDestroy, ocxR
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
   }
 
-  @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
-    this.ocxInitRemoteComponent(config)
+  @Input() set ocxRemoteComponentConfig(rcConfig: RemoteComponentConfig) {
+    this.ocxInitRemoteComponent(rcConfig)
   }
   // Remove this listener when PrimeNG fixes the p-menubar autoHide component
   @ViewChild('menubar')
   set menubarSetter(menubar: Menubar | undefined) {
     if (!menubar) return
-
     this.removeMouseLeaveListener = this.renderer.listen(menubar.el.nativeElement, 'mouseleave', () => {
       menubar.hide()
     })
@@ -94,10 +78,10 @@ export class OneCXHorizontalMainMenuComponent implements OnInit, OnDestroy, ocxR
     this.removeMouseLeaveListener?.()
   }
 
-  ocxInitRemoteComponent(remoteComponentConfig: RemoteComponentConfig) {
-    //this.baseUrl.next(remoteComponentConfig.baseUrl)
+  ocxInitRemoteComponent(rcConfig: RemoteComponentConfig) {
+    this.remoteComponentConfig.next(rcConfig)
     this.menuItemApiService.configuration = new Configuration({
-      basePath: Location.joinWithSlash(remoteComponentConfig.baseUrl, environment.apiPrefix)
+      basePath: Location.joinWithSlash(rcConfig.baseUrl, environment.apiPrefix)
     })
   }
 

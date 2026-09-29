@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, Input, inject } from '@angular/core'
+import { Component, EventEmitter, Input, inject } from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
@@ -19,10 +19,10 @@ import {
   withLatestFrom
 } from 'rxjs'
 
-//import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
 import { AppConfigService, AppStateService, UserService } from '@onecx/angular-integration-interface'
 import {
   AngularRemoteComponentsModule,
+  REMOTE_COMPONENT_CONFIG,
   RemoteComponentConfig,
   SLOT_SERVICE,
   SlotService,
@@ -56,25 +56,12 @@ const MENU_MODE = 'static'
     VerticalMenuItemComponent
   ],
   providers: [{ provide: SLOT_SERVICE, useExisting: SlotService }],
-  /*
-  providers: [
-    AppConfigService,
-    {
-      provide: APP_INITIALIZER,
-      useFactory: slotInitializer,
-      deps: [SLOT_SERVICE],
-      multi: true
-    },
-    {
-      provide: SLOT_SERVICE,
-      useExisting: SlotService
-    }
-  ],*/
   templateUrl: './user-sidebar-menu.component.html',
   styleUrls: ['./user-sidebar-menu.component.scss']
 })
 @UntilDestroy()
 export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
+  private readonly remoteComponentConfig = inject<ReplaySubject<RemoteComponentConfig>>(REMOTE_COMPONENT_CONFIG)
   public currentUser$: Observable<UserProfile>
   public userMenu$: Observable<MenuItem[]>
   public displayName$: Observable<string>
@@ -179,7 +166,7 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent, ocxRem
   }
 
   ocxInitRemoteComponent(config: RemoteComponentConfig): void {
-    // this.baseUrl.next(config.baseUrl)
+    this.remoteComponentConfig.next(config)
     this.appConfigService.init(config.baseUrl)
     this.menuItemApiService.configuration = new Configuration({
       basePath: Location.joinWithSlash(config.baseUrl, environment.apiPrefix)

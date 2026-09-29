@@ -1,25 +1,30 @@
-<!-- force scrolling by limit height -->
-<div
-  *ngIf="{ activeMode: activeMode$ | async, isHidden: isHidden$ | async, menuItems: menuItems$ | async } as vm"
-  class="slim-vertical-menu-parent"
->
-  <ul
-    *ngIf="vm.activeMode && vm.activeMode !== Mode.INACTIVE"
-    [hidden]="vm.isHidden"
-    id="ws_slim_vertical_main_menu_list"
-    class="m-0 p-0 overflow-auto flex flex-column align-items-center justify-content-center list-none"
-    [ngClass]="{
-      'slim-vertical-menu-list-slim': vm.activeMode === Mode.SLIM,
-      'slim-vertical-menu-list-slim-plus': vm.activeMode === Mode.SLIM_PLUS
-    }"
-  >
-    <li
-      app-slim-menu-item
-      *ngFor="let item of vm.menuItems ?? []; let i = index"
-      [item]="item"
-      [id]="'ws_slim_vertical_main_menu_list_item_' + (i + 1)"
-      [index]="i"
-      [activeMode]="vm.activeMode"
-    ></li>
-  </ul>
-</div>
+@let vm = { activeMode: activeMode$ | async, isHidden: isHidden$ | async, items: (menuItems$ | async) ?? [] };
+@if (vm) {
+  <!-- force scrolling by limit height -->
+  <div class="slim-vertical-menu-parent">
+    @if (vm.activeMode && vm.activeMode !== Mode.INACTIVE) {
+      <ul
+        [hidden]="vm.isHidden"
+        id="ws_slim_vertical_main_menu_list"
+        class="m-0 p-0 overflow-auto flex flex-column align-items-center justify-content-center list-none"
+        [ngClass]="{
+          'slim-vertical-menu-list-slim': vm.activeMode === Mode.SLIM,
+          'slim-vertical-menu-list-slim-plus': vm.activeMode === Mode.SLIM_PLUS
+        }"
+      >
+        @for (item of vm.items; track item; let i = $index) {
+          <li
+            app-slim-menu-item
+            [id]="'ws_slim_vertical_main_menu_list_item_' + (i + 1)"
+            [item]="item"
+            [index]="i"
+            [activeMode]="vm.activeMode"
+          ></li>
+          <!--li [id]="'ws_user_avatar_menu_list_item_' + (i + 1)" class="layout-topbar-action-item">
+            <app-vertical-menu-item [item]="item"></app-vertical-menu-item>
+          </li-->
+        }
+      </ul>
+    }
+  </div>
+}

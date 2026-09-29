@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, Inject, Input, OnDestroy, ViewChild } from '@angular/core'
+import { Component, ElementRef, inject, Input, OnDestroy, ViewChild } from '@angular/core'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { combineLatest, filter, map, merge, Observable, ReplaySubject } from 'rxjs'
 
@@ -75,11 +75,10 @@ export class OneCXTopbarLogoComponent implements ocxRemoteComponent, ocxRemoteWe
 
   // initialize this component as remote
   public ocxInitRemoteComponent(config: RemoteComponentConfig): void {
-    this.appConfigService.init(config.baseUrl)
     this.remoteComponentConfig.next(config)
+    this.appConfigService.init(config.baseUrl)
     this.initializeContainerStyles()
     /*
-    this.baseUrl.next(remoteComponentConfig.baseUrl)
     this.themeApi.configuration = new Configuration({
       basePath: Location.joinWithSlash(config.baseUrl, environment.apiPrefix)
     })*/

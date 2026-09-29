@@ -1,8 +1,7 @@
-import { Component, inject, Inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
-import { HttpClient } from '@angular/common/http'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
-import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import {
   BehaviorSubject,
   catchError,
@@ -21,13 +20,8 @@ import {
 
 import { MenuItem } from 'primeng/api'
 
-import {
-  RemoteComponentConfig,
-  ocxRemoteWebcomponent,
-  provideTranslateServiceForRoot
-} from '@onecx/angular-remote-components'
+import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig, ocxRemoteWebcomponent } from '@onecx/angular-remote-components'
 import { AppStateService, Capability, ShellCapabilityService, UserService } from '@onecx/angular-integration-interface'
-import { createTranslateLoader, provideTranslationPathFromMeta } from '@onecx/angular-utils'
 import { EventsTopic, NavigatedEventPayload, Workspace } from '@onecx/integration-interface'
 
 import { MenuService } from 'src/app/shared/services/menu.service'
@@ -43,27 +37,12 @@ import { SlimMenuItemComponent } from 'src/app/shared/components/slim-menu-item/
   selector: 'app-slim-vertical-main-menu',
   standalone: true,
   imports: [CommonModule, TranslateModule, SlimMenuItemComponent],
-  /*
-  providers: [
-    {
-      provide: BASE_URL,
-      useValue: new ReplaySubject<string>(1)
-    },
-    provideTranslateServiceForRoot({
-      isolate: true,
-      loader: {
-        provide: TranslateLoader,
-        useFactory: createTranslateLoader,
-        deps: [HttpClient]
-      }
-    }),
-    provideTranslationPathFromMeta(import.meta.url, 'assets/i18n/')
-  ],*/
   templateUrl: './slim-vertical-main-menu.component.html',
   styleUrl: './slim-vertical-main-menu.component.scss'
 })
 @UntilDestroy()
 export class OneCXSlimVerticalMainMenuComponent implements ocxRemoteWebcomponent, OnInit, OnDestroy {
+  private readonly remoteComponentConfig = inject<ReplaySubject<RemoteComponentConfig>>(REMOTE_COMPONENT_CONFIG)
   private readonly userService = inject(UserService)
   private readonly translateService = inject(TranslateService)
   private readonly appStateService = inject(AppStateService)
@@ -109,10 +88,10 @@ export class OneCXSlimVerticalMainMenuComponent implements ocxRemoteWebcomponent
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
   }
 
-  @Input() set ocxRemoteComponentConfig(remoteComponentConfig: RemoteComponentConfig) {
-    // this.baseUrl.next(remoteComponentConfig.baseUrl)
+  @Input() set ocxRemoteComponentConfig(rcConfig: RemoteComponentConfig) {
+    this.remoteComponentConfig.next(rcConfig)
     this.menuItemApiService.configuration = new Configuration({
-      basePath: Location.joinWithSlash(remoteComponentConfig.baseUrl, environment.apiPrefix)
+      basePath: Location.joinWithSlash(rcConfig.baseUrl, environment.apiPrefix)
     })
   }
 

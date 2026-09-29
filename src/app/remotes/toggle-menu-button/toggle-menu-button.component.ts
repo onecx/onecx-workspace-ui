@@ -1,20 +1,15 @@
-import { Component, inject, Inject, Input } from '@angular/core'
+import { Component, inject, Input } from '@angular/core'
 import { AsyncPipe } from '@angular/common'
-import { HttpClient } from '@angular/common/http'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
-import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { combineLatest, map, Observable, ReplaySubject } from 'rxjs'
 
 import { TooltipModule } from 'primeng/tooltip'
 import { RippleModule } from 'primeng/ripple'
 
-import {
-  RemoteComponentConfig,
-  ocxRemoteWebcomponent,
-  provideTranslateServiceForRoot
-} from '@onecx/angular-remote-components'
+import { RemoteComponentConfig, ocxRemoteWebcomponent } from '@onecx/angular-remote-components'
 import { Capability, ShellCapabilityService, UserService } from '@onecx/angular-integration-interface'
-import { createTranslateLoader, provideTranslationPathFromMeta } from '@onecx/angular-utils'
+import { REMOTE_COMPONENT_CONFIG } from '@onecx/angular-utils'
 
 import { MenuService } from 'src/app/shared/services/menu.service'
 import { StaticMenuStatePublisher } from 'src/app/shared/topics/static-menu-state.topic'
@@ -27,25 +22,10 @@ const MENU_MODE = 'static'
   styleUrl: './toggle-menu-button.component.scss',
   standalone: true,
   imports: [AsyncPipe, TranslateModule, TooltipModule, RippleModule]
-  /*
-  providers: [
-    {
-      provide: BASE_URL,
-      useValue: new ReplaySubject<string>(1)
-    },
-    provideTranslateServiceForRoot({
-      isolate: true,
-      loader: {
-        provide: TranslateLoader,
-        useFactory: createTranslateLoader,
-        deps: [HttpClient]
-      }
-    }),
-    provideTranslationPathFromMeta(import.meta.url, 'assets/i18n/')
-  ]*/
 })
 @UntilDestroy()
 export class OneCXToggleMenuButtonComponent implements ocxRemoteWebcomponent {
+  public readonly remoteComponentConfig = inject<ReplaySubject<RemoteComponentConfig>>(REMOTE_COMPONENT_CONFIG)
   private readonly userService = inject(UserService)
   private readonly translateService = inject(TranslateService)
 
@@ -70,9 +50,8 @@ export class OneCXToggleMenuButtonComponent implements ocxRemoteWebcomponent {
     )
   }
 
-  @Input() set ocxRemoteComponentConfig(remoteComponentConfig: RemoteComponentConfig) {
-    // TODO
-    //this.baseUrl.next(remoteComponentConfig.baseUrl)
+  @Input() set ocxRemoteComponentConfig(rcConfig: RemoteComponentConfig) {
+    this.remoteComponentConfig.next(rcConfig)
   }
 
   onMenuButtonClick(isVisible: boolean | null): void {

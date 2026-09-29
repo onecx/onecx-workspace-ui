@@ -2,6 +2,7 @@ import { Directive, inject, input, HostListener } from '@angular/core'
 import { Router } from '@angular/router'
 
 @Directive({
+  // eslint-disable-next-line @angular-eslint/directive-selector
   selector: 'a[safeRouterLink]',
   standalone: true
 })

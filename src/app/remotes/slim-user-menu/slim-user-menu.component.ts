@@ -1,8 +1,7 @@
-import { Component, EventEmitter, inject, Inject, Input } from '@angular/core'
+import { Component, EventEmitter, inject, Input } from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
-import { HttpClient } from '@angular/common/http'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
-import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import {
   BehaviorSubject,
   catchError,
@@ -25,11 +24,10 @@ import { AccordionModule } from 'primeng/accordion'
 import {
   AngularRemoteComponentsModule,
   RemoteComponentConfig,
-  ocxRemoteWebcomponent,
-  provideTranslateServiceForRoot
+  ocxRemoteWebcomponent
 } from '@onecx/angular-remote-components'
 import { AppStateService, UserService } from '@onecx/angular-integration-interface'
-import { createTranslateLoader, provideTranslationPathFromMeta } from '@onecx/angular-utils'
+import { REMOTE_COMPONENT_CONFIG } from '@onecx/angular-utils'
 import { EventsPublisher, UserProfile, Workspace } from '@onecx/integration-interface'
 
 import { MenuService } from 'src/app/shared/services/menu.service'
@@ -54,27 +52,18 @@ import { SlimMenuItemComponent } from 'src/app/shared/components/slim-menu-item/
     RippleModule,
     AccordionModule
   ],
-  /*
-  providers: [
-    {
-      provide: BASE_URL,
-      useValue: new ReplaySubject<string>(1)
-    },
-    provideTranslateServiceForRoot({
-      isolate: true,
-      loader: {
-        provide: TranslateLoader,
-        useFactory: createTranslateLoader,
-        deps: [HttpClient]
-      }
-    }),
-    provideTranslationPathFromMeta(import.meta.url, 'assets/i18n/')
-  ],*/
   templateUrl: './slim-user-menu.component.html',
-  styleUrl: './slim-user-menu.component.scss'
+  styleUrls: ['./slim-user-menu.component.scss']
 })
 @UntilDestroy()
 export class OneCXSlimUserMenuComponent implements ocxRemoteWebcomponent {
+  public readonly remoteComponentConfig = inject<ReplaySubject<RemoteComponentConfig>>(REMOTE_COMPONENT_CONFIG)
+  private readonly userService = inject(UserService)
+  private readonly translateService = inject(TranslateService)
+  private readonly appStateService = inject(AppStateService)
+  private readonly menuItemApiService = inject(MenuItemAPIService)
+  private readonly menuItemService = inject(MenuItemService)
+
   Mode = SlimMenuMode
 
   private readonly menuService = inject(MenuService)
@@ -92,12 +81,8 @@ export class OneCXSlimUserMenuComponent implements ocxRemoteWebcomponent {
   // Assumption: only one menu can be active at a time
   public activeMode$ = combineLatest([this.isSlimMenuActive$, this.isSlimPlusMenuActive$]).pipe(
     map(([isSlimActive, isSlimPlusActive]) => {
-      if (isSlimActive) {
-        return SlimMenuMode.SLIM
-      }
-      if (isSlimPlusActive) {
-        return SlimMenuMode.SLIM_PLUS
-      }
+      if (isSlimActive) return SlimMenuMode.SLIM
+      if (isSlimPlusActive) return SlimMenuMode.SLIM_PLUS
       return SlimMenuMode.INACTIVE
     })
   )
@@ -116,14 +101,7 @@ export class OneCXSlimUserMenuComponent implements ocxRemoteWebcomponent {
 
   menuItems$: BehaviorSubject<SlimMenuItems | undefined> = new BehaviorSubject<SlimMenuItems | undefined>(undefined)
 
-  constructor(
-    //@Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
-    private readonly userService: UserService,
-    private readonly translateService: TranslateService,
-    private readonly appStateService: AppStateService,
-    private readonly menuItemApiService: MenuItemAPIService,
-    private readonly menuItemService: MenuItemService
-  ) {
+  constructor() {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
     this.avatarImageLoadedEmitter.subscribe(this.avatarImageLoaded$)
 
@@ -143,10 +121,10 @@ export class OneCXSlimUserMenuComponent implements ocxRemoteWebcomponent {
       .subscribe(this.menuItems$)
   }
 
-  @Input() set ocxRemoteComponentConfig(remoteComponentConfig: RemoteComponentConfig) {
-    //this.baseUrl.next(remoteComponentConfig.baseUrl)
+  @Input() set ocxRemoteComponentConfig(rcConfig: RemoteComponentConfig) {
+    this.remoteComponentConfig.next(rcConfig)
     this.menuItemApiService.configuration = new Configuration({
-      basePath: Location.joinWithSlash(remoteComponentConfig.baseUrl, environment.apiPrefix)
+      basePath: Location.joinWithSlash(rcConfig.baseUrl, environment.apiPrefix)
     })
   }
 

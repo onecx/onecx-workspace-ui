@@ -4,7 +4,6 @@ import {
   ElementRef,
   EventEmitter,
   inject,
-  Inject,
   Input,
   OnDestroy,
   Renderer2,
