@@ -4,12 +4,16 @@
   }
 
   .p-panelmenu {
+    width: 17rem;
+    gap: 0;
     .p-panelmenu-panel {
       box-shadow: none;
       border-style: none;
       border-radius: 0;
       padding: 0;
     }
+
+    .p-panelmenu-header-content,
     .p-panelmenu-item-content {
       border-radius: 0;
     }
@@ -18,130 +22,19 @@
       color: var(--menu-item-text-color);
     }
 
-    /*
-    // panel menu items
-    .p-panelmenu-header {
-      .p-panelmenu-header-content {
-        color: var(--menu-item-text-color);
-        background: var(--panelmenu-header-bg);
-        border-radius: 0;
-        .p-panelmenu-header-action {
-          color: var(--menu-item-text-color);
-
-          &:hover {
-            background: var(--menu-item-hover-bg-color);
-            color: var(--menu-item-text-color);
-          }
-        }
-      }
-
-      &:not(.p-disabled) {
-        &:focus-visible {
-          .p-panelmenu-header-content {
-            .p-panelmenu-header-action {
-              background: var(--menu-item-hover-bg-color);
-            }
-          }
-        }
-      }
-
-      &:not(.p-highlight):not(.p-disabled) {
-        .p-panelmenu-header-action:focus {
-          background: var(--menu-item-hover-bg-color);
-        }
-      }
-
-      &:not(.p-highlight):not(.p-disabled):hover {
-        .p-panelmenu-header-content {
-          color: var(--menu-item-text-color);
-          background: var(--menu-item-hover-bg-color);
-        }
-      }
-
-      &:not(.p-disabled).p-highlight {
-        .p-panelmenu-header-content {
-          color: var(--menu-item-text-color);
-          background: var(--panelmenu-header-bg);
-        }
-      }
-
-      &:hover {
-        .p-panelmenu-header-content {
-          color: var(--menu-item-text-color);
-        }
-      }
-    }
-
-    .p-panelmenu-content {
-      color: var(--menu-item-text-color);
-
-      // menu items
-      .p-menuitem {
-        .p-menuitem-content {
-          color: var(--menu-item-text-color);
-
-          .p-menuitem-link {
-            color: var(--menu-item-text-color);
-
-            .p-menuitem-text,
-            .p-menuitem-icon,
-            .p-submenu-icon {
-              color: var(--menu-item-text-color);
-            }
-          }
-        }
-
-        &.p-highlight {
-          > .p-menuitem-content {
-            color: var(--menu-item-text-color);
-            background: var(--menu-item-hover-bg-color);
-
-            .p-menuitem-link {
-              .p-menuitem-text,
-              .p-menuitem-icon,
-              .p-submenu-icon {
-                color: var(--menu-item-text-color);
-              }
-            }
-          }
-
-          &.p-focus {
-            > .p-menuitem-content {
-              background: var(--menu-item-hover-bg-color);
-            }
-          }
-        }
-
-        &:not(.p-highlight):not(.p-disabled) {
-          &.p-focus {
-            > .p-menuitem-content {
-              color: var(--menu-item-text-color);
-              background: var(--menu-item-hover-bg-color);
-              .p-menuitem-text,
-              .p-menuitem-icon,
-              .p-submenu-icon {
-                color: var(--menu-item-text-color);
-              }
-            }
-          }
-
-          > .p-menuitem-content {
-            &:hover {
-              color: var(--menu-item-text-color);
-              background: var(--menu-item-hover-bg-color);
-
-              .p-menuitem-link {
-                .p-menuitem-text,
-                .p-menuitem-icon,
-                .p-submenu-icon {
-                  color: var(--menu-item-text-color);
-                }
-              }
+    /* markup the active menu item with specific background and text color */
+    .ocx-vertical-menu-active-item {
+      &:not(.p-focus) {
+        > .p-panelmenu-header-content,
+        .p-panelmenu-item-content {
+          &:not(:hover) {
+            .ocx-vertical-menu-item {
+              background-color: var(--menu-active-item-bg-color);
+              color: var(--menu-active-item-text-color);
             }
           }
         }
       }
     }
-    */
   }
 }

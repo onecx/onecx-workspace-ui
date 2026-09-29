@@ -1,9 +1,8 @@
+import { Component, EventEmitter, Inject, Input, inject } from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
-import { HttpClient } from '@angular/common/http'
-import { APP_INITIALIZER, Component, EventEmitter, Inject, Input, inject } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
-import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { AccordionModule } from 'primeng/accordion'
 import { MenuItem, PrimeIcons } from 'primeng/api'
 import { PanelMenuModule } from 'primeng/panelmenu'
@@ -28,8 +27,7 @@ import {
   SLOT_SERVICE,
   SlotService,
   ocxRemoteComponent,
-  ocxRemoteWebcomponent,
-  provideTranslateServiceForRoot
+  ocxRemoteWebcomponent
 } from '@onecx/angular-remote-components'
 import { EventsPublisher, UserProfile } from '@onecx/integration-interface'
 
@@ -37,12 +35,14 @@ import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
 import { MenuService } from 'src/app/shared/services/menu.service'
 import { environment } from 'src/environments/environment'
+import { VerticalMenuItemComponent } from 'src/app/shared/vertical-menu-item/vertical-menu-item.component'
 
 export function slotInitializer(slotService: SlotService) {
   return () => slotService.init()
 }
 
 const MENU_MODE = 'static'
+
 @Component({
   selector: 'app-user-sidebar-menu',
   standalone: true,
@@ -52,23 +52,13 @@ const MENU_MODE = 'static'
     RouterModule,
     AccordionModule,
     TranslateModule,
-    PanelMenuModule
+    PanelMenuModule,
+    VerticalMenuItemComponent
   ],
+  providers: [{ provide: SLOT_SERVICE, useExisting: SlotService }],
   /*
   providers: [
     AppConfigService,
-    {
-      provide: BASE_URL,
-      useValue: new ReplaySubject<string>(1)
-    },
-    provideTranslateServiceForRoot({
-      isolate: true,
-      loader: {
-        provide: TranslateLoader,
-        useFactory: createRemoteComponentTranslateLoader,
-        deps: [HttpClient, BASE_URL]
-      }
-    }),
     {
       provide: APP_INITIALIZER,
       useFactory: slotInitializer,

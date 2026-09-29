@@ -1,6 +1,5 @@
 import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core'
-import { AsyncPipe, JsonPipe, Location } from '@angular/common'
-import { RouterModule } from '@angular/router'
+import { AsyncPipe, Location } from '@angular/common'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import {
@@ -42,7 +41,7 @@ import { EventsTopic, NavigatedEventPayload } from '@onecx/integration-interface
 import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
 import { MenuService } from 'src/app/shared/services/menu.service'
-import { SafeLinkDirective } from 'src/app/shared/safe-link.directive'
+import { VerticalMenuItemComponent } from 'src/app/shared/vertical-menu-item/vertical-menu-item.component'
 import { environment } from 'src/environments/environment'
 
 export interface WorkspaceMenuItems {
@@ -62,7 +61,7 @@ const MENU_MODE = 'static'
     AngularRemoteComponentsModule,
     TranslateModule,
     PanelMenuModule,
-    SafeLinkDirective
+    VerticalMenuItemComponent
   ],
   providers: [{ provide: REMOTE_COMPONENT_CONFIG, useValue: new ReplaySubject<string>(1) }],
   templateUrl: './vertical-main-menu.component.html',
@@ -201,7 +200,7 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRe
   private updateItemsByActiveItem(item: MenuItem, activeItem: MenuItem | undefined): MenuItem {
     return {
       ...item,
-      styleClass: item.id === activeItem?.id ? this.activeItemClass : '',
+      styleClass: item.id === activeItem?.id ? this.activeItemClass : undefined,
       items: item.items?.map((i) => this.updateItemsByActiveItem(i, activeItem))
     }
   }

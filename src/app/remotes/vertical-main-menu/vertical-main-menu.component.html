@@ -5,43 +5,7 @@
 @if (active) {
   <p-panelMenu [hidden]="hidden" [model]="menu?.items ?? []" multiple="true">
     <ng-template #item let-item>
-      <!-- general look&feel of the menu items -->
-      @let menuItemStyle = 'p-2x flex w-full ocx-vertical-menu-item ';
-      <div class="flex items-center w-full">
-        @if (item.routerLink) {
-          <a
-            [id]="item.id"
-            [class]="menuItemStyle + 'cursor-pointer'"
-            [safeRouterLink]="item.routerLink"
-            [target]="item.target"
-          >
-            @if (item.icon) {
-              <span [class]="item.icon" class="mr-2"></span>
-            }
-            <span>{{ item.label }}</span>
-          </a>
-        } @else if (item.url) {
-          <a [id]="item.id" [class]="menuItemStyle + 'items-center'" [attr.href]="item.url" [target]="item.target">
-            @if (item.icon) {
-              <span [class]="item.icon" class="mr-2"></span>
-            }
-            <span>{{ item.label }}</span>
-          </a>
-        } @else {
-          <div [class]="menuItemStyle + 'flex-row justify-content-between align-items-center'">
-            <span class="flex flex-row align-items-center">
-              @if (item.icon) {
-                <span [class]="item.icon" class="mr-2"></span>
-              }
-              <span>{{ item.label }}</span>
-            </span>
-            @if (item.items) {
-              @let icon = item.expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right';
-              <span [class]="icon"></span>
-            }
-          </div>
-        }
-      </div>
+      <app-vertical-menu-item [item]="item"></app-vertical-menu-item>
     </ng-template>
   </p-panelMenu>
 }

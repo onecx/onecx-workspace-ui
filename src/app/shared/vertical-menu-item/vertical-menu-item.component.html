@@ -1,0 +1,38 @@
+@let itm = item();
+@if (itm) {
+  <!-- general look&feel of the menu items -->
+  @let menuItemStyle = 'p-2x flex w-full ocx-vertical-menu-item ';
+  @if (itm.routerLink) {
+    <a
+      [id]="itm.id"
+      [class]="menuItemStyle + 'cursor-pointer'"
+      [safeRouterLink]="itm.routerLink"
+      [target]="itm.target ?? '_self'"
+    >
+      @if (itm.icon) {
+        <span [class]="itm.icon" class="mr-2"></span>
+      }
+      <span>{{ itm.label }}</span>
+    </a>
+  } @else if (itm.url) {
+    <a [id]="itm.id" [class]="menuItemStyle + 'items-center'" [attr.href]="itm.url" [target]="itm.target">
+      @if (itm.icon) {
+        <span [class]="itm.icon" class="mr-2"></span>
+      }
+      <span>{{ itm.label }}</span>
+    </a>
+  } @else {
+    <div [class]="menuItemStyle + 'flex-row justify-content-between align-items-center'">
+      <span class="flex flex-row align-items-center">
+        @if (itm.icon) {
+          <span [class]="itm.icon" class="mr-2"></span>
+        }
+        <span>{{ itm.label }}</span>
+      </span>
+      @if (itm.items) {
+        @let icon = itm.expanded ? 'pi-chevron-down' : 'pi-chevron-right';
+        <span [class]="'ml-2 pi ' + icon"></span>
+      }
+    </div>
+  }
+}
