@@ -1,9 +1,5 @@
 import { NgModule } from '@angular/core'
-import { CommonModule } from '@angular/common'
 import { RouterModule, Routes } from '@angular/router'
-
-import { DividerModule } from 'primeng/divider'
-import { PickListModule } from 'primeng/picklist'
 
 import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
 
@@ -30,13 +26,6 @@ const routes: Routes = [
   }
 ]
 @NgModule({
-  imports: [
-    CommonModule,
-    AngularAcceleratorModule,
-    [RouterModule.forChild(routes)],
-    SharedModule,
-    DividerModule,
-    PickListModule
-  ]
+  imports: [AngularAcceleratorModule, [RouterModule.forChild(routes)], SharedModule]
 })
 export class WorkspaceDetailModule {}

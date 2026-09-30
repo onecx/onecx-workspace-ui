@@ -1,6 +1,11 @@
 @let version = versionInfo$ | async;
 @if (version) {
-  <div class="w-full pr-2 text-right" aria-label="Version Information" role="note">
+  <div
+    class="w-full pr-2 text-right"
+    aria-label="Version Information"
+    role="note"
+    style="color: var(--menu-item-text-color)"
+  >
     <span aria-label="Workspace" pTooltip="Workspace" tooltipPosition="top" tooltipEvent="hover" role="note">
       {{ version.workspaceName }}
     </span>

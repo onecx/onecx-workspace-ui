@@ -1,29 +1,13 @@
 @let items = menuItems();
 @if (items.length > 0) {
   <ul class="m-0 p-0 sm:ml-2 p-panelmenu list-none flex flex-row column-gap-3 row-gap-2 align-items-center">
-    @for (item of items; track $index; let i = $index) {
-      <li class="ap-menuitem flex">
-        <!-- Angular 19 issue with native routerLink, using special directive -->
-        @if (item.routerLink) {
-          <a
-            [id]="'ws_footer_menu_' + item.id + '_link'"
-            class="p-2 p-menuitem-link cursor-pointer"
-            [safeRouterLink]="item.routerLink"
-            [target]="item.target ?? '_self'"
-          >
-            {{ item.label }}
-          </a>
-        }
-        @if (item.url) {
-          <a
-            [id]="'ws_footer_menu_' + item.id + '_href'"
-            class="p-2 p-menuitem-link"
-            [attr.href]="item.url"
-            [target]="item.target"
-          >
-            {{ item.label }}
-          </a>
-        }
+    @for (item of items; track $index) {
+      <li class="p-menuitem flex">
+        <app-vertical-menu-item
+          [item]="item"
+          [id]="'ws_footer_menu_' + item.id + '_link'"
+          styleClass="p-2 p-menuitem-link"
+        ></app-vertical-menu-item>
       </li>
     }
   </ul>

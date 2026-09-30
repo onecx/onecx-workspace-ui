@@ -8,7 +8,7 @@
       [class]="(styleClass() ?? '') + menuItemStyle"
       [safeRouterLink]="itm.routerLink"
       [target]="itm.target ?? '_self'"
-      [pTooltip]="title() ?? itm.title ?? ''"
+      [pTooltip]="title() ?? itm.tooltip ?? ''"
       tooltipPosition="bottom"
       tooltipEvent="hover"
     >
@@ -23,7 +23,7 @@
       [class]="(styleClass() ?? '') + menuItemStyle"
       [href]="itm.url"
       [target]="itm.target ?? '_self'"
-      [pTooltip]="title() ?? itm.title ?? ''"
+      [pTooltip]="title() ?? itm.tooltip ?? ''"
       tooltipPosition="bottom"
       tooltipEvent="hover"
     >
@@ -35,7 +35,7 @@
   } @else {
     <div
       [class]="(styleClass() ?? '') + menuItemStyle + 'flex-row justify-content-between align-items-center'"
-      [pTooltip]="title() ?? itm.title ?? ''"
+      [pTooltip]="title() ?? itm.tooltip ?? ''"
       tooltipPosition="bottom"
       tooltipEvent="hover"
     >

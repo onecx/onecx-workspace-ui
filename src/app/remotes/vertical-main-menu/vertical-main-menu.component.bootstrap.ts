@@ -1,6 +1,7 @@
 import { importProvidersFrom } from '@angular/core'
 import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
+import { provideRouter } from '@angular/router'
 import { TranslateLoader, MissingTranslationHandler } from '@ngx-translate/core'
 import { ReplaySubject } from 'rxjs'
 
@@ -23,6 +24,7 @@ bootstrapRemoteComponent(OneCXVerticalMainMenuComponent, 'ocx-vertical-main-menu
     provide: REMOTE_COMPONENT_CONFIG,
     useValue: new ReplaySubject<RemoteComponentConfig>(1)
   },
+  provideRouter([]),
   provideHttpClient(withInterceptorsFromDi()),
   importProvidersFrom(AngularAcceleratorModule, AngularAuthModule, BrowserAnimationsModule),
   provideTranslationPathFromMeta(import.meta.url, 'assets/i18n/'),

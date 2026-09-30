@@ -1,5 +1,4 @@
 import {
-  APP_INITIALIZER,
   Component,
   EventEmitter,
   Input,
@@ -7,7 +6,8 @@ import {
   OnChanges,
   OnInit,
   OnDestroy,
-  NO_ERRORS_SCHEMA
+  NO_ERRORS_SCHEMA,
+  inject
 } from '@angular/core'
 import { TranslateService } from '@ngx-translate/core'
 import { Observable, Subject, catchError, finalize, map, of } from 'rxjs'
@@ -38,14 +38,18 @@ export function slotInitializer(slotService: SlotService) {
   standalone: true,
   schemas: [NO_ERRORS_SCHEMA],
   imports: [SharedModule, OcxChipComponent, WorkspaceRoleDetailComponent],
-  providers: [
-    { provide: APP_INITIALIZER, useFactory: slotInitializer, deps: [SLOT_SERVICE], multi: true },
-    { provide: SLOT_SERVICE, useExisting: SlotService }
-  ],
+  providers: [{ provide: SLOT_SERVICE, useExisting: SlotService }],
   templateUrl: './workspace-roles.component.html',
   styleUrls: ['./workspace-roles.component.scss']
 })
 export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
+  private readonly workspaceService = inject(WorkspaceService)
+  private readonly user = inject(UserService)
+  private readonly slotService = inject(SlotService)
+  private readonly wRoleApi = inject(WorkspaceRolesAPIService)
+  private readonly translate = inject(TranslateService)
+  private readonly msgService = inject(PortalMessageService)
+
   @Input() workspace!: Workspace | undefined
   // data: the receiving of workspace and iam roles are complete decoupled (no combineLatest possible)
   private readonly destroy$ = new Subject()
@@ -86,14 +90,9 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
   public roleListEmitter = new EventEmitter<IAMRole[]>()
   public componentPermissions: string[] = []
 
-  constructor(
-    private readonly workspaceService: WorkspaceService,
-    private readonly user: UserService,
-    private readonly slotService: SlotService,
-    private readonly wRoleApi: WorkspaceRolesAPIService,
-    private readonly translate: TranslateService,
-    private readonly msgService: PortalMessageService
-  ) {
+  constructor() {}
+
+  public ngOnInit(): void {
     Promise.all([
       this.user.hasPermission('WORKSPACE_ROLE#EDIT'),
       this.user.hasPermission('WORKSPACE_ROLE#CREATE'),
@@ -103,11 +102,8 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
       this.hasCreatePermission = permCreate
       this.hasDeletePermission = permDelete
     })
-
     this.prepareQuickFilter()
   }
-
-  public ngOnInit(): void {}
 
   public ngOnChanges(changes: SimpleChanges): void {
     if (this.workspace && changes['workspace']) {

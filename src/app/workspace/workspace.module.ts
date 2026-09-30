@@ -6,7 +6,6 @@ import { providePermissionService } from '@onecx/angular-utils'
 import { LabelResolver } from 'src/app/shared/label.resolver'
 
 import { WorkspaceSearchComponent } from './workspace-search/workspace-search.component'
-import { WorkspaceDetailComponent } from './workspace-detail/workspace-detail.component'
 
 const routes: Routes = [
   {
@@ -16,7 +15,7 @@ const routes: Routes = [
   },
   {
     path: ':name',
-    component: WorkspaceDetailComponent,
+    loadChildren: () => import('./workspace-detail/workspace-detail.module').then((m) => m.WorkspaceDetailModule),
     runGuardsAndResolvers: 'paramsChange',
     data: {
       breadcrumb: 'BREADCRUMBS.DETAIL',
@@ -28,7 +27,7 @@ const routes: Routes = [
   }
 ]
 @NgModule({
-  imports: [WorkspaceSearchComponent, WorkspaceDetailComponent, RouterModule.forChild(routes)],
+  imports: [WorkspaceSearchComponent, RouterModule.forChild(routes)],
   providers: [...providePermissionService()]
 })
 export class WorkspaceModule {}

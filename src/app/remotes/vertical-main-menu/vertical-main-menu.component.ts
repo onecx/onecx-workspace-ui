@@ -41,7 +41,6 @@ import { EventsTopic, NavigatedEventPayload } from '@onecx/integration-interface
 import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
 import { MenuService } from 'src/app/shared/services/menu.service'
-import { VerticalMenuItemComponent } from 'src/app/shared/vertical-menu-item/vertical-menu-item.component'
 import { environment } from 'src/environments/environment'
 
 export interface WorkspaceMenuItems {
@@ -55,14 +54,7 @@ const MENU_MODE = 'static'
 @Component({
   selector: 'app-vertical-main-menu',
   standalone: true,
-  imports: [
-    AsyncPipe,
-    AngularAcceleratorModule,
-    AngularRemoteComponentsModule,
-    TranslateModule,
-    PanelMenuModule,
-    VerticalMenuItemComponent
-  ],
+  imports: [AsyncPipe, AngularAcceleratorModule, AngularRemoteComponentsModule, TranslateModule, PanelMenuModule],
   providers: [{ provide: REMOTE_COMPONENT_CONFIG, useValue: new ReplaySubject<string>(1) }],
   templateUrl: './vertical-main-menu.component.html',
   styleUrls: ['./vertical-main-menu.component.scss']

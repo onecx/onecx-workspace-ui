@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, EventEmitter, inject, Input, OnChanges } from '@angular/core'
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { AsyncPipe, Location } from '@angular/common'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { BehaviorSubject, catchError, first, map, Observable, of, ReplaySubject } from 'rxjs'
 
 import {

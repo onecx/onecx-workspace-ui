@@ -11,7 +11,8 @@ import { SafeLinkDirective } from 'src/app/shared/safe-link.directive'
   selector: 'app-vertical-menu-item',
   standalone: true,
   imports: [AngularAcceleratorModule, SafeLinkDirective, TooltipModule, TranslateModule],
-  templateUrl: './vertical-menu-item.component.html'
+  templateUrl: './vertical-menu-item.component.html',
+  styleUrls: ['./vertical-menu-item.component.scss']
 })
 export class VerticalMenuItemComponent {
   public readonly item = input<MenuItem | undefined>(undefined)

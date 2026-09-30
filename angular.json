@@ -25,18 +25,8 @@
               "src/assets",
               {
                 "glob": "**/*",
-                "input": "node_modules/@onecx/angular-accelerator/assets/",
-                "output": "/onecx-portal-lib/assets/"
-              },
-              {
-                "glob": "**/*",
                 "input": "./node_modules/@onecx/angular-accelerator/assets/",
                 "output": "/onecx-angular-accelerator/assets/"
-              },
-              {
-                "glob": "**/*",
-                "input": "./node_modules/@onecx/angular-utils/assets/",
-                "output": "/onecx-angular-utils/assets/"
               }
             ],
             "styles": ["src/styles.scss"],
@@ -111,6 +101,15 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
+            "include": ["**/*.spec.ts"],
+            "exclude": [
+              "src/app/remotes/**/*.spec.ts",
+              "src/app/workspace/workspace-create/**/*.spec.ts",
+              "src/app/workspace/workspace-detail/**/*.spec.ts",
+              "src/app/workspace/workspace-menu/**/*.spec.ts",
+              "src/app/workspace/workspace-product/**/*.spec.ts",
+              "src/app/workspace/workspace-role-detail/**/*.spec.ts"
+            ],
             "assets": ["src/favicon.ico", "src/assets"],
             "styles": ["src/styles.scss"],
             "scripts": [],

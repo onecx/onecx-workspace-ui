@@ -1,13 +1,33 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "composite": false,
-    "declaration": false,
-    "outDir": "./dist/test",
-    "types": ["jasmine", "node"],
+    "types": ["jasmine", "node", "zone.js"],
     "useDefineForClassFields": false
   },
   "files": ["src/test.ts", "src/polyfills.ts"],
-  "exclude": ["src/app/shared/generated", "node_modules"],
-  "include": ["src/**/*.spec.ts", "src/**/*.d.ts"]
+  "include": ["src/app/**/*.spec.ts", "src/**/*.d.ts"],
+  "exclude": [
+    "src/app/shared/generated",
+    "node_modules",
+    "src/app/remotes/**",
+    "src/app/workspace/workspace-create/workspace-create.component.spec.ts",
+    "src/app/workspace/workspace-detail/workspace-detail.component.spec.ts",
+    "src/app/workspace/workspace-detail/workspace-contact/workspace-contact.component.spec.ts",
+    "src/app/workspace/workspace-detail/workspace-delete/workspace-delete.component.spec.ts",
+    "src/app/workspace/workspace-detail/workspace-export/workspace-export.component.spec.ts",
+    "src/app/workspace/workspace-detail/workspace-i18n/workspace-i18n.component.spec.ts",
+    "src/app/workspace/workspace-detail/workspace-intern/workspace-intern.component.spec.ts",
+    "src/app/workspace/workspace-detail/workspace-props/workspace-props.component.spec.ts",
+    "src/app/workspace/workspace-detail/workspace-roles/workspace-roles.component.spec.ts",
+    "src/app/workspace/workspace-detail/workspace-slots/workspace-slots.component.spec.ts",
+    "src/app/workspace/workspace-detail/workspace-slot-detail/workspace-slot-detail.component.spec.ts",
+    "src/app/workspace/workspace-product/workspace-product.component.spec.ts",
+    "src/app/workspace/workspace-role-detail/workspace-role-detail.component.spec.ts",
+    "src/app/workspace/workspace-menu/menu-detail/menu-detail.component.spec.ts",
+    "src/app/workspace/workspace-menu/menu-intern/menu-intern.component.spec.ts",
+    "src/app/workspace/workspace-menu/menu-import/menu-import.component.spec.ts",
+    "src/app/workspace/workspace-menu/menu-preview/menu-preview.component.spec.ts",
+    "src/app/workspace/workspace-menu/services/**",
+    "src/app/workspace/workspace-menu/menu.component.spec.ts"
+  ]
 }

@@ -35,7 +35,6 @@ import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
 import { MenuService } from 'src/app/shared/services/menu.service'
 import { environment } from 'src/environments/environment'
-import { VerticalMenuItemComponent } from 'src/app/shared/vertical-menu-item/vertical-menu-item.component'
 
 export function slotInitializer(slotService: SlotService) {
   return () => slotService.init()
@@ -52,8 +51,7 @@ const MENU_MODE = 'static'
     RouterModule,
     AccordionModule,
     TranslateModule,
-    PanelMenuModule,
-    VerticalMenuItemComponent
+    PanelMenuModule
   ],
   providers: [{ provide: SLOT_SERVICE, useExisting: SlotService }],
   templateUrl: './user-sidebar-menu.component.html',

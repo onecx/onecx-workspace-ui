@@ -21,13 +21,13 @@ import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
 import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
 import { Utils } from 'src/app/shared/utils'
-import { SafeLinkDirective } from 'src/app/shared/safe-link.directive'
+import { VerticalMenuItemComponent } from 'src/app/shared/vertical-menu-item/vertical-menu-item.component'
 import { environment } from 'src/environments/environment'
 
 @Component({
   selector: 'app-ocx-footer-menu',
   standalone: true,
-  imports: [AngularAcceleratorModule, AngularRemoteComponentsModule, TranslateModule, SafeLinkDirective],
+  imports: [AngularAcceleratorModule, AngularRemoteComponentsModule, TranslateModule, VerticalMenuItemComponent],
   providers: [{ provide: REMOTE_COMPONENT_CONFIG, useValue: new ReplaySubject<string>(1) }],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './footer-menu.component.html',

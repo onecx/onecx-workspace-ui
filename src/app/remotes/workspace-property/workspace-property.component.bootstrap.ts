@@ -27,8 +27,8 @@ bootstrapRemoteComponent(
       provide: REMOTE_COMPONENT_CONFIG,
       useValue: new ReplaySubject<RemoteComponentConfig>(1)
     },
-    importProvidersFrom(AngularAcceleratorModule, AngularAuthModule, BrowserAnimationsModule),
     provideHttpClient(withInterceptorsFromDi()),
+    importProvidersFrom(AngularAcceleratorModule, AngularAuthModule, BrowserAnimationsModule),
     provideTranslationPathFromMeta(import.meta.url, 'assets/i18n/'),
     provideTranslateServiceForRoot({
       isolate: true,

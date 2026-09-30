@@ -3,12 +3,24 @@
 @let menu = menuItems$ | async;
 
 @if (active) {
+  <p-panelMenu
+    [style]="{
+      '--panelmenu-header-bg': 'var(--menu-bg-color)',
+      '--panelmenu-header-hover-bg': 'var(--menu-item-hover-bg-color)',
+      '--panelmenu-header-active-bg': 'var(--menu-active-item-bg-color)',
+      '--panelmenu-header-active-hover-bg': 'var(--menu-item-hover-bg-color)',
+      '--panelmenu-content-bg': 'var(--menu-bg-color)'
+    }"
+    [hidden]="hidden"
+    multiple="true"
+    [model]="menu?.items ?? []"
+  ></p-panelMenu>
+
+  <!--
   <p-panelMenu [hidden]="hidden" [model]="menu?.items ?? []" multiple="true">
     <ng-template #item let-item>
       <app-vertical-menu-item [item]="item" styleClassLabel="w-12rem"></app-vertical-menu-item>
-      <!--
-       white-space-nowrap overflow-hidden text-overflow-ellipsis
-       -->
     </ng-template>
   </p-panelMenu>
+  -->
 }
