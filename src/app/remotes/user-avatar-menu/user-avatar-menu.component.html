@@ -78,8 +78,9 @@
     </li>
 
     <!-- user-profile menu -->
-    <ng-container *ngIf="userMenu$ | async as userMenu">
-      @for (item of userMenu; track item; let i = $index) {
+    @let items = userMenu$ | async;
+    @if (items) {
+      @for (item of items; track item; let i = $index) {
         <li [id]="'ws_user_avatar_menu_list_item_' + (i + 1)" class="ocx-topbar-action-panel-item">
           <app-vertical-menu-item
             [item]="item"
@@ -89,6 +90,6 @@
           ></app-vertical-menu-item>
         </li>
       }
-    </ng-container>
+    }
   </ul>
 </div>

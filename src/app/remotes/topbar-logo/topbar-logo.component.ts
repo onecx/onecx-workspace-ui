@@ -13,10 +13,10 @@ import { AppConfigService } from '@onecx/angular-integration-interface'
 
 import { RefType } from 'src/app/shared/generated'
 import { MenuMode, MenuService } from 'src/app/shared/services/menu.service'
-import { ResizedEventType } from '../../shared/resized-events/v1/resized-event-type'
-import { ResizedEventsTopic } from '../../shared/resized-events/v1/resized-events.topic'
-import { SlotGroupResizedEvent } from '../../shared/resized-events/v1/slot-groups-resized-type'
-import { SlotResizedEvent } from '../../shared/resized-events/v1/slots-resized-type'
+import { ResizedEventType } from 'src/app/shared/resized-events/v1/resized-event-type'
+import { ResizedEventsTopic } from 'src/app/shared/resized-events/v1/resized-events.topic'
+import { SlotGroupResizedEvent } from 'src/app/shared/resized-events/v1/slot-groups-resized-type'
+import { SlotResizedEvent } from 'src/app/shared/resized-events/v1/slots-resized-type'
 
 import { OneCXCurrentWorkspaceLogoComponent } from '../current-workspace-logo/current-workspace-logo.component'
 
@@ -74,11 +74,11 @@ export class OneCXTopbarLogoComponent implements ocxRemoteComponent, ocxRemoteWe
   }
 
   // initialize this component as remote
-  public ocxInitRemoteComponent(config: RemoteComponentConfig): void {
-    this.remoteComponentConfig.next(config)
-    this.appConfigService.init(config.baseUrl)
+  public ocxInitRemoteComponent(rcConfig: RemoteComponentConfig): void {
+    this.remoteComponentConfig.next(rcConfig)
+    this.appConfigService.init(rcConfig.baseUrl)
     this.initializeContainerStyles()
-    /*
+    /* TODO
     this.themeApi.configuration = new Configuration({
       basePath: Location.joinWithSlash(config.baseUrl, environment.apiPrefix)
     })*/

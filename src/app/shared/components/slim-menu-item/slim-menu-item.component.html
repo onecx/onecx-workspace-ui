@@ -1,25 +1,26 @@
-<ng-container *ngIf="item as item">
+@let itm = item;
+@if (itm) {
   <ng-container
     [ngTemplateOutlet]="itemTemplate"
     [ngTemplateOutletContext]="{ $implicit: item, index: index }"
   ></ng-container>
 
   <!-- ITEM CONTENT via TEMPLATE -->
-
   <ng-template #itemTemplate let-item let-index="index">
-    <ng-container *ngIf="item.type === ItemType.ROUTER_LINK">
-      <ng-container *ngTemplateOutlet="routerLinkTemplate; context: { $implicit: item, index: index }"></ng-container>
-    </ng-container>
-    <ng-container *ngIf="item.type === ItemType.URL">
-      <ng-container *ngTemplateOutlet="urlTemplate; context: { $implicit: item, index: index }"></ng-container>
-    </ng-container>
-    <ng-container *ngIf="item.type === ItemType.ACTION">
-      <ng-container *ngTemplateOutlet="actionTemplate; context: { $implicit: item, index: index }"></ng-container>
-    </ng-container>
+    @switch (item.type) {
+      @case (ItemType.ROUTER_LINK) {
+        <ng-container *ngTemplateOutlet="routerLinkTemplate; context: { $implicit: item, index: index }"></ng-container>
+      }
+      @case (ItemType.URL) {
+        <ng-container *ngTemplateOutlet="urlTemplate; context: { $implicit: item, index: index }"></ng-container>
+      }
+      @case (ItemType.ACTION) {
+        <ng-container *ngTemplateOutlet="actionTemplate; context: { $implicit: item, index: index }"></ng-container>
+      }
+    }
   </ng-template>
 
   <!-- TEMPLATE DEFINITIONS -->
-
   <ng-template #routerLinkTemplate let-item let-index="index">
     <a
       pRipple
@@ -70,7 +71,7 @@
   </ng-template>
 
   <ng-template #textTemplate let-item>
-    <ng-container *ngIf="activeMode === SlimMenuMode.SLIM_PLUS">
+    @if (activeMode === SlimMenuMode.SLIM_PLUS) {
       @let whitespace_included = item.label?.match(wsRegExp);
       <div
         class="slim-menu-list-item-text text-center"
@@ -78,7 +79,7 @@
       >
         {{ item.label }}
       </div>
-    </ng-container>
+    }
   </ng-template>
 
   <ng-template #iconTemplate let-item>
@@ -88,4 +89,4 @@
       aria-hidden="true"
     ></i>
   </ng-template>
-</ng-container>
+}

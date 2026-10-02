@@ -18,10 +18,10 @@ const MENU_MODE = 'static'
 
 @Component({
   selector: 'app-toggle-menu-button',
-  templateUrl: './toggle-menu-button.component.html',
-  styleUrl: './toggle-menu-button.component.scss',
   standalone: true,
-  imports: [AsyncPipe, TranslateModule, TooltipModule, RippleModule]
+  imports: [AsyncPipe, TranslateModule, TooltipModule, RippleModule],
+  templateUrl: './toggle-menu-button.component.html',
+  styleUrls: ['./toggle-menu-button.component.scss']
 })
 @UntilDestroy()
 export class OneCXToggleMenuButtonComponent implements ocxRemoteWebcomponent {

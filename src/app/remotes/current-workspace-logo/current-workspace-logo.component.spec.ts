@@ -1,13 +1,12 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
-import { CommonModule } from '@angular/common'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { NoopAnimationsModule } from '@angular/platform-browser/animations'
+import { provideNoopAnimations } from '@angular/platform-browser/animations'
+import { ReplaySubject, firstValueFrom } from 'rxjs'
 import { TranslateTestingModule } from 'ngx-translate-testing'
-import { ReplaySubject } from 'rxjs'
 
-import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
+import { RemoteComponentConfig, REMOTE_COMPONENT_CONFIG, SlotService } from '@onecx/angular-remote-components'
+import { SlotServiceMock } from '@onecx/angular-remote-components/mocks'
 import { AppStateServiceMock, provideAppStateServiceMock } from '@onecx/angular-integration-interface/mocks'
 import { Workspace } from '@onecx/integration-interface'
 
@@ -23,6 +22,16 @@ const workspace1: Partial<Workspace> = {
 }
 
 describe('OneCXCurrentWorkspaceLogoComponent', () => {
+  // the component injects this token - it must be provided (a ReplaySubject, like the real host)
+  const rcConfig = new ReplaySubject<RemoteComponentConfig>(1)
+  const defaultRCConfig: RemoteComponentConfig = {
+    appId: 'appId',
+    productName: 'prodName',
+    baseUrl: 'base',
+    permissions: ['permission']
+  }
+  rcConfig.next(defaultRCConfig)
+
   let mockAppStateService: AppStateServiceMock
 
   function setUp() {
@@ -32,39 +41,32 @@ describe('OneCXCurrentWorkspaceLogoComponent', () => {
     return { fixture, component }
   }
 
-  let baseUrlSubject: ReplaySubject<any>
-  beforeEach(() => {
-    baseUrlSubject = new ReplaySubject<any>(1)
-    TestBed.configureTestingModule({
-      declarations: [],
+  beforeEach(async () => {
+    // keep the component's real imports (AngularRemoteComponentsModule / CommonModule /
+    // AngularAcceleratorModule) so [ocxSrc] and the async pipe resolve without NO_ERRORS_SCHEMA
+    await TestBed.configureTestingModule({
       imports: [
+        OneCXCurrentWorkspaceLogoComponent,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
-        }).withDefaultLanguage('en'),
-        NoopAnimationsModule
+        }).withDefaultLanguage('en')
       ],
-      schemas: [NO_ERRORS_SCHEMA],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
+        provideNoopAnimations(),
         provideAppStateServiceMock(),
-        { provide: BASE_URL, useValue: baseUrlSubject }
+        { provide: REMOTE_COMPONENT_CONFIG, useValue: rcConfig },
+        { provide: SlotService, useClass: SlotServiceMock }
       ]
-    })
-      .overrideComponent(OneCXCurrentWorkspaceLogoComponent, {
-        set: {
-          imports: [TranslateTestingModule, CommonModule],
-          providers: []
-        }
-      })
-      .compileComponents()
+    }).compileComponents()
 
-    baseUrlSubject.next('base_url_mock')
     mockAppStateService = TestBed.inject(AppStateServiceMock)
     mockAppStateService.currentWorkspace$.publish({
       workspaceName: workspace1.workspaceName,
-      logoUrl: workspace1.logoUrl
+      logoUrl: workspace1.logoUrl,
+      logoSmallImageUrl: workspace1.logoSmallImageUrl
     } as Workspace)
   })
 
@@ -90,15 +92,19 @@ describe('OneCXCurrentWorkspaceLogoComponent', () => {
       expect(component.ocxInitRemoteComponent).toHaveBeenCalledWith(mockConfig)
     })
 
-    it('should init remote component', (done: DoneFn) => {
+    it('should forward the config to the REMOTE_COMPONENT_CONFIG token', async () => {
       const { component } = setUp()
+      const mockConfig: RemoteComponentConfig = {
+        appId: 'appId',
+        productName: 'prodName',
+        permissions: ['permission'],
+        baseUrl: 'base_url'
+      }
 
-      component.ocxInitRemoteComponent({ baseUrl: 'base_url' } as RemoteComponentConfig)
+      component.ocxInitRemoteComponent(mockConfig)
 
-      baseUrlSubject.asObservable().subscribe((item) => {
-        expect(item).toEqual('base_url')
-        done()
-      })
+      const config = await firstValueFrom(rcConfig)
+      expect(config).toEqual(mockConfig)
     })
   })
 

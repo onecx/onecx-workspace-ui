@@ -158,8 +158,9 @@
           id="ws_detail_props_item_base_url"
           class="w-full pt-3 pb-2 text-responsive"
           formControlName="baseUrl"
-          [attr.aria-label]="'WORKSPACE.BASE_URL' | translate"
-          [pTooltip]="'WORKSPACE.TOOLTIPS.BASE_URL' | translate"
+          [escape]="false"
+          [ariaLabel]="('WORKSPACE.TOOLTIPS.BASE_URL' | translate) + ('VALIDATION.HINTS.FORMAT_BASE_URL' | translate)"
+          [pTooltip]="('WORKSPACE.TOOLTIPS.BASE_URL' | translate) + ('VALIDATION.HINTS.FORMAT_BASE_URL' | translate)"
           tooltipPosition="top"
           tooltipEvent="hover"
         />
@@ -190,15 +191,6 @@
       <!--p-inputgroup-addon class="bg-primary">
       </p-inputgroup-addon-->
     </p-inputgroup>
-    <label
-      *ngIf="editMode"
-      class="ocx-control-hint block"
-      style="color: var(--emphasis-medium)"
-      for="ws_detail_props_item_base_url_link"
-      aria-hidden="true"
-    >
-      {{ 'VALIDATION.HINTS.FORMAT_BASE_URL' | translate }}
-    </label>
   </article>
 
   <article class="w-full" [attr.aria-label]="'WORKSPACE.HOME_PAGE' | translate">
@@ -232,23 +224,19 @@
         target="_blank"
         [href]="prepareProductUrl(inputHomePage.value)"
         (click)="$event.stopPropagation()"
-        [attr.aria-label]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
-        [pTooltip]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
+        [escape]="false"
+        [attr.aria-label]="
+          ('ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate) + ('VALIDATION.HINTS.FORMAT_HOME_PAGE' | translate)
+        "
+        [pTooltip]="
+          ('ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate) + ('VALIDATION.HINTS.FORMAT_HOME_PAGE' | translate)
+        "
         tooltipPosition="right"
         tooltipEvent="hover"
         role="link"
       >
       </a>
     </p-inputgroup>
-    <label
-      *ngIf="editMode"
-      class="ocx-control-hint block"
-      style="color: var(--emphasis-medium)"
-      for="ws_detail_props_item_home_page_link"
-      aria-hidden="true"
-    >
-      {{ 'VALIDATION.HINTS.FORMAT_HOME_PAGE' | translate }}
-    </label>
   </article>
 
   <article class="w-full" [attr.aria-label]="'WORKSPACE.RSS_FEED_URL' | translate">
@@ -261,8 +249,13 @@
           id="ws_detail_props_item_rssFeedUrl"
           class="w-full pt-3 pb-2 text-responsive"
           formControlName="rssFeedUrl"
-          [attr.aria-label]="'WORKSPACE.RSS_FEED_URL' | translate"
-          [pTooltip]="'WORKSPACE.TOOLTIPS.RSS_FEED_URL' | translate"
+          [escape]="false"
+          [ariaLabel]="
+            ('WORKSPACE.TOOLTIPS.RSS_FEED_URL' | translate) + ('VALIDATION.HINTS.FORMAT_FEED_URL' | translate)
+          "
+          [pTooltip]="
+            ('WORKSPACE.TOOLTIPS.RSS_FEED_URL' | translate) + ('VALIDATION.HINTS.FORMAT_FEED_URL' | translate)
+          "
           tooltipPosition="top"
           tooltipEvent="hover"
         />
@@ -283,15 +276,6 @@
         />
       </p-inputgroup-addon>
     </p-inputgroup>
-    <label
-      *ngIf="editMode"
-      class="ocx-control-hint block"
-      style="color: var(--emphasis-medium)"
-      for="ws_detail_props_item_rssFeedUrl"
-      aria-hidden="true"
-    >
-      {{ 'VALIDATION.HINTS.FORMAT_FEED_URL' | translate }}
-    </label>
   </article>
 
   <!-- LOGO -->
@@ -352,12 +336,15 @@
             class="w-full pt-3 pb-2 text-responsive"
             id="ws_detail_props_item_logo_url"
             formControlName="logoUrl"
-            [ariaLabel]="'IMAGE.LOGO_URL' | translate"
-            [pTooltip]="'IMAGE.TOOLTIPS.URL' | translate"
+            [escape]="false"
+            [ariaLabel]="('IMAGE.LOGO' | translate) + ':  ' + ('IMAGE.TOOLTIPS.URL' | translate)"
+            [pTooltip]="('IMAGE.TOOLTIPS.URL' | translate) + ('VALIDATION.HINTS.FORMAT_IMAGE_URL' | translate)"
             tooltipPosition="top"
             tooltipEvent="hover"
           />
-          <label for="ws_detail_props_item_logo_url" aria-hidden="true">{{ 'IMAGE.LOGO_URL' | translate }}</label>
+          <label for="ws_detail_props_item_logo_url" aria-hidden="true">
+            {{ 'IMAGE.LOGO_URL' | translate }}
+          </label>
         </p-floatlabel>
         <p-inputgroup-addon>
           <p-button
@@ -372,15 +359,6 @@
           />
         </p-inputgroup-addon>
       </p-inputgroup>
-      <label
-        *ngIf="editMode"
-        class="ocx-control-hint block"
-        style="color: var(--emphasis-medium)"
-        for="ws_detail_props_item_logo_url"
-        aria-hidden="true"
-      >
-        {{ 'VALIDATION.HINTS.FORMAT_IMAGE_URL' | translate }}
-      </label>
     </div>
   </article>
 
@@ -447,8 +425,9 @@
             class="w-full pt-3 pb-2 text-responsive"
             id="ws_detail_props_item_logo_small_url"
             formControlName="smallLogoUrl"
-            [attr.aria-label]="'IMAGE.LOGO_URL' | translate"
-            [pTooltip]="'IMAGE.TOOLTIPS.URL' | translate"
+            [escape]="false"
+            [ariaLabel]="('IMAGE.LOGO' | translate) + ':  ' + ('IMAGE.TOOLTIPS.URL' | translate)"
+            [pTooltip]="('IMAGE.TOOLTIPS.URL' | translate) + ('VALIDATION.HINTS.FORMAT_IMAGE_URL' | translate)"
             tooltipPosition="top"
             tooltipEvent="hover"
           />
@@ -469,15 +448,6 @@
           />
         </p-inputgroup-addon>
       </p-inputgroup>
-      <label
-        *ngIf="editMode"
-        class="ocx-control-hint block"
-        style="color: var(--emphasis-medium)"
-        for="ws_detail_props_item_logo_small_url"
-        aria-hidden="true"
-      >
-        {{ 'VALIDATION.HINTS.FORMAT_IMAGE_URL' | translate }}
-      </label>
     </div>
   </article>
 

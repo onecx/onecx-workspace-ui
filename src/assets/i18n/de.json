@@ -715,10 +715,10 @@
     "FORM_INVALID": "Das Formular enthält ungültige Werte.",
     "HINTS": {
       "FORMAT_URL": "Format: ",
-      "FORMAT_BASE_URL": "Format: /pfad-zum-workspace",
-      "FORMAT_FEED_URL": "Format: http(s)://pfad-zum-feed",
-      "FORMAT_IMAGE_URL": "Format: http(s)://pfad-zum-bild",
-      "FORMAT_HOME_PAGE": "Format: /pfad-zur-registrierten-app"
+      "FORMAT_BASE_URL": "<br/>Format: /pfad-zum-workspace",
+      "FORMAT_FEED_URL": "<br/>Format: http(s)://pfad-zum-feed",
+      "FORMAT_IMAGE_URL": "<br/>Format: http(s)://path-to-image",
+      "FORMAT_HOME_PAGE": "<br/>Format: /pfad-zur-registrierten-app"
     },
     "ERRORS": {
       "APP_MODULE.PATH_ALREADY_USED": "Dieser Modulpfade wurde bereits verwendet. Bitte einen Pfad wählen der für die Applikation eindeutig ist.",

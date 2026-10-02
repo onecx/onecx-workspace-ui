@@ -1,19 +1,17 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core'
-import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing'
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
-import { ActivatedRoute, ActivatedRouteSnapshot, provideRouter, Router } from '@angular/router'
+import { FormControl, FormGroup, Validators } from '@angular/forms'
+import { provideRouter, Router } from '@angular/router'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of, throwError } from 'rxjs'
-import { ConfirmationService } from 'primeng/api'
-import { DropdownModule } from 'primeng/dropdown'
+import { provideNoopAnimations } from '@angular/platform-browser/animations'
 
+import { SlotService } from '@onecx/angular-remote-components'
+import { SlotServiceMock } from '@onecx/angular-remote-components/mocks'
 import { PortalMessageService, ThemeService } from '@onecx/angular-integration-interface'
-import { APP_CONFIG } from '@onecx/angular-accelerator'
 
 import { ProductAPIService, Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
-import { environment } from 'src/environments/environment'
 import { Theme, WorkspaceCreateComponent } from './workspace-create.component'
 
 const workspace: Workspace = {
@@ -29,61 +27,63 @@ const themesOrg: Theme[] = [
   { name: 'theme2', displayName: 'Theme 2' }
 ]
 
-class MockRouter {
-  navigate = jasmine.createSpy('navigate')
+class MockThemeService {
+  currentTheme$ = { asObservable: () => of({ name: 'theme' }) }
 }
 
 describe('WorkspaceCreateComponent', () => {
   let component: WorkspaceCreateComponent
   let fixture: ComponentFixture<WorkspaceCreateComponent>
-  const mockRouter = new MockRouter()
-
-  const wApiServiceSpy = { createWorkspace: jasmine.createSpy('createWorkspace').and.returnValue(of({})) }
-  const productServiceSpy = {
-    searchAvailableProducts: jasmine.createSpy('searchAvailableProducts').and.returnValue(of({}))
-  }
-  class MockThemeService {
-    currentTheme$ = { asObservable: () => of({ name: 'theme' }) }
-  }
   let mockThemeService: MockThemeService
-  const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
-  const mockActivatedRouteSnapshot: Partial<ActivatedRouteSnapshot> = { params: { id: 'mockId' } }
-  const mockActivatedRoute: Partial<ActivatedRoute> = {
-    snapshot: mockActivatedRouteSnapshot as ActivatedRouteSnapshot
-  }
+  let router: Router
+  // WorkspaceAPIService / ProductAPIService / PortalMessageService are providedIn 'any', so the
+  // component holds its own instances - root-level providers would be shadowed, thus spy on the
+  // actual instances the component uses
+  let createWorkspaceSpy: jasmine.Spy
+  let searchAvailableProductsSpy: jasmine.Spy
+  let messageSuccessSpy: jasmine.Spy
+  let messageErrorSpy: jasmine.Spy
 
   beforeEach(waitForAsync(() => {
     mockThemeService = new MockThemeService()
+    // keep the component's real imports (SharedModule / ImageContainerComponent) so the template
+    // resolves all PrimeNG/translate elements without NO_ERRORS_SCHEMA
     TestBed.configureTestingModule({
-      declarations: [WorkspaceCreateComponent],
       imports: [
-        ReactiveFormsModule,
-        DropdownModule,
+        WorkspaceCreateComponent,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
       providers: [
-        provideHttpClientTesting(),
         provideHttpClient(),
+        provideHttpClientTesting(),
+        provideNoopAnimations(),
         provideRouter([{ path: '', component: WorkspaceCreateComponent }]),
-        { provide: APP_CONFIG, useValue: environment },
-        { provide: Router, useValue: mockRouter },
-        { provide: ActivatedRoute, useValue: mockActivatedRoute },
-        { provide: PortalMessageService, useValue: msgServiceSpy },
-        { provide: WorkspaceAPIService, useValue: wApiServiceSpy },
-        { provide: ProductAPIService, useValue: productServiceSpy },
         { provide: ThemeService, useValue: mockThemeService },
-        ConfirmationService
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
+        { provide: SlotService, useClass: SlotServiceMock }
+      ]
     }).compileComponents()
   }))
 
   beforeEach(() => {
     fixture = TestBed.createComponent(WorkspaceCreateComponent)
     component = fixture.componentInstance
+    router = TestBed.inject(Router)
+    createWorkspaceSpy = spyOn(
+      (component as unknown as { workspaceApi: WorkspaceAPIService }).workspaceApi,
+      'createWorkspace'
+    )
+    createWorkspaceSpy.and.returnValue(of({}))
+    searchAvailableProductsSpy = spyOn(
+      (component as unknown as { productApi: ProductAPIService }).productApi,
+      'searchAvailableProducts'
+    )
+    searchAvailableProductsSpy.and.returnValue(of({}))
+    messageSuccessSpy = spyOn((component as unknown as { message: PortalMessageService }).message, 'success')
+    messageErrorSpy = spyOn((component as unknown as { message: PortalMessageService }).message, 'error')
+
     component.formGroup = new FormGroup({
       name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
       displayName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
@@ -101,53 +101,56 @@ describe('WorkspaceCreateComponent', () => {
     fixture.detectChanges()
   })
 
-  afterEach(() => {
-    wApiServiceSpy.createWorkspace.calls.reset()
-    productServiceSpy.searchAvailableProducts.calls.reset()
-    msgServiceSpy.success.calls.reset()
-    msgServiceSpy.error.calls.reset()
-  })
-
   it('should create', () => {
-    mockThemeService.currentTheme$ = { asObservable: () => of({ name: 'theme' }) }
     expect(component).toBeTruthy()
 
     component.currentTheme$.subscribe()
   })
 
   it('should create a workspace', () => {
-    wApiServiceSpy.createWorkspace.and.returnValue(of({ resource: workspace }))
+    createWorkspaceSpy.and.returnValue(of({ resource: workspace }))
+    const navigateSpy = spyOn(router, 'navigate')
 
     component.saveWorkspace()
 
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.MESSAGE.CREATE.OK' })
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['./name'], { relativeTo: mockActivatedRoute })
+    expect(navigateSpy).toHaveBeenCalledWith(['./name'], { relativeTo: jasmine.anything() })
+    expect(messageSuccessSpy).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.MESSAGE.CREATE.OK' })
+  })
+
+  it('should not navigate when workspace creation fails', () => {
+    const errorResponse = { status: 400, statusText: 'Error on creationg a workspace' }
+    createWorkspaceSpy.and.returnValue(throwError(() => errorResponse))
+    spyOn(console, 'error')
+    const navigateSpy = spyOn(router, 'navigate')
+
+    component.saveWorkspace()
+
+    expect(messageErrorSpy).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.MESSAGE.CREATE.NOK' })
+    expect(navigateSpy).not.toHaveBeenCalled()
   })
 
   it('should display error when workspace creation fails', () => {
     const errorResponse = { status: 400, statusText: 'Error on creationg a workspace' }
-    wApiServiceSpy.createWorkspace.and.returnValue(throwError(() => errorResponse))
+    createWorkspaceSpy.and.returnValue(throwError(() => errorResponse))
     spyOn(console, 'error')
 
     component.saveWorkspace()
 
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.MESSAGE.CREATE.NOK' })
+    expect(messageErrorSpy).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.MESSAGE.CREATE.NOK' })
     expect(console.error).toHaveBeenCalledWith('createWorkspace', errorResponse)
   })
 
-  it('should change fetchingLogoUrl on inputChange: valid value', fakeAsync(() => {
+  it('should change fetchingLogoUrl on inputChange', () => {
     const event = {
       target: { value: 'newLogoValue' }
     } as unknown as Event
 
     component.inputChange(event)
 
-    tick(1000)
-
     expect(component.fetchingLogoUrl).toBe('newLogoValue')
-  }))
+  })
 
-  it('should change fetchingLogoUrl on inputChange: empty value', fakeAsync(() => {
+  it('should change fetchingLogoUrl on inputChange: url value', () => {
     const url = 'https://host/path-to-assets/images/logo.svg'
     const event = {
       target: { value: url }
@@ -156,15 +159,13 @@ describe('WorkspaceCreateComponent', () => {
 
     component.inputChange(event)
 
-    tick(1000)
-
     expect(component.fetchingLogoUrl).toBe(url)
-  }))
+  })
 
   describe('onOpenProductPathes', () => {
     it('should load product urls', () => {
       const products = [{ baseUrl: '/productBaseUrl-1' }, { baseUrl: '/productBaseUrl-2' }]
-      productServiceSpy.searchAvailableProducts.and.returnValue(of({ stream: products }))
+      searchAvailableProductsSpy.and.returnValue(of({ stream: products }))
 
       component.onOpenProductPathes([])
 
@@ -178,12 +179,12 @@ describe('WorkspaceCreateComponent', () => {
 
       component.onOpenProductPathes(paths)
 
-      expect().nothing()
+      expect(searchAvailableProductsSpy).not.toHaveBeenCalled()
     })
 
     it('should load product paths failed', () => {
       const errorResponse = { status: 400, statusText: 'Error on loading product paths' }
-      productServiceSpy.searchAvailableProducts.and.returnValue(throwError(() => errorResponse))
+      searchAvailableProductsSpy.and.returnValue(throwError(() => errorResponse))
       spyOn(console, 'error')
 
       component.onOpenProductPathes([])

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, NO_ERRORS_SCHEMA, Output } from '@angular/core'
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { BehaviorSubject, ReplaySubject } from 'rxjs'
@@ -21,7 +21,6 @@ import { environment } from 'src/environments/environment'
   selector: 'app-current-workspace-logo',
   standalone: true,
   imports: [AngularRemoteComponentsModule, CommonModule, AngularAcceleratorModule],
-  schemas: [NO_ERRORS_SCHEMA],
   templateUrl: './current-workspace-logo.component.html',
   styleUrls: ['./current-workspace-logo.component.scss']
 })

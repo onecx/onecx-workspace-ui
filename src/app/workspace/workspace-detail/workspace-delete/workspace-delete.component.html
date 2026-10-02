@@ -14,13 +14,13 @@
     <div class="flex column-gap-3 row-gap-1 justify-content-start align-items-center">
       <div class="pi pi-question-circle text-3xl danger-action-text"></div>
       <div class="flex flex-column row-gap-3">
-        <p-message
-          *ngIf="workspace?.mandatory"
-          id="th_delete_reject_mandatory_message"
-          severity="info"
-          [text]="'ACTIONS.DELETE.WORKSPACE.MESSAGE.REJECT_MANDATORY' | translate"
-        ></p-message>
-        @if (!workspace?.mandatory) {
+        @if (workspace?.mandatory) {
+          <p-message
+            id="th_delete_reject_mandatory_message"
+            severity="info"
+            [text]="'ACTIONS.DELETE.WORKSPACE.MESSAGE.REJECT_MANDATORY' | translate"
+          ></p-message>
+        } @else if (!workspace?.mandatory) {
           <div class="flex flex-column row-gap-2">
             <div id="ws_delete_message" class="font-bold">
               {{ 'ACTIONS.DELETE.WORKSPACE.MESSAGE.QUESTION' | translate }}
@@ -33,16 +33,16 @@
                 ({{ workspace?.name }})
               </div>
             </div>
-            @if (!workspace?.operator) {
+            @if (workspace?.operator) {
+              <p-message
+                id="ws_delete_operator_hint"
+                severity="info"
+                styleClass="mt-1"
+                [text]="'ACTIONS.DELETE.WORKSPACE.MESSAGE.INFO_OPERATOR' | translate"
+              ></p-message>
+            } @else {
               <div>{{ 'ACTIONS.DELETE.INFO' | translate }}</div>
             }
-            <p-message
-              *ngIf="workspace?.operator"
-              id="ws_delete_operator_hint"
-              severity="info"
-              styleClass="mt-1"
-              [text]="'ACTIONS.DELETE.WORKSPACE.MESSAGE.INFO_OPERATOR' | translate"
-            ></p-message>
           </div>
         }
       </div>

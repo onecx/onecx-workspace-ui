@@ -1,14 +1,13 @@
-<ng-container
-  *ngIf="{
+@let vm =
+  {
     activeMode: activeMode$ | async,
     isHidden: isHidden$ | async,
     avatarImageLoaded: avatarImageLoaded$ | async,
     displayName: displayName$ | async,
     menuItems: menuItems$ | async
-  } as vm"
->
+  };
+@if (vm && vm.activeMode && vm.activeMode !== Mode.INACTIVE) {
   <div
-    *ngIf="vm.activeMode && vm.activeMode !== Mode.INACTIVE"
     id="ws_slim_user_sidebar"
     class="slim-user-menu"
     [ngClass]="{
@@ -42,24 +41,27 @@
               [outputs]="{ imageLoaded: avatarImageLoadedEmitter }"
             >
             </ocx-slot>
-            <div *ngIf="vm.avatarImageLoaded === undefined" class="p-2 slim-user-menu-header-icon pi pi-user"></div>
+            @if (vm.avatarImageLoaded === undefined) {
+              <div class="p-2 slim-user-menu-header-icon pi pi-user"></div>
+            }
           </div>
         </ng-template>
         <ng-template pTemplate="content">
-          <ul
-            *ngIf="vm.menuItems"
-            id="ws_slim_user_sidebar_menu_list"
-            class="m-0 p-0 slim-user-menu-list flex flex-column align-items-center justify-content-center list-none"
-          >
-            <li
-              app-slim-menu-item
-              *ngFor="let item of vm.menuItems; let i = index"
-              [item]="item"
-              [id]="'ws_slim_user_sidebar_menu_list_item_' + (i + 1)"
-              [index]="i"
-              [activeMode]="vm.activeMode"
-            ></li>
-          </ul>
+          @if (vm.menuItems) {
+            <ul
+              id="ws_slim_user_sidebar_menu_list"
+              class="m-0 p-0 slim-user-menu-list flex flex-column align-items-center justify-content-center list-none"
+            >
+              <li
+                app-slim-menu-item
+                *ngFor="let item of vm.menuItems; let i = index"
+                [item]="item"
+                [id]="'ws_slim_user_sidebar_menu_list_item_' + (i + 1)"
+                [index]="i"
+                [activeMode]="vm.activeMode"
+              ></li>
+            </ul>
+          }
         </ng-template>
         <ng-template pTemplate="icon">
           <!-- Display nothing -->
@@ -67,4 +69,4 @@
       </p-accordionTab>
     </p-accordion>
   </div>
-</ng-container>
+}

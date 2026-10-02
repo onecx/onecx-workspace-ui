@@ -20,14 +20,9 @@
       </p-floatlabel>
     </div>
     <div>
-      <ocx-slot
-        *ngIf="isThemeComponentDefined$ | async"
-        [name]="slotName"
-        [inputs]="{ dataType: 'themes' }"
-        [outputs]="{ themes: themesEmitter }"
-      >
-      </ocx-slot>
-
+      @if (isThemeComponentDefined$ | async) {
+        <ocx-slot [name]="slotName" [inputs]="{ dataType: 'themes' }" [outputs]="{ themes: themesEmitter }"> </ocx-slot>
+      }
       @let themes = (themes$ | async) ?? [importTheme];
       @if (themes) {
         <div>

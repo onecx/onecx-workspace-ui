@@ -17,11 +17,12 @@
     [cancelLabel]="'ACTIONS.CANCEL' | translate"
     [chooseLabel]="'ACTIONS.CHOOSE' | translate"
   />
-  <p-message
-    *ngIf="importError"
-    styleClass="mt-2"
-    id="ws_import_choose_file_upload_error"
-    severity="error"
-    [text]="validationErrorCause"
-  ></p-message>
+  @if (importError) {
+    <p-message
+      styleClass="mt-2"
+      id="ws_import_choose_file_upload_error"
+      severity="error"
+      [text]="validationErrorCause"
+    ></p-message>
+  }
 </div>

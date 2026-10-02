@@ -55,40 +55,44 @@
           </ocx-slot>
           <div class="flex flex-row flex-wrap gap-3 justify-content-between">
             <p-floatlabel variant="on" class="w-12 sm:w-5x">
-              <p-dropdown
-                *ngIf="(themes$ | async) ?? [currentTheme$ | async] as themes"
-                id="ws_create_form_theme"
-                formControlName="theme"
-                styleClass="w-full input-field-correction"
-                optionLabel="displayName"
-                optionValue="name"
-                [options]="themes"
-                [showClear]="true"
-                [ariaLabel]="'WORKSPACE.THEME' | translate"
-                [pTooltip]="'WORKSPACE.TOOLTIPS.THEME' | translate"
-                tooltipPosition="top"
-                tooltipEvent="hover"
-              >
-              </p-dropdown>
+              @let themes = (themes$ | async) ?? [currentTheme$ | async];
+              @if (themes) {
+                <p-dropdown
+                  id="ws_create_form_theme"
+                  formControlName="theme"
+                  styleClass="w-full input-field-correction"
+                  optionLabel="displayName"
+                  optionValue="name"
+                  [options]="themes"
+                  [showClear]="true"
+                  [ariaLabel]="'WORKSPACE.THEME' | translate"
+                  [pTooltip]="'WORKSPACE.TOOLTIPS.THEME' | translate"
+                  tooltipPosition="top"
+                  tooltipEvent="hover"
+                >
+                </p-dropdown>
+              }
               <label class="ocx-required-label" for="ws_create_form_theme" aria-hidden="true">
                 {{ 'WORKSPACE.THEME' | translate }}
               </label>
             </p-floatlabel>
             <p-floatlabel variant="on" class="w-12 sm:w-7x">
-              <p-dropdown
-                *ngIf="(productPaths$ | async) ?? [] as paths"
-                id="ws_create_form_home_page"
-                formControlName="homePage"
-                styleClass="w-full input-field-correction"
-                (onClick)="onOpenProductPathes(paths)"
-                [options]="paths"
-                [showClear]="true"
-                [ariaLabel]="'WORKSPACE.HOME_PAGE' | translate"
-                [pTooltip]="'WORKSPACE.TOOLTIPS.HOME_PAGE' | translate"
-                tooltipPosition="top"
-                tooltipEvent="hover"
-              >
-              </p-dropdown>
+              @let paths = (productPaths$ | async) ?? [];
+              @if (paths) {
+                <p-dropdown
+                  id="ws_create_form_home_page"
+                  formControlName="homePage"
+                  styleClass="w-full input-field-correction"
+                  (onClick)="onOpenProductPathes(paths)"
+                  [options]="paths"
+                  [showClear]="true"
+                  [ariaLabel]="'WORKSPACE.HOME_PAGE' | translate"
+                  [pTooltip]="'WORKSPACE.TOOLTIPS.HOME_PAGE' | translate"
+                  tooltipPosition="top"
+                  tooltipEvent="hover"
+                >
+                </p-dropdown>
+              }
               <label for="ws_create_form_home_page" aria-hidden="true">{{ 'WORKSPACE.HOME_PAGE' | translate }} </label>
             </p-floatlabel>
           </div>
