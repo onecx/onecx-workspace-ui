@@ -6,7 +6,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of, ReplaySubject, throwError } from 'rxjs'
 
-import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
+import { RemoteComponentConfig } from '@onecx/angular-remote-components'
 
 import { SearchWorkspacesResponse, Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
 import { OneCXWorkspaceDataComponent } from './workspace-data.component'
@@ -48,14 +48,7 @@ describe('OneCXWorkspaceDataComponent', () => {
         }).withDefaultLanguage('en'),
         NoopAnimationsModule
       ],
-      providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
-        {
-          provide: BASE_URL,
-          useValue: baseUrlSubject
-        }
-      ]
+      providers: [provideHttpClient(), provideHttpClientTesting()]
     })
       .overrideComponent(OneCXWorkspaceDataComponent, {
         set: {

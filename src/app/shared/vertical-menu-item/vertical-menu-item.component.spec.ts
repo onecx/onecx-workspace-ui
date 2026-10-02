@@ -40,7 +40,7 @@ function setItem(fixture: ComponentFixture<TestHostComponent>, item: MenuItem | 
   fixture.detectChanges()
 }
 
-fdescribe('VerticalMenuItemComponent', () => {
+describe('VerticalMenuItemComponent', () => {
   let fixture: ComponentFixture<TestHostComponent>
   let host: TestHostComponent
   let router: Router

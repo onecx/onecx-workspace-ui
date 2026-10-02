@@ -2,7 +2,7 @@ import { TestBed, waitForAsync } from '@angular/core/testing'
 import { CommonModule } from '@angular/common'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { NoopAnimationsModule } from '@angular/platform-browser/animations'
+import { provideNoopAnimations } from '@angular/platform-browser/animations'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { ReplaySubject, firstValueFrom } from 'rxjs'
 
@@ -60,12 +60,12 @@ describe('OneCXVersionInfoComponent', () => {
         TranslateTestingModule.withTranslations({
           de: require('./../../../assets/i18n/de.json'),
           en: require('./../../../assets/i18n/en.json')
-        }).withDefaultLanguage('en'),
-        NoopAnimationsModule
+        }).withDefaultLanguage('en')
       ],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
+        provideNoopAnimations(),
         provideAppStateServiceMock(),
         provideConfigurationServiceMock(),
         { provide: REMOTE_COMPONENT_CONFIG, useValue: rcConfig }

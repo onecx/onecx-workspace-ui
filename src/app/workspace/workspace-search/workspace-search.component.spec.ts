@@ -23,7 +23,7 @@ const currentWorkspace: Partial<Workspace> = {
   displayName: 'Workspace 1'
 }
 
-fdescribe('WorkspaceSearchComponent', () => {
+describe('WorkspaceSearchComponent', () => {
   let component: WorkspaceSearchComponent
   let fixture: ComponentFixture<WorkspaceSearchComponent>
 

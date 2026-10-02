@@ -6,9 +6,7 @@ import { BehaviorSubject, catchError, first, map, Observable, of, ReplaySubject 
 import {
   AngularRemoteComponentsModule,
   ocxRemoteComponent,
-  ocxRemoteWebcomponent,
-  SLOT_SERVICE,
-  SlotService
+  ocxRemoteWebcomponent
 } from '@onecx/angular-remote-components'
 import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
 import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
@@ -30,7 +28,6 @@ type DataType = 'logo' | 'workspaces' | 'workspace'
   selector: 'app-workspace-data',
   standalone: true,
   imports: [AngularAcceleratorModule, AngularRemoteComponentsModule, AsyncPipe],
-  providers: [{ provide: SLOT_SERVICE, useExisting: SlotService }],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './workspace-data.component.html'
 })
@@ -38,7 +35,6 @@ export class OneCXWorkspaceDataComponent implements ocxRemoteComponent, ocxRemot
   private readonly rcConfig = inject<ReplaySubject<RemoteComponentConfig>>(REMOTE_COMPONENT_CONFIG)
   private readonly appConfigService = inject(AppConfigService)
   private readonly destroyRef = inject(DestroyRef)
-  private readonly slotService = inject(SlotService)
   private readonly workspaceApi = inject(WorkspaceAPIService)
   // input
   @Input() refresh: boolean | undefined = false // on any change here a reload is triggered
@@ -72,7 +68,6 @@ export class OneCXWorkspaceDataComponent implements ocxRemoteComponent, ocxRemot
   public ocxInitRemoteComponent(config: RemoteComponentConfig): void {
     this.appConfigService.init(config.baseUrl)
     this.rcConfig.next(config)
-    this.slotService.init()
     this.workspaceApi.configuration = new Configuration({
       basePath: Location.joinWithSlash(config.baseUrl, environment.apiPrefix)
     })

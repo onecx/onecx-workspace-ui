@@ -26,7 +26,7 @@ const workspace1: Partial<Workspace> = {
   displayName: 'Workspace 1'
 }
 
-describe('OneCXDisplayWorkspacePropertyComponent', () => {
+fdescribe('OneCXDisplayWorkspacePropertyComponent', () => {
   const rcConfig = new ReplaySubject<RemoteComponentConfig>(1)
   const defaultRCConfig = {
     productName: 'prodName',

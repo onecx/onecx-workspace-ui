@@ -8,9 +8,7 @@ import { TooltipModule } from 'primeng/tooltip'
 import {
   AngularRemoteComponentsModule,
   ocxRemoteComponent,
-  ocxRemoteWebcomponent,
-  SLOT_SERVICE,
-  SlotService
+  ocxRemoteWebcomponent
 } from '@onecx/angular-remote-components'
 import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
 import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
@@ -20,13 +18,11 @@ import { AppStateService, ConfigurationService, UserService } from '@onecx/angul
   selector: 'app-ocx-display-workspace-property',
   standalone: true,
   imports: [AngularAcceleratorModule, AngularRemoteComponentsModule, AsyncPipe, TooltipModule, TranslateModule],
-  providers: [{ provide: SLOT_SERVICE, useExisting: SlotService }],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './workspace-property.component.html'
 })
 export class OneCXDisplayWorkspacePropertyComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
   private readonly rcConfig = inject<ReplaySubject<RemoteComponentConfig>>(REMOTE_COMPONENT_CONFIG)
-  private readonly slotService = inject(SlotService)
   private readonly appState = inject(AppStateService)
   public readonly config = inject(ConfigurationService)
   public readonly userService = inject(UserService)
@@ -46,7 +42,6 @@ export class OneCXDisplayWorkspacePropertyComponent implements ocxRemoteComponen
   // initialize this component as remote
   public ocxInitRemoteComponent(config: RemoteComponentConfig): void {
     this.rcConfig.next(config)
-    this.slotService.init()
   }
 
   public property$: Observable<string | undefined> = combineLatest([

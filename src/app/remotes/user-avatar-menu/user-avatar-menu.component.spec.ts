@@ -4,7 +4,7 @@ import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { provideRouter, Router } from '@angular/router'
-import { NoopAnimationsModule } from '@angular/platform-browser/animations'
+import { provideNoopAnimations } from '@angular/platform-browser/animations'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { firstValueFrom, of, ReplaySubject, throwError } from 'rxjs'
 import { ButtonModule } from 'primeng/button'
@@ -33,7 +33,7 @@ import { VerticalMenuItemComponent } from 'src/app/shared/vertical-menu-item/ver
 import { OneCXUserAvatarMenuHarness } from './user-avatar-menu.harness'
 import { OneCXUserAvatarMenuComponent } from './user-avatar-menu.component'
 
-fdescribe('OneCXUserAvatarMenuComponent', () => {
+describe('OneCXUserAvatarMenuComponent', () => {
   const menuItemApiSpy = jasmine.createSpyObj<MenuItemAPIService>('MenuItemAPIService', ['getMenuItems'])
   const rcConfig = new ReplaySubject<RemoteComponentConfig>(1)
   const defaultRCConfig: RemoteComponentConfig = {
@@ -69,12 +69,12 @@ fdescribe('OneCXUserAvatarMenuComponent', () => {
         TranslateTestingModule.withTranslations({
           de: require('../../../assets/i18n/de.json'),
           en: require('../../../assets/i18n/en.json')
-        }).withDefaultLanguage('en'),
-        NoopAnimationsModule
+        }).withDefaultLanguage('en')
       ],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
+        provideNoopAnimations(),
         provideUserServiceMock(),
         provideAppStateServiceMock(),
         provideAppConfigServiceMock(),

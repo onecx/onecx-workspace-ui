@@ -4,7 +4,7 @@ import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { provideRouter, Router, RouterModule } from '@angular/router'
-import { NoopAnimationsModule } from '@angular/platform-browser/animations'
+import { provideNoopAnimations } from '@angular/platform-browser/animations'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { ReplaySubject, of, throwError } from 'rxjs'
 import { PanelMenuModule } from 'primeng/panelmenu'
@@ -12,7 +12,7 @@ import { PrimeIcons } from 'primeng/api'
 
 import { PPanelMenuHarness } from '@onecx/angular-testing'
 import { AppStateService, Capability } from '@onecx/angular-integration-interface'
-import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
+import { RemoteComponentConfig } from '@onecx/angular-remote-components'
 
 import { MenuItemAPIService } from 'src/app/shared/generated'
 import { OneCXVerticalMainMenuComponent } from './vertical-main-menu.component'
@@ -42,14 +42,14 @@ describe('OneCXVerticalMainMenuComponent', () => {
       declarations: [],
       imports: [
         TranslateTestingModule.withTranslations({
+          de: require('../../../assets/i18n/de.json'),
           en: require('../../../assets/i18n/en.json')
-        }).withDefaultLanguage('en'),
-        NoopAnimationsModule
+        }).withDefaultLanguage('en')
       ],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        { provide: BASE_URL, useValue: baseUrlSubject },
+        provideNoopAnimations(),
         provideRouter([{ path: 'admin/welcome', component: OneCXVerticalMainMenuComponent }]),
         provideShellCapabilityServiceMock(),
         { provide: MenuService, useValue: menuServiceSpy }
