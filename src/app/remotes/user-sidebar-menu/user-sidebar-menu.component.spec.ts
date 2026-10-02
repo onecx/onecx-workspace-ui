@@ -1,52 +1,76 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { CommonModule } from '@angular/common'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
-import { provideRouter, Router, RouterModule } from '@angular/router'
+import { provideRouter, Router } from '@angular/router'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'
 import { TranslateService } from '@ngx-translate/core'
 import { TranslateTestingModule } from 'ngx-translate-testing'
-import { ReplaySubject, of, throwError } from 'rxjs'
+import { firstValueFrom, of, ReplaySubject, throwError } from 'rxjs'
 import { PanelMenuModule } from 'primeng/panelmenu'
 import { AccordionModule } from 'primeng/accordion'
 import { PrimeIcons } from 'primeng/api'
 
-import { BASE_URL, RemoteComponentConfig, SlotService } from '@onecx/angular-remote-components'
-import { AppConfigService, AppStateService, UserService } from '@onecx/angular-integration-interface'
-import { UserProfile } from '@onecx/integration-interface'
+import {
+  AngularRemoteComponentsModule,
+  RemoteComponentConfig,
+  REMOTE_COMPONENT_CONFIG,
+  SlotService
+} from '@onecx/angular-remote-components'
+import { SlotServiceMock } from '@onecx/angular-remote-components/mocks'
+import {
+  AppConfigServiceMock,
+  AppStateServiceMock,
+  provideAppConfigServiceMock,
+  provideAppStateServiceMock,
+  provideUserServiceMock,
+  UserServiceMock
+} from '@onecx/angular-integration-interface/mocks'
+import { UserProfile, Workspace } from '@onecx/integration-interface'
 
 import { MenuItemAPIService } from 'src/app/shared/generated'
+import { MenuService } from 'src/app/shared/services/menu.service'
 import { OneCXUserSidebarMenuHarness } from './user-sidebar-menu.harness'
 import { OneCXUserSidebarMenuComponent, slotInitializer } from './user-sidebar-menu.component'
-import { MenuService } from 'src/app/shared/services/menu.service'
 
 describe('OneCXUserSidebarMenuComponent', () => {
   const menuItemApiSpy = jasmine.createSpyObj<MenuItemAPIService>('MenuItemAPIService', ['getMenuItems'])
-  const menuServiceSpy = jasmine.createSpyObj<MenuService>('MenuService', ['isVisible', 'isActive'])
+  const menuServiceSpy = jasmine.createSpyObj<MenuService>('MenuService', ['isActive', 'isVisible'])
+  const rcConfig = new ReplaySubject<RemoteComponentConfig>(1)
+  const defaultRCConfig: RemoteComponentConfig = {
+    appId: 'appId',
+    productName: 'prodName',
+    baseUrl: 'base',
+    permissions: []
+  }
+  rcConfig.next(defaultRCConfig) // load default rc config (the component injects this token)
 
-  const appConfigSpy = jasmine.createSpyObj<AppConfigService>('AppConfigService', ['init'])
+  let appConfigMock: AppConfigServiceMock
+  let appStateMock: AppStateServiceMock
+  let userMock: UserServiceMock
 
   function setUp() {
     const fixture = TestBed.createComponent(OneCXUserSidebarMenuComponent)
     const component = fixture.componentInstance
     fixture.detectChanges()
-
     return { fixture, component }
   }
 
-  async function setUpWithHarness() {
+  async function setUpWithHarnessAndInit(permissions: string[] = []) {
     const { fixture, component } = setUp()
+    component.ocxInitRemoteComponent({ baseUrl: 'base_url', permissions } as RemoteComponentConfig)
+    fixture.detectChanges()
+    // userMenu$/displayName$/organization$ resolve through async pipes (translate.get, ...);
+    // flush the zone so the menu is rendered before querying the DOM.
+    await fixture.whenStable()
+    fixture.detectChanges()
     const sidebarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXUserSidebarMenuHarness)
     return { fixture, component, sidebarMenuHarness }
   }
 
-  let baseUrlSubject: ReplaySubject<any>
-  beforeEach(() => {
-    baseUrlSubject = new ReplaySubject<any>(1)
-    TestBed.configureTestingModule({
-      declarations: [],
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [
         TranslateTestingModule.withTranslations({
           en: require('../../../assets/i18n/en.json')
@@ -56,192 +80,154 @@ describe('OneCXUserSidebarMenuComponent', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        {
-          provide: BASE_URL,
-          useValue: baseUrlSubject
-        },
-        {
-          provide: AppConfigService,
-          useValue: appConfigSpy
-        },
-        provideRouter([{ path: 'admin/user-profile', component: OneCXUserSidebarMenuComponent }]),
-        { provide: MenuService, useValue: menuServiceSpy }
+        provideUserServiceMock(),
+        provideAppStateServiceMock(),
+        provideAppConfigServiceMock(),
+        { provide: MenuItemAPIService, useValue: menuItemApiSpy },
+        { provide: REMOTE_COMPONENT_CONFIG, useValue: rcConfig },
+        { provide: MenuService, useValue: menuServiceSpy },
+        provideRouter([{ path: 'admin/user-profile' }])
       ]
     })
       .overrideComponent(OneCXUserSidebarMenuComponent, {
         set: {
-          imports: [TranslateTestingModule, CommonModule, RouterModule, PanelMenuModule, AccordionModule],
-          providers: [{ provide: MenuItemAPIService, useValue: menuItemApiSpy }],
-          schemas: [NO_ERRORS_SCHEMA]
+          imports: [CommonModule, PanelMenuModule, AccordionModule, AngularRemoteComponentsModule],
+          providers: [{ provide: SlotService, useClass: SlotServiceMock }]
         }
       })
       .compileComponents()
 
-    baseUrlSubject.next('base_url_mock')
+    appConfigMock = TestBed.inject(AppConfigServiceMock)
+    appStateMock = TestBed.inject(AppStateServiceMock)
+    userMock = TestBed.inject(UserServiceMock)
+
+    appConfigMock.setProperty('REMOTES.USER_SIDEBAR_MENU.LOGOUT', 'Log out')
     menuServiceSpy.isActive.and.returnValue(of(true))
     menuServiceSpy.isVisible.and.returnValue(of(true))
-    menuItemApiSpy.getMenuItems.calls.reset()
+    menuItemApiSpy.getMenuItems.and.returnValue(of({ workspaceName: 'test-workspace', menu: [] } as any))
+
+    userMock.profile$.publish(undefined as unknown as UserProfile)
+    appStateMock.currentWorkspace$.publish({ workspaceName: 'test-workspace' } as Workspace)
   })
 
   describe('initialize', () => {
-    it('should create', () => {
-      const { component } = setUp()
-
+    it('should create', async () => {
+      const { component } = await setUpWithHarnessAndInit()
       expect(component).toBeTruthy()
     })
 
-    it('should get image loaded response', () => {
+    it('should forward the config to the REMOTE_COMPONENT_CONFIG token', async () => {
       const { component } = setUp()
+      const mockConfig: RemoteComponentConfig = {
+        appId: 'appId',
+        productName: 'prodName',
+        permissions: ['permission'],
+        baseUrl: 'base'
+      }
+
+      component.ocxRemoteComponentConfig = mockConfig
+
+      expect(await firstValueFrom(rcConfig)).toEqual(mockConfig)
+    })
+
+    it('should set the base path of the menu item api service', () => {
+      const { component } = setUp()
+
+      component.ocxInitRemoteComponent({ baseUrl: 'base_url' } as RemoteComponentConfig)
+
+      expect(menuItemApiSpy.configuration.basePath).toEqual('base_url/bff')
+    })
+
+    it('should init the app config service with the base url', async () => {
+      const { component } = await setUpWithHarnessAndInit()
+
+      expect(appConfigMock.init).toHaveBeenCalledOnceWith('base_url')
+    })
+
+    it('should set avatarImageLoaded from the avatar image slot output', async () => {
+      const { component } = await setUpWithHarnessAndInit()
+      expect(component.avatarImageLoaded).toBeUndefined()
 
       component.avatarImageLoadedEmitter.emit(true)
 
-      expect().nothing()
-    })
-  })
-
-  it('should call ocxInitRemoteComponent with the correct config', () => {
-    const { component } = setUp()
-    const mockConfig: RemoteComponentConfig = {
-      appId: 'appId',
-      productName: 'prodName',
-      permissions: ['permission'],
-      baseUrl: 'base'
-    }
-    spyOn(component, 'ocxInitRemoteComponent')
-
-    component.ocxRemoteComponentConfig = mockConfig
-
-    expect(component.ocxInitRemoteComponent).toHaveBeenCalledWith(mockConfig)
-  })
-
-  it('should init remote component', (done: DoneFn) => {
-    const { component } = setUp()
-
-    component.ocxInitRemoteComponent({
-      baseUrl: 'base_url'
-    } as RemoteComponentConfig)
-
-    expect(menuItemApiSpy.configuration.basePath).toEqual('base_url/bff')
-    baseUrlSubject.asObservable().subscribe((item) => {
-      expect(item).toEqual('base_url')
-      expect(appConfigSpy.init).toHaveBeenCalledOnceWith('base_url')
-      done()
+      expect(component.avatarImageLoaded).toBeTrue()
     })
   })
 
   describe('user section', () => {
     it('should display person displayName', async () => {
-      const userService = TestBed.inject(UserService)
-      spyOn(userService.profile$, 'asObservable').and.returnValue(
-        of({
-          userId: 'my-user-id',
-          organization: 'org',
-          person: {
-            displayName: 'My user',
-            firstName: 'Name',
-            lastName: 'Lastname'
-          }
-        }) as any
-      )
+      userMock.profile$.publish({
+        userId: 'my-user-id',
+        organization: 'org',
+        person: { displayName: 'My user', firstName: 'Name', lastName: 'Lastname' }
+      } as UserProfile)
 
-      const { sidebarMenuHarness } = await setUpWithHarness()
+      const { sidebarMenuHarness } = await setUpWithHarnessAndInit()
 
       expect(await sidebarMenuHarness.getDisplayName()).toEqual('My user')
     })
 
     it('should display person firstName and lastName when displayName unavailable', async () => {
-      const userService = TestBed.inject(UserService)
-      spyOn(userService.profile$, 'asObservable').and.returnValue(
-        of({
-          userId: 'my-user-id',
-          organization: 'org',
-          person: {
-            displayName: undefined,
-            firstName: 'Name',
-            lastName: 'Lastname'
-          }
-        }) as any
-      )
+      userMock.profile$.publish({
+        userId: 'my-user-id',
+        organization: 'org',
+        person: { displayName: undefined, firstName: 'Name', lastName: 'Lastname' }
+      } as UserProfile)
 
-      const { sidebarMenuHarness } = await setUpWithHarness()
+      const { sidebarMenuHarness } = await setUpWithHarnessAndInit()
 
       expect(await sidebarMenuHarness.getDisplayName()).toEqual('Name Lastname')
     })
 
     it('should display userId when none other user info available', async () => {
-      const userService = TestBed.inject(UserService)
-      spyOn(userService.profile$, 'asObservable').and.returnValue(
-        of({
-          userId: 'my-user-id',
-          organization: 'org',
-          person: {
-            displayName: undefined,
-            firstName: undefined,
-            lastName: undefined
-          }
-        }) as any
-      )
+      userMock.profile$.publish({
+        userId: 'my-user-id',
+        organization: 'org',
+        person: { displayName: undefined, firstName: undefined, lastName: undefined }
+      } as UserProfile)
 
-      const { sidebarMenuHarness } = await setUpWithHarness()
+      const { sidebarMenuHarness } = await setUpWithHarnessAndInit()
 
       expect(await sidebarMenuHarness.getDisplayName()).toEqual('my-user-id')
     })
 
-    it('should display guest when no user info', async () => {
-      const fixture = TestBed.createComponent(OneCXUserSidebarMenuComponent)
-      const component = fixture.componentInstance
+    it('should display guest when no user info', () => {
+      const { component } = setUp()
 
-      const result = component.determineDisplayName(undefined as unknown as UserProfile)
-
-      expect(result).toBe('Guest')
+      expect(component.determineDisplayName(undefined as unknown as UserProfile)).toBe('Guest')
     })
 
     it('should activate inline profile', () => {
-      const fixture = TestBed.createComponent(OneCXUserSidebarMenuComponent)
-      const component = fixture.componentInstance
-      const mockEvent = {
-        preventDefault: jasmine.createSpy('preventDefault')
-      } as unknown as UIEvent
+      const { component } = setUp()
+      const preventDefaultSpy = jasmine.createSpy('preventDefault')
+      const mockEvent = { preventDefault: preventDefaultSpy } as unknown as UIEvent
 
       component.onInlineProfileClick(mockEvent)
 
-      expect(component.inlineProfileActive).toBe(true)
+      expect(component.inlineProfileActive).toBeTrue()
+      expect(preventDefaultSpy).toHaveBeenCalled()
     })
 
     it('should display organization', async () => {
-      const userService = TestBed.inject(UserService)
-      spyOn(userService.profile$, 'asObservable').and.returnValue(
-        of({
-          userId: 'my-user-id',
-          organization: 'user-organization',
-          person: {
-            displayName: undefined,
-            firstName: undefined,
-            lastName: undefined
-          }
-        }) as any
-      )
+      userMock.profile$.publish({
+        userId: 'my-user-id',
+        organization: 'user-organization',
+        person: { displayName: undefined, firstName: undefined, lastName: undefined }
+      } as UserProfile)
 
-      const { sidebarMenuHarness } = await setUpWithHarness()
+      const { sidebarMenuHarness } = await setUpWithHarnessAndInit()
 
       expect(await sidebarMenuHarness.getOrg()).toEqual('user-organization')
     })
 
     it('should not display organization', async () => {
-      const userService = TestBed.inject(UserService)
-      spyOn(userService.profile$, 'asObservable').and.returnValue(
-        of({
-          userId: 'my-user-id',
-          organization: undefined,
-          person: {
-            displayName: undefined,
-            firstName: undefined,
-            lastName: undefined
-          }
-        }) as any
-      )
+      userMock.profile$.publish({
+        userId: 'my-user-id',
+        organization: undefined,
+        person: { displayName: undefined, firstName: undefined, lastName: undefined }
+      } as UserProfile)
 
-      const { sidebarMenuHarness } = await setUpWithHarness()
+      const { sidebarMenuHarness } = await setUpWithHarnessAndInit()
 
       expect(await sidebarMenuHarness.getOrg()).toBeFalsy()
     })
@@ -249,24 +235,11 @@ describe('OneCXUserSidebarMenuComponent', () => {
 
   describe('menu section', () => {
     beforeEach(() => {
-      const userService = TestBed.inject(UserService)
-      spyOn(userService.profile$, 'asObservable').and.returnValue(
-        of({
-          userId: 'my-user-id',
-          organization: 'org',
-          person: {
-            displayName: 'My user',
-            firstName: 'Name',
-            lastName: 'Lastname'
-          }
-        }) as any
-      )
-      const appStateService = TestBed.inject(AppStateService)
-      spyOn(appStateService.currentWorkspace$, 'asObservable').and.returnValue(
-        of({
-          workspaceName: 'test-workspace'
-        }) as any
-      )
+      userMock.profile$.publish({
+        userId: 'my-user-id',
+        organization: 'org',
+        person: { displayName: 'My user', firstName: 'Name', lastName: 'Lastname' }
+      } as UserProfile)
     })
 
     it('should render menu in correct positions', async () => {
@@ -302,7 +275,7 @@ describe('OneCXUserSidebarMenuComponent', () => {
         } as any)
       )
 
-      const { sidebarMenuHarness } = await setUpWithHarness()
+      const { sidebarMenuHarness } = await setUpWithHarnessAndInit()
       await sidebarMenuHarness.expandAccordion()
 
       const menu = await sidebarMenuHarness.getPanelMenu()
@@ -330,10 +303,7 @@ describe('OneCXUserSidebarMenuComponent', () => {
                   url: '/admin/user-profile',
                   position: 1,
                   external: false,
-                  i18n: {
-                    en: 'English personal info',
-                    de: 'German personal info'
-                  },
+                  i18n: { en: 'English personal info', de: 'German personal info' },
                   children: []
                 }
               ]
@@ -342,12 +312,10 @@ describe('OneCXUserSidebarMenuComponent', () => {
         } as any)
       )
 
-      const { sidebarMenuHarness } = await setUpWithHarness()
+      const { sidebarMenuHarness } = await setUpWithHarnessAndInit()
       await sidebarMenuHarness.expandAccordion()
 
-      const menu = await sidebarMenuHarness.getPanelMenu()
-      expect(menu).toBeTruthy()
-      const panels = await menu?.getAllPanels()
+      const panels = await (await sidebarMenuHarness.getPanelMenu())?.getAllPanels()
       expect(await panels![0].getText()).toEqual('English personal info')
     })
 
@@ -376,12 +344,10 @@ describe('OneCXUserSidebarMenuComponent', () => {
         } as any)
       )
 
-      const { sidebarMenuHarness } = await setUpWithHarness()
+      const { sidebarMenuHarness } = await setUpWithHarnessAndInit()
       await sidebarMenuHarness.expandAccordion()
 
-      const menu = await sidebarMenuHarness.getPanelMenu()
-      expect(menu).toBeTruthy()
-      const panels = await menu?.getAllPanels()
+      const panels = await (await sidebarMenuHarness.getPanelMenu())?.getAllPanels()
       expect(await panels![0].hasIcon(PrimeIcons.HOME)).toBeTrue()
     })
 
@@ -410,12 +376,10 @@ describe('OneCXUserSidebarMenuComponent', () => {
       )
       const router = TestBed.inject(Router)
 
-      const { sidebarMenuHarness } = await setUpWithHarness()
+      const { sidebarMenuHarness } = await setUpWithHarnessAndInit()
       await sidebarMenuHarness.expandAccordion()
 
-      const menu = await sidebarMenuHarness.getPanelMenu()
-      expect(menu).toBeTruthy()
-      const panels = await menu?.getAllPanels()
+      const panels = await (await sidebarMenuHarness.getPanelMenu())?.getAllPanels()
       await panels![0].click()
       expect(router.url).toBe('/admin/user-profile')
     })
@@ -443,12 +407,10 @@ describe('OneCXUserSidebarMenuComponent', () => {
         } as any)
       )
 
-      const { sidebarMenuHarness } = await setUpWithHarness()
+      const { sidebarMenuHarness } = await setUpWithHarnessAndInit()
       await sidebarMenuHarness.expandAccordion()
 
-      const menu = await sidebarMenuHarness.getPanelMenu()
-      expect(menu).toBeTruthy()
-      const panels = await menu?.getAllPanels()
+      const panels = await (await sidebarMenuHarness.getPanelMenu())?.getAllPanels()
       expect(await panels![0].getLink()).toBe('https://www.google.com/')
     })
 
@@ -494,12 +456,11 @@ describe('OneCXUserSidebarMenuComponent', () => {
         } as any)
       )
 
-      const { sidebarMenuHarness } = await setUpWithHarness()
+      const { sidebarMenuHarness } = await setUpWithHarnessAndInit()
       await sidebarMenuHarness.expandAccordion()
 
-      const menu = await sidebarMenuHarness.getPanelMenu()
-      expect(menu).toBeTruthy()
-      const panels = await menu?.getAllPanels()
+      const panels = await (await sidebarMenuHarness.getPanelMenu())?.getAllPanels()
+      expect(panels?.length).toBe(2)
 
       const firstItemChildren = await panels![0].getChildren()
       expect(firstItemChildren.length).toBe(1)
@@ -509,15 +470,18 @@ describe('OneCXUserSidebarMenuComponent', () => {
     })
 
     it('should only show logout on failed menu fetch call', async () => {
-      menuItemApiSpy.getMenuItems.and.returnValue(throwError(() => {}))
+      menuItemApiSpy.getMenuItems.and.returnValue(throwError(() => new Error('unable to load menu')))
       spyOn(console, 'error')
 
-      const { sidebarMenuHarness } = await setUpWithHarness()
-      await sidebarMenuHarness.expandAccordion()
+      const { fixture, sidebarMenuHarness } = await setUpWithHarnessAndInit()
 
-      const menu = await sidebarMenuHarness.getPanelMenu()
-      expect(menu).toBeTruthy()
-      const panels = await menu?.getAllPanels()
+      // the component retries the failing call with a delay before giving up
+      await new Promise((resolve) => setTimeout(resolve, 1800))
+      await fixture.whenStable()
+      fixture.detectChanges()
+
+      await sidebarMenuHarness.expandAccordion()
+      const panels = await (await sidebarMenuHarness.getPanelMenu())?.getAllPanels()
 
       expect(panels?.length).toBe(1)
       expect(await panels![0].getText()).toBe('Log out')
@@ -527,68 +491,41 @@ describe('OneCXUserSidebarMenuComponent', () => {
 
   describe('logout panel', () => {
     beforeEach(() => {
-      const userService = TestBed.inject(UserService)
-      spyOn(userService.profile$, 'asObservable').and.returnValue(
-        of({
-          userId: 'my-user-id',
-          organization: 'org',
-          person: {
-            displayName: 'My user',
-            firstName: 'Name',
-            lastName: 'Lastname'
-          }
-        }) as any
-      )
-      const appStateService = TestBed.inject(AppStateService)
-      spyOn(appStateService.currentWorkspace$, 'asObservable').and.returnValue(
-        of({
-          workspaceName: 'test-workspace'
-        }) as any
-      )
-      menuItemApiSpy.getMenuItems.and.returnValue(
-        of({
-          workspaceName: 'test-workspace',
-          menu: []
-        } as any)
-      )
+      userMock.profile$.publish({
+        userId: 'my-user-id',
+        organization: 'org',
+        person: { displayName: 'My user', firstName: 'Name', lastName: 'Lastname' }
+      } as UserProfile)
     })
 
     it('should have correct icon for logout', async () => {
-      const { sidebarMenuHarness } = await setUpWithHarness()
+      const { sidebarMenuHarness } = await setUpWithHarnessAndInit()
       await sidebarMenuHarness.expandAccordion()
 
-      const menu = await sidebarMenuHarness.getPanelMenu()
-      expect(menu).toBeTruthy()
-      const panels = await menu?.getAllPanels()
+      const panels = await (await sidebarMenuHarness.getPanelMenu())?.getAllPanels()
 
       expect(await panels![0].hasIcon(PrimeIcons.POWER_OFF)).toBeTrue()
     })
 
     it('should default to Logout', async () => {
       const translateService = TestBed.inject(TranslateService)
-      spyOn(translateService, 'get').and.returnValue(throwError(() => {}))
+      spyOn(translateService, 'get').and.returnValue(throwError(() => new Error('')))
 
-      const { sidebarMenuHarness } = await setUpWithHarness()
+      const { sidebarMenuHarness } = await setUpWithHarnessAndInit()
       await sidebarMenuHarness.expandAccordion()
 
-      const menu = await sidebarMenuHarness.getPanelMenu()
-      expect(menu).toBeTruthy()
-      const panels = await menu?.getAllPanels()
+      const panels = await (await sidebarMenuHarness.getPanelMenu())?.getAllPanels()
 
       expect(await panels![0].getText()).toEqual('Logout')
     })
 
     it('should publish event on logout click', async () => {
-      const { component, sidebarMenuHarness } = await setUpWithHarness()
+      const { component, sidebarMenuHarness } = await setUpWithHarnessAndInit()
 
       spyOn(component.eventsPublisher$, 'publish')
 
       await sidebarMenuHarness.expandAccordion()
-
-      const menu = await sidebarMenuHarness.getPanelMenu()
-      expect(menu).toBeTruthy()
-      const panels = await menu?.getAllPanels()
-
+      const panels = await (await sidebarMenuHarness.getPanelMenu())?.getAllPanels()
       await panels![0].click()
 
       expect(component.eventsPublisher$.publish).toHaveBeenCalledOnceWith({
@@ -598,14 +535,10 @@ describe('OneCXUserSidebarMenuComponent', () => {
   })
 
   describe('slotInitializer', () => {
-    let slotService: jasmine.SpyObj<SlotService>
-
-    beforeEach(() => {
-      slotService = jasmine.createSpyObj('SlotService', ['init'])
-    })
-
     it('should call SlotService.init', () => {
+      const slotService = jasmine.createSpyObj<SlotService>('SlotService', ['init'])
       const initializer = slotInitializer(slotService)
+
       initializer()
 
       expect(slotService.init).toHaveBeenCalled()
