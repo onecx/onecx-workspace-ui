@@ -79,8 +79,8 @@ describe('WorkspaceInternComponent', () => {
       component.onSave()
 
       expect(component.formGroup.valid).toBeTrue()
-      expect(component.workspace.mandatory).toBeTrue()
-      expect(component.workspace.disabled).toBeTrue()
+      expect(component.workspace?.mandatory).toBeTrue()
+      expect(component.workspace?.disabled).toBeTrue()
       expect(component.editMode).toBeFalse()
     })
   })

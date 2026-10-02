@@ -17,6 +17,4 @@ export class OcxChipComponent {
   @Input() public title: string | undefined
   @Input() public styleClass: string | undefined
   @Input() public filled = false
-
-  constructor() {}
 }

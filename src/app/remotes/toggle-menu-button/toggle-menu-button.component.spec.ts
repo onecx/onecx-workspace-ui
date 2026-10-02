@@ -18,7 +18,7 @@ import { MenuService } from 'src/app/shared/services/menu.service'
 import { OneCXToggleMenuButtonComponent } from './toggle-menu-button.component'
 import { ToggleMenuButtonHarness } from './toggle-menu-button.component.harness'
 
-fdescribe('OneCXToggleMenuButtonComponent', () => {
+describe('OneCXToggleMenuButtonComponent', () => {
   const menuServiceSpy = jasmine.createSpyObj<MenuService>('MenuService', ['isActive', 'isVisible'])
   // the component injects this token - it must be provided (a ReplaySubject, like the real host)
   const rcConfig = new ReplaySubject<RemoteComponentConfig>(1)
