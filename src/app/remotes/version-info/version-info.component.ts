@@ -51,7 +51,7 @@ export class OneCXVersionInfoComponent implements ocxRemoteComponent, ocxRemoteW
       const mfeInfo = mfe.displayName + (mfe.version ? ' ' + mfeVersion : '')
       const version: Version = {
         workspaceName: workspace.workspaceName,
-        shellInfo: hostVersion,
+        shellInfo: hostVersion === '@UNDEFINED' ? undefined : hostVersion,
         mfeInfo: mfe.displayName ? mfeInfo : '',
         separator: mfe.displayName || mfe.version ? ' - ' : ''
       }

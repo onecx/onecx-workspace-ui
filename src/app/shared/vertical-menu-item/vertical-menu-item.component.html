@@ -32,6 +32,22 @@
       }
       <span [class]="styleClassLabel() ?? ''">{{ itm.label }}</span>
     </a>
+  } @else if (itm.command) {
+    <a
+      [id]="id() ?? itm.id"
+      [class]="(styleClass() ?? '') + menuItemStyle"
+      (click)="itm.command({})"
+      (keydown.enter)="itm.command({})"
+      [target]="itm.target ?? '_self'"
+      [pTooltip]="title() ?? itm.tooltip ?? ''"
+      tooltipPosition="bottom"
+      tooltipEvent="hover"
+    >
+      @if (itm.icon) {
+        <span [class]="(styleClassIcon() ?? '') + ' mr-2 ' + itm.icon"></span>
+      }
+      <span [class]="styleClassLabel() ?? ''">{{ itm.label }}</span>
+    </a>
   } @else {
     <div
       [class]="(styleClass() ?? '') + menuItemStyle + 'flex-row justify-content-between align-items-center'"

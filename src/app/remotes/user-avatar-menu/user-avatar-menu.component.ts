@@ -1,14 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  EventEmitter,
-  inject,
-  Input,
-  OnDestroy,
-  Renderer2,
-  ViewChild
-} from '@angular/core'
+import { Component, ElementRef, EventEmitter, HostListener, inject, Input, signal } from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
 import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
@@ -72,11 +62,8 @@ export type MenuAnchorPositionConfig = 'right' | 'left'
   styleUrls: ['./user-avatar-menu.component.scss']
 })
 @UntilDestroy()
-export class OneCXUserAvatarMenuComponent
-  implements ocxRemoteComponent, ocxRemoteWebcomponent, AfterViewInit, OnDestroy
-{
+export class OneCXUserAvatarMenuComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
   private readonly remoteComponentConfig = inject<ReplaySubject<RemoteComponentConfig>>(REMOTE_COMPONENT_CONFIG)
-  private readonly renderer = inject(Renderer2)
   private readonly userService: UserService = inject(UserService)
   private readonly slotService: SlotService = inject(SlotService)
   private readonly menuItemApiService: MenuItemAPIService = inject(MenuItemAPIService)
@@ -84,16 +71,14 @@ export class OneCXUserAvatarMenuComponent
   private readonly appConfigService: AppConfigService = inject(AppConfigService)
   private readonly translateService: TranslateService = inject(TranslateService)
   private readonly menuItemService: MenuItemService = inject(MenuItemService)
+  private elementRef = inject(ElementRef)
 
-  @ViewChild('userAvatarMenuButton')
-  private readonly userAvatarMenuButton!: ElementRef<HTMLButtonElement>
+  public menuOpen = signal<boolean>(false)
 
   public userProfile$: Observable<UserProfile>
   public userMenu$: Observable<MenuItem[]>
   public eventsPublisher$: EventsPublisher = new EventsPublisher()
-  public menuOpen = false
   public permissions: string[] = []
-  public removeDocumentClickListener: (() => void) | undefined
   public menuAnchorPosition: MenuAnchorPositionConfig = 'right'
   // slot configuration: get avatar image
   public slotNameAvatarImage = 'onecx-avatar-image'
@@ -104,13 +89,26 @@ export class OneCXUserAvatarMenuComponent
   public slotNameCustomUserInfo = 'onecx-custom-user-info'
   public isCustomUserInfoComponentDefined$: Observable<boolean> = of(false) // check if a component was assigned
 
+  /**
+   * Handles global keyboard and click events to close the menu if it is open.
+   */
+  @HostListener('document:keydown.escape', ['$event']) onEscapePressed(event: Event) {
+    if (this.menuOpen()) {
+      this.menuOpen.set(false)
+    }
+  }
+  @HostListener('document:click', ['$event']) onDocumentClick(event: Event) {
+    if (!this.menuOpen()) return
+    this.menuOpen.set(false)
+    const clickedInside = this.elementRef.nativeElement.contains(event.target)
+    if (!clickedInside) this.menuOpen.set(false)
+  }
+
   constructor() {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
     this.isCustomUserInfoComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.slotNameCustomUserInfo)
     this.isAvatarImageComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.slotNameAvatarImage)
-    this.avatarImageLoadedEmitter.subscribe((data) => {
-      this.avatarImageLoaded = data
-    })
+    this.avatarImageLoadedEmitter.subscribe((data) => (this.avatarImageLoaded = data))
 
     this.userProfile$ = this.userService.profile$.pipe(
       filter((x) => x !== undefined),
@@ -167,23 +165,6 @@ export class OneCXUserAvatarMenuComponent
     )
   }
 
-  ngAfterViewInit() {
-    this.removeDocumentClickListener = this.renderer.listen('body', 'click', (event: Event) => {
-      const target = event.target
-      const buttonElement = this.userAvatarMenuButton?.nativeElement
-
-      if (!(target instanceof Node) || !buttonElement?.contains(target)) {
-        this.menuOpen = false
-      }
-    })
-  }
-
-  ngOnDestroy() {
-    if (this.removeDocumentClickListener) {
-      this.removeDocumentClickListener()
-    }
-  }
-
   @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
     this.ocxInitRemoteComponent(config)
   }
@@ -202,22 +183,9 @@ export class OneCXUserAvatarMenuComponent
     })
   }
 
-  onAvatarEnter() {
-    this.menuOpen = true
-  }
-
-  onAvatarEscape() {
-    this.menuOpen = false
-  }
-
-  onItemEscape(userAvatarMenuButton: HTMLElement) {
-    this.menuOpen = false
-    userAvatarMenuButton.focus()
-  }
-
-  public handleAvatarClick(event: Event): void {
-    event.preventDefault()
-    this.menuOpen = !this.menuOpen
+  public toggleMenu(event: Event): void {
+    event.stopPropagation()
+    this.menuOpen.set(!this.menuOpen())
   }
 
   public onLogout(): void {

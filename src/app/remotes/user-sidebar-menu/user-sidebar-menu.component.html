@@ -53,11 +53,17 @@
       <p-accordion-content>
         @let items = (userMenu$ | async) ?? [];
         @if (items && items.length > 0) {
-          <p-panelMenu [model]="items">
-            <ng-template #item let-item>
-              <!--app-vertical-menu-item [item]="item"></app-vertical-menu-item -->
-            </ng-template>
-          </p-panelMenu>
+          <p-panelMenu
+            [model]="items"
+            styleClass="shadow-none"
+            [style]="{
+              '--panelmenu-header-bg': 'var(--menu-bg-color)',
+              '--panelmenu-header-hover-bg': 'var(--menu-item-hover-bg-color)',
+              '--panelmenu-header-active-bg': 'var(--menu-active-item-bg-color)',
+              '--panelmenu-header-active-hover-bg': 'var(--menu-item-hover-bg-color)',
+              '--panelmenu-content-bg': 'var(--menu-bg-color)'
+            }"
+          ></p-panelMenu>
         }
       </p-accordion-content>
     </p-accordion-panel>

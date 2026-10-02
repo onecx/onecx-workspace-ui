@@ -1,137 +1,92 @@
-<div class="layout-topbar-item">
-  <button
+<div class="ocx-topbar-action-with-menu">
+  @let avatarIcon = avatarImageLoaded === undefined ? 'pi pi-user fs-xlarge' : '';
+  <p-button
     #userAvatarMenuButton
     id="ocx_topbar_action_user_avatar_menu"
-    class="layout-topbar-action"
+    class="ocx-topbar-action"
     pRipple
-    pButton
-    (click)="handleAvatarClick($event)"
-    (keydown.enter)="onAvatarEnter()"
-    (keydown.space)="onAvatarEnter()"
-    (keydown.escape)="onAvatarEscape()"
-    [attr.aria-label]="'REMOTES.USER_AVATAR_MENU.TOOLTIP' | translate"
+    [rounded]="true"
+    [icon]="avatarIcon"
+    (onClick)="toggleMenu($event)"
+    [ariaLabel]="'REMOTES.USER_AVATAR_MENU.TOOLTIP' | translate"
     [pTooltip]="'REMOTES.USER_AVATAR_MENU.TOOLTIP' | translate"
     tooltipPosition="bottom"
     tooltipEvent="hover"
   >
-    <i *ngIf="avatarImageLoaded === undefined" id="ocx_topbar_action_user_avatar_icon" class="pi pi-user fs-xlarge"></i>
-    <ocx-slot
-      *ngIf="isAvatarImageComponentDefined$ | async"
-      [name]="slotNameAvatarImage"
-      [inputs]="{
-        id: 'ocx_topbar_action_user_avatar_image',
-        imageType: 'medium',
-        imageStyle: 'max-height: 2.5rem; max-width: 2.5rem'
-      }"
-      [outputs]="{ imageLoaded: avatarImageLoadedEmitter }"
-    ></ocx-slot>
-  </button>
+    @if (isAvatarImageComponentDefined$ | async) {
+      <ocx-slot
+        [name]="slotNameAvatarImage"
+        [inputs]="{
+          id: 'ocx_topbar_action_user_avatar_image',
+          imageType: 'medium',
+          imageStyle: 'max-height: 2.5rem; max-width: 2.5rem'
+        }"
+        [outputs]="{ imageLoaded: avatarImageLoadedEmitter }"
+      ></ocx-slot>
+    }
+  </p-button>
 
   <!-- MENU -->
   <ul
     id="ws_user_avatar_menu_list"
-    class="layout-topbar-action-panel shadow-4 border-round-bottom fixed sm:absolute mt-2 sm:top-100 w-screen sm:w-auto"
-    [ngClass]="menuAnchorPosition + '-0'"
-    [hidden]="!menuOpen"
+    class="ocx-topbar-action-panel shadow-4 border-round-bottom fixed sm:absolute mt-2 sm:top-100 w-screen sm:w-auto"
+    [class]="menuAnchorPosition + '-0' + (menuOpen() ? '' : ' hidden')"
+    (click)="menuOpen.set(false)"
   >
     <!-- USER data from various sources:  a) OneCX user profile, b) custom data -->
-    <li
-      *ngIf="{
+    @let data =
+      {
         userProfile: userProfile$ | async,
         customComponentDefined: isCustomUserInfoComponentDefined$ | async
-      } as data"
+      };
+    <li
       id="ws_user_avatar_menu_list_item_0"
-      class="layout-topbar-action-item layout-topbar-action-item-padded cursor-auto user-info"
+      class="ocx-topbar-action-item ocx-topbar-action-item-padded cursor-auto user-info"
     >
-      <div
-        *ngIf="data.userProfile as profile"
-        class="my-1 flex flex-column flex-wrap justify-content-evenly row-gap-0 w-15rem text-center"
-        role="note"
-        [attr.aria-label]="'User Information'"
-      >
+      @let profile = data.userProfile;
+      @if (profile) {
         <div
-          id="ws_user_avatar_menu_list_item_0_user_name"
-          class="font-bold text-lg text-color-secondary"
-          [pTooltip]="profile.person.email ?? ''"
-          tooltipPosition="bottom"
-          tooltipEvent="hover"
+          class="my-1 flex flex-column flex-wrap justify-content-evenly row-gap-0 w-15rem text-center"
+          role="note"
+          [attr.aria-label]="'User Information'"
         >
-          {{ profile.person.displayName }}
+          <div
+            id="ws_user_avatar_menu_list_item_0_user_name"
+            class="font-bold text-lg text-color-secondary"
+            [pTooltip]="profile.person.email ?? ''"
+            tooltipPosition="bottom"
+            tooltipEvent="hover"
+          >
+            {{ profile.person.displayName }}
+          </div>
+          @if (profile.organization) {
+            <div
+              id="ws_user_avatar_menu_list_item_0_organization"
+              class="text-sm"
+              [pTooltip]="'REMOTES.USER_AVATAR_MENU.ORGID' | translate"
+              tooltipPosition="bottom"
+              tooltipEvent="hover"
+            >
+              {{ profile.organization }}
+            </div>
+          }
         </div>
-        <div
-          *ngIf="profile.organization"
-          id="ws_user_avatar_menu_list_item_0_organization"
-          class="text-sm"
-          [pTooltip]="'REMOTES.USER_AVATAR_MENU.ORGID' | translate"
-          tooltipPosition="bottom"
-          tooltipEvent="hover"
-        >
-          {{ profile.organization }}
-        </div>
-      </div>
-      <ocx-slot *ngIf="data.customComponentDefined" [name]="slotNameCustomUserInfo"></ocx-slot>
+      }
+      @if (data.customComponentDefined) {
+        <ocx-slot [name]="slotNameCustomUserInfo"></ocx-slot>
+      }
     </li>
 
     <!-- user-profile menu -->
     <ng-container *ngIf="userMenu$ | async as userMenu">
       @for (item of userMenu; track item; let i = $index) {
-        <li [id]="'ws_user_avatar_menu_list_item_' + (i + 1)" class="layout-topbar-action-item">
-          <a
-            *ngIf="!item.routerLink && item.url && !item.command"
-            [id]="'ws_user_avatar_menu_list_item_' + (i + 1) + '_link'"
-            class="layout-topbar-action-item-padded px-3 flex flex-row flex-nowrap align-items-center gap-2"
-            pRipple
-            [attr.href]="item.url"
-            (keydown.escape)="onItemEscape(userAvatarMenuButton)"
-          >
-            <i *ngIf="item.icon" [ngClass]="item.icon" aria-hidden="true"></i>
-            <span [id]="'ws_user_avatar_menu_list_item_' + (i + 1) + '_text'" class="white-space-nowrap">
-              {{ item.label }}
-            </span>
-          </a>
-
-          @if (item.routerLink && !item.url && !item.command) {
-            <app-vertical-menu-item
-              [item]="item"
-              [id]="'ws_user_avatar_menu_list_item_' + (i + 1) + '_link'"
-              styleClass="layout-topbar-action-item-padded"
-              styleClassLabel="white-space-nowrap"
-            ></app-vertical-menu-item>
-          }
-          <!--a
-            *ngIf="item.routerLink && !item.url && !item.command"
-            [id]="'ws_user_avatar_menu_list_item_' + (i + 1) + '_link'"
-            class="layout-topbar-action-item-padded px-3 flex flex-row flex-nowrap align-items-center gap-2"
-            pRipple
-            [routerLink]="item.routerLink"
-            (keydown.escape)="onItemEscape(userAvatarMenuButton)"
-          >
-            <i *ngIf="item.icon" [ngClass]="item.icon" aria-hidden="true"></i>
-            <span [id]="'ws_user_avatar_menu_list_item_' + (i + 1) + '_text'" class="white-space-nowrap">
-              {{ item.label }}
-            </span>
-          </a-->
-          <button
-            tabindex="0"
-            *ngIf="!item.routerLink && !item.url && item.command"
-            [id]="'ws_user_avatar_menu_list_item_logout'"
-            class="layout-topbar-action-item-padded px-3 flex flex-row flex-nowrap align-items-center gap-2 border-none cursor-pointer"
-            style="background-color: inherit; color: inherit; font-size: inherit; width: 100%"
-            pRipple
-            (click)="item.command({})"
-            (keydown.enter)="item.command({})"
-            (keydown.escape)="onItemEscape(userAvatarMenuButton)"
-          >
-            <i
-              [id]="'ws_user_avatar_menu_list_item_logout_icon'"
-              *ngIf="item.icon"
-              [ngClass]="item.icon"
-              aria-hidden="true"
-            ></i>
-            <span [id]="'ws_user_avatar_menu_list_item_logout_text'" class="white-space-nowrap">
-              {{ item.label }}
-            </span>
-          </button>
+        <li [id]="'ws_user_avatar_menu_list_item_' + (i + 1)" class="ocx-topbar-action-panel-item">
+          <app-vertical-menu-item
+            [item]="item"
+            [id]="'ws_user_avatar_menu_list_item_' + (i + 1)"
+            styleClass="ocx-topbar-action-item-padded"
+            styleClassLabel="white-space-nowrap"
+          ></app-vertical-menu-item>
         </li>
       }
     </ng-container>

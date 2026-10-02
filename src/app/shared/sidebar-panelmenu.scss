@@ -1,6 +1,8 @@
 :host ::ng-deep {
-  .p-2x {
-    padding: 0.928rem;
+  --onecx-workspace-onecx-workspace-ui-panelmenu-item-focus-background: var(--p-panelmenu-item-focus-background);
+
+  .p-panelmenu-item:not(.p-disabled) > .p-panelmenu-item-content:hover {
+    color: var(--menu-item-text-color);
   }
 
   /* Angular 19 migration for PrimeNG */
@@ -13,26 +15,36 @@
       border-radius: 0;
       padding: 0;
     }
+  }
 
-    .p-panelmenu-header-content,
-    .p-panelmenu-item-content {
-      border-radius: 0;
+  /* general styles for panel menu items */
+  .p-panelmenu-header-content,
+  .p-panelmenu-item-content {
+    border-radius: 0;
+    color: var(--menu-item-text-color);
+    &:hover {
+      background: var(--p-panelmenu-item-focus-background);
       color: var(--menu-item-text-color);
     }
+    * {
+      background: inherit;
+      color: inherit;
+    }
+  }
 
-    /* markup the active menu item with specific background and text color */
-    .ocx-vertical-menu-active-item {
-      &:not(.p-focus) {
-        > .p-panelmenu-header-content,
-        .p-panelmenu-item-content {
-          &:not(:hover) {
-            background-color: var(--menu-active-item-bg-color);
-            color: var(--menu-active-item-text-color);
-          }
+  /* markup the active menu item with specific background and text color */
+  .ocx-vertical-menu-active-item {
+    &:not(.p-focus) {
+      > .p-panelmenu-header-content,
+      .p-panelmenu-item-content {
+        &:not(:hover) {
+          background-color: var(--menu-active-item-bg-color);
+          color: var(--menu-active-item-text-color);
         }
       }
     }
   }
+
   /*
   .p-panelmenu {
     // panel menu items

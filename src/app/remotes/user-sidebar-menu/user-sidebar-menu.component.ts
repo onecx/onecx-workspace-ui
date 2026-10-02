@@ -3,9 +3,6 @@ import { CommonModule, Location } from '@angular/common'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
-import { AccordionModule } from 'primeng/accordion'
-import { MenuItem, PrimeIcons } from 'primeng/api'
-import { PanelMenuModule } from 'primeng/panelmenu'
 import {
   Observable,
   ReplaySubject,
@@ -18,6 +15,10 @@ import {
   shareReplay,
   withLatestFrom
 } from 'rxjs'
+
+import { AccordionModule } from 'primeng/accordion'
+import { MenuItem, PrimeIcons } from 'primeng/api'
+import { PanelMenuModule } from 'primeng/panelmenu'
 
 import { AppConfigService, AppStateService, UserService } from '@onecx/angular-integration-interface'
 import {
@@ -60,6 +61,13 @@ const MENU_MODE = 'static'
 @UntilDestroy()
 export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
   private readonly remoteComponentConfig = inject<ReplaySubject<RemoteComponentConfig>>(REMOTE_COMPONENT_CONFIG)
+  private readonly translateService = inject(TranslateService)
+  private readonly appConfigService = inject(AppConfigService)
+  private readonly appStateService = inject(AppStateService)
+  private readonly menuItemApiService = inject(MenuItemAPIService)
+  private readonly userService = inject(UserService)
+  private readonly menuItemService = inject(MenuItemService)
+
   public currentUser$: Observable<UserProfile>
   public userMenu$: Observable<MenuItem[]>
   public displayName$: Observable<string>
@@ -77,14 +85,7 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent, ocxRem
     .pipe(map((isVisible) => !isVisible))
     .pipe(untilDestroyed(this))
 
-  constructor(
-    private readonly translateService: TranslateService,
-    private readonly appConfigService: AppConfigService,
-    private readonly appStateService: AppStateService,
-    private readonly menuItemApiService: MenuItemAPIService,
-    private readonly userService: UserService,
-    private readonly menuItemService: MenuItemService
-  ) {
+  constructor() {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
     this.avatarImageLoadedEmitter.subscribe(this.avatarImageLoaded)
     this.avatarImageLoadedEmitter.subscribe((data: boolean) => {

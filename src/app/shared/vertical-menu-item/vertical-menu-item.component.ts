@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core'
+import { Component, input, output } from '@angular/core'
 import { TranslateModule } from '@ngx-translate/core'
 
 import { MenuItem } from 'primeng/api'
@@ -15,10 +15,13 @@ import { SafeLinkDirective } from 'src/app/shared/safe-link.directive'
   styleUrls: ['./vertical-menu-item.component.scss']
 })
 export class VerticalMenuItemComponent {
+  // input
   public readonly item = input<MenuItem | undefined>(undefined)
   public readonly id = input<string | undefined>(undefined)
   public readonly styleClass = input<string | undefined>(undefined)
   public readonly styleClassIcon = input<string | undefined>(undefined)
   public readonly styleClassLabel = input<string | undefined>(undefined)
   public readonly title = input<string | undefined>(undefined)
+  // output
+  public readonly clicked = output<boolean>()
 }
