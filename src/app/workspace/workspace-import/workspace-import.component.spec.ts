@@ -1,67 +1,64 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
+import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { ActivatedRoute, ActivatedRouteSnapshot, Router } from '@angular/router'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of, throwError } from 'rxjs'
 
-import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+import { PortalMessageService } from '@onecx/angular-integration-interface'
+import { provideUserServiceMock } from '@onecx/angular-integration-interface/mocks'
 
-import { ImportResponseStatus, WorkspaceAPIService } from 'src/app/shared/generated'
+import { ImportResponseStatus } from 'src/app/shared/generated'
 import { WorkspaceImportComponent } from './workspace-import.component'
-
-class MockRouter {
-  navigate = jasmine.createSpy('navigate')
-}
 
 describe('WorkspaceImportComponent', () => {
   let component: WorkspaceImportComponent
   let fixture: ComponentFixture<WorkspaceImportComponent>
-  const mockRouter = new MockRouter()
+
+  const mockRouter = { navigate: jasmine.createSpy('navigate') }
   const mockActivatedRouteSnapshot: Partial<ActivatedRouteSnapshot> = { params: { id: 'mockId' } }
   const mockActivatedRoute: Partial<ActivatedRoute> = {
     snapshot: mockActivatedRouteSnapshot as ActivatedRouteSnapshot
   }
-  const mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', [
-    'success',
-    'error',
-    'warning'
-  ])
-  const apiServiceSpy = { importWorkspaces: jasmine.createSpy('importWorkspaces').and.returnValue(of({})) }
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [WorkspaceImportComponent],
+  // WorkspaceAPIService and PortalMessageService are providedIn: 'any', so the component holds its
+  // own instance and a root-level provider would be shadowed - spy on the actual instance it holds.
+  let apiServiceSpy: { importWorkspaces: jasmine.Spy }
+  let msgServiceSpy: { success: jasmine.Spy; error: jasmine.Spy; warning: jasmine.Spy }
+
+  beforeEach(async () => {
+    // keep the component's real imports (SharedModule + child step components) so the template
+    // resolves without NO_ERRORS_SCHEMA. displayDialog defaults to false, so the dialog body is
+    // not rendered and no PrimeNG / child components are instantiated.
+    await TestBed.configureTestingModule({
       imports: [
+        WorkspaceImportComponent,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
-      schemas: [NO_ERRORS_SCHEMA],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
+        provideUserServiceMock(),
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
-        { provide: Router, useValue: mockRouter },
-        { provide: PortalMessageService, useValue: msgServiceSpy },
-        { provide: WorkspaceAPIService, useValue: apiServiceSpy },
-        { provide: UserService, useValue: mockUserService }
+        { provide: Router, useValue: mockRouter }
       ]
     }).compileComponents()
-    msgServiceSpy.success.calls.reset()
-    msgServiceSpy.error.calls.reset()
-    msgServiceSpy.warning.calls.reset()
-    apiServiceSpy.importWorkspaces.calls.reset()
-  }))
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(WorkspaceImportComponent)
     component = fixture.componentInstance
     fixture.detectChanges()
+
+    apiServiceSpy = {
+      importWorkspaces: spyOn(component['workspaceApi'], 'importWorkspaces') as jasmine.Spy
+    }
+    msgServiceSpy = {
+      success: spyOn(component['msgService'], 'success'),
+      error: spyOn(component['msgService'], 'error'),
+      warning: spyOn(component['msgService'], 'warning')
+    }
   })
 
   describe('model changes', () => {
