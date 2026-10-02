@@ -55,12 +55,6 @@ fdescribe('OneCXUserAvatarMenuComponent', () => {
     return { fixture, component }
   }
 
-  async function setupWithHarness() {
-    const { fixture, component } = setUp()
-    const avatarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXUserAvatarMenuHarness)
-    return { fixture, component, avatarMenuHarness }
-  }
-
   async function setupWithHarnessAndInit(permissions: string[] = []) {
     const { fixture, component } = setUp()
     component.ocxInitRemoteComponent({ baseUrl: 'base_url', permissions: permissions } as RemoteComponentConfig)
