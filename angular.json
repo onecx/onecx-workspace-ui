@@ -103,7 +103,6 @@
             "karmaConfig": "karma.conf.js",
             "include": ["**/*.spec.ts"],
             "exclude": [
-              "src/app/remotes/slim-vertical-main-menu/**",
               "src/app/workspace/workspace-detail/**/*.spec.ts",
               "src/app/workspace/workspace-menu/**/*.spec.ts",
               "src/app/workspace/workspace-product/**/*.spec.ts",

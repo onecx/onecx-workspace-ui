@@ -9,7 +9,6 @@
   "exclude": [
     "src/app/shared/generated",
     "node_modules",
-    "src/app/remotes/slim-vertical-main-menu/**",
     "src/app/workspace/workspace-detail/workspace-roles/workspace-roles.component.spec.ts",
     "src/app/workspace/workspace-detail/workspace-slots/workspace-slots.component.spec.ts",
     "src/app/workspace/workspace-detail/workspace-slot-detail/workspace-slot-detail.component.spec.ts",

@@ -1,12 +1,11 @@
-import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { TestBed } from '@angular/core/testing'
-import { NoopAnimationsModule } from '@angular/platform-browser/animations'
-import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
+import { provideHttpClient } from '@angular/common/http'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { provideNoopAnimations } from '@angular/platform-browser/animations'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of, ReplaySubject, throwError } from 'rxjs'
 
-import { OneCXSlimVerticalMainMenuComponent } from './slim-vertical-main-menu.component'
-import { provideHttpClient } from '@angular/common/http'
+import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-remote-components'
 import {
   AppStateServiceMock,
   FakeTopic,
@@ -16,16 +15,28 @@ import {
   ShellCapabilityServiceMock,
   UserServiceMock
 } from '@onecx/angular-integration-interface/mocks'
-import { AppStateService, Capability, UserService } from '@onecx/angular-integration-interface'
-import { MenuService } from 'src/app/shared/services/menu.service'
-import { MenuItemAPIService } from 'src/app/shared/generated'
-import { TestbedHarnessEnvironment } from '@onecx/angular-testing'
-import { OneCXSlimVerticalMainMenuHarness } from './slim-vertical-main-menu.component.harness'
 import { CurrentLocationTopicPayload, EventsTopic, Workspace } from '@onecx/integration-interface'
+import { AppStateService, Capability, UserService } from '@onecx/angular-integration-interface'
+import { TestbedHarnessEnvironment } from '@onecx/angular-testing'
+
+import { MenuItemAPIService } from 'src/app/shared/generated'
+import { MenuService } from 'src/app/shared/services/menu.service'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
 import { SlimMenuMode } from 'src/app/shared/model/slim-menu-mode'
 
+import { OneCXSlimVerticalMainMenuHarness } from './slim-vertical-main-menu.component.harness'
+import { OneCXSlimVerticalMainMenuComponent } from './slim-vertical-main-menu.component'
+
 describe('OneCXSlimVerticalMainMenuComponent', () => {
+  // The component injects this token non-optionally, so it must be provided (a ReplaySubject,
+  // mirroring the real remote-component host).
+  const rcConfig = new ReplaySubject<RemoteComponentConfig>(1)
+  const defaultConfig: RemoteComponentConfig = {
+    appId: 'appId',
+    productName: 'prodName',
+    permissions: ['permission'],
+    baseUrl: 'base'
+  }
   const menuItemApiSpy = jasmine.createSpyObj<MenuItemAPIService>('MenuItemAPIService', ['getMenuItems'])
   const menuServiceSpy = jasmine.createSpyObj<MenuService>('MenuService', ['isVisible', 'isActive'])
   const menuItemServiceSpy = jasmine.createSpyObj<MenuItemService>('MenuItemService', [
@@ -46,24 +57,21 @@ describe('OneCXSlimVerticalMainMenuComponent', () => {
   beforeEach(() => {
     baseUrlSubject = new ReplaySubject<any>(1)
     TestBed.configureTestingModule({
-      declarations: [],
       imports: [
         OneCXSlimVerticalMainMenuComponent,
         TranslateTestingModule.withTranslations({
+          de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
-        }).withDefaultLanguage('en'),
-        NoopAnimationsModule
+        }).withDefaultLanguage('en')
       ],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        {
-          provide: BASE_URL,
-          useValue: baseUrlSubject
-        },
+        provideNoopAnimations(),
         provideShellCapabilityServiceMock(),
         provideAppStateServiceMock(),
         provideUserServiceMock(),
+        { provide: REMOTE_COMPONENT_CONFIG, useValue: rcConfig },
         { provide: MenuService, useValue: menuServiceSpy }
       ]
     }).overrideComponent(OneCXSlimVerticalMainMenuComponent, {
@@ -75,6 +83,8 @@ describe('OneCXSlimVerticalMainMenuComponent', () => {
       }
     })
 
+    // Seed the remote-component config token and reset all spies.
+    rcConfig.next(defaultConfig)
     appStateServiceMock = TestBed.inject(AppStateService) as unknown as AppStateServiceMock
     userServiceMock = TestBed.inject(UserService) as unknown as UserServiceMock
     userServiceMock.lang$.next('en')
@@ -94,7 +104,7 @@ describe('OneCXSlimVerticalMainMenuComponent', () => {
     expect(component).toBeTruthy()
   })
 
-  it('should call ocxInitRemoteComponent with the correct config', (doneFn: DoneFn) => {
+  it('should call ocxInitRemoteComponent with the correct config', () => {
     const { component } = setUp()
 
     const mockConfig: RemoteComponentConfig = {
@@ -106,12 +116,9 @@ describe('OneCXSlimVerticalMainMenuComponent', () => {
 
     component.ocxRemoteComponentConfig = mockConfig
 
-    expect(component['menuItemApiService'].configuration.basePath).toEqual('base/bff')
-
-    component['baseUrl'].subscribe((baseUrl) => {
-      expect(baseUrl).toEqual('base')
-      doneFn()
-    })
+    expect(
+      (component as unknown as { menuItemApiService: MenuItemAPIService }).menuItemApiService.configuration.basePath
+    ).toEqual('base/bff')
   })
 
   it('should have no content in INACTIVE MODE', async () => {

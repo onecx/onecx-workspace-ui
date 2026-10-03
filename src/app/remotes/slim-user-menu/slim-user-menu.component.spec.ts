@@ -28,12 +28,6 @@ import { OneCXSlimUserMenuHarness } from './slim-user-menu.component.harness'
 import { OneCXSlimUserMenuComponent } from './slim-user-menu.component'
 
 describe('OneCXSlimUserMenuComponent', () => {
-  const menuServiceSpy = jasmine.createSpyObj<MenuService>('MenuService', ['isVisible', 'isActive'])
-  const menuItemServiceSpy = jasmine.createSpyObj<MenuItemService>('MenuItemService', [
-    'mapMenuItemsToSlimMenuItems',
-    'constructMenuItems'
-  ])
-
   // The component injects this token non-optionally, so it must be provided (a ReplaySubject,
   // mirroring the real remote-component host).
   const rcConfig = new ReplaySubject<RemoteComponentConfig>(1)
@@ -43,6 +37,11 @@ describe('OneCXSlimUserMenuComponent', () => {
     permissions: ['permission'],
     baseUrl: 'base'
   }
+  const menuServiceSpy = jasmine.createSpyObj<MenuService>('MenuService', ['isVisible', 'isActive'])
+  const menuItemServiceSpy = jasmine.createSpyObj<MenuItemService>('MenuItemService', [
+    'mapMenuItemsToSlimMenuItems',
+    'constructMenuItems'
+  ])
 
   // Shared fake menu response: workspaceName 'workspace', one menu with a single child.
   const fakeResponse = {
