@@ -16,6 +16,9 @@ import {
   WorkspaceProductAPIService
 } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
+import { SharedModule } from 'src/app/shared/shared.module'
+import { ImageContainerComponent } from 'src/app/shared/components/image-container/image-container.component'
+import { WorkspaceI18nComponent } from '../workspace-i18n/workspace-i18n.component'
 
 export type Theme = {
   name: string
@@ -25,6 +28,8 @@ export type Theme = {
 
 @Component({
   selector: 'app-workspace-props',
+  standalone: true,
+  imports: [SharedModule, ImageContainerComponent, WorkspaceI18nComponent],
   templateUrl: './workspace-props.component.html',
   styleUrls: ['./workspace-props.component.scss']
 })

@@ -1,7 +1,75 @@
-.layout-topbar-item {
-  display: flex;
-  align-items: center;
-  position: relative;
+@use 'src/app/shared/sidebar-panelmenu.scss' as *;
+
+::ng-deep {
+  .ocx-topbar-action {
+    color: red;
+    .p-button {
+      /* embeded BUTTON */
+      &.p-button-rounded {
+        border-radius: 50%;
+        height: 3.2rem;
+        width: 3.2rem;
+        color: var(--topbar-item-text-color);
+        background-color: var(--topbar-bg-color);
+        border: none;
+        &:hover,
+        &:focus {
+          border: none;
+          color: var(--topbar-item-text-hover-color);
+          background-color: var(--topbar-item-text-hover-bg-color);
+          transition: background-color var(--p-transition-duration);
+        }
+        .p-button-icon {
+          font-size: 2rem;
+        }
+      }
+    }
+  }
+
+  /* topbar action + menu panel */
+  .ocx-topbar-action-with-menu {
+    display: flex;
+    align-items: center;
+    position: relative;
+  }
+
+  /* menu panel */
+  .ocx-topbar-action-panel {
+    position: absolute;
+    top: 4rem;
+    right: 0;
+    z-index: 1000;
+    min-width: 13rem;
+    padding: 0;
+    transform-origin: top;
+    background-color: var(--overlay-content-bg-color);
+    color: var(--text-color);
+    z-index: 1000;
+    list-style: none;
+
+    .ocx-topbar-action-panel-item {
+      cursor: pointer;
+      border-radius: 0;
+      color: var(--menu-item-text-color);
+      &:hover {
+        background: var(--p-panelmenu-item-focus-background);
+        color: var(--menu-item-text-color);
+      }
+      * {
+        background: inherit;
+        color: inherit;
+      }
+    }
+  }
+
+  .ocx-topbar-action-item-padded {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    padding-right: 1rem;
+  }
+}
+
+/*
 
   .layout-topbar-action {
     user-select: none;
@@ -104,10 +172,5 @@
       }
     }
   }
-
-  .layout-topbar-action-item-padded {
-    padding-top: 0.75rem;
-    padding-bottom: 0.75rem;
-    padding-right: 1rem;
-  }
 }
+*/

@@ -1,25 +1,25 @@
-<ng-container *ngIf="item as item">
+@if (item) {
   <ng-container
     [ngTemplateOutlet]="itemTemplate"
     [ngTemplateOutletContext]="{ $implicit: item, index: index }"
   ></ng-container>
 
   <!-- ITEM CONTENT via TEMPLATE -->
-
   <ng-template #itemTemplate let-item let-index="index">
-    <ng-container *ngIf="item.type === ItemType.ROUTER_LINK">
-      <ng-container *ngTemplateOutlet="routerLinkTemplate; context: { $implicit: item, index: index }"></ng-container>
-    </ng-container>
-    <ng-container *ngIf="item.type === ItemType.URL">
-      <ng-container *ngTemplateOutlet="urlTemplate; context: { $implicit: item, index: index }"></ng-container>
-    </ng-container>
-    <ng-container *ngIf="item.type === ItemType.ACTION">
-      <ng-container *ngTemplateOutlet="actionTemplate; context: { $implicit: item, index: index }"></ng-container>
-    </ng-container>
+    @switch (item.type) {
+      @case (ItemType.ROUTER_LINK) {
+        <ng-container *ngTemplateOutlet="routerLinkTemplate; context: { $implicit: item, index: index }"></ng-container>
+      }
+      @case (ItemType.URL) {
+        <ng-container *ngTemplateOutlet="urlTemplate; context: { $implicit: item, index: index }"></ng-container>
+      }
+      @case (ItemType.ACTION) {
+        <ng-container *ngTemplateOutlet="actionTemplate; context: { $implicit: item, index: index }"></ng-container>
+      }
+    }
   </ng-template>
 
-  <!-- TEMPLATE DEFINITIONS -->
-
+  <!-- ROUTERLINK TEMPLATE -->
   <ng-template #routerLinkTemplate let-item let-index="index">
     <a
       pRipple
@@ -36,6 +36,7 @@
     </a>
   </ng-template>
 
+  <!-- URL TEMPLATE -->
   <ng-template #urlTemplate let-item let-index="index">
     <a
       pRipple
@@ -52,6 +53,7 @@
     </a>
   </ng-template>
 
+  <!-- ACTION TEMPLATE -->
   <ng-template #actionTemplate let-item let-index="index">
     <button
       pRipple
@@ -69,8 +71,9 @@
     </button>
   </ng-template>
 
+  <!-- TEXT TEMPLATE -->
   <ng-template #textTemplate let-item>
-    <ng-container *ngIf="activeMode === SlimMenuMode.SLIM_PLUS">
+    @if (activeMode === SlimMenuMode.SLIM_PLUS) {
       @let whitespace_included = item.label?.match(wsRegExp);
       <div
         class="slim-menu-list-item-text text-center"
@@ -78,9 +81,10 @@
       >
         {{ item.label }}
       </div>
-    </ng-container>
+    }
   </ng-template>
 
+  <!-- ICON TEMPLATE -->
   <ng-template #iconTemplate let-item>
     <i
       class="slim-menu-list-item-icon block text-center"
@@ -88,4 +92,4 @@
       aria-hidden="true"
     ></i>
   </ng-template>
-</ng-container>
+}

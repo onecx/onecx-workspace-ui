@@ -1,4 +1,5 @@
 <ocx-portal-page permission="WORKSPACE#VIEW" helpArticleId="PAGE_WORKSPACE_DETAIL" pageName="PAGE_WORKSPACE_DETAIL">
+  @let workspace = (workspace$ | async) ?? undefined;
   <ocx-page-header
     [header]="Utils.limitText(workspace?.displayName, 70)"
     [subheader]="'DIALOG.WORKSPACE.HEADER.DETAIL' | translate"
@@ -8,211 +9,141 @@
   >
   </ocx-page-header>
 
-  <ocx-page-content *ngIf="workspace$ | async as workspace">
-    <p-message
-      *ngIf="loading && !exceptionKey"
-      id="ws_detail_loading_message"
-      severity="info"
-      styleClass="m-3"
-      [text]="'ACTIONS.LOADING' | translate"
-    ></p-message>
-    <p-message
-      *ngIf="exceptionKey"
-      id="ws_detail_error_message"
-      severity="error"
-      styleClass="m-3"
-      [text]="exceptionKey | translate"
-    ></p-message>
+  <ocx-content class="ocx-content">
+    @if (loading) {
+      <p-message
+        id="ws_detail_loading_message"
+        severity="info"
+        styleClass="m-3"
+        [text]="'ACTIONS.LOADING' | translate"
+      ></p-message>
+    } @else if (exceptionKey) {
+      <p-message
+        id="ws_detail_error_message"
+        severity="error"
+        styleClass="m-3"
+        [text]="exceptionKey | translate"
+      ></p-message>
+    }
 
-    <!-- showOperatorMessage -->
-    <div *ocxIfPermission="'WORKSPACE#EDIT'" class="relative">
-      <!-- PrimeNG  17: Using p-messages uses the correct alert role (aria)
-           PrimeNG >17: Try again with p-message - check correct use of aria role
-      -->
-      <p-messages
-        *ngIf="workspace?.operator && showOperatorMessage"
-        [(value)]="messages"
-        [enableService]="false"
-        [style]="{ 'margin-top': '35px', right: '10px', left: '10px' }"
-        styleClass="absolute z-1"
-      >
-      </p-messages>
-    </div>
-
-    <p-tabView *ngIf="!exceptionKey" (onChange)="onTabChange($event, workspace)" [activeIndex]="selectedTabIndex">
-      <p-tabPanel
-        *ocxIfPermission="'WORKSPACE#VIEW'"
-        id="ws_detail_props"
-        class="relative"
-        [header]="'TABS.WORKSPACE.DETAILS' | translate"
-        [attr.aria-label]="'TABS.WORKSPACE.DETAILS' | translate"
-        [tooltip]="'TABS.WORKSPACE.TOOLTIPS.DETAILS' | translate"
-      >
-        <app-workspace-props
-          [workspace]="workspace"
-          [editMode]="editMode"
-          [isLoading]="loading"
-          (headerImageUrl)="onUpdateHeaderImageUrl($event)"
-        ></app-workspace-props>
-      </p-tabPanel>
-
-      <p-tabPanel
-        *ocxIfPermission="'WORKSPACE_CONTACT#VIEW'"
-        id="ws_detail_contact"
-        [header]="'TABS.WORKSPACE.CONTACT' | translate"
-        [attr.aria-label]="'TABS.WORKSPACE.CONTACT' | translate"
-        [tooltip]="'TABS.WORKSPACE.TOOLTIPS.CONTACT' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      >
-        <app-workspace-contact [workspace]="workspace" [editMode]="editMode"></app-workspace-contact>
-      </p-tabPanel>
-
-      <p-tabPanel
-        *ocxIfPermission="'WORKSPACE_INTERNAL#VIEW'"
-        id="ws_detail_intern"
-        [header]="'INTERNAL.HEADER' | translate"
-        [attr.aria-label]="'INTERNAL.HEADER' | translate"
-        [tooltip]="'INTERNAL.TOOLTIP' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      >
-        <app-workspace-intern
-          [workspace]="workspace"
-          [editMode]="editMode"
-          [dateFormat]="dateFormat"
-        ></app-workspace-intern>
-      </p-tabPanel>
-
-      <p-tabPanel
-        *ocxIfPermission="'WORKSPACE_ROLE#VIEW'"
-        id="ws_detail_roles"
-        [disabled]="editMode"
-        class="p-0"
-        [header]="'TABS.WORKSPACE.ROLES' | translate"
-        [attr.aria-label]="'TABS.WORKSPACE.ROLES' | translate"
-        [tooltip]="'TABS.WORKSPACE.TOOLTIPS.ROLES' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      >
-        <app-workspace-roles [workspace]="workspaceForRoles"></app-workspace-roles>
-      </p-tabPanel>
-
-      <p-tabPanel
-        *ocxIfPermission="'WORKSPACE_SLOT#VIEW'"
-        id="ws_detail_slots"
-        [disabled]="editMode"
-        class="p-0"
-        [header]="'TABS.WORKSPACE.SLOTS' | translate"
-        [attr.aria-label]="'TABS.WORKSPACE.SLOTS' | translate"
-        [tooltip]="'TABS.WORKSPACE.TOOLTIPS.SLOTS' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      >
-        <app-workspace-slots [workspace]="workspaceForSlots"></app-workspace-slots>
-      </p-tabPanel>
-
-      <p-tabPanel
-        *ocxIfPermission="'WORKSPACE_PRODUCTS#VIEW'"
-        id="ws_detail_products"
-        class="p-0"
-        [disabled]="editMode"
-        [header]="'TABS.WORKSPACE.PRODUCTS' | translate"
-        [attr.aria-label]="'TABS.WORKSPACE.PRODUCTS' | translate"
-        [tooltip]="'TABS.WORKSPACE.TOOLTIPS.PRODUCTS' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      >
-        <app-products [workspace]="workspaceForProducts" (changed)="onProductChanges()"></app-products>
-      </p-tabPanel>
-    </p-tabView>
-  </ocx-page-content>
+    <p-tabs [lazy]="false" [(value)]="selectedTabIndex" (valueChange)="onTabChange($event, workspace)">
+      <p-tablist>
+        <p-tab
+          value="0"
+          *ocxIfPermission="'WORKSPACE#VIEW'"
+          id="ws_detail_props"
+          [ariaLabel]="'TABS.WORKSPACE.DETAILS' | translate"
+          [pTooltip]="'TABS.WORKSPACE.TOOLTIPS.DETAILS' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        >
+          {{ 'TABS.WORKSPACE.DETAILS' | translate }}
+        </p-tab>
+        <p-tab
+          value="1"
+          *ocxIfPermission="'WORKSPACE_CONTACT#VIEW'"
+          id="ws_detail_contact"
+          [ariaLabel]="'TABS.WORKSPACE.CONTACT' | translate"
+          [pTooltip]="'TABS.WORKSPACE.TOOLTIPS.CONTACT' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        >
+          {{ 'TABS.WORKSPACE.CONTACT' | translate }}
+        </p-tab>
+        <p-tab
+          value="2"
+          *ocxIfPermission="'WORKSPACE_INTERNAL#VIEW'"
+          id="ws_detail_intern"
+          [ariaLabel]="'INTERNAL.HEADER' | translate"
+          [pTooltip]="'INTERNAL.TOOLTIP' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        >
+          {{ 'INTERNAL.HEADER' | translate }}
+        </p-tab>
+        <p-tab
+          value="3"
+          *ocxIfPermission="'WORKSPACE_ROLE#VIEW'"
+          id="ws_detail_slots"
+          [disabled]="editMode"
+          [ariaLabel]="'TABS.WORKSPACE.ROLES' | translate"
+          [pTooltip]="'TABS.WORKSPACE.TOOLTIPS.ROLES' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        >
+          {{ 'TABS.WORKSPACE.ROLES' | translate }}
+        </p-tab>
+        <p-tab
+          value="4"
+          *ocxIfPermission="'WORKSPACE_SLOT#VIEW'"
+          id="ws_detail_slots"
+          [disabled]="editMode"
+          [ariaLabel]="'TABS.WORKSPACE.SLOTS' | translate"
+          [pTooltip]="'TABS.WORKSPACE.TOOLTIPS.SLOTS' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        >
+          {{ 'TABS.WORKSPACE.SLOTS' | translate }}
+        </p-tab>
+        <p-tab
+          value="5"
+          *ocxIfPermission="'WORKSPACE_PRODUCTS#VIEW'"
+          id="ws_detail_product"
+          [disabled]="editMode"
+          [ariaLabel]="'TABS.WORKSPACE.PRODUCTS' | translate"
+          [pTooltip]="'TABS.WORKSPACE.TOOLTIPS.PRODUCTS' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        >
+          {{ 'TABS.WORKSPACE.PRODUCTS' | translate }}
+        </p-tab>
+      </p-tablist>
+      <p-tabpanels>
+        <!-- PROPS -->
+        <p-tabpanel value="0">
+          <div class="p-3 sm:p-4">
+            <app-workspace-props
+              [workspace]="workspace"
+              [editMode]="editMode"
+              [isLoading]="loading"
+              (headerImageUrl)="onUpdateHeaderImageUrl($event)"
+            ></app-workspace-props>
+          </div>
+        </p-tabpanel>
+        <p-tabpanel value="1">
+          <div class="p-3 sm:p-4">
+            <app-workspace-contact [workspace]="workspace" [editMode]="editMode"></app-workspace-contact>
+          </div>
+        </p-tabpanel>
+        <p-tabpanel value="2">
+          <div class="p-3 sm:p-4">
+            <app-workspace-intern
+              [workspace]="workspace"
+              [editMode]="editMode"
+              [dateFormat]="dateFormat"
+            ></app-workspace-intern>
+          </div>
+        </p-tabpanel>
+        <p-tabpanel value="3">
+          <app-workspace-roles [workspace]="workspaceForRoles"></app-workspace-roles>
+        </p-tabpanel>
+        <p-tabpanel value="4">
+          <app-workspace-slots [workspace]="workspaceForSlots"></app-workspace-slots>
+        </p-tabpanel>
+        <p-tabpanel value="5">
+          <app-products [workspace]="workspaceForProducts" (changed)="onProductChanges()"></app-products>
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+  </ocx-content>
 </ocx-portal-page>
 
 <!-- DELETE -->
-<p-dialog
-  #workspaceDelete
-  [(visible)]="workspaceDeleteVisible"
-  [header]="'DIALOG.WORKSPACE.HEADER.DELETE' | translate"
-  [modal]="true"
-  [closable]="true"
-  [draggable]="true"
-  [resizable]="false"
-  [dismissableMask]="true"
-  [style]="{ 'max-width': '425px' }"
-  styleClass="disable-max-height-preset"
->
-  <div class="flex column-gap-3 row-gap-1 justify-content-start align-items-center">
-    <div class="pi pi-question-circle text-3xl danger-action-text"></div>
-    <div class="flex flex-column row-gap-3">
-      <p-message
-        *ngIf="workspace?.mandatory"
-        id="th_delete_reject_mandatory_message"
-        severity="info"
-        [text]="'ACTIONS.DELETE.WORKSPACE.MESSAGE.REJECT_MANDATORY' | translate"
-      ></p-message>
-      <div *ngIf="!workspace?.mandatory" class="flex flex-column row-gap-2">
-        <div id="ws_delete_message" class="font-bold">
-          {{ 'ACTIONS.DELETE.WORKSPACE.MESSAGE.QUESTION' | translate }}
-        </div>
-        <div>
-          <div id="ws_delete_workspace_display_name" class="font-bold text-center danger-action-text">
-            {{ workspace?.displayName }}
-          </div>
-          <div id="ws_delete_workspace_name" class="font-bold text-center danger-action-text text-sm">
-            ({{ workspace?.name }})
-          </div>
-        </div>
-        <div *ngIf="!workspace?.operator">{{ 'ACTIONS.DELETE.INFO' | translate }}</div>
-        <p-message
-          *ngIf="workspace?.operator"
-          id="ws_delete_operator_hint"
-          severity="info"
-          styleClass="mt-1"
-          [text]="'ACTIONS.DELETE.WORKSPACE.MESSAGE.INFO_OPERATOR' | translate"
-        ></p-message>
-      </div>
-    </div>
-  </div>
-
-  <ng-template pTemplate="footer">
-    <div class="mt-3 flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
-      <p-button
-        *ngIf="workspace?.mandatory"
-        id="ws_delete_action_close"
-        icon="pi pi-times"
-        (onClick)="workspaceDeleteVisible = false"
-        [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
-        [ariaLabel]="'ACTIONS.NAVIGATION.CLOSE' | translate"
-        [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      ></p-button>
-      <p-button
-        *ngIf="!workspace?.mandatory"
-        id="ws_delete_action_no"
-        icon="pi pi-times"
-        (onClick)="workspaceDeleteVisible = false"
-        [label]="'ACTIONS.CONFIRMATION.NO' | translate"
-        [ariaLabel]="'ACTIONS.CONFIRMATION.NO' | translate"
-        [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      ></p-button>
-      <p-button
-        *ngIf="!workspace?.mandatory"
-        id="ws_delete_action_yes"
-        icon="pi pi-check"
-        (onClick)="onConfirmDeleteWorkspace()"
-        [label]="'ACTIONS.CONFIRMATION.YES' | translate"
-        [ariaLabel]="'ACTIONS.CONFIRMATION.YES' | translate"
-        [pTooltip]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      ></p-button>
-    </div>
-  </ng-template>
-</p-dialog>
+<app-workspace-delete
+  [(workspaceDeleteVisible)]="workspaceDeleteVisible"
+  [workspace]="workspace"
+  (confirmDelete)="onConfirmDeleteWorkspace()"
+></app-workspace-delete>
 
 <app-workspace-export
   [(workspaceExportVisible)]="workspaceExportVisible"

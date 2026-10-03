@@ -89,10 +89,8 @@
         [initialViewMode]="'grid'"
         [filterValue]="filterValue"
         [enableFiltering]="true"
-        (filterChange)="rolesDataView?.filter($event)"
         [filterColumns]="['ROLE.NAME' | translate, 'ROLE.TYPE' | translate]"
         [enableSorting]="false"
-        [translations]="(dataViewControlsTranslations$ | async) ?? {}"
       >
       </ocx-data-view-controls>
       <!-- Additional Actions -->

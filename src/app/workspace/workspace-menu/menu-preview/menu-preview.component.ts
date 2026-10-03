@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from
 import { SelectItem, TreeNode } from 'primeng/api'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+import { SharedModule } from 'src/app/shared/shared.module'
 
 import { Utils } from 'src/app/shared/utils'
 import { MenuItemAPIService, WorkspaceMenuItem } from 'src/app/shared/generated'
@@ -13,6 +14,8 @@ export type I18N = { [key: string]: string }
 
 @Component({
   selector: 'app-menu-preview',
+  standalone: true,
+  imports: [SharedModule],
   templateUrl: './menu-preview.component.html',
   styleUrls: ['./menu-preview.component.scss']
 })
@@ -166,7 +169,7 @@ export class MenuPreviewComponent implements OnChanges {
   }
 
   /**
-   * End of DRAG & DROP action
+   * End of DRAG & DROP action => TODO
    */
   public onDrop(event: TreeNodeDropEvent): void {
     if (event.dragNode && event.dropNode) {
@@ -178,7 +181,9 @@ export class MenuPreviewComponent implements OnChanges {
 
       let targetItem = event.dropNode.data as WorkspaceMenuItem
       let parentItemId: string | undefined = targetItem.id
-
+      /*
+      => TODO: Handle drop point 'between' logic for reordering menu items
+      
       if (event.dropPoint === 'between') {
         targetItem = event.dropNode?.parent?.data as WorkspaceMenuItem
         parentItemId = targetItem?.id ?? undefined
@@ -187,7 +192,7 @@ export class MenuPreviewComponent implements OnChanges {
           targetPos -= 1
         }
       }
-
+      */
       targetPos = Math.max(0, targetPos)
 
       // dummy-node on root or child-level detected

@@ -1,10 +1,6 @@
-<form
-  class="mt-3 mx-2 sm:mx-3 flex flex-wrap flex-column row-gap-3 sm:row-gap-4 lg:w-10 xl:w-8"
-  [formGroup]="propsForm"
-  errorTailor
->
-  <div class="p-inputgroup mb-1 w-full" controlErrorAnchor>
-    <span class="p-float-label">
+<form [formGroup]="propsForm" class="lg:w-10 xl:w-8 flex flex-wrap flex-column row-gap-3 sm:row-gap-4">
+  <p-inputgroup class="w-auto">
+    <p-floatlabel variant="on">
       <input
         #displayNameInput
         pInputText
@@ -20,23 +16,21 @@
       <label class="ocx-required-label" for="ws_detail_props_item_display_name" aria-hidden="true">
         {{ 'WORKSPACE.DISPLAY_NAME' | translate }}
       </label>
-    </span>
-    <button
+    </p-floatlabel>
+    <p-button
       id="ws_detail_props_item_display_name_i18n"
-      class="p-inputgroup-addon bg-primary pseudo-button"
+      icon="pi pi-language"
       [ngClass]="displayNameInput.value && !editMode ? 'cursor-pointer' : 'p-disabled'"
-      (click)="openI18nDialog('displayName', 'WORKSPACE.DISPLAY_NAME')"
-      [attr.aria-label]="'DIALOG.I18N.TOOLTIP' | translate"
+      (onClick)="openI18nDialog('displayName', 'WORKSPACE.DISPLAY_NAME')"
+      [ariaLabel]="'DIALOG.I18N.TOOLTIP' | translate"
       [pTooltip]="'DIALOG.I18N.TOOLTIP' | translate"
-      tooltipPosition="right"
+      tooltipPosition="top"
       tooltipEvent="hover"
-    >
-      <span class="pi pi-language" aria-hidden="true"></span>
-    </button>
-  </div>
+    />
+  </p-inputgroup>
 
   <!-- THEMES -->
-  <article [ariaLabel]="'WORKSPACE.THEME' | translate" class="w-full">
+  <article class="w-full" [ariaLabel]="'WORKSPACE.THEME' | translate">
     <ocx-slot
       class="hidden"
       [name]="themeSlotName"
@@ -44,13 +38,14 @@
       [outputs]="{ themes: themesEmitter }"
     >
     </ocx-slot>
-    <ng-container *ngIf="isThemeComponentDefined$ | async; else noThemesAvailable">
-      <div
-        *ngIf="{
+    @if (isThemeComponentDefined$ | async) {
+      @let data =
+        {
           themes: (themes$ | async) ?? [],
           formValues: themeFormValues$ | async,
           themeLogoUrl: getThemeImageUrl((themes$ | async) ?? [], (themeFormValues$ | async)?.theme ?? '', RefType.Logo)
-        } as data"
+        };
+      <div
         class="w-full flex flex-row flex-wrap sm:flex-nowrap align-items-center"
         [ngClass]="{
           'row-gap-2 column-gap-3 sm:column-gap-4': (themeLogoLoadingFailed$ | async) !== undefined || data.themeLogoUrl
@@ -79,47 +74,47 @@
           ></ocx-slot>
         }
         <!-- build inputgroup by hand due to better flex layout -->
-        <div class="mb-1 flex-grow-1 flex flex-row justify-content-start row-gap-0" controlErrorAnchor>
-          <span class="p-float-label w-full">
-            <p-dropdown
-              #wsThemeName
-              id="ws_detail_props_item_theme"
-              formControlName="theme"
-              styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
-              [options]="checkAndExtendThemes(data.themes)"
-              optionLabel="displayName"
-              optionValue="name"
-              [ariaLabel]="'WORKSPACE.THEME' | translate"
-              [pTooltip]="'WORKSPACE.TOOLTIPS.THEME' | translate"
-              tooltipPosition="top"
+        <div class="mb-1 flex-grow-1 flex flex-row justify-content-start row-gap-0">
+          <p-inputgroup class="flex-grow-1">
+            <p-floatlabel variant="on">
+              <p-select
+                #wsThemeName
+                id="ws_detail_props_item_theme"
+                formControlName="theme"
+                styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
+                [options]="checkAndExtendThemes(data.themes)"
+                optionLabel="displayName"
+                optionValue="name"
+                [ariaLabel]="'WORKSPACE.THEME' | translate"
+                [pTooltip]="'WORKSPACE.TOOLTIPS.THEME' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+              >
+              </p-select>
+              <label class="ocx-required-label" for="ws_detail_props_item_theme" aria-hidden="true">
+                {{ 'WORKSPACE.THEME' | translate }}
+              </label>
+            </p-floatlabel>
+            <a
+              tabindex="0"
+              id="ws_detail_props_item_theme_link"
+              class="flex-grow-0 bg-primary p-inputgroupaddon pseudo-button pi pi-link"
+              [ngClass]="!editMode && inputBaseUrl.value && themeEndpointExist ? 'cursor-pointer' : 'p-disabled'"
+              [routerLink]="[getThemeEndpointUrl$(wsThemeName.value) | async]"
+              [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
+              [pTooltip]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
+              tooltipPosition="right"
               tooltipEvent="hover"
+              role="link"
             >
-            </p-dropdown>
-            <label class="ocx-required-label" for="ws_detail_props_item_theme" aria-hidden="true">
-              {{ 'WORKSPACE.THEME' | translate }}
-            </label>
-          </span>
-          <a
-            tabindex="0"
-            id="ws_detail_props_item_theme_link"
-            class="flex-grow-0 p-inputgroup-addon bg-primary pseudo-button pi pi-link"
-            [ngClass]="!editMode && inputBaseUrl.value && themeEndpointExist ? 'cursor-pointer' : 'p-disabled'"
-            [routerLink]="[getThemeEndpointUrl$(wsThemeName.value) | async]"
-            [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
-            [pTooltip]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
-            tooltipPosition="right"
-            tooltipEvent="hover"
-            role="link"
-          >
-          </a>
+            </a>
+          </p-inputgroup>
         </div>
       </div>
-    </ng-container>
-
-    <!-- THEME readonly (no change possible) -->
-    <ng-template #noThemesAvailable>
-      <div class="p-inputgroup mb-1 w-full" controlErrorAnchor>
-        <span class="p-float-label">
+    } @else {
+      <!-- THEME readonly (no change possible) -->
+      <p-inputgroup class="mb-1 w-full">
+        <p-floatlabel variant="on">
           <input
             #wsThemeNameReadonly
             pInputText
@@ -135,11 +130,11 @@
           <label class="ocx-required-label" for="ws_detail_props_item_theme_readonly">
             {{ 'WORKSPACE.THEME' | translate }}
           </label>
-        </span>
+        </p-floatlabel>
         <a
           tabindex="0"
           id="ws_detail_props_item_theme_link2"
-          class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
+          class="bg-primary p-inputgroupaddon pseudo-button pi pi-link"
           [routerLink]="[getThemeEndpointUrl$(wsThemeNameReadonly.value) | async]"
           [ngClass]="!editMode && inputBaseUrl.value && themeEndpointExist ? 'cursor-pointer' : 'p-disabled'"
           [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
@@ -148,14 +143,14 @@
           tooltipEvent="hover"
         >
         </a>
-      </div>
-    </ng-template>
+      </p-inputgroup>
+    }
     <!-- end of theme row -->
   </article>
 
-  <article [attr.aria-label]="'WORKSPACE.BASE_URL' | translate" class="w-full">
-    <div class="p-inputgroup mb-1" controlErrorAnchor>
-      <span class="p-float-label">
+  <article class="w-full" [attr.aria-label]="'WORKSPACE.BASE_URL' | translate">
+    <p-inputgroup class="mb-1">
+      <p-floatlabel variant="on">
         <input
           #inputBaseUrl
           pInputText
@@ -163,19 +158,20 @@
           id="ws_detail_props_item_base_url"
           class="w-full pt-3 pb-2 text-responsive"
           formControlName="baseUrl"
-          [attr.aria-label]="'WORKSPACE.BASE_URL' | translate"
-          [pTooltip]="'WORKSPACE.TOOLTIPS.BASE_URL' | translate"
+          [escape]="false"
+          [ariaLabel]="('WORKSPACE.TOOLTIPS.BASE_URL' | translate) + ('VALIDATION.HINTS.FORMAT_BASE_URL' | translate)"
+          [pTooltip]="('WORKSPACE.TOOLTIPS.BASE_URL' | translate) + ('VALIDATION.HINTS.FORMAT_BASE_URL' | translate)"
           tooltipPosition="top"
           tooltipEvent="hover"
         />
         <label class="ocx-required-label" for="ws_detail_props_item_base_url" aria-hidden="true">
           {{ 'WORKSPACE.BASE_URL' | translate }}
         </label>
-      </span>
+      </p-floatlabel>
       <a
         tabindex="0"
         id="ws_detail_props_item_base_url_link"
-        class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
+        class="bg-primary p-inputgroupaddon pseudo-button pi pi-link"
         [ngClass]="!editMode && inputBaseUrl.value ? 'cursor-pointer' : 'p-disabled'"
         target="_blank"
         [href]="Utils.prepareUrlPath(getLocation().deploymentPath, inputBaseUrl.value)"
@@ -192,72 +188,60 @@
         role="link"
       >
       </a>
-    </div>
-    <label
-      *ngIf="editMode"
-      class="ocx-control-hint block"
-      style="color: var(--emphasis-medium)"
-      for="ws_detail_props_item_base_url_link"
-      aria-hidden="true"
-    >
-      {{ 'VALIDATION.HINTS.FORMAT_BASE_URL' | translate }}
-    </label>
+      <!--p-inputgroup-addon class="bg-primary">
+      </p-inputgroup-addon-->
+    </p-inputgroup>
   </article>
 
-  <article
-    *ngIf="(productPaths$ | async) ?? [] as paths"
-    class="w-full"
-    [attr.aria-label]="'WORKSPACE.HOME_PAGE' | translate"
-  >
-    <div class="p-inputgroup mb-1" controlErrorAnchor>
-      <span class="p-float-label">
-        <p-dropdown
+  <article class="w-full" [attr.aria-label]="'WORKSPACE.HOME_PAGE' | translate">
+    @let paths = (productPaths$ | async) ?? [];
+    <p-inputgroup class="mb-1">
+      <p-floatlabel variant="on">
+        <p-select
           #inputHomePage
           id="ws_detail_props_item_home_page"
           formControlName="homePage"
-          styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
-          (onClick)="onOpenProductPaths(paths); $event.stopPropagation()"
+          styleClass="w-full"
+          panelStyleClass="max-w-30rem"
+          (onChange)="onOpenProductPaths(paths)"
           [options]="paths"
           [editable]="true"
-          [showClear]="true"
+          [showClear]="false"
+          [autoDisplayFirst]="false"
           [ariaLabel]="'WORKSPACE.HOME_PAGE' | translate"
           [pTooltip]="'WORKSPACE.TOOLTIPS.HOME_PAGE' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"
         >
-        </p-dropdown>
+        </p-select>
         <label for="ws_detail_props_item_home_page" aria-hidden="true">{{ 'WORKSPACE.HOME_PAGE' | translate }} </label>
-      </span>
+      </p-floatlabel>
       <a
         tabindex="0"
         id="ws_detail_props_item_home_page_link"
-        class="p-inputgroup-addon bg-primary pseudo-button pi pi-link"
+        class="bg-primary p-inputgroupaddon pseudo-button pi pi-link"
         [ngClass]="!editMode && !workspace?.disabled && inputHomePage.value ? 'cursor-pointer' : 'p-disabled'"
         target="_blank"
         [href]="prepareProductUrl(inputHomePage.value)"
         (click)="$event.stopPropagation()"
-        [attr.aria-label]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
-        [pTooltip]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
+        [escape]="false"
+        [attr.aria-label]="
+          ('ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate) + ('VALIDATION.HINTS.FORMAT_HOME_PAGE' | translate)
+        "
+        [pTooltip]="
+          ('ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate) + ('VALIDATION.HINTS.FORMAT_HOME_PAGE' | translate)
+        "
         tooltipPosition="right"
         tooltipEvent="hover"
         role="link"
       >
       </a>
-    </div>
-    <label
-      *ngIf="editMode"
-      class="ocx-control-hint block"
-      style="color: var(--emphasis-medium)"
-      for="ws_detail_props_item_home_page_link"
-      aria-hidden="true"
-    >
-      {{ 'VALIDATION.HINTS.FORMAT_HOME_PAGE' | translate }}
-    </label>
+    </p-inputgroup>
   </article>
 
-  <article class="w-full" controlErrorAnchor [attr.aria-label]="'WORKSPACE.RSS_FEED_URL' | translate">
-    <div class="p-inputgroup mb-1" controlErrorAnchor>
-      <span class="p-float-label">
+  <article class="w-full" [attr.aria-label]="'WORKSPACE.RSS_FEED_URL' | translate">
+    <p-inputgroup class="mb-1">
+      <p-floatlabel variant="on">
         <input
           #inputRssFeedUrl
           pInputText
@@ -265,37 +249,33 @@
           id="ws_detail_props_item_rssFeedUrl"
           class="w-full pt-3 pb-2 text-responsive"
           formControlName="rssFeedUrl"
-          [attr.aria-label]="'WORKSPACE.RSS_FEED_URL' | translate"
-          [pTooltip]="'WORKSPACE.TOOLTIPS.RSS_FEED_URL' | translate"
+          [escape]="false"
+          [ariaLabel]="
+            ('WORKSPACE.TOOLTIPS.RSS_FEED_URL' | translate) + ('VALIDATION.HINTS.FORMAT_FEED_URL' | translate)
+          "
+          [pTooltip]="
+            ('WORKSPACE.TOOLTIPS.RSS_FEED_URL' | translate) + ('VALIDATION.HINTS.FORMAT_FEED_URL' | translate)
+          "
           tooltipPosition="top"
           tooltipEvent="hover"
         />
         <label for="ws_detail_props_item_rssFeedUrl" aria-hidden="true">
           {{ 'WORKSPACE.RSS_FEED_URL' | translate }}
         </label>
-      </span>
-      <button
-        id="ws_detail_props_item_rssFeedUrl_link"
-        class="p-inputgroup-addon bg-primary pseudo-button"
-        [ngClass]="inputRssFeedUrl.value ? 'cursor-pointer' : 'p-disabled'"
-        (click)="Utils.copyToClipboard(workspace?.rssFeedUrl)"
-        [attr.aria-label]="'ACTIONS.COPY.CLIPBOARD' | translate"
-        [pTooltip]="'ACTIONS.COPY.CLIPBOARD' | translate"
-        tooltipPosition="right"
-        tooltipEvent="hover"
-      >
-        <span class="pi pi-copy" aria-hidden="true"></span>
-      </button>
-    </div>
-    <label
-      *ngIf="editMode"
-      class="ocx-control-hint block"
-      style="color: var(--emphasis-medium)"
-      for="ws_detail_props_item_home_page_link"
-      aria-hidden="true"
-    >
-      {{ 'VALIDATION.HINTS.FORMAT_FEED_URL' | translate }}
-    </label>
+      </p-floatlabel>
+      <p-inputgroup-addon>
+        <p-button
+          id="ws_detail_props_item_rssFeedUrl_link"
+          icon="pi pi-copy"
+          [ngClass]="inputRssFeedUrl.value ? 'cursor-pointer' : 'p-disabled'"
+          (onClick)="Utils.copyToClipboard(workspace?.rssFeedUrl)"
+          [ariaLabel]="'ACTIONS.COPY.CLIPBOARD' | translate"
+          [pTooltip]="'ACTIONS.COPY.CLIPBOARD' | translate"
+          tooltipPosition="right"
+          tooltipEvent="hover"
+        />
+      </p-inputgroup-addon>
+    </p-inputgroup>
   </article>
 
   <!-- LOGO -->
@@ -347,8 +327,8 @@
       tooltipEvent="hover"
     />
     <div class="flex flex-column row-gap-1 flex-grow-1">
-      <div class="p-inputgroup">
-        <span class="p-float-label">
+      <p-inputgroup>
+        <p-floatlabel variant="on">
           <input
             #LogoUrlInput
             pInputText
@@ -356,35 +336,29 @@
             class="w-full pt-3 pb-2 text-responsive"
             id="ws_detail_props_item_logo_url"
             formControlName="logoUrl"
-            [ariaLabel]="'IMAGE.LOGO_URL' | translate"
-            [pTooltip]="'IMAGE.TOOLTIPS.URL' | translate"
+            [escape]="false"
+            [ariaLabel]="('IMAGE.LOGO' | translate) + ':  ' + ('IMAGE.TOOLTIPS.URL' | translate)"
+            [pTooltip]="('IMAGE.TOOLTIPS.URL' | translate) + ('VALIDATION.HINTS.FORMAT_IMAGE_URL' | translate)"
             tooltipPosition="top"
             tooltipEvent="hover"
           />
-          <label for="ws_detail_props_item_logo_url" aria-hidden="true">{{ 'IMAGE.LOGO_URL' | translate }}</label>
-        </span>
-        <button
-          id="ws_detail_props_item_logo_url_remove"
-          class="p-inputgroup-addon bg-primary pseudo-button"
-          [ngClass]="editMode && LogoUrlInput.value ? 'cursor-pointer' : 'p-disabled'"
-          (click)="onRemoveImageUrl(RefType.Logo)"
-          [attr.aria-label]="'IMAGE.TOOLTIPS.REMOVE.URL' | translate"
-          [pTooltip]="'IMAGE.TOOLTIPS.REMOVE.URL' | translate"
-          tooltipPosition="right"
-          tooltipEvent="hover"
-        >
-          <span class="pi pi-trash" aria-hidden="true"></span>
-        </button>
-      </div>
-      <label
-        *ngIf="editMode"
-        class="ocx-control-hint block"
-        style="color: var(--emphasis-medium)"
-        for="ws_detail_props_item_logo_url"
-        aria-hidden="true"
-      >
-        {{ 'VALIDATION.HINTS.FORMAT_IMAGE_URL' | translate }}
-      </label>
+          <label for="ws_detail_props_item_logo_url" aria-hidden="true">
+            {{ 'IMAGE.LOGO_URL' | translate }}
+          </label>
+        </p-floatlabel>
+        <p-inputgroup-addon>
+          <p-button
+            id="ws_detail_props_item_logo_url_remove"
+            icon="pi pi-trash"
+            [ngClass]="editMode && LogoUrlInput.value ? 'cursor-pointer' : 'p-disabled'"
+            (click)="onRemoveImageUrl(RefType.Logo)"
+            [ariaLabel]="'IMAGE.TOOLTIPS.REMOVE.URL' | translate"
+            [pTooltip]="'IMAGE.TOOLTIPS.REMOVE.URL' | translate"
+            tooltipPosition="right"
+            tooltipEvent="hover"
+          />
+        </p-inputgroup-addon>
+      </p-inputgroup>
     </div>
   </article>
 
@@ -442,8 +416,8 @@
       tooltipEvent="hover"
     />
     <div class="flex flex-column row-gap-1 flex-grow-1">
-      <div class="p-inputgroup">
-        <span class="p-float-label">
+      <p-inputgroup class="w-auto">
+        <p-floatlabel variant="on">
           <input
             #SmallLogoUrlInput
             pInputText
@@ -451,43 +425,35 @@
             class="w-full pt-3 pb-2 text-responsive"
             id="ws_detail_props_item_logo_small_url"
             formControlName="smallLogoUrl"
-            [attr.aria-label]="'IMAGE.LOGO_URL' | translate"
-            [pTooltip]="'IMAGE.TOOLTIPS.URL' | translate"
+            [escape]="false"
+            [ariaLabel]="('IMAGE.LOGO' | translate) + ':  ' + ('IMAGE.TOOLTIPS.URL' | translate)"
+            [pTooltip]="('IMAGE.TOOLTIPS.URL' | translate) + ('VALIDATION.HINTS.FORMAT_IMAGE_URL' | translate)"
             tooltipPosition="top"
             tooltipEvent="hover"
           />
           <label for="ws_detail_props_item_logo_small_url" aria-hidden="true">
             {{ 'IMAGE.LOGO_URL' | translate }}
           </label>
-        </span>
-        <button
-          id="ws_detail_props_item_logo_small-url_remove"
-          class="p-inputgroup-addon bg-primary pseudo-button"
-          [ngClass]="editMode && SmallLogoUrlInput.value ? 'cursor-pointer' : 'p-disabled'"
-          (click)="onRemoveImageUrl(RefType.LogoSmall)"
-          [attr.aria-label]="'IMAGE.TOOLTIPS.REMOVE.URL' | translate"
-          [pTooltip]="'IMAGE.TOOLTIPS.REMOVE.URL' | translate"
-          tooltipPosition="right"
-          tooltipEvent="hover"
-        >
-          <span class="pi pi-trash" aria-hidden="true"></span>
-        </button>
-      </div>
-      <label
-        *ngIf="editMode"
-        class="ocx-control-hint block"
-        style="color: var(--emphasis-medium)"
-        for="ws_detail_props_item_logo_small_url"
-        aria-hidden="true"
-      >
-        {{ 'VALIDATION.HINTS.FORMAT_IMAGE_URL' | translate }}
-      </label>
+        </p-floatlabel>
+        <p-inputgroup-addon>
+          <p-button
+            id="ws_detail_props_item_logo_small-url_remove"
+            icon="pi pi-trash"
+            [ngClass]="footerLabelInput.value && !editMode ? 'cursor-pointer' : 'p-disabled'"
+            (onClick)="onRemoveImageUrl(RefType.LogoSmall)"
+            [ariaLabel]="'IMAGE.TOOLTIPS.REMOVE.URL' | translate"
+            [pTooltip]="'IMAGE.TOOLTIPS.REMOVE.URL' | translate"
+            tooltipPosition="right"
+            tooltipEvent="hover"
+          />
+        </p-inputgroup-addon>
+      </p-inputgroup>
     </div>
   </article>
 
   <!-- FOOTER LABEL -->
-  <div class="p-inputgroup mb-1 w-full" controlErrorAnchor>
-    <span class="p-float-label">
+  <p-inputgroup class="w-auto">
+    <p-floatlabel variant="on">
       <input
         #footerLabelInput
         pInputText
@@ -503,22 +469,22 @@
       <label for="ws_detail_props_item_footer_label" aria-hidden="true">
         {{ 'WORKSPACE.FOOTER_LABEL' | translate }}
       </label>
-    </span>
-    <button
-      id="ws_detail_props_item_footer_label_i18n"
-      class="p-inputgroup-addon bg-primary pseudo-button"
-      [ngClass]="footerLabelInput.value && !editMode ? 'cursor-pointer' : 'p-disabled'"
-      (click)="openI18nDialog('footerLabel', 'WORKSPACE.FOOTER_LABEL')"
-      [attr.aria-label]="'DIALOG.I18N.TOOLTIP' | translate"
-      [pTooltip]="'DIALOG.I18N.TOOLTIP' | translate"
-      tooltipPosition="right"
-      tooltipEvent="hover"
-    >
-      <span class="pi pi-language" aria-hidden="true"></span>
-    </button>
-  </div>
+    </p-floatlabel>
+    <p-inputgroup-addon>
+      <p-button
+        id="ws_detail_props_item_footer_label_i18n"
+        icon="pi pi-language"
+        [ngClass]="footerLabelInput.value && !editMode ? 'cursor-pointer' : 'p-disabled'"
+        (onClick)="openI18nDialog('footerLabel', 'WORKSPACE.FOOTER_LABEL')"
+        [ariaLabel]="'DIALOG.I18N.TOOLTIP' | translate"
+        [pTooltip]="'DIALOG.I18N.TOOLTIP' | translate"
+        tooltipPosition="right"
+        tooltipEvent="hover"
+      />
+    </p-inputgroup-addon>
+  </p-inputgroup>
 
-  <span class="p-float-label mb-1 w-full" controlErrorAnchor>
+  <p-floatlabel variant="on" class="flex-grow-1">
     <textarea
       class="w-full"
       pInputTextarea
@@ -527,13 +493,13 @@
       id="ws_detail_props_item_description"
       maxlength="255"
       formControlName="description"
-      [attr.aria-label]="'WORKSPACE.DESCRIPTION' | translate"
+      [ariaLabel]="'WORKSPACE.DESCRIPTION' | translate"
       [pTooltip]="'WORKSPACE.TOOLTIPS.DESCRIPTION' | translate"
       tooltipPosition="top"
       tooltipEvent="hover"
     ></textarea>
     <label for="ws_detail_props_item_description" aria-hidden="true">{{ 'WORKSPACE.DESCRIPTION' | translate }} </label>
-  </span>
+  </p-floatlabel>
 </form>
 
 <app-workspace-i18n

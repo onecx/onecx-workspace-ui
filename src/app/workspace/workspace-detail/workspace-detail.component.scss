@@ -1,19 +1,41 @@
-@import 'src/app/_ws-mixins.scss';
+@use 'src/app/_ws-mixins.scss' as *;
 
 @include word-break-all;
+@include danger-action;
+@include ocx-text-responsive;
+@include ocx-required-label;
+@include ocx-p-inputgroup;
+@include ocx-p-message;
+@include ocx-p-tabs;
+@include ocx-interactive-data-view-fixes;
+@include dialog-footer-buttons;
+@include dialog-non-full-size-modal;
+@include readable-disabled-components;
+/*
 @include card-badges;
 @include danger-action;
 @include cursor-default;
 @include picklist-zebra-rows;
 @include picklist-hide-double-buttons;
 @include correct-select-button;
-@include displaying-text-responsive;
+@include ocx-text-responsive;
 @include readable-disabled-components;
 @include dialog-footer-buttons;
 @include dialog-modal-disable-full-height;
 @include tabview-fix-color-selected-tab;
-
+*/
 :host ::ng-deep {
+  .ocx-content > div {
+    margin-bottom: 0 !important;
+    padding: 0 !important;
+  }
+  .p-tabs .p-tabpanels {
+    padding: 0;
+    &.non-modal-panels {
+      padding: 0.3rem 1rem;
+    }
+  }
+
   .max-w-11 {
     max-width: 90%;
   }

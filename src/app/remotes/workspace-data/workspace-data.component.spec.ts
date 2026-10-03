@@ -2,11 +2,12 @@ import { TestBed } from '@angular/core/testing'
 import { CommonModule } from '@angular/common'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { NoopAnimationsModule } from '@angular/platform-browser/animations'
+import { provideNoopAnimations } from '@angular/platform-browser/animations'
 import { TranslateTestingModule } from 'ngx-translate-testing'
-import { of, ReplaySubject, throwError } from 'rxjs'
+import { firstValueFrom, of, ReplaySubject, throwError } from 'rxjs'
 
-import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
+import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-remote-components'
+import { provideAppConfigServiceMock } from '@onecx/angular-integration-interface/mocks'
 
 import { SearchWorkspacesResponse, Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
 import { OneCXWorkspaceDataComponent } from './workspace-data.component'
@@ -24,6 +25,16 @@ const workspace2: Workspace = {
 const workspaces: Workspace[] = [workspace1, workspace2]
 
 describe('OneCXWorkspaceDataComponent', () => {
+  // the component injects this token - it must be provided (a ReplaySubject, like the real host)
+  const rcConfig = new ReplaySubject<RemoteComponentConfig>(1)
+  const defaultRCConfig: RemoteComponentConfig = {
+    appId: 'appId',
+    productName: 'prodName',
+    baseUrl: 'base',
+    permissions: ['permission']
+  }
+  rcConfig.next(defaultRCConfig)
+
   const workspaceApiSpy = {
     searchWorkspaces: jasmine.createSpy('searchWorkspaces').and.returnValue(of({})),
     getWorkspaceByName: jasmine.createSpy('getWorkspaceByName').and.returnValue(of({}))
@@ -36,25 +47,22 @@ describe('OneCXWorkspaceDataComponent', () => {
     return { fixture, component }
   }
 
-  let baseUrlSubject: ReplaySubject<any>
   beforeEach(() => {
-    baseUrlSubject = new ReplaySubject<any>(1)
     TestBed.configureTestingModule({
       declarations: [],
       imports: [
+        OneCXWorkspaceDataComponent,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
-        }).withDefaultLanguage('en'),
-        NoopAnimationsModule
+        }).withDefaultLanguage('en')
       ],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        {
-          provide: BASE_URL,
-          useValue: baseUrlSubject
-        }
+        provideNoopAnimations(),
+        provideAppConfigServiceMock(),
+        { provide: REMOTE_COMPONENT_CONFIG, useValue: rcConfig }
       ]
     })
       .overrideComponent(OneCXWorkspaceDataComponent, {
@@ -65,7 +73,6 @@ describe('OneCXWorkspaceDataComponent', () => {
       })
       .compileComponents()
 
-    baseUrlSubject.next('base_url_mock')
     workspaceApiSpy.searchWorkspaces.calls.reset()
     workspaceApiSpy.getWorkspaceByName.calls.reset()
   })
@@ -92,15 +99,15 @@ describe('OneCXWorkspaceDataComponent', () => {
       expect(component.ocxInitRemoteComponent).toHaveBeenCalledWith(mockConfig)
     })
 
-    it('should init remote component', (done: DoneFn) => {
+    it('should init remote component', async () => {
       const { component } = setUp()
 
       component.ocxInitRemoteComponent({ baseUrl: 'base_url' } as RemoteComponentConfig)
 
-      baseUrlSubject.asObservable().subscribe((item) => {
-        expect(item).toEqual('base_url')
-        done()
-      })
+      // ocxInitRemoteComponent() pushes the config to the token and re-bases the API service.
+      expect((await firstValueFrom(rcConfig))?.baseUrl).toEqual('base_url')
+      const workspaceApi = (component as unknown as { workspaceApi: WorkspaceAPIService }).workspaceApi
+      expect(workspaceApi.configuration.basePath).toEqual('base_url/bff')
     })
   })
 

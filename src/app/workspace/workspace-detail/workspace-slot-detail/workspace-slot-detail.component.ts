@@ -5,9 +5,12 @@ import { PortalMessageService, UserService } from '@onecx/angular-integration-in
 
 import { SlotAPIService, UpdateSlotRequest } from 'src/app/shared/generated'
 import { ChangeMode, ExtendedSlot, ExtendedComponent, PSSlot } from '../workspace-slots/workspace-slots.component'
+import { SharedModule } from 'src/app/shared/shared.module'
 
 @Component({
   selector: 'app-workspace-slot-detail',
+  standalone: true,
+  imports: [SharedModule],
   templateUrl: './workspace-slot-detail.component.html',
   styleUrls: ['./workspace-slot-detail.component.scss']
 })
@@ -39,7 +42,9 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
     private readonly translate: TranslateService,
     private readonly msgService: PortalMessageService
   ) {
-    this.hasEditPermission = this.user.hasPermission('WORKSPACE_SLOT#EDIT')
+    Promise.all([this.user.hasPermission('WORKSPACE_SLOT#EDIT')]).then(([perm]) => {
+      this.hasEditPermission = perm
+    })
     this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm:ss' : 'M/d/yy, hh:mm:ss a'
   }
 

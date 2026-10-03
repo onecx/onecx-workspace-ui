@@ -5,9 +5,12 @@ import FileSaver from 'file-saver'
 import { Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { Utils } from 'src/app/shared/utils'
+import { SharedModule } from 'src/app/shared/shared.module'
 
 @Component({
   selector: 'app-workspace-export',
+  standalone: true,
+  imports: [SharedModule],
   templateUrl: './workspace-export.component.html'
 })
 export class WorkspaceExportComponent {

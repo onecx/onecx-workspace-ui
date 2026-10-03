@@ -41,6 +41,7 @@ import {
   WorkspaceService
 } from '@onecx/angular-integration-interface'
 
+import { SharedModule } from 'src/app/shared/shared.module'
 import {
   ImagesInternalAPIService,
   Microfrontend,
@@ -59,6 +60,7 @@ import {
   SlotComponent
 } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
+import { ImageContainerComponent } from 'src/app/shared/components/image-container/image-container.component'
 
 type ChangeStatus = {
   index?: number
@@ -149,6 +151,8 @@ export function AddMfeModuleFormControl(fb: FormBuilder, modules: FormArray, idx
 
 @Component({
   selector: 'app-products',
+  standalone: true,
+  imports: [SharedModule, ImageContainerComponent],
   templateUrl: './products.component.html',
   styleUrls: ['./products.component.scss']
 })
@@ -202,7 +206,10 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     private readonly elem: ElementRef,
     public renderer: Renderer2
   ) {
-    this.hasRegisterPermission = this.user.hasPermission('WORKSPACE_PRODUCTS#REGISTER')
+    Promise.all([this.user.hasPermission('WORKSPACE_PRODUCTS#REGISTER')]).then(([perm]) => {
+      this.hasRegisterPermission = perm
+    })
+
     this.appState.currentMfe$.pipe(map((mfe) => (this.currentMfe = mfe))).subscribe()
     this.formGroup = this.fb.group({
       displayName: new FormControl({ value: null, disabled: true }),

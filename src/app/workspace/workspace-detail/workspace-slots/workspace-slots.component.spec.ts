@@ -784,7 +784,7 @@ describe('WorkspaceSlotsComponent', () => {
     it('dataview translations', (done) => {
       const translationData = {
         'DIALOG.DATAVIEW.FILTER': 'filter',
-        'DIALOG.DATAVIEW.FILTER_OF': 'filterOf',
+        'DIALOG.DATAVIEW.FILTER.OF': 'filterOf',
         'DIALOG.DATAVIEW.SORT_BY': 'sortBy'
       }
       const translateService = TestBed.inject(TranslateService)

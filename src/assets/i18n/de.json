@@ -100,10 +100,10 @@
     "EXPORT": {
       "LABEL": "Export",
       "TOOLTIP": "Definition im JSON Format herunterladen",
-      "MENU": "Die Menü-Definition im JSON Format herunterladen",
-      "WORKSPACE": "Die Workspace-Definition im JSON Format herunterladen",
+      "MENU": "Die Menü-Definition im JSON Format herunterladen.",
+      "WORKSPACE": "Die Workspace-Definition im JSON Format herunterladen.",
       "MESSAGE": {
-        "NOK": "Workspace konnte nicht exportiert werden"
+        "NOK": "Workspace konnte nicht exportiert werden."
       }
     },
     "IMPORT": {
@@ -205,7 +205,7 @@
     "MODIFICATION_DATE": "Geändert am",
     "MODIFICATION_USER": "Geändert von",
     "MANDATORY": "Notwendig",
-    "MANDATORY_TRUE": "Dieser Workspace ist notwendig für den Betrieb. Der Workspace kann somit nicht gelöscht werden.",
+    "MANDATORY_TRUE": "Dieser Workspace ist notwendig für den Betrieb. Der Workspace kann somit nicht so einfach gelöscht werden.",
     "OPERATOR": "Automatisiert erstellt",
     "OPERATOR_HINT": "Hinweis",
     "OPERATOR_MESSAGE": "Dieser Workspace wurde automatisiert erstellt. Alle Änderungen gehen beim nächsten Deployment verloren.",
@@ -214,7 +214,7 @@
       "CREATION_USER": "ID des Benutzers der Erstellung",
       "MODIFICATION_DATE": "Zeitpunkt der letzten Änderung",
       "MODIFICATION_USER": "ID des Benutzers der letzten Änderung",
-      "MANDATORY": "Wenn gesetzt, dann ist dieser Workspace notwendig für den Betrieb. Der Workspace kann somit nicht gelöscht werden.",
+      "MANDATORY": "Wenn gesetzt, dann ist dieser Workspace notwendig für den Betrieb. Der Workspace kann somit nicht so einfach gelöscht werden.",
       "OPERATOR": "Wenn gesetzt, dann wurde der Workspace automatisiert erstellt. Alle Änderungen gehen beim beim nächsten Deployment verloren."
     }
   },
@@ -554,12 +554,14 @@
       }
     },
     "DATAVIEW": {
-      "FILTER": "Filter",
+      "FILTER": {
+        "LABEL": "Filter",
+        "OF": "Filter für ",
+        "CLEAR": "Filter entfernen",
+        "PLACEHOLDER": "Filter"
+      },
       "PRODUCT_FILTER_TOOLTIP": "Filtern nach Applikation und Klassifikation",
       "SLOT_FILTER_TOOLTIP": "Filtern nach Komponenten",
-      "FILTER_OF": "Filter für ",
-      "FILTER_CLEAR": "Filter entfernen",
-      "FILTER_PLACEHOLDER": "Filter",
       "SORT_BY": "Sortiert nach",
       "SORT_DIRECTION_ASC": "aufsteigend",
       "SORT_DIRECTION_DESC": "absteigend",
@@ -600,12 +602,8 @@
     }
   },
   "WORKSPACE_EXPORT": {
-    "THEME_CHECKBOX_HEADER": "Export Workspace-Definition",
-    "THEME_CHECKBOX_MESSAGE": "Die Workspace-Definition im JSON Format herunterladen.",
-    "THEME_LOADING": "...lädt",
-    "THEME_NOT_AVALIABLE": "keine verfügbaren Themes ",
     "MENU": "Menü-Definition aufnehmen",
-    "MENU_TOOLTIP": "Menü in die Definition des Workspace aufnehmen"
+    "MENU_TOOLTIP": "Menü in die Definition des Workspace aufnehmen."
   },
   "WORKSPACE_IMPORT": {
     "HEADER": "Workspace Import",
@@ -717,10 +715,10 @@
     "FORM_INVALID": "Das Formular enthält ungültige Werte.",
     "HINTS": {
       "FORMAT_URL": "Format: ",
-      "FORMAT_BASE_URL": "Format: /pfad-zum-workspace",
-      "FORMAT_FEED_URL": "Format: http(s)://pfad-zum-feed",
-      "FORMAT_IMAGE_URL": "Format: http(s)://pfad-zum-bild",
-      "FORMAT_HOME_PAGE": "Format: /pfad-zur-registrierten-app"
+      "FORMAT_BASE_URL": "<br/>Format: /pfad-zum-workspace",
+      "FORMAT_FEED_URL": "<br/>Format: http(s)://pfad-zum-feed",
+      "FORMAT_IMAGE_URL": "<br/>Format: http(s)://path-to-image",
+      "FORMAT_HOME_PAGE": "<br/>Format: /pfad-zur-registrierten-app"
     },
     "ERRORS": {
       "APP_MODULE.PATH_ALREADY_USED": "Dieser Modulpfade wurde bereits verwendet. Bitte einen Pfad wählen der für die Applikation eindeutig ist.",

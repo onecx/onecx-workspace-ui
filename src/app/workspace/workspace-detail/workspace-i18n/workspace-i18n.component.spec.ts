@@ -1,8 +1,7 @@
-import { NO_ERRORS_SCHEMA, SimpleChanges } from '@angular/core'
+import { SimpleChanges } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { provideHttpClient } from '@angular/common/http'
-import { ReactiveFormsModule } from '@angular/forms'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of, throwError } from 'rxjs'
 
@@ -67,9 +66,9 @@ describe('WorkspaceI18nComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [WorkspaceI18nComponent],
+      declarations: [],
       imports: [
-        ReactiveFormsModule,
+        WorkspaceI18nComponent,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
@@ -81,7 +80,6 @@ describe('WorkspaceI18nComponent', () => {
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: WorkspaceAPIService, useValue: apiServiceSpy }
       ],
-      schemas: [NO_ERRORS_SCHEMA],
       teardown: { destroyAfterEach: false }
     }).compileComponents()
   }))

@@ -1,11 +1,11 @@
-<div class="my-3">
+<div class="mt-5 mb-2">
   <form [formGroup]="formGroup" errorTailor class="flex flex-wrap align-items-top gap-4">
     <div>
-      <span class="p-float-label" controlErrorAnchor>
+      <p-floatlabel variant="on" class="w-16rem">
         <input
           pInputText
           type="text"
-          class="w-16rem"
+          class="w-full pt-3 pb-2"
           id="ws_import_preview_workspace_name"
           formControlName="name"
           (keyup)="onModelChange()"
@@ -17,43 +17,41 @@
         <label class="ocx-required-label" for="ws_import_preview_workspace_name">
           {{ 'WORKSPACE_IMPORT.WORKSPACE_NAME' | translate }}
         </label>
-      </span>
+      </p-floatlabel>
     </div>
     <div>
-      <ocx-slot
-        *ngIf="isThemeComponentDefined$ | async"
-        [name]="slotName"
-        [inputs]="{ dataType: 'themes' }"
-        [outputs]="{ themes: themesEmitter }"
-      >
-      </ocx-slot>
-
-      <div *ngIf="(themes$ | async) ?? [importTheme] as themes">
-        <span class="p-float-label" controlErrorAnchor>
-          <p-dropdown
-            id="ws_import_preview_theme"
-            formControlName="theme"
-            styleClass="w-16rem inputgroup-dropdown-with-link input-field-correction"
-            [options]="checkAndExtendThemes(themes)"
-            optionLabel="displayName"
-            optionValue="name"
-            (onChange)="onModelChange()"
-            [ariaLabel]="'WORKSPACE.THEME' | translate"
-            [pTooltip]="'WORKSPACE_IMPORT.THEME_NAME.TOOLTIP' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          >
-          </p-dropdown>
-          <label class="ocx-required-label" for="ws_import_preview_theme">{{ 'WORKSPACE.THEME' | translate }} </label>
-        </span>
-      </div>
+      @if (isThemeComponentDefined$ | async) {
+        <ocx-slot [name]="slotName" [inputs]="{ dataType: 'themes' }" [outputs]="{ themes: themesEmitter }"> </ocx-slot>
+      }
+      @let themes = (themes$ | async) ?? [importTheme];
+      @if (themes) {
+        <div>
+          <p-floatlabel variant="on" class="w-16rem">
+            <p-select
+              id="ws_import_preview_theme"
+              formControlName="theme"
+              styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
+              [options]="checkAndExtendThemes(themes)"
+              optionLabel="displayName"
+              optionValue="name"
+              (onChange)="onModelChange()"
+              [ariaLabel]="'WORKSPACE.THEME' | translate"
+              [pTooltip]="'WORKSPACE_IMPORT.THEME_NAME.TOOLTIP' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            >
+            </p-select>
+            <label class="ocx-required-label" for="ws_import_preview_theme">{{ 'WORKSPACE.THEME' | translate }} </label>
+          </p-floatlabel>
+        </div>
+      }
     </div>
     <div>
-      <span class="p-float-label" controlErrorAnchor>
+      <p-floatlabel variant="on" class="w-16rem">
         <input
           pInputText
           type="text"
-          class="w-16rem"
+          class="w-full pt-3 pb-2"
           id="ws_import_preview_base_url"
           formControlName="baseUrl"
           (keyup)="onModelChange()"
@@ -65,14 +63,14 @@
         <label class="ocx-required-label" for="ws_import_preview_base_url">
           {{ 'WORKSPACE.BASE_URL' | translate }}
         </label>
-      </span>
+      </p-floatlabel>
     </div>
     <div>
-      <span class="p-float-label" controlErrorAnchor>
+      <p-floatlabel variant="on" class="w-16rem">
         <input
           pInputText
           type="text"
-          class="w-16rem"
+          class="w-full pt-3 pb-2"
           id="ws_import_preview_display_name"
           formControlName="displayName"
           (keyup)="onModelChange()"
@@ -84,7 +82,7 @@
         <label class="ocx-required-label" for="ws_import_preview_display_name">
           {{ 'WORKSPACE.DISPLAY_NAME' | translate }}
         </label>
-      </span>
+      </p-floatlabel>
     </div>
     <div class="flex justify-content-center align-items-center">
       <p-checkbox
@@ -93,75 +91,104 @@
         styleClass="cursor-pointer shadow-none"
         formControlName="mandatory"
         (onChange)="onModelChange()"
-        [binary]="true"
-        [label]="'INTERNAL.MANDATORY' | translate"
         [ariaLabel]="'INTERNAL.MANDATORY' | translate"
         [pTooltip]="'INTERNAL.TOOLTIPS.MANDATORY' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       >
-        <!-- simplifies aria appearance-->
-        <ng-template pTemplate="icon">
-          <span class="pi" [ngClass]="checkMandatory.value ? 'pi-check-square' : 'pi-check'"></span>
-        </ng-template>
       </p-checkbox>
+      <label class="ocx-required-label ml-2" for="ws_import_preview_mandatory">
+        {{ 'INTERNAL.MANDATORY' | translate }}
+      </label>
     </div>
   </form>
   <!-- Workspace Collections: Menu, Roles, Products -->
-  <p-tabView styleClass="mt-4">
-    <p-tabPanel
-      [header]="'TABS.WORKSPACE.MENU' | translate"
-      [attr.aria-label]="'TABS.WORKSPACE.MENU' | translate"
-      [tooltip]="'TABS.WORKSPACE.TOOLTIPS.MENU' | translate"
-      tooltipPosition="top"
-      tooltipEvent="focus|hover"
-    >
-      <div class="my-1 mx-2 max-h-13rem overflow-auto">
-        <p-tree
-          styleClass="p-0"
-          id="ws_import_preview_menu"
-          [value]="menuItems"
-          [emptyMessage]="'DIALOG.MENU.MENU_NOT_EXIST' | translate"
-        ></p-tree>
-      </div>
-    </p-tabPanel>
-    <p-tabPanel
-      [header]="'TABS.WORKSPACE.ROLES' | translate"
-      [attr.aria-label]="'TABS.WORKSPACE.ROLES' | translate"
-      [tooltip]="'TABS.WORKSPACE.TOOLTIPS.ROLES' | translate"
-      tooltipPosition="top"
-      tooltipEvent="focus|hover"
-    >
-      <div class="my-1 mx-2 max-h-10rem overflow-auto">
-        <ng-container *ngIf="workspaceRoles.length === 0" id="ws_import_preview_roles_not_exist">
-          {{ 'ROLE.ROLES_NOT_EXIST' | translate }}
-        </ng-container>
-        <ng-container *ngIf="workspaceRoles.length > 0" id="ws_import_preview_roles">
-          {{ workspaceRoles.sort(sortByLocale).join(', ') }}
-        </ng-container>
-      </div>
-    </p-tabPanel>
-    <p-tabPanel
-      [header]="'TABS.WORKSPACE.PRODUCTS' | translate"
-      [attr.aria-label]="'TABS.WORKSPACE.PRODUCTS' | translate"
-      [tooltip]="'TABS.WORKSPACE.TOOLTIPS.PRODUCTS' | translate"
-      tooltipPosition="top"
-      tooltipEvent="focus|hover"
-    >
-      <div class="mt-1 mb-2 mx-2 max-h-10rem overflow-auto">
-        <ng-container *ngIf="workspaceProducts.length === 0" id="ws_import_preview_products_not_exist">
-          {{ 'DIALOG.PRODUCTS.MESSAGES.NOTHING_REGISTERED' | translate }}
-        </ng-container>
-        <ng-container *ngIf="workspaceProducts.length > 0" id="ws_import_preview_products">
-          {{ workspaceProducts.sort(sortByLocale).join(', ') }}
-        </ng-container>
-      </div>
-      <p-message
-        *ngIf="workspaceProducts.length > 0"
-        id="ws_import_preview_product_hint"
-        severity="info"
-        [text]="'WORKSPACE_IMPORT.PRODUCT_HINT' | translate"
-      ></p-message>
-    </p-tabPanel>
-  </p-tabView>
+  <p-tabs [lazy]="false" [value]="'0'" class="mt-4">
+    <p-tablist>
+      <p-tab
+        value="0"
+        id="ws_import_preview_menu"
+        [ariaLabel]="'TABS.WORKSPACE.MENU' | translate"
+        [pTooltip]="'TABS.WORKSPACE.TOOLTIPS.MENU' | translate"
+        tooltipPosition="top"
+        tooltipEvent="focus|hover"
+      >
+        {{ 'TABS.WORKSPACE.MENU' | translate }}
+      </p-tab>
+      <p-tab
+        value="1"
+        id="ws_import_preview_roles"
+        [ariaLabel]="'TABS.WORKSPACE.ROLES' | translate"
+        [pTooltip]="'TABS.WORKSPACE.TOOLTIPS.ROLES' | translate"
+        tooltipPosition="top"
+        tooltipEvent="focus|hover"
+      >
+        {{ 'TABS.WORKSPACE.ROLES' | translate }}
+      </p-tab>
+      <p-tab
+        value="2"
+        id="ws_import_preview_products"
+        [ariaLabel]="'TABS.WORKSPACE.PRODUCTS' | translate"
+        [pTooltip]="'TABS.WORKSPACE.TOOLTIPS.PRODUCTS' | translate"
+        tooltipPosition="top"
+        tooltipEvent="focus|hover"
+      >
+        {{ 'TABS.WORKSPACE.PRODUCTS' | translate }}
+      </p-tab>
+    </p-tablist>
+    <p-tabpanels>
+      <!-- MENU -->
+      <p-tabpanel value="0">
+        <div class="max-h-13rem overflow-auto">
+          <p-tree
+            styleClass="p-0"
+            id="ws_import_preview_menu"
+            [value]="menuItems"
+            [emptyMessage]="'DIALOG.MENU.MENU_NOT_EXIST' | translate"
+          ></p-tree>
+        </div>
+      </p-tabpanel>
+      <!-- ROLES -->
+      <p-tabpanel value="1">
+        @let wrs = workspaceRoles.sort(sortByLocale);
+        @let wrsMessageKey = wrs.length === 0 ? 'WORKSPACE_IMPORT.VALIDATION.WORKSPACE.ROLES_MISSING' : 'ROLE_HINT';
+        <div class="px-3 max-h-13rem">
+          @if (wrs.length > 0) {
+            <ul id="ws_import_preview_roles" class="max-h-10rem overflow-auto">
+              @for (r of wrs; track r) {
+                <li>{{ r }}</li>
+              }
+            </ul>
+          } @else {
+            <p-message
+              id="ws_import_preview_roles_message"
+              severity="info"
+              [text]="wrsMessageKey | translate"
+            ></p-message>
+          }
+        </div>
+      </p-tabpanel>
+
+      <!-- PRODUCTS -->
+      <p-tabpanel value="2">
+        @let wps = workspaceProducts.sort(sortByLocale);
+        @let wpsMessageKey =
+          wps.length === 0 ? 'WORKSPACE_IMPORT.VALIDATION.WORKSPACE.PRODUCTS_MISSING' : 'WORKSPACE_IMPORT.PRODUCT_HINT';
+        <div class="px-3 max-h-13rem">
+          <p-message
+            id="ws_import_preview_product_message"
+            severity="info"
+            [text]="wpsMessageKey | translate"
+          ></p-message>
+          @if (wps.length > 0) {
+            <ul id="ws_import_preview_products" class="max-h-10rem overflow-auto">
+              @for (p of wps; track p) {
+                <li>{{ p }}</li>
+              }
+            </ul>
+          }
+        </div>
+      </p-tabpanel>
+    </p-tabpanels>
+  </p-tabs>
 </div>

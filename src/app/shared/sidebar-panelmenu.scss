@@ -1,4 +1,51 @@
 :host ::ng-deep {
+  --onecx-workspace-onecx-workspace-ui-panelmenu-item-focus-background: var(--p-panelmenu-item-focus-background);
+
+  .p-panelmenu-item:not(.p-disabled) > .p-panelmenu-item-content:hover {
+    color: var(--menu-item-text-color);
+  }
+
+  /* Angular 19 migration for PrimeNG */
+  .p-panelmenu {
+    width: 17rem;
+    gap: 0;
+    .p-panelmenu-panel {
+      box-shadow: none;
+      border-style: none;
+      border-radius: 0;
+      padding: 0;
+    }
+  }
+
+  /* general styles for panel menu items */
+  .p-panelmenu-header-content,
+  .p-panelmenu-item-content {
+    border-radius: 0;
+    color: var(--menu-item-text-color);
+    &:hover {
+      background: var(--p-panelmenu-item-focus-background);
+      color: var(--menu-item-text-color);
+    }
+    * {
+      background: inherit;
+      color: inherit;
+    }
+  }
+
+  /* markup the active menu item with specific background and text color */
+  .ocx-vertical-menu-active-item {
+    &:not(.p-focus) {
+      > .p-panelmenu-header-content,
+      .p-panelmenu-item-content {
+        &:not(:hover) {
+          background-color: var(--menu-active-item-bg-color);
+          color: var(--menu-active-item-text-color);
+        }
+      }
+    }
+  }
+
+  /*
   .p-panelmenu {
     // panel menu items
     .p-panelmenu-header {
@@ -57,6 +104,7 @@
 
       // menu items
       .p-menuitem {
+        .p-panelmenu-item-content,
         .p-menuitem-content {
           color: var(--menu-item-text-color);
 
@@ -72,7 +120,8 @@
         }
 
         &.p-highlight {
-          > .p-menuitem-content {
+          > .p-panelmenu-item-content,
+          .p-menuitem-content {
             color: var(--menu-item-text-color);
             background: var(--menu-item-hover-bg-color);
 
@@ -86,7 +135,8 @@
           }
 
           &.p-focus {
-            > .p-menuitem-content {
+            > .p-panelmenu-item-content,
+            .p-menuitem-content {
               background: var(--menu-item-hover-bg-color);
             }
           }
@@ -94,7 +144,8 @@
 
         &:not(.p-highlight):not(.p-disabled) {
           &.p-focus {
-            > .p-menuitem-content {
+            > .p-panelmenu-item-content,
+            .p-menuitem-content {
               color: var(--menu-item-text-color);
               background: var(--menu-item-hover-bg-color);
               .p-menuitem-text,
@@ -105,7 +156,8 @@
             }
           }
 
-          > .p-menuitem-content {
+          > .p-panelmenu-item-content,
+          .p-menuitem-content {
             &:hover {
               color: var(--menu-item-text-color);
               background: var(--menu-item-hover-bg-color);
@@ -123,4 +175,5 @@
       }
     }
   }
+*/
 }

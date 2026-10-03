@@ -2,7 +2,7 @@ import { TestBed, waitForAsync } from '@angular/core/testing'
 import { CommonModule } from '@angular/common'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { NoopAnimationsModule } from '@angular/platform-browser/animations'
+import { provideNoopAnimations } from '@angular/platform-browser/animations'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { ReplaySubject, firstValueFrom } from 'rxjs'
 
@@ -36,16 +36,17 @@ describe('OneCXVersionInfoComponent', () => {
 
   const cfg: Config = { [CONFIG_KEY.APP_VERSION]: 'v1' }
 
-  /* Why async:
-     versionInfo$ is declared with combineLatest whcih fires each time a
-     part is changed. Within the tests the versionInfo value is captured
-     with firstValueFrom. Therefore the config value should be set on
-     initialization time.
+  /* Why async / init before createComponent:
+     versionInfo$ is declared with combineLatest and reads
+     config.getProperty(APP_VERSION) in the component constructor. The mock's
+     getProperty resolves against the already-seeded config, so the config must
+     be initialised BEFORE the component is created - otherwise hostVersion is
+     captured as undefined. The versionInfo value is then captured with firstValueFrom.
   */
   async function setUp(config: Config) {
+    await mockConfigurationService.init(config)
     const fixture = TestBed.createComponent(OneCXVersionInfoComponent)
     const component = fixture.componentInstance
-    await mockConfigurationService.init(config)
     fixture.detectChanges()
     return { fixture, component }
   }
@@ -55,28 +56,22 @@ describe('OneCXVersionInfoComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [],
       imports: [
+        OneCXVersionInfoComponent,
         TranslateTestingModule.withTranslations({
-          de: require('./../../../assets/i18n/de.json'),
-          en: require('./../../../assets/i18n/en.json')
-        }).withDefaultLanguage('en'),
-        NoopAnimationsModule
+          de: require('src/assets/i18n/de.json'),
+          en: require('src/assets/i18n/en.json')
+        }).withDefaultLanguage('en')
       ],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
+        provideNoopAnimations(),
         provideAppStateServiceMock(),
         provideConfigurationServiceMock(),
         { provide: REMOTE_COMPONENT_CONFIG, useValue: rcConfig }
       ]
-    })
-      .overrideComponent(OneCXVersionInfoComponent, {
-        set: {
-          imports: [TranslateTestingModule, CommonModule]
-        }
-      })
-      .compileComponents()
+    }).compileComponents()
 
     // Initialize Mocks
     mockConfigurationService = TestBed.inject(ConfigurationServiceMock)
@@ -168,7 +163,8 @@ describe('OneCXVersionInfoComponent', () => {
         mfeInfo: 'OneCX Workspace UI v1.0.0',
         separator: ' - '
       }
-      const { component } = await setUp({})
+      // An empty host version maps to an empty shellInfo (an absent key would map to undefined).
+      const { component } = await setUp({ [CONFIG_KEY.APP_VERSION]: '' })
       const versionInfo = await firstValueFrom(component.versionInfo$)
 
       expect(versionInfo).toEqual(mockVersion)

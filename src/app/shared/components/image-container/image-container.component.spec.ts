@@ -1,5 +1,6 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { provideHttpClient } from '@angular/common/http'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of } from 'rxjs'
 
@@ -28,15 +29,18 @@ describe('ImageContainerComponent', () => {
     mockAppStateService = new MockAppStateService()
 
     TestBed.configureTestingModule({
-      declarations: [ImageContainerComponent],
       imports: [
+        ImageContainerComponent,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
-      schemas: [NO_ERRORS_SCHEMA],
-      providers: [{ provide: AppStateService, useValue: mockAppStateService }]
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: AppStateService, useValue: mockAppStateService }
+      ]
     }).compileComponents()
   }))
 

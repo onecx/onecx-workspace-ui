@@ -1,13 +1,12 @@
-@import '/src/app/_ws-mixins.scss';
+@use 'src/app/_ws-mixins.scss' as *;
 
 @include invisible;
 @include card-badges;
 @include prepare-inputgroup;
 @include picklist-zebra-rows;
-@include displaying-text-responsive;
+@include ocx-text-responsive;
+@include ocx-p-tabs;
 @include dialog-modal-disable-full-height;
-@include tabview-fix-color-selected-tab;
-@include tabview-reduce-padding;
 
 :host ::ng-deep {
   @media screen and (min-width: 962px) {

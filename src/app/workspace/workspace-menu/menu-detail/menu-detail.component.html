@@ -227,13 +227,14 @@
                 class="checkbox-label"
                 formControlName="disabled"
                 [binary]="true"
-                [label]="'MENU_ITEM.DISABLED' | translate"
                 [ariaLabel]="'MENU_ITEM.DISABLED' | translate"
                 [pTooltip]="'MENU_ITEM.TOOLTIP.DISABLED' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
-              >
-              </p-checkbox>
+              />
+              <label for="ws_menu_detail_field_disabled" aria-hidden="true">
+                {{ 'MENU_ITEM.DISABLED' | translate }}
+              </label>
             </div>
             <div class="w-full md:my-2 flex justify-content-start align-items-center">
               <p-checkbox
@@ -241,13 +242,14 @@
                 class="checkbox-label"
                 formControlName="external"
                 [binary]="true"
-                [label]="'MENU_ITEM.EXTERN' | translate"
                 [ariaLabel]="'MENU_ITEM.EXTERN' | translate"
                 [pTooltip]="'MENU_ITEM.TOOLTIP.EXTERN' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
-              >
-              </p-checkbox>
+              />
+              <label for="ws_menu_detail_field_ws_exit" aria-hidden="true">
+                {{ 'MENU_ITEM.EXTERN' | translate }}
+              </label>
             </div>
             <div class="w-full flex justify-content-start align-items-center">
               <p-checkbox
@@ -258,13 +260,14 @@
                 trueValue="_blank"
                 falseValue="_self"
                 [binary]="true"
-                [label]="'MENU_ITEM.TARGET' | translate"
                 [ariaLabel]="'MENU_ITEM.TARGET' | translate"
                 [pTooltip]="'MENU_ITEM.TOOLTIP.TARGET' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
-              >
-              </p-checkbox>
+              />
+              <label for="ws_menu_detail_field_target" aria-hidden="true">
+                {{ 'MENU_ITEM.TARGET' | translate }}
+              </label>
             </div>
           </div>
         </div>

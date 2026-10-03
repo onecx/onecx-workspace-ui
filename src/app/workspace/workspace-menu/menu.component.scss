@@ -1,8 +1,8 @@
-@import 'src/app/_ws-mixins.scss';
+@use 'src/app/_ws-mixins.scss' as *;
 
 @include invisible;
 @include cursor-default;
-@include displaying-text-responsive;
+@include ocx-text-responsive;
 @include readable-disabled-components;
 @include correct-data-view-control;
 @include correct-select-button;

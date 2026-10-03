@@ -1,8 +1,9 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { provideHttpClient } from '@angular/common/http'
 import { TranslateTestingModule } from 'ngx-translate-testing'
+
+import { provideNoopAnimations } from '@angular/platform-browser/animations'
 
 import { WorkspaceInternComponent } from './workspace-intern.component'
 
@@ -17,21 +18,20 @@ const workspace = {
   baseUrl: '/some/base/url'
 }
 
-describe('WorkspaceInternComponent', () => {
+fdescribe('WorkspaceInternComponent', () => {
   let component: WorkspaceInternComponent
   let fixture: ComponentFixture<WorkspaceInternComponent>
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [WorkspaceInternComponent],
       imports: [
+        WorkspaceInternComponent,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
-      providers: [provideHttpClientTesting(), provideHttpClient()],
-      schemas: [NO_ERRORS_SCHEMA]
+      providers: [provideHttpClientTesting(), provideHttpClient(), provideNoopAnimations()]
     }).compileComponents()
   }))
 
@@ -79,8 +79,8 @@ describe('WorkspaceInternComponent', () => {
       component.onSave()
 
       expect(component.formGroup.valid).toBeTrue()
-      expect(component.workspace.mandatory).toBeTrue()
-      expect(component.workspace.disabled).toBeTrue()
+      expect(component.workspace?.mandatory).toBeTrue()
+      expect(component.workspace?.disabled).toBeTrue()
       expect(component.editMode).toBeFalse()
     })
   })

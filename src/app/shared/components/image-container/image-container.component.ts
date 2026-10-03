@@ -1,6 +1,9 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core'
 import { map } from 'rxjs'
 
+import { TooltipModule } from 'primeng/tooltip'
+
+import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
 import { AppStateService } from '@onecx/angular-integration-interface'
 
 import { environment } from 'src/environments/environment'
@@ -14,6 +17,8 @@ import { Utils } from 'src/app/shared/utils'
  */
 @Component({
   selector: 'app-image-container',
+  standalone: true,
+  imports: [AngularAcceleratorModule, TooltipModule],
   templateUrl: './image-container.component.html'
 })
 export class ImageContainerComponent implements OnChanges {
