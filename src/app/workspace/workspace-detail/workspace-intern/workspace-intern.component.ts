@@ -4,6 +4,11 @@ import { FormControl, FormGroup } from '@angular/forms'
 import { Workspace } from 'src/app/shared/generated'
 import { SharedModule } from 'src/app/shared/shared.module'
 
+export type WorkspaceInternFormControls = {
+  operator: FormControl<boolean | null>
+  mandatory: FormControl<boolean | null>
+  disabled: FormControl<boolean | null>
+}
 @Component({
   selector: 'app-workspace-intern',
   standalone: true,
@@ -15,32 +20,31 @@ export class WorkspaceInternComponent implements OnChanges {
   @Input() editMode = false
   @Input() dateFormat = 'M/d/yy, hh:mm:ss a'
 
-  public formGroup: FormGroup
-
-  constructor() {
-    this.formGroup = new FormGroup({
-      operator: new FormControl<boolean | null>(null),
-      mandatory: new FormControl<boolean | null>(null),
-      disabled: new FormControl<boolean | null>(null)
-    })
-  }
+  public formGroup = new FormGroup<WorkspaceInternFormControls>({
+    operator: new FormControl<boolean | null>(false),
+    mandatory: new FormControl<boolean | null>(false),
+    disabled: new FormControl<boolean | null>(false)
+  })
 
   public ngOnChanges(): void {
     this.setFormData()
-    this.editMode ? this.formGroup.enable() : this.formGroup.disable()
-    this.formGroup.controls['operator'].disable()
+    this.formGroup.disable()
+    if (this.editMode) {
+      this.formGroup.controls['mandatory'].enable()
+      this.formGroup.controls['disabled'].enable()
+    }
   }
 
   private setFormData(): void {
     Object.keys(this.formGroup.controls).forEach((element) => {
-      this.formGroup.controls[element].setValue((this.workspace as any)[element])
+      this.formGroup.get(element)?.setValue((this.workspace as any)[element] ?? false)
     })
   }
 
   public onSave(): void {
     if (this.workspace && this.formGroup.valid) {
-      this.workspace.mandatory = this.formGroup.controls['mandatory'].value
-      this.workspace.disabled = this.formGroup.controls['disabled'].value
+      this.workspace.mandatory = this.formGroup.get('mandatory')?.value ?? false
+      this.workspace.disabled = this.formGroup.get('disabled')?.value ?? false
       this.editMode = false
     }
   }
