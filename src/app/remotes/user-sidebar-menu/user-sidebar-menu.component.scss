@@ -1,5 +1,7 @@
 @use 'src/app/shared/sidebar-panelmenu.scss' as *;
-
+/* User Sidebar (vertical) Menu Component Styles
+   The outside of the menu is covered via Accordion.
+*/
 ::ng-deep {
   .p-accordion {
     width: 17rem;
@@ -15,8 +17,8 @@
       }
     }
     .p-accordioncontent-content {
-      padding: 1rem;
-      padding-top: 0;
+      padding: 0;
+      /* The menu item list is located within the accordion content. */
     }
 
     .p-accordionpanel:not(.p-disabled) {

@@ -1,4 +1,3 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { Location } from '@angular/common'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
@@ -63,17 +62,16 @@ describe('WorkspaceDetailComponent', () => {
   beforeEach(waitForAsync(() => {
     mockUserService = { lang$: new BehaviorSubject('de') }
     TestBed.configureTestingModule({
-      declarations: [WorkspaceDetailComponent],
       imports: [
+        WorkspaceDetailComponent,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
-      schemas: [NO_ERRORS_SCHEMA],
       providers: [
-        provideHttpClientTesting(),
         provideHttpClient(),
+        provideHttpClientTesting(),
         provideRouter([{ path: '', component: WorkspaceDetailComponent }]),
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: Router, useValue: mockRouter },

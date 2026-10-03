@@ -21,7 +21,7 @@ import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
 import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
 import { Utils } from 'src/app/shared/utils'
-import { VerticalMenuItemComponent } from 'src/app/shared/vertical-menu-item/vertical-menu-item.component'
+import { VerticalMenuItemComponent } from 'src/app/shared/components/vertical-menu-item/vertical-menu-item.component'
 import { environment } from 'src/environments/environment'
 
 @Component({

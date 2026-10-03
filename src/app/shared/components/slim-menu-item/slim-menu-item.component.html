@@ -1,5 +1,4 @@
-@let itm = item;
-@if (itm) {
+@if (item) {
   <ng-container
     [ngTemplateOutlet]="itemTemplate"
     [ngTemplateOutletContext]="{ $implicit: item, index: index }"
@@ -20,7 +19,7 @@
     }
   </ng-template>
 
-  <!-- TEMPLATE DEFINITIONS -->
+  <!-- ROUTERLINK TEMPLATE -->
   <ng-template #routerLinkTemplate let-item let-index="index">
     <a
       pRipple
@@ -37,6 +36,7 @@
     </a>
   </ng-template>
 
+  <!-- URL TEMPLATE -->
   <ng-template #urlTemplate let-item let-index="index">
     <a
       pRipple
@@ -53,6 +53,7 @@
     </a>
   </ng-template>
 
+  <!-- ACTION TEMPLATE -->
   <ng-template #actionTemplate let-item let-index="index">
     <button
       pRipple
@@ -70,6 +71,7 @@
     </button>
   </ng-template>
 
+  <!-- TEXT TEMPLATE -->
   <ng-template #textTemplate let-item>
     @if (activeMode === SlimMenuMode.SLIM_PLUS) {
       @let whitespace_included = item.label?.match(wsRegExp);
@@ -82,6 +84,7 @@
     }
   </ng-template>
 
+  <!-- ICON TEMPLATE -->
   <ng-template #iconTemplate let-item>
     <i
       class="slim-menu-list-item-icon block text-center"

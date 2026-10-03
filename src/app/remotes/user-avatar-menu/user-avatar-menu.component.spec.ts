@@ -1,5 +1,4 @@
-import { TestBed } from '@angular/core/testing'
-import { CommonModule } from '@angular/common'
+import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
@@ -7,14 +6,12 @@ import { provideRouter, Router } from '@angular/router'
 import { provideNoopAnimations } from '@angular/platform-browser/animations'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { firstValueFrom, of, ReplaySubject, throwError } from 'rxjs'
-import { ButtonModule } from 'primeng/button'
-import { RippleModule } from 'primeng/ripple'
-import { TooltipModule } from 'primeng/tooltip'
 
+import { AppConfigService } from '@onecx/angular-integration-interface'
 import {
-  AngularRemoteComponentsModule,
   RemoteComponentConfig,
   REMOTE_COMPONENT_CONFIG,
+  SLOT_SERVICE,
   SlotService
 } from '@onecx/angular-remote-components'
 import { SlotServiceMock } from '@onecx/angular-remote-components/mocks'
@@ -29,11 +26,14 @@ import {
 import { UserProfile, Workspace } from '@onecx/integration-interface'
 
 import { MenuItemAPIService } from 'src/app/shared/generated'
-import { VerticalMenuItemComponent } from 'src/app/shared/vertical-menu-item/vertical-menu-item.component'
 import { OneCXUserAvatarMenuHarness } from './user-avatar-menu.harness'
 import { OneCXUserAvatarMenuComponent } from './user-avatar-menu.component'
 
 describe('OneCXUserAvatarMenuComponent', () => {
+  // MenuItemAPIService is providedIn 'any', so the component builds its own instance and a module-level
+  // provider would be shadowed. The component also declares its own (real) AppConfigService provider.
+  // We re-point the component's providers (via overrideComponent) at the shared mocks/spy so the
+  // component injects the very instances the tests assert on.
   const menuItemApiSpy = jasmine.createSpyObj<MenuItemAPIService>('MenuItemAPIService', ['getMenuItems'])
   const rcConfig = new ReplaySubject<RemoteComponentConfig>(1)
   const defaultRCConfig: RemoteComponentConfig = {
@@ -44,6 +44,8 @@ describe('OneCXUserAvatarMenuComponent', () => {
   }
   rcConfig.next(defaultRCConfig) // load default rc config (the component injects this token)
 
+  const emptyMenu = { workspaceName: 'test-workspace', menu: [] } as any
+
   let appConfigMock: AppConfigServiceMock
   let userMock: UserServiceMock
   let appStateMock: AppStateServiceMock
@@ -51,14 +53,23 @@ describe('OneCXUserAvatarMenuComponent', () => {
   function setUp() {
     const fixture = TestBed.createComponent(OneCXUserAvatarMenuComponent)
     const component = fixture.componentInstance
+    // first CD: subscribes the template async pipe (userMenu$) so the menu pipeline runs against the
+    // (spied) API and the seeded workspace.
     fixture.detectChanges()
     return { fixture, component }
+  }
+
+  // Flush change detection so the async pipe value (userMenu$) renders.
+  async function flush(fixture: ComponentFixture<OneCXUserAvatarMenuComponent>): Promise<void> {
+    fixture.detectChanges()
+    await fixture.whenStable()
+    fixture.detectChanges()
   }
 
   async function setupWithHarnessAndInit(permissions: string[] = []) {
     const { fixture, component } = setUp()
     component.ocxInitRemoteComponent({ baseUrl: 'base_url', permissions: permissions } as RemoteComponentConfig)
-    fixture.detectChanges()
+    await flush(fixture)
     const avatarMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXUserAvatarMenuHarness)
     return { fixture, component, avatarMenuHarness }
   }
@@ -66,9 +77,10 @@ describe('OneCXUserAvatarMenuComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
+        OneCXUserAvatarMenuComponent,
         TranslateTestingModule.withTranslations({
-          de: require('../../../assets/i18n/de.json'),
-          en: require('../../../assets/i18n/en.json')
+          de: require('src/assets/i18n/de.json'),
+          en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
       providers: [
@@ -78,33 +90,30 @@ describe('OneCXUserAvatarMenuComponent', () => {
         provideUserServiceMock(),
         provideAppStateServiceMock(),
         provideAppConfigServiceMock(),
-        { provide: MenuItemAPIService, useValue: menuItemApiSpy },
         { provide: REMOTE_COMPONENT_CONFIG, useValue: rcConfig },
+        { provide: SlotService, useClass: SlotServiceMock },
         provideRouter([{ path: 'admin/user-profile', component: OneCXUserAvatarMenuComponent }])
       ]
+    }).compileComponents()
+
+    // Use the shared mocks/spy for the component's own instances (see note above).
+    TestBed.overrideComponent(OneCXUserAvatarMenuComponent, {
+      set: {
+        providers: [
+          { provide: SLOT_SERVICE, useExisting: SlotService },
+          { provide: AppConfigService, useExisting: AppConfigServiceMock },
+          { provide: MenuItemAPIService, useValue: menuItemApiSpy }
+        ]
+      }
     })
-      .overrideComponent(OneCXUserAvatarMenuComponent, {
-        set: {
-          imports: [
-            TranslateTestingModule,
-            CommonModule,
-            ButtonModule,
-            RippleModule,
-            TooltipModule,
-            AngularRemoteComponentsModule,
-            VerticalMenuItemComponent
-          ],
-          providers: [{ provide: SlotService, useClass: SlotServiceMock }]
-        }
-      })
-      .compileComponents()
 
     appConfigMock = TestBed.inject(AppConfigServiceMock)
     userMock = TestBed.inject(UserServiceMock)
     appStateMock = TestBed.inject(AppStateServiceMock)
 
     rcConfig.next(defaultRCConfig)
-    menuItemApiSpy.getMenuItems.calls.reset()
+    // default (empty) menu so the pipeline resolves for tests that don't care about items
+    menuItemApiSpy.getMenuItems.and.returnValue(of(emptyMenu))
     userMock.profile$.publish(undefined as unknown as UserProfile)
     appStateMock.currentWorkspace$.publish({ workspaceName: 'test-workspace' } as Workspace)
   })
@@ -131,10 +140,10 @@ describe('OneCXUserAvatarMenuComponent', () => {
 
     it('should set the base path of the menu item api service', async () => {
       const { component } = await setupWithHarnessAndInit()
-      const menuItemApiService = TestBed.inject(MenuItemAPIService)
       component.ocxInitRemoteComponent({ baseUrl: 'base_url' } as RemoteComponentConfig)
 
-      expect(menuItemApiService.configuration.basePath).toEqual('base_url/bff')
+      const api = (component as unknown as { menuItemApiService: MenuItemAPIService }).menuItemApiService
+      expect(api.configuration.basePath).toEqual('base_url/bff')
     })
 
     it('should store the permissions from the config', async () => {
@@ -148,7 +157,9 @@ describe('OneCXUserAvatarMenuComponent', () => {
     })
 
     it('should read the menu anchor position from the app config', async () => {
-      appConfigMock.setProperty('USER_AVATAR_MENU_ANCHOR_POSITION', 'left')
+      // the component reads the position inside appConfigService.init(...).then(...); the mock's init()
+      // resets its config, so stub getProperty to control what the component observes.
+      spyOn(appConfigMock, 'getProperty').and.returnValue('left')
       const { component } = await setupWithHarnessAndInit()
       expect(component.menuAnchorPosition).toBe('left')
     })
@@ -356,9 +367,10 @@ describe('OneCXUserAvatarMenuComponent', () => {
       menuItemApiSpy.getMenuItems.and.returnValue(throwError(() => new Error('unable to load menu')))
       spyOn(console, 'error')
 
-      // the component retries the failing call with a delay before giving up
-      await new Promise((resolve) => setTimeout(resolve, 1800))
-      const { avatarMenuHarness } = await setupWithHarnessAndInit()
+      const { fixture, avatarMenuHarness } = await setupWithHarnessAndInit()
+      // the component retries the failing call (500ms x 3) before the pipeline resolves
+      await new Promise((resolve) => setTimeout(resolve, 1700))
+      await flush(fixture)
 
       const menuItems = await avatarMenuHarness.getMenuItems()
       expect(menuItems.length).toBe(1)

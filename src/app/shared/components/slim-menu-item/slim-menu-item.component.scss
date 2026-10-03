@@ -1,16 +1,8 @@
 // menu item styles
 :host {
   width: 4rem;
-  color: var(--menu-item-text-color, var(--menu-text-color, var(--text-secondary-color, #000000)));
-  background-color: var(--menu-item-bg-color, var(--menu-bg-color), #f7f7f7);
-  // hover and focus styles
-  & :hover,
-  & :focus {
-    background-color: var(--menu-item-hover-bg-color, #e0e0e0);
-  }
-  // children styles
   > * {
-    width: 4rem;
+    width: inherit;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -19,6 +11,11 @@
     padding: 1rem 0;
     color: var(--menu-item-text-color, var(--menu-text-color, var(--text-secondary-color, #000000)));
     background-color: var(--menu-item-bg-color, var(--menu-bg-color), #f7f7f7);
+    // hover and focus styles
+    &:hover,
+    &:focus {
+      background-color: var(--menu-item-hover-bg-color, #e0e0e0);
+    }
   }
   // icon styles
   .slim-menu-list-item-icon {
@@ -55,9 +52,9 @@
 :host(.slim-menu-list-item-plus) {
   width: 7rem;
   > * {
-    width: 7rem;
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
+    width: inherit;
+    /* y x */
+    padding: 0.8rem 0.5rem !important;
   }
   .slim-menu-list-item-link {
     row-gap: 0.3rem;

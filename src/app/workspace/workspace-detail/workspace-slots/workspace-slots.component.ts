@@ -1,6 +1,6 @@
 import { Component, Input, NO_ERRORS_SCHEMA, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
 import { SharedModule } from 'src/app/shared/shared.module'
-import { OcxChipComponent } from 'src/app/shared/ocx-chip/ocx-chip.component'
+import { OcxChipComponent } from 'src/app/shared/components/ocx-chip/ocx-chip.component'
 import { WorkspaceSlotDetailComponent } from '../workspace-slot-detail/workspace-slot-detail.component'
 import { TranslateService } from '@ngx-translate/core'
 import {

@@ -54,8 +54,6 @@ describe('OneCXTopbarLogoComponent', () => {
   }
 
   beforeEach(async () => {
-    // keep the parent's real imports (AngularRemoteComponentsModule / OneCXCurrentWorkspaceLogoComponent)
-    // and the child's real imports so <app-current-workspace-logo> and [ocxSrc] resolve without NO_ERRORS_SCHEMA
     await TestBed.configureTestingModule({
       imports: [
         OneCXTopbarLogoComponent,

@@ -17,7 +17,7 @@ import {
 } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
 import { SharedModule } from 'src/app/shared/shared.module'
-import { ImageContainerComponent } from 'src/app/shared/image-container/image-container.component'
+import { ImageContainerComponent } from 'src/app/shared/components/image-container/image-container.component'
 import { WorkspaceI18nComponent } from '../workspace-i18n/workspace-i18n.component'
 
 export type Theme = {

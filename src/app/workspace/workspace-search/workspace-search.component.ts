@@ -33,7 +33,7 @@ import {
   WorkspaceAbstract
 } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
-import { ImageContainerComponent } from 'src/app/shared/image-container/image-container.component'
+import { ImageContainerComponent } from 'src/app/shared/components/image-container/image-container.component'
 import { WorkspaceCreateComponent } from '../workspace-create/workspace-create.component'
 import { WorkspaceImportComponent } from '../workspace-import/workspace-import.component'
 

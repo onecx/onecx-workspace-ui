@@ -37,8 +37,6 @@ describe('OneCXToggleMenuButtonComponent', () => {
   }
 
   beforeEach(waitForAsync(async () => {
-    // keep the component's real imports (AsyncPipe / TranslateModule / TooltipModule / RippleModule)
-    // so the template directives ([pTooltip], pRipple) resolve without NO_ERRORS_SCHEMA
     await TestBed.configureTestingModule({
       imports: [
         OneCXToggleMenuButtonComponent,

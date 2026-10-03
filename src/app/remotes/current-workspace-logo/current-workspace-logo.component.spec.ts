@@ -17,8 +17,10 @@ const workspace1: Partial<Workspace> = {
   id: 'w1',
   workspaceName: 'workspace1',
   displayName: 'Workspace 1',
-  logoUrl: 'https://host:port/site/logo.png',
-  logoSmallImageUrl: 'https://host:port/site/logo-small.png'
+  // valid hostnames: the ocxSrc directive calls new URL(...) on the logo url and logs
+  // "Cannot parse URL" (noise) for placeholders like host:port that are not parseable URLs.
+  logoUrl: 'https://logo.example.com/current-logo-site/logo.png',
+  logoSmallImageUrl: 'https://logo.example.com/current-logo-site/logo-small.png'
 }
 
 describe('OneCXCurrentWorkspaceLogoComponent', () => {
@@ -42,8 +44,6 @@ describe('OneCXCurrentWorkspaceLogoComponent', () => {
   }
 
   beforeEach(async () => {
-    // keep the component's real imports (AngularRemoteComponentsModule / CommonModule /
-    // AngularAcceleratorModule) so [ocxSrc] and the async pipe resolve without NO_ERRORS_SCHEMA
     await TestBed.configureTestingModule({
       imports: [
         OneCXCurrentWorkspaceLogoComponent,
@@ -126,7 +126,6 @@ describe('OneCXCurrentWorkspaceLogoComponent', () => {
         component.workspaceName = workspace1.workspaceName
         component.imageUrl = 'http://custom/logo.png'
         component.logoUrl[RefType.Logo] = 'http://external/logo.png'
-        component.logEnabled = true
 
         const imageUrlSpy = spyOn(component.imageUrl$, 'next')
 

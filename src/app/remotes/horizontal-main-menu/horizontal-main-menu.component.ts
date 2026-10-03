@@ -8,7 +8,6 @@ import { Observable, ReplaySubject, catchError, map, mergeMap, of, retry, shareR
 import { MenuItem } from 'primeng/api'
 import { Menubar, MenubarModule } from 'primeng/menubar'
 
-//import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
 import {
   AngularRemoteComponentsModule,
   REMOTE_COMPONENT_CONFIG,

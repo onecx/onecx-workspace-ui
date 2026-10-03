@@ -27,8 +27,8 @@ const workspaceForm = {
   theme: 'theme1',
   baseUrl: '/some/base/url',
   homePage: '/welcome',
-  logoUrl: 'https://host:port/site/logo.png',
-  smallLogoUrl: 'https://host:port/site/logo-small.png',
+  logoUrl: 'https://logo.example.com/ws-props-site/logo.png',
+  smallLogoUrl: 'https://logo.example.com/ws-props-site/logo-small.png',
   rssFeedUrl: undefined,
   footerLabel: undefined,
   description: undefined

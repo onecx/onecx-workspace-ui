@@ -50,7 +50,7 @@ describe('OneCXSlimVerticalMainMenuComponent', () => {
       imports: [
         OneCXSlimVerticalMainMenuComponent,
         TranslateTestingModule.withTranslations({
-          en: require('../../../assets/i18n/en.json')
+          en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage('en'),
         NoopAnimationsModule
       ],

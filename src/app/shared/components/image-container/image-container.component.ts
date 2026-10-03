@@ -1,11 +1,13 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core'
 import { map } from 'rxjs'
 
+import { TooltipModule } from 'primeng/tooltip'
+
+import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
 import { AppStateService } from '@onecx/angular-integration-interface'
 
 import { environment } from 'src/environments/environment'
 import { Utils } from 'src/app/shared/utils'
-import { SharedModule } from '../shared.module'
 
 /**
  * This component displays the image with given imageURL.
@@ -16,7 +18,7 @@ import { SharedModule } from '../shared.module'
 @Component({
   selector: 'app-image-container',
   standalone: true,
-  imports: [SharedModule],
+  imports: [AngularAcceleratorModule, TooltipModule],
   templateUrl: './image-container.component.html'
 })
 export class ImageContainerComponent implements OnChanges {

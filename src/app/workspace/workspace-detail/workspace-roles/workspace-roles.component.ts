@@ -20,7 +20,7 @@ import { PortalMessageService, UserService, WorkspaceService } from '@onecx/angu
 import { Workspace, WorkspaceRole, WorkspaceRolesAPIService } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
 import { SharedModule } from 'src/app/shared/shared.module'
-import { OcxChipComponent } from 'src/app/shared/ocx-chip/ocx-chip.component'
+import { OcxChipComponent } from 'src/app/shared/components/ocx-chip/ocx-chip.component'
 import { WorkspaceRoleDetailComponent } from '../../workspace-role-detail/workspace-role-detail.component'
 
 export type IAMRole = { name?: string; description?: string }

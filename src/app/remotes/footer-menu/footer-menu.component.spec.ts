@@ -45,26 +45,24 @@ describe('OneCXFooterMenuComponent', () => {
   }
 
   beforeEach(async () => {
-    // keep the component's real imports (AngularAcceleratorModule / AngularRemoteComponentsModule /
-    // TranslateModule / VerticalMenuItemComponent) so <app-vertical-menu-item> and its directives
-    // ([safeRouterLink], [pTooltip]) resolve without NO_ERRORS_SCHEMA
     await TestBed.configureTestingModule({
       imports: [
         OneCXFooterMenuComponent,
         TranslateTestingModule.withTranslations({
-          en: require('../../../assets/i18n/en.json')
+          de: require('src/assets/i18n/de.json'),
+          en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
+        provideAppConfigServiceMock(),
+        provideAppStateServiceMock(),
+        provideUserServiceMock(),
         provideRouter([
           { path: 'contact', component: OneCXFooterMenuComponent },
           { path: 'contact2', component: OneCXFooterMenuComponent }
-        ]),
-        provideAppConfigServiceMock(),
-        provideUserServiceMock(),
-        provideAppStateServiceMock()
+        ])
       ]
     }).compileComponents()
 

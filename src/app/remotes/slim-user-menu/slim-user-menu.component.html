@@ -8,7 +8,7 @@
   };
 @if (vm && vm.activeMode && vm.activeMode !== Mode.INACTIVE) {
   <div
-    id="ws_slim_user_sidebar"
+    id="ws_slim_user_sidebar_menu"
     class="slim-user-menu"
     [ngClass]="{
       'slim-user-menu-slim': vm.activeMode === Mode.SLIM,
@@ -17,15 +17,18 @@
     [hidden]="vm.isHidden"
   >
     <p-accordion>
-      <p-accordionTab>
-        <ng-template pTemplate="header">
+      <p-accordion-panel value="0">
+        <p-accordion-header>
+          <!-- no toggle icon -->
+          <ng-template #toggleicon> </ng-template>
+          <!-- content -->
           <div
             id="ws_slim_user_sidebar_header"
             class="slim-user-menu-header flex flex-column row-gap-1 align-items-center justify-content-center"
             [ngClass]="{
               'slim-user-menu-header-plus': vm.activeMode === Mode.SLIM_PLUS
             }"
-            [style]="'height: 3.5rem;'"
+            [style]="'height: 3rem;'"
             [pTooltip]="('REMOTES.SLIM_USER_MENU.TOOLTIP' | translate) + '<br/>' + vm.displayName"
             [escape]="false"
             tooltipPosition="right"
@@ -45,28 +48,26 @@
               <div class="p-2 slim-user-menu-header-icon pi pi-user"></div>
             }
           </div>
-        </ng-template>
-        <ng-template pTemplate="content">
+        </p-accordion-header>
+        <p-accordion-content>
           @if (vm.menuItems) {
             <ul
               id="ws_slim_user_sidebar_menu_list"
-              class="m-0 p-0 slim-user-menu-list flex flex-column align-items-center justify-content-center list-none"
+              class="m-0 p-0 pb-2 flex flex-column align-items-center justify-content-center list-none"
             >
-              <li
-                app-slim-menu-item
-                *ngFor="let item of vm.menuItems; let i = index"
-                [item]="item"
-                [id]="'ws_slim_user_sidebar_menu_list_item_' + (i + 1)"
-                [index]="i"
-                [activeMode]="vm.activeMode"
-              ></li>
+              @for (item of vm.menuItems; track item; let i = $index) {
+                <li
+                  app-slim-menu-item
+                  [id]="'ws_slim_user_sidebar_menu_list_item_' + (i + 1)"
+                  [item]="item"
+                  [index]="i"
+                  [activeMode]="vm.activeMode"
+                ></li>
+              }
             </ul>
           }
-        </ng-template>
-        <ng-template pTemplate="icon">
-          <!-- Display nothing -->
-        </ng-template>
-      </p-accordionTab>
+        </p-accordion-content>
+      </p-accordion-panel>
     </p-accordion>
   </div>
 }

@@ -51,8 +51,14 @@ export class OneCXUserAvatarMenuHarness extends ComponentHarness {
     return (await this.getUserAvatarButton()).getAttribute('id')
   }
 
+  /**
+   * Click the avatar button. The `p-button` host wraps a real inner `<button>` (the visible,
+   * clickable control); clicking the host element directly does not reach the `(onClick)` handler.
+   * Clicking the inner button bubbles up to the host, which toggles the menu (and stops propagation
+   * so the document:click close listener does not immediately undo it).
+   */
   async clickButton() {
-    await (await this.getUserAvatarButton()).click()
+    await (await this.locatorFor('#ocx_topbar_action_user_avatar_menu button')()).click()
   }
 
   async getOrganization() {

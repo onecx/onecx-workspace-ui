@@ -17,6 +17,7 @@ import {
   withLatestFrom
 } from 'rxjs'
 
+import { MenuItem, PrimeIcons } from 'primeng/api'
 import { TooltipModule } from 'primeng/tooltip'
 import { RippleModule } from 'primeng/ripple'
 import { AccordionModule } from 'primeng/accordion'
@@ -30,14 +31,12 @@ import { AppStateService, UserService } from '@onecx/angular-integration-interfa
 import { REMOTE_COMPONENT_CONFIG } from '@onecx/angular-utils'
 import { EventsPublisher, UserProfile, Workspace } from '@onecx/integration-interface'
 
+import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuService } from 'src/app/shared/services/menu.service'
 import { SlimMenuMode } from 'src/app/shared/model/slim-menu-mode'
-import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
 import { environment } from 'src/environments/environment'
-import { MenuItem, PrimeIcons } from 'primeng/api'
 import { SlimMenuItems } from 'src/app/shared/model/slim-menu-item'
-
 import { SlimMenuItemComponent } from 'src/app/shared/components/slim-menu-item/slim-menu-item.component'
 
 @Component({
@@ -45,12 +44,13 @@ import { SlimMenuItemComponent } from 'src/app/shared/components/slim-menu-item/
   standalone: true,
   imports: [
     CommonModule,
-    TranslateModule,
-    AngularRemoteComponentsModule,
-    SlimMenuItemComponent,
-    TooltipModule,
+    AccordionModule,
     RippleModule,
-    AccordionModule
+    TooltipModule,
+    TranslateModule,
+    // components
+    AngularRemoteComponentsModule,
+    SlimMenuItemComponent
   ],
   templateUrl: './slim-user-menu.component.html',
   styleUrls: ['./slim-user-menu.component.scss']

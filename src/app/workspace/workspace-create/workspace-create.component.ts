@@ -10,7 +10,7 @@ import { PortalMessageService, ThemeService } from '@onecx/angular-integration-i
 import { Utils } from 'src/app/shared/utils'
 import { WorkspaceAPIService, ProductAPIService } from 'src/app/shared/generated'
 import { SharedModule } from 'src/app/shared/shared.module'
-import { ImageContainerComponent } from 'src/app/shared/image-container/image-container.component'
+import { ImageContainerComponent } from 'src/app/shared/components/image-container/image-container.component'
 
 export type Theme = {
   name: string

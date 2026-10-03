@@ -1,5 +1,4 @@
 import { TestBed } from '@angular/core/testing'
-import { CommonModule } from '@angular/common'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
@@ -72,8 +71,10 @@ describe('OneCXUserSidebarMenuComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
+        OneCXUserSidebarMenuComponent,
         TranslateTestingModule.withTranslations({
-          en: require('../../../assets/i18n/en.json')
+          de: require('src/assets/i18n/de.json'),
+          en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
       providers: [
@@ -86,13 +87,17 @@ describe('OneCXUserSidebarMenuComponent', () => {
         { provide: MenuItemAPIService, useValue: menuItemApiSpy },
         { provide: REMOTE_COMPONENT_CONFIG, useValue: rcConfig },
         { provide: MenuService, useValue: menuServiceSpy },
-        provideRouter([{ path: 'admin/user-profile' }])
+        provideRouter([{ path: 'admin/user-profile', component: OneCXUserSidebarMenuComponent }])
       ]
     })
       .overrideComponent(OneCXUserSidebarMenuComponent, {
         set: {
-          imports: [CommonModule, PanelMenuModule, AccordionModule, AngularRemoteComponentsModule],
-          providers: [{ provide: SlotService, useClass: SlotServiceMock }]
+          providers: [
+            { provide: SlotService, useClass: SlotServiceMock },
+            // MenuItemAPIService is providedIn 'any' - the component builds its own instance, so a
+            // module-level provider is shadowed. Re-point the component's provider at the shared spy.
+            { provide: MenuItemAPIService, useValue: menuItemApiSpy }
+          ]
         }
       })
       .compileComponents()
@@ -139,9 +144,12 @@ describe('OneCXUserSidebarMenuComponent', () => {
     })
 
     it('should init the app config service with the base url', async () => {
-      const { component } = await setUpWithHarnessAndInit()
+      // init() is a plain method on the mock; spy it (before the component calls it) so it can be asserted.
+      const initSpy = spyOn(appConfigMock, 'init').and.returnValue(Promise.resolve())
 
-      expect(appConfigMock.init).toHaveBeenCalledOnceWith('base_url')
+      await setUpWithHarnessAndInit()
+
+      expect(initSpy).toHaveBeenCalledOnceWith('base_url')
     })
 
     it('should set avatarImageLoaded from the avatar image slot output', async () => {
@@ -460,7 +468,8 @@ describe('OneCXUserSidebarMenuComponent', () => {
       await sidebarMenuHarness.expandAccordion()
 
       const panels = await (await sidebarMenuHarness.getPanelMenu())?.getAllPanels()
-      expect(panels?.length).toBe(2)
+      // two menu items + the logout item the component appends
+      expect(panels?.length).toBe(3)
 
       const firstItemChildren = await panels![0].getChildren()
       expect(firstItemChildren.length).toBe(1)

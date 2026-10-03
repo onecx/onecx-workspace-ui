@@ -46,8 +46,6 @@ describe('WorkspaceCreateComponent', () => {
 
   beforeEach(waitForAsync(() => {
     mockThemeService = new MockThemeService()
-    // keep the component's real imports (SharedModule / ImageContainerComponent) so the template
-    // resolves all PrimeNG/translate elements without NO_ERRORS_SCHEMA
     TestBed.configureTestingModule({
       imports: [
         WorkspaceCreateComponent,
