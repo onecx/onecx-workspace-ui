@@ -1,6 +1,12 @@
 @use '/src/app/shared/sidebar-panelmenu.scss' as *;
 
 :host ::ng-deep {
+  /* move the open/close icon to the end */
+  .p-iconwrapper {
+    justify-content: end;
+    flex-grow: 1;
+    order: 1;
+  }
   .p-panelmenu {
     width: 17rem;
     display: block;
