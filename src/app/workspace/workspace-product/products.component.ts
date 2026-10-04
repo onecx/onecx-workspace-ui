@@ -61,6 +61,7 @@ import {
 } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
 import { ImageContainerComponent } from 'src/app/shared/components/image-container/image-container.component'
+import { ProductDeregistrationComponent } from './workspace-product-deregistration/product-deregistration.component'
 
 type ChangeStatus = {
   index?: number
@@ -152,7 +153,7 @@ export function AddMfeModuleFormControl(fb: FormBuilder, modules: FormArray, idx
 @Component({
   selector: 'app-products',
   standalone: true,
-  imports: [SharedModule, ImageContainerComponent],
+  imports: [SharedModule, ImageContainerComponent, ProductDeregistrationComponent],
   templateUrl: './products.component.html',
   styleUrls: ['./products.component.scss']
 })
@@ -173,8 +174,8 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   public displayedDetailItem: ExtendedProduct | undefined = undefined
   public formGroup: FormGroup
   public formChanged = false
-  public sourceFilterValue: string | undefined // product store
-  public targetFilterValue: string | undefined // workspace
+  public sourceFilterValue = '' // product store
+  public targetFilterValue = '' // workspace
   public sourceList!: HTMLElement | null
   public targetList!: HTMLElement | null
   public sourceListViewMode: ViewingModes | undefined
@@ -188,6 +189,8 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   public wProducts$!: Observable<ExtendedProduct[]>
   public wProducts: ExtendedProduct[] = [] // registered products
   public psProducts: ExtendedProduct[] = [] // not registered product store products
+  public filteredPsProducts = [...this.psProducts]
+  public filteredWProducts = [...this.wProducts]
   public psProducts$!: Observable<ExtendedProduct[]>
   public psProductsOrg!: Map<string, ExtendedProduct> // all products in product store (not undeployed)
   public currentMfe!: MfeInfo
@@ -284,7 +287,9 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
             this.wProducts = []
             for (const p of products)
               this.wProducts.push({ ...p, bucket: 'TARGET', exists: true, changedComponents: false } as ExtendedProduct)
-            return this.wProducts.sort(this.sortProductsByDisplayName)
+            this.wProducts.sort(this.sortProductsByDisplayName)
+            this.filteredWProducts = [...this.wProducts]
+            return this.wProducts
           }),
           catchError((err) => {
             this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + Utils.mapping_error_status(err.status) + '.PRODUCTS'
@@ -327,7 +332,9 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
             }
           // mark workspace products which are not longer exist in product store
           for (const wP of workspaceData.products) wP.exists = this.psProductsOrg.get(wP.productName!) !== undefined
-          return this.psProducts.sort(this.sortProductsByDisplayName)
+          this.psProducts.sort(this.sortProductsByDisplayName)
+          this.filteredPsProducts = [...this.psProducts]
+          return this.psProducts
         }),
         catchError((err) => {
           this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + Utils.mapping_error_status(err.status) + '.PRODUCTS'
@@ -408,6 +415,20 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
    */
   public getFilterValue(ev: any): string {
     return ev.target.value
+  }
+  filterProducts(val: string, bucket: 'SOURCE' | 'TARGET') {
+    if (!val || val.trim() === '') {
+      if (bucket === 'SOURCE') this.filteredPsProducts = [...this.psProducts]
+      if (bucket === 'TARGET') this.filteredWProducts = [...this.wProducts]
+      return
+    }
+    const lowerSearch = val.toLowerCase()
+    if (bucket === 'SOURCE') {
+      this.filteredPsProducts = this.psProducts.filter((item) => item.displayName?.toLowerCase().includes(lowerSearch))
+    }
+    if (bucket === 'TARGET') {
+      this.filteredWProducts = this.wProducts.filter((item) => item.displayName?.toLowerCase().includes(lowerSearch))
+    }
   }
   public onHideItemDetails() {
     this.displayDetails = false

@@ -1,0 +1,52 @@
+@if (visible) {
+  <p-dialog
+    [visible]="true"
+    (visibleChange)="onCancel()"
+    [header]="'DIALOG.PRODUCTS.DEREGISTER' | translate"
+    [modal]="true"
+    [closable]="true"
+    [resizable]="false"
+    [dismissableMask]="true"
+    [style]="{ width: '450px' }"
+    styleClass="disable-max-height-preset"
+  >
+    <section
+      class="flex column-gap-4 row-gap-1 justify-content-start align-items-center"
+      [attr.aria-label]="'DIALOG.PRODUCTS.DEREGISTER' | translate"
+    >
+      <div class="pi pi-question-circle text-3xl danger-action-text"></div>
+      <div class="flex flex-column row-gap-2">
+        <div id="ws_products_deregister_message" class="font-bold">
+          {{ 'ACTIONS.DELETE.PRODUCT.MESSAGE' | translate }}
+        </div>
+        <div id="ws_products_deregister_message_info">{{ 'ACTIONS.DELETE.PRODUCT.MESSAGE_INFO' | translate }}</div>
+        <div>{{ 'ACTIONS.DELETE.INFO' | translate }}</div>
+      </div>
+    </section>
+
+    <ng-template pTemplate="footer">
+      <footer class="mt-3 flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
+        <p-button
+          id="ws_products_deregister_action_no"
+          icon="pi pi-times"
+          (onClick)="onCancel()"
+          [label]="'ACTIONS.CONFIRMATION.NO' | translate"
+          [ariaLabel]="'ACTIONS.CONFIRMATION.NO' | translate"
+          [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        ></p-button>
+        <p-button
+          id="ws_products_deregister_action_yes"
+          icon="pi pi-check"
+          (onClick)="onConfirm()"
+          [label]="'ACTIONS.CONFIRMATION.YES' | translate"
+          [ariaLabel]="'ACTIONS.CONFIRMATION.YES' | translate"
+          [pTooltip]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        ></p-button>
+      </footer>
+    </ng-template>
+  </p-dialog>
+}

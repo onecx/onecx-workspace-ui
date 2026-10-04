@@ -1,301 +1,296 @@
 <!-- MESSSAGES on small screens -->
 <section class="block md:hidden mb-2">
-  <p-message
-    *ngIf="!exceptionKey && (wpLoading || psLoading)"
-    id="ws_products_message_loading_sm"
-    severity="info"
-    [text]="'ACTIONS.LOADING' | translate"
-  ></p-message>
-  <p-message
-    *ngIf="exceptionKey"
-    id="ws_products_message_error_sm"
-    severity="error"
-    [text]="exceptionKey | translate"
-  ></p-message>
+  @if (exceptionKey) {
+    <p-message
+      *ngIf="exceptionKey"
+      id="ws_products_message_error_sm"
+      severity="error"
+      [text]="exceptionKey | translate"
+    ></p-message>
+  } @else if (wpLoading || psLoading) {
+    <p-message
+      *ngIf="!exceptionKey && (wpLoading || psLoading)"
+      id="ws_products_message_loading_sm"
+      severity="info"
+      [text]="'ACTIONS.LOADING' | translate"
+    ></p-message>
+  }
 </section>
 
 <div class="p-0 flex flex-row column-gap-2 align-items-start">
-  <section class="pt-1 flex flex-row column-gap-4">
-    <p-pickList
-      *ngIf="!exceptionKey"
-      #picklist
-      id="ws_products_picklist"
-      [filterBy]="'displayName,classifications'"
-      [source]="psProducts"
-      [target]="wProducts"
-      [showSourceControls]="false"
-      [showTargetControls]="false"
-      [responsive]="false"
-      [metaKeySelection]="true"
-      [disabled]="!hasRegisterPermission"
-      (onSourceSelect)="onSourceSelect($event)"
-      (onTargetSelect)="onTargetSelect($event)"
-      (onMoveToSource)="onMoveToSource($event)"
-      (onMoveToTarget)="onMoveToTarget($event)"
-    >
-      <ng-template pTemplate="sourceHeader">
-        <div class="flex flex-row column-gap-2 justify-content-between align-items-center">
-          <div
-            class="flex-grow-1 text-sm sm:text-base white-space-nowrap"
-            [attr.aria-label]="'DIALOG.PRODUCTS.NUMBER_OF' | translate"
-            [pTooltip]="'DIALOG.PRODUCTS.NUMBER_OF' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-            role="note"
-          >
-            {{ 'DIALOG.PRODUCTS.PS_PRODUCTS' | translate }}: {{ psProducts.length }}
-          </div>
-          <button
-            id="ws_products_picklist_ps_load"
-            class="p-2 pi pi-refresh cursor-pointer p-button border-none"
-            (click)="onLoadPsProducts()"
-            [attr.aria-label]="'ACTIONS.SEARCH.RELOAD' | translate"
-            [pTooltip]="'ACTIONS.SEARCH.RELOAD' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          ></button>
-        </div>
-      </ng-template>
-      <ng-template pTemplate="targetHeader">
-        <div class="flex flex-row column-gap-2 justify-content-between align-items-center">
-          <div
-            class="flex-grow-1 text-sm sm:text-base white-space-nowrap"
-            [attr.aria-label]="'DIALOG.PRODUCTS.NUMBER_OF' | translate"
-            [pTooltip]="'DIALOG.PRODUCTS.NUMBER_OF' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-            role="note"
-          >
-            {{ 'DIALOG.PRODUCTS.W_PRODUCTS' | translate }}: {{ wProducts.length }}
-          </div>
-          <button
-            id="ws_products_picklist_ws_load"
-            class="p-2 pi pi-refresh cursor-pointer p-button border-none"
-            (click)="onLoadWProducts()"
-            [attr.aria-label]="'ACTIONS.SEARCH.RELOAD' | translate"
-            [pTooltip]="'ACTIONS.SEARCH.RELOAD' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          ></button>
-        </div>
-      </ng-template>
-
-      <ng-template pTemplate="sourceFilter" let-items="options">
-        <div class="m-1 sm:my-2 sm:mx-3 flex flex-row align-items-center column-gap-3 row-gap-2">
-          <div class="search-criteria-selectbutton">
-            <p-selectButton
-              id="ws_products_picklist_ps_filter"
-              [options]="viewingModes"
-              [(ngModel)]="sourceListViewMode"
-              [allowEmpty]="false"
-              optionLabel="icon"
-              styleClass="w-6rem hidden sm:block"
-              (onChange)="onSourceViewModeChange($event.value)"
+  <section class="flex flex-row column-gap-4">
+    @if (!exceptionKey) {
+      <p-pickList
+        #picklist
+        id="ws_products_picklist"
+        [filterBy]="'displayName,classifications'"
+        [source]="filteredPsProducts"
+        [target]="filteredWProducts"
+        [showSourceFilter]="true"
+        [showTargetFilter]="true"
+        [showSourceControls]="false"
+        [showTargetControls]="false"
+        [responsive]="false"
+        [metaKeySelection]="true"
+        [disabled]="!hasRegisterPermission"
+        (onSourceSelect)="onSourceSelect($event)"
+        (onTargetSelect)="onTargetSelect($event)"
+        (onMoveToSource)="onMoveToSource($event)"
+        (onMoveToTarget)="onMoveToTarget($event)"
+      >
+        <ng-template #sourceHeader>
+          <div class="p-2 border-bottom-2 flex flex-row column-gap-2 justify-content-between align-items-center">
+            <div
+              class="flex-grow-1 text-sm sm:text-base font-bold white-space-nowrap"
+              [attr.aria-label]="'DIALOG.PRODUCTS.NUMBER_OF' | translate"
+              [pTooltip]="'DIALOG.PRODUCTS.NUMBER_OF' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+              role="note"
             >
-              <ng-template let-item pTemplate="item">
-                <span
-                  [class]="item.icon"
-                  [attr.aria-label]="item.titleKey | translate"
-                  [pTooltip]="item.titleKey | translate"
+              {{ 'DIALOG.PRODUCTS.PS_PRODUCTS' | translate }}: {{ psProducts.length }}
+            </div>
+            <p-button
+              id="ws_products_picklist_ps_load"
+              icon="pi pi-refresh"
+              (onClick)="onLoadPsProducts()"
+              [ariaLabel]="'ACTIONS.SEARCH.RELOAD' | translate"
+              [pTooltip]="'ACTIONS.SEARCH.RELOAD' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            ></p-button>
+          </div>
+        </ng-template>
+        <ng-template #targetHeader>
+          <div class="p-2 border-bottom-2 flex flex-row column-gap-2 justify-content-between align-items-center">
+            <div
+              class="flex-grow-1 text-sm sm:text-base font-bold white-space-nowrap"
+              [attr.aria-label]="'DIALOG.PRODUCTS.NUMBER_OF' | translate"
+              [pTooltip]="'DIALOG.PRODUCTS.NUMBER_OF' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+              role="note"
+            >
+              {{ 'DIALOG.PRODUCTS.W_PRODUCTS' | translate }}: {{ wProducts.length }}
+            </div>
+            <p-button
+              id="ws_products_picklist_ps_load"
+              icon="pi pi-refresh"
+              (onClick)="onLoadWProducts()"
+              [ariaLabel]="'ACTIONS.SEARCH.RELOAD' | translate"
+              [pTooltip]="'ACTIONS.SEARCH.RELOAD' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            ></p-button>
+          </div>
+        </ng-template>
+
+        <ng-template pTemplate="sourceFilter">
+          <div class="p-1 sm:p-2 sm:pb-3 flex flex-row align-items-center column-gap-3 row-gap-2">
+            <div class="select-button-view">
+              <p-selectButton
+                id="ws_products_picklist_ps_filter"
+                [options]="viewingModes"
+                [(ngModel)]="sourceListViewMode"
+                [allowEmpty]="false"
+                optionLabel="icon"
+                styleClass="hidden sm:block"
+                (onChange)="onSourceViewModeChange($event.value)"
+              >
+                <ng-template #item let-item>
+                  <span
+                    [class]="item.icon"
+                    [attr.aria-label]="item.titleKey | translate"
+                    [pTooltip]="item.titleKey | translate"
+                    tooltipPosition="top"
+                    tooltipEvent="hover"
+                  ></span>
+                </ng-template>
+              </p-selectButton>
+            </div>
+            <p-inputgroup class="p-picklist-filter">
+              <input
+                #psFilter
+                type="text"
+                pInputText
+                id="ws_products_picklist_ps_filter_value"
+                class="text-responsive"
+                (input)="filterProducts(psFilter.value, 'SOURCE')"
+                [placeholder]="'DIALOG.DATAVIEW.FILTER.LABEL' | translate"
+                [attr.aria-label]="'DIALOG.DATAVIEW.FILTER.LABEL' | translate"
+                [pTooltip]="'DIALOG.DATAVIEW.PRODUCT_FILTER_TOOLTIP' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+              />
+              <p-inputgroup-addon>
+                <p-button
+                  id="ws_products_detail_picklist_ps_filter_clear"
+                  icon="pi pi-filter-slash"
+                  (onClick)="psFilter.value = ''; filterProducts('', 'SOURCE')"
+                  [disabled]="psFilter.value === ''"
+                  [ariaLabel]="'DIALOG.DATAVIEW.FILTER.CLEAR' | translate"
+                  [pTooltip]="'DIALOG.DATAVIEW.FILTER.CLEAR' | translate"
                   tooltipPosition="top"
                   tooltipEvent="hover"
-                ></span>
-              </ng-template>
-            </p-selectButton>
+                />
+              </p-inputgroup-addon>
+            </p-inputgroup>
           </div>
-          <div class="p-inputgroup p-picklist-filter">
-            <input
-              #psFilter
-              id="ws_products_picklist_ps_filter_value"
-              class="p-picklist-filter-input p-inputtext p-component"
-              [ngClass]="{ 'p-disabled': items?.length === 0 }"
-              [(ngModel)]="sourceFilterValue"
-              (keyup)="items.filter(getFilterValue($event))"
-              type="text"
-              [placeholder]="'DIALOG.DATAVIEW.FILTER' | translate"
-              [attr.aria-label]="'DIALOG.DATAVIEW.FILTER' | translate"
-              [pTooltip]="'DIALOG.DATAVIEW.PRODUCT_FILTER_TOOLTIP' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            />
-            <button
-              id="ws_products_detail_picklist_ps_filter_clear"
-              class="p-inputgroup-addon cursor-pointer pi pi-filter-slash"
-              [ngClass]="{ 'bg-primary': psFilter.value !== '', 'p-disabled': psFilter.value === '' }"
-              [ngStyle]="
-                psFilter.value === ''
-                  ? { 'background-color': 'var(--emphasis-lower)', opacity: 'var(--disabled-opacity)' }
-                  : null
-              "
-              (keydown.space)="items.reset(); sourceFilterValue = undefined"
-              (click)="items.reset(); sourceFilterValue = undefined"
-              [attr.aria-label]="'DIALOG.DATAVIEW.FILTER.CLEAR' | translate"
-              [pTooltip]="'DIALOG.DATAVIEW.FILTER.CLEAR' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            ></button>
-          </div>
-        </div>
-      </ng-template>
+        </ng-template>
 
-      <ng-template pTemplate="targetFilter" let-items="options">
-        <div class="m-1 sm:my-2 sm:mx-3 flex flex-row align-items-center column-gap-3 row-gap-2">
-          <div class="search-criteria-selectbutton">
-            <p-selectButton
-              id="ws_products_picklist_ws_filter"
-              [options]="viewingModes"
-              [(ngModel)]="targetListViewMode"
-              [allowEmpty]="false"
-              optionLabel="icon"
-              styleClass="w-6rem hidden sm:block"
-              (onChange)="onTargetViewModeChange($event.value)"
-            >
-              <ng-template let-item pTemplate="item">
-                <span
-                  [class]="item.icon"
-                  [attr.aria-label]="item.titleKey | translate"
-                  [pTooltip]="item.titleKey | translate"
+        <ng-template #targetFilter let-items="options">
+          <div class="p-1 sm:p-2 sm:pb-3 flex flex-row align-items-center column-gap-3 row-gap-2">
+            <div class="select-button-view">
+              <p-selectButton
+                id="ws_products_picklist_ws_filter"
+                [options]="viewingModes"
+                [(ngModel)]="targetListViewMode"
+                [allowEmpty]="false"
+                optionLabel="icon"
+                styleClass="hidden sm:block"
+                (onChange)="onTargetViewModeChange($event.value)"
+              >
+                <ng-template #item let-item>
+                  <span
+                    [class]="item.icon"
+                    [attr.aria-label]="item.titleKey | translate"
+                    [pTooltip]="item.titleKey | translate"
+                    tooltipPosition="top"
+                    tooltipEvent="hover"
+                  ></span>
+                </ng-template>
+              </p-selectButton>
+            </div>
+            <p-inputgroup class="p-picklist-filter">
+              <input
+                #wFilter
+                id="ws_products_picklist_ws_filter_value"
+                class="p-picklist-filter-input p-inputtext p-component"
+                (input)="filterProducts(wFilter.value, 'TARGET')"
+                [placeholder]="'DIALOG.DATAVIEW.FILTER.LABEL' | translate"
+                [ariaLabel]="'DIALOG.DATAVIEW.FILTER.LABEL' | translate"
+                [pTooltip]="'DIALOG.DATAVIEW.PRODUCT_FILTER_TOOLTIP' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+              />
+              <p-inputgroup-addon>
+                <p-button
+                  id="ws_products_detail_picklist_ps_filter_clear"
+                  icon="pi pi-filter-slash"
+                  (onClick)="wFilter.value = ''; filterProducts('', 'TARGET')"
+                  [disabled]="wFilter.value === ''"
+                  [ariaLabel]="'DIALOG.DATAVIEW.FILTER.CLEAR' | translate"
+                  [pTooltip]="'DIALOG.DATAVIEW.FILTER.CLEAR' | translate"
                   tooltipPosition="top"
                   tooltipEvent="hover"
-                ></span>
-              </ng-template>
-            </p-selectButton>
+                />
+              </p-inputgroup-addon>
+            </p-inputgroup>
           </div>
-          <div class="p-inputgroup p-picklist-filter">
-            <input
-              #wFilter
-              id="ws_products_picklist_ws_filter_value"
-              class="p-picklist-filter-input p-inputtext p-component"
-              [(ngModel)]="targetFilterValue"
-              (keyup)="items.filter(getFilterValue($event))"
-              type="text"
-              [placeholder]="'DIALOG.DATAVIEW.FILTER' | translate"
-              [attr.aria-label]="'DIALOG.DATAVIEW.FILTER' | translate"
-              [pTooltip]="'DIALOG.DATAVIEW.PRODUCT_FILTER_TOOLTIP' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            />
-            <button
-              id="ws_products_detail_picklist_ws_filter_clear"
-              class="p-inputgroup-addon cursor-pointer pi pi-filter-slash"
-              [ngClass]="{ 'bg-primary': wFilter.value !== '', 'p-disabled': wFilter.value === '' }"
-              [ngStyle]="
-                wFilter.value === ''
-                  ? { 'background-color': 'var(--emphasis-lower)', opacity: 'var(--disabled-opacity)' }
-                  : null
-              "
-              (keydown.space)="items.reset(); targetFilterValue = undefined"
-              (click)="items.reset(); targetFilterValue = undefined"
-              [attr.aria-label]="'DIALOG.DATAVIEW.FILTER.CLEAR' | translate"
-              [pTooltip]="'DIALOG.DATAVIEW.FILTER.CLEAR' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            ></button>
-          </div>
-        </div>
-      </ng-template>
+        </ng-template>
 
-      <!--
+        <!--
         PRODUCT ITEM in picklist
       -->
-      <ng-template let-product pTemplate="item">
-        <div class="col-12 sm:h-2rem md:h-3rem p-0 flex flex-wrap align-items-center">
-          <div
-            class="col-12 md:col-9 p-0 flex flex-row column-gap-2 align-items-center tile-view-content"
-            (dblclick)="return($event)"
-          >
+        <ng-template #item let-product let-i="index">
+          <div class="col-12 sm:h-2rem md:h-3rem p-0 flex flex-wrap align-items-center">
             <div
-              class="h-1rem sm:h-2rem md:h-3rem w-1rem sm:w-2rem md:w-3rem flex align-items-center"
-              aria-hidden="true"
+              class="col-12 md:col-9 p-0 flex flex-row column-gap-2 align-items-center tile-view-content"
+              (dblclick)="return($event)"
             >
-              <app-image-container
-                [id]="'ws_products_picklist_' + product.productName + '_logo'"
-                [imageUrl]="getImageUrl(product)"
-                [defaultLogoType]="'product'"
-                styleClass="max-h-1rem sm:max-h-2rem md:max-h-3rem max-w-1rem sm:max-w-2rem md:max-w-3rem tile-view-optional border-round-sm"
-              ></app-image-container>
-            </div>
-            <div class="flex flex-column row-gap-1">
               <div
-                [id]="'ws_products_picklist_' + product.productName + '_display_name'"
-                class="tile-view-mandatory sm:font-semibold text-sm lg:text-md max-w-10rem xl:max-w-15rem text-responsive"
-                [class.danger-action-text]="product?.undeployed"
+                class="h-1rem sm:h-2rem md:h-3rem w-1rem sm:w-2rem md:w-3rem flex align-items-center"
+                aria-hidden="true"
+              >
+                <app-image-container
+                  [id]="'ws_products_picklist_' + product.productName + '_logo'"
+                  [imageUrl]="getImageUrl(product)"
+                  [defaultLogoType]="'product'"
+                  styleClass="max-h-1rem sm:max-h-2rem md:max-h-3rem max-w-1rem sm:max-w-2rem md:max-w-3rem tile-view-optional border-round-sm"
+                ></app-image-container>
+              </div>
+              <div class="flex flex-column row-gap-1">
+                <div
+                  [id]="'ws_products_picklist_' + product.productName + '_display_name'"
+                  class="tile-view-mandatory sm:font-semibold text-sm lg:text-md max-w-10rem xl:max-w-15rem text-responsive"
+                  [class.danger-action-text]="product?.undeployed"
+                  role="note"
+                >
+                  {{ product.displayName ?? product.productName }}
+                </div>
+                <div
+                  [id]="'ws_products_picklist_' + product.productName + '_product_name'"
+                  class="tile-view-optional text-xs hidden md:block max-w-10rem xl:max-w-15rem text-responsive"
+                  role="note"
+                >
+                  {{ product.productName }}
+                </div>
+              </div>
+            </div>
+            <div
+              class="tile-view-optional col-3 h-3rem p-0 text-sm hidden md:flex flex-column justify-content-center row-gap-2"
+            >
+              <div
+                [id]="'ws_products_picklist_' + product.productName + '_product_base_url'"
+                class="max-w-15rem word-break-all text-ellipsis-2-lines"
                 role="note"
               >
-                {{ product.displayName ?? product.productName }}
+                {{ product.baseUrl }}
               </div>
-              <div
-                [id]="'ws_products_picklist_' + product.productName + '_product_name'"
-                class="tile-view-optional text-xs hidden md:block max-w-10rem xl:max-w-15rem text-responsive"
-                role="note"
-              >
-                {{ product.productName }}
-              </div>
+              <!-- STATUS -->
+              @if (product?.undeployed === true) {
+                <div
+                  [id]="'ws_products_picklist_' + product.productName + '_undeployed'"
+                  class="tile-view-optional danger-action-text text-xs font-bold"
+                  [attr.aria-label]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
+                  [pTooltip]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
+                  tooltipPosition="top"
+                  tooltipEvent="hover"
+                  role="note"
+                >
+                  {{ 'DIALOG.PRODUCTS.STATUS.UNDEPLOYED' | translate }}
+                </div>
+              } @else {
+                @if (!product?.exists) {
+                  <div
+                    [id]="'ws_products_picklist_' + product.productName + '_not_exist'"
+                    class="tile-view-optional danger-action-text text-xs font-bold"
+                    [attr.aria-label]="'DIALOG.PRODUCTS.REMOVED' | translate"
+                    [pTooltip]="'DIALOG.PRODUCTS.REMOVED' | translate"
+                    tooltipPosition="top"
+                    tooltipEvent="hover"
+                    role="note"
+                  >
+                    {{ 'DIALOG.PRODUCTS.STATUS.REMOVED' | translate }}
+                  </div>
+                } @else {
+                  @if (product?.changedComponents) {
+                    <div
+                      [id]="'ws_products_picklist_' + product.productName + '_changed'"
+                      class="tile-view-optional danger-action-text text-xs font-bold"
+                      [attr.aria-label]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
+                      [pTooltip]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
+                      tooltipPosition="top"
+                      tooltipEvent="hover"
+                      role="note"
+                    >
+                      {{ 'DIALOG.PRODUCTS.STATUS.CHANGED' | translate }}
+                    </div>
+                  }
+                }
+              }
             </div>
           </div>
-          <div
-            class="tile-view-optional col-3 h-3rem p-0 text-sm hidden md:flex justify-content-start align-items-center"
-          >
-            <div
-              [id]="'ws_products_picklist_' + product.productName + '_product_base_url'"
-              class="max-w-15rem word-break-all text-ellipsis-2-lines"
-              role="note"
-            >
-              {{ product.baseUrl }}
-            </div>
-          </div>
-          <!-- BADGES -->
-          @if (product?.undeployed === true) {
-            <div
-              [id]="'ws_products_picklist_' + product.productName + '_undeployed'"
-              class="card-badge-right badge-1 tile-view-optional danger-action-text sm:text-xl pi pi-ban"
-              [attr.aria-label]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
-              [pTooltip]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-              role="note"
-            ></div>
-          } @else {
-            @if (!product?.exists) {
-              <div
-                [id]="'ws_products_picklist_' + product.productName + '_not_exist'"
-                class="card-badge-right badge-1 tile-view-optional danger-action-text sm:text-xl pi pi-trash"
-                [attr.aria-label]="'DIALOG.PRODUCTS.REMOVED' | translate"
-                [pTooltip]="'DIALOG.PRODUCTS.REMOVED' | translate"
-                tooltipPosition="top"
-                tooltipEvent="hover"
-                role="note"
-              ></div>
-            } @else {
-              <div
-                *ngIf="product?.changedComponents"
-                [id]="'ws_products_picklist_' + product.productName + '_changed'"
-                class="card-badge-right badge-1 tile-view-optional danger-action-text sm:text-xl pi pi-exclamation-circle"
-                [attr.aria-label]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
-                [pTooltip]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
-                tooltipPosition="top"
-                tooltipEvent="hover"
-                role="note"
-              ></div>
-            }
-          }
-        </div>
-      </ng-template>
-    </p-pickList>
+        </ng-template>
+      </p-pickList>
+    }
     <!-- MESSSAGES on bigger screens -->
     <section class="hidden md:block">
-      <p-message
-        *ngIf="!exceptionKey && (wpLoading || psLoading)"
-        id="ws_products_message_loading"
-        severity="info"
-        [text]="'ACTIONS.LOADING' | translate"
-      ></p-message>
-      <p-message
-        *ngIf="exceptionKey"
-        id="ws_products_message_error"
-        severity="error"
-        [text]="exceptionKey | translate"
-      ></p-message>
+      @if (exceptionKey) {
+        <p-message id="ws_products_message_error" severity="error" [text]="exceptionKey | translate"></p-message>
+      } @else if (wpLoading || psLoading) {
+        <p-message id="ws_products_message_loading" severity="info" [text]="'ACTIONS.LOADING' | translate"></p-message>
+      }
     </section>
   </section>
 
@@ -304,7 +299,7 @@
   -->
   <section
     *ngIf="displayDetails && displayedDetailItem"
-    class="mt-1 ml-3 pt-2 w-4 hidden md:block card"
+    class="ml-3 pt-2 w-4 hidden md:block card"
     [attr.aria-label]="'DIALOG.PRODUCTS.DETAILS' | translate"
   >
     <!-- 
@@ -753,52 +748,8 @@
 </div>
 
 <!-- PRODUCT DEREGISTRATION -->
-<p-dialog
-  [(visible)]="displayDeregisterConfirmation"
-  [header]="'DIALOG.PRODUCTS.DEREGISTER' | translate"
-  (onHide)="onDeregisterCancellation()"
-  [modal]="true"
-  [closable]="true"
-  [resizable]="false"
-  [dismissableMask]="true"
-  [style]="{ width: '450px' }"
-  styleClass="disable-max-height-preset"
->
-  <section
-    class="flex column-gap-4 row-gap-1 justify-content-start align-items-center"
-    [attr.aria-label]="'DIALOG.PRODUCTS.DEREGISTER' | translate"
-  >
-    <div class="pi pi-question-circle text-3xl danger-action-text"></div>
-    <div class="flex flex-column row-gap-2">
-      <div id="ws_products_deregister_message" class="font-bold">
-        {{ 'ACTIONS.DELETE.PRODUCT.MESSAGE' | translate }}
-      </div>
-      <div id="ws_products_deregister_message_info">{{ 'ACTIONS.DELETE.PRODUCT.MESSAGE_INFO' | translate }}</div>
-      <div>{{ 'ACTIONS.DELETE.INFO' | translate }}</div>
-    </div>
-  </section>
-  <ng-template pTemplate="footer">
-    <footer class="mt-3 flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
-      <p-button
-        id="ws_products_deregister_action_no"
-        icon="pi pi-times"
-        (onClick)="onDeregisterCancellation()"
-        [label]="'ACTIONS.CONFIRMATION.NO' | translate"
-        [ariaLabel]="'ACTIONS.CONFIRMATION.NO' | translate"
-        [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      ></p-button>
-      <p-button
-        id="ws_products_deregister_action_yes"
-        icon="pi pi-check"
-        (onClick)="onDeregisterConfirmation()"
-        [label]="'ACTIONS.CONFIRMATION.YES' | translate"
-        [ariaLabel]="'ACTIONS.CONFIRMATION.YES' | translate"
-        [pTooltip]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      ></p-button>
-    </footer>
-  </ng-template>
-</p-dialog>
+<app-product-deregistration
+  [visible]="displayDeregisterConfirmation"
+  (cancel)="onDeregisterCancellation()"
+  (confirm)="onDeregisterConfirmation()"
+></app-product-deregistration>

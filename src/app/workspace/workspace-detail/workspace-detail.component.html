@@ -131,7 +131,9 @@
           <app-workspace-slots [workspace]="workspaceForSlots"></app-workspace-slots>
         </p-tabpanel>
         <p-tabpanel value="5">
-          <app-products [workspace]="workspaceForProducts" (changed)="onProductChanges()"></app-products>
+          <div class="p-2 sm:p-3">
+            <app-products [workspace]="workspaceForProducts" (changed)="onProductChanges()"></app-products>
+          </div>
         </p-tabpanel>
       </p-tabpanels>
     </p-tabs>

@@ -105,7 +105,6 @@
             "exclude": [
               "src/app/workspace/workspace-detail/**/*.spec.ts",
               "src/app/workspace/workspace-menu/**/*.spec.ts",
-              "src/app/workspace/workspace-product/**/*.spec.ts",
               "src/app/workspace/workspace-role-detail/**/*.spec.ts"
             ],
             "assets": ["src/favicon.ico", "src/assets"],

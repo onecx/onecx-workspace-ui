@@ -1,10 +1,11 @@
-import { NO_ERRORS_SCHEMA, Renderer2, SimpleChanges } from '@angular/core'
+import { Renderer2, SimpleChanges } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { of, throwError } from 'rxjs'
+import { BehaviorSubject, of, throwError } from 'rxjs'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { provideNoopAnimations } from '@angular/platform-browser/animations'
 import { TranslateTestingModule } from 'ngx-translate-testing'
-import { ReactiveFormsModule, FormBuilder, FormArray, FormControl, FormGroup } from '@angular/forms'
+import { FormBuilder, FormArray, FormControl, FormGroup } from '@angular/forms'
 
 import {
   AppStateService,
@@ -206,7 +207,11 @@ describe('ProductComponent', () => {
   const slotApiSpy = { getSlotsForWorkspace: jasmine.createSpy('getSlotsForWorkspace').and.returnValue(of({})) }
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
   const workspaceServiceSpy = jasmine.createSpyObj<WorkspaceService>('WorkspaceService', ['doesUrlExistFor', 'getUrl'])
-  const mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
+  const mockUserService = {
+    ...jasmine.createSpyObj('UserService', ['hasPermission']),
+    // TranslationConnectionService (eagerly created via AngularAcceleratorModule) subscribes to it
+    lang$: new BehaviorSubject('en')
+  }
   mockUserService.hasPermission.and.callFake((permission: string) => {
     return ['WORKSPACE_PRODUCTS#REGISTER'].includes(permission)
   })
@@ -214,27 +219,38 @@ describe('ProductComponent', () => {
   beforeEach(waitForAsync(() => {
     mockAppState = { currentMfe$: of(mfeInfo) }
     TestBed.configureTestingModule({
-      declarations: [ProductComponent],
       imports: [
-        ReactiveFormsModule,
+        ProductComponent,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
-      schemas: [NO_ERRORS_SCHEMA],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        { provide: PortalMessageService, useValue: msgServiceSpy },
-        { provide: WorkspaceProductAPIService, useValue: wProductApiSpy },
-        { provide: ProductAPIService, useValue: productApiSpy },
+        provideNoopAnimations(),
         { provide: AppStateService, useValue: mockAppState },
-        { provide: SlotAPIService, useValue: slotApiSpy },
         { provide: WorkspaceService, useValue: workspaceServiceSpy },
         { provide: UserService, useValue: mockUserService }
       ]
-    }).compileComponents()
+    })
+      // WorkspaceProductAPIService / ProductAPIService / SlotAPIService and PortalMessageService
+      // are all `providedIn: 'any'`, so the component injects its OWN instance and a root-level
+      // `useValue` spy is silently shadowed (the real services then perform genuine HTTP calls via
+      // provideHttpClientTesting / publish to a MessageTopic, which never reach the spies). Re-point
+      // the component's own providers at the shared spies so the component actually receives them.
+      .overrideComponent(ProductComponent, {
+        set: {
+          providers: [
+            { provide: PortalMessageService, useValue: msgServiceSpy },
+            { provide: WorkspaceProductAPIService, useValue: wProductApiSpy },
+            { provide: ProductAPIService, useValue: productApiSpy },
+            { provide: SlotAPIService, useValue: slotApiSpy }
+          ]
+        }
+      })
+      .compileComponents()
   }))
 
   beforeEach(() => {

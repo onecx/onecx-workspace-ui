@@ -18,7 +18,7 @@ const workspace = {
   baseUrl: '/some/base/url'
 }
 
-fdescribe('WorkspaceInternComponent', () => {
+describe('WorkspaceInternComponent', () => {
   let component: WorkspaceInternComponent
   let fixture: ComponentFixture<WorkspaceInternComponent>
 

@@ -532,6 +532,13 @@
         "DEPRECATED": "Outdated",
         "UNDEPLOYED": "Unavailable"
       },
+      "STATUS": {
+        "CHANGED": "Changed",
+        "NEW": "New",
+        "REMOVED": "Unknown",
+        "DEPRECATED": "Deprecated",
+        "UNDEPLOYED": "Unavailable"
+      },
       "SLOTS": {
         "NEW": "Slot not registered for the Workspace",
         "REMOVED": "Slot does not exist anymore in Application Store"
@@ -560,7 +567,7 @@
         "CLEAR": "Clear Filter",
         "PLACEHOLDER": "Filter"
       },
-      "PRODUCT_FILTER_TOOLTIP": "Filter by Application and Classification",
+      "PRODUCT_FILTER_TOOLTIP": "Filter by Application (Display Name)",
       "SLOT_FILTER_TOOLTIP": "Filter by Components",
       "SORT_BY": "Sort By",
       "SORT_DIRECTION_ASC": "ascending",

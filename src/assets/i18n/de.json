@@ -532,6 +532,13 @@
         "DEPRECATED": "Veraltet",
         "UNDEPLOYED": "Unverfügbar"
       },
+      "STATUS": {
+        "CHANGED": "Geändert",
+        "NEW": "Neu",
+        "REMOVED": "Unbekannt",
+        "DEPRECATED": "Veraltet",
+        "UNDEPLOYED": "Unverfügbar"
+      },
       "SLOTS": {
         "NEW": "Slot nicht für den Workspace registriert",
         "REMOVED": "Slot existiert nicht mehr im Applikation Store"
@@ -560,7 +567,7 @@
         "CLEAR": "Filter entfernen",
         "PLACEHOLDER": "Filter"
       },
-      "PRODUCT_FILTER_TOOLTIP": "Filtern nach Applikation und Klassifikation",
+      "PRODUCT_FILTER_TOOLTIP": "Filtern nach Applikation (Anzeigename)",
       "SLOT_FILTER_TOOLTIP": "Filtern nach Komponenten",
       "SORT_BY": "Sortiert nach",
       "SORT_DIRECTION_ASC": "aufsteigend",

@@ -55,7 +55,7 @@
                     #globalFilterInput
                     type="text"
                     pInputText
-                    id="th_search_filter"
+                    id="ws_search_filter"
                     class="text-responsive"
                     [value]="globalFilterValue"
                     (input)="onGlobalFilter(globalFilterInput.value, rows)"
@@ -69,12 +69,12 @@
                     tooltipPosition="top"
                     tooltipEvent="hover"
                   />
-                  <label for="th_search_filter" aria-hidden="true">
+                  <label for="ws_search_filter" aria-hidden="true">
                     {{ 'DIALOG.DATAVIEW.FILTER.LABEL' | translate }}
                   </label>
                 </p-floatlabel>
                 <p-button
-                  id="th_search_filter_clear"
+                  id="ws_search_filter_clear"
                   icon="pi pi-filter-slash"
                   (onClick)="onClearGlobalFilter()"
                   [disabled]="globalFilterInput.value === ''"
