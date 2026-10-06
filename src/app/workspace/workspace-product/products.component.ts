@@ -190,8 +190,7 @@ export class ProductComponent implements OnChanges, OnDestroy {
     private readonly appState: AppStateService,
     private readonly translate: TranslateService,
     private readonly msgService: PortalMessageService,
-    private readonly fb: FormBuilder,
-    private readonly cdr: ChangeDetectorRef
+    private readonly fb: FormBuilder
   ) {
     Promise.all([this.user.hasPermission('WORKSPACE_PRODUCTS#REGISTER')]).then(([perm]) => {
       this.hasRegisterPermission = perm
@@ -381,9 +380,14 @@ export class ProductComponent implements OnChanges, OnDestroy {
 
   public getImageUrl(product?: ExtendedProduct): string | undefined {
     if (!product) return undefined
-    if (product.imageUrl && product.imageUrl != '') {
+    if (product.imageUrl && product.imageUrl !== '') {
       return product.imageUrl
     }
+    /*
+    console.log(
+      'getImageUrl called with product:',
+      Utils.bffProductImageUrl(this.imageApi.configuration.basePath, product.productName)
+    )*/
     return Utils.bffProductImageUrl(this.imageApi.configuration.basePath, product.productName)
   }
 
@@ -622,6 +626,8 @@ export class ProductComponent implements OnChanges, OnDestroy {
    *
    * This event fires after the items were moved from source to target => PrimeNG
    * Afterwards, Step through the list and on each error roll back the move.
+   *
+   * Migration Angular 18 => 19 : Events onSourceSelect, onTargetSelect missing
    */
   private prepareMfePaths(mfes: Microfrontend[]): Microfrontend[] | undefined {
     return mfes.length === 0

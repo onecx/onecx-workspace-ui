@@ -8,8 +8,16 @@
   .mt-05 {
     margin-top: 0.125rem !important;
   }
-  .workspace-product-item .p-card-body {
-    padding: 1rem;
+  .workspace-product-item {
+    .p-card-header {
+      background-color: rgb(from var(--primary-color) r g b / 0.1);
+    }
+    .p-card-body {
+      padding: 0.5rem 0.8rem;
+      .app-sub-title {
+        background-color: rgb(from var(--primary-color) r g b / 0.1);
+      }
+    }
   }
 
   // PrimeNG 19 rebuilt the picklist on top of the listbox.
@@ -125,5 +133,10 @@
     .card-badge-right.badge-1 {
       top: -1px;
     }
+  }
+
+  /* fix on missing border definition: define border for active buttons */
+  .p-button:not(:disabled):active {
+    border: 1px solid var(--onecx-workspace-onecx-workspace-ui-button-primary-border-color);
   }
 }
