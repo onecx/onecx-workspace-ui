@@ -36,13 +36,15 @@ export class WorkspaceContactComponent implements OnChanges {
   }
 
   private fillForm(): void {
-    Object.keys(this.contactForm.controls).forEach((element) => {
-      if (['street', 'streetNo', 'city', 'postalCode', 'country'].includes(element) && this.workspace?.address) {
-        this.contactForm.controls[element].setValue((this.workspace?.address as any)[element])
-      } else {
-        this.contactForm.controls[element].setValue((this.workspace as any)[element])
+    if (this.workspace) {
+      for (const key of Object.keys(this.contactForm.controls)) {
+        if (['street', 'streetNo', 'city', 'postalCode', 'country'].includes(key) && this.workspace?.address) {
+          this.contactForm.controls[key].setValue((this.workspace?.address as any)[key])
+        } else if ((this.workspace as any)[key]) {
+          this.contactForm.controls[key].setValue((this.workspace as any)[key])
+        }
       }
-    })
+    }
   }
 
   public onSave(): void {

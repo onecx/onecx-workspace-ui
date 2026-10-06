@@ -29,6 +29,12 @@
     margin-bottom: 0 !important;
     padding: 0 !important;
   }
+  /* fixes for p-card */
+  --onecx-workspace-onecx-workspace-ui-card-body-padding: 0.5rem;
+  --onecx-workspace-onecx-workspace-ui-card-border-radius: 4px;
+  --onecx-workspace-onecx-workspace-ui-card-shadow:
+    rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+
   .p-tabs .p-tabpanels {
     padding: 0;
     &.non-modal-panels {

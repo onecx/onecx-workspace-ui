@@ -1,14 +1,12 @@
 import {
-  AfterViewInit,
   Component,
-  ElementRef,
   EventEmitter,
-  Renderer2,
   Input,
   Output,
   OnDestroy,
   OnChanges,
-  SimpleChanges
+  SimpleChanges,
+  ChangeDetectorRef
 } from '@angular/core'
 import {
   FormArray,
@@ -32,6 +30,8 @@ import {
   takeUntil
 } from 'rxjs'
 import { TranslateService } from '@ngx-translate/core'
+
+import { CardModule } from 'primeng/card'
 
 import { MfeInfo } from '@onecx/integration-interface'
 import {
@@ -90,15 +90,6 @@ export type ExtendedProduct = Product &
     apps?: Map<string, ExtendedApp> // key: appId
     slots?: Array<ExtendedSlot> // from ProductStoreItem
   }
-interface ViewingModes {
-  icon: string
-  mode: string
-  titleKey?: string
-}
-const ALL_VIEW_MODES = [
-  { icon: 'pi pi-list', mode: 'list', titleKey: 'DIALOG.DATAVIEW.VIEW_MODE_LIST' },
-  { icon: 'pi pi-th-large', mode: 'grid', titleKey: 'DIALOG.DATAVIEW.VIEW_MODE_GRID' }
-]
 
 export function ValidateModuleBasePath(fa: FormArray): ValidatorFn {
   return (): ValidationErrors | null => {
@@ -149,15 +140,14 @@ export function AddMfeModuleFormControl(fb: FormBuilder, modules: FormArray, idx
     })
   }
 }
-
 @Component({
   selector: 'app-products',
   standalone: true,
-  imports: [SharedModule, ImageContainerComponent, ProductDeregistrationComponent],
+  imports: [CardModule, SharedModule, ImageContainerComponent, ProductDeregistrationComponent],
   templateUrl: './products.component.html',
   styleUrls: ['./products.component.scss']
 })
-export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
+export class ProductComponent implements OnChanges, OnDestroy {
   @Input() workspace!: Workspace | undefined
   @Output() changed = new EventEmitter()
 
@@ -176,11 +166,6 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   public formChanged = false
   public sourceFilterValue = '' // product store
   public targetFilterValue = '' // workspace
-  public sourceList!: HTMLElement | null
-  public targetList!: HTMLElement | null
-  public sourceListViewMode: ViewingModes | undefined
-  public targetListViewMode: ViewingModes | undefined
-  public viewingModes: ViewingModes[] = []
   public displayDeregisterConfirmation = false
   private deregisterItems: ExtendedProduct[] = []
 
@@ -206,8 +191,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     private readonly translate: TranslateService,
     private readonly msgService: PortalMessageService,
     private readonly fb: FormBuilder,
-    private readonly elem: ElementRef,
-    public renderer: Renderer2
+    private readonly cdr: ChangeDetectorRef
   ) {
     Promise.all([this.user.hasPermission('WORKSPACE_PRODUCTS#REGISTER')]).then(([perm]) => {
       this.hasRegisterPermission = perm
@@ -219,15 +203,8 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
       baseUrl: new FormControl(null, [Validators.required, Validators.maxLength(200)]),
       modules: this.fb.array([])
     })
-    this.viewingModes = ALL_VIEW_MODES
-    this.sourceListViewMode = this.viewingModes.find((v) => v.mode === 'list')
-    this.targetListViewMode = this.viewingModes.find((v) => v.mode === 'list')
   }
 
-  public ngAfterViewInit() {
-    this.sourceList = (<HTMLElement>this.elem.nativeElement).querySelector('.p-picklist-list.p-picklist-source')
-    this.targetList = (<HTMLElement>this.elem.nativeElement).querySelector('.p-picklist-list.p-picklist-target')
-  }
   public ngOnChanges(changes: SimpleChanges): void {
     if (this.workspace && changes['workspace']) {
       this.loadData()
@@ -436,20 +413,6 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     this.formChanged = false
     this.formGroup.reset()
   }
-  public onSourceViewModeChange(ev: { icon: string; mode: string }): void {
-    if (ev) {
-      this.sourceListViewMode = this.viewingModes.find((v) => v.mode === ev.mode)
-      if (ev.mode === 'grid') this.renderer.addClass(this.sourceList, 'tile-view')
-      if (ev.mode === 'list') this.renderer.removeClass(this.sourceList, 'tile-view')
-    }
-  }
-  public onTargetViewModeChange(ev: { icon: string; mode: string }): void {
-    if (ev) {
-      this.targetListViewMode = this.viewingModes.find((v) => v.mode === ev.mode)
-      if (ev.mode === 'grid') this.renderer.addClass(this.targetList, 'tile-view')
-      if (ev.mode === 'list') this.renderer.removeClass(this.targetList, 'tile-view')
-    }
-  }
 
   /**************************************************
    * UI Events: Detail
@@ -458,13 +421,13 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     event.stopPropagation()
   }
   // on picklist item clicks: ev.items is collection
-  public onSourceSelect(ev: any): void {
-    if (ev.items.length === 0) this.onHideItemDetails()
-    if (ev.items.length === 1) this.fillForm(this.psProductsOrg.get(ev.items[0].productName))
-  }
-  public onTargetSelect(ev: any): void {
-    if (ev.items.length === 0) this.onHideItemDetails()
-    if (ev.items.length === 1) this.getWProduct(ev.items[0])
+  public onItemSelect(item: ExtendedProduct): void {
+    const isSource = this.psProducts.includes(item)
+    if (isSource) {
+      this.fillForm(this.psProductsOrg.get(item.productName!))
+    } else {
+      this.getWProduct(item)
+    }
   }
 
   /**************************************************

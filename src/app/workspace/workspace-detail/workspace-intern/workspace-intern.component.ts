@@ -36,9 +36,11 @@ export class WorkspaceInternComponent implements OnChanges {
   }
 
   private setFormData(): void {
-    Object.keys(this.formGroup.controls).forEach((element) => {
-      this.formGroup.get(element)?.setValue((this.workspace as any)[element] ?? false)
-    })
+    if (this.workspace) {
+      this.formGroup.get('operator')?.setValue(this.workspace.operator ?? false)
+      this.formGroup.get('mandatory')?.setValue(this.workspace.mandatory ?? false)
+      this.formGroup.get('disabled')?.setValue(this.workspace.disabled ?? false)
+    }
   }
 
   public onSave(): void {
