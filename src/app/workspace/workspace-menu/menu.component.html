@@ -53,9 +53,9 @@
             tooltipEvent="hover"
           />
           <!-- FILTER -->
-          <div class="p-inputgroup w-13rem sm:w-17rem md:w-20rem">
+          <p-inputgroup class="w-13rem sm:w-17rem md:w-20rem">
             <span class="p-inputgroup-addon pi pi-filter" aria-hidden="true"> </span>
-            <span class="p-float-label">
+            <p-floatlabel variant="on">
               @let tooltipText =
                 ('DIALOG.DATAVIEW.FILTER.OF' | translate) +
                 ('MENU_ITEM.MENU_NAME' | translate) +
@@ -80,7 +80,7 @@
               >
                 {{ 'DIALOG.DATAVIEW.FILTER.PLACEHOLDER' | translate }}
               </label>
-            </span>
+            </p-floatlabel>
             <button
               id="ws_menu_table_header_filter_clear"
               class="p-inputgroup-addon cursor-pointer pi pi-filter-slash"
@@ -93,7 +93,7 @@
               tooltipPosition="top"
               tooltipEvent="hover"
             ></button>
-          </div>
+          </p-inputgroup>
           <!-- ACTIONS & LINKS -->
           <section
             class="hidden sm:flex flex-wrap justify-content-between align-items-center gap-2"
@@ -203,11 +203,11 @@
             </p-selectButton>
           </div>
           <!-- role filter -->
-          <div
+          <p-inputgroup
             *ngIf="displayRoles && wRoles.length > 3 && treeFilteredRows > 0"
-            class="mt-1 sm:mt-0 p-inputgroup w-13rem sm:w-17rem md:w-20rem"
+            class="mt-1 sm:mt-0 w-13rem sm:w-17rem md:w-20rem"
           >
-            <span class="p-float-label">
+            <p-floatlabel variant="on">
               <input
                 #roleNameFilter
                 pInputText
@@ -222,7 +222,7 @@
               <label for="ws_menu_table_header_role_filter" aria-hidden="true">
                 {{ 'DIALOG.MENU.ROLE.FILTER.DISPLAY_ROLES' | translate }}
               </label>
-            </span>
+            </p-floatlabel>
             <button
               id="ws_menu_table_header_role_filter_clear"
               class="p-inputgroup-addon bg-primary pseudo-button pi pi-filter-slash"
@@ -234,7 +234,7 @@
               tooltipPosition="top"
               tooltipEvent="hover"
             ></button>
-          </div>
+          </p-inputgroup>
         </section>
       </ng-template>
 

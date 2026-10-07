@@ -24,7 +24,7 @@
         <!-- ROW 1 -->
         <div class="flex flex-row flex-wrap gap-4">
           <div class="w-12 md:w-7" style="min-width: 15rem">
-            <span class="p-float-label" controlErrorAnchor>
+            <p-floatlabel variant="on">
               <input
                 pInputText
                 type="text"
@@ -39,12 +39,13 @@
               <label class="ocx-required-label" for="ws_menu_detail_field_menu_name" aria-hidden="true">
                 {{ 'MENU_ITEM.MENU_NAME' | translate }}
               </label>
-            </span>
+            </p-floatlabel>
           </div>
           <article class="flex-grow-1" style="min-width: 10rem" [attr.aria-abel]="'MENU_ITEM.BADGE' | translate">
-            <span class="p-float-label" controlErrorAnchor>
-              <p-dropdown
-                id="ws_menu_detail_field_badge"
+            <p-floatlabel variant="on">
+              <p-select
+                id="ws_menu_detail_field_badge_input"
+                inputId="ws_menu_detail_field_badge"
                 styleClass="w-full min-w-min input-field-correction"
                 formControlName="badge"
                 [showClear]="true"
@@ -67,16 +68,16 @@
                     <span>{{ icon.label }}</span>
                   </div>
                 </ng-template>
-              </p-dropdown>
-              <label for="ws_menu_detail_field_badge" aria-hidden="true">{{ 'MENU_ITEM.BADGE' | translate }} </label>
-            </span>
+              </p-select>
+              <label for="ws_menu_detail_field_badge" aria-hidden="true"> {{ 'MENU_ITEM.BADGE' | translate }} </label>
+            </p-floatlabel>
           </article>
         </div>
 
         <!-- ROW 2 -->
         <div class="flex flex-row flex-wrap gap-4">
           <article class="w-12 md:w-6" style="min-width: 15rem" [attr.aria-abel]="'MENU_ITEM.MENU_ID' | translate">
-            <span class="p-float-label" controlErrorAnchor>
+            <p-floatlabel variant="on">
               <input
                 pInputText
                 type="text"
@@ -91,12 +92,13 @@
               <label class="ocx-required-label" for="ws_menu_detail_field_menu_id" aria-hidden="true">
                 {{ 'MENU_ITEM.MENU_ID' | translate }}
               </label>
-            </span>
+            </p-floatlabel>
           </article>
           <article class="flex-grow-1" style="min-width: 15rem" [attr.aria-abel]="'MENU_ITEM.PARENT_ID' | translate">
-            <span class="p-float-label">
-              <p-dropdown
-                id="ws_menu_detail_field_parent_id"
+            <p-floatlabel variant="on">
+              <p-select
+                id="ws_menu_detail_field_parent_id_input"
+                inputId="ws_menu_detail_field_parent_id"
                 styleClass="w-full input-field-correction"
                 formControlName="parentItemId"
                 [options]="parentItems"
@@ -107,19 +109,20 @@
                 tooltipPosition="top"
                 tooltipEvent="hover"
               >
-              </p-dropdown>
-              <label for="ws_menu_detail_field_parent_id" aria-hidden="true"
-                >{{ 'MENU_ITEM.PARENT_ID' | translate }}
-              </label>
-            </span>
+              </p-select>
+              <label for="ws_menu_detail_field_parent_id" aria-hidden="true">
+                {{ 'MENU_ITEM.PARENT_ID' | translate }}</label
+              >
+            </p-floatlabel>
           </article>
         </div>
 
         <!-- ROW 3 -->
         <article class="w-12" [attr.aria-abel]="'MENU_ITEM.URL' | translate">
-          <span class="p-float-label mb-1" controlErrorAnchor>
+          <p-floatlabel variant="on" class="mb-1">
             <p-autoComplete
-              id="ws_menu_detail_field_url"
+              id="ws_menu_detail_field_url_input"
+              inputId="ws_menu_detail_field_url"
               formControlName="url"
               [suggestions]="filteredMfes"
               (completeMethod)="onFilterPaths($event)"
@@ -155,7 +158,7 @@
               </ng-template>
             </p-autoComplete>
             <label for="ws_menu_detail_field_url" aria-hidden="true">{{ 'MENU_ITEM.URL' | translate }} </label>
-          </span>
+          </p-floatlabel>
         </article>
 
         <!-- ROW 4/5 -->
@@ -164,7 +167,7 @@
             <!-- ROW 4 -->
             <div class="flex-grow-1 flex flex-row gap-4 flex-wrap">
               <div class="w-4">
-                <span class="p-float-label mb-1" controlErrorAnchor>
+                <p-floatlabel variant="on" class="mb-1">
                   <input
                     pInputText
                     type="text"
@@ -179,12 +182,13 @@
                   <label for="ws_menu_detail_field_position" aria-hidden="true">{{
                     'MENU_ITEM.POSITION' | translate
                   }}</label>
-                </span>
+                </p-floatlabel>
               </div>
               <article class="flex-grow-1" style="min-width: 10rem" [attr.aria-label]="'MENU_ITEM.SCOPE' | translate">
-                <span class="p-float-label mb-1" controlErrorAnchor>
-                  <p-dropdown
-                    id="ws_menu_detail_field_scope"
+                <p-floatlabel variant="on" class="mb-1">
+                  <p-select
+                    id="ws_menu_detail_field_scope_input"
+                    inputId="ws_menu_detail_field_scope"
                     styleClass="w-full min-w-min input-field-correction"
                     formControlName="scope"
                     [appendTo]="'body'"
@@ -195,15 +199,15 @@
                     tooltipPosition="top"
                     tooltipEvent="hover"
                   >
-                  </p-dropdown>
-                  <label for="ws_menu_detail_field_scope" aria-hidden="true"
-                    >{{ 'MENU_ITEM.SCOPE' | translate }}
+                  </p-select>
+                  <label for="ws_menu_detail_field_scope" aria-hidden="true">
+                    {{ 'MENU_ITEM.SCOPE' | translate }}
                   </label>
-                </span>
+                </p-floatlabel>
               </article>
             </div>
             <!-- ROW 5 -->
-            <div class="p-float-label mb-1" controlErrorAnchor>
+            <p-floatlabel variant="on" class="mb-1">
               <input
                 pInputText
                 type="text"
@@ -218,7 +222,7 @@
               <label for="ws_menu_detail_field_description" aria-hidden="true"
                 >{{ 'MENU_ITEM.DESCRIPTION' | translate }}
               </label>
-            </div>
+            </p-floatlabel>
           </div>
           <div class="md:w-4 sm:pl-2 md:pl-3 flex flex-column gap-3 md:gap-2 justify-content-evenly">
             <div class="w-full flex justify-content-start align-items-center">
@@ -232,7 +236,7 @@
                 tooltipPosition="top"
                 tooltipEvent="hover"
               />
-              <label for="ws_menu_detail_field_disabled" aria-hidden="true">
+              <label for="ws_menu_detail_field_disabled" class="ml-2" aria-hidden="true">
                 {{ 'MENU_ITEM.DISABLED' | translate }}
               </label>
             </div>
@@ -247,7 +251,7 @@
                 tooltipPosition="top"
                 tooltipEvent="hover"
               />
-              <label for="ws_menu_detail_field_ws_exit" aria-hidden="true">
+              <label for="ws_menu_detail_field_ws_exit" class="ml-2" aria-hidden="true">
                 {{ 'MENU_ITEM.EXTERN' | translate }}
               </label>
             </div>
@@ -265,7 +269,7 @@
                 tooltipPosition="top"
                 tooltipEvent="hover"
               />
-              <label for="ws_menu_detail_field_target" aria-hidden="true">
+              <label for="ws_menu_detail_field_target" class="ml-2" aria-hidden="true">
                 {{ 'MENU_ITEM.TARGET' | translate }}
               </label>
             </div>
@@ -282,9 +286,10 @@
       tooltipEvent="focus|hover"
     >
       <div class="flex flex-column gap-4">
-        <article
+        <p-floatlabel
+          variant="on"
           *ngFor="let language of languagesDisplayed; index as i"
-          class="p-float-label p-input-icon-right w-30rem"
+          class="p-input-icon-right w-30rem"
           [attr.aria-label]="getLanguageLabel(language.value)"
         >
           <button
@@ -307,7 +312,7 @@
           <label [for]="'ws_menu_detail_i18n_lang_' + i + '_value'" aria-hidden="true">
             {{ getLanguageLabel(language.value) }}
           </label>
-        </article>
+        </p-floatlabel>
       </div>
       <div
         *ngIf="languagesAvailable.length > 0"
