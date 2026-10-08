@@ -3,6 +3,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms'
 import { TranslateService } from '@ngx-translate/core'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+import { TabsModule } from 'primeng/tabs'
 
 import { SharedModule } from 'src/app/shared/shared.module'
 import {
@@ -16,7 +17,7 @@ import { ChangeMode, Role } from '../workspace-detail/workspace-roles/workspace-
 @Component({
   selector: 'app-workspace-role-detail',
   standalone: true,
-  imports: [SharedModule],
+  imports: [SharedModule, TabsModule],
   templateUrl: './workspace-role-detail.component.html',
   styleUrls: ['./workspace-role-detail.component.scss']
 })

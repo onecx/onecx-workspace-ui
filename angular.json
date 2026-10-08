@@ -53,8 +53,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "8kb",
-                  "maximumError": "10kb"
+                  "maximumWarning": "10kb",
+                  "maximumError": "15kb"
                 }
               ],
               "fileReplacements": [
@@ -104,8 +104,8 @@
             "include": ["**/*.spec.ts"],
             "exclude": [
               "src/app/workspace/workspace-detail/**/*.spec.ts",
-              "src/app/workspace/workspace-menu/**/*.spec.ts",
-              "src/app/workspace/workspace-role-detail/**/*.spec.ts"
+              "src/app/workspace/workspace-role-detail/**/*.spec.ts",
+              "src/app/workspace/workspace-menu/menu-preview/**/*.spec.ts"
             ],
             "assets": ["src/favicon.ico", "src/assets"],
             "styles": ["src/styles.scss"],

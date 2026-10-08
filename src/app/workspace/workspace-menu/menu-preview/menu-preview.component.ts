@@ -1,14 +1,15 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core'
+
 import { SelectItem, TreeNode } from 'primeng/api'
-
-import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
-import { SharedModule } from 'src/app/shared/shared.module'
-
-import { Utils } from 'src/app/shared/utils'
-import { MenuItemAPIService, WorkspaceMenuItem } from 'src/app/shared/generated'
-import { MenuStateService } from '../services/menu-state.service'
 import { TreeTableNodeExpandEvent } from 'primeng/treetable'
 import { TreeNodeDropEvent } from 'primeng/tree'
+
+import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+
+import { Utils } from 'src/app/shared/utils'
+import { SharedModule } from 'src/app/shared/shared.module'
+import { MenuItemAPIService, WorkspaceMenuItem } from 'src/app/shared/generated'
+import { MenuStateService } from '../services/menu-state.service'
 
 export type I18N = { [key: string]: string }
 

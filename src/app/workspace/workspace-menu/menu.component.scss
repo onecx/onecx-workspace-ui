@@ -3,6 +3,10 @@
 @include invisible;
 @include cursor-default;
 @include ocx-text-responsive;
+@include ocx-required-label;
+@include ocx-p-inputgroup;
+@include ocx-p-message;
+@include ocx-p-tabs;
 @include readable-disabled-components;
 @include correct-data-view-control;
 @include correct-select-button;
@@ -11,6 +15,11 @@
 @include table-inline-buttons;
 
 :host ::ng-deep {
+  .ocx-content > div {
+    margin-bottom: 0 !important;
+    padding: 0.75rem 0.5rem !important;
+  }
+
   .p-dialog .p-dialog-content {
     padding-bottom: 0;
     overflow-y: hidden;

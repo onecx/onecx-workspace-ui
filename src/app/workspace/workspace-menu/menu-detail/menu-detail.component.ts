@@ -1,11 +1,11 @@
-import { Component, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core'
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core'
 import { Location } from '@angular/common'
 import { DefaultValueAccessor, FormControl, FormGroup, Validators } from '@angular/forms'
 import { TranslateService } from '@ngx-translate/core'
 import { firstValueFrom, catchError, map, of, Subject, takeUntil } from 'rxjs'
 
-import { TabView } from 'primeng/tabview'
 import { SelectItem } from 'primeng/api'
+import { TabsModule } from 'primeng/tabs'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 
@@ -45,7 +45,7 @@ DefaultValueAccessor.prototype.registerOnChange = function (fn) {
 @Component({
   selector: 'app-menu-detail',
   standalone: true,
-  imports: [SharedModule, MenuInternComponent],
+  imports: [SharedModule, MenuInternComponent, TabsModule],
   templateUrl: './menu-detail.component.html',
   styleUrls: ['./menu-detail.component.scss']
 })
@@ -61,11 +61,10 @@ export class MenuDetailComponent implements OnChanges {
   @Output() displayDeleteDialogChange: EventEmitter<boolean> = new EventEmitter()
   @Output() dataChanged: EventEmitter<boolean> = new EventEmitter()
 
-  @ViewChild('panelDetail') panelDetail: TabView | undefined
   private readonly destroy$ = new Subject()
   public menuItemForm: FormGroup
   public dateFormat = 'short'
-  public tabIndex = 0
+  public selectedTabIndex = '0'
   public menuItem: MenuItem | undefined
   public iconItems: SelectItem[] = [] // default value is empty
   public scopeItems: SelectItem[]
@@ -124,7 +123,7 @@ export class MenuDetailComponent implements OnChanges {
 
   public ngOnChanges(): void {
     if (this.displayDetailDialog) {
-      this.tabIndex = 0
+      this.selectedTabIndex = '0'
       this.languagesDisplayed = []
       this.menuItemForm.reset()
       this.cleanupMfeUrls() // remove special entries
@@ -325,8 +324,8 @@ export class MenuDetailComponent implements OnChanges {
     })
   }
 
-  public onTabPanelChange(e: any): void {
-    this.tabIndex = e.index
+  public onTabChange(e: string | number): void {
+    this.selectedTabIndex = typeof e === 'number' ? e.toString() : e
     this.prepareLanguagePanel()
   }
 

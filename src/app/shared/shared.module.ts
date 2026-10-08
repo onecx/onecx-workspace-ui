@@ -29,7 +29,6 @@ import { PickListModule } from 'primeng/picklist'
 import { SelectModule } from 'primeng/select'
 import { SelectButtonModule } from 'primeng/selectbutton'
 import { TabsModule } from 'primeng/tabs'
-import { TabViewModule } from 'primeng/tabview'
 import { TableModule } from 'primeng/table'
 import { ToastModule } from 'primeng/toast'
 import { ToggleButtonModule } from 'primeng/togglebutton'
@@ -70,7 +69,6 @@ import { LabelResolver } from './label.resolver'
     RouterModule,
     SelectModule,
     SelectButtonModule,
-    TabViewModule,
     TabsModule,
     TableModule,
     ToastModule,
@@ -110,8 +108,8 @@ import { LabelResolver } from './label.resolver'
     ReactiveFormsModule,
     SelectModule,
     SelectButtonModule,
-    TabViewModule,
     TableModule,
+    TabsModule,
     ToastModule,
     ToggleButtonModule,
     TooltipModule,

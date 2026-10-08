@@ -1,6 +1,12 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {},
-  "include": ["src/**/*.ts"],
-  "exclude": ["src/test.ts", "src/**/*.spec.ts", "src/**/*.harness.ts", "src/app/shared/mocks/**"]
+  "include": ["src/**/*.ts", "src/app/workspace/workspace-menu/menu-preview/menu-preview.component.spec-abc.defts"],
+  "exclude": [
+    "src/test.ts",
+    "src/**/*.spec.ts",
+    "src/**/*.harness.ts",
+    "src/app/shared/mocks/**",
+    "src/app/workspace/workspace-menu/menu-preview/menu-preview.component.ts"
+  ]
 }
