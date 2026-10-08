@@ -170,7 +170,7 @@ export class MenuPreviewComponent implements OnChanges {
   }
 
   /**
-   * End of DRAG & DROP action => TODO
+   * End of DRAG & DROP action
    */
   public onDrop(event: TreeNodeDropEvent): void {
     if (event.dragNode && event.dropNode) {
@@ -182,10 +182,8 @@ export class MenuPreviewComponent implements OnChanges {
 
       let targetItem = event.dropNode.data as WorkspaceMenuItem
       let parentItemId: string | undefined = targetItem.id
-      /*
-      => TODO: Handle drop point 'between' logic for reordering menu items
-      
-      if (event.dropPoint === 'between') {
+
+      if (this.isDropBetweenNodes(event)) {
         targetItem = event.dropNode?.parent?.data as WorkspaceMenuItem
         parentItemId = targetItem?.id ?? undefined
 
@@ -193,7 +191,6 @@ export class MenuPreviewComponent implements OnChanges {
           targetPos -= 1
         }
       }
-      */
       targetPos = Math.max(0, targetPos)
 
       // dummy-node on root or child-level detected
@@ -210,28 +207,36 @@ export class MenuPreviewComponent implements OnChanges {
       }
 
       if (menuItem) {
-        this.menuApi
-          .updateMenuItemParent({
-            menuItemId: menuItem.id!,
-            updateMenuItemParentRequest: {
-              modificationCount: menuItem.modificationCount!,
-              parentItemId: parentItemId,
-              position: targetPos
-            }
-          })
-          .subscribe({
-            next: (data) => {
-              this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU.OK' })
-              if (event.dragNode) event.dragNode.data = data
-              this.reorderEmitter.emit(true)
-            },
-            error: (err) => {
-              this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU.NOK' })
-              console.error('updateMenuItemParent', err)
-            }
-          })
+        const obs$ = this.menuApi.updateMenuItemParent({
+          menuItemId: menuItem.id!,
+          updateMenuItemParentRequest: {
+            modificationCount: menuItem.modificationCount!,
+            parentItemId: parentItemId,
+            position: targetPos
+          }
+        })
+        obs$.subscribe({
+          next: (data) => {
+            this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU.OK' })
+            if (event.dragNode) event.dragNode.data = data
+            this.reorderEmitter.emit(true)
+          },
+          error: (err) => {
+            this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU.NOK' })
+            console.error('updateMenuItemParent', err)
+          }
+        })
       }
     }
+  }
+
+  /**
+   * PrimeNG's TreeNodeDropEvent no longer exposes a 'dropPoint' field, so the drop-zone
+   * element's CSS class is used to tell a "between nodes" drop apart from a "drop on node".
+   */
+  private isDropBetweenNodes(event: TreeNodeDropEvent): boolean {
+    const target = event.originalEvent?.target as HTMLElement | null
+    return !!target?.classList?.contains('p-tree-node-droppoint')
   }
 
   public onHierarchyViewChange(event: TreeTableNodeExpandEvent): void {
