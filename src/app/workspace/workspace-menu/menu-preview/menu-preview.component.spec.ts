@@ -1,0 +1,396 @@
+import { provideHttpClient } from '@angular/common/http'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
+import { provideRouter } from '@angular/router'
+import { TranslateTestingModule } from 'ngx-translate-testing'
+
+import { TreeDragDropService } from 'primeng/api'
+import { TreeNodeDropEvent, TreeNodeExpandEvent } from 'primeng/tree'
+
+import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+import { MenuPreviewComponent } from './menu-preview.component'
+import { MenuTreeService } from '../services/menu-tree.service'
+import { MenuStateService, MenuState } from '../services/menu-state.service'
+import { MenuItemAPIService, WorkspaceMenuItem } from 'src/app/shared/generated'
+import { BehaviorSubject, of, throwError } from 'rxjs'
+import { provideNoopAnimations } from '@angular/platform-browser/animations'
+
+const state: MenuState = {
+  pageSize: 0,
+  showDetails: false,
+  rootFilter: true,
+  treeMode: true,
+  treeExpansionState: new Map()
+}
+
+const items = [
+  { key: 'key', id: 'id', i18n: { ['lang']: 'en' }, children: [{ key: 'key', id: 'id' }], disabled: true },
+  { key: 'key2', badge: 'angle-double-down', id: 'id' }
+]
+
+describe('MenuPreviewComponent', () => {
+  let component: MenuPreviewComponent
+  let fixture: ComponentFixture<MenuPreviewComponent>
+
+  function initTestComponent(): void {
+    fixture = TestBed.createComponent(MenuPreviewComponent)
+    component = fixture.componentInstance
+    fixture.detectChanges()
+  }
+  // PrimeNG tags the "between nodes" drop-zone element with this class; used to simulate originalEvent.target
+  function dropTarget(isBetweenNodes: boolean): HTMLElement {
+    const el = document.createElement(isBetweenNodes ? 'li' : 'div')
+    if (isBetweenNodes) el.classList.add('p-tree-node-droppoint')
+    return el
+  }
+
+  const treeServiceSpy = jasmine.createSpyObj<MenuTreeService>('MenuTreeService', ['calculateNewNodesPositions'])
+  const stateServiceSpy = jasmine.createSpyObj<MenuStateService>('MenuStateService', ['getState'])
+  const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
+  const menuApiService = {
+    updateMenuItemParent: jasmine.createSpy('updateMenuItemParent').and.returnValue(of({}))
+  }
+  const mockUserService = {
+    lang$: new BehaviorSubject<string>('de'),
+    getPermission: jasmine.createSpy('getPermission').and.returnValue(Promise.resolve(true)),
+    hasPermission: jasmine.createSpy('hasPermission').and.callFake((permission) => {
+      return ['WORKSPACE#EDIT'].includes(permission)
+    })
+  }
+
+  beforeEach(waitForAsync(() => {
+    // MenuItemAPIService is 'providedIn: any': MenuPreviewComponent (standalone, imports SharedModule)
+    // resolves it from its own environment injector, so a plain TestBed providers override is bypassed.
+    // The override must be registered before compileComponents() runs.
+    TestBed.overrideComponent(MenuPreviewComponent, {
+      add: { providers: [{ provide: MenuItemAPIService, useValue: menuApiService }] }
+    })
+    TestBed.configureTestingModule({
+      imports: [
+        MenuPreviewComponent,
+        TranslateTestingModule.withTranslations({
+          de: require('src/assets/i18n/de.json'),
+          en: require('src/assets/i18n/en.json')
+        }).withDefaultLanguage('en')
+      ],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideNoopAnimations(),
+        provideRouter([{ path: '', component: MenuPreviewComponent }]),
+        { provide: UserService, useValue: mockUserService },
+        TreeDragDropService
+      ]
+    })
+      .overrideComponent(MenuPreviewComponent, {
+        add: {
+          providers: [
+            { provide: MenuTreeService, useValue: treeServiceSpy },
+            { provide: MenuStateService, useValue: stateServiceSpy },
+            { provide: MenuItemAPIService, useValue: menuApiService },
+            { provide: PortalMessageService, useValue: msgServiceSpy }
+          ]
+        }
+      })
+      .compileComponents()
+  }))
+
+  beforeEach(() => {
+    treeServiceSpy.calculateNewNodesPositions.calls.reset()
+    stateServiceSpy.getState.calls.reset()
+    menuApiService.updateMenuItemParent.calls.reset()
+    msgServiceSpy.success.calls.reset()
+    msgServiceSpy.error.calls.reset()
+
+    initTestComponent()
+  })
+
+  it('should create', () => {
+    expect(component).toBeTruthy()
+  })
+
+  describe('ngOnChanges', () => {
+    it('should set menuNodes onChanges if workspaceDetail & changes correct: langExists false', () => {
+      stateServiceSpy.getState.and.returnValue(state)
+      component.displayDialog = true
+      component.menuItems = items
+
+      component.ngOnChanges({})
+
+      expect(component.treeExpanded).toBeFalse()
+    })
+
+    it('should set menuNodes onChanges if workspaceDetail & changes correct: langExists true', () => {
+      stateServiceSpy.getState.and.returnValue(state)
+      component.displayDialog = true
+      component.menuItems = items
+      component.languagesPreviewValue = 'lang'
+
+      component.ngOnChanges({})
+
+      expect(component.treeExpanded).toBeFalse()
+    })
+  })
+
+  describe('on Drop', () => {
+    it('should update menu item - drag on node', () => {
+      const items: WorkspaceMenuItem[] = [
+        { id: 'item1', modificationCount: 1, children: [] },
+        { id: 'item2', modificationCount: 1, children: [] }
+      ]
+
+      component.menuItems = [...items]
+
+      menuApiService.updateMenuItemParent.and.returnValue(of({}))
+      spyOn(component.reorderEmitter, 'emit')
+      const event: TreeNodeDropEvent = {
+        originalEvent: { target: dropTarget(false) } as unknown as DragEvent,
+        index: 1,
+        dragNode: { key: 'draggedNodeId', parent: { key: 'oldParentNodeId' }, data: items[0] },
+        dropNode: {
+          key: 'newParentNodeId',
+          children: [{ key: 'draggedNodeId' }],
+          parent: { key: 'parent key' },
+          data: items[1]
+        }
+      }
+
+      component.onDrop(event)
+
+      expect(component.reorderEmitter.emit).toHaveBeenCalledWith(true)
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU.OK' })
+      expect(menuApiService.updateMenuItemParent).toHaveBeenCalledWith(
+        jasmine.objectContaining({
+          updateMenuItemParentRequest: jasmine.objectContaining({ parentItemId: items[1].id, position: 1 })
+        })
+      )
+    })
+
+    it('should update menu item - drag between nodes', () => {
+      const items: WorkspaceMenuItem[] = [
+        { id: 'item1', modificationCount: 1, children: [] },
+        { id: 'item2', modificationCount: 1, children: [] }
+      ]
+      const parentItem: WorkspaceMenuItem = { id: 'parentItem', modificationCount: 1, children: [] }
+
+      component.menuItems = [...items]
+      const event: TreeNodeDropEvent = {
+        originalEvent: { target: dropTarget(true) } as unknown as DragEvent,
+        index: 1,
+        dragNode: { key: 'draggedNodeId', parent: { key: 'oldParentNodeId' }, data: items[0] },
+        dropNode: {
+          key: 'newParentNodeId',
+          children: [{ key: 'draggedNodeId' }],
+          parent: { key: 'parent key', data: parentItem },
+          data: items[1]
+        }
+      }
+      menuApiService.updateMenuItemParent.and.returnValue(of({}))
+
+      component.onDrop(event)
+
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU.OK' })
+      expect(menuApiService.updateMenuItemParent).toHaveBeenCalledWith(
+        jasmine.objectContaining({
+          updateMenuItemParentRequest: jasmine.objectContaining({ parentItemId: parentItem.id })
+        })
+      )
+    })
+
+    it('should update menu items onDrop: return before pushing items', () => {
+      const items: WorkspaceMenuItem[] = [
+        { id: 'item1', modificationCount: 1, children: [] },
+        { id: 'item2', modificationCount: 1, children: [] }
+      ]
+
+      component.menuItems = [...items]
+      const errorResponse = { status: 400, statusText: 'Error on change parent' }
+      const event = {
+        dragNode: { key: 'draggedNodeId', parent: { key: 'oldParentNodeId' }, data: items[0] },
+        dropNode: {
+          key: 'newParentNodeId',
+          children: [{ key: 'draggedNodeId' }],
+          parent: { key: 'parent key' },
+          data: items[1]
+        }
+      }
+      menuApiService.updateMenuItemParent.and.returnValue(throwError(() => errorResponse))
+      spyOn(console, 'error')
+
+      component.onDrop(event)
+
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU.NOK' })
+      expect(console.error).toHaveBeenCalledWith('updateMenuItemParent', errorResponse)
+    })
+  })
+
+  it('should update menu item - drop on dummy node with parent but no children', () => {
+    const items: WorkspaceMenuItem[] = [
+      { id: 'item1', modificationCount: 1, children: [] },
+      { id: 'parentItem', modificationCount: 1 } // <-- keine children definiert
+    ]
+
+    component.menuItems = [...items]
+
+    menuApiService.updateMenuItemParent.and.returnValue(of(items[0]))
+    spyOn(component.reorderEmitter, 'emit')
+
+    const event: TreeNodeDropEvent = {
+      //dropPoint: 'node',
+      index: 0,
+      dragNode: {
+        key: 'draggedNodeId',
+        parent: { key: 'oldParentNodeId' },
+        data: items[0]
+      },
+      dropNode: {
+        key: '__DUMMY__newItem',
+        data: { id: '__DUMMY__newItem' },
+        parent: {
+          key: 'parentItem',
+          data: items[1]
+        },
+        children: []
+      }
+    }
+
+    component.onDrop(event)
+
+    expect(component.reorderEmitter.emit).toHaveBeenCalledWith(true)
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU.OK' })
+  })
+
+  it('should update menu item - drop on dummy node without parent (root level)', () => {
+    const items: WorkspaceMenuItem[] = [
+      { id: 'item1', modificationCount: 1, children: [] },
+      { id: 'item2', modificationCount: 1, children: [] }
+    ]
+
+    component.menuItems = [...items]
+
+    menuApiService.updateMenuItemParent.and.returnValue(of(items[0]))
+    spyOn(component.reorderEmitter, 'emit')
+
+    const event: TreeNodeDropEvent = {
+      //      dropPoint: 'node',
+      index: 0,
+      dragNode: {
+        key: 'draggedNodeId',
+        parent: { key: 'oldParentNodeId' },
+        data: items[0]
+      },
+      dropNode: {
+        key: '__DUMMY__newItem',
+        data: { id: '__DUMMY__newItem' },
+        parent: undefined,
+        children: []
+      }
+    }
+
+    component.onDrop(event)
+
+    expect(component.reorderEmitter.emit).toHaveBeenCalledWith(true)
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU.OK' })
+  })
+
+  describe('toggle tree view', () => {
+    it('should expand tree nodes on expandAll', () => {
+      const mockExpansionState: Map<string, boolean> = new Map<string, boolean>()
+      stateServiceSpy.getState.and.returnValue({
+        treeExpansionState: mockExpansionState,
+        pageSize: 0,
+        showDetails: false,
+        rootFilter: true,
+        treeMode: true
+      })
+      component.menuNodes = [
+        { key: '1', expanded: false, children: [{ key: '1-1', children: [{ key: '1-1-1' }] }] },
+        { key: '2' }
+      ]
+
+      component.onToggleTreeViewMode({ checked: true })
+
+      expect(stateServiceSpy.getState().treeExpansionState.get('1')).toBeTrue()
+    })
+
+    it('should expand tree nodes on expandAll: no node key', () => {
+      const mockExpansionState: Map<string, boolean> = new Map<string, boolean>()
+      stateServiceSpy.getState.and.returnValue({
+        treeExpansionState: mockExpansionState,
+        pageSize: 0,
+        showDetails: false,
+        rootFilter: true,
+        treeMode: true
+      })
+      component.menuNodes = [
+        { expanded: false, children: [{ key: '1-1', children: [{ key: '1-1-1' }] }] },
+        { key: '2' }
+      ]
+
+      component.onToggleTreeViewMode({ checked: true })
+
+      expect(stateServiceSpy.getState().treeExpansionState.get('1')).toBeUndefined()
+    })
+
+    it('should collapse tree nodes on collapseAll', () => {
+      const mockExpansionState: Map<string, boolean> = new Map<string, boolean>()
+      stateServiceSpy.getState.and.returnValue({
+        treeExpansionState: mockExpansionState,
+        pageSize: 0,
+        showDetails: false,
+        rootFilter: true,
+        treeMode: true
+      })
+      component.menuNodes = [
+        { key: '1', expanded: true, children: [{ key: '1-1', children: [{ key: '1-1-1' }] }] },
+        { key: '2' }
+      ]
+
+      component.onToggleTreeViewMode({ checked: false })
+
+      expect(stateServiceSpy.getState().treeExpansionState.get('1')).toBeFalse()
+    })
+  })
+
+  it('should set treeExpansionState onHierarchyViewChange', () => {
+    const mockExpansionState: Map<string, boolean> = new Map<string, boolean>()
+    stateServiceSpy.getState.and.returnValue({
+      treeExpansionState: mockExpansionState,
+      pageSize: 0,
+      showDetails: false,
+      rootFilter: true,
+      treeMode: true
+    })
+    const event = { node: { key: 'node', expanded: true } }
+    spyOn(mockExpansionState, 'set').and.callThrough()
+
+    component.onHierarchyViewChange(event as TreeNodeExpandEvent)
+
+    expect(stateServiceSpy.getState().treeExpansionState.set).toHaveBeenCalledWith(event.node.key, event.node.expanded)
+  })
+
+  it('should set languagePreviewValue and mapToTree onLanguagePreviewChange', () => {
+    const lang = 'de'
+    component.menuItems = items
+    const mockExpansionState: Map<string, boolean> = new Map<string, boolean>()
+    stateServiceSpy.getState.and.returnValue({
+      treeExpansionState: mockExpansionState,
+      pageSize: 0,
+      showDetails: false,
+      rootFilter: true,
+      treeMode: true
+    })
+
+    component.onLanguagesPreviewChange(lang)
+
+    expect(component.languagesPreviewValue).toEqual(lang)
+  })
+
+  it('should hide the dialog', () => {
+    spyOn(component.hideDialog, 'emit')
+
+    component.onClose()
+
+    expect(component.hideDialog.emit).toHaveBeenCalled()
+  })
+})
