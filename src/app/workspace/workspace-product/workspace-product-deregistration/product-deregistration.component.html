@@ -1,7 +1,7 @@
 @if (visible) {
   <p-dialog
     [visible]="true"
-    (visibleChange)="onCancel()"
+    (visibleChange)="onClose()"
     [header]="'DIALOG.PRODUCTS.DEREGISTER' | translate"
     [modal]="true"
     [closable]="true"
@@ -29,7 +29,7 @@
         <p-button
           id="ws_products_deregister_action_no"
           icon="pi pi-times"
-          (onClick)="onCancel()"
+          (onClick)="onClose()"
           [label]="'ACTIONS.CONFIRMATION.NO' | translate"
           [ariaLabel]="'ACTIONS.CONFIRMATION.NO' | translate"
           [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"

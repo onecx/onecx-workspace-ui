@@ -17,11 +17,11 @@ import { SharedModule } from 'src/app/shared/shared.module'
 })
 export class ProductDeregistrationComponent {
   @Input() public visible = false
-  @Output() public cancel = new EventEmitter<void>()
+  @Output() public closeDialog = new EventEmitter<void>()
   @Output() public confirm = new EventEmitter<void>()
 
-  public onCancel(): void {
-    this.cancel.emit()
+  public onClose(): void {
+    this.closeDialog.emit()
   }
 
   public onConfirm(): void {

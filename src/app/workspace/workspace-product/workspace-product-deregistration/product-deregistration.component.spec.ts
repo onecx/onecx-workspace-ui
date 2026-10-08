@@ -40,13 +40,13 @@ describe('ProductDeregistrationComponent', () => {
     expect(confirmSpy).toHaveBeenCalled()
   })
 
-  it('should emit cancel on onCancel', () => {
-    const cancelSpy = jasmine.createSpy('cancel')
-    component.cancel.subscribe(cancelSpy)
+  it('should emit closeDialog on onClose', () => {
+    const closeSpy = jasmine.createSpy('closeDialog')
+    component.closeDialog.subscribe(closeSpy)
 
-    component.onCancel()
+    component.onClose()
 
-    expect(cancelSpy).toHaveBeenCalled()
+    expect(closeSpy).toHaveBeenCalled()
   })
 
   it('should default to not visible', () => {

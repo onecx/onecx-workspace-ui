@@ -9,7 +9,7 @@ import { BehaviorSubject, of, throwError } from 'rxjs'
 
 import { SlotService } from '@onecx/angular-remote-components'
 import { SlotServiceMock } from '@onecx/angular-remote-components/mocks'
-import { PortalMessageService, UserService, WorkspaceService } from '@onecx/angular-integration-interface'
+import { UserService, WorkspaceService } from '@onecx/angular-integration-interface'
 import { provideAppStateServiceMock } from '@onecx/angular-integration-interface/mocks'
 
 import {

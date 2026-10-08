@@ -18,7 +18,7 @@ import {
 import { SelectItem } from 'primeng/api'
 
 //import { DataViewControlTranslations } from '@onecx/angular-accelerator'
-import { PortalMessageService, UserService, WorkspaceService } from '@onecx/angular-integration-interface'
+import { UserService, WorkspaceService } from '@onecx/angular-integration-interface'
 
 import {
   GetSlotsForWorkspaceRequestParams,

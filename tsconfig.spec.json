@@ -5,10 +5,6 @@
     "useDefineForClassFields": false
   },
   "files": ["src/test.ts", "src/polyfills.ts"],
-  "include": [
-    "src/app/**/*.spec.ts",
-    "src/**/*.d.ts",
-    "src/app/workspace/workspace-menu/menu-preview/menu-preview.component.spec-abc.defts"
-  ],
-  "exclude": ["src/app/shared/generated", "node_modules", "src/app/workspace/workspace-menu/menu-preview/**"]
+  "include": ["src/app/**/*.spec.ts", "src/**/*.d.ts"],
+  "exclude": ["src/app/shared/generated", "node_modules"]
 }

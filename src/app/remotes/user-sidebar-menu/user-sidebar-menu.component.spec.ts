@@ -1,22 +1,16 @@
 import { TestBed } from '@angular/core/testing'
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
-import { provideRouter, Router } from '@angular/router'
 import { provideNoopAnimations } from '@angular/platform-browser/animations'
+import { provideRouter, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { firstValueFrom, of, ReplaySubject, throwError } from 'rxjs'
-import { PanelMenuModule } from 'primeng/panelmenu'
-import { AccordionModule } from 'primeng/accordion'
+
 import { PrimeIcons } from 'primeng/api'
 
-import {
-  AngularRemoteComponentsModule,
-  RemoteComponentConfig,
-  REMOTE_COMPONENT_CONFIG,
-  SlotService
-} from '@onecx/angular-remote-components'
+import { RemoteComponentConfig, REMOTE_COMPONENT_CONFIG, SlotService } from '@onecx/angular-remote-components'
 import { SlotServiceMock } from '@onecx/angular-remote-components/mocks'
 import {
   AppConfigServiceMock,

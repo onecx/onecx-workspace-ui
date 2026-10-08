@@ -102,7 +102,7 @@
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
             "include": ["**/*.spec.ts"],
-            "exclude": ["src/app/workspace/workspace-menu/menu-preview/**/*.spec.ts"],
+            "exclude": [],
             "assets": ["src/favicon.ico", "src/assets"],
             "styles": ["src/styles.scss"],
             "scripts": [],
