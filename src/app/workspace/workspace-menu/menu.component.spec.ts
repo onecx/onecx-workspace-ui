@@ -125,17 +125,14 @@ describe('MenuComponent', () => {
   const translateServiceSpy = jasmine.createSpyObj('TranslateService', ['get'])
   const stateServiceSpy = jasmine.createSpyObj<MenuStateService>('MenuStateService', ['getState', 'updateState'])
   const locationSpy = jasmine.createSpyObj<Location>('Location', ['back'])
-
   const mockUserService = {
     lang$: new BehaviorSubject<string>('de'),
+    getPermission: jasmine.createSpy('getPermission').and.returnValue(Promise.resolve(true)),
     hasPermission: jasmine.createSpy('hasPermission').and.callFake((permission) => {
       return ['MENU#VIEW', 'MENU#CREATE', 'MENU#EDIT', 'MENU#GRANT', 'WORKSPACE_ROLE#EDIT'].includes(permission)
-    }),
-    getPermission: jasmine.createSpy('getPermission').and.returnValue(Promise.resolve(true))
+    })
   }
-  const mockActivatedRouteSnapshot: Partial<ActivatedRouteSnapshot> = {
-    params: { id: 'mockId' }
-  }
+  const mockActivatedRouteSnapshot: Partial<ActivatedRouteSnapshot> = { params: { id: 'mockId' } }
   const mockActivatedRoute: Partial<ActivatedRoute> = {
     snapshot: mockActivatedRouteSnapshot as ActivatedRouteSnapshot
   }

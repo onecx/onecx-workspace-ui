@@ -1,24 +1,37 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { ActivatedRoute, ActivatedRouteSnapshot, Router } from '@angular/router'
 import { TranslateTestingModule } from 'ngx-translate-testing'
-import { of, throwError } from 'rxjs'
+import { BehaviorSubject, of, throwError } from 'rxjs'
 
-import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { provideUserServiceMock } from '@onecx/angular-integration-interface/mocks'
 
 import { ImportResponseStatus } from 'src/app/shared/generated'
 import { WorkspaceImportComponent } from './workspace-import.component'
+import { UserService } from '@onecx/angular-integration-interface'
 
 describe('WorkspaceImportComponent', () => {
   let component: WorkspaceImportComponent
   let fixture: ComponentFixture<WorkspaceImportComponent>
 
+  function initializeComponent(): void {
+    fixture = TestBed.createComponent(WorkspaceImportComponent)
+    component = fixture.componentInstance
+    fixture.detectChanges()
+  }
+
   const mockRouter = { navigate: jasmine.createSpy('navigate') }
   const mockActivatedRouteSnapshot: Partial<ActivatedRouteSnapshot> = { params: { id: 'mockId' } }
   const mockActivatedRoute: Partial<ActivatedRoute> = {
     snapshot: mockActivatedRouteSnapshot as ActivatedRouteSnapshot
+  }
+  const mockUserService = {
+    lang$: new BehaviorSubject<string>('de'),
+    getPermission: jasmine.createSpy('getPermission').and.returnValue(Promise.resolve(true)),
+    hasPermission: jasmine.createSpy('hasPermission').and.callFake((permission) => {
+      return ['WORKSPACE#IMPORT'].includes(permission)
+    })
   }
 
   // WorkspaceAPIService and PortalMessageService are providedIn: 'any', so the component holds its
@@ -42,14 +55,13 @@ describe('WorkspaceImportComponent', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         provideUserServiceMock(),
+        { provide: UserService, useValue: mockUserService },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: Router, useValue: mockRouter }
       ]
     }).compileComponents()
 
-    fixture = TestBed.createComponent(WorkspaceImportComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    initializeComponent()
 
     apiServiceSpy = {
       importWorkspaces: spyOn(component['workspaceApi'], 'importWorkspaces') as jasmine.Spy

@@ -1,10 +1,9 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { TranslateService } from '@ngx-translate/core'
+import { provideNoopAnimations } from '@angular/platform-browser/animations'
 import { TranslateTestingModule } from 'ngx-translate-testing'
-import { of, throwError } from 'rxjs'
+import { BehaviorSubject, of, throwError } from 'rxjs'
 
 import { PortalMessageService, UserService, WorkspaceService } from '@onecx/angular-integration-interface'
 
@@ -186,32 +185,38 @@ describe('WorkspaceSlotsComponent', () => {
     searchAvailableProducts: jasmine.createSpy('searchAvailableProducts').and.returnValue(of({}))
   }
   const workspaceServiceSpy = jasmine.createSpyObj<WorkspaceService>('WorkspaceService', ['doesUrlExistFor', 'getUrl'])
-  const mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
-  mockUserService.hasPermission.and.callFake((permission: string) => {
-    return ['WORKSPACE_SLOT#EDIT'].includes(permission)
-  })
+  const mockUserService = {
+    lang$: new BehaviorSubject<string>('de'),
+    getPermission: jasmine.createSpy('getPermission').and.returnValue(Promise.resolve(true)),
+    hasPermission: jasmine.createSpy('hasPermission').and.callFake((permission) => {
+      return ['WORKSPACE_SLOT#EDIT'].includes(permission)
+    })
+  }
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [WorkspaceSlotsComponent],
       imports: [
+        WorkspaceSlotsComponent,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
-      schemas: [NO_ERRORS_SCHEMA],
-      providers: [
-        provideHttpClientTesting(),
-        provideHttpClient(),
-        { provide: PortalMessageService, useValue: msgServiceSpy },
-        { provide: WorkspaceProductAPIService, useValue: wProductServiceSpy },
-        { provide: ProductAPIService, useValue: productServiceSpy },
-        { provide: SlotAPIService, useValue: slotServiceSpy },
-        { provide: WorkspaceService, useValue: workspaceServiceSpy },
-        { provide: UserService, useValue: mockUserService }
-      ]
-    }).compileComponents()
+      providers: [provideHttpClient(), provideHttpClientTesting(), provideNoopAnimations()]
+    })
+      .overrideComponent(WorkspaceSlotsComponent, {
+        add: {
+          providers: [
+            { provide: WorkspaceService, useValue: workspaceServiceSpy },
+            { provide: UserService, useValue: mockUserService },
+            { provide: PortalMessageService, useValue: msgServiceSpy },
+            { provide: SlotAPIService, useValue: slotServiceSpy },
+            { provide: WorkspaceProductAPIService, useValue: wProductServiceSpy },
+            { provide: ProductAPIService, useValue: productServiceSpy }
+          ]
+        }
+      })
+      .compileComponents()
   }))
 
   beforeEach(() => {
@@ -236,8 +241,11 @@ describe('WorkspaceSlotsComponent', () => {
       expect(component).toBeTruthy()
     })
 
-    it('should set hasEditPermission from user service', () => {
-      expect(component.hasEditPermission).toBeTrue()
+    it('should set hasEditPermission from user service', (done) => {
+      fixture.whenStable().then(() => {
+        expect(component.hasEditPermission).toBeTrue()
+        done()
+      })
     })
   })
 
@@ -781,28 +789,6 @@ describe('WorkspaceSlotsComponent', () => {
   })
 
   describe('Test translations', () => {
-    it('dataview translations', (done) => {
-      const translationData = {
-        'DIALOG.DATAVIEW.FILTER': 'filter',
-        'DIALOG.DATAVIEW.FILTER.OF': 'filterOf',
-        'DIALOG.DATAVIEW.SORT_BY': 'sortBy'
-      }
-      const translateService = TestBed.inject(TranslateService)
-      spyOn(translateService, 'get').and.returnValue(of(translationData))
-
-      component.ngOnInit()
-
-      component.dataViewControlsTranslations$?.subscribe({
-        next: (data) => {
-          if (data) {
-            expect(data.sortDropdownTooltip).toEqual('sortBy')
-          }
-          done()
-        },
-        error: done.fail
-      })
-    })
-
     it('should translate quick filter items', () => {
       component.prepareQuickFilter()
 

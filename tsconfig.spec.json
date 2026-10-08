@@ -10,13 +10,5 @@
     "src/**/*.d.ts",
     "src/app/workspace/workspace-menu/menu-preview/menu-preview.component.spec-abc.defts"
   ],
-  "exclude": [
-    "src/app/shared/generated",
-    "node_modules",
-    "src/app/workspace/workspace-detail/workspace-roles/workspace-roles.component.spec.ts",
-    "src/app/workspace/workspace-detail/workspace-slots/workspace-slots.component.spec.ts",
-    "src/app/workspace/workspace-detail/workspace-slot-detail/workspace-slot-detail.component.spec.ts",
-    "src/app/workspace/workspace-role-detail/workspace-role-detail.component.spec.ts",
-    "src/app/workspace/workspace-menu/menu-preview/**"
-  ]
+  "exclude": ["src/app/shared/generated", "node_modules", "src/app/workspace/workspace-menu/menu-preview/**"]
 }

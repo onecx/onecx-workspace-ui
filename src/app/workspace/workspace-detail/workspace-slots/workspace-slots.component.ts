@@ -99,8 +99,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     private readonly slotApi: SlotAPIService,
     private readonly psProductApi: ProductAPIService,
     private readonly wProductApi: WorkspaceProductAPIService,
-    private readonly translate: TranslateService,
-    private readonly msgService: PortalMessageService
+    private readonly translate: TranslateService
   ) {
     Promise.all([this.user.hasPermission('WORKSPACE_SLOT#EDIT')]).then(([permRegister]) => {
       this.hasEditPermission = permRegister

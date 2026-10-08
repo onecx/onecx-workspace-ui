@@ -5,12 +5,12 @@ import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { provideNoopAnimations } from '@angular/platform-browser/animations'
 import { provideRouter } from '@angular/router'
 import { TranslateTestingModule } from 'ngx-translate-testing'
-import { of, throwError } from 'rxjs'
+import { BehaviorSubject, of, throwError } from 'rxjs'
 
 import { SlotService } from '@onecx/angular-remote-components'
 import { SlotServiceMock } from '@onecx/angular-remote-components/mocks'
-import { WorkspaceService } from '@onecx/angular-integration-interface'
-import { provideAppStateServiceMock, provideUserServiceMock } from '@onecx/angular-integration-interface/mocks'
+import { PortalMessageService, UserService, WorkspaceService } from '@onecx/angular-integration-interface'
+import { provideAppStateServiceMock } from '@onecx/angular-integration-interface/mocks'
 
 import {
   Theme,
@@ -61,7 +61,7 @@ describe('WorkspacePropsComponent', () => {
   const workspaceServiceSpy = jasmine.createSpyObj<WorkspaceService>('WorkspaceService', ['doesUrlExistFor', 'getUrl'])
   // msgService / imageApi / wProductApi are providedIn 'any', so the component holds its own
   // instance and a root-level provider would be shadowed - spy on the actual instance it holds.
-  let msgServiceSpy: { success: jasmine.Spy; error: jasmine.Spy; warning: jasmine.Spy }
+  let msgServiceSpy: { success: jasmine.Spy; error: jasmine.Spy }
   let imageServiceSpy: { getImage: jasmine.Spy; deleteImage: jasmine.Spy; uploadImage: jasmine.Spy }
   let wProductServiceSpy: { getProductsByWorkspaceId: jasmine.Spy }
 
@@ -73,8 +73,7 @@ describe('WorkspacePropsComponent', () => {
 
     msgServiceSpy = {
       success: spyOn(component['msgService'], 'success'),
-      error: spyOn(component['msgService'], 'error'),
-      warning: spyOn(component['msgService'], 'warning')
+      error: spyOn(component['msgService'], 'error')
     }
     imageServiceSpy = {
       getImage: spyOn(component['imageApi'], 'getImage') as jasmine.Spy,
@@ -89,6 +88,16 @@ describe('WorkspacePropsComponent', () => {
     imageServiceSpy.deleteImage.and.returnValue(of({}))
     imageServiceSpy.uploadImage.and.returnValue(of({}))
     wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of({}))
+  }
+  // getPermissions() is the branch the *ocxIfPermission directive uses (it prefers it over
+  // hasPermission). Grant WORKSPACE#EDIT so the template is shown without the
+  // "No permission from permission checker" console.log.
+  const mockUserService = {
+    lang$: new BehaviorSubject<string>('de'),
+    getPermissions: jasmine.createSpy('getPermissions').and.returnValue(of(['WORKSPACE#EDIT'])),
+    hasPermission: jasmine.createSpy('hasPermission').and.callFake((permission) => {
+      return ['WORKSPACE#EDIT'].includes(permission)
+    })
   }
 
   beforeEach(async () => {
@@ -108,15 +117,24 @@ describe('WorkspacePropsComponent', () => {
         provideHttpClientTesting(),
         provideNoopAnimations(),
         provideRouter([]),
-        provideUserServiceMock(),
+        // Provide the granting mock at root level: the *ocxIfPermission directive resolves its
+        // checker via HAS_PERMISSION_CHECKER (wired by AngularAcceleratorModule at the module
+        // injector), which falls back to the root UserService - so it must be this mock.
+        { provide: UserService, useValue: mockUserService },
         provideAppStateServiceMock(),
-        { provide: SlotService, useClass: SlotServiceMock },
         // BASE_PATH drives imageApi.configuration.basePath, which the component captures as imageBasePath
-        { provide: BASE_PATH, useValue: basePath },
-        { provide: WorkspaceService, useValue: workspaceServiceSpy }
-      ],
-      teardown: { destroyAfterEach: false }
-    }).compileComponents()
+        { provide: BASE_PATH, useValue: basePath }
+      ]
+    })
+      .overrideComponent(WorkspacePropsComponent, {
+        add: {
+          providers: [
+            { provide: SlotService, useClass: SlotServiceMock },
+            { provide: WorkspaceService, useValue: workspaceServiceSpy }
+          ]
+        }
+      })
+      .compileComponents()
   })
 
   beforeEach(() => {
@@ -125,7 +143,6 @@ describe('WorkspacePropsComponent', () => {
     // reset
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
-    msgServiceSpy.warning.calls.reset()
     wProductServiceSpy.getProductsByWorkspaceId.calls.reset()
     imageServiceSpy.getImage.calls.reset()
     imageServiceSpy.deleteImage.calls.reset()

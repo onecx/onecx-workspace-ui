@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {},
-  "include": ["src/**/*.ts", "src/app/workspace/workspace-menu/menu-preview/menu-preview.component.spec-abc.defts"],
+  "include": ["src/**/*.ts"],
   "exclude": [
     "src/test.ts",
     "src/**/*.spec.ts",

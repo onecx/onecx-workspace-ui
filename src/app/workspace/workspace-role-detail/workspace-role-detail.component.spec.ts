@@ -1,7 +1,7 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { provideNoopAnimations } from '@angular/platform-browser/animations'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { BehaviorSubject, of, throwError } from 'rxjs'
 
@@ -32,46 +32,52 @@ describe('WorkspaceRoleDetailComponent', () => {
   let component: WorkspaceRoleDetailComponent
   let fixture: ComponentFixture<WorkspaceRoleDetailComponent>
 
-  const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
-  const wRoleServiceSpy = {
-    createWorkspaceRole: jasmine.createSpy('createWorkspaceRole').and.returnValue(of({})),
-    updateWorkspaceRole: jasmine.createSpy('updateWorkspaceRole').and.returnValue(of({})),
-    deleteWorkspaceRole: jasmine.createSpy('deleteWorkspaceRole').and.returnValue(of({}))
-  }
-  const mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
-  mockUserService.hasPermission.and.callFake((permission: string) => {
-    return ['WORKSPACE_SLOT#EDIT'].includes(permission)
-  })
-  mockUserService.lang$ = new BehaviorSubject('de')
-
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [WorkspaceRoleDetailComponent],
-      imports: [
-        TranslateTestingModule.withTranslations({
-          de: require('src/assets/i18n/de.json'),
-          en: require('src/assets/i18n/en.json')
-        }).withDefaultLanguage('en')
-      ],
-      schemas: [NO_ERRORS_SCHEMA],
-      providers: [
-        provideHttpClientTesting(),
-        provideHttpClient(),
-        { provide: PortalMessageService, useValue: msgServiceSpy },
-        { provide: WorkspaceRolesAPIService, useValue: wRoleServiceSpy },
-        { provide: UserService, useValue: mockUserService }
-      ]
-    }).compileComponents()
-    msgServiceSpy.success.calls.reset()
-    msgServiceSpy.error.calls.reset()
-  }))
-
   function initializeComponent(): void {
     fixture = TestBed.createComponent(WorkspaceRoleDetailComponent)
     component = fixture.componentInstance
     component.workspace = workspace
     fixture.detectChanges()
   }
+
+  const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
+  const wRoleServiceSpy = {
+    createWorkspaceRole: jasmine.createSpy('createWorkspaceRole').and.returnValue(of({})),
+    updateWorkspaceRole: jasmine.createSpy('updateWorkspaceRole').and.returnValue(of({})),
+    deleteWorkspaceRole: jasmine.createSpy('deleteWorkspaceRole').and.returnValue(of({}))
+  }
+  const mockUserService = {
+    lang$: new BehaviorSubject<string>('de'),
+    getPermission: jasmine.createSpy('getPermission').and.returnValue(Promise.resolve(true)),
+    hasPermission: jasmine.createSpy('hasPermission').and.callFake((permission) => {
+      return ['WORKSPACE_ROLE#EDIT'].includes(permission)
+    })
+  }
+
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        WorkspaceRoleDetailComponent,
+        TranslateTestingModule.withTranslations({
+          de: require('src/assets/i18n/de.json'),
+          en: require('src/assets/i18n/en.json')
+        }).withDefaultLanguage('en')
+      ],
+      providers: [provideHttpClient(), provideHttpClientTesting(), provideNoopAnimations()]
+    })
+      .overrideComponent(WorkspaceRoleDetailComponent, {
+        add: {
+          providers: [
+            { provide: UserService, useValue: mockUserService },
+            { provide: PortalMessageService, useValue: msgServiceSpy },
+            { provide: WorkspaceRolesAPIService, useValue: wRoleServiceSpy }
+          ]
+        }
+      })
+      .compileComponents()
+
+    msgServiceSpy.success.calls.reset()
+    msgServiceSpy.error.calls.reset()
+  }))
 
   beforeEach(() => {
     initializeComponent()
