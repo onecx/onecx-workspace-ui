@@ -1,8 +1,9 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core'
+import { Component, EventEmitter, inject, Input, OnChanges, Output, SimpleChanges } from '@angular/core'
 import { FormArray, FormBuilder } from '@angular/forms'
 
 import { Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
+import { SharedModule } from 'src/app/shared/shared.module'
 
 export type LanguageOption = {
   label: string
@@ -11,10 +12,16 @@ export type LanguageOption = {
 
 @Component({
   selector: 'app-workspace-i18n',
+  standalone: true,
+  imports: [SharedModule],
   templateUrl: './workspace-i18n.component.html',
   styleUrls: ['./workspace-i18n.component.scss']
 })
 export class WorkspaceI18nComponent implements OnChanges {
+  private readonly fb = inject(FormBuilder)
+  private readonly workspaceApi = inject(WorkspaceAPIService)
+  private readonly msgService = inject(PortalMessageService)
+
   @Input() workspace!: Workspace
   @Input() workspaceI18nVisible = false
   @Input() propertyName: string | undefined = undefined
@@ -22,7 +29,6 @@ export class WorkspaceI18nComponent implements OnChanges {
   @Output() workspaceI18nVisibleChange = new EventEmitter<boolean>()
 
   private initialSnapshot = ''
-
   public translationsForm: FormArray
   public showAddRow = false
   public newLanguage: string | undefined = undefined
@@ -57,11 +63,7 @@ export class WorkspaceI18nComponent implements OnChanges {
     { value: 'zh', label: 'Chinese (zh)' }
   ]
 
-  constructor(
-    private readonly fb: FormBuilder,
-    private readonly workspaceApi: WorkspaceAPIService,
-    private readonly msgService: PortalMessageService
-  ) {
+  constructor() {
     this.translationsForm = this.fb.array([])
   }
 

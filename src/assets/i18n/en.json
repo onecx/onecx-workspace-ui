@@ -205,7 +205,7 @@
     "MODIFICATION_DATE": "Changed on",
     "MODIFICATION_USER": "Changed by",
     "MANDATORY": "Mandatory",
-    "MANDATORY_TRUE": "This workspace is required for operation. Therefore, it cannot be deleted.",
+    "MANDATORY_TRUE": "This workspace is required for operation. Therefore, it cannot be easily deleted.",
     "OPERATOR": "Created by automation",
     "OPERATOR_HINT": "Hint",
     "OPERATOR_MESSAGE": "This Workspace was created by automation. All changes will be lost on the next deployment.",
@@ -214,7 +214,7 @@
       "CREATION_USER": "ID of the user of the creation",
       "MODIFICATION_DATE": "Timestamp of the last change",
       "MODIFICATION_USER": "ID of the user of the last change",
-      "MANDATORY": "If set then this Workspace is required for operation and therefore the Workspace cannot be deleted.",
+      "MANDATORY": "If set then this Workspace is required for operation and therefore the Workspace cannot be easily deleted.",
       "OPERATOR": "If set, the Workspace was created by automation. All changes will be lost during the next deployment."
     }
   },
@@ -532,6 +532,13 @@
         "DEPRECATED": "Outdated",
         "UNDEPLOYED": "Unavailable"
       },
+      "STATUS": {
+        "CHANGED": "Changed",
+        "NEW": "New",
+        "REMOVED": "Unknown",
+        "DEPRECATED": "Deprecated",
+        "UNDEPLOYED": "Unavailable"
+      },
       "SLOTS": {
         "NEW": "Slot not registered for the Workspace",
         "REMOVED": "Slot does not exist anymore in Application Store"
@@ -554,12 +561,14 @@
       }
     },
     "DATAVIEW": {
-      "FILTER": "Filter",
-      "PRODUCT_FILTER_TOOLTIP": "Filter by Application and Classification",
+      "FILTER": {
+        "LABEL": "Filter",
+        "OF": "Filter of ",
+        "CLEAR": "Clear Filter",
+        "PLACEHOLDER": "Filter"
+      },
+      "PRODUCT_FILTER_TOOLTIP": "Filter by Application (Display Name)",
       "SLOT_FILTER_TOOLTIP": "Filter by Components",
-      "FILTER_OF": "Filter of ",
-      "FILTER_CLEAR": "Clear Filter",
-      "FILTER_PLACEHOLDER": "Filter",
       "SORT_BY": "Sort By",
       "SORT_DIRECTION_ASC": "ascending",
       "SORT_DIRECTION_DESC": "descending",
@@ -600,10 +609,6 @@
     }
   },
   "WORKSPACE_EXPORT": {
-    "THEME_CHECKBOX_HEADER": "Export Workspace definition",
-    "THEME_CHECKBOX_MESSAGE": "Download the Workspace definition as JSON file.",
-    "THEME_LOADING": "...is loading",
-    "THEME_NOT_AVALIABLE": "no available Themes",
     "MENU": "Include the Menu definition",
     "MENU_TOOLTIP": "Include Menu in Workspace definition"
   },
@@ -717,10 +722,10 @@
     "FORM_INVALID": "The form contains invalid values.",
     "HINTS": {
       "FORMAT_URL": "Format: ",
-      "FORMAT_BASE_URL": "Format: /path-to-workspace",
-      "FORMAT_FEED_URL": "Format: http(s)://pfad-zum-feed",
-      "FORMAT_IMAGE_URL": "Format: http(s)://path-to-image",
-      "FORMAT_HOME_PAGE": "Format: /path-to-registered-app"
+      "FORMAT_BASE_URL": "<br/>Format: /path-to-workspace",
+      "FORMAT_FEED_URL": "<br/>Format: http(s)://pfad-zum-feed",
+      "FORMAT_IMAGE_URL": "<br/>Format: http(s)://path-to-image",
+      "FORMAT_HOME_PAGE": "<br/>Format: /path-to-registered-app"
     },
     "ERRORS": {
       "APP_MODULE.PATH_ALREADY_USED": "This module path has already been used. Please choose a path that is unique to the application.",

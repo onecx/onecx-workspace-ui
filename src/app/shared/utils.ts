@@ -1,5 +1,6 @@
 import { AbstractControl, FormArray, FormGroup } from '@angular/forms'
 import { Location } from '@angular/common'
+import { Router } from '@angular/router'
 import { catchError, first, of, tap } from 'rxjs'
 import { SelectItem } from 'primeng/api'
 
@@ -134,6 +135,20 @@ const Utils = {
       )
       .subscribe((ex) => (exist = ex))
     return exist
+  },
+
+  /**
+   * Routing
+   */
+  navigate(router: Router, event: Event, route: string, target?: string): void {
+    event.preventDefault()
+    if (target === '_blank') {
+      const urlTree = router.createUrlTree([route])
+      const url = router.serializeUrl(urlTree)
+      window.open(url, '_blank')
+    } else {
+      router.navigate([route])
+    }
   }
 }
 

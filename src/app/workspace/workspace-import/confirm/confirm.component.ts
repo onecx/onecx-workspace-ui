@@ -1,9 +1,12 @@
 import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core'
 import { WorkspaceAPIService, SearchWorkspacesResponse, WorkspaceAbstract } from 'src/app/shared/generated'
 import { ImportWorkspace } from '../workspace-import.component'
+import { SharedModule } from 'src/app/shared/shared.module'
 
 @Component({
   selector: 'app-import-confirm',
+  standalone: true,
+  imports: [SharedModule],
   templateUrl: './confirm.component.html'
 })
 export class ConfirmComponent implements OnInit {

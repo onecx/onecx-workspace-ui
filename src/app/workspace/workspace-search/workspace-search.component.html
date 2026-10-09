@@ -2,261 +2,292 @@
   <ocx-page-header
     [header]="'DIALOG.WORKSPACE.HEADER.SEARCH' | translate"
     [subheader]="'DIALOG.WORKSPACE.HEADER.SEARCH.SUBHEADER' | translate"
-    [actions]="(actions$ | async) ?? []"
-    [manualBreadcrumbs]="false"
+    [actions]="actions()"
   >
   </ocx-page-header>
-  <ocx-page-content *ngIf="workspaces$ | async as workspaces">
-    <p-message
-      *ngIf="loading && !exceptionKey"
-      id="ws_search_message_loading"
-      severity="info"
-      styleClass="m-3"
-      [text]="'ACTIONS.LOADING' | translate"
-    ></p-message>
-    <p-message
-      *ngIf="exceptionKey"
-      id="ws_search_message_error"
-      severity="error"
-      styleClass="m-3"
-      [text]="exceptionKey | translate"
-    ></p-message>
-    <p-dataView
-      *ngIf="!exceptionKey"
-      #workspaceTable
-      id="ws_search_dataview"
-      [value]="workspaces"
-      [paginator]="true"
-      [alwaysShowPaginator]="true"
-      [rowsPerPageOptions]="viewMode === 'grid' ? [100, 200] : [50, 200]"
-      [rows]="viewMode === 'grid' ? 100 : 50"
-      [layout]="viewMode"
-      [emptyMessage]="'ACTIONS.SEARCH.NO_DATA' | translate"
-      filterBy="displayName,theme"
-      [sortField]="sortField"
-      [sortOrder]="sortOrder"
-      [showCurrentPageReport]="true"
-      currentPageReportTemplate="{first} - {last} {{ 'ACTIONS.SEARCH.FILTER.OF' | translate }} {totalRecords}"
-    >
-      <ng-template pTemplate="header">
-        <ocx-data-view-controls
-          [enableSorting]="true"
-          [enableFiltering]="true"
-          [supportedViews]="['grid', 'list']"
-          [initialViewMode]="viewMode"
-          [sortingOptions]="[
-            { label: 'WORKSPACE.DISPLAY_NAME' | translate, value: 'displayName' },
-            { label: 'WORKSPACE.THEME' | translate, value: 'theme' }
-          ]"
-          [defaultSortOption]="sortField"
-          [defaultSortDirection]="false"
-          (dataViewChange)="onLayoutChange($event)"
-          (filterChange)="onFilterChange($event, workspaceTable)"
-          [filterColumns]="['WORKSPACE.DISPLAY_NAME' | translate, 'WORKSPACE.THEME' | translate]"
-          (sortChange)="onSortChange($event)"
-          (sortDirectionChange)="onSortDirChange($event)"
-          [translations]="(dataViewControlsTranslations$ | async) ?? {}"
-        >
-        </ocx-data-view-controls>
-      </ng-template>
 
-      <!-- LIST -->
-      <ng-template let-workspaces pTemplate="listItem">
-        <section [attr.aria-label]="('DIALOG.SEARCH.RESULTS' | translate) + ': Workspaces'">
-          <article
-            *ngFor="let workspace of workspaces; index as i"
-            class="sm:mx-3 py-1 px-3 flex flex-row flex-nowrap justify-content-start align-items-center column-gap-3 hover:bg-gray-200 cursor-pointer"
-            [id]="'ws_search_data_list_row_' + i"
-            [routerLink]="['./' + workspace.name]"
-            [attr.aria-label]="workspace.displayName"
-          >
-            <div
-              class="p-0 h-3rem sm:h-4rem col-4 sm:col-3 md:col-2 flex justify-content-around align-items-center"
-              aria-hidden="true"
-            >
-              <app-image-container
-                [id]="'ws_search_data_list_row_' + i + '_logo'"
-                styleClass="max-h-3rem max-w-4rem sm:max-w-6rem border-round-sm"
-                [bffUrl]="Utils.bffImageUrl(imageBasePath, workspace.name, RefType.Logo)"
-                [imageUrl]="workspace.logoUrl"
-              ></app-image-container>
-            </div>
-            <div
-              [id]="'ws_search_data_list_row_' + i + '_display_name'"
-              class="p-0 col-8 sm:col-6 md:col-6 lg:col-5 xl:col-3 sm:font-bold text-base sm:text-md md:text-lg"
-              aria-label="Workspace"
-              [pTooltip]="workspace.displayName"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-              role="note"
-            >
-              {{ Utils.limitText(workspace.displayName, 60) }}
-            </div>
-            <div class="p-0 hidden sm:block col-3 md:col-2">
-              <a
-                target="_blank"
-                [routerLink]="workspace.baseUrl"
-                [id]="'ws_search_data_list_row_' + i + '_goto_workspace'"
-                (click)="$event.stopPropagation()"
-                class="text-primary"
-                [attr.aria-label]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
-                [pTooltip]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
-                tooltipPosition="top"
-                tooltipEvent="hover"
-                role="link"
-              >
-                {{ Utils.limitText(workspace.baseUrl, 30) }}
-              </a>
-            </div>
-            <div
-              [id]="'ws_search_data_list_row_' + i + '_theme'"
-              class="p-0 hidden md:block col-2"
-              aria-label="Theme"
-              [pTooltip]="('WORKSPACE.THEME' | translate) + (workspace.theme.length < 40 ? '' : ' ' + workspace.theme)"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-              role="note"
-            >
-              {{ Utils.limitText(workspace.theme, 40) }}
-            </div>
-            <div
-              [id]="'ws_search_data_list_row_' + i + '_description'"
-              class="p-0 hidden xl:block col-2"
-              [attr.aria-label]="'WORKSPACE.DESCRIPTION' | translate"
-              [pTooltip]="workspace.description < 50 ? '' : workspace.description"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-              role="note"
-            >
-              {{ Utils.limitText(workspace.description, 50) }}
-            </div>
-          </article>
-        </section>
-      </ng-template>
-
-      <!-- GRID -->
-      <ng-template let-workspaces pTemplate="gridItem">
-        <section
-          class="grid grid-nogutter"
-          [attr.aria-label]="('DIALOG.SEARCH.RESULTS' | translate) + ': ' + ('TABS.WORKSPACE.WORKSPACES' | translate)"
+  @let rows = data();
+  @let exceptionMessage = exceptionKey();
+  <ocx-content class="ocx-content">
+    @if (exceptionMessage) {
+      <p-message
+        id="ws_search_message_error"
+        severity="error"
+        styleClass="m-3"
+        [text]="exceptionMessage | translate"
+      ></p-message>
+    } @else if (loading()) {
+      <p-message
+        id="ws_search_message_loading"
+        severity="info"
+        styleClass="m-3"
+        [text]="'ACTIONS.LOADING' | translate"
+      ></p-message>
+    } @else {
+      <section [attr.aria-label]="'DIALOG.SEARCH.RESULTS' | translate">
+        <ocx-interactive-data-view
+          id="ws_search_dataview"
+          styleClass="p-0"
+          [data]="filteredData() ?? rows"
+          [emptyResultsMessage]="'ACTIONS.SEARCH.NO_DATA' | translate"
+          [listGridPaginator]="true"
+          [pageSizes]="[20, 40, 100]"
+          [pageSize]="20"
+          [supportedViewLayouts]="['list', 'grid']"
+          [layout]="'grid'"
+          [clientSideSorting]="true"
+          [clientSideFiltering]="true"
+          [columns]="sortColumns"
+          [displayedColumnKeys]="sortColumnKeys"
+          [sortDirection]="sortDirection"
+          [sortField]="sortField"
+          (sorted)="onSortChange($event)"
         >
-          <div *ngFor="let workspace of workspaces; index as i" class="col-6 md:col-4 xl:col-3 p-2 md:p-3">
+          <ng-template #topCenter>
+            <div class="flex flex-wrap flex-row justify-content-between align-items-center gap-2">
+              <!-- GLOBAL Filter -->
+              <p-inputgroup class="w-auto">
+                <p-inputgroup-addon>
+                  <i class="pi pi-filter" aria-hidden="true"></i>
+                </p-inputgroup-addon>
+                <p-floatlabel variant="on">
+                  <input
+                    #globalFilterInput
+                    type="text"
+                    pInputText
+                    id="ws_search_filter"
+                    class="text-responsive"
+                    [value]="globalFilterValue"
+                    (input)="onGlobalFilter(globalFilterInput.value, rows)"
+                    [ariaLabel]="'DIALOG.DATAVIEW.FILTER.LABEL' | translate"
+                    [pTooltip]="
+                      ('DIALOG.DATAVIEW.FILTER.OF' | translate) +
+                      ('WORKSPACE.NAME' | translate) +
+                      ', ' +
+                      ('WORKSPACE.DISPLAY_NAME' | translate)
+                    "
+                    tooltipPosition="top"
+                    tooltipEvent="hover"
+                  />
+                  <label for="ws_search_filter" aria-hidden="true">
+                    {{ 'DIALOG.DATAVIEW.FILTER.LABEL' | translate }}
+                  </label>
+                </p-floatlabel>
+                <p-button
+                  id="ws_search_filter_clear"
+                  icon="pi pi-filter-slash"
+                  (onClick)="onClearGlobalFilter()"
+                  [disabled]="globalFilterInput.value === ''"
+                  [ariaLabel]="'DIALOG.DATAVIEW.FILTER.CLEAR' | translate"
+                  [pTooltip]="'DIALOG.DATAVIEW.FILTER.CLEAR' | translate"
+                  tooltipPosition="top"
+                  tooltipEvent="hover"
+                />
+              </p-inputgroup>
+              <!-- ALIGNMENT Helper -->
+              <div>&nbsp;</div>
+            </div>
+          </ng-template>
+
+          <!-- LIST -->
+          <ng-template pTemplate="listItem" let-item>
             <article
-              [id]="'ws_search_data_grid_row_' + i"
-              class="card p-2 sm:px-3 flex flex-column gap-1 sm:gap-2 justify-content-between text-center hover:bg-gray-200 cursor-pointer"
-              [routerLink]="['./', workspace.name]"
-              [attr.aria-label]="'Workspace: ' + workspace.displayName"
+              [id]="'ws_search_data_list_row_' + item.name"
+              class="w-12 sm:mx-3 py-1 px-3 flex flex-row flex-nowrap justify-content-start align-items-center column-gap-3 hover:bg-gray-200 cursor-pointer"
+              [attr.aria-label]="item.displayName"
+              [routerLink]="['./', item.name]"
             >
               <div
-                [id]="'ws_search_data_grid_row_' + i + '_display_name'"
-                class="w-full font-bold text-base sm:text-lg md:text-xl lg:text-2xl text-responsive"
-                aria-label="Workspace"
-                [pTooltip]="workspace.displayName.length < 20 ? '' : workspace.displayName"
-                tooltipPosition="top"
-                tooltipEvent="hover"
+                class="p-0 h-3rem sm:h-4rem col-4 sm:col-3 md:col-2 flex justify-content-around align-items-center"
                 aria-hidden="true"
               >
-                {{ workspace.displayName }}
-              </div>
-              <!-- IMAGE & BADGE -->
-              <div class="relative w-full h-5rem sm:h-10rem px-4 flex justify-content-center align-items-center">
                 <app-image-container
-                  [id]="'ws_search_data_grid_row_' + i + '_logo'"
-                  styleClass="max-h-5rem sm:max-h-10rem p-2 border-round-sm"
-                  [bffUrl]="Utils.bffImageUrl(imageBasePath, workspace.name, RefType.Logo)"
-                  [imageUrl]="workspace.logoUrl"
-                  aria-hidden="true"
+                  [id]="'ws_search_data_list_row_' + item.name + '_logo'"
+                  styleClass="max-h-3rem max-w-4rem sm:max-w-6rem border-round-sm"
+                  [bffUrl]="Utils.bffImageUrl(imageBasePath, item.name, RefType.Logo)"
+                  [imageUrl]="item.logoUrl"
                 ></app-image-container>
-                <!-- BADGES -->
-                <div
-                  *ngIf="workspace.disabled"
-                  [id]="'ws_search_data_grid_row_' + i + '_disabled'"
-                  class="card-badge-right badge-1 text-lg md:text-xl pi pi-ban danger-action-text font-bold"
-                  [attr.aria-label]="'WORKSPACE.DISABLED.DISPLAY' | translate"
-                  [pTooltip]="'WORKSPACE.TOOLTIPS.DISABLED.DISPLAY' | translate"
-                  tooltipPosition="right"
-                  tooltipEvent="hover"
-                  role="note"
-                ></div>
-                <div
-                  *ngIf="workspace.mandatory"
-                  [id]="'ws_search_data_grid_row_' + i + '_mandatory'"
-                  class="card-badge-left badge-1 font-bold text-xl pi pi-shield"
-                  [attr.aria-label]="'INTERNAL.MANDATORY_TRUE' | translate"
-                  [pTooltip]="'WORKSPACE.TOOLTIPS.MANDATORY' | translate"
-                  tooltipPosition="top"
-                  tooltipEvent="hover"
-                  role="note"
-                ></div>
-                <a
-                  *ngIf="!workspace.disabled && currentWorkspaceName !== workspace.name"
-                  tabindex="0"
-                  [id]="'ws_search_data_grid_row_' + i + '_goto_workspace'"
-                  class="card-badge-right badge-1 text-lg sm:text-xl pi pi-external-link button-icon-only"
-                  [href]="Utils.prepareUrlPath(getLocation().deploymentPath, workspace.baseUrl)"
-                  target="_blank"
-                  (click)="$event.stopPropagation()"
-                  [attr.aria-label]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_WORKSPACE' | translate"
-                  [pTooltip]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_WORKSPACE' | translate"
-                  tooltipPosition="right"
-                  tooltipEvent="hover"
-                  role="link"
-                ></a>
-                <a
-                  *ocxIfPermission="'MENU#VIEW'"
-                  tabindex="0"
-                  [id]="'ws_search_data_grid_row_' + i + '_goto_menu'"
-                  class="card-badge-right badge-2 text-lg sm:text-xl pi pi-sitemap button-icon-only"
-                  [routerLink]="[workspace.name, 'menu']"
-                  target="_self"
-                  (click)="$event.stopPropagation()"
-                  [attr.aria-label]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_MENU' | translate"
-                  [pTooltip]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_MENU' | translate"
-                  tooltipPosition="right"
-                  tooltipEvent="hover"
-                  role="link"
-                ></a>
               </div>
-
-              <div class="w-full mt-1 h-2rem sm:h-3rem flex flex-column justify-content-between text-center">
-                <div
-                  [id]="'ws_search_data_grid_row_' + i + '_description'"
-                  class="text-xs md:text-sm md:text-base text-responsive"
-                  [attr.aria-label]="'WORKSPACE.DESCRIPTION' | translate"
-                  [pTooltip]="'WORKSPACE.DESCRIPTION' | translate"
+              <div
+                [id]="'ws_search_data_list_row_' + item.name + '_display_name'"
+                class="p-0 col-8 sm:col-6 md:col-6 lg:col-5 xl:col-3 sm:font-bold text-base sm:text-md md:text-lg"
+                [attr.aria-label]="item.displayName"
+                [pTooltip]="item.displayName?.length < 40 ? '' : item.displayName"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+                role="note"
+              >
+                {{ Utils.limitText(item.displayName, 40) }}
+              </div>
+              <div class="p-0 hidden sm:block col-3 md:col-2">
+                <a
+                  target="_blank"
+                  [routerLink]="item.baseUrl"
+                  [id]="'ws_search_data_list_row_' + item.name + '_goto_workspace'"
+                  (click)="$event.stopPropagation()"
+                  class="text-primary"
+                  [attr.aria-label]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
+                  [pTooltip]="'ACTIONS.NAVIGATION.OPEN_IN_NEW_TAB' | translate"
                   tooltipPosition="top"
                   tooltipEvent="hover"
-                  role="note"
+                  role="link"
                 >
-                  {{ workspace.description }}
-                </div>
-                <div
-                  [id]="'ws_search_data_grid_row_' + i + '_theme'"
-                  class="text-xs md:text-sm md:text-base text-responsive"
-                  [attr.aria-label]="'WORKSPACE.THEME' | translate"
-                  [pTooltip]="'WORKSPACE.THEME' | translate"
-                  tooltipPosition="top"
-                  tooltipEvent="hover"
-                  role="note"
-                >
-                  Theme: {{ workspace.theme }}
-                </div>
+                  {{ Utils.limitText(item.baseUrl, 30) }}
+                </a>
+              </div>
+              <div
+                [id]="'ws_search_data_list_row_' + item.name + '_theme'"
+                class="p-0 hidden md:block col-2"
+                aria-label="Theme"
+                [pTooltip]="('WORKSPACE.THEME' | translate) + (item.theme.length < 40 ? '' : ' ' + item.theme)"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+                role="note"
+              >
+                {{ Utils.limitText(item.theme, 40) }}
+              </div>
+              <div
+                [id]="'ws_search_data_list_row_' + item.name + '_description'"
+                class="p-0 hidden xl:block col-2"
+                [attr.aria-label]="'WORKSPACE.DESCRIPTION' | translate"
+                [pTooltip]="item.description < 50 ? '' : item.description"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+                role="note"
+              >
+                {{ Utils.limitText(item.description, 50) }}
               </div>
             </article>
-          </div>
-        </section>
-      </ng-template>
-    </p-dataView>
-  </ocx-page-content>
+          </ng-template>
+
+          <!-- GRID -->
+          <ng-template pTemplate="gridItem" let-item>
+            <div class="col-6 md:col-4 xl:col-3 p-2 md:p-3">
+              <p-card
+                [id]="'ws_search_data_grid_row_' + item.name"
+                [style]="{ margin: '0rem;' }"
+                styleClass="cursor-pointer hover:bg-gray-200 text-center m-2 p-1"
+                [attr.aria-label]="item.displayName"
+                [routerLink]="['./', item.name]"
+                (keydown.enter)="$any($event.target).click()"
+                (keydown.space)="$event.preventDefault(); $any($event.target).click()"
+                role="button"
+                tabindex="0"
+              >
+                <div
+                  [id]="'ws_search_data_grid_row_' + item.name + '_display_name'"
+                  class="w-full font-bold text-base sm:text-lg md:text-xl lg:text-2xl text-responsive"
+                  aria-label="Workspace"
+                  [pTooltip]="item.displayName.length < 20 ? '' : item.displayName"
+                  tooltipPosition="top"
+                  tooltipEvent="hover"
+                  aria-hidden="true"
+                >
+                  {{ item.displayName || item.name }}
+                </div>
+                <!-- IMAGE & BADGE -->
+                <div class="relative w-full h-5rem sm:h-10rem px-4 flex justify-content-center align-items-center">
+                  <app-image-container
+                    [id]="'ws_search_data_grid_row_' + item.name + '_logo'"
+                    styleClass="max-h-5rem sm:max-h-10rem p-2 border-round-sm"
+                    [bffUrl]="Utils.bffImageUrl(imageBasePath, item.name, RefType.Logo)"
+                    [imageUrl]="item.logoUrl"
+                    aria-hidden="true"
+                  ></app-image-container>
+                  <!-- BADGES -->
+                  @if (item.disabled) {
+                    <div
+                      [id]="'ws_search_data_grid_row_' + item.name + '_disabled'"
+                      class="card-badge-right badge-1 text-lg md:text-xl pi pi-ban danger-action-text font-bold"
+                      [attr.aria-label]="'WORKSPACE.DISABLED.DISPLAY' | translate"
+                      [pTooltip]="'WORKSPACE.TOOLTIPS.DISABLED.DISPLAY' | translate"
+                      tooltipPosition="right"
+                      tooltipEvent="hover"
+                      role="note"
+                    ></div>
+                  }
+                  @if (item.mandatory) {
+                    <div
+                      [id]="'ws_search_data_grid_row_' + item.name + '_mandatory'"
+                      class="card-badge-left badge-1 font-bold text-xl pi pi-shield"
+                      [attr.aria-label]="'INTERNAL.MANDATORY_TRUE' | translate"
+                      [pTooltip]="'WORKSPACE.TOOLTIPS.MANDATORY' | translate"
+                      tooltipPosition="top"
+                      tooltipEvent="hover"
+                      role="note"
+                    ></div>
+                  }
+                  @if (!item.disabled && currentWorkspaceName !== item.name) {
+                    <a
+                      tabindex="0"
+                      [id]="'ws_search_data_grid_row_' + item.name + '_goto_workspace'"
+                      class="card-badge-right badge-1 text-lg sm:text-xl pi pi-external-link button-icon-only"
+                      [href]="Utils.prepareUrlPath(getLocation().deploymentPath, item.baseUrl)"
+                      target="_blank"
+                      (click)="$event.stopPropagation()"
+                      [attr.aria-label]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_WORKSPACE' | translate"
+                      [pTooltip]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_WORKSPACE' | translate"
+                      tooltipPosition="right"
+                      tooltipEvent="hover"
+                      role="link"
+                    ></a>
+                  }
+                  <a
+                    *ocxIfPermission="'MENU#VIEW'"
+                    tabindex="0"
+                    [id]="'ws_search_data_grid_row_' + item.name + '_goto_menu'"
+                    class="card-badge-right badge-2 text-lg sm:text-xl pi pi-sitemap button-icon-only"
+                    [routerLink]="[item.name, 'menu']"
+                    target="_self"
+                    (click)="$event.stopPropagation()"
+                    [attr.aria-label]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_MENU' | translate"
+                    [pTooltip]="'DIALOG.WORKSPACE.QUICK_LINKS.GOTO_MENU' | translate"
+                    tooltipPosition="right"
+                    tooltipEvent="hover"
+                    role="link"
+                  ></a>
+                </div>
+
+                <div class="w-full mt-1 h-2rem sm:h-3rem flex flex-column justify-content-between text-center">
+                  <div
+                    [id]="'ws_search_data_grid_row_' + item.name + '_description'"
+                    class="text-xs md:text-sm md:text-base text-responsive"
+                    [attr.aria-label]="'WORKSPACE.DESCRIPTION' | translate"
+                    [pTooltip]="'WORKSPACE.DESCRIPTION' | translate"
+                    tooltipPosition="top"
+                    tooltipEvent="hover"
+                    role="note"
+                  >
+                    {{ item.description }}
+                  </div>
+                  <div
+                    [id]="'ws_search_data_grid_row_' + item.name + '_theme'"
+                    class="text-xs md:text-sm md:text-base text-responsive"
+                    [attr.aria-label]="'WORKSPACE.THEME' | translate"
+                    [pTooltip]="'WORKSPACE.THEME' | translate"
+                    tooltipPosition="top"
+                    tooltipEvent="hover"
+                    role="note"
+                  >
+                    Theme: {{ item.theme }}
+                  </div>
+                </div>
+              </p-card>
+            </div>
+          </ng-template>
+        </ocx-interactive-data-view>
+      </section>
+    }
+  </ocx-content>
 </ocx-portal-page>
 
 <app-workspace-create
-  (toggleCreationDialogEvent)="toggleShowCreateDialog()"
-  [displayDialog]="showCreateDialog"
+  [displayDialog]="workspaceCreateVisible()"
+  (toggleCreationDialogEvent)="workspaceCreateVisible.set(false)"
 ></app-workspace-create>
 
 <app-workspace-import
-  [displayDialog]="showImportDialog"
-  [resetDialog]="showImportDialog"
-  (toggleImportDialogEvent)="toggleShowImportDialog()"
+  [displayDialog]="workspaceImportVisible()"
+  [resetDialog]="workspaceImportVisible()"
+  (toggleImportDialogEvent)="workspaceImportVisible.set(false)"
 ></app-workspace-import>

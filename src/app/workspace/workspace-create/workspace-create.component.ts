@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core'
+import { Component, EventEmitter, Input, Output, OnInit, inject } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
@@ -9,6 +9,8 @@ import { PortalMessageService, ThemeService } from '@onecx/angular-integration-i
 
 import { Utils } from 'src/app/shared/utils'
 import { WorkspaceAPIService, ProductAPIService } from 'src/app/shared/generated'
+import { SharedModule } from 'src/app/shared/shared.module'
+import { ImageContainerComponent } from 'src/app/shared/components/image-container/image-container.component'
 
 export type Theme = {
   name: string
@@ -19,10 +21,21 @@ export type Theme = {
 
 @Component({
   selector: 'app-workspace-create',
+  standalone: true,
+  imports: [SharedModule, ImageContainerComponent],
   templateUrl: './workspace-create.component.html',
   styleUrls: ['./workspace-create.component.scss']
 })
 export class WorkspaceCreateComponent implements OnInit {
+  private readonly router = inject(Router)
+  private readonly route = inject(ActivatedRoute)
+  private readonly slotService = inject(SlotService)
+  private readonly themeService = inject(ThemeService)
+  private readonly workspaceApi = inject(WorkspaceAPIService)
+  private readonly message = inject(PortalMessageService)
+  private readonly translate = inject(TranslateService)
+  private readonly productApi = inject(ProductAPIService)
+
   @Input() displayDialog = false
   @Output() toggleCreationDialogEvent = new EventEmitter()
 
@@ -41,16 +54,7 @@ export class WorkspaceCreateComponent implements OnInit {
   public themesEmitter = new EventEmitter<Theme[]>()
   public themeLogoLoadingFailed = false
 
-  constructor(
-    private readonly router: Router,
-    private readonly route: ActivatedRoute,
-    private readonly slotService: SlotService,
-    private readonly themeService: ThemeService,
-    private readonly workspaceApi: WorkspaceAPIService,
-    private readonly message: PortalMessageService,
-    private readonly translate: TranslateService,
-    private readonly productApi: ProductAPIService
-  ) {
+  constructor() {
     this.currentTheme$ = this.themeService.currentTheme$
       .asObservable()
       .pipe(map((t) => ({ ...t, displayName: t.name }) as Theme))

@@ -1,44 +1,90 @@
-@import 'src/app/_ws-mixins.scss';
+@use 'src/app/_ws-mixins.scss' as *;
 
+@include ocx-text-responsive;
 @include prepare-inputgroup;
-@include search-criteria-select-button;
+@include listbox-zebra-rows;
 
 :host ::ng-deep {
   .mt-05 {
     margin-top: 0.125rem !important;
   }
-  .p-dialog .p-dialog-content {
-    padding-top: 1rem;
-    padding-bottom: 0;
-    .p-inputgroup .p-float-label:first-child {
-      width: unset;
+  .workspace-product-item {
+    .p-card-header {
+      background-color: rgb(from var(--primary-color) r g b / 0.1);
     }
-    .p-float-label,
-    .p-float-label .p-dropdown {
-      .p-inputtext {
-        padding: 11px 8px 7px 8px;
+    .p-card-body {
+      padding: 0.5rem 0.8rem;
+      .app-sub-title {
+        background-color: rgb(from var(--primary-color) r g b / 0.1);
       }
     }
   }
+
+  // PrimeNG 19 rebuilt the picklist on top of the listbox.
+  // The old .p-picklist-list / .p-picklist-source / .p-picklist-target /
+  // .p-picklist-header / .p-picklist-filter-container / li.p-picklist-item
+  // classes no longer exist. New structure per column:
+  //   div.p-picklist
+  //     div.p-picklist-list-container.p-picklist-source-list-container
+  //       div.p-listbox
+  //         div.p-listbox-header   (source/target header template)
+  //         div.p-listbox-header   (source/target filter template)
+  //         div.p-listbox-list-container   (scroll area)
+  //           ul.p-listbox-list > li.p-listbox-option
   .p-picklist {
-    .p-picklist-header {
-      padding: 4px; // reset here to manage distances below
-      text-align: center;
-      color: var(--primary-text-color);
-      background-color: var(--primary-color);
+    // equal, bounded height for both columns so they line up and scroll
+    .p-picklist-list-container {
+      height: 34.7rem;
+      width: 22rem;
     }
-    .p-picklist-filter-container {
+    // the listbox fills its column; the inner list becomes the scroll area
+    .p-listbox {
+      display: flex;
+      flex-direction: column;
+    }
+
+    // header bar (count + reload button): primary background, centered
+    .p-listbox-header:has([id$='_load']) {
+      padding: 0;
+      text-align: center;
+      color: var(--onecx-workspace-onecx-workspace-ui-listbox-color);
+      background-color: var(--onecx-workspace-onecx-workspace-ui-listbox-border-color);
+      border-top-left-radius: var(--onecx-workspace-onecx-workspace-ui-listbox-border-radius);
+      border-top-right-radius: var(--onecx-workspace-onecx-workspace-ui-listbox-border-radius);
+      div {
+        border-bottom-color: var(--onecx-workspace-onecx-workspace-ui-listbox-border-color);
+      }
+    }
+    // filter bar (view mode + search): tighten distances
+    .p-listbox-header:has(.select-button-view) {
       padding: 0; // reset here to manage distances below
-      .p-buttonset .p-button {
+      .p-selectbutton .p-button {
         min-width: unset;
       }
     }
-    .p-picklist-list {
-      height: 34.7rem;
-      &.p-picklist-source,
-      &.p-picklist-target {
-        &.tile-view li {
-          float: left;
+
+    /* source/target */
+    .p-listbox-list-container {
+      flex: 1 1 auto;
+      min-height: 0; // allow the flex child to shrink and scroll
+      max-height: 100% !important;
+      overflow: auto;
+    }
+    /* <ul> list of options */
+    .p-listbox-list {
+      // list rows: restore padding + separators (items are li.p-listbox-option now)
+      li.p-listbox-option {
+        padding: 0.2rem 0.5rem;
+        border-bottom: var(--table-header-border);
+      }
+
+      // grid / tile view (the .tile-view class is toggled by the component on the list)
+      &.tile-view {
+        display: flex;
+        flex-wrap: wrap;
+        align-content: flex-start;
+
+        li.p-listbox-option {
           max-width: 100px;
           min-width: fit-content;
           .tile-view-content {
@@ -53,11 +99,30 @@
           }
         }
       }
-      li.p-picklist-item {
-        padding: 0.2rem 0.5rem;
-        border-bottom: var(--table-header-border);
-      }
     }
+  }
+
+  /* hide the double arrow buttons, because they are not working */
+  .p-picklist-controls .p-button:has(angledoublerighticon),
+  .p-picklist-controls .p-button:has(angledoublelefticon) {
+    display: none;
+  }
+
+  /* manage coloring of selected row
+     1. decolorizing all selected rows markup from PrimeNG
+     2. applying custom selected row styling
+  */
+  .p-listbox:not(.p-disabled) .p-listbox-option.p-listbox-option-selected {
+    background-color: inherit;
+    &:nth-child(even) {
+      background-color: var(
+        --onecx-workspace-onecx-workspace-ui-datatable-row-even-background,
+        var(--table-body-row-even-bg, rgba(0, 0, 0, 0.02))
+      );
+    }
+  }
+  .p-listbox:not(.p-disabled) .p-listbox-option:has(.custom-selected-row) {
+    background-color: var(--onecx-workspace-onecx-workspace-ui-listbox-option-selected-background) !important;
   }
 
   .text-ellipsis-2-lines {
@@ -68,5 +133,10 @@
     .card-badge-right.badge-1 {
       top: -1px;
     }
+  }
+
+  /* fix on missing border definition: define border for active buttons */
+  .p-button:not(:disabled):active {
+    border: 1px solid var(--onecx-workspace-onecx-workspace-ui-button-primary-border-color);
   }
 }

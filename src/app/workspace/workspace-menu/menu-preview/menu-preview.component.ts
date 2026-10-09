@@ -1,18 +1,22 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core'
+
 import { SelectItem, TreeNode } from 'primeng/api'
+import { TreeTableNodeExpandEvent } from 'primeng/treetable'
+import { TreeNodeDropEvent } from 'primeng/tree'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 
 import { Utils } from 'src/app/shared/utils'
+import { SharedModule } from 'src/app/shared/shared.module'
 import { MenuItemAPIService, WorkspaceMenuItem } from 'src/app/shared/generated'
 import { MenuStateService } from '../services/menu-state.service'
-import { TreeTableNodeExpandEvent } from 'primeng/treetable'
-import { TreeNodeDropEvent } from 'primeng/tree'
 
 export type I18N = { [key: string]: string }
 
 @Component({
   selector: 'app-menu-preview',
+  standalone: true,
+  imports: [SharedModule],
   templateUrl: './menu-preview.component.html',
   styleUrls: ['./menu-preview.component.scss']
 })
@@ -179,15 +183,14 @@ export class MenuPreviewComponent implements OnChanges {
       let targetItem = event.dropNode.data as WorkspaceMenuItem
       let parentItemId: string | undefined = targetItem.id
 
-      if (event.dropPoint === 'between') {
+      if (this.isDropBetweenNodes(event)) {
         targetItem = event.dropNode?.parent?.data as WorkspaceMenuItem
-        parentItemId = targetItem?.id ?? undefined
+        if (targetItem.id) parentItemId = targetItem.id
 
         if (targetPos > dragIndex) {
           targetPos -= 1
         }
       }
-
       targetPos = Math.max(0, targetPos)
 
       // dummy-node on root or child-level detected
@@ -204,28 +207,36 @@ export class MenuPreviewComponent implements OnChanges {
       }
 
       if (menuItem) {
-        this.menuApi
-          .updateMenuItemParent({
-            menuItemId: menuItem.id!,
-            updateMenuItemParentRequest: {
-              modificationCount: menuItem.modificationCount!,
-              parentItemId: parentItemId,
-              position: targetPos
-            }
-          })
-          .subscribe({
-            next: (data) => {
-              this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU.OK' })
-              if (event.dragNode) event.dragNode.data = data
-              this.reorderEmitter.emit(true)
-            },
-            error: (err) => {
-              this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU.NOK' })
-              console.error('updateMenuItemParent', err)
-            }
-          })
+        const obs$ = this.menuApi.updateMenuItemParent({
+          menuItemId: menuItem.id!,
+          updateMenuItemParentRequest: {
+            modificationCount: menuItem.modificationCount!,
+            parentItemId: parentItemId,
+            position: targetPos
+          }
+        })
+        obs$.subscribe({
+          next: (data) => {
+            this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU.OK' })
+            if (event.dragNode) event.dragNode.data = data
+            this.reorderEmitter.emit(true)
+          },
+          error: (err) => {
+            this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU.NOK' })
+            console.error('updateMenuItemParent', err)
+          }
+        })
       }
     }
+  }
+
+  /**
+   * PrimeNG's TreeNodeDropEvent no longer exposes a 'dropPoint' field, so the drop-zone
+   * element's CSS class is used to tell a "between nodes" drop apart from a "drop on node".
+   */
+  private isDropBetweenNodes(event: TreeNodeDropEvent): boolean {
+    const target = event.originalEvent?.target as HTMLElement | null
+    return !!target?.classList?.contains('p-tree-node-droppoint')
   }
 
   public onHierarchyViewChange(event: TreeTableNodeExpandEvent): void {

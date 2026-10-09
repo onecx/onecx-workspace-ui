@@ -1,30 +1,22 @@
-import { NO_ERRORS_SCHEMA, SimpleChanges } from '@angular/core'
+import { SimpleChanges } from '@angular/core'
+import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { provideNoopAnimations } from '@angular/platform-browser/animations'
 import { provideRouter } from '@angular/router'
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { TranslateTestingModule } from 'ngx-translate-testing'
-import { of, throwError } from 'rxjs'
+import { BehaviorSubject, of, throwError } from 'rxjs'
 
-import {
-  ConfigurationService,
-  PortalMessageService,
-  ThemeService,
-  WorkspaceService
-} from '@onecx/angular-integration-interface'
-import * as Accelerator from '@onecx/accelerator'
+import { SlotService } from '@onecx/angular-remote-components'
+import { SlotServiceMock } from '@onecx/angular-remote-components/mocks'
+import { UserService, WorkspaceService } from '@onecx/angular-integration-interface'
+import { provideAppStateServiceMock } from '@onecx/angular-integration-interface/mocks'
 
 import {
   Theme,
   WorkspacePropsComponent
 } from 'src/app/workspace/workspace-detail/workspace-props/workspace-props.component'
-import {
-  ImagesInternalAPIService,
-  Workspace,
-  WorkspaceAPIService,
-  WorkspaceProductAPIService,
-  RefType
-} from 'src/app/shared/generated'
+import { BASE_PATH, RefType, Workspace } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
 
 const basePath = '/basepath'
@@ -35,8 +27,8 @@ const workspaceForm = {
   theme: 'theme1',
   baseUrl: '/some/base/url',
   homePage: '/welcome',
-  logoUrl: 'https://host:port/site/logo.png',
-  smallLogoUrl: 'https://host:port/site/logo-small.png',
+  logoUrl: 'https://logo.example.com/ws-props-site/logo.png',
+  smallLogoUrl: 'https://logo.example.com/ws-props-site/logo-small.png',
   rssFeedUrl: undefined,
   footerLabel: undefined,
   description: undefined
@@ -65,55 +57,85 @@ describe('WorkspacePropsComponent', () => {
   let component: WorkspacePropsComponent
   let fixture: ComponentFixture<WorkspacePropsComponent>
 
-  const accSpy = { getLocation: jasmine.createSpy('getLocation').and.returnValue({ deploymentPath: '/path' }) }
-  const apiServiceSpy = { updateWorkspace: jasmine.createSpy('updateWorkspace').and.returnValue(of([])) }
-  const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
-  const configServiceSpy = { getProperty: jasmine.createSpy('getProperty').and.returnValue('123') }
-  const imageServiceSpy = {
-    getImage: jasmine.createSpy('getImage').and.returnValue(of({})),
-    deleteImage: jasmine.createSpy('deleteImage').and.returnValue(of({})),
-    uploadImage: jasmine.createSpy('uploadImage').and.returnValue(of({})),
-    configuration: { basePath: basePath }
-  }
-  const themeService = jasmine.createSpyObj<ThemeService>('ThemeService', ['apply'])
+  // WorkspaceService is providedIn 'root' so a root-level provider applies.
   const workspaceServiceSpy = jasmine.createSpyObj<WorkspaceService>('WorkspaceService', ['doesUrlExistFor', 'getUrl'])
-  const wProductServiceSpy = {
-    getProductsByWorkspaceId: jasmine.createSpy('getProductsByWorkspaceId').and.returnValue(of({}))
-  }
+  // msgService / imageApi / wProductApi are providedIn 'any', so the component holds its own
+  // instance and a root-level provider would be shadowed - spy on the actual instance it holds.
+  let msgServiceSpy: { success: jasmine.Spy; error: jasmine.Spy }
+  let imageServiceSpy: { getImage: jasmine.Spy; deleteImage: jasmine.Spy; uploadImage: jasmine.Spy }
+  let wProductServiceSpy: { getProductsByWorkspaceId: jasmine.Spy }
 
   function initTestComponent(): void {
     fixture = TestBed.createComponent(WorkspacePropsComponent)
-    accSpy.getLocation()
     component = fixture.componentInstance
     component.workspace = workspace
     fixture.detectChanges()
+
+    msgServiceSpy = {
+      success: spyOn(component['msgService'], 'success'),
+      error: spyOn(component['msgService'], 'error')
+    }
+    imageServiceSpy = {
+      getImage: spyOn(component['imageApi'], 'getImage') as jasmine.Spy,
+      deleteImage: spyOn(component['imageApi'], 'deleteImage') as jasmine.Spy,
+      uploadImage: spyOn(component['imageApi'], 'uploadImage') as jasmine.Spy
+    }
+    wProductServiceSpy = {
+      getProductsByWorkspaceId: spyOn(component['wProductApi'], 'getProductsByWorkspaceId') as jasmine.Spy
+    }
+    // default return values - overridden per-test where needed
+    imageServiceSpy.getImage.and.returnValue(of({}))
+    imageServiceSpy.deleteImage.and.returnValue(of({}))
+    imageServiceSpy.uploadImage.and.returnValue(of({}))
+    wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of({}))
+  }
+  // getPermissions() is the branch the *ocxIfPermission directive uses (it prefers it over
+  // hasPermission). Grant WORKSPACE#EDIT so the template is shown without the
+  // "No permission from permission checker" console.log.
+  const mockUserService = {
+    lang$: new BehaviorSubject<string>('de'),
+    getPermissions: jasmine.createSpy('getPermissions').and.returnValue(of(['WORKSPACE#EDIT'])),
+    hasPermission: jasmine.createSpy('hasPermission').and.callFake((permission) => {
+      return ['WORKSPACE#EDIT'].includes(permission)
+    })
   }
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [WorkspacePropsComponent],
+  beforeEach(async () => {
+    // keep the component's real imports (SharedModule / ImageContainerComponent / WorkspaceI18nComponent)
+    // so PrimeNG inputs, [pTooltip], [routerLink], *ocxIfPermission, <ocx-slot> and <app-image-container>
+    // resolve without NO_ERRORS_SCHEMA.
+    await TestBed.configureTestingModule({
       imports: [
+        WorkspacePropsComponent,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
-      schemas: [NO_ERRORS_SCHEMA],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        provideRouter([{ path: '', component: WorkspacePropsComponent }]),
-        { provide: PortalMessageService, useValue: msgServiceSpy },
-        { provide: ConfigurationService, useValue: configServiceSpy },
-        { provide: ImagesInternalAPIService, useValue: imageServiceSpy },
-        { provide: WorkspaceAPIService, useValue: apiServiceSpy },
-        { provide: WorkspaceProductAPIService, useValue: wProductServiceSpy },
-        { provide: WorkspaceService, useValue: workspaceServiceSpy },
-        { provide: Accelerator, useValue: accSpy }
-      ],
-      teardown: { destroyAfterEach: false }
-    }).compileComponents()
-  }))
+        provideNoopAnimations(),
+        provideRouter([]),
+        // Provide the granting mock at root level: the *ocxIfPermission directive resolves its
+        // checker via HAS_PERMISSION_CHECKER (wired by AngularAcceleratorModule at the module
+        // injector), which falls back to the root UserService - so it must be this mock.
+        { provide: UserService, useValue: mockUserService },
+        provideAppStateServiceMock(),
+        // BASE_PATH drives imageApi.configuration.basePath, which the component captures as imageBasePath
+        { provide: BASE_PATH, useValue: basePath }
+      ]
+    })
+      .overrideComponent(WorkspacePropsComponent, {
+        add: {
+          providers: [
+            { provide: SlotService, useClass: SlotServiceMock },
+            { provide: WorkspaceService, useValue: workspaceServiceSpy }
+          ]
+        }
+      })
+      .compileComponents()
+  })
 
   beforeEach(() => {
     initTestComponent()
@@ -121,9 +143,7 @@ describe('WorkspacePropsComponent', () => {
     // reset
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
-    apiServiceSpy.updateWorkspace.calls.reset()
     wProductServiceSpy.getProductsByWorkspaceId.calls.reset()
-    themeService.apply.calls.reset()
     imageServiceSpy.getImage.calls.reset()
     imageServiceSpy.deleteImage.calls.reset()
     imageServiceSpy.uploadImage.calls.reset()

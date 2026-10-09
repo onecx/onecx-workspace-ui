@@ -1,4 +1,14 @@
-import { Component, EventEmitter, Input, OnInit, OnChanges, Output, SimpleChanges } from '@angular/core'
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  OnChanges,
+  Output,
+  SimpleChanges,
+  inject,
+  DestroyRef
+} from '@angular/core'
 import { Location } from '@angular/common'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { BehaviorSubject, map, Observable, of, ReplaySubject } from 'rxjs'
@@ -16,6 +26,10 @@ import {
   WorkspaceProductAPIService
 } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
+import { SharedModule } from 'src/app/shared/shared.module'
+import { ImageContainerComponent } from 'src/app/shared/components/image-container/image-container.component'
+import { WorkspaceI18nComponent } from '../workspace-i18n/workspace-i18n.component'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 
 export type Theme = {
   name: string
@@ -25,10 +39,19 @@ export type Theme = {
 
 @Component({
   selector: 'app-workspace-props',
+  standalone: true,
+  imports: [SharedModule, ImageContainerComponent, WorkspaceI18nComponent],
   templateUrl: './workspace-props.component.html',
   styleUrls: ['./workspace-props.component.scss']
 })
 export class WorkspacePropsComponent implements OnInit, OnChanges {
+  private readonly destroyRef = inject(DestroyRef)
+  private readonly slotService = inject(SlotService)
+  private readonly workspaceService = inject(WorkspaceService)
+  private readonly msgService = inject(PortalMessageService)
+  private readonly imageApi = inject(ImagesInternalAPIService)
+  private readonly wProductApi = inject(WorkspaceProductAPIService)
+
   @Input() workspace: Workspace | undefined
   @Input() editMode = true
   @Input() isLoading = false
@@ -56,7 +79,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
 
   // slot configuration: get theme data
   public themeSlotName = 'onecx-theme-data'
-  public isThemeComponentDefined$: Observable<boolean> // check if a component was assigned
+  public isThemeComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.themeSlotName)
   public themes$ = new BehaviorSubject<Theme[] | undefined>(undefined) // theme data
   public themesEmitter = new EventEmitter<Theme[]>()
   // slot configuration: get theme logo
@@ -64,14 +87,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   public themeLogoLoadingFailed$ = new BehaviorSubject<boolean | undefined>(undefined)
   public themeFormValues$ = new ReplaySubject<{ theme: string }>(1) // async storage of formgroup value to manage change detection
 
-  constructor(
-    private readonly slotService: SlotService,
-    private readonly workspaceService: WorkspaceService,
-    private readonly msgService: PortalMessageService,
-    private readonly imageApi: ImagesInternalAPIService,
-    private readonly wProductApi: WorkspaceProductAPIService
-  ) {
-    this.isThemeComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.themeSlotName)
+  constructor() {
     this.propsForm = new FormGroup({
       displayName: new FormControl<string | null>(null, [
         Validators.required,
@@ -103,7 +119,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       footerLabel: new FormControl<string | null>(null, [Validators.maxLength(255)]),
       description: new FormControl<string | null>(null, [Validators.maxLength(255)])
     })
-    this.propsForm.valueChanges.subscribe(this.themeFormValues$)
   }
 
   public ngOnInit(): void {
@@ -111,6 +126,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     this.themeLogoLoadingEmitter.subscribe((data) => {
       this.themeLogoLoadingFailed$.next(data)
     })
+    this.propsForm.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(this.themeFormValues$)
   }
 
   public ngOnChanges(changes: SimpleChanges): void {

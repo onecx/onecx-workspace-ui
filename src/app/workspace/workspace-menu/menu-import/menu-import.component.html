@@ -30,13 +30,14 @@
     tooltipEvent="hover"
   ></p-fileUpload>
 
-  <p-message
-    *ngIf="menuImportError"
-    severity="error"
-    styleClass="mt-3"
-    id="ws_menu_import_parse_error"
-    [text]="'VALIDATION.ERRORS.PARSE_ERROR' | translate"
-  ></p-message>
+  @if (menuImportError) {
+    <p-message
+      severity="error"
+      styleClass="mt-3"
+      id="ws_menu_import_parse_error"
+      [text]="'VALIDATION.ERRORS.PARSE_ERROR' | translate"
+    ></p-message>
+  }
 
   <ng-template pTemplate="footer">
     <div class="flex flex-wrap justify-content-end column-gap-2 row-gap-1">

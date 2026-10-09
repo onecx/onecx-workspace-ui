@@ -1,12 +1,17 @@
-import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core'
-import { Location } from '@angular/common'
+import { AfterViewInit, ChangeDetectorRef, Component, inject, OnInit, ViewChild } from '@angular/core'
+import { AsyncPipe, Location } from '@angular/common'
 import { ActivatedRoute, Router } from '@angular/router'
-import { TranslateService } from '@ngx-translate/core'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { catchError, finalize, map, Observable, of } from 'rxjs'
-import { Message } from 'primeng/api'
 
-import { Action, ObjectDetailItem } from '@onecx/angular-accelerator'
+import { MessageModule } from 'primeng/message'
+import { TabsModule } from 'primeng/tabs'
+import { TooltipModule } from 'primeng/tooltip'
+
+import { Action, AngularAcceleratorModule, ObjectDetailItem } from '@onecx/angular-accelerator'
+import { PortalPageComponent } from '@onecx/angular-utils'
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+
 import {
   GetWorkspaceResponse,
   Workspace,
@@ -16,16 +21,50 @@ import {
 } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
 
+import { WorkspaceExportComponent } from './workspace-export/workspace-export.component'
 import { WorkspacePropsComponent } from './workspace-props/workspace-props.component'
 import { WorkspaceContactComponent } from './workspace-contact/workspace-contact.component'
 import { WorkspaceInternComponent } from './workspace-intern/workspace-intern.component'
+import { WorkspaceRolesComponent } from './workspace-roles/workspace-roles.component'
+import { WorkspaceSlotsComponent } from './workspace-slots/workspace-slots.component'
+import { ProductComponent } from '../workspace-product/products.component'
+import { WorkspaceDeleteComponent } from './workspace-delete/workspace-delete.component'
 
 @Component({
   selector: 'app-workspace-detail',
+  standalone: true,
+  imports: [
+    AsyncPipe,
+    AngularAcceleratorModule,
+    MessageModule,
+    TabsModule,
+    TooltipModule,
+    TranslateModule,
+    // components
+    PortalPageComponent,
+    WorkspacePropsComponent,
+    WorkspaceContactComponent,
+    WorkspaceInternComponent,
+    WorkspaceRolesComponent,
+    WorkspaceSlotsComponent,
+    ProductComponent,
+    WorkspaceExportComponent,
+    WorkspaceDeleteComponent
+  ],
   templateUrl: './workspace-detail.component.html',
-  styleUrls: ['./workspace-detail.component.scss']
+  styleUrls: ['./workspace-detail.component.scss', './workspace-delete/workspace-delete.component.scss']
 })
 export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
+  public readonly route = inject(ActivatedRoute)
+  private readonly user = inject(UserService)
+  private readonly router = inject(Router)
+  private readonly location = inject(Location)
+  private readonly translate = inject(TranslateService)
+  private readonly msgService = inject(PortalMessageService)
+  private readonly workspaceApi = inject(WorkspaceAPIService)
+  private readonly imageApi = inject(ImagesInternalAPIService)
+  private readonly cd = inject(ChangeDetectorRef)
+
   @ViewChild(WorkspacePropsComponent, { static: false }) workspacePropsComponent!: WorkspacePropsComponent
   @ViewChild(WorkspaceContactComponent, { static: false }) workspaceContactComponent!: WorkspaceContactComponent
   @ViewChild(WorkspaceInternComponent, { static: false }) workspaceInternComponent!: WorkspaceInternComponent
@@ -35,7 +74,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
   public loading = false
   public exceptionKey: string | undefined = undefined
   public headerImageUrl?: string
-  public selectedTabIndex = 0
+  public selectedTabIndex = '0'
   public dateFormat = 'M/d/yy, hh:mm:ss a'
   public objectDetails!: ObjectDetailItem[]
   public workspace$!: Observable<Workspace | undefined>
@@ -50,25 +89,12 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
   public currentLogoUrl: string | undefined = undefined
   public showOperatorMessage = true // display initially only
   public Utils = Utils
-  private translations$: Observable<Message[]> | undefined
-  public messages: Message[] = []
 
-  constructor(
-    public readonly route: ActivatedRoute,
-    private readonly user: UserService,
-    private readonly router: Router,
-    private readonly location: Location,
-    private readonly translate: TranslateService,
-    private readonly msgService: PortalMessageService,
-    private readonly workspaceApi: WorkspaceAPIService,
-    private readonly imageApi: ImagesInternalAPIService,
-    private readonly cd: ChangeDetectorRef
-  ) {
+  constructor() {
     this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm:ss' : 'M/d/yy, hh:mm:ss a'
   }
 
   ngOnInit() {
-    this.prepareDialogTranslations()
     this.getWorkspace()
   }
 
@@ -95,7 +121,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
       finalize(() => {
         this.loading = false
         if (switchToEdit === true) this.editMode = true
-        this.prepareActionButtons()
+        this.preparePageActions()
       })
     )
   }
@@ -104,19 +130,19 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
     // Trigger update on the form of the currently selected tab
     let workspaceData: Workspace | undefined
     switch (this.selectedTabIndex) {
-      case 0: {
+      case '0': {
         this.workspacePropsComponent.onSave()
         if (!this.workspacePropsComponent.propsForm.valid) return
         workspaceData = this.workspacePropsComponent.workspace
         break
       }
-      case 1: {
+      case '1': {
         this.workspaceContactComponent.onSave()
         if (!this.workspaceContactComponent.contactForm.valid) return
         workspaceData = this.workspaceContactComponent.workspace
         break
       }
-      case 2: {
+      case '2': {
         this.workspaceInternComponent.onSave()
         workspaceData = this.workspaceInternComponent.workspace
         break
@@ -174,23 +200,23 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
   private goToTab(workspace: Workspace | undefined) {
     if (workspace && this.uriFragment) {
       const tabMap = new Map([
-        ['roles', 3],
-        ['slots', 4],
-        ['products', 5]
+        ['roles', '3'],
+        ['slots', '4'],
+        ['products', '5']
       ])
-      this.onTabChange({ index: tabMap.get(this.uriFragment) }, workspace)
+      this.onTabChange(String(tabMap.get(this.uriFragment)), workspace)
     }
   }
   // activate TAB
-  public onTabChange($event: any, workspace: Workspace | undefined) {
+  public onTabChange(tabValue: string | number, workspace?: Workspace) {
     if (workspace) {
       this.showOperatorMessage = false
-      this.selectedTabIndex = $event.index
-      if (this.selectedTabIndex === 3) this.workspaceForRoles = workspace
-      if (this.selectedTabIndex === 4) this.workspaceForSlots = workspace
-      if (this.selectedTabIndex === 5) this.workspaceForProducts = workspace
-    }
-    this.prepareActionButtons()
+      this.selectedTabIndex = typeof tabValue === 'number' ? tabValue.toString() : tabValue
+      if (this.selectedTabIndex === '3') this.workspaceForRoles = workspace
+      if (this.selectedTabIndex === '4') this.workspaceForSlots = workspace
+      if (this.selectedTabIndex === '5') this.workspaceForProducts = workspace
+    } else this.selectedTabIndex = '0'
+    this.preparePageActions()
   }
 
   // If product registration change then refresh slot TAB data
@@ -213,7 +239,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
       this.editMode = !this.editMode
       this.getWorkspace(this.editMode)
     }
-    this.prepareActionButtons()
+    this.preparePageActions()
   }
 
   public getLogoUrl(workspace: Workspace | undefined): string | undefined {
@@ -231,7 +257,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
     this.router.navigate(['./menu'], { relativeTo: this.route })
   }
 
-  public prepareActionButtons(): void {
+  public preparePageActions(): void {
     this.actions$ = this.translate
       .get([
         'DIALOG.MENU.LABEL',
@@ -310,7 +336,7 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
               show: 'always',
               permission: 'WORKSPACE#EDIT',
               conditional: true,
-              showCondition: this.workspace != null && !this.editMode && [0, 1, 2].includes(this.selectedTabIndex)
+              showCondition: this.workspace != null && !this.editMode && ['0', '1', '2'].includes(this.selectedTabIndex)
             },
             {
               label: data['ACTIONS.DELETE.LABEL'],
@@ -327,23 +353,5 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
           ]
         })
       )
-  }
-
-  private prepareDialogTranslations(): void {
-    this.translations$ = this.translate.get(['INTERNAL.OPERATOR_MESSAGE', 'INTERNAL.OPERATOR_HINT']).pipe(
-      map((data) => {
-        return [
-          {
-            id: 'ws_detail_operator_message',
-            severity: 'warn',
-            life: 5000,
-            closable: true,
-            summary: data['INTERNAL.OPERATOR_HINT'],
-            detail: data['INTERNAL.OPERATOR_MESSAGE']
-          }
-        ]
-      })
-    )
-    this.translations$.subscribe((data) => (this.messages = data))
   }
 }

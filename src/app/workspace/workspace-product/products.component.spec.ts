@@ -1,10 +1,11 @@
-import { NO_ERRORS_SCHEMA, Renderer2, SimpleChanges } from '@angular/core'
+import { SimpleChanges } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { of, throwError } from 'rxjs'
+import { BehaviorSubject, of, throwError } from 'rxjs'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { provideNoopAnimations } from '@angular/platform-browser/animations'
 import { TranslateTestingModule } from 'ngx-translate-testing'
-import { ReactiveFormsModule, FormBuilder, FormArray, FormControl, FormGroup } from '@angular/forms'
+import { FormBuilder, FormArray, FormControl, FormGroup } from '@angular/forms'
 
 import {
   AppStateService,
@@ -188,7 +189,6 @@ const mfeInfo: MfeInfo = {
 describe('ProductComponent', () => {
   let component: ProductComponent
   let fixture: ComponentFixture<ProductComponent>
-  let mockRenderer: Renderer2
   let fb: FormBuilder
   let mockAppState
   let productFormGroup: FormGroup
@@ -206,7 +206,11 @@ describe('ProductComponent', () => {
   const slotApiSpy = { getSlotsForWorkspace: jasmine.createSpy('getSlotsForWorkspace').and.returnValue(of({})) }
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
   const workspaceServiceSpy = jasmine.createSpyObj<WorkspaceService>('WorkspaceService', ['doesUrlExistFor', 'getUrl'])
-  const mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
+  const mockUserService = {
+    ...jasmine.createSpyObj('UserService', ['hasPermission']),
+    // TranslationConnectionService (eagerly created via AngularAcceleratorModule) subscribes to it
+    lang$: new BehaviorSubject('en')
+  }
   mockUserService.hasPermission.and.callFake((permission: string) => {
     return ['WORKSPACE_PRODUCTS#REGISTER'].includes(permission)
   })
@@ -214,32 +218,42 @@ describe('ProductComponent', () => {
   beforeEach(waitForAsync(() => {
     mockAppState = { currentMfe$: of(mfeInfo) }
     TestBed.configureTestingModule({
-      declarations: [ProductComponent],
       imports: [
-        ReactiveFormsModule,
+        ProductComponent,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
-      schemas: [NO_ERRORS_SCHEMA],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        { provide: PortalMessageService, useValue: msgServiceSpy },
-        { provide: WorkspaceProductAPIService, useValue: wProductApiSpy },
-        { provide: ProductAPIService, useValue: productApiSpy },
+        provideNoopAnimations(),
         { provide: AppStateService, useValue: mockAppState },
-        { provide: SlotAPIService, useValue: slotApiSpy },
         { provide: WorkspaceService, useValue: workspaceServiceSpy },
         { provide: UserService, useValue: mockUserService }
       ]
-    }).compileComponents()
+    })
+      // WorkspaceProductAPIService / ProductAPIService / SlotAPIService and PortalMessageService
+      // are all `providedIn: 'any'`, so the component injects its OWN instance and a root-level
+      // `useValue` spy is silently shadowed (the real services then perform genuine HTTP calls via
+      // provideHttpClientTesting / publish to a MessageTopic, which never reach the spies). Re-point
+      // the component's own providers at the shared spies so the component actually receives them.
+      .overrideComponent(ProductComponent, {
+        set: {
+          providers: [
+            { provide: PortalMessageService, useValue: msgServiceSpy },
+            { provide: WorkspaceProductAPIService, useValue: wProductApiSpy },
+            { provide: ProductAPIService, useValue: productApiSpy },
+            { provide: SlotAPIService, useValue: slotApiSpy }
+          ]
+        }
+      })
+      .compileComponents()
   }))
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ProductComponent)
-    mockRenderer = jasmine.createSpyObj('Renderer2', ['addClass', 'removeClass'])
     fb = TestBed.inject(FormBuilder)
     productFormGroup = fb.group({
       displayName: new FormControl(null),
@@ -247,7 +261,6 @@ describe('ProductComponent', () => {
       modules: fb.array([])
     })
     component = fixture.componentInstance
-    component.renderer = mockRenderer
     component.workspace = workspace
     component.displayDetails = false
     component.displayedDetailItem = undefined
@@ -390,99 +403,81 @@ describe('ProductComponent', () => {
     expect(mockEvent.stopPropagation).toHaveBeenCalled()
   })
 
-  describe('onSourceSelect', () => {
-    it('should set displayDetails to false when no item is selected', () => {
-      const event = { items: [] }
-      spyOn(component, 'onHideItemDetails')
-
-      component.onSourceSelect(event)
-
-      expect(component.displayDetails).toBeFalse()
-      expect(component.onHideItemDetails).toHaveBeenCalled()
-    })
-
-    it('should call fillForm when item is selected: mfes', () => {
+  describe('onItemSelect', () => {
+    it('should call fillForm when a SOURCE item is selected', () => {
       component.formGroup = productFormGroup
       const modules = component.formGroup.get('modules') as FormArray
       AddMfeModuleFormControl(fb, modules, 0, mfeModule1)
-      const event = { items: [product1Source] }
       component.displayDetails = true
+      component.psProducts = [product1Source]
       component.psProductsOrg = new Map()
       component.psProductsOrg.set(product1Source.productName!, product1Source)
 
-      component.onSourceSelect(event)
+      component.onItemSelect(product1Source)
 
       expect(component.displayDetails).toBeTrue()
       expect(component.displayedDetailItem).toEqual(product1Source)
     })
-  })
-  describe('onTargetSelect', () => {
-    it('should set displayDetails to false when no item is selected', () => {
-      const event = { items: [] }
 
-      component.onTargetSelect(event)
-
-      expect(component.displayDetails).toBeFalse()
-      expect(component.displayedDetailItem).toBeUndefined()
-    })
-
-    it('should call getWProduct when an target item is selected - successful', () => {
+    it('should call getWProduct when a TARGET item is selected - successful', () => {
       wProductApiSpy.getProductById.and.returnValue(of({ ...wProduct1, productName: 'onecx-shell' }))
       wProductApiSpy.getProductsByWorkspaceId.and.returnValue(of([{ ...wProduct1, productName: 'onecx-shell' }]))
       productApiSpy.searchAvailableProducts.and.returnValue(
         of({ stream: [{ ...psProduct1, productName: 'onecx-shell' }] })
       )
-      const event = { items: [{ ...product1Target, productName: 'onecx-shell' }] }
 
       component.ngOnChanges(changes as unknown as SimpleChanges)
-      component.onTargetSelect(event)
+      const targetItem = { ...product1Target, productName: 'onecx-shell' }
+      component.wProducts = [targetItem]
+      component.onItemSelect(targetItem)
 
       expect(component.displayDetails).toBeTrue()
+      expect(wProductApiSpy.getProductById).toHaveBeenCalledWith({ id: workspace.id, productId: targetItem.id })
 
       component.getModuleControls('app1')
     })
 
-    it('should call getWProduct when an target item is selected - successful - using product store displayName', () => {
+    it('should call getWProduct when a TARGET item is selected - successful - using product store displayName', () => {
       wProductApiSpy.getProductById.and.returnValue(of({ ...wProduct1, displayName: undefined }))
       wProductApiSpy.getProductsByWorkspaceId.and.returnValue(of([wProduct1]))
       productApiSpy.searchAvailableProducts.and.returnValue(of({ stream: [psProduct1] }))
-      const event = { items: [product1Target] }
 
       component.ngOnChanges(changes as unknown as SimpleChanges)
-      component.onTargetSelect(event)
+      component.wProducts = [product1Target]
+      component.onItemSelect(product1Target)
 
       expect(component.displayDetails).toBeTrue()
       expect(component.displayedDetailItem?.displayName).toEqual(wProduct1.displayName)
     })
 
-    it('should call getWProduct when an target item is selected - successful - using product name', () => {
+    it('should call getWProduct when a TARGET item is selected - successful - using product name', () => {
       wProductApiSpy.getProductById.and.returnValue(of({ ...wProduct2 }))
       wProductApiSpy.getProductsByWorkspaceId.and.returnValue(of([wProduct1, wProduct2]))
       productApiSpy.searchAvailableProducts.and.returnValue(of({ stream: [psProduct1] }))
-      const event = { items: [product1Target] }
 
       component.ngOnChanges(changes as unknown as SimpleChanges)
-      component.onTargetSelect(event)
+      component.wProducts = [product1Target]
+      component.onItemSelect(product1Target)
 
       expect(component.displayDetails).toBeTrue()
       expect(component.displayedDetailItem?.displayName).toEqual(wProduct2.productName)
     })
 
-    it('should call getWProduct when an item is selected: display error and hide detail panel', () => {
+    it('should call getWProduct when a TARGET item is selected: display error and hide detail panel', () => {
       const errorResponse = { status: 404, statusText: 'workspace product not found' }
       wProductApiSpy.getProductById.and.returnValue(throwError(() => errorResponse))
       spyOn(console, 'error')
-      const event = { items: [{ id: 1 }] }
       component.displayDetails = true
+      component.wProducts = [{ id: '1' } as ExtendedProduct]
 
-      component.onTargetSelect(event)
+      component.onItemSelect({ id: '1' } as ExtendedProduct)
 
       expect(component.displayDetails).toBeFalse()
       expect(console.error).toHaveBeenCalledWith('getProductById', errorResponse)
       expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.LOAD_ERROR' })
     })
 
-    it('should call getWProduct when an item is selected: call getProductById for TARGET product', () => {
+    it('should call getWProduct when a TARGET item is selected: product without MFEs', () => {
       const productWithoutMfes: Product = {
         ...wProduct1,
         microfrontends: []
@@ -494,10 +489,11 @@ describe('ProductComponent', () => {
       wProductApiSpy.getProductById.and.returnValue(of(productWithoutMfes))
       wProductApiSpy.getProductsByWorkspaceId.and.returnValue(of([productWithoutMfes]))
       productApiSpy.searchAvailableProducts.and.returnValue(of({ stream: [productSourceWithoutMfes] }))
-      const event = { items: [{ ...product1Target, microfrontends: undefined }] }
+      const targetItem = { ...product1Target, microfrontends: undefined }
 
       component.ngOnChanges(changes as unknown as SimpleChanges)
-      component.onTargetSelect(event)
+      component.wProducts = [targetItem]
+      component.onItemSelect(targetItem)
 
       expect(component.displayDetails).toBeTrue()
       expect(component.displayedDetailItem?.microfrontends).toBeUndefined()
@@ -547,7 +543,8 @@ describe('ProductComponent', () => {
       component.formGroup = productFormGroup
 
       component.ngOnChanges(changes as unknown as SimpleChanges)
-      component.onTargetSelect({ items: [product1Target] }) // and fill form
+      component.wProducts = [product1Target]
+      component.onItemSelect(product1Target) // and fill form
 
       component.onProductSave()
 
@@ -963,54 +960,43 @@ describe('ProductComponent', () => {
 
       expect(component.displayDetails).toBeFalse()
     })
+  })
 
-    it('should update sourceListViewMode based on event mode: grid', () => {
-      const event = { icon: 'grid-icon', mode: 'grid' }
+  describe('filterProducts', () => {
+    it('should reset the SOURCE list to all products when the value is empty', () => {
+      const data = [{ displayName: 'Alpha' } as ExtendedProduct, { displayName: 'Beta' } as ExtendedProduct]
+      component.psProducts = data
 
-      component.onSourceViewModeChange(event)
+      component.filterProducts('', 'SOURCE')
 
-      expect(component.sourceListViewMode).toEqual({
-        mode: 'grid',
-        icon: 'pi pi-th-large',
-        titleKey: 'DIALOG.DATAVIEW.VIEW_MODE_GRID'
-      })
-      expect(mockRenderer.addClass).toHaveBeenCalledWith(component.sourceList, 'tile-view')
+      expect(component.filteredPsProducts).toEqual(data)
     })
 
-    it('should update sourceListViewMode based on event mode: list', () => {
-      const event = { icon: 'list-icon', mode: 'list' }
+    it('should reset the TARGET list to all products when the value is blank', () => {
+      const data = [{ displayName: 'Omega' } as ExtendedProduct]
+      component.wProducts = data
 
-      component.onSourceViewModeChange(event)
+      component.filterProducts('   ', 'TARGET')
 
-      expect(component.sourceListViewMode).toEqual({
-        mode: 'list',
-        icon: 'pi pi-list',
-        titleKey: 'DIALOG.DATAVIEW.VIEW_MODE_LIST'
-      })
-      expect(mockRenderer.removeClass).toHaveBeenCalledWith(component.sourceList, 'tile-view')
+      expect(component.filteredWProducts).toEqual(data)
     })
 
-    it('should update targetListViewMode based on event mode', () => {
-      const event = { icon: 'grid-icon', mode: 'grid' }
+    it('should filter the SOURCE list by displayName', () => {
+      component.psProducts = [{ displayName: 'Alpha' } as ExtendedProduct, { displayName: 'Beta' } as ExtendedProduct]
 
-      component.onTargetViewModeChange(event)
+      component.filterProducts('alpha', 'SOURCE')
 
-      expect(component.targetListViewMode).toEqual({
-        mode: 'grid',
-        icon: 'pi pi-th-large',
-        titleKey: 'DIALOG.DATAVIEW.VIEW_MODE_GRID'
-      })
-      expect(mockRenderer.addClass).toHaveBeenCalledWith(component.targetList, 'tile-view')
+      expect(component.filteredPsProducts.length).toBe(1)
+      expect(component.filteredPsProducts[0].displayName).toEqual('Alpha')
     })
 
-    it('should handle mode changes appropriately for the target list', () => {
-      let event = { icon: 'list-icon', mode: 'list' }
-      component.onTargetViewModeChange(event)
-      expect(mockRenderer.removeClass).toHaveBeenCalledWith(component.targetList, 'tile-view')
+    it('should filter the TARGET list by displayName', () => {
+      component.wProducts = [{ displayName: 'Alpha' } as ExtendedProduct, { displayName: 'Beta' } as ExtendedProduct]
 
-      event = { icon: 'grid-icon', mode: 'grid' }
-      component.onTargetViewModeChange(event)
-      expect(mockRenderer.addClass).toHaveBeenCalledWith(component.targetList, 'tile-view')
+      component.filterProducts('beta', 'TARGET')
+
+      expect(component.filteredWProducts.length).toBe(1)
+      expect(component.filteredWProducts[0].displayName).toEqual('Beta')
     })
   })
 

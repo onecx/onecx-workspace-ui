@@ -27,10 +27,12 @@
       tooltipPosition="right"
       tooltipEvent="hover"
     />
-    <span class="p-float-label">
-      <p-dropdown
-        id="ws_menu_preview_language_list"
+    <p-floatlabel variant="on">
+      <p-select
+        id="ws_menu_preview_language_list_input"
+        inputId="ws_menu_preview_language_list"
         styleClass="reduced-field-size"
+        [placeholder]="'DIALOG.MENU.PREVIEW.LANG' | translate"
         [appendTo]="'body'"
         [emptyMessage]="'DIALOG.MENU.PREVIEW.LANG.EMPTY' | translate"
         [options]="languagesPreview"
@@ -40,9 +42,9 @@
         [pTooltip]="'DIALOG.MENU.PREVIEW.LANG.TOOLTIP' | translate"
         tooltipPosition="right"
         tooltipEvent="hover"
-      ></p-dropdown>
+      ></p-select>
       <label for="ws_menu_preview_language_list">{{ 'DIALOG.MENU.PREVIEW.LANG' | translate }}</label>
-    </span>
+    </p-floatlabel>
   </div>
 
   <p-tree
