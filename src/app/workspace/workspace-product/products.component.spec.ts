@@ -962,6 +962,44 @@ describe('ProductComponent', () => {
     })
   })
 
+  describe('filterProducts', () => {
+    it('should reset the SOURCE list to all products when the value is empty', () => {
+      const data = [{ displayName: 'Alpha' } as ExtendedProduct, { displayName: 'Beta' } as ExtendedProduct]
+      component.psProducts = data
+
+      component.filterProducts('', 'SOURCE')
+
+      expect(component.filteredPsProducts).toEqual(data)
+    })
+
+    it('should reset the TARGET list to all products when the value is blank', () => {
+      const data = [{ displayName: 'Omega' } as ExtendedProduct]
+      component.wProducts = data
+
+      component.filterProducts('   ', 'TARGET')
+
+      expect(component.filteredWProducts).toEqual(data)
+    })
+
+    it('should filter the SOURCE list by displayName', () => {
+      component.psProducts = [{ displayName: 'Alpha' } as ExtendedProduct, { displayName: 'Beta' } as ExtendedProduct]
+
+      component.filterProducts('alpha', 'SOURCE')
+
+      expect(component.filteredPsProducts.length).toBe(1)
+      expect(component.filteredPsProducts[0].displayName).toEqual('Alpha')
+    })
+
+    it('should filter the TARGET list by displayName', () => {
+      component.wProducts = [{ displayName: 'Alpha' } as ExtendedProduct, { displayName: 'Beta' } as ExtendedProduct]
+
+      component.filterProducts('beta', 'TARGET')
+
+      expect(component.filteredWProducts.length).toBe(1)
+      expect(component.filteredWProducts[0].displayName).toEqual('Beta')
+    })
+  })
+
   describe('getProductEndpointUrl', () => {
     beforeEach(() => {
       component.workspace = workspace

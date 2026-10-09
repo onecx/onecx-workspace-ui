@@ -24,6 +24,11 @@ import { Utils } from 'src/app/shared/utils'
 import { VerticalMenuItemComponent } from 'src/app/shared/components/vertical-menu-item/vertical-menu-item.component'
 import { environment } from 'src/environments/environment'
 
+export type MenuData = {
+  menu: MenuItem[]
+  workspaceName?: string
+  workspaceBaseUrl?: string
+}
 @Component({
   selector: 'app-ocx-footer-menu',
   standalone: true,
@@ -45,7 +50,7 @@ export class OneCXFooterMenuComponent implements ocxRemoteComponent, ocxRemoteWe
   public readonly router = inject(Router)
 
   menuItems$ = this.getMenuItems()
-  menuItems = toSignal(this.menuItems$ ?? of([]), { initialValue: [] })
+  menuItems = toSignal(this.menuItems$, { initialValue: [] })
   public Utils = Utils
 
   constructor() {
@@ -64,7 +69,8 @@ export class OneCXFooterMenuComponent implements ocxRemoteComponent, ocxRemoteWe
     })
   }
 
-  getMenuItems(): Observable<MenuItem[]> | undefined {
+  getMenuItems(): Observable<MenuItem[]> {
+    const data: MenuData = { menu: [] as MenuItem[], workspaceName: undefined, workspaceBaseUrl: undefined }
     return this.appStateService.currentWorkspace$.pipe(
       mergeMap((currentWorkspace) =>
         this.menuItemApiService
@@ -76,24 +82,25 @@ export class OneCXFooterMenuComponent implements ocxRemoteComponent, ocxRemoteWe
           })
           .pipe(
             map((response) => ({
-              data: response,
+              ...data,
+              menu: response.menu,
               workspaceName: currentWorkspace.workspaceName,
               workspaceBaseUrl: currentWorkspace.baseUrl
             })),
             retry({ delay: 500, count: 3 }),
             catchError(() => {
               console.error('Unable to load menu items for footer menu.')
-              return of(undefined)
+              return of({
+                ...data,
+                workspaceName: currentWorkspace.workspaceName,
+                workspaceBaseUrl: currentWorkspace.baseUrl
+              })
             })
           )
       ),
       withLatestFrom(this.userService.lang$),
       map(([menuData, userLang]) =>
-        this.menuItemService.constructMenuItems(
-          menuData?.data?.menu?.[0]?.children,
-          userLang,
-          menuData?.workspaceBaseUrl
-        )
+        this.menuItemService.constructMenuItems(menuData?.menu?.[0]?.children, userLang, menuData?.workspaceBaseUrl)
       ),
       shareReplay(),
       untilDestroyed(this)

@@ -115,6 +115,15 @@ describe('WorkspaceSearchComponent', () => {
       expect(console.error).toHaveBeenCalledWith('searchWorkspaces', errorResponse)
       expect(component.data().length).toBe(0)
     })
+
+    it('should default to empty workspaces when the response has no stream', () => {
+      // a response without a `stream` property exercises the `data?.stream ?? []` fallback
+      triggerLoad(of({} as SearchWorkspacesResponse))
+
+      expect(component.loading()).toBeFalse()
+      expect(component.exceptionKey()).toBeUndefined()
+      expect(component.data().length).toBe(0)
+    })
   })
 
   describe('convertToWorkspaces', () => {
@@ -164,6 +173,16 @@ describe('WorkspaceSearchComponent', () => {
       const data = [{ name: 'a', displayName: 'A' }] as unknown as RowListGridData[]
 
       component.onGlobalFilter('', data)
+
+      expect(component.globalFilterValue).toEqual('')
+      expect(component.filteredData()).toBeUndefined()
+    })
+
+    it('should default an undefined value to an empty filter onGlobalFilter', () => {
+      // an undefined `value` (with data present) exercises the `value ?? ''` fallback
+      const data = [{ name: 'a', displayName: 'A' }] as unknown as RowListGridData[]
+
+      component.onGlobalFilter(undefined, data)
 
       expect(component.globalFilterValue).toEqual('')
       expect(component.filteredData()).toBeUndefined()

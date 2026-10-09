@@ -168,5 +168,21 @@ describe('OneCXVersionInfoComponent', () => {
 
       expect(versionInfo).toEqual(mockVersion)
     })
+
+    it('should getting data - host version undefined', async () => {
+      mockAppStateService.currentMfe$.publish({ displayName: 'OneCX Workspace UI', version: 'v1.0.0' } as MfeInfo)
+      mockAppStateService.currentWorkspace$.publish(workspace1 as Workspace)
+      const mockVersion: Version = {
+        workspaceName: workspace1.workspaceName!,
+        shellInfo: undefined,
+        mfeInfo: 'OneCX Workspace UI v1.0.0',
+        separator: ' - '
+      }
+      // An empty host version maps to an empty shellInfo (an absent key would map to undefined).
+      const { component } = await setUp({ [CONFIG_KEY.APP_VERSION]: '@UNDEFINED' })
+      const versionInfo = await firstValueFrom(component.versionInfo$)
+
+      expect(versionInfo).toEqual(mockVersion)
+    })
   })
 })

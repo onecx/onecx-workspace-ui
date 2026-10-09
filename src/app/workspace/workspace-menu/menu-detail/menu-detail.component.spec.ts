@@ -598,6 +598,13 @@ describe('MenuDetailComponent', () => {
 
       expect(component.selectedTabIndex).toBe(tabValue)
     })
+
+    it('should convert a numeric tab value to its string form on onTabChange', () => {
+      // a number (not a string) tab value exercises the `e.toString()` side of the ternary
+      component.onTabChange(2)
+
+      expect(component.selectedTabIndex).toBe('2')
+    })
   })
 
   describe('translations', () => {

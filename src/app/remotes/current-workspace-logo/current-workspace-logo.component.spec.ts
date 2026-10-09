@@ -124,6 +124,7 @@ describe('OneCXCurrentWorkspaceLogoComponent', () => {
       it('should fall back from workspace external URL to custom input URL', () => {
         const { component } = setUp()
         component.workspaceName = workspace1.workspaceName
+        component.logEnabled = true
         component.imageUrl = 'http://custom/logo.png'
         component.logoUrl[RefType.Logo] = 'http://external/logo.png'
 

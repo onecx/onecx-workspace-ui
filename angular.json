@@ -106,7 +106,12 @@
             "assets": ["src/favicon.ico", "src/assets"],
             "styles": ["src/styles.scss"],
             "scripts": [],
-            "codeCoverageExclude": ["**/*.module.ts", "src/app/environments/**", "src/app/shared/generated/**"]
+            "codeCoverageExclude": [
+              "**/*.module.ts",
+              "src/app/environments/**",
+              "src/app/shared/generated/**",
+              "**/*.harness.ts"
+            ]
           }
         },
         "lint": {

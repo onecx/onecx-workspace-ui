@@ -185,7 +185,7 @@ export class MenuPreviewComponent implements OnChanges {
 
       if (this.isDropBetweenNodes(event)) {
         targetItem = event.dropNode?.parent?.data as WorkspaceMenuItem
-        parentItemId = targetItem?.id ?? undefined
+        parentItemId = targetItem?.id!
 
         if (targetPos > dragIndex) {
           targetPos -= 1

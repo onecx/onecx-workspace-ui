@@ -179,6 +179,24 @@ describe('WorkspaceDetailComponent', () => {
         component.onTabChange('5', component.workspace)
         expect(component.workspaceForProducts).toBe(workspace)
       })
+
+      it('should convert a numeric tab value to its string form', () => {
+        component.workspace = workspace
+
+        // a number (not a string) tab value exercises the `tabValue.toString()` side of the ternary
+        component.onTabChange(1, workspace)
+
+        expect(component.selectedTabIndex).toEqual('1')
+      })
+
+      it('should reset selectedTabIndex to 0 when no workspace is provided', () => {
+        component.selectedTabIndex = '5'
+
+        // a falsy workspace takes the `else` branch instead of the tab-specific assignments
+        component.onTabChange('0')
+
+        expect(component.selectedTabIndex).toEqual('0')
+      })
     })
   })
 

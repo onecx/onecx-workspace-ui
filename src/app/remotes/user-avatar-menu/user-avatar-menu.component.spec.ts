@@ -4,6 +4,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { provideRouter, Router } from '@angular/router'
 import { provideNoopAnimations } from '@angular/platform-browser/animations'
+import { TranslateService } from '@ngx-translate/core'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { firstValueFrom, of, ReplaySubject, throwError } from 'rxjs'
 
@@ -410,6 +411,22 @@ describe('OneCXUserAvatarMenuComponent', () => {
       expect(await logoutItem.getText()).toEqual('Log out')
       expect(await logoutItem.hasIcon('pi-power-off')).toBeTrue()
     })
+
+    it('should fall back to the raw "Logout" label when the translation is unavailable', async () => {
+      menuItemApiSpy.getMenuItems.and.returnValue(of({ workspaceName: 'workspace', menu: [] } as any))
+      // The pipeline resolves the logout label via translateService.get(...). Only that key errors so the
+      // template's other | translate pipes (TOOLTIP / ORGID) keep resolving.
+      const translateService = TestBed.inject(TranslateService)
+      spyOn(translateService, 'get').and.callFake((key: string) =>
+        key === 'REMOTES.USER_AVATAR_MENU.LOGOUT' ? throwError(() => new Error('no translation')) : of(key)
+      )
+
+      const { avatarMenuHarness } = await setupWithHarnessAndInit()
+      const logoutItem = await avatarMenuHarness.getLogoutMenuItem()
+
+      expect(await logoutItem.getText()).toEqual('Logout')
+      expect(await logoutItem.hasIcon('pi-power-off')).toBeTrue()
+    })
   })
 
   describe('menu visibility', () => {
@@ -425,6 +442,56 @@ describe('OneCXUserAvatarMenuComponent', () => {
       await avatarMenuHarness.clickButton()
       expect(component.menuOpen()).toBeFalse()
       expect(await avatarMenuHarness.isMenuHidden()).toBeTrue()
+    })
+  })
+
+  // The close-on-escape / close-on-outside-click logic lives in the `document:` @HostListeners. They are
+  // exercised by invoking the handler methods directly with a controlled `event.target` (dispatching to
+  // `document` would always resolve `event.target` to `document`, so the inside/outside distinction could
+  // not be reached). The handlers mutate the menuOpen signal synchronously.
+  describe('global event listeners', () => {
+    it('should close the menu when the escape key is pressed', async () => {
+      const { avatarMenuHarness, component } = await setupWithHarnessAndInit()
+      await avatarMenuHarness.clickButton()
+      expect(component.menuOpen()).toBeTrue()
+
+      component.onEscapePressed(new KeyboardEvent('keydown', { key: 'Escape' }))
+      expect(component.menuOpen()).toBeFalse()
+    })
+
+    it('should not close the menu when escape is pressed while it is already closed', async () => {
+      const { component } = await setupWithHarnessAndInit()
+      expect(component.menuOpen()).toBeFalse()
+
+      component.onEscapePressed(new KeyboardEvent('keydown', { key: 'Escape' }))
+      expect(component.menuOpen()).toBeFalse()
+    })
+
+    it('should close the menu when clicking outside the component while it is open', async () => {
+      const { fixture, avatarMenuHarness, component } = await setupWithHarnessAndInit()
+      await avatarMenuHarness.clickButton()
+      expect(component.menuOpen()).toBeTrue()
+
+      // target is a node NOT inside the component's element.
+      component.onDocumentClick({ target: document.body } as unknown as Event)
+
+      expect(component.menuOpen()).toBeFalse()
+      fixture.detectChanges()
+      expect(await avatarMenuHarness.isMenuHidden()).toBeTrue()
+    })
+
+    it('should close the menu when the click is inside the component', async () => {
+      const { fixture, avatarMenuHarness, component } = await setupWithHarnessAndInit()
+      await avatarMenuHarness.clickButton()
+      expect(component.menuOpen()).toBeTrue()
+
+      // target is a node inside the component's element, so the `!clickedInside` guard is not taken
+      // (covers the false side of the `if (!clickedInside)` branch); the menu is closed by the
+      // unconditional set(false) that runs before it.
+      const inside = fixture.nativeElement.querySelector('app-user-avatar-menu')
+      component.onDocumentClick({ target: inside } as unknown as Event)
+
+      expect(component.menuOpen()).toBeFalse()
     })
   })
 })

@@ -118,6 +118,18 @@ describe('WorkspaceContactComponent', () => {
     expect(component.contactForm.controls['street'].value).toEqual('detail street')
   })
 
+  it('should fillForm onChanges: top-level companyName and phoneNumber', () => {
+    // companyName / phoneNumber are read from the workspace itself (not from address), so a fresh
+    // workspace carrying those top-level fields exercises the `else if (workspace[key])` branch.
+    component.contactForm = createContactForm()
+    component.workspace = { ...workspace, companyName: 'Some Company', phoneNumber: '123456789' }
+
+    component.ngOnChanges()
+
+    expect(component.contactForm.controls['companyName'].value).toEqual('Some Company')
+    expect(component.contactForm.controls['phoneNumber'].value).toEqual('123456789')
+  })
+
   it('should update workspace onSave', () => {
     component.contactForm = new FormGroup({
       phoneNumber: new FormControl('123456789'),
