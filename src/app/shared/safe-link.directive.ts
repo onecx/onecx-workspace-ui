@@ -7,7 +7,7 @@ import { Router } from '@angular/router'
   standalone: true
 })
 export class SafeLinkDirective {
-  private router = inject(Router)
+  private readonly router = inject(Router)
 
   safeRouterLink = input<string | any[] | undefined | null>(undefined) // Der Router-Link
   target = input<string>('_self')

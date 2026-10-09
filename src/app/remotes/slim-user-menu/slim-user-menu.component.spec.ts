@@ -283,7 +283,7 @@ describe('OneCXSlimUserMenuComponent', () => {
     const slimUserMenu = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXSlimUserMenuHarness)
     await slimUserMenu.open()
     const items = await slimUserMenu.getItems()
-    expect(items.length).toBe(1) // Only the logout item
+    expect(items).toHaveSize(1) // Only the logout item
     await items[items.length - 1].click() // Click the logout item
 
     expect(component['eventsPublisher'].publish).toHaveBeenCalledWith({ type: 'authentication#logoutButtonClicked' })

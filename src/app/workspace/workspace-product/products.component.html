@@ -38,7 +38,7 @@
             {{ 'DIALOG.PRODUCTS.PS_PRODUCTS' | translate }}: {{ psProducts.length }}
           </div>
           <p-button
-            id="ws_products_picklist_ps_load"
+            id="ws_products_picklist_ps_reload"
             icon="pi pi-refresh"
             (onClick)="onLoadPsProducts()"
             [ariaLabel]="'ACTIONS.SEARCH.RELOAD' | translate"
@@ -61,7 +61,7 @@
             {{ 'DIALOG.PRODUCTS.W_PRODUCTS' | translate }}: {{ wProducts.length }}
           </div>
           <p-button
-            id="ws_products_picklist_ps_load"
+            id="ws_products_picklist_w_reload"
             icon="pi pi-refresh"
             (onClick)="onLoadWProducts()"
             [ariaLabel]="'ACTIONS.SEARCH.RELOAD' | translate"
@@ -82,15 +82,17 @@
               id="ws_products_picklist_ps_filter_value"
               class="text-responsive"
               (input)="filterProducts(psFilter.value, 'SOURCE')"
-              [placeholder]="'DIALOG.DATAVIEW.FILTER.LABEL' | translate"
               [attr.aria-label]="'DIALOG.DATAVIEW.FILTER.LABEL' | translate"
               [pTooltip]="'DIALOG.DATAVIEW.PRODUCT_FILTER_TOOLTIP' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
             />
+            <label for="ws_products_picklist_ps_filter_value">
+              {{ 'DIALOG.DATAVIEW.FILTER.LABEL' | translate }}
+            </label>
             <p-inputgroup-addon>
               <p-button
-                id="ws_products_detail_picklist_ps_filter_clear"
+                id="ws_products_picklist_ps_filter_clear"
                 icon="pi pi-filter-slash"
                 (onClick)="psFilter.value = ''; filterProducts('', 'SOURCE')"
                 [disabled]="psFilter.value === ''"
@@ -112,15 +114,17 @@
               id="ws_products_picklist_ws_filter_value"
               class="p-picklist-filter-input p-inputtext p-component"
               (input)="filterProducts(wFilter.value, 'TARGET')"
-              [placeholder]="'DIALOG.DATAVIEW.FILTER.LABEL' | translate"
               [ariaLabel]="'DIALOG.DATAVIEW.FILTER.LABEL' | translate"
               [pTooltip]="'DIALOG.DATAVIEW.PRODUCT_FILTER_TOOLTIP' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
             />
+            <label for="ws_products_picklist_ws_filter_value">
+              {{ 'DIALOG.DATAVIEW.FILTER.LABEL' | translate }}
+            </label>
             <p-inputgroup-addon>
               <p-button
-                id="ws_products_detail_picklist_ps_filter_clear"
+                id="ws_products_picklist_ps_filter_clear"
                 icon="pi pi-filter-slash"
                 (onClick)="wFilter.value = ''; filterProducts('', 'TARGET')"
                 [disabled]="wFilter.value === ''"

@@ -107,7 +107,7 @@
     <p-tablist>
       <p-tab
         value="0"
-        id="ws_import_preview_menu"
+        id="ws_import_preview_menu_tree"
         [ariaLabel]="'TABS.WORKSPACE.MENU' | translate"
         [pTooltip]="'TABS.WORKSPACE.TOOLTIPS.MENU' | translate"
         tooltipPosition="top"
@@ -142,7 +142,7 @@
         <div class="max-h-13rem overflow-auto">
           <p-tree
             styleClass="p-0"
-            id="ws_import_preview_menu"
+            id="ws_import_preview_menu_not_exist"
             [value]="menuItems"
             [emptyMessage]="'DIALOG.MENU.MENU_NOT_EXIST' | translate"
           ></p-tree>
@@ -154,7 +154,7 @@
         @let wrsMessageKey = wrs.length === 0 ? 'WORKSPACE_IMPORT.VALIDATION.WORKSPACE.ROLES_MISSING' : 'ROLE_HINT';
         <div class="px-3 max-h-13rem">
           @if (wrs.length > 0) {
-            <ul id="ws_import_preview_roles" class="max-h-10rem overflow-auto">
+            <ul id="ws_import_preview_roles_list" class="max-h-10rem overflow-auto">
               @for (r of wrs; track r) {
                 <li>{{ r }}</li>
               }
@@ -181,7 +181,7 @@
             [text]="wpsMessageKey | translate"
           ></p-message>
           @if (wps.length > 0) {
-            <ul id="ws_import_preview_products" class="max-h-10rem overflow-auto">
+            <ul id="ws_import_preview_products_list" class="max-h-10rem overflow-auto">
               @for (p of wps; track p) {
                 <li>{{ p }}</li>
               }

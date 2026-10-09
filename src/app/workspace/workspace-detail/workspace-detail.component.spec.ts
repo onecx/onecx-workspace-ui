@@ -3,7 +3,7 @@ import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { provideRouter, Router } from '@angular/router'
-import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router'
+import { ActivatedRoute } from '@angular/router'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of, BehaviorSubject, throwError } from 'rxjs'
 
@@ -18,10 +18,8 @@ import { WorkspaceInternComponent } from './workspace-intern/workspace-intern.co
 import { provideNoopAnimations } from '@angular/platform-browser/animations'
 import { providePermissionService } from '@onecx/angular-utils'
 import { BreadcrumbService } from '@onecx/angular-accelerator'
+import { provideAppStateServiceMock } from '@onecx/angular-integration-interface/mocks'
 
-class MockRouter {
-  navigate = jasmine.createSpy('navigate')
-}
 const workspace: Workspace = {
   id: 'id',
   name: 'name',
@@ -29,6 +27,9 @@ const workspace: Workspace = {
   baseUrl: '/some/base/url',
   displayName: ''
 }
+/* 
+  Mock sub components for testing WorkspaceDetailComponent
+*/
 class MockWorkspacePropsComponent {
   public onSave(): void {}
   public propsForm = { valid: true }
@@ -43,10 +44,15 @@ class MockWorkspaceInternComponent {
   public onSave(): void {}
 }
 
-xdescribe('WorkspaceDetailComponent', () => {
+describe('WorkspaceDetailComponent', () => {
   let component: WorkspaceDetailComponent
   let fixture: ComponentFixture<WorkspaceDetailComponent>
-  const mockRouter = new MockRouter()
+
+  function initializeComponent(): void {
+    fixture = TestBed.createComponent(WorkspaceDetailComponent)
+    component = fixture.componentInstance
+    fixture.detectChanges()
+  }
 
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
   const apiServiceSpy = {
@@ -56,15 +62,32 @@ xdescribe('WorkspaceDetailComponent', () => {
     updateWorkspace: jasmine.createSpy('updateWorkspace').and.returnValue(of({}))
   }
   const locationSpy = jasmine.createSpyObj<Location>('Location', ['back'])
-  const mockActivatedRouteSnapshot: Partial<ActivatedRouteSnapshot> = { params: { id: 'mockId' } }
-  const mockActivatedRoute: Partial<ActivatedRoute> = {
-    snapshot: mockActivatedRouteSnapshot as ActivatedRouteSnapshot
-  }
   const mockUserService = {
     lang$: new BehaviorSubject<string>('de'),
     getPermission: jasmine.createSpy('getPermission').and.returnValue(Promise.resolve(true)),
+    getPermissions: jasmine
+      .createSpy('getPermissions')
+      .and.returnValue(
+        of([
+          'WORKSPACE#EDIT',
+          'WORKSPACE#VIEW',
+          'WORKSPACE_CONTACT#VIEW',
+          'WORKSPACE_INTERNAL#VIEW',
+          'WORKSPACE_PRODUCTS#VIEW',
+          'WORKSPACE_ROLE#VIEW',
+          'WORKSPACE_SLOT#VIEW'
+        ])
+      ),
     hasPermission: jasmine.createSpy('hasPermission').and.callFake((permission) => {
-      return ['WORKSPACE#EDIT'].includes(permission)
+      return [
+        'WORKSPACE#EDIT',
+        'WORKSPACE#VIEW',
+        'WORKSPACE_CONTACT#VIEW',
+        'WORKSPACE_INTERNAL#VIEW',
+        'WORKSPACE_ROLE#VIEW',
+        'WORKSPACE_SLOT#VIEW',
+        'WORKSPACE_PRODUCTS#VIEW'
+      ].includes(permission)
     })
   }
 
@@ -80,11 +103,10 @@ xdescribe('WorkspaceDetailComponent', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
+        provideAppStateServiceMock(),
         providePermissionService(),
         provideNoopAnimations(),
-        provideRouter([{ path: '', component: WorkspaceDetailComponent }]),
-        { provide: ActivatedRoute, useValue: mockActivatedRoute },
-        { provide: Router, useValue: mockRouter }
+        provideRouter([{ path: '', component: WorkspaceDetailComponent }])
       ]
     })
       .overrideComponent(WorkspaceDetailComponent, {
@@ -110,13 +132,13 @@ xdescribe('WorkspaceDetailComponent', () => {
     apiServiceSpy.updateWorkspace.calls.reset()
     // to spy data: refill with neutral data
     apiServiceSpy.getWorkspaceByName.and.returnValue(of({}))
-  }))
 
-  function initializeComponent(): void {
-    fixture = TestBed.createComponent(WorkspaceDetailComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
-  }
+    // setup router spies based on provided Router instance
+    const router = TestBed.inject(Router)
+    // fake router navigation
+    spyOn(router, 'navigate').and.returnValue(Promise.resolve(true))
+    spyOn(router, 'navigateByUrl').and.returnValue(Promise.resolve(true))
+  }))
 
   beforeEach(() => {
     initializeComponent()
@@ -497,9 +519,11 @@ xdescribe('WorkspaceDetailComponent', () => {
 
   describe('test navigation', () => {
     it('should correctly navigate on onGoToMenu', () => {
+      const router = TestBed.inject(Router)
+      const route = TestBed.inject(ActivatedRoute)
       component.onGoToMenu()
 
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['./menu'], { relativeTo: mockActivatedRoute })
+      expect(router.navigate).toHaveBeenCalledWith(['./menu'], { relativeTo: route })
     })
   })
 })

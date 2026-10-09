@@ -71,7 +71,7 @@ export class OneCXUserAvatarMenuComponent implements ocxRemoteComponent, ocxRemo
   private readonly appConfigService: AppConfigService = inject(AppConfigService)
   private readonly translateService: TranslateService = inject(TranslateService)
   private readonly menuItemService: MenuItemService = inject(MenuItemService)
-  private elementRef = inject(ElementRef)
+  private readonly elementRef = inject(ElementRef)
 
   public menuOpen = signal<boolean>(false)
 

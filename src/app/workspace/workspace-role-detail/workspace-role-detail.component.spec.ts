@@ -123,8 +123,6 @@ describe('WorkspaceRoleDetailComponent', () => {
     expect(component.dataChanged.emit).toHaveBeenCalledWith(false)
   })
 
-  it('should return if formGroup invalid')
-
   it('should delete a workspace role and display success message', () => {
     wRoleServiceSpy.deleteWorkspaceRole.and.returnValue(of({}))
     spyOn(component.dataChanged, 'emit')
