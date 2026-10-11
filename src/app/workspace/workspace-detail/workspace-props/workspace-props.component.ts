@@ -7,7 +7,8 @@ import {
   Output,
   SimpleChanges,
   inject,
-  DestroyRef
+  DestroyRef,
+  ChangeDetectionStrategy
 } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { Location } from '@angular/common'
@@ -41,6 +42,7 @@ export type Theme = {
   selector: 'app-workspace-props',
   standalone: true,
   imports: [SharedModule, ImageComponent, WorkspaceI18nComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './workspace-props.component.html',
   styleUrls: ['./workspace-props.component.scss']
 })
