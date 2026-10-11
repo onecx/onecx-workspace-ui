@@ -27,6 +27,7 @@ import {
 } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
 import { SharedModule } from 'src/app/shared/shared.module'
+import { ImageComponent } from 'src/app/shared/components/image/image.component'
 import { ImageContainerComponent } from 'src/app/shared/components/image-container/image-container.component'
 import { WorkspaceI18nComponent } from '../workspace-i18n/workspace-i18n.component'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
@@ -40,7 +41,7 @@ export type Theme = {
 @Component({
   selector: 'app-workspace-props',
   standalone: true,
-  imports: [SharedModule, ImageContainerComponent, WorkspaceI18nComponent],
+  imports: [SharedModule, ImageComponent, WorkspaceI18nComponent],
   templateUrl: './workspace-props.component.html',
   styleUrls: ['./workspace-props.component.scss']
 })
@@ -174,9 +175,9 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   }
 
   // initially prepare image URL based on workspace
-  public setBffImageUrl(theme: Theme | undefined, refType: RefType): void {
-    if (!theme) return undefined
-    this.bffUrl[refType] = Utils.bffImageUrl(this.imageBasePath, theme.name, refType)
+  public setBffImageUrl(ws: Workspace | undefined, refType: RefType): void {
+    if (!ws) return undefined
+    this.bffUrl[refType] = Utils.bffImageUrl(this.imageBasePath, ws.name, refType)
   }
 
   // UPLOAD

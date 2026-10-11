@@ -138,28 +138,6 @@ describe('WorkspaceCreateComponent', () => {
     expect(console.error).toHaveBeenCalledWith('createWorkspace', errorResponse)
   })
 
-  it('should change fetchingLogoUrl on inputChange', () => {
-    const event = {
-      target: { value: 'newLogoValue' }
-    } as unknown as Event
-
-    component.inputChange(event)
-
-    expect(component.fetchingLogoUrl).toBe('newLogoValue')
-  })
-
-  it('should change fetchingLogoUrl on inputChange: url value', () => {
-    const url = 'https://host/path-to-assets/images/logo.svg'
-    const event = {
-      target: { value: url }
-    } as unknown as Event
-    component.formGroup.controls['name'].setValue('name')
-
-    component.inputChange(event)
-
-    expect(component.fetchingLogoUrl).toBe(url)
-  })
-
   describe('onOpenProductPathes', () => {
     it('should load product urls', () => {
       const products = [{ baseUrl: '/productBaseUrl-1' }, { baseUrl: '/productBaseUrl-2' }]

@@ -48,10 +48,11 @@ import {
   Slot,
   WorkspaceProductAPIService,
   UIEndpoint,
-  SlotComponent
+  SlotComponent,
+  RefType
 } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
-import { ImageContainerComponent } from 'src/app/shared/components/image-container/image-container.component'
+import { ImageComponent } from 'src/app/shared/components/image/image.component'
 import { ProductDeregistrationComponent } from './workspace-product-deregistration/product-deregistration.component'
 
 type ChangeStatus = {
@@ -134,7 +135,7 @@ export function AddMfeModuleFormControl(fb: FormBuilder, modules: FormArray, idx
 @Component({
   selector: 'app-products',
   standalone: true,
-  imports: [CardModule, SharedModule, ImageContainerComponent, ProductDeregistrationComponent],
+  imports: [CardModule, SharedModule, ImageComponent, ProductDeregistrationComponent],
   templateUrl: './products.component.html',
   styleUrls: ['./products.component.scss']
 })
@@ -159,6 +160,8 @@ export class ProductComponent implements OnChanges, OnDestroy {
   public targetFilterValue = '' // workspace
   public displayDeregisterConfirmation = false
   private deregisterItems: ExtendedProduct[] = []
+  public RefType = RefType
+  public imageBasePath = this.imageApi.configuration.basePath
 
   // data
   public wSlots$!: Observable<Slot[]>
@@ -367,19 +370,6 @@ export class ProductComponent implements OnChanges, OnDestroy {
   }
   public sortSlotsByName(a: SlotPS, b: SlotPS): number {
     return (a.name ? a.name.toUpperCase() : '').localeCompare(b.name ? b.name.toUpperCase() : '')
-  }
-
-  public getImageUrl(product?: ExtendedProduct): string | undefined {
-    if (!product) return undefined
-    if (product.imageUrl && product.imageUrl !== '') {
-      return product.imageUrl
-    }
-    /*
-    console.log(
-      'getImageUrl called with product:',
-      Utils.bffProductImageUrl(this.imageApi.configuration.basePath, product.productName)
-    )*/
-    return Utils.bffProductImageUrl(this.imageApi.configuration.basePath, product.productName)
   }
 
   /**************************************************

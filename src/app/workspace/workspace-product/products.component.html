@@ -75,21 +75,23 @@
       <ng-template #sourceFilter>
         <div class="flex align-items-center">
           <p-inputgroup class="p-picklist-filter">
-            <input
-              #psFilter
-              type="text"
-              pInputText
-              id="ws_products_picklist_ps_filter_value"
-              class="text-responsive"
-              (input)="filterProducts(psFilter.value, 'SOURCE')"
-              [attr.aria-label]="'DIALOG.DATAVIEW.FILTER.LABEL' | translate"
-              [pTooltip]="'DIALOG.DATAVIEW.PRODUCT_FILTER_TOOLTIP' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            />
-            <label for="ws_products_picklist_ps_filter_value">
-              {{ 'DIALOG.DATAVIEW.FILTER.LABEL' | translate }}
-            </label>
+            <p-floatlabel variant="on">
+              <input
+                #psFilter
+                type="text"
+                pInputText
+                id="ws_products_picklist_ps_filter_value"
+                class="text-responsive"
+                (input)="filterProducts(psFilter.value, 'SOURCE')"
+                [attr.aria-label]="'DIALOG.DATAVIEW.FILTER.LABEL' | translate"
+                [pTooltip]="'DIALOG.DATAVIEW.PRODUCT_FILTER_TOOLTIP' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+              />
+              <label for="ws_products_picklist_ps_filter_value">
+                {{ 'DIALOG.DATAVIEW.FILTER.LABEL' | translate }}
+              </label>
+            </p-floatlabel>
             <p-inputgroup-addon>
               <p-button
                 id="ws_products_picklist_ps_filter_clear"
@@ -109,22 +111,24 @@
       <ng-template #targetFilter>
         <div class="flex align-items-center">
           <p-inputgroup class="p-picklist-filter">
-            <input
-              #wFilter
-              id="ws_products_picklist_ws_filter_value"
-              class="p-picklist-filter-input p-inputtext p-component"
-              (input)="filterProducts(wFilter.value, 'TARGET')"
-              [ariaLabel]="'DIALOG.DATAVIEW.FILTER.LABEL' | translate"
-              [pTooltip]="'DIALOG.DATAVIEW.PRODUCT_FILTER_TOOLTIP' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            />
-            <label for="ws_products_picklist_ws_filter_value">
-              {{ 'DIALOG.DATAVIEW.FILTER.LABEL' | translate }}
-            </label>
+            <p-floatlabel variant="on">
+              <input
+                #wFilter
+                id="ws_products_picklist_ws_filter_value"
+                class="p-picklist-filter-input p-inputtext p-component"
+                (input)="filterProducts(wFilter.value, 'TARGET')"
+                [ariaLabel]="'DIALOG.DATAVIEW.FILTER.LABEL' | translate"
+                [pTooltip]="'DIALOG.DATAVIEW.PRODUCT_FILTER_TOOLTIP' | translate"
+                tooltipPosition="top"
+                tooltipEvent="hover"
+              />
+              <label for="ws_products_picklist_ws_filter_value">
+                {{ 'DIALOG.DATAVIEW.FILTER.LABEL' | translate }}
+              </label>
+            </p-floatlabel>
             <p-inputgroup-addon>
               <p-button
-                id="ws_products_picklist_ps_filter_clear"
+                id="ws_products_picklist_ws_filter_clear"
                 icon="pi pi-filter-slash"
                 (onClick)="wFilter.value = ''; filterProducts('', 'TARGET')"
                 [disabled]="wFilter.value === ''"
@@ -156,12 +160,19 @@
               class="h-1rem sm:h-2rem md:h-3rem w-1rem sm:w-2rem md:w-3rem flex align-items-center"
               aria-hidden="true"
             >
-              <app-image-container
+              @let pname = product.productName;
+              <app-image
                 [id]="'ws_products_picklist_' + product.productName + '_logo'"
-                [imageUrl]="getImageUrl(product)"
-                [defaultLogoType]="'product'"
                 styleClass="max-h-1rem sm:max-h-2rem md:max-h-3rem max-w-1rem sm:max-w-2rem md:max-w-3rem tile-view-optional border-round-sm"
-              ></app-image-container>
+                [cascadeUse]="!editMode"
+                [item]="{
+                  name: pname,
+                  refType: RefType.Logo,
+                  imageType: 'product',
+                  url: product.imageUrl,
+                  bffUrl: pname ? imageBasePath + '/images/product/' + pname : undefined
+                }"
+              ></app-image>
             </div>
             <div class="flex flex-column row-gap-1">
               <div
@@ -299,12 +310,19 @@
             <!-- IMAGE -->
             <div class="hidden xl:block">
               <div class="h-2rem md:h-3rem md:h-4rem flex align-items-center" aria-hidden="true">
-                <app-image-container
-                  id="ws_products_detail_logo"
-                  [imageUrl]="getImageUrl(displayedDetailItem)"
-                  [defaultLogoType]="'product'"
-                  styleClass="max-h-2rem md:max-h-3rem md:max-h-4rem max-w-3rem md:max-w-4rem md:max-w-5rem border-round-sm"
-                ></app-image-container>
+                @let pname = displayedDetailItem.productName;
+                <app-image
+                  id="ws_detail_props_form_logo_image"
+                  styleClass="max-h-2rem md:max-h-3rem md:max-h-4rem max-w-3rem md:max-w-4rem md:max-w-5rem"
+                  [cascadeUse]="!editMode"
+                  [item]="{
+                    name: pname,
+                    refType: RefType.Logo,
+                    imageType: 'product',
+                    url: displayedDetailItem.imageUrl,
+                    bffUrl: pname ? imageBasePath + '/images/product/' + pname : undefined
+                  }"
+                ></app-image>
               </div>
             </div>
             <!-- LINKS -->

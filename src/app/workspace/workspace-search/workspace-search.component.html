@@ -101,12 +101,19 @@
                 class="p-0 h-3rem sm:h-4rem col-4 sm:col-3 md:col-2 flex justify-content-around align-items-center"
                 aria-hidden="true"
               >
-                <app-image-container
+                @let pname = item.name;
+                <app-image
                   [id]="'ws_search_data_list_row_' + item.name + '_logo'"
-                  styleClass="max-h-3rem max-w-4rem sm:max-w-6rem border-round-sm"
-                  [bffUrl]="Utils.bffImageUrl(imageBasePath, item.name, RefType.Logo)"
-                  [imageUrl]="item.logoUrl"
-                ></app-image-container>
+                  styleClass="max-h-3rem max-w-4rem sm:max-w-6rem"
+                  [cascadeUse]="true"
+                  [item]="{
+                    name: pname,
+                    refType: RefType.Logo,
+                    imageType: 'workspace',
+                    basePath: imageBasePath,
+                    url: item.logoUrl
+                  }"
+                ></app-image>
               </div>
               <div
                 [id]="'ws_search_data_list_row_' + item.name + '_display_name'"
@@ -187,13 +194,19 @@
                 </div>
                 <!-- IMAGE & BADGE -->
                 <div class="relative w-full h-5rem sm:h-10rem px-4 flex justify-content-center align-items-center">
-                  <app-image-container
-                    [id]="'ws_search_data_grid_row_' + item.name + '_logo'"
-                    styleClass="max-h-5rem sm:max-h-10rem p-2 border-round-sm"
-                    [bffUrl]="Utils.bffImageUrl(imageBasePath, item.name, RefType.Logo)"
-                    [imageUrl]="item.logoUrl"
-                    aria-hidden="true"
-                  ></app-image-container>
+                  @let pname = item.name;
+                  <app-image
+                    [id]="'ws_search_data_card_row_' + item.name + '_logo'"
+                    styleClass="p-2 max-h-5rem sm:max-h-10rem"
+                    [cascadeUse]="true"
+                    [item]="{
+                      name: pname,
+                      refType: RefType.Logo,
+                      imageType: 'workspace',
+                      basePath: imageBasePath,
+                      url: item.logoUrl
+                    }"
+                  ></app-image>
                   <!-- BADGES -->
                   @if (item.disabled) {
                     <div

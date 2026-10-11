@@ -295,14 +295,19 @@
     >
       {{ 'IMAGE.LOGO' | translate }}
     </section>
-    <app-image-container
+    <app-image
       id="ws_detail_props_form_logo_image"
-      styleClass="max-h-3rem max-w-5rem border-round-sm"
-      [bffUrl]="bffUrl[RefType.Logo]"
-      [imageUrl]="propsForm.controls['logoUrl'].value"
+      styleClass="max-h-3rem max-w-5rem"
       [cascadeUse]="!editMode"
+      [item]="{
+        name: workspace?.name,
+        refType: RefType.Logo,
+        imageType: 'workspace',
+        basePath: imageBasePath,
+        url: propsForm.controls['logoUrl'].value
+      }"
       (imageLoadResult)="onImageLoadResult($event, RefType.Logo, propsForm.controls['logoUrl'].value)"
-    ></app-image-container>
+    ></app-image>
     <p-button
       *ocxIfPermission="'WORKSPACE#EDIT'"
       id="ws_detail_props_item_remove_logo"
@@ -385,14 +390,19 @@
     >
       {{ 'IMAGE.LOGO_SMALL' | translate }}
     </section>
-    <app-image-container
+    <app-image
       id="ws_detail_props_form_logo_small_image"
-      styleClass="max-h-3rem max-w-5rem border-round-sm"
-      [bffUrl]="bffUrl[RefType.LogoSmall]"
-      [imageUrl]="propsForm.controls['smallLogoUrl'].value"
+      styleClass="max-h-3rem max-w-5rem"
       [cascadeUse]="!editMode"
+      [item]="{
+        name: workspace?.name,
+        refType: RefType.LogoSmall,
+        imageType: 'workspace',
+        basePath: imageBasePath,
+        url: propsForm.controls['smallLogoUrl'].value
+      }"
       (imageLoadResult)="onImageLoadResult($event, RefType.LogoSmall, propsForm.controls['smallLogoUrl'].value)"
-    ></app-image-container>
+    ></app-image>
     <p-button
       *ocxIfPermission="'WORKSPACE#EDIT'"
       id="ws_detail_props_item_remove_logo_small"

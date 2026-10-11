@@ -32,6 +32,8 @@ export class ImageContainerComponent {
   public readonly imageUrl = input<string | undefined>() // external URL
   public readonly cascadeUse = input<boolean>(true) // if false then only the default logo is used if loading failed
   public readonly defaultLogoType = input<'workspace' | 'product' | undefined>()
+  public readonly logPrefix = input<string | undefined>(undefined)
+  public readonly logEnabled = input<boolean>(false)
   // output
   public readonly imageLoadResult = output<boolean>() // inform caller
 
@@ -56,6 +58,7 @@ export class ImageContainerComponent {
       const imageUrl = this.imageUrl()
       const bffUrl = this.bffUrl()
       const defaultUrl = this.defaultImageUrl()
+      this.log('Image effect: ' + imageUrl + ', BFF URL: ' + bffUrl + ', defaultUrl: ' + defaultUrl)
       if (imageUrl) {
         if (/^(http|https):\/\/.{6,245}$/.exec(imageUrl)) {
           this._url.set(imageUrl)
@@ -78,6 +81,7 @@ export class ImageContainerComponent {
    * Emit image loading results
    */
   public onImageLoadSuccess(): void {
+    this.log('Image load success. URL type: ' + this.urlType + ', URL: ' + this.url())
     if (this.url() !== undefined && this.url() !== this.defaultImageUrl()) {
       this.imageLoadResult.emit(true)
     }
@@ -85,6 +89,7 @@ export class ImageContainerComponent {
 
   // on loading error switch URL
   public onImageLoadError(): void {
+    this.log('Image load error occurred. URL type: ' + this.urlType + ', URL: ' + this.url())
     if (this.url() !== undefined) this.imageLoadResult.emit(false)
 
     // using ext-url not possible, use bff URL
@@ -101,5 +106,9 @@ export class ImageContainerComponent {
       this._url.set(this.defaultImageUrl())
       this.urlType = 'def-url'
     }
+  }
+
+  private log(text: string) {
+    if (this.logEnabled()) console.info('image-container: ' + (this.logPrefix() ?? '') + ' => ' + text)
   }
 }

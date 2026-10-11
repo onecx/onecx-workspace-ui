@@ -923,26 +923,6 @@ describe('ProductComponent', () => {
     })
   })
 
-  describe('image', () => {
-    it('should return imageUrl path', () => {
-      const result = component.getImageUrl({ imageUrl: '/url' } as ExtendedProduct)
-
-      expect(result).toBe('/url')
-    })
-
-    it('should return imageUrl path', () => {
-      const result = component.getImageUrl()
-
-      expect(result).toBeUndefined()
-    })
-
-    it('should return uploaded imageUrl', () => {
-      const result = component.getImageUrl({ productName: 'product' } as ExtendedProduct)
-
-      expect(result).toBe('http://onecx-workspace-bff:8080/images/product/product')
-    })
-  })
-
   /**
    * UI Events
    */

@@ -121,11 +121,15 @@
         </div>
 
         <div class="flex flex-wrap sm:flex-nowrap align-items-center row-gap-2 column-gap-4">
-          <app-image-container
+          <app-image
             [id]="'ws_create_form_logo_image'"
-            [imageUrl]="fetchingLogoUrl"
-            styleClass="max-h-3rem max-w-4rem border-round-sm"
-          ></app-image-container>
+            styleClass="max-h-3rem max-w-4rem"
+            [item]="{
+              refType: RefType.Logo,
+              imageType: 'workspace',
+              url: formGroup.controls['logoUrl'].value
+            }"
+          ></app-image>
           <p-floatlabel variant="on" class="w-full">
             <input
               pInputText
@@ -133,7 +137,6 @@
               id="ws_create_form_logo"
               class="w-full pt-3 pb-2"
               formControlName="logoUrl"
-              (blur)="inputChange($event)"
               [attr.aria-label]="'IMAGE.LOGO_URL' | translate"
               [pTooltip]="'IMAGE.TOOLTIPS.URL' | translate"
               tooltipPosition="top"

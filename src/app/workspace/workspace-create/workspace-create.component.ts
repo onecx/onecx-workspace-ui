@@ -8,9 +8,9 @@ import { SlotService } from '@onecx/angular-remote-components'
 import { PortalMessageService, ThemeService } from '@onecx/angular-integration-interface'
 
 import { Utils } from 'src/app/shared/utils'
-import { WorkspaceAPIService, ProductAPIService } from 'src/app/shared/generated'
+import { WorkspaceAPIService, ProductAPIService, RefType } from 'src/app/shared/generated'
 import { SharedModule } from 'src/app/shared/shared.module'
-import { ImageContainerComponent } from 'src/app/shared/components/image-container/image-container.component'
+import { ImageComponent } from 'src/app/shared/components/image/image.component'
 
 export type Theme = {
   name: string
@@ -22,7 +22,7 @@ export type Theme = {
 @Component({
   selector: 'app-workspace-create',
   standalone: true,
-  imports: [SharedModule, ImageContainerComponent],
+  imports: [SharedModule, ImageComponent],
   templateUrl: './workspace-create.component.html',
   styleUrls: ['./workspace-create.component.scss']
 })
@@ -39,12 +39,12 @@ export class WorkspaceCreateComponent implements OnInit {
   @Input() displayDialog = false
   @Output() toggleCreationDialogEvent = new EventEmitter()
 
+  public RefType = RefType
   public productPaths$: Observable<string[]> = of([])
   public formGroup: FormGroup
   public selectedLogoFile: File | undefined
   public minimumImageWidth = 150
   public minimumImageHeight = 150
-  public fetchingLogoUrl?: string
   public currentTheme$: Observable<Theme>
 
   // slot configuration: get theme infos
@@ -64,7 +64,11 @@ export class WorkspaceCreateComponent implements OnInit {
       displayName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
       theme: new FormControl(null, [Validators.required]),
       homePage: new FormControl(null, [Validators.maxLength(255)]),
-      logoUrl: new FormControl(null, [Validators.minLength(2), Validators.maxLength(255), Validators.pattern('^/.*')]),
+      logoUrl: new FormControl(null, [
+        Validators.minLength(2),
+        Validators.maxLength(255),
+        Validators.pattern('^(http|https)://.{6,245}')
+      ]),
       baseUrl: new FormControl(null, [
         Validators.required,
         Validators.minLength(2),
@@ -82,7 +86,6 @@ export class WorkspaceCreateComponent implements OnInit {
 
   public closeDialog(): void {
     this.formGroup.reset()
-    this.fetchingLogoUrl = undefined
     this.selectedLogoFile = undefined
     this.toggleCreationDialogEvent.emit()
   }
@@ -104,10 +107,6 @@ export class WorkspaceCreateComponent implements OnInit {
           console.error('createWorkspace', err)
         }
       })
-  }
-
-  inputChange(event: Event) {
-    this.fetchingLogoUrl = (event.target as HTMLInputElement).value
   }
 
   public onOpenProductPathes(paths: string[]) {

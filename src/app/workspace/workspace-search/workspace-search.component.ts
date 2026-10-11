@@ -33,7 +33,7 @@ import {
   WorkspaceAbstract
 } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
-import { ImageContainerComponent } from 'src/app/shared/components/image-container/image-container.component'
+import { ImageComponent } from 'src/app/shared/components/image/image.component'
 import { WorkspaceCreateComponent } from '../workspace-create/workspace-create.component'
 import { WorkspaceImportComponent } from '../workspace-import/workspace-import.component'
 
@@ -56,7 +56,7 @@ import { WorkspaceImportComponent } from '../workspace-import/workspace-import.c
     PortalPageComponent,
     WorkspaceCreateComponent,
     WorkspaceImportComponent,
-    ImageContainerComponent
+    ImageComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './workspace-search.component.html',
@@ -111,8 +111,10 @@ export class WorkspaceSearchComponent implements OnInit {
       ])
     )
   public readonly actions = toSignal(this.actions$, { initialValue: [] as Action[] })
+  public Utils = Utils
   public RefType = RefType
   public getLocation = getLocation
+  public imageBasePath = this.imageApi.configuration.basePath
   // data
   public workspaces$!: Observable<Workspace[]>
   public currentWorkspaceName: string | undefined
@@ -123,8 +125,6 @@ export class WorkspaceSearchComponent implements OnInit {
   public sortColumnKeys = this.sortColumns.map((c) => c.id)
   public sortDirection: DataSortDirection = DataSortDirection.ASCENDING
   public sortField = 'displayName'
-  public Utils = Utils
-  public imageBasePath = this.imageApi.configuration.basePath
 
   constructor() {
     this.appState.currentWorkspace$.asObservable().subscribe((workspace) => {
