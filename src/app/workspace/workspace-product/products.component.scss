@@ -44,7 +44,7 @@
     }
 
     // header bar (count + reload button): primary background, centered
-    .p-listbox-header:has([id$='_load']) {
+    .p-listbox-header:has([id$='_reload']) {
       padding: 0;
       text-align: center;
       color: var(--onecx-workspace-onecx-workspace-ui-listbox-color);
