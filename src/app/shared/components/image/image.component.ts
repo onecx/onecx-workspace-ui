@@ -1,14 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  effect,
-  inject,
-  input,
-  linkedSignal,
-  output,
-  signal
-} from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject, input, linkedSignal, output } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 
 import { TooltipModule } from 'primeng/tooltip'

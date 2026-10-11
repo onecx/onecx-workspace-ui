@@ -9,6 +9,7 @@ import {
   inject,
   DestroyRef
 } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { Location } from '@angular/common'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { BehaviorSubject, map, Observable, of, ReplaySubject } from 'rxjs'
@@ -28,9 +29,7 @@ import {
 import { Utils } from 'src/app/shared/utils'
 import { SharedModule } from 'src/app/shared/shared.module'
 import { ImageComponent } from 'src/app/shared/components/image/image.component'
-import { ImageContainerComponent } from 'src/app/shared/components/image-container/image-container.component'
 import { WorkspaceI18nComponent } from '../workspace-i18n/workspace-i18n.component'
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 
 export type Theme = {
   name: string
