@@ -1,4 +1,5 @@
 import { FormGroup, FormControl } from '@angular/forms'
+import { Router } from '@angular/router'
 import { SelectItem } from 'primeng/api'
 import { of, throwError } from 'rxjs'
 
@@ -292,6 +293,41 @@ describe('util functions', () => {
         const result = Utils.bffImageUrl('http://example.com', 'imageName', 'refTypeTest' as RefType)
         expect(result).toBe('http://example.com/images/imageName/refTypeTest')
       })
+    })
+  })
+
+  describe('navigate', () => {
+    let routerMock: jasmine.SpyObj<Router>
+    let windowOpenSpy: jasmine.Spy
+
+    beforeEach(() => {
+      routerMock = jasmine.createSpyObj('Router', ['navigate', 'createUrlTree', 'serializeUrl'])
+      windowOpenSpy = spyOn(window, 'open')
+      routerMock.serializeUrl.and.returnValue('/route')
+    })
+
+    it('should navigate in the same window when target is not _blank', () => {
+      const event = document.createEvent('Event')
+      spyOn(event, 'preventDefault')
+
+      Utils.navigate(routerMock, event, 'route')
+
+      expect(event.preventDefault).toHaveBeenCalled()
+      expect(routerMock.navigate).toHaveBeenCalledWith(['route'])
+      expect(windowOpenSpy).not.toHaveBeenCalled()
+    })
+
+    it('should open the route in a new tab when target is _blank', () => {
+      const event = document.createEvent('Event')
+      spyOn(event, 'preventDefault')
+
+      Utils.navigate(routerMock, event, 'route', '_blank')
+
+      expect(event.preventDefault).toHaveBeenCalled()
+      expect(routerMock.createUrlTree).toHaveBeenCalledWith(['route'])
+      expect(routerMock.serializeUrl).toHaveBeenCalled()
+      expect(windowOpenSpy).toHaveBeenCalledWith('/route', '_blank')
+      expect(routerMock.navigate).not.toHaveBeenCalled()
     })
   })
 

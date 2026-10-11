@@ -1,12 +1,8 @@
+import { Component, EventEmitter, Input, inject } from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
-import { HttpClient } from '@angular/common/http'
-import { APP_INITIALIZER, Component, EventEmitter, Inject, Input, inject } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
-import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
-import { AccordionModule } from 'primeng/accordion'
-import { MenuItem, PrimeIcons } from 'primeng/api'
-import { PanelMenuModule } from 'primeng/panelmenu'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import {
   Observable,
   ReplaySubject,
@@ -20,17 +16,19 @@ import {
   withLatestFrom
 } from 'rxjs'
 
-import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
+import { AccordionModule } from 'primeng/accordion'
+import { MenuItem, PrimeIcons } from 'primeng/api'
+import { PanelMenuModule } from 'primeng/panelmenu'
+
 import { AppConfigService, AppStateService, UserService } from '@onecx/angular-integration-interface'
 import {
   AngularRemoteComponentsModule,
-  BASE_URL,
+  REMOTE_COMPONENT_CONFIG,
   RemoteComponentConfig,
   SLOT_SERVICE,
   SlotService,
   ocxRemoteComponent,
-  ocxRemoteWebcomponent,
-  provideTranslateServiceForRoot
+  ocxRemoteWebcomponent
 } from '@onecx/angular-remote-components'
 import { EventsPublisher, UserProfile } from '@onecx/integration-interface'
 
@@ -44,6 +42,7 @@ export function slotInitializer(slotService: SlotService) {
 }
 
 const MENU_MODE = 'static'
+
 @Component({
   selector: 'app-user-sidebar-menu',
   standalone: true,
@@ -55,37 +54,20 @@ const MENU_MODE = 'static'
     TranslateModule,
     PanelMenuModule
   ],
-
-  providers: [
-    AppConfigService,
-    {
-      provide: BASE_URL,
-      useValue: new ReplaySubject<string>(1)
-    },
-    provideTranslateServiceForRoot({
-      isolate: true,
-      loader: {
-        provide: TranslateLoader,
-        useFactory: createRemoteComponentTranslateLoader,
-        deps: [HttpClient, BASE_URL]
-      }
-    }),
-    {
-      provide: APP_INITIALIZER,
-      useFactory: slotInitializer,
-      deps: [SLOT_SERVICE],
-      multi: true
-    },
-    {
-      provide: SLOT_SERVICE,
-      useExisting: SlotService
-    }
-  ],
+  providers: [{ provide: SLOT_SERVICE, useExisting: SlotService }],
   templateUrl: './user-sidebar-menu.component.html',
   styleUrls: ['./user-sidebar-menu.component.scss']
 })
 @UntilDestroy()
 export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
+  private readonly remoteComponentConfig = inject<ReplaySubject<RemoteComponentConfig>>(REMOTE_COMPONENT_CONFIG)
+  private readonly translateService = inject(TranslateService)
+  private readonly appConfigService = inject(AppConfigService)
+  private readonly appStateService = inject(AppStateService)
+  private readonly menuItemApiService = inject(MenuItemAPIService)
+  private readonly userService = inject(UserService)
+  private readonly menuItemService = inject(MenuItemService)
+
   public currentUser$: Observable<UserProfile>
   public userMenu$: Observable<MenuItem[]>
   public displayName$: Observable<string>
@@ -103,15 +85,7 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent, ocxRem
     .pipe(map((isVisible) => !isVisible))
     .pipe(untilDestroyed(this))
 
-  constructor(
-    @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
-    private readonly translateService: TranslateService,
-    private readonly appConfigService: AppConfigService,
-    private readonly appStateService: AppStateService,
-    private readonly menuItemApiService: MenuItemAPIService,
-    private readonly userService: UserService,
-    private readonly menuItemService: MenuItemService
-  ) {
+  constructor() {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
     this.avatarImageLoadedEmitter.subscribe(this.avatarImageLoaded)
     this.avatarImageLoadedEmitter.subscribe((data: boolean) => {
@@ -191,7 +165,7 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent, ocxRem
   }
 
   ocxInitRemoteComponent(config: RemoteComponentConfig): void {
-    this.baseUrl.next(config.baseUrl)
+    this.remoteComponentConfig.next(config)
     this.appConfigService.init(config.baseUrl)
     this.menuItemApiService.configuration = new Configuration({
       basePath: Location.joinWithSlash(config.baseUrl, environment.apiPrefix)

@@ -1,72 +1,91 @@
-import { TestBed } from '@angular/core/testing'
-import { CommonModule } from '@angular/common'
+import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
-import { provideRouter, Router, RouterModule } from '@angular/router'
-import { NoopAnimationsModule } from '@angular/platform-browser/animations'
+import { provideRouter, Router } from '@angular/router'
+import { provideNoopAnimations } from '@angular/platform-browser/animations'
 import { TranslateTestingModule } from 'ngx-translate-testing'
-import { ReplaySubject, of, throwError } from 'rxjs'
-import { PanelMenuModule } from 'primeng/panelmenu'
+import { firstValueFrom, of, throwError } from 'rxjs'
+
 import { PrimeIcons } from 'primeng/api'
 
-import { PPanelMenuHarness } from '@onecx/angular-testing'
 import { AppStateService, Capability } from '@onecx/angular-integration-interface'
-import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
-
-import { MenuItemAPIService } from 'src/app/shared/generated'
-import { OneCXVerticalMainMenuComponent } from './vertical-main-menu.component'
+import { RemoteComponentConfig } from '@onecx/angular-remote-components'
 import {
   FakeTopic,
+  provideAppConfigServiceMock,
+  provideAppStateServiceMock,
   provideShellCapabilityServiceMock,
+  provideUserServiceMock,
   ShellCapabilityServiceMock
 } from '@onecx/angular-integration-interface/mocks'
+
+import { MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuService } from 'src/app/shared/services/menu.service'
+import { OneCXVerticalMainMenuComponent } from './vertical-main-menu.component'
+import { PanelMenuHarness } from './vertical-main-menu.component.harness'
 
 describe('OneCXVerticalMainMenuComponent', () => {
-  const menuItemApiSpy = jasmine.createSpyObj<MenuItemAPIService>('MenuItemAPIService', ['getMenuItems'])
   const menuServiceSpy = jasmine.createSpyObj<MenuService>('MenuService', ['isVisible', 'isActive'])
 
+  const menuResponse = (children: any[]) =>
+    ({
+      workspaceName: 'test-workspace',
+      menu: [{ key: 'PORTAL_MAIN_MENU', name: 'Main Menu', children }]
+    }) as any
+
+  // Tests install their spies (workspace / mfe / location / getMenuItems) and then call ngOnInit
+  // explicitly, so the menu pipeline always runs against the mocked services. The initial
+  // detectChanges() is crucial: it subscribes the template's async pipe (menuItems$) to the stable
+  // BehaviorSubject BEFORE ngOnInit emits the value, so the OnPush <p-panelMenu> re-checks [model]
+  // and renders (mirrors horizontal-main-menu). Without it the async pipe never picks up the value.
   function setUp() {
     const fixture = TestBed.createComponent(OneCXVerticalMainMenuComponent)
     const component = fixture.componentInstance
     fixture.detectChanges()
-
     return { fixture, component }
   }
 
-  let baseUrlSubject: ReplaySubject<any>
+  // MenuItemAPIService is providedIn 'any', so the component holds its own instance and a
+  // root-level provider would be shadowed - spy the actual instance it uses.
+  function spyGetMenuItems(component: OneCXVerticalMainMenuComponent): jasmine.Spy {
+    return spyOn(
+      (component as unknown as { menuItemApiService: MenuItemAPIService }).menuItemApiService,
+      'getMenuItems'
+    )
+  }
+
+  // Flush change detection so the async pipes (menuItems$) render after ngOnInit emits.
+  async function flush(fixture: ComponentFixture<OneCXVerticalMainMenuComponent>): Promise<void> {
+    fixture.detectChanges()
+    await fixture.whenStable()
+    fixture.detectChanges()
+  }
+
   beforeEach(() => {
-    baseUrlSubject = new ReplaySubject<any>(1)
     TestBed.configureTestingModule({
-      declarations: [],
       imports: [
+        OneCXVerticalMainMenuComponent,
         TranslateTestingModule.withTranslations({
-          en: require('../../../assets/i18n/en.json')
-        }).withDefaultLanguage('en'),
-        NoopAnimationsModule
+          de: require('src/assets/i18n/de.json'),
+          en: require('src/assets/i18n/en.json')
+        }).withDefaultLanguage('en')
       ],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        { provide: BASE_URL, useValue: baseUrlSubject },
+        provideNoopAnimations(),
         provideRouter([{ path: 'admin/welcome', component: OneCXVerticalMainMenuComponent }]),
+        provideAppConfigServiceMock(),
+        provideUserServiceMock(),
+        provideAppStateServiceMock(),
         provideShellCapabilityServiceMock(),
         { provide: MenuService, useValue: menuServiceSpy }
       ]
     })
-      .overrideComponent(OneCXVerticalMainMenuComponent, {
-        set: {
-          imports: [TranslateTestingModule, CommonModule, RouterModule, PanelMenuModule],
-          providers: [{ provide: MenuItemAPIService, useValue: menuItemApiSpy }]
-        }
-      })
-      .compileComponents()
 
-    baseUrlSubject.next('base_url_mock')
     menuServiceSpy.isActive.and.returnValue(of(true))
     menuServiceSpy.isVisible.and.returnValue(of(true))
-    menuItemApiSpy.getMenuItems.calls.reset()
     ShellCapabilityServiceMock.setCapabilities([Capability.CURRENT_LOCATION_TOPIC])
   })
 
@@ -98,70 +117,55 @@ describe('OneCXVerticalMainMenuComponent', () => {
     expect(component.ocxInitRemoteComponent).toHaveBeenCalledWith(mockConfig)
   })
 
-  it('should init remote component', (done: DoneFn) => {
+  it('should init remote component', async () => {
     const { component } = setUp()
 
-    component.ocxInitRemoteComponent({
-      baseUrl: 'base_url'
-    } as RemoteComponentConfig)
+    component.ocxInitRemoteComponent({ baseUrl: 'base_url' } as RemoteComponentConfig)
 
-    expect(menuItemApiSpy.configuration.basePath).toEqual('base_url/bff')
-    baseUrlSubject.asObservable().subscribe((item) => {
-      expect(item).toEqual('base_url')
-      done()
-    })
+    // The component re-bases its own API service and pushes the config to its own rc token.
+    const api = (component as unknown as { menuItemApiService: MenuItemAPIService }).menuItemApiService
+    expect(api.configuration.basePath).toEqual('base_url/bff')
+    expect((await firstValueFrom(component['remoteComponentConfig']))?.baseUrl).toEqual('base_url')
   })
 
   it('should render menu in correct positions', async () => {
     const appStateService = TestBed.inject(AppStateService)
     spyOn(appStateService.currentWorkspace$, 'asObservable').and.returnValue(
-      of({
-        workspaceName: 'test-workspace'
-      }) as any
+      of({ workspaceName: 'test-workspace' }) as any
     )
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(of({} as any))
-    menuItemApiSpy.getMenuItems.and.returnValue(
-      of({
-        workspaceName: 'test-workspace',
-        menu: [
-          {
-            key: 'PORTAL_MAIN_MENU',
-            name: 'Main Menu',
-            children: [
-              {
-                key: 'CORE_WELCOME',
-                name: 'Welcome Page',
-                url: '/admin/welcome',
-                position: 1,
-                external: false,
-                i18n: {},
-                children: []
-              },
-              {
-                key: 'CORE_AH_MGMT',
-                name: 'Announcement & Help',
-                url: '/announcementAndHelpUrl',
-                position: 0,
-                external: false,
-                i18n: {},
-                children: []
-              }
-            ]
-          }
-        ]
-      } as any)
-    )
 
     const { fixture, component } = setUp()
-    spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(
-      of({
-        url: 'page-url',
-        isFirst: true
-      })
+    spyGetMenuItems(component).and.returnValue(
+      of(
+        menuResponse([
+          {
+            key: 'CORE_WELCOME',
+            name: 'Welcome Page',
+            url: '/admin/welcome',
+            position: 1,
+            external: false,
+            i18n: {},
+            children: []
+          },
+          {
+            key: 'CORE_AH_MGMT',
+            name: 'Announcement & Help',
+            url: '/announcementAndHelpUrl',
+            position: 0,
+            external: false,
+            i18n: {},
+            children: []
+          }
+        ])
+      )
     )
-    await component.ngOnInit()
+    spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(of({ url: 'page-url', isFirst: true }))
 
-    const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PPanelMenuHarness)
+    await component.ngOnInit()
+    await flush(fixture)
+
+    const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PanelMenuHarness)
     const panels = await menu.getAllPanels()
     expect(panels.length).toEqual(2)
 
@@ -172,47 +176,35 @@ describe('OneCXVerticalMainMenuComponent', () => {
   it('should use translations whenever i18n translation is provided', async () => {
     const appStateService = TestBed.inject(AppStateService)
     spyOn(appStateService.currentWorkspace$, 'asObservable').and.returnValue(
-      of({
-        workspaceName: 'test-workspace'
-      }) as any
+      of({ workspaceName: 'test-workspace' }) as any
     )
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(of({} as any))
-    menuItemApiSpy.getMenuItems.and.returnValue(
-      of({
-        workspaceName: 'test-workspace',
-        menu: [
-          {
-            key: 'PORTAL_MAIN_MENU',
-            name: 'Main Menu',
-            children: [
-              {
-                key: 'CORE_WELCOME',
-                name: 'Welcome Page',
-                url: '/admin/welcome',
-                position: 1,
-                external: false,
-                i18n: {
-                  en: 'English welcome page',
-                  de: 'German welcome page'
-                },
-                children: []
-              }
-            ]
-          }
-        ]
-      } as any)
-    )
 
     const { fixture, component } = setUp()
-    spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(
-      of({
-        url: 'page-url',
-        isFirst: true
-      })
+    spyGetMenuItems(component).and.returnValue(
+      of(
+        menuResponse([
+          {
+            key: 'CORE_WELCOME',
+            name: 'Welcome Page',
+            url: '/admin/welcome',
+            position: 1,
+            external: false,
+            i18n: {
+              en: 'English welcome page',
+              de: 'German welcome page'
+            },
+            children: []
+          }
+        ])
+      )
     )
-    await component.ngOnInit()
+    spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(of({ url: 'page-url', isFirst: true }))
 
-    const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PPanelMenuHarness)
+    await component.ngOnInit()
+    await flush(fixture)
+
+    const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PanelMenuHarness)
     const panels = await menu.getAllPanels()
     expect(panels.length).toEqual(1)
 
@@ -222,44 +214,32 @@ describe('OneCXVerticalMainMenuComponent', () => {
   it('should display icon if provided', async () => {
     const appStateService = TestBed.inject(AppStateService)
     spyOn(appStateService.currentWorkspace$, 'asObservable').and.returnValue(
-      of({
-        workspaceName: 'test-workspace'
-      }) as any
+      of({ workspaceName: 'test-workspace' }) as any
     )
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(of({} as any))
-    menuItemApiSpy.getMenuItems.and.returnValue(
-      of({
-        workspaceName: 'test-workspace',
-        menu: [
-          {
-            key: 'PORTAL_MAIN_MENU',
-            name: 'Main Menu',
-            children: [
-              {
-                key: 'CORE_WELCOME',
-                name: 'Welcome Page',
-                url: '/admin/welcome',
-                position: 0,
-                badge: 'home',
-                external: false,
-                children: []
-              }
-            ]
-          }
-        ]
-      } as any)
-    )
 
     const { fixture, component } = setUp()
-    spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(
-      of({
-        url: 'page-url',
-        isFirst: true
-      })
+    spyGetMenuItems(component).and.returnValue(
+      of(
+        menuResponse([
+          {
+            key: 'CORE_WELCOME',
+            name: 'Welcome Page',
+            url: '/admin/welcome',
+            position: 0,
+            badge: 'home',
+            external: false,
+            children: []
+          }
+        ])
+      )
     )
-    await component.ngOnInit()
+    spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(of({ url: 'page-url', isFirst: true }))
 
-    const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PPanelMenuHarness)
+    await component.ngOnInit()
+    await flush(fixture)
+
+    const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PanelMenuHarness)
     const panels = await menu.getAllPanels()
     expect(panels.length).toEqual(1)
 
@@ -269,44 +249,32 @@ describe('OneCXVerticalMainMenuComponent', () => {
   it('should use routerLink for local urls', async () => {
     const appStateService = TestBed.inject(AppStateService)
     spyOn(appStateService.currentWorkspace$, 'asObservable').and.returnValue(
-      of({
-        workspaceName: 'test-workspace'
-      }) as any
+      of({ workspaceName: 'test-workspace' }) as any
     )
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(of({} as any))
-    menuItemApiSpy.getMenuItems.and.returnValue(
-      of({
-        workspaceName: 'test-workspace',
-        menu: [
-          {
-            key: 'PORTAL_MAIN_MENU',
-            name: 'Main Menu',
-            children: [
-              {
-                key: 'CORE_WELCOME',
-                name: 'Welcome Page',
-                url: '/admin/welcome',
-                position: 0,
-                external: false,
-                children: []
-              }
-            ]
-          }
-        ]
-      } as any)
-    )
-    const router = TestBed.inject(Router)
 
     const { fixture, component } = setUp()
-    spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(
-      of({
-        url: 'page-url',
-        isFirst: true
-      })
+    spyGetMenuItems(component).and.returnValue(
+      of(
+        menuResponse([
+          {
+            key: 'CORE_WELCOME',
+            name: 'Welcome Page',
+            url: '/admin/welcome',
+            position: 0,
+            external: false,
+            children: []
+          }
+        ])
+      )
     )
-    await component.ngOnInit()
+    spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(of({ url: 'page-url', isFirst: true }))
+    const router = TestBed.inject(Router)
 
-    const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PPanelMenuHarness)
+    await component.ngOnInit()
+    await flush(fixture)
+
+    const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PanelMenuHarness)
     const panels = await menu.getAllPanels()
     expect(panels.length).toEqual(1)
     await panels[0].click()
@@ -316,43 +284,31 @@ describe('OneCXVerticalMainMenuComponent', () => {
   it('should use href for external urls', async () => {
     const appStateService = TestBed.inject(AppStateService)
     spyOn(appStateService.currentWorkspace$, 'asObservable').and.returnValue(
-      of({
-        workspaceName: 'test-workspace'
-      }) as any
+      of({ workspaceName: 'test-workspace' }) as any
     )
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(of({} as any))
-    menuItemApiSpy.getMenuItems.and.returnValue(
-      of({
-        workspaceName: 'test-workspace',
-        menu: [
-          {
-            key: 'PORTAL_MAIN_MENU',
-            name: 'Main Menu',
-            children: [
-              {
-                key: 'Google',
-                name: 'Go to google',
-                url: 'https://www.google.com/',
-                position: 0,
-                external: true,
-                children: []
-              }
-            ]
-          }
-        ]
-      } as any)
-    )
 
     const { fixture, component } = setUp()
-    spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(
-      of({
-        url: 'page-url',
-        isFirst: true
-      })
+    spyGetMenuItems(component).and.returnValue(
+      of(
+        menuResponse([
+          {
+            key: 'Google',
+            name: 'Go to google',
+            url: 'https://www.google.com/',
+            position: 0,
+            external: true,
+            children: []
+          }
+        ])
+      )
     )
-    await component.ngOnInit()
+    spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(of({ url: 'page-url', isFirst: true }))
 
-    const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PPanelMenuHarness)
+    await component.ngOnInit()
+    await flush(fixture)
+
+    const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PanelMenuHarness)
     const panels = await menu.getAllPanels()
     expect(panels.length).toEqual(1)
     expect(await panels[0].getLink()).toBe('https://www.google.com/')
@@ -361,72 +317,61 @@ describe('OneCXVerticalMainMenuComponent', () => {
   it('should render submenus', async () => {
     const appStateService = TestBed.inject(AppStateService)
     spyOn(appStateService.currentWorkspace$, 'asObservable').and.returnValue(
-      of({
-        workspaceName: 'test-workspace'
-      }) as any
+      of({ workspaceName: 'test-workspace' }) as any
     )
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(of({} as any))
-    menuItemApiSpy.getMenuItems.and.returnValue(
-      of({
-        workspaceName: 'test-workspace',
-        menu: [
+
+    const { fixture, component } = setUp()
+    spyGetMenuItems(component).and.returnValue(
+      of(
+        menuResponse([
           {
-            key: 'PORTAL_MAIN_MENU',
-            name: 'Main Menu',
+            key: 'CORE_WELCOME',
+            name: 'Welcome Page',
+            url: '/admin/welcome',
+            position: 0,
+            external: false,
+            i18n: {},
+            children: []
+          },
+          {
+            key: 'CORE_AH_MGMT',
+            name: 'Announcement & Help',
+            url: 'page-url',
+            position: 1,
+            external: false,
+            i18n: {},
             children: [
               {
-                key: 'CORE_WELCOME',
-                name: 'Welcome Page',
-                url: '/admin/welcome',
-                position: 0,
+                key: 'CORE_AH_MGMT_A',
+                name: 'Announcements',
+                url: '/admin/announcement',
+                position: 1,
                 external: false,
                 i18n: {},
                 children: []
               },
               {
-                key: 'CORE_AH_MGMT',
-                name: 'Announcement & Help',
-                url: 'page-url',
-                position: 1,
+                key: 'CORE_AH_MGMT_HI',
+                name: 'Help Items',
+                url: '/admin/help',
+                position: 2,
                 external: false,
                 i18n: {},
-                children: [
-                  {
-                    key: 'CORE_AH_MGMT_A',
-                    name: 'Announcements',
-                    url: '/admin/announcement',
-                    position: 1,
-                    external: false,
-                    i18n: {},
-                    children: []
-                  },
-                  {
-                    key: 'CORE_AH_MGMT_HI',
-                    name: 'Help Items',
-                    url: '/admin/help',
-                    position: 2,
-                    external: false,
-                    i18n: {},
-                    children: []
-                  }
-                ]
+                children: []
               }
             ]
           }
-        ]
-      } as any)
+        ])
+      )
     )
+    // A child of the group is active, so the group (its parent) is expanded and its items render.
+    spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(of({ url: '/admin/help', isFirst: true }))
 
-    const { fixture, component } = setUp()
-    spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(
-      of({
-        url: 'page-url',
-        isFirst: true
-      })
-    )
     await component.ngOnInit()
+    await flush(fixture)
 
-    const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PPanelMenuHarness)
+    const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PanelMenuHarness)
     const panels = await menu.getAllPanels()
     expect(panels.length).toEqual(2)
 
@@ -443,63 +388,54 @@ describe('OneCXVerticalMainMenuComponent', () => {
     ShellCapabilityServiceMock.setCapabilities([])
     const appStateService = TestBed.inject(AppStateService)
     spyOn(appStateService.currentWorkspace$, 'asObservable').and.returnValue(
-      of({
-        workspaceName: 'test-workspace'
-      }) as any
+      of({ workspaceName: 'test-workspace' }) as any
     )
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(of({} as any))
-    menuItemApiSpy.getMenuItems.and.returnValue(
-      of({
-        workspaceName: 'test-workspace',
-        menu: [
+
+    const { fixture, component } = setUp()
+    spyGetMenuItems(component).and.returnValue(
+      of(
+        menuResponse([
           {
-            key: 'PORTAL_MAIN_MENU',
-            name: 'Main Menu',
+            key: 'CORE_WELCOME',
+            name: 'Welcome Page',
+            url: '/admin/welcome',
+            position: 0,
+            external: false,
+            i18n: {},
+            children: []
+          },
+          {
+            key: 'CORE_AH_MGMT',
+            name: 'Announcement & Help',
+            url: 'page-url',
+            position: 1,
+            external: false,
+            i18n: {},
             children: [
               {
-                key: 'CORE_WELCOME',
-                name: 'Welcome Page',
-                url: '/admin/welcome',
-                position: 0,
+                key: 'CORE_AH_MGMT_A',
+                name: 'Announcements',
+                url: '/admin/announcement',
+                position: 1,
                 external: false,
                 i18n: {},
                 children: []
               },
               {
-                key: 'CORE_AH_MGMT',
-                name: 'Announcement & Help',
-                url: 'page-url',
-                position: 1,
+                key: 'CORE_AH_MGMT_HI',
+                name: 'Help Items',
+                url: '/admin/help',
+                position: 2,
                 external: false,
                 i18n: {},
-                children: [
-                  {
-                    key: 'CORE_AH_MGMT_A',
-                    name: 'Announcements',
-                    url: '/admin/announcement',
-                    position: 1,
-                    external: false,
-                    i18n: {},
-                    children: []
-                  },
-                  {
-                    key: 'CORE_AH_MGMT_HI',
-                    name: 'Help Items',
-                    url: '/admin/help',
-                    position: 2,
-                    external: false,
-                    i18n: {},
-                    children: []
-                  }
-                ]
+                children: []
               }
             ]
           }
-        ]
-      } as any)
+        ])
+      )
     )
-
-    const { fixture, component } = setUp()
 
     component['eventsTopic$'] = new FakeTopic() as any
     component['eventsTopic$'].publish({
@@ -509,8 +445,9 @@ describe('OneCXVerticalMainMenuComponent', () => {
       }
     })
     await component.ngOnInit()
+    await flush(fixture)
 
-    const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PPanelMenuHarness)
+    const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PanelMenuHarness)
     const panels = await menu.getAllPanels()
     expect(panels.length).toEqual(2)
 
@@ -571,28 +508,23 @@ describe('OneCXVerticalMainMenuComponent', () => {
     it('should expand active item parents', async () => {
       const appStateService = TestBed.inject(AppStateService)
       spyOn(appStateService.currentWorkspace$, 'asObservable').and.returnValue(
-        of({
-          workspaceName: 'test-workspace'
-        }) as any
+        of({ workspaceName: 'test-workspace' }) as any
       )
       spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(of({} as any))
-      menuItemApiSpy.getMenuItems.and.returnValue(
+
+      const { fixture, component } = setUp()
+      spyGetMenuItems(component).and.returnValue(
         of({
           workspaceName: 'test-workspace',
           menu: baseItems
         } as any)
       )
+      spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(of({ url: '/admin/help', isFirst: true }))
 
-      const { fixture, component } = setUp()
-      spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(
-        of({
-          url: '/admin/help',
-          isFirst: true
-        })
-      )
       await component.ngOnInit()
+      await flush(fixture)
 
-      const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PPanelMenuHarness)
+      const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PanelMenuHarness)
       const panels = await menu.getAllPanels()
       expect(panels.length).toEqual(2)
 
@@ -613,12 +545,12 @@ describe('OneCXVerticalMainMenuComponent', () => {
     it('should update items if workspace did not change', async () => {
       const appStateService = TestBed.inject(AppStateService)
       spyOn(appStateService.currentWorkspace$, 'asObservable').and.returnValue(
-        of({
-          workspaceName: 'test-workspace'
-        }) as any
+        of({ workspaceName: 'test-workspace' }) as any
       )
       spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(of({} as any))
-      menuItemApiSpy.getMenuItems.and.returnValue(
+
+      const { component } = setUp()
+      spyGetMenuItems(component).and.returnValue(
         of({
           workspaceName: 'test-workspace',
           workspaceBaseUrl: '/base-path',
@@ -635,14 +567,7 @@ describe('OneCXVerticalMainMenuComponent', () => {
           ]
         } as any)
       )
-
-      const { component } = setUp()
-      spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(
-        of({
-          url: '/admin/help',
-          isFirst: true
-        })
-      )
+      spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(of({ url: '/admin/help', isFirst: true }))
       component.menuItems$.next({
         workspaceName: 'test-workspace',
         workspaceBaseUrl: '/base-path',
@@ -665,41 +590,27 @@ describe('OneCXVerticalMainMenuComponent', () => {
     it('should overwrite items if workspace has changed', async () => {
       const appStateService = TestBed.inject(AppStateService)
       spyOn(appStateService.currentWorkspace$, 'asObservable').and.returnValue(
-        of({
-          workspaceName: 'other-workspace'
-        }) as any
+        of({ workspaceName: 'other-workspace' }) as any
       )
       spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(of({} as any))
-      menuItemApiSpy.getMenuItems.and.returnValue(
-        of({
-          workspaceName: 'other-workspace',
-          menu: [
-            {
-              key: 'PORTAL_MAIN_MENU',
-              name: 'Main Menu',
-              children: [
-                {
-                  key: 'my-item',
-                  name: 'item-name-1',
-                  url: '/admin/help',
-                  position: 2,
-                  external: false,
-                  i18n: {},
-                  children: []
-                }
-              ]
-            }
-          ]
-        } as any)
-      )
 
       const { component } = setUp()
-      spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(
-        of({
-          url: '/admin/help',
-          isFirst: true
-        })
+      spyGetMenuItems(component).and.returnValue(
+        of(
+          menuResponse([
+            {
+              key: 'my-item',
+              name: 'item-name-1',
+              url: '/admin/help',
+              position: 2,
+              external: false,
+              i18n: {},
+              children: []
+            }
+          ])
+        )
       )
+      spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(of({ url: '/admin/help', isFirst: true }))
       component.menuItems$.next({
         workspaceName: 'test-workspace',
         workspaceBaseUrl: '/base-path',
@@ -723,16 +634,22 @@ describe('OneCXVerticalMainMenuComponent', () => {
   it('should return 0 panels when unable to load them', async () => {
     const appStateService = TestBed.inject(AppStateService)
     spyOn(appStateService.currentWorkspace$, 'asObservable').and.returnValue(
-      of({
-        workspaceName: 'test-workspace'
-      }) as any
+      of({ workspaceName: 'test-workspace' }) as any
     )
-    const errorResponse = { status: 400, statusText: 'An error occur' }
-    menuItemApiSpy.getMenuItems.and.returnValue(throwError(() => errorResponse))
-    spyOn(console, 'error')
-    const { fixture } = setUp()
+    spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(of({} as any))
 
-    const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PPanelMenuHarness)
+    const { fixture, component } = setUp()
+    const errorResponse = { status: 400, statusText: 'An error occur' }
+    spyGetMenuItems(component).and.returnValue(throwError(() => errorResponse))
+    spyOn(console, 'error')
+    spyOn(appStateService.currentLocation$, 'asObservable').and.returnValue(of({ url: 'page-url', isFirst: true }))
+
+    await component.ngOnInit()
+    // The pipeline retries 3 times with a 500ms delay before catchError resolves to undefined.
+    await new Promise((resolve) => setTimeout(resolve, 1700))
+    await flush(fixture)
+
+    const menu = await TestbedHarnessEnvironment.harnessForFixture(fixture, PanelMenuHarness)
     const panels = await menu.getAllPanels()
     expect(panels.length).toEqual(0)
     expect(console.error).toHaveBeenCalled()

@@ -5,6 +5,11 @@ import { MenuItem } from 'primeng/api'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 import { ImportResponseStatus, Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
+import { SharedModule } from 'src/app/shared/shared.module'
+
+import { ChooseFileComponent } from './choose-file/choose-file.component'
+import { ConfirmComponent } from './confirm/confirm.component'
+import { PreviewComponent } from './preview/preview.component'
 
 export type ImportResponse = { workspace: ImportResponseStatus; menu: ImportResponseStatus }
 export type ImportWorkspace = Workspace & { themeObject?: Theme; menuItems?: any; roles?: any; products?: any }
@@ -17,6 +22,8 @@ export type Theme = {
 
 @Component({
   selector: 'app-workspace-import',
+  standalone: true,
+  imports: [SharedModule, ChooseFileComponent, ConfirmComponent, PreviewComponent],
   templateUrl: './workspace-import.component.html',
   styleUrls: ['./workspace-import.component.scss']
 })
@@ -45,7 +52,9 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
     private readonly workspaceApi: WorkspaceAPIService,
     private readonly msgService: PortalMessageService
   ) {
-    this.hasPermission = this.user.hasPermission('WORKSPACE#IMPORT')
+    Promise.all([this.user.hasPermission('WORKSPACE#IMPORT')]).then(([perm]) => {
+      this.hasPermission = perm
+    })
 
     this.steps = [
       { label: this.translate.instant('WORKSPACE_IMPORT.CHOOSE_FILE') },

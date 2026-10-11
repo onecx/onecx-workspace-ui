@@ -1,5 +1,5 @@
 import { Component, inject, Input } from '@angular/core'
-import { CommonModule } from '@angular/common'
+import { AsyncPipe } from '@angular/common'
 import { UntilDestroy } from '@ngneat/until-destroy'
 import { combineLatest, from, map, Observable, ReplaySubject } from 'rxjs'
 
@@ -8,11 +8,10 @@ import { AppStateService, CONFIG_KEY, ConfigurationService } from '@onecx/angula
 import {
   AngularRemoteComponentsModule,
   ocxRemoteComponent,
-  ocxRemoteWebcomponent
+  ocxRemoteWebcomponent,
+  REMOTE_COMPONENT_CONFIG,
+  RemoteComponentConfig
 } from '@onecx/angular-remote-components'
-import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
-
-import { SharedModule } from 'src/app/shared/shared.module'
 
 export type Version = {
   workspaceName: string
@@ -23,10 +22,10 @@ export type Version = {
 
 @Component({
   selector: 'app-ocx-version-info',
-  templateUrl: './version-info.component.html',
   standalone: true,
-  imports: [AngularRemoteComponentsModule, CommonModule, AngularAcceleratorModule, SharedModule],
-  providers: [{ provide: REMOTE_COMPONENT_CONFIG, useValue: new ReplaySubject<string>(1) }]
+  imports: [AsyncPipe, AngularAcceleratorModule, AngularRemoteComponentsModule],
+  providers: [{ provide: REMOTE_COMPONENT_CONFIG, useValue: new ReplaySubject<string>(1) }],
+  templateUrl: './version-info.component.html'
 })
 @UntilDestroy()
 export class OneCXVersionInfoComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
@@ -37,28 +36,26 @@ export class OneCXVersionInfoComponent implements ocxRemoteComponent, ocxRemoteW
   @Input() set ocxRemoteComponentConfig(rcConfig: RemoteComponentConfig) {
     this.ocxInitRemoteComponent(rcConfig)
   }
+  public ocxInitRemoteComponent(rcConfig: RemoteComponentConfig) {
+    this.rcConfig.next(rcConfig)
+  }
 
   public versionInfo$: Observable<Version | undefined> = combineLatest([
     this.appState.currentMfe$.asObservable(),
     this.appState.currentWorkspace$.asObservable(),
-    //this.config.getProperty(CONFIG_KEY.APP_VERSION), // only in Lib v6
+    this.config.getProperty(CONFIG_KEY.APP_VERSION),
     from(this.config.isInitialized)
   ]).pipe(
-    map(([mfe, workspace]) => {
-      const hostVersion = this.config.getProperty(CONFIG_KEY.APP_VERSION) ?? '' // only in Lib v5
+    map(([mfe, workspace, hostVersion, _]) => {
       const mfeVersion = mfe.version ?? ''
       const mfeInfo = mfe.displayName + (mfe.version ? ' ' + mfeVersion : '')
       const version: Version = {
         workspaceName: workspace.workspaceName,
-        shellInfo: hostVersion,
+        shellInfo: hostVersion === '@UNDEFINED' ? undefined : hostVersion,
         mfeInfo: mfe.displayName ? mfeInfo : '',
         separator: mfe.displayName || mfe.version ? ' - ' : ''
       }
       return version
     })
   )
-
-  public ocxInitRemoteComponent(rcConfig: RemoteComponentConfig) {
-    this.rcConfig.next(rcConfig)
-  }
 }

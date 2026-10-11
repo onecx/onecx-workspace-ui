@@ -1,19 +1,35 @@
-@import 'src/app/_ws-mixins.scss';
+@use 'src/app/_ws-mixins.scss' as *;
 
 @include word-break-all;
-@include card-badges;
 @include danger-action;
-@include cursor-default;
-@include picklist-zebra-rows;
-@include picklist-hide-double-buttons;
-@include correct-select-button;
-@include displaying-text-responsive;
-@include readable-disabled-components;
+@include ocx-text-responsive;
+@include ocx-required-label;
+@include ocx-p-inputgroup;
+@include ocx-p-message;
+@include ocx-p-tabs;
+@include ocx-interactive-data-view-fixes;
 @include dialog-footer-buttons;
-@include dialog-modal-disable-full-height;
-@include tabview-fix-color-selected-tab;
+@include dialog-non-full-size-modal;
+@include readable-disabled-components;
 
 :host ::ng-deep {
+  .ocx-content > div {
+    margin-bottom: 0 !important;
+    padding: 0 !important;
+  }
+  /* fixes for p-card */
+  --onecx-workspace-onecx-workspace-ui-card-body-padding: 0.5rem;
+  --onecx-workspace-onecx-workspace-ui-card-border-radius: 4px;
+  --onecx-workspace-onecx-workspace-ui-card-shadow:
+    rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+
+  .p-tabs .p-tabpanels {
+    padding: 0;
+    &.non-modal-panels {
+      padding: 0.3rem 1rem;
+    }
+  }
+
   .max-w-11 {
     max-width: 90%;
   }

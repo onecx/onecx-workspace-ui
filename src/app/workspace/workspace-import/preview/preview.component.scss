@@ -1,9 +1,16 @@
-@import 'src/app/_ws-mixins.scss';
+@use 'src/app/_ws-mixins.scss' as *;
 
+@include ocx-p-tabs;
 @include dialog-modal-dialog-content;
 @include dropdown-zebra-rows;
 
 :host ::ng-deep {
+  .p-tabs {
+    .p-tabpanels {
+      padding: 1rem 0rem;
+    }
+  }
+
   .p-tree {
     border: unset;
     .p-tree-container .p-treenode .p-treenode-content {

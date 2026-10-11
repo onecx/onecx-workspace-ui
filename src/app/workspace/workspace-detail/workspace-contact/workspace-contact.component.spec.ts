@@ -1,12 +1,9 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core'
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { provideRouter } from '@angular/router'
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { FormControl, FormGroup } from '@angular/forms'
+import { provideRouter } from '@angular/router'
 import { TranslateTestingModule } from 'ngx-translate-testing'
-
-import { PortalMessageService } from '@onecx/angular-integration-interface'
 
 import { Workspace } from 'src/app/shared/generated'
 import { WorkspaceContactComponent } from './workspace-contact.component'
@@ -19,45 +16,58 @@ const workspace: Workspace = {
   displayName: 'Display Name'
 }
 
-const contactForm = new FormGroup({
-  country: new FormControl('country'),
-  city: new FormControl('city'),
-  postalCode: new FormControl('postalCode'),
-  street: new FormControl('street'),
-  streetNo: new FormControl('streetNo')
-})
+// Fresh form per test: the previous shared instance was mutated by fillForm() across tests
+// (leak). Controls start null, mirroring the component's real form.
+function createContactForm(): FormGroup {
+  return new FormGroup({
+    companyName: new FormControl(null),
+    phoneNumber: new FormControl(null),
+    country: new FormControl(null),
+    city: new FormControl(null),
+    postalCode: new FormControl(null),
+    street: new FormControl(null),
+    streetNo: new FormControl(null)
+  })
+}
 
 describe('WorkspaceContactComponent', () => {
   let component: WorkspaceContactComponent
   let fixture: ComponentFixture<WorkspaceContactComponent>
 
-  const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
+  // PortalMessageService is providedIn 'any', so the component injects its own instance and a
+  // root-level provider would be shadowed - spy on the actual instance the component holds.
+  let msgServiceSpy: { success: jasmine.Spy; error: jasmine.Spy }
+
+  function initializeComponent(): void {
+    fixture = TestBed.createComponent(WorkspaceContactComponent)
+    component = fixture.componentInstance
+    fixture.detectChanges()
+
+    msgServiceSpy = {
+      success: spyOn(component['msgService'], 'success'),
+      error: spyOn(component['msgService'], 'error')
+    }
+  }
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [WorkspaceContactComponent],
       imports: [
+        WorkspaceContactComponent,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
-      schemas: [NO_ERRORS_SCHEMA],
       providers: [
-        provideHttpClientTesting(),
         provideHttpClient(),
-        provideRouter([{ path: '', component: WorkspaceContactComponent }]),
-        { provide: PortalMessageService, useValue: msgServiceSpy }
+        provideHttpClientTesting(),
+        provideRouter([{ path: '', component: WorkspaceContactComponent }])
       ]
     }).compileComponents()
-    msgServiceSpy.success.calls.reset()
-    msgServiceSpy.error.calls.reset()
   }))
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(WorkspaceContactComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    initializeComponent()
   })
 
   it('should create', () => {
@@ -66,7 +76,7 @@ describe('WorkspaceContactComponent', () => {
 
   it('should disable contactForm if editMode false', () => {
     component.editMode = false
-    component.contactForm = contactForm
+    component.contactForm = createContactForm()
     component.workspace = workspace
     component.workspace.address = {
       country: 'detail country',
@@ -83,17 +93,17 @@ describe('WorkspaceContactComponent', () => {
 
   it('should fillForm onChanges: no address', () => {
     component.editMode = true
-    component.contactForm = contactForm
+    component.contactForm = createContactForm()
     component.workspace = workspace
     component.workspace.address = undefined
 
     component.ngOnChanges()
 
-    expect(component.contactForm.controls['street'].value).toEqual(undefined)
+    expect(component.contactForm.controls['street'].value).toBeNull()
   })
 
   it('should fillForm onChanges: address', () => {
-    component.contactForm = contactForm
+    component.contactForm = createContactForm()
     component.workspace = workspace
     component.workspace.address = {
       country: 'detail country',
@@ -106,6 +116,18 @@ describe('WorkspaceContactComponent', () => {
     component.ngOnChanges()
 
     expect(component.contactForm.controls['street'].value).toEqual('detail street')
+  })
+
+  it('should fillForm onChanges: top-level companyName and phoneNumber', () => {
+    // companyName / phoneNumber are read from the workspace itself (not from address), so a fresh
+    // workspace carrying those top-level fields exercises the `else if (workspace[key])` branch.
+    component.contactForm = createContactForm()
+    component.workspace = { ...workspace, companyName: 'Some Company', phoneNumber: '123456789' }
+
+    component.ngOnChanges()
+
+    expect(component.contactForm.controls['companyName'].value).toEqual('Some Company')
+    expect(component.contactForm.controls['phoneNumber'].value).toEqual('123456789')
   })
 
   it('should update workspace onSave', () => {
@@ -139,7 +161,7 @@ describe('WorkspaceContactComponent', () => {
     expect(component.workspace.address).toBeDefined()
   })
 
-  it('should display error msg if form is invalid', () => {
+  it('should do nothing onSave when workspace is undefined', () => {
     component.workspace = undefined
 
     component.onSave()
@@ -153,9 +175,9 @@ describe('WorkspaceContactComponent', () => {
     component.workspace.address = {}
 
     component.ngOnChanges()
-    component.contactForm.controls['street'].setValue(
-      '89_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789_'
-    )
+
+    // street validator is maxLength(255): a 256-char value makes the form invalid
+    component.contactForm.controls['street'].setValue('x'.repeat(256))
 
     component.onSave()
 

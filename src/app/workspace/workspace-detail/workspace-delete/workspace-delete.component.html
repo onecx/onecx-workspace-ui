@@ -1,0 +1,89 @@
+@if (workspaceDeleteVisible) {
+  <p-dialog
+    [visible]="true"
+    (visibleChange)="onClose()"
+    [header]="'DIALOG.WORKSPACE.HEADER.DELETE' | translate"
+    [modal]="true"
+    [closable]="true"
+    [draggable]="true"
+    [resizable]="false"
+    [dismissableMask]="true"
+    [style]="{ 'max-width': '425px' }"
+    styleClass="disable-max-height-preset"
+  >
+    <div class="flex column-gap-3 row-gap-1 justify-content-start align-items-center">
+      <div class="pi pi-question-circle text-3xl danger-action-text"></div>
+      <div class="flex flex-column row-gap-3">
+        @if (workspace?.mandatory) {
+          <p-message
+            id="th_delete_reject_mandatory_message"
+            severity="info"
+            [text]="'ACTIONS.DELETE.WORKSPACE.MESSAGE.REJECT_MANDATORY' | translate"
+          ></p-message>
+        } @else if (!workspace?.mandatory) {
+          <div class="flex flex-column row-gap-2">
+            <div id="ws_delete_message" class="font-bold">
+              {{ 'ACTIONS.DELETE.WORKSPACE.MESSAGE.QUESTION' | translate }}
+            </div>
+            <div>
+              <div id="ws_delete_workspace_display_name" class="font-bold text-center danger-action-text">
+                {{ workspace?.displayName }}
+              </div>
+              <div id="ws_delete_workspace_name" class="font-bold text-center danger-action-text text-sm">
+                ({{ workspace?.name }})
+              </div>
+            </div>
+            @if (workspace?.operator) {
+              <p-message
+                id="ws_delete_operator_hint"
+                severity="info"
+                styleClass="mt-1"
+                [text]="'ACTIONS.DELETE.WORKSPACE.MESSAGE.INFO_OPERATOR' | translate"
+              ></p-message>
+            } @else {
+              <div>{{ 'ACTIONS.DELETE.INFO' | translate }}</div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <div class="mt-3 flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
+        @if (workspace?.mandatory) {
+          <p-button
+            id="ws_delete_action_close"
+            icon="pi pi-times"
+            (onClick)="onClose()"
+            [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+            [ariaLabel]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+            [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          ></p-button>
+        } @else {
+          <p-button
+            id="ws_delete_action_no"
+            icon="pi pi-times"
+            (onClick)="onClose()"
+            [label]="'ACTIONS.CONFIRMATION.NO' | translate"
+            [ariaLabel]="'ACTIONS.CONFIRMATION.NO' | translate"
+            [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          ></p-button>
+          <p-button
+            id="ws_delete_action_yes"
+            icon="pi pi-check"
+            (onClick)="onConfirmDeleteWorkspace()"
+            [label]="'ACTIONS.CONFIRMATION.YES' | translate"
+            [ariaLabel]="'ACTIONS.CONFIRMATION.YES' | translate"
+            [pTooltip]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          ></p-button>
+        }
+      </div>
+    </ng-template>
+  </p-dialog>
+}

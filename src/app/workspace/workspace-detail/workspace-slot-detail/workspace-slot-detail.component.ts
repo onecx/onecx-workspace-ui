@@ -2,12 +2,16 @@ import { Component, EventEmitter, Input, Output, OnChanges } from '@angular/core
 import { TranslateService } from '@ngx-translate/core'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+import { TabsModule } from 'primeng/tabs'
 
 import { SlotAPIService, UpdateSlotRequest } from 'src/app/shared/generated'
 import { ChangeMode, ExtendedSlot, ExtendedComponent, PSSlot } from '../workspace-slots/workspace-slots.component'
+import { SharedModule } from 'src/app/shared/shared.module'
 
 @Component({
   selector: 'app-workspace-slot-detail',
+  standalone: true,
+  imports: [SharedModule, TabsModule],
   templateUrl: './workspace-slot-detail.component.html',
   styleUrls: ['./workspace-slot-detail.component.scss']
 })
@@ -26,7 +30,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   public psComponents: ExtendedComponent[] = [] // org ps components reduced by used in slot
   public hasEditPermission = false
   public displayDeregisterConfirmation = false
-  public selectedTabIndex = 0
+  public selectedTabIndex = '0'
   private deregisterItems: ExtendedComponent[] = [] // moved items
   private wComponentsOrg: ExtendedComponent[] = [] // used for restore
   public showTargetControls = false // manage visibility of target controls due to picklist bug
@@ -39,7 +43,9 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
     private readonly translate: TranslateService,
     private readonly msgService: PortalMessageService
   ) {
-    this.hasEditPermission = this.user.hasPermission('WORKSPACE_SLOT#EDIT')
+    Promise.all([this.user.hasPermission('WORKSPACE_SLOT#EDIT')]).then(([perm]) => {
+      this.hasEditPermission = perm
+    })
     this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm:ss' : 'M/d/yy, hh:mm:ss a'
   }
 
@@ -54,7 +60,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
       this.collectPsComponents()
       if (this.slot.psSlots) this.slot.psSlots.sort(this.sortProducts)
       if (this.slot.productNames) this.slot.productNames.sort((a, b) => a.toUpperCase().localeCompare(b.toUpperCase()))
-      this.selectedTabIndex = this.slot.productNames?.length === 0 ? 1 : 0
+      this.selectedTabIndex = this.slot.productNames?.length === 0 ? '1' : '0'
     }
   }
 

@@ -1,7 +1,7 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angular/core/testing'
+import { provideNoopAnimations } from '@angular/platform-browser/animations'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { BehaviorSubject, of, throwError } from 'rxjs'
 
@@ -15,39 +15,48 @@ describe('WorkspaceSlotDetailComponent', () => {
   let component: WorkspaceSlotDetailComponent
   let fixture: ComponentFixture<WorkspaceSlotDetailComponent>
 
-  const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
-  const slotServiceSpy = { addOrUpdateSlot: jasmine.createSpy('addOrUpdateSlot').and.returnValue(of({})) }
-
-  const mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
-  mockUserService.hasPermission.and.callFake((permission: string) => {
-    return ['WORKSPACE_SLOT#EDIT'].includes(permission)
-  })
-  mockUserService.lang$ = new BehaviorSubject('de')
-
   function initializeComponent(): void {
     fixture = TestBed.createComponent(WorkspaceSlotDetailComponent)
     component = fixture.componentInstance
     fixture.detectChanges()
   }
 
+  const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
+  const slotServiceSpy = { addOrUpdateSlot: jasmine.createSpy('addOrUpdateSlot').and.returnValue(of({})) }
+  const mockUserService = {
+    lang$: new BehaviorSubject<string>('de'),
+    getPermission: jasmine.createSpy('getPermission').and.returnValue(Promise.resolve(true)),
+    hasPermission: jasmine.createSpy('hasPermission').and.callFake((permission) => {
+      return ['WORKSPACE_SLOT#EDIT'].includes(permission)
+    })
+  }
+
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [WorkspaceSlotDetailComponent],
       imports: [
+        WorkspaceSlotDetailComponent,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
-      schemas: [NO_ERRORS_SCHEMA],
       providers: [
-        provideHttpClientTesting(),
         provideHttpClient(),
-        { provide: PortalMessageService, useValue: msgServiceSpy },
-        { provide: SlotAPIService, useValue: slotServiceSpy },
+        provideHttpClientTesting(),
+        provideNoopAnimations(),
         { provide: UserService, useValue: mockUserService }
       ]
-    }).compileComponents()
+    })
+      .overrideComponent(WorkspaceSlotDetailComponent, {
+        add: {
+          providers: [
+            { provide: PortalMessageService, useValue: msgServiceSpy },
+            { provide: SlotAPIService, useValue: slotServiceSpy }
+          ]
+        }
+      })
+      .compileComponents()
+
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
     slotServiceSpy.addOrUpdateSlot.calls.reset()

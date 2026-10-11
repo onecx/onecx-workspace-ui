@@ -1,10 +1,9 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { Location } from '@angular/common'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { provideRouter, Router } from '@angular/router'
-import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router'
+import { ActivatedRoute } from '@angular/router'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of, BehaviorSubject, throwError } from 'rxjs'
 
@@ -16,10 +15,11 @@ import { WorkspaceDetailComponent } from './workspace-detail.component'
 import { WorkspaceContactComponent } from './workspace-contact/workspace-contact.component'
 import { WorkspacePropsComponent } from './workspace-props/workspace-props.component'
 import { WorkspaceInternComponent } from './workspace-intern/workspace-intern.component'
+import { provideNoopAnimations } from '@angular/platform-browser/animations'
+import { providePermissionService } from '@onecx/angular-utils'
+import { BreadcrumbService } from '@onecx/angular-accelerator'
+import { provideAppStateServiceMock } from '@onecx/angular-integration-interface/mocks'
 
-class MockRouter {
-  navigate = jasmine.createSpy('navigate')
-}
 const workspace: Workspace = {
   id: 'id',
   name: 'name',
@@ -27,6 +27,9 @@ const workspace: Workspace = {
   baseUrl: '/some/base/url',
   displayName: ''
 }
+/* 
+  Mock sub components for testing WorkspaceDetailComponent
+*/
 class MockWorkspacePropsComponent {
   public onSave(): void {}
   public propsForm = { valid: true }
@@ -44,8 +47,12 @@ class MockWorkspaceInternComponent {
 describe('WorkspaceDetailComponent', () => {
   let component: WorkspaceDetailComponent
   let fixture: ComponentFixture<WorkspaceDetailComponent>
-  const mockRouter = new MockRouter()
-  let mockUserService: any
+
+  function initializeComponent(): void {
+    fixture = TestBed.createComponent(WorkspaceDetailComponent)
+    component = fixture.componentInstance
+    fixture.detectChanges()
+  }
 
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
   const apiServiceSpy = {
@@ -55,34 +62,66 @@ describe('WorkspaceDetailComponent', () => {
     updateWorkspace: jasmine.createSpy('updateWorkspace').and.returnValue(of({}))
   }
   const locationSpy = jasmine.createSpyObj<Location>('Location', ['back'])
-  const mockActivatedRouteSnapshot: Partial<ActivatedRouteSnapshot> = { params: { id: 'mockId' } }
-  const mockActivatedRoute: Partial<ActivatedRoute> = {
-    snapshot: mockActivatedRouteSnapshot as ActivatedRouteSnapshot
+  const mockUserService = {
+    lang$: new BehaviorSubject<string>('de'),
+    getPermission: jasmine.createSpy('getPermission').and.returnValue(Promise.resolve(true)),
+    getPermissions: jasmine
+      .createSpy('getPermissions')
+      .and.returnValue(
+        of([
+          'WORKSPACE#EDIT',
+          'WORKSPACE#VIEW',
+          'WORKSPACE_CONTACT#VIEW',
+          'WORKSPACE_INTERNAL#VIEW',
+          'WORKSPACE_PRODUCTS#VIEW',
+          'WORKSPACE_ROLE#VIEW',
+          'WORKSPACE_SLOT#VIEW'
+        ])
+      ),
+    hasPermission: jasmine.createSpy('hasPermission').and.callFake((permission) => {
+      return [
+        'WORKSPACE#EDIT',
+        'WORKSPACE#VIEW',
+        'WORKSPACE_CONTACT#VIEW',
+        'WORKSPACE_INTERNAL#VIEW',
+        'WORKSPACE_ROLE#VIEW',
+        'WORKSPACE_SLOT#VIEW',
+        'WORKSPACE_PRODUCTS#VIEW'
+      ].includes(permission)
+    })
   }
 
   beforeEach(waitForAsync(() => {
-    mockUserService = { lang$: new BehaviorSubject('de') }
     TestBed.configureTestingModule({
-      declarations: [WorkspaceDetailComponent],
       imports: [
+        WorkspaceDetailComponent,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
-      schemas: [NO_ERRORS_SCHEMA],
       providers: [
-        provideHttpClientTesting(),
         provideHttpClient(),
-        provideRouter([{ path: '', component: WorkspaceDetailComponent }]),
-        { provide: ActivatedRoute, useValue: mockActivatedRoute },
-        { provide: Router, useValue: mockRouter },
-        { provide: PortalMessageService, useValue: msgServiceSpy },
-        { provide: WorkspaceAPIService, useValue: apiServiceSpy },
-        { provide: Location, useValue: locationSpy },
-        { provide: UserService, useValue: mockUserService }
+        provideHttpClientTesting(),
+        provideAppStateServiceMock(),
+        providePermissionService(),
+        provideNoopAnimations(),
+        provideRouter([{ path: '', component: WorkspaceDetailComponent }])
       ]
-    }).compileComponents()
+    })
+      .overrideComponent(WorkspaceDetailComponent, {
+        add: {
+          providers: [
+            { provide: BreadcrumbService, useValue: {} },
+            { provide: UserService, useValue: mockUserService },
+            { provide: PortalMessageService, useValue: msgServiceSpy },
+            { provide: WorkspaceAPIService, useValue: apiServiceSpy },
+            { provide: Location, useValue: locationSpy }
+          ]
+        }
+      })
+      .compileComponents()
+
     // to spy data: reset
     locationSpy.back.calls.reset()
     msgServiceSpy.success.calls.reset()
@@ -93,13 +132,13 @@ describe('WorkspaceDetailComponent', () => {
     apiServiceSpy.updateWorkspace.calls.reset()
     // to spy data: refill with neutral data
     apiServiceSpy.getWorkspaceByName.and.returnValue(of({}))
-  }))
 
-  function initializeComponent(): void {
-    fixture = TestBed.createComponent(WorkspaceDetailComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
-  }
+    // setup router spies based on provided Router instance
+    const router = TestBed.inject(Router)
+    // fake router navigation
+    spyOn(router, 'navigate').and.returnValue(Promise.resolve(true))
+    spyOn(router, 'navigateByUrl').and.returnValue(Promise.resolve(true))
+  }))
 
   beforeEach(() => {
     initializeComponent()
@@ -115,7 +154,6 @@ describe('WorkspaceDetailComponent', () => {
 
     describe('onTabChange', () => {
       it('should set selectedTabIndex onChange', (done) => {
-        const event = { index: 1 }
         apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
         component.workspaceName = 'name'
 
@@ -129,17 +167,35 @@ describe('WorkspaceDetailComponent', () => {
           error: done.fail
         })
 
-        component.onTabChange(event, component.workspace)
-        expect(component.selectedTabIndex).toEqual(1)
+        component.onTabChange('1', component.workspace)
+        expect(component.selectedTabIndex).toEqual('1')
 
-        component.onTabChange({ index: 3 }, component.workspace)
+        component.onTabChange('3', component.workspace)
         expect(component.workspaceForRoles).toBe(workspace)
 
-        component.onTabChange({ index: 4 }, component.workspace)
+        component.onTabChange('4', component.workspace)
         expect(component.workspaceForSlots).toBe(workspace)
 
-        component.onTabChange({ index: 5 }, component.workspace)
+        component.onTabChange('5', component.workspace)
         expect(component.workspaceForProducts).toBe(workspace)
+      })
+
+      it('should convert a numeric tab value to its string form', () => {
+        component.workspace = workspace
+
+        // a number (not a string) tab value exercises the `tabValue.toString()` side of the ternary
+        component.onTabChange(1, workspace)
+
+        expect(component.selectedTabIndex).toEqual('1')
+      })
+
+      it('should reset selectedTabIndex to 0 when no workspace is provided', () => {
+        component.selectedTabIndex = '5'
+
+        // a falsy workspace takes the `else` branch instead of the tab-specific assignments
+        component.onTabChange('0')
+
+        expect(component.selectedTabIndex).toEqual('0')
       })
     })
   })
@@ -147,7 +203,7 @@ describe('WorkspaceDetailComponent', () => {
   describe('search workspace Data and go to roles', () => {
     it('should getWorkspaceData onInit', (done) => {
       apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
-      spyOn(component, 'prepareActionButtons')
+      spyOn(component, 'preparePageActions')
       spyOn(component, 'onTabChange')
       component.workspaceName = 'name'
       component.uriFragment = 'roles'
@@ -162,7 +218,7 @@ describe('WorkspaceDetailComponent', () => {
         error: done.fail
       })
       expect(component.loading).toBeFalsy()
-      expect(component.prepareActionButtons).toHaveBeenCalled()
+      expect(component.preparePageActions).toHaveBeenCalled()
       expect(component.onTabChange).toHaveBeenCalled()
     })
 
@@ -259,14 +315,6 @@ describe('WorkspaceDetailComponent', () => {
     })
   })
 
-  describe('test message translations', () => {
-    it('should have prepared messages', () => {
-      component.ngOnInit()
-
-      expect(component.messages.length).toBe(1)
-    })
-  })
-
   describe('test action buttons', () => {
     it('should have prepared action buttons onInit: close', () => {
       apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
@@ -308,7 +356,7 @@ describe('WorkspaceDetailComponent', () => {
     it('should have prepared action buttons onInit: update workspace props - valid data', () => {
       apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
       component.workspacePropsComponent = new MockWorkspacePropsComponent() as unknown as WorkspacePropsComponent
-      component.selectedTabIndex = 0
+      component.selectedTabIndex = '0'
       component.ngOnInit()
       let actions: any = []
       component.actions$!.subscribe((act) => (actions = act))
@@ -327,7 +375,7 @@ describe('WorkspaceDetailComponent', () => {
     it('should have prepared action buttons onInit: update workspace contact', () => {
       apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
       component.workspaceContactComponent = new MockWorkspaceContactComponent() as unknown as WorkspaceContactComponent
-      component.selectedTabIndex = 1
+      component.selectedTabIndex = '1'
       component.ngOnInit()
       let actions: any = []
       component.actions$!.subscribe((act) => (actions = act))
@@ -347,7 +395,7 @@ describe('WorkspaceDetailComponent', () => {
     it('should have prepared action buttons onInit: update workspace intern', () => {
       apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
       component.workspaceInternComponent = new MockWorkspaceInternComponent() as unknown as WorkspaceInternComponent
-      component.selectedTabIndex = 2
+      component.selectedTabIndex = '2'
       component.ngOnInit()
       let actions: any = []
       component.actions$!.subscribe((act) => (actions = act))
@@ -359,7 +407,7 @@ describe('WorkspaceDetailComponent', () => {
 
     it('should have prepared action buttons onInit: update workspace: default', () => {
       apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
-      component.selectedTabIndex = 99
+      component.selectedTabIndex = '99'
       spyOn(console, 'error')
       component.ngOnInit()
       let actions: any = []
@@ -411,7 +459,7 @@ describe('WorkspaceDetailComponent', () => {
   describe('update workspace data', () => {
     it('it should log an error if non-related TAB is used', () => {
       spyOn(console, 'error')
-      component.selectedTabIndex = 99
+      component.selectedTabIndex = '99'
       component.ngOnInit()
       let actions: any = []
       component.actions$!.subscribe((act) => (actions = act))
@@ -424,7 +472,7 @@ describe('WorkspaceDetailComponent', () => {
       apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
       apiServiceSpy.updateWorkspace.and.returnValue(of(workspace))
       component.workspacePropsComponent = new MockWorkspacePropsComponent() as unknown as WorkspacePropsComponent
-      component.selectedTabIndex = 0
+      component.selectedTabIndex = '0'
 
       component.ngOnInit()
       component.editMode = true
@@ -449,7 +497,7 @@ describe('WorkspaceDetailComponent', () => {
         component.workspacePropsComponent.workspace.logoUrl = ''
         component.workspacePropsComponent.workspace.smallLogoUrl = ''
       }
-      component.selectedTabIndex = 0
+      component.selectedTabIndex = '0'
 
       component.ngOnInit()
       component.editMode = true
@@ -471,7 +519,7 @@ describe('WorkspaceDetailComponent', () => {
       const errorResponse = { status: 400, statusText: 'Error on updating a workspace' }
       apiServiceSpy.updateWorkspace.and.returnValue(throwError(() => errorResponse))
       component.workspaceContactComponent = new MockWorkspaceContactComponent() as unknown as WorkspaceContactComponent
-      component.selectedTabIndex = 1
+      component.selectedTabIndex = '1'
       spyOn(console, 'error')
 
       component.ngOnInit()
@@ -489,9 +537,11 @@ describe('WorkspaceDetailComponent', () => {
 
   describe('test navigation', () => {
     it('should correctly navigate on onGoToMenu', () => {
+      const router = TestBed.inject(Router)
+      const route = TestBed.inject(ActivatedRoute)
       component.onGoToMenu()
 
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['./menu'], { relativeTo: mockActivatedRoute })
+      expect(router.navigate).toHaveBeenCalledWith(['./menu'], { relativeTo: route })
     })
   })
 })

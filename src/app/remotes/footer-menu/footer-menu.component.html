@@ -1,25 +1,14 @@
-<ul
-  *ngIf="menuItems$ | async as menuItems"
-  class="m-0 p-0 sm:ml-2 p-panelmenu list-none flex flex-row column-gap-3 row-gap-2 align-items-center"
->
-  <li *ngFor="let item of menuItems" class="p-menuitem flex">
-    <a
-      *ngIf="!item.routerLink && item.url"
-      id="ws_footer_menu_{{ item.id }}_href"
-      class="p-2 p-menuitem-link"
-      [attr.href]="item.url"
-      [target]="item.target"
-    >
-      {{ item.label }}
-    </a>
-    <a
-      *ngIf="item.routerLink"
-      id="ws_footer_menu_{{ item.id }}_link"
-      class="p-2 p-menuitem-link"
-      [routerLink]="item.routerLink"
-      [target]="item.target"
-    >
-      {{ item.label }}
-    </a>
-  </li>
-</ul>
+@let items = menuItems();
+@if (items.length > 0) {
+  <ul class="m-0 p-0 sm:ml-2 p-panelmenu list-none flex flex-row column-gap-3 row-gap-2 align-items-center">
+    @for (item of items; track $index) {
+      <li class="p-menuitem flex">
+        <app-vertical-menu-item
+          [item]="item"
+          [id]="'ws_footer_menu_' + item.id + '_link'"
+          styleClass="p-2 p-menuitem-link"
+        ></app-vertical-menu-item>
+      </li>
+    }
+  </ul>
+}

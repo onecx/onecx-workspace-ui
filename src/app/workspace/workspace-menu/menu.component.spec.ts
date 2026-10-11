@@ -1,12 +1,13 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { Location } from '@angular/common'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router'
-import { of, throwError } from 'rxjs'
+import { provideNoopAnimations } from '@angular/platform-browser/animations'
+import { ActivatedRoute, ActivatedRouteSnapshot, provideRouter } from '@angular/router'
 import { TranslateTestingModule } from 'ngx-translate-testing'
-import { TreeNode } from 'primeng/api'
+import { BehaviorSubject, of, throwError } from 'rxjs'
+
+import { TreeNode, TreeDragDropService } from 'primeng/api'
 import { TreeTableNodeExpandEvent } from 'primeng/treetable'
 
 import { PortalMessageService, UserService, WorkspaceService } from '@onecx/angular-integration-interface'
@@ -23,6 +24,8 @@ import {
 } from 'src/app/shared/generated'
 import { MenuStateService, MenuState } from './services/menu-state.service'
 import { MenuComponent, MenuItemNodeData } from './menu.component'
+import { providePermissionService } from '@onecx/angular-utils'
+import { BreadcrumbService } from '@onecx/angular-accelerator'
 
 const workspace: Workspace = {
   id: 'id',
@@ -122,43 +125,54 @@ describe('MenuComponent', () => {
   const translateServiceSpy = jasmine.createSpyObj('TranslateService', ['get'])
   const stateServiceSpy = jasmine.createSpyObj<MenuStateService>('MenuStateService', ['getState', 'updateState'])
   const locationSpy = jasmine.createSpyObj<Location>('Location', ['back'])
-
-  const mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
-  mockUserService.hasPermission.and.callFake((permission: string) => {
-    return ['MENU#VIEW', 'MENU#CREATE', 'MENU#EDIT', 'MENU#GRANT', 'WORKSPACE_ROLE#EDIT'].includes(permission)
-  })
-  const mockActivatedRouteSnapshot: Partial<ActivatedRouteSnapshot> = {
-    params: { id: 'mockId' }
+  const mockUserService = {
+    lang$: new BehaviorSubject<string>('de'),
+    getPermission: jasmine.createSpy('getPermission').and.returnValue(Promise.resolve(true)),
+    hasPermission: jasmine.createSpy('hasPermission').and.callFake((permission) => {
+      return ['MENU#VIEW', 'MENU#CREATE', 'MENU#EDIT', 'MENU#GRANT', 'WORKSPACE_ROLE#EDIT'].includes(permission)
+    })
   }
+  const mockActivatedRouteSnapshot: Partial<ActivatedRouteSnapshot> = { params: { id: 'mockId' } }
   const mockActivatedRoute: Partial<ActivatedRoute> = {
     snapshot: mockActivatedRouteSnapshot as ActivatedRouteSnapshot
   }
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [MenuComponent],
       imports: [
+        MenuComponent,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
-      schemas: [NO_ERRORS_SCHEMA],
       providers: [
-        provideHttpClientTesting(),
         provideHttpClient(),
+        provideHttpClientTesting(),
+        providePermissionService(),
+        provideNoopAnimations(),
+        provideRouter([{ path: '', component: MenuComponent }]),
+        TreeDragDropService,
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
-        { provide: PortalMessageService, useValue: msgServiceSpy },
-        { provide: WorkspaceService, useValue: workspaceServiceSpy },
-        { provide: WorkspaceAPIService, useValue: workspaceApiSpy },
-        { provide: WorkspaceRolesAPIService, useValue: wRoleServiceSpy },
-        { provide: MenuItemAPIService, useValue: menuApiServiceSpy },
-        { provide: AssignmentAPIService, useValue: assgmtApiServiceSpy },
         { provide: MenuStateService, useValue: stateServiceSpy },
-        { provide: Location, useValue: locationSpy },
-        { provide: UserService, useValue: mockUserService }
+        { provide: Location, useValue: locationSpy }
       ]
-    }).compileComponents()
+    })
+    TestBed.overrideComponent(MenuComponent, {
+      add: {
+        providers: [
+          { provide: BreadcrumbService, useValue: {} },
+          { provide: UserService, useValue: mockUserService },
+          { provide: PortalMessageService, useValue: msgServiceSpy },
+          { provide: WorkspaceService, useValue: workspaceServiceSpy },
+          { provide: WorkspaceAPIService, useValue: workspaceApiSpy },
+          { provide: WorkspaceRolesAPIService, useValue: wRoleServiceSpy },
+          { provide: MenuItemAPIService, useValue: menuApiServiceSpy },
+          { provide: AssignmentAPIService, useValue: assgmtApiServiceSpy }
+        ]
+      }
+    })
+    TestBed.compileComponents()
   }))
 
   beforeEach(() => {
@@ -198,7 +212,10 @@ describe('MenuComponent', () => {
       expect(component).toBeTruthy()
     })
 
-    it('it should push permissions to array if userService has them', () => {
+    // permissions are loaded asynchronously in the constructor via Promise.all(...).then(...)
+    it('it should push permissions to array if userService has them', async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0))
+
       expect(component.myPermissions).toContain('MENU#VIEW')
       expect(component.myPermissions).toContain('MENU#CREATE')
       expect(component.myPermissions).toContain('MENU#EDIT')
@@ -238,12 +255,12 @@ describe('MenuComponent', () => {
 
     it('should have BACK navigation', () => {
       if (component.actions$) {
-        component.actions$.subscribe((actions) => {
-          const action = actions[0]
-          action.actionCallback()
+        let actions: any = []
+        component.actions$!.subscribe((act) => (actions = act))
 
-          expect(locationSpy.back).toHaveBeenCalled()
-        })
+        actions[0].actionCallback()
+
+        expect(locationSpy.back).toHaveBeenCalled()
       }
     })
 
@@ -251,15 +268,15 @@ describe('MenuComponent', () => {
       spyOn(component, 'onCreateMenu')
 
       if (component.actions$) {
-        component.actions$.subscribe((actions) => {
-          const action = actions[1]
-          action.actionCallback()
+        let actions: any = []
+        component.actions$!.subscribe((act) => (actions = act))
 
-          expect(action.permission).toEqual('MENU#CREATE')
-          //expect(component.changeMode).toEqual('CREATE')
-          expect(component.onCreateMenu).toHaveBeenCalled()
-          //expect(component.displayDetailDialog).toBeTrue()
-        })
+        actions[1].actionCallback()
+
+        expect(actions[1].permission).toEqual('MENU#CREATE')
+        //expect(component.changeMode).toEqual('CREATE')
+        expect(component.onCreateMenu).toHaveBeenCalled()
+        //expect(component.displayDetailDialog).toBeTrue()
       }
     })
 
@@ -267,16 +284,16 @@ describe('MenuComponent', () => {
       spyOn(component, 'onExportMenu')
 
       if (component.actions$) {
-        component.actions$.subscribe((actions) => {
-          const action = actions[2]
-          action.actionCallback()
+        let actions: any = []
+        component.actions$!.subscribe((act) => (actions = act))
 
-          expect(action.permission).toEqual('MENU#EXPORT')
-          expect(action.showCondition).toBeFalse()
-          expect(component.onExportMenu).toHaveBeenCalled()
-          expect(component.menuItems).toEqual([])
-          expect(component.menuItems?.length).toBe(0)
-        })
+        actions[2].actionCallback()
+
+        expect(actions[2].permission).toEqual('MENU#EXPORT')
+        expect(actions[2].showCondition).toBeFalse()
+        expect(component.onExportMenu).toHaveBeenCalled()
+        expect(component.menuItems).toEqual([])
+        expect(component.menuItems?.length).toBe(0)
       }
     })
     it('should call EXPORT', () => {
@@ -284,14 +301,14 @@ describe('MenuComponent', () => {
       component.menuItems = mockMenuItems
 
       if (component.actions$) {
-        component.actions$.subscribe((actions) => {
-          const action = actions[2]
-          action.actionCallback()
-          expect(component.onExportMenu).toHaveBeenCalled()
-          expect(action.permission).toEqual('MENU#EXPORT')
-          expect(action.showCondition).toBeTrue()
-          expect(component.menuItems?.length).toBe(2)
-        })
+        let actions: any = []
+        component.actions$!.subscribe((act) => (actions = act))
+
+        actions[2].actionCallback()
+        expect(component.onExportMenu).toHaveBeenCalled()
+        expect(actions[2].permission).toEqual('MENU#EXPORT')
+        expect(actions[2].showCondition).toBeTrue()
+        expect(component.menuItems?.length).toBe(2)
       }
     })
 
@@ -308,13 +325,12 @@ describe('MenuComponent', () => {
 
     it('should call IMPORT', () => {
       spyOn(component, 'onImportMenu')
-
       if (component.actions$) {
-        component.actions$.subscribe((actions) => {
-          const action = actions[3]
-          action.actionCallback()
-          expect(component.onImportMenu).toHaveBeenCalled()
-        })
+        let actions: any = []
+        component.actions$!.subscribe((act) => (actions = act))
+
+        actions[3].actionCallback()
+        expect(component.onImportMenu).toHaveBeenCalled()
       }
     })
   })
@@ -539,11 +555,13 @@ describe('MenuComponent', () => {
    * CREATE + EDIT + DELETE
    */
 
-  it('should displayDetailDialog and change mode onGoToDetails: edit permission', () => {
+  it('should displayDetailDialog and change mode onGoToDetails: edit permission', async () => {
     const event: MouseEvent = new MouseEvent('type')
     const item = {
       id: 'id1'
     }
+    // myPermissions is loaded asynchronously in the constructor via Promise.all(...).then(...)
+    await new Promise((resolve) => setTimeout(resolve, 0))
 
     component.onGotoDetails(event, item)
 

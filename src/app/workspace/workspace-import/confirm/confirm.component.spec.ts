@@ -1,7 +1,7 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { provideNoopAnimations } from '@angular/platform-browser/animations'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of } from 'rxjs'
 
@@ -29,28 +29,17 @@ describe('ConfirmComponent', () => {
   let component: ConfirmComponent
   let fixture: ComponentFixture<ConfirmComponent>
 
-  const apiServiceSpy = {
-    searchWorkspaces: jasmine.createSpy('searchWorkspaces').and.returnValue(of({}))
-  }
-
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ConfirmComponent],
       imports: [
+        ConfirmComponent,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
-      schemas: [NO_ERRORS_SCHEMA],
-      providers: [
-        provideHttpClientTesting(),
-        provideHttpClient(),
-        { provide: WorkspaceAPIService, useValue: apiServiceSpy }
-      ]
+      providers: [provideHttpClient(), provideHttpClientTesting(), provideNoopAnimations()]
     }).compileComponents()
-
-    apiServiceSpy.searchWorkspaces.calls.reset()
   }))
 
   beforeEach(() => {
@@ -66,8 +55,19 @@ describe('ConfirmComponent', () => {
   })
 
   describe('on init', () => {
-    it('should set baseUrlExists to true in checkWorkspaceUniqueness onInit', () => {
-      apiServiceSpy.searchWorkspaces.and.returnValue(of({ stream: workspaces }))
+    // WorkspaceAPIService is providedIn: 'any', so the component resolves its own instance
+    // that shadows the TestBed root provider. Stub the method on the instance the component
+    // actually holds to control the searchWorkspaces result.
+    function stubSearchWorkspaces(stream: WorkspaceAbstract[]): void {
+      const workspaceApi = (component as unknown as { workspaceApi: WorkspaceAPIService }).workspaceApi
+      // the generated method has HttpEvent-typed overloads; cast to satisfy the spy
+      spyOn(workspaceApi, 'searchWorkspaces').and.returnValue(
+        of({ stream }) as unknown as ReturnType<WorkspaceAPIService['searchWorkspaces']>
+      )
+    }
+
+    it('should call fetchWorkspace on init when a workspace is imported', () => {
+      stubSearchWorkspaces(workspaces)
       component.importWorkspace = { ...impWorkspace }
       spyOn<any>(component, 'fetchWorkspace')
 
@@ -76,19 +76,18 @@ describe('ConfirmComponent', () => {
       expect(component['fetchWorkspace']).toHaveBeenCalled()
     })
 
-    it('should reflect missing baseUrl and fetch portals OnInit', () => {
-      apiServiceSpy.searchWorkspaces.and.returnValue(of([]))
+    it('should reflect missing baseUrl on init', () => {
+      stubSearchWorkspaces([])
       component.importWorkspace = { ...impWorkspace, baseUrl: undefined }
-      spyOn(component, 'checkWorkspaceUniqueness')
 
       component.ngOnInit()
 
-      expect(component.checkWorkspaceUniqueness).toHaveBeenCalled()
       expect(component.baseUrlIsMissing).toBeTrue()
+      expect(component.baseUrlExists).toBeFalse()
     })
 
     it('should set workspaceNameExists to true in checkWorkspaceUniqueness onInit if no permission', () => {
-      apiServiceSpy.searchWorkspaces.and.returnValue(of({ stream: workspaces }))
+      stubSearchWorkspaces(workspaces)
 
       component.importWorkspace = { ...impWorkspace, name: workspaces[0].name }
       component.hasPermission = false
@@ -99,7 +98,7 @@ describe('ConfirmComponent', () => {
     })
 
     it('should set baseUrlExists to true in checkWorkspaceUniqueness onInit', () => {
-      apiServiceSpy.searchWorkspaces.and.returnValue(of({ stream: workspaces }))
+      stubSearchWorkspaces(workspaces)
       component.importWorkspace = { ...impWorkspace, baseUrl: workspaces[0].baseUrl }
 
       component.ngOnInit()

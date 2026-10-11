@@ -71,7 +71,6 @@
         [supportedViews]="['grid']"
         [initialViewMode]="'grid'"
         [enableFiltering]="true"
-        (filterChange)="slotsDataView.filter($event)"
         [filterColumns]="['SLOT.NAME' | translate]"
         [enableSorting]="true"
         [sortingOptions]="[
@@ -80,9 +79,6 @@
         ]"
         [defaultSortOption]="'name'"
         [defaultSortDirection]="false"
-        (sortChange)="onSortChange($event)"
-        (sortDirectionChange)="onSortDirChange($event)"
-        [translations]="(dataViewControlsTranslations$ | async) ?? {}"
       >
       </ocx-data-view-controls>
       <!-- Additional Actions -->

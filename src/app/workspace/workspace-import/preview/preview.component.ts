@@ -1,16 +1,51 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core'
-import { FormControl, FormGroup, Validators } from '@angular/forms'
-import { TreeNode } from 'primeng/api'
+import { AsyncPipe } from '@angular/common'
+import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { TranslateModule } from '@ngx-translate/core'
 import { BehaviorSubject, Observable } from 'rxjs'
 
+import { ButtonModule } from 'primeng/button'
+import { CheckboxModule } from 'primeng/checkbox'
+import { DialogModule } from 'primeng/dialog'
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { FileUploadModule } from 'primeng/fileupload'
+import { InputTextModule } from 'primeng/inputtext'
+import { MessageModule } from 'primeng/message'
+import { SelectModule } from 'primeng/select'
+import { TabsModule } from 'primeng/tabs'
+import { TooltipModule } from 'primeng/tooltip'
+import { TreeModule } from 'primeng/tree'
+import { TreeNode } from 'primeng/api'
+
+import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
 import { SlotService } from '@onecx/angular-remote-components'
 
 import { EximWorkspaceMenuItem, Product } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
+
 import { Theme, ImportWorkspace } from '../workspace-import.component'
 
 @Component({
   selector: 'app-import-preview',
+  standalone: true,
+  imports: [
+    AsyncPipe,
+    AngularAcceleratorModule,
+    ButtonModule,
+    CheckboxModule,
+    DialogModule,
+    FormsModule,
+    FloatLabelModule,
+    FileUploadModule,
+    InputTextModule,
+    MessageModule,
+    ReactiveFormsModule,
+    SelectModule,
+    TabsModule,
+    TooltipModule,
+    TranslateModule,
+    TreeModule
+  ],
   templateUrl: './preview.component.html',
   styleUrls: ['./preview.component.scss']
 })

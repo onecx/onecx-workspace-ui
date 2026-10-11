@@ -1,329 +1,348 @@
-<p-dialog
-  [header]="'DIALOG.SLOT.HEADER.VIEW' | translate"
-  [(visible)]="displayDialog"
-  (onHide)="onClose()"
-  [modal]="true"
-  [closable]="true"
-  [resizable]="true"
-  [dismissableMask]="true"
-  contentStyleClass="overflow-y-auto md:overflow-y-hidden"
->
-  <ng-container *ngIf="slot?.name">
-    <!-- display slot name on dialog header -->
-    <div
-      class="absolute hidden lg:dialog-header-right-slot"
-      [attr.aria-label]="'SLOT.NAME' | translate"
-      [pTooltip]="'SLOT.NAME' | translate"
-      tooltipPosition="top"
-      tooltipEvent="hover"
-    >
-      {{ slot?.name }}
-    </div>
-    <!-- display slot name on dialog content -->
-    <span class="mt-1 mb-4 p-float-label lg:hidden">
-      <input
-        pInputText
-        type="text"
-        [style]="{ width: 2 + (slot?.name?.length ?? 0) + 'ch' }"
-        id="ws_slot_detail_item_slot_name"
-        class="pt-3 pb-2 text-responsive"
-        [value]="slot?.name"
-        [disabled]="true"
+@if (displayDialog) {
+  <p-dialog
+    [visible]="true"
+    (visibleChange)="onClose()"
+    [header]="'DIALOG.SLOT.HEADER.VIEW' | translate"
+    [modal]="true"
+    [closable]="true"
+    [resizable]="true"
+    [dismissableMask]="true"
+    contentStyleClass="overflow-y-auto md:overflow-y-hidden"
+  >
+    @if (slot?.name) {
+      <!-- display slot name on dialog header -->
+      <div
+        class="absolute hidden lg:dialog-header-right-slot"
         [attr.aria-label]="'SLOT.NAME' | translate"
         [pTooltip]="'SLOT.NAME' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
-      />
-      <label for="ws_slot_detail_item_slot_name">{{ 'SLOT.NAME' | translate }}</label>
-    </span>
-  </ng-container>
+      >
+        {{ slot?.name }}
+      </div>
+      <!-- display slot name on dialog content -->
+      <span class="mt-1 mb-4 p-float-label lg:hidden">
+        <input
+          pInputText
+          type="text"
+          [style]="{ width: 2 + (slot?.name?.length ?? 0) + 'ch' }"
+          id="ws_slot_detail_item_slot_name"
+          class="pt-3 pb-2 text-responsive"
+          [value]="slot?.name"
+          [disabled]="true"
+          [attr.aria-label]="'SLOT.NAME' | translate"
+          [pTooltip]="'SLOT.NAME' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        />
+        <label for="ws_slot_detail_item_slot_name">{{ 'SLOT.NAME' | translate }}</label>
+      </span>
+    }
 
-  <p-tabView [(activeIndex)]="selectedTabIndex">
-    <p-tabPanel
-      id="ws_slot_detail_components"
-      [header]="'DIALOG.SLOT.TABS.COMPONENTS' | translate"
-      [attr.aria-label]="'DIALOG.SLOT.TABS.COMPONENTS' | translate"
-      [tooltip]="'DIALOG.SLOT.TABS.TOOLTIPS.COMPONENTS' | translate"
-      tooltipPosition="top"
-      tooltipEvent="hover"
-    >
-      <div class="flex flex-row column-gap-4">
-        <p-pickList
-          #picklist
-          id="ws_slot_detail_component_picklist"
-          [filterBy]="'name'"
-          [source]="psComponents"
-          [target]="wComponents"
-          [showSourceControls]="false"
-          [showTargetControls]="showTargetControls && wComponents.length > 1"
-          [responsive]="true"
-          [metaKeySelection]="true"
-          [disabled]="!hasEditPermission"
-          (onTargetSelect)="onTargetSelect($event)"
-          (onTargetReorder)="onSaveSlot(true)"
-          (onMoveToTarget)="onSaveSlot(false)"
-          (onMoveToSource)="onDeregister($event)"
+    <p-tabs [(value)]="selectedTabIndex">
+      <p-tablist>
+        <p-tab
+          value="0"
+          id="ws_slot_detail_components"
+          [ariaLabel]="'DIALOG.SLOT.TABS.COMPONENTS' | translate"
+          [pTooltip]="'DIALOG.SLOT.TABS.TOOLTIPS.COMPONENTS' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
         >
-          <ng-template pTemplate="sourceHeader">
-            <div class="flex flex-row justify-content-between align-items-center column-gap-2">
-              <div
-                class="flex-grow-1"
-                [attr.aria-label]="'DIALOG.SLOT.COMPONENTS.NOT_USED' | translate"
-                [pTooltip]="'DIALOG.SLOT.COMPONENTS.NOT_USED.TOOLTIP' | translate"
-                tooltipPosition="top"
-                tooltipEvent="hover"
-              >
-                {{ 'DIALOG.SLOT.COMPONENTS.NOT_USED' | translate }}: {{ psComponents.length }}
-              </div>
-            </div>
-          </ng-template>
-          <ng-template pTemplate="targetHeader">
-            <div class="flex flex-row justify-content-between align-items-center column-gap-2">
-              <div
-                class="flex-grow-1"
-                [attr.aria-label]="'DIALOG.SLOT.COMPONENTS.USED' | translate"
-                [pTooltip]="'DIALOG.SLOT.COMPONENTS.USED.TOOLTIP' | translate"
-                tooltipPosition="top"
-                tooltipEvent="hover"
-              >
-                {{ 'DIALOG.SLOT.COMPONENTS.USED' | translate }}: {{ wComponents.length }}
-              </div>
-            </div>
-          </ng-template>
-
-          <ng-template pTemplate="sourceFilter" let-options="options">
-            <div class="p-inputgroup p-picklist-filter">
-              <input
-                #sourceFilter
-                id="ws_slot_detail_picklist_unregistered_filter_value"
-                class="p-picklist-filter-input p-inputtext p-component"
-                [(ngModel)]="sourceFilterValue"
-                (keyup)="options.filter(getFilterValue($event))"
-                type="text"
-                [placeholder]="'DIALOG.DATAVIEW.FILTER' | translate"
-                [attr.aria-label]="'DIALOG.DATAVIEW.FILTER' | translate"
-                [pTooltip]="'DIALOG.DATAVIEW.SLOT_FILTER_TOOLTIP' | translate"
-                tooltipPosition="top"
-                tooltipEvent="hover"
-              />
-              <button
-                id="ws_slot_detail_picklist_unregistered_filter_clear"
-                class="p-inputgroup-addon cursor-pointer pi pi-filter-slash"
-                [ngClass]="{ 'bg-primary': sourceFilter.value !== '', 'p-disabled': sourceFilter.value === '' }"
-                [ngStyle]="
-                  sourceFilter.value === ''
-                    ? { 'background-color': 'var(--emphasis-lower)', opacity: 'var(--disabled-opacity)' }
-                    : null
-                "
-                (keydown.space)="options.reset(); sourceFilterValue = undefined"
-                (click)="options.reset(); sourceFilterValue = undefined"
-                [attr.aria-label]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
-                [pTooltip]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
-                tooltipPosition="top"
-                tooltipEvent="hover"
-              ></button>
-            </div>
-          </ng-template>
-          <ng-template pTemplate="targetFilter" let-options="options">
-            <div class="p-inputgroup p-picklist-filter">
-              <input
-                #targetFilter
-                id="ws_slot_detail_picklist_registered_filter_value"
-                class="p-picklist-filter-input p-inputtext p-component"
-                [(ngModel)]="targetFilterValue"
-                (keyup)="options.filter(getFilterValue($event))"
-                type="text"
-                [placeholder]="'DIALOG.DATAVIEW.FILTER' | translate"
-                [attr.aria-label]="'DIALOG.DATAVIEW.FILTER' | translate"
-                [pTooltip]="'DIALOG.DATAVIEW.SLOT_FILTER_TOOLTIP' | translate"
-                tooltipPosition="top"
-                tooltipEvent="hover"
-              />
-              <button
-                id="ws_slot_detail_picklist_registered_filter_clear"
-                class="p-inputgroup-addon cursor-pointer pi pi-filter-slash"
-                [ngClass]="{ 'bg-primary': targetFilter.value !== '', 'p-disabled': targetFilter.value === '' }"
-                [ngStyle]="
-                  targetFilter.value === ''
-                    ? { 'background-color': 'var(--emphasis-lower)', opacity: 'var(--disabled-opacity)' }
-                    : null
-                "
-                (keydown.space)="options.reset(); targetFilterValue = undefined"
-                (click)="options.reset(); targetFilterValue = undefined"
-                [attr.aria-label]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
-                [pTooltip]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
-                tooltipPosition="top"
-                tooltipEvent="hover"
-              ></button>
-            </div>
-          </ng-template>
-
-          <ng-template let-component let-i="rowIndex" pTemplate="item">
-            <div class="pl-2 pr-1 flex flex-row flex-nowrap justify-content-between column-gap-2 align-items-center">
-              <!-- CONTENT -->
-              <div class="py-0 sm:py-1 flex flex-column row-gap-0" (dblclick)="return($event)">
-                <div
-                  [id]="'ws_slot_detail_picklist_' + i + '_component_name'"
-                  class="font-semibold text-sm md:text-md max-w-21rem text-responsive"
-                >
-                  {{ component.name }}
+          {{ 'DIALOG.SLOT.TABS.COMPONENTS' | translate }}
+        </p-tab>
+        <p-tab
+          value="1"
+          id="ws_slot_detail_products"
+          [ariaLabel]="'DIALOG.SLOT.TABS.PRODUCTS' | translate"
+          [pTooltip]="'DIALOG.SLOT.TABS.TOOLTIPS.PRODUCTS' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        >
+          {{ 'DIALOG.SLOT.TABS.PRODUCTS' | translate }}
+        </p-tab>
+      </p-tablist>
+      <p-tabpanels>
+        <p-tabpanel value="0">
+          <div class="flex flex-row column-gap-4">
+            <p-pickList
+              #picklist
+              id="ws_slot_detail_component_picklist"
+              [filterBy]="'name'"
+              [source]="psComponents"
+              [target]="wComponents"
+              [showSourceControls]="false"
+              [showTargetControls]="showTargetControls && wComponents.length > 1"
+              [responsive]="true"
+              [metaKeySelection]="true"
+              [disabled]="!hasEditPermission"
+              (onTargetSelect)="onTargetSelect($event)"
+              (onTargetReorder)="onSaveSlot(true)"
+              (onMoveToTarget)="onSaveSlot(false)"
+              (onMoveToSource)="onDeregister($event)"
+            >
+              <ng-template pTemplate="sourceHeader">
+                <div class="flex flex-row justify-content-between align-items-center column-gap-2">
+                  <div
+                    class="flex-grow-1"
+                    [attr.aria-label]="'DIALOG.SLOT.COMPONENTS.NOT_USED' | translate"
+                    [pTooltip]="'DIALOG.SLOT.COMPONENTS.NOT_USED.TOOLTIP' | translate"
+                    tooltipPosition="top"
+                    tooltipEvent="hover"
+                  >
+                    {{ 'DIALOG.SLOT.COMPONENTS.NOT_USED' | translate }}: {{ psComponents.length }}
+                  </div>
                 </div>
-                <div
-                  [id]="'ws_slot_detail_picklist_' + i + '_product_name'"
-                  class="text-xs max-w-22rem text-responsive"
-                >
-                  {{ component.productName }}
+              </ng-template>
+              <ng-template pTemplate="targetHeader">
+                <div class="flex flex-row justify-content-between align-items-center column-gap-2">
+                  <div
+                    class="flex-grow-1"
+                    [attr.aria-label]="'DIALOG.SLOT.COMPONENTS.USED' | translate"
+                    [pTooltip]="'DIALOG.SLOT.COMPONENTS.USED.TOOLTIP' | translate"
+                    tooltipPosition="top"
+                    tooltipEvent="hover"
+                  >
+                    {{ 'DIALOG.SLOT.COMPONENTS.USED' | translate }}: {{ wComponents.length }}
+                  </div>
                 </div>
-              </div>
-              <!-- BADGES -->
-              @if (component?.undeployed) {
+              </ng-template>
+
+              <ng-template pTemplate="sourceFilter" let-options="options">
+                <div class="p-inputgroup p-picklist-filter">
+                  <input
+                    #sourceFilter
+                    id="ws_slot_detail_picklist_unregistered_filter_value"
+                    class="p-picklist-filter-input p-inputtext p-component"
+                    [(ngModel)]="sourceFilterValue"
+                    (keyup)="options.filter(getFilterValue($event))"
+                    type="text"
+                    [placeholder]="'DIALOG.DATAVIEW.FILTER' | translate"
+                    [attr.aria-label]="'DIALOG.DATAVIEW.FILTER' | translate"
+                    [pTooltip]="'DIALOG.DATAVIEW.SLOT_FILTER_TOOLTIP' | translate"
+                    tooltipPosition="top"
+                    tooltipEvent="hover"
+                  />
+                  <button
+                    id="ws_slot_detail_picklist_unregistered_filter_clear"
+                    class="p-inputgroup-addon cursor-pointer pi pi-filter-slash"
+                    [ngClass]="{ 'bg-primary': sourceFilter.value !== '', 'p-disabled': sourceFilter.value === '' }"
+                    [ngStyle]="
+                      sourceFilter.value === ''
+                        ? { 'background-color': 'var(--emphasis-lower)', opacity: 'var(--disabled-opacity)' }
+                        : null
+                    "
+                    (keydown.space)="options.reset(); sourceFilterValue = undefined"
+                    (click)="options.reset(); sourceFilterValue = undefined"
+                    [attr.aria-label]="'DIALOG.DATAVIEW.FILTER.CLEAR' | translate"
+                    [pTooltip]="'DIALOG.DATAVIEW.FILTER.CLEAR' | translate"
+                    tooltipPosition="top"
+                    tooltipEvent="hover"
+                  ></button>
+                </div>
+              </ng-template>
+              <ng-template pTemplate="targetFilter" let-options="options">
+                <div class="p-inputgroup p-picklist-filter">
+                  <input
+                    #targetFilter
+                    id="ws_slot_detail_picklist_registered_filter_value"
+                    class="p-picklist-filter-input p-inputtext p-component"
+                    [(ngModel)]="targetFilterValue"
+                    (keyup)="options.filter(getFilterValue($event))"
+                    type="text"
+                    [placeholder]="'DIALOG.DATAVIEW.FILTER' | translate"
+                    [attr.aria-label]="'DIALOG.DATAVIEW.FILTER' | translate"
+                    [pTooltip]="'DIALOG.DATAVIEW.SLOT_FILTER_TOOLTIP' | translate"
+                    tooltipPosition="top"
+                    tooltipEvent="hover"
+                  />
+                  <button
+                    id="ws_slot_detail_picklist_registered_filter_clear"
+                    class="p-inputgroup-addon cursor-pointer pi pi-filter-slash"
+                    [ngClass]="{ 'bg-primary': targetFilter.value !== '', 'p-disabled': targetFilter.value === '' }"
+                    [ngStyle]="
+                      targetFilter.value === ''
+                        ? { 'background-color': 'var(--emphasis-lower)', opacity: 'var(--disabled-opacity)' }
+                        : null
+                    "
+                    (keydown.space)="options.reset(); targetFilterValue = undefined"
+                    (click)="options.reset(); targetFilterValue = undefined"
+                    [attr.aria-label]="'DIALOG.DATAVIEW.FILTER.CLEAR' | translate"
+                    [pTooltip]="'DIALOG.DATAVIEW.FILTER.CLEAR' | translate"
+                    tooltipPosition="top"
+                    tooltipEvent="hover"
+                  ></button>
+                </div>
+              </ng-template>
+
+              <ng-template let-component let-i="rowIndex" pTemplate="item">
                 <div
-                  [id]="'ws_slot_detail_picklist_' + i + '_undeployed'"
-                  class="danger-action-text text-lg pi pi-ban"
-                  [attr.aria-label]="'DIALOG.SLOT.UNDEPLOYED.COMPONENT.TOOLTIP' | translate"
-                  [pTooltip]="'DIALOG.SLOT.UNDEPLOYED.COMPONENT.TOOLTIP' | translate"
-                  tooltipPosition="top"
-                  tooltipEvent="hover"
-                ></div>
-              } @else if (component?.deprecated) {
-                <div
-                  [id]="'ws_slot_detail_picklist_' + i + '_deprecated'"
-                  class="danger-action-text text-lg pi pi-exclamation-circle"
-                  [attr.aria-label]="'DIALOG.SLOT.DEPRECATED' | translate"
-                  [pTooltip]="'DIALOG.SLOT.DEPRECATED.TOOLTIP' | translate"
-                  tooltipPosition="top"
-                  tooltipEvent="hover"
-                ></div>
-              } @else if (component?.productUnregistered) {
-                <div
-                  [id]="'ws_slot_detail_picklist_' + i + '_product_unregistered'"
-                  class="danger-action-text text-lg pi pi-trash"
-                  [attr.aria-label]="'DIALOG.SLOT.PRODUCT_UNREGISTERED' | translate"
-                  [pTooltip]="'DIALOG.SLOT.PRODUCT_UNREGISTERED' | translate"
-                  tooltipPosition="top"
-                  tooltipEvent="hover"
-                ></div>
-              }
-            </div>
-          </ng-template>
-        </p-pickList>
-        <!-- manage picklist bug: use the following invisible dummy if controls are hidden (no selected items) -->
-        <div *ngIf="!showTargetControls && wComponents.length > 1">
-          <button type="button" class="invisible p-element p-ripple p-button-icon-only p-button p-component"></button>
+                  class="pl-2 pr-1 flex flex-row flex-nowrap justify-content-between column-gap-2 align-items-center"
+                >
+                  <!-- CONTENT -->
+                  <div class="py-0 sm:py-1 flex flex-column row-gap-0" (dblclick)="return($event)">
+                    <div
+                      [id]="'ws_slot_detail_picklist_' + i + '_component_name'"
+                      class="font-semibold text-sm md:text-md max-w-21rem text-responsive"
+                    >
+                      {{ component.name }}
+                    </div>
+                    <div
+                      [id]="'ws_slot_detail_picklist_' + i + '_product_name'"
+                      class="text-xs max-w-22rem text-responsive"
+                    >
+                      {{ component.productName }}
+                    </div>
+                  </div>
+                  <!-- BADGES -->
+                  @if (component?.undeployed) {
+                    <div
+                      [id]="'ws_slot_detail_picklist_' + i + '_undeployed'"
+                      class="danger-action-text text-lg pi pi-ban"
+                      [attr.aria-label]="'DIALOG.SLOT.UNDEPLOYED.COMPONENT.TOOLTIP' | translate"
+                      [pTooltip]="'DIALOG.SLOT.UNDEPLOYED.COMPONENT.TOOLTIP' | translate"
+                      tooltipPosition="top"
+                      tooltipEvent="hover"
+                    ></div>
+                  } @else if (component?.deprecated) {
+                    <div
+                      [id]="'ws_slot_detail_picklist_' + i + '_deprecated'"
+                      class="danger-action-text text-lg pi pi-exclamation-circle"
+                      [attr.aria-label]="'DIALOG.SLOT.DEPRECATED' | translate"
+                      [pTooltip]="'DIALOG.SLOT.DEPRECATED.TOOLTIP' | translate"
+                      tooltipPosition="top"
+                      tooltipEvent="hover"
+                    ></div>
+                  } @else if (component?.productUnregistered) {
+                    <div
+                      [id]="'ws_slot_detail_picklist_' + i + '_product_unregistered'"
+                      class="danger-action-text text-lg pi pi-trash"
+                      [attr.aria-label]="'DIALOG.SLOT.PRODUCT_UNREGISTERED' | translate"
+                      [pTooltip]="'DIALOG.SLOT.PRODUCT_UNREGISTERED' | translate"
+                      tooltipPosition="top"
+                      tooltipEvent="hover"
+                    ></div>
+                  }
+                </div>
+              </ng-template>
+            </p-pickList>
+            <!-- manage picklist bug: use the following invisible dummy if controls are hidden (no selected items) -->
+            @if (!showTargetControls && wComponents.length > 1) {
+              <button
+                type="button"
+                class="invisible p-element p-ripple p-button-icon-only p-button p-component"
+              ></button>
+            }
+          </div>
+        </p-tabpanel>
+
+        <p-tabpanel value="1">
+          <div [style]="{ 'min-width': '35rem', 'min-height': '7rem' }">
+            @if (slot?.productNames?.length === 0) {
+              <p-message
+                id="ws_slot_detail_no_products_message"
+                severity="warn"
+                styleClass="mx-2 w-30rem"
+                [text]="'DIALOG.SLOT.PRODUCTS.NOT_FOUND' | translate"
+              ></p-message>
+            } @else {
+              <div>{{ 'DIALOG.SLOT.PRODUCTS.TOOLTIP' | translate }}</div>
+              <ul class="ml-0 mt-2">
+                <li *ngFor="let productName of slot?.productNames; let i = index" class="">
+                  <div class="p-1 flex flex-row column-gap-2">
+                    <div [id]="'ws_slot_detail_product_' + i + '_name'" class="text-md max-w-30rem text-responsive">
+                      {{ productName }}
+                    </div>
+                    @if (slot?.undeployed) {
+                      <div
+                        [id]="'ws_slot_detail_product_' + i + '_undeployed'"
+                        class="danger-action-text text-md pi pi-ban"
+                        [attr.aria-label]="'DIALOG.SLOT.UNDEPLOYED' | translate"
+                        [pTooltip]="'DIALOG.SLOT.UNDEPLOYED.TOOLTIP' | translate"
+                        tooltipPosition="top"
+                        tooltipEvent="hover"
+                      ></div>
+                    }
+                    @if (slot?.deprecated) {
+                      <div
+                        [id]="'ws_slot_detail_product_' + i + '_deprecated'"
+                        class="danger-action-text text-md pi pi-exclamation-circle"
+                        [attr.aria-label]="'DIALOG.SLOT.DEPRECATED' | translate"
+                        [pTooltip]="'DIALOG.SLOT.DEPRECATED.TOOLTIP' | translate"
+                        tooltipPosition="top"
+                        tooltipEvent="hover"
+                      ></div>
+                    }
+                  </div>
+                </li>
+              </ul>
+            }
+          </div>
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+
+    <ng-template pTemplate="footer">
+      <div class="flex flex-row flex-wrap column-gap-2 row-gap-1 justify-content-end">
+        <p-button
+          id="ws_slot_detail_action_close"
+          icon="pi pi-times"
+          (onClick)="onClose()"
+          [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+          [ariaLabel]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+          [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        ></p-button>
+      </div>
+    </ng-template>
+  </p-dialog>
+
+  <!-- DEREGISTER COMPONENT -->
+  <p-dialog
+    [header]="'DIALOG.SLOT.HEADER.COMPONENTS.DEREGISTER' | translate"
+    [(visible)]="displayDeregisterConfirmation"
+    (onHide)="displayDeregisterConfirmation = false"
+    [modal]="true"
+    [closable]="true"
+    [resizable]="false"
+    [dismissableMask]="true"
+    [style]="{ width: '400px' }"
+    styleClass="disable-max-height-preset"
+  >
+    <div class="my-2 flex column-gap-4 row-gap-1 justify-content-start align-items-center">
+      <div class="pi pi-question-circle text-3xl danger-action-text"></div>
+      <div class="flex flex-column row-gap-2">
+        <div id="ws_slot_deregister_message" class="font-bold">
+          {{ 'ACTIONS.DELETE.SLOT.DEREGISTER_COMPONENTS' | translate }}
         </div>
+        <div>{{ 'ACTIONS.DELETE.INFO' | translate }}</div>
       </div>
-    </p-tabPanel>
-
-    <p-tabPanel
-      id="ws_slot_detail_products"
-      [header]="'DIALOG.SLOT.TABS.PRODUCTS' | translate"
-      [attr.aria-label]="'DIALOG.SLOT.TABS.PRODUCTS' | translate"
-      [tooltip]="'DIALOG.SLOT.TABS.TOOLTIPS.PRODUCTS' | translate"
-      tooltipPosition="top"
-      tooltipEvent="hover"
-    >
-      <div [style]="{ 'min-width': '35rem', 'min-height': '7rem' }">
-        <p-message
-          *ngIf="slot?.productNames?.length === 0; else ProductsWithSlots"
-          id="ws_slot_detail_no_products_message"
-          severity="warn"
-          styleClass="mx-2 w-30rem"
-          [text]="'DIALOG.SLOT.PRODUCTS.NOT_FOUND' | translate"
-        ></p-message>
-        <ng-template #ProductsWithSlots>
-          <div>{{ 'DIALOG.SLOT.PRODUCTS.TOOLTIP' | translate }}</div>
-          <ul class="ml-0 mt-2">
-            <li *ngFor="let productName of slot?.productNames; let i = index" class="">
-              <div class="p-1 flex flex-row column-gap-2">
-                <div [id]="'ws_slot_detail_product_' + i + '_name'" class="text-md max-w-30rem text-responsive">
-                  {{ productName }}
-                </div>
-                <div
-                  *ngIf="slot?.undeployed"
-                  [id]="'ws_slot_detail_product_' + i + '_undeployed'"
-                  class="danger-action-text text-md pi pi-ban"
-                  [attr.aria-label]="'DIALOG.SLOT.UNDEPLOYED' | translate"
-                  [pTooltip]="'DIALOG.SLOT.UNDEPLOYED.TOOLTIP' | translate"
-                  tooltipPosition="top"
-                  tooltipEvent="hover"
-                ></div>
-                <div
-                  *ngIf="slot?.deprecated"
-                  [id]="'ws_slot_detail_product_' + i + '_deprecated'"
-                  class="danger-action-text text-md pi pi-exclamation-circle"
-                  [attr.aria-label]="'DIALOG.SLOT.DEPRECATED' | translate"
-                  [pTooltip]="'DIALOG.SLOT.DEPRECATED' | translate"
-                  tooltipPosition="top"
-                  tooltipEvent="hover"
-                ></div>
-              </div>
-            </li>
-          </ul>
-        </ng-template>
+    </div>
+    <ng-template pTemplate="footer">
+      <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
+        <p-button
+          id="ws_slot_deregister_action_no"
+          icon="pi pi-times"
+          (onClick)="onDeregisterCancellation()"
+          [label]="'ACTIONS.CONFIRMATION.NO' | translate"
+          [ariaLabel]="'ACTIONS.CONFIRMATION.NO' | translate"
+          [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        ></p-button>
+        <p-button
+          id="ws_slot_deregister_action_yes"
+          icon="pi pi-check"
+          iconPos="left"
+          (onClick)="onDeregisterConfirmation()"
+          [label]="'ACTIONS.CONFIRMATION.YES' | translate"
+          [ariaLabel]="'ACTIONS.CONFIRMATION.YES' | translate"
+          [pTooltip]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        ></p-button>
       </div>
-    </p-tabPanel>
-  </p-tabView>
-
-  <ng-template pTemplate="footer">
-    <div class="flex flex-row flex-wrap column-gap-2 row-gap-1 justify-content-end">
-      <p-button
-        id="ws_slot_detail_action_close"
-        icon="pi pi-times"
-        (onClick)="onClose()"
-        [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
-        [ariaLabel]="'ACTIONS.NAVIGATION.CLOSE' | translate"
-        [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      ></p-button>
-    </div>
-  </ng-template>
-</p-dialog>
-
-<!-- DEREGISTER COMPONENT -->
-<p-dialog
-  [header]="'DIALOG.SLOT.HEADER.COMPONENTS.DEREGISTER' | translate"
-  [(visible)]="displayDeregisterConfirmation"
-  (onHide)="displayDeregisterConfirmation = false"
-  [modal]="true"
-  [closable]="true"
-  [resizable]="false"
-  [dismissableMask]="true"
-  [style]="{ width: '400px' }"
-  styleClass="disable-max-height-preset"
->
-  <div class="my-2 flex column-gap-4 row-gap-1 justify-content-start align-items-center">
-    <div class="pi pi-question-circle text-3xl danger-action-text"></div>
-    <div class="flex flex-column row-gap-2">
-      <div id="ws_slot_deregister_message" class="font-bold">
-        {{ 'ACTIONS.DELETE.SLOT.DEREGISTER_COMPONENTS' | translate }}
-      </div>
-      <div>{{ 'ACTIONS.DELETE.INFO' | translate }}</div>
-    </div>
-  </div>
-  <ng-template pTemplate="footer">
-    <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
-      <p-button
-        id="ws_slot_deregister_action_no"
-        icon="pi pi-times"
-        (onClick)="onDeregisterCancellation()"
-        [label]="'ACTIONS.CONFIRMATION.NO' | translate"
-        [ariaLabel]="'ACTIONS.CONFIRMATION.NO' | translate"
-        [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      ></p-button>
-      <p-button
-        id="ws_slot_deregister_action_yes"
-        icon="pi pi-check"
-        iconPos="left"
-        (onClick)="onDeregisterConfirmation()"
-        [label]="'ACTIONS.CONFIRMATION.YES' | translate"
-        [ariaLabel]="'ACTIONS.CONFIRMATION.YES' | translate"
-        [pTooltip]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      ></p-button>
-    </div>
-  </ng-template>
-</p-dialog>
+    </ng-template>
+  </p-dialog>
+}

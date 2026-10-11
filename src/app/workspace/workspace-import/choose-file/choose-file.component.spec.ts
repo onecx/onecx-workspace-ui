@@ -1,9 +1,10 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { ComponentFixture, TestBed, tick, waitForAsync, fakeAsync } from '@angular/core/testing'
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
+import { TranslateService } from '@ngx-translate/core'
 import { TranslateTestingModule } from 'ngx-translate-testing'
-import { of, throwError } from 'rxjs'
+import { of } from 'rxjs'
 import { FileSelectEvent } from 'primeng/fileupload'
 
 import { PortalMessageService } from '@onecx/angular-integration-interface'
@@ -30,12 +31,11 @@ describe('ChooseFileComponent', () => {
   const apiServiceSpy = {
     portalImportRequest: jasmine.createSpy('portalImportRequest').and.returnValue(of({}))
   }
-  const translateServiceSpy = jasmine.createSpyObj('TranslateService', ['get'])
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ChooseFileComponent],
       imports: [
+        ChooseFileComponent,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
@@ -52,7 +52,6 @@ describe('ChooseFileComponent', () => {
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
     apiServiceSpy.portalImportRequest.calls.reset()
-    translateServiceSpy.get.calls.reset()
   }))
 
   beforeEach(() => {
@@ -75,46 +74,46 @@ describe('ChooseFileComponent', () => {
     expect(component.importFileSelected.emit).toHaveBeenCalledOnceWith(component.importWorkspace)
   })
 
-  it('should select a file, get translations and set importDTO', (done) => {
+  it('should select a file, get translations and set importWorkspace', async () => {
     const validJson = JSON.stringify(snapshot)
     const mockFile = new File([validJson], 'test.json', { type: 'application/json' })
     spyOn(mockFile, 'text').and.returnValue(Promise.resolve(validJson))
     const fileList = { 0: mockFile, length: 1, item: () => mockFile }
-    translateServiceSpy.get.and.returnValue(of({}))
 
-    component.onFileSelect({ files: fileList } as any as FileSelectEvent)
-    component.importWorkspace = snapshot
+    const translateService = TestBed.inject(TranslateService)
+    spyOn(translateService, 'get').and.returnValue(of({}))
 
-    setTimeout(() => {
-      expect(mockFile.text).toHaveBeenCalled()
-      done()
-    })
+    component.onFileSelect({ files: fileList } as unknown as FileSelectEvent)
+    await fixture.whenStable()
+
+    expect(mockFile.text).toHaveBeenCalled()
     expect(component.importWorkspace).toEqual(snapshot)
     expect(component.importError).toBeFalse()
     expect(component.validationErrorCause).toBeUndefined()
   })
 
-  it('should catch an import error', fakeAsync(() => {
-    const errorResponse = { status: 400, statusText: 'Error on parsing file to be imported' }
-    translateServiceSpy.get.and.returnValue(throwError(() => errorResponse))
+  it('should set an import error when the file content is not valid JSON', async () => {
+    const invalidJson = '{not valid json'
+    const mockFile = new File([invalidJson], 'test.json', { type: 'application/json' })
+    spyOn(mockFile, 'text').and.returnValue(Promise.resolve(invalidJson))
+    const fileList = { 0: mockFile, length: 1, item: () => mockFile }
 
-    const file = new File(['file content'], 'test.txt', { type: 'text/plain' })
-    const fileList: FileList = {
-      0: file,
-      length: 1,
-      item: (index: number) => file
-    }
+    const translateService = TestBed.inject(TranslateService)
+    spyOn(translateService, 'get').and.returnValue(
+      of({
+        'WORKSPACE_IMPORT.VALIDATION.RESULT': 'Validation failed: ',
+        'WORKSPACE_IMPORT.VALIDATION.JSON_ERROR': 'Invalid JSON file'
+      })
+    )
     spyOn(console, 'error')
-    spyOn(file, 'text').and.returnValue(Promise.resolve('{"portal"}'))
-    const event = { files: fileList }
 
-    component.onFileSelect(event as any as FileSelectEvent)
-
-    tick()
+    component.onFileSelect({ files: fileList } as unknown as FileSelectEvent)
+    await fixture.whenStable()
 
     expect(component.importError).toBeTrue()
     expect(console.error).toHaveBeenCalled()
-  }))
+    expect(component.validationErrorCause).toBe('Validation failed: Invalid JSON file')
+  })
 
   it('should behave correctly onClear', () => {
     component.onClear()
@@ -150,7 +149,7 @@ describe('ChooseFileComponent', () => {
       expect(component.validationErrorCause).toContain('Workspace missing')
     })
 
-    it('should return false when workspace name is missing', () => {
+    it('should return true when workspace name is missing', () => {
       const obj = { workspaces: { key1: {} } }
       expect(component.isWorkspaceImportValid(obj, mockData)).toBeTrue()
     })

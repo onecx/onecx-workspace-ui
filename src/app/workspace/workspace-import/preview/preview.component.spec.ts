@@ -1,8 +1,10 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { provideNoopAnimations } from '@angular/platform-browser/animations'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
+import { SlotService } from '@onecx/angular-remote-components'
+import { SlotServiceMock } from '@onecx/angular-remote-components/mocks'
 
 import { PreviewComponent } from './preview.component'
 import { Theme, ImportWorkspace } from '../workspace-import.component'
@@ -33,15 +35,19 @@ describe('PreviewComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [PreviewComponent],
       imports: [
+        PreviewComponent,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
-      providers: [provideHttpClientTesting(), provideHttpClient()],
-      schemas: [NO_ERRORS_SCHEMA]
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideNoopAnimations(),
+        { provide: SlotService, useClass: SlotServiceMock }
+      ]
     }).compileComponents()
   }))
 

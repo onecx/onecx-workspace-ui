@@ -1,9 +1,10 @@
 /* global styles */
-@import 'node_modules/primeng/resources/primeng.min.css';
-@import 'node_modules/primeicons/primeicons.css';
-@import 'node_modules/primeflex/primeflex.scss';
+@use 'primeflex/primeflex.scss';
+@use 'primeicons/primeicons.css';
 
 /* portal core */
-@import 'node_modules/@onecx/portal-layout-styles/src/styles/shell/shell.scss';
-@import 'node_modules/@onecx/portal-layout-styles/src/styles/primeng/theme-light.scss';
-@import 'node_modules/@onecx/portal-integration-angular/assets/styles.scss';
+@use 'node_modules/@onecx/angular-accelerator/assets/styles.scss';
+
+.p-confirmdialog {
+  --onecx-workspace-onecx-workspace-ui-confirmdialog-icon-color: var(--danger-button-bg);
+}

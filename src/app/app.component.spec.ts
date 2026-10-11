@@ -1,13 +1,14 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
+import { provideRouter } from '@angular/router'
+import { TranslateModule } from '@ngx-translate/core'
 
 import { AppComponent } from './app.component'
 
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [AppComponent],
-      schemas: [NO_ERRORS_SCHEMA]
+      imports: [AppComponent, TranslateModule.forRoot()],
+      providers: [provideRouter([])]
     }).compileComponents()
   })
 
