@@ -67,6 +67,7 @@ describe('ImageContainerComponent', () => {
 
     it('should use bffUrl as URL when bffUrl is set', () => {
       fixture.componentRef.setInput('bffUrl', '/basePath/path-to-logo')
+      fixture.componentRef.setInput('logEnabled', true)
       fixture.detectChanges()
 
       expect(component.url()).toBe('/basePath/path-to-logo')

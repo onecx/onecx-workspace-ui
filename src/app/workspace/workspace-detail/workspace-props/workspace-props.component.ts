@@ -32,10 +32,11 @@ import { SharedModule } from 'src/app/shared/shared.module'
 import { ImageComponent } from 'src/app/shared/components/image/image.component'
 import { WorkspaceI18nComponent } from '../workspace-i18n/workspace-i18n.component'
 
-export type Theme = {
+export type ExtendedTheme = {
   name: string
   displayName: string
   logoUrl?: string
+  bffImageUrl?: string
 }
 
 @Component({
@@ -82,8 +83,8 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   // slot configuration: get theme data
   public themeSlotName = 'onecx-theme-data'
   public isThemeComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.themeSlotName)
-  public themes$ = new BehaviorSubject<Theme[] | undefined>(undefined) // theme data
-  public themesEmitter = new EventEmitter<Theme[]>()
+  public themes$ = new BehaviorSubject<ExtendedTheme[] | undefined>(undefined) // theme data
+  public themesEmitter = new EventEmitter<ExtendedTheme[]>()
   // slot configuration: get theme logo
   public themeLogoLoadingEmitter = new EventEmitter<boolean>()
   public themeLogoLoadingFailed$ = new BehaviorSubject<boolean | undefined>(undefined)
@@ -124,8 +125,8 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   }
 
   public ngOnInit(): void {
-    this.themesEmitter.subscribe(this.themes$)
-    this.themeLogoLoadingEmitter.subscribe((data) => {
+    this.themesEmitter.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(this.themes$)
+    this.themeLogoLoadingEmitter.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((data) => {
       this.themeLogoLoadingFailed$.next(data)
     })
     this.propsForm.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(this.themeFormValues$)
@@ -317,16 +318,19 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   }
 
   // sometimes the theme is unknown, then add to the list
-  public checkAndExtendThemes(themes: Theme[]): Theme[] {
-    // if not included (why ever) then add the used value to make it visible
-    if (!themes.some((t) => t.name === this.workspace?.theme))
-      themes.push({ name: this.workspace?.theme, displayName: this.workspace?.theme } as Theme)
+  public checkAndExtendThemes(themes: ExtendedTheme[]): ExtendedTheme[] {
+    if (!this.workspace?.theme) return themes
+    // create a mini
+    const currentTheme = { name: this.workspace?.theme, displayName: this.workspace?.theme } as ExtendedTheme
+    // import case: imported theme might not be in the list (of current themes)
+    if (themes.length === 0) return [currentTheme] // if themes could not be retrieved
+    if (!themes.some((t) => t.name === this.workspace?.theme)) themes.push(currentTheme)
     return themes
   }
 
-  public getThemeImageUrl(themes: Theme[], themeName: string, refType: RefType): string | undefined {
+  public getThemeImageUrl(themes: ExtendedTheme[], themeName?: string): string | undefined {
     const theme = themes.find((t) => t.name === themeName)
-    return theme?.logoUrl
+    return theme?.logoUrl ?? theme?.bffImageUrl
   }
 
   public getThemeEndpointUrl$(name?: string): Observable<string | undefined> {

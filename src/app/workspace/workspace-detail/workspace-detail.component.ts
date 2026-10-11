@@ -1,4 +1,12 @@
-import { AfterViewInit, ChangeDetectorRef, Component, inject, OnInit, ViewChild } from '@angular/core'
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  inject,
+  OnInit,
+  ViewChild
+} from '@angular/core'
 import { AsyncPipe, Location } from '@angular/common'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
@@ -51,6 +59,7 @@ import { WorkspaceDeleteComponent } from './workspace-delete/workspace-delete.co
     WorkspaceExportComponent,
     WorkspaceDeleteComponent
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './workspace-detail.component.html',
   styleUrls: ['./workspace-detail.component.scss', './workspace-delete/workspace-delete.component.scss']
 })

@@ -217,6 +217,7 @@ describe('ImageComponent without default image URL', () => {
   it('should not cascade to default URL when no default image URL is available', () => {
     spyOn(component.imageLoadResult, 'emit')
     fixture.componentRef.setInput('item', { ...baseImage, bffUrl: '/bff/url' })
+    fixture.componentRef.setInput('logEnabled', true)
     fixture.detectChanges()
 
     component.onImageLoadError()

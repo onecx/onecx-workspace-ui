@@ -41,7 +41,7 @@
     @if (isThemeComponentDefined$ | async) {
       @let themes = (themes$ | async) ?? [];
       @let themeFormValues = themeFormValues$ | async;
-      @let themeLogoUrl = getThemeImageUrl(themes, themeFormValues?.theme ?? '', RefType.Logo);
+      @let themeLogoUrl = getThemeImageUrl(themes, themeFormValues?.theme);
       <div
         class="w-full flex flex-row flex-wrap sm:flex-nowrap align-items-center"
         [ngClass]="{
@@ -57,18 +57,6 @@
             aria-label="Theme Logo"
             aria-hidden="true"
           />
-        } @else {
-          <!-- theme has uploaded logo or default logo -->
-          <ocx-slot
-            [name]="themeSlotName"
-            [inputs]="{
-              dataType: 'logo',
-              themeName: themeFormValues?.theme,
-              useDefaultLogo: true,
-              imageStyleClass: 'max-h-2rem max-w-5rem'
-            }"
-            [outputs]="{ imageLoadingFailed: themeLogoLoadingEmitter }"
-          ></ocx-slot>
         }
         <!-- build inputgroup by hand due to better flex layout -->
         <div class="mb-1 flex-grow-1 flex flex-row justify-content-start row-gap-0">

@@ -13,7 +13,7 @@ import { UserService, WorkspaceService } from '@onecx/angular-integration-interf
 import { provideAppStateServiceMock } from '@onecx/angular-integration-interface/mocks'
 
 import {
-  Theme,
+  ExtendedTheme,
   WorkspacePropsComponent
 } from 'src/app/workspace/workspace-detail/workspace-props/workspace-props.component'
 import { BASE_PATH, RefType, Workspace } from 'src/app/shared/generated'
@@ -48,8 +48,8 @@ const changes: SimpleChanges = {
   }
 }
 
-const themesOrg: Theme[] = [
-  { name: 'theme1', displayName: 'Theme 1', logoUrl: '/logo' },
+const themesOrg: ExtendedTheme[] = [
+  { name: 'theme1', displayName: 'Theme 1', logoUrl: '/logo', bffImageUrl: '/bff-logo' },
   { name: 'theme2', displayName: 'Theme 2' }
 ]
 
@@ -198,10 +198,38 @@ describe('WorkspacePropsComponent', () => {
       if (component.workspace) {
         component.workspace.theme = 'theme1'
 
-        const url = component.getThemeImageUrl(themesOrg, 'theme1', RefType.Logo)
+        const url = component.getThemeImageUrl(themesOrg, 'theme1')
 
         expect(url).toBe(themesOrg[0].logoUrl)
       }
+    })
+
+    it('should get bff url if logo url is not defined', () => {
+      const themes: ExtendedTheme[] = [{ name: 'theme2', displayName: 'Theme 2', bffImageUrl: '/bff-logo' }]
+
+      const url = component.getThemeImageUrl(themes, 'theme2')
+
+      expect(url).toBe('/bff-logo')
+    })
+
+    it('should return themes unchanged when there is no workspace theme', () => {
+      const themes: ExtendedTheme[] = [{ name: 'theme1', displayName: 'Theme 1' }]
+      component.workspace = { ...workspace, theme: '' } // falsy theme => early return
+
+      const result = component.checkAndExtendThemes(themes)
+
+      expect(result).toBe(themes)
+      // restore shared state (use a copy above so the fixture workspace const is untouched)
+      component.workspace = workspace
+    })
+
+    it('should return a single theme when themes could not be retrieved', () => {
+      component.workspace = { ...workspace, theme: 'imported' }
+
+      const result = component.checkAndExtendThemes([])
+
+      expect(result).toEqual([{ name: 'imported', displayName: 'imported' }])
+      component.workspace = workspace
     })
   })
 
