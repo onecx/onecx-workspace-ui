@@ -29,7 +29,7 @@
     />
   </p-inputgroup>
 
-  <!-- THEMES -->
+  <!-- THEME -->
   <article class="w-full" [ariaLabel]="'WORKSPACE.THEME' | translate">
     <ocx-slot
       class="hidden"
@@ -50,13 +50,15 @@
       >
         @if (themeLogoUrl) {
           <!-- theme has extern logo url? -->
-          <img
-            [class]="'border-round-sm max-h-2rem max-w-5rem'"
-            [src]="themeLogoUrl"
-            alt="Theme Logo"
-            aria-label="Theme Logo"
-            aria-hidden="true"
-          />
+          <div class="h-3rem w-5rem flex justify-content-center align-items-center">
+            <img
+              [class]="'border-round-sm max-h-2rem max-w-5rem'"
+              [src]="themeLogoUrl"
+              alt="Theme Logo"
+              aria-label="Theme Logo"
+              aria-hidden="true"
+            />
+          </div>
         }
         <!-- build inputgroup by hand due to better flex layout -->
         <div class="mb-1 flex-grow-1 flex flex-row justify-content-start row-gap-0">
@@ -278,19 +280,21 @@
     >
       {{ 'IMAGE.LOGO' | translate }}
     </section>
-    <app-image
-      id="ws_detail_props_form_logo_image"
-      styleClass="max-h-3rem max-w-5rem"
-      [cascadeUse]="!editMode"
-      [item]="{
-        name: workspace?.name,
-        refType: RefType.Logo,
-        imageType: 'workspace',
-        basePath: imageBasePath,
-        url: propsForm.controls['logoUrl'].value
-      }"
-      (imageLoadResult)="onImageLoadResult($event, RefType.Logo, propsForm.controls['logoUrl'].value)"
-    ></app-image>
+    <div class="h-3rem w-5rem flex justify-content-center align-items-center">
+      <app-image
+        id="ws_detail_props_form_logo_image"
+        styleClass="max-h-3rem max-w-5rem"
+        [cascadeUse]="!editMode"
+        [item]="{
+          name: workspace?.name,
+          refType: RefType.Logo,
+          imageType: 'workspace',
+          basePath: imageBasePath,
+          url: propsForm.controls['logoUrl'].value
+        }"
+        (imageLoadResult)="onImageLoadResult($event, RefType.Logo, propsForm.controls['logoUrl'].value)"
+      ></app-image>
+    </div>
     <p-button
       *ocxIfPermission="'WORKSPACE#EDIT'"
       id="ws_detail_props_item_remove_logo"
@@ -373,19 +377,21 @@
     >
       {{ 'IMAGE.LOGO_SMALL' | translate }}
     </section>
-    <app-image
-      id="ws_detail_props_form_logo_small_image"
-      styleClass="max-h-3rem max-w-5rem"
-      [cascadeUse]="!editMode"
-      [item]="{
-        name: workspace?.name,
-        refType: RefType.LogoSmall,
-        imageType: 'workspace',
-        basePath: imageBasePath,
-        url: propsForm.controls['smallLogoUrl'].value
-      }"
-      (imageLoadResult)="onImageLoadResult($event, RefType.LogoSmall, propsForm.controls['smallLogoUrl'].value)"
-    ></app-image>
+    <div class="h-3rem w-5rem flex justify-content-center align-items-center">
+      <app-image
+        id="ws_detail_props_form_logo_small_image"
+        styleClass="max-h-3rem max-w-5rem"
+        [cascadeUse]="!editMode"
+        [item]="{
+          name: workspace?.name,
+          refType: RefType.LogoSmall,
+          imageType: 'workspace',
+          basePath: imageBasePath,
+          url: propsForm.controls['smallLogoUrl'].value
+        }"
+        (imageLoadResult)="onImageLoadResult($event, RefType.LogoSmall, propsForm.controls['smallLogoUrl'].value)"
+      ></app-image>
+    </div>
     <p-button
       *ocxIfPermission="'WORKSPACE#EDIT'"
       id="ws_detail_props_item_remove_logo_small"

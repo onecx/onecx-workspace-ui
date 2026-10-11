@@ -663,7 +663,7 @@
   },
   "IMAGE": {
     "LOGO": "Logo",
-    "LOGO_SMALL": "Logo (klein)",
+    "LOGO_SMALL": "Logo klein",
     "LOGO_URL": "Externe Logo URL",
     "UPLOAD": {
       "OK": "Die Datei wurde erfolgreich hochgeladen",
