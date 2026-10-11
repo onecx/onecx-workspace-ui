@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core'
 
+import { CardModule } from 'primeng/card'
 import { SelectItem, TreeNode } from 'primeng/api'
 import { TreeTableNodeExpandEvent } from 'primeng/treetable'
 import { TreeNodeDropEvent } from 'primeng/tree'
@@ -16,7 +17,7 @@ export type I18N = { [key: string]: string }
 @Component({
   selector: 'app-menu-preview',
   standalone: true,
-  imports: [SharedModule],
+  imports: [SharedModule, CardModule],
   templateUrl: './menu-preview.component.html',
   styleUrls: ['./menu-preview.component.scss']
 })

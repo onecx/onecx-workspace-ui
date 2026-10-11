@@ -376,7 +376,6 @@
                     type="button"
                     pRipple
                     [text]="true"
-                    [plain]="true"
                     [rounded]="true"
                     [icon]="'pi pi-' + (rowData['disabled'] ? 'minus' : 'check') + '-circle'"
                     [severity]="rowData['disabled'] ? 'danger' : 'success'"
@@ -392,7 +391,6 @@
                     type="button"
                     pRipple
                     [text]="true"
-                    [plain]="true"
                     [rounded]="true"
                     [icon]="'pi pi-' + (editAllowed ? 'pencil' : 'eye')"
                     [id]="'ws_menu_table_row_' + rowData.key + '_action_goto_details'"
@@ -407,7 +405,6 @@
                     type="button"
                     pRipple
                     [text]="true"
-                    [plain]="true"
                     [rounded]="true"
                     [icon]="'pi pi-plus-circle'"
                     [id]="'ws_menu_table_row_' + rowData.key + '_action_goto_new'"
@@ -419,10 +416,8 @@
                   />
                   <p-button
                     *ocxIfPermission="'MENU#DELETE'"
-                    type="button"
                     pRipple
                     [text]="true"
-                    [plain]="true"
                     [rounded]="true"
                     [icon]="'pi pi-trash'"
                     severity="danger"
