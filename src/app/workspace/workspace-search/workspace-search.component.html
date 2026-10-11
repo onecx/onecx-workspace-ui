@@ -234,7 +234,7 @@
                     <a
                       tabindex="0"
                       [id]="'ws_search_data_grid_row_' + item.name + '_goto_workspace'"
-                      class="card-badge-right badge-1 text-lg sm:text-xl pi pi-external-link button-icon-only"
+                      class="card-badge-right badge-1 border-radius-sm text-lg sm:text-xl pi pi-external-link button-icon-only"
                       [href]="Utils.prepareUrlPath(getLocation().deploymentPath, item.baseUrl)"
                       target="_blank"
                       (click)="$event.stopPropagation()"
@@ -249,7 +249,7 @@
                     *ocxIfPermission="'MENU#VIEW'"
                     tabindex="0"
                     [id]="'ws_search_data_grid_row_' + item.name + '_goto_menu'"
-                    class="card-badge-right badge-2 text-lg sm:text-xl pi pi-sitemap button-icon-only"
+                    class="card-badge-right badge-2 border-radius-sm text-lg sm:text-xl pi pi-sitemap button-icon-only"
                     [routerLink]="[item.name, 'menu']"
                     target="_self"
                     (click)="$event.stopPropagation()"

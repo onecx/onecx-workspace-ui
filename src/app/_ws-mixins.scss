@@ -197,13 +197,14 @@
         }
       }
     }
+
     /* clickable icon-only buttons */
     .button-icon-only {
-      border-radius: var(--border-radius);
+      border-radius: 6px;
       background: transparent;
       &:hover {
-        color: var(--primary-color-text);
-        background: var(--button-hover-bg) !important;
+        color: var(--onecx-workspace-onecx-workspace-ui-button-primary-hover-color);
+        background: var(--onecx-workspace-onecx-workspace-ui-button-primary-hover-background);
         cursor: pointer;
       }
     }
