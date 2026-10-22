@@ -1,4 +1,13 @@
-import { Component, EventEmitter, Input, Output, OnDestroy, OnChanges, SimpleChanges } from '@angular/core'
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  OnDestroy,
+  OnChanges,
+  SimpleChanges,
+  ChangeDetectionStrategy
+} from '@angular/core'
 import {
   FormArray,
   FormBuilder,
@@ -136,6 +145,7 @@ export function AddMfeModuleFormControl(fb: FormBuilder, modules: FormArray, idx
   selector: 'app-products',
   standalone: true,
   imports: [CardModule, SharedModule, ImageComponent, ProductDeregistrationComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './products.component.html',
   styleUrls: ['./products.component.scss']
 })
@@ -259,6 +269,7 @@ export class ProductComponent implements OnChanges, OnDestroy {
               this.wProducts.push({ ...p, bucket: 'TARGET', exists: true, changedComponents: false } as ExtendedProduct)
             this.wProducts.sort(this.sortProductsByDisplayName)
             this.filteredWProducts = [...this.wProducts]
+            this.wpLoading = false
             return this.wProducts
           }),
           catchError((err) => {

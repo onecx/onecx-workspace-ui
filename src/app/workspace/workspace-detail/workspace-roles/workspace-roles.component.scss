@@ -1,41 +1,30 @@
 @use 'src/app/_ws-mixins.scss' as *;
 
+@include danger-action;
+@include ocx-text-responsive;
+@include ocx-interactive-data-view-fixes;
+@include ocx-p-message;
 @include readable-disabled-components;
-@include correct-data-view-control;
-@include correct-data-view-header-for-tabpanel;
-@include search-criteria-select-button;
-@include search-criteria-select-button-slim;
 @include dialog-modal-disable-full-height;
 
 :host ::ng-deep {
-  ocx-data-view-controls {
-    flex-grow: unset !important;
-  }
-
   .p-dataview .p-dataview-content {
     padding-left: 0;
     padding-right: 0;
   }
-  .h-2-5rem {
-    height: 2.5rem !important;
-  }
-  .card-badge-left {
-    &.badge-2 {
-      top: 29px;
-      left: 6px;
-    }
-    &.badge-1-number {
-      top: 3px;
-      left: 5px;
-    }
-    &.card-badge-left-text {
-      left: 4px;
-      font-size: 0.7rem !important;
-    }
+  .p-card-body {
+    padding: 0.25rem;
   }
   .card-badge-right {
+    display: inline-block;
+    position: absolute;
     &.badge-1 {
+      top: 1px;
       right: 1px;
+    }
+    .p-button {
+      width: 2rem;
+      padding: 5px;
     }
   }
   .word-wrap-break {

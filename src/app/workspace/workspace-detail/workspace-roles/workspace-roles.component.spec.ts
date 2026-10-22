@@ -6,6 +6,7 @@ import { provideNoopAnimations } from '@angular/platform-browser/animations'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { BehaviorSubject, of, throwError } from 'rxjs'
 
+import { RowListGridData } from '@onecx/angular-accelerator'
 import { SlotService } from '@onecx/angular-remote-components'
 import { PortalMessageService, UserService, WorkspaceService } from '@onecx/angular-integration-interface'
 
@@ -136,12 +137,11 @@ describe('WorkspaceRolesComponent', () => {
       component.ngOnChanges(changes as unknown as SimpleChanges)
 
       expect(component.wRoles).toEqual(wRoles)
-      expect(component.roles.length).toEqual(wRoles.length)
 
-      component.loadingIamRoles = true
+      component.loadingIamRoles.set(true)
       tick(5000)
       fixture.detectChanges()
-      expect(component.loadingIamRoles).toEqual(false)
+      expect(component.loadingIamRoles()).toEqual(false)
     }))
 
     it('should populate wRoles on search: empty stream', () => {
@@ -174,7 +174,7 @@ describe('WorkspaceRolesComponent', () => {
       component.ngOnChanges(changes as unknown as SimpleChanges)
 
       expect(console.error).toHaveBeenCalledWith('searchWorkspaceRoles', errorResponse)
-      expect(component.exceptionKey).toEqual('EXCEPTIONS.HTTP_STATUS_' + errorResponse.status + '.WS_ROLES')
+      expect(component.exceptionKey()).toEqual('EXCEPTIONS.HTTP_STATUS_' + errorResponse.status + '.WS_ROLES')
     })
   })
 
@@ -189,7 +189,6 @@ describe('WorkspaceRolesComponent', () => {
       component.ngOnChanges(changes as unknown as SimpleChanges)
       component.roleListEmitter.emit(iamRoles)
 
-      expect(component.roles[0].name).toEqual(iamRoles[0].name)
       expect(component.iamRoles.length).toBe(2)
       expect(component.iamRoles[0]).toEqual(iamRoles[0])
       expect(component.iamRoles[1]).toEqual(iamRoles[1])
@@ -204,13 +203,13 @@ describe('WorkspaceRolesComponent', () => {
       wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: wRolesNameless as WorkspaceRolePageResult }))
       const changes = { ['workspace']: { previousValue: 'ws0', currentValue: 'ws1', firstChange: true } }
       component.quickFilterValue = 'WORKSPACE'
-      component.wRolesLoaded = false
+      component.wRolesLoaded.set(false)
 
       component.ngOnChanges(changes as unknown as SimpleChanges)
 
-      expect(component.roles.length).toEqual(2)
-      expect(component.roles[0].name).toBeUndefined()
-      expect(component.roles[1].name).toEqual('role1')
+      expect(component.data()).toHaveSize(2)
+      expect(component.data()[0]['name']).toBeUndefined()
+      expect(component.data()[1]['name']).toEqual('role1')
     })
 
     it('should combine roles', () => {
@@ -231,7 +230,7 @@ describe('WorkspaceRolesComponent', () => {
       component.roleListEmitter.emit(iamRoles)
 
       expect(component.wRoles).toEqual(wRoles)
-      expect(component.iamRoles.length).toBe(4)
+      expect(component.iamRoles).toHaveSize(4)
       expect(component.iamRoles[0]).toEqual(iamRoles[0])
       expect(component.iamRoles[1]).toEqual(iamRoles[1])
     })
@@ -243,9 +242,8 @@ describe('WorkspaceRolesComponent', () => {
     component.quickFilterValue = 'ALL'
     component.onReload()
 
-    expect(component.roles).toEqual([])
-    expect(component.wRolesLoaded).toBeFalse()
-    expect(component.iamRolesLoaded).toBeFalse()
+    expect(component.wRolesLoaded()).toBeFalse()
+    expect(component.iamRolesLoaded()).toBeFalse()
     expect((component as any).searchRoles).toHaveBeenCalled()
   })
 
@@ -365,16 +363,16 @@ describe('WorkspaceRolesComponent', () => {
       component.ngOnChanges(change1 as unknown as SimpleChanges)
       component.roleListEmitter.emit(iamRoles)
 
-      component.onQuickFilterChange({ value: 'ALL' })
+      component.onQuickFilterChange('ALL')
 
       expect(component.quickFilterValue).toEqual('ALL')
-      expect(component.rolesFiltered).toEqual(component.roles)
+      expect(component.filteredData()).toBeUndefined()
 
       component.ngOnChanges(change2 as unknown as SimpleChanges)
-      component.onQuickFilterChange({ value: 'WORKSPACE' })
+      component.onQuickFilterChange('WORKSPACE')
 
       expect(component.quickFilterValue).toEqual('WORKSPACE')
-      expect(component.rolesFiltered).toEqual([component.roles[0]])
+      expect(component.filteredData()).toEqual([component.data()[0]])
     })
 
     it('should quick filter after searching', () => {
@@ -391,6 +389,115 @@ describe('WorkspaceRolesComponent', () => {
       expect(component.onGetQuickFilterCount('IAM')).toEqual('0')
       expect(component.onGetQuickFilterCount('WORKSPACE')).toEqual('1')
       expect(component.onGetQuickFilterCount('ALL')).toEqual('1') // combined role
+    })
+
+    it('should ignore rows with a missing or non-array origin (convertToRoleType fallbacks)', () => {
+      // origin undefined -> falsy branch; origin string -> non-array branch
+      const dataSubject = (component as any)['dataSubject$']
+      dataSubject.next([
+        { id: 'a', name: 'roleA', origin: undefined },
+        { id: 'b', name: 'roleB', origin: 'WORKSPACE' }
+      ])
+
+      component.onQuickFilterChange('WORKSPACE')
+
+      expect(component.filteredData()).toEqual([])
+    })
+  })
+
+  describe('convertToRoles', () => {
+    it('should map a fully populated row to a Role', () => {
+      const row = {
+        id: 'r1',
+        name: 'role1',
+        description: 'desc',
+        isIamRole: true,
+        isWorkspaceRole: false,
+        origin: ['IAM']
+      } as unknown as RowListGridData
+
+      const roles = component.convertToRoles([row])
+
+      expect(roles).toEqual([
+        { id: 'r1', name: 'role1', description: 'desc', isIamRole: true, isWorkspaceRole: false, origin: ['IAM'] }
+      ])
+    })
+
+    it('should default missing flags and origin', () => {
+      const row = { id: 'r2', name: 'role2' } as unknown as RowListGridData
+
+      const roles = component.convertToRoles([row])
+
+      expect(roles[0]).toEqual({
+        id: 'r2',
+        name: 'role2',
+        description: undefined,
+        isIamRole: false,
+        isWorkspaceRole: false,
+        origin: []
+      })
+    })
+  })
+
+  describe('global filter', () => {
+    const wRoles: WorkspaceRole[] = [
+      { id: 'w1', name: 'role1', description: 'desc' },
+      { id: 'w2', name: 'role2', description: 'desc' }
+    ]
+
+    function seedRoles(): void {
+      wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: wRoles as WorkspaceRolePageResult }))
+      const changes = { ['workspace']: { previousValue: 'ws0', currentValue: 'ws1', firstChange: true } }
+      component.ngOnChanges(changes as unknown as SimpleChanges)
+    }
+
+    it('should return early when there is no data', () => {
+      const dataSubject = (component as any)['dataSubject$']
+      dataSubject.next(undefined) // force a falsy data() to trip the guard
+      component.globalFilterValue = ''
+
+      component.onGlobalFilter('nomatch')
+
+      expect(component.globalFilterValue).toBe('')
+      expect(component.filteredData()).toBeUndefined()
+    })
+
+    it('should filter rows by a matching name', () => {
+      seedRoles()
+
+      component.onGlobalFilter('role1')
+
+      expect(component.globalFilterValue).toBe('role1')
+      expect(component.filteredData()).toEqual([component.data()[0]])
+    })
+
+    it('should keep no rows when nothing matches', () => {
+      seedRoles()
+
+      component.onGlobalFilter('nomatch')
+
+      expect(component.filteredData()).toEqual([])
+    })
+
+    it('should treat an undefined value as a filter clear', () => {
+      seedRoles()
+      component.onGlobalFilter('role1')
+      expect(component.filteredData()).not.toBeUndefined()
+
+      component.onGlobalFilter(undefined)
+
+      expect(component.globalFilterValue).toBe('')
+      expect(component.filteredData()).toBeUndefined()
+    })
+
+    it('should reset the filter on clear', () => {
+      seedRoles()
+      component.onGlobalFilter('role1')
+
+      component.onClearGlobalFilter()
+
+      expect(component.globalFilterValue).toBe('')
+      expect(component.filteredData()).toBeUndefined()
     })
   })
 

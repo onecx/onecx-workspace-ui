@@ -63,13 +63,13 @@ import { WorkspaceImportComponent } from '../workspace-import/workspace-import.c
   styleUrls: ['./workspace-search.component.scss']
 })
 export class WorkspaceSearchComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef)
   private readonly route = inject(ActivatedRoute)
   private readonly router = inject(Router)
   private readonly workspaceApi = inject(WorkspaceAPIService)
   private readonly translate = inject(TranslateService)
   private readonly imageApi = inject(ImagesInternalAPIService)
   private readonly appState = inject(AppStateService)
-  private readonly destroyRef = inject(DestroyRef)
   // signals
   public readonly workspaceImportVisible = signal(false)
   public readonly workspaceCreateVisible = signal(false)
@@ -174,9 +174,9 @@ export class WorkspaceSearchComponent implements OnInit {
   /**
    * FILTER & SORT Events
    */
-  public onGlobalFilter(value?: string, data?: RowListGridData[]): void {
+  public onGlobalFilter(val?: string, data?: RowListGridData[]): void {
     if (!data) return
-    this.globalFilterValue = value ?? ''
+    this.globalFilterValue = val ?? ''
     if (this.globalFilterValue === '') this.filteredData.set(undefined)
     else {
       this.filteredData.set(
