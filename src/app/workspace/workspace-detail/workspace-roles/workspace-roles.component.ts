@@ -13,7 +13,7 @@ import {
 } from '@angular/core'
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
 import { TranslateService } from '@ngx-translate/core'
-import { BehaviorSubject, Observable, Subject, catchError, finalize, map, of } from 'rxjs'
+import { BehaviorSubject, Observable, Subject, catchError, map, of } from 'rxjs'
 
 import { SelectItem } from 'primeng/api'
 import { CardModule } from 'primeng/card'
