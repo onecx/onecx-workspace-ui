@@ -130,8 +130,8 @@
               <p-button
                 id="ws_menu_table_action_reload"
                 styleClass="button-min-height"
-                [icon]="'pi ' + (loadingMenu ? 'pi-spin pi-spinner' : 'pi-refresh')"
-                [disabled]="loadingMenu"
+                [icon]="'pi ' + (loadingMenu || loadingWorkspace ? 'pi-spin pi-spinner' : 'pi-refresh')"
+                [disabled]="loadingMenu || loadingWorkspace"
                 (onClick)="onReload()"
                 [ariaLabel]="'DIALOG.MENU.ACTION.RELOAD' | translate"
                 [pTooltip]="'DIALOG.MENU.ACTION.RELOAD' | translate"
@@ -576,9 +576,8 @@
 
         <ng-template pTemplate="footer">
           <!-- MESSAGES -->
-          <section class="pt-3" [attr.aria-label]="'DIALOG.MENU.SECTIONS.MESSAGES' | translate">
-            @if (loading) {
-              <!-- waiting for results -->
+          <section class="pt-3 pb-1" [attr.aria-label]="'DIALOG.MENU.SECTIONS.MESSAGES' | translate">
+            @if (loadingWorkspace) {
               <p-message severity="info" [text]="'ACTIONS.LOADING' | translate"></p-message>
             } @else {
               @if (loadingMenu) {
@@ -587,8 +586,7 @@
                 <!-- role column filter is NOT active: no data == no menu in general -->
                 @if (menuNodes.length === 0 && roleColumnFilterValue.length === 0) {
                   <p-message severity="info" [text]="'ACTIONS.SEARCH.NO_DATA' | translate"></p-message>
-                }
-                @if (treeFilteredRows === 0) {
+                } @else if (treeFilteredRows === 0) {
                   <p-message severity="info" [text]="'ACTIONS.SEARCH.FILTER.NOT_MATCHING' | translate"></p-message>
                 }
               }

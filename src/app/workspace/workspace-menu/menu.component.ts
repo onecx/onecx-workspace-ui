@@ -63,7 +63,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject()
   // dialog
   public actions$: Observable<Action[]> | undefined
-  public loading = true
+  public loadingWorkspace = true
   public loadingMenu = true
   public loadingRoles = false
   public exceptionKey: string | undefined = undefined
@@ -648,7 +648,7 @@ export class MenuComponent implements OnInit, OnDestroy {
    * DATA
    */
   public loadAllData(): void {
-    this.loading = true
+    this.loadingWorkspace = true
     this.exceptionKey = undefined
     this.workspace = undefined
 
@@ -668,7 +668,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         console.error('getWorkspaceByName', err)
         return of(undefined)
       }),
-      finalize(() => (this.loading = false))
+      finalize(() => (this.loadingWorkspace = false))
     )
   }
 
