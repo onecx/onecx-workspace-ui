@@ -6,10 +6,11 @@ import { BehaviorSubject, catchError, first, map, Observable, of, ReplaySubject 
 import {
   AngularRemoteComponentsModule,
   ocxRemoteComponent,
-  ocxRemoteWebcomponent
+  ocxRemoteWebcomponent,
+  REMOTE_COMPONENT_CONFIG,
+  RemoteComponentConfig
 } from '@onecx/angular-remote-components'
 import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
-import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
 import { AppConfigService } from '@onecx/angular-integration-interface'
 
 import {
@@ -51,8 +52,8 @@ export class OneCXWorkspaceDataComponent implements ocxRemoteComponent, ocxRemot
   // log
   @Input() logPrefix: string | undefined = undefined
   @Input() logEnabled = false
-  @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
-    this.ocxInitRemoteComponent(config)
+  @Input() set ocxRemoteComponentConfig(rcConfig: RemoteComponentConfig) {
+    this.ocxInitRemoteComponent(rcConfig)
   }
   // output
   @Input() workspaces = new EventEmitter<Workspace[]>()
@@ -65,14 +66,14 @@ export class OneCXWorkspaceDataComponent implements ocxRemoteComponent, ocxRemot
   public defaultImageUrl: string | undefined = undefined
 
   // initialize this component as remote
-  public ocxInitRemoteComponent(config: RemoteComponentConfig): void {
-    this.appConfigService.init(config.baseUrl)
-    this.rcConfig.next(config)
+  public ocxInitRemoteComponent(rcConfig: RemoteComponentConfig): void {
+    this.appConfigService.init(rcConfig.baseUrl)
+    this.rcConfig.next(rcConfig)
     this.workspaceApi.configuration = new Configuration({
-      basePath: Location.joinWithSlash(config.baseUrl, environment.apiPrefix)
+      basePath: Location.joinWithSlash(rcConfig.baseUrl, environment.apiPrefix)
     })
     if (environment.DEFAULT_LOGO_PATH)
-      this.defaultImageUrl = Utils.prepareUrlPath(config.baseUrl, environment.DEFAULT_LOGO_PATH)
+      this.defaultImageUrl = Utils.prepareUrlPath(rcConfig.baseUrl, environment.DEFAULT_LOGO_PATH)
   }
 
   /**
