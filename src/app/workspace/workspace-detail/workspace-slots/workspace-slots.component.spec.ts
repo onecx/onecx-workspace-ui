@@ -511,6 +511,9 @@ describe('WorkspaceSlotsComponent', () => {
       expect(slot!.changes).toBeTrue()
       expect(slot!.type).toContain('WORKSPACE')
       expect(slot!.type).toContain('CHANGES')
+      // the deprecated declaration from prod2 must propagate onto the workspace slot itself
+      expect(slot!.deprecated).toBeTrue()
+      expect(slot!.undeployed).toBeFalse()
     }))
 
     it('should handle two PS products declaring the same slot name and slot NOT used in workspace', fakeAsync(() => {
@@ -742,7 +745,6 @@ describe('WorkspaceSlotsComponent', () => {
     it('should handle slot detail event and update the component state', () => {
       const mockSlot: ExtendedSlot = {
         id: '123',
-        new: false,
         type: ['WORKSPACE'],
         changes: false,
         psSlots: [],
@@ -764,7 +766,6 @@ describe('WorkspaceSlotsComponent', () => {
     it('should handle slot detail event and set change mode to VIEW', () => {
       const mockSlot: ExtendedSlot = {
         id: '123',
-        new: false,
         type: ['WORKSPACE'],
         changes: false,
         psSlots: [],
@@ -786,7 +787,6 @@ describe('WorkspaceSlotsComponent', () => {
     it('should open detail dialog if slot is new and has EDIT permission', () => {
       const mockSlot: ExtendedSlot = {
         id: '123',
-        new: true,
         type: ['WORKSPACE'],
         changes: false,
         psSlots: [],
@@ -838,7 +838,7 @@ describe('WorkspaceSlotsComponent', () => {
     })
 
     it('should not call loadData when item4Detail has no id', () => {
-      component.item4Detail = { new: true } as any // no id
+      component.item4Detail = {} as any // no id
       component.changeMode = 'EDIT'
 
       component.onSlotDetailClosed(true) // with changes

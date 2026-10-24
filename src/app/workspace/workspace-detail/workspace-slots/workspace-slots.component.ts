@@ -39,7 +39,7 @@ export type SlotFilterType = 'ALL' | SlotType
 export type ExtendedSelectItem = SelectItem & { tooltipKey?: string }
 export type ChangeMode = 'VIEW' | 'EDIT'
 export type PSSlot = SlotPS & { pName: string; pDisplayName: string }
-type ChangeStatus = { changes?: boolean; new?: boolean; exists?: boolean; deprecated?: boolean; undeployed?: boolean }
+type ChangeStatus = { changes?: boolean; exists?: boolean; deprecated?: boolean; undeployed?: boolean }
 
 // workspace slot data extended with status from product store
 export type ExtendedComponent = SlotComponent & ChangeStatus & { productUnregistered?: boolean }
@@ -148,18 +148,14 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
           wProducts: this.wProducts$
         }).pipe(
           map(({ wSlots, psProducts, wProducts }) => {
-            //console.log('data: wSlot', wSlots, ' psProducts', psProducts, ' product', wProducts)
             // Extract PS components from the PS products
             this.psComponents = this.extractPsComponents(psProducts) // this is public used
             // Extract PS slots which are not yet used in the workspace
             const psSlots = this.extractUnusedPsSlots(psProducts, wSlots)
             // Combine workspace slots and unused PS slots into a single array
             const slots: ExtendedSlot[] = [...wSlots, ...psSlots]
-
             // Enrich workspace slots with PS components and products
             this.syncComponentState(slots, this.psComponents, wProducts)
-
-            this.addUnregisteredSlots(psSlots, wProducts, slots) // added to slots
             this.addLostSlotComponents(slots)
             // finalize
             slots.sort(this.sortSlotsByName)
@@ -176,6 +172,9 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     } finally {
       this.loading.set(false)
     }
+  }
+  public sortSlotsByName(a: Slot, b: Slot): number {
+    return a.name!.toUpperCase().localeCompare(b.name!.toUpperCase())
   }
 
   // get all products registered in the workspace
@@ -208,7 +207,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
         .getSlotsForWorkspace({ id: this.workspace?.id } as GetSlotsForWorkspaceRequestParams)
         .pipe(
           map((res) => {
-            const wSlots = []
+            const wSlots: ExtendedSlot[] = []
             if (res.slots)
               // cases: a + b
               for (const s of res.slots)
@@ -241,9 +240,6 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
       .searchAvailableProducts({ productStoreSearchCriteria: { pageSize: 1000 } })
       .pipe(map((res) => res.stream ?? []))
   }
-  public sortSlotsByName(a: Slot, b: Slot): number {
-    return a.name!.toUpperCase().localeCompare(b.name!.toUpperCase())
-  }
 
   // Extract unused PS slots from PS products
   // => essential for listing products using a slot
@@ -265,7 +261,8 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     wSlots: ExtendedSlot[]
   ): void {
     // 1. Check if the slot is already used in the workspace
-    let ps: ExtendedSlot | undefined = wSlots.find((s) => s.name === psSlot.name)
+    let wps = wSlots.find((s) => s.name === psSlot.name)
+    let ps = wps
     // 2. otherwise check if the slot was already declared by another product in the consolidated list
     if (!ps) ps = psSlots.find((s) => s.name === psSlot.name)
     if (ps) {
@@ -274,7 +271,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
       // add product name to the list of products using this slot
       if (!ps.productNames.includes(psProduct.productName!)) ps.productNames.push(psProduct.productName!)
     } else {
-      // new slot, not yet in the consolidated list
+      // new slot, not yet in the list
       ps = {
         ...psSlot,
         id: undefined, // no need to have this
@@ -288,21 +285,15 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
       if (ps.changes) ps.type.push('CHANGES')
       psSlots.push(ps)
     }
-    //
-    // select workspace slot with same name (there is no productname stored for slots in workspace)
-    const wSlot = wSlots.find((s) => s.name === ps.name)
-    if (wSlot && !wSlot.productNames.includes(psProduct.productName!)) {
-      // slot already assigned to product in workspace => enrich product list and state
-      wSlot.productNames.push(psProduct.productName!)
-    }
-    if (wSlot?.psSlots) {
-      wSlot.psSlots.push({ ...ps, pName: psProduct.productName!, pDisplayName: psProduct.displayName! })
-      // consolidate slot state (aware of the state of current ps together with previous ones)
-      wSlot.exists = true
-      wSlot.changes = wSlot.changes || ps.changes // inherit change status
-      wSlot.deprecated = wSlot.deprecated || ps.deprecated
-      wSlot.undeployed = wSlot.undeployed || ps.undeployed
-      if (wSlot.changes && !wSlot.type.includes('CHANGES')) wSlot.type.push('CHANGES')
+    // Update workspace slot with PS slot information
+    // => find workspace slot with same name (there is no productname stored for slots in workspace)
+    if (wps?.psSlots) {
+      if (!wps.psSlots.find((s) => s.name === ps.name))
+        wps.psSlots.push({ ...ps, pName: psProduct.productName!, pDisplayName: psProduct.displayName! })
+      // consolidate slot state (aware of the state of current psSlot declaration together with previous ones)
+      wps.exists = true
+      wps.deprecated = wps.deprecated || psSlot.deprecated === true
+      wps.undeployed = wps.undeployed || psSlot.undeployed === true
     }
   }
 
@@ -359,16 +350,6 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  // Add slots existing in PS which are not existing in Workspace but part of a registered product
-  // => mark as "new"
-  // TODO
-  private addUnregisteredSlots(psSlots: ExtendedSlot[], productNames: string[], slots: ExtendedSlot[]): void {
-    for (const pn of productNames)
-      for (const ps of psSlots.filter((s) => s.productNames.includes(pn)))
-        if (!slots.some((ws) => ws.name === ps.name)) {
-          slots.push({ ...ps, new: true })
-        }
-  }
   // add components assigned to workspace slot but not available in product store anymore
   private addLostSlotComponents(wSlots: ExtendedSlot[]): void {
     for (const ws of wSlots)
@@ -400,7 +381,6 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public onGlobalFilter(val?: string): void {
-    if (!this.data()) return
     this.globalFilterValue = val ?? ''
     if (this.globalFilterValue === '') this.filteredData.set(undefined)
     else {

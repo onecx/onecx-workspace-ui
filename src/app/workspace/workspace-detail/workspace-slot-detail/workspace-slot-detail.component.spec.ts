@@ -81,7 +81,6 @@ describe('WorkspaceSlotDetailComponent', () => {
       const slot: ExtendedSlot = {
         name: 'slot1',
         productNames: ['productB', 'productC'],
-        new: false,
         type: ['WORKSPACE'],
         changes: false,
         undeployed: false,
@@ -129,7 +128,6 @@ describe('WorkspaceSlotDetailComponent', () => {
       const slot: ExtendedSlot = {
         name: 'slot1',
         productNames: [], // slot is a lost slot if productNames is empty
-        new: false,
         type: ['WORKSPACE'],
         changes: false,
         undeployed: false,
@@ -164,7 +162,6 @@ describe('WorkspaceSlotDetailComponent', () => {
       modificationCount: 0,
       name: 'slot1',
       productNames: ['productA'],
-      new: false,
       type: ['WORKSPACE'],
       changes: false,
       undeployed: false,
@@ -315,7 +312,6 @@ describe('WorkspaceSlotDetailComponent', () => {
       component.workspace_id = 'workspace1'
       component.slot = {
         name: 'slot1',
-        new: false,
         productNames: ['productA'],
         type: ['WORKSPACE'],
         changes: false,
@@ -412,7 +408,6 @@ describe('WorkspaceSlotDetailComponent', () => {
     it('should ignore saving if slot has no or one component', () => {
       component.slot = {
         name: 'slot1',
-        new: false,
         type: ['WORKSPACE'],
         changes: false,
         undeployed: false,
@@ -434,7 +429,6 @@ describe('WorkspaceSlotDetailComponent', () => {
     it('should ignore saving if slot has no or one component', () => {
       component.slot = {
         name: 'slot1',
-        new: false,
         type: ['WORKSPACE'],
         changes: false,
         undeployed: false,
