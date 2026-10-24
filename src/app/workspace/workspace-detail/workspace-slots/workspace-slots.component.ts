@@ -3,7 +3,7 @@ import { SharedModule } from 'src/app/shared/shared.module'
 import { OcxChipComponent } from 'src/app/shared/components/ocx-chip/ocx-chip.component'
 import { WorkspaceSlotDetailComponent } from '../workspace-slot-detail/workspace-slot-detail.component'
 import { TranslateService } from '@ngx-translate/core'
-import { Subject, catchError, map, of, Observable, firstValueFrom, BehaviorSubject, forkJoin } from 'rxjs'
+import { catchError, map, of, Observable, firstValueFrom, BehaviorSubject, forkJoin } from 'rxjs'
 import { SelectItem } from 'primeng/api'
 import { CardModule } from 'primeng/card'
 
