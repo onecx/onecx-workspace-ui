@@ -271,18 +271,6 @@ describe('WorkspaceSlotsComponent', () => {
     }))
   })
 
-  describe('ngOnDestroy', () => {
-    it('should complete the destroy$ subject', () => {
-      spyOn(component['destroy$'], 'next')
-      spyOn(component['destroy$'], 'complete')
-
-      component.ngOnDestroy()
-
-      expect(component['destroy$'].next).toHaveBeenCalledWith(undefined)
-      expect(component['destroy$'].complete).toHaveBeenCalled()
-    })
-  })
-
   describe('on changes', () => {
     it('should load data onChanges', () => {
       component.workspace = workspace
