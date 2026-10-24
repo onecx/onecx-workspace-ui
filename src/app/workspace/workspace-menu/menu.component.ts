@@ -128,13 +128,15 @@ export class MenuComponent implements OnInit, OnDestroy {
       this.user.hasPermission('MENU#EDIT'),
       this.user.hasPermission('MENU#GRANT'),
       this.user.hasPermission('WORKSPACE_ROLE#EDIT')
-    ]).then(([mview, mcreate, medit, mgrant, wroleedit]) => {
-      if (mview) this.myPermissions.push('MENU#VIEW')
-      if (mcreate) this.myPermissions.push('MENU#CREATE')
-      if (medit) this.myPermissions.push('MENU#EDIT')
-      if (mgrant) this.myPermissions.push('MENU#GRANT')
-      if (wroleedit) this.myPermissions.push('WORKSPACE_ROLE#EDIT')
-    })
+    ])
+      .then(([mview, mcreate, medit, mgrant, wroleedit]) => {
+        if (mview) this.myPermissions.push('MENU#VIEW')
+        if (mcreate) this.myPermissions.push('MENU#CREATE')
+        if (medit) this.myPermissions.push('MENU#EDIT')
+        if (mgrant) this.myPermissions.push('MENU#GRANT')
+        if (wroleedit) this.myPermissions.push('WORKSPACE_ROLE#EDIT')
+      })
+      .catch((err) => console.error(err))
 
     this.treeFrozenColumns = [{ name: 'node label', headerKey: '', tooltipKey: '' }]
     this.treeDetailColumns = [

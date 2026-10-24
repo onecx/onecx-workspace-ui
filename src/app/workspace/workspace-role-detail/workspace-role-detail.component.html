@@ -164,6 +164,7 @@
         @if (role?.isIamRole && !role?.isWorkspaceRole) {
           <p-message
             id="ws_role_create_info_inw"
+            styleClass="w-fit"
             severity="info"
             [text]="'DIALOG.ROLE.ORIGIN.IAM.VIEW' | translate"
           ></p-message>
@@ -171,6 +172,7 @@
         @if (!role?.isIamRole && role?.isWorkspaceRole) {
           <p-message
             id="ws_role_create_info_niw"
+            styleClass="w-fit"
             severity="info"
             [text]="'DIALOG.ROLE.ORIGIN.WORKSPACE.EDIT' | translate"
           ></p-message>
@@ -178,6 +180,7 @@
         @if (role?.isIamRole && role?.isWorkspaceRole) {
           <p-message
             id="ws_role_create_info_iw"
+            styleClass="w-fit"
             severity="info"
             [text]="'DIALOG.ROLE.ORIGIN.IAM.WORKSPACE.EDIT' | translate"
           ></p-message>

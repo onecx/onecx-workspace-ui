@@ -110,6 +110,21 @@ describe('WorkspaceRolesComponent', () => {
     it('should create', () => {
       expect(component).toBeTruthy()
     })
+
+    it('should log error when checking permissions rejects', fakeAsync(() => {
+      spyOn(console, 'error')
+      mockUserService.hasPermission.and.returnValue(Promise.reject(new Error('perm failed')))
+
+      component.ngOnInit()
+      tick()
+
+      expect(console.error).toHaveBeenCalled()
+
+      // restore neutral behaviour for subsequent tests
+      mockUserService.hasPermission.and.callFake((permission) =>
+        ['WORKSPACE_ROLE#EDIT', 'WORKSPACE_ROLE#CREATE', 'WORKSPACE_ROLE#DELETE'].includes(permission)
+      )
+    }))
   })
 
   describe('slotInitializer', () => {

@@ -214,13 +214,30 @@ describe('MenuComponent', () => {
 
     // permissions are loaded asynchronously in the constructor via Promise.all(...).then(...)
     it('it should push permissions to array if userService has them', async () => {
-      await new Promise((resolve) => setTimeout(resolve, 0))
+      await new Promise((resolve) => setTimeout(resolve, 0)).catch((err) => console.error(err))
 
       expect(component.myPermissions).toContain('MENU#VIEW')
       expect(component.myPermissions).toContain('MENU#CREATE')
       expect(component.myPermissions).toContain('MENU#EDIT')
       expect(component.myPermissions).toContain('MENU#GRANT')
       expect(component.myPermissions).toContain('WORKSPACE_ROLE#EDIT')
+    })
+
+    it('should log error when checking permissions rejects', async () => {
+      spyOn(console, 'error')
+      mockUserService.hasPermission.and.returnValue(Promise.reject(new Error('perm failed')))
+
+      const newFixture = TestBed.createComponent(MenuComponent)
+      newFixture.componentInstance.workspace = workspace
+      newFixture.detectChanges()
+      await new Promise((resolve) => setTimeout(resolve, 0))
+
+      expect(console.error).toHaveBeenCalled()
+
+      // restore neutral behaviour for subsequent tests
+      mockUserService.hasPermission.and.callFake((permission) =>
+        ['MENU#VIEW', 'MENU#CREATE', 'MENU#EDIT', 'MENU#GRANT', 'WORKSPACE_ROLE#EDIT'].includes(permission)
+      )
     })
   })
 
@@ -561,7 +578,7 @@ describe('MenuComponent', () => {
       id: 'id1'
     }
     // myPermissions is loaded asynchronously in the constructor via Promise.all(...).then(...)
-    await new Promise((resolve) => setTimeout(resolve, 0))
+    await new Promise((resolve) => setTimeout(resolve, 0)).catch((err) => console.error(err))
 
     component.onGotoDetails(event, item)
 

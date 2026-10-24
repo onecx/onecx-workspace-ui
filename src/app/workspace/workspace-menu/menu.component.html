@@ -18,7 +18,7 @@
   }
   <ocx-content class="ocx-content">
     @if (exceptionKey) {
-      <p-message severity="error" styleClass="m-3" [text]="exceptionKey | translate"></p-message>
+      <p-message severity="error" styleClass="m-3 w-fit" [text]="exceptionKey | translate"></p-message>
     } @else {
       <p-treeTable
         #menuTree
@@ -311,13 +311,22 @@
               @if (columns.length === 0) {
                 <th id="ws_menu_table_header_row_role_messages" class="p-1 pt-0 border-bottom-2 border-transparent">
                   @if (loadingRoles) {
-                    <p-message severity="info" [text]="'DIALOG.MENU.HEADER.ROLES.LOADING' | translate"></p-message>
+                    <p-message
+                      severity="info"
+                      styleClass="w-fit"
+                      [text]="'DIALOG.MENU.HEADER.ROLES.LOADING' | translate"
+                    ></p-message>
                   } @else {
                     @if (wRoles.length === 0) {
-                      <p-message severity="info" [text]="'DIALOG.MENU.HEADER.ROLES.NOT_EXIST' | translate"></p-message>
+                      <p-message
+                        severity="info"
+                        styleClass="w-fit"
+                        [text]="'DIALOG.MENU.HEADER.ROLES.NOT_EXIST' | translate"
+                      ></p-message>
                     } @else {
                       <p-message
                         severity="info"
+                        styleClass="w-fit"
                         [text]="'DIALOG.MENU.HEADER.ROLES.NOT_MATCHING' | translate"
                       ></p-message>
                     }
@@ -578,16 +587,28 @@
           <!-- MESSAGES -->
           <section class="pt-3 pb-1" [attr.aria-label]="'DIALOG.MENU.SECTIONS.MESSAGES' | translate">
             @if (loadingWorkspace) {
-              <p-message severity="info" [text]="'ACTIONS.LOADING' | translate"></p-message>
+              <p-message severity="info" styleClass="w-fit" [text]="'ACTIONS.LOADING' | translate"></p-message>
             } @else {
               @if (loadingMenu) {
-                <p-message severity="info" [text]="'DIALOG.MENU.ACTION.LOAD' | translate"></p-message>
+                <p-message
+                  severity="info"
+                  styleClass="w-fit"
+                  [text]="'DIALOG.MENU.ACTION.LOAD' | translate"
+                ></p-message>
               } @else {
                 <!-- role column filter is NOT active: no data == no menu in general -->
                 @if (menuNodes.length === 0 && roleColumnFilterValue.length === 0) {
-                  <p-message severity="info" [text]="'ACTIONS.SEARCH.NO_DATA' | translate"></p-message>
+                  <p-message
+                    severity="info"
+                    styleClass="w-fit"
+                    [text]="'ACTIONS.SEARCH.NO_DATA' | translate"
+                  ></p-message>
                 } @else if (treeFilteredRows === 0) {
-                  <p-message severity="info" [text]="'ACTIONS.SEARCH.FILTER.NOT_MATCHING' | translate"></p-message>
+                  <p-message
+                    severity="info"
+                    styleClass="w-fit"
+                    [text]="'ACTIONS.SEARCH.FILTER.NOT_MATCHING' | translate"
+                  ></p-message>
                 }
               }
             }

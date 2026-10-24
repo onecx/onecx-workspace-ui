@@ -77,6 +77,19 @@ describe('WorkspaceImportComponent', () => {
     it('should create', () => {
       expect(component).toBeTruthy()
     })
+
+    it('should log error when checking hasPermission rejects', async () => {
+      spyOn(console, 'error')
+      mockUserService.hasPermission.and.returnValue(Promise.reject(new Error('perm failed')))
+
+      initializeComponent()
+      await new Promise((resolve) => setTimeout(resolve, 0))
+
+      expect(console.error).toHaveBeenCalled()
+
+      // restore neutral behaviour for subsequent tests
+      mockUserService.hasPermission.and.callFake((permission) => ['WORKSPACE#IMPORT'].includes(permission))
+    })
   })
 
   describe('close and reset', () => {

@@ -112,11 +112,13 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
       this.user.hasPermission('WORKSPACE_ROLE#EDIT'),
       this.user.hasPermission('WORKSPACE_ROLE#CREATE'),
       this.user.hasPermission('WORKSPACE_ROLE#DELETE')
-    ]).then(([permEdit, permCreate, permDelete]) => {
-      this.hasEditPermission = permEdit
-      this.hasCreatePermission = permCreate
-      this.hasDeletePermission = permDelete
-    })
+    ])
+      .then(([permEdit, permCreate, permDelete]) => {
+        this.hasEditPermission = permEdit
+        this.hasCreatePermission = permCreate
+        this.hasDeletePermission = permDelete
+      })
+      .catch((err) => console.error(err))
     this.prepareQuickFilter()
   }
 

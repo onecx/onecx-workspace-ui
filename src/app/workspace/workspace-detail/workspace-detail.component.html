@@ -14,14 +14,14 @@
       <p-message
         id="ws_detail_loading_message"
         severity="info"
-        styleClass="m-3"
+        styleClass="m-3 w-fit"
         [text]="'ACTIONS.LOADING' | translate"
       ></p-message>
     } @else if (exceptionKey) {
       <p-message
         id="ws_detail_error_message"
         severity="error"
-        styleClass="m-3"
+        styleClass="m-3 w-fit"
         [text]="exceptionKey | translate"
       ></p-message>
     }

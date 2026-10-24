@@ -13,14 +13,14 @@
       <p-message
         id="ws_search_message_error"
         severity="error"
-        styleClass="m-3"
+        styleClass="m-3 w-fit"
         [text]="exceptionMessage | translate"
       ></p-message>
     } @else if (loading()) {
       <p-message
         id="ws_search_message_loading"
         severity="info"
-        styleClass="m-3"
+        styleClass="m-3 w-fit"
         [text]="'ACTIONS.LOADING' | translate"
       ></p-message>
     } @else {

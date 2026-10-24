@@ -101,9 +101,12 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   public sortField = 'name,changes'
 
   public ngOnInit() {
-    Promise.all([this.user.hasPermission('WORKSPACE_SLOT#EDIT')]).then(([permRegister]) => {
-      this.hasEditPermission = permRegister
-    })
+    Promise.all([this.user.hasPermission('WORKSPACE_SLOT#EDIT')])
+      .then(([permRegister]) => {
+        this.hasEditPermission = permRegister
+      })
+      .catch((err) => console.error(err))
+
     this.prepareQuickFilter()
   }
   public ngOnChanges(changes: SimpleChanges): void {
@@ -131,7 +134,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     this.declareWorkspaceProducts()
     this.declareWorkspaceSlots()
     this.declarePSSlots()
-    this.loadSlots()
+    this.loadSlots().catch((err) => console.error(err))
   }
 
   /**
@@ -285,11 +288,15 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
       if (ps.changes) ps.type.push('CHANGES')
       psSlots.push(ps)
     }
-    // Update workspace slot with PS slot information
-    // => find workspace slot with same name (there is no productname stored for slots in workspace)
+    this.updateWorkspaceSlotState(psProduct, psSlot, wps)
+  }
+
+  // Update workspace slot with PS slot information
+  // => find workspace slot with same name (there is no productname stored for slots in workspace)
+  private updateWorkspaceSlotState(psProduct: ProductStoreItem, psSlot: SlotPS, wps?: ExtendedSlot): void {
     if (wps?.psSlots) {
-      if (!wps.psSlots.find((s) => s.name === ps.name))
-        wps.psSlots.push({ ...ps, pName: psProduct.productName!, pDisplayName: psProduct.displayName! })
+      if (!wps.psSlots.find((s) => s.name === psSlot.name))
+        wps.psSlots.push({ ...psSlot, pName: psProduct.productName!, pDisplayName: psProduct.displayName! })
       // consolidate slot state (aware of the state of current psSlot declaration together with previous ones)
       wps.exists = true
       wps.deprecated = wps.deprecated || psSlot.deprecated === true

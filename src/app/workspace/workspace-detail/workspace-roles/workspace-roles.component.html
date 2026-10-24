@@ -15,7 +15,7 @@
     <p-message
       id="ws_roles_message_error"
       severity="error"
-      styleClass="m-3"
+      styleClass="m-3 w-fit"
       [text]="exceptionMessage | translate"
     ></p-message>
   } @else {
@@ -30,6 +30,7 @@
             @if (isComponentDefined && (loadingIamRoles() || wsLoading())) {
               <p-message
                 id="ws_roles_message_loading"
+                styleClass="w-fit"
                 severity="info"
                 [text]="'ACTIONS.LOADING' | translate"
               ></p-message>
@@ -37,6 +38,7 @@
             @if (!isComponentDefined) {
               <p-message
                 id="ws_roles_exception_component_not_exist"
+                styleClass="w-fit"
                 severity="error"
                 [text]="'EXCEPTIONS.NOT_FOUND.IAM_COMPONENT' | translate"
               ></p-message>

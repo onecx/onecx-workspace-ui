@@ -43,9 +43,11 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
     private readonly translate: TranslateService,
     private readonly msgService: PortalMessageService
   ) {
-    Promise.all([this.user.hasPermission('WORKSPACE_SLOT#EDIT')]).then(([perm]) => {
-      this.hasEditPermission = perm
-    })
+    Promise.all([this.user.hasPermission('WORKSPACE_SLOT#EDIT')])
+      .then(([perm]) => {
+        this.hasEditPermission = perm
+      })
+      .catch((err) => console.error(err))
     this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm:ss' : 'M/d/yy, hh:mm:ss a'
   }
 

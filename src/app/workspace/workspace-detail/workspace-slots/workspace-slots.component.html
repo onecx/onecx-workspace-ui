@@ -5,7 +5,7 @@
     <p-message
       id="ws_slots_message_error"
       severity="error"
-      styleClass="m-3"
+      styleClass="m-3 w-fit"
       [text]="exceptionMessage | translate"
     ></p-message>
   } @else {
@@ -15,7 +15,12 @@
         class="mb-3 py-3 flex flex-row flex-wrap justify-content-between align-items-center column-gap-4 row-gap-1 border-bottom-1 border-100"
       >
         @if (loading()) {
-          <p-message id="ws_slots_message_loading" severity="info" [text]="'ACTIONS.LOADING' | translate"></p-message>
+          <p-message
+            id="ws_slots_message_loading"
+            styleClass="w-fit"
+            severity="info"
+            [text]="'ACTIONS.LOADING' | translate"
+          ></p-message>
         } @else {
           <!-- QUICK FILTER -->
           <nav

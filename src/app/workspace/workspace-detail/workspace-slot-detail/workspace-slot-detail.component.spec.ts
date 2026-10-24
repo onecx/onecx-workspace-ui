@@ -1,6 +1,6 @@
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angular/core/testing'
+import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing'
 import { provideNoopAnimations } from '@angular/platform-browser/animations'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { BehaviorSubject, of, throwError } from 'rxjs'
@@ -69,6 +69,19 @@ describe('WorkspaceSlotDetailComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy()
   })
+
+  it('should log error when checking hasEditPermission rejects', fakeAsync(() => {
+    spyOn(console, 'error')
+    mockUserService.hasPermission.and.returnValue(Promise.reject(new Error('perm failed')))
+
+    initializeComponent()
+    tick()
+
+    expect(console.error).toHaveBeenCalled()
+
+    // restore neutral behaviour for subsequent tests
+    mockUserService.hasPermission.and.callFake((permission) => ['WORKSPACE_SLOT#EDIT'].includes(permission))
+  }))
 
   describe('OnChanges', () => {
     it('should initialize component state when slot is provided', () => {

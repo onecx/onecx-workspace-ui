@@ -256,6 +256,19 @@ describe('WorkspaceSlotsComponent', () => {
       expect(component.sortColumns.length).toBe(1)
       expect(component.sortColumns[0].id).toBe('name')
     })
+
+    it('should log error when checking hasEditPermission rejects', fakeAsync(() => {
+      spyOn(console, 'error')
+      mockUserService.hasPermission.and.returnValue(Promise.reject(new Error('perm failed')))
+
+      component.ngOnInit()
+      tick()
+
+      expect(console.error).toHaveBeenCalled()
+
+      // restore neutral behaviour for subsequent tests
+      mockUserService.hasPermission.and.callFake((permission) => ['WORKSPACE_SLOT#EDIT'].includes(permission))
+    }))
   })
 
   describe('ngOnDestroy', () => {
@@ -594,6 +607,16 @@ describe('WorkspaceSlotsComponent', () => {
       expect(slot!.type).toContain('CHANGES')
       expect(slot!.psComponents!.length).toBe(1)
       expect(slot!.psComponents![0].deprecated).toBeTrue()
+    }))
+
+    it('should log error when loadSlots rejects', fakeAsync(() => {
+      spyOn(console, 'error')
+      spyOn(component as any, 'loadSlots').and.returnValue(Promise.reject(new Error('boom')))
+
+      component.loadData()
+      tick()
+
+      expect(console.error).toHaveBeenCalledWith(jasmine.any(Error))
     }))
 
     it('should not set changes when slot component is found and has no state issues', fakeAsync(() => {

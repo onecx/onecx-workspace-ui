@@ -1,9 +1,19 @@
 <!-- MESSSAGES on small screens -->
 <section class="block md:hidden mb-2">
   @if (exceptionKey) {
-    <p-message id="ws_products_message_error_sm" severity="error" [text]="exceptionKey | translate"></p-message>
+    <p-message
+      id="ws_products_message_error_sm"
+      styleClass="w-fit"
+      severity="error"
+      [text]="exceptionKey | translate"
+    ></p-message>
   } @else if (wpLoading || psLoading) {
-    <p-message id="ws_products_message_loading_sm" severity="info" [text]="'ACTIONS.LOADING' | translate"></p-message>
+    <p-message
+      id="ws_products_message_loading_sm"
+      styleClass="w-fit"
+      severity="info"
+      [text]="'ACTIONS.LOADING' | translate"
+    ></p-message>
   }
 </section>
 
@@ -254,9 +264,19 @@
     <!-- MESSSAGES on bigger screens -->
     <section class="hidden md:block">
       @if (exceptionKey) {
-        <p-message id="ws_products_message_error" severity="error" [text]="exceptionKey | translate"></p-message>
+        <p-message
+          id="ws_products_message_error"
+          styleClass="w-fit"
+          severity="error"
+          [text]="exceptionKey | translate"
+        ></p-message>
       } @else if (wpLoading || psLoading) {
-        <p-message id="ws_products_message_loading" severity="info" [text]="'ACTIONS.LOADING' | translate"></p-message>
+        <p-message
+          id="ws_products_message_loading"
+          styleClass="w-fit"
+          severity="info"
+          [text]="'ACTIONS.LOADING' | translate"
+        ></p-message>
       }
     </section>
   </section>

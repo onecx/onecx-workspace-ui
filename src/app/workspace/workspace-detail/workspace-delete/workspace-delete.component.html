@@ -17,6 +17,7 @@
         @if (workspace?.mandatory) {
           <p-message
             id="th_delete_reject_mandatory_message"
+            styleClass="w-fit"
             severity="info"
             [text]="'ACTIONS.DELETE.WORKSPACE.MESSAGE.REJECT_MANDATORY' | translate"
           ></p-message>
@@ -37,7 +38,7 @@
               <p-message
                 id="ws_delete_operator_hint"
                 severity="info"
-                styleClass="mt-1"
+                styleClass="mt-1 w-fit"
                 [text]="'ACTIONS.DELETE.WORKSPACE.MESSAGE.INFO_OPERATOR' | translate"
               ></p-message>
             } @else {

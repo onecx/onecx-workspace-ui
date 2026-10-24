@@ -298,6 +298,29 @@ describe('ProductComponent', () => {
     it('should set currentMfe', () => {
       expect(component.currentMfe).toEqual(mfeInfo)
     })
+
+    it('should log error when checking hasRegisterPermission rejects', async () => {
+      spyOn(console, 'error')
+      mockUserService.hasPermission.and.returnValue(Promise.reject(new Error('perm failed')))
+
+      const newFixture = TestBed.createComponent(ProductComponent)
+      const newComponent = newFixture.componentInstance
+      newComponent.workspace = workspace
+      newComponent.displayDetails = false
+      newComponent.displayedDetailItem = undefined
+      newComponent.wProducts = []
+      newComponent.psProducts = []
+      newComponent.psProductsOrg = new Map()
+      newFixture.detectChanges()
+      await new Promise((resolve) => setTimeout(resolve, 0))
+
+      expect(console.error).toHaveBeenCalled()
+
+      // restore neutral behaviour for subsequent tests
+      mockUserService.hasPermission.and.callFake((permission: string) =>
+        ['WORKSPACE_PRODUCTS#REGISTER'].includes(permission)
+      )
+    })
   })
 
   describe('load data', () => {

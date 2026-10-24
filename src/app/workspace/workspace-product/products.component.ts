@@ -196,9 +196,11 @@ export class ProductComponent implements OnChanges, OnDestroy {
     private readonly msgService: PortalMessageService,
     private readonly fb: FormBuilder
   ) {
-    Promise.all([this.user.hasPermission('WORKSPACE_PRODUCTS#REGISTER')]).then(([perm]) => {
-      this.hasRegisterPermission = perm
-    })
+    Promise.all([this.user.hasPermission('WORKSPACE_PRODUCTS#REGISTER')])
+      .then(([perm]) => {
+        this.hasRegisterPermission = perm
+      })
+      .catch((err) => console.error(err))
 
     this.appState.currentMfe$.pipe(map((mfe) => (this.currentMfe = mfe))).subscribe()
     this.formGroup = this.fb.group({
