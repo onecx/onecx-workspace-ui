@@ -261,7 +261,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     wSlots: ExtendedSlot[]
   ): void {
     // 1. Check if the slot is already used in the workspace
-    let wps = wSlots.find((s) => s.name === psSlot.name)
+    const wps = wSlots.find((s) => s.name === psSlot.name)
     let ps = wps
     // 2. otherwise check if the slot was already declared by another product in the consolidated list
     if (!ps) ps = psSlots.find((s) => s.name === psSlot.name)
