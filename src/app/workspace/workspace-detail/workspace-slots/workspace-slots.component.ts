@@ -90,6 +90,10 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges {
   public productEndpointExist = false
   public hasEditPermission = false
   public showSlotDetailDialog = false
+  public numberOfAllSlots = 0
+  public numberOfWSlots = 0
+  public numberOfUnusedPSlots = 0
+  public numberOfChangedSlots = 0
 
   public ngOnInit() {
     Promise.all([this.user.hasPermission('WORKSPACE_SLOT#EDIT')])
@@ -151,6 +155,11 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges {
             // finalize
             slots.sort(this.sortSlotsByName)
             this.onQuickFilterChange(this.quickFilterValue) // reestablish filter after data change
+            // count
+            this.numberOfAllSlots = slots.length
+            this.numberOfWSlots = wSlots.length
+            this.numberOfUnusedPSlots = psSlots.length
+            this.numberOfChangedSlots = slots.filter((s) => s.changes).length
             return slots
           }),
           takeUntilDestroyed(this.destroyRef)
@@ -390,6 +399,19 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges {
   public onClearGlobalFilter(): void {
     this.globalFilterValue = ''
     this.filteredData.set(undefined)
+  }
+
+  public onGetQuickFilterCount(slotType: SlotFilterType): string {
+    switch (slotType) {
+      case 'WORKSPACE':
+        return this.numberOfWSlots.toString()
+      case 'CHANGES':
+        return this.numberOfChangedSlots.toString()
+      case 'UNUSED':
+        return this.numberOfUnusedPSlots.toString()
+      default:
+        return this.numberOfAllSlots.toString()
+    }
   }
 
   /**

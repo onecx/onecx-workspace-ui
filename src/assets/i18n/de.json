@@ -363,6 +363,7 @@
         "LABEL": "Status",
         "TOOLTIP": "Filter für Slotregistrierungsstatus",
         "SELECTED": "Ausgewählt",
+        "COUNT": "Anzahl",
         "ALL": "Alle",
         "ALL.TOOLTIP": "Alle Slots",
         "CHANGES": "Änderungen",

@@ -734,6 +734,31 @@ describe('WorkspaceSlotsComponent', () => {
     })
   })
 
+  describe('onGetQuickFilterCount', () => {
+    beforeEach(() => {
+      component.numberOfAllSlots = 4
+      component.numberOfWSlots = 3
+      component.numberOfUnusedPSlots = 2
+      component.numberOfChangedSlots = 1
+    })
+
+    it('should return the number of workspace slots for WORKSPACE', () => {
+      expect(component.onGetQuickFilterCount('WORKSPACE')).toBe('3')
+    })
+
+    it('should return the number of changed slots for CHANGES', () => {
+      expect(component.onGetQuickFilterCount('CHANGES')).toBe('1')
+    })
+
+    it('should return the number of unused product store slots for UNUSED', () => {
+      expect(component.onGetQuickFilterCount('UNUSED')).toBe('2')
+    })
+
+    it('should return the number of all slots for ALL', () => {
+      expect(component.onGetQuickFilterCount('ALL')).toBe('4')
+    })
+  })
+
   describe('sorting', () => {
     it('should sort slots by name case-insensitive', () => {
       const slotA = { name: 'alpha' } as ExtendedSlot

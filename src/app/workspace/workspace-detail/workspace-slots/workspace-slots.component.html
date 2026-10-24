@@ -52,6 +52,9 @@
             >
               <span>{{ 'DIALOG.SLOT.QUICK_FILTER.LABEL' | translate }}: </span>
               <span>{{ 'DIALOG.SLOT.QUICK_FILTER.' + quickFilterValue + '.TOOLTIP' | translate }} </span>
+              <span role="note" [attr.aria-label]="'DIALOG.SLOT.QUICK_FILTER.COUNT' | translate">
+                {{ onGetQuickFilterCount(quickFilterValue) }}
+              </span>
             </div>
           </nav>
         }
@@ -203,7 +206,7 @@
               @if (item.components) {
                 <div
                   [id]="'ws_slots_grid_data_row_' + i + '_components'"
-                  class="card-badge-right badge-2-number p-1 text-color"
+                  class="card-badge-right badge-2-number p-1 text-color font-bold"
                   [attr.aria-label]="'SLOT.COMPONENTS' | translate"
                   [pTooltip]="'SLOT.COMPONENTS' | translate"
                   tooltipPosition="top"
