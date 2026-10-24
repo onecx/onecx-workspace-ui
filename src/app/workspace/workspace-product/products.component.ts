@@ -449,11 +449,14 @@ export class ProductComponent implements OnChanges, OnDestroy {
           const item = data as ExtendedProduct
           this.prepareWProduct(item)
           this.fillForm(item)
+          // OnPush: this HTTP response arrives outside the click handler's change detection cycle
+          this.cdr.markForCheck()
         },
         error: (err) => {
           this.onHideItemDetails()
           console.error('getProductById', err)
           this.msgService.error({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.LOAD_ERROR' })
+          this.cdr.markForCheck()
         },
         complete() {}
       })
