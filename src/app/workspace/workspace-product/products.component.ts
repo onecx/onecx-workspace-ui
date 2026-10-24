@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   Input,
@@ -194,7 +195,8 @@ export class ProductComponent implements OnChanges, OnDestroy {
     private readonly appState: AppStateService,
     private readonly translate: TranslateService,
     private readonly msgService: PortalMessageService,
-    private readonly fb: FormBuilder
+    private readonly fb: FormBuilder,
+    private readonly cdr: ChangeDetectorRef
   ) {
     Promise.all([this.user.hasPermission('WORKSPACE_PRODUCTS#REGISTER')])
       .then(([perm]) => {
@@ -279,7 +281,11 @@ export class ProductComponent implements OnChanges, OnDestroy {
             console.error('getProductsByWorkspaceId', err)
             return of([] as ExtendedProduct[])
           }),
-          finalize(() => (this.wpLoading = false))
+          // OnPush: the view must be marked dirty explicitly, this runs outside any template event
+          finalize(() => {
+            this.wpLoading = false
+            this.cdr.markForCheck()
+          })
         )
         .pipe(takeUntil(this.destroy$))
   }
@@ -324,7 +330,11 @@ export class ProductComponent implements OnChanges, OnDestroy {
           console.error('searchAvailableProducts', err)
           return of([] as ExtendedProduct[])
         }),
-        finalize(() => (this.psLoading = false))
+        // OnPush: the view must be marked dirty explicitly, this runs outside any template event
+        finalize(() => {
+          this.psLoading = false
+          this.cdr.markForCheck()
+        })
       )
       .pipe(takeUntil(this.destroy$))
   }

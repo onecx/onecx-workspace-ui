@@ -1,14 +1,4 @@
-import {
-  Component,
-  DestroyRef,
-  inject,
-  Input,
-  OnChanges,
-  OnDestroy,
-  OnInit,
-  signal,
-  SimpleChanges
-} from '@angular/core'
+import { Component, DestroyRef, inject, Input, OnChanges, OnInit, signal, SimpleChanges } from '@angular/core'
 import { SharedModule } from 'src/app/shared/shared.module'
 import { OcxChipComponent } from 'src/app/shared/components/ocx-chip/ocx-chip.component'
 import { WorkspaceSlotDetailComponent } from '../workspace-slot-detail/workspace-slot-detail.component'
@@ -58,7 +48,7 @@ export type ExtendedSlot = Slot &
   templateUrl: './workspace-slots.component.html',
   styleUrls: ['./workspace-slots.component.scss']
 })
-export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
+export class WorkspaceSlotsComponent implements OnInit, OnChanges {
   private readonly destroyRef = inject(DestroyRef)
   private readonly workspaceService = inject(WorkspaceService)
   private readonly user = inject(UserService)
@@ -74,31 +64,32 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   public data$: Observable<RowListGridData[]> = this.dataSubject$.asObservable()
   public readonly data = toSignal(this.data$, { initialValue: [] as RowListGridData[] })
   public readonly filteredData = signal<RowListGridData[] | undefined>(undefined)
-  public globalFilterValue = ''
-  public quickFilterValue: SlotFilterType = 'ALL'
-  public quickFilterOptions$: Observable<SelectItem[]> | undefined
-  public quickFilterCount = ''
-  public wProductNames: string[] = [] // simple list of names of registered products in workspace
 
-  private readonly destroy$ = new Subject()
   public wProducts$!: Observable<string[]>
   public wSlots$!: Observable<ExtendedSlot[]> // workspace slots
   public slotsFiltered: ExtendedSlot[] = [] // filtered slot collection
   public psProducts$!: Observable<ProductStoreItem[]> // product store slots
   public psComponents: ExtendedComponent[] = []
   public item4Detail: ExtendedSlot | undefined
-  public productEndpointExist = false
+  public wProductNames: string[] = [] // simple list of names of registered products in workspace
+
+  // filter
+  public globalFilterValue = ''
+  public quickFilterValue: SlotFilterType = 'ALL'
+  public quickFilterOptions$: Observable<SelectItem[]> | undefined
+  public quickFilterCount = ''
+  // sort
+  public sortColumns = this.prepareSortColumns()
+  public sortDirection: DataSortDirection = DataSortDirection.ASCENDING
+  public sortField = 'name,changes'
 
   // dialog
   public readonly exceptionKey = signal<string | undefined>(undefined)
   public loading = signal(false)
   public changeMode: ChangeMode = 'VIEW'
+  public productEndpointExist = false
   public hasEditPermission = false
   public showSlotDetailDialog = false
-
-  public sortColumns = this.prepareSortColumns()
-  public sortDirection: DataSortDirection = DataSortDirection.ASCENDING
-  public sortField = 'name,changes'
 
   public ngOnInit() {
     Promise.all([this.user.hasPermission('WORKSPACE_SLOT#EDIT')])
@@ -109,6 +100,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
 
     this.prepareQuickFilter()
   }
+
   public ngOnChanges(changes: SimpleChanges): void {
     if (this.workspace && changes['workspace']) {
       this.loadData()
@@ -120,10 +112,6 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
         'slots'
       )
     }
-  }
-  public ngOnDestroy(): void {
-    this.destroy$.next(undefined)
-    this.destroy$.complete()
   }
 
   public onReload() {

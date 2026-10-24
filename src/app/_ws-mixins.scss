@@ -551,15 +551,6 @@
   }
 }
 
-@mixin ocx-p-message {
-  :host ::ng-deep {
-    .p-message {
-      display: inline-grid;
-      min-width: 20rem;
-    }
-  }
-}
-
 /* **********************************************
  *  DIALOG
  * **********************************************/

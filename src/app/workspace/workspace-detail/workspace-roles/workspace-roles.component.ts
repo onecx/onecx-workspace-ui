@@ -53,7 +53,7 @@ export function slotInitializer(slotService: SlotService) {
   templateUrl: './workspace-roles.component.html',
   styleUrls: ['./workspace-roles.component.scss']
 })
-export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
+export class WorkspaceRolesComponent implements OnInit, OnChanges {
   private readonly destroyRef = inject(DestroyRef)
   private readonly workspaceService = inject(WorkspaceService)
   private readonly user = inject(UserService)
@@ -63,28 +63,28 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
   private readonly msgService = inject(PortalMessageService)
 
   @Input() workspace!: Workspace | undefined
-  // data: the receiving of workspace and iam roles are complete decoupled (no combineLatest possible)
-  private readonly destroy$ = new Subject()
-  public wRoles$!: Observable<WorkspaceRole[]>
-  public wRoles: WorkspaceRole[] = []
-  public iamRoles: IAMRole[] = []
-  public role: Role | undefined // for detail
-  public Utils = Utils
-  public permissionEndpointExist = false
-
-  public sortColumns = this.prepareSortColumns()
-  public sortDirection: DataSortDirection = DataSortDirection.ASCENDING
-  public sortField = 'displayName'
 
   // data
   private readonly dataSubject$ = new BehaviorSubject<RowListGridData[]>([])
   public data$: Observable<RowListGridData[]> = this.dataSubject$.asObservable()
   public readonly data = toSignal(this.data$, { initialValue: [] as RowListGridData[] })
   public readonly filteredData = signal<RowListGridData[] | undefined>(undefined)
+
+  // data: the receiving of workspace and iam roles are complete decoupled (no combineLatest possible)
+  public wRoles$!: Observable<WorkspaceRole[]>
+  public wRoles: WorkspaceRole[] = []
+  public iamRoles: IAMRole[] = []
+  public role: Role | undefined // for detail
+
+  // filter
   public globalFilterValue = ''
   public quickFilterValue: RoleFilterType = 'ALL'
   public quickFilterOptions$: Observable<SelectItem[]> | undefined
   public quickFilterCount = ''
+  // sort
+  public sortColumns = this.prepareSortColumns()
+  public sortDirection: DataSortDirection = DataSortDirection.ASCENDING
+  public sortField = 'displayName'
 
   // dialog
   public readonly exceptionKey = signal<string | undefined>(undefined)
@@ -93,6 +93,8 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
   public iamRolesLoaded = signal(false)
   public iamAvailable = signal(false)
   public changeMode: ChangeMode = 'VIEW'
+  public Utils = Utils
+  public permissionEndpointExist = false
   public hasCreatePermission = false
   public hasDeletePermission = false
   public hasEditPermission = false
@@ -140,10 +142,6 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
         this.loadingIamRoles.set(false)
       }
     }, 5000)
-  }
-  public ngOnDestroy(): void {
-    this.destroy$.next(undefined)
-    this.destroy$.complete()
   }
 
   /**
