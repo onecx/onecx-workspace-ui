@@ -360,8 +360,8 @@
         "COMPONENTS.DEREGISTER": "Komponenten abmelden"
       },
       "QUICK_FILTER": {
-        "LABEL": "Filter",
-        "TOOLTIP": "Filter für Slotregistrierung",
+        "LABEL": "Status",
+        "TOOLTIP": "Filter für Slotregistrierungsstatus",
         "SELECTED": "Ausgewählt",
         "ALL": "Alle",
         "ALL.TOOLTIP": "Alle Slots",

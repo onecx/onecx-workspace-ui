@@ -350,7 +350,7 @@ describe('MenuComponent', () => {
 
     it('should prevent data loading during loading', () => {
       spyOn(component, 'loadMenu')
-      component.loading = true
+      component.loadingMenu = true
 
       component.onReload()
 

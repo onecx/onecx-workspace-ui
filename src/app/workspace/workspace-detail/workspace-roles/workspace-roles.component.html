@@ -8,258 +8,262 @@
 }
 
 @let rows = data();
-<div class="px-3 flex flex-column justify-content-between row-gap-3">
+<div class="flex flex-column justify-content-between row-gap-3">
   @let exceptionMessage = exceptionKey();
 
   @if (exceptionMessage) {
     <p-message
       id="ws_roles_message_error"
       severity="error"
-      styleClass="mb-2"
+      styleClass="m-3"
       [text]="exceptionMessage | translate"
     ></p-message>
-  }
-
-  <!-- HEADER -->
-  <div
-    class="py-3 flex flex-row flex-wrap justify-content-between align-items-center column-gap-4 row-gap-1 border-bottom-1 border-100"
-  >
-    <!-- INFO -->
-    @if (!isComponentDefined || loadingIamRoles() || wsLoading()) {
-      <div id="ws_roles_messages">
-        @if (isComponentDefined && (loadingIamRoles() || wsLoading())) {
-          <p-message id="ws_roles_message_loading" severity="info" [text]="'ACTIONS.LOADING' | translate"></p-message>
-        }
-        @if (!isComponentDefined) {
-          <p-message
-            id="ws_roles_exception_component_not_exist"
-            severity="error"
-            [text]="'EXCEPTIONS.NOT_FOUND.IAM_COMPONENT' | translate"
-          ></p-message>
-        }
-      </div>
-    }
-    <!-- QUICK FILTER -->
-    @if (isComponentDefined && !loadingIamRoles() && !wsLoading()) {
-      <nav
-        class="slim-selectbutton search-criteria-selectbutton"
-        [attr.aria-label]="'DIALOG.ROLE.QUICK_FILTER.TOOLTIP' | translate"
-        [pTooltip]="'DIALOG.ROLE.QUICK_FILTER.TOOLTIP' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
+  } @else {
+    <div class="px-3">
+      <!-- HEADER -->
+      <div
+        class="mb-3 py-3 flex flex-row flex-wrap justify-content-between align-items-center column-gap-4 row-gap-1 border-bottom-1 border-100"
       >
-        <p-selectButton
-          inputid="ws_roles_quick_filter"
-          size="small"
-          [options]="(quickFilterOptions$ | async) ?? []"
-          [(ngModel)]="quickFilterValue"
-          (onChange)="onQuickFilterChange($event.value)"
-          [allowEmpty]="false"
-          [ariaLabel]="'DIALOG.ROLE.QUICK_FILTER.LABEL' | translate"
-          [pTooltip]="'DIALOG.ROLE.QUICK_FILTER.TOOLTIP' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        >
-          <ng-template let-item pTemplate>
-            <span [id]="'ws_detail_roles_quick_filter_' + item.value"> {{ item.label }}</span>
-          </ng-template>
-        </p-selectButton>
-        <div
-          class="pl-2 flex flex-row flex-nowrap column-gap-3 text-sm opacity-90"
-          [attr.aria-label]="'DIALOG.ROLE.QUICK_FILTER.SELECTED' | translate"
-          role="note"
-        >
-          <span>{{ 'DIALOG.ROLE.QUICK_FILTER.LABEL' | translate }}: </span>
-          <span>{{ 'DIALOG.ROLE.QUICK_FILTER.' + quickFilterValue | translate }} </span>
-          <span role="note" [attr.aria-label]="'DIALOG.ROLE.QUICK_FILTER.COUNT' | translate">
-            {{ onGetQuickFilterCount(quickFilterValue) }}
-          </span>
-        </div>
-      </nav>
-    }
-    <!-- FILTER -->
-    <p-inputgroup class="w-auto">
-      <p-inputgroup-addon>
-        <i class="pi pi-filter" aria-hidden="true"></i>
-      </p-inputgroup-addon>
-      <p-floatlabel variant="on">
-        <input
-          #globalFilterInput
-          type="text"
-          pInputText
-          id="ws_roles_filter"
-          class="text-responsive"
-          [value]="globalFilterValue"
-          (input)="onGlobalFilter(globalFilterInput.value)"
-          [ariaLabel]="'DIALOG.DATAVIEW.FILTER.LABEL' | translate"
-          [pTooltip]="
-            ('DIALOG.DATAVIEW.FILTER.OF' | translate) + ('ROLE.NAME' | translate) + ', ' + ('ROLE.TYPE' | translate)
-          "
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        />
-        <label for="ws_roles_filter" aria-hidden="true">
-          {{ 'DIALOG.DATAVIEW.FILTER.LABEL' | translate }}
-        </label>
-      </p-floatlabel>
-      <p-inputgroup-addon>
-        <p-button
-          id="ws_roles_filter_clear"
-          icon="pi pi-filter-slash"
-          (onClick)="onClearGlobalFilter()"
-          [disabled]="globalFilterInput.value === ''"
-          [ariaLabel]="'DIALOG.DATAVIEW.FILTER.CLEAR' | translate"
-          [pTooltip]="'DIALOG.DATAVIEW.FILTER.CLEAR' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        />
-      </p-inputgroup-addon>
-    </p-inputgroup>
-    <!-- ACTIONS -->
-    <nav
-      class="flex flex-wrap align-is-center column-gap-2 row-gap-1"
-      [attr.aria-label]="'ACTIONS.NAVIGATION.RELATED_TOPICS' | translate"
-    >
-      <p-button
-        *ocxIfPermission="'WORKSPACE#GOTO_PERMISSION'"
-        id="ws_roles_header_action_slot_link"
-        styleClass="h-full"
-        icon="pi pi-lock"
-        [disabled]="!permissionEndpointExist"
-        [routerLink]="[getPermisionEndpointUrl$(workspace?.name!) | async]"
-        [ariaLabel]="'ACTIONS.NAVIGATION.GOTO_WORKSPACE_PERMISSIONS' | translate"
-        [pTooltip]="'ACTIONS.NAVIGATION.GOTO_WORKSPACE_PERMISSIONS' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      >
-      </p-button>
-      <p-button
-        *ocxIfPermission="'WORKSPACE_ROLE#CREATE'"
-        id="ws_roles_header_create"
-        styleClass="h-full"
-        icon="pi pi-plus"
-        (onClick)="onCreateRole($event)"
-        [ariaLabel]="'ACTIONS.CREATE.ROLE' | translate"
-        [pTooltip]="'ACTIONS.CREATE.ROLE' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      >
-      </p-button>
-      <p-button
-        *ocxIfPermission="'WORKSPACE_ROLE#VIEW'"
-        id="ws_roles_header_reload"
-        styleClass="h-full"
-        [icon]="'pi ' + (wsLoading() || loadingIamRoles() ? 'pi-spin pi-spinner' : 'pi-refresh')"
-        [disabled]="wsLoading() || loadingIamRoles()"
-        (onClick)="onReload()"
-        [ariaLabel]="'ACTIONS.SEARCH.RELOAD' | translate"
-        [pTooltip]="'ACTIONS.SEARCH.RELOAD' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      >
-      </p-button>
-    </nav>
-  </div>
-
-  <!-- TABLE -->
-  <ocx-data-view
-    #rolesDataView
-    id="ws_roles_dataview"
-    [columns]="sortColumns"
-    [data]="filteredData() ?? rows"
-    [layout]="'grid'"
-    [paginator]="true"
-    [pageSizes]="[20, 40, 100]"
-    [pageSize]="20"
-    [clientSideSorting]="false"
-    [clientSideFiltering]="true"
-    [sortDirection]="sortDirection"
-    [sortField]="sortField"
-    [emptyResultsMessage]="'ACTIONS.SEARCH.NO_DATA' | translate"
-  >
-    <!-- GRID -->
-    <ng-template #gridItem let-item>
-      <div class="col-6 md:col-4 xl:col-3 p-2 md:p-2">
-        <p-card
-          [id]="'ws_roles_grid_row_' + item.id"
-          [style]="{ margin: '0rem;' }"
-          styleClass="relative hover:bg-gray-200 text-center m-2 p-1 cursor-pointer"
-          [attr.aria-label]="'DIALOG.ROLE.HEADER.' + (hasEditPermission ? 'EDIT' : 'VIEW') | translate"
-          (click)="onEditRole($event, item)"
-          (keydown.enter)="$any($event.target).click()"
-          (keydown.space)="$event.preventDefault(); $any($event.target).click()"
-          role="button"
-          tabindex="0"
-        >
-          <!-- BADGES -->
-          @if (item.isWorkspaceRole && hasDeletePermission) {
-            <p-button
-              [id]="'ws_roles_grid_row_' + item.id + '_delete'"
-              icon="pi pi-trash"
-              [text]="true"
-              [rounded]="false"
-              severity="danger"
-              class="card-badge-right badge-1"
-              (onClick)="onDeleteRole($event, item)"
-              [attr.aria-label]="'ACTIONS.DELETE.ROLE.HEADER' | translate"
-              [pTooltip]="'ACTIONS.DELETE.ROLE.HEADER' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            ></p-button>
-          }
-          @if (!item.isWorkspaceRole && item.isIamRole && hasCreatePermission) {
-            <p-button
-              [id]="'ws_roles_grid_row_' + item.id + '_create'"
-              icon="pi pi-plus"
-              [text]="true"
-              [rounded]="false"
-              class="card-badge-right badge-1"
-              (onClick)="onAddRole($event, item)"
-              [attr.aria-label]="'ACTIONS.CREATE.WORKSPACE.ROLE' | translate"
-              [pTooltip]="'ACTIONS.CREATE.WORKSPACE.ROLE' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            ></p-button>
-          }
-          <!-- CONTENT -->
-          <div class="flex flex-column justify-content-between row-gap-2 text-center" aria-hidden="true">
-            <div
-              [id]="'ws_roles_grid_row_' + item.id + '_role_name'"
-              class="text-sm sm:text-base font-bold text-responsive"
-              [attr.aria-label]="item.name"
-              [pTooltip]="item.name?.length > 40 ? item.name : ''"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            >
-              {{ Utils.limitText(item.name, 40) }}
-            </div>
-            <div
-              [id]="'ws_roles_grid_row_' + item.id + '_workspace'"
-              class="flex flex-row justify-content-center align-items-center column-gap-1 text-xs sm:text-sm"
-            >
-              @if (item.isWorkspaceRole) {
-                <app-ocx-chip
-                  [id]="'ws_roles_grid_row_' + item.id + '_workspace'"
-                  class="py-1"
-                  [styleClass]="'bg-primary'"
-                  [label]="'Workspace'"
-                  [title]="'DIALOG.ROLE.ORIGIN.WORKSPACE' | translate"
-                />
-              }
-              @if (item.isIamRole) {
-                <app-ocx-chip
-                  [id]="'ws_roles_grid_row_' + item.id + '_iam'"
-                  class="py-1"
-                  [label]="'IDM'"
-                  [title]="'DIALOG.ROLE.ORIGIN.IAM' | translate"
-                />
-              }
-            </div>
+        <!-- INFO -->
+        @if (!isComponentDefined || loadingIamRoles() || wsLoading()) {
+          <div id="ws_roles_messages">
+            @if (isComponentDefined && (loadingIamRoles() || wsLoading())) {
+              <p-message
+                id="ws_roles_message_loading"
+                severity="info"
+                [text]="'ACTIONS.LOADING' | translate"
+              ></p-message>
+            }
+            @if (!isComponentDefined) {
+              <p-message
+                id="ws_roles_exception_component_not_exist"
+                severity="error"
+                [text]="'EXCEPTIONS.NOT_FOUND.IAM_COMPONENT' | translate"
+              ></p-message>
+            }
           </div>
-        </p-card>
+        } @else {
+          <!-- QUICK FILTER -->
+          <nav
+            class="slim-selectbutton search-criteria-selectbutton"
+            [attr.aria-label]="'DIALOG.ROLE.QUICK_FILTER.TOOLTIP' | translate"
+            [pTooltip]="'DIALOG.ROLE.QUICK_FILTER.TOOLTIP' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          >
+            <p-selectButton
+              inputid="ws_roles_quick_filter"
+              [options]="(quickFilterOptions$ | async) ?? []"
+              [(ngModel)]="quickFilterValue"
+              (onChange)="onQuickFilterChange($event.value)"
+              [allowEmpty]="false"
+              [ariaLabel]="'DIALOG.ROLE.QUICK_FILTER.LABEL' | translate"
+              [pTooltip]="'DIALOG.ROLE.QUICK_FILTER.TOOLTIP' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            >
+              <ng-template let-item pTemplate>
+                <span [id]="'ws_detail_roles_quick_filter_' + item.value"> {{ item.label }}</span>
+              </ng-template>
+            </p-selectButton>
+            <div
+              class="pl-2 flex flex-row flex-nowrap column-gap-3 text-sm opacity-90"
+              [attr.aria-label]="'DIALOG.ROLE.QUICK_FILTER.SELECTED' | translate"
+              role="note"
+            >
+              <span>{{ 'DIALOG.ROLE.QUICK_FILTER.LABEL' | translate }}: </span>
+              <span>{{ 'DIALOG.ROLE.QUICK_FILTER.' + quickFilterValue | translate }} </span>
+              <span role="note" [attr.aria-label]="'DIALOG.ROLE.QUICK_FILTER.COUNT' | translate">
+                {{ onGetQuickFilterCount(quickFilterValue) }}
+              </span>
+            </div>
+          </nav>
+        }
+        <!-- FILTER -->
+        <p-inputgroup class="w-auto">
+          <p-inputgroup-addon>
+            <i class="pi pi-filter" aria-hidden="true"></i>
+          </p-inputgroup-addon>
+          <p-floatlabel variant="on">
+            <input
+              #globalFilterInput
+              type="text"
+              pInputText
+              id="ws_roles_filter"
+              class="text-responsive"
+              [value]="globalFilterValue"
+              (input)="onGlobalFilter(globalFilterInput.value)"
+              [ariaLabel]="'DIALOG.DATAVIEW.FILTER.LABEL' | translate"
+              [pTooltip]="
+                ('DIALOG.DATAVIEW.FILTER.OF' | translate) + ('ROLE.NAME' | translate) + ', ' + ('ROLE.TYPE' | translate)
+              "
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            />
+            <label for="ws_roles_filter" aria-hidden="true">
+              {{ 'DIALOG.DATAVIEW.FILTER.LABEL' | translate }}
+            </label>
+          </p-floatlabel>
+          <p-inputgroup-addon>
+            <p-button
+              id="ws_roles_filter_clear"
+              icon="pi pi-filter-slash"
+              (onClick)="onClearGlobalFilter()"
+              [disabled]="globalFilterInput.value === ''"
+              [ariaLabel]="'DIALOG.DATAVIEW.FILTER.CLEAR' | translate"
+              [pTooltip]="'DIALOG.DATAVIEW.FILTER.CLEAR' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            />
+          </p-inputgroup-addon>
+        </p-inputgroup>
+        <!-- ACTIONS -->
+        <nav
+          class="flex flex-wrap align-is-center column-gap-2 row-gap-1"
+          [attr.aria-label]="'ACTIONS.NAVIGATION.RELATED_TOPICS' | translate"
+        >
+          <p-button
+            *ocxIfPermission="'WORKSPACE#GOTO_PERMISSION'"
+            id="ws_roles_header_action_slot_link"
+            styleClass="h-full"
+            icon="pi pi-lock"
+            [disabled]="!permissionEndpointExist"
+            [routerLink]="[getPermisionEndpointUrl$(workspace?.name!) | async]"
+            [ariaLabel]="'ACTIONS.NAVIGATION.GOTO_WORKSPACE_PERMISSIONS' | translate"
+            [pTooltip]="'ACTIONS.NAVIGATION.GOTO_WORKSPACE_PERMISSIONS' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          >
+          </p-button>
+          <p-button
+            *ocxIfPermission="'WORKSPACE_ROLE#CREATE'"
+            id="ws_roles_header_create"
+            styleClass="h-full"
+            icon="pi pi-plus"
+            (onClick)="onCreateRole($event)"
+            [ariaLabel]="'ACTIONS.CREATE.ROLE' | translate"
+            [pTooltip]="'ACTIONS.CREATE.ROLE' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          >
+          </p-button>
+          <p-button
+            *ocxIfPermission="'WORKSPACE_ROLE#VIEW'"
+            id="ws_roles_header_reload"
+            styleClass="h-full"
+            [icon]="'pi ' + (wsLoading() || loadingIamRoles() ? 'pi-spin pi-spinner' : 'pi-refresh')"
+            [disabled]="wsLoading() || loadingIamRoles()"
+            (onClick)="onReload()"
+            [ariaLabel]="'ACTIONS.SEARCH.RELOAD' | translate"
+            [pTooltip]="'ACTIONS.SEARCH.RELOAD' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          >
+          </p-button>
+        </nav>
       </div>
-    </ng-template>
-  </ocx-data-view>
+
+      <!-- TABLE -->
+      <ocx-data-view
+        #rolesDataView
+        id="ws_roles_dataview"
+        [columns]="sortColumns"
+        [data]="filteredData() ?? rows"
+        [layout]="'grid'"
+        [paginator]="true"
+        [pageSizes]="[20, 40, 100]"
+        [pageSize]="20"
+        [clientSideSorting]="false"
+        [clientSideFiltering]="true"
+        [sortDirection]="sortDirection"
+        [sortField]="sortField"
+        [emptyResultsMessage]="'ACTIONS.SEARCH.NO_DATA' | translate"
+      >
+        <!-- GRID -->
+        <ng-template #gridItem let-item>
+          <div class="col-6 md:col-4 xl:col-3 p-2 md:p-2">
+            <p-card
+              [id]="'ws_roles_grid_row_' + item.id"
+              [style]="{ margin: '0rem;' }"
+              styleClass="relative hover:bg-gray-200 text-center m-2 p-1 cursor-pointer"
+              [attr.aria-label]="'DIALOG.ROLE.HEADER.' + (hasEditPermission ? 'EDIT' : 'VIEW') | translate"
+              (click)="onEditRole($event, item)"
+              (keydown.enter)="$any($event.target).click()"
+              (keydown.space)="$event.preventDefault(); $any($event.target).click()"
+              role="button"
+              tabindex="0"
+            >
+              <!-- BADGES -->
+              @if (item.isWorkspaceRole && hasDeletePermission) {
+                <p-button
+                  [id]="'ws_roles_grid_row_' + item.id + '_delete'"
+                  icon="pi pi-trash"
+                  [text]="true"
+                  [rounded]="false"
+                  severity="danger"
+                  class="card-badge-right badge-1"
+                  (onClick)="onDeleteRole($event, item)"
+                  [attr.aria-label]="'ACTIONS.DELETE.ROLE.HEADER' | translate"
+                  [pTooltip]="'ACTIONS.DELETE.ROLE.HEADER' | translate"
+                  tooltipPosition="top"
+                  tooltipEvent="hover"
+                ></p-button>
+              }
+              @if (!item.isWorkspaceRole && item.isIamRole && hasCreatePermission) {
+                <p-button
+                  [id]="'ws_roles_grid_row_' + item.id + '_create'"
+                  icon="pi pi-plus"
+                  [text]="true"
+                  [rounded]="false"
+                  class="card-badge-right badge-1"
+                  (onClick)="onAddRole($event, item)"
+                  [attr.aria-label]="'ACTIONS.CREATE.WORKSPACE.ROLE' | translate"
+                  [pTooltip]="'ACTIONS.CREATE.WORKSPACE.ROLE' | translate"
+                  tooltipPosition="top"
+                  tooltipEvent="hover"
+                ></p-button>
+              }
+              <!-- CONTENT -->
+              <div class="flex flex-column justify-content-between row-gap-2 text-center" aria-hidden="true">
+                <div
+                  [id]="'ws_roles_grid_row_' + item.id + '_role_name'"
+                  class="text-sm sm:text-base font-bold text-responsive"
+                  [attr.aria-label]="item.name"
+                  [pTooltip]="item.name?.length > 40 ? item.name : ''"
+                  tooltipPosition="top"
+                  tooltipEvent="hover"
+                >
+                  {{ Utils.limitText(item.name, 40) }}
+                </div>
+                <div
+                  [id]="'ws_roles_grid_row_' + item.id + '_workspace'"
+                  class="flex flex-row justify-content-center align-items-center column-gap-1 text-xs sm:text-sm"
+                >
+                  @if (item.isWorkspaceRole) {
+                    <app-ocx-chip
+                      [id]="'ws_roles_grid_row_' + item.id + '_workspace'"
+                      class="py-1"
+                      [styleClass]="'bg-primary'"
+                      [label]="'Workspace'"
+                      [title]="'DIALOG.ROLE.ORIGIN.WORKSPACE' | translate"
+                    />
+                  }
+                  @if (item.isIamRole) {
+                    <app-ocx-chip
+                      [id]="'ws_roles_grid_row_' + item.id + '_iam'"
+                      class="py-1"
+                      [label]="'IDM'"
+                      [title]="'DIALOG.ROLE.ORIGIN.IAM' | translate"
+                    />
+                  }
+                </div>
+              </div>
+            </p-card>
+          </div>
+        </ng-template>
+      </ocx-data-view>
+    </div>
+  }
 </div>
 
 <app-workspace-role-detail

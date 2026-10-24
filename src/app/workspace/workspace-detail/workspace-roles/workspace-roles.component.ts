@@ -85,10 +85,9 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
   public quickFilterValue: RoleFilterType = 'ALL'
   public quickFilterOptions$: Observable<SelectItem[]> | undefined
   public quickFilterCount = ''
+
   // dialog
   public readonly exceptionKey = signal<string | undefined>(undefined)
-
-  //public dataViewControlsTranslations$: Observable<DataViewControlTranslations> | undefined
   public wsLoading = signal(false)
   public wRolesLoaded = signal(false)
   public iamRolesLoaded = signal(false)
@@ -107,8 +106,6 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
   public slotName = 'onecx-iam-user-roles'
   public roleListEmitter = new EventEmitter<IAMRole[]>()
   public componentPermissions: string[] = []
-
-  constructor() {}
 
   public ngOnInit(): void {
     Promise.all([
@@ -319,7 +316,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   /**
-   * UI Events: FILTERING
+   * FILTERING
    */
   public onQuickFilterChange(val: RoleFilterType): void {
     if (val === 'ALL') {

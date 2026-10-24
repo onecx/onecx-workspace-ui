@@ -360,8 +360,8 @@
         "COMPONENTS.DEREGISTER": "Deregister Components"
       },
       "QUICK_FILTER": {
-        "LABEL": "Filter",
-        "TOOLTIP": "Filter for Slot registration",
+        "LABEL": "Status",
+        "TOOLTIP": "Filter for Slot registration status",
         "SELECTED": "Selected",
         "ALL": "All",
         "ALL.TOOLTIP": "All Slots",
