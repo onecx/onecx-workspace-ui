@@ -27,7 +27,6 @@ export class WorkspaceRoleDetailComponent implements OnChanges {
   @Input() roles: Role[] = []
   @Input() changeMode: ChangeMode = 'VIEW'
   @Input() displayDetailDialog = false
-  @Input() displayDeleteDialog = false
   @Output() dataChanged: EventEmitter<boolean> = new EventEmitter()
 
   public dateFormat = 'M/d/yy, hh:mm:ss a'
@@ -124,18 +123,5 @@ export class WorkspaceRoleDetailComponent implements OnChanges {
         }
       })
     }
-  }
-
-  public onDeleteRoleConfirmation() {
-    this.wRoleApi.deleteWorkspaceRole({ id: this.role?.id ?? '' }).subscribe({
-      next: () => {
-        this.msgService.success({ summaryKey: 'ACTIONS.DELETE.ROLE.MESSAGE.OK' })
-        this.dataChanged.emit(true)
-      },
-      error: (err) => {
-        this.msgService.error({ summaryKey: 'ACTIONS.DELETE.ROLE.MESSAGE.NOK' })
-        console.error('deleteWorkspaceRole', err)
-      }
-    })
   }
 }

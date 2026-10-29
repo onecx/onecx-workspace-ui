@@ -274,6 +274,11 @@
   [role]="role"
   [changeMode]="changeMode"
   [displayDetailDialog]="showRoleDetailDialog"
-  [displayDeleteDialog]="showRoleDeleteDialog"
   (dataChanged)="onRoleChanged($event)"
 ></app-workspace-role-detail>
+
+<app-workspace-role-delete
+  [role]="role"
+  [displayDeleteDialog]="showRoleDeleteDialog"
+  (dataChanged)="onRoleChanged($event)"
+></app-workspace-role-delete>

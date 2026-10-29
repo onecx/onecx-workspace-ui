@@ -31,6 +31,7 @@ import { Workspace, WorkspaceRole, WorkspaceRolesAPIService } from 'src/app/shar
 import { Utils } from 'src/app/shared/utils'
 import { SharedModule } from 'src/app/shared/shared.module'
 import { OcxChipComponent } from 'src/app/shared/components/ocx-chip/ocx-chip.component'
+import { WorkspaceRoleDeleteComponent } from '../../workspace-role-delete/workspace-role-delete.component'
 import { WorkspaceRoleDetailComponent } from '../../workspace-role-detail/workspace-role-detail.component'
 
 export type IAMRole = { name?: string; description?: string }
@@ -46,7 +47,14 @@ export function slotInitializer(slotService: SlotService) {
 @Component({
   selector: 'app-workspace-roles',
   standalone: true,
-  imports: [SharedModule, AngularAcceleratorModule, CardModule, OcxChipComponent, WorkspaceRoleDetailComponent],
+  imports: [
+    SharedModule,
+    AngularAcceleratorModule,
+    CardModule,
+    OcxChipComponent,
+    WorkspaceRoleDetailComponent,
+    WorkspaceRoleDeleteComponent
+  ],
   providers: [{ provide: SLOT_SERVICE, useExisting: SlotService }],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './workspace-roles.component.html',

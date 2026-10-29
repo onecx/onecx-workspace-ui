@@ -42,8 +42,7 @@ describe('WorkspaceRoleDetailComponent', () => {
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
   const wRoleServiceSpy = {
     createWorkspaceRole: jasmine.createSpy('createWorkspaceRole').and.returnValue(of({})),
-    updateWorkspaceRole: jasmine.createSpy('updateWorkspaceRole').and.returnValue(of({})),
-    deleteWorkspaceRole: jasmine.createSpy('deleteWorkspaceRole').and.returnValue(of({}))
+    updateWorkspaceRole: jasmine.createSpy('updateWorkspaceRole').and.returnValue(of({}))
   }
   const mockUserService = {
     lang$: new BehaviorSubject<string>('de'),
@@ -84,7 +83,6 @@ describe('WorkspaceRoleDetailComponent', () => {
     // reset
     wRoleServiceSpy.createWorkspaceRole.calls.reset()
     wRoleServiceSpy.updateWorkspaceRole.calls.reset()
-    wRoleServiceSpy.deleteWorkspaceRole.calls.reset()
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
   })
@@ -121,16 +119,6 @@ describe('WorkspaceRoleDetailComponent', () => {
     component.onClose()
 
     expect(component.dataChanged.emit).toHaveBeenCalledWith(false)
-  })
-
-  it('should delete a workspace role and display success message', () => {
-    wRoleServiceSpy.deleteWorkspaceRole.and.returnValue(of({}))
-    spyOn(component.dataChanged, 'emit')
-
-    component.onDeleteRoleConfirmation()
-
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.ROLE.MESSAGE.OK' })
-    expect(component.dataChanged.emit).toHaveBeenCalledWith(true)
   })
 
   it('should not proceed onSaveRole if form is invalid', () => {
@@ -313,17 +301,6 @@ describe('WorkspaceRoleDetailComponent', () => {
     expect(wRoleServiceSpy.updateWorkspaceRole).toHaveBeenCalled()
     expect(console.error).toHaveBeenCalledWith('updateWorkspaceRole', errorResponse)
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.ROLE_NOK' })
-  })
-
-  it('should display error message if delete api call fails', () => {
-    const errorResponse = { status: 400, statusText: 'error on deleting a role' }
-    wRoleServiceSpy.deleteWorkspaceRole.and.returnValue(throwError(() => errorResponse))
-    spyOn(console, 'error')
-
-    component.onDeleteRoleConfirmation()
-
-    expect(console.error).toHaveBeenCalledWith('deleteWorkspaceRole', errorResponse)
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.ROLE.MESSAGE.NOK' })
   })
 
   /**
