@@ -569,7 +569,7 @@
         "PLACEHOLDER": "Filter"
       },
       "PRODUCT_FILTER_TOOLTIP": "Filtern nach Applikation (Anzeigename)",
-      "SLOT_FILTER_TOOLTIP": "Filtern nach Komponenten",
+      "COMPONENT_FILTER_TOOLTIP": "Filtern nach Komponenten",
       "SORT_BY": "Sortiert nach",
       "SORT_DIRECTION_ASC": "aufsteigend",
       "SORT_DIRECTION_DESC": "absteigend",

@@ -29,7 +29,7 @@ export type SlotFilterType = 'ALL' | SlotType
 export type ExtendedSelectItem = SelectItem & { tooltipKey?: string }
 export type ChangeMode = 'VIEW' | 'EDIT'
 export type PSSlot = SlotPS & { pName: string; pDisplayName: string }
-type ChangeStatus = { changes?: boolean; exists?: boolean; deprecated?: boolean; undeployed?: boolean }
+type ChangeStatus = { changes: boolean; exists?: boolean; deprecated: boolean; undeployed: boolean }
 
 // workspace slot data extended with status from product store
 export type ExtendedComponent = SlotComponent & ChangeStatus & { productUnregistered?: boolean }
@@ -143,6 +143,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges {
           wProducts: this.wProducts$
         }).pipe(
           map(({ wSlots, psProducts, wProducts }) => {
+            this.wProductNames = wProducts
             // Extract PS components from the PS products
             this.psComponents = this.extractPsComponents(psProducts) // this is public used
             // Extract PS slots which are not yet used in the workspace
@@ -360,7 +361,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges {
       if (ws.components)
         for (const wc of ws.components)
           if (!ws.psComponents?.find((psc) => psc.name === wc.name)) {
-            ws.psComponents?.push({ ...wc, undeployed: true, deprecated: false, exists: false })
+            ws.psComponents?.push({ ...wc, changes: false, deprecated: false, exists: false, undeployed: true })
             ws.changes = true
             if (!ws.type.includes('CHANGES')) ws.type.push('CHANGES')
           }

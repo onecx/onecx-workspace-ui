@@ -401,7 +401,7 @@ export class ProductComponent implements OnChanges, OnDestroy {
   public getFilterValue(ev: any): string {
     return ev.target.value
   }
-  filterProducts(val: string, bucket: 'SOURCE' | 'TARGET') {
+  public filterProducts(val: string, bucket: 'SOURCE' | 'TARGET') {
     if (!val || val.trim() === '') {
       if (bucket === 'SOURCE') this.filteredPsProducts = [...this.psProducts]
       if (bucket === 'TARGET') this.filteredWProducts = [...this.wProducts]
@@ -415,6 +415,7 @@ export class ProductComponent implements OnChanges, OnDestroy {
       this.filteredWProducts = this.wProducts.filter((item) => item.displayName?.toLowerCase().includes(lowerSearch))
     }
   }
+
   public onHideItemDetails() {
     this.displayDetails = false
     this.displayedDetailItem = undefined

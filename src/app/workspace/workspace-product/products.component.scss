@@ -55,13 +55,6 @@
         border-bottom-color: var(--onecx-workspace-onecx-workspace-ui-listbox-border-color);
       }
     }
-    // filter bar (view mode + search): tighten distances
-    .p-listbox-header:has(.select-button-view) {
-      padding: 0; // reset here to manage distances below
-      .p-selectbutton .p-button {
-        min-width: unset;
-      }
-    }
 
     /* source/target */
     .p-listbox-list-container {
