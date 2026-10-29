@@ -34,7 +34,7 @@
         cursor: pointer;
       }
       .p-treenode-content {
-        padding: 0 !important;
+        padding: 0;
         .p-tree-toggler {
           height: 1.7rem;
           margin-right: 0.1rem;
@@ -54,7 +54,7 @@
     height: 2.3rem;
   }
   .lang-not-exists {
-    color: var(--danger-button-bg) !important;
+    color: var(--danger-button-bg);
   }
   .item-disabled {
     opacity: 0.5;

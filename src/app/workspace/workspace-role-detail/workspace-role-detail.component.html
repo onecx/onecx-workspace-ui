@@ -10,7 +10,7 @@
     [style]="{ width: '550px' }"
     styleClass="disable-max-height-preset"
   >
-    <p-tabs>
+    <p-tabs value="0">
       <p-tablist>
         <p-tab
           value="0"
@@ -40,7 +40,7 @@
           <form [formGroup]="formGroupRole" errorTailor>
             <div class="mt-2 flex flex-wrap flex-column gap-4 justify-content-between">
               <div>
-                <span class="p-float-label" controlErrorAnchor>
+                <p-floatlabel variant="on">
                   <input
                     pInputText
                     type="text"
@@ -55,10 +55,10 @@
                   <label class="ocx-required-label" for="ws_role_create_form_name"
                     >{{ 'ROLE.NAME' | translate }}
                   </label>
-                </span>
+                </p-floatlabel>
               </div>
               <div>
-                <span class="p-float-label">
+                <p-floatlabel variant="on">
                   <input
                     pInputText
                     type="text"
@@ -71,7 +71,7 @@
                     tooltipEvent="hover"
                   />
                   <label for="ws_role_create_form_description">{{ 'ROLE.DESCRIPTION' | translate }} </label>
-                </span>
+                </p-floatlabel>
               </div>
             </div>
           </form>
@@ -81,7 +81,7 @@
           <p-tabpanel value="1">
             <div class="mt-2 flex flex-column justify-content-between gap-4">
               <div class="flex flex-row flex-wrap gap-4">
-                <span class="flex-grow-1 sm:flex-grow-0 p-float-label">
+                <p-floatlabel variant="on" class="flex-grow-1 sm:flex-grow-0">
                   <input
                     pInputText
                     type="text"
@@ -97,8 +97,8 @@
                   <label for="ws_role_detail_intern_item_creation_date">{{
                     'INTERNAL.CREATION_DATE' | translate
                   }}</label>
-                </span>
-                <span class="flex-grow-1 p-float-label">
+                </p-floatlabel>
+                <p-floatlabel variant="on" class="flex-grow-1">
                   <input
                     pInputText
                     type="text"
@@ -114,7 +114,7 @@
                   <label for="ws_role_detail_intern_item_creation-user">{{
                     'INTERNAL.CREATION_USER' | translate
                   }}</label>
-                </span>
+                </p-floatlabel>
               </div>
 
               <div class="flex flex-row flex-wrap gap-4">

@@ -13,9 +13,6 @@
 @include ocx-p-tabs;
 
 :host ::ng-deep {
-  .w-35rem {
-    width: 35rem !important;
-  }
   .p-autocomplete .p-autocomplete-input {
     padding-right: 2.2rem;
     white-space: nowrap;

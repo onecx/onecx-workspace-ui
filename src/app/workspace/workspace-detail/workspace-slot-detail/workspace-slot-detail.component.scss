@@ -11,7 +11,7 @@
 :host ::ng-deep {
   @media screen and (min-width: 962px) {
     .lg\:dialog-header-right-slot {
-      display: block !important;
+      display: block;
       top: 1.55rem;
       right: 5rem;
       font-weight: var(--dialog-header-font-weight); // same as dialog-title
@@ -71,28 +71,6 @@
         padding: 0.2rem 0.5rem;
         border-bottom: var(--table-header-border);
       }
-
-      // grid / tile view (the .tile-view class is toggled by the component on the list)
-      &.tile-view {
-        display: flex;
-        flex-wrap: wrap;
-        align-content: flex-start;
-
-        li.p-listbox-option {
-          max-width: 100px;
-          min-width: fit-content;
-          .tile-view-content {
-            width: 100%;
-          }
-          .tile-view-mandatory {
-            text-align: center;
-            width: min-content;
-          }
-          .tile-view-optional {
-            display: none !important;
-          }
-        }
-      }
     }
   }
 
@@ -116,6 +94,6 @@
     }
   }
   .p-listbox:not(.p-disabled) .p-listbox-option:has(.custom-selected-row) {
-    background-color: var(--onecx-workspace-onecx-workspace-ui-listbox-option-selected-background) !important;
+    background-color: var(--onecx-workspace-onecx-workspace-ui-listbox-option-selected-background);
   }
 }

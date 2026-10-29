@@ -5,9 +5,6 @@
 @include listbox-zebra-rows;
 
 :host ::ng-deep {
-  .mt-05 {
-    margin-top: 0.125rem !important;
-  }
   .workspace-product-item {
     .p-card-header {
       background-color: rgb(from var(--primary-color) r g b / 0.1);
@@ -70,28 +67,6 @@
         padding: 0.2rem 0.5rem;
         border-bottom: var(--table-header-border);
       }
-
-      // grid / tile view (the .tile-view class is toggled by the component on the list)
-      &.tile-view {
-        display: flex;
-        flex-wrap: wrap;
-        align-content: flex-start;
-
-        li.p-listbox-option {
-          max-width: 100px;
-          min-width: fit-content;
-          .tile-view-content {
-            width: 100%;
-          }
-          .tile-view-mandatory {
-            text-align: center;
-            width: min-content;
-          }
-          .tile-view-optional {
-            display: none !important;
-          }
-        }
-      }
     }
   }
 
@@ -115,7 +90,7 @@
     }
   }
   .p-listbox:not(.p-disabled) .p-listbox-option:has(.custom-selected-row) {
-    background-color: var(--onecx-workspace-onecx-workspace-ui-listbox-option-selected-background) !important;
+    background-color: var(--onecx-workspace-onecx-workspace-ui-listbox-option-selected-background);
   }
 
   .text-ellipsis-2-lines {

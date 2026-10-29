@@ -15,8 +15,8 @@
 
 :host ::ng-deep {
   .ocx-content > div {
-    margin-bottom: 0 !important;
-    padding: 0.75rem 0.5rem !important;
+    margin-bottom: 0;
+    padding: 0.75rem 0.5rem;
   }
 
   .p-dialog .p-dialog-content {
@@ -101,12 +101,12 @@
           }
         }
         tr th:last-of-type {
-          border-right: none !important;
+          border-right: none;
         }
       }
       .p-treetable-tbody {
         tr:last-of-type td {
-          border-bottom: none !important;
+          border-bottom: none;
         }
         tr {
           td {
@@ -120,7 +120,7 @@
               padding: 0 0.3rem;
             }
             &:last-of-type {
-              border-right: none !important;
+              border-right: none;
             }
           }
         }
@@ -141,18 +141,18 @@
 
   @media screen and (max-width: 276px) {
     .xs\:hidden {
-      display: none !important;
+      display: none;
     }
   }
 
   @media (max-width: 367px) {
     .hidden-xs {
-      display: none !important;
+      display: none;
     }
   }
   @media (max-width: 567px) {
     .hidden-sm {
-      display: none !important;
+      display: none;
     }
     .role-message {
       top: 0.5rem;
@@ -161,17 +161,17 @@
   }
   @media (max-width: 768px) {
     .hidden-md {
-      display: none !important;
+      display: none;
     }
   }
   @media (max-width: 992px) {
     .hidden-lg {
-      display: none !important;
+      display: none;
     }
   }
   @media (min-width: 1200px) {
     .hidden-xl {
-      display: none !important;
+      display: none;
     }
   }
 }
