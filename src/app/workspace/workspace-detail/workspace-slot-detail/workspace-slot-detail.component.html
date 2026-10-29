@@ -306,50 +306,9 @@
   </p-dialog>
 
   <!-- DEREGISTER COMPONENT -->
-  <p-dialog
-    [header]="'DIALOG.SLOT.HEADER.COMPONENTS.DEREGISTER' | translate"
-    [(visible)]="displayDeregisterConfirmation"
-    (onHide)="displayDeregisterConfirmation = false"
-    [modal]="true"
-    [closable]="true"
-    [resizable]="false"
-    [dismissableMask]="true"
-    [style]="{ width: '400px' }"
-    styleClass="disable-max-height-preset"
-  >
-    <div class="my-2 flex column-gap-4 row-gap-1 justify-content-start align-items-center">
-      <div class="pi pi-question-circle text-3xl danger-action-text"></div>
-      <div class="flex flex-column row-gap-2">
-        <div id="ws_slot_deregister_message" class="font-bold">
-          {{ 'ACTIONS.DELETE.SLOT.DEREGISTER_COMPONENTS' | translate }}
-        </div>
-        <div>{{ 'ACTIONS.DELETE.INFO' | translate }}</div>
-      </div>
-    </div>
-    <ng-template pTemplate="footer">
-      <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
-        <p-button
-          id="ws_slot_deregister_action_no"
-          icon="pi pi-times"
-          (onClick)="onDeregisterCancellation()"
-          [label]="'ACTIONS.CONFIRMATION.NO' | translate"
-          [ariaLabel]="'ACTIONS.CONFIRMATION.NO' | translate"
-          [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        ></p-button>
-        <p-button
-          id="ws_slot_deregister_action_yes"
-          icon="pi pi-check"
-          iconPos="left"
-          (onClick)="onDeregisterConfirmation()"
-          [label]="'ACTIONS.CONFIRMATION.YES' | translate"
-          [ariaLabel]="'ACTIONS.CONFIRMATION.YES' | translate"
-          [pTooltip]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        ></p-button>
-      </div>
-    </ng-template>
-  </p-dialog>
+  <app-workspace-slot-deregistration
+    [visible]="displayDeregisterConfirmation"
+    (closeDialog)="onDeregisterCancellation()"
+    (confirm)="onDeregisterConfirmation()"
+  ></app-workspace-slot-deregistration>
 }

@@ -7,11 +7,12 @@ import { TabsModule } from 'primeng/tabs'
 import { SlotAPIService, UpdateSlotRequest } from 'src/app/shared/generated'
 import { ChangeMode, ExtendedSlot, ExtendedComponent, PSSlot } from '../workspace-slots/workspace-slots.component'
 import { SharedModule } from 'src/app/shared/shared.module'
+import { WorkspaceSlotDeregistrationComponent } from '../workspace-slot-deregistration/workspace-slot-deregistration.component'
 
 @Component({
   selector: 'app-workspace-slot-detail',
   standalone: true,
-  imports: [SharedModule, TabsModule],
+  imports: [SharedModule, TabsModule, WorkspaceSlotDeregistrationComponent],
   templateUrl: './workspace-slot-detail.component.html',
   styleUrls: ['./workspace-slot-detail.component.scss']
 })
