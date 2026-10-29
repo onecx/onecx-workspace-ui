@@ -1,4 +1,4 @@
-@if (displayDetailDialog) {
+@if (displayDetailDialog && role) {
   <p-dialog
     [visible]="true"
     (visibleChange)="onClose()"
@@ -22,7 +22,7 @@
         >
           {{ 'DIALOG.MENU.TABS.DETAILS' | translate }}
         </p-tab>
-        @if (role?.isWorkspaceRole) {
+        @if (role.isWorkspaceRole) {
           <p-tab
             value="1"
             id="ws_role_detail_tab_intern"
@@ -37,121 +37,117 @@
       </p-tablist>
       <p-tabpanels>
         <p-tabpanel value="0">
-          <form [formGroup]="formGroupRole" errorTailor>
+          <form [formGroup]="formGroupRole" class="py-3 sm:py-4">
             <div class="mt-2 flex flex-wrap flex-column gap-4 justify-content-between">
-              <div>
-                <p-floatlabel variant="on">
-                  <input
-                    pInputText
-                    type="text"
-                    class="w-full"
-                    id="ws_role_create_form_name"
-                    formControlName="name"
-                    [attr.aria-label]="'ROLE.NAME' | translate"
-                    [pTooltip]="'ROLE.NAME.TOOLTIP' | translate"
-                    tooltipPosition="top"
-                    tooltipEvent="hover"
-                  />
-                  <label class="ocx-required-label" for="ws_role_create_form_name"
-                    >{{ 'ROLE.NAME' | translate }}
-                  </label>
-                </p-floatlabel>
-              </div>
-              <div>
-                <p-floatlabel variant="on">
-                  <input
-                    pInputText
-                    type="text"
-                    class="w-full"
-                    id="ws_role_create_form_description"
-                    formControlName="description"
-                    [attr.aria-label]="'ROLE.DESCRIPTION' | translate"
-                    [pTooltip]="'ROLE.DESCRIPTION.TOOLTIP' | translate"
-                    tooltipPosition="top"
-                    tooltipEvent="hover"
-                  />
-                  <label for="ws_role_create_form_description">{{ 'ROLE.DESCRIPTION' | translate }} </label>
-                </p-floatlabel>
-              </div>
+              <p-floatlabel variant="on" class="flex-grow-1 sm:flex-grow-0">
+                <input
+                  pInputText
+                  type="text"
+                  class="w-full"
+                  id="ws_role_create_form_name"
+                  formControlName="name"
+                  [attr.aria-label]="'ROLE.NAME' | translate"
+                  [pTooltip]="'ROLE.NAME.TOOLTIP' | translate"
+                  tooltipPosition="top"
+                  tooltipEvent="hover"
+                />
+                <label class="ocx-required-label" for="ws_role_create_form_name">{{ 'ROLE.NAME' | translate }} </label>
+              </p-floatlabel>
+              <p-floatlabel variant="on" class="flex-grow-1 sm:flex-grow-0">
+                <input
+                  pInputText
+                  type="text"
+                  class="w-full"
+                  id="ws_role_create_form_description"
+                  formControlName="description"
+                  [attr.aria-label]="'ROLE.DESCRIPTION' | translate"
+                  [pTooltip]="'ROLE.DESCRIPTION.TOOLTIP' | translate"
+                  tooltipPosition="top"
+                  tooltipEvent="hover"
+                />
+                <label for="ws_role_create_form_description">{{ 'ROLE.DESCRIPTION' | translate }} </label>
+              </p-floatlabel>
             </div>
           </form>
         </p-tabpanel>
 
-        @if (role?.isWorkspaceRole) {
+        @if (role.isWorkspaceRole) {
           <p-tabpanel value="1">
-            <div class="mt-2 flex flex-column justify-content-between gap-4">
-              <div class="flex flex-row flex-wrap gap-4">
-                <p-floatlabel variant="on" class="flex-grow-1 sm:flex-grow-0">
-                  <input
-                    pInputText
-                    type="text"
-                    id="ws_role_detail_intern_item_creation_date"
-                    class="w-full sm:w-13rem pt-3 pb-2 text-responsive"
-                    [disabled]="true"
-                    [value]="role ? (role.creationDate | date: dateFormat) : ''"
-                    [attr.aria-label]="'INTERNAL.CREATION_DATE' | translate"
-                    [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_DATE' | translate"
-                    tooltipPosition="top"
-                    tooltipEvent="hover"
-                  />
-                  <label for="ws_role_detail_intern_item_creation_date">{{
-                    'INTERNAL.CREATION_DATE' | translate
-                  }}</label>
-                </p-floatlabel>
-                <p-floatlabel variant="on" class="flex-grow-1">
-                  <input
-                    pInputText
-                    type="text"
-                    id="ws_role_detail_intern_item_creation-user"
-                    class="w-full pt-3 pb-2 text-responsive"
-                    [value]="role?.creationUser"
-                    [disabled]="true"
-                    [attr.aria-label]="'INTERNAL.CREATION_USER' | translate"
-                    [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_USER' | translate"
-                    tooltipPosition="top"
-                    tooltipEvent="hover"
-                  />
-                  <label for="ws_role_detail_intern_item_creation-user">{{
-                    'INTERNAL.CREATION_USER' | translate
-                  }}</label>
-                </p-floatlabel>
-              </div>
+            <div class="py-3 sm:py-4">
+              <div class="mt-2 flex flex-column justify-content-between gap-4">
+                <div class="flex flex-row flex-wrap gap-4">
+                  <p-floatlabel variant="on" class="flex-grow-1 sm:flex-grow-0">
+                    <input
+                      pInputText
+                      type="text"
+                      id="ws_role_detail_intern_item_creation_date"
+                      class="w-full sm:w-13rem pt-3 pb-2 text-responsive"
+                      [disabled]="true"
+                      [value]="role ? (role.creationDate | date: dateFormat) : ''"
+                      [attr.aria-label]="'INTERNAL.CREATION_DATE' | translate"
+                      [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_DATE' | translate"
+                      tooltipPosition="top"
+                      tooltipEvent="hover"
+                    />
+                    <label for="ws_role_detail_intern_item_creation_date">{{
+                      'INTERNAL.CREATION_DATE' | translate
+                    }}</label>
+                  </p-floatlabel>
+                  <p-floatlabel variant="on" class="flex-grow-1">
+                    <input
+                      pInputText
+                      type="text"
+                      id="ws_role_detail_intern_item_creation-user"
+                      class="w-full pt-3 pb-2 text-responsive"
+                      [value]="role.creationUser"
+                      [disabled]="true"
+                      [attr.aria-label]="'INTERNAL.CREATION_USER' | translate"
+                      [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_USER' | translate"
+                      tooltipPosition="top"
+                      tooltipEvent="hover"
+                    />
+                    <label for="ws_role_detail_intern_item_creation-user">{{
+                      'INTERNAL.CREATION_USER' | translate
+                    }}</label>
+                  </p-floatlabel>
+                </div>
 
-              <div class="flex flex-row flex-wrap gap-4">
-                <span class="flex-grow-1 sm:flex-grow-0 p-float-label">
-                  <input
-                    pInputText
-                    type="text"
-                    id="ws_role_detail_intern_item_modification_date"
-                    class="w-full sm:w-13rem pt-3 pb-2 text-responsive"
-                    [disabled]="true"
-                    [value]="role ? (role.modificationDate | date: dateFormat) : ''"
-                    [attr.aria-label]="'INTERNAL.MODIFICATION_DATE' | translate"
-                    [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_DATE' | translate"
-                    tooltipPosition="top"
-                    tooltipEvent="hover"
-                  />
-                  <label for="ws_role_detail_intern_item_modification_date">{{
-                    'INTERNAL.MODIFICATION_DATE' | translate
-                  }}</label>
-                </span>
-                <span class="flex-grow-1 p-float-label">
-                  <input
-                    pInputText
-                    type="text"
-                    id="ws_role_detail_intern_item_modification-user"
-                    class="w-full pt-3 pb-2 text-responsive"
-                    [value]="role?.modificationUser"
-                    [disabled]="true"
-                    [attr.aria-label]="'INTERNAL.MODIFICATION_USER' | translate"
-                    [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_USER' | translate"
-                    tooltipPosition="top"
-                    tooltipEvent="hover"
-                  />
-                  <label for="ws_role_detail_intern_item_modification-user">
-                    {{ 'INTERNAL.MODIFICATION_USER' | translate }}</label
-                  >
-                </span>
+                <div class="flex flex-row flex-wrap gap-4">
+                  <p-floatlabel variant="on" class="flex-grow-1 sm:flex-grow-0">
+                    <input
+                      pInputText
+                      type="text"
+                      id="ws_role_detail_intern_item_modification_date"
+                      class="w-full sm:w-13rem pt-3 pb-2 text-responsive"
+                      [disabled]="true"
+                      [value]="role ? (role.modificationDate | date: dateFormat) : ''"
+                      [attr.aria-label]="'INTERNAL.MODIFICATION_DATE' | translate"
+                      [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_DATE' | translate"
+                      tooltipPosition="top"
+                      tooltipEvent="hover"
+                    />
+                    <label for="ws_role_detail_intern_item_modification_date">{{
+                      'INTERNAL.MODIFICATION_DATE' | translate
+                    }}</label>
+                  </p-floatlabel>
+                  <p-floatlabel variant="on" class="flex-grow-1">
+                    <input
+                      pInputText
+                      type="text"
+                      id="ws_role_detail_intern_item_modification-user"
+                      class="w-full pt-3 pb-2 text-responsive"
+                      [value]="role.modificationUser"
+                      [disabled]="true"
+                      [attr.aria-label]="'INTERNAL.MODIFICATION_USER' | translate"
+                      [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_USER' | translate"
+                      tooltipPosition="top"
+                      tooltipEvent="hover"
+                    />
+                    <label for="ws_role_detail_intern_item_modification-user">
+                      {{ 'INTERNAL.MODIFICATION_USER' | translate }}</label
+                    >
+                  </p-floatlabel>
+                </div>
               </div>
             </div>
           </p-tabpanel>
@@ -161,7 +157,7 @@
 
     @if (changeMode !== 'CREATE') {
       <div class="mt-4">
-        @if (role?.isIamRole && !role?.isWorkspaceRole) {
+        @if (role.isIamRole && !role.isWorkspaceRole) {
           <p-message
             id="ws_role_create_info_inw"
             styleClass="w-fit"
@@ -169,7 +165,7 @@
             [text]="'DIALOG.ROLE.ORIGIN.IAM.VIEW' | translate"
           ></p-message>
         }
-        @if (!role?.isIamRole && role?.isWorkspaceRole) {
+        @if (!role.isIamRole && role.isWorkspaceRole) {
           <p-message
             id="ws_role_create_info_niw"
             styleClass="w-fit"
@@ -177,7 +173,7 @@
             [text]="'DIALOG.ROLE.ORIGIN.WORKSPACE.EDIT' | translate"
           ></p-message>
         }
-        @if (role?.isIamRole && role?.isWorkspaceRole) {
+        @if (role.isIamRole && role.isWorkspaceRole) {
           <p-message
             id="ws_role_create_info_iw"
             styleClass="w-fit"
@@ -201,8 +197,7 @@
             tooltipPosition="top"
             tooltipEvent="hover"
           ></p-button>
-        }
-        @if (changeMode !== 'VIEW') {
+        } @else {
           <p-button
             id="ws_role_create_button_cancel"
             icon="pi pi-times"
@@ -213,8 +208,6 @@
             tooltipPosition="top"
             tooltipEvent="hover"
           ></p-button>
-        }
-        @if (changeMode !== 'VIEW') {
           <p-button
             id="ws_role_create_button_save"
             icon="pi pi-save"
@@ -248,7 +241,7 @@
       <div class="pi pi-question-circle text-3xl danger-action-text"></div>
       <div class="flex flex-column row-gap-2">
         <div id="ws_role_delete_message" class="font-bold">{{ 'ACTIONS.DELETE.ROLE.MESSAGE' | translate }}</div>
-        <div id="ws_role_delete_role_name" class="font-bold text-center danger-action-text">{{ role?.name }}</div>
+        <div id="ws_role_delete_role_name" class="font-bold text-center danger-action-text">{{ role.name }}</div>
         <div id="ws_role_delete_message_info">{{ 'ACTIONS.DELETE.ROLE.MESSAGE_INFO' | translate }}</div>
         <div>{{ 'ACTIONS.DELETE.INFO' | translate }}</div>
       </div>
