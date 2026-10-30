@@ -95,13 +95,12 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges {
   public numberOfUnusedPSlots = 0
   public numberOfChangedSlots = 0
 
-  public ngOnInit() {
-    Promise.all([this.user.hasPermission('WORKSPACE_SLOT#EDIT')])
-      .then(([permRegister]) => {
-        this.hasEditPermission = permRegister
-      })
-      .catch((err) => console.error(err))
-
+  public async ngOnInit() {
+    try {
+      this.hasEditPermission = await this.user.hasPermission('WORKSPACE_SLOT#EDIT')
+    } catch (err) {
+      console.error(err)
+    }
     this.prepareQuickFilter()
   }
 
@@ -265,7 +264,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges {
     const wps = wSlots.find((s) => s.name === psSlot.name)
     let ps = wps
     // 2. otherwise check if the slot was already declared by another product in the consolidated list
-    if (!ps) ps = psSlots.find((s) => s.name === psSlot.name)
+    ps ??= psSlots.find((s) => s.name === psSlot.name)
     if (ps) {
       ps.changes = ps.changes || psSlot.undeployed === true || psSlot.deprecated === true // any change on slot?
       if (ps.changes && !ps.type.includes('CHANGES')) ps.type.push('CHANGES')
@@ -293,7 +292,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges {
   // => find workspace slot with same name (there is no productname stored for slots in workspace)
   private updateWorkspaceSlotState(psProduct: ProductStoreItem, psSlot: SlotPS, wps?: ExtendedSlot): void {
     if (wps?.psSlots) {
-      if (!wps.psSlots.find((s) => s.name === psSlot.name))
+      if (!wps.psSlots.some((s) => s.name === psSlot.name))
         wps.psSlots.push({ ...psSlot, pName: psProduct.productName!, pDisplayName: psProduct.displayName! })
       // consolidate slot state (aware of the state of current psSlot declaration together with previous ones)
       wps.exists = true

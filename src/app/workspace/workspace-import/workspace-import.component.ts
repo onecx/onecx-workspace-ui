@@ -52,12 +52,6 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
     private readonly workspaceApi: WorkspaceAPIService,
     private readonly msgService: PortalMessageService
   ) {
-    Promise.all([this.user.hasPermission('WORKSPACE#IMPORT')])
-      .then(([perm]) => {
-        this.hasPermission = perm
-      })
-      .catch((err) => console.error(err))
-
     this.steps = [
       { label: this.translate.instant('WORKSPACE_IMPORT.CHOOSE_FILE') },
       { label: this.translate.instant('WORKSPACE_IMPORT.PREVIEW') },
@@ -66,9 +60,15 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
     this.reset()
   }
 
-  public ngOnInit(): void {
+  public async ngOnInit(): Promise<void> {
+    try {
+      this.hasPermission = await this.user.hasPermission('WORKSPACE#IMPORT')
+    } catch (err) {
+      console.error(err)
+    }
     this.reset()
   }
+
   public ngOnChanges(): void {
     this.reset()
   }

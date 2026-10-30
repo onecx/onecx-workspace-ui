@@ -32,6 +32,7 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   public hasEditPermission = false
   public displayDeregisterConfirmation = false
   public selectedTabIndex = '0'
+  public selectedComponentName: string | undefined
   private deregisterItems: ExtendedComponent[] = [] // moved items
   private wComponentsOrg: ExtendedComponent[] = [] // used for restore
   public showTargetControls = false // manage visibility of target controls due to picklist bug
@@ -69,6 +70,10 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
       this.filteredPsComponents = [...this.psComponents] // unregistered items
       this.filteredWComponents = [...this.wComponents] // registered items
     }
+  }
+
+  public selectComponent(componentName: string) {
+    this.selectedComponentName = componentName
   }
 
   // Collect available but not yet registered components from product store

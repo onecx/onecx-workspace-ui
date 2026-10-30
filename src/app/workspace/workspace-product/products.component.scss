@@ -41,15 +41,17 @@
     }
 
     // header bar (count + reload button): primary background, centered
-    .p-listbox-header:has([id$='_reload']) {
-      padding: 0;
-      text-align: center;
-      color: var(--onecx-workspace-onecx-workspace-ui-listbox-color);
-      background-color: var(--onecx-workspace-onecx-workspace-ui-listbox-border-color);
-      border-top-left-radius: var(--onecx-workspace-onecx-workspace-ui-listbox-border-radius);
-      border-top-right-radius: var(--onecx-workspace-onecx-workspace-ui-listbox-border-radius);
-      div {
-        border-bottom-color: var(--onecx-workspace-onecx-workspace-ui-listbox-border-color);
+    .p-listbox-header {
+      &:not(:has(.p-picklist-filter)) {
+        padding: 0;
+        text-align: center;
+        color: var(--onecx-workspace-onecx-workspace-ui-listbox-color);
+        background-color: var(--onecx-workspace-onecx-workspace-ui-listbox-border-color);
+        border-top-left-radius: var(--onecx-workspace-onecx-workspace-ui-listbox-border-radius);
+        border-top-right-radius: var(--onecx-workspace-onecx-workspace-ui-listbox-border-radius);
+      }
+      &:has(.p-picklist-filter) {
+        border-bottom: 1px solid var(--onecx-workspace-onecx-workspace-ui-listbox-border-color);
       }
     }
 

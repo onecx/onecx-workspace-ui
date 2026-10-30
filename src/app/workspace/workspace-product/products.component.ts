@@ -7,7 +7,8 @@ import {
   OnDestroy,
   OnChanges,
   SimpleChanges,
-  ChangeDetectionStrategy
+  ChangeDetectionStrategy,
+  OnInit
 } from '@angular/core'
 import {
   FormArray,
@@ -150,7 +151,7 @@ export function AddMfeModuleFormControl(fb: FormBuilder, modules: FormArray, idx
   templateUrl: './products.component.html',
   styleUrls: ['./products.component.scss']
 })
-export class ProductComponent implements OnChanges, OnDestroy {
+export class ProductComponent implements OnInit, OnChanges, OnDestroy {
   @Input() workspace!: Workspace | undefined
   @Output() changed = new EventEmitter()
 
@@ -198,18 +199,20 @@ export class ProductComponent implements OnChanges, OnDestroy {
     private readonly fb: FormBuilder,
     private readonly cdr: ChangeDetectorRef
   ) {
-    Promise.all([this.user.hasPermission('WORKSPACE_PRODUCTS#REGISTER')])
-      .then(([perm]) => {
-        this.hasRegisterPermission = perm
-      })
-      .catch((err) => console.error(err))
-
     this.appState.currentMfe$.pipe(map((mfe) => (this.currentMfe = mfe))).subscribe()
     this.formGroup = this.fb.group({
       displayName: new FormControl({ value: null, disabled: true }),
       baseUrl: new FormControl(null, [Validators.required, Validators.maxLength(200)]),
       modules: this.fb.array([])
     })
+  }
+
+  public async ngOnInit(): Promise<void> {
+    try {
+      this.hasRegisterPermission = await this.user.hasPermission('WORKSPACE_PRODUCTS#REGISTER')
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   public ngOnChanges(changes: SimpleChanges): void {

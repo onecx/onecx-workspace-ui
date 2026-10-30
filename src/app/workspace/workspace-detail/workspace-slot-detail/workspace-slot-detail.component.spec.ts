@@ -745,6 +745,16 @@ describe('WorkspaceSlotDetailComponent', () => {
   /**
    * EXTRAS
    */
+  describe('extras', () => {
+    it('should set component name', () => {
+      initializeComponent()
+
+      component.selectComponent('Component Name')
+
+      expect(component.selectedComponentName).toEqual('Component Name')
+    })
+  })
+
   describe('language', () => {
     it('should set German date format', () => {
       mockUserService.lang$.next('de')

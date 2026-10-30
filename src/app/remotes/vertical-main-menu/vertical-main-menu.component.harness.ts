@@ -8,7 +8,7 @@ export class PanelMenuPanelHarness extends ComponentHarness {
   static readonly hostSelector = 'div.p-panelmenu-panel'
 
   private async labelSpan() {
-    return this.locatorForOptional(SpanHarness.with({ class: 'p-panelmenu-header-label' }))
+    return await this.locatorForOptional(SpanHarness.with({ class: 'p-panelmenu-header-label' }))
   }
 
   private async anchor() {
@@ -46,7 +46,7 @@ export class PanelMenuItemHarness extends ComponentHarness {
   static readonly hostSelector = 'li.p-panelmenu-item'
 
   private async labelSpan() {
-    return this.locatorForOptional(SpanHarness.with({ class: 'p-panelmenu-item-label' }))
+    return await this.locatorForOptional(SpanHarness.with({ class: 'p-panelmenu-item-label' }))
   }
 
   private async anchor() {

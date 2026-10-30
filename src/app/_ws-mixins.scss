@@ -9,7 +9,7 @@
     &.p-floatlabel-over {
       &:has(.p-filled) label,
       &:has(.p-focus) label {
-        top: -5px !important;
+        top: -5px;
         background-color: white;
         padding: 0 0.5rem;
       }
@@ -109,7 +109,7 @@
         background: var(--button-hover-bg) !important;
         cursor: pointer;
         * {
-          background: var(--button-hover-bg) !important;
+          background: var(--button-hover-bg);
         }
       }
       /* Manipulate the addon wrapper depends on button state inside */
@@ -361,20 +361,20 @@
     /* fix base layout of interactive data view */
     ocx-interactive-data-view > {
       :first-child {
-        padding-top: 0 !important;
+        padding-top: 0;
       }
       :not(:first-child) {
-        padding: 0.5rem 0 0 0 !important;
+        padding: 0.5rem 0 0 0;
       }
     }
     /* correct header layouting by lib */
     .table-header-wrapper {
-      flex-direction: row !important;
-      justify-content: flex-start !important;
-      flex-wrap: nowrap !important;
+      flex-direction: row;
+      justify-content: flex-start;
+      flex-wrap: nowrap;
     }
     .table-header-wrapper span:first-child {
-      margin-right: 10px !important;
+      margin-right: 10px;
     }
 
     /* establish grid-nogutter */

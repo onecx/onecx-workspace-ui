@@ -78,10 +78,6 @@ export class OneCXTopbarLogoComponent implements ocxRemoteComponent, ocxRemoteWe
     this.remoteComponentConfig.next(rcConfig)
     this.appConfigService.init(rcConfig.baseUrl)
     this.initializeContainerStyles()
-    /* TODO
-    this.themeApi.configuration = new Configuration({
-      basePath: Location.joinWithSlash(config.baseUrl, environment.apiPrefix)
-    })*/
   }
 
   private initializeContainerStyles() {
