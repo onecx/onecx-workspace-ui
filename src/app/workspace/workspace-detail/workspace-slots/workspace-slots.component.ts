@@ -87,7 +87,10 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges {
   public readonly exceptionKey = signal<string | undefined>(undefined)
   public loading = signal(false)
   public changeMode: ChangeMode = 'VIEW'
-  public productEndpointExist = false
+  public readonly productEndpointExist = toSignal(
+    Utils.doesEndpointExist(this.workspaceService, 'onecx-product-store', 'onecx-product-store-ui', 'slots'),
+    { initialValue: false }
+  )
   public hasEditPermission = false
   public showSlotDetailDialog = false
   public numberOfAllSlots = 0
@@ -107,13 +110,6 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges {
   public ngOnChanges(changes: SimpleChanges): void {
     if (this.workspace && changes['workspace']) {
       this.loadData()
-      // check detail endpoint exists
-      this.productEndpointExist = Utils.doesEndpointExist(
-        this.workspaceService,
-        'onecx-product-store',
-        'onecx-product-store-ui',
-        'slots'
-      )
     }
   }
 
@@ -458,7 +454,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges {
   }
 
   public getProductEndpointUrl$(): Observable<string | undefined> {
-    if (this.productEndpointExist)
+    if (this.productEndpointExist())
       return this.workspaceService.getUrl('onecx-product-store', 'onecx-product-store-ui', 'slots')
     return of(undefined)
   }

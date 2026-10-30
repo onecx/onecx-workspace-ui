@@ -1,8 +1,9 @@
-import { Component, OnInit, OnDestroy } from '@angular/core'
+import { Component, OnInit, OnDestroy, OnChanges, Input } from '@angular/core'
+import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { Location } from '@angular/common'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
-import { catchError, combineLatest, finalize, map, Observable, Subject, of } from 'rxjs'
+import { catchError, combineLatest, finalize, map, Observable, Subject, of, switchMap } from 'rxjs'
 import { saveAs } from 'file-saver'
 
 import { TreeTable, TreeTableNodeExpandEvent } from 'primeng/treetable'
@@ -58,15 +59,34 @@ type Column = { name: string; headerKey: string; tooltipKey: string; css?: strin
   styleUrls: ['./menu.component.scss']
 })
 export class MenuComponent implements OnInit, OnDestroy {
-  Object = Object
+  @Input() public name!: string // workspace name inherited from parent component (path parameter)
+  public Object = Object
   public Utils = Utils
   private readonly destroy$ = new Subject()
+  // data
+  public workspace$!: Observable<Workspace | undefined>
+  public workspace?: Workspace
+  public workspaceName = ''
+  public wRoles: WorkspaceRole[] = []
+  public wRolesFiltered: WorkspaceRole[] = []
+  public wAssignments: Assignment[] = []
+  public menuNodes: TreeNode[] = []
+  public menuItems: WorkspaceMenuItem[] | undefined
+  public menuItem: WorkspaceMenuItem | undefined
+  public parentItems!: SelectItem[]
+  public usedLanguages: Map<string, number> = new Map()
   // dialog
   public actions$: Observable<Action[]> | undefined
-  public loadingWorkspace = true
-  public loadingMenu = true
+  public loadingWorkspace = false
+  public loadingMenu = false
   public loadingRoles = false
   public exceptionKey: string | undefined = undefined
+  public changeMode: ChangeMode = 'VIEW'
+  public displayDetailDialog = false
+  public displayDeleteDialog = false
+  public displayMenuImport = false
+  public displayMenuPreview = false
+  public displayRoles = false
   public myPermissions = new Array<string>() // permissions of the user
   public treeTableContentSwitchValue = 'DETAILS'
   public treeTableExpandSwitchValue = 'COLLAPSE'
@@ -80,28 +100,21 @@ export class MenuComponent implements OnInit, OnDestroy {
   public treeFilteredRows = 0
   public currentLogoUrl: string | undefined = undefined
   public roleColumnFilterValue: string[] = []
-  public permissionEndpointExist = false
-  public permissionUrl: string | undefined
-
-  // data
-  public workspace$!: Observable<Workspace | undefined>
-  public workspace?: Workspace
-  public workspaceName: string = this.route.snapshot.params['name']
-  public wRoles: WorkspaceRole[] = []
-  public wRolesFiltered: WorkspaceRole[] = []
-  public wAssignments: Assignment[] = []
-  public menuNodes: TreeNode[] = []
-  public menuItems: WorkspaceMenuItem[] | undefined
-  public menuItem: WorkspaceMenuItem | undefined
-  public parentItems!: SelectItem[]
-  public usedLanguages: Map<string, number> = new Map()
-  // detail
-  public changeMode: ChangeMode = 'VIEW'
-  public displayDetailDialog = false
-  public displayDeleteDialog = false
-  public displayMenuImport = false
-  public displayMenuPreview = false
-  public displayRoles = false
+  public readonly permissionEndpointExist = toSignal(
+    Utils.doesEndpointExist(this.workspaceService, 'onecx-permission', 'onecx-permission-ui', 'workspace'),
+    { initialValue: false }
+  )
+  public readonly permissionUrl = toSignal(
+    toObservable(this.permissionEndpointExist).pipe(
+      switchMap((exists) =>
+        exists
+          ? this.workspaceService.getUrl('onecx-permission', 'onecx-permission-ui', 'workspace', {
+              'workspace-name': this.workspaceName
+            })
+          : of(undefined)
+      )
+    )
+  )
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -169,25 +182,13 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
+    this.workspaceName = this.name
     this.prepareTreeTableSwitchItems()
     this.prepareTreeNodeLabelSwitch()
     this.prepareActionButtons()
-    this.loadAllData()
-    // check detail endpoint exists
-    this.permissionEndpointExist = Utils.doesEndpointExist(
-      this.workspaceService,
-      'onecx-permission',
-      'onecx-permission-ui',
-      'workspace'
-    )
-    if (this.permissionEndpointExist)
-      this.workspaceService
-        .getUrl('onecx-permission', 'onecx-permission-ui', 'workspace', {
-          'workspace-name': this.workspace?.name
-        })
-        .subscribe((url) => {
-          this.permissionUrl = url
-        })
+    if (this.name) {
+      this.loadAllData()
+    }
   }
 
   public ngOnDestroy(): void {

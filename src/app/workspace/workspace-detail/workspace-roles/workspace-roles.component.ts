@@ -101,7 +101,10 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   public iamAvailable = signal(false)
   public changeMode: ChangeMode = 'VIEW'
   public Utils = Utils
-  public permissionEndpointExist = false
+  public readonly permissionEndpointExist = toSignal(
+    Utils.doesEndpointExist(this.workspaceService, 'onecx-permission', 'onecx-permission-ui', 'workspace'),
+    { initialValue: false }
+  )
   public hasCreatePermission = false
   public hasDeletePermission = false
   public hasEditPermission = false
@@ -135,13 +138,6 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
     if (this.workspace && changes['workspace']) {
       this.prepareWorkspaceRoleSearch()
       this.searchRoles()
-      // check detail endpoint exists
-      this.permissionEndpointExist = Utils.doesEndpointExist(
-        this.workspaceService,
-        'onecx-permission',
-        'onecx-permission-ui',
-        'workspace'
-      )
     }
     // after 5s we assume IAM product is not running
     setTimeout(() => {
@@ -392,7 +388,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   }
 
   public getPermisionEndpointUrl$(name: string): Observable<string | undefined> {
-    if (this.permissionEndpointExist)
+    if (this.permissionEndpointExist())
       return this.workspaceService.getUrl('onecx-permission', 'onecx-permission-ui', 'workspace', {
         'workspace-name': name
       })

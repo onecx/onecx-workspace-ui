@@ -7,7 +7,7 @@ import { ActivatedRoute } from '@angular/router'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of, BehaviorSubject, throwError } from 'rxjs'
 
-import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+import { PortalMessageService, UserService, WorkspaceService } from '@onecx/angular-integration-interface'
 
 import { Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
 
@@ -106,6 +106,8 @@ describe('WorkspaceDetailComponent', () => {
         provideAppStateServiceMock(),
         providePermissionService(),
         provideNoopAnimations(),
+        // real child components check endpoints on creation; without a stub they log "Routing not possible"
+        { provide: WorkspaceService, useValue: { doesUrlExistFor: () => of(true), getUrl: () => of('/url') } },
         provideRouter([{ path: '', component: WorkspaceDetailComponent }])
       ]
     })

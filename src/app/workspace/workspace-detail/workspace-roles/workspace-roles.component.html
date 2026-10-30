@@ -129,7 +129,7 @@
             id="ws_roles_header_action_slot_link"
             styleClass="h-full"
             icon="pi pi-lock"
-            [disabled]="!permissionEndpointExist"
+            [disabled]="!permissionEndpointExist()"
             [routerLink]="[getPermisionEndpointUrl$(workspace?.name!) | async]"
             [ariaLabel]="'ACTIONS.NAVIGATION.GOTO_WORKSPACE_PERMISSIONS' | translate"
             [pTooltip]="'ACTIONS.NAVIGATION.GOTO_WORKSPACE_PERMISSIONS' | translate"

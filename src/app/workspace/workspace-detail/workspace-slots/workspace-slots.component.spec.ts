@@ -224,6 +224,8 @@ describe('WorkspaceSlotsComponent', () => {
   }))
 
   beforeEach(() => {
+    // used by the endpoint check in the component's field initializer
+    workspaceServiceSpy.doesUrlExistFor.and.returnValue(of(true))
     initializeComponent()
 
     // to spy data: reset
@@ -236,8 +238,6 @@ describe('WorkspaceSlotsComponent', () => {
     wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of({}))
     slotServiceSpy.getSlotsForWorkspace.and.returnValue(of({}))
     productServiceSpy.searchAvailableProducts.and.returnValue(of({}))
-    // used in ngOnChanges
-    workspaceServiceSpy.doesUrlExistFor.and.returnValue(of(true))
   })
 
   describe('initialize', () => {
@@ -905,7 +905,6 @@ describe('WorkspaceSlotsComponent', () => {
     })
 
     it('should productEndpointExist - exist', (done) => {
-      component.productEndpointExist = true
       workspaceServiceSpy.getUrl.and.returnValue(of('/url'))
 
       const eu$ = component.getProductEndpointUrl$()
@@ -922,8 +921,10 @@ describe('WorkspaceSlotsComponent', () => {
     })
 
     it('should productEndpointExist - not exist', (done) => {
-      component.productEndpointExist = false
-
+      spyOn(console, 'error')
+      workspaceServiceSpy.doesUrlExistFor.and.returnValue(of(false))
+      initializeComponent()
+      component.workspace = workspace
       const eu$ = component.getProductEndpointUrl$()
 
       eu$.subscribe({

@@ -89,6 +89,8 @@ describe('WorkspaceRolesComponent', () => {
   }))
 
   beforeEach(() => {
+    // used by the endpoint check in the component's field initializer
+    workspaceServiceSpy.doesUrlExistFor.and.returnValue(of(true))
     initTestComponent()
 
     // to spy data: reset
@@ -102,8 +104,6 @@ describe('WorkspaceRolesComponent', () => {
     // to spy data: refill with neutral data
     wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({}))
     iamRoleServiceSpy.searchAvailableRoles.and.returnValue(of({}))
-    // used in ngOnChanges
-    workspaceServiceSpy.doesUrlExistFor.and.returnValue(of(true))
   })
 
   describe('initialize', () => {
@@ -535,7 +535,6 @@ describe('WorkspaceRolesComponent', () => {
     })
 
     it('should permissionEndpointExist - exist', (done) => {
-      component.permissionEndpointExist = true
       workspaceServiceSpy.getUrl.and.returnValue(of('/url'))
 
       const eu$ = component.getPermisionEndpointUrl$('name')
@@ -552,7 +551,9 @@ describe('WorkspaceRolesComponent', () => {
     })
 
     it('should permissionEndpointExist - not exist', (done) => {
-      component.permissionEndpointExist = false
+      spyOn(console, 'error')
+      workspaceServiceSpy.doesUrlExistFor.and.returnValue(of(false))
+      initTestComponent()
       const errorResponse = { status: 400, statusText: 'Error on check endpoint' }
       workspaceServiceSpy.getUrl.and.returnValue(throwError(() => errorResponse))
 

@@ -253,6 +253,8 @@ describe('ProductComponent', () => {
   }))
 
   beforeEach(() => {
+    // used by the endpoint checks in the component's field initializers
+    workspaceServiceSpy.doesUrlExistFor.and.returnValue(of(true))
     fixture = TestBed.createComponent(ProductComponent)
     fb = TestBed.inject(FormBuilder)
     productFormGroup = fb.group({
@@ -286,8 +288,6 @@ describe('ProductComponent', () => {
     wProductApiSpy.deleteProductById.and.returnValue(of({}))
     productApiSpy.searchAvailableProducts.and.returnValue(of({}))
     slotApiSpy.getSlotsForWorkspace.and.returnValue(of({}))
-    // used in ngOnChanges
-    workspaceServiceSpy.doesUrlExistFor.and.returnValue(of(true))
   })
 
   describe('initialize', () => {
@@ -1004,12 +1004,19 @@ describe('ProductComponent', () => {
   })
 
   describe('getProductEndpointUrl', () => {
+    function recreateComponent(endpointsExist: boolean): void {
+      if (!endpointsExist) spyOn(console, 'error')
+      workspaceServiceSpy.doesUrlExistFor.and.returnValue(of(endpointsExist))
+      fixture = TestBed.createComponent(ProductComponent)
+      component = fixture.componentInstance
+      fixture.detectChanges()
+    }
+
     beforeEach(() => {
       component.workspace = workspace
     })
 
     it('should productEndpointExist - exist', (done) => {
-      component.productEndpointExist = true
       workspaceServiceSpy.getUrl.and.returnValue(of('/url'))
 
       const eu$ = component.getProductEndpointUrl$('name')
@@ -1026,7 +1033,7 @@ describe('ProductComponent', () => {
     })
 
     it('should productEndpointExist - not exist', (done) => {
-      component.productEndpointExist = false
+      recreateComponent(false)
       const errorResponse = { status: 400, statusText: 'Error on check endpoint' }
       workspaceServiceSpy.getUrl.and.returnValue(throwError(() => errorResponse))
 
@@ -1044,7 +1051,6 @@ describe('ProductComponent', () => {
     })
 
     it('should permissionEndpointExist - exist', (done) => {
-      component.permissionEndpointExist = true
       workspaceServiceSpy.getUrl.and.returnValue(of('/url'))
 
       const eu$ = component.getPermissionEndpointUrl$('name')
@@ -1061,7 +1067,7 @@ describe('ProductComponent', () => {
     })
 
     it('should permissionEndpointExist - not exist', (done) => {
-      component.permissionEndpointExist = false
+      recreateComponent(false)
       const errorResponse = { status: 400, statusText: 'Error on check endpoint' }
       workspaceServiceSpy.getUrl.and.returnValue(throwError(() => errorResponse))
 

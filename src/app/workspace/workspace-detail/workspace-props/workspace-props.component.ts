@@ -10,7 +10,7 @@ import {
   DestroyRef,
   ChangeDetectionStrategy
 } from '@angular/core'
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
 import { Location } from '@angular/common'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { BehaviorSubject, map, Observable, of, ReplaySubject } from 'rxjs'
@@ -78,7 +78,10 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   public propsForm: FormGroup
   public productPaths$: Observable<string[]> = of([]) // to fill drop down with product paths
   public deploymentPath: string | undefined = undefined
-  public themeEndpointExist = false
+  public readonly themeEndpointExist = toSignal(
+    Utils.doesEndpointExist(this.workspaceService, 'onecx-theme', 'onecx-theme-ui', 'theme-detail'),
+    { initialValue: false }
+  )
 
   // slot configuration: get theme data
   public themeSlotName = 'onecx-theme-data'
@@ -140,13 +143,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       if (this.editMode) this.propsForm.enable()
       // if a home page value exists then fill it into drop down list for displaying
       if (this.workspace.homePage) this.productPaths$ = of([this.workspace.homePage])
-      // check detail endpoint exists
-      this.themeEndpointExist = Utils.doesEndpointExist(
-        this.workspaceService,
-        'onecx-theme',
-        'onecx-theme-ui',
-        'theme-detail'
-      )
     } else {
       this.propsForm.reset()
     }
@@ -334,7 +330,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   }
 
   public getThemeEndpointUrl$(name?: string): Observable<string | undefined> {
-    if (this.themeEndpointExist && name)
+    if (this.themeEndpointExist() && name)
       return this.workspaceService.getUrl('onecx-theme', 'onecx-theme-ui', 'theme-detail', { 'theme-name': name })
     return of(undefined)
   }

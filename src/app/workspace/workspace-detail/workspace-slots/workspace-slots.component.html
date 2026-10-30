@@ -106,7 +106,7 @@
             id="ws_slots_header_action_slot_link"
             styleClass="h-full"
             icon="pi pi-cog"
-            [disabled]="!productEndpointExist"
+            [disabled]="!productEndpointExist()"
             [routerLink]="[getProductEndpointUrl$() | async]"
             [ariaLabel]="'ACTIONS.NAVIGATION.GOTO_PRODUCT_SLOTS' | translate"
             [pTooltip]="'ACTIONS.NAVIGATION.GOTO_PRODUCT_SLOTS' | translate"

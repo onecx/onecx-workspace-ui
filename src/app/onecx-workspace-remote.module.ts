@@ -38,7 +38,10 @@ const routes: Routes = [
     AngularAcceleratorModule,
     AngularAuthModule,
     BrowserAnimationsModule,
-    RouterModule.forRoot(routes),
+    RouterModule.forRoot(routes, {
+      bindToComponentInputs: true, // Aktiviert das @Input()-Binding
+      paramsInheritanceStrategy: 'always' // <--- Zwingt Angular, ':name' nach unten durchzureichen!
+    }),
     TranslateModule.forRoot({
       isolate: true,
       loader: {

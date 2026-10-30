@@ -138,6 +138,8 @@ describe('WorkspacePropsComponent', () => {
   })
 
   beforeEach(() => {
+    // used by the endpoint check in the component's field initializer
+    workspaceServiceSpy.doesUrlExistFor.and.returnValue(of(true))
     initTestComponent()
 
     // reset
@@ -147,8 +149,6 @@ describe('WorkspacePropsComponent', () => {
     imageServiceSpy.getImage.calls.reset()
     imageServiceSpy.deleteImage.calls.reset()
     imageServiceSpy.uploadImage.calls.reset()
-    // used in ngOnChanges
-    workspaceServiceSpy.doesUrlExistFor.and.returnValue(of(true))
   })
 
   describe('initialize', () => {
@@ -559,7 +559,6 @@ describe('WorkspacePropsComponent', () => {
     })
 
     it('should themeEndpointExist - exist', (done) => {
-      component.themeEndpointExist = true
       workspaceServiceSpy.getUrl.and.returnValue(of('/url'))
 
       const eu$ = component.getThemeEndpointUrl$('name')
@@ -576,7 +575,11 @@ describe('WorkspacePropsComponent', () => {
     })
 
     it('should themeEndpointExist - not exist', (done) => {
-      component.themeEndpointExist = false
+      spyOn(console, 'error')
+      workspaceServiceSpy.doesUrlExistFor.and.returnValue(of(false))
+      fixture = TestBed.createComponent(WorkspacePropsComponent)
+      component = fixture.componentInstance
+      fixture.detectChanges()
       const errorResponse = { status: 400, statusText: 'Error on check endpoint' }
       workspaceServiceSpy.getUrl.and.returnValue(throwError(() => errorResponse))
 
