@@ -2,21 +2,6 @@
  *  FORM - Control Improvements
  * **********************************************/
 
-// Manipulate PrimeNG p-floatlabel
-@mixin ocx-p-floatlabel {
-  .p-floatlabel {
-    // Move the label only if embedded input control (input, textarea etc.) is filled or focussed
-    &.p-floatlabel-over {
-      &:has(.p-filled) label,
-      &:has(.p-focus) label {
-        top: -5px;
-        background-color: white;
-        padding: 0 0.5rem;
-      }
-    }
-  }
-}
-
 @mixin ocx-required-label {
   // Keep a visible required marker even when external theme styles are missing.
   :host ::ng-deep {
@@ -152,16 +137,6 @@
 /* **********************************************
  *  Badges
  * **********************************************/
-@mixin text-badges {
-  :host ::ng-deep {
-    .text-badge-right {
-      display: inline-block;
-      position: absolute;
-      right: 20px;
-      top: -10px;
-    }
-  }
-}
 @mixin card-badges {
   :host ::ng-deep {
     /* badge basics: position */
@@ -259,15 +234,6 @@
 }
 
 /* DATA VIEW */
-@mixin correct-dataview-header {
-  :host ::ng-deep {
-    .p-dataview .p-dataview-header {
-      border-top-left-radius: 0.25rem; // value taken from .content-wrap
-      border-top-right-radius: 0.25rem;
-    }
-  }
-}
-
 @mixin correct-data-view-header-for-tabpanel {
   :host ::ng-deep {
     .p-dataview .p-dataview-header,
@@ -390,23 +356,6 @@
   }
 }
 
-@mixin ocx-search-criteria-fixes {
-  :host ::ng-deep {
-    .search-criteria-container > div {
-      display: flex;
-      flex-wrap: wrap;
-      align-content: center;
-      row-gap: 1rem;
-      column-gap: 3rem;
-      .search-criteria-buttons {
-        flex-wrap: wrap;
-        align-content: center;
-        margin-top: unset;
-      }
-    }
-  }
-}
-
 @mixin search-criteria-select-button-slim {
   :host ::ng-deep {
     .slim-selectbutton {
@@ -426,25 +375,6 @@
       .p-selectbutton-subtitle {
         font-size: 0.8rem;
         padding-left: 0.25rem;
-      }
-    }
-  }
-}
-@mixin search-criteria-select-button-filter {
-  :host ::ng-deep {
-    .filter-selectbutton {
-      .p-selectbutton .p-button {
-        opacity: 0.9 !important;
-        border: var(--toggle-button-border);
-        &.p-highlight {
-          background: var(--toggle-button-active-bg);
-          border-color: var(--toggle-button-active-border-color);
-        }
-        &:not(.p-disabled):not(.p-highlight):hover {
-          color: var(--text-color);
-          border-color: var(--toggle-button-hover-border-color);
-          background-color: var(--toggle-button-hover-bg);
-        }
       }
     }
   }
@@ -473,15 +403,6 @@
 }
 
 /* ZEBRA rows */
-@mixin dataview-list-zebra-rows {
-  :host ::ng-deep {
-    .p-dataview-list .p-dataview-content .p-grid > * {
-      &:nth-child(even) {
-        background-color: var(--table-body-row-even-bg);
-      }
-    }
-  }
-}
 @mixin dataview-list-flex-zebra-rows {
   :host ::ng-deep {
     .p-dataview-list .p-dataview-content section > article {
@@ -515,37 +436,6 @@
           --onecx-workspace-onecx-workspace-ui-datatable-row-even-background,
           var(--table-body-row-even-bg, rgba(0, 0, 0, 0.02))
         );
-      }
-    }
-  }
-}
-@mixin picklist-zebra-rows {
-  :host ::ng-deep {
-    .p-picklist-list li {
-      &:nth-child(even) {
-        background-color: var(--table-body-row-even-bg);
-      }
-    }
-  }
-}
-@mixin table-zebra-rows {
-  :host ::ng-deep {
-    /* this works only on non-frozen columns (table.p-datatable-striped does not work) */
-    .p-datatable .p-datatable-tbody > tr:nth-child(even) > td:not(.p-frozen-column) {
-      background-color: var(--table-body-row-even-bg);
-    }
-  }
-}
-
-/* PICKLIST */
-@mixin picklist-hide-double-buttons {
-  :host ::ng-deep {
-    .p-picklist .p-picklist-buttons {
-      button[icon='pi pi-angle-double-left'],
-      button[icon='pi pi-angle-double-right'],
-      button:nth-child(2),
-      button:nth-child(4) {
-        display: none !important;
       }
     }
   }
@@ -644,41 +534,6 @@
     }
   }
 }
-@mixin table-vertical-lines {
-  :host ::ng-deep {
-    .p-datatable .p-datatable-tbody > tr > td {
-      &:not(:first-of-type) {
-        border-left-width: 1px;
-      }
-    }
-  }
-}
-@mixin table-responsive-columns {
-  :host ::ng-deep {
-    /* responsive table result view */
-    @media screen and (min-width: 576px) {
-      .sm\:table-cell {
-        display: table-cell !important;
-      }
-    }
-    @media screen and (min-width: 768px) {
-      .md\:table-cell {
-        display: table-cell !important;
-      }
-    }
-    @media screen and (min-width: 992px) {
-      .lg\:table-cell {
-        display: table-cell !important;
-      }
-    }
-    @media screen and (min-width: 1200px) {
-      .xl\:table-cell {
-        display: table-cell !important;
-      }
-    }
-  }
-}
-
 @mixin media-queries {
   :host ::ng-deep {
     @media screen and (min-width: 768px) {
