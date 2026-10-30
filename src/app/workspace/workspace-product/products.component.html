@@ -59,6 +59,7 @@
           ></p-button>
         </div>
       </ng-template>
+
       <ng-template #targetHeader>
         <div class="p-2 flex flex-row column-gap-2 justify-content-between align-items-center">
           <div
@@ -163,6 +164,8 @@
           class="col-12 sm:h-2rem md:h-3rem p-0 flex flex-wrap align-items-center"
           [class.custom-selected-row]="displayedDetailItem?.productName === product.productName"
           (click)="onItemSelect(product)"
+          (keydown.enter)="$any($event.target).click()"
+          (keydown.space)="$event.preventDefault(); $any($event.target).click()"
         >
           <div class="col-12 md:col-9 p-0 flex flex-row column-gap-2 align-items-center" (dblclick)="return($event)">
             <div

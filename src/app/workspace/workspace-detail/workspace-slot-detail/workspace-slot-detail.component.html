@@ -184,6 +184,8 @@
                   class="pl-2 pr-1 flex flex-row flex-nowrap justify-content-between column-gap-2 align-items-center"
                   [class.custom-selected-row]="selectedComponentName === component.name"
                   (click)="selectComponent(component.name)"
+                  (keydown.enter)="$any($event.target).click()"
+                  (keydown.space)="$event.preventDefault(); $any($event.target).click()"
                 >
                   <!-- CONTENT -->
                   <div class="py-0 sm:py-1 flex flex-column row-gap-0" (dblclick)="return($event)">
