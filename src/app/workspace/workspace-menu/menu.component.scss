@@ -27,6 +27,8 @@
     @include displaying-text-ellipsis(2);
   }
 
+  --onecx-workspace-onecx-workspace-ui-togglebutton-content-padding: 0.25rem 0.5rem;
+
   /* togglebuttons should look like buttons */
   .p-togglebutton.p-button:not(.p-highlight),
   .p-togglebutton.p-button.p-highlight {

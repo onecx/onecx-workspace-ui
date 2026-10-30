@@ -1220,33 +1220,6 @@ describe('MenuComponent', () => {
     })
   })
 
-  it('should set displayRoles to true when displayRoles is false and wRoles is empty', () => {
-    component.displayRoles = false
-    component.wRoles = []
-
-    component.onDisplayRoles()
-
-    expect(component.displayRoles).toBeTrue()
-  })
-
-  it('should set displayRoles to true without loading roles when wRoles is not empty', () => {
-    component.displayRoles = false
-    component.wRoles = [wRole]
-
-    component.onDisplayRoles()
-
-    expect(component.displayRoles).toBeTrue()
-    expect(wRoleServiceSpy.searchWorkspaceRoles).not.toHaveBeenCalled()
-  })
-
-  it('should set displayRoles to false when displayRoles is true', () => {
-    component.displayRoles = true
-
-    component.onDisplayRoles()
-
-    expect(component.displayRoles).toBeFalse()
-  })
-
   it('should set displayMenuPreview to true onDisplayMenuPreview', () => {
     component.onDisplayMenuPreview()
 

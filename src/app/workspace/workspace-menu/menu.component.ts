@@ -439,12 +439,6 @@ export class MenuComponent implements OnInit, OnDestroy {
     else this.roleColumnFilterValue.push(role)
     this.loadMenu(true)
   }
-  public onDisplayRoles(): void {
-    if (!this.displayRoles && this.wRoles.length === 0) {
-      this.loadRolesAndAssignments()
-    }
-    this.displayRoles = !this.displayRoles
-  }
 
   // REORDER
   public onDisplayMenuPreview(): void {
@@ -758,6 +752,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.wAssignments = ass
         this.assignNode2Role(ass)
       }
+      this.displayRoles = true
       this.loadingRoles = false
     })
   }

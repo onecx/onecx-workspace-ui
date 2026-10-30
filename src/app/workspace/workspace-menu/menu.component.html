@@ -146,7 +146,7 @@
             class="mt-2 md:mt-3 flex flex-wrap justify-content-start align-items-center row-gap-1 column-gap-5"
             [attr.aria-label]="'DIALOG.MENU.SECTIONS.OPTIONS' | translate"
           >
-            <div class="sm:my-2 slim-selectbutton search-criteria-selectbutton">
+            <div class="sm:my-2">
               <p-selectButton
                 inputid="ws_menu_table_header_row_switch_content"
                 styleClass="white-space-nowrap hidden-xs"
@@ -168,7 +168,7 @@
                 </ng-template>
               </p-selectButton>
             </div>
-            <div class="sm:my-2 slim-selectbutton search-criteria-selectbutton">
+            <div class="sm:my-2">
               <p-selectButton
                 inputid="ws_menu_table_header_row_1_switch_tree_label"
                 styleClass="flex flex-wrap row-gap-1"
@@ -185,7 +185,7 @@
                 <ng-template let-item pTemplate="item">{{ item.label }} </ng-template>
               </p-selectButton>
             </div>
-            <div class="sm:my-2 slim-selectbutton search-criteria-selectbutton">
+            <div class="sm:my-2">
               <p-selectButton
                 inputid="ws_menu_table_header_row_1_switch_content"
                 styleClass="white-space-nowrap hidden-xs"
@@ -543,6 +543,7 @@
                             [rounded]="true"
                             [icon]="'pi pi-circle-fill'"
                             [id]="'ws_menu_table_role_' + role.name + '_' + rowData.key + '_action_revoke'"
+                            styleClass="text-primary"
                             (onClick)="onRevokePermission(rowData, role.id, rowData.roles[role.id])"
                             [ariaLabel]="
                               ('DIALOG.MENU.ASSIGNMENT.REVOKE_ROLE' | translate) + role.name + ' + ' + rowData.key
@@ -563,6 +564,7 @@
                             [rounded]="true"
                             [icon]="'pi pi-circle'"
                             [id]="'ws_menu_table_role_' + role.name + '_' + rowData.key + '_action_grant'"
+                            styleClass="text-primary"
                             (onClick)="onGrantPermission(rowNode, rowData, role.id)"
                             [ariaLabel]="
                               ('DIALOG.MENU.ASSIGNMENT.GRANT_ROLE' | translate) + role.name + ' + ' + rowData.key
