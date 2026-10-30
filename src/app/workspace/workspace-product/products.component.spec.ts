@@ -1,6 +1,6 @@
 import { SimpleChanges } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { BehaviorSubject, of, throwError } from 'rxjs'
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { provideNoopAnimations } from '@angular/platform-browser/animations'
@@ -190,7 +190,7 @@ describe('ProductComponent', () => {
   let component: ProductComponent
   let fixture: ComponentFixture<ProductComponent>
   let fb: FormBuilder
-  let mockAppState
+  let mockAppState: { currentMfe$: Observable<typeof mfeInfo> }
   let productFormGroup: FormGroup
 
   const wProductApiSpy = {
@@ -297,6 +297,18 @@ describe('ProductComponent', () => {
 
     it('should set currentMfe', () => {
       expect(component.currentMfe).toEqual(mfeInfo)
+    })
+
+    it('should unsubscribe from currentMfe$ on destroy', () => {
+      const mfe$ = new BehaviorSubject(mfeInfo)
+      mockAppState.currentMfe$ = mfe$
+      const newFixture = TestBed.createComponent(ProductComponent)
+
+      expect(mfe$.observed).toBeTrue()
+
+      newFixture.destroy()
+
+      expect(mfe$.observed).toBeFalse()
     })
 
     it('should log error when checking hasRegisterPermission rejects', async () => {

@@ -206,7 +206,7 @@ export class ProductComponent implements OnInit, OnChanges, OnDestroy {
     private readonly fb: FormBuilder,
     private readonly cdr: ChangeDetectorRef
   ) {
-    this.appState.currentMfe$.pipe(map((mfe) => (this.currentMfe = mfe))).subscribe()
+    this.appState.currentMfe$.pipe(takeUntil(this.destroy$)).subscribe((mfe) => (this.currentMfe = mfe))
     this.formGroup = this.fb.group({
       displayName: new FormControl({ value: null, disabled: true }),
       baseUrl: new FormControl(null, [Validators.required, Validators.maxLength(200)]),

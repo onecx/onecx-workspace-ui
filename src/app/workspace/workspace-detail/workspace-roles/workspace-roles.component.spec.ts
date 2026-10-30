@@ -210,6 +210,54 @@ describe('WorkspaceRolesComponent', () => {
     })
   })
 
+  describe('cleanup', () => {
+    afterEach(() => {
+      slotServiceSpy.isSomeComponentDefinedForSlot.and.returnValue(of(true))
+    })
+
+    it('should unsubscribe from slot check and role emitter on destroy', () => {
+      const slot$ = new BehaviorSubject(true)
+      slotServiceSpy.isSomeComponentDefinedForSlot.and.returnValue(slot$)
+      const changes = { ['workspace']: { previousValue: 'ws0', currentValue: 'ws1', firstChange: true } }
+      component.quickFilterValue = 'IAM'
+      component.isComponentDefined = false
+      component.ngOnChanges(changes as unknown as SimpleChanges)
+
+      expect(slot$.observed).toBeTrue()
+      expect(component.roleListEmitter.observed).toBeTrue()
+
+      fixture.destroy()
+
+      expect(slot$.observed).toBeFalse()
+      expect(component.roleListEmitter.observed).toBeFalse()
+    })
+
+    it('should restart the IAM loading timeout when changes arrive repeatedly', fakeAsync(() => {
+      component.loadingIamRoles.set(true)
+
+      component.ngOnChanges({} as SimpleChanges)
+      tick(3000)
+      component.ngOnChanges({} as SimpleChanges)
+      tick(3000)
+
+      expect(component.loadingIamRoles()).toBeTrue()
+
+      tick(2000)
+
+      expect(component.loadingIamRoles()).toBeFalse()
+    }))
+
+    it('should clear the IAM loading timeout on destroy', fakeAsync(() => {
+      component.loadingIamRoles.set(true)
+      component.ngOnChanges({} as SimpleChanges)
+
+      component.ngOnDestroy()
+      tick(5000)
+
+      expect(component.loadingIamRoles()).toBeTrue()
+    }))
+  })
+
   describe('search ALL roles', () => {
     it('should sort named role after nameless role (covers b.name falsy branch)', () => {
       // Place nameless role at index 0 so sort comparator is called as (named, nameless),

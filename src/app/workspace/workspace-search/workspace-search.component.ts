@@ -127,9 +127,12 @@ export class WorkspaceSearchComponent implements OnInit {
   public sortField = 'displayName'
 
   constructor() {
-    this.appState.currentWorkspace$.asObservable().subscribe((workspace) => {
-      this.currentWorkspaceName = workspace?.workspaceName
-    })
+    this.appState.currentWorkspace$
+      .asObservable()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((workspace) => {
+        this.currentWorkspaceName = workspace?.workspaceName
+      })
     this.loadTrigger$
       .pipe(
         switchMap(() => {

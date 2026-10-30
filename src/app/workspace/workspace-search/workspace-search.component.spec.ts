@@ -83,6 +83,17 @@ describe('WorkspaceSearchComponent', () => {
     it('should set currentWorkspaceName from AppStateService', () => {
       expect(component.currentWorkspaceName).toEqual(currentWorkspace.workspaceName)
     })
+
+    it('should stop updating currentWorkspaceName after destroy', async () => {
+      await mockAppStateService.currentWorkspace$.publish({ workspaceName: 'other' } as Workspace)
+
+      expect(component.currentWorkspaceName).toEqual('other')
+
+      fixture.destroy()
+      await mockAppStateService.currentWorkspace$.publish({ workspaceName: 'after-destroy' } as Workspace)
+
+      expect(component.currentWorkspaceName).toEqual('other')
+    })
   })
 
   describe('loadWorkspace', () => {

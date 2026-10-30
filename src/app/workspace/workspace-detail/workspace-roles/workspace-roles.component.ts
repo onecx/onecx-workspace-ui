@@ -5,6 +5,7 @@ import {
   Input,
   SimpleChanges,
   OnChanges,
+  OnDestroy,
   OnInit,
   inject,
   signal,
@@ -60,7 +61,7 @@ export function slotInitializer(slotService: SlotService) {
   templateUrl: './workspace-roles.component.html',
   styleUrls: ['./workspace-roles.component.scss']
 })
-export class WorkspaceRolesComponent implements OnInit, OnChanges {
+export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
   private readonly destroyRef = inject(DestroyRef)
   private readonly workspaceService = inject(WorkspaceService)
   private readonly user = inject(UserService)
@@ -118,6 +119,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   public slotName = 'onecx-iam-user-roles'
   public roleListEmitter = new EventEmitter<IAMRole[]>()
   public componentPermissions: string[] = []
+  private loadingIamRolesTimeout: ReturnType<typeof setTimeout> | undefined
 
   public ngOnInit(): void {
     Promise.all([
@@ -140,11 +142,16 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
       this.searchRoles()
     }
     // after 5s we assume IAM product is not running
-    setTimeout(() => {
+    clearTimeout(this.loadingIamRolesTimeout)
+    this.loadingIamRolesTimeout = setTimeout(() => {
       if (this.loadingIamRoles()) {
         this.loadingIamRoles.set(false)
       }
     }, 5000)
+  }
+
+  public ngOnDestroy(): void {
+    clearTimeout(this.loadingIamRolesTimeout)
   }
 
   /**
@@ -154,17 +161,20 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges {
   private initSlot() {
     if (!this.isComponentDefined) {
       // check if the IAM component is assigned to the slot
-      this.slotService.isSomeComponentDefinedForSlot(this.slotName).subscribe((def) => {
-        this.isComponentDefined = def
-        this.loadingIamRoles.set(true)
-        if (this.isComponentDefined) this.prepareRoleListEmitter()
-      })
+      this.slotService
+        .isSomeComponentDefinedForSlot(this.slotName)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((def) => {
+          this.isComponentDefined = def
+          this.loadingIamRoles.set(true)
+          if (this.isComponentDefined) this.prepareRoleListEmitter()
+        })
     }
   }
   // Hommage to SonarCloud: separate this
   private prepareRoleListEmitter() {
     // receive data from remote component
-    this.roleListEmitter.subscribe((list) => {
+    this.roleListEmitter.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((list) => {
       this.iamRolesLoaded.set(true)
       this.loadingIamRoles.set(false)
       this.iamRoles = list
