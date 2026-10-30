@@ -310,7 +310,7 @@ describe('MenuComponent', () => {
         expect(actions[2].showCondition).toBeFalse()
         expect(component.onExportMenu).toHaveBeenCalled()
         expect(component.menuItems).toEqual([])
-        expect(component.menuItems?.length).toBe(0)
+        expect(component.menuItems).toHaveSize(0)
       }
     })
     it('should call EXPORT', () => {
@@ -325,7 +325,7 @@ describe('MenuComponent', () => {
         expect(component.onExportMenu).toHaveBeenCalled()
         expect(actions[2].permission).toEqual('MENU#EXPORT')
         expect(actions[2].showCondition).toBeTrue()
-        expect(component.menuItems?.length).toBe(2)
+        expect(component.menuItems).toHaveSize(2)
       }
     })
 
@@ -793,7 +793,7 @@ describe('MenuComponent', () => {
       component.workspace$.subscribe()
 
       expect(component.workspace).toEqual(workspace)
-      expect(component.menuNodes.length).toBe(2)
+      expect(component.menuNodes).toHaveSize(2)
       expect(component.menuNodes[0].expanded).toBeTrue()
     })
 

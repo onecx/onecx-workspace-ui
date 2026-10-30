@@ -389,7 +389,7 @@ describe('ProductComponent', () => {
 
         component.ngOnChanges(changes as unknown as SimpleChanges)
 
-        expect(component.psProducts.length).toBe(0) // prevent lading of undeployed products
+        expect(component.psProducts).toHaveSize(0) // prevent lading of undeployed products
       })
     })
 
@@ -812,8 +812,8 @@ describe('ProductComponent', () => {
         id: 'wid',
         productId: product1Target.id
       })
-      expect(component.psProducts.length).toBe(0)
-      expect(component.wProducts.length).toBe(1)
+      expect(component.psProducts).toHaveSize(0)
+      expect(component.wProducts).toHaveSize(1)
     })
   })
 
@@ -989,7 +989,7 @@ describe('ProductComponent', () => {
 
       component.filterProducts('alpha', 'SOURCE')
 
-      expect(component.filteredPsProducts.length).toBe(1)
+      expect(component.filteredPsProducts).toHaveSize(1)
       expect(component.filteredPsProducts[0].displayName).toEqual('Alpha')
     })
 
@@ -998,7 +998,7 @@ describe('ProductComponent', () => {
 
       component.filterProducts('beta', 'TARGET')
 
-      expect(component.filteredWProducts.length).toBe(1)
+      expect(component.filteredWProducts).toHaveSize(1)
       expect(component.filteredWProducts[0].displayName).toEqual('Beta')
     })
   })

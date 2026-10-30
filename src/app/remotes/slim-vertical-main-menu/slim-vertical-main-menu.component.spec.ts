@@ -185,7 +185,7 @@ describe('OneCXSlimVerticalMainMenuComponent', () => {
     )
 
     const items = await slimVerticalMenu.getListItems()
-    expect(items.length).toBe(0)
+    expect(items).toHaveSize(0)
     expect(console.error).toHaveBeenCalledWith('Unable to load menu items for slim vertical main menu.')
   })
 
@@ -326,7 +326,7 @@ describe('OneCXSlimVerticalMainMenuComponent', () => {
       const listElement = await slimVerticalMenu.getList()
       expect(await listElement?.getAttribute('class')).toContain('slim-vertical-menu-list-slim')
       const listItems = await slimVerticalMenu.getListItems()
-      expect(listItems.length).toBe(3)
+      expect(listItems).toHaveSize(3)
       //const item = listItems[0]
       //expect(await item.getCssValue('height')).toEqual(4 * 16 + 'px')
     })
@@ -384,7 +384,7 @@ describe('OneCXSlimVerticalMainMenuComponent', () => {
       const listElement = await slimVerticalMenu.getList()
       expect(await listElement?.getAttribute('class')).toContain('slim-vertical-menu-list-slim-plus')
       const listItems = await slimVerticalMenu.getListItems()
-      expect(listItems.length).toBe(3)
+      expect(listItems).toHaveSize(3)
       //const item = listItems[0]
       //expect(await item.getCssValue('height')).toEqual(7 * 16 + 'px')
     })

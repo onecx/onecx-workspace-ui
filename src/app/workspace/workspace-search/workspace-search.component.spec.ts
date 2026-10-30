@@ -93,7 +93,7 @@ describe('WorkspaceSearchComponent', () => {
 
       expect(component.loading()).toBeFalse()
       expect(component.exceptionKey()).toBeUndefined()
-      expect(component.data().length).toBe(2)
+      expect(component.data()).toHaveSize(2)
       expect((component.data()[0] as unknown as GeneratedWorkspace).name).toEqual('a')
     })
 
@@ -102,7 +102,7 @@ describe('WorkspaceSearchComponent', () => {
 
       expect(component.loading()).toBeFalse()
       expect(component.exceptionKey()).toBeUndefined()
-      expect(component.data().length).toBe(0)
+      expect(component.data()).toHaveSize(0)
     })
 
     it('should load workspaces - failed', () => {
@@ -113,7 +113,7 @@ describe('WorkspaceSearchComponent', () => {
       expect(component.loading()).toBeFalse()
       expect(component.exceptionKey()).toEqual('EXCEPTIONS.HTTP_STATUS_' + errorResponse.status + '.WORKSPACES')
       expect(console.error).toHaveBeenCalledWith('searchWorkspaces', errorResponse)
-      expect(component.data().length).toBe(0)
+      expect(component.data()).toHaveSize(0)
     })
 
     it('should default to empty workspaces when the response has no stream', () => {
@@ -122,7 +122,7 @@ describe('WorkspaceSearchComponent', () => {
 
       expect(component.loading()).toBeFalse()
       expect(component.exceptionKey()).toBeUndefined()
-      expect(component.data().length).toBe(0)
+      expect(component.data()).toHaveSize(0)
     })
   })
 
@@ -197,7 +197,7 @@ describe('WorkspaceSearchComponent', () => {
       component.onGlobalFilter('alpha', data)
 
       expect(component.globalFilterValue).toEqual('alpha')
-      expect(component.filteredData()?.length).toBe(1)
+      expect(component.filteredData()).toHaveSize(1)
       expect((component.filteredData() as any)[0].name).toEqual('workspace-a')
     })
 
@@ -209,7 +209,7 @@ describe('WorkspaceSearchComponent', () => {
 
       component.onGlobalFilter('beta', data)
 
-      expect(component.filteredData()?.length).toBe(1)
+      expect(component.filteredData()).toHaveSize(1)
       expect((component.filteredData() as any)[0].name).toEqual('workspace-b')
     })
 

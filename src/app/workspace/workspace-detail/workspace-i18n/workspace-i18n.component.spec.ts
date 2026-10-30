@@ -105,7 +105,7 @@ describe('WorkspaceI18nComponent', () => {
       component.workspaceI18nVisible = false
       fixture.detectChanges()
 
-      expect(component.translationsForm.length).toBe(0)
+      expect(component.translationsForm).toHaveSize(0)
     })
   })
 
@@ -113,13 +113,13 @@ describe('WorkspaceI18nComponent', () => {
     it('should init form when workspaceI18nVisible becomes true and propertyName is set', () => {
       component.ngOnChanges(makeChanges({ workspaceI18nVisible: true }))
 
-      expect(component.translationsForm.length).toBe(2)
+      expect(component.translationsForm).toHaveSize(2)
     })
 
     it('should init form when propertyName changes and dialog is already visible', () => {
       component.ngOnChanges(makeChanges({ propertyName: 'displayName' }))
 
-      expect(component.translationsForm.length).toBe(2)
+      expect(component.translationsForm).toHaveSize(2)
     })
 
     it('should NOT init form when dialog is not visible', () => {
@@ -128,7 +128,7 @@ describe('WorkspaceI18nComponent', () => {
 
       component.ngOnChanges(makeChanges({ workspaceI18nVisible: false }))
 
-      expect(component.translationsForm.length).toBe(0)
+      expect(component.translationsForm).toHaveSize(0)
     })
 
     it('should NOT init form when propertyName is not set', () => {
@@ -137,7 +137,7 @@ describe('WorkspaceI18nComponent', () => {
 
       component.ngOnChanges(makeChanges({ workspaceI18nVisible: true }))
 
-      expect(component.translationsForm.length).toBe(0)
+      expect(component.translationsForm).toHaveSize(0)
     })
 
     it('should init with empty form when workspace has no i18n data for the property', () => {
@@ -145,7 +145,7 @@ describe('WorkspaceI18nComponent', () => {
 
       component.ngOnChanges(makeChanges({ workspaceI18nVisible: true }))
 
-      expect(component.translationsForm.length).toBe(0)
+      expect(component.translationsForm).toHaveSize(0)
     })
 
     it('should init with empty form when workspace has no i18n at all', () => {
@@ -153,7 +153,7 @@ describe('WorkspaceI18nComponent', () => {
 
       component.ngOnChanges(makeChanges({ workspaceI18nVisible: true }))
 
-      expect(component.translationsForm.length).toBe(0)
+      expect(component.translationsForm).toHaveSize(0)
     })
   })
 
@@ -211,7 +211,7 @@ describe('WorkspaceI18nComponent', () => {
       component.workspace = { ...workspace, i18n: {} }
       component.ngOnChanges(makeChanges({ workspaceI18nVisible: true }))
 
-      expect(component.availableLanguages.length).toBe(component.allLanguages.length)
+      expect(component.availableLanguages).toHaveSize(component.allLanguages.length)
     })
   })
 
@@ -274,7 +274,7 @@ describe('WorkspaceI18nComponent', () => {
 
       component.onAddLanguage()
 
-      expect(component.translationsForm.length).toBe(initialLength)
+      expect(component.translationsForm).toHaveSize(initialLength)
     })
   })
 
@@ -299,7 +299,7 @@ describe('WorkspaceI18nComponent', () => {
 
       component.onRemoveTranslation(0)
 
-      expect(component.translationsForm.length).toBe(initialLength - 1)
+      expect(component.translationsForm).toHaveSize(initialLength - 1)
       const remaining = component.translationsForm.controls.map((c) => c.get('language')?.value)
       expect(remaining).not.toContain(langToRemove)
     })

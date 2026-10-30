@@ -32,6 +32,7 @@
     class="ocx-topbar-action-panel shadow-4 border-round-bottom fixed sm:absolute mt-2 sm:top-100 w-screen sm:w-auto"
     [class]="menuAnchorPosition + '-0' + (menuOpen() ? '' : ' hidden')"
     (click)="menuOpen.set(false)"
+    (keydown)="menuOpen.set(false)"
   >
     <!-- USER data from various sources:  a) OneCX user profile, b) custom data -->
     @let data =

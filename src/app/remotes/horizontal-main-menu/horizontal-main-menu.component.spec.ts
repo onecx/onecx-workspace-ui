@@ -349,13 +349,13 @@ describe('OneCXHorizontalMainMenuComponent', () => {
     const menuItems = await menu.getAllMenuItems()
     expect(menuItems.length).toEqual(4)
 
-    expect((await menuItems[0].getChildren()).length).toBe(0)
+    expect(await menuItems[0].getChildren()).toHaveSize(0)
     const secondItemChildren = await menuItems[1].getChildren()
-    expect(secondItemChildren.length).toBe(2)
+    expect(secondItemChildren).toHaveSize(2)
     expect(await secondItemChildren[0].getText()).toEqual('Announcements')
-    expect((await secondItemChildren[0].getChildren()).length).toBe(0)
+    expect(await secondItemChildren[0].getChildren()).toHaveSize(0)
     expect(await secondItemChildren[1].getText()).toEqual('Help Items')
-    expect((await secondItemChildren[1].getChildren()).length).toBe(0)
+    expect(await secondItemChildren[1].getChildren()).toHaveSize(0)
   })
 
   it('should return 0 menu items when unable to load them', async () => {

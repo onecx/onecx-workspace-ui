@@ -244,7 +244,7 @@ describe('OneCXSlimUserMenuComponent', () => {
 
     const slimUserMenu = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXSlimUserMenuHarness)
     const items = await slimUserMenu.getItems()
-    expect(items.length).toBe(0)
+    expect(items).toHaveSize(0)
     expect(console.error).toHaveBeenCalledWith('Unable to load menu items for slim user menu.')
   })
 
@@ -263,7 +263,7 @@ describe('OneCXSlimUserMenuComponent', () => {
     const items = await slimUserMenu.getItems()
     expect(menuItemServiceSpy.constructMenuItems).toHaveBeenCalledOnceWith([{ id: 'fake' } as any], 'en', '/')
     // +1 for the logout item
-    expect(items.length).toBe(4)
+    expect(items).toHaveSize(4)
   })
 
   it('should publish on logout', async () => {
@@ -347,7 +347,7 @@ describe('OneCXSlimUserMenuComponent', () => {
       const slimUserMenu = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXSlimUserMenuHarness)
       await slimUserMenu.open()
       const items = await slimUserMenu.getItems()
-      expect(items.length).toBe(4)
+      expect(items).toHaveSize(4)
     })
 
     it('should have correct header style', async () => {
@@ -381,7 +381,7 @@ describe('OneCXSlimUserMenuComponent', () => {
       const slimUserMenu = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXSlimUserMenuHarness)
       await slimUserMenu.open()
       const items = await slimUserMenu.getItems()
-      expect(items.length).toBe(4)
+      expect(items).toHaveSize(4)
     })
 
     it('should have correct header style', async () => {

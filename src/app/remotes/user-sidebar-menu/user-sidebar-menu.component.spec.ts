@@ -463,13 +463,13 @@ describe('OneCXUserSidebarMenuComponent', () => {
 
       const panels = await (await sidebarMenuHarness.getPanelMenu())?.getAllPanels()
       // two menu items + the logout item the component appends
-      expect(panels?.length).toBe(3)
+      expect(panels).toHaveSize(3)
 
       const firstItemChildren = await panels![0].getChildren()
-      expect(firstItemChildren.length).toBe(1)
+      expect(firstItemChildren).toHaveSize(1)
       expect(await firstItemChildren[0].getText()).toEqual('Change personal info')
-      expect((await firstItemChildren[0].getChildren()).length).toBe(0)
-      expect((await panels![1].getChildren()).length).toBe(0)
+      expect(await firstItemChildren[0].getChildren()).toHaveSize(0)
+      expect(await panels![1].getChildren()).toHaveSize(0)
     })
 
     it('should only show logout on failed menu fetch call', async () => {
@@ -486,7 +486,7 @@ describe('OneCXUserSidebarMenuComponent', () => {
       await sidebarMenuHarness.expandAccordion()
       const panels = await (await sidebarMenuHarness.getPanelMenu())?.getAllPanels()
 
-      expect(panels?.length).toBe(1)
+      expect(panels).toHaveSize(1)
       expect(await panels![0].getText()).toBe('Log out')
       expect(console.error).toHaveBeenCalled()
     })

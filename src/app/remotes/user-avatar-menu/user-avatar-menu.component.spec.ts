@@ -235,7 +235,7 @@ describe('OneCXUserAvatarMenuComponent', () => {
       const { avatarMenuHarness } = await setupWithHarnessAndInit()
       const menuItems = await avatarMenuHarness.getMenuItems()
 
-      expect(menuItems.length).toBe(3) // two items + logout
+      expect(menuItems).toHaveSize(3) // two items + logout
       expect(await menuItems[0].getText()).toEqual('Account Settings')
       expect(await menuItems[1].getText()).toEqual('Personal Info')
     })
@@ -374,7 +374,7 @@ describe('OneCXUserAvatarMenuComponent', () => {
       await flush(fixture)
 
       const menuItems = await avatarMenuHarness.getMenuItems()
-      expect(menuItems.length).toBe(1)
+      expect(menuItems).toHaveSize(1)
       expect(await menuItems[0].getText()).toEqual('Log out')
       expect(console.error).toHaveBeenCalled()
     })

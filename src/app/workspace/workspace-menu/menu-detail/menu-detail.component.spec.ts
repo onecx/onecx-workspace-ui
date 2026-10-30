@@ -284,7 +284,7 @@ describe('MenuDetailComponent', () => {
 
       component.ngOnChanges()
 
-      expect(component.menuItems?.length).toBe(5)
+      expect(component.menuItems).toHaveSize(5)
     })
 
     it('should prepare mfe paths for menu items - empty mfe path', () => {
@@ -656,14 +656,14 @@ describe('MenuDetailComponent', () => {
 
       component.onRemoveLanguage('fr')
 
-      expect(component.languagesDisplayed.length).toBe(0)
-      expect(component.languagesAvailable.length).toBe(2)
+      expect(component.languagesDisplayed).toHaveSize(0)
+      expect(component.languagesAvailable).toHaveSize(2)
 
       component.languagesDisplayed = [{ label: 'German', value: 'de', data: 'Data' }]
 
       component.onRemoveLanguage('de')
 
-      expect(component.languagesDisplayed.length).toBe(1)
+      expect(component.languagesDisplayed).toHaveSize(1)
 
       component.languagesDisplayed = []
 
@@ -679,7 +679,7 @@ describe('MenuDetailComponent', () => {
       expect(component.languagesDisplayed).toEqual(
         jasmine.arrayContaining([{ label: 'English', value: 'en', data: '' }])
       )
-      expect(component.languagesAvailable.length).toBe(0)
+      expect(component.languagesAvailable).toHaveSize(0)
     })
 
     it('should return label of language if in languagesDisplayed', () => {
@@ -728,7 +728,7 @@ describe('MenuDetailComponent', () => {
 
       component.onDropdownClick(event)
 
-      expect(component.filteredMfes.length).toBe(2)
+      expect(component.filteredMfes).toHaveSize(2)
     })
 
     it('onClearUrl', () => {
@@ -797,7 +797,7 @@ describe('MenuDetailComponent', () => {
 
       component.onFilterPaths(mockEvent)
 
-      expect(component.filteredMfes.length).toBe(1)
+      expect(component.filteredMfes).toHaveSize(1)
       expect(component.filteredMfes[0].id).toBe('id')
     })
 
@@ -823,7 +823,7 @@ describe('MenuDetailComponent', () => {
 
       component.onFilterPaths(mockEvent)
 
-      expect(component.filteredMfes.length).toBe(1)
+      expect(component.filteredMfes).toHaveSize(1)
       expect(component.filteredMfes[0].mfePath).toBe('/path')
     })
 
@@ -845,7 +845,7 @@ describe('MenuDetailComponent', () => {
 
       component.onFilterPaths(mockEvent)
 
-      expect(component.filteredMfes.length).toBe(2)
+      expect(component.filteredMfes).toHaveSize(2)
       expect(component.filteredMfes[0].id).toBeUndefined()
     })
 

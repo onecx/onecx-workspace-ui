@@ -164,10 +164,7 @@
           [class.custom-selected-row]="displayedDetailItem?.productName === product.productName"
           (click)="onItemSelect(product)"
         >
-          <div
-            class="col-12 md:col-9 p-0 flex flex-row column-gap-2 align-items-center tile-view-content"
-            (dblclick)="return($event)"
-          >
+          <div class="col-12 md:col-9 p-0 flex flex-row column-gap-2 align-items-center" (dblclick)="return($event)">
             <div
               class="h-1rem sm:h-2rem md:h-3rem w-1rem sm:w-2rem md:w-3rem flex align-items-center"
               aria-hidden="true"
@@ -175,7 +172,7 @@
               @let pname = product.productName;
               <app-image
                 [id]="'ws_products_picklist_' + product.productName + '_logo'"
-                styleClass="max-h-1rem sm:max-h-2rem md:max-h-3rem max-w-1rem sm:max-w-2rem md:max-w-3rem tile-view-optional border-round-sm"
+                styleClass="max-h-1rem sm:max-h-2rem md:max-h-3rem max-w-1rem sm:max-w-2rem md:max-w-3rem  border-round-sm"
                 [cascadeUse]="!editMode"
                 [item]="{
                   name: pname,
@@ -189,7 +186,7 @@
             <div class="flex flex-column row-gap-1">
               <div
                 [id]="'ws_products_picklist_' + product.productName + '_display_name'"
-                class="tile-view-mandatory sm:font-semibold text-sm lg:text-md max-w-10rem xl:max-w-15rem text-responsive"
+                class="sm:font-semibold text-sm lg:text-md max-w-10rem xl:max-w-15rem text-responsive"
                 [class.danger-action-text]="product?.undeployed"
                 role="note"
               >
@@ -197,16 +194,14 @@
               </div>
               <div
                 [id]="'ws_products_picklist_' + product.productName + '_product_name'"
-                class="tile-view-optional text-xs hidden md:block max-w-10rem xl:max-w-15rem text-responsive"
+                class="text-xs hidden md:block max-w-10rem xl:max-w-15rem text-responsive"
                 role="note"
               >
                 {{ product.productName }}
               </div>
             </div>
           </div>
-          <div
-            class="tile-view-optional col-3 h-3rem p-0 text-sm hidden md:flex flex-column justify-content-center row-gap-1"
-          >
+          <div class="col-3 h-3rem p-0 text-sm hidden md:flex flex-column justify-content-center row-gap-1">
             <div
               [id]="'ws_products_picklist_' + product.productName + '_product_base_url'"
               class="max-w-15rem word-break-all text-ellipsis-2-lines"
@@ -218,7 +213,7 @@
             @if (product?.undeployed === true) {
               <div
                 [id]="'ws_products_picklist_' + product.productName + '_undeployed'"
-                class="tile-view-optional danger-action-text text-xs font-bold"
+                class="danger-action-text text-xs font-bold"
                 [attr.aria-label]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
                 [pTooltip]="'DIALOG.PRODUCTS.UNDEPLOYED' | translate"
                 tooltipPosition="top"
@@ -231,7 +226,7 @@
               @if (!product?.exists) {
                 <div
                   [id]="'ws_products_picklist_' + product.productName + '_not_exist'"
-                  class="tile-view-optional danger-action-text text-xs font-bold"
+                  class="danger-action-text text-xs font-bold"
                   [attr.aria-label]="'DIALOG.PRODUCTS.REMOVED' | translate"
                   [pTooltip]="'DIALOG.PRODUCTS.REMOVED' | translate"
                   tooltipPosition="top"
@@ -244,7 +239,7 @@
                 @if (product?.changedComponents) {
                   <div
                     [id]="'ws_products_picklist_' + product.productName + '_changed'"
-                    class="tile-view-optional danger-action-text text-xs font-bold"
+                    class="danger-action-text text-xs font-bold"
                     [attr.aria-label]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
                     [pTooltip]="'DIALOG.PRODUCTS.CHANGED_MFE' | translate"
                     tooltipPosition="top"

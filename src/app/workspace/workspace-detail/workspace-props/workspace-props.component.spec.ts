@@ -180,7 +180,7 @@ describe('WorkspacePropsComponent', () => {
 
         component.checkAndExtendThemes(themesOrg)
 
-        expect(themesOrg.length).toBe(2)
+        expect(themesOrg).toHaveSize(2)
       }
     })
 
@@ -190,7 +190,7 @@ describe('WorkspacePropsComponent', () => {
 
         component.checkAndExtendThemes(themesOrg)
 
-        expect(themesOrg.length).toBe(3)
+        expect(themesOrg).toHaveSize(3)
       }
     })
 

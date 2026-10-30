@@ -84,7 +84,7 @@
      1. decolorizing all selected rows markup from PrimeNG
      2. applying custom selected row styling
   */
-  .p-listbox:not(.p-disabled) .p-listbox-option.p-listbox-option-selected {
+  .p-listbox:not(.p-disabled) .p-listbox-option.p-listbox-option-selected:not(:has(.custom-selected-row)) {
     background-color: inherit;
     &:nth-child(even) {
       background-color: var(
@@ -94,6 +94,6 @@
     }
   }
   .p-listbox:not(.p-disabled) .p-listbox-option:has(.custom-selected-row) {
-    background-color: var(--onecx-workspace-onecx-workspace-ui-listbox-option-selected-background);
+    background-color: var(--onecx-workspace-onecx-workspace-ui-listbox-option-selected-background) !important;
   }
 }

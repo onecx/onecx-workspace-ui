@@ -253,7 +253,7 @@ describe('WorkspaceSlotsComponent', () => {
     })
 
     it('should prepare sort columns', () => {
-      expect(component.sortColumns.length).toBe(1)
+      expect(component.sortColumns).toHaveSize(1)
       expect(component.sortColumns[0].id).toBe('name')
     })
 
@@ -335,8 +335,8 @@ describe('WorkspaceSlotsComponent', () => {
       component.loadData()
       tick()
 
-      expect(component.data().length).toBe(5)
-      expect(component.psComponents.length).toBe(4)
+      expect(component.data()).toHaveSize(5)
+      expect(component.psComponents).toHaveSize(4)
       expect(component.exceptionKey()).toBeUndefined()
     }))
 
@@ -396,7 +396,7 @@ describe('WorkspaceSlotsComponent', () => {
       component.loadData()
       tick()
 
-      expect(component.psComponents.length).toBe(0)
+      expect(component.psComponents).toHaveSize(0)
     }))
 
     it('should handle empty slots from workspace', fakeAsync(() => {
@@ -437,7 +437,7 @@ describe('WorkspaceSlotsComponent', () => {
       tick()
 
       // No PS slots extracted, but components are still extracted
-      expect(component.psComponents.length).toBe(1)
+      expect(component.psComponents).toHaveSize(1)
     }))
 
     it('should handle PS product without microfrontends', fakeAsync(() => {
@@ -454,7 +454,7 @@ describe('WorkspaceSlotsComponent', () => {
       component.loadData()
       tick()
 
-      expect(component.psComponents.length).toBe(0)
+      expect(component.psComponents).toHaveSize(0)
     }))
 
     it('should mark slot as changed when assigned component product is not registered', fakeAsync(() => {
@@ -567,7 +567,7 @@ describe('WorkspaceSlotsComponent', () => {
       expect(slot!.changes).toBeTrue()
       expect(slot!.type).toContain('WORKSPACE')
       expect(slot!.type).toContain('CHANGES')
-      expect(slot!.psComponents!.length).toBe(1)
+      expect(slot!.psComponents!).toHaveSize(1)
       expect(slot!.psComponents![0].exists).toBeFalse()
     }))
 
@@ -593,7 +593,7 @@ describe('WorkspaceSlotsComponent', () => {
       expect(slot!.changes).toBeTrue()
       expect(slot!.type).toContain('WORKSPACE')
       expect(slot!.type).toContain('CHANGES')
-      expect(slot!.psComponents!.length).toBe(1)
+      expect(slot!.psComponents!).toHaveSize(1)
       expect(slot!.psComponents![0].deprecated).toBeTrue()
     }))
 
@@ -634,7 +634,7 @@ describe('WorkspaceSlotsComponent', () => {
       const slot = asSlots(component.data()).find((s) => s.name === 'slot-ok')
       expect(slot!.changes).toBeFalse()
       expect(slot!.type).toContain('WORKSPACE')
-      expect(slot!.psComponents!.length).toBe(1)
+      expect(slot!.psComponents!).toHaveSize(1)
     }))
   })
 
@@ -661,7 +661,7 @@ describe('WorkspaceSlotsComponent', () => {
       component.onQuickFilterChange('WORKSPACE')
 
       expect(component.quickFilterValue).toEqual('WORKSPACE')
-      expect(component.filteredData()?.length).toBe(2)
+      expect(component.filteredData()).toHaveSize(2)
       expect((component.filteredData() as any)[0].name).toBe('slot-1')
       expect((component.filteredData() as any)[1].name).toBe('slot-3')
     })
@@ -676,7 +676,7 @@ describe('WorkspaceSlotsComponent', () => {
       component.onQuickFilterChange('CHANGES')
 
       expect(component.quickFilterValue).toEqual('CHANGES')
-      expect(component.filteredData()?.length).toBe(2)
+      expect(component.filteredData()).toHaveSize(2)
     })
 
     it('should exclude rows without a type field', () => {
@@ -684,7 +684,7 @@ describe('WorkspaceSlotsComponent', () => {
 
       component.onQuickFilterChange('WORKSPACE')
 
-      expect(component.filteredData()?.length).toBe(0)
+      expect(component.filteredData()).toHaveSize(0)
     })
 
     it('should exclude rows whose type is not an array', () => {
@@ -692,7 +692,7 @@ describe('WorkspaceSlotsComponent', () => {
 
       component.onQuickFilterChange('WORKSPACE')
 
-      expect(component.filteredData()?.length).toBe(0)
+      expect(component.filteredData()).toHaveSize(0)
     })
   })
 
@@ -705,7 +705,7 @@ describe('WorkspaceSlotsComponent', () => {
       component.onGlobalFilter('-a')
 
       expect(component.globalFilterValue).toEqual('-a')
-      expect(component.filteredData()?.length).toBe(1)
+      expect(component.filteredData()).toHaveSize(1)
       expect((component.filteredData() as any)[0].name).toBe('workspace-a')
     })
 

@@ -375,13 +375,13 @@ describe('OneCXVerticalMainMenuComponent', () => {
     const panels = await menu.getAllPanels()
     expect(panels.length).toEqual(2)
 
-    expect((await panels[0].getChildren()).length).toBe(0)
+    expect(await panels[0].getChildren()).toHaveSize(0)
     const secondItemChildren = await panels[1].getChildren()
-    expect(secondItemChildren.length).toBe(2)
+    expect(secondItemChildren).toHaveSize(2)
     expect(await secondItemChildren[0].getText()).toEqual('Announcements')
-    expect((await secondItemChildren[0].getChildren()).length).toBe(0)
+    expect(await secondItemChildren[0].getChildren()).toHaveSize(0)
     expect(await secondItemChildren[1].getText()).toEqual('Help Items')
-    expect((await secondItemChildren[1].getChildren()).length).toBe(0)
+    expect(await secondItemChildren[1].getChildren()).toHaveSize(0)
   })
 
   it('should use eventsTopic to determine active item if capability is not set', async () => {
@@ -451,9 +451,9 @@ describe('OneCXVerticalMainMenuComponent', () => {
     const panels = await menu.getAllPanels()
     expect(panels.length).toEqual(2)
 
-    expect((await panels[0].getChildren()).length).toBe(0)
+    expect(await panels[0].getChildren()).toHaveSize(0)
     const secondItemChildren = await panels[1].getChildren()
-    expect(secondItemChildren.length).toBe(2)
+    expect(secondItemChildren).toHaveSize(2)
     expect(await secondItemChildren[0].getText()).toEqual('Announcements')
     expect(await (await secondItemChildren[0].host()).hasClass(component.activeItemClass)).toBeFalse()
   })
@@ -528,16 +528,16 @@ describe('OneCXVerticalMainMenuComponent', () => {
       const panels = await menu.getAllPanels()
       expect(panels.length).toEqual(2)
 
-      expect((await panels[0].getChildren()).length).toBe(0)
+      expect(await panels[0].getChildren()).toHaveSize(0)
       const secondItemChildren = await panels[1].getChildren()
-      expect(secondItemChildren.length).toBe(2)
+      expect(secondItemChildren).toHaveSize(2)
       expect(await secondItemChildren[0].getText()).toEqual('Announcements')
       expect(await (await secondItemChildren[0].host()).hasClass(component.activeItemClass)).toBeFalse()
       expect(await secondItemChildren[1].getText()).toEqual('Help Items')
       expect(await (await secondItemChildren[1].host()).hasClass(component.activeItemClass)).toBeTrue()
 
       const menuItems = component.menuItems$.getValue()
-      expect(menuItems?.items.length).toBe(2)
+      expect(menuItems?.items).toHaveSize(2)
       expect(menuItems?.items[0].expanded).toBeFalsy()
       expect(menuItems?.items[1].expanded).toBeTrue()
     })
@@ -583,7 +583,7 @@ describe('OneCXVerticalMainMenuComponent', () => {
       await component.ngOnInit()
 
       const menuItems = component.menuItems$.getValue()
-      expect(menuItems?.items.length).toBe(1)
+      expect(menuItems?.items).toHaveSize(1)
       expect(menuItems?.items[0].label).toBe('item-name-2')
     })
 
@@ -626,7 +626,7 @@ describe('OneCXVerticalMainMenuComponent', () => {
       await component.ngOnInit()
 
       const menuItems = component.menuItems$.getValue()
-      expect(menuItems?.items.length).toBe(1)
+      expect(menuItems?.items).toHaveSize(1)
       expect(menuItems?.items[0].label).toBe('item-name-1')
     })
   })

@@ -204,7 +204,7 @@ describe('WorkspaceRolesComponent', () => {
       component.ngOnChanges(changes as unknown as SimpleChanges)
       component.roleListEmitter.emit(iamRoles)
 
-      expect(component.iamRoles.length).toBe(2)
+      expect(component.iamRoles).toHaveSize(2)
       expect(component.iamRoles[0]).toEqual(iamRoles[0])
       expect(component.iamRoles[1]).toEqual(iamRoles[1])
     })
