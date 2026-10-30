@@ -31,7 +31,7 @@ export class PanelMenuPanelHarness extends ComponentHarness {
   }
 
   async getChildren(): Promise<PanelMenuItemHarness[]> {
-    return this.locatorForAll(PanelMenuItemHarness)()
+    return await this.locatorForAll(PanelMenuItemHarness)()
   }
 }
 
@@ -52,7 +52,7 @@ export class PanelMenuItemHarness extends ComponentHarness {
   }
 
   async getChildren(): Promise<PanelMenuItemHarness[]> {
-    return this.locatorForAll(PanelMenuItemHarness)()
+    return await this.locatorForAll(PanelMenuItemHarness)()
   }
 }
 
@@ -60,7 +60,7 @@ export class PanelMenuHarness extends ComponentHarness {
   static readonly hostSelector = 'p-panelmenu'
 
   async getAllPanels(): Promise<PanelMenuPanelHarness[]> {
-    return this.locatorForAll(PanelMenuPanelHarness)()
+    return await this.locatorForAll(PanelMenuPanelHarness)()
   }
 }
 

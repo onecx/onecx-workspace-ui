@@ -33,7 +33,7 @@ export class MenuBarItemHarness extends ComponentHarness {
   }
 
   async getChildren(): Promise<MenuBarItemHarness[]> {
-    return this.locatorForAll(MenuBarItemHarness)()
+    return await this.locatorForAll(MenuBarItemHarness)()
   }
 }
 
@@ -41,6 +41,6 @@ export class MenuBarHarness extends ComponentHarness {
   static readonly hostSelector = 'p-menubar'
 
   async getAllMenuItems(): Promise<MenuBarItemHarness[]> {
-    return this.locatorForAll(MenuBarItemHarness)()
+    return await this.locatorForAll(MenuBarItemHarness)()
   }
 }
