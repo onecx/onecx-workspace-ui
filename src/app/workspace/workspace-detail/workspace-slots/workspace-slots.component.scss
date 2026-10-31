@@ -2,11 +2,11 @@
 
 @include correct-data-view-control;
 @include correct-data-view-header-for-tabpanel;
-@include search-criteria-select-button;
-@include search-criteria-select-button-slim;
 @include card-badges;
 
 :host ::ng-deep {
+  --onecx-workspace-onecx-workspace-ui-togglebutton-content-padding: 0.25rem 0.5rem;
+
   .p-dataview .p-dataview-content {
     padding-left: 0;
     padding-right: 0;

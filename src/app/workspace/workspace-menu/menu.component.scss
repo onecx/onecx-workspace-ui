@@ -8,15 +8,12 @@
 @include ocx-p-tabs;
 @include readable-disabled-components;
 @include correct-data-view-control;
-@include correct-select-button;
-@include search-criteria-select-button;
-@include search-criteria-select-button-slim;
 @include table-inline-buttons;
 
 :host ::ng-deep {
   .ocx-content > div {
     margin-bottom: 0;
-    padding: 0.75rem 0.5rem;
+    padding: 0rem;
   }
 
   .p-dialog .p-dialog-content {
@@ -81,7 +78,6 @@
     }
     table {
       width: unset;
-      margin-top: 0.75rem;
       .p-treetable-thead {
         tr th.menu-name {
           min-width: 15rem;

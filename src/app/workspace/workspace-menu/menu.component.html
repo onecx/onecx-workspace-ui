@@ -255,17 +255,18 @@
               >
                 <!-- empty -->
               </th>
-              <th
-                *ngFor="let col of treeDetailColumns"
-                [id]="'ws_menu_table_header_detail_' + col.name"
-                class="p-2 pb-1 text-center vertical-align-bottom white-space-nowrap border-bottom-2"
-                [ngClass]="col.css"
-                [pTooltip]="col.tooltipKey | translate"
-                tooltipPosition="top"
-                tooltipEvent="hover"
-              >
-                <div class="p-1 border-round-sm border-none">{{ col.headerKey | translate }}</div>
-              </th>
+              @for (col of treeDetailColumns; track col.name) {
+                <th
+                  [id]="'ws_menu_table_header_detail_' + col.name"
+                  class="p-2 pb-1 text-center vertical-align-bottom white-space-nowrap border-bottom-2"
+                  [ngClass]="col.css"
+                  [pTooltip]="col.tooltipKey | translate"
+                  tooltipPosition="top"
+                  tooltipEvent="hover"
+                >
+                  <div class="p-1 border-round-sm border-none">{{ col.headerKey | translate }}</div>
+                </th>
+              }
             }
             <!-- HEADER ROW: ROLE Columns, filtered -->
             @if (displayRoles) {

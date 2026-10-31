@@ -47,7 +47,7 @@
         } @else {
           <!-- QUICK FILTER -->
           <nav
-            class="slim-selectbutton search-criteria-selectbutton"
+            class="flex flex-column"
             [attr.aria-label]="'DIALOG.ROLE.QUICK_FILTER.TOOLTIP' | translate"
             [pTooltip]="'DIALOG.ROLE.QUICK_FILTER.TOOLTIP' | translate"
             tooltipPosition="top"
@@ -229,7 +229,7 @@
               <div class="flex flex-column justify-content-between row-gap-2 text-center" aria-hidden="true">
                 <div
                   [id]="'ws_roles_grid_row_' + item.id + '_role_name'"
-                  class="text-sm sm:text-base font-bold text-responsive"
+                  class="font-bold text-sm sm:text-base text-responsive"
                   [attr.aria-label]="item.name"
                   [pTooltip]="item.name?.length > 40 ? item.name : ''"
                   tooltipPosition="top"

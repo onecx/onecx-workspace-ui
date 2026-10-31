@@ -356,52 +356,6 @@
   }
 }
 
-@mixin search-criteria-select-button-slim {
-  :host ::ng-deep {
-    .slim-selectbutton {
-      display: flex;
-      flex-wrap: wrap;
-      flex-direction: column;
-      row-gap: 0.1rem;
-
-      .p-selectbutton .p-button {
-        text-align: center;
-        display: inline-block;
-        color: var(--emphasis-medium);
-        font-weight: var(--font-weight);
-        padding: 0.3rem 0.8rem;
-        border: var(--input-border);
-      }
-      .p-selectbutton-subtitle {
-        font-size: 0.8rem;
-        padding-left: 0.25rem;
-      }
-    }
-  }
-}
-@mixin search-criteria-select-button {
-  :host ::ng-deep {
-    .p-selectbutton-title {
-      width: 2rem;
-      text-align: right;
-    }
-    .search-criteria-selectbutton {
-      .p-selectbutton .p-button {
-        &.p-highlight {
-          color: var(--primary-text-color);
-          border-color: var(--toggle-button-hover-border-color);
-          background-color: var(--primary-color);
-        }
-        &:not(.p-disabled):not(.p-highlight):hover {
-          color: var(--primary-text-color);
-          border-color: var(--toggle-button-hover-border-color);
-          background-color: var(--button-hover-bg);
-        }
-      }
-    }
-  }
-}
-
 /* ZEBRA rows */
 @mixin dataview-list-flex-zebra-rows {
   :host ::ng-deep {
