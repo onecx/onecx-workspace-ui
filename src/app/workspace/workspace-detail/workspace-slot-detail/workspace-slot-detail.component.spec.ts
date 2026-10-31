@@ -1,7 +1,7 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angular/core/testing'
+import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing'
+import { provideNoopAnimations } from '@angular/platform-browser/animations'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { BehaviorSubject, of, throwError } from 'rxjs'
 
@@ -15,39 +15,48 @@ describe('WorkspaceSlotDetailComponent', () => {
   let component: WorkspaceSlotDetailComponent
   let fixture: ComponentFixture<WorkspaceSlotDetailComponent>
 
-  const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
-  const slotServiceSpy = { addOrUpdateSlot: jasmine.createSpy('addOrUpdateSlot').and.returnValue(of({})) }
-
-  const mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
-  mockUserService.hasPermission.and.callFake((permission: string) => {
-    return ['WORKSPACE_SLOT#EDIT'].includes(permission)
-  })
-  mockUserService.lang$ = new BehaviorSubject('de')
-
   function initializeComponent(): void {
     fixture = TestBed.createComponent(WorkspaceSlotDetailComponent)
     component = fixture.componentInstance
     fixture.detectChanges()
   }
 
+  const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
+  const slotServiceSpy = { addOrUpdateSlot: jasmine.createSpy('addOrUpdateSlot').and.returnValue(of({})) }
+  const mockUserService = {
+    lang$: new BehaviorSubject<string>('de'),
+    getPermission: jasmine.createSpy('getPermission').and.returnValue(Promise.resolve(true)),
+    hasPermission: jasmine.createSpy('hasPermission').and.callFake((permission) => {
+      return ['WORKSPACE_SLOT#EDIT'].includes(permission)
+    })
+  }
+
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [WorkspaceSlotDetailComponent],
       imports: [
+        WorkspaceSlotDetailComponent,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
-      schemas: [NO_ERRORS_SCHEMA],
       providers: [
-        provideHttpClientTesting(),
         provideHttpClient(),
-        { provide: PortalMessageService, useValue: msgServiceSpy },
-        { provide: SlotAPIService, useValue: slotServiceSpy },
+        provideHttpClientTesting(),
+        provideNoopAnimations(),
         { provide: UserService, useValue: mockUserService }
       ]
-    }).compileComponents()
+    })
+      .overrideComponent(WorkspaceSlotDetailComponent, {
+        add: {
+          providers: [
+            { provide: PortalMessageService, useValue: msgServiceSpy },
+            { provide: SlotAPIService, useValue: slotServiceSpy }
+          ]
+        }
+      })
+      .compileComponents()
+
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
     slotServiceSpy.addOrUpdateSlot.calls.reset()
@@ -61,6 +70,19 @@ describe('WorkspaceSlotDetailComponent', () => {
     expect(component).toBeTruthy()
   })
 
+  it('should log error when checking hasEditPermission rejects', fakeAsync(() => {
+    spyOn(console, 'error')
+    mockUserService.hasPermission.and.returnValue(Promise.reject(new Error('perm failed')))
+
+    initializeComponent()
+    tick()
+
+    expect(console.error).toHaveBeenCalled()
+
+    // restore neutral behaviour for subsequent tests
+    mockUserService.hasPermission.and.callFake((permission) => ['WORKSPACE_SLOT#EDIT'].includes(permission))
+  }))
+
   describe('OnChanges', () => {
     it('should initialize component state when slot is provided', () => {
       component.displayDialog = true
@@ -72,22 +94,61 @@ describe('WorkspaceSlotDetailComponent', () => {
       const slot: ExtendedSlot = {
         name: 'slot1',
         productNames: ['productB', 'productC'],
-        new: false,
         type: ['WORKSPACE'],
         changes: false,
         undeployed: false,
         deprecated: false,
         psSlots: psSlots,
         psComponents: [
-          { name: 'compB', appId: 'appId1', productName: 'productB', undeployed: false, deprecated: false }
+          {
+            name: 'compB',
+            appId: 'appId1',
+            productName: 'productB',
+            changes: false,
+            exists: true,
+            undeployed: false,
+            deprecated: false
+          }
         ]
       }
       component.slot = slot
       component.psComponentsOrg = [
-        { name: 'compA', appId: 'appId1', productName: 'productA', undeployed: false, deprecated: false },
-        { name: 'compB', appId: 'appId1', productName: 'productA', undeployed: false, deprecated: false },
-        { name: 'compA', appId: 'appId2', productName: 'productB', undeployed: false, deprecated: false },
-        { name: 'compB', appId: 'appId3', productName: 'productB', undeployed: false, deprecated: false }
+        {
+          name: 'compA',
+          appId: 'appId1',
+          productName: 'productA',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        },
+        {
+          name: 'compB',
+          appId: 'appId1',
+          productName: 'productA',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        },
+        {
+          name: 'compA',
+          appId: 'appId2',
+          productName: 'productB',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        },
+        {
+          name: 'compB',
+          appId: 'appId3',
+          productName: 'productB',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        }
       ]
       component.wProductNames = ['productA', 'productB', 'productC']
 
@@ -113,6 +174,8 @@ describe('WorkspaceSlotDetailComponent', () => {
           name: 'compA',
           appId: 'appId1',
           productName: 'productA',
+          changes: false,
+          exists: true,
           undeployed: false,
           deprecated: false
         }
@@ -120,7 +183,6 @@ describe('WorkspaceSlotDetailComponent', () => {
       const slot: ExtendedSlot = {
         name: 'slot1',
         productNames: [], // slot is a lost slot if productNames is empty
-        new: false,
         type: ['WORKSPACE'],
         changes: false,
         undeployed: false,
@@ -130,10 +192,42 @@ describe('WorkspaceSlotDetailComponent', () => {
       }
       component.slot = slot
       component.psComponentsOrg = [
-        { name: 'compA', appId: 'appId1', productName: 'productA', undeployed: false, deprecated: false },
-        { name: 'compB', appId: 'appId1', productName: 'productA', undeployed: false, deprecated: false },
-        { name: 'compA', appId: 'appId2', productName: 'productB', undeployed: false, deprecated: false },
-        { name: 'compB', appId: 'appId3', productName: 'productB', undeployed: false, deprecated: false }
+        {
+          name: 'compA',
+          appId: 'appId1',
+          productName: 'productA',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        },
+        {
+          name: 'compB',
+          appId: 'appId1',
+          productName: 'productA',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        },
+        {
+          name: 'compA',
+          appId: 'appId2',
+          productName: 'productB',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        },
+        {
+          name: 'compB',
+          appId: 'appId3',
+          productName: 'productB',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        }
       ]
       component.wProductNames = ['productA', 'productB', 'productC']
 
@@ -143,9 +237,33 @@ describe('WorkspaceSlotDetailComponent', () => {
       expect(component.wComponents).toEqual(slot.psComponents)
       // this is the reduced set of components in alphabetical order (minus slot)
       expect(component.psComponents).toEqual([
-        { name: 'compA', productName: 'productB', appId: 'appId2', undeployed: false, deprecated: false },
-        { name: 'compB', productName: 'productA', appId: 'appId1', undeployed: false, deprecated: false },
-        { name: 'compB', productName: 'productB', appId: 'appId3', undeployed: false, deprecated: false }
+        {
+          name: 'compA',
+          productName: 'productB',
+          appId: 'appId2',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        },
+        {
+          name: 'compB',
+          productName: 'productA',
+          appId: 'appId1',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        },
+        {
+          name: 'compB',
+          productName: 'productB',
+          appId: 'appId3',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        }
       ])
     })
   })
@@ -155,7 +273,6 @@ describe('WorkspaceSlotDetailComponent', () => {
       modificationCount: 0,
       name: 'slot1',
       productNames: ['productA'],
-      new: false,
       type: ['WORKSPACE'],
       changes: false,
       undeployed: false,
@@ -166,6 +283,8 @@ describe('WorkspaceSlotDetailComponent', () => {
           productName: 'slotComponentProdName',
           appId: 'slotComponentAppId',
           name: 'slotComponentName',
+          changes: false,
+          exists: true,
           undeployed: false,
           deprecated: false
         }
@@ -228,6 +347,128 @@ describe('WorkspaceSlotDetailComponent', () => {
     })
   })
 
+  describe('Filtering', () => {
+    const createComponent = (name: string, productName: string): ExtendedComponent => ({
+      name,
+      appId: 'appId',
+      productName,
+      changes: false,
+      exists: true,
+      undeployed: false,
+      deprecated: false
+    })
+    const unregistered = [createComponent('Alpha', 'productA'), createComponent('Beta', 'productA')]
+    const registered = [createComponent('Gamma', 'productB'), createComponent('Delta', 'productB')]
+
+    beforeEach(() => {
+      component.psComponents = unregistered
+      component.wComponents = registered
+    })
+
+    it('should initialize filtered lists with all components when slot is provided', () => {
+      component.displayDialog = true
+      component.slot = {
+        name: 'slot1',
+        productNames: ['productB'],
+        type: ['WORKSPACE'],
+        changes: false,
+        undeployed: false,
+        deprecated: false,
+        psSlots: [],
+        psComponents: [createComponent('compB', 'productB')]
+      }
+      component.psComponentsOrg = [createComponent('compA', 'productB'), createComponent('compB', 'productB')]
+      component.wProductNames = ['productB']
+
+      component.ngOnChanges()
+
+      expect(component.filteredWComponents).toEqual([createComponent('compB', 'productB')])
+      expect(component.filteredPsComponents).toEqual([createComponent('compA', 'productB')])
+    })
+
+    it('should filter unregistered components by name when source value is given', () => {
+      component.filterComponents('alp', 'SOURCE')
+
+      expect(component.filteredPsComponents).toEqual([unregistered[0]])
+    })
+
+    it('should not touch registered components when source value is given', () => {
+      component.filteredWComponents = []
+
+      component.filterComponents('alp', 'SOURCE')
+
+      expect(component.filteredWComponents).toEqual([])
+    })
+
+    it('should filter registered components by name when target value is given', () => {
+      component.filterComponents('DELTA', 'TARGET')
+
+      expect(component.filteredWComponents).toEqual([registered[1]])
+    })
+
+    it('should not touch unregistered components when target value is given', () => {
+      component.filteredPsComponents = []
+
+      component.filterComponents('delta', 'TARGET')
+
+      expect(component.filteredPsComponents).toEqual([])
+    })
+
+    it('should return no unregistered components when nothing matches', () => {
+      component.filterComponents('unknown', 'SOURCE')
+
+      expect(component.filteredPsComponents).toEqual([])
+    })
+
+    it('should reset unregistered components when source value is empty', () => {
+      component.filteredPsComponents = []
+
+      component.filterComponents('', 'SOURCE')
+
+      expect(component.filteredPsComponents).toEqual(unregistered)
+    })
+
+    it('should reset unregistered components when source value is only whitespace', () => {
+      component.filteredPsComponents = []
+
+      component.filterComponents('   ', 'SOURCE')
+
+      expect(component.filteredPsComponents).toEqual(unregistered)
+    })
+
+    it('should reset registered components when target value is empty', () => {
+      component.filteredWComponents = []
+
+      component.filterComponents('', 'TARGET')
+
+      expect(component.filteredWComponents).toEqual(registered)
+    })
+
+    it('should not touch registered components when source value is empty', () => {
+      component.filteredWComponents = []
+
+      component.filterComponents('', 'SOURCE')
+
+      expect(component.filteredWComponents).toEqual([])
+    })
+
+    it('should not touch unregistered components when target value is empty', () => {
+      component.filteredPsComponents = []
+
+      component.filterComponents('', 'TARGET')
+
+      expect(component.filteredPsComponents).toEqual([])
+    })
+
+    it('should reset unregistered components when source value is undefined', () => {
+      component.filteredPsComponents = []
+
+      component.filterComponents(undefined as unknown as string, 'SOURCE')
+
+      expect(component.filteredPsComponents).toEqual(unregistered)
+    })
+  })
+
   describe('Deregistration', () => {
     it('should set deregisterItems and displayDeregisterConfirmation when onMoveToSource is called', () => {
       const mockEvent = { items: ['item1', 'item2', 'item3'] }
@@ -253,6 +494,8 @@ describe('WorkspaceSlotDetailComponent', () => {
           productName: 'product1',
           appId: 'app1',
           name: 'comp1',
+          changes: false,
+          exists: true,
           undeployed: false,
           deprecated: false
         }
@@ -263,6 +506,8 @@ describe('WorkspaceSlotDetailComponent', () => {
           productName: 'product1',
           appId: 'app1',
           name: 'comp1',
+          changes: false,
+          exists: true,
           undeployed: false,
           deprecated: false
         },
@@ -270,6 +515,8 @@ describe('WorkspaceSlotDetailComponent', () => {
           productName: 'product2',
           appId: 'app2',
           name: 'comp2',
+          changes: false,
+          exists: true,
           undeployed: false,
           deprecated: false
         }
@@ -283,6 +530,8 @@ describe('WorkspaceSlotDetailComponent', () => {
           productName: 'product2',
           appId: 'app2',
           name: 'comp2',
+          changes: false,
+          exists: true,
           undeployed: false,
           deprecated: false
         }
@@ -306,7 +555,6 @@ describe('WorkspaceSlotDetailComponent', () => {
       component.workspace_id = 'workspace1'
       component.slot = {
         name: 'slot1',
-        new: false,
         productNames: ['productA'],
         type: ['WORKSPACE'],
         changes: false,
@@ -318,13 +566,23 @@ describe('WorkspaceSlotDetailComponent', () => {
             productName: 'product1',
             appId: 'app1',
             name: 'comp1',
+            changes: false,
+            exists: true,
             undeployed: false,
             deprecated: false
           }
         ]
       }
       component.wComponents = [
-        { productName: 'product1', appId: 'app1', name: 'comp1', undeployed: false, deprecated: false }
+        {
+          productName: 'product1',
+          appId: 'app1',
+          name: 'comp1',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        }
       ]
     })
 
@@ -366,6 +624,8 @@ describe('WorkspaceSlotDetailComponent', () => {
           productName: 'product1',
           appId: 'app1',
           name: 'comp1',
+          changes: false,
+          exists: true,
           undeployed: false,
           deprecated: false
         }
@@ -376,6 +636,8 @@ describe('WorkspaceSlotDetailComponent', () => {
           productName: 'product1',
           appId: 'app1',
           name: 'comp1',
+          changes: false,
+          exists: true,
           undeployed: false,
           deprecated: false
         },
@@ -383,13 +645,31 @@ describe('WorkspaceSlotDetailComponent', () => {
           productName: 'product2',
           appId: 'app1',
           name: 'comp1',
+          changes: false,
+          exists: true,
           undeployed: false,
           deprecated: false
         }
       ]
       component.wComponents = [
-        { name: 'comp2', productName: 'product1', appId: 'appId1', undeployed: false, deprecated: false },
-        { name: 'comp2', productName: 'product2', appId: 'appId1', undeployed: false, deprecated: false }
+        {
+          name: 'comp2',
+          productName: 'product1',
+          appId: 'appId1',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        },
+        {
+          name: 'comp2',
+          productName: 'product2',
+          appId: 'appId1',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        }
       ]
       slotServiceSpy.addOrUpdateSlot.and.returnValue(of(undefined))
 
@@ -403,7 +683,6 @@ describe('WorkspaceSlotDetailComponent', () => {
     it('should ignore saving if slot has no or one component', () => {
       component.slot = {
         name: 'slot1',
-        new: false,
         type: ['WORKSPACE'],
         changes: false,
         undeployed: false,
@@ -412,7 +691,15 @@ describe('WorkspaceSlotDetailComponent', () => {
         productNames: [],
         components: [{ productName: 'Product', appId: 'AppId', name: 'Component Name' }],
         psComponents: [
-          { productName: 'Product', appId: 'AppId', name: 'Component Name', undeployed: false, deprecated: false }
+          {
+            productName: 'Product',
+            appId: 'AppId',
+            name: 'Component Name',
+            changes: false,
+            exists: true,
+            undeployed: false,
+            deprecated: false
+          }
         ]
       }
       slotServiceSpy.addOrUpdateSlot.and.returnValue(of({}))
@@ -425,7 +712,6 @@ describe('WorkspaceSlotDetailComponent', () => {
     it('should ignore saving if slot has no or one component', () => {
       component.slot = {
         name: 'slot1',
-        new: false,
         type: ['WORKSPACE'],
         changes: false,
         undeployed: false,
@@ -437,7 +723,15 @@ describe('WorkspaceSlotDetailComponent', () => {
           { productName: 'Product', appId: 'AppId', name: 'Component Name 2' }
         ],
         psComponents: [
-          { productName: 'Product', appId: 'AppId', name: 'Component Name', undeployed: false, deprecated: false }
+          {
+            productName: 'Product',
+            appId: 'AppId',
+            name: 'Component Name',
+            changes: false,
+            exists: true,
+            undeployed: false,
+            deprecated: false
+          }
         ]
       }
       slotServiceSpy.addOrUpdateSlot.and.returnValue(of({}))
@@ -451,6 +745,16 @@ describe('WorkspaceSlotDetailComponent', () => {
   /**
    * EXTRAS
    */
+  describe('extras', () => {
+    it('should set component name', () => {
+      initializeComponent()
+
+      component.selectComponent('Component Name')
+
+      expect(component.selectedComponentName).toEqual('Component Name')
+    })
+  })
+
   describe('language', () => {
     it('should set German date format', () => {
       mockUserService.lang$.next('de')
@@ -473,6 +777,8 @@ describe('WorkspaceSlotDetailComponent', () => {
         name: 'compA',
         productName: 'compA',
         appId: 'appId',
+        changes: false,
+        exists: true,
         undeployed: false,
         deprecated: false
       }
@@ -480,6 +786,8 @@ describe('WorkspaceSlotDetailComponent', () => {
         name: 'compB',
         productName: 'compB',
         appId: 'appId',
+        changes: false,
+        exists: true,
         undeployed: false,
         deprecated: false
       }
@@ -487,6 +795,8 @@ describe('WorkspaceSlotDetailComponent', () => {
         name: 'compC',
         productName: 'compC',
         appId: 'appId',
+        changes: false,
+        exists: true,
         undeployed: false,
         deprecated: false
       }
@@ -502,6 +812,8 @@ describe('WorkspaceSlotDetailComponent', () => {
         name: '',
         productName: 'compA',
         appId: 'appId',
+        changes: false,
+        exists: true,
         undeployed: false,
         deprecated: false
       }
@@ -509,6 +821,8 @@ describe('WorkspaceSlotDetailComponent', () => {
         name: '',
         productName: 'compB',
         appId: 'appId',
+        changes: false,
+        exists: true,
         undeployed: false,
         deprecated: false
       }
@@ -516,6 +830,8 @@ describe('WorkspaceSlotDetailComponent', () => {
         name: 'compC',
         productName: 'compC',
         appId: 'appId',
+        changes: false,
+        exists: true,
         undeployed: false,
         deprecated: false
       }

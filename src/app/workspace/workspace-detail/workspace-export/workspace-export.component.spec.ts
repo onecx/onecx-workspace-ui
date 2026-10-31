@@ -1,13 +1,8 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { provideHttpClient } from '@angular/common/http'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of, throwError } from 'rxjs'
-
-import { PortalMessageService } from '@onecx/angular-integration-interface'
-
-import { WorkspaceAPIService } from 'src/app/shared/generated'
 
 import { WorkspaceExportComponent } from './workspace-export.component'
 
@@ -15,30 +10,22 @@ describe('WorkspaceExportComponent', () => {
   let component: WorkspaceExportComponent
   let fixture: ComponentFixture<WorkspaceExportComponent>
 
-  const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
-  const apiServiceSpy = {
-    getWorkspaceByName: jasmine.createSpy('getWorkspaceByName').and.returnValue(of({})),
-    deleteWorkspace: jasmine.createSpy('deleteWorkspace').and.returnValue(of({})),
-    exportWorkspaces: jasmine.createSpy('exportWorkspaces').and.returnValue(of({})),
-    updateWorkspace: jasmine.createSpy('updateWorkspace').and.returnValue(of({}))
-  }
+  // Both WorkspaceAPIService and PortalMessageService are providedIn 'any', so the component
+  // injects its own instances and root-level providers would be shadowed - spy on the actual
+  // instances the component holds.
+  let msgServiceSpy: { success: jasmine.Spy; error: jasmine.Spy }
+  let apiServiceSpy: { exportWorkspaces: jasmine.Spy }
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [WorkspaceExportComponent],
       imports: [
+        WorkspaceExportComponent,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
-      providers: [
-        provideHttpClientTesting(),
-        provideHttpClient(),
-        { provide: PortalMessageService, useValue: msgServiceSpy },
-        { provide: WorkspaceAPIService, useValue: apiServiceSpy }
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
+      providers: [provideHttpClient(), provideHttpClientTesting()]
     }).compileComponents()
   }))
 
@@ -53,6 +40,16 @@ describe('WorkspaceExportComponent', () => {
       id: 'id'
     }
     fixture.detectChanges()
+
+    msgServiceSpy = {
+      success: spyOn(component['msgService'], 'success'),
+      error: spyOn(component['msgService'], 'error')
+    }
+    apiServiceSpy = {
+      exportWorkspaces: spyOn(component['workspaceApi'], 'exportWorkspaces')
+    }
+    // default return value - overridden per-test where needed
+    apiServiceSpy.exportWorkspaces.and.returnValue(of({}))
   })
 
   it('should create', () => {

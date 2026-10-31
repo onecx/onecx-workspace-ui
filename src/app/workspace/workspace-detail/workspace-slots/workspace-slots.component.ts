@@ -1,21 +1,13 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
+import { Component, DestroyRef, inject, Input, OnChanges, OnInit, signal, SimpleChanges } from '@angular/core'
+import { SharedModule } from 'src/app/shared/shared.module'
+import { OcxChipComponent } from 'src/app/shared/components/ocx-chip/ocx-chip.component'
+import { WorkspaceSlotDetailComponent } from '../workspace-slot-detail/workspace-slot-detail.component'
 import { TranslateService } from '@ngx-translate/core'
-import {
-  Subject,
-  catchError,
-  finalize,
-  map,
-  mergeMap,
-  of,
-  switchMap,
-  takeUntil,
-  Observable,
-  firstValueFrom
-} from 'rxjs'
+import { catchError, map, of, Observable, firstValueFrom, BehaviorSubject, forkJoin } from 'rxjs'
 import { SelectItem } from 'primeng/api'
+import { CardModule } from 'primeng/card'
 
-import { DataViewControlTranslations } from '@onecx/portal-integration-angular'
-import { PortalMessageService, UserService, WorkspaceService } from '@onecx/angular-integration-interface'
+import { UserService, WorkspaceService } from '@onecx/angular-integration-interface'
 
 import {
   GetSlotsForWorkspaceRequestParams,
@@ -29,13 +21,15 @@ import {
   WorkspaceProductAPIService
 } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
+import { ColumnType, DataSortDirection, DataTableColumn, RowListGridData } from '@onecx/angular-accelerator'
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
 
-type ChangeStatus = { changes?: boolean; new?: boolean; exists?: boolean; deprecated?: boolean; undeployed?: boolean }
 export type SlotType = 'WORKSPACE' | 'UNUSED' | 'CHANGES'
 export type SlotFilterType = 'ALL' | SlotType
 export type ExtendedSelectItem = SelectItem & { tooltipKey?: string }
 export type ChangeMode = 'VIEW' | 'EDIT'
 export type PSSlot = SlotPS & { pName: string; pDisplayName: string }
+type ChangeStatus = { changes: boolean; exists?: boolean; deprecated: boolean; undeployed: boolean }
 
 // workspace slot data extended with status from product store
 export type ExtendedComponent = SlotComponent & ChangeStatus & { productUnregistered?: boolean }
@@ -49,113 +43,151 @@ export type ExtendedSlot = Slot &
 
 @Component({
   selector: 'app-workspace-slots',
+  standalone: true,
+  imports: [SharedModule, CardModule, OcxChipComponent, WorkspaceSlotDetailComponent],
   templateUrl: './workspace-slots.component.html',
   styleUrls: ['./workspace-slots.component.scss']
 })
-export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
+export class WorkspaceSlotsComponent implements OnInit, OnChanges {
+  private readonly destroyRef = inject(DestroyRef)
+  private readonly workspaceService = inject(WorkspaceService)
+  private readonly user = inject(UserService)
+  private readonly slotApi = inject(SlotAPIService)
+  private readonly psProductApi = inject(ProductAPIService)
+  private readonly wProductApi = inject(WorkspaceProductAPIService)
+  private readonly translate = inject(TranslateService)
+
   @Input() workspace!: Workspace | undefined
 
   // data
-  private readonly destroy$ = new Subject()
+  private readonly dataSubject$ = new BehaviorSubject<RowListGridData[]>([])
+  public data$: Observable<RowListGridData[]> = this.dataSubject$.asObservable()
+  public readonly data = toSignal(this.data$, { initialValue: [] as RowListGridData[] })
+  public readonly filteredData = signal<RowListGridData[] | undefined>(undefined)
+
   public wProducts$!: Observable<string[]>
-  public wProductNames: string[] = [] // simple list of names of registered products in workspace
-  public wSlots$!: Observable<string[]> // workspace slots
-  public slots: ExtendedSlot[] = [] // collected slots from workspace and product store to be displayed
+  public wSlots$!: Observable<ExtendedSlot[]> // workspace slots
   public slotsFiltered: ExtendedSlot[] = [] // filtered slot collection
-  public slotsInternal: ExtendedSlot[] = [] // internal workspace slot collection: decoupled from displaying
-  public psSlots$!: Observable<string[]> // product store slots
+  public psProducts$!: Observable<ProductStoreItem[]> // product store slots
   public psComponents: ExtendedComponent[] = []
   public item4Detail: ExtendedSlot | undefined
-  public productEndpointExist = false
+  public wProductNames: string[] = [] // simple list of names of registered products in workspace
 
-  // dialog
-  public dataViewControlsTranslations$: Observable<DataViewControlTranslations> | undefined
-
-  public filterValue: string | undefined
-  public filterByDefault = 'name'
-  public filterBy = this.filterByDefault
-  public sortField = 'name,changes'
-  public sortOrder = 1
+  // filter
+  public globalFilterValue = ''
   public quickFilterValue: SlotFilterType = 'ALL'
   public quickFilterOptions$: Observable<SelectItem[]> | undefined
   public quickFilterCount = ''
-  public exceptionKey: string | undefined = undefined
-  public psLoading = false
-  public wpLoading = false
-  public wsLoading = false
+  // sort
+  public sortColumns = this.prepareSortColumns()
+  public sortDirection: DataSortDirection = DataSortDirection.ASCENDING
+  public sortField = 'name,changes'
+
+  // dialog
+  public readonly exceptionKey = signal<string | undefined>(undefined)
+  public loading = signal(false)
   public changeMode: ChangeMode = 'VIEW'
+  public readonly productEndpointExist = toSignal(
+    Utils.doesEndpointExist(this.workspaceService, 'onecx-product-store', 'onecx-product-store-ui', 'slots'),
+    { initialValue: false }
+  )
   public hasEditPermission = false
   public showSlotDetailDialog = false
+  public numberOfAllSlots = 0
+  public numberOfWSlots = 0
+  public numberOfUnusedPSlots = 0
+  public numberOfChangedSlots = 0
 
-  constructor(
-    private readonly workspaceService: WorkspaceService,
-    private readonly user: UserService,
-    private readonly slotApi: SlotAPIService,
-    private readonly psProductApi: ProductAPIService,
-    private readonly wProductApi: WorkspaceProductAPIService,
-    private readonly translate: TranslateService,
-    private readonly msgService: PortalMessageService
-  ) {
-    this.hasEditPermission = this.user.hasPermission('WORKSPACE_SLOT#EDIT')
-  }
-
-  public ngOnInit() {
+  public async ngOnInit() {
+    try {
+      this.hasEditPermission = await this.user.hasPermission('WORKSPACE_SLOT#EDIT')
+    } catch (err) {
+      console.error(err)
+    }
     this.prepareQuickFilter()
-    this.prepareTranslations()
   }
+
   public ngOnChanges(changes: SimpleChanges): void {
     if (this.workspace && changes['workspace']) {
       this.loadData()
-      // check detail endpoint exists
-      this.productEndpointExist = Utils.doesEndpointExist(
-        this.workspaceService,
-        'onecx-product-store',
-        'onecx-product-store-ui',
-        'slots'
-      )
     }
-  }
-  public ngOnDestroy(): void {
-    this.destroy$.next(undefined)
-    this.destroy$.complete()
   }
 
   public onReload() {
     this.loadData()
   }
   public loadData(): void {
-    this.exceptionKey = undefined
+    this.exceptionKey.set(undefined)
     this.declareWorkspaceProducts()
     this.declareWorkspaceSlots()
-    this.getPsSlotsAndComponents()
-    firstValueFrom(
-      this.wSlots$.pipe(
-        mergeMap(() => this.wProducts$),
-        switchMap(() => this.psSlots$)
-      )
-    )
+    this.declarePSSlots()
+    this.loadSlots().catch((err) => console.error(err))
   }
 
-  // get registered products
+  /**
+   * The following sequence waits for wSlots$ to emit a value, then switches to wProducts$,
+   * and once it emits data, it switches to psProducts$.
+   * The first emitted value from psProducts$ is then returned as a Promise.
+   */
+  private async loadSlots(): Promise<void> {
+    try {
+      const slots = await firstValueFrom(
+        forkJoin({
+          wSlots: this.wSlots$,
+          psProducts: this.psProducts$,
+          wProducts: this.wProducts$
+        }).pipe(
+          map(({ wSlots, psProducts, wProducts }) => {
+            this.wProductNames = wProducts
+            // Extract PS components from the PS products
+            this.psComponents = this.extractPsComponents(psProducts) // this is public used
+            // Extract PS slots which are not yet used in the workspace
+            const psSlots = this.extractUnusedPsSlots(psProducts, wSlots)
+            // Combine workspace slots and unused PS slots into a single array
+            const slots: ExtendedSlot[] = [...wSlots, ...psSlots]
+            // Enrich workspace slots with PS components and products
+            this.syncComponentState(slots, this.psComponents, wProducts)
+            this.addLostSlotComponents(slots)
+            // finalize
+            slots.sort(this.sortSlotsByName)
+            this.onQuickFilterChange(this.quickFilterValue) // reestablish filter after data change
+            // count
+            this.numberOfAllSlots = slots.length
+            this.numberOfWSlots = wSlots.length
+            this.numberOfUnusedPSlots = psSlots.length
+            this.numberOfChangedSlots = slots.filter((s) => s.changes).length
+            return slots
+          }),
+          takeUntilDestroyed(this.destroyRef)
+        )
+      )
+      this.dataSubject$.next(slots as unknown as RowListGridData[])
+    } catch (err) {
+      this.exceptionKey.set('EXCEPTIONS.HTTP_STATUS_' + Utils.mapping_error_status(0) + '.SLOTS')
+      console.error('loadSlots', err)
+    } finally {
+      this.loading.set(false)
+    }
+  }
+  public sortSlotsByName(a: Slot, b: Slot): number {
+    return a.name!.toUpperCase().localeCompare(b.name!.toUpperCase())
+  }
+
+  // get all products registered in the workspace
   private declareWorkspaceProducts(): void {
     if (this.workspace) {
-      this.wpLoading = true
-      this.wProducts$ = this.wProductApi
-        .getProductsByWorkspaceId({ id: this.workspace.id! })
-        .pipe(
-          map((products) => {
-            this.wProductNames = []
-            for (const p of products) if (p.productName) this.wProductNames.push(p.productName)
-            return []
-          }),
-          catchError((err) => {
-            this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + Utils.mapping_error_status(err.status) + '.PRODUCTS'
-            console.error('getProductsByWorkspaceId', err)
-            return of([])
-          }),
-          finalize(() => (this.wpLoading = false))
-        )
-        .pipe(takeUntil(this.destroy$))
+      this.wProducts$ = this.wProductApi.getProductsByWorkspaceId({ id: this.workspace.id! }).pipe(
+        map((products) => {
+          const names = []
+          for (const p of products) if (p.productName) names.push(p.productName)
+          return names
+        }),
+        catchError((err) => {
+          this.exceptionKey.set('EXCEPTIONS.HTTP_STATUS_' + Utils.mapping_error_status(err.status) + '.PRODUCTS')
+          console.error('getProductsByWorkspaceId', err)
+          return of([])
+        })
+      )
     }
   }
 
@@ -167,131 +199,112 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   // b) the bad case:  slot or assigned components are no longer available in the product store
   private declareWorkspaceSlots(): void {
     if (this.workspace) {
-      this.wsLoading = true
       this.wSlots$ = this.slotApi
         .getSlotsForWorkspace({ id: this.workspace?.id } as GetSlotsForWorkspaceRequestParams)
         .pipe(
-          takeUntil(this.destroy$),
           map((res) => {
-            this.slotsInternal = []
+            const wSlots: ExtendedSlot[] = []
             if (res.slots)
               // cases: a + b
               for (const s of res.slots)
-                this.slotsInternal.push({
+                wSlots.push({
                   ...s, // contains also the registered components
                   productNames: [], // to be filled by matching with PS slots
                   type: ['WORKSPACE'],
                   psSlots: [],
                   psComponents: [],
                   // initial state...to be enriched later by product store slot states
-                  new: false,
-                  exists: false, // true if exists in PS
+                  exists: false, // later set to true if exists in PS
                   changes: false,
                   undeployed: false,
                   deprecated: false
                 } as ExtendedSlot)
-            return []
+            return wSlots
           }),
           catchError((err) => {
-            this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + Utils.mapping_error_status(err.status) + '.SLOTS'
+            this.exceptionKey.set('EXCEPTIONS.HTTP_STATUS_' + Utils.mapping_error_status(err.status) + '.SLOTS')
             console.error('getSlotsForWorkspace', err)
             return of([])
-          }),
-          finalize(() => (this.wsLoading = false))
+          })
         )
     }
   }
 
   // All declared Slots of product store products: containing deployment information
-  private getPsSlotsAndComponents(): void {
-    this.psLoading = true
-    this.psSlots$ = this.psProductApi.searchAvailableProducts({ productStoreSearchCriteria: { pageSize: 1000 } }).pipe(
-      map((res) => {
-        if (res.stream) {
-          // build internal database (use slotsInternal as long as the slot list is not final)
-          const psSlots = this.extractPsSlots(res.stream)
-          // collect components to be used also in slot detail
-          this.psComponents = this.extractPsComponents(res.stream)
-          this.syncComponentState(this.slotsInternal, this.psComponents)
-          this.addUnregisteredSlots(psSlots) // added to slotsInternal
-          this.addLostSlotComponents(this.slotsInternal)
-          // finalize
-          this.slotsInternal.sort(this.sortSlotsByName)
-          this.slots = this.slotsInternal // to be displayed final slot list
-          this.onQuickFilterChange({ value: this.quickFilterValue }) // reestablish filter after data change
-        }
-        return []
-      }),
-      catchError((err) => {
-        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + Utils.mapping_error_status(err.status) + '.PRODUCTS'
-        console.error('searchAvailableProducts', err)
-        return of([])
-      }),
-      finalize(() => (this.psLoading = false))
-    )
+  private declarePSSlots(): void {
+    this.psProducts$ = this.psProductApi
+      .searchAvailableProducts({ productStoreSearchCriteria: { pageSize: 1000 } })
+      .pipe(map((res) => res.stream ?? []))
   }
 
-  public sortSlotsByName(a: Slot, b: Slot): number {
-    return a.name!.toUpperCase().localeCompare(b.name!.toUpperCase())
-  }
-
-  // Collect PS Slots
-  // essential for listing products which using a slot
-  private extractPsSlots(products: ProductStoreItem[]): ExtendedSlot[] {
+  // Extract unused PS slots from PS products
+  // => essential for listing products using a slot
+  private extractUnusedPsSlots(psProducts: ProductStoreItem[], wSlots: ExtendedSlot[]): ExtendedSlot[] {
     const psSlots: ExtendedSlot[] = []
-    for (const p of products) {
-      if (p.slots) for (const psS of p.slots) this.addPsSlot(p, psS, psSlots)
+    for (const p of psProducts) {
+      if (p.slots) for (const psS of p.slots) this.addPsSlot(p, psS, psSlots, wSlots)
     }
     return psSlots
   }
 
-  // Add consolidated (unique) PS slots (condense slots by different products)
-  private addPsSlot(product: ProductStoreItem, psSlot: SlotPS, psSlots: ExtendedSlot[]): void {
-    let ps: ExtendedSlot | undefined = psSlots.find((s) => s.name === psSlot.name) // slot already existing by another product?
+  // Add a PS slot to the consolidated list of PS slots and update workspace slot if applicable
+  // => A product can defines a slot but the slot itself is independently used, not tied to a specific product
+  // => psSlots is the consolidated (unique) list of PS slots
+  private addPsSlot(
+    psProduct: ProductStoreItem,
+    psSlot: SlotPS,
+    psSlots: ExtendedSlot[],
+    wSlots: ExtendedSlot[]
+  ): void {
+    // 1. Check if the slot is already used in the workspace
+    const wps = wSlots.find((s) => s.name === psSlot.name)
+    let ps = wps
+    // 2. otherwise check if the slot was already declared by another product in the consolidated list
+    ps ??= psSlots.find((s) => s.name === psSlot.name)
     if (ps) {
-      ps.changes = ps.changes || psSlot.undeployed === true || psSlot.deprecated === true // any change?
-      if (ps.changes) ps.type.push('CHANGES')
-      if (!ps.productNames.includes(product.productName!)) ps.productNames.push(product.productName!)
+      ps.changes = ps.changes || psSlot.undeployed === true || psSlot.deprecated === true // any change on slot?
+      if (ps.changes && !ps.type.includes('CHANGES')) ps.type.push('CHANGES')
+      // add product name to the list of products using this slot
+      if (!ps.productNames.includes(psProduct.productName!)) ps.productNames.push(psProduct.productName!)
     } else {
+      // new slot, not yet in the list
       ps = {
         ...psSlot,
         id: undefined, // no need to have this
-        productNames: [product.productName],
+        productNames: [psProduct.productName],
         // change state
         changes: psSlot.undeployed === true || psSlot.deprecated === true,
         undeployed: psSlot.undeployed === true,
         deprecated: psSlot.deprecated === true,
-        type: ['UNUSED'] // initial state
+        type: ['UNUSED']
       } as ExtendedSlot
       if (ps.changes) ps.type.push('CHANGES')
       psSlots.push(ps)
     }
-    //
-    // select workspace slot with same name (there is no productname for slots in workspace)
-    const wSlot = this.slotsInternal.find((s) => s.name === ps.name)
-    if (wSlot && !wSlot.productNames.includes(product.productName!)) {
-      // slot already assigned to product in workspace => enrich product list and state
-      wSlot.productNames.push(product.productName!)
-    }
-    if (wSlot?.psSlots) {
-      wSlot.psSlots.push({ ...ps, pName: product.productName!, pDisplayName: product.displayName! })
-      // consolidate slot state (aware of the state of current ps together with previous ones)
-      wSlot.exists = true
-      wSlot.changes = wSlot.changes || ps.changes // inherit change status
-      wSlot.deprecated = wSlot.deprecated || ps.deprecated
-      wSlot.undeployed = wSlot.undeployed || ps.undeployed
-      if (wSlot.changes && !wSlot.type.includes('CHANGES')) wSlot.type.push('CHANGES')
+    this.updateWorkspaceSlotState(psProduct, psSlot, wps)
+  }
+
+  // Update workspace slot with PS slot information
+  // => find workspace slot with same name (there is no productname stored for slots in workspace)
+  private updateWorkspaceSlotState(psProduct: ProductStoreItem, psSlot: SlotPS, wps?: ExtendedSlot): void {
+    if (wps?.psSlots) {
+      if (!wps.psSlots.some((s) => s.name === psSlot.name))
+        wps.psSlots.push({ ...psSlot, pName: psProduct.productName!, pDisplayName: psProduct.displayName! })
+      // consolidate slot state (aware of the state of current psSlot declaration together with previous ones)
+      wps.exists = true
+      wps.deprecated = wps.deprecated || psSlot.deprecated === true
+      wps.undeployed = wps.undeployed || psSlot.undeployed === true
     }
   }
 
-  // Collect PS components
+  // Extract all PS components
   private extractPsComponents(psProducts: ProductStoreItem[]): ExtendedComponent[] {
-    const psComponents: ExtendedComponent[] = []
+    const components: ExtendedComponent[] = []
     for (const psp of psProducts) {
       if (psp.microfrontends && psp.microfrontends.length > 0) {
         // only remote components
         for (const c of psp.microfrontends.filter((mfe) => mfe.type === 'COMPONENT'))
-          psComponents.push({
+          components.push({
             productName: psp.productName,
             appId: c.appId,
             name: c.exposedModule,
@@ -301,32 +314,35 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
           } as ExtendedComponent)
       }
     }
-    return psComponents
+    return components
   }
 
   // Enrich workspace slot state with PS slot state
-  private syncComponentState(wSlots: ExtendedSlot[], psComponents: ExtendedComponent[]): void {
+  private syncComponentState(wSlots: ExtendedSlot[], psComponents: ExtendedComponent[], productNames: string[]): void {
     for (const ws of wSlots) {
       // components assigned to workspace slot
       if (ws.components) {
         for (const wc of ws.components) {
           // component product still registered?
-          if (!this.wProductNames.includes(wc.productName)) {
+          if (!productNames.includes(wc.productName)) {
             ws.changes = true
             if (!ws.type.includes('CHANGES')) ws.type.push('CHANGES')
           }
           this.assignPSComponent(
             ws,
-            psComponents.find((pc) => pc.productName === wc.productName && pc.appId === wc.appId && pc.name === wc.name)
+            psComponents.find(
+              (pc) => pc.productName === wc.productName && pc.appId === wc.appId && pc.name === wc.name
+            ),
+            productNames
           )
         }
       }
     }
   }
 
-  private assignPSComponent(ws: ExtendedSlot, psc: ExtendedComponent | undefined): void {
+  private assignPSComponent(ws: ExtendedSlot, psc: ExtendedComponent | undefined, productNames: string[]): void {
     if (psc) {
-      psc.productUnregistered = !this.wProductNames.includes(psc.productName)
+      psc.productUnregistered = !productNames.includes(psc.productName)
       ws.psComponents.push(psc)
       // extend consolidated slot state with component state
       ws.changes = ws.changes || psc.undeployed || psc.deprecated
@@ -334,40 +350,64 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  // add new slots existing in PS which are not existing in Workspace but part of a registered product)
-  private addUnregisteredSlots(psSlots: ExtendedSlot[]): void {
-    for (const pn of this.wProductNames)
-      for (const ps of psSlots.filter((s) => s.productNames.includes(pn)))
-        if (!this.slotsInternal.some((ws) => ws.name === ps.name))
-          this.slotsInternal.push({
-            ...ps,
-            new: true
-          })
-  }
   // add components assigned to workspace slot but not available in product store anymore
   private addLostSlotComponents(wSlots: ExtendedSlot[]): void {
     for (const ws of wSlots)
       if (ws.components)
         for (const wc of ws.components)
           if (!ws.psComponents?.find((psc) => psc.name === wc.name)) {
-            ws.psComponents?.push({ ...wc, undeployed: true, deprecated: false, exists: false })
+            ws.psComponents?.push({ ...wc, changes: false, deprecated: false, exists: false, undeployed: true })
             ws.changes = true
             if (!ws.type.includes('CHANGES')) ws.type.push('CHANGES')
           }
   }
 
   /**
-   * UI Events
+   * FILTERING
    */
-  public onQuickFilterChange(ev: any): void {
-    this.slotsFiltered = this.slots.filter((s) => (ev.value === 'ALL' ? s : s.type.includes(ev.value)))
-    this.quickFilterValue = ev.value
+  public onQuickFilterChange(val: SlotFilterType): void {
+    if (val === 'ALL') {
+      this.filteredData.set(undefined)
+    } else {
+      this.filteredData.set(this.data().filter((s) => this.convertToRoleType(s['type'])?.includes(val)))
+    }
+    this.quickFilterValue = val
   }
-  public onSortChange(field: string): void {
-    this.sortField = field
+
+  private convertToRoleType(origin: unknown): SlotType[] {
+    if (!origin) return []
+    if (Array.isArray(origin)) return origin as SlotType[]
+    return []
   }
-  public onSortDirChange(asc: boolean): void {
-    this.sortOrder = asc ? -1 : 1
+
+  public onGlobalFilter(val?: string): void {
+    this.globalFilterValue = val ?? ''
+    if (this.globalFilterValue === '') this.filteredData.set(undefined)
+    else {
+      this.filteredData.set(
+        this.data().filter((row) =>
+          row['name']?.toString().toLowerCase().includes(this.globalFilterValue.toLowerCase())
+        )
+      )
+    }
+  }
+
+  public onClearGlobalFilter(): void {
+    this.globalFilterValue = ''
+    this.filteredData.set(undefined)
+  }
+
+  public onGetQuickFilterCount(slotType: SlotFilterType): string {
+    switch (slotType) {
+      case 'WORKSPACE':
+        return this.numberOfWSlots.toString()
+      case 'CHANGES':
+        return this.numberOfChangedSlots.toString()
+      case 'UNUSED':
+        return this.numberOfUnusedPSlots.toString()
+      default:
+        return this.numberOfAllSlots.toString()
+    }
   }
 
   /**
@@ -393,21 +433,6 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
   /**
    * Dialog preparation
    */
-  private prepareTranslations(): void {
-    this.dataViewControlsTranslations$ = this.translate
-      .get(['SLOT.NAME', 'ROLE.TYPE', 'DIALOG.DATAVIEW.FILTER', 'DIALOG.DATAVIEW.FILTER_OF', 'DIALOG.DATAVIEW.SORT_BY'])
-      .pipe(
-        map((data) => {
-          return {
-            filterInputPlaceholder: data['DIALOG.DATAVIEW.FILTER'],
-            filterInputTooltip: data['DIALOG.DATAVIEW.FILTER_OF'] + data['SLOT.NAME'],
-            sortDropdownTooltip: data['DIALOG.DATAVIEW.SORT_BY'],
-            sortDropdownPlaceholder: data['DIALOG.DATAVIEW.SORT_BY']
-          } as DataViewControlTranslations
-        })
-      )
-  }
-
   public prepareQuickFilter(): void {
     this.quickFilterOptions$ = this.translate
       .get([
@@ -417,20 +442,31 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges, OnDestroy {
         'DIALOG.SLOT.QUICK_FILTER.UNUSED'
       ])
       .pipe(
-        map((data) => {
+        map((qfd) => {
           return [
-            { label: data['DIALOG.SLOT.QUICK_FILTER.ALL'], value: 'ALL' },
-            { label: data['DIALOG.SLOT.QUICK_FILTER.UNUSED'], value: 'UNUSED' },
-            { label: data['DIALOG.SLOT.QUICK_FILTER.WORKSPACE'], value: 'WORKSPACE' },
-            { label: data['DIALOG.SLOT.QUICK_FILTER.CHANGES'], value: 'CHANGES' }
+            { label: qfd['DIALOG.SLOT.QUICK_FILTER.ALL'], value: 'ALL' },
+            { label: qfd['DIALOG.SLOT.QUICK_FILTER.UNUSED'], value: 'UNUSED' },
+            { label: qfd['DIALOG.SLOT.QUICK_FILTER.WORKSPACE'], value: 'WORKSPACE' },
+            { label: qfd['DIALOG.SLOT.QUICK_FILTER.CHANGES'], value: 'CHANGES' }
           ]
         })
       )
   }
 
   public getProductEndpointUrl$(): Observable<string | undefined> {
-    if (this.productEndpointExist)
+    if (this.productEndpointExist())
       return this.workspaceService.getUrl('onecx-product-store', 'onecx-product-store-ui', 'slots')
     return of(undefined)
+  }
+
+  private prepareSortColumns(): DataTableColumn[] {
+    return [
+      {
+        columnType: ColumnType.STRING,
+        nameKey: 'SLOT.NAME',
+        id: 'name',
+        sortable: true
+      }
+    ]
   }
 }

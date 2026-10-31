@@ -1,22 +1,16 @@
-@import 'src/app/_ws-mixins.scss';
+@use 'src/app/_ws-mixins.scss' as *;
 
 @include danger-action;
 @include compact-dropdown-list-items;
 @include dropdown-zebra-rows;
 @include correct-autocomplete;
-@include correct-select-button;
-@include search-criteria-select-button-slim;
-@include displaying-text-responsive;
+@include ocx-text-responsive;
 @include input-clear-icon;
 @include dialog-footer-buttons;
 @include dialog-modal-disable-full-height;
-@include tabview-fix-color-selected-tab;
-@include tabview-reduce-padding;
+@include ocx-p-tabs;
 
 :host ::ng-deep {
-  .w-35rem {
-    width: 35rem !important;
-  }
   .p-autocomplete .p-autocomplete-input {
     padding-right: 2.2rem;
     white-space: nowrap;

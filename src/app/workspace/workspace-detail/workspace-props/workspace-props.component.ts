@@ -1,4 +1,16 @@
-import { Component, EventEmitter, Input, OnInit, OnChanges, Output, SimpleChanges } from '@angular/core'
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  OnChanges,
+  Output,
+  SimpleChanges,
+  inject,
+  DestroyRef,
+  ChangeDetectionStrategy
+} from '@angular/core'
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
 import { Location } from '@angular/common'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { BehaviorSubject, map, Observable, of, ReplaySubject } from 'rxjs'
@@ -16,19 +28,33 @@ import {
   WorkspaceProductAPIService
 } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
+import { SharedModule } from 'src/app/shared/shared.module'
+import { ImageComponent } from 'src/app/shared/components/image/image.component'
+import { WorkspaceI18nComponent } from '../workspace-i18n/workspace-i18n.component'
 
-export type Theme = {
+export type ExtendedTheme = {
   name: string
   displayName: string
   logoUrl?: string
+  bffImageUrl?: string
 }
 
 @Component({
   selector: 'app-workspace-props',
+  standalone: true,
+  imports: [SharedModule, ImageComponent, WorkspaceI18nComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './workspace-props.component.html',
   styleUrls: ['./workspace-props.component.scss']
 })
 export class WorkspacePropsComponent implements OnInit, OnChanges {
+  private readonly destroyRef = inject(DestroyRef)
+  private readonly slotService = inject(SlotService)
+  private readonly workspaceService = inject(WorkspaceService)
+  private readonly msgService = inject(PortalMessageService)
+  private readonly imageApi = inject(ImagesInternalAPIService)
+  private readonly wProductApi = inject(WorkspaceProductAPIService)
+
   @Input() workspace: Workspace | undefined
   @Input() editMode = true
   @Input() isLoading = false
@@ -52,26 +78,22 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   public propsForm: FormGroup
   public productPaths$: Observable<string[]> = of([]) // to fill drop down with product paths
   public deploymentPath: string | undefined = undefined
-  public themeEndpointExist = false
+  public readonly themeEndpointExist = toSignal(
+    Utils.doesEndpointExist(this.workspaceService, 'onecx-theme', 'onecx-theme-ui', 'theme-detail'),
+    { initialValue: false }
+  )
 
   // slot configuration: get theme data
   public themeSlotName = 'onecx-theme-data'
-  public isThemeComponentDefined$: Observable<boolean> // check if a component was assigned
-  public themes$ = new BehaviorSubject<Theme[] | undefined>(undefined) // theme data
-  public themesEmitter = new EventEmitter<Theme[]>()
+  public isThemeComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.themeSlotName)
+  public themes$ = new BehaviorSubject<ExtendedTheme[] | undefined>(undefined) // theme data
+  public themesEmitter = new EventEmitter<ExtendedTheme[]>()
   // slot configuration: get theme logo
   public themeLogoLoadingEmitter = new EventEmitter<boolean>()
   public themeLogoLoadingFailed$ = new BehaviorSubject<boolean | undefined>(undefined)
   public themeFormValues$ = new ReplaySubject<{ theme: string }>(1) // async storage of formgroup value to manage change detection
 
-  constructor(
-    private readonly slotService: SlotService,
-    private readonly workspaceService: WorkspaceService,
-    private readonly msgService: PortalMessageService,
-    private readonly imageApi: ImagesInternalAPIService,
-    private readonly wProductApi: WorkspaceProductAPIService
-  ) {
-    this.isThemeComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.themeSlotName)
+  constructor() {
     this.propsForm = new FormGroup({
       displayName: new FormControl<string | null>(null, [
         Validators.required,
@@ -103,14 +125,14 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       footerLabel: new FormControl<string | null>(null, [Validators.maxLength(255)]),
       description: new FormControl<string | null>(null, [Validators.maxLength(255)])
     })
-    this.propsForm.valueChanges.subscribe(this.themeFormValues$)
   }
 
   public ngOnInit(): void {
-    this.themesEmitter.subscribe(this.themes$)
-    this.themeLogoLoadingEmitter.subscribe((data) => {
+    this.themesEmitter.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(this.themes$)
+    this.themeLogoLoadingEmitter.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((data) => {
       this.themeLogoLoadingFailed$.next(data)
     })
+    this.propsForm.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(this.themeFormValues$)
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
@@ -121,13 +143,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       if (this.editMode) this.propsForm.enable()
       // if a home page value exists then fill it into drop down list for displaying
       if (this.workspace.homePage) this.productPaths$ = of([this.workspace.homePage])
-      // check detail endpoint exists
-      this.themeEndpointExist = Utils.doesEndpointExist(
-        this.workspaceService,
-        'onecx-theme',
-        'onecx-theme-ui',
-        'theme-detail'
-      )
     } else {
       this.propsForm.reset()
     }
@@ -158,9 +173,9 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   }
 
   // initially prepare image URL based on workspace
-  public setBffImageUrl(theme: Theme | undefined, refType: RefType): void {
-    if (!theme) return undefined
-    this.bffUrl[refType] = Utils.bffImageUrl(this.imageBasePath, theme.name, refType)
+  public setBffImageUrl(ws: Workspace | undefined, refType: RefType): void {
+    if (!ws) return undefined
+    this.bffUrl[refType] = Utils.bffImageUrl(this.imageBasePath, ws.name, refType)
   }
 
   // UPLOAD
@@ -299,20 +314,23 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   }
 
   // sometimes the theme is unknown, then add to the list
-  public checkAndExtendThemes(themes: Theme[]): Theme[] {
-    // if not included (why ever) then add the used value to make it visible
-    if (!themes.some((t) => t.name === this.workspace?.theme))
-      themes.push({ name: this.workspace?.theme, displayName: this.workspace?.theme } as Theme)
+  public checkAndExtendThemes(themes: ExtendedTheme[]): ExtendedTheme[] {
+    if (!this.workspace?.theme) return themes
+    // create a mini
+    const currentTheme = { name: this.workspace?.theme, displayName: this.workspace?.theme } as ExtendedTheme
+    // import case: imported theme might not be in the list (of current themes)
+    if (themes.length === 0) return [currentTheme] // if themes could not be retrieved
+    if (!themes.some((t) => t.name === this.workspace?.theme)) themes.push(currentTheme)
     return themes
   }
 
-  public getThemeImageUrl(themes: Theme[], themeName: string, refType: RefType): string | undefined {
+  public getThemeImageUrl(themes: ExtendedTheme[], themeName?: string): string | undefined {
     const theme = themes.find((t) => t.name === themeName)
-    return theme?.logoUrl
+    return theme?.logoUrl ?? theme?.bffImageUrl
   }
 
   public getThemeEndpointUrl$(name?: string): Observable<string | undefined> {
-    if (this.themeEndpointExist && name)
+    if (this.themeEndpointExist() && name)
       return this.workspaceService.getUrl('onecx-theme', 'onecx-theme-ui', 'theme-detail', { 'theme-name': name })
     return of(undefined)
   }

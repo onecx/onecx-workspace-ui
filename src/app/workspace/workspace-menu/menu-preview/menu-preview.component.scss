@@ -1,10 +1,29 @@
-@import 'src/app/_ws-mixins.scss';
+@use 'src/app/_ws-mixins.scss' as *;
 
 @include invisible;
 @include dialog-footer-buttons;
 @include dialog-modal-disable-full-height;
 
 :host ::ng-deep {
+  /* fixes for p-card */
+  --onecx-workspace-onecx-workspace-ui-card-body-padding: 0.5rem;
+  --onecx-workspace-onecx-workspace-ui-card-border-radius: 4px;
+  --onecx-workspace-onecx-workspace-ui-card-shadow:
+    rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+
+  .p-card-body {
+    padding: 0;
+  }
+  .p-tree-node-content {
+    padding: 0.1rem 0.5rem;
+    &:hover {
+      cursor: grab;
+      background-color: var(--menu-item-hover-bg-color);
+    }
+    &:active {
+      cursor: grabbing;
+    }
+  }
   .p-tree {
     .p-tree-wrapper {
       padding-right: 1rem;
@@ -15,7 +34,7 @@
         cursor: pointer;
       }
       .p-treenode-content {
-        padding: 0 0 !important;
+        padding: 0;
         .p-tree-toggler {
           height: 1.7rem;
           margin-right: 0.1rem;
@@ -35,7 +54,7 @@
     height: 2.3rem;
   }
   .lang-not-exists {
-    color: var(--danger-button-bg) !important;
+    color: var(--danger-button-bg);
   }
   .item-disabled {
     opacity: 0.5;

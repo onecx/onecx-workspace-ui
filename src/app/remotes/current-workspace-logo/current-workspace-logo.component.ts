@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Inject, Input, NO_ERRORS_SCHEMA, Output } from '@angular/core'
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { BehaviorSubject, ReplaySubject } from 'rxjs'
@@ -7,9 +7,9 @@ import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
 import { AppStateService } from '@onecx/angular-integration-interface'
 import {
   AngularRemoteComponentsModule,
-  BASE_URL,
   ocxRemoteComponent,
   ocxRemoteWebcomponent,
+  REMOTE_COMPONENT_CONFIG,
   RemoteComponentConfig
 } from '@onecx/angular-remote-components'
 
@@ -19,20 +19,15 @@ import { environment } from 'src/environments/environment'
 
 @Component({
   selector: 'app-current-workspace-logo',
-  templateUrl: './current-workspace-logo.component.html',
-  styleUrls: ['./current-workspace-logo.component.scss'],
   standalone: true,
   imports: [AngularRemoteComponentsModule, CommonModule, AngularAcceleratorModule],
-  schemas: [NO_ERRORS_SCHEMA],
-  providers: [
-    {
-      provide: BASE_URL,
-      useValue: new ReplaySubject<string>(1)
-    }
-  ]
+  templateUrl: './current-workspace-logo.component.html',
+  styleUrls: ['./current-workspace-logo.component.scss']
 })
 @UntilDestroy()
 export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
+  private readonly remoteComponentConfig = inject<ReplaySubject<RemoteComponentConfig>>(REMOTE_COMPONENT_CONFIG)
+  private readonly workspaceApi = inject(WorkspaceAPIService)
   // Inputs
   @Input() imageId: string | undefined = undefined
   @Input() imageUrl: string | undefined = undefined
@@ -62,10 +57,7 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
 
   private readonly imageType$ = new BehaviorSubject<RefType>(RefType.Logo)
 
-  constructor(
-    @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
-    private readonly workspaceApi: WorkspaceAPIService
-  ) {
+  constructor() {
     this.appState.currentWorkspace$
       .asObservable()
       .pipe(untilDestroyed(this))
@@ -83,13 +75,13 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
     this.imageUrl$.next(this.getImageUrl(this.workspaceName, 'url', this.imageType))
   }
 
-  ocxInitRemoteComponent(remoteComponentConfig: RemoteComponentConfig) {
-    this.baseUrl.next(remoteComponentConfig.baseUrl)
+  ocxInitRemoteComponent(rcConfig: RemoteComponentConfig) {
+    this.remoteComponentConfig.next(rcConfig)
     this.workspaceApi.configuration = new Configuration({
-      basePath: Location.joinWithSlash(remoteComponentConfig.baseUrl, environment.apiPrefix)
+      basePath: Location.joinWithSlash(rcConfig.baseUrl, environment.apiPrefix)
     })
     if (environment.DEFAULT_LOGO_PATH) {
-      this.defaultImageUrl = Utils.prepareUrlPath(remoteComponentConfig.baseUrl, environment.DEFAULT_LOGO_PATH)
+      this.defaultImageUrl = Utils.prepareUrlPath(rcConfig.baseUrl, environment.DEFAULT_LOGO_PATH)
     }
   }
 

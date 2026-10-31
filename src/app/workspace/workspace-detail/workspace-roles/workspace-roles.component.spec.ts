@@ -1,11 +1,12 @@
-import { NO_ERRORS_SCHEMA, SimpleChanges } from '@angular/core'
+import { SimpleChanges } from '@angular/core'
 import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { TranslateService } from '@ngx-translate/core'
+import { provideNoopAnimations } from '@angular/platform-browser/animations'
 import { TranslateTestingModule } from 'ngx-translate-testing'
-import { of, throwError } from 'rxjs'
+import { BehaviorSubject, of, throwError } from 'rxjs'
 
+import { RowListGridData } from '@onecx/angular-accelerator'
 import { SlotService } from '@onecx/angular-remote-components'
 import { PortalMessageService, UserService, WorkspaceService } from '@onecx/angular-integration-interface'
 
@@ -54,34 +55,42 @@ describe('WorkspaceRolesComponent', () => {
     isSomeComponentDefinedForSlot: jasmine.createSpy('isSomeComponentDefinedForSlot').and.returnValue(of(true))
   }
   const workspaceServiceSpy = jasmine.createSpyObj<WorkspaceService>('WorkspaceService', ['doesUrlExistFor', 'getUrl'])
-  const mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
-  mockUserService.hasPermission.and.callFake((permission: string) => {
-    return ['WORKSPACE_ROLE#EDIT', 'WORKSPACE_ROLE#CREATE', 'WORKSPACE_ROLE#DELETE'].includes(permission)
-  })
+  const mockUserService = {
+    lang$: new BehaviorSubject<string>('de'),
+    getPermission: jasmine.createSpy('getPermission').and.returnValue(Promise.resolve(true)),
+    hasPermission: jasmine.createSpy('hasPermission').and.callFake((permission) => {
+      return ['WORKSPACE_ROLE#EDIT', 'WORKSPACE_ROLE#CREATE', 'WORKSPACE_ROLE#DELETE'].includes(permission)
+    })
+  }
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [WorkspaceRolesComponent],
       imports: [
+        WorkspaceRolesComponent,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
-      schemas: [NO_ERRORS_SCHEMA],
-      providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
-        { provide: SlotService, useValue: slotServiceSpy },
-        { provide: PortalMessageService, useValue: msgServiceSpy },
-        { provide: WorkspaceRolesAPIService, useValue: wRoleServiceSpy },
-        { provide: WorkspaceService, useValue: workspaceServiceSpy },
-        { provide: UserService, useValue: mockUserService }
-      ]
-    }).compileComponents()
+      providers: [provideHttpClient(), provideHttpClientTesting(), provideNoopAnimations()]
+    })
+      .overrideComponent(WorkspaceRolesComponent, {
+        add: {
+          providers: [
+            { provide: SlotService, useValue: slotServiceSpy },
+            { provide: PortalMessageService, useValue: msgServiceSpy },
+            { provide: WorkspaceRolesAPIService, useValue: wRoleServiceSpy },
+            { provide: WorkspaceService, useValue: workspaceServiceSpy },
+            { provide: UserService, useValue: mockUserService }
+          ]
+        }
+      })
+      .compileComponents()
   }))
 
   beforeEach(() => {
+    // used by the endpoint check in the component's field initializer
+    workspaceServiceSpy.doesUrlExistFor.and.returnValue(of(true))
     initTestComponent()
 
     // to spy data: reset
@@ -95,14 +104,27 @@ describe('WorkspaceRolesComponent', () => {
     // to spy data: refill with neutral data
     wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({}))
     iamRoleServiceSpy.searchAvailableRoles.and.returnValue(of({}))
-    // used in ngOnChanges
-    workspaceServiceSpy.doesUrlExistFor.and.returnValue(of(true))
   })
 
   describe('initialize', () => {
     it('should create', () => {
       expect(component).toBeTruthy()
     })
+
+    it('should log error when checking permissions rejects', fakeAsync(() => {
+      spyOn(console, 'error')
+      mockUserService.hasPermission.and.returnValue(Promise.reject(new Error('perm failed')))
+
+      component.ngOnInit()
+      tick()
+
+      expect(console.error).toHaveBeenCalled()
+
+      // restore neutral behaviour for subsequent tests
+      mockUserService.hasPermission.and.callFake((permission) =>
+        ['WORKSPACE_ROLE#EDIT', 'WORKSPACE_ROLE#CREATE', 'WORKSPACE_ROLE#DELETE'].includes(permission)
+      )
+    }))
   })
 
   describe('slotInitializer', () => {
@@ -130,12 +152,11 @@ describe('WorkspaceRolesComponent', () => {
       component.ngOnChanges(changes as unknown as SimpleChanges)
 
       expect(component.wRoles).toEqual(wRoles)
-      expect(component.roles.length).toEqual(wRoles.length)
 
-      component.loadingIamRoles = true
+      component.loadingIamRoles.set(true)
       tick(5000)
       fixture.detectChanges()
-      expect(component.loadingIamRoles).toEqual(false)
+      expect(component.loadingIamRoles()).toEqual(false)
     }))
 
     it('should populate wRoles on search: empty stream', () => {
@@ -168,7 +189,7 @@ describe('WorkspaceRolesComponent', () => {
       component.ngOnChanges(changes as unknown as SimpleChanges)
 
       expect(console.error).toHaveBeenCalledWith('searchWorkspaceRoles', errorResponse)
-      expect(component.exceptionKey).toEqual('EXCEPTIONS.HTTP_STATUS_' + errorResponse.status + '.WS_ROLES')
+      expect(component.exceptionKey()).toEqual('EXCEPTIONS.HTTP_STATUS_' + errorResponse.status + '.WS_ROLES')
     })
   })
 
@@ -183,11 +204,58 @@ describe('WorkspaceRolesComponent', () => {
       component.ngOnChanges(changes as unknown as SimpleChanges)
       component.roleListEmitter.emit(iamRoles)
 
-      expect(component.roles[0].name).toEqual(iamRoles[0].name)
-      expect(component.iamRoles.length).toBe(2)
+      expect(component.iamRoles).toHaveSize(2)
       expect(component.iamRoles[0]).toEqual(iamRoles[0])
       expect(component.iamRoles[1]).toEqual(iamRoles[1])
     })
+  })
+
+  describe('cleanup', () => {
+    afterEach(() => {
+      slotServiceSpy.isSomeComponentDefinedForSlot.and.returnValue(of(true))
+    })
+
+    it('should unsubscribe from slot check and role emitter on destroy', () => {
+      const slot$ = new BehaviorSubject(true)
+      slotServiceSpy.isSomeComponentDefinedForSlot.and.returnValue(slot$)
+      const changes = { ['workspace']: { previousValue: 'ws0', currentValue: 'ws1', firstChange: true } }
+      component.quickFilterValue = 'IAM'
+      component.isComponentDefined = false
+      component.ngOnChanges(changes as unknown as SimpleChanges)
+
+      expect(slot$.observed).toBeTrue()
+      expect(component.roleListEmitter.observed).toBeTrue()
+
+      fixture.destroy()
+
+      expect(slot$.observed).toBeFalse()
+      expect(component.roleListEmitter.observed).toBeFalse()
+    })
+
+    it('should restart the IAM loading timeout when changes arrive repeatedly', fakeAsync(() => {
+      component.loadingIamRoles.set(true)
+
+      component.ngOnChanges({} as SimpleChanges)
+      tick(3000)
+      component.ngOnChanges({} as SimpleChanges)
+      tick(3000)
+
+      expect(component.loadingIamRoles()).toBeTrue()
+
+      tick(2000)
+
+      expect(component.loadingIamRoles()).toBeFalse()
+    }))
+
+    it('should clear the IAM loading timeout on destroy', fakeAsync(() => {
+      component.loadingIamRoles.set(true)
+      component.ngOnChanges({} as SimpleChanges)
+
+      component.ngOnDestroy()
+      tick(5000)
+
+      expect(component.loadingIamRoles()).toBeTrue()
+    }))
   })
 
   describe('search ALL roles', () => {
@@ -198,13 +266,13 @@ describe('WorkspaceRolesComponent', () => {
       wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: wRolesNameless as WorkspaceRolePageResult }))
       const changes = { ['workspace']: { previousValue: 'ws0', currentValue: 'ws1', firstChange: true } }
       component.quickFilterValue = 'WORKSPACE'
-      component.wRolesLoaded = false
+      component.wRolesLoaded.set(false)
 
       component.ngOnChanges(changes as unknown as SimpleChanges)
 
-      expect(component.roles.length).toEqual(2)
-      expect(component.roles[0].name).toBeUndefined()
-      expect(component.roles[1].name).toEqual('role1')
+      expect(component.data()).toHaveSize(2)
+      expect(component.data()[0]['name']).toBeUndefined()
+      expect(component.data()[1]['name']).toEqual('role1')
     })
 
     it('should combine roles', () => {
@@ -225,7 +293,7 @@ describe('WorkspaceRolesComponent', () => {
       component.roleListEmitter.emit(iamRoles)
 
       expect(component.wRoles).toEqual(wRoles)
-      expect(component.iamRoles.length).toBe(4)
+      expect(component.iamRoles).toHaveSize(4)
       expect(component.iamRoles[0]).toEqual(iamRoles[0])
       expect(component.iamRoles[1]).toEqual(iamRoles[1])
     })
@@ -237,9 +305,8 @@ describe('WorkspaceRolesComponent', () => {
     component.quickFilterValue = 'ALL'
     component.onReload()
 
-    expect(component.roles).toEqual([])
-    expect(component.wRolesLoaded).toBeFalse()
-    expect(component.iamRolesLoaded).toBeFalse()
+    expect(component.wRolesLoaded()).toBeFalse()
+    expect(component.iamRolesLoaded()).toBeFalse()
     expect((component as any).searchRoles).toHaveBeenCalled()
   })
 
@@ -359,16 +426,16 @@ describe('WorkspaceRolesComponent', () => {
       component.ngOnChanges(change1 as unknown as SimpleChanges)
       component.roleListEmitter.emit(iamRoles)
 
-      component.onQuickFilterChange({ value: 'ALL' })
+      component.onQuickFilterChange('ALL')
 
       expect(component.quickFilterValue).toEqual('ALL')
-      expect(component.rolesFiltered).toEqual(component.roles)
+      expect(component.filteredData()).toBeUndefined()
 
       component.ngOnChanges(change2 as unknown as SimpleChanges)
-      component.onQuickFilterChange({ value: 'WORKSPACE' })
+      component.onQuickFilterChange('WORKSPACE')
 
       expect(component.quickFilterValue).toEqual('WORKSPACE')
-      expect(component.rolesFiltered).toEqual([component.roles[0]])
+      expect(component.filteredData()).toEqual([component.data()[0]])
     })
 
     it('should quick filter after searching', () => {
@@ -386,31 +453,118 @@ describe('WorkspaceRolesComponent', () => {
       expect(component.onGetQuickFilterCount('WORKSPACE')).toEqual('1')
       expect(component.onGetQuickFilterCount('ALL')).toEqual('1') // combined role
     })
+
+    it('should ignore rows with a missing or non-array origin (convertToRoleType fallbacks)', () => {
+      // origin undefined -> falsy branch; origin string -> non-array branch
+      const dataSubject = (component as any)['dataSubject$']
+      dataSubject.next([
+        { id: 'a', name: 'roleA', origin: undefined },
+        { id: 'b', name: 'roleB', origin: 'WORKSPACE' }
+      ])
+
+      component.onQuickFilterChange('WORKSPACE')
+
+      expect(component.filteredData()).toEqual([])
+    })
+  })
+
+  describe('convertToRoles', () => {
+    it('should map a fully populated row to a Role', () => {
+      const row = {
+        id: 'r1',
+        name: 'role1',
+        description: 'desc',
+        isIamRole: true,
+        isWorkspaceRole: false,
+        origin: ['IAM']
+      } as unknown as RowListGridData
+
+      const roles = component.convertToRoles([row])
+
+      expect(roles).toEqual([
+        { id: 'r1', name: 'role1', description: 'desc', isIamRole: true, isWorkspaceRole: false, origin: ['IAM'] }
+      ])
+    })
+
+    it('should default missing flags and origin', () => {
+      const row = { id: 'r2', name: 'role2' } as unknown as RowListGridData
+
+      const roles = component.convertToRoles([row])
+
+      expect(roles[0]).toEqual({
+        id: 'r2',
+        name: 'role2',
+        description: undefined,
+        isIamRole: false,
+        isWorkspaceRole: false,
+        origin: []
+      })
+    })
+  })
+
+  describe('global filter', () => {
+    const wRoles: WorkspaceRole[] = [
+      { id: 'w1', name: 'role1', description: 'desc' },
+      { id: 'w2', name: 'role2', description: 'desc' }
+    ]
+
+    function seedRoles(): void {
+      wRoleServiceSpy.searchWorkspaceRoles.and.returnValue(of({ stream: wRoles as WorkspaceRolePageResult }))
+      const changes = { ['workspace']: { previousValue: 'ws0', currentValue: 'ws1', firstChange: true } }
+      component.ngOnChanges(changes as unknown as SimpleChanges)
+    }
+
+    it('should return early when there is no data', () => {
+      const dataSubject = (component as any)['dataSubject$']
+      dataSubject.next(undefined) // force a falsy data() to trip the guard
+      component.globalFilterValue = ''
+
+      component.onGlobalFilter('nomatch')
+
+      expect(component.globalFilterValue).toBe('')
+      expect(component.filteredData()).toBeUndefined()
+    })
+
+    it('should filter rows by a matching name', () => {
+      seedRoles()
+
+      component.onGlobalFilter('role1')
+
+      expect(component.globalFilterValue).toBe('role1')
+      expect(component.filteredData()).toEqual([component.data()[0]])
+    })
+
+    it('should keep no rows when nothing matches', () => {
+      seedRoles()
+
+      component.onGlobalFilter('nomatch')
+
+      expect(component.filteredData()).toEqual([])
+    })
+
+    it('should treat an undefined value as a filter clear', () => {
+      seedRoles()
+      component.onGlobalFilter('role1')
+      expect(component.filteredData()).not.toBeUndefined()
+
+      component.onGlobalFilter(undefined)
+
+      expect(component.globalFilterValue).toBe('')
+      expect(component.filteredData()).toBeUndefined()
+    })
+
+    it('should reset the filter on clear', () => {
+      seedRoles()
+      component.onGlobalFilter('role1')
+
+      component.onClearGlobalFilter()
+
+      expect(component.globalFilterValue).toBe('')
+      expect(component.filteredData()).toBeUndefined()
+    })
   })
 
   describe('Test translations', () => {
-    it('dataview translations', (done) => {
-      const translationData = {
-        'DIALOG.DATAVIEW.FILTER': 'filter',
-        'DIALOG.DATAVIEW.FILTER_OF': 'filterOf',
-        'DIALOG.DATAVIEW.SORT_BY': 'sortBy'
-      }
-      const translateService = TestBed.inject(TranslateService)
-      spyOn(translateService, 'get').and.returnValue(of(translationData))
-
-      component.ngOnInit()
-
-      component.dataViewControlsTranslations$?.subscribe({
-        next: (data) => {
-          if (data) {
-            expect(data.sortDropdownTooltip).toEqual('sortBy')
-          }
-          done()
-        },
-        error: done.fail
-      })
-    })
-
     it('should translate quick filter items', () => {
       component.prepareQuickFilter()
 
@@ -429,7 +583,6 @@ describe('WorkspaceRolesComponent', () => {
     })
 
     it('should permissionEndpointExist - exist', (done) => {
-      component.permissionEndpointExist = true
       workspaceServiceSpy.getUrl.and.returnValue(of('/url'))
 
       const eu$ = component.getPermisionEndpointUrl$('name')
@@ -446,7 +599,9 @@ describe('WorkspaceRolesComponent', () => {
     })
 
     it('should permissionEndpointExist - not exist', (done) => {
-      component.permissionEndpointExist = false
+      spyOn(console, 'error')
+      workspaceServiceSpy.doesUrlExistFor.and.returnValue(of(false))
+      initTestComponent()
       const errorResponse = { status: 400, statusText: 'Error on check endpoint' }
       workspaceServiceSpy.getUrl.and.returnValue(throwError(() => errorResponse))
 

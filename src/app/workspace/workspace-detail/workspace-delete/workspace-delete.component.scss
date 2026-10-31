@@ -1,0 +1,5 @@
+@use 'src/app/_ws-mixins.scss' as *;
+
+@include danger-action;
+@include dialog-footer-buttons;
+@include dialog-non-full-size-modal;

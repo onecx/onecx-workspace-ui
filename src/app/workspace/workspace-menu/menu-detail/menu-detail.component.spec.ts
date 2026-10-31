@@ -1,9 +1,12 @@
-import { NO_ERRORS_SCHEMA, Component } from '@angular/core'
+import { Component } from '@angular/core'
 import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing'
 import { Location } from '@angular/common'
+import { provideHttpClient } from '@angular/common/http'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { FormControl, FormGroup, FormsModule, Validators } from '@angular/forms'
 import { By } from '@angular/platform-browser'
-import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router'
+import { provideNoopAnimations } from '@angular/platform-browser/animations'
+import { ActivatedRoute, ActivatedRouteSnapshot, provideRouter } from '@angular/router'
 import { BehaviorSubject, of, throwError } from 'rxjs'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 
@@ -156,23 +159,36 @@ describe('MenuDetailComponent', () => {
   beforeEach(waitForAsync(() => {
     mockUserService = { lang$: new BehaviorSubject('de') }
     TestBed.configureTestingModule({
-      declarations: [MenuDetailComponent],
       imports: [
+        MenuDetailComponent,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
-      schemas: [NO_ERRORS_SCHEMA],
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideNoopAnimations(),
+        provideRouter([{ path: '', component: MenuDetailComponent }]),
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
-        { provide: PortalMessageService, useValue: msgServiceSpy },
-        { provide: WorkspaceProductAPIService, useValue: wProductApiServiceSpy },
-        { provide: MenuItemAPIService, useValue: menuApiServiceSpy },
         { provide: Location, useValue: locationSpy },
         { provide: UserService, useValue: mockUserService }
       ]
-    }).compileComponents()
+    })
+    // WorkspaceProductAPIService and MenuItemAPIService use `providedIn: 'any'`, which TestBed
+    // providers do not reliably override for standalone components - add providers on the component itself.
+    TestBed.overrideComponent(MenuDetailComponent, {
+      add: {
+        providers: [
+          { provide: PortalMessageService, useValue: msgServiceSpy },
+          { provide: WorkspaceProductAPIService, useValue: wProductApiServiceSpy },
+          { provide: MenuItemAPIService, useValue: menuApiServiceSpy }
+        ]
+      }
+    })
+    TestBed.compileComponents()
+
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
     wProductApiServiceSpy.getProductsByWorkspaceId.calls.reset()
@@ -268,7 +284,7 @@ describe('MenuDetailComponent', () => {
 
       component.ngOnChanges()
 
-      expect(component.menuItems?.length).toBe(5)
+      expect(component.menuItems).toHaveSize(5)
     })
 
     it('should prepare mfe paths for menu items - empty mfe path', () => {
@@ -575,12 +591,19 @@ describe('MenuDetailComponent', () => {
       expect(console.error).toHaveBeenCalledWith('deleteMenuItemById', errorResponse)
     })
 
-    it('should update tabIndex onTabPanelChange', () => {
-      const mockEvent = { index: 3 }
+    it('should update selectedTabIndex onTabChange', () => {
+      const tabValue = '1'
 
-      component.onTabPanelChange(mockEvent)
+      component.onTabChange(tabValue)
 
-      expect(component.tabIndex).toBe(mockEvent.index)
+      expect(component.selectedTabIndex).toBe(tabValue)
+    })
+
+    it('should convert a numeric tab value to its string form on onTabChange', () => {
+      // a number (not a string) tab value exercises the `e.toString()` side of the ternary
+      component.onTabChange(2)
+
+      expect(component.selectedTabIndex).toBe('2')
     })
   })
 
@@ -633,14 +656,14 @@ describe('MenuDetailComponent', () => {
 
       component.onRemoveLanguage('fr')
 
-      expect(component.languagesDisplayed.length).toBe(0)
-      expect(component.languagesAvailable.length).toBe(2)
+      expect(component.languagesDisplayed).toHaveSize(0)
+      expect(component.languagesAvailable).toHaveSize(2)
 
       component.languagesDisplayed = [{ label: 'German', value: 'de', data: 'Data' }]
 
       component.onRemoveLanguage('de')
 
-      expect(component.languagesDisplayed.length).toBe(1)
+      expect(component.languagesDisplayed).toHaveSize(1)
 
       component.languagesDisplayed = []
 
@@ -656,7 +679,7 @@ describe('MenuDetailComponent', () => {
       expect(component.languagesDisplayed).toEqual(
         jasmine.arrayContaining([{ label: 'English', value: 'en', data: '' }])
       )
-      expect(component.languagesAvailable.length).toBe(0)
+      expect(component.languagesAvailable).toHaveSize(0)
     })
 
     it('should return label of language if in languagesDisplayed', () => {
@@ -705,7 +728,7 @@ describe('MenuDetailComponent', () => {
 
       component.onDropdownClick(event)
 
-      expect(component.filteredMfes.length).toBe(2)
+      expect(component.filteredMfes).toHaveSize(2)
     })
 
     it('onClearUrl', () => {
@@ -739,12 +762,14 @@ describe('MenuDetailComponent', () => {
     it('should call onFilterPaths with correct query when keyup event is triggered', () => {
       // Spy on the onFilterPaths method
       spyOn(component, 'onFilterPaths')
+      component.displayDetailDialog = true
+      fixture.detectChanges()
       const mockEvent = new KeyboardEvent('keyup', {
         bubbles: true,
         cancelable: true
       })
       // Create a mock event with a target value
-      const inputElement = fixture.debugElement.query(By.css('input')).nativeElement
+      const inputElement = fixture.debugElement.query(By.css('#ws_menu_detail_field_url_input')).nativeElement
       inputElement.value = 'test query'
       Object.defineProperty(mockEvent, 'target', { writable: false, value: inputElement })
 
@@ -772,7 +797,7 @@ describe('MenuDetailComponent', () => {
 
       component.onFilterPaths(mockEvent)
 
-      expect(component.filteredMfes.length).toBe(1)
+      expect(component.filteredMfes).toHaveSize(1)
       expect(component.filteredMfes[0].id).toBe('id')
     })
 
@@ -798,7 +823,7 @@ describe('MenuDetailComponent', () => {
 
       component.onFilterPaths(mockEvent)
 
-      expect(component.filteredMfes.length).toBe(1)
+      expect(component.filteredMfes).toHaveSize(1)
       expect(component.filteredMfes[0].mfePath).toBe('/path')
     })
 
@@ -820,7 +845,7 @@ describe('MenuDetailComponent', () => {
 
       component.onFilterPaths(mockEvent)
 
-      expect(component.filteredMfes.length).toBe(2)
+      expect(component.filteredMfes).toHaveSize(2)
       expect(component.filteredMfes[0].id).toBeUndefined()
     })
 
@@ -855,6 +880,8 @@ describe('MenuDetailComponent', () => {
  * Test modification of built-in Angular class registerOnChange at top of the file
  */
 @Component({
+  standalone: true,
+  imports: [FormsModule],
   template: `<input type="text" [(ngModel)]="value" />`
 })
 class TestComponent {
@@ -874,8 +901,7 @@ describe('DefaultValueAccessor prototype modification', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TestComponent],
-      imports: [FormsModule]
+      imports: [TestComponent]
     }).compileComponents()
 
     initTestComponent()

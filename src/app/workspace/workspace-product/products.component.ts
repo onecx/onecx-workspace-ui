@@ -1,14 +1,14 @@
 import {
-  AfterViewInit,
+  ChangeDetectorRef,
   Component,
-  ElementRef,
   EventEmitter,
-  Renderer2,
   Input,
   Output,
   OnDestroy,
   OnChanges,
-  SimpleChanges
+  SimpleChanges,
+  ChangeDetectionStrategy,
+  OnInit
 } from '@angular/core'
 import {
   FormArray,
@@ -19,6 +19,7 @@ import {
   ValidatorFn,
   Validators
 } from '@angular/forms'
+import { toSignal } from '@angular/core/rxjs-interop'
 import {
   catchError,
   combineLatest,
@@ -33,6 +34,8 @@ import {
 } from 'rxjs'
 import { TranslateService } from '@ngx-translate/core'
 
+import { CardModule } from 'primeng/card'
+
 import { MfeInfo } from '@onecx/integration-interface'
 import {
   AppStateService,
@@ -41,6 +44,7 @@ import {
   WorkspaceService
 } from '@onecx/angular-integration-interface'
 
+import { SharedModule } from 'src/app/shared/shared.module'
 import {
   ImagesInternalAPIService,
   Microfrontend,
@@ -56,9 +60,12 @@ import {
   Slot,
   WorkspaceProductAPIService,
   UIEndpoint,
-  SlotComponent
+  SlotComponent,
+  RefType
 } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
+import { ImageComponent } from 'src/app/shared/components/image/image.component'
+import { ProductDeregistrationComponent } from './workspace-product-deregistration/product-deregistration.component'
 
 type ChangeStatus = {
   index?: number
@@ -87,15 +94,6 @@ export type ExtendedProduct = Product &
     apps?: Map<string, ExtendedApp> // key: appId
     slots?: Array<ExtendedSlot> // from ProductStoreItem
   }
-interface ViewingModes {
-  icon: string
-  mode: string
-  titleKey?: string
-}
-const ALL_VIEW_MODES = [
-  { icon: 'pi pi-list', mode: 'list', titleKey: 'DIALOG.DATAVIEW.VIEW_MODE_LIST' },
-  { icon: 'pi pi-th-large', mode: 'grid', titleKey: 'DIALOG.DATAVIEW.VIEW_MODE_GRID' }
-]
 
 export function ValidateModuleBasePath(fa: FormArray): ValidatorFn {
   return (): ValidationErrors | null => {
@@ -146,13 +144,15 @@ export function AddMfeModuleFormControl(fb: FormBuilder, modules: FormArray, idx
     })
   }
 }
-
 @Component({
   selector: 'app-products',
+  standalone: true,
+  imports: [CardModule, SharedModule, ImageComponent, ProductDeregistrationComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './products.component.html',
   styleUrls: ['./products.component.scss']
 })
-export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
+export class ProductComponent implements OnInit, OnChanges, OnDestroy {
   @Input() workspace!: Workspace | undefined
   @Output() changed = new EventEmitter()
 
@@ -163,27 +163,32 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   public wpLoading = false
   public editMode = false
   public hasRegisterPermission = false
-  public permissionEndpointExist = false
-  public productEndpointExist = false
+  public readonly permissionEndpointExist = toSignal(
+    Utils.doesEndpointExist(this.workspaceService, 'onecx-permission', 'onecx-permission-ui', 'product'),
+    { initialValue: false }
+  )
+  public readonly productEndpointExist = toSignal(
+    Utils.doesEndpointExist(this.workspaceService, 'onecx-product-store', 'onecx-product-store-ui', 'product-detail'),
+    { initialValue: false }
+  )
   public displayDetails = false
   public displayedDetailItem: ExtendedProduct | undefined = undefined
   public formGroup: FormGroup
   public formChanged = false
-  public sourceFilterValue: string | undefined // product store
-  public targetFilterValue: string | undefined // workspace
-  public sourceList!: HTMLElement | null
-  public targetList!: HTMLElement | null
-  public sourceListViewMode: ViewingModes | undefined
-  public targetListViewMode: ViewingModes | undefined
-  public viewingModes: ViewingModes[] = []
+  public sourceFilterValue = '' // product store
+  public targetFilterValue = '' // workspace
   public displayDeregisterConfirmation = false
   private deregisterItems: ExtendedProduct[] = []
+  public RefType = RefType
+  public imageBasePath = this.imageApi.configuration.basePath
 
   // data
   public wSlots$!: Observable<Slot[]>
   public wProducts$!: Observable<ExtendedProduct[]>
   public wProducts: ExtendedProduct[] = [] // registered products
   public psProducts: ExtendedProduct[] = [] // not registered product store products
+  public filteredPsProducts = [...this.psProducts]
+  public filteredWProducts = [...this.wProducts]
   public psProducts$!: Observable<ExtendedProduct[]>
   public psProductsOrg!: Map<string, ExtendedProduct> // all products in product store (not undeployed)
   public currentMfe!: MfeInfo
@@ -199,41 +204,27 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     private readonly translate: TranslateService,
     private readonly msgService: PortalMessageService,
     private readonly fb: FormBuilder,
-    private readonly elem: ElementRef,
-    public renderer: Renderer2
+    private readonly cdr: ChangeDetectorRef
   ) {
-    this.hasRegisterPermission = this.user.hasPermission('WORKSPACE_PRODUCTS#REGISTER')
-    this.appState.currentMfe$.pipe(map((mfe) => (this.currentMfe = mfe))).subscribe()
+    this.appState.currentMfe$.pipe(takeUntil(this.destroy$)).subscribe((mfe) => (this.currentMfe = mfe))
     this.formGroup = this.fb.group({
       displayName: new FormControl({ value: null, disabled: true }),
       baseUrl: new FormControl(null, [Validators.required, Validators.maxLength(200)]),
       modules: this.fb.array([])
     })
-    this.viewingModes = ALL_VIEW_MODES
-    this.sourceListViewMode = this.viewingModes.find((v) => v.mode === 'list')
-    this.targetListViewMode = this.viewingModes.find((v) => v.mode === 'list')
   }
 
-  public ngAfterViewInit() {
-    this.sourceList = (<HTMLElement>this.elem.nativeElement).querySelector('.p-picklist-list.p-picklist-source')
-    this.targetList = (<HTMLElement>this.elem.nativeElement).querySelector('.p-picklist-list.p-picklist-target')
+  public async ngOnInit(): Promise<void> {
+    try {
+      this.hasRegisterPermission = await this.user.hasPermission('WORKSPACE_PRODUCTS#REGISTER')
+    } catch (err) {
+      console.error(err)
+    }
   }
+
   public ngOnChanges(changes: SimpleChanges): void {
     if (this.workspace && changes['workspace']) {
       this.loadData()
-      // check detail endpoint exists
-      this.productEndpointExist = Utils.doesEndpointExist(
-        this.workspaceService,
-        'onecx-product-store',
-        'onecx-product-store-ui',
-        'product-detail'
-      )
-      this.permissionEndpointExist = Utils.doesEndpointExist(
-        this.workspaceService,
-        'onecx-permission',
-        'onecx-permission-ui',
-        'product'
-      )
     }
   }
   public ngOnDestroy(): void {
@@ -277,14 +268,21 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
             this.wProducts = []
             for (const p of products)
               this.wProducts.push({ ...p, bucket: 'TARGET', exists: true, changedComponents: false } as ExtendedProduct)
-            return this.wProducts.sort(this.sortProductsByDisplayName)
+            this.wProducts.sort(this.sortProductsByDisplayName)
+            this.filteredWProducts = [...this.wProducts]
+            this.wpLoading = false
+            return this.wProducts
           }),
           catchError((err) => {
             this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + Utils.mapping_error_status(err.status) + '.PRODUCTS'
             console.error('getProductsByWorkspaceId', err)
             return of([] as ExtendedProduct[])
           }),
-          finalize(() => (this.wpLoading = false))
+          // OnPush: the view must be marked dirty explicitly, this runs outside any template event
+          finalize(() => {
+            this.wpLoading = false
+            this.cdr.markForCheck()
+          })
         )
         .pipe(takeUntil(this.destroy$))
   }
@@ -320,14 +318,20 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
             }
           // mark workspace products which are not longer exist in product store
           for (const wP of workspaceData.products) wP.exists = this.psProductsOrg.get(wP.productName!) !== undefined
-          return this.psProducts.sort(this.sortProductsByDisplayName)
+          this.psProducts.sort(this.sortProductsByDisplayName)
+          this.filteredPsProducts = [...this.psProducts]
+          return this.psProducts
         }),
         catchError((err) => {
           this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + Utils.mapping_error_status(err.status) + '.PRODUCTS'
           console.error('searchAvailableProducts', err)
           return of([] as ExtendedProduct[])
         }),
-        finalize(() => (this.psLoading = false))
+        // OnPush: the view must be marked dirty explicitly, this runs outside any template event
+        finalize(() => {
+          this.psLoading = false
+          this.cdr.markForCheck()
+        })
       )
       .pipe(takeUntil(this.destroy$))
   }
@@ -388,39 +392,32 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     return (a.name ? a.name.toUpperCase() : '').localeCompare(b.name ? b.name.toUpperCase() : '')
   }
 
-  public getImageUrl(product?: ExtendedProduct): string | undefined {
-    if (!product) return undefined
-    if (product.imageUrl && product.imageUrl != '') {
-      return product.imageUrl
-    }
-    return Utils.bffProductImageUrl(this.imageApi.configuration.basePath, product.productName)
-  }
-
   /**************************************************
    * UI Events: Picklist
    */
   public getFilterValue(ev: any): string {
     return ev.target.value
   }
+  public filterProducts(val: string, bucket: 'SOURCE' | 'TARGET') {
+    if (!val || val.trim() === '') {
+      if (bucket === 'SOURCE') this.filteredPsProducts = [...this.psProducts]
+      if (bucket === 'TARGET') this.filteredWProducts = [...this.wProducts]
+      return
+    }
+    const lowerSearch = val.toLowerCase()
+    if (bucket === 'SOURCE') {
+      this.filteredPsProducts = this.psProducts.filter((item) => item.displayName?.toLowerCase().includes(lowerSearch))
+    }
+    if (bucket === 'TARGET') {
+      this.filteredWProducts = this.wProducts.filter((item) => item.displayName?.toLowerCase().includes(lowerSearch))
+    }
+  }
+
   public onHideItemDetails() {
     this.displayDetails = false
     this.displayedDetailItem = undefined
     this.formChanged = false
     this.formGroup.reset()
-  }
-  public onSourceViewModeChange(ev: { icon: string; mode: string }): void {
-    if (ev) {
-      this.sourceListViewMode = this.viewingModes.find((v) => v.mode === ev.mode)
-      if (ev.mode === 'grid') this.renderer.addClass(this.sourceList, 'tile-view')
-      if (ev.mode === 'list') this.renderer.removeClass(this.sourceList, 'tile-view')
-    }
-  }
-  public onTargetViewModeChange(ev: { icon: string; mode: string }): void {
-    if (ev) {
-      this.targetListViewMode = this.viewingModes.find((v) => v.mode === ev.mode)
-      if (ev.mode === 'grid') this.renderer.addClass(this.targetList, 'tile-view')
-      if (ev.mode === 'list') this.renderer.removeClass(this.targetList, 'tile-view')
-    }
   }
 
   /**************************************************
@@ -430,13 +427,13 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     event.stopPropagation()
   }
   // on picklist item clicks: ev.items is collection
-  public onSourceSelect(ev: any): void {
-    if (ev.items.length === 0) this.onHideItemDetails()
-    if (ev.items.length === 1) this.fillForm(this.psProductsOrg.get(ev.items[0].productName))
-  }
-  public onTargetSelect(ev: any): void {
-    if (ev.items.length === 0) this.onHideItemDetails()
-    if (ev.items.length === 1) this.getWProduct(ev.items[0])
+  public onItemSelect(item: ExtendedProduct): void {
+    const isSource = this.psProducts.includes(item)
+    if (isSource) {
+      this.fillForm(this.psProductsOrg.get(item.productName!))
+    } else {
+      this.getWProduct(item)
+    }
   }
 
   /**************************************************
@@ -450,11 +447,14 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
           const item = data as ExtendedProduct
           this.prepareWProduct(item)
           this.fillForm(item)
+          // OnPush: this HTTP response arrives outside the click handler's change detection cycle
+          this.cdr.markForCheck()
         },
         error: (err) => {
           this.onHideItemDetails()
           console.error('getProductById', err)
           this.msgService.error({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.LOAD_ERROR' })
+          this.cdr.markForCheck()
         },
         complete() {}
       })
@@ -631,6 +631,8 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
    *
    * This event fires after the items were moved from source to target => PrimeNG
    * Afterwards, Step through the list and on each error roll back the move.
+   *
+   * Migration Angular 18 => 19 : Events onSourceSelect, onTargetSelect missing
    */
   private prepareMfePaths(mfes: Microfrontend[]): Microfrontend[] | undefined {
     return mfes.length === 0
@@ -769,14 +771,14 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
    * ENDPOINTS
    */
   public getProductEndpointUrl$(name?: string): Observable<string | undefined> {
-    if (this.productEndpointExist && name)
+    if (this.productEndpointExist() && name)
       return this.workspaceService.getUrl('onecx-product-store', 'onecx-product-store-ui', 'product-detail', {
         'product-name': name
       })
     return of(undefined)
   }
   public getPermissionEndpointUrl$(name?: string): Observable<string | undefined> {
-    if (this.permissionEndpointExist && name)
+    if (this.permissionEndpointExist() && name)
       return this.workspaceService.getUrl('onecx-permission', 'onecx-permission-ui', 'product', {
         'product-name': name
       })

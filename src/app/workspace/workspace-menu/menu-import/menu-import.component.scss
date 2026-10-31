@@ -1,4 +1,4 @@
-@import 'src/app/_ws-mixins.scss';
+@use 'src/app/_ws-mixins.scss' as *;
 
 @include dialog-modal-dialog-content;
 @include dialog-modal-disable-full-height;

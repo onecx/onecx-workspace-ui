@@ -1,0 +1,12 @@
+.p-2x {
+  padding: 0.928rem;
+}
+
+/* overwrite general style from "body a" */
+.ocx-menu-item {
+  color: var(--menu-item-text-color);
+  &:hover {
+    background: var(--p-panelmenu-item-focus-background);
+    color: var(--p-panelmenu-item-focus-color);
+  }
+}

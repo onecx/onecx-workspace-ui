@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core'
+import { Component, EventEmitter, Input, Output, OnInit, inject } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
@@ -8,7 +8,9 @@ import { SlotService } from '@onecx/angular-remote-components'
 import { PortalMessageService, ThemeService } from '@onecx/angular-integration-interface'
 
 import { Utils } from 'src/app/shared/utils'
-import { WorkspaceAPIService, ProductAPIService } from 'src/app/shared/generated'
+import { WorkspaceAPIService, ProductAPIService, RefType } from 'src/app/shared/generated'
+import { SharedModule } from 'src/app/shared/shared.module'
+import { ImageComponent } from 'src/app/shared/components/image/image.component'
 
 export type Theme = {
   name: string
@@ -19,19 +21,30 @@ export type Theme = {
 
 @Component({
   selector: 'app-workspace-create',
+  standalone: true,
+  imports: [SharedModule, ImageComponent],
   templateUrl: './workspace-create.component.html',
   styleUrls: ['./workspace-create.component.scss']
 })
 export class WorkspaceCreateComponent implements OnInit {
+  private readonly router = inject(Router)
+  private readonly route = inject(ActivatedRoute)
+  private readonly slotService = inject(SlotService)
+  private readonly themeService = inject(ThemeService)
+  private readonly workspaceApi = inject(WorkspaceAPIService)
+  private readonly message = inject(PortalMessageService)
+  private readonly translate = inject(TranslateService)
+  private readonly productApi = inject(ProductAPIService)
+
   @Input() displayDialog = false
   @Output() toggleCreationDialogEvent = new EventEmitter()
 
+  public RefType = RefType
   public productPaths$: Observable<string[]> = of([])
   public formGroup: FormGroup
   public selectedLogoFile: File | undefined
   public minimumImageWidth = 150
   public minimumImageHeight = 150
-  public fetchingLogoUrl?: string
   public currentTheme$: Observable<Theme>
 
   // slot configuration: get theme infos
@@ -41,16 +54,7 @@ export class WorkspaceCreateComponent implements OnInit {
   public themesEmitter = new EventEmitter<Theme[]>()
   public themeLogoLoadingFailed = false
 
-  constructor(
-    private readonly router: Router,
-    private readonly route: ActivatedRoute,
-    private readonly slotService: SlotService,
-    private readonly themeService: ThemeService,
-    private readonly workspaceApi: WorkspaceAPIService,
-    private readonly message: PortalMessageService,
-    private readonly translate: TranslateService,
-    private readonly productApi: ProductAPIService
-  ) {
+  constructor() {
     this.currentTheme$ = this.themeService.currentTheme$
       .asObservable()
       .pipe(map((t) => ({ ...t, displayName: t.name }) as Theme))
@@ -60,7 +64,11 @@ export class WorkspaceCreateComponent implements OnInit {
       displayName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
       theme: new FormControl(null, [Validators.required]),
       homePage: new FormControl(null, [Validators.maxLength(255)]),
-      logoUrl: new FormControl(null, [Validators.minLength(2), Validators.maxLength(255), Validators.pattern('^/.*')]),
+      logoUrl: new FormControl(null, [
+        Validators.minLength(2),
+        Validators.maxLength(255),
+        Validators.pattern('^(http|https)://.{6,245}')
+      ]),
       baseUrl: new FormControl(null, [
         Validators.required,
         Validators.minLength(2),
@@ -78,7 +86,6 @@ export class WorkspaceCreateComponent implements OnInit {
 
   public closeDialog(): void {
     this.formGroup.reset()
-    this.fetchingLogoUrl = undefined
     this.selectedLogoFile = undefined
     this.toggleCreationDialogEvent.emit()
   }
@@ -100,10 +107,6 @@ export class WorkspaceCreateComponent implements OnInit {
           console.error('createWorkspace', err)
         }
       })
-  }
-
-  inputChange(event: Event) {
-    this.fetchingLogoUrl = (event.target as HTMLInputElement).value
   }
 
   public onOpenProductPathes(paths: string[]) {

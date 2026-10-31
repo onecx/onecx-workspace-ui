@@ -1,18 +1,19 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { provideRouter } from '@angular/router'
 import { TranslateTestingModule } from 'ngx-translate-testing'
-import { ToggleButtonModule } from 'primeng/togglebutton'
+
+import { TreeDragDropService } from 'primeng/api'
 import { TreeNodeDropEvent, TreeNodeExpandEvent } from 'primeng/tree'
 
-import { PortalMessageService } from '@onecx/angular-integration-interface'
+import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 import { MenuPreviewComponent } from './menu-preview.component'
 import { MenuTreeService } from '../services/menu-tree.service'
 import { MenuStateService, MenuState } from '../services/menu-state.service'
 import { MenuItemAPIService, WorkspaceMenuItem } from 'src/app/shared/generated'
-import { of, throwError } from 'rxjs'
+import { BehaviorSubject, of, throwError } from 'rxjs'
+import { provideNoopAnimations } from '@angular/platform-browser/animations'
 
 const state: MenuState = {
   pageSize: 0,
@@ -31,40 +32,67 @@ describe('MenuPreviewComponent', () => {
   let component: MenuPreviewComponent
   let fixture: ComponentFixture<MenuPreviewComponent>
 
+  function initTestComponent(): void {
+    fixture = TestBed.createComponent(MenuPreviewComponent)
+    component = fixture.componentInstance
+    fixture.detectChanges()
+  }
+  // PrimeNG tags the "between nodes" drop-zone element with this class; used to simulate originalEvent.target
+  function dropTarget(isBetweenNodes: boolean): HTMLElement {
+    const el = document.createElement(isBetweenNodes ? 'li' : 'div')
+    if (isBetweenNodes) el.classList.add('p-tree-node-droppoint')
+    return el
+  }
+
   const treeServiceSpy = jasmine.createSpyObj<MenuTreeService>('MenuTreeService', ['calculateNewNodesPositions'])
   const stateServiceSpy = jasmine.createSpyObj<MenuStateService>('MenuStateService', ['getState'])
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
   const menuApiService = {
     updateMenuItemParent: jasmine.createSpy('updateMenuItemParent').and.returnValue(of({}))
   }
-
-  function initTestComponent(): void {
-    fixture = TestBed.createComponent(MenuPreviewComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+  const mockUserService = {
+    lang$: new BehaviorSubject<string>('de'),
+    getPermission: jasmine.createSpy('getPermission').and.returnValue(Promise.resolve(true)),
+    hasPermission: jasmine.createSpy('hasPermission').and.callFake((permission) => {
+      return ['WORKSPACE#EDIT'].includes(permission)
+    })
   }
 
   beforeEach(waitForAsync(() => {
+    // MenuItemAPIService is 'providedIn: any': MenuPreviewComponent (standalone, imports SharedModule)
+    // resolves it from its own environment injector, so a plain TestBed providers override is bypassed.
+    // The override must be registered before compileComponents() runs.
+    TestBed.overrideComponent(MenuPreviewComponent, {
+      add: { providers: [{ provide: MenuItemAPIService, useValue: menuApiService }] }
+    })
     TestBed.configureTestingModule({
-      declarations: [MenuPreviewComponent],
       imports: [
-        ToggleButtonModule,
+        MenuPreviewComponent,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
-      schemas: [NO_ERRORS_SCHEMA],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
+        provideNoopAnimations(),
         provideRouter([{ path: '', component: MenuPreviewComponent }]),
-        { provide: MenuTreeService, useValue: treeServiceSpy },
-        { provide: MenuStateService, useValue: stateServiceSpy },
-        { provide: MenuItemAPIService, useValue: menuApiService },
-        { provide: PortalMessageService, useValue: msgServiceSpy }
+        { provide: UserService, useValue: mockUserService },
+        TreeDragDropService
       ]
-    }).compileComponents()
+    })
+      .overrideComponent(MenuPreviewComponent, {
+        add: {
+          providers: [
+            { provide: MenuTreeService, useValue: treeServiceSpy },
+            { provide: MenuStateService, useValue: stateServiceSpy },
+            { provide: MenuItemAPIService, useValue: menuApiService },
+            { provide: PortalMessageService, useValue: msgServiceSpy }
+          ]
+        }
+      })
+      .compileComponents()
   }))
 
   beforeEach(() => {
@@ -116,7 +144,7 @@ describe('MenuPreviewComponent', () => {
       menuApiService.updateMenuItemParent.and.returnValue(of({}))
       spyOn(component.reorderEmitter, 'emit')
       const event: TreeNodeDropEvent = {
-        dropPoint: 'node',
+        originalEvent: { target: dropTarget(false) } as unknown as DragEvent,
         index: 1,
         dragNode: { key: 'draggedNodeId', parent: { key: 'oldParentNodeId' }, data: items[0] },
         dropNode: {
@@ -131,6 +159,11 @@ describe('MenuPreviewComponent', () => {
 
       expect(component.reorderEmitter.emit).toHaveBeenCalledWith(true)
       expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU.OK' })
+      expect(menuApiService.updateMenuItemParent).toHaveBeenCalledWith(
+        jasmine.objectContaining({
+          updateMenuItemParentRequest: jasmine.objectContaining({ parentItemId: items[1].id, position: 1 })
+        })
+      )
     })
 
     it('should update menu item - drag between nodes', () => {
@@ -138,16 +171,17 @@ describe('MenuPreviewComponent', () => {
         { id: 'item1', modificationCount: 1, children: [] },
         { id: 'item2', modificationCount: 1, children: [] }
       ]
+      const parentItem: WorkspaceMenuItem = { id: 'parentItem', modificationCount: 1, children: [] }
 
       component.menuItems = [...items]
       const event: TreeNodeDropEvent = {
-        dropPoint: 'between',
+        originalEvent: { target: dropTarget(true) } as unknown as DragEvent,
         index: 1,
         dragNode: { key: 'draggedNodeId', parent: { key: 'oldParentNodeId' }, data: items[0] },
         dropNode: {
           key: 'newParentNodeId',
           children: [{ key: 'draggedNodeId' }],
-          parent: { key: 'parent key' },
+          parent: { key: 'parent key', data: parentItem },
           data: items[1]
         }
       }
@@ -156,6 +190,11 @@ describe('MenuPreviewComponent', () => {
       component.onDrop(event)
 
       expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU.OK' })
+      expect(menuApiService.updateMenuItemParent).toHaveBeenCalledWith(
+        jasmine.objectContaining({
+          updateMenuItemParentRequest: jasmine.objectContaining({ parentItemId: parentItem.id })
+        })
+      )
     })
 
     it('should update menu items onDrop: return before pushing items', () => {
@@ -197,7 +236,7 @@ describe('MenuPreviewComponent', () => {
     spyOn(component.reorderEmitter, 'emit')
 
     const event: TreeNodeDropEvent = {
-      dropPoint: 'node',
+      //dropPoint: 'node',
       index: 0,
       dragNode: {
         key: 'draggedNodeId',
@@ -233,7 +272,7 @@ describe('MenuPreviewComponent', () => {
     spyOn(component.reorderEmitter, 'emit')
 
     const event: TreeNodeDropEvent = {
-      dropPoint: 'node',
+      //      dropPoint: 'node',
       index: 0,
       dragNode: {
         key: 'draggedNodeId',

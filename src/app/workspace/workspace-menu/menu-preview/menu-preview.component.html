@@ -1,76 +1,84 @@
-<p-dialog
-  [header]="'DIALOG.MENU.HEADER.TREE_MODAL' | translate"
-  [(visible)]="displayDialog"
-  [modal]="true"
-  [closable]="true"
-  [resizable]="true"
-  [draggable]="true"
-  (onHide)="onClose()"
-  styleClass="disable-max-height-preset"
->
-  <ul class="mt-1 px-5">
-    <li>{{ 'DIALOG.MENU.HEADER.REORDER.TOOLTIP' | translate }}</li>
-    <li class="danger-action-text">{{ 'DIALOG.MENU.HEADER.PREVIEW2.TOOLTIP' | translate }}</li>
-  </ul>
-  <div class="mt-4 flex flex-wrap justify-content-between align-items-start gap-2">
-    <p-toggleButton
-      inputId="ws_menu_preview_tree_toggle"
-      styleClass="white-space-nowrap"
-      [onIcon]="'pi pi-arrow-down-left-and-arrow-up-right-to-center'"
-      [offIcon]="'pi pi-arrow-up-right-and-arrow-down-left-from-center'"
-      [onLabel]="'ACTIONS.TREE.COLLAPSE_ALL' | translate"
-      [offLabel]="'ACTIONS.TREE.EXPAND_ALL' | translate"
-      [(ngModel)]="treeExpanded"
-      (onChange)="onToggleTreeViewMode($event)"
-      [ariaLabel]="'ACTIONS.TREE.EXPAND_ALL' | translate"
-      [pTooltip]="'ACTIONS.TREE.EXPAND_ALL.TOOLTIP' | translate"
-      tooltipPosition="right"
-      tooltipEvent="hover"
-    />
-    <span class="p-float-label">
-      <p-dropdown
-        id="ws_menu_preview_language_list"
-        styleClass="reduced-field-size"
-        [appendTo]="'body'"
-        [emptyMessage]="'DIALOG.MENU.PREVIEW.LANG.EMPTY' | translate"
-        [options]="languagesPreview"
-        [(ngModel)]="languagesPreviewValue"
-        (onChange)="onLanguagesPreviewChange($event.value)"
-        [ariaLabel]="'DIALOG.MENU.PREVIEW.LANG' | translate"
-        [pTooltip]="'DIALOG.MENU.PREVIEW.LANG.TOOLTIP' | translate"
-        tooltipPosition="right"
-        tooltipEvent="hover"
-      ></p-dropdown>
-      <label for="ws_menu_preview_language_list">{{ 'DIALOG.MENU.PREVIEW.LANG' | translate }}</label>
-    </span>
-  </div>
-
-  <p-tree
-    #previewTree
-    [value]="menuNodes"
-    [draggableNodes]="true"
-    [droppableNodes]="true"
-    (onNodeDrop)="onDrop($event)"
-    (onNodeCollapse)="onHierarchyViewChange($event)"
-    (onNodeExpand)="onHierarchyViewChange($event)"
-    scrollHeight="300px"
-    styleClass="my-2 pl-2 pt-1 p-0"
+@if (displayDialog) {
+  <p-dialog
+    [visible]="true"
+    (visibleChange)="onClose()"
+    [header]="'DIALOG.MENU.HEADER.TREE_MODAL' | translate"
+    [modal]="true"
+    [closable]="true"
+    [resizable]="true"
+    [draggable]="true"
+    styleClass="disable-max-height-preset"
   >
-    <ng-template let-node pTemplate="default">{{ node.label }} </ng-template>
-  </p-tree>
-
-  <ng-template pTemplate="footer">
-    <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
-      <p-button
-        id="ws_menu_preview_action_close"
-        icon="pi pi-times"
-        (onClick)="onClose()"
-        [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
-        [ariaLabel]="'ACTIONS.NAVIGATION.CLOSE' | translate"
-        [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
+    <ul class="mt-1 px-5">
+      <li>{{ 'DIALOG.MENU.HEADER.REORDER.TOOLTIP' | translate }}</li>
+      <li class="danger-action-text">{{ 'DIALOG.MENU.HEADER.PREVIEW2.TOOLTIP' | translate }}</li>
+    </ul>
+    <div class="mt-4 flex flex-wrap justify-content-between align-items-start gap-2">
+      <p-toggleButton
+        inputId="ws_menu_preview_tree_toggle"
+        styleClass="white-space-nowrap"
+        [onIcon]="'pi pi-arrow-down-left-and-arrow-up-right-to-center'"
+        [offIcon]="'pi pi-arrow-up-right-and-arrow-down-left-from-center'"
+        [onLabel]="'ACTIONS.TREE.COLLAPSE_ALL' | translate"
+        [offLabel]="'ACTIONS.TREE.EXPAND_ALL' | translate"
+        [(ngModel)]="treeExpanded"
+        (onChange)="onToggleTreeViewMode($event)"
+        [ariaLabel]="'ACTIONS.TREE.EXPAND_ALL' | translate"
+        [pTooltip]="'ACTIONS.TREE.EXPAND_ALL.TOOLTIP' | translate"
         tooltipPosition="right"
         tooltipEvent="hover"
-      ></p-button>
+      />
+      <p-floatlabel variant="on">
+        <p-select
+          id="ws_menu_preview_language_list_input"
+          inputId="ws_menu_preview_language_list"
+          styleClass="reduced-field-size"
+          [placeholder]="'DIALOG.MENU.PREVIEW.LANG' | translate"
+          [appendTo]="'body'"
+          [emptyMessage]="'DIALOG.MENU.PREVIEW.LANG.EMPTY' | translate"
+          [options]="languagesPreview"
+          [(ngModel)]="languagesPreviewValue"
+          (onChange)="onLanguagesPreviewChange($event.value)"
+          [ariaLabel]="'DIALOG.MENU.PREVIEW.LANG' | translate"
+          [pTooltip]="'DIALOG.MENU.PREVIEW.LANG.TOOLTIP' | translate"
+          tooltipPosition="right"
+          tooltipEvent="hover"
+        ></p-select>
+        <label for="ws_menu_preview_language_list">{{ 'DIALOG.MENU.PREVIEW.LANG' | translate }}</label>
+      </p-floatlabel>
     </div>
-  </ng-template>
-</p-dialog>
+
+    <p-card styleClass="p-0 my-3">
+      <p-tree
+        #previewTree
+        [value]="menuNodes"
+        [draggableNodes]="true"
+        [droppableNodes]="true"
+        draggableScope="self"
+        droppableScope="self"
+        (onNodeDrop)="onDrop($event)"
+        (onNodeCollapse)="onHierarchyViewChange($event)"
+        (onNodeExpand)="onHierarchyViewChange($event)"
+        scrollHeight="400px"
+        styleClass="py-0 px-2"
+      >
+        <ng-template let-node pTemplate="default">{{ node.label }} </ng-template>
+      </p-tree>
+    </p-card>
+
+    <ng-template pTemplate="footer">
+      <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
+        <p-button
+          id="ws_menu_preview_action_close"
+          icon="pi pi-times"
+          (onClick)="onClose()"
+          [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+          [ariaLabel]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+          [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
+          tooltipPosition="right"
+          tooltipEvent="hover"
+        ></p-button>
+      </div>
+    </ng-template>
+  </p-dialog>
+}

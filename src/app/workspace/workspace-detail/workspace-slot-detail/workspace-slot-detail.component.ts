@@ -2,12 +2,17 @@ import { Component, EventEmitter, Input, Output, OnChanges } from '@angular/core
 import { TranslateService } from '@ngx-translate/core'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+import { TabsModule } from 'primeng/tabs'
 
 import { SlotAPIService, UpdateSlotRequest } from 'src/app/shared/generated'
 import { ChangeMode, ExtendedSlot, ExtendedComponent, PSSlot } from '../workspace-slots/workspace-slots.component'
+import { SharedModule } from 'src/app/shared/shared.module'
+import { WorkspaceSlotDeregistrationComponent } from '../workspace-slot-deregistration/workspace-slot-deregistration.component'
 
 @Component({
   selector: 'app-workspace-slot-detail',
+  standalone: true,
+  imports: [SharedModule, TabsModule, WorkspaceSlotDeregistrationComponent],
   templateUrl: './workspace-slot-detail.component.html',
   styleUrls: ['./workspace-slot-detail.component.scss']
 })
@@ -26,12 +31,15 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   public psComponents: ExtendedComponent[] = [] // org ps components reduced by used in slot
   public hasEditPermission = false
   public displayDeregisterConfirmation = false
-  public selectedTabIndex = 0
+  public selectedTabIndex = '0'
+  public selectedComponentName: string | undefined
   private deregisterItems: ExtendedComponent[] = [] // moved items
   private wComponentsOrg: ExtendedComponent[] = [] // used for restore
   public showTargetControls = false // manage visibility of target controls due to picklist bug
-  public sourceFilterValue: string | undefined // unregistered items
-  public targetFilterValue: string | undefined // registered items
+  public sourceFilterValue: string | undefined
+  public targetFilterValue: string | undefined
+  public filteredPsComponents: ExtendedComponent[] = [] // unregistered items
+  public filteredWComponents: ExtendedComponent[] = [] // registered items
 
   constructor(
     private readonly slotApi: SlotAPIService,
@@ -39,7 +47,11 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
     private readonly translate: TranslateService,
     private readonly msgService: PortalMessageService
   ) {
-    this.hasEditPermission = this.user.hasPermission('WORKSPACE_SLOT#EDIT')
+    Promise.all([this.user.hasPermission('WORKSPACE_SLOT#EDIT')])
+      .then(([perm]) => {
+        this.hasEditPermission = perm
+      })
+      .catch((err) => console.error(err))
     this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm:ss' : 'M/d/yy, hh:mm:ss a'
   }
 
@@ -54,8 +66,14 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
       this.collectPsComponents()
       if (this.slot.psSlots) this.slot.psSlots.sort(this.sortProducts)
       if (this.slot.productNames) this.slot.productNames.sort((a, b) => a.toUpperCase().localeCompare(b.toUpperCase()))
-      this.selectedTabIndex = this.slot.productNames?.length === 0 ? 1 : 0
+      this.selectedTabIndex = this.slot.productNames?.length === 0 ? '1' : '0'
+      this.filteredPsComponents = [...this.psComponents] // unregistered items
+      this.filteredWComponents = [...this.wComponents] // registered items
     }
+  }
+
+  public selectComponent(componentName: string) {
+    this.selectedComponentName = componentName
   }
 
   // Collect available but not yet registered components from product store
@@ -97,6 +115,20 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   }
   public getFilterValue(ev: any): string {
     return ev.target.value
+  }
+  public filterComponents(val: string, bucket: 'SOURCE' | 'TARGET') {
+    if (!val || val.trim() === '') {
+      if (bucket === 'SOURCE') this.filteredPsComponents = [...this.psComponents]
+      if (bucket === 'TARGET') this.filteredWComponents = [...this.wComponents]
+      return
+    }
+    const lowerSearch = val.toLowerCase()
+    if (bucket === 'SOURCE') {
+      this.filteredPsComponents = this.psComponents.filter((item) => item.name.toLowerCase().includes(lowerSearch))
+    }
+    if (bucket === 'TARGET') {
+      this.filteredWComponents = this.wComponents.filter((item) => item.name.toLowerCase().includes(lowerSearch))
+    }
   }
 
   // fix picklist bug: hide controls if not one item is selected

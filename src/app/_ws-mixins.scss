@@ -2,45 +2,20 @@
  *  FORM - Control Improvements
  * **********************************************/
 
-/* displaying text like an input field with floating label */
-@mixin float-label-textbox {
-  :host {
-    .p-float-label {
-      display: block;
-      position: relative;
-      .ocx-float-label-textbox {
-        font-family: var(--font-family);
-        font-size: var(--input-text-font-size);
-        color: var(--emphasis-high);
-        background: var(--input-bg);
-        padding: var(--input-padding);
-        border: var(--input-border);
-        transition: var(--form-element-transition);
-        appearance: none;
-        border-radius: var(--border-radius);
-      }
-      .ocx-float-label {
-        position: absolute;
-        left: 0.75rem;
-        top: -0.5rem !important;
-        padding: 2px 4px;
-        margin-left: -4px;
-        margin-top: 0;
-        line-height: 1;
-        font-size: 12px;
-        pointer-events: none;
-        color: var(--emphasis-medium);
-        background-color: var(--input-bg);
-        transition-property: all;
-        transition-timing-function: ease;
-        transition-duration: var(--transition-duration);
-      }
+@mixin ocx-required-label {
+  // Keep a visible required marker even when external theme styles are missing.
+  :host ::ng-deep {
+    .p-floatlabel > label.ocx-required-label::after {
+      content: ' *';
+      color: var(--red-500, #ef4444);
+      font-weight: 600;
     }
   }
 }
 
-@mixin displaying-text-responsive {
+@mixin ocx-text-responsive {
   :host ::ng-deep {
+    --disabled-opacity: 0.7;
     .text-responsive {
       white-space: nowrap;
       overflow: hidden;
@@ -104,6 +79,32 @@
   }
 }
 
+@mixin ocx-p-inputgroup {
+  :host ::ng-deep {
+    .p-inputgroupaddon {
+      > p-button {
+        display: flex;
+        height: 100%;
+        width: 100%;
+        > .p-button {
+          flex-grow: 1;
+        }
+      }
+      .pseudo-button:hover {
+        background: var(--button-hover-bg) !important;
+        cursor: pointer;
+        * {
+          background: var(--button-hover-bg);
+        }
+      }
+      /* Manipulate the addon wrapper depends on button state inside */
+      &:has(.p-button.p-button-primary) {
+        border: none;
+      }
+    }
+  }
+}
+
 @mixin compact-dropdown-list-items {
   :host ::ng-deep {
     .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
@@ -136,16 +137,6 @@
 /* **********************************************
  *  Badges
  * **********************************************/
-@mixin text-badges {
-  :host ::ng-deep {
-    .text-badge-right {
-      display: inline-block;
-      position: absolute;
-      right: 20px;
-      top: -10px;
-    }
-  }
-}
 @mixin card-badges {
   :host ::ng-deep {
     /* badge basics: position */
@@ -181,13 +172,14 @@
         }
       }
     }
+
     /* clickable icon-only buttons */
     .button-icon-only {
-      border-radius: var(--border-radius);
+      border-radius: 6px;
       background: transparent;
       &:hover {
-        color: var(--primary-color-text);
-        background: var(--button-hover-bg) !important;
+        color: var(--onecx-workspace-onecx-workspace-ui-button-primary-hover-color);
+        background: var(--onecx-workspace-onecx-workspace-ui-button-primary-hover-background);
         cursor: pointer;
       }
     }
@@ -242,15 +234,6 @@
 }
 
 /* DATA VIEW */
-@mixin correct-dataview-header {
-  :host ::ng-deep {
-    .p-dataview .p-dataview-header {
-      border-top-left-radius: 0.25rem; // value taken from .content-wrap
-      border-top-right-radius: 0.25rem;
-    }
-  }
-}
-
 @mixin correct-data-view-header-for-tabpanel {
   :host ::ng-deep {
     .p-dataview .p-dataview-header,
@@ -337,112 +320,43 @@
 }
 
 /* **********************************************
- *  OneCX Widget - Layout Corrections
+ *  OCX Widgets
  * **********************************************/
-@mixin correct-search-criteria {
+@mixin ocx-interactive-data-view-fixes {
   :host ::ng-deep {
-    .search-criteria-container > div {
-      display: flex;
-      flex-wrap: wrap;
-      align-content: center;
-      row-gap: 1rem;
-      column-gap: 3rem;
-      .search-criteria-buttons {
-        flex-wrap: wrap;
-        align-content: center;
-        margin-top: unset;
+    /* fix base layout of interactive data view */
+    ocx-interactive-data-view > {
+      :first-child {
+        padding-top: 0;
+      }
+      :not(:first-child) {
+        padding: 0.5rem 0 0 0;
       }
     }
-  }
-}
+    /* correct header layouting by lib */
+    .table-header-wrapper {
+      flex-direction: row;
+      justify-content: flex-start;
+      flex-wrap: nowrap;
+    }
+    .table-header-wrapper span:first-child {
+      margin-right: 10px;
+    }
 
-@mixin search-criteria-select-button-slim {
-  :host ::ng-deep {
-    .slim-selectbutton {
-      display: flex;
-      flex-wrap: wrap;
-      flex-direction: column;
-      row-gap: 0.1rem;
-
-      .p-selectbutton .p-button {
-        text-align: center;
-        display: inline-block;
-        color: var(--emphasis-medium);
-        font-weight: var(--font-weight);
-        padding: 0.3rem 0.8rem;
-        border: var(--input-border);
-        min-width: unset;
-      }
-      .p-selectbutton-subtitle {
-        font-size: 0.8rem;
-        padding-left: 0.25rem;
-      }
-    }
-  }
-}
-@mixin search-criteria-select-button-filter {
-  :host ::ng-deep {
-    .filter-selectbutton {
-      .p-selectbutton .p-button {
-        opacity: 0.9 !important;
-        border: var(--toggle-button-border);
-        &.p-highlight {
-          background: var(--toggle-button-active-bg);
-          border-color: var(--toggle-button-active-border-color);
-        }
-        &:not(.p-disabled):not(.p-highlight):hover {
-          color: var(--text-color);
-          border-color: var(--toggle-button-hover-border-color);
-          background-color: var(--toggle-button-hover-bg);
-        }
-      }
-    }
-  }
-}
-@mixin search-criteria-select-button {
-  :host ::ng-deep {
-    .p-selectbutton-title {
-      width: 2rem;
-      text-align: right;
-    }
-    .search-criteria-selectbutton {
-      .p-selectbutton .p-button {
-        &.p-highlight {
-          color: var(--primary-text-color);
-          border-color: var(--toggle-button-hover-border-color);
-          background-color: var(--primary-color);
-        }
-        &:not(.p-disabled):not(.p-highlight):hover {
-          color: var(--primary-text-color);
-          border-color: var(--toggle-button-hover-border-color);
-          background-color: var(--button-hover-bg);
-        }
-      }
-    }
-  }
-}
-
-@mixin correct-ocx-interactive-data-view {
-  :host ::ng-deep {
-    ocx-interactive-data-view > div {
-      padding: 0 0 0.2rem 0 !important;
-      &.surface-border {
-        border-bottom: var(--table-header-border) !important;
+    /* establish grid-nogutter */
+    .p-dataview .p-dataview-content {
+      margin: 0;
+      padding: 0;
+      border-top: var(--table-header-border);
+      > .grid {
+        gap: 0 !important;
+        padding: 0;
       }
     }
   }
 }
 
 /* ZEBRA rows */
-@mixin dataview-list-zebra-rows {
-  :host ::ng-deep {
-    .p-dataview-list .p-dataview-content .p-grid > * {
-      &:nth-child(even) {
-        background-color: var(--table-body-row-even-bg);
-      }
-    }
-  }
-}
 @mixin dataview-list-flex-zebra-rows {
   :host ::ng-deep {
     .p-dataview-list .p-dataview-content section > article {
@@ -461,45 +375,21 @@
 }
 @mixin listbox-zebra-rows {
   :host ::ng-deep {
-    .p-listbox:not(.p-disabled) .p-listbox-item:not(.p-highlight):not(.p-disabled) {
+    .p-listbox-list:not(.p-disabled)
+      .p-listbox-option:not(.p-highlight):not(.p-disabled):not(:hover):not(.p-listbox-option-selected) {
       &:nth-child(even) {
-        background-color: var(--table-body-row-even-bg);
+        background-color: var(
+          --onecx-workspace-onecx-workspace-ui-datatable-row-even-background,
+          var(--table-body-row-even-bg, rgba(0, 0, 0, 0.02))
+        );
       }
     }
     .p-orderlist:not(.p-disabled) .p-orderlist-item:not(.p-highlight):not(.p-disabled) {
       &:nth-child(even) {
-        background-color: var(--table-body-row-even-bg);
-      }
-    }
-  }
-}
-@mixin picklist-zebra-rows {
-  :host ::ng-deep {
-    .p-picklist-list li {
-      &:nth-child(even) {
-        background-color: var(--table-body-row-even-bg);
-      }
-    }
-  }
-}
-@mixin table-zebra-rows {
-  :host ::ng-deep {
-    /* this works only on non-frozen columns (table.p-datatable-striped does not work) */
-    .p-datatable .p-datatable-tbody > tr:nth-child(even) > td:not(.p-frozen-column) {
-      background-color: var(--table-body-row-even-bg);
-    }
-  }
-}
-
-/* PICKLIST */
-@mixin picklist-hide-double-buttons {
-  :host ::ng-deep {
-    .p-picklist .p-picklist-buttons {
-      button[icon='pi pi-angle-double-left'],
-      button[icon='pi pi-angle-double-right'],
-      button:nth-child(2),
-      button:nth-child(4) {
-        display: none !important;
+        background-color: var(
+          --onecx-workspace-onecx-workspace-ui-datatable-row-even-background,
+          var(--table-body-row-even-bg, rgba(0, 0, 0, 0.02))
+        );
       }
     }
   }
@@ -531,6 +421,22 @@
     }
   }
 }
+@mixin dialog-non-full-size-modal {
+  :host ::ng-deep {
+    @media (max-width: 991px) {
+      .p-dialog.p-dialog {
+        max-height: unset !important;
+        height: unset !important;
+      }
+    }
+    @media (max-width: 576px) {
+      .p-dialog.p-dialog {
+        max-height: inherit !important;
+        height: inherit !important;
+      }
+    }
+  }
+}
 @mixin dialog-footer-buttons {
   :host ::ng-deep {
     .p-dialog .p-dialog-footer button {
@@ -539,16 +445,25 @@
   }
 }
 
-@mixin tabview-reduce-padding {
+/* **********************************************
+ *  TABs
+ * **********************************************/
+@mixin ocx-p-tabs {
   :host ::ng-deep {
-    .p-tabview .p-tabview-panels {
-      padding: 1.4rem 0 0 0;
+    .p-tabs {
+      .p-tablist {
+        border-bottom: 1px solid var(--surface-300);
+      }
+      .p-tab {
+        padding: 0.75rem 1rem;
+        &.p-tab-active {
+          background-color: rgb(from var(--primary-color) r g b / 0.1);
+        }
+      }
+      .p-tabpanels {
+        padding: 1.5rem 0 0 0;
+      }
     }
-  }
-}
-@mixin tabview-fix-color-selected-tab {
-  :host ::ng-deep {
-    --tabview-header-active-bg: rgb(from var(--primary-color) r g b / 0.12) !important;
   }
 }
 
@@ -573,41 +488,6 @@
     }
   }
 }
-@mixin table-vertical-lines {
-  :host ::ng-deep {
-    .p-datatable .p-datatable-tbody > tr > td {
-      &:not(:first-of-type) {
-        border-left-width: 1px;
-      }
-    }
-  }
-}
-@mixin table-responsive-columns {
-  :host ::ng-deep {
-    /* responsive table result view */
-    @media screen and (min-width: 576px) {
-      .sm\:table-cell {
-        display: table-cell !important;
-      }
-    }
-    @media screen and (min-width: 768px) {
-      .md\:table-cell {
-        display: table-cell !important;
-      }
-    }
-    @media screen and (min-width: 992px) {
-      .lg\:table-cell {
-        display: table-cell !important;
-      }
-    }
-    @media screen and (min-width: 1200px) {
-      .xl\:table-cell {
-        display: table-cell !important;
-      }
-    }
-  }
-}
-
 @mixin media-queries {
   :host ::ng-deep {
     @media screen and (min-width: 768px) {

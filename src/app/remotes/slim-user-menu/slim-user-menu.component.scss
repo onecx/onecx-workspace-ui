@@ -1,52 +1,29 @@
 // Overriding styles since
 // user sidebar menu component overrides with ::ng-deep
-// and workspace UI uses portal layout styles
 // but we need to ensure our styles take precedence
-::ng-deep {
-  .slim-user-menu {
-    border-top: 2px solid var(--divider-color, #0003);
-    border-bottom: 2px solid var(--divider-color, #0003);
-    .p-accordion {
-      width: 100%;
-      .p-accordion-tab {
-        border-radius: 0 !important;
-        background-color: var(--menu-item-bg-color, var(--menu-bg-color), #f7f7f7) !important;
-        .p-accordion-header {
-          & :hover {
-            background-color: var(--menu-item-hover-bg-color, #e0e0e0);
-          }
-          .p-accordion-header-link {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border-radius: 0 !important;
-            background-color: var(--menu-item-bg-color, var(--menu-bg-color), #f7f7f7) !important;
-          }
-          .p-accordion-header-link:focus {
-            background: var(--menu-item-hover-bg-color, #e0e0e0) !important;
-          }
-        }
-        .p-accordion-content {
-          background-color: var(--menu-item-bg-color, var(--menu-bg-color), #f7f7f7) !important;
-        }
-      }
-      .p-accordion-tab-active {
-        margin-bottom: 0 !important;
+
+/* head of slim menu (general styles) */
+.slim-user-menu {
+  overflow: hidden;
+  border-bottom: 2px solid var(--divider-color, #0003);
+  .p-accordion {
+    width: 100%;
+    .p-accordionpanel:not(.p-disabled) {
+      .p-accordionheader {
+        padding: 0.5rem;
+        display: flex;
+        justify-content: space-around;
       }
     }
   }
 }
-
+/* slim menu dimensions */
 .slim-user-menu-slim {
   width: 4rem;
-  overflow: hidden;
 }
 .slim-user-menu-slim-plus {
   width: 7rem;
-  overflow: hidden;
 }
-
 .slim-user-menu-header-plus {
   padding-left: 0.5rem;
   padding-right: 0.5rem;
@@ -54,14 +31,12 @@
 .slim-user-menu-header {
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
-
   color: var(--menu-item-text-color, var(--menu-text-color, var(--text-secondary-color, #000000)));
   background-color: var(--menu-item-bg-color, var(--menu-bg-color), #f7f7f7);
 
   .slim-user-menu-header-icon {
     font-size: calc(var(--font-size, var(--font-size-default, 1rem)) * 1.5);
   }
-
   .slim-user-menu-header-text {
     font-size: var(--font-size, var(--font-size-default, 1rem));
     display: block;

@@ -1,24 +1,23 @@
-@import 'src/app/_ws-mixins.scss';
+@use 'src/app/_ws-mixins.scss' as *;
 
 @include correct-data-view-control;
 @include correct-data-view-header-for-tabpanel;
-@include search-criteria-select-button;
-@include search-criteria-select-button-slim;
 @include card-badges;
 
 :host ::ng-deep {
+  --onecx-workspace-onecx-workspace-ui-togglebutton-content-padding: 0.25rem 0.5rem;
+
   .p-dataview .p-dataview-content {
     padding-left: 0;
     padding-right: 0;
   }
-
-  .h-2-5rem {
-    height: 2.5rem !important;
+  .p-card-body {
+    padding: 0.2rem;
   }
 
   .card-badge-left {
     &.badge-2 {
-      top: 26px;
+      top: 32px;
       left: 1px;
     }
 
@@ -33,7 +32,7 @@
       right: 1px;
     }
     &.badge-2-number {
-      top: 26px;
+      top: 32px;
       right: 3px;
     }
   }

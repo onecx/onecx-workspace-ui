@@ -1,12 +1,12 @@
 <img
-  [id]="id"
-  [class]="'max-w-full ' + (styleClass ?? '')"
-  [ocxSrc]="url"
+  [id]="id()"
+  [class]="'max-w-full ' + (styleClass() ?? '')"
+  [ocxSrc]="url()"
   (error)="onImageLoadError()"
   (load)="onImageLoadSuccess()"
   [alt]="'Logo Workspace'"
   [attr.aria-label]="'Logo Workspace'"
-  [pTooltip]="title"
+  [pTooltip]="title()"
   tooltipPosition="top"
   tooltipEvent="hover"
 />

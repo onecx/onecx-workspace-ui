@@ -3,7 +3,9 @@ import { FormGroup, FormControl, Validators } from '@angular/forms'
 import { TranslateService } from '@ngx-translate/core'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+import { TabsModule } from 'primeng/tabs'
 
+import { SharedModule } from 'src/app/shared/shared.module'
 import {
   CreateWorkspaceRoleRequest,
   UpdateWorkspaceRoleRequest,
@@ -14,6 +16,8 @@ import { ChangeMode, Role } from '../workspace-detail/workspace-roles/workspace-
 
 @Component({
   selector: 'app-workspace-role-detail',
+  standalone: true,
+  imports: [SharedModule, TabsModule],
   templateUrl: './workspace-role-detail.component.html',
   styleUrls: ['./workspace-role-detail.component.scss']
 })
@@ -23,7 +27,6 @@ export class WorkspaceRoleDetailComponent implements OnChanges {
   @Input() roles: Role[] = []
   @Input() changeMode: ChangeMode = 'VIEW'
   @Input() displayDetailDialog = false
-  @Input() displayDeleteDialog = false
   @Output() dataChanged: EventEmitter<boolean> = new EventEmitter()
 
   public dateFormat = 'M/d/yy, hh:mm:ss a'
@@ -120,18 +123,5 @@ export class WorkspaceRoleDetailComponent implements OnChanges {
         }
       })
     }
-  }
-
-  public onDeleteRoleConfirmation() {
-    this.wRoleApi.deleteWorkspaceRole({ id: this.role?.id ?? '' }).subscribe({
-      next: () => {
-        this.msgService.success({ summaryKey: 'ACTIONS.DELETE.ROLE.MESSAGE.OK' })
-        this.dataChanged.emit(true)
-      },
-      error: (err) => {
-        this.msgService.error({ summaryKey: 'ACTIONS.DELETE.ROLE.MESSAGE.NOK' })
-        console.error('deleteWorkspaceRole', err)
-      }
-    })
   }
 }
