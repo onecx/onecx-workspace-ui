@@ -73,8 +73,8 @@
   }
 
   /* hide the double arrow buttons, because they are not working */
-  .p-picklist-controls .p-button:has(angledoublerighticon),
-  .p-picklist-controls .p-button:has(angledoublelefticon) {
+  .p-picklist-controls .p-button[data-pc-section='moveAllToSourceButton'],
+  .p-picklist-controls .p-button[data-pc-section='moveAllToTargetButton'] {
     display: none;
   }
 

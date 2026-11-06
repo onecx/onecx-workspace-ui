@@ -195,17 +195,7 @@ export class MenuPreviewComponent implements OnChanges {
       targetPos = Math.max(0, targetPos)
 
       // dummy-node on root or child-level detected
-      if (event.dropNode.data.id.startsWith('__DUMMY__')) {
-        // set parent if existing
-        if (event.dropNode.parent) {
-          parentItemId = event.dropNode.parent.data.id
-          const parent = this.menuItems.find((item) => item.id === parentItemId)
-          targetPos = parent?.children?.length ?? 0
-        } else {
-          parentItemId = undefined
-          targetPos = this.menuItems.length
-        }
-      }
+      this.detectDummyNode(event.dropNode, parentItemId, targetPos)
 
       if (menuItem) {
         const obs$ = this.menuApi.updateMenuItemParent({
@@ -231,6 +221,19 @@ export class MenuPreviewComponent implements OnChanges {
     }
   }
 
+  private detectDummyNode(dropNode: TreeNode, parentItemId: string | undefined, targetPos: number): void {
+    if (dropNode.data.id.startsWith('__DUMMY__')) {
+      // set parent if existing
+      if (dropNode.parent) {
+        parentItemId = dropNode.parent.data.id
+        const parent = this.menuItems.find((item) => item.id === parentItemId)
+        targetPos = parent?.children?.length ?? 0
+      } else {
+        parentItemId = undefined
+        targetPos = this.menuItems.length
+      }
+    }
+  }
   /**
    * PrimeNG's TreeNodeDropEvent no longer exposes a 'dropPoint' field, so the drop-zone
    * element's CSS class is used to tell a "between nodes" drop apart from a "drop on node".
