@@ -11,132 +11,136 @@
 
   <ocx-content class="ocx-content">
     @if (loading) {
-      <p-message
-        id="ws_detail_loading_message"
-        severity="info"
-        styleClass="m-3 w-fit"
-        [text]="'ACTIONS.LOADING' | translate"
-      ></p-message>
+      <div class="p-1">
+        <p-message
+          id="ws_detail_loading_message"
+          severity="info"
+          styleClass="m-3 w-fit"
+          [text]="'ACTIONS.LOADING' | translate"
+        ></p-message>
+      </div>
     } @else if (exceptionKey) {
-      <p-message
-        id="ws_detail_error_message"
-        severity="error"
-        styleClass="m-3 w-fit"
-        [text]="exceptionKey | translate"
-      ></p-message>
+      <div class="p-1">
+        <p-message
+          id="ws_detail_error_message"
+          severity="error"
+          styleClass="m-3 w-fit"
+          [text]="exceptionKey | translate"
+        ></p-message>
+      </div>
+    } @else {
+      <p-tabs [lazy]="false" [(value)]="selectedTabIndex" (valueChange)="onTabChange($event, workspace)">
+        <p-tablist>
+          <p-tab
+            value="0"
+            *ocxIfPermission="'WORKSPACE#VIEW'"
+            id="ws_detail_props"
+            [ariaLabel]="'TABS.WORKSPACE.DETAILS' | translate"
+            [pTooltip]="'TABS.WORKSPACE.TOOLTIPS.DETAILS' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          >
+            {{ 'TABS.WORKSPACE.DETAILS' | translate }}
+          </p-tab>
+          <p-tab
+            value="1"
+            *ocxIfPermission="'WORKSPACE_CONTACT#VIEW'"
+            id="ws_detail_contact"
+            [ariaLabel]="'TABS.WORKSPACE.CONTACT' | translate"
+            [pTooltip]="'TABS.WORKSPACE.TOOLTIPS.CONTACT' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          >
+            {{ 'TABS.WORKSPACE.CONTACT' | translate }}
+          </p-tab>
+          <p-tab
+            value="2"
+            *ocxIfPermission="'WORKSPACE_INTERNAL#VIEW'"
+            id="ws_detail_intern"
+            [ariaLabel]="'INTERNAL.HEADER' | translate"
+            [pTooltip]="'INTERNAL.TOOLTIP' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          >
+            {{ 'INTERNAL.HEADER' | translate }}
+          </p-tab>
+          <p-tab
+            value="3"
+            *ocxIfPermission="'WORKSPACE_ROLE#VIEW'"
+            id="ws_detail_roles"
+            [disabled]="editMode"
+            [ariaLabel]="'TABS.WORKSPACE.ROLES' | translate"
+            [pTooltip]="'TABS.WORKSPACE.TOOLTIPS.ROLES' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          >
+            {{ 'TABS.WORKSPACE.ROLES' | translate }}
+          </p-tab>
+          <p-tab
+            value="4"
+            *ocxIfPermission="'WORKSPACE_SLOT#VIEW'"
+            id="ws_detail_slots"
+            [disabled]="editMode"
+            [ariaLabel]="'TABS.WORKSPACE.SLOTS' | translate"
+            [pTooltip]="'TABS.WORKSPACE.TOOLTIPS.SLOTS' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          >
+            {{ 'TABS.WORKSPACE.SLOTS' | translate }}
+          </p-tab>
+          <p-tab
+            value="5"
+            *ocxIfPermission="'WORKSPACE_PRODUCTS#VIEW'"
+            id="ws_detail_product"
+            [disabled]="editMode"
+            [ariaLabel]="'TABS.WORKSPACE.PRODUCTS' | translate"
+            [pTooltip]="'TABS.WORKSPACE.TOOLTIPS.PRODUCTS' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          >
+            {{ 'TABS.WORKSPACE.PRODUCTS' | translate }}
+          </p-tab>
+        </p-tablist>
+        <p-tabpanels>
+          <!-- PROPS -->
+          <p-tabpanel value="0">
+            <div class="p-3 sm:p-4">
+              <app-workspace-props
+                [workspace]="workspace"
+                [editMode]="editMode"
+                [isLoading]="loading"
+                (headerImageUrl)="onUpdateHeaderImageUrl($event)"
+              ></app-workspace-props>
+            </div>
+          </p-tabpanel>
+          <p-tabpanel value="1">
+            <div class="p-3 sm:p-4">
+              <app-workspace-contact [workspace]="workspace" [editMode]="editMode"></app-workspace-contact>
+            </div>
+          </p-tabpanel>
+          <p-tabpanel value="2">
+            <div class="p-3 sm:p-4">
+              <app-workspace-intern
+                [workspace]="workspace"
+                [editMode]="editMode"
+                [dateFormat]="dateFormat"
+              ></app-workspace-intern>
+            </div>
+          </p-tabpanel>
+          <p-tabpanel value="3">
+            <app-workspace-roles [workspace]="workspaceForRoles"></app-workspace-roles>
+          </p-tabpanel>
+          <p-tabpanel value="4">
+            <app-workspace-slots [workspace]="workspaceForSlots"></app-workspace-slots>
+          </p-tabpanel>
+          <p-tabpanel value="5">
+            <div class="p-2 sm:p-3">
+              <app-products [workspace]="workspaceForProducts" (changed)="onProductChanges()"></app-products>
+            </div>
+          </p-tabpanel>
+        </p-tabpanels>
+      </p-tabs>
     }
-
-    <p-tabs [lazy]="false" [(value)]="selectedTabIndex" (valueChange)="onTabChange($event, workspace)">
-      <p-tablist>
-        <p-tab
-          value="0"
-          *ocxIfPermission="'WORKSPACE#VIEW'"
-          id="ws_detail_props"
-          [ariaLabel]="'TABS.WORKSPACE.DETAILS' | translate"
-          [pTooltip]="'TABS.WORKSPACE.TOOLTIPS.DETAILS' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        >
-          {{ 'TABS.WORKSPACE.DETAILS' | translate }}
-        </p-tab>
-        <p-tab
-          value="1"
-          *ocxIfPermission="'WORKSPACE_CONTACT#VIEW'"
-          id="ws_detail_contact"
-          [ariaLabel]="'TABS.WORKSPACE.CONTACT' | translate"
-          [pTooltip]="'TABS.WORKSPACE.TOOLTIPS.CONTACT' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        >
-          {{ 'TABS.WORKSPACE.CONTACT' | translate }}
-        </p-tab>
-        <p-tab
-          value="2"
-          *ocxIfPermission="'WORKSPACE_INTERNAL#VIEW'"
-          id="ws_detail_intern"
-          [ariaLabel]="'INTERNAL.HEADER' | translate"
-          [pTooltip]="'INTERNAL.TOOLTIP' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        >
-          {{ 'INTERNAL.HEADER' | translate }}
-        </p-tab>
-        <p-tab
-          value="3"
-          *ocxIfPermission="'WORKSPACE_ROLE#VIEW'"
-          id="ws_detail_roles"
-          [disabled]="editMode"
-          [ariaLabel]="'TABS.WORKSPACE.ROLES' | translate"
-          [pTooltip]="'TABS.WORKSPACE.TOOLTIPS.ROLES' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        >
-          {{ 'TABS.WORKSPACE.ROLES' | translate }}
-        </p-tab>
-        <p-tab
-          value="4"
-          *ocxIfPermission="'WORKSPACE_SLOT#VIEW'"
-          id="ws_detail_slots"
-          [disabled]="editMode"
-          [ariaLabel]="'TABS.WORKSPACE.SLOTS' | translate"
-          [pTooltip]="'TABS.WORKSPACE.TOOLTIPS.SLOTS' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        >
-          {{ 'TABS.WORKSPACE.SLOTS' | translate }}
-        </p-tab>
-        <p-tab
-          value="5"
-          *ocxIfPermission="'WORKSPACE_PRODUCTS#VIEW'"
-          id="ws_detail_product"
-          [disabled]="editMode"
-          [ariaLabel]="'TABS.WORKSPACE.PRODUCTS' | translate"
-          [pTooltip]="'TABS.WORKSPACE.TOOLTIPS.PRODUCTS' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        >
-          {{ 'TABS.WORKSPACE.PRODUCTS' | translate }}
-        </p-tab>
-      </p-tablist>
-      <p-tabpanels>
-        <!-- PROPS -->
-        <p-tabpanel value="0">
-          <div class="p-3 sm:p-4">
-            <app-workspace-props
-              [workspace]="workspace"
-              [editMode]="editMode"
-              [isLoading]="loading"
-              (headerImageUrl)="onUpdateHeaderImageUrl($event)"
-            ></app-workspace-props>
-          </div>
-        </p-tabpanel>
-        <p-tabpanel value="1">
-          <div class="p-3 sm:p-4">
-            <app-workspace-contact [workspace]="workspace" [editMode]="editMode"></app-workspace-contact>
-          </div>
-        </p-tabpanel>
-        <p-tabpanel value="2">
-          <div class="p-3 sm:p-4">
-            <app-workspace-intern
-              [workspace]="workspace"
-              [editMode]="editMode"
-              [dateFormat]="dateFormat"
-            ></app-workspace-intern>
-          </div>
-        </p-tabpanel>
-        <p-tabpanel value="3">
-          <app-workspace-roles [workspace]="workspaceForRoles"></app-workspace-roles>
-        </p-tabpanel>
-        <p-tabpanel value="4">
-          <app-workspace-slots [workspace]="workspaceForSlots"></app-workspace-slots>
-        </p-tabpanel>
-        <p-tabpanel value="5">
-          <div class="p-2 sm:p-3">
-            <app-products [workspace]="workspaceForProducts" (changed)="onProductChanges()"></app-products>
-          </div>
-        </p-tabpanel>
-      </p-tabpanels>
-    </p-tabs>
   </ocx-content>
 </ocx-portal-page>
 

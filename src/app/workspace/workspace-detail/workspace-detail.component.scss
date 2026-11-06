@@ -12,11 +12,10 @@
 @include readable-disabled-components;
 
 :host ::ng-deep {
-  .ocx-content > div {
+  .ocx-content .ocx-card {
     margin-bottom: 0;
     padding: 0;
   }
-
   --onecx-workspace-onecx-workspace-ui-togglebutton-content-padding: 0.25rem;
 
   /* fixes for p-card */
