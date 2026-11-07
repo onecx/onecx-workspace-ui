@@ -35,17 +35,18 @@
         >
           {{ 'DIALOG.MENU.TABS.I18N.LABEL' | translate }}
         </p-tab>
-        <p-tab
-          *ngIf="changeMode !== 'CREATE'"
-          value="2"
-          id="ws_menu_detail_tab_intern"
-          [ariaLabel]="'INTERNAL.HEADER' | translate"
-          [pTooltip]="'INTERNAL.TOOLTIP' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        >
-          {{ 'INTERNAL.HEADER' | translate }}
-        </p-tab>
+        @if (changeMode !== 'CREATE') {
+          <p-tab
+            value="2"
+            id="ws_menu_detail_tab_intern"
+            [ariaLabel]="'INTERNAL.HEADER' | translate"
+            [pTooltip]="'INTERNAL.TOOLTIP' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          >
+            {{ 'INTERNAL.HEADER' | translate }}
+          </p-tab>
+        }
       </p-tablist>
       <p-tabpanels>
         <p-tabpanel value="0">
@@ -187,7 +188,9 @@
                         <div class="text-sm font-bold text-responsive" [class.danger-action-text]="!mfe.id">
                           {{ mfe.id ? mfe.product : (mfe.product | translate) }}
                         </div>
-                        <div class="text-xs text-responsive" *ngIf="mfe.id">{{ mfe.appId }}</div>
+                        @if (mfe.id) {
+                          <div class="text-xs text-responsive">{{ mfe.appId }}</div>
+                        }
                       </div>
                     </div>
                   </ng-template>
@@ -319,96 +322,98 @@
 
         <p-tabpanel value="1">
           <div class="flex flex-column gap-4">
-            <p-floatlabel
-              variant="on"
-              *ngFor="let language of languagesDisplayed; index as i"
-              class="p-input-icon-right w-30rem"
-              [attr.aria-label]="getLanguageLabel(language.value)"
-            >
-              <button
-                [id]="'ws_menu_detail_i18n_lang_' + i + '_action_remove'"
-                class="pi pi-times bg-transparent border-none button-icon-only"
-                (click)="onRemoveLanguage(language.value)"
-                [attr.aria-label]="'DIALOG.MENU.TABS.I18N.REMOVE_LANGUAGE' | translate"
-                [pTooltip]="'DIALOG.MENU.TABS.I18N.REMOVE_LANGUAGE' | translate"
+            @for (language of languagesDisplayed; track $index; let i = $index) {
+              <p-floatlabel
+                variant="on"
+                class="p-input-icon-right w-30rem"
+                [attr.aria-label]="getLanguageLabel(language.value)"
+              >
+                <button
+                  [id]="'ws_menu_detail_i18n_lang_' + i + '_action_remove'"
+                  class="pi pi-times bg-transparent border-none button-icon-only"
+                  (click)="onRemoveLanguage(language.value)"
+                  [attr.aria-label]="'DIALOG.MENU.TABS.I18N.REMOVE_LANGUAGE' | translate"
+                  [pTooltip]="'DIALOG.MENU.TABS.I18N.REMOVE_LANGUAGE' | translate"
+                  tooltipPosition="top"
+                  tooltipEvent="hover"
+                ></button>
+                <input
+                  pInputText
+                  type="text"
+                  [id]="'ws_menu_detail_i18n_lang_' + i + '_value'"
+                  class="w-30rem text-responsive"
+                  [(ngModel)]="language.data"
+                  [attr.aria-label]="getLanguageLabel(language.value)"
+                />
+                <label [for]="'ws_menu_detail_i18n_lang_' + i + '_value'" aria-hidden="true">
+                  {{ getLanguageLabel(language.value) }}
+                </label>
+              </p-floatlabel>
+            }
+          </div>
+          @if (languagesAvailable.length > 0) {
+            <div class="mt-5 mb-3 flex flex-row align-items-center column-gap-4 row-gap-2">
+              <div class="text-sm w-4rem">{{ 'DIALOG.MENU.TABS.I18N.ADD_LANGUAGE' | translate }}</div>
+              <p-selectButton
+                inputid="ws_menu_detail_i18n_language_selector"
+                styleClass="flex flex-nowrap"
+                [options]="languagesAvailable"
+                (onOptionClick)="onAddLanguage($event.option.value)"
+                [allowEmpty]="false"
+                [ariaLabel]="'DIALOG.MENU.TABS.I18N.ADD_LANGUAGE' | translate"
+                [pTooltip]="'DIALOG.MENU.TABS.I18N.ADD_LANGUAGE' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
-              ></button>
-              <input
-                pInputText
-                type="text"
-                [id]="'ws_menu_detail_i18n_lang_' + i + '_value'"
-                class="w-30rem text-responsive"
-                [(ngModel)]="language.data"
-                [attr.aria-label]="getLanguageLabel(language.value)"
-              />
-              <label [for]="'ws_menu_detail_i18n_lang_' + i + '_value'" aria-hidden="true">
-                {{ getLanguageLabel(language.value) }}
-              </label>
-            </p-floatlabel>
-          </div>
-          <div
-            *ngIf="languagesAvailable.length > 0"
-            class="mt-5 mb-3 flex flex-row align-items-center column-gap-4 row-gap-2"
-          >
-            <div class="text-sm w-4rem">{{ 'DIALOG.MENU.TABS.I18N.ADD_LANGUAGE' | translate }}</div>
-            <p-selectButton
-              inputid="ws_menu_detail_i18n_language_selector"
-              styleClass="flex flex-nowrap"
-              [options]="languagesAvailable"
-              (onOptionClick)="onAddLanguage($event.option.value)"
-              [allowEmpty]="false"
-              [ariaLabel]="'DIALOG.MENU.TABS.I18N.ADD_LANGUAGE' | translate"
-              [pTooltip]="'DIALOG.MENU.TABS.I18N.ADD_LANGUAGE' | translate"
-              tooltipPosition="top"
-              tooltipEvent="hover"
-            >
-            </p-selectButton>
-          </div>
+              >
+              </p-selectButton>
+            </div>
+          }
         </p-tabpanel>
 
-        <p-tabpanel *ngIf="changeMode !== 'CREATE'" value="2">
-          <app-menu-intern [menuItem]="menuItem" [dateFormat]="dateFormat"></app-menu-intern>
-        </p-tabpanel>
+        @if (changeMode !== 'CREATE') {
+          <p-tabpanel value="2">
+            <app-menu-intern [menuItem]="menuItem" [dateFormat]="dateFormat"></app-menu-intern>
+          </p-tabpanel>
+        }
       </p-tabpanels>
     </p-tabs>
 
     <ng-template pTemplate="footer">
       <footer class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
-        <p-button
-          *ngIf="changeMode === 'VIEW'"
-          id="ws_menu_detail_action_close"
-          icon="pi pi-times"
-          (onClick)="onCloseDialog()"
-          [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
-          [ariaLabel]="'ACTIONS.NAVIGATION.CLOSE' | translate"
-          [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        ></p-button>
-        <p-button
-          *ngIf="changeMode !== 'VIEW'"
-          id="ws_menu_detail_action_cancel"
-          icon="pi pi-times"
-          (onClick)="onCloseDialog()"
-          [label]="'ACTIONS.CANCEL' | translate"
-          [ariaLabel]="'ACTIONS.TOOLTIPS.CANCEL_WITHOUT_SAVE' | translate"
-          [pTooltip]="'ACTIONS.TOOLTIPS.CANCEL_WITHOUT_SAVE' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        ></p-button>
-        <p-button
-          *ngIf="changeMode !== 'VIEW'"
-          id="ws_menu_detail_action_save"
-          icon="pi pi-save"
-          [disabled]="!menuItemForm.valid"
-          (onClick)="onMenuSave()"
-          [label]="'ACTIONS.SAVE' | translate"
-          [ariaLabel]="'ACTIONS.SAVE' | translate"
-          [pTooltip]="'ACTIONS.TOOLTIPS.SAVE' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        ></p-button>
+        @if (changeMode === 'VIEW') {
+          <p-button
+            id="ws_menu_detail_action_close"
+            icon="pi pi-times"
+            (onClick)="onCloseDialog()"
+            [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+            [ariaLabel]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+            [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          ></p-button>
+        } @else {
+          <p-button
+            id="ws_menu_detail_action_cancel"
+            icon="pi pi-times"
+            (onClick)="onCloseDialog()"
+            [label]="'ACTIONS.CANCEL' | translate"
+            [ariaLabel]="'ACTIONS.TOOLTIPS.CANCEL_WITHOUT_SAVE' | translate"
+            [pTooltip]="'ACTIONS.TOOLTIPS.CANCEL_WITHOUT_SAVE' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          ></p-button>
+          <p-button
+            id="ws_menu_detail_action_save"
+            icon="pi pi-save"
+            [disabled]="!menuItemForm.valid"
+            (onClick)="onMenuSave()"
+            [label]="'ACTIONS.SAVE' | translate"
+            [ariaLabel]="'ACTIONS.SAVE' | translate"
+            [pTooltip]="'ACTIONS.TOOLTIPS.SAVE' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          ></p-button>
+        }
       </footer>
     </ng-template>
   </p-dialog>

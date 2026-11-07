@@ -335,25 +335,26 @@
                 </th>
               } @else {
                 <!-- ROLE COLUMNS - filtered columns => no match = no columns -->
-                <th
-                  *ngFor="let role of columns"
-                  [id]="'ws_menu_table_header_row_role_' + role.name"
-                  class="pt-2 pb-1 px-1 hidden-xs text-center border-bottom-2 border-right-1 role-name"
-                >
-                  <button
-                    [id]="'ws_menu_table_header_roles_' + role.name"
-                    class="p-1 text-base cursor-pointer border-round-sm border-none"
-                    [class.clicked]="roleColumnFilterValue.includes(role.name)"
-                    (keydown.space)="onRoleColumnFilterChange(role.name)"
-                    (click)="onRoleColumnFilterChange(role.name)"
-                    [attr.aria-label]="'DIALOG.MENU.ROLE.FILTER.NAME' | translate"
-                    [pTooltip]="'DIALOG.MENU.ROLE.FILTER.NAME' | translate"
-                    tooltipPosition="top"
-                    tooltipEvent="hover"
+                @for (role of columns; track $index; let i = $index) {
+                  <th
+                    [id]="'ws_menu_table_header_row_role_' + role.name"
+                    class="pt-2 pb-1 px-1 hidden-xs text-center border-bottom-2 border-right-1 role-name"
                   >
-                    {{ role.name }}
-                  </button>
-                </th>
+                    <button
+                      [id]="'ws_menu_table_header_roles_' + role.name"
+                      class="p-1 text-base cursor-pointer border-round-sm border-none"
+                      [class.clicked]="roleColumnFilterValue.includes(role.name)"
+                      (keydown.space)="onRoleColumnFilterChange(role.name)"
+                      (click)="onRoleColumnFilterChange(role.name)"
+                      [attr.aria-label]="'DIALOG.MENU.ROLE.FILTER.NAME' | translate"
+                      [pTooltip]="'DIALOG.MENU.ROLE.FILTER.NAME' | translate"
+                      tooltipPosition="top"
+                      tooltipEvent="hover"
+                    >
+                      {{ role.name }}
+                    </button>
+                  </th>
+                }
               }
             }
           </tr>

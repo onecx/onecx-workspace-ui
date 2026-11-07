@@ -10,15 +10,18 @@ import {
   ChangeDetectionStrategy,
   OnInit
 } from '@angular/core'
+import { CommonModule } from '@angular/common'
 import {
   FormArray,
   FormBuilder,
   FormControl,
   FormGroup,
+  ReactiveFormsModule,
   ValidationErrors,
   ValidatorFn,
   Validators
 } from '@angular/forms'
+import { RouterModule } from '@angular/router'
 import { toSignal } from '@angular/core/rxjs-interop'
 import {
   catchError,
@@ -32,10 +35,19 @@ import {
   switchMap,
   takeUntil
 } from 'rxjs'
-import { TranslateService } from '@ngx-translate/core'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
 
+import { ButtonModule } from 'primeng/button'
 import { CardModule } from 'primeng/card'
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { InputGroupModule } from 'primeng/inputgroup'
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon'
+import { InputTextModule } from 'primeng/inputtext'
+import { MessageModule } from 'primeng/message'
+import { PickListModule } from 'primeng/picklist'
+import { TooltipModule } from 'primeng/tooltip'
 
+import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
 import { MfeInfo } from '@onecx/integration-interface'
 import {
   AppStateService,
@@ -44,7 +56,6 @@ import {
   WorkspaceService
 } from '@onecx/angular-integration-interface'
 
-import { SharedModule } from 'src/app/shared/shared.module'
 import {
   ImagesInternalAPIService,
   Microfrontend,
@@ -147,7 +158,24 @@ export function AddMfeModuleFormControl(fb: FormBuilder, modules: FormArray, idx
 @Component({
   selector: 'app-workspace-products',
   standalone: true,
-  imports: [CardModule, SharedModule, ImageComponent, ProductDeregistrationComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterModule,
+    TranslateModule,
+    AngularAcceleratorModule,
+    ButtonModule,
+    CardModule,
+    FloatLabelModule,
+    InputGroupModule,
+    InputGroupAddonModule,
+    InputTextModule,
+    MessageModule,
+    PickListModule,
+    TooltipModule,
+    ImageComponent,
+    ProductDeregistrationComponent
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './products.component.html',
   styleUrls: ['./products.component.scss']

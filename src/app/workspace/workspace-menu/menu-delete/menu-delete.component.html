@@ -17,9 +17,11 @@
       <div id="ws_menu_delete_menu_item_name" class="font-bold text-center danger-action-text">
         {{ menuItemOrg?.name }}
       </div>
-      <div *ngIf="menuItemOrg && menuItemOrg.children && menuItemOrg.children[0]">
-        {{ 'ACTIONS.DELETE.MENU.MESSAGE_CHILDREN' | translate }}
-      </div>
+      @if (menuItemOrg && menuItemOrg.children && menuItemOrg.children[0]) {
+        <div>
+          {{ 'ACTIONS.DELETE.MENU.MESSAGE_CHILDREN' | translate }}
+        </div>
+      }
       <div>{{ 'ACTIONS.DELETE.INFO' | translate }}</div>
     </div>
   </div>

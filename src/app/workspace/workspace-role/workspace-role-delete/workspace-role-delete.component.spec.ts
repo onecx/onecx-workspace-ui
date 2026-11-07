@@ -8,7 +8,7 @@ import { of, throwError } from 'rxjs'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 
 import { WorkspaceRolesAPIService } from 'src/app/shared/generated'
-import { Role } from '../workspace-role/workspace-roles/workspace-roles.component'
+import { Role } from '../workspace-roles/workspace-roles.component'
 import { WorkspaceRoleDeleteComponent } from './workspace-role-delete.component'
 
 const wRole: Role = {

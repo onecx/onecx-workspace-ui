@@ -1,6 +1,9 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core'
+import { TranslateModule } from '@ngx-translate/core'
 
-import { SharedModule } from 'src/app/shared/shared.module'
+import { ButtonModule } from 'primeng/button'
+import { DialogModule } from 'primeng/dialog'
+import { TooltipModule } from 'primeng/tooltip'
 
 /**
  * Confirmation dialog for deregistering (removing) workspace products.
@@ -11,7 +14,7 @@ import { SharedModule } from 'src/app/shared/shared.module'
 @Component({
   selector: 'app-product-deregistration',
   standalone: true,
-  imports: [SharedModule],
+  imports: [TranslateModule, ButtonModule, DialogModule, TooltipModule],
   templateUrl: './product-deregistration.component.html',
   styleUrls: ['./product-deregistration.component.scss']
 })

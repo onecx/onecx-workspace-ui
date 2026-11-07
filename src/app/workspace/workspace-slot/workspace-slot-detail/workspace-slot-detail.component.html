@@ -259,33 +259,35 @@
               } @else {
                 <div>{{ 'DIALOG.SLOT.PRODUCTS.TOOLTIP' | translate }}</div>
                 <ul class="ml-0 mt-2">
-                  <li *ngFor="let productName of productNames; let i = index" class="">
-                    <div class="p-1 flex flex-row column-gap-2">
-                      <div [id]="'ws_slot_detail_product_' + i + '_name'" class="text-md max-w-30rem text-responsive">
-                        {{ productName }}
+                  @for (productName of productNames; track productName; let i = $index) {
+                    <li>
+                      <div class="p-1 flex flex-row column-gap-2">
+                        <div [id]="'ws_slot_detail_product_' + i + '_name'" class="text-md max-w-30rem text-responsive">
+                          {{ productName }}
+                        </div>
+                        @if (slot.undeployed) {
+                          <div
+                            [id]="'ws_slot_detail_product_' + i + '_undeployed'"
+                            class="danger-action-text text-md pi pi-ban"
+                            [attr.aria-label]="'DIALOG.SLOT.UNDEPLOYED' | translate"
+                            [pTooltip]="'DIALOG.SLOT.UNDEPLOYED.TOOLTIP' | translate"
+                            tooltipPosition="top"
+                            tooltipEvent="hover"
+                          ></div>
+                        }
+                        @if (slot.deprecated) {
+                          <div
+                            [id]="'ws_slot_detail_product_' + i + '_deprecated'"
+                            class="danger-action-text text-md pi pi-exclamation-circle"
+                            [attr.aria-label]="'DIALOG.SLOT.DEPRECATED' | translate"
+                            [pTooltip]="'DIALOG.SLOT.DEPRECATED.TOOLTIP' | translate"
+                            tooltipPosition="top"
+                            tooltipEvent="hover"
+                          ></div>
+                        }
                       </div>
-                      @if (slot.undeployed) {
-                        <div
-                          [id]="'ws_slot_detail_product_' + i + '_undeployed'"
-                          class="danger-action-text text-md pi pi-ban"
-                          [attr.aria-label]="'DIALOG.SLOT.UNDEPLOYED' | translate"
-                          [pTooltip]="'DIALOG.SLOT.UNDEPLOYED.TOOLTIP' | translate"
-                          tooltipPosition="top"
-                          tooltipEvent="hover"
-                        ></div>
-                      }
-                      @if (slot.deprecated) {
-                        <div
-                          [id]="'ws_slot_detail_product_' + i + '_deprecated'"
-                          class="danger-action-text text-md pi pi-exclamation-circle"
-                          [attr.aria-label]="'DIALOG.SLOT.DEPRECATED' | translate"
-                          [pTooltip]="'DIALOG.SLOT.DEPRECATED.TOOLTIP' | translate"
-                          tooltipPosition="top"
-                          tooltipEvent="hover"
-                        ></div>
-                      }
-                    </div>
-                  </li>
+                    </li>
+                  }
                 </ul>
               }
             </div>
