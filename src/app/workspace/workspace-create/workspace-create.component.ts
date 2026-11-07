@@ -1,15 +1,23 @@
 import { Component, EventEmitter, Input, Output, OnInit, inject } from '@angular/core'
-import { FormControl, FormGroup, Validators } from '@angular/forms'
+import { CommonModule } from '@angular/common'
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
-import { TranslateService } from '@ngx-translate/core'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { BehaviorSubject, catchError, map, Observable, of } from 'rxjs'
 
-import { SlotService } from '@onecx/angular-remote-components'
+import { ButtonModule } from 'primeng/button'
+import { DialogModule } from 'primeng/dialog'
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { InputTextModule } from 'primeng/inputtext'
+import { SelectModule } from 'primeng/select'
+import { TextareaModule } from 'primeng/textarea'
+import { TooltipModule } from 'primeng/tooltip'
+
+import { AngularRemoteComponentsModule, SlotService } from '@onecx/angular-remote-components'
 import { PortalMessageService, ThemeService } from '@onecx/angular-integration-interface'
 
 import { Utils } from 'src/app/shared/utils'
 import { WorkspaceAPIService, ProductAPIService, RefType } from 'src/app/shared/generated'
-import { SharedModule } from 'src/app/shared/shared.module'
 import { ImageComponent } from 'src/app/shared/components/image/image.component'
 
 export type Theme = {
@@ -22,7 +30,21 @@ export type Theme = {
 @Component({
   selector: 'app-workspace-create',
   standalone: true,
-  imports: [SharedModule, ImageComponent],
+  imports: [
+    AngularRemoteComponentsModule,
+    CommonModule,
+    ButtonModule,
+    DialogModule,
+    FloatLabelModule,
+    InputTextModule,
+    ReactiveFormsModule,
+    SelectModule,
+    TextareaModule,
+    TooltipModule,
+    TranslateModule,
+    // components
+    ImageComponent
+  ],
   templateUrl: './workspace-create.component.html',
   styleUrls: ['./workspace-create.component.scss']
 })

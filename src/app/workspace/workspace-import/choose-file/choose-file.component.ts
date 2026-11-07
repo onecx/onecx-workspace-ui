@@ -8,14 +8,16 @@ import {
   Output
 } from '@angular/core'
 import { HttpHeaders } from '@angular/common/http'
-import { TranslateService } from '@ngx-translate/core'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { FileSelectEvent } from 'primeng/fileupload'
-import { SharedModule } from 'src/app/shared/shared.module'
+
+import { FileUploadModule } from 'primeng/fileupload'
+import { MessageModule } from 'primeng/message'
 
 @Component({
   selector: 'app-import-choose-file',
   standalone: true,
-  imports: [SharedModule],
+  imports: [TranslateModule, FileUploadModule, MessageModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './choose-file.component.html'
 })

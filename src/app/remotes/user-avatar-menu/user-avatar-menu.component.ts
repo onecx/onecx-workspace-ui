@@ -19,8 +19,10 @@ import {
 
 import { MenuItem, PrimeIcons } from 'primeng/api'
 import { AvatarModule } from 'primeng/avatar'
+import { ButtonModule } from 'primeng/button'
 import { MenuModule } from 'primeng/menu'
 import { RippleModule } from 'primeng/ripple'
+import { TooltipModule } from 'primeng/tooltip'
 
 import { AppConfigService, AppStateService, UserService } from '@onecx/angular-integration-interface'
 import {
@@ -36,7 +38,6 @@ import { EventsPublisher, UserProfile } from '@onecx/integration-interface'
 
 import { Configuration, MenuItemAPIService } from 'src/app/shared/generated'
 import { MenuItemService } from 'src/app/shared/services/menu-item.service'
-import { SharedModule } from 'src/app/shared/shared.module'
 import { VerticalMenuItemComponent } from 'src/app/shared/components/vertical-menu-item/vertical-menu-item.component'
 import { environment } from 'src/environments/environment'
 
@@ -49,10 +50,11 @@ export type MenuAnchorPositionConfig = 'right' | 'left'
     AngularRemoteComponentsModule,
     FormsModule,
     CommonModule,
-    SharedModule,
     MenuModule,
     AvatarModule,
+    ButtonModule,
     RippleModule,
+    TooltipModule,
     RouterModule,
     TranslateModule,
     VerticalMenuItemComponent

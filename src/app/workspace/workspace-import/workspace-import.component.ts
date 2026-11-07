@@ -1,11 +1,15 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnChanges, ChangeDetectionStrategy } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
-import { TranslateService } from '@ngx-translate/core'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { MenuItem } from 'primeng/api'
+
+import { ButtonModule } from 'primeng/button'
+import { DialogModule } from 'primeng/dialog'
+import { StepsModule } from 'primeng/steps'
+import { TooltipModule } from 'primeng/tooltip'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 import { ImportResponseStatus, Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
-import { SharedModule } from 'src/app/shared/shared.module'
 
 import { ChooseFileComponent } from './choose-file/choose-file.component'
 import { ConfirmComponent } from './confirm/confirm.component'
@@ -23,7 +27,16 @@ export type Theme = {
 @Component({
   selector: 'app-workspace-import',
   standalone: true,
-  imports: [SharedModule, ChooseFileComponent, ConfirmComponent, PreviewComponent],
+  imports: [
+    TranslateModule,
+    ButtonModule,
+    DialogModule,
+    StepsModule,
+    TooltipModule,
+    ChooseFileComponent,
+    ConfirmComponent,
+    PreviewComponent
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './workspace-import.component.html',
   styleUrls: ['./workspace-import.component.scss']

@@ -3,7 +3,6 @@ import { RouterModule, Routes } from '@angular/router'
 
 import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
 
-import { SharedModule } from 'src/app/shared/shared.module'
 import { LabelResolver } from 'src/app/shared/label.resolver'
 
 import { WorkspaceDetailComponent } from './workspace-detail.component'
@@ -26,6 +25,7 @@ const routes: Routes = [
   }
 ]
 @NgModule({
-  imports: [AngularAcceleratorModule, [RouterModule.forChild(routes)], SharedModule]
+  imports: [AngularAcceleratorModule, [RouterModule.forChild(routes)]],
+  providers: [LabelResolver]
 })
 export class WorkspaceDetailModule {}
