@@ -418,11 +418,3 @@
     </ng-template>
   </p-dialog>
 }
-@if (displayDeleteDialog) {
-  <app-menu-delete
-    [menuItemOrg]="menuItemOrg"
-    [displayDialog]="displayDeleteDialog"
-    (displayDialogChange)="displayDeleteDialogChange.emit($event)"
-    (dataChanged)="dataChanged.emit($event)"
-  ></app-menu-delete>
-}

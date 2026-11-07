@@ -8,11 +8,10 @@ import { DialogModule } from 'primeng/dialog'
 import { FloatLabelModule } from 'primeng/floatlabel'
 import { SelectModule } from 'primeng/select'
 import { SelectItem, TreeNode } from 'primeng/api'
-import { TreeTableNodeExpandEvent } from 'primeng/treetable'
-import { TreeModule } from 'primeng/tree'
-import { TreeNodeDropEvent } from 'primeng/tree'
 import { ToggleButtonModule } from 'primeng/togglebutton'
 import { TooltipModule } from 'primeng/tooltip'
+import { TreeModule, TreeNodeDropEvent } from 'primeng/tree'
+import { TreeTableNodeExpandEvent } from 'primeng/treetable'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 

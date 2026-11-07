@@ -39,7 +39,6 @@ import { Utils } from 'src/app/shared/utils'
 
 import { ChangeMode } from '../menu.component'
 import { IconService } from '../services/iconservice'
-import { MenuDeleteComponent } from '../menu-delete/menu-delete.component'
 import { MenuInternComponent } from '../menu-intern/menu-intern.component'
 
 type I18N = { [key: string]: string }
@@ -75,7 +74,6 @@ DefaultValueAccessor.prototype.registerOnChange = function (fn) {
     SelectButtonModule,
     ButtonModule,
     TooltipModule,
-    MenuDeleteComponent,
     MenuInternComponent
   ],
   templateUrl: './menu-detail.component.html',

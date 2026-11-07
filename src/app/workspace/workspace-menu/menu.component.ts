@@ -7,16 +7,15 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { catchError, combineLatest, finalize, map, Observable, Subject, of, switchMap } from 'rxjs'
 import { saveAs } from 'file-saver'
 
-import { TreeTable, TreeTableNodeExpandEvent } from 'primeng/treetable'
-import { TreeTableModule } from 'primeng/treetable'
-import { SelectItem, TreeNode } from 'primeng/api'
 import { ButtonModule } from 'primeng/button'
 import { FloatLabelModule } from 'primeng/floatlabel'
 import { InputGroupModule } from 'primeng/inputgroup'
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon'
 import { MessageModule } from 'primeng/message'
 import { SelectButtonModule } from 'primeng/selectbutton'
+import { SelectItem, TreeNode } from 'primeng/api'
 import { TooltipModule } from 'primeng/tooltip'
+import { TreeTable, TreeTableModule, TreeTableNodeExpandEvent } from 'primeng/treetable'
 
 import { getLocation } from '@onecx/accelerator'
 import { Action, AngularAcceleratorModule } from '@onecx/angular-accelerator'
@@ -39,6 +38,7 @@ import {
 import { Utils } from 'src/app/shared/utils'
 import { MenuStateService } from './services/menu-state.service'
 
+import { MenuDeleteComponent } from './menu-delete/menu-delete.component'
 import { MenuDetailComponent } from './menu-detail/menu-detail.component'
 import { MenuImportComponent } from './menu-import/menu-import.component'
 import { MenuPreviewComponent } from './menu-preview/menu-preview.component'
@@ -76,6 +76,8 @@ type Column = { name: string; headerKey: string; tooltipKey: string; css?: strin
     SelectButtonModule,
     TooltipModule,
     TreeTableModule,
+    // components
+    MenuDeleteComponent,
     MenuDetailComponent,
     MenuImportComponent,
     MenuPreviewComponent,

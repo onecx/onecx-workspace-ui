@@ -9,9 +9,8 @@ import {
 } from '@angular/core'
 import { HttpHeaders } from '@angular/common/http'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
-import { FileSelectEvent } from 'primeng/fileupload'
 
-import { FileUploadModule } from 'primeng/fileupload'
+import { FileSelectEvent, FileUploadModule } from 'primeng/fileupload'
 import { MessageModule } from 'primeng/message'
 
 @Component({

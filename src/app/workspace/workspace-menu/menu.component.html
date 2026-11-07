@@ -589,7 +589,7 @@
 
         <ng-template pTemplate="footer">
           <!-- MESSAGES -->
-          <section class="pt-3 pb-1" [attr.aria-label]="'DIALOG.MENU.SECTIONS.MESSAGES' | translate">
+          <section class="py-3 pb-1" [attr.aria-label]="'DIALOG.MENU.SECTIONS.MESSAGES' | translate">
             @if (loadingWorkspace) {
               <p-message severity="info" styleClass="w-fit" [text]="'ACTIONS.LOADING' | translate"></p-message>
             } @else {
@@ -633,9 +633,14 @@
   [parentItems]="parentItems"
   [changeMode]="changeMode"
   [(displayDetailDialog)]="displayDetailDialog"
-  [(displayDeleteDialog)]="displayDeleteDialog"
   (dataChanged)="onMenuItemChanged($event)"
 ></app-menu-detail>
+
+<app-menu-delete
+  [menuItemOrg]="menuItem"
+  [displayDialog]="displayDeleteDialog"
+  (dataChanged)="onMenuItemChanged($event)"
+></app-menu-delete>
 
 <!-- 
   PREVIEW + REORDER 
