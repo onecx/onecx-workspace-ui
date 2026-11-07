@@ -29,14 +29,14 @@ import {
 } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
 
-import { WorkspaceExportComponent } from './workspace-export/workspace-export.component'
-import { WorkspacePropsComponent } from './workspace-props/workspace-props.component'
 import { WorkspaceContactComponent } from './workspace-contact/workspace-contact.component'
-import { WorkspaceInternComponent } from './workspace-intern/workspace-intern.component'
-import { WorkspaceRolesComponent } from './workspace-roles/workspace-roles.component'
-import { WorkspaceSlotsComponent } from './workspace-slots/workspace-slots.component'
-import { ProductComponent } from '../workspace-product/products.component'
 import { WorkspaceDeleteComponent } from './workspace-delete/workspace-delete.component'
+import { WorkspaceExportComponent } from './workspace-export/workspace-export.component'
+import { WorkspaceInternComponent } from './workspace-intern/workspace-intern.component'
+import { WorkspacePropsComponent } from './workspace-props/workspace-props.component'
+import { WorkspaceRolesComponent } from '../workspace-role/workspace-roles/workspace-roles.component'
+import { WorkspaceSlotsComponent } from '../workspace-slot/workspace-slots/workspace-slots.component'
+import { ProductComponent } from '../workspace-product/products.component'
 
 @Component({
   selector: 'app-workspace-detail',

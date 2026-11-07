@@ -4,7 +4,7 @@ import { PortalMessageService } from '@onecx/angular-integration-interface'
 
 import { SharedModule } from 'src/app/shared/shared.module'
 import { WorkspaceRolesAPIService } from 'src/app/shared/generated'
-import { Role } from '../workspace-detail/workspace-roles/workspace-roles.component'
+import { Role } from '../workspace-roles/workspace-roles.component'
 
 @Component({
   selector: 'app-workspace-role-delete',

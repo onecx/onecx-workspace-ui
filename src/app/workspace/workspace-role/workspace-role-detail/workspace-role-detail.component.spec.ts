@@ -8,7 +8,7 @@ import { BehaviorSubject, of, throwError } from 'rxjs'
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 
 import { Workspace, WorkspaceRolesAPIService } from 'src/app/shared/generated'
-import { Role } from '../workspace-detail/workspace-roles/workspace-roles.component'
+import { Role } from '../workspace-roles/workspace-roles.component'
 import { WorkspaceRoleDetailComponent } from './workspace-role-detail.component'
 
 const workspace: Workspace = {

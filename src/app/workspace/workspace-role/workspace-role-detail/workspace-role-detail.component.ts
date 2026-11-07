@@ -19,7 +19,7 @@ import {
   WorkspaceRolesAPIService,
   Workspace
 } from 'src/app/shared/generated'
-import { ChangeMode, Role } from '../workspace-detail/workspace-roles/workspace-roles.component'
+import { ChangeMode, Role } from '../workspace-roles/workspace-roles.component'
 
 @Component({
   selector: 'app-workspace-role-detail',

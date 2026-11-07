@@ -4,9 +4,9 @@ import { TranslateService } from '@ngx-translate/core'
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 import { TabsModule } from 'primeng/tabs'
 
+import { SharedModule } from 'src/app/shared/shared.module'
 import { SlotAPIService, UpdateSlotRequest } from 'src/app/shared/generated'
 import { ChangeMode, ExtendedSlot, ExtendedComponent, PSSlot } from '../workspace-slots/workspace-slots.component'
-import { SharedModule } from 'src/app/shared/shared.module'
 import { WorkspaceSlotDeregistrationComponent } from '../workspace-slot-deregistration/workspace-slot-deregistration.component'
 
 @Component({

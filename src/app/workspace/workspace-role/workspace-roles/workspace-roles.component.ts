@@ -32,8 +32,8 @@ import { Workspace, WorkspaceRole, WorkspaceRolesAPIService } from 'src/app/shar
 import { Utils } from 'src/app/shared/utils'
 import { SharedModule } from 'src/app/shared/shared.module'
 import { OcxChipComponent } from 'src/app/shared/components/ocx-chip/ocx-chip.component'
-import { WorkspaceRoleDeleteComponent } from '../../workspace-role-delete/workspace-role-delete.component'
-import { WorkspaceRoleDetailComponent } from '../../workspace-role-detail/workspace-role-detail.component'
+import { WorkspaceRoleDeleteComponent } from '../workspace-role-delete/workspace-role-delete.component'
+import { WorkspaceRoleDetailComponent } from '../workspace-role-detail/workspace-role-detail.component'
 
 export type IAMRole = { name?: string; description?: string }
 export type RoleType = 'WORKSPACE' | 'IAM'
