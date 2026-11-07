@@ -1,11 +1,18 @@
 import { Component, EventEmitter, Input, Output, OnChanges } from '@angular/core'
-import { FormGroup, FormControl, Validators } from '@angular/forms'
-import { TranslateService } from '@ngx-translate/core'
+import { CommonModule } from '@angular/common'
+import { FormGroup, FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
+
+import { ButtonModule } from 'primeng/button'
+import { DialogModule } from 'primeng/dialog'
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { InputTextModule } from 'primeng/inputtext'
+import { MessageModule } from 'primeng/message'
+import { TabsModule } from 'primeng/tabs'
+import { TooltipModule } from 'primeng/tooltip'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
-import { TabsModule } from 'primeng/tabs'
 
-import { SharedModule } from 'src/app/shared/shared.module'
 import {
   CreateWorkspaceRoleRequest,
   UpdateWorkspaceRoleRequest,
@@ -17,9 +24,19 @@ import { ChangeMode, Role } from '../workspace-detail/workspace-roles/workspace-
 @Component({
   selector: 'app-workspace-role-detail',
   standalone: true,
-  imports: [SharedModule, TabsModule],
-  templateUrl: './workspace-role-detail.component.html',
-  styleUrls: ['./workspace-role-detail.component.scss']
+  imports: [
+    CommonModule,
+    ButtonModule,
+    DialogModule,
+    FloatLabelModule,
+    InputTextModule,
+    MessageModule,
+    ReactiveFormsModule,
+    TabsModule,
+    TooltipModule,
+    TranslateModule
+  ],
+  templateUrl: './workspace-role-detail.component.html'
 })
 export class WorkspaceRoleDetailComponent implements OnChanges {
   @Input() workspace!: Workspace | undefined

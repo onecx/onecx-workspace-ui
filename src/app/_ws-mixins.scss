@@ -342,7 +342,11 @@
     .table-header-wrapper span:first-child {
       margin-right: 10px;
     }
+  }
+}
 
+@mixin ocx-data-view-fixes {
+  :host ::ng-deep {
     /* establish grid-nogutter */
     .p-dataview .p-dataview-content {
       margin: 0;

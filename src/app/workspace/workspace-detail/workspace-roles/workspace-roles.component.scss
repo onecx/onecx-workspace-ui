@@ -2,14 +2,11 @@
 
 @include danger-action;
 @include ocx-text-responsive;
+@include ocx-data-view-fixes;
 
 :host ::ng-deep {
   --onecx-workspace-onecx-workspace-ui-togglebutton-content-padding: 0.25rem 0.5rem;
 
-  .p-dataview .p-dataview-content {
-    padding-left: 0;
-    padding-right: 0;
-  }
   .p-card-body {
     padding: 0.25rem;
   }
