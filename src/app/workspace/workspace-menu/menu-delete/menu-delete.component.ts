@@ -1,14 +1,18 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core'
+import { TranslateModule } from '@ngx-translate/core'
+
+import { ButtonModule } from 'primeng/button'
+import { DialogModule } from 'primeng/dialog'
+import { TooltipModule } from 'primeng/tooltip'
 
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 
 import { MenuItemAPIService, WorkspaceMenuItem } from 'src/app/shared/generated'
-import { SharedModule } from 'src/app/shared/shared.module'
 
 @Component({
   selector: 'app-menu-delete',
   standalone: true,
-  imports: [SharedModule],
+  imports: [TranslateModule, DialogModule, ButtonModule, TooltipModule],
   templateUrl: './menu-delete.component.html',
   styleUrls: ['./menu-delete.component.scss']
 })

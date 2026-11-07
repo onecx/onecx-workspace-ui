@@ -1,20 +1,28 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core'
 import { toObservable, toSignal } from '@angular/core/rxjs-interop'
-import { Location } from '@angular/common'
-import { ActivatedRoute, Router } from '@angular/router'
-import { TranslateService } from '@ngx-translate/core'
+import { CommonModule, Location } from '@angular/common'
+import { FormsModule } from '@angular/forms'
+import { ActivatedRoute, RouterModule, Router } from '@angular/router'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { catchError, combineLatest, finalize, map, Observable, Subject, of, switchMap } from 'rxjs'
 import { saveAs } from 'file-saver'
 
 import { TreeTable, TreeTableNodeExpandEvent } from 'primeng/treetable'
+import { TreeTableModule } from 'primeng/treetable'
 import { SelectItem, TreeNode } from 'primeng/api'
+import { ButtonModule } from 'primeng/button'
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { InputGroupModule } from 'primeng/inputgroup'
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon'
+import { MessageModule } from 'primeng/message'
+import { SelectButtonModule } from 'primeng/selectbutton'
+import { TooltipModule } from 'primeng/tooltip'
 
 import { getLocation } from '@onecx/accelerator'
-import { Action } from '@onecx/angular-accelerator'
+import { Action, AngularAcceleratorModule } from '@onecx/angular-accelerator'
 import { PortalPageComponent } from '@onecx/angular-utils'
 import { PortalMessageService, UserService, WorkspaceService } from '@onecx/angular-integration-interface'
 
-import { SharedModule } from 'src/app/shared/shared.module'
 import {
   AssignmentAPIService,
   Assignment,
@@ -54,7 +62,25 @@ type Column = { name: string; headerKey: string; tooltipKey: string; css?: strin
 @Component({
   selector: 'app-menu',
   standalone: true,
-  imports: [SharedModule, MenuDetailComponent, MenuImportComponent, MenuPreviewComponent, PortalPageComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    TranslateModule,
+    AngularAcceleratorModule,
+    ButtonModule,
+    FloatLabelModule,
+    InputGroupModule,
+    InputGroupAddonModule,
+    MessageModule,
+    SelectButtonModule,
+    TooltipModule,
+    TreeTableModule,
+    MenuDetailComponent,
+    MenuImportComponent,
+    MenuPreviewComponent,
+    PortalPageComponent
+  ],
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.scss']
 })

@@ -1,14 +1,22 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core'
+import { FormsModule } from '@angular/forms'
+import { TranslateModule } from '@ngx-translate/core'
 
+import { ButtonModule } from 'primeng/button'
 import { CardModule } from 'primeng/card'
+import { DialogModule } from 'primeng/dialog'
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { SelectModule } from 'primeng/select'
 import { SelectItem, TreeNode } from 'primeng/api'
 import { TreeTableNodeExpandEvent } from 'primeng/treetable'
+import { TreeModule } from 'primeng/tree'
 import { TreeNodeDropEvent } from 'primeng/tree'
+import { ToggleButtonModule } from 'primeng/togglebutton'
+import { TooltipModule } from 'primeng/tooltip'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 
 import { Utils } from 'src/app/shared/utils'
-import { SharedModule } from 'src/app/shared/shared.module'
 import { MenuItemAPIService, WorkspaceMenuItem } from 'src/app/shared/generated'
 import { MenuStateService } from '../services/menu-state.service'
 
@@ -17,7 +25,18 @@ export type I18N = { [key: string]: string }
 @Component({
   selector: 'app-menu-preview',
   standalone: true,
-  imports: [SharedModule, CardModule],
+  imports: [
+    TranslateModule,
+    FormsModule,
+    DialogModule,
+    ToggleButtonModule,
+    FloatLabelModule,
+    SelectModule,
+    CardModule,
+    TreeModule,
+    ButtonModule,
+    TooltipModule
+  ],
   templateUrl: './menu-preview.component.html',
   styleUrls: ['./menu-preview.component.scss']
 })

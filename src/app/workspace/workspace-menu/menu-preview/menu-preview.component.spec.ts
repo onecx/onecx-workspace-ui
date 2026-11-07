@@ -59,7 +59,7 @@ describe('MenuPreviewComponent', () => {
   }
 
   beforeEach(waitForAsync(() => {
-    // MenuItemAPIService is 'providedIn: any': MenuPreviewComponent (standalone, imports SharedModule)
+    // MenuItemAPIService is 'providedIn: any': MenuPreviewComponent (standalone)
     // resolves it from its own environment injector, so a plain TestBed providers override is bypassed.
     // The override must be registered before compileComponents() runs.
     TestBed.overrideComponent(MenuPreviewComponent, {

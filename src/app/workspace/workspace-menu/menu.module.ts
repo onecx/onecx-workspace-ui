@@ -5,8 +5,6 @@ import { TreeDragDropService } from 'primeng/api'
 
 import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
 
-import { SharedModule } from 'src/app/shared/shared.module'
-
 import { MenuTreeService } from './services/menu-tree.service'
 import { MenuComponent } from './menu.component'
 import { MenuDeleteComponent } from './menu-delete/menu-delete.component'
@@ -31,7 +29,6 @@ const routes: Routes = [
     MenuImportComponent,
     MenuPreviewComponent,
     [RouterModule.forChild(routes)],
-    SharedModule,
     TreeTableModule
   ],
   providers: [MenuTreeService, TreeDragDropService]

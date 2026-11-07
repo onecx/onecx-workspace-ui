@@ -1,14 +1,17 @@
+import { CommonModule } from '@angular/common'
 import { Component, Input } from '@angular/core'
-import { TranslateService } from '@ngx-translate/core'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
 
-import { SharedModule } from 'src/app/shared/shared.module'
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { InputTextModule } from 'primeng/inputtext'
+import { TooltipModule } from 'primeng/tooltip'
 
 import { WorkspaceMenuItem } from 'src/app/shared/generated'
 
 @Component({
   selector: 'app-menu-intern',
   standalone: true,
-  imports: [SharedModule],
+  imports: [CommonModule, TranslateModule, FloatLabelModule, InputTextModule, TooltipModule],
   templateUrl: './menu-intern.component.html'
 })
 export class MenuInternComponent {

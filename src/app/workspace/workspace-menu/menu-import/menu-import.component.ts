@@ -1,17 +1,20 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core'
 import { HttpHeaders } from '@angular/common/http'
-import { TranslateService } from '@ngx-translate/core'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
 
-import { FileSelectEvent } from 'primeng/fileupload'
+import { ButtonModule } from 'primeng/button'
+import { DialogModule } from 'primeng/dialog'
+import { FileSelectEvent, FileUploadModule } from 'primeng/fileupload'
+import { MessageModule } from 'primeng/message'
+import { TooltipModule } from 'primeng/tooltip'
 
-import { SharedModule } from 'src/app/shared/shared.module'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { MenuItemAPIService, MenuSnapshot } from 'src/app/shared/generated'
 
 @Component({
   selector: 'app-menu-import',
   standalone: true,
-  imports: [SharedModule],
+  imports: [TranslateModule, DialogModule, FileUploadModule, MessageModule, ButtonModule, TooltipModule],
   templateUrl: './menu-import.component.html',
   styleUrls: ['./menu-import.component.scss']
 })

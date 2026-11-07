@@ -1,11 +1,27 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core'
 import { Location } from '@angular/common'
-import { DefaultValueAccessor, FormControl, FormGroup, Validators } from '@angular/forms'
-import { TranslateService } from '@ngx-translate/core'
+import {
+  DefaultValueAccessor,
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { firstValueFrom, catchError, map, of, Subject, takeUntil } from 'rxjs'
 
 import { SelectItem } from 'primeng/api'
 import { TabsModule } from 'primeng/tabs'
+import { AutoCompleteModule } from 'primeng/autocomplete'
+import { ButtonModule } from 'primeng/button'
+import { CheckboxModule } from 'primeng/checkbox'
+import { DialogModule } from 'primeng/dialog'
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { InputTextModule } from 'primeng/inputtext'
+import { SelectButtonModule } from 'primeng/selectbutton'
+import { SelectModule } from 'primeng/select'
+import { TooltipModule } from 'primeng/tooltip'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 
@@ -20,7 +36,6 @@ import {
   Target
 } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
-import { SharedModule } from 'src/app/shared/shared.module'
 
 import { ChangeMode } from '../menu.component'
 import { IconService } from '../services/iconservice'
@@ -46,7 +61,23 @@ DefaultValueAccessor.prototype.registerOnChange = function (fn) {
 @Component({
   selector: 'app-menu-detail',
   standalone: true,
-  imports: [SharedModule, MenuDeleteComponent, MenuInternComponent, TabsModule],
+  imports: [
+    TranslateModule,
+    FormsModule,
+    ReactiveFormsModule,
+    DialogModule,
+    TabsModule,
+    FloatLabelModule,
+    InputTextModule,
+    SelectModule,
+    AutoCompleteModule,
+    CheckboxModule,
+    SelectButtonModule,
+    ButtonModule,
+    TooltipModule,
+    MenuDeleteComponent,
+    MenuInternComponent
+  ],
   templateUrl: './menu-detail.component.html',
   styleUrls: ['./menu-detail.component.scss']
 })
