@@ -1,15 +1,19 @@
 import { Component, Input, OnChanges } from '@angular/core'
-import { FormControl, FormGroup, Validators } from '@angular/forms'
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
+import { TranslateModule } from '@ngx-translate/core'
+
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { InputTextModule } from 'primeng/inputtext'
+import { TooltipModule } from 'primeng/tooltip'
 
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 
 import { Workspace } from 'src/app/shared/generated'
-import { SharedModule } from 'src/app/shared/shared.module'
 
 @Component({
   selector: 'app-workspace-contact',
   standalone: true,
-  imports: [SharedModule],
+  imports: [ReactiveFormsModule, TranslateModule, FloatLabelModule, InputTextModule, TooltipModule],
   templateUrl: './workspace-contact.component.html'
 })
 export class WorkspaceContactComponent implements OnChanges {

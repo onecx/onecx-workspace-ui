@@ -1,16 +1,21 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core'
-import { TranslateService } from '@ngx-translate/core'
+import { FormsModule } from '@angular/forms'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import FileSaver from 'file-saver'
+
+import { ButtonModule } from 'primeng/button'
+import { CheckboxModule } from 'primeng/checkbox'
+import { DialogModule } from 'primeng/dialog'
+import { TooltipModule } from 'primeng/tooltip'
 
 import { Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { Utils } from 'src/app/shared/utils'
-import { SharedModule } from 'src/app/shared/shared.module'
 
 @Component({
   selector: 'app-workspace-export',
   standalone: true,
-  imports: [SharedModule],
+  imports: [TranslateModule, FormsModule, DialogModule, CheckboxModule, ButtonModule, TooltipModule],
   templateUrl: './workspace-export.component.html'
 })
 export class WorkspaceExportComponent {

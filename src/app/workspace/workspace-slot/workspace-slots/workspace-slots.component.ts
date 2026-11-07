@@ -1,11 +1,21 @@
+import { CommonModule } from '@angular/common'
 import { Component, DestroyRef, inject, Input, OnChanges, OnInit, signal, SimpleChanges } from '@angular/core'
-import { SharedModule } from 'src/app/shared/shared.module'
+import { FormsModule } from '@angular/forms'
+import { RouterModule } from '@angular/router'
 import { OcxChipComponent } from 'src/app/shared/components/ocx-chip/ocx-chip.component'
 import { WorkspaceSlotDetailComponent } from '../workspace-slot-detail/workspace-slot-detail.component'
-import { TranslateService } from '@ngx-translate/core'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { catchError, map, of, Observable, firstValueFrom, BehaviorSubject, forkJoin } from 'rxjs'
 import { SelectItem } from 'primeng/api'
+import { ButtonModule } from 'primeng/button'
 import { CardModule } from 'primeng/card'
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon'
+import { InputGroupModule } from 'primeng/inputgroup'
+import { InputTextModule } from 'primeng/inputtext'
+import { MessageModule } from 'primeng/message'
+import { SelectButtonModule } from 'primeng/selectbutton'
+import { TooltipModule } from 'primeng/tooltip'
 
 import { UserService, WorkspaceService } from '@onecx/angular-integration-interface'
 
@@ -21,7 +31,13 @@ import {
   WorkspaceProductAPIService
 } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
-import { ColumnType, DataSortDirection, DataTableColumn, RowListGridData } from '@onecx/angular-accelerator'
+import {
+  AngularAcceleratorModule,
+  ColumnType,
+  DataSortDirection,
+  DataTableColumn,
+  RowListGridData
+} from '@onecx/angular-accelerator'
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
 
 export type SlotType = 'WORKSPACE' | 'UNUSED' | 'CHANGES'
@@ -44,7 +60,24 @@ export type ExtendedSlot = Slot &
 @Component({
   selector: 'app-workspace-slots',
   standalone: true,
-  imports: [SharedModule, CardModule, OcxChipComponent, WorkspaceSlotDetailComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    TranslateModule,
+    AngularAcceleratorModule,
+    ButtonModule,
+    FloatLabelModule,
+    InputGroupModule,
+    InputGroupAddonModule,
+    InputTextModule,
+    MessageModule,
+    SelectButtonModule,
+    TooltipModule,
+    CardModule,
+    OcxChipComponent,
+    WorkspaceSlotDetailComponent
+  ],
   templateUrl: './workspace-slots.component.html',
   styleUrls: ['./workspace-slots.component.scss']
 })

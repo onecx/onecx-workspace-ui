@@ -1,8 +1,14 @@
+import { CommonModule } from '@angular/common'
 import { Component, Input, OnChanges } from '@angular/core'
-import { FormControl, FormGroup } from '@angular/forms'
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
+import { TranslateModule } from '@ngx-translate/core'
+
+import { CheckboxModule } from 'primeng/checkbox'
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { InputTextModule } from 'primeng/inputtext'
+import { TooltipModule } from 'primeng/tooltip'
 
 import { Workspace } from 'src/app/shared/generated'
-import { SharedModule } from 'src/app/shared/shared.module'
 
 export type WorkspaceInternFormControls = {
   operator: FormControl<boolean | null>
@@ -12,7 +18,15 @@ export type WorkspaceInternFormControls = {
 @Component({
   selector: 'app-workspace-intern',
   standalone: true,
-  imports: [SharedModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    TranslateModule,
+    CheckboxModule,
+    FloatLabelModule,
+    InputTextModule,
+    TooltipModule
+  ],
   templateUrl: './workspace-intern.component.html'
 })
 export class WorkspaceInternComponent implements OnChanges {

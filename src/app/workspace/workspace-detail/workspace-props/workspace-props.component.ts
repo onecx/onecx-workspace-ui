@@ -11,11 +11,23 @@ import {
   ChangeDetectionStrategy
 } from '@angular/core'
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
-import { Location } from '@angular/common'
-import { FormControl, FormGroup, Validators } from '@angular/forms'
+import { CommonModule, Location } from '@angular/common'
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
+import { TranslateModule } from '@ngx-translate/core'
+import { RouterModule } from '@angular/router'
 import { BehaviorSubject, map, Observable, of, ReplaySubject } from 'rxjs'
 
-import { SlotService } from '@onecx/angular-remote-components'
+import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
+import { AngularRemoteComponentsModule, SlotService } from '@onecx/angular-remote-components'
+import { ButtonModule } from 'primeng/button'
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon'
+import { InputGroupModule } from 'primeng/inputgroup'
+import { InputTextModule } from 'primeng/inputtext'
+import { SelectModule } from 'primeng/select'
+import { TextareaModule } from 'primeng/textarea'
+import { TooltipModule } from 'primeng/tooltip'
+
 import { PortalMessageService, WorkspaceService } from '@onecx/angular-integration-interface'
 import { getLocation } from '@onecx/accelerator'
 
@@ -28,7 +40,6 @@ import {
   WorkspaceProductAPIService
 } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
-import { SharedModule } from 'src/app/shared/shared.module'
 import { ImageComponent } from 'src/app/shared/components/image/image.component'
 import { WorkspaceI18nComponent } from '../workspace-i18n/workspace-i18n.component'
 
@@ -42,7 +53,24 @@ export type ExtendedTheme = {
 @Component({
   selector: 'app-workspace-props',
   standalone: true,
-  imports: [SharedModule, ImageComponent, WorkspaceI18nComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterModule,
+    TranslateModule,
+    AngularAcceleratorModule,
+    AngularRemoteComponentsModule,
+    InputGroupModule,
+    InputGroupAddonModule,
+    FloatLabelModule,
+    InputTextModule,
+    SelectModule,
+    TextareaModule,
+    ButtonModule,
+    TooltipModule,
+    ImageComponent,
+    WorkspaceI18nComponent
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './workspace-props.component.html',
   styleUrls: ['./workspace-props.component.scss']

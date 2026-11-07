@@ -1,12 +1,17 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core'
+import { TranslateModule } from '@ngx-translate/core'
+
+import { ButtonModule } from 'primeng/button'
+import { DialogModule } from 'primeng/dialog'
+import { MessageModule } from 'primeng/message'
+import { TooltipModule } from 'primeng/tooltip'
 
 import { Workspace } from 'src/app/shared/generated'
-import { SharedModule } from 'src/app/shared/shared.module'
 
 @Component({
   selector: 'app-workspace-delete',
   standalone: true,
-  imports: [SharedModule],
+  imports: [TranslateModule, DialogModule, MessageModule, ButtonModule, TooltipModule],
   templateUrl: './workspace-delete.component.html'
 })
 export class WorkspaceDeleteComponent {

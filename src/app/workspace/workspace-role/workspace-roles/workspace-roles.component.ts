@@ -11,12 +11,23 @@ import {
   signal,
   DestroyRef
 } from '@angular/core'
+import { CommonModule } from '@angular/common'
+import { FormsModule } from '@angular/forms'
+import { RouterModule } from '@angular/router'
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
-import { TranslateService } from '@ngx-translate/core'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { BehaviorSubject, Observable, catchError, map, of } from 'rxjs'
 
 import { SelectItem } from 'primeng/api'
+import { ButtonModule } from 'primeng/button'
 import { CardModule } from 'primeng/card'
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon'
+import { InputGroupModule } from 'primeng/inputgroup'
+import { InputTextModule } from 'primeng/inputtext'
+import { MessageModule } from 'primeng/message'
+import { SelectButtonModule } from 'primeng/selectbutton'
+import { TooltipModule } from 'primeng/tooltip'
 
 import {
   ColumnType,
@@ -30,7 +41,6 @@ import { PortalMessageService, UserService, WorkspaceService } from '@onecx/angu
 
 import { Workspace, WorkspaceRole, WorkspaceRolesAPIService } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
-import { SharedModule } from 'src/app/shared/shared.module'
 import { OcxChipComponent } from 'src/app/shared/components/ocx-chip/ocx-chip.component'
 import { WorkspaceRoleDeleteComponent } from '../workspace-role-delete/workspace-role-delete.component'
 import { WorkspaceRoleDetailComponent } from '../workspace-role-detail/workspace-role-detail.component'
@@ -49,8 +59,19 @@ export function slotInitializer(slotService: SlotService) {
   selector: 'app-workspace-roles',
   standalone: true,
   imports: [
-    SharedModule,
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    TranslateModule,
     AngularAcceleratorModule,
+    ButtonModule,
+    FloatLabelModule,
+    InputGroupModule,
+    InputGroupAddonModule,
+    InputTextModule,
+    MessageModule,
+    SelectButtonModule,
+    TooltipModule,
     CardModule,
     OcxChipComponent,
     WorkspaceRoleDetailComponent,
