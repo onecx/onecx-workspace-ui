@@ -1,9 +1,20 @@
 import { Component, EventEmitter, inject, Input, OnChanges, Output, SimpleChanges } from '@angular/core'
-import { FormArray, FormBuilder } from '@angular/forms'
+import { FormArray, FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { TranslateModule } from '@ngx-translate/core'
+
+import { ButtonModule } from 'primeng/button'
+import { DialogModule } from 'primeng/dialog'
+import { DividerModule } from 'primeng/divider'
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon'
+import { InputGroupModule } from 'primeng/inputgroup'
+import { InputTextModule } from 'primeng/inputtext'
+import { MessageModule } from 'primeng/message'
+import { SelectModule } from 'primeng/select'
+import { TooltipModule } from 'primeng/tooltip'
 
 import { Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
-import { SharedModule } from 'src/app/shared/shared.module'
 
 export type LanguageOption = {
   label: string
@@ -13,7 +24,21 @@ export type LanguageOption = {
 @Component({
   selector: 'app-workspace-i18n',
   standalone: true,
-  imports: [SharedModule],
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    TranslateModule,
+    DialogModule,
+    DividerModule,
+    FloatLabelModule,
+    InputTextModule,
+    InputGroupModule,
+    InputGroupAddonModule,
+    ButtonModule,
+    MessageModule,
+    SelectModule,
+    TooltipModule
+  ],
   templateUrl: './workspace-i18n.component.html',
   styleUrls: ['./workspace-i18n.component.scss']
 })

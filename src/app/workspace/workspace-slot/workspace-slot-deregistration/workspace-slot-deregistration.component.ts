@@ -1,6 +1,9 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core'
+import { TranslateModule } from '@ngx-translate/core'
 
-import { SharedModule } from 'src/app/shared/shared.module'
+import { ButtonModule } from 'primeng/button'
+import { DialogModule } from 'primeng/dialog'
+import { TooltipModule } from 'primeng/tooltip'
 
 /**
  * Confirmation dialog for deregistering components from a workspace slot.
@@ -10,7 +13,7 @@ import { SharedModule } from 'src/app/shared/shared.module'
 @Component({
   selector: 'app-workspace-slot-deregistration',
   standalone: true,
-  imports: [SharedModule],
+  imports: [TranslateModule, DialogModule, ButtonModule, TooltipModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './workspace-slot-deregistration.component.html'
 })

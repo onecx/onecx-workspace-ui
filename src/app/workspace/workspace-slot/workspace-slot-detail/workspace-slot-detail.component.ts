@@ -1,10 +1,20 @@
+import { CommonModule } from '@angular/common'
 import { Component, EventEmitter, Input, Output, OnChanges, inject, OnInit } from '@angular/core'
-import { TranslateService } from '@ngx-translate/core'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
+
+import { ButtonModule } from 'primeng/button'
+import { DialogModule } from 'primeng/dialog'
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon'
+import { InputGroupModule } from 'primeng/inputgroup'
+import { InputTextModule } from 'primeng/inputtext'
+import { MessageModule } from 'primeng/message'
+import { PickListModule } from 'primeng/picklist'
+import { TabsModule } from 'primeng/tabs'
+import { TooltipModule } from 'primeng/tooltip'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
-import { TabsModule } from 'primeng/tabs'
 
-import { SharedModule } from 'src/app/shared/shared.module'
 import { SlotAPIService, UpdateSlotRequest } from 'src/app/shared/generated'
 import { ChangeMode, ExtendedSlot, ExtendedComponent, PSSlot } from '../workspace-slots/workspace-slots.component'
 import { WorkspaceSlotDeregistrationComponent } from '../workspace-slot-deregistration/workspace-slot-deregistration.component'
@@ -12,7 +22,21 @@ import { WorkspaceSlotDeregistrationComponent } from '../workspace-slot-deregist
 @Component({
   selector: 'app-workspace-slot-detail',
   standalone: true,
-  imports: [SharedModule, TabsModule, WorkspaceSlotDeregistrationComponent],
+  imports: [
+    CommonModule,
+    TranslateModule,
+    DialogModule,
+    InputTextModule,
+    FloatLabelModule,
+    InputGroupModule,
+    InputGroupAddonModule,
+    ButtonModule,
+    MessageModule,
+    PickListModule,
+    TabsModule,
+    TooltipModule,
+    WorkspaceSlotDeregistrationComponent
+  ],
   templateUrl: './workspace-slot-detail.component.html',
   styleUrls: ['./workspace-slot-detail.component.scss']
 })

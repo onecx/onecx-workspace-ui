@@ -1,15 +1,19 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core'
+import { TranslateModule } from '@ngx-translate/core'
+
+import { ButtonModule } from 'primeng/button'
+import { DialogModule } from 'primeng/dialog'
+import { TooltipModule } from 'primeng/tooltip'
 
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 
-import { SharedModule } from 'src/app/shared/shared.module'
 import { WorkspaceRolesAPIService } from 'src/app/shared/generated'
 import { Role } from '../workspace-roles/workspace-roles.component'
 
 @Component({
   selector: 'app-workspace-role-delete',
   standalone: true,
-  imports: [SharedModule],
+  imports: [TranslateModule, DialogModule, ButtonModule, TooltipModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './workspace-role-delete.component.html'
 })
