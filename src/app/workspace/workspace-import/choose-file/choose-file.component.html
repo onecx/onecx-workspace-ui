@@ -9,6 +9,7 @@
     [headers]="httpHeaders"
     [customUpload]="true"
     (uploadHandler)="uploadHandler()"
+    [uploadButtonProps]="{ label: 'WORKSPACE_IMPORT.PREVIEW' | translate }"
     (onClear)="onClear()"
     (onRemove)="onClear()"
     (onSelect)="onFileSelect($event)"
@@ -19,7 +20,7 @@
   />
   @if (importError) {
     <p-message
-      styleClass="mt-2 w-fit"
+      styleClass="mt-4 w-fit"
       id="ws_import_choose_file_upload_error"
       severity="error"
       [text]="validationErrorCause"

@@ -24,6 +24,7 @@ import { SharedModule } from 'src/app/shared/shared.module'
 
 import { ChangeMode } from '../menu.component'
 import { IconService } from '../services/iconservice'
+import { MenuDeleteComponent } from '../menu-delete/menu-delete.component'
 import { MenuInternComponent } from '../menu-intern/menu-intern.component'
 
 type I18N = { [key: string]: string }
@@ -45,7 +46,7 @@ DefaultValueAccessor.prototype.registerOnChange = function (fn) {
 @Component({
   selector: 'app-menu-detail',
   standalone: true,
-  imports: [SharedModule, MenuInternComponent, TabsModule],
+  imports: [SharedModule, MenuDeleteComponent, MenuInternComponent, TabsModule],
   templateUrl: './menu-detail.component.html',
   styleUrls: ['./menu-detail.component.scss']
 })
@@ -305,23 +306,6 @@ export class MenuDetailComponent implements OnChanges {
       this.menuItem.target = this.menuItemForm.controls['target'].value
       this.menuItem.description = this.menuItemForm.controls['description'].value
     }
-  }
-
-  /**
-   * DELETE
-   */
-  public onMenuDelete(): void {
-    this.displayDeleteDialog = false
-    this.menuApi.deleteMenuItemById({ menuItemId: this.menuItemOrg?.id ?? '' }).subscribe({
-      next: () => {
-        this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MENU.MESSAGE.OK' })
-        this.dataChanged.emit(true)
-      },
-      error: (err) => {
-        this.msgService.error({ summaryKey: 'ACTIONS.DELETE.MENU.MESSAGE.NOK' })
-        console.error('deleteMenuItemById', err)
-      }
-    })
   }
 
   public onTabChange(e: string | number): void {

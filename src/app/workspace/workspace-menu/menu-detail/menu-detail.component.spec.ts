@@ -139,8 +139,7 @@ describe('MenuDetailComponent', () => {
   const menuApiServiceSpy = {
     getMenuItemById: jasmine.createSpy('getMenuItemById').and.returnValue(of(mockMenuItems)),
     createMenuItemForWorkspace: jasmine.createSpy('createMenuItemForWorkspace').and.returnValue(of(mockMenuItems)),
-    updateMenuItem: jasmine.createSpy('updateMenuItem').and.returnValue(of(mockMenuItems)),
-    deleteMenuItemById: jasmine.createSpy('deleteMenuItemById').and.returnValue(of({}))
+    updateMenuItem: jasmine.createSpy('updateMenuItem').and.returnValue(of(mockMenuItems))
   }
   const translateServiceSpy = jasmine.createSpyObj('TranslateService', ['get'])
   const locationSpy = jasmine.createSpyObj<Location>('Location', ['back'])
@@ -193,7 +192,6 @@ describe('MenuDetailComponent', () => {
     msgServiceSpy.error.calls.reset()
     wProductApiServiceSpy.getProductsByWorkspaceId.calls.reset()
     menuApiServiceSpy.getMenuItemById.calls.reset()
-    menuApiServiceSpy.deleteMenuItemById.calls.reset()
     menuApiServiceSpy.createMenuItemForWorkspace.calls.reset()
     menuApiServiceSpy.updateMenuItem.calls.reset()
     translateServiceSpy.get.calls.reset()
@@ -570,27 +568,7 @@ describe('MenuDetailComponent', () => {
     })
   })
 
-  describe('deletion', () => {
-    it('should delete menu item', () => {
-      menuApiServiceSpy.deleteMenuItemById({ menuItemId: 'id' })
-      component.menuItem = mockMenuItems[0]
-
-      component.onMenuDelete()
-
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MENU.MESSAGE.OK' })
-    })
-
-    it('should display error message on delete menu item', () => {
-      const errorResponse = { status: 400, statusText: 'Error on import menu items' }
-      menuApiServiceSpy.deleteMenuItemById.and.returnValue(throwError(() => errorResponse))
-      spyOn(console, 'error')
-
-      component.onMenuDelete()
-
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MENU.MESSAGE.NOK' })
-      expect(console.error).toHaveBeenCalledWith('deleteMenuItemById', errorResponse)
-    })
-
+  describe('tabs', () => {
     it('should update selectedTabIndex onTabChange', () => {
       const tabValue = '1'
 

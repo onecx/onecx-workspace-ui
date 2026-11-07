@@ -1,5 +1,6 @@
 @if (displayDetailDialog && role) {
   <p-dialog
+    #dialog
     [visible]="true"
     (visibleChange)="onClose()"
     [header]="'DIALOG.ROLE.HEADER.' + changeMode | translate"
@@ -7,10 +8,11 @@
     [closable]="true"
     [resizable]="false"
     [dismissableMask]="true"
-    [style]="{ width: '550px' }"
+    [closeOnEscape]="true"
+    [style]="{ width: '600px' }"
     styleClass="disable-max-height-preset"
   >
-    <p-tabs value="0">
+    <p-tabs value="0" (valueChange)="dialog.focus()">
       <p-tablist>
         <p-tab
           value="0"

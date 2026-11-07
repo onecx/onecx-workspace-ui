@@ -6,10 +6,7 @@
 @include ocx-required-label;
 @include ocx-p-inputgroup;
 @include ocx-p-tabs;
-@include ocx-interactive-data-view-fixes;
-@include dialog-footer-buttons;
 @include dialog-non-full-size-modal;
-@include readable-disabled-components;
 
 :host ::ng-deep {
   .ocx-content .ocx-card {

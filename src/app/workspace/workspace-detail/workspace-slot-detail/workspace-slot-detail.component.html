@@ -1,5 +1,6 @@
 @if (displayDialog && slot) {
   <p-dialog
+    #dialog
     [visible]="true"
     (visibleChange)="onClose()"
     [header]="'DIALOG.SLOT.HEADER.VIEW' | translate"
@@ -11,7 +12,7 @@
   >
     <!-- DIALOG HEADER ROW -->
     <div
-      class="absolute hidden lg:dialog-header-right-slot"
+      class="absolute lg:dialog-header-right-slot"
       [attr.aria-label]="'SLOT.NAME' | translate"
       [pTooltip]="'SLOT.NAME' | translate"
       tooltipPosition="top"
@@ -37,7 +38,7 @@
       <label for="ws_slot_detail_item_slot_name">{{ 'SLOT.NAME' | translate }}</label>
     </span>
 
-    <p-tabs [(value)]="selectedTabIndex">
+    <p-tabs [(value)]="selectedTabIndex" (valueChange)="dialog.focus()">
       <p-tablist>
         <p-tab
           value="0"

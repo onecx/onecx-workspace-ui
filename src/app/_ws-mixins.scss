@@ -437,13 +437,6 @@
     }
   }
 }
-@mixin dialog-footer-buttons {
-  :host ::ng-deep {
-    .p-dialog .p-dialog-footer button {
-      margin: 0;
-    }
-  }
-}
 
 /* **********************************************
  *  TABs

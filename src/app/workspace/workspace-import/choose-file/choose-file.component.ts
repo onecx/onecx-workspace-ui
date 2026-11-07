@@ -1,4 +1,12 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  inject,
+  OnInit,
+  Output
+} from '@angular/core'
 import { HttpHeaders } from '@angular/common/http'
 import { TranslateService } from '@ngx-translate/core'
 import { FileSelectEvent } from 'primeng/fileupload'
@@ -8,9 +16,13 @@ import { SharedModule } from 'src/app/shared/shared.module'
   selector: 'app-import-choose-file',
   standalone: true,
   imports: [SharedModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './choose-file.component.html'
 })
 export class ChooseFileComponent implements OnInit {
+  private readonly translate = inject(TranslateService)
+  private readonly cdr = inject(ChangeDetectorRef)
+
   @Output() public importFileSelected = new EventEmitter<any>()
 
   importWorkspace = null
@@ -19,8 +31,6 @@ export class ChooseFileComponent implements OnInit {
   public reader = new FileReader()
   public importError = false
   public validationErrorCause: string | undefined = undefined
-
-  constructor(private readonly translate: TranslateService) {}
 
   public ngOnInit(): void {
     this.httpHeaders = new HttpHeaders()
@@ -65,6 +75,8 @@ export class ChooseFileComponent implements OnInit {
             this.importError = true
             this.validationErrorCause =
               data['WORKSPACE_IMPORT.VALIDATION.RESULT'] + data['WORKSPACE_IMPORT.VALIDATION.JSON_ERROR']
+          } finally {
+            this.cdr.markForCheck()
           }
         })
     })
@@ -94,6 +106,7 @@ export class ChooseFileComponent implements OnInit {
     if (this.validationErrorCause) {
       this.importError = true
       this.validationErrorCause = data['WORKSPACE_IMPORT.VALIDATION.RESULT'] + this.validationErrorCause
+      this.cdr.markForCheck()
       return false
     }
     return true

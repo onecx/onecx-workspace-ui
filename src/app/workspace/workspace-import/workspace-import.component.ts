@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnChanges } from '@angular/core'
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges, ChangeDetectionStrategy } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 import { MenuItem } from 'primeng/api'
@@ -24,6 +24,7 @@ export type Theme = {
   selector: 'app-workspace-import',
   standalone: true,
   imports: [SharedModule, ChooseFileComponent, ConfirmComponent, PreviewComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './workspace-import.component.html',
   styleUrls: ['./workspace-import.component.scss']
 })

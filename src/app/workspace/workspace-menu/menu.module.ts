@@ -9,6 +9,7 @@ import { SharedModule } from 'src/app/shared/shared.module'
 
 import { MenuTreeService } from './services/menu-tree.service'
 import { MenuComponent } from './menu.component'
+import { MenuDeleteComponent } from './menu-delete/menu-delete.component'
 import { MenuDetailComponent } from './menu-detail/menu-detail.component'
 import { MenuInternComponent } from './menu-intern/menu-intern.component'
 import { MenuPreviewComponent } from './menu-preview/menu-preview.component'
@@ -24,6 +25,7 @@ const routes: Routes = [
   imports: [
     AngularAcceleratorModule,
     MenuComponent,
+    MenuDeleteComponent,
     MenuDetailComponent,
     MenuInternComponent,
     MenuImportComponent,
