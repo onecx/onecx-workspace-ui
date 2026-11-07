@@ -145,14 +145,14 @@ export function AddMfeModuleFormControl(fb: FormBuilder, modules: FormArray, idx
   }
 }
 @Component({
-  selector: 'app-products',
+  selector: 'app-workspace-products',
   standalone: true,
   imports: [CardModule, SharedModule, ImageComponent, ProductDeregistrationComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './products.component.html',
   styleUrls: ['./products.component.scss']
 })
-export class ProductComponent implements OnInit, OnChanges, OnDestroy {
+export class WorkspaceProductComponent implements OnInit, OnChanges, OnDestroy {
   @Input() workspace!: Workspace | undefined
   @Output() changed = new EventEmitter()
 

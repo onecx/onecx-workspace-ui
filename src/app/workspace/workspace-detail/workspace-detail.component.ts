@@ -36,7 +36,7 @@ import { WorkspaceInternComponent } from './workspace-intern/workspace-intern.co
 import { WorkspacePropsComponent } from './workspace-props/workspace-props.component'
 import { WorkspaceRolesComponent } from '../workspace-role/workspace-roles/workspace-roles.component'
 import { WorkspaceSlotsComponent } from '../workspace-slot/workspace-slots/workspace-slots.component'
-import { ProductComponent } from '../workspace-product/products.component'
+import { WorkspaceProductComponent } from '../workspace-product/products.component'
 
 @Component({
   selector: 'app-workspace-detail',
@@ -55,7 +55,7 @@ import { ProductComponent } from '../workspace-product/products.component'
     WorkspaceInternComponent,
     WorkspaceRolesComponent,
     WorkspaceSlotsComponent,
-    ProductComponent,
+    WorkspaceProductComponent,
     WorkspaceExportComponent,
     WorkspaceDeleteComponent
   ],

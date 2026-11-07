@@ -35,7 +35,7 @@ import {
   ExtendedApp,
   ExtendedMicrofrontend,
   ExtendedProduct,
-  ProductComponent
+  WorkspaceProductComponent
 } from './products.component'
 
 const changes = { ['workspace']: { previousValue: 'ws0', currentValue: 'ws1', firstChange: true } }
@@ -186,9 +186,9 @@ const mfeInfo: MfeInfo = {
   productName: 'prodName'
 }
 
-describe('ProductComponent', () => {
-  let component: ProductComponent
-  let fixture: ComponentFixture<ProductComponent>
+describe('WorkspaceProductComponent', () => {
+  let component: WorkspaceProductComponent
+  let fixture: ComponentFixture<WorkspaceProductComponent>
   let fb: FormBuilder
   let mockAppState: { currentMfe$: Observable<typeof mfeInfo> }
   let productFormGroup: FormGroup
@@ -219,7 +219,7 @@ describe('ProductComponent', () => {
     mockAppState = { currentMfe$: of(mfeInfo) }
     TestBed.configureTestingModule({
       imports: [
-        ProductComponent,
+        WorkspaceProductComponent,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
@@ -239,7 +239,7 @@ describe('ProductComponent', () => {
       // `useValue` spy is silently shadowed (the real services then perform genuine HTTP calls via
       // provideHttpClientTesting / publish to a MessageTopic, which never reach the spies). Re-point
       // the component's own providers at the shared spies so the component actually receives them.
-      .overrideComponent(ProductComponent, {
+      .overrideComponent(WorkspaceProductComponent, {
         set: {
           providers: [
             { provide: PortalMessageService, useValue: msgServiceSpy },
@@ -255,7 +255,7 @@ describe('ProductComponent', () => {
   beforeEach(() => {
     // used by the endpoint checks in the component's field initializers
     workspaceServiceSpy.doesUrlExistFor.and.returnValue(of(true))
-    fixture = TestBed.createComponent(ProductComponent)
+    fixture = TestBed.createComponent(WorkspaceProductComponent)
     fb = TestBed.inject(FormBuilder)
     productFormGroup = fb.group({
       displayName: new FormControl(null),
@@ -302,7 +302,7 @@ describe('ProductComponent', () => {
     it('should unsubscribe from currentMfe$ on destroy', () => {
       const mfe$ = new BehaviorSubject(mfeInfo)
       mockAppState.currentMfe$ = mfe$
-      const newFixture = TestBed.createComponent(ProductComponent)
+      const newFixture = TestBed.createComponent(WorkspaceProductComponent)
 
       expect(mfe$.observed).toBeTrue()
 
@@ -315,7 +315,7 @@ describe('ProductComponent', () => {
       spyOn(console, 'error')
       mockUserService.hasPermission.and.returnValue(Promise.reject(new Error('perm failed')))
 
-      const newFixture = TestBed.createComponent(ProductComponent)
+      const newFixture = TestBed.createComponent(WorkspaceProductComponent)
       const newComponent = newFixture.componentInstance
       newComponent.workspace = workspace
       newComponent.displayDetails = false
@@ -1019,7 +1019,7 @@ describe('ProductComponent', () => {
     function recreateComponent(endpointsExist: boolean): void {
       if (!endpointsExist) spyOn(console, 'error')
       workspaceServiceSpy.doesUrlExistFor.and.returnValue(of(endpointsExist))
-      fixture = TestBed.createComponent(ProductComponent)
+      fixture = TestBed.createComponent(WorkspaceProductComponent)
       component = fixture.componentInstance
       fixture.detectChanges()
     }

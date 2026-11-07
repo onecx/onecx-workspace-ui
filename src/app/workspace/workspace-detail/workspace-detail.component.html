@@ -135,7 +135,10 @@
           </p-tabpanel>
           <p-tabpanel value="5">
             <div class="p-2 sm:p-3">
-              <app-products [workspace]="workspaceForProducts" (changed)="onProductChanges()"></app-products>
+              <app-workspace-products
+                [workspace]="workspaceForProducts"
+                (changed)="onProductChanges()"
+              ></app-workspace-products>
             </div>
           </p-tabpanel>
         </p-tabpanels>
