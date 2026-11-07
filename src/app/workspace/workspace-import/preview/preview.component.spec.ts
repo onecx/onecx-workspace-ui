@@ -1,8 +1,10 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { provideNoopAnimations } from '@angular/platform-browser/animations'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
+import { SlotService } from '@onecx/angular-remote-components'
+import { SlotServiceMock } from '@onecx/angular-remote-components/mocks'
 
 import { PreviewComponent } from './preview.component'
 import { Theme, ImportWorkspace } from '../workspace-import.component'
@@ -33,15 +35,19 @@ describe('PreviewComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [PreviewComponent],
       imports: [
+        PreviewComponent,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
-      providers: [provideHttpClientTesting(), provideHttpClient()],
-      schemas: [NO_ERRORS_SCHEMA]
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideNoopAnimations(),
+        { provide: SlotService, useClass: SlotServiceMock }
+      ]
     }).compileComponents()
   }))
 
@@ -56,9 +62,9 @@ describe('PreviewComponent', () => {
     it('should create', () => {
       expect(component).toBeTruthy()
       // complex data
-      expect(component.menuItems.length).toBe(2)
-      expect(component.workspaceRoles.length).toBe(1)
-      expect(component.workspaceProducts.length).toBe(1)
+      expect(component.menuItems).toHaveSize(2)
+      expect(component.workspaceRoles).toHaveSize(1)
+      expect(component.workspaceProducts).toHaveSize(1)
       // init form
       expect(component.formGroup.value).toEqual(formValue)
       expect(component.formGroup.valid).toBeTrue()
@@ -94,21 +100,21 @@ describe('PreviewComponent', () => {
     it('should NOT extend themes if workspace is using a known theme', () => {
       component.importTheme = themesOrg[0]
 
-      expect(themesOrg.length).toBe(2) // themesOrg
+      expect(themesOrg).toHaveSize(2) // themesOrg
 
       component.checkAndExtendThemes(themesOrg)
 
-      expect(themesOrg.length).toBe(2) // themesOrg
+      expect(themesOrg).toHaveSize(2) // themesOrg
     })
 
     it('should extend themes if workspace is using an unknown theme name', () => {
       component.importTheme = importWorkspace.themeObject!
 
-      expect(themesOrg.length).toBe(2) // themesOrg
+      expect(themesOrg).toHaveSize(2) // themesOrg
 
       component.checkAndExtendThemes(themesOrg)
 
-      expect(themesOrg.length).toBe(3) // themesOrg + workspace theme
+      expect(themesOrg).toHaveSize(3) // themesOrg + workspace theme
     })
 
     it('should use a dummy theme (more a theroretical case)', () => {
@@ -141,9 +147,9 @@ describe('PreviewComponent', () => {
       expect(component).toBeTruthy()
       if (importWorkspace.themeObject) expect(component.importTheme).toEqual(importWorkspace.themeObject)
       // complex data
-      expect(component.menuItems.length).toBe(0)
-      expect(component.workspaceRoles.length).toBe(0)
-      expect(component.workspaceProducts.length).toBe(0)
+      expect(component.menuItems).toHaveSize(0)
+      expect(component.workspaceRoles).toHaveSize(0)
+      expect(component.workspaceProducts).toHaveSize(0)
       // init form
       expect(component.formGroup.value).toEqual(formValue_2)
       expect(component.formGroup.valid).toBeFalse()

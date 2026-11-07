@@ -1,6 +1,7 @@
 import { AbstractControl, FormArray, FormGroup } from '@angular/forms'
 import { Location } from '@angular/common'
-import { catchError, first, of, tap } from 'rxjs'
+import { Router } from '@angular/router'
+import { catchError, first, Observable, of, tap } from 'rxjs'
 import { SelectItem } from 'primeng/api'
 
 import { WorkspaceService } from '@onecx/angular-integration-interface'
@@ -118,22 +119,33 @@ const Utils = {
     productName: string,
     appId: string,
     endpointName: string
-  ): boolean {
-    let exist = false
-    workspaceService
-      .doesUrlExistFor(productName, appId, endpointName)
-      .pipe(
-        first(),
-        tap((exists) => {
-          if (!exists) console.error(`Routing not possible for endpoint: ${productName} ${appId} ${endpointName}`)
-        }),
-        catchError((err) => {
-          console.error('doesUrlExistFor', err)
-          return of(false)
-        })
-      )
-      .subscribe((ex) => (exist = ex))
-    return exist
+  ): Observable<boolean> {
+    return workspaceService.doesUrlExistFor(productName, appId, endpointName).pipe(
+      first(),
+      tap((exists) => {
+        if (!exists) {
+          console.error(`Routing not possible to workspace for endpoint: ${productName} ${appId} ${endpointName}`)
+        }
+      }),
+      catchError((err) => {
+        console.error('doesUrlExistFor', err)
+        return of(false)
+      })
+    )
+  },
+
+  /**
+   * Routing
+   */
+  navigate(router: Router, event: Event, route: string, target?: string): void {
+    event.preventDefault()
+    if (target === '_blank') {
+      const urlTree = router.createUrlTree([route])
+      const url = router.serializeUrl(urlTree)
+      window.open(url, '_blank')
+    } else {
+      router.navigate([route])
+    }
   }
 }
 

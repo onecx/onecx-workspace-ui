@@ -1,18 +1,41 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core'
+import { FormsModule } from '@angular/forms'
+import { TranslateModule } from '@ngx-translate/core'
+
+import { ButtonModule } from 'primeng/button'
+import { CardModule } from 'primeng/card'
+import { DialogModule } from 'primeng/dialog'
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { SelectModule } from 'primeng/select'
 import { SelectItem, TreeNode } from 'primeng/api'
+import { ToggleButtonModule } from 'primeng/togglebutton'
+import { TooltipModule } from 'primeng/tooltip'
+import { TreeModule, TreeNodeDropEvent } from 'primeng/tree'
+import { TreeTableNodeExpandEvent } from 'primeng/treetable'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 
 import { Utils } from 'src/app/shared/utils'
 import { MenuItemAPIService, WorkspaceMenuItem } from 'src/app/shared/generated'
 import { MenuStateService } from '../services/menu-state.service'
-import { TreeTableNodeExpandEvent } from 'primeng/treetable'
-import { TreeNodeDropEvent } from 'primeng/tree'
 
 export type I18N = { [key: string]: string }
 
 @Component({
   selector: 'app-menu-preview',
+  standalone: true,
+  imports: [
+    TranslateModule,
+    FormsModule,
+    DialogModule,
+    ToggleButtonModule,
+    FloatLabelModule,
+    SelectModule,
+    CardModule,
+    TreeModule,
+    ButtonModule,
+    TooltipModule
+  ],
   templateUrl: './menu-preview.component.html',
   styleUrls: ['./menu-preview.component.scss']
 })
@@ -179,53 +202,65 @@ export class MenuPreviewComponent implements OnChanges {
       let targetItem = event.dropNode.data as WorkspaceMenuItem
       let parentItemId: string | undefined = targetItem.id
 
-      if (event.dropPoint === 'between') {
+      if (this.isDropBetweenNodes(event)) {
         targetItem = event.dropNode?.parent?.data as WorkspaceMenuItem
-        parentItemId = targetItem?.id ?? undefined
+        if (targetItem.id) parentItemId = targetItem.id
 
         if (targetPos > dragIndex) {
           targetPos -= 1
         }
       }
-
       targetPos = Math.max(0, targetPos)
 
       // dummy-node on root or child-level detected
-      if (event.dropNode.data.id.startsWith('__DUMMY__')) {
-        // set parent if existing
-        if (event.dropNode.parent) {
-          parentItemId = event.dropNode.parent.data.id
-          const parent = this.menuItems.find((item) => item.id === parentItemId)
-          targetPos = parent?.children?.length ?? 0
-        } else {
-          parentItemId = undefined
-          targetPos = this.menuItems.length
-        }
-      }
+      targetPos = this.detectDummyNode(event.dropNode, parentItemId, targetPos)
 
       if (menuItem) {
-        this.menuApi
-          .updateMenuItemParent({
-            menuItemId: menuItem.id!,
-            updateMenuItemParentRequest: {
-              modificationCount: menuItem.modificationCount!,
-              parentItemId: parentItemId,
-              position: targetPos
-            }
-          })
-          .subscribe({
-            next: (data) => {
-              this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU.OK' })
-              if (event.dragNode) event.dragNode.data = data
-              this.reorderEmitter.emit(true)
-            },
-            error: (err) => {
-              this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU.NOK' })
-              console.error('updateMenuItemParent', err)
-            }
-          })
+        const obs$ = this.menuApi.updateMenuItemParent({
+          menuItemId: menuItem.id!,
+          updateMenuItemParentRequest: {
+            modificationCount: menuItem.modificationCount!,
+            parentItemId: parentItemId,
+            position: targetPos
+          }
+        })
+        obs$.subscribe({
+          next: (data) => {
+            this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU.OK' })
+            if (event.dragNode) event.dragNode.data = data
+            this.reorderEmitter.emit(true)
+          },
+          error: (err) => {
+            this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.MENU.NOK' })
+            console.error('updateMenuItemParent', err)
+          }
+        })
       }
     }
+  }
+
+  private detectDummyNode(dropNode: TreeNode, parentItemId: string | undefined, targetPos: number): number {
+    if (dropNode.data.id.startsWith('__DUMMY__')) {
+      // set parent if existing
+      if (dropNode.parent) {
+        parentItemId = dropNode.parent.data.id
+        const parent = this.menuItems.find((item) => item.id === parentItemId)
+        targetPos = parent?.children?.length ?? 0
+      } else {
+        parentItemId = undefined
+        targetPos = this.menuItems.length
+      }
+    }
+    return targetPos
+  }
+
+  /**
+   * PrimeNG's TreeNodeDropEvent no longer exposes a 'dropPoint' field, so the drop-zone
+   * element's CSS class is used to tell a "between nodes" drop apart from a "drop on node".
+   */
+  private isDropBetweenNodes(event: TreeNodeDropEvent): boolean {
+    const target = event.originalEvent?.target as HTMLElement | null
+    return !!target?.classList?.contains('p-tree-node-droppoint')
   }
 
   public onHierarchyViewChange(event: TreeTableNodeExpandEvent): void {

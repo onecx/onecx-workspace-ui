@@ -1,4 +1,4 @@
-<div class="mt-2 px-1">
+<div class="mt-5 mb-2 px-1">
   <p-fileUpload
     #fileUploader
     id="ws_import_choose_file_upload"
@@ -9,6 +9,7 @@
     [headers]="httpHeaders"
     [customUpload]="true"
     (uploadHandler)="uploadHandler()"
+    [uploadButtonProps]="{ label: 'WORKSPACE_IMPORT.PREVIEW' | translate }"
     (onClear)="onClear()"
     (onRemove)="onClear()"
     (onSelect)="onFileSelect($event)"
@@ -17,11 +18,12 @@
     [cancelLabel]="'ACTIONS.CANCEL' | translate"
     [chooseLabel]="'ACTIONS.CHOOSE' | translate"
   />
-  <p-message
-    *ngIf="importError"
-    styleClass="mt-2"
-    id="ws_import_choose_file_upload_error"
-    severity="error"
-    [text]="validationErrorCause"
-  ></p-message>
+  @if (importError) {
+    <p-message
+      styleClass="mt-4 w-fit"
+      id="ws_import_choose_file_upload_error"
+      severity="error"
+      [text]="validationErrorCause"
+    ></p-message>
+  }
 </div>

@@ -1,8 +1,7 @@
-import { NO_ERRORS_SCHEMA, SimpleChanges } from '@angular/core'
+import { SimpleChanges } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { provideHttpClient } from '@angular/common/http'
-import { ReactiveFormsModule } from '@angular/forms'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of, throwError } from 'rxjs'
 
@@ -11,6 +10,7 @@ import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
 
 import { WorkspaceI18nComponent } from './workspace-i18n.component'
+import { provideNoopAnimations } from '@angular/platform-browser/animations'
 
 const workspace: Workspace = {
   id: 'ws-id',
@@ -50,11 +50,6 @@ describe('WorkspaceI18nComponent', () => {
   let component: WorkspaceI18nComponent
   let fixture: ComponentFixture<WorkspaceI18nComponent>
 
-  const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
-  const apiServiceSpy = {
-    updateWorkspace: jasmine.createSpy('updateWorkspace').and.returnValue(of({}))
-  }
-
   function initTestComponent(): void {
     fixture = TestBed.createComponent(WorkspaceI18nComponent)
     component = fixture.componentInstance
@@ -65,25 +60,30 @@ describe('WorkspaceI18nComponent', () => {
     component.ngOnChanges(makeChanges({ workspaceI18nVisible: true }))
   }
 
+  const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
+  const apiServiceSpy = { updateWorkspace: jasmine.createSpy('updateWorkspace').and.returnValue(of({})) }
+
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [WorkspaceI18nComponent],
+      declarations: [],
       imports: [
-        ReactiveFormsModule,
+        WorkspaceI18nComponent,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
-      providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
-        { provide: PortalMessageService, useValue: msgServiceSpy },
-        { provide: WorkspaceAPIService, useValue: apiServiceSpy }
-      ],
-      schemas: [NO_ERRORS_SCHEMA],
-      teardown: { destroyAfterEach: false }
-    }).compileComponents()
+      providers: [provideHttpClient(), provideHttpClientTesting(), provideNoopAnimations()]
+    })
+      .overrideComponent(WorkspaceI18nComponent, {
+        add: {
+          providers: [
+            { provide: PortalMessageService, useValue: msgServiceSpy },
+            { provide: WorkspaceAPIService, useValue: apiServiceSpy }
+          ]
+        }
+      })
+      .compileComponents()
   }))
 
   beforeEach(() => {
@@ -105,7 +105,7 @@ describe('WorkspaceI18nComponent', () => {
       component.workspaceI18nVisible = false
       fixture.detectChanges()
 
-      expect(component.translationsForm.length).toBe(0)
+      expect(component.translationsForm).toHaveSize(0)
     })
   })
 
@@ -113,13 +113,13 @@ describe('WorkspaceI18nComponent', () => {
     it('should init form when workspaceI18nVisible becomes true and propertyName is set', () => {
       component.ngOnChanges(makeChanges({ workspaceI18nVisible: true }))
 
-      expect(component.translationsForm.length).toBe(2)
+      expect(component.translationsForm).toHaveSize(2)
     })
 
     it('should init form when propertyName changes and dialog is already visible', () => {
       component.ngOnChanges(makeChanges({ propertyName: 'displayName' }))
 
-      expect(component.translationsForm.length).toBe(2)
+      expect(component.translationsForm).toHaveSize(2)
     })
 
     it('should NOT init form when dialog is not visible', () => {
@@ -128,7 +128,7 @@ describe('WorkspaceI18nComponent', () => {
 
       component.ngOnChanges(makeChanges({ workspaceI18nVisible: false }))
 
-      expect(component.translationsForm.length).toBe(0)
+      expect(component.translationsForm).toHaveSize(0)
     })
 
     it('should NOT init form when propertyName is not set', () => {
@@ -137,7 +137,7 @@ describe('WorkspaceI18nComponent', () => {
 
       component.ngOnChanges(makeChanges({ workspaceI18nVisible: true }))
 
-      expect(component.translationsForm.length).toBe(0)
+      expect(component.translationsForm).toHaveSize(0)
     })
 
     it('should init with empty form when workspace has no i18n data for the property', () => {
@@ -145,7 +145,7 @@ describe('WorkspaceI18nComponent', () => {
 
       component.ngOnChanges(makeChanges({ workspaceI18nVisible: true }))
 
-      expect(component.translationsForm.length).toBe(0)
+      expect(component.translationsForm).toHaveSize(0)
     })
 
     it('should init with empty form when workspace has no i18n at all', () => {
@@ -153,7 +153,7 @@ describe('WorkspaceI18nComponent', () => {
 
       component.ngOnChanges(makeChanges({ workspaceI18nVisible: true }))
 
-      expect(component.translationsForm.length).toBe(0)
+      expect(component.translationsForm).toHaveSize(0)
     })
   })
 
@@ -211,7 +211,7 @@ describe('WorkspaceI18nComponent', () => {
       component.workspace = { ...workspace, i18n: {} }
       component.ngOnChanges(makeChanges({ workspaceI18nVisible: true }))
 
-      expect(component.availableLanguages.length).toBe(component.allLanguages.length)
+      expect(component.availableLanguages).toHaveSize(component.allLanguages.length)
     })
   })
 
@@ -274,7 +274,7 @@ describe('WorkspaceI18nComponent', () => {
 
       component.onAddLanguage()
 
-      expect(component.translationsForm.length).toBe(initialLength)
+      expect(component.translationsForm).toHaveSize(initialLength)
     })
   })
 
@@ -299,7 +299,7 @@ describe('WorkspaceI18nComponent', () => {
 
       component.onRemoveTranslation(0)
 
-      expect(component.translationsForm.length).toBe(initialLength - 1)
+      expect(component.translationsForm).toHaveSize(initialLength - 1)
       const remaining = component.translationsForm.controls.map((c) => c.get('language')?.value)
       expect(remaining).not.toContain(langToRemove)
     })

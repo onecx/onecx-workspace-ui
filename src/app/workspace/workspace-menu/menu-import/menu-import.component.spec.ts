@@ -1,4 +1,3 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
@@ -34,22 +33,30 @@ describe('MenuImportComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [MenuImportComponent],
       imports: [
+        MenuImportComponent,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
-      schemas: [NO_ERRORS_SCHEMA],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        provideRouter([{ path: '', component: MenuImportComponent }]),
-        { provide: PortalMessageService, useValue: msgServiceSpy },
-        { provide: MenuItemAPIService, useValue: menuApiServiceSpy }
+        provideRouter([{ path: '', component: MenuImportComponent }])
       ]
-    }).compileComponents()
+    })
+    // PortalMessageService and MenuItemAPIService are `providedIn: 'any'`, so TestBed
+    // providers do not reliably override them for standalone components - add providers on the component itself.
+    TestBed.overrideComponent(MenuImportComponent, {
+      add: {
+        providers: [
+          { provide: PortalMessageService, useValue: msgServiceSpy },
+          { provide: MenuItemAPIService, useValue: menuApiServiceSpy }
+        ]
+      }
+    })
+    TestBed.compileComponents()
   }))
 
   beforeEach(() => {

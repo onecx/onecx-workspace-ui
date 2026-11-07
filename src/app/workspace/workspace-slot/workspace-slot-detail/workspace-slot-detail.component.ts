@@ -1,0 +1,231 @@
+import { Component, EventEmitter, Input, Output, OnChanges, inject, OnInit } from '@angular/core'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
+
+import { ButtonModule } from 'primeng/button'
+import { DialogModule } from 'primeng/dialog'
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon'
+import { InputGroupModule } from 'primeng/inputgroup'
+import { InputTextModule } from 'primeng/inputtext'
+import { MessageModule } from 'primeng/message'
+import { PickListModule } from 'primeng/picklist'
+import { TabsModule } from 'primeng/tabs'
+import { TooltipModule } from 'primeng/tooltip'
+
+import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+
+import { SlotAPIService, UpdateSlotRequest } from 'src/app/shared/generated'
+import { ChangeMode, ExtendedSlot, ExtendedComponent, PSSlot } from '../workspace-slots/workspace-slots.component'
+import { WorkspaceSlotDeregistrationComponent } from '../workspace-slot-deregistration/workspace-slot-deregistration.component'
+
+@Component({
+  selector: 'app-workspace-slot-detail',
+  standalone: true,
+  imports: [
+    ButtonModule,
+    DialogModule,
+    FloatLabelModule,
+    InputGroupModule,
+    InputGroupAddonModule,
+    InputTextModule,
+    MessageModule,
+    PickListModule,
+    TabsModule,
+    TooltipModule,
+    TranslateModule,
+    // components
+    WorkspaceSlotDeregistrationComponent
+  ],
+  templateUrl: './workspace-slot-detail.component.html',
+  styleUrls: ['./workspace-slot-detail.component.scss']
+})
+export class WorkspaceSlotDetailComponent implements OnInit, OnChanges {
+  private readonly slotApi = inject(SlotAPIService)
+  private readonly user = inject(UserService)
+  private readonly translate = inject(TranslateService)
+  private readonly msgService = inject(PortalMessageService)
+
+  @Input() slot: ExtendedSlot | undefined // displayed slot
+  @Input() workspace_id!: string // only id is needed for API calls
+  @Input() psComponentsOrg: ExtendedComponent[] = [] // all PS components
+  @Input() wProductNames: string[] = [] // names of all products registered in workspace
+  @Input() changeMode: ChangeMode = 'VIEW'
+  @Input() displayDialog = false
+  @Output() detailClosed: EventEmitter<boolean> = new EventEmitter()
+
+  public dateFormat: string
+  public slotOrg: ExtendedSlot | undefined // used for restore
+  public wComponents: ExtendedComponent[] = [] // used/assigned components
+  public psComponents: ExtendedComponent[] = [] // org ps components reduced by used in slot
+  public hasEditPermission = false
+  public displayDeregisterConfirmation = false
+  public selectedTabIndex = '0'
+  public selectedComponentName: string | undefined
+  private deregisterItems: ExtendedComponent[] = [] // moved items
+  private wComponentsOrg: ExtendedComponent[] = [] // used for restore
+  public showTargetControls = false // manage visibility of target controls due to picklist bug
+  public sourceFilterValue: string | undefined
+  public targetFilterValue: string | undefined
+  public filteredPsComponents: ExtendedComponent[] = [] // unregistered items
+  public filteredWComponents: ExtendedComponent[] = [] // registered items
+
+  constructor() {
+    this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm:ss' : 'M/d/yy, hh:mm:ss a'
+  }
+
+  public async ngOnInit() {
+    try {
+      this.hasEditPermission = await this.user.hasPermission('WORKSPACE_SLOT#EDIT')
+    } catch (err) {
+      console.error(err)
+    }
+  }
+  public ngOnChanges(): void {
+    if (this.displayDialog && this.slot) {
+      this.slotOrg = { ...this.slot } // to be able to restore and compare
+      this.wComponents = []
+      // extract components assigned to the slot with PS infos
+      if (this.slot.psComponents) this.wComponents = [...this.slot.psComponents]
+      this.wComponentsOrg = [...this.wComponents] // to be able to restore
+      this.psComponents = []
+      this.collectPsComponents()
+      if (this.slot.psSlots) this.slot.psSlots.sort(this.sortProducts)
+      if (this.slot.productNames) this.slot.productNames.sort((a, b) => a.toUpperCase().localeCompare(b.toUpperCase()))
+      this.selectedTabIndex = this.slot.productNames?.length === 0 ? '1' : '0'
+      this.filteredPsComponents = [...this.psComponents] // unregistered items
+      this.filteredWComponents = [...this.wComponents] // registered items
+    }
+  }
+
+  public selectComponent(componentName: string) {
+    this.selectedComponentName = componentName
+  }
+
+  // Collect available but not yet registered components from product store
+  private collectPsComponents() {
+    for (const psComp of this.psComponentsOrg)
+      if (
+        !this.wComponents.some(
+          (wc) => wc.productName === psComp.productName && wc.appId === psComp.appId && wc.name === psComp.name
+        )
+      )
+        if (this.wProductNames.includes(psComp.productName))
+          // registered products only
+          this.psComponents.push(psComp)
+    if (this.psComponents) this.psComponents.sort(this.sortComponents)
+  }
+
+  public sortComponents(a: ExtendedComponent, b: ExtendedComponent): number {
+    return (
+      a.name.toUpperCase().localeCompare(b.name.toUpperCase()) ||
+      a.appId.toUpperCase().localeCompare(b.appId.toUpperCase()) ||
+      a.productName.toUpperCase().localeCompare(b.productName.toUpperCase())
+    )
+  }
+  public sortProducts(a: PSSlot, b: PSSlot): number {
+    return a.pDisplayName.toUpperCase().localeCompare(b.pDisplayName.toUpperCase())
+  }
+
+  public onClose(): void {
+    if (this.slot) {
+      this.detailClosed.emit(this.slotOrg?.modificationCount !== this.slot?.modificationCount)
+    }
+  }
+
+  /**
+   * UI Events: DETAIL
+   */
+  return(event: any) {
+    event.stopPropagation()
+  }
+  public getFilterValue(ev: any): string {
+    return ev.target.value
+  }
+  public filterComponents(val: string, bucket: 'SOURCE' | 'TARGET') {
+    if (!val || val.trim() === '') {
+      if (bucket === 'SOURCE') this.filteredPsComponents = [...this.psComponents]
+      if (bucket === 'TARGET') this.filteredWComponents = [...this.wComponents]
+      return
+    }
+    const lowerSearch = val.toLowerCase()
+    if (bucket === 'SOURCE') {
+      this.filteredPsComponents = this.psComponents.filter((item) => item.name.toLowerCase().includes(lowerSearch))
+    }
+    if (bucket === 'TARGET') {
+      this.filteredWComponents = this.wComponents.filter((item) => item.name.toLowerCase().includes(lowerSearch))
+    }
+  }
+
+  // fix picklist bug: hide controls if not one item is selected
+  public onTargetSelect(event: any) {
+    this.showTargetControls = event.items.length === 1
+  }
+
+  // The picklist has done the deregistration immediatly - roll back with more effort
+  public onDeregister(event: any): void {
+    this.deregisterItems = event.items
+    this.displayDeregisterConfirmation = true
+  }
+  // restore the previous state: on user abortion or closing the dialog
+  public onDeregisterCancellation() {
+    if (this.deregisterItems.length === 0) return
+    this.displayDeregisterConfirmation = false
+    // restore
+    for (const deregItem of this.deregisterItems)
+      this.psComponents = this.psComponents.filter(
+        (psc) =>
+          !(psc.productName === deregItem.productName && psc.appId === deregItem.appId && psc.name === deregItem.name)
+      )
+    this.wComponents = this.wComponentsOrg
+    this.wComponentsOrg = [...this.wComponents]
+    this.deregisterItems = []
+  }
+
+  public onDeregisterConfirmation(): void {
+    this.displayDeregisterConfirmation = false
+    this.onSaveSlot(false)
+  }
+
+  public onSaveSlot(reorder: boolean) {
+    if (this.slot) {
+      // picklist bug: ignore change if only one component is in list
+      if (reorder && this.slot.components && this.slot.components.length < 2) return
+      this.slotApi
+        .addOrUpdateSlot({
+          id: this.workspace_id,
+          updateSlotRequest: {
+            modificationCount: this.slot.modificationCount,
+            name: this.slot.name,
+            components: this.wComponents.map((ec) => {
+              return { productName: ec.productName, appId: ec.appId, name: ec.name }
+            })
+          } as UpdateSlotRequest
+        })
+        .subscribe({
+          next: (data) => {
+            if (this.slot)
+              if (data) {
+                this.slot.modificationCount = data.modificationCount
+                this.slot.modificationDate = data.modificationDate
+                this.slot.components = data.components
+              } else {
+                this.slot = {
+                  ...this.slot,
+                  id: undefined,
+                  modificationCount: undefined,
+                  modificationDate: undefined
+                }
+              }
+            if (this.deregisterItems.length > 0) this.psComponents.sort(this.sortComponents)
+            this.deregisterItems = []
+            this.wComponentsOrg = [...this.wComponents]
+            this.msgService.success({ summaryKey: 'ACTIONS.EDIT.SLOT_OK' })
+          },
+          error: (err) => {
+            this.msgService.error({ summaryKey: 'ACTIONS.EDIT.SLOT_NOK' })
+            console.error('addOrUpdateSlot', err)
+          }
+        })
+    }
+  }
+}

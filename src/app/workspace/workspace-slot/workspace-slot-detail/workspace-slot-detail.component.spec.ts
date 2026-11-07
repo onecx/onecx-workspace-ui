@@ -1,0 +1,845 @@
+import { provideHttpClient } from '@angular/common/http'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing'
+import { provideNoopAnimations } from '@angular/platform-browser/animations'
+import { TranslateTestingModule } from 'ngx-translate-testing'
+import { BehaviorSubject, of, throwError } from 'rxjs'
+
+import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+
+import { Slot, SlotAPIService } from 'src/app/shared/generated'
+import { ExtendedSlot, ExtendedComponent, PSSlot } from '../workspace-slots/workspace-slots.component'
+import { WorkspaceSlotDetailComponent } from './workspace-slot-detail.component'
+
+describe('WorkspaceSlotDetailComponent', () => {
+  let component: WorkspaceSlotDetailComponent
+  let fixture: ComponentFixture<WorkspaceSlotDetailComponent>
+
+  function initializeComponent(): void {
+    fixture = TestBed.createComponent(WorkspaceSlotDetailComponent)
+    component = fixture.componentInstance
+    fixture.detectChanges()
+  }
+
+  const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
+  const slotServiceSpy = { addOrUpdateSlot: jasmine.createSpy('addOrUpdateSlot').and.returnValue(of({})) }
+  const mockUserService = {
+    lang$: new BehaviorSubject<string>('de'),
+    getPermission: jasmine.createSpy('getPermission').and.returnValue(Promise.resolve(true)),
+    hasPermission: jasmine.createSpy('hasPermission').and.callFake((permission) => {
+      return ['WORKSPACE_SLOT#EDIT'].includes(permission)
+    })
+  }
+
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        WorkspaceSlotDetailComponent,
+        TranslateTestingModule.withTranslations({
+          de: require('src/assets/i18n/de.json'),
+          en: require('src/assets/i18n/en.json')
+        }).withDefaultLanguage('en')
+      ],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideNoopAnimations(),
+        { provide: UserService, useValue: mockUserService }
+      ]
+    })
+      .overrideComponent(WorkspaceSlotDetailComponent, {
+        add: {
+          providers: [
+            { provide: PortalMessageService, useValue: msgServiceSpy },
+            { provide: SlotAPIService, useValue: slotServiceSpy }
+          ]
+        }
+      })
+      .compileComponents()
+
+    msgServiceSpy.success.calls.reset()
+    msgServiceSpy.error.calls.reset()
+    slotServiceSpy.addOrUpdateSlot.calls.reset()
+  }))
+
+  beforeEach(() => {
+    initializeComponent()
+  })
+
+  it('should create', () => {
+    expect(component).toBeTruthy()
+  })
+
+  it('should log error when checking hasEditPermission rejects', fakeAsync(() => {
+    spyOn(console, 'error')
+    mockUserService.hasPermission.and.returnValue(Promise.reject(new Error('perm failed')))
+
+    initializeComponent()
+    tick()
+
+    expect(console.error).toHaveBeenCalled()
+
+    // restore neutral behaviour for subsequent tests
+    mockUserService.hasPermission.and.callFake((permission) => ['WORKSPACE_SLOT#EDIT'].includes(permission))
+  }))
+
+  describe('OnChanges', () => {
+    it('should initialize component state when slot is provided', () => {
+      component.displayDialog = true
+      // products which using the slot
+      const psSlots: PSSlot[] = [
+        { name: 'slot1', pName: 'productB', pDisplayName: 'Product B' },
+        { name: 'slot1', pName: 'productC', pDisplayName: 'Product C' }
+      ]
+      const slot: ExtendedSlot = {
+        name: 'slot1',
+        productNames: ['productB', 'productC'],
+        type: ['WORKSPACE'],
+        changes: false,
+        undeployed: false,
+        deprecated: false,
+        psSlots: psSlots,
+        psComponents: [
+          {
+            name: 'compB',
+            appId: 'appId1',
+            productName: 'productB',
+            changes: false,
+            exists: true,
+            undeployed: false,
+            deprecated: false
+          }
+        ]
+      }
+      component.slot = slot
+      component.psComponentsOrg = [
+        {
+          name: 'compA',
+          appId: 'appId1',
+          productName: 'productA',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        },
+        {
+          name: 'compB',
+          appId: 'appId1',
+          productName: 'productA',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        },
+        {
+          name: 'compA',
+          appId: 'appId2',
+          productName: 'productB',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        },
+        {
+          name: 'compB',
+          appId: 'appId3',
+          productName: 'productB',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        }
+      ]
+      component.wProductNames = ['productA', 'productB', 'productC']
+
+      component.ngOnChanges()
+
+      expect(component.slot).toEqual(slot)
+      expect(component.wComponents).toEqual(slot.psComponents)
+    })
+
+    it('should initialize component state when slot is provided, but slot is a lost slot', () => {
+      component.displayDialog = true
+      // products which using the slot
+      const psSlots: PSSlot[] = [
+        {
+          name: 'slot1',
+          pName: 'productB',
+          pDisplayName: 'Product B'
+        }
+      ]
+      // original product store data of the assigned components
+      const psComponentsOrg: ExtendedComponent[] = [
+        {
+          name: 'compA',
+          appId: 'appId1',
+          productName: 'productA',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        }
+      ]
+      const slot: ExtendedSlot = {
+        name: 'slot1',
+        productNames: [], // slot is a lost slot if productNames is empty
+        type: ['WORKSPACE'],
+        changes: false,
+        undeployed: false,
+        deprecated: false,
+        psSlots: psSlots,
+        psComponents: psComponentsOrg
+      }
+      component.slot = slot
+      component.psComponentsOrg = [
+        {
+          name: 'compA',
+          appId: 'appId1',
+          productName: 'productA',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        },
+        {
+          name: 'compB',
+          appId: 'appId1',
+          productName: 'productA',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        },
+        {
+          name: 'compA',
+          appId: 'appId2',
+          productName: 'productB',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        },
+        {
+          name: 'compB',
+          appId: 'appId3',
+          productName: 'productB',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        }
+      ]
+      component.wProductNames = ['productA', 'productB', 'productC']
+
+      component.ngOnChanges()
+
+      expect(component.slot).toEqual(slot)
+      expect(component.wComponents).toEqual(slot.psComponents)
+      // this is the reduced set of components in alphabetical order (minus slot)
+      expect(component.psComponents).toEqual([
+        {
+          name: 'compA',
+          productName: 'productB',
+          appId: 'appId2',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        },
+        {
+          name: 'compB',
+          productName: 'productA',
+          appId: 'appId1',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        },
+        {
+          name: 'compB',
+          productName: 'productB',
+          appId: 'appId3',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        }
+      ])
+    })
+  })
+
+  describe('Closing', () => {
+    const slot: ExtendedSlot = {
+      modificationCount: 0,
+      name: 'slot1',
+      productNames: ['productA'],
+      type: ['WORKSPACE'],
+      changes: false,
+      undeployed: false,
+      deprecated: false,
+      psSlots: [],
+      psComponents: [
+        {
+          productName: 'slotComponentProdName',
+          appId: 'slotComponentAppId',
+          name: 'slotComponentName',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        }
+      ]
+    }
+    beforeEach(() => {
+      component.slot = slot
+      component.workspace_id = 'workspace1'
+      component.displayDialog = true
+      component.ngOnChanges()
+    })
+
+    it('should emit detailClosed event with false if there is no change ', () => {
+      component.slot = undefined
+      spyOn(component.detailClosed, 'emit')
+
+      component.onClose()
+
+      expect(component.detailClosed.emit).not.toHaveBeenCalled()
+    })
+
+    it('should emit detailClosed event with true if there is a change ', () => {
+      const slot2: ExtendedSlot = {
+        ...slot,
+        modificationCount: 1 // changed
+      }
+      component.slot = slot2
+      spyOn(component.detailClosed, 'emit')
+
+      component.onClose()
+
+      expect(component.detailClosed.emit).toHaveBeenCalledWith(true)
+    })
+  })
+
+  /**
+   * UI Events: DETAIL
+   */
+  describe('Extra UI events', () => {
+    it('should return value from event object', () => {
+      const event = { target: { value: 'test value' } }
+
+      expect(component.getFilterValue(event)).toEqual('test value')
+    })
+
+    it('should call stopPropagation on the event when return is called', () => {
+      const mockEvent = jasmine.createSpyObj('event', ['stopPropagation'])
+
+      component.return(mockEvent)
+
+      expect(mockEvent.stopPropagation).toHaveBeenCalled()
+    })
+
+    it('should display target controls depends on selected items', () => {
+      const ev = { items: [{}] }
+
+      component.onTargetSelect(ev)
+
+      expect(component.showTargetControls).toBeTrue()
+    })
+  })
+
+  describe('Filtering', () => {
+    const createComponent = (name: string, productName: string): ExtendedComponent => ({
+      name,
+      appId: 'appId',
+      productName,
+      changes: false,
+      exists: true,
+      undeployed: false,
+      deprecated: false
+    })
+    const unregistered = [createComponent('Alpha', 'productA'), createComponent('Beta', 'productA')]
+    const registered = [createComponent('Gamma', 'productB'), createComponent('Delta', 'productB')]
+
+    beforeEach(() => {
+      component.psComponents = unregistered
+      component.wComponents = registered
+    })
+
+    it('should initialize filtered lists with all components when slot is provided', () => {
+      component.displayDialog = true
+      component.slot = {
+        name: 'slot1',
+        productNames: ['productB'],
+        type: ['WORKSPACE'],
+        changes: false,
+        undeployed: false,
+        deprecated: false,
+        psSlots: [],
+        psComponents: [createComponent('compB', 'productB')]
+      }
+      component.psComponentsOrg = [createComponent('compA', 'productB'), createComponent('compB', 'productB')]
+      component.wProductNames = ['productB']
+
+      component.ngOnChanges()
+
+      expect(component.filteredWComponents).toEqual([createComponent('compB', 'productB')])
+      expect(component.filteredPsComponents).toEqual([createComponent('compA', 'productB')])
+    })
+
+    it('should filter unregistered components by name when source value is given', () => {
+      component.filterComponents('alp', 'SOURCE')
+
+      expect(component.filteredPsComponents).toEqual([unregistered[0]])
+    })
+
+    it('should not touch registered components when source value is given', () => {
+      component.filteredWComponents = []
+
+      component.filterComponents('alp', 'SOURCE')
+
+      expect(component.filteredWComponents).toEqual([])
+    })
+
+    it('should filter registered components by name when target value is given', () => {
+      component.filterComponents('DELTA', 'TARGET')
+
+      expect(component.filteredWComponents).toEqual([registered[1]])
+    })
+
+    it('should not touch unregistered components when target value is given', () => {
+      component.filteredPsComponents = []
+
+      component.filterComponents('delta', 'TARGET')
+
+      expect(component.filteredPsComponents).toEqual([])
+    })
+
+    it('should return no unregistered components when nothing matches', () => {
+      component.filterComponents('unknown', 'SOURCE')
+
+      expect(component.filteredPsComponents).toEqual([])
+    })
+
+    it('should reset unregistered components when source value is empty', () => {
+      component.filteredPsComponents = []
+
+      component.filterComponents('', 'SOURCE')
+
+      expect(component.filteredPsComponents).toEqual(unregistered)
+    })
+
+    it('should reset unregistered components when source value is only whitespace', () => {
+      component.filteredPsComponents = []
+
+      component.filterComponents('   ', 'SOURCE')
+
+      expect(component.filteredPsComponents).toEqual(unregistered)
+    })
+
+    it('should reset registered components when target value is empty', () => {
+      component.filteredWComponents = []
+
+      component.filterComponents('', 'TARGET')
+
+      expect(component.filteredWComponents).toEqual(registered)
+    })
+
+    it('should not touch registered components when source value is empty', () => {
+      component.filteredWComponents = []
+
+      component.filterComponents('', 'SOURCE')
+
+      expect(component.filteredWComponents).toEqual([])
+    })
+
+    it('should not touch unregistered components when target value is empty', () => {
+      component.filteredPsComponents = []
+
+      component.filterComponents('', 'TARGET')
+
+      expect(component.filteredPsComponents).toEqual([])
+    })
+
+    it('should reset unregistered components when source value is undefined', () => {
+      component.filteredPsComponents = []
+
+      component.filterComponents(undefined as unknown as string, 'SOURCE')
+
+      expect(component.filteredPsComponents).toEqual(unregistered)
+    })
+  })
+
+  describe('Deregistration', () => {
+    it('should set deregisterItems and displayDeregisterConfirmation when onMoveToSource is called', () => {
+      const mockEvent = { items: ['item1', 'item2', 'item3'] }
+
+      component.onDeregister(mockEvent)
+
+      expect(component.displayDeregisterConfirmation).toBeTrue()
+    })
+
+    it('should not change state if deregisterItems is empty', () => {
+      component['deregisterItems'] = []
+      component.displayDeregisterConfirmation = true
+
+      component.onDeregisterCancellation()
+
+      expect(component.displayDeregisterConfirmation).toBeTrue()
+      expect(component['deregisterItems']).toEqual([])
+    })
+
+    it('should update state correctly when onDeregisterCancellation is called', () => {
+      component['deregisterItems'] = [
+        {
+          productName: 'product1',
+          appId: 'app1',
+          name: 'comp1',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        }
+      ]
+      component.displayDeregisterConfirmation = true
+      component.psComponents = [
+        {
+          productName: 'product1',
+          appId: 'app1',
+          name: 'comp1',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        },
+        {
+          productName: 'product2',
+          appId: 'app2',
+          name: 'comp2',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        }
+      ]
+
+      component.onDeregisterCancellation()
+
+      expect(component.displayDeregisterConfirmation).toBeFalse()
+      expect(component.psComponents).toEqual([
+        {
+          productName: 'product2',
+          appId: 'app2',
+          name: 'comp2',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        }
+      ])
+      expect(component['deregisterItems']).toEqual([])
+    })
+
+    it('should save slot on deregister confirmation', () => {
+      component.displayDeregisterConfirmation = true
+      spyOn(component, 'onSaveSlot')
+
+      component.onDeregisterConfirmation()
+
+      expect(component.onSaveSlot).toHaveBeenCalled()
+      expect(component.displayDeregisterConfirmation).toBeFalse()
+    })
+  })
+
+  describe('Saving', () => {
+    beforeEach(() => {
+      component.workspace_id = 'workspace1'
+      component.slot = {
+        name: 'slot1',
+        productNames: ['productA'],
+        type: ['WORKSPACE'],
+        changes: false,
+        undeployed: false,
+        deprecated: false,
+        psSlots: [],
+        psComponents: [
+          {
+            productName: 'product1',
+            appId: 'app1',
+            name: 'comp1',
+            changes: false,
+            exists: true,
+            undeployed: false,
+            deprecated: false
+          }
+        ]
+      }
+      component.wComponents = [
+        {
+          productName: 'product1',
+          appId: 'app1',
+          name: 'comp1',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        }
+      ]
+    })
+
+    it('should save slot and handle success response', () => {
+      const slotResponse: Slot = {
+        modificationCount: 1,
+        modificationDate: 'date',
+        components: [{ productName: 'product1', appId: 'app1', name: 'comp1' }]
+      }
+      slotServiceSpy.addOrUpdateSlot.and.returnValue(of(slotResponse))
+
+      component.onSaveSlot(false)
+
+      expect(slotServiceSpy.addOrUpdateSlot).toHaveBeenCalled()
+      if (component.slot) {
+        expect(component.slot.modificationCount).toBe(slotResponse.modificationCount)
+        expect(component.slot.modificationDate).toBe(slotResponse.modificationDate)
+        expect(component.slot.components).toEqual(slotResponse.components)
+      }
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.SLOT_OK' })
+    })
+
+    it('should save slot and handle error response', () => {
+      const errorResponse = { status: 400, statusText: 'Error on import menu items' }
+      slotServiceSpy.addOrUpdateSlot.and.returnValue(throwError(() => errorResponse))
+      spyOn(console, 'error')
+
+      component.onSaveSlot(false)
+
+      expect(slotServiceSpy.addOrUpdateSlot).toHaveBeenCalled()
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.SLOT_NOK' })
+      expect(console.error).toHaveBeenCalledWith('addOrUpdateSlot', errorResponse)
+    })
+
+    it('should save slot on deregister confirmation', fakeAsync(() => {
+      component.displayDeregisterConfirmation = true
+      component['deregisterItems'] = [
+        {
+          productName: 'product1',
+          appId: 'app1',
+          name: 'comp1',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        }
+      ]
+      component.displayDeregisterConfirmation = true
+      component.psComponents = [
+        {
+          productName: 'product1',
+          appId: 'app1',
+          name: 'comp1',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        },
+        {
+          productName: 'product2',
+          appId: 'app1',
+          name: 'comp1',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        }
+      ]
+      component.wComponents = [
+        {
+          name: 'comp2',
+          productName: 'product1',
+          appId: 'appId1',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        },
+        {
+          name: 'comp2',
+          productName: 'product2',
+          appId: 'appId1',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        }
+      ]
+      slotServiceSpy.addOrUpdateSlot.and.returnValue(of(undefined))
+
+      component.onSaveSlot(false)
+
+      expect(component['deregisterItems']).toEqual([])
+    }))
+  })
+
+  describe('Reorder', () => {
+    it('should ignore saving if slot has no or one component', () => {
+      component.slot = {
+        name: 'slot1',
+        type: ['WORKSPACE'],
+        changes: false,
+        undeployed: false,
+        deprecated: false,
+        psSlots: [],
+        productNames: [],
+        components: [{ productName: 'Product', appId: 'AppId', name: 'Component Name' }],
+        psComponents: [
+          {
+            productName: 'Product',
+            appId: 'AppId',
+            name: 'Component Name',
+            changes: false,
+            exists: true,
+            undeployed: false,
+            deprecated: false
+          }
+        ]
+      }
+      slotServiceSpy.addOrUpdateSlot.and.returnValue(of({}))
+
+      component.onSaveSlot(true)
+
+      expect(slotServiceSpy.addOrUpdateSlot).not.toHaveBeenCalled()
+    })
+
+    it('should ignore saving if slot has no or one component', () => {
+      component.slot = {
+        name: 'slot1',
+        type: ['WORKSPACE'],
+        changes: false,
+        undeployed: false,
+        deprecated: false,
+        psSlots: [],
+        productNames: [],
+        components: [
+          { productName: 'Product', appId: 'AppId', name: 'Component Name 1' },
+          { productName: 'Product', appId: 'AppId', name: 'Component Name 2' }
+        ],
+        psComponents: [
+          {
+            productName: 'Product',
+            appId: 'AppId',
+            name: 'Component Name',
+            changes: false,
+            exists: true,
+            undeployed: false,
+            deprecated: false
+          }
+        ]
+      }
+      slotServiceSpy.addOrUpdateSlot.and.returnValue(of({}))
+
+      component.onSaveSlot(true)
+
+      expect(slotServiceSpy.addOrUpdateSlot).toHaveBeenCalled()
+    })
+  })
+
+  /**
+   * EXTRAS
+   */
+  describe('extras', () => {
+    it('should set component name', () => {
+      initializeComponent()
+
+      component.selectComponent('Component Name')
+
+      expect(component.selectedComponentName).toEqual('Component Name')
+    })
+  })
+
+  describe('language', () => {
+    it('should set German date format', () => {
+      mockUserService.lang$.next('de')
+      initializeComponent()
+
+      expect(component.dateFormat).toEqual('dd.MM.yyyy HH:mm:ss')
+    })
+
+    it('should set English date format', () => {
+      mockUserService.lang$.next('en')
+      initializeComponent()
+
+      expect(component.dateFormat).toEqual('M/d/yy, hh:mm:ss a')
+    })
+  })
+
+  describe('sort components', () => {
+    it('should sort components by name correctly', () => {
+      const compA: ExtendedComponent = {
+        name: 'compA',
+        productName: 'compA',
+        appId: 'appId',
+        changes: false,
+        exists: true,
+        undeployed: false,
+        deprecated: false
+      }
+      const compB: ExtendedComponent = {
+        name: 'compB',
+        productName: 'compB',
+        appId: 'appId',
+        changes: false,
+        exists: true,
+        undeployed: false,
+        deprecated: false
+      }
+      const compC: ExtendedComponent = {
+        name: 'compC',
+        productName: 'compC',
+        appId: 'appId',
+        changes: false,
+        exists: true,
+        undeployed: false,
+        deprecated: false
+      }
+      const components: ExtendedComponent[] = [compB, compA, compC]
+
+      components.sort((a, b) => component.sortComponents(a, b))
+
+      expect(components).toEqual([compA, compB, compC])
+    })
+
+    it('should handle empty name values', () => {
+      const compA: ExtendedComponent = {
+        name: '',
+        productName: 'compA',
+        appId: 'appId',
+        changes: false,
+        exists: true,
+        undeployed: false,
+        deprecated: false
+      }
+      const compB: ExtendedComponent = {
+        name: '',
+        productName: 'compB',
+        appId: 'appId',
+        changes: false,
+        exists: true,
+        undeployed: false,
+        deprecated: false
+      }
+      const compC: ExtendedComponent = {
+        name: 'compC',
+        productName: 'compC',
+        appId: 'appId',
+        changes: false,
+        exists: true,
+        undeployed: false,
+        deprecated: false
+      }
+      const components: ExtendedComponent[] = [compB, compC, compA]
+
+      components.sort((a, b) => component.sortComponents(a, b))
+
+      expect(components).toEqual([compA, compB, compC])
+    })
+  })
+})

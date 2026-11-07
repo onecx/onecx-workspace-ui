@@ -1,8 +1,3 @@
-@import '/src/app/_ws-mixins.scss';
+@use 'src/app/_ws-mixins.scss' as *;
 
-@include prepare-inputgroup;
 @include dropdown-zebra-rows;
-
-.p-inputgroup {
-  width: unset !important;
-}

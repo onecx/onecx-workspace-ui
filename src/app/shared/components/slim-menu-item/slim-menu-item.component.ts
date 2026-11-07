@@ -1,11 +1,13 @@
-import { CommonModule } from '@angular/common'
 import { Component, Input } from '@angular/core'
+import { NgClass, NgTemplateOutlet } from '@angular/common'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy } from '@ngneat/until-destroy'
+
 import { RippleModule } from 'primeng/ripple'
 import { TooltipModule } from 'primeng/tooltip'
-import { ItemType, SlimMenuItem } from 'src/app/shared/model/slim-menu-item'
+
 import { SlimMenuMode } from 'src/app/shared/model/slim-menu-mode'
+import { ItemType, SlimMenuItem } from 'src/app/shared/model/slim-menu-item'
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
@@ -13,7 +15,7 @@ import { SlimMenuMode } from 'src/app/shared/model/slim-menu-mode'
   templateUrl: './slim-menu-item.component.html',
   styleUrls: ['./slim-menu-item.component.scss'],
   standalone: true,
-  imports: [CommonModule, RouterModule, TooltipModule, RippleModule],
+  imports: [NgClass, NgTemplateOutlet, RouterModule, TooltipModule, RippleModule],
   host: {
     class: 'slim-menu-list-item flex flex-column align-items-center justify-content-center',
     '[class.slim-menu-list-item-active]': 'item?.active',

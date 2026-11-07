@@ -1,10 +1,19 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnChanges } from '@angular/core'
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges, ChangeDetectionStrategy } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
-import { TranslateService } from '@ngx-translate/core'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { MenuItem } from 'primeng/api'
+
+import { ButtonModule } from 'primeng/button'
+import { DialogModule } from 'primeng/dialog'
+import { StepsModule } from 'primeng/steps'
+import { TooltipModule } from 'primeng/tooltip'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 import { ImportResponseStatus, Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
+
+import { ChooseFileComponent } from './choose-file/choose-file.component'
+import { ConfirmComponent } from './confirm/confirm.component'
+import { PreviewComponent } from './preview/preview.component'
 
 export type ImportResponse = { workspace: ImportResponseStatus; menu: ImportResponseStatus }
 export type ImportWorkspace = Workspace & { themeObject?: Theme; menuItems?: any; roles?: any; products?: any }
@@ -17,6 +26,18 @@ export type Theme = {
 
 @Component({
   selector: 'app-workspace-import',
+  standalone: true,
+  imports: [
+    TranslateModule,
+    ButtonModule,
+    DialogModule,
+    StepsModule,
+    TooltipModule,
+    ChooseFileComponent,
+    ConfirmComponent,
+    PreviewComponent
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './workspace-import.component.html',
   styleUrls: ['./workspace-import.component.scss']
 })
@@ -45,8 +66,6 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
     private readonly workspaceApi: WorkspaceAPIService,
     private readonly msgService: PortalMessageService
   ) {
-    this.hasPermission = this.user.hasPermission('WORKSPACE#IMPORT')
-
     this.steps = [
       { label: this.translate.instant('WORKSPACE_IMPORT.CHOOSE_FILE') },
       { label: this.translate.instant('WORKSPACE_IMPORT.PREVIEW') },
@@ -55,9 +74,15 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
     this.reset()
   }
 
-  public ngOnInit(): void {
+  public async ngOnInit(): Promise<void> {
+    try {
+      this.hasPermission = await this.user.hasPermission('WORKSPACE#IMPORT')
+    } catch (err) {
+      console.error(err)
+    }
     this.reset()
   }
+
   public ngOnChanges(): void {
     this.reset()
   }
