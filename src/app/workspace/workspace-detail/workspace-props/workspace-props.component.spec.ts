@@ -101,9 +101,6 @@ describe('WorkspacePropsComponent', () => {
   }
 
   beforeEach(async () => {
-    // keep the component's real imports (specific PrimeNG/onecx modules / ImageComponent / WorkspaceI18nComponent)
-    // so PrimeNG inputs, [pTooltip], [routerLink], *ocxIfPermission, <ocx-slot> and <app-image-container>
-    // resolve without NO_ERRORS_SCHEMA.
     await TestBed.configureTestingModule({
       imports: [
         WorkspacePropsComponent,

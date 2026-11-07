@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output, OnInit, inject } from '@angular/core'
-import { CommonModule } from '@angular/common'
+import { AsyncPipe } from '@angular/common'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
@@ -32,7 +32,7 @@ export type Theme = {
   standalone: true,
   imports: [
     AngularRemoteComponentsModule,
-    CommonModule,
+    AsyncPipe,
     ButtonModule,
     DialogModule,
     FloatLabelModule,

@@ -11,7 +11,7 @@ import {
   signal,
   DestroyRef
 } from '@angular/core'
-import { CommonModule } from '@angular/common'
+import { AsyncPipe } from '@angular/common'
 import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
@@ -59,7 +59,7 @@ export function slotInitializer(slotService: SlotService) {
   selector: 'app-workspace-roles',
   standalone: true,
   imports: [
-    CommonModule,
+    AsyncPipe,
     FormsModule,
     RouterModule,
     TranslateModule,

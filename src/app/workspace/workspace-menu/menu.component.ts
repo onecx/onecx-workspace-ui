@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core'
 import { toObservable, toSignal } from '@angular/core/rxjs-interop'
-import { CommonModule, Location } from '@angular/common'
+import { AsyncPipe, Location, NgClass, NgStyle } from '@angular/common'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, RouterModule, Router } from '@angular/router'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
@@ -63,7 +63,9 @@ type Column = { name: string; headerKey: string; tooltipKey: string; css?: strin
   selector: 'app-menu',
   standalone: true,
   imports: [
-    CommonModule,
+    AsyncPipe,
+    NgClass,
+    NgStyle,
     FormsModule,
     RouterModule,
     TranslateModule,

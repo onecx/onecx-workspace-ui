@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core'
-import { CommonModule } from '@angular/common'
+import { NgClass, NgTemplateOutlet } from '@angular/common'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy } from '@ngneat/until-destroy'
 
@@ -15,7 +15,7 @@ import { ItemType, SlimMenuItem } from 'src/app/shared/model/slim-menu-item'
   templateUrl: './slim-menu-item.component.html',
   styleUrls: ['./slim-menu-item.component.scss'],
   standalone: true,
-  imports: [CommonModule, RouterModule, TooltipModule, RippleModule],
+  imports: [NgClass, NgTemplateOutlet, RouterModule, TooltipModule, RippleModule],
   host: {
     class: 'slim-menu-list-item flex flex-column align-items-center justify-content-center',
     '[class.slim-menu-list-item-active]': 'item?.active',

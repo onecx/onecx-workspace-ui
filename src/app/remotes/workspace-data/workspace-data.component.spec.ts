@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing'
-import { CommonModule } from '@angular/common'
+import { AsyncPipe } from '@angular/common'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { provideNoopAnimations } from '@angular/platform-browser/animations'
@@ -67,7 +67,7 @@ describe('OneCXWorkspaceDataComponent', () => {
     })
       .overrideComponent(OneCXWorkspaceDataComponent, {
         set: {
-          imports: [TranslateTestingModule, CommonModule],
+          imports: [TranslateTestingModule, AsyncPipe],
           providers: [{ provide: WorkspaceAPIService, useValue: workspaceApiSpy }]
         }
       })

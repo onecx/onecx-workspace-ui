@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common'
+import { DatePipe } from '@angular/common'
 import { Component, Input, OnChanges } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
 import { TranslateModule } from '@ngx-translate/core'
@@ -19,7 +19,7 @@ export type WorkspaceInternFormControls = {
   selector: 'app-workspace-intern',
   standalone: true,
   imports: [
-    CommonModule,
+    DatePipe,
     ReactiveFormsModule,
     TranslateModule,
     CheckboxModule,

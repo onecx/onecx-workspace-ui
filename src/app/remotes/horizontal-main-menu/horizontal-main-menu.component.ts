@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, OnDestroy, ViewChild, inject, Renderer2 } from '@angular/core'
-import { CommonModule, Location } from '@angular/common'
+import { AsyncPipe, Location } from '@angular/common'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
@@ -27,7 +27,7 @@ const MENU_MODE = 'horizontal'
 @Component({
   selector: 'app-horizontal-main-menu',
   standalone: true,
-  imports: [AngularRemoteComponentsModule, CommonModule, RouterModule, TranslateModule, MenubarModule],
+  imports: [AngularRemoteComponentsModule, AsyncPipe, RouterModule, TranslateModule, MenubarModule],
   templateUrl: './horizontal-main-menu.component.html',
   styleUrls: ['./horizontal-main-menu.component.scss']
 })

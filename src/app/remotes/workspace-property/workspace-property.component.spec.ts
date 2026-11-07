@@ -1,5 +1,5 @@
 import { TestBed, waitForAsync } from '@angular/core/testing'
-import { CommonModule } from '@angular/common'
+import { AsyncPipe } from '@angular/common'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'
@@ -77,7 +77,7 @@ describe('OneCXDisplayWorkspacePropertyComponent', () => {
     })
       .overrideComponent(OneCXDisplayWorkspacePropertyComponent, {
         set: {
-          imports: [TranslateTestingModule, CommonModule]
+          imports: [TranslateTestingModule, AsyncPipe]
         }
       })
       .compileComponents()

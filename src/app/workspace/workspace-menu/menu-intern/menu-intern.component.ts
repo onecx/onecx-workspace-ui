@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common'
+import { DatePipe } from '@angular/common'
 import { Component, Input } from '@angular/core'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
 
@@ -11,7 +11,7 @@ import { WorkspaceMenuItem } from 'src/app/shared/generated'
 @Component({
   selector: 'app-menu-intern',
   standalone: true,
-  imports: [CommonModule, TranslateModule, FloatLabelModule, InputTextModule, TooltipModule],
+  imports: [DatePipe, TranslateModule, FloatLabelModule, InputTextModule, TooltipModule],
   templateUrl: './menu-intern.component.html'
 })
 export class MenuInternComponent {

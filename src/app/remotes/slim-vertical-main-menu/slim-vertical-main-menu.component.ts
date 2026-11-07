@@ -1,5 +1,5 @@
 import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
-import { CommonModule, Location } from '@angular/common'
+import { AsyncPipe, Location, NgClass } from '@angular/common'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import {
@@ -36,7 +36,7 @@ import { SlimMenuItemComponent } from 'src/app/shared/components/slim-menu-item/
 @Component({
   selector: 'app-slim-vertical-main-menu',
   standalone: true,
-  imports: [CommonModule, TranslateModule, SlimMenuItemComponent],
+  imports: [AsyncPipe, NgClass, TranslateModule, SlimMenuItemComponent],
   templateUrl: './slim-vertical-main-menu.component.html',
   styleUrl: './slim-vertical-main-menu.component.scss'
 })

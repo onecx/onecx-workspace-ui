@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, HostListener, inject, Input, signal } from '@angular/core'
-import { CommonModule, Location } from '@angular/common'
+import { AsyncPipe, Location } from '@angular/common'
 import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
@@ -49,7 +49,7 @@ export type MenuAnchorPositionConfig = 'right' | 'left'
   imports: [
     AngularRemoteComponentsModule,
     FormsModule,
-    CommonModule,
+    AsyncPipe,
     MenuModule,
     AvatarModule,
     ButtonModule,

@@ -1,12 +1,12 @@
-import { CommonModule } from '@angular/common'
 import { Component, DestroyRef, inject, Input, OnChanges, OnInit, signal, SimpleChanges } from '@angular/core'
+import { AsyncPipe, NgClass } from '@angular/common'
 import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
 import { OcxChipComponent } from 'src/app/shared/components/ocx-chip/ocx-chip.component'
 import { WorkspaceSlotDetailComponent } from '../workspace-slot-detail/workspace-slot-detail.component'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { catchError, map, of, Observable, firstValueFrom, BehaviorSubject, forkJoin } from 'rxjs'
-import { SelectItem } from 'primeng/api'
+
 import { ButtonModule } from 'primeng/button'
 import { CardModule } from 'primeng/card'
 import { FloatLabelModule } from 'primeng/floatlabel'
@@ -15,6 +15,7 @@ import { InputGroupModule } from 'primeng/inputgroup'
 import { InputTextModule } from 'primeng/inputtext'
 import { MessageModule } from 'primeng/message'
 import { SelectButtonModule } from 'primeng/selectbutton'
+import { SelectItem } from 'primeng/api'
 import { TooltipModule } from 'primeng/tooltip'
 
 import { UserService, WorkspaceService } from '@onecx/angular-integration-interface'
@@ -61,7 +62,8 @@ export type ExtendedSlot = Slot &
   selector: 'app-workspace-slots',
   standalone: true,
   imports: [
-    CommonModule,
+    AsyncPipe,
+    NgClass,
     FormsModule,
     RouterModule,
     TranslateModule,

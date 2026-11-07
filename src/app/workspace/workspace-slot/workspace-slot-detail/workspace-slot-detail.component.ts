@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import { Component, EventEmitter, Input, Output, OnChanges, inject, OnInit } from '@angular/core'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
 
@@ -23,18 +22,18 @@ import { WorkspaceSlotDeregistrationComponent } from '../workspace-slot-deregist
   selector: 'app-workspace-slot-detail',
   standalone: true,
   imports: [
-    CommonModule,
-    TranslateModule,
+    ButtonModule,
     DialogModule,
-    InputTextModule,
     FloatLabelModule,
     InputGroupModule,
     InputGroupAddonModule,
-    ButtonModule,
+    InputTextModule,
     MessageModule,
     PickListModule,
     TabsModule,
     TooltipModule,
+    TranslateModule,
+    // components
     WorkspaceSlotDeregistrationComponent
   ],
   templateUrl: './workspace-slot-detail.component.html',

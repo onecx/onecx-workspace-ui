@@ -10,7 +10,7 @@ import {
   ChangeDetectionStrategy,
   OnInit
 } from '@angular/core'
-import { CommonModule } from '@angular/common'
+import { AsyncPipe, KeyValuePipe, NgClass } from '@angular/common'
 import {
   FormArray,
   FormBuilder,
@@ -159,7 +159,9 @@ export function AddMfeModuleFormControl(fb: FormBuilder, modules: FormArray, idx
   selector: 'app-workspace-products',
   standalone: true,
   imports: [
-    CommonModule,
+    AsyncPipe,
+    KeyValuePipe,
+    NgClass,
     ReactiveFormsModule,
     RouterModule,
     TranslateModule,

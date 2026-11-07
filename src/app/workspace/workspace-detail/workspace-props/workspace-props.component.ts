@@ -11,7 +11,7 @@ import {
   ChangeDetectionStrategy
 } from '@angular/core'
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
-import { CommonModule, Location } from '@angular/common'
+import { AsyncPipe, Location, NgClass } from '@angular/common'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { TranslateModule } from '@ngx-translate/core'
 import { RouterModule } from '@angular/router'
@@ -54,7 +54,8 @@ export type ExtendedTheme = {
   selector: 'app-workspace-props',
   standalone: true,
   imports: [
-    CommonModule,
+    AsyncPipe,
+    NgClass,
     ReactiveFormsModule,
     RouterModule,
     TranslateModule,

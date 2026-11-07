@@ -40,9 +40,6 @@ describe('WorkspaceImportComponent', () => {
   let msgServiceSpy: { success: jasmine.Spy; error: jasmine.Spy; warning: jasmine.Spy }
 
   beforeEach(async () => {
-    // keep the component's real imports (PrimeNG modules + child step components) so the template
-    // resolves without NO_ERRORS_SCHEMA. displayDialog defaults to false, so the dialog body is
-    // not rendered and no PrimeNG / child components are instantiated.
     await TestBed.configureTestingModule({
       imports: [
         WorkspaceImportComponent,

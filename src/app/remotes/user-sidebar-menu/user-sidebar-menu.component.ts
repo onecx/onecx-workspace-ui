@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, inject } from '@angular/core'
-import { CommonModule, Location } from '@angular/common'
+import { AsyncPipe, Location, NgClass } from '@angular/common'
 import { RouterModule } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
@@ -47,7 +47,8 @@ const MENU_MODE = 'static'
   selector: 'app-user-sidebar-menu',
   standalone: true,
   imports: [
-    CommonModule,
+    AsyncPipe,
+    NgClass,
     AngularRemoteComponentsModule,
     RouterModule,
     AccordionModule,

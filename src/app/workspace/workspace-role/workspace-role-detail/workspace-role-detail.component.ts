@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output, OnChanges } from '@angular/core'
-import { CommonModule } from '@angular/common'
+import { DatePipe } from '@angular/common'
 import { FormGroup, FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
 
@@ -25,7 +25,7 @@ import { ChangeMode, Role } from '../workspace-roles/workspace-roles.component'
   selector: 'app-workspace-role-detail',
   standalone: true,
   imports: [
-    CommonModule,
+    DatePipe,
     ButtonModule,
     DialogModule,
     FloatLabelModule,
