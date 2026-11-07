@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnChanges } from '@angular/core'
+import { Component, EventEmitter, Input, Output, OnChanges, inject } from '@angular/core'
 import { TranslateService } from '@ngx-translate/core'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
@@ -17,6 +17,11 @@ import { WorkspaceSlotDeregistrationComponent } from '../workspace-slot-deregist
   styleUrls: ['./workspace-slot-detail.component.scss']
 })
 export class WorkspaceSlotDetailComponent implements OnChanges {
+  private readonly slotApi = inject(SlotAPIService)
+  private readonly user = inject(UserService)
+  private readonly translate = inject(TranslateService)
+  private readonly msgService = inject(PortalMessageService)
+
   @Input() slot: ExtendedSlot | undefined // displayed slot
   @Input() workspace_id!: string // only id is needed for API calls
   @Input() psComponentsOrg: ExtendedComponent[] = [] // all PS components
@@ -41,20 +46,17 @@ export class WorkspaceSlotDetailComponent implements OnChanges {
   public filteredPsComponents: ExtendedComponent[] = [] // unregistered items
   public filteredWComponents: ExtendedComponent[] = [] // registered items
 
-  constructor(
-    private readonly slotApi: SlotAPIService,
-    private readonly user: UserService,
-    private readonly translate: TranslateService,
-    private readonly msgService: PortalMessageService
-  ) {
-    Promise.all([this.user.hasPermission('WORKSPACE_SLOT#EDIT')])
-      .then(([perm]) => {
-        this.hasEditPermission = perm
-      })
-      .catch((err) => console.error(err))
+  constructor() {
     this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm:ss' : 'M/d/yy, hh:mm:ss a'
   }
 
+  public async ngOnInit() {
+    try {
+      this.hasEditPermission = await this.user.hasPermission('WORKSPACE_SLOT#EDIT')
+    } catch (err) {
+      console.error(err)
+    }
+  }
   public ngOnChanges(): void {
     if (this.displayDialog && this.slot) {
       this.slotOrg = { ...this.slot } // to be able to restore and compare

@@ -58,7 +58,7 @@
                     pInputText
                     type="text"
                     id="ws_menu_detail_field_menu_name"
-                    class="w-full pt-3 pb-2"
+                    class="w-full text-responsive"
                     formControlName="name"
                     [attr.aria-label]="'MENU_ITEM.MENU_NAME' | translate"
                     [pTooltip]="'MENU_ITEM.TOOLTIP.MENU_NAME' | translate"
@@ -113,7 +113,7 @@
                     pInputText
                     type="text"
                     id="ws_menu_detail_field_menu_id"
-                    class="w-full pt-3 pb-2"
+                    class="w-full text-responsive"
                     formControlName="key"
                     [attr.aria-label]="'MENU_ITEM.TOOLTIP.MENU_ID' | translate"
                     [pTooltip]="'MENU_ITEM.TOOLTIP.MENU_ID' | translate"
@@ -207,7 +207,7 @@
                         pInputText
                         type="text"
                         id="ws_menu_detail_field_position"
-                        class="w-full pt-3 pb-2 text-center"
+                        class="w-full text-responsive text-center"
                         formControlName="position"
                         [attr.aria-label]="'MENU_ITEM.POSITION' | translate"
                         [pTooltip]="'MENU_ITEM.TOOLTIP.POSITION' | translate"
@@ -251,7 +251,7 @@
                     pInputText
                     type="text"
                     id="ws_menu_detail_field_description"
-                    class="w-full pt-3 pb-2"
+                    class="w-full text-responsive"
                     formControlName="description"
                     [attr.aria-label]="'MENU_ITEM.DESCRIPTION' | translate"
                     [pTooltip]="'MENU_ITEM.TOOLTIP.DESCRIPTION' | translate"
@@ -338,7 +338,7 @@
                 pInputText
                 type="text"
                 [id]="'ws_menu_detail_i18n_lang_' + i + '_value'"
-                class="w-30rem pt-3 pb-2"
+                class="w-30rem text-responsive"
                 [(ngModel)]="language.data"
                 [attr.aria-label]="getLanguageLabel(language.value)"
               />

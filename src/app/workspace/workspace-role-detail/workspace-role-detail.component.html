@@ -71,92 +71,90 @@
           </form>
         </p-tabpanel>
 
-        @if (role.isWorkspaceRole) {
-          <p-tabpanel value="1">
-            <div class="py-3 sm:py-4">
-              <div class="mt-2 flex flex-column justify-content-between gap-4">
-                <div class="flex flex-row flex-wrap gap-4">
-                  <p-floatlabel variant="on" class="flex-grow-1 sm:flex-grow-0">
-                    <input
-                      pInputText
-                      type="text"
-                      id="ws_role_detail_intern_item_creation_date"
-                      class="w-full sm:w-13rem pt-3 pb-2 text-responsive"
-                      [disabled]="true"
-                      [value]="role ? (role.creationDate | date: dateFormat) : ''"
-                      [attr.aria-label]="'INTERNAL.CREATION_DATE' | translate"
-                      [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_DATE' | translate"
-                      tooltipPosition="top"
-                      tooltipEvent="hover"
-                    />
-                    <label for="ws_role_detail_intern_item_creation_date">{{
-                      'INTERNAL.CREATION_DATE' | translate
-                    }}</label>
-                  </p-floatlabel>
-                  <p-floatlabel variant="on" class="flex-grow-1">
-                    <input
-                      pInputText
-                      type="text"
-                      id="ws_role_detail_intern_item_creation-user"
-                      class="w-full pt-3 pb-2 text-responsive"
-                      [value]="role.creationUser"
-                      [disabled]="true"
-                      [attr.aria-label]="'INTERNAL.CREATION_USER' | translate"
-                      [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_USER' | translate"
-                      tooltipPosition="top"
-                      tooltipEvent="hover"
-                    />
-                    <label for="ws_role_detail_intern_item_creation-user">{{
-                      'INTERNAL.CREATION_USER' | translate
-                    }}</label>
-                  </p-floatlabel>
-                </div>
+        <p-tabpanel value="1">
+          <div class="py-3 sm:py-4">
+            <div class="mt-2 flex flex-column justify-content-between gap-4">
+              <div class="flex flex-row flex-wrap gap-4">
+                <p-floatlabel variant="on" class="flex-grow-1 sm:flex-grow-0">
+                  <input
+                    pInputText
+                    type="text"
+                    id="ws_role_detail_intern_item_creation_date"
+                    class="w-full sm:w-13rem text-responsive"
+                    [disabled]="true"
+                    [value]="role ? (role.creationDate | date: dateFormat) : ''"
+                    [attr.aria-label]="'INTERNAL.CREATION_DATE' | translate"
+                    [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_DATE' | translate"
+                    tooltipPosition="top"
+                    tooltipEvent="hover"
+                  />
+                  <label for="ws_role_detail_intern_item_creation_date">{{
+                    'INTERNAL.CREATION_DATE' | translate
+                  }}</label>
+                </p-floatlabel>
+                <p-floatlabel variant="on" class="flex-grow-1">
+                  <input
+                    pInputText
+                    type="text"
+                    id="ws_role_detail_intern_item_creation-user"
+                    class="w-full text-responsive"
+                    [value]="role.creationUser"
+                    [disabled]="true"
+                    [attr.aria-label]="'INTERNAL.CREATION_USER' | translate"
+                    [pTooltip]="'INTERNAL.TOOLTIPS.CREATION_USER' | translate"
+                    tooltipPosition="top"
+                    tooltipEvent="hover"
+                  />
+                  <label for="ws_role_detail_intern_item_creation-user">{{
+                    'INTERNAL.CREATION_USER' | translate
+                  }}</label>
+                </p-floatlabel>
+              </div>
 
-                <div class="flex flex-row flex-wrap gap-4">
-                  <p-floatlabel variant="on" class="flex-grow-1 sm:flex-grow-0">
-                    <input
-                      pInputText
-                      type="text"
-                      id="ws_role_detail_intern_item_modification_date"
-                      class="w-full sm:w-13rem pt-3 pb-2 text-responsive"
-                      [disabled]="true"
-                      [value]="role ? (role.modificationDate | date: dateFormat) : ''"
-                      [attr.aria-label]="'INTERNAL.MODIFICATION_DATE' | translate"
-                      [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_DATE' | translate"
-                      tooltipPosition="top"
-                      tooltipEvent="hover"
-                    />
-                    <label for="ws_role_detail_intern_item_modification_date">{{
-                      'INTERNAL.MODIFICATION_DATE' | translate
-                    }}</label>
-                  </p-floatlabel>
-                  <p-floatlabel variant="on" class="flex-grow-1">
-                    <input
-                      pInputText
-                      type="text"
-                      id="ws_role_detail_intern_item_modification-user"
-                      class="w-full pt-3 pb-2 text-responsive"
-                      [value]="role.modificationUser"
-                      [disabled]="true"
-                      [attr.aria-label]="'INTERNAL.MODIFICATION_USER' | translate"
-                      [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_USER' | translate"
-                      tooltipPosition="top"
-                      tooltipEvent="hover"
-                    />
-                    <label for="ws_role_detail_intern_item_modification-user">
-                      {{ 'INTERNAL.MODIFICATION_USER' | translate }}</label
-                    >
-                  </p-floatlabel>
-                </div>
+              <div class="flex flex-row flex-wrap gap-4">
+                <p-floatlabel variant="on" class="flex-grow-1 sm:flex-grow-0">
+                  <input
+                    pInputText
+                    type="text"
+                    id="ws_role_detail_intern_item_modification_date"
+                    class="w-full sm:w-13rem text-responsive"
+                    [disabled]="true"
+                    [value]="role ? (role.modificationDate | date: dateFormat) : ''"
+                    [attr.aria-label]="'INTERNAL.MODIFICATION_DATE' | translate"
+                    [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_DATE' | translate"
+                    tooltipPosition="top"
+                    tooltipEvent="hover"
+                  />
+                  <label for="ws_role_detail_intern_item_modification_date">{{
+                    'INTERNAL.MODIFICATION_DATE' | translate
+                  }}</label>
+                </p-floatlabel>
+                <p-floatlabel variant="on" class="flex-grow-1">
+                  <input
+                    pInputText
+                    type="text"
+                    id="ws_role_detail_intern_item_modification-user"
+                    class="w-full text-responsive"
+                    [value]="role.modificationUser"
+                    [disabled]="true"
+                    [attr.aria-label]="'INTERNAL.MODIFICATION_USER' | translate"
+                    [pTooltip]="'INTERNAL.TOOLTIPS.MODIFICATION_USER' | translate"
+                    tooltipPosition="top"
+                    tooltipEvent="hover"
+                  />
+                  <label for="ws_role_detail_intern_item_modification-user">
+                    {{ 'INTERNAL.MODIFICATION_USER' | translate }}</label
+                  >
+                </p-floatlabel>
               </div>
             </div>
-          </p-tabpanel>
-        }
+          </div>
+        </p-tabpanel>
       </p-tabpanels>
     </p-tabs>
 
     @if (changeMode !== 'CREATE') {
-      <div class="mt-4">
+      <div class="mt-2">
         @if (role.isIamRole && !role.isWorkspaceRole) {
           <p-message
             id="ws_role_create_info_inw"

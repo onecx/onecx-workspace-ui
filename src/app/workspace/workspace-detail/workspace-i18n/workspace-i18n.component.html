@@ -17,7 +17,7 @@
           pInputText
           type="text"
           id="ws_detail_i18n_property_name"
-          class="w-full pt-3 pb-2 text-responsive"
+          class="w-full text-responsive"
           readonly
           [value]="propertyKey ? (propertyKey | translate) : ''"
           [attr.aria-label]="'DIALOG.I18N.PROPERTY_NAME' | translate"
@@ -34,7 +34,7 @@
           pInputText
           type="text"
           id="ws_detail_i18n_property_value"
-          class="w-full pt-3 pb-2 text-responsive"
+          class="w-full text-responsive"
           readonly
           [value]="getPropertyValue(workspace, propertyName)"
           [attr.aria-label]="'DIALOG.I18N.PROPERTY_VALUE' | translate"
