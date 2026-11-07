@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnChanges, inject } from '@angular/core'
+import { Component, EventEmitter, Input, Output, OnChanges, inject, OnInit } from '@angular/core'
 import { TranslateService } from '@ngx-translate/core'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
@@ -16,7 +16,7 @@ import { WorkspaceSlotDeregistrationComponent } from '../workspace-slot-deregist
   templateUrl: './workspace-slot-detail.component.html',
   styleUrls: ['./workspace-slot-detail.component.scss']
 })
-export class WorkspaceSlotDetailComponent implements OnChanges {
+export class WorkspaceSlotDetailComponent implements OnInit, OnChanges {
   private readonly slotApi = inject(SlotAPIService)
   private readonly user = inject(UserService)
   private readonly translate = inject(TranslateService)
