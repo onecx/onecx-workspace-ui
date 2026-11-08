@@ -237,10 +237,9 @@
             </p-pickList>
             <!-- manage picklist bug: use the following displayed but invisible dummy if the target controls are hidden (no selected items) -->
             @if (targetFilterValue && filteredWComponents.length > 1) {
-              <button
-                type="button"
-                class="invisible p-element p-ripple p-button-icon-only p-button p-component"
-              ></button>
+              <div class="invisible m-2">
+                <div class="picklist-p-icon"></div>
+              </div>
             }
           </div>
         </p-tabpanel>
