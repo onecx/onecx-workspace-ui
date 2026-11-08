@@ -155,7 +155,7 @@ describe('WorkspaceSlotDetailComponent', () => {
       component.ngOnChanges()
 
       expect(component.slot).toEqual(slot)
-      expect(component.wComponents).toEqual(slot.psComponents)
+      expect(component.wComponentsOrg).toEqual(slot.psComponents)
     })
 
     it('should initialize component state when slot is provided, but slot is a lost slot', () => {
@@ -234,7 +234,7 @@ describe('WorkspaceSlotDetailComponent', () => {
       component.ngOnChanges()
 
       expect(component.slot).toEqual(slot)
-      expect(component.wComponents).toEqual(slot.psComponents)
+      expect(component.wComponentsOrg).toEqual(slot.psComponents)
       // this is the reduced set of components in alphabetical order (minus slot)
       expect(component.psComponents).toEqual([
         {
@@ -323,16 +323,6 @@ describe('WorkspaceSlotDetailComponent', () => {
   /**
    * UI Events: DETAIL
    */
-  describe('Extra UI events', () => {
-    it('should call stopPropagation on the event when return is called', () => {
-      const mockEvent = jasmine.createSpyObj('event', ['stopPropagation'])
-
-      component.return(mockEvent)
-
-      expect(mockEvent.stopPropagation).toHaveBeenCalled()
-    })
-  })
-
   describe('Filtering', () => {
     const createComponent = (name: string, productName: string): ExtendedComponent => ({
       name,
@@ -348,7 +338,7 @@ describe('WorkspaceSlotDetailComponent', () => {
 
     beforeEach(() => {
       component.psComponents = unregistered
-      component.wComponents = registered
+      component.wComponentsOrg = registered
     })
 
     it('should set filter values to empty string when slot is provided', () => {
@@ -475,12 +465,12 @@ describe('WorkspaceSlotDetailComponent', () => {
       expect(component.filteredPsComponents).toEqual(unregistered)
     })
 
-    it('should keep the selected component when the filter is cleared', () => {
+    it('should clear the selected component when the filter value is empty', () => {
       component.selectedComponent = createComponent('Alpha', 'productA')
 
       component.filterComponents('SOURCE')
 
-      expect(component.selectedComponent).toEqual(createComponent('Alpha', 'productA'))
+      expect(component.selectedComponent).toBeUndefined()
     })
 
     it('should clear the selected component when a filter value is applied', () => {
@@ -507,7 +497,7 @@ describe('WorkspaceSlotDetailComponent', () => {
       const toMove = makeComponent('Gamma', 'productB')
       const kept = makeComponent('Alpha', 'productA')
       component.psComponents = [kept, toMove]
-      component.wComponents = [makeComponent('Delta', 'productB')]
+      component.wComponentsOrg = [makeComponent('Delta', 'productB')]
       component.sourceFilterValue = 'alp'
       component.targetFilterValue = 'del'
       component.selectedComponent = toMove
@@ -516,8 +506,8 @@ describe('WorkspaceSlotDetailComponent', () => {
       component.onAddComponentsToSlot({ items: [toMove] })
 
       expect(component.psComponents.map((c) => c.name)).toEqual(['Alpha'])
-      expect(component.wComponents.map((c) => c.name)).toEqual(['Delta', 'Gamma'])
-      expect(component.targetFilterValue).toBe('')
+      expect(component.wComponentsOrg.map((c) => c.name)).toEqual(['Delta', 'Gamma'])
+      expect(component.targetFilterValue).toBeUndefined()
       expect(component.sourceFilterValue).toBe('alp')
       // target is refreshed without filter, source keeps the active filter
       expect(component.filteredWComponents.map((c) => c.name)).toEqual(['Delta', 'Gamma'])
@@ -528,13 +518,13 @@ describe('WorkspaceSlotDetailComponent', () => {
 
     it('should do nothing and not save when no items are moved', () => {
       component.psComponents = [makeComponent('Alpha', 'productA')]
-      component.wComponents = []
+      component.wComponentsOrg = []
       spyOn(component, 'onSaveSlot')
 
       component.onAddComponentsToSlot({ items: [] })
 
       expect(component.psComponents.map((c) => c.name)).toEqual(['Alpha'])
-      expect(component.wComponents).toEqual([])
+      expect(component.wComponentsOrg).toEqual([])
       expect(component.onSaveSlot).not.toHaveBeenCalled()
     })
   })
@@ -633,7 +623,7 @@ describe('WorkspaceSlotDetailComponent', () => {
           deprecated: false
         }
       ]
-      component.wComponents = [
+      component.wComponentsOrg = [
         {
           productName: 'product1',
           appId: 'app1',
@@ -653,16 +643,18 @@ describe('WorkspaceSlotDetailComponent', () => {
           deprecated: false
         }
       ]
-      component['wComponentsOrg'] = [...component.wComponents]
+      const wComponentsOrgCopy = [...component.wComponentsOrg]
       spyOn(component, 'onSaveSlot')
 
       component.onDeregisterConfirmation()
 
       expect(component.displayDeregisterConfirmation).toBeFalse()
       expect(component.onSaveSlot).toHaveBeenCalledWith(false)
+      // the confirmation only adds the items back to the source list; the slot
+      // data is synced from the filtered list in the onSaveSlot response
       expect(component.psComponents.map((c) => c.name)).toEqual(['comp2', 'comp1'])
-      expect(component.wComponents.map((c) => c.name)).toEqual(['comp3'])
-      expect(component['wComponentsOrg']).toEqual(component.wComponents)
+      expect(component.wComponentsOrg).toEqual(wComponentsOrgCopy)
+      expect(component['deregisterItems']).not.toEqual([]) // still cleared in the onSaveSlot response
     })
   })
 
@@ -689,7 +681,7 @@ describe('WorkspaceSlotDetailComponent', () => {
           }
         ]
       }
-      component.wComponents = [
+      component.wComponentsOrg = [
         {
           productName: 'product1',
           appId: 'app1',
@@ -767,7 +759,7 @@ describe('WorkspaceSlotDetailComponent', () => {
           deprecated: false
         }
       ]
-      component.wComponents = [
+      component.wComponentsOrg = [
         {
           name: 'comp2',
           productName: 'product1',
@@ -796,28 +788,33 @@ describe('WorkspaceSlotDetailComponent', () => {
   })
 
   describe('Reorder', () => {
-    it('should ignore saving if slot has no or one component', () => {
-      component.slot = {
-        name: 'slot1',
-        type: ['WORKSPACE'],
-        changes: false,
-        undeployed: false,
-        deprecated: false,
-        psSlots: [],
-        productNames: [],
-        components: [{ productName: 'Product', appId: 'AppId', name: 'Component Name' }],
-        psComponents: [
-          {
-            productName: 'Product',
-            appId: 'AppId',
-            name: 'Component Name',
-            changes: false,
-            exists: true,
-            undeployed: false,
-            deprecated: false
-          }
-        ]
-      }
+    const makeComponent = (name: string): ExtendedComponent => ({
+      name,
+      appId: 'AppId',
+      productName: 'Product',
+      changes: false,
+      exists: true,
+      undeployed: false,
+      deprecated: false
+    })
+    const slot: ExtendedSlot = {
+      name: 'slot1',
+      type: ['WORKSPACE'],
+      changes: false,
+      undeployed: false,
+      deprecated: false,
+      psSlots: [],
+      productNames: [],
+      psComponents: []
+    }
+
+    beforeEach(() => {
+      component.workspace_id = 'workspace1'
+    })
+
+    it('should ignore saving if the target list has no or one component', () => {
+      component.slot = slot
+      component.filteredWComponents = [makeComponent('Component Name 1')]
       slotServiceSpy.addOrUpdateSlot.and.returnValue(of({}))
 
       component.onSaveSlot(true)
@@ -825,36 +822,24 @@ describe('WorkspaceSlotDetailComponent', () => {
       expect(slotServiceSpy.addOrUpdateSlot).not.toHaveBeenCalled()
     })
 
-    it('should ignore saving if slot has no or one component', () => {
-      component.slot = {
-        name: 'slot1',
-        type: ['WORKSPACE'],
-        changes: false,
-        undeployed: false,
-        deprecated: false,
-        psSlots: [],
-        productNames: [],
-        components: [
-          { productName: 'Product', appId: 'AppId', name: 'Component Name 1' },
-          { productName: 'Product', appId: 'AppId', name: 'Component Name 2' }
-        ],
-        psComponents: [
-          {
-            productName: 'Product',
-            appId: 'AppId',
-            name: 'Component Name',
-            changes: false,
-            exists: true,
-            undeployed: false,
-            deprecated: false
-          }
-        ]
-      }
+    it('should save the slot with the current target list if the target list has two or more components', () => {
+      component.slot = slot
+      component.filteredWComponents = [makeComponent('Component Name 1'), makeComponent('Component Name 2')]
       slotServiceSpy.addOrUpdateSlot.and.returnValue(of({}))
 
       component.onSaveSlot(true)
 
-      expect(slotServiceSpy.addOrUpdateSlot).toHaveBeenCalled()
+      expect(slotServiceSpy.addOrUpdateSlot).toHaveBeenCalledWith({
+        id: component.workspace_id,
+        updateSlotRequest: {
+          modificationCount: undefined,
+          name: 'slot1',
+          components: [
+            { productName: 'Product', appId: 'AppId', name: 'Component Name 1' },
+            { productName: 'Product', appId: 'AppId', name: 'Component Name 2' }
+          ]
+        }
+      })
     })
   })
 

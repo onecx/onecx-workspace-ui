@@ -103,7 +103,7 @@
                     tooltipPosition="top"
                     tooltipEvent="hover"
                   >
-                    {{ 'DIALOG.SLOT.COMPONENTS.USED' | translate }}: {{ wComponents.length }}
+                    {{ 'DIALOG.SLOT.COMPONENTS.USED' | translate }}: {{ wComponentsOrg.length }}
                   </div>
                 </div>
               </ng-template>
@@ -189,7 +189,7 @@
                   (keydown.space)="$event.preventDefault(); $any($event.target).click()"
                 >
                   <!-- CONTENT -->
-                  <div class="py-0 sm:py-1 flex flex-column row-gap-0" (dblclick)="return($event)">
+                  <div class="py-0 sm:py-1 flex flex-column row-gap-0" (dblclick)="$event.stopPropagation()">
                     <div
                       [id]="'ws_slot_detail_picklist_' + i + '_component_name'"
                       class="font-semibold text-sm md:text-md max-w-21rem text-responsive"

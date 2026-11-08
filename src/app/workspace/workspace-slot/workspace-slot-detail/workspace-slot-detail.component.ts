@@ -56,8 +56,9 @@ export class WorkspaceSlotDetailComponent implements OnInit, OnChanges {
   public dateFormat: string
   public slotOrg: ExtendedSlot | undefined // used for restore
   public psComponents: ExtendedComponent[] = [] // org ps components reduced by used in slot
-  public wComponents: ExtendedComponent[] = [] // used/assigned components
-  private wComponentsOrg: ExtendedComponent[] = [] // used for restore
+  public wComponentsOrg: ExtendedComponent[] = [] // used for restore
+  public filteredPsComponents: ExtendedComponent[] = [] // displaying filtered, unregistered components,
+  public filteredWComponents: ExtendedComponent[] = [] // displaying filtered, registered components
   public hasEditPermission = false
   public displayDeregisterConfirmation = false
   public selectedTabIndex = '0'
@@ -65,8 +66,6 @@ export class WorkspaceSlotDetailComponent implements OnInit, OnChanges {
   private deregisterItems: ExtendedComponent[] = [] // moved items
   public sourceFilterValue: string | undefined = undefined
   public targetFilterValue: string | undefined = undefined
-  public filteredPsComponents: ExtendedComponent[] = [] // unregistered items
-  public filteredWComponents: ExtendedComponent[] = [] // registered items
 
   constructor() {
     this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm:ss' : 'M/d/yy, hh:mm:ss a'
@@ -82,20 +81,19 @@ export class WorkspaceSlotDetailComponent implements OnInit, OnChanges {
   public ngOnChanges(): void {
     if (this.displayDialog && this.slot) {
       this.slotOrg = { ...this.slot } // to be able to restore and compare
-      this.wComponents = []
-      this.selectedComponent = undefined
-      // extract components assigned to the slot with PS infos
-      if (this.slot.psComponents) this.wComponents = [...this.slot.psComponents]
-      this.wComponentsOrg = [...this.wComponents] // to be able to restore
+      this.wComponentsOrg = []
       this.psComponents = []
+      if (this.slot.psComponents) this.wComponentsOrg = [...this.slot.psComponents]
       this.collectPsComponents()
       if (this.slot.psSlots) this.slot.psSlots.sort(this.sortProducts)
       if (this.slot.productNames) this.slot.productNames.sort((a, b) => a.toUpperCase().localeCompare(b.toUpperCase()))
       this.selectedTabIndex = this.slot.productNames?.length === 0 ? '1' : '0'
+      // init filter values and filtered component lists
       this.sourceFilterValue = undefined
       this.targetFilterValue = undefined
       this.filteredPsComponents = [...this.psComponents] // unregistered items
-      this.filteredWComponents = [...this.wComponents] // registered items
+      this.filteredWComponents = [...this.wComponentsOrg] // registered items
+      this.selectedComponent = undefined
     }
   }
 
@@ -103,7 +101,7 @@ export class WorkspaceSlotDetailComponent implements OnInit, OnChanges {
   private collectPsComponents() {
     for (const psComp of this.psComponentsOrg)
       if (
-        !this.wComponents.some(
+        !this.wComponentsOrg.some(
           (wc) => wc.productName === psComp.productName && wc.appId === psComp.appId && wc.name === psComp.name
         )
       )
@@ -133,31 +131,27 @@ export class WorkspaceSlotDetailComponent implements OnInit, OnChanges {
   /**
    * UI Events: DETAIL
    */
-  return(event: any) {
-    event.stopPropagation()
-  }
-
   public filterComponents(bucket: 'SOURCE' | 'TARGET', val?: string) {
-    if (val && val.trim() !== '') this.selectedComponent = undefined
+    if (val?.trim() !== '') this.selectedComponent = undefined // deselect component if filter value is not empty
     if (!val || val.trim() === '') {
       if (bucket === 'SOURCE') {
         this.filteredPsComponents = [...this.psComponents]
-        this.sourceFilterValue = ''
+        this.sourceFilterValue = undefined
       }
       if (bucket === 'TARGET') {
-        this.filteredWComponents = [...this.wComponents]
-        this.targetFilterValue = ''
+        this.filteredWComponents = [...this.wComponentsOrg]
+        this.targetFilterValue = undefined
       }
       return
     }
-    const lowerSearch = val.toLowerCase()
+    const lowerSearch = val?.trim().toLowerCase()
     if (bucket === 'SOURCE') {
       this.sourceFilterValue = val
       this.filteredPsComponents = this.psComponents.filter((item) => item.name.toLowerCase().includes(lowerSearch))
     }
     if (bucket === 'TARGET') {
       this.targetFilterValue = val
-      this.filteredWComponents = this.wComponents.filter((item) => item.name.toLowerCase().includes(lowerSearch))
+      this.filteredWComponents = this.wComponentsOrg.filter((item) => item.name.toLowerCase().includes(lowerSearch))
     }
   }
 
@@ -165,7 +159,7 @@ export class WorkspaceSlotDetailComponent implements OnInit, OnChanges {
    * Select a component: workaround for displaying the selected component in the UI
    */
   public onComponentSelect(comp: ExtendedComponent) {
-    this.selectedComponent = { ...comp }
+    this.selectedComponent = { ...comp } // create a copy to make it independent from the original object
   }
 
   /**
@@ -178,16 +172,16 @@ export class WorkspaceSlotDetailComponent implements OnInit, OnChanges {
     if (ev.items.length > 0) {
       // move in v19
       for (const item of ev.items) {
-        this.wComponents = this.wComponents.filter(
+        this.wComponentsOrg = this.wComponentsOrg.filter(
           (wc) => !(wc.productName === item.productName && wc.appId === item.appId && wc.name === item.name)
         )
-        this.wComponents.push({ ...item })
+        this.wComponentsOrg.push({ ...item })
         this.psComponents = this.psComponents.filter(
           (psc) => !(psc.productName === item.productName && psc.appId === item.appId && psc.name === item.name)
         )
       }
       // refresh the target list (move to the end); an active target filter would hide the moved items
-      this.targetFilterValue = ''
+      this.targetFilterValue = undefined
       this.filterComponents('TARGET')
       // an active source filter still applies to the remaining items
       this.filterComponents('SOURCE', this.sourceFilterValue)
@@ -216,8 +210,7 @@ export class WorkspaceSlotDetailComponent implements OnInit, OnChanges {
           (psc) => !(psc.productName === item.productName && psc.appId === item.appId && psc.name === item.name)
         )
       }
-      this.wComponents = [...this.wComponentsOrg]
-      this.filterComponents('SOURCE', this.sourceFilterValue)
+      this.filterComponents('SOURCE', this.sourceFilterValue) // renew filtered components
       this.filterComponents('TARGET', this.targetFilterValue)
       this.deregisterItems = []
       this.selectedComponent = undefined
@@ -230,11 +223,7 @@ export class WorkspaceSlotDetailComponent implements OnInit, OnChanges {
       // move
       for (const item of this.deregisterItems) {
         this.psComponents.push({ ...item })
-        this.wComponents = this.wComponents.filter(
-          (wc) => !(wc.productName === item.productName && wc.appId === item.appId && wc.name === item.name)
-        )
       }
-      this.wComponentsOrg = [...this.wComponents]
       this.selectedComponent = undefined
       this.onSaveSlot(false)
     }
@@ -242,14 +231,11 @@ export class WorkspaceSlotDetailComponent implements OnInit, OnChanges {
 
   /**
    * Save the current slot configuration
-   * @param reorder - indicates if the components have been reordered:
-   *   if true then wComponents not changed by the picklist reordering
-   *      but is same as filtered components (no filtering applied)
+   * @param reorder - indicates if the components have been reordered
    */
   public onSaveSlot(reorder: boolean) {
     if (this.slot) {
-      // picklist bug: ignore change if only one component is in list
-      if (reorder && this.slot.components && this.slot.components.length < 2) return
+      if (reorder && this.filteredWComponents.length < 2) return
       this.slotApi
         .addOrUpdateSlot({
           id: this.workspace_id,
@@ -277,10 +263,7 @@ export class WorkspaceSlotDetailComponent implements OnInit, OnChanges {
                 }
               }
             if (this.deregisterItems.length > 0) this.psComponents.sort(this.sortComponents)
-            this.wComponentsOrg = [...this.wComponents]
-            if (!reorder) {
-              this.filterComponents('TARGET')
-            }
+            this.wComponentsOrg = [...this.filteredWComponents]
             this.deregisterItems = []
             this.selectedComponent = undefined
             this.msgService.success({ summaryKey: 'ACTIONS.EDIT.SLOT_OK' })
