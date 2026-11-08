@@ -8,7 +8,7 @@ import { InputGroupAddonModule } from 'primeng/inputgroupaddon'
 import { InputGroupModule } from 'primeng/inputgroup'
 import { InputTextModule } from 'primeng/inputtext'
 import { MessageModule } from 'primeng/message'
-import { PickListModule } from 'primeng/picklist'
+import { PickListModule, PickListMoveToSourceEvent, PickListMoveToTargetEvent } from 'primeng/picklist'
 import { TabsModule } from 'primeng/tabs'
 import { TooltipModule } from 'primeng/tooltip'
 
@@ -55,17 +55,16 @@ export class WorkspaceSlotDetailComponent implements OnInit, OnChanges {
 
   public dateFormat: string
   public slotOrg: ExtendedSlot | undefined // used for restore
-  public wComponents: ExtendedComponent[] = [] // used/assigned components
   public psComponents: ExtendedComponent[] = [] // org ps components reduced by used in slot
+  public wComponents: ExtendedComponent[] = [] // used/assigned components
+  private wComponentsOrg: ExtendedComponent[] = [] // used for restore
   public hasEditPermission = false
   public displayDeregisterConfirmation = false
   public selectedTabIndex = '0'
-  public selectedComponentName: string | undefined
+  public selectedComponent: ExtendedComponent | undefined
   private deregisterItems: ExtendedComponent[] = [] // moved items
-  private wComponentsOrg: ExtendedComponent[] = [] // used for restore
-  public showTargetControls = false // manage visibility of target controls due to picklist bug
-  public sourceFilterValue: string | undefined
-  public targetFilterValue: string | undefined
+  public sourceFilterValue: string | undefined = undefined
+  public targetFilterValue: string | undefined = undefined
   public filteredPsComponents: ExtendedComponent[] = [] // unregistered items
   public filteredWComponents: ExtendedComponent[] = [] // registered items
 
@@ -84,6 +83,7 @@ export class WorkspaceSlotDetailComponent implements OnInit, OnChanges {
     if (this.displayDialog && this.slot) {
       this.slotOrg = { ...this.slot } // to be able to restore and compare
       this.wComponents = []
+      this.selectedComponent = undefined
       // extract components assigned to the slot with PS infos
       if (this.slot.psComponents) this.wComponents = [...this.slot.psComponents]
       this.wComponentsOrg = [...this.wComponents] // to be able to restore
@@ -92,13 +92,11 @@ export class WorkspaceSlotDetailComponent implements OnInit, OnChanges {
       if (this.slot.psSlots) this.slot.psSlots.sort(this.sortProducts)
       if (this.slot.productNames) this.slot.productNames.sort((a, b) => a.toUpperCase().localeCompare(b.toUpperCase()))
       this.selectedTabIndex = this.slot.productNames?.length === 0 ? '1' : '0'
+      this.sourceFilterValue = undefined
+      this.targetFilterValue = undefined
       this.filteredPsComponents = [...this.psComponents] // unregistered items
       this.filteredWComponents = [...this.wComponents] // registered items
     }
-  }
-
-  public selectComponent(componentName: string) {
-    this.selectedComponentName = componentName
   }
 
   // Collect available but not yet registered components from product store
@@ -138,54 +136,116 @@ export class WorkspaceSlotDetailComponent implements OnInit, OnChanges {
   return(event: any) {
     event.stopPropagation()
   }
-  public getFilterValue(ev: any): string {
-    return ev.target.value
-  }
-  public filterComponents(val: string, bucket: 'SOURCE' | 'TARGET') {
+
+  public filterComponents(bucket: 'SOURCE' | 'TARGET', val?: string) {
+    if (val && val.trim() !== '') this.selectedComponent = undefined
     if (!val || val.trim() === '') {
-      if (bucket === 'SOURCE') this.filteredPsComponents = [...this.psComponents]
-      if (bucket === 'TARGET') this.filteredWComponents = [...this.wComponents]
+      if (bucket === 'SOURCE') {
+        this.filteredPsComponents = [...this.psComponents]
+        this.sourceFilterValue = ''
+      }
+      if (bucket === 'TARGET') {
+        this.filteredWComponents = [...this.wComponents]
+        this.targetFilterValue = ''
+      }
       return
     }
     const lowerSearch = val.toLowerCase()
     if (bucket === 'SOURCE') {
+      this.sourceFilterValue = val
       this.filteredPsComponents = this.psComponents.filter((item) => item.name.toLowerCase().includes(lowerSearch))
     }
     if (bucket === 'TARGET') {
+      this.targetFilterValue = val
       this.filteredWComponents = this.wComponents.filter((item) => item.name.toLowerCase().includes(lowerSearch))
     }
   }
 
-  // fix picklist bug: hide controls if not one item is selected
-  public onTargetSelect(event: any) {
-    this.showTargetControls = event.items.length === 1
+  /**
+   * Select a component: workaround for displaying the selected component in the UI
+   */
+  public onComponentSelect(comp: ExtendedComponent) {
+    this.selectedComponent = { ...comp }
   }
 
-  // The picklist has done the deregistration immediatly - roll back with more effort
-  public onDeregister(event: any): void {
+  /**
+   * The picklist made the move only in UI (identity based, at the current position) and not for data,
+   * so we handle the data move manually.
+   * v18: the picklist made this move automatically
+   * v19: the picklist does not move items automatically, so we handle it manually
+   */
+  public onAddComponentsToSlot(ev: PickListMoveToTargetEvent) {
+    if (ev.items.length > 0) {
+      // move in v19
+      for (const item of ev.items) {
+        this.wComponents = this.wComponents.filter(
+          (wc) => !(wc.productName === item.productName && wc.appId === item.appId && wc.name === item.name)
+        )
+        this.wComponents.push({ ...item })
+        this.psComponents = this.psComponents.filter(
+          (psc) => !(psc.productName === item.productName && psc.appId === item.appId && psc.name === item.name)
+        )
+      }
+      // refresh the target list (move to the end); an active target filter would hide the moved items
+      this.targetFilterValue = ''
+      this.filterComponents('TARGET')
+      // an active source filter still applies to the remaining items
+      this.filterComponents('SOURCE', this.sourceFilterValue)
+      this.selectedComponent = undefined
+      this.onSaveSlot(false)
+    }
+  }
+
+  /**
+   * The picklist made the move only in UI and not for data.
+   * Depends on the confirmation from the user to actually remove the components from the slot.
+   */
+  public onRemoveComponentsFromSlot(event: PickListMoveToSourceEvent): void {
     this.deregisterItems = event.items
     this.displayDeregisterConfirmation = true
   }
+
   // restore the previous state: on user abortion or closing the dialog
   public onDeregisterCancellation() {
     if (this.deregisterItems.length === 0) return
     this.displayDeregisterConfirmation = false
-    // restore
-    for (const deregItem of this.deregisterItems)
-      this.psComponents = this.psComponents.filter(
-        (psc) =>
-          !(psc.productName === deregItem.productName && psc.appId === deregItem.appId && psc.name === deregItem.name)
-      )
-    this.wComponents = this.wComponentsOrg
-    this.wComponentsOrg = [...this.wComponents]
-    this.deregisterItems = []
+    if (this.deregisterItems.length > 0) {
+      // restore
+      for (const item of this.deregisterItems) {
+        this.psComponents = this.psComponents.filter(
+          (psc) => !(psc.productName === item.productName && psc.appId === item.appId && psc.name === item.name)
+        )
+      }
+      this.wComponents = [...this.wComponentsOrg]
+      this.filterComponents('SOURCE', this.sourceFilterValue)
+      this.filterComponents('TARGET', this.targetFilterValue)
+      this.deregisterItems = []
+      this.selectedComponent = undefined
+    }
   }
 
   public onDeregisterConfirmation(): void {
     this.displayDeregisterConfirmation = false
-    this.onSaveSlot(false)
+    if (this.deregisterItems.length > 0) {
+      // move
+      for (const item of this.deregisterItems) {
+        this.psComponents.push({ ...item })
+        this.wComponents = this.wComponents.filter(
+          (wc) => !(wc.productName === item.productName && wc.appId === item.appId && wc.name === item.name)
+        )
+      }
+      this.wComponentsOrg = [...this.wComponents]
+      this.selectedComponent = undefined
+      this.onSaveSlot(false)
+    }
   }
 
+  /**
+   * Save the current slot configuration
+   * @param reorder - indicates if the components have been reordered:
+   *   if true then wComponents not changed by the picklist reordering
+   *      but is same as filtered components (no filtering applied)
+   */
   public onSaveSlot(reorder: boolean) {
     if (this.slot) {
       // picklist bug: ignore change if only one component is in list
@@ -196,7 +256,7 @@ export class WorkspaceSlotDetailComponent implements OnInit, OnChanges {
           updateSlotRequest: {
             modificationCount: this.slot.modificationCount,
             name: this.slot.name,
-            components: this.wComponents.map((ec) => {
+            components: this.filteredWComponents.map((ec) => {
               return { productName: ec.productName, appId: ec.appId, name: ec.name }
             })
           } as UpdateSlotRequest
@@ -217,8 +277,12 @@ export class WorkspaceSlotDetailComponent implements OnInit, OnChanges {
                 }
               }
             if (this.deregisterItems.length > 0) this.psComponents.sort(this.sortComponents)
-            this.deregisterItems = []
             this.wComponentsOrg = [...this.wComponents]
+            if (!reorder) {
+              this.filterComponents('TARGET')
+            }
+            this.deregisterItems = []
+            this.selectedComponent = undefined
             this.msgService.success({ summaryKey: 'ACTIONS.EDIT.SLOT_OK' })
           },
           error: (err) => {

@@ -324,26 +324,12 @@ describe('WorkspaceSlotDetailComponent', () => {
    * UI Events: DETAIL
    */
   describe('Extra UI events', () => {
-    it('should return value from event object', () => {
-      const event = { target: { value: 'test value' } }
-
-      expect(component.getFilterValue(event)).toEqual('test value')
-    })
-
     it('should call stopPropagation on the event when return is called', () => {
       const mockEvent = jasmine.createSpyObj('event', ['stopPropagation'])
 
       component.return(mockEvent)
 
       expect(mockEvent.stopPropagation).toHaveBeenCalled()
-    })
-
-    it('should display target controls depends on selected items', () => {
-      const ev = { items: [{}] }
-
-      component.onTargetSelect(ev)
-
-      expect(component.showTargetControls).toBeTrue()
     })
   })
 
@@ -363,6 +349,27 @@ describe('WorkspaceSlotDetailComponent', () => {
     beforeEach(() => {
       component.psComponents = unregistered
       component.wComponents = registered
+    })
+
+    it('should set filter values to empty string when slot is provided', () => {
+      component.displayDialog = true
+      component.slot = {
+        name: 'slot1',
+        productNames: ['productB'],
+        type: ['WORKSPACE'],
+        changes: false,
+        undeployed: false,
+        deprecated: false,
+        psSlots: [],
+        psComponents: [createComponent('compB', 'productB')]
+      }
+      component.psComponentsOrg = [createComponent('compA', 'productB'), createComponent('compB', 'productB')]
+      component.wProductNames = ['productB']
+
+      component.ngOnChanges()
+
+      expect(component.sourceFilterValue).toBeUndefined()
+      expect(component.targetFilterValue).toBeUndefined()
     })
 
     it('should initialize filtered lists with all components when slot is provided', () => {
@@ -387,7 +394,7 @@ describe('WorkspaceSlotDetailComponent', () => {
     })
 
     it('should filter unregistered components by name when source value is given', () => {
-      component.filterComponents('alp', 'SOURCE')
+      component.filterComponents('SOURCE', 'alp')
 
       expect(component.filteredPsComponents).toEqual([unregistered[0]])
     })
@@ -395,13 +402,13 @@ describe('WorkspaceSlotDetailComponent', () => {
     it('should not touch registered components when source value is given', () => {
       component.filteredWComponents = []
 
-      component.filterComponents('alp', 'SOURCE')
+      component.filterComponents('SOURCE', 'alp')
 
       expect(component.filteredWComponents).toEqual([])
     })
 
     it('should filter registered components by name when target value is given', () => {
-      component.filterComponents('DELTA', 'TARGET')
+      component.filterComponents('TARGET', 'DELTA')
 
       expect(component.filteredWComponents).toEqual([registered[1]])
     })
@@ -409,13 +416,13 @@ describe('WorkspaceSlotDetailComponent', () => {
     it('should not touch unregistered components when target value is given', () => {
       component.filteredPsComponents = []
 
-      component.filterComponents('delta', 'TARGET')
+      component.filterComponents('TARGET', 'delta')
 
       expect(component.filteredPsComponents).toEqual([])
     })
 
     it('should return no unregistered components when nothing matches', () => {
-      component.filterComponents('unknown', 'SOURCE')
+      component.filterComponents('SOURCE', 'unknown')
 
       expect(component.filteredPsComponents).toEqual([])
     })
@@ -423,7 +430,7 @@ describe('WorkspaceSlotDetailComponent', () => {
     it('should reset unregistered components when source value is empty', () => {
       component.filteredPsComponents = []
 
-      component.filterComponents('', 'SOURCE')
+      component.filterComponents('SOURCE', '')
 
       expect(component.filteredPsComponents).toEqual(unregistered)
     })
@@ -431,7 +438,7 @@ describe('WorkspaceSlotDetailComponent', () => {
     it('should reset unregistered components when source value is only whitespace', () => {
       component.filteredPsComponents = []
 
-      component.filterComponents('   ', 'SOURCE')
+      component.filterComponents('SOURCE', '   ')
 
       expect(component.filteredPsComponents).toEqual(unregistered)
     })
@@ -439,7 +446,7 @@ describe('WorkspaceSlotDetailComponent', () => {
     it('should reset registered components when target value is empty', () => {
       component.filteredWComponents = []
 
-      component.filterComponents('', 'TARGET')
+      component.filterComponents('TARGET', '')
 
       expect(component.filteredWComponents).toEqual(registered)
     })
@@ -447,7 +454,7 @@ describe('WorkspaceSlotDetailComponent', () => {
     it('should not touch registered components when source value is empty', () => {
       component.filteredWComponents = []
 
-      component.filterComponents('', 'SOURCE')
+      component.filterComponents('SOURCE', '')
 
       expect(component.filteredWComponents).toEqual([])
     })
@@ -455,7 +462,7 @@ describe('WorkspaceSlotDetailComponent', () => {
     it('should not touch unregistered components when target value is empty', () => {
       component.filteredPsComponents = []
 
-      component.filterComponents('', 'TARGET')
+      component.filterComponents('TARGET', '')
 
       expect(component.filteredPsComponents).toEqual([])
     })
@@ -463,9 +470,72 @@ describe('WorkspaceSlotDetailComponent', () => {
     it('should reset unregistered components when source value is undefined', () => {
       component.filteredPsComponents = []
 
-      component.filterComponents(undefined as unknown as string, 'SOURCE')
+      component.filterComponents('SOURCE')
 
       expect(component.filteredPsComponents).toEqual(unregistered)
+    })
+
+    it('should keep the selected component when the filter is cleared', () => {
+      component.selectedComponent = createComponent('Alpha', 'productA')
+
+      component.filterComponents('SOURCE')
+
+      expect(component.selectedComponent).toEqual(createComponent('Alpha', 'productA'))
+    })
+
+    it('should clear the selected component when a filter value is applied', () => {
+      component.selectedComponent = createComponent('Alpha', 'productA')
+
+      component.filterComponents('SOURCE', 'alp')
+
+      expect(component.selectedComponent).toBeUndefined()
+    })
+  })
+
+  describe('Adding components to slot', () => {
+    const makeComponent = (name: string, productName: string): ExtendedComponent => ({
+      name,
+      appId: 'appId',
+      productName,
+      changes: false,
+      exists: true,
+      undeployed: false,
+      deprecated: false
+    })
+
+    it('should move components from source to target, reset the target filter and save the slot', () => {
+      const toMove = makeComponent('Gamma', 'productB')
+      const kept = makeComponent('Alpha', 'productA')
+      component.psComponents = [kept, toMove]
+      component.wComponents = [makeComponent('Delta', 'productB')]
+      component.sourceFilterValue = 'alp'
+      component.targetFilterValue = 'del'
+      component.selectedComponent = toMove
+      spyOn(component, 'onSaveSlot')
+
+      component.onAddComponentsToSlot({ items: [toMove] })
+
+      expect(component.psComponents.map((c) => c.name)).toEqual(['Alpha'])
+      expect(component.wComponents.map((c) => c.name)).toEqual(['Delta', 'Gamma'])
+      expect(component.targetFilterValue).toBe('')
+      expect(component.sourceFilterValue).toBe('alp')
+      // target is refreshed without filter, source keeps the active filter
+      expect(component.filteredWComponents.map((c) => c.name)).toEqual(['Delta', 'Gamma'])
+      expect(component.filteredPsComponents.map((c) => c.name)).toEqual(['Alpha'])
+      expect(component.selectedComponent).toBeUndefined()
+      expect(component.onSaveSlot).toHaveBeenCalledWith(false)
+    })
+
+    it('should do nothing and not save when no items are moved', () => {
+      component.psComponents = [makeComponent('Alpha', 'productA')]
+      component.wComponents = []
+      spyOn(component, 'onSaveSlot')
+
+      component.onAddComponentsToSlot({ items: [] })
+
+      expect(component.psComponents.map((c) => c.name)).toEqual(['Alpha'])
+      expect(component.wComponents).toEqual([])
+      expect(component.onSaveSlot).not.toHaveBeenCalled()
     })
   })
 
@@ -473,7 +543,7 @@ describe('WorkspaceSlotDetailComponent', () => {
     it('should set deregisterItems and displayDeregisterConfirmation when onMoveToSource is called', () => {
       const mockEvent = { items: ['item1', 'item2', 'item3'] }
 
-      component.onDeregister(mockEvent)
+      component.onRemoveComponentsFromSlot(mockEvent)
 
       expect(component.displayDeregisterConfirmation).toBeTrue()
     })
@@ -539,14 +609,60 @@ describe('WorkspaceSlotDetailComponent', () => {
       expect(component['deregisterItems']).toEqual([])
     })
 
-    it('should save slot on deregister confirmation', () => {
+    it('should move components back to source, reset state and save slot on deregister confirmation', () => {
       component.displayDeregisterConfirmation = true
+      component['deregisterItems'] = [
+        {
+          productName: 'product1',
+          appId: 'app1',
+          name: 'comp1',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        }
+      ]
+      component.psComponents = [
+        {
+          productName: 'product2',
+          appId: 'app2',
+          name: 'comp2',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        }
+      ]
+      component.wComponents = [
+        {
+          productName: 'product1',
+          appId: 'app1',
+          name: 'comp1',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        },
+        {
+          productName: 'product3',
+          appId: 'app3',
+          name: 'comp3',
+          changes: false,
+          exists: true,
+          undeployed: false,
+          deprecated: false
+        }
+      ]
+      component['wComponentsOrg'] = [...component.wComponents]
       spyOn(component, 'onSaveSlot')
 
       component.onDeregisterConfirmation()
 
-      expect(component.onSaveSlot).toHaveBeenCalled()
       expect(component.displayDeregisterConfirmation).toBeFalse()
+      expect(component.onSaveSlot).toHaveBeenCalledWith(false)
+      expect(component.psComponents.map((c) => c.name)).toEqual(['comp2', 'comp1'])
+      expect(component.wComponents.map((c) => c.name)).toEqual(['comp3'])
+      expect(component['wComponentsOrg']).toEqual(component.wComponents)
     })
   })
 
@@ -747,11 +863,21 @@ describe('WorkspaceSlotDetailComponent', () => {
    */
   describe('extras', () => {
     it('should set component name', () => {
+      const comp: ExtendedComponent = {
+        name: 'compB',
+        appId: 'appId1',
+        productName: 'productB',
+        changes: false,
+        exists: true,
+        undeployed: false,
+        deprecated: false
+      }
+
       initializeComponent()
 
-      component.selectComponent('Component Name')
+      component.onComponentSelect(comp)
 
-      expect(component.selectedComponentName).toEqual('Component Name')
+      expect(component.selectedComponent?.name).toEqual('compB')
     })
   })
 

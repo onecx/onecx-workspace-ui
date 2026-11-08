@@ -396,7 +396,7 @@
       "PRODUCTS.TOOLTIP": "Applications that have registered this Slot:",
       "PRODUCTS.NOT_FOUND": "This Slot has no registered Applications. To remove it from the workspace, detach all connected components.",
       "COMPONENTS": "Content-forming Components",
-      "COMPONENTS.USED": "Used Components",
+      "COMPONENTS.USED": "Slot Components",
       "COMPONENTS.USED.TOOLTIP": "Components used in the slot, in order from top to bottom.",
       "COMPONENTS.NOT_USED": "Available Components",
       "COMPONENTS.NOT_USED.TOOLTIP": "List of available components declared via the registered Applications.",

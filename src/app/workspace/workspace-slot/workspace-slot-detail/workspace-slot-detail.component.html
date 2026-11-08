@@ -72,14 +72,13 @@
               [source]="filteredPsComponents"
               [target]="filteredWComponents"
               [showSourceControls]="false"
-              [showTargetControls]="showTargetControls && filteredWComponents.length > 1"
+              [showTargetControls]="!targetFilterValue && filteredWComponents.length > 1"
               [responsive]="true"
               [metaKeySelection]="true"
               [disabled]="!hasEditPermission"
-              (onTargetSelect)="onTargetSelect($event)"
               (onTargetReorder)="onSaveSlot(true)"
-              (onMoveToTarget)="onSaveSlot(false)"
-              (onMoveToSource)="onDeregister($event)"
+              (onMoveToTarget)="onAddComponentsToSlot($event)"
+              (onMoveToSource)="onRemoveComponentsFromSlot($event)"
             >
               <ng-template #sourceHeader>
                 <div class="p-2 flex flex-row column-gap-2 justify-content-between align-items-center">
@@ -94,6 +93,7 @@
                   </div>
                 </div>
               </ng-template>
+
               <ng-template #targetHeader>
                 <div class="p-2 flex flex-row column-gap-2 justify-content-between align-items-center">
                   <div
@@ -118,7 +118,7 @@
                         pInputText
                         id="ws_slots_picklist_ps_filter_value"
                         class="text-responsive"
-                        (input)="filterComponents(psFilter.value, 'SOURCE')"
+                        (input)="filterComponents('SOURCE', psFilter.value)"
                         [attr.aria-label]="'DIALOG.DATAVIEW.COMPONENT_FILTER_TOOLTIP' | translate"
                         [pTooltip]="'DIALOG.DATAVIEW.COMPONENT_FILTER_TOOLTIP' | translate"
                         tooltipPosition="top"
@@ -132,7 +132,7 @@
                       <p-button
                         id="ws_slots_picklist_ps_filter_clear"
                         icon="pi pi-filter-slash"
-                        (onClick)="psFilter.value = ''; filterComponents('', 'SOURCE')"
+                        (onClick)="psFilter.value = ''; filterComponents('SOURCE')"
                         [disabled]="psFilter.value === ''"
                         [ariaLabel]="'DIALOG.DATAVIEW.FILTER.CLEAR' | translate"
                         [pTooltip]="'DIALOG.DATAVIEW.FILTER.CLEAR' | translate"
@@ -149,12 +149,12 @@
                   <p-inputgroup class="p-picklist-filter">
                     <p-floatlabel variant="on">
                       <input
-                        #psFilter
+                        #wFilter
                         type="text"
                         pInputText
                         id="ws_slots_picklist_w_filter_value"
                         class="text-responsive"
-                        (input)="filterComponents(psFilter.value, 'TARGET')"
+                        (input)="filterComponents('TARGET', wFilter.value)"
                         [attr.aria-label]="'DIALOG.DATAVIEW.COMPONENT_FILTER_TOOLTIP' | translate"
                         [pTooltip]="'DIALOG.DATAVIEW.COMPONENT_FILTER_TOOLTIP' | translate"
                         tooltipPosition="top"
@@ -166,10 +166,10 @@
                     </p-floatlabel>
                     <p-inputgroup-addon>
                       <p-button
-                        id="ws_slots_picklist_ps_filter_clear"
+                        id="ws_slots_picklist_w_filter_clear"
                         icon="pi pi-filter-slash"
-                        (onClick)="psFilter.value = ''; filterComponents('', 'TARGET')"
-                        [disabled]="psFilter.value === ''"
+                        (onClick)="wFilter.value = ''; filterComponents('TARGET')"
+                        [disabled]="wFilter.value === ''"
                         [ariaLabel]="'DIALOG.DATAVIEW.FILTER.CLEAR' | translate"
                         [pTooltip]="'DIALOG.DATAVIEW.FILTER.CLEAR' | translate"
                         tooltipPosition="top"
@@ -183,8 +183,8 @@
               <ng-template pTemplate="item" let-component let-i="index">
                 <div
                   class="pl-2 pr-1 flex flex-row flex-nowrap justify-content-between column-gap-2 align-items-center"
-                  [class.custom-selected-row]="selectedComponentName === component.name"
-                  (click)="selectComponent(component.name)"
+                  [class.custom-selected-row]="selectedComponent?.name === component.name"
+                  (click)="onComponentSelect(component)"
                   (keydown.enter)="$any($event.target).click()"
                   (keydown.space)="$event.preventDefault(); $any($event.target).click()"
                 >
@@ -235,8 +235,8 @@
                 </div>
               </ng-template>
             </p-pickList>
-            <!-- manage picklist bug: use the following invisible dummy if controls are hidden (no selected items) -->
-            @if (!showTargetControls && wComponents.length > 1) {
+            <!-- manage picklist bug: use the following displayed but invisible dummy if the target controls are hidden (no selected items) -->
+            @if (targetFilterValue && filteredWComponents.length > 1) {
               <button
                 type="button"
                 class="invisible p-element p-ripple p-button-icon-only p-button p-component"

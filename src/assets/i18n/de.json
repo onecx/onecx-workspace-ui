@@ -396,7 +396,7 @@
       "PRODUCTS.TOOLTIP": "Applikationen die den Slot registriert haben:",
       "PRODUCTS.NOT_FOUND": "Diesen Slot hat keine Applikation registriert. Um ihn für den Workspace zu entfernen lösen Sie alle verbundenen Komponenten.",
       "COMPONENTS": "Inhaltsbildende Komponenten",
-      "COMPONENTS.USED": "Verwendete Komponenten",
+      "COMPONENTS.USED": "Slot Komponenten",
       "COMPONENTS.USED.TOOLTIP": "Im Slot verwendeten Komponenten, in der Reihenfolge von oben nach unten.",
       "COMPONENTS.NOT_USED": "Verfügbare Komponenten",
       "COMPONENTS.NOT_USED.TOOLTIP": "Liste der verfügbaren Komponenten, die über die registrierten Applikationen deklariert worden sind.",
