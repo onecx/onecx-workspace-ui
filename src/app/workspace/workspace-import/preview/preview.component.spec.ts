@@ -72,6 +72,20 @@ describe('PreviewComponent', () => {
   })
 
   describe('model changes', () => {
+    it('should accept letters, digits, hyphen and underscore as workspace name', () => {
+      component.formGroup.controls['name'].setValue('Work-space_01')
+
+      expect(component.formGroup.controls['name'].valid).toBeTrue()
+    })
+
+    for (const invalidName of ['my space', 'a/b', 'a?b', 'a#b', 'a.b', 'äb']) {
+      it(`should reject the workspace name '${invalidName}'`, () => {
+        component.formGroup.controls['name'].setValue(invalidName)
+
+        expect(component.formGroup.controls['name'].hasError('pattern')).toBeTrue()
+      })
+    }
+
     it('should change workspace name', () => {
       const newWorkspaceName = 'Test'
       component.formGroup.controls['displayName'].setValue(newWorkspaceName)

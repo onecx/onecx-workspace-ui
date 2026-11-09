@@ -70,7 +70,12 @@ export class PreviewComponent implements OnInit {
 
   constructor(private readonly slotService: SlotService) {
     this.formGroup = new FormGroup({
-      name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
+      name: new FormControl(null, [
+        Validators.required,
+        Validators.minLength(2),
+        Validators.maxLength(50),
+        Validators.pattern('^[a-zA-Z0-9_-]+$')
+      ]),
       displayName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
       theme: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
       baseUrl: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(100)]),

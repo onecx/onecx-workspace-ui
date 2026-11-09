@@ -10,7 +10,10 @@
           formControlName="name"
           (keyup)="onModelChange()"
           [attr.aria-label]="'WORKSPACE_IMPORT.WORKSPACE_NAME' | translate"
-          [pTooltip]="'WORKSPACE_IMPORT.WORKSPACE_NAME.TOOLTIP' | translate"
+          [pTooltip]="
+            ('WORKSPACE_IMPORT.WORKSPACE_NAME.TOOLTIP' | translate) + ('VALIDATION.HINTS.FORMAT_NAME' | translate)
+          "
+          [escape]="false"
           tooltipPosition="top"
           tooltipEvent="hover"
         />

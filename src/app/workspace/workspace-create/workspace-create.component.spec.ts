@@ -105,6 +105,31 @@ describe('WorkspaceCreateComponent', () => {
     component.currentTheme$.subscribe()
   })
 
+  describe('name validation', () => {
+    // the form of the shared component instance is replaced in beforeEach: use a fresh instance
+    let nameControl: FormControl
+
+    beforeEach(() => {
+      nameControl = TestBed.createComponent(WorkspaceCreateComponent).componentInstance.formGroup.controls[
+        'name'
+      ] as FormControl
+    })
+
+    it('should accept letters, digits, hyphen and underscore', () => {
+      nameControl.setValue('Work-space_01')
+
+      expect(nameControl.valid).toBeTrue()
+    })
+
+    for (const invalidName of ['my space', 'a/b', 'a?b', 'a#b', 'a.b', 'äb', 'a%2Fb']) {
+      it(`should reject the name '${invalidName}'`, () => {
+        nameControl.setValue(invalidName)
+
+        expect(nameControl.hasError('pattern')).toBeTrue()
+      })
+    }
+  })
+
   it('should create a workspace', () => {
     createWorkspaceSpy.and.returnValue(of({ resource: workspace }))
     const navigateSpy = spyOn(router, 'navigate')

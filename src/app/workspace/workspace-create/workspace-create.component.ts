@@ -82,7 +82,12 @@ export class WorkspaceCreateComponent implements OnInit {
       .pipe(map((t) => ({ ...t, displayName: t.name }) as Theme))
     this.isThemeComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.slotName)
     this.formGroup = new FormGroup({
-      name: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
+      name: new FormControl(null, [
+        Validators.required,
+        Validators.minLength(2),
+        Validators.maxLength(50),
+        Validators.pattern('^[a-zA-Z0-9_-]+$')
+      ]),
       displayName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
       theme: new FormControl(null, [Validators.required]),
       homePage: new FormControl(null, [Validators.maxLength(255)]),

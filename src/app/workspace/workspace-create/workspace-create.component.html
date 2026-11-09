@@ -25,7 +25,8 @@
               class="w-full text-responsive"
               formControlName="name"
               [attr.aria-label]="'WORKSPACE.NAME' | translate"
-              [pTooltip]="'WORKSPACE.TOOLTIPS.NAME' | translate"
+              [pTooltip]="('WORKSPACE.TOOLTIPS.NAME' | translate) + ('VALIDATION.HINTS.FORMAT_NAME' | translate)"
+              [escape]="false"
               tooltipPosition="top"
               tooltipEvent="hover"
             />

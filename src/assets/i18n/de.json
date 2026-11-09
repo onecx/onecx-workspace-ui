@@ -723,6 +723,7 @@
     "FORM_INVALID": "Das Formular enthält ungültige Werte.",
     "HINTS": {
       "FORMAT_URL": "Format: ",
+      "FORMAT_NAME": "<br/>Erlaubte Zeichen: a-z, A-Z, 0-9, - und _",
       "FORMAT_BASE_URL": "<br/>Format: /pfad-zum-workspace",
       "FORMAT_FEED_URL": "<br/>Format: http(s)://pfad-zum-feed",
       "FORMAT_IMAGE_URL": "<br/>Format: http(s)://path-to-image",
