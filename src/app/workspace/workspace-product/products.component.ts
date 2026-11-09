@@ -191,7 +191,6 @@ export class WorkspaceProductComponent implements OnInit, OnChanges, OnDestroy {
   public exceptionKey: string | undefined = undefined
   public psLoading = false
   public wpLoading = false
-  public editMode = false
   public hasRegisterPermission = false
   public readonly permissionEndpointExist = toSignal(
     Utils.doesEndpointExist(this.workspaceService, 'onecx-permission', 'onecx-permission-ui', 'product'),
@@ -618,27 +617,27 @@ export class WorkspaceProductComponent implements OnInit, OnChanges, OnDestroy {
    * UI Event: SAVE
    */
   public onProductSave(): void {
-    this.editMode = false
     if (this.workspace?.id && this.formGroup.valid && this.displayedDetailItem?.id) {
-      this.displayedDetailItem.displayName = this.formGroup.controls['displayName'].value
-      this.displayedDetailItem.baseUrl = this.formGroup.controls['baseUrl'].value
+      const changedProduct = { ...this.displayedDetailItem }
+      changedProduct.displayName = this.formGroup.controls['displayName'].value
+      changedProduct.baseUrl = this.formGroup.controls['baseUrl'].value
       // MFE modules to be saved:
-      this.displayedDetailItem.microfrontends = [] // clear
+      changedProduct.microfrontends = [] // clear
       const modules = this.formGroup.get('modules') as FormArray
       modules.controls.forEach((item) => {
         // ignore item if id is undefined and "new" = false and formChanged
         if ((item.value.id && !item.value.change) || (!item.value.id && item.value.change === 'create'))
-          this.displayedDetailItem?.microfrontends?.push(item.value)
+          changedProduct?.microfrontends?.push(item.value)
       })
       this.wProductApi
         .updateProductById({
           id: this.workspace?.id,
           productId: this.displayedDetailItem.id,
           updateProductRequest: {
-            modificationCount: this.displayedDetailItem.modificationCount,
-            baseUrl: this.displayedDetailItem.baseUrl,
-            displayName: this.displayedDetailItem.displayName,
-            microfrontends: this.displayedDetailItem.microfrontends?.map((m) => ({
+            modificationCount: changedProduct.modificationCount,
+            baseUrl: changedProduct.baseUrl,
+            displayName: changedProduct.displayName,
+            microfrontends: changedProduct.microfrontends?.map((m) => ({
               appId: m.appId,
               basePath: m.basePath,
               exposedModule: m.exposedModule
