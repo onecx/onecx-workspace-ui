@@ -185,7 +185,6 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges {
             this.addLostSlotComponents(slots)
             // finalize
             slots.sort(this.sortSlotsByName)
-            this.onQuickFilterChange(this.quickFilterValue) // reestablish filter after data change
             // count
             this.numberOfAllSlots = slots.length
             this.numberOfWSlots = wSlots.length
@@ -197,6 +196,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges {
         )
       )
       this.dataSubject$.next(slots as unknown as RowListGridData[])
+      this.onQuickFilterChange(this.quickFilterValue) // reestablish filter on the new data
     } catch (err) {
       this.exceptionKey.set('EXCEPTIONS.HTTP_STATUS_' + Utils.mapping_error_status(0) + '.SLOTS')
       console.error('loadSlots', err)

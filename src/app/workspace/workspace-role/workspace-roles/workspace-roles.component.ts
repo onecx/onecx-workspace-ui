@@ -335,7 +335,7 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
   }
   public onDeleteRole(ev: Event, role: Role): void {
     ev.stopPropagation()
-    if (!this.hasEditPermission) return
+    if (!this.hasDeletePermission) return
     this.role = role
     this.changeMode = 'DELETE'
     this.showRoleDeleteDialog = true

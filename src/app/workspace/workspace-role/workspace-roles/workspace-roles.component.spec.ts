@@ -378,10 +378,10 @@ describe('WorkspaceRolesComponent', () => {
       expect(component.showRoleDetailDialog).toBeTrue()
     })
 
-    it('should set properties for deleting a role: edit permission', () => {
+    it('should set properties for deleting a role: delete permission', () => {
       const eventMock = new Event('click')
       spyOn(eventMock, 'stopPropagation')
-      component.hasEditPermission = true
+      component.hasDeletePermission = true
 
       component.onDeleteRole(eventMock, wRole)
 
@@ -391,9 +391,9 @@ describe('WorkspaceRolesComponent', () => {
       expect(component.showRoleDeleteDialog).toBeTrue()
     })
 
-    it('should set properties for deleting a role: no edit permission', () => {
+    it('should set properties for deleting a role: no delete permission', () => {
       const eventMock = new Event('click')
-      component.hasEditPermission = false
+      component.hasDeletePermission = false
 
       component.onDeleteRole(eventMock, wRole)
 
