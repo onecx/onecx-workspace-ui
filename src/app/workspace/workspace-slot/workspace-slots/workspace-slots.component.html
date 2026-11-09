@@ -107,7 +107,7 @@
             styleClass="h-full"
             icon="pi pi-cog"
             [disabled]="!productEndpointExist()"
-            [routerLink]="[getProductEndpointUrl$() | async]"
+            [routerLink]="getProductEndpointUrl$() | async"
             [ariaLabel]="'ACTIONS.NAVIGATION.GOTO_PRODUCT_SLOTS' | translate"
             [pTooltip]="'ACTIONS.NAVIGATION.GOTO_PRODUCT_SLOTS' | translate"
             tooltipPosition="top"

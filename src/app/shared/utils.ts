@@ -8,6 +8,8 @@ import { WorkspaceService } from '@onecx/angular-integration-interface'
 
 import { RefType } from 'src/app/shared/generated'
 
+const NO_URL$: Observable<string | undefined> = of(undefined)
+
 // This object encupsulated function because ...
 //  ...Jasmine has problems to spying direct imported functions
 const Utils = {
@@ -132,6 +134,22 @@ const Utils = {
         return of(false)
       })
     )
+  },
+
+  // Same observable instance per name: a new instance in a template binding makes the async pipe resubscribe on every change detection
+  cachedEndpointUrl$(
+    cache: Map<string, Observable<string | undefined>>,
+    endpointExists: boolean,
+    name: string | undefined,
+    create: (name: string) => Observable<string | undefined>
+  ): Observable<string | undefined> {
+    if (!endpointExists || !name) return NO_URL$
+    let url$ = cache.get(name)
+    if (!url$) {
+      url$ = create(name)
+      cache.set(name, url$)
+    }
+    return url$
   },
 
   /**

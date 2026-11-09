@@ -130,7 +130,7 @@
             styleClass="h-full"
             icon="pi pi-lock"
             [disabled]="!permissionEndpointExist()"
-            [routerLink]="[getPermisionEndpointUrl$(workspace?.name!) | async]"
+            [routerLink]="getPermisionEndpointUrl$(workspace?.name!) | async"
             [ariaLabel]="'ACTIONS.NAVIGATION.GOTO_WORKSPACE_PERMISSIONS' | translate"
             [pTooltip]="'ACTIONS.NAVIGATION.GOTO_WORKSPACE_PERMISSIONS' | translate"
             tooltipPosition="top"

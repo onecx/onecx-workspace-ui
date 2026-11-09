@@ -382,4 +382,48 @@ describe('util functions', () => {
       expect(result).toBeFalse()
     }))
   })
+
+  describe('cachedEndpointUrl$', () => {
+    it('should return an observable without url when endpoint does not exist', (done) => {
+      const create = jasmine.createSpy('create')
+
+      Utils.cachedEndpointUrl$(new Map(), false, 'name', create).subscribe((url) => {
+        expect(url).toBeUndefined()
+        expect(create).not.toHaveBeenCalled()
+        done()
+      })
+    })
+
+    it('should return an observable without url when name is missing', (done) => {
+      const create = jasmine.createSpy('create')
+
+      Utils.cachedEndpointUrl$(new Map(), true, undefined, create).subscribe((url) => {
+        expect(url).toBeUndefined()
+        expect(create).not.toHaveBeenCalled()
+        done()
+      })
+    })
+
+    it('should return the same observable instance when called repeatedly with the same name', () => {
+      const cache = new Map()
+      const create = jasmine.createSpy('create').and.callFake((n: string) => of('/' + n))
+
+      const first = Utils.cachedEndpointUrl$(cache, true, 'a', create)
+      const second = Utils.cachedEndpointUrl$(cache, true, 'a', create)
+
+      expect(second).toBe(first)
+      expect(create).toHaveBeenCalledTimes(1)
+    })
+
+    it('should create a new observable when called with another name', () => {
+      const cache = new Map()
+      const create = jasmine.createSpy('create').and.callFake((n: string) => of('/' + n))
+
+      const first = Utils.cachedEndpointUrl$(cache, true, 'a', create)
+      const second = Utils.cachedEndpointUrl$(cache, true, 'b', create)
+
+      expect(second).not.toBe(first)
+      expect(create).toHaveBeenCalledTimes(2)
+    })
+  })
 })

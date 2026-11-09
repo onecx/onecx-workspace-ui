@@ -418,12 +418,13 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
       )
   }
 
+  private readonly permissionUrlCache = new Map<string, Observable<string | undefined>>()
   public getPermisionEndpointUrl$(name: string): Observable<string | undefined> {
-    if (this.permissionEndpointExist())
-      return this.workspaceService.getUrl('onecx-permission', 'onecx-permission-ui', 'workspace', {
-        'workspace-name': name
+    return Utils.cachedEndpointUrl$(this.permissionUrlCache, this.permissionEndpointExist(), name, (n) =>
+      this.workspaceService.getUrl('onecx-permission', 'onecx-permission-ui', 'workspace', {
+        'workspace-name': n
       })
-    return of(undefined)
+    )
   }
 
   private prepareSortColumns(): DataTableColumn[] {

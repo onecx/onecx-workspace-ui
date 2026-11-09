@@ -358,10 +358,11 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     return theme?.logoUrl ?? theme?.bffImageUrl
   }
 
+  private readonly themeUrlCache = new Map<string, Observable<string | undefined>>()
   public getThemeEndpointUrl$(name?: string): Observable<string | undefined> {
-    if (this.themeEndpointExist() && name)
-      return this.workspaceService.getUrl('onecx-theme', 'onecx-theme-ui', 'theme-detail', { 'theme-name': name })
-    return of(undefined)
+    return Utils.cachedEndpointUrl$(this.themeUrlCache, this.themeEndpointExist(), name, (n) =>
+      this.workspaceService.getUrl('onecx-theme', 'onecx-theme-ui', 'theme-detail', { 'theme-name': n })
+    )
   }
 
   public openI18nDialog(propName: string, propKey: string): void {

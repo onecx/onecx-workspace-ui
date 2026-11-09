@@ -800,18 +800,20 @@ export class WorkspaceProductComponent implements OnInit, OnChanges, OnDestroy {
   /****************************************************************************
    * ENDPOINTS
    */
+  private readonly productUrlCache = new Map<string, Observable<string | undefined>>()
+  private readonly permissionUrlCache = new Map<string, Observable<string | undefined>>()
   public getProductEndpointUrl$(name?: string): Observable<string | undefined> {
-    if (this.productEndpointExist() && name)
-      return this.workspaceService.getUrl('onecx-product-store', 'onecx-product-store-ui', 'product-detail', {
-        'product-name': name
+    return Utils.cachedEndpointUrl$(this.productUrlCache, this.productEndpointExist(), name, (n) =>
+      this.workspaceService.getUrl('onecx-product-store', 'onecx-product-store-ui', 'product-detail', {
+        'product-name': n
       })
-    return of(undefined)
+    )
   }
   public getPermissionEndpointUrl$(name?: string): Observable<string | undefined> {
-    if (this.permissionEndpointExist() && name)
-      return this.workspaceService.getUrl('onecx-permission', 'onecx-permission-ui', 'product', {
-        'product-name': name
+    return Utils.cachedEndpointUrl$(this.permissionUrlCache, this.permissionEndpointExist(), name, (n) =>
+      this.workspaceService.getUrl('onecx-permission', 'onecx-permission-ui', 'product', {
+        'product-name': n
       })
-    return of(undefined)
+    )
   }
 }

@@ -488,10 +488,11 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges {
       )
   }
 
+  private readonly productUrlCache = new Map<string, Observable<string | undefined>>()
   public getProductEndpointUrl$(): Observable<string | undefined> {
-    if (this.productEndpointExist())
-      return this.workspaceService.getUrl('onecx-product-store', 'onecx-product-store-ui', 'slots')
-    return of(undefined)
+    return Utils.cachedEndpointUrl$(this.productUrlCache, this.productEndpointExist(), 'slots', () =>
+      this.workspaceService.getUrl('onecx-product-store', 'onecx-product-store-ui', 'slots')
+    )
   }
 
   private prepareSortColumns(): DataTableColumn[] {
