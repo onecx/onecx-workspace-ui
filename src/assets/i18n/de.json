@@ -635,7 +635,8 @@
       "CREATED": "Der Workspace wurde erfolgreich erstellt.",
       "SKIPPED": "Der Workspace wurde beim Import ignoriert.",
       "UPDATED": "Der Workspace wurde erfolgreich geändert.",
-      "ERROR": "Ein Fehler ist aufgetreten. Der Workspace konnte nicht erstellt/aktualisiert werden."
+      "ERROR": "Ein Fehler ist aufgetreten. Der Workspace konnte nicht erstellt/aktualisiert werden.",
+      "MENU_ERROR": "Der Workspace wurde importiert, aber sein Menü konnte nicht importiert werden."
     },
     "VALIDATION": {
       "JSON_ERROR": "JSON Formatfehler",

@@ -51,7 +51,6 @@ import { Theme, ImportWorkspace } from '../workspace-import.component'
 })
 export class PreviewComponent implements OnInit {
   @Input() public importWorkspace: ImportWorkspace | undefined
-  @Input() public hasPermission = false
   @Output() public isFormValide = new EventEmitter<boolean>()
 
   public formGroup: FormGroup

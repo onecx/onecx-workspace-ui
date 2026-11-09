@@ -1,5 +1,5 @@
 <div class="mt-5 mb-2">
-  <form [formGroup]="formGroup" errorTailor class="flex flex-wrap align-items-top gap-4">
+  <form [formGroup]="formGroup" class="flex flex-wrap align-items-top gap-4">
     <div>
       <p-floatlabel variant="on" class="w-16rem">
         <input
@@ -89,10 +89,10 @@
     </div>
     <div class="flex justify-content-center align-items-center">
       <p-checkbox
-        #checkMandatory
         inputId="ws_import_preview_mandatory"
         styleClass="cursor-pointer shadow-none"
         formControlName="mandatory"
+        [binary]="true"
         (onChange)="onModelChange()"
         [ariaLabel]="'INTERNAL.MANDATORY' | translate"
         [pTooltip]="'INTERNAL.TOOLTIPS.MANDATORY' | translate"
@@ -100,7 +100,7 @@
         tooltipEvent="hover"
       >
       </p-checkbox>
-      <label class="ocx-required-label ml-2" for="ws_import_preview_mandatory">
+      <label class="ml-2" for="ws_import_preview_mandatory">
         {{ 'INTERNAL.MANDATORY' | translate }}
       </label>
     </div>

@@ -86,11 +86,10 @@ describe('ConfirmComponent', () => {
       expect(component.baseUrlExists).toBeFalse()
     })
 
-    it('should set workspaceNameExists to true in checkWorkspaceUniqueness onInit if no permission', () => {
+    it('should set workspaceNameExists to true in checkWorkspaceUniqueness onInit', () => {
       stubSearchWorkspaces(workspaces)
 
       component.importWorkspace = { ...impWorkspace, name: workspaces[0].name }
-      component.hasPermission = false
 
       component.ngOnInit()
 

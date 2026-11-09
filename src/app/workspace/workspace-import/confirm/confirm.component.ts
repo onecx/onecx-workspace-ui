@@ -27,7 +27,6 @@ import { ImportWorkspace } from '../workspace-import.component'
 })
 export class ConfirmComponent implements OnInit {
   @Input() public importWorkspace: ImportWorkspace | undefined
-  @Input() public hasPermission = false
   // eslint-disable-next-line @typescript-eslint/ban-types
   @Input() public importResponse: {} | undefined
 

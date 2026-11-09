@@ -94,6 +94,24 @@ describe('PreviewComponent', () => {
 
       expect(component.importWorkspace?.displayName).toEqual(newWorkspaceName)
     })
+
+    it('should toggle the mandatory checkbox and update the workspace', () => {
+      const input = fixture.nativeElement.querySelector('#ws_import_preview_mandatory') as HTMLInputElement
+
+      expect(component.formGroup.controls['mandatory'].value).toBeFalse()
+
+      input.click()
+      fixture.detectChanges()
+
+      expect(component.formGroup.controls['mandatory'].value).toBeTrue()
+      expect(component.importWorkspace?.mandatory).toBeTrue()
+
+      input.click()
+      fixture.detectChanges()
+
+      expect(component.formGroup.controls['mandatory'].value).toBeFalse()
+      expect(component.importWorkspace?.mandatory).toBeFalse()
+    })
   })
 
   describe('themes', () => {

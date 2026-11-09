@@ -20,14 +20,12 @@
           }
           @case (1) {
             <app-import-preview
-              [hasPermission]="hasPermission"
               [importWorkspace]="importWorkspace"
               (isFormValide)="handleFormValidation($event)"
             ></app-import-preview>
           }
           @case (2) {
             <app-import-confirm
-              [hasPermission]="hasPermission"
               [importWorkspace]="importWorkspace"
               [importResponse]="importResponse"
               (isLoading)="handleIsLoading($event)"
@@ -78,7 +76,7 @@
           <p-button
             id="ws_import_action_import"
             [icon]="isLoading ? 'pi pi-spin pi-spinner' : 'pi pi-check'"
-            [disabled]="isLoading || !isFormValid"
+            [disabled]="isLoading || !isFormValid || !hasPermission"
             (onClick)="saveWorkspace()"
             [label]="'WORKSPACE_IMPORT.START_IMPORT' | translate"
             [ariaLabel]="'WORKSPACE_IMPORT.START_IMPORT' | translate"
