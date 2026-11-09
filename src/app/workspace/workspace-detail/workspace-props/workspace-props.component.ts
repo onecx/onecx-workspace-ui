@@ -295,11 +295,12 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
    * WORKSPACE
    */
 
-  // called by workspace detail dialog: returns form values to workspace
-  public onSave(): void {
-    if (!this.workspace) return
-    if (this.propsForm.valid) Object.assign(this.workspace, this.getFormData())
-    else this.msgService.error({ summaryKey: 'VALIDATION.FORM_INVALID' })
+  // called by workspace detail: returns the workspace with the changed form values, the input stays untouched
+  public onSave(): Workspace | undefined {
+    if (!this.workspace) return undefined
+    if (this.propsForm.valid) return { ...this.workspace, ...this.getFormData() }
+    this.msgService.error({ summaryKey: 'VALIDATION.FORM_INVALID' })
+    return undefined
   }
 
   // return the values that are different

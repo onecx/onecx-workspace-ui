@@ -331,9 +331,7 @@ describe('WorkspacePropsComponent', () => {
       it('should return if no workspace to save', () => {
         component.workspace = undefined
 
-        component.onSave()
-
-        expect().nothing()
+        expect(component.onSave()).toBeUndefined()
       })
 
       it('should update workspace onSave', () => {
@@ -342,6 +340,18 @@ describe('WorkspacePropsComponent', () => {
         component.onSave()
 
         expect(component['getFormData']).toHaveBeenCalled()
+      })
+
+      it('should return a copy with changes and leave the input workspace untouched', () => {
+        const url = 'https://abc.de'
+        const original = component.workspace?.logoUrl
+        component.propsForm.controls['logoUrl'].setValue(url)
+
+        const result = component.onSave()
+
+        expect(result?.logoUrl).toBe(url)
+        expect(result).not.toBe(component.workspace)
+        expect(component.workspace?.logoUrl).toBe(original)
       })
 
       it('should detect changes on workspaces', () => {

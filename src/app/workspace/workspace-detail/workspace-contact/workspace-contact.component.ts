@@ -51,14 +51,16 @@ export class WorkspaceContactComponent implements OnChanges {
     }
   }
 
-  public onSave(): void {
-    if (!this.workspace) return
-    if (this.contactForm.valid) Object.assign(this.workspace, this.getFormData())
-    else this.msgService.error({ summaryKey: 'VALIDATION.FORM_INVALID' })
+  // returns the form values to be merged into the workspace, the input stays untouched
+  public onSave(): Partial<Workspace> | undefined {
+    if (!this.workspace) return undefined
+    if (this.contactForm.valid) return this.getFormData()
+    this.msgService.error({ summaryKey: 'VALIDATION.FORM_INVALID' })
+    return undefined
   }
 
   // read form values
-  private getFormData(): any[] {
+  private getFormData(): Partial<Workspace> {
     const data: any = {
       address: {}
     }

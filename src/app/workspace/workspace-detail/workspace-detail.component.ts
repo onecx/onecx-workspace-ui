@@ -136,37 +136,21 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
   }
 
   private onSaveWorkspace() {
-    // Trigger update on the form of the currently selected tab
-    let workspaceData: Workspace | undefined
-    switch (this.selectedTabIndex) {
-      case '0': {
-        this.workspacePropsComponent.onSave()
-        if (!this.workspacePropsComponent.propsForm.valid) return
-        workspaceData = this.workspacePropsComponent.workspace
-        break
-      }
-      case '1': {
-        this.workspaceContactComponent.onSave()
-        if (!this.workspaceContactComponent.contactForm.valid) return
-        workspaceData = this.workspaceContactComponent.workspace
-        break
-      }
-      case '2': {
-        this.workspaceInternComponent.onSave()
-        workspaceData = this.workspaceInternComponent.workspace
-        break
-      }
-      default: {
-        console.error("Couldn't assign tab to component")
-        return
-      }
-    }
-    if (workspaceData) {
-      workspaceData = {
-        ...workspaceData,
-        logoUrl: workspaceData.logoUrl === '' ? undefined : workspaceData.logoUrl,
-        smallLogoUrl: workspaceData.smallLogoUrl === '' ? undefined : workspaceData.smallLogoUrl
-      }
+    // get data from tabs
+    const workspaceContactData: Partial<Workspace> | undefined = this.workspaceContactComponent.onSave()
+    const workspaceInternData: Partial<Workspace> | undefined = this.workspaceInternComponent.onSave()
+    const workspacePropsData: Partial<Workspace> | undefined = this.workspacePropsComponent.onSave()
+    // combine and save
+    if (this.workspace?.name && workspacePropsData && workspaceContactData && workspaceInternData) {
+      const workspaceData = {
+        id: this.workspace?.id,
+        name: this.workspace?.name,
+        ...workspacePropsData,
+        ...workspaceContactData,
+        ...workspaceInternData,
+        logoUrl: workspacePropsData.logoUrl === '' ? undefined : workspacePropsData.logoUrl,
+        smallLogoUrl: workspacePropsData.smallLogoUrl === '' ? undefined : workspacePropsData.smallLogoUrl
+      } as Workspace
       if (workspaceData.id)
         this.workspaceApi
           .updateWorkspace({

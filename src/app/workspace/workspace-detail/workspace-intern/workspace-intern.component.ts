@@ -57,11 +57,13 @@ export class WorkspaceInternComponent implements OnChanges {
     }
   }
 
-  public onSave(): void {
-    if (this.workspace && this.formGroup.valid) {
-      this.workspace.mandatory = this.formGroup.get('mandatory')?.value ?? false
-      this.workspace.disabled = this.formGroup.get('disabled')?.value ?? false
-      this.editMode = false
+  // returns the form values to be merged into the workspace, the input stays untouched
+  public onSave(): Partial<Workspace> | undefined {
+    if (!this.workspace || !this.formGroup.valid) return undefined
+    this.editMode = false
+    return {
+      mandatory: this.formGroup.get('mandatory')?.value ?? false,
+      disabled: this.formGroup.get('disabled')?.value ?? false
     }
   }
 }

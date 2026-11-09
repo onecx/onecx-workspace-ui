@@ -153,20 +153,19 @@ describe('WorkspaceContactComponent', () => {
     expect(component.editMode).toBeFalse()
   })
 
-  it('should update workspace onSave: no address', () => {
-    component.workspace = workspace
+  it('should return workspace copy with address onSave: no address', () => {
+    component.workspace = { ...workspace, address: undefined }
 
-    component.onSave()
+    const result = component.onSave()
 
-    expect(component.workspace.address).toBeDefined()
+    expect(result?.address).toBeDefined()
+    expect(component.workspace.address).toBeUndefined()
   })
 
-  it('should do nothing onSave when workspace is undefined', () => {
+  it('should return undefined onSave when workspace is undefined', () => {
     component.workspace = undefined
 
-    component.onSave()
-
-    expect().nothing()
+    expect(component.onSave()).toBeUndefined()
   })
 
   it('should display error msg if form is invalid', () => {

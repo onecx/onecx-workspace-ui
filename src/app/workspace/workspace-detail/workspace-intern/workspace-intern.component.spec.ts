@@ -89,7 +89,7 @@ describe('WorkspaceInternComponent', () => {
   })
 
   describe('save', () => {
-    it('should refill workspace from form', () => {
+    it('should return workspace copy filled from form', () => {
       component.editMode = true
       component.ngOnChanges()
       component.formGroup.setValue({
@@ -97,11 +97,15 @@ describe('WorkspaceInternComponent', () => {
         mandatory: true,
         disabled: true
       })
-      component.onSave()
+      const original = { ...component.workspace }
+
+      const result = component.onSave()
 
       expect(component.formGroup.valid).toBeTrue()
-      expect(component.workspace?.mandatory).toBeTrue()
-      expect(component.workspace?.disabled).toBeTrue()
+      expect(result?.mandatory).toBeTrue()
+      expect(result?.disabled).toBeTrue()
+      expect(component.workspace?.mandatory).toBe(original.mandatory)
+      expect(component.workspace?.disabled).toBe(original.disabled)
       expect(component.editMode).toBeFalse()
     })
     it('should default null form values to false on save', () => {
@@ -109,10 +113,15 @@ describe('WorkspaceInternComponent', () => {
       component.workspace = { id: 'id', name: 'name', displayName: 'name' }
       component.formGroup.setValue({ operator: null, mandatory: null, disabled: null })
 
-      component.onSave()
+      const result = component.onSave()
 
-      expect(component.workspace?.mandatory).toBeFalse()
-      expect(component.workspace?.disabled).toBeFalse()
+      expect(result?.mandatory).toBeFalse()
+      expect(result?.disabled).toBeFalse()
+    })
+    it('should return undefined when workspace is undefined', () => {
+      component.workspace = undefined
+
+      expect(component.onSave()).toBeUndefined()
     })
   })
 })

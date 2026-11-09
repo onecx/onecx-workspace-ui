@@ -27,26 +27,24 @@ const workspace: Workspace = {
   baseUrl: '/some/base/url',
   displayName: ''
 }
-/* 
-  Mock sub components for testing WorkspaceDetailComponent
-*/
-class MockWorkspacePropsComponent {
-  public onSave(): void {}
-  public propsForm = { valid: true }
-  public workspace = workspace
-}
-class MockWorkspaceContactComponent {
-  public onSave(): void {}
-  public contactForm = { valid: true }
-  public workspace = workspace
-}
-class MockWorkspaceInternComponent {
-  public onSave(): void {}
-}
+type TabData = Partial<Workspace> | undefined
 
 describe('WorkspaceDetailComponent', () => {
   let component: WorkspaceDetailComponent
   let fixture: ComponentFixture<WorkspaceDetailComponent>
+
+  // each tab returns its part of the workspace or undefined if its form is invalid
+  function mockTabs(props: TabData, contact: TabData, intern: TabData): void {
+    component.workspacePropsComponent = { onSave: () => props } as unknown as WorkspacePropsComponent
+    component.workspaceContactComponent = { onSave: () => contact } as unknown as WorkspaceContactComponent
+    component.workspaceInternComponent = { onSave: () => intern } as unknown as WorkspaceInternComponent
+  }
+
+  function triggerSave(): void {
+    let actions: any = []
+    component.actions$!.subscribe((act) => (actions = act))
+    actions[3].actionCallback()
+  }
 
   function initializeComponent(): void {
     fixture = TestBed.createComponent(WorkspaceDetailComponent)
@@ -355,71 +353,6 @@ describe('WorkspaceDetailComponent', () => {
       expect(component.editMode).toBeTrue()
     })
 
-    it('should have prepared action buttons onInit: update workspace props - valid data', () => {
-      apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
-      component.workspacePropsComponent = new MockWorkspacePropsComponent() as unknown as WorkspacePropsComponent
-      component.selectedTabIndex = '0'
-      component.ngOnInit()
-      let actions: any = []
-      component.actions$!.subscribe((act) => (actions = act))
-      actions[3].actionCallback()
-
-      expect(component.editMode).toBeFalse()
-
-      // if data are invalid
-      component.editMode = true
-      component.workspacePropsComponent.propsForm = { valid: false } as any
-      actions[3].actionCallback()
-
-      expect(component.editMode).toBeTrue()
-    })
-
-    it('should have prepared action buttons onInit: update workspace contact', () => {
-      apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
-      component.workspaceContactComponent = new MockWorkspaceContactComponent() as unknown as WorkspaceContactComponent
-      component.selectedTabIndex = '1'
-      component.ngOnInit()
-      let actions: any = []
-      component.actions$!.subscribe((act) => (actions = act))
-
-      actions[3].actionCallback()
-
-      expect(component.editMode).toBeFalse()
-
-      // if data are invalid
-      component.editMode = true
-      component.workspaceContactComponent.contactForm = { valid: false } as any
-      actions[3].actionCallback()
-
-      expect(component.editMode).toBeTrue()
-    })
-
-    it('should have prepared action buttons onInit: update workspace intern', () => {
-      apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
-      component.workspaceInternComponent = new MockWorkspaceInternComponent() as unknown as WorkspaceInternComponent
-      component.selectedTabIndex = '2'
-      component.ngOnInit()
-      let actions: any = []
-      component.actions$!.subscribe((act) => (actions = act))
-
-      actions[3].actionCallback()
-
-      expect(component.editMode).toBeFalse()
-    })
-
-    it('should have prepared action buttons onInit: update workspace: default', () => {
-      apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
-      component.selectedTabIndex = '99'
-      spyOn(console, 'error')
-      component.ngOnInit()
-      let actions: any = []
-      component.actions$!.subscribe((act) => (actions = act))
-
-      actions[3].actionCallback()
-
-      expect(console.error).toHaveBeenCalledWith("Couldn't assign tab to component")
-    })
-
     it('should have prepared action buttons onInit: workspaceExportVisible', () => {
       apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
       spyOn(component, 'onExportWorkspace')
@@ -459,81 +392,131 @@ describe('WorkspaceDetailComponent', () => {
   })
 
   describe('update workspace data', () => {
-    it('it should log an error if non-related TAB is used', () => {
+    const propsData = { displayName: 'props name', baseUrl: '/props', theme: 'props theme' }
+    const contactData = { companyName: 'company', address: { city: 'city' } }
+    const internData = { mandatory: true, disabled: false }
+
+    beforeEach(() => {
+      apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
+      apiServiceSpy.updateWorkspace.and.returnValue(of(workspace))
+      component.ngOnInit()
+      component.workspace = workspace
+      component.editMode = true
       spyOn(console, 'error')
-      component.selectedTabIndex = '99'
-      component.ngOnInit()
-      let actions: any = []
-      component.actions$!.subscribe((act) => (actions = act))
-      actions[3].actionCallback()
-
-      expect(console.error).toHaveBeenCalledWith("Couldn't assign tab to component")
     })
 
-    it('it should update workspace successfully and display message', (done) => {
-      apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
-      apiServiceSpy.updateWorkspace.and.returnValue(of(workspace))
-      component.workspacePropsComponent = new MockWorkspacePropsComponent() as unknown as WorkspacePropsComponent
-      component.selectedTabIndex = '0'
+    it('should send the combined data of all tabs', () => {
+      mockTabs(propsData, contactData, internData)
 
-      component.ngOnInit()
-      component.editMode = true
+      triggerSave()
 
-      // trigger save action
-      let actions: any = []
-      component.actions$!.subscribe((act) => (actions = act))
-      actions[3].actionCallback()
+      expect(apiServiceSpy.updateWorkspace).toHaveBeenCalledWith({
+        id: workspace.id,
+        updateWorkspaceRequest: {
+          resource: {
+            id: workspace.id,
+            name: workspace.name,
+            ...propsData,
+            ...contactData,
+            ...internData,
+            logoUrl: undefined,
+            smallLogoUrl: undefined
+          }
+        }
+      })
+    })
+
+    it('should send undefined logo urls when they are empty', () => {
+      mockTabs({ ...propsData, logoUrl: '', smallLogoUrl: '' }, contactData, internData)
+
+      triggerSave()
+
+      const resource = apiServiceSpy.updateWorkspace.calls.mostRecent().args[0].updateWorkspaceRequest.resource
+      expect(resource.logoUrl).toBeUndefined()
+      expect(resource.smallLogoUrl).toBeUndefined()
+    })
+
+    it('should keep logo urls when they are set', () => {
+      mockTabs({ ...propsData, logoUrl: 'https://logo', smallLogoUrl: 'https://small' }, contactData, internData)
+
+      triggerSave()
+
+      const resource = apiServiceSpy.updateWorkspace.calls.mostRecent().args[0].updateWorkspaceRequest.resource
+      expect(resource.logoUrl).toBe('https://logo')
+      expect(resource.smallLogoUrl).toBe('https://small')
+    })
+
+    it('should display message, leave edit mode and take over the response when update succeeds', (done) => {
+      const saved = { ...workspace, displayName: 'saved' }
+      apiServiceSpy.updateWorkspace.and.returnValue(of(saved))
+      mockTabs(propsData, contactData, internData)
+
+      triggerSave()
 
       expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.WORKSPACE.OK' })
+      expect(component.editMode).toBeFalse()
+      expect(component.workspace).toBe(saved)
       component.workspace$.subscribe((data) => {
-        expect(data).toEqual(workspace)
+        expect(data).toEqual(saved)
         done()
       })
     })
 
-    it('it should update workspace successfully with undefined logos and display message', (done) => {
-      apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
-      apiServiceSpy.updateWorkspace.and.returnValue(of(workspace))
-      component.workspacePropsComponent = new MockWorkspacePropsComponent() as unknown as WorkspacePropsComponent
-      if (component.workspacePropsComponent.workspace) {
-        component.workspacePropsComponent.workspace.logoUrl = ''
-        component.workspacePropsComponent.workspace.smallLogoUrl = ''
-      }
-      component.selectedTabIndex = '0'
-
-      component.ngOnInit()
-      component.editMode = true
-
-      // trigger save action
-      let actions: any = []
-      component.actions$!.subscribe((act) => (actions = act))
-      actions[3].actionCallback()
-
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.WORKSPACE.OK' })
-      component.workspace$.subscribe((data) => {
-        expect(data).toEqual(workspace)
-        done()
-      })
-    })
-
-    it('it should display error on failed updating workspace', () => {
-      apiServiceSpy.getWorkspaceByName.and.returnValue(of({ resource: workspace }))
+    it('should display error when update fails', () => {
       const errorResponse = { status: 400, statusText: 'Error on updating a workspace' }
       apiServiceSpy.updateWorkspace.and.returnValue(throwError(() => errorResponse))
-      component.workspaceContactComponent = new MockWorkspaceContactComponent() as unknown as WorkspaceContactComponent
-      component.selectedTabIndex = '1'
-      spyOn(console, 'error')
+      mockTabs(propsData, contactData, internData)
 
-      component.ngOnInit()
-      component.editMode = true
-
-      // trigger save action
-      let actions: any = []
-      component.actions$!.subscribe((act) => (actions = act))
-      actions[3].actionCallback()
+      triggerSave()
 
       expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EDIT.MESSAGE.WORKSPACE.NOK' })
       expect(console.error).toHaveBeenCalledWith('updateWorkspace', errorResponse)
+      expect(component.editMode).toBeTrue()
+    })
+
+    it('should not update when the props tab is invalid', () => {
+      mockTabs(undefined, contactData, internData)
+
+      triggerSave()
+
+      expect(apiServiceSpy.updateWorkspace).not.toHaveBeenCalled()
+      expect(component.editMode).toBeTrue()
+    })
+
+    it('should not update when the contact tab is invalid', () => {
+      mockTabs(propsData, undefined, internData)
+
+      triggerSave()
+
+      expect(apiServiceSpy.updateWorkspace).not.toHaveBeenCalled()
+      expect(component.editMode).toBeTrue()
+    })
+
+    it('should not update when the intern tab is invalid', () => {
+      mockTabs(propsData, contactData, undefined)
+
+      triggerSave()
+
+      expect(apiServiceSpy.updateWorkspace).not.toHaveBeenCalled()
+      expect(component.editMode).toBeTrue()
+    })
+
+    it('should not update when no workspace is loaded', () => {
+      component.workspace = undefined
+      mockTabs(propsData, contactData, internData)
+
+      triggerSave()
+
+      expect(apiServiceSpy.updateWorkspace).not.toHaveBeenCalled()
+    })
+
+    it('should not update when the workspace has no id', () => {
+      component.workspace = { ...workspace, id: undefined }
+      mockTabs(propsData, contactData, internData)
+
+      triggerSave()
+
+      expect(apiServiceSpy.updateWorkspace).not.toHaveBeenCalled()
     })
   })
 
