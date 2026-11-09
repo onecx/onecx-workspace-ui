@@ -205,8 +205,8 @@ export class WorkspaceProductComponent implements OnInit, OnChanges, OnDestroy {
   public displayedDetailItem: ExtendedProduct | undefined = undefined
   public formGroup: FormGroup
   public formChanged = false
-  public sourceFilterValue = '' // product store
-  public targetFilterValue = '' // workspace
+  public sourceFilterValue: string | undefined = undefined
+  public targetFilterValue: string | undefined = undefined
   public displayDeregisterConfirmation = false
   private deregisterItems: ExtendedProduct[] = []
   public RefType = RefType
@@ -247,6 +247,7 @@ export class WorkspaceProductComponent implements OnInit, OnChanges, OnDestroy {
   public async ngOnInit(): Promise<void> {
     try {
       this.hasRegisterPermission = await this.user.hasPermission('WORKSPACE_PRODUCTS#REGISTER')
+      this.cdr.markForCheck()
     } catch (err) {
       console.error(err)
     }
@@ -299,6 +300,7 @@ export class WorkspaceProductComponent implements OnInit, OnChanges, OnDestroy {
             for (const p of products)
               this.wProducts.push({ ...p, bucket: 'TARGET', exists: true, changedComponents: false } as ExtendedProduct)
             this.wProducts.sort(this.sortProductsByDisplayName)
+            this.targetFilterValue = undefined
             this.filteredWProducts = [...this.wProducts]
             this.wpLoading = false
             return this.wProducts
@@ -349,6 +351,7 @@ export class WorkspaceProductComponent implements OnInit, OnChanges, OnDestroy {
           // mark workspace products which are not longer exist in product store
           for (const wP of workspaceData.products) wP.exists = this.psProductsOrg.get(wP.productName!) !== undefined
           this.psProducts.sort(this.sortProductsByDisplayName)
+          this.sourceFilterValue = undefined
           this.filteredPsProducts = [...this.psProducts]
           return this.psProducts
         }),
@@ -430,15 +433,23 @@ export class WorkspaceProductComponent implements OnInit, OnChanges, OnDestroy {
   }
   public filterProducts(val: string, bucket: 'SOURCE' | 'TARGET') {
     if (!val || val.trim() === '') {
-      if (bucket === 'SOURCE') this.filteredPsProducts = [...this.psProducts]
-      if (bucket === 'TARGET') this.filteredWProducts = [...this.wProducts]
+      if (bucket === 'SOURCE') {
+        this.sourceFilterValue = undefined
+        this.filteredPsProducts = [...this.psProducts]
+      }
+      if (bucket === 'TARGET') {
+        this.targetFilterValue = undefined
+        this.filteredWProducts = [...this.wProducts]
+      }
       return
     }
     const lowerSearch = val.toLowerCase()
     if (bucket === 'SOURCE') {
+      this.sourceFilterValue = val
       this.filteredPsProducts = this.psProducts.filter((item) => item.displayName?.toLowerCase().includes(lowerSearch))
     }
     if (bucket === 'TARGET') {
+      this.targetFilterValue = val
       this.filteredWProducts = this.wProducts.filter((item) => item.displayName?.toLowerCase().includes(lowerSearch))
     }
   }
@@ -640,6 +651,7 @@ export class WorkspaceProductComponent implements OnInit, OnChanges, OnDestroy {
             this.prepareWProduct(item)
             this.fillForm(item)
             this.msgService.success({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.UPDATE_OK' })
+            this.cdr.markForCheck()
           },
           error: (err) => {
             console.error('updateProductById', err)
@@ -650,6 +662,7 @@ export class WorkspaceProductComponent implements OnInit, OnChanges, OnDestroy {
                 detailKey: 'VALIDATION.ERRORS.APP_MODULE.' + err.error?.errorCode
               })
             } else this.msgService.error({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.UPDATE_NOK' })
+            this.cdr.markForCheck()
           },
           complete() {}
         })
@@ -707,6 +720,7 @@ export class WorkspaceProductComponent implements OnInit, OnChanges, OnDestroy {
               this.changed.emit()
               if (itemCount === successCounter + errorCounter)
                 this.displayRegisterMessages('REGISTRATION', successCounter, errorCounter)
+              this.cdr.markForCheck()
             },
             error: (err) => {
               console.error('createProductInWorkspace', err)
@@ -716,6 +730,7 @@ export class WorkspaceProductComponent implements OnInit, OnChanges, OnDestroy {
               this.psProducts.push(p)
               if (itemCount === successCounter + errorCounter)
                 this.displayRegisterMessages('REGISTRATION', successCounter, errorCounter)
+              this.cdr.markForCheck()
             }
           })
       }
@@ -769,6 +784,7 @@ export class WorkspaceProductComponent implements OnInit, OnChanges, OnDestroy {
             this.wProducts = this.wProducts.filter((psp) => psp.productName !== p.productName)
             if (itemCount === successCounter + errorCounter)
               this.displayRegisterMessages('DEREGISTRATION', successCounter, errorCounter)
+            this.cdr.markForCheck()
           },
           error: (err) => {
             errorCounter++
@@ -778,6 +794,7 @@ export class WorkspaceProductComponent implements OnInit, OnChanges, OnDestroy {
             console.error('deleteProductById', err)
             if (itemCount === successCounter + errorCounter)
               this.displayRegisterMessages('DEREGISTRATION', successCounter, errorCounter)
+            this.cdr.markForCheck()
           }
         })
       }

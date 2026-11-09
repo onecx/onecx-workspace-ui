@@ -178,11 +178,14 @@ export class WorkspaceDetailComponent implements OnInit, AfterViewInit {
               this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.WORKSPACE.OK' })
               this.toggleEditMode('view')
               // update observable with response data
+              this.workspace = data
               this.workspace$ = new Observable((sub) => sub.next(data))
+              this.cd.markForCheck()
             },
             error: (err) => {
               console.error('updateWorkspace', err)
               this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.WORKSPACE.NOK' })
+              this.cd.markForCheck()
             }
           })
     }
