@@ -91,13 +91,10 @@
           min-width: 60px;
           button {
             background: transparent;
-            &:enabled:hover {
-              color: var(--primary-text-color);
-              background: var(--button-hover-bg);
-            }
+            &:enabled:hover,
             &.clicked {
-              color: var(--primary-text-color);
-              background: var(--primary-color);
+              color: var(--onecx-workspace-onecx-workspace-ui-button-primary-hover-color);
+              background: var(--onecx-workspace-onecx-workspace-ui-button-primary-hover-background);
             }
           }
         }
