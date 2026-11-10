@@ -157,18 +157,34 @@ describe('WorkspacePropsComponent', () => {
   })
 
   describe('themes', () => {
-    it('should get themes form rc emitter', (done) => {
-      component.ngOnInit()
+    it('should get themes form rc emitter', () => {
+      component.themesEmitter.emit(themesOrg)
+
+      expect(component.themes()).toEqual(themesOrg)
+    })
+
+    it('should provide the theme logo url when themes arrive after the form was filled', () => {
+      component.ngOnChanges(changes)
 
       component.themesEmitter.emit(themesOrg)
 
-      component.themes$?.subscribe({
-        next: (data) => {
-          expect(data).toEqual(themesOrg)
-          done()
-        },
-        error: done.fail
-      })
+      expect(component.themeLogoUrl()).toBe(themesOrg[0].logoUrl)
+    })
+
+    it('should provide the theme logo url when the form was filled after themes arrived', () => {
+      component.themesEmitter.emit(themesOrg)
+
+      component.ngOnChanges(changes)
+
+      expect(component.themeLogoUrl()).toBe(themesOrg[0].logoUrl)
+    })
+
+    it('should update the theme logo url when the theme is changed in the form', () => {
+      component.themesEmitter.emit(themesOrg)
+
+      component.propsForm.controls['theme'].setValue('theme2')
+
+      expect(component.themeLogoUrl()).toBeUndefined()
     })
 
     it('should NOT extend themes if workspace is using a known theme', () => {
@@ -236,20 +252,49 @@ describe('WorkspacePropsComponent', () => {
       wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of(products))
 
       component.workspace = workspace
-      component.onOpenProductPaths([])
+      component.productPaths.set([])
+      component.onOpenProductPaths()
 
-      component.productPaths$.subscribe((paths) => {
-        expect(paths).toEqual([products[0].baseUrl, products[1].baseUrl])
-      })
+      expect(component.productPaths()).toEqual([products[0].baseUrl, products[1].baseUrl])
+    })
+
+    it('should sort loaded product urls', () => {
+      const products = [{ baseUrl: '/b' }, { baseUrl: '/a' }]
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of(products))
+
+      component.productPaths.set([])
+      component.onOpenProductPaths()
+
+      expect(component.productPaths()).toEqual(['/a', '/b'])
+    })
+
+    it('should set empty paths when workspace has no products', () => {
+      wProductServiceSpy.getProductsByWorkspaceId.and.returnValue(of([]))
+
+      component.productPaths.set([])
+      component.onOpenProductPaths()
+
+      expect(component.productPaths()).toEqual([])
     })
 
     it('should prevent loading product urls again', () => {
-      const paths = ['/productBaseUrl-1', '/productBaseUrl-2']
-
       component.workspace = { ...workspace, homePage: undefined }
-      component.onOpenProductPaths(paths)
+      component.productPaths.set(['/productBaseUrl-1', '/productBaseUrl-2'])
+      wProductServiceSpy.getProductsByWorkspaceId.calls.reset()
 
-      expect().nothing()
+      component.onOpenProductPaths()
+
+      expect(wProductServiceSpy.getProductsByWorkspaceId).not.toHaveBeenCalled()
+    })
+
+    it('should not load product urls when workspace is undefined', () => {
+      component.workspace = undefined
+      component.productPaths.set([])
+      wProductServiceSpy.getProductsByWorkspaceId.calls.reset()
+
+      component.onOpenProductPaths()
+
+      expect(wProductServiceSpy.getProductsByWorkspaceId).not.toHaveBeenCalled()
     })
   })
 

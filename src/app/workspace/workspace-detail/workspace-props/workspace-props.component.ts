@@ -8,14 +8,17 @@ import {
   SimpleChanges,
   inject,
   DestroyRef,
-  ChangeDetectionStrategy
+  ChangeDetectionStrategy,
+  Signal,
+  computed,
+  signal
 } from '@angular/core'
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
 import { AsyncPipe, Location, NgClass } from '@angular/common'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { TranslateModule } from '@ngx-translate/core'
 import { RouterModule } from '@angular/router'
-import { BehaviorSubject, map, Observable, of, ReplaySubject } from 'rxjs'
+import { BehaviorSubject, map, Observable } from 'rxjs'
 
 import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
 import { AngularRemoteComponentsModule, SlotService } from '@onecx/angular-remote-components'
@@ -105,7 +108,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
 
   // data
   public propsForm: FormGroup
-  public productPaths$: Observable<string[]> = of([]) // to fill drop down with product paths
+  public readonly productPaths = signal<string[]>([]) // to fill drop down with product paths
   public deploymentPath: string | undefined = undefined
   public readonly themeEndpointExist = toSignal(
     Utils.doesEndpointExist(this.workspaceService, 'onecx-theme', 'onecx-theme-ui', 'theme-detail'),
@@ -115,12 +118,13 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   // slot configuration: get theme data
   public themeSlotName = 'onecx-theme-data'
   public isThemeComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.themeSlotName)
-  public themes$ = new BehaviorSubject<ExtendedTheme[] | undefined>(undefined) // theme data
   public themesEmitter = new EventEmitter<ExtendedTheme[]>()
+  public readonly themes = toSignal(this.themesEmitter, { initialValue: [] as ExtendedTheme[] }) // theme data
   // slot configuration: get theme logo
   public themeLogoLoadingEmitter = new EventEmitter<boolean>()
   public themeLogoLoadingFailed$ = new BehaviorSubject<boolean | undefined>(undefined)
-  public themeFormValues$ = new ReplaySubject<{ theme: string }>(1) // async storage of formgroup value to manage change detection
+  public readonly themeName: Signal<string | undefined> // set in constructor: needs the form
+  public readonly themeLogoUrl = computed(() => this.getThemeImageUrl(this.themes(), this.themeName()))
 
   constructor() {
     this.propsForm = new FormGroup({
@@ -154,14 +158,14 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       footerLabel: new FormControl<string | null>(null, [Validators.maxLength(255)]),
       description: new FormControl<string | null>(null, [Validators.maxLength(255)])
     })
+    // subscribe right away: ngOnChanges patches the form before ngOnInit runs
+    this.themeName = toSignal(this.propsForm.controls['theme'].valueChanges, { initialValue: undefined })
   }
 
   public ngOnInit(): void {
-    this.themesEmitter.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(this.themes$)
     this.themeLogoLoadingEmitter.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((data) => {
       this.themeLogoLoadingFailed$.next(data)
     })
-    this.propsForm.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(this.themeFormValues$)
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
@@ -171,7 +175,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       if (changes['workspace']) this.fillForm(this.workspace)
       if (this.editMode) this.propsForm.enable()
       // if a home page value exists then fill it into drop down list for displaying
-      if (this.workspace.homePage) this.productPaths$ = of([this.workspace.homePage])
+      if (this.workspace.homePage) this.productPaths.set([this.workspace.homePage])
     } else {
       this.propsForm.reset()
     }
@@ -326,21 +330,23 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     } else return undefined
   }
 
-  public onOpenProductPaths(paths: string[]) {
-    console.log('onOpenProductPaths', paths)
+  public onOpenProductPaths(): void {
     // if paths already filled then prevent doing twice
-    if (paths.length > (this.workspace?.homePage ? 1 : 0)) return
+    if (this.productPaths().length > (this.workspace?.homePage ? 1 : 0)) return
     if (this.workspace) {
-      this.productPaths$ = this.wProductApi.getProductsByWorkspaceId({ id: this.workspace.id! }).pipe(
-        map((val: any[]) => {
-          const paths: string[] = []
-          if (val.length > 0) {
-            for (const p of val) paths.push(p.baseUrl)
-            paths.sort(Utils.sortByLocale)
-          }
-          return paths
-        })
-      )
+      this.wProductApi
+        .getProductsByWorkspaceId({ id: this.workspace.id! })
+        .pipe(
+          map((val: any[]) => {
+            const paths: string[] = []
+            if (val.length > 0) {
+              for (const p of val) paths.push(p.baseUrl)
+              paths.sort(Utils.sortByLocale)
+            }
+            return paths
+          })
+        )
+        .subscribe((paths) => this.productPaths.set(paths))
     }
   }
 

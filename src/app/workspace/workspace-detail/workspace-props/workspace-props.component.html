@@ -39,21 +39,18 @@
     >
     </ocx-slot>
     @if (isThemeComponentDefined$ | async) {
-      @let themes = (themes$ | async) ?? [];
-      @let themeFormValues = themeFormValues$ | async;
-      @let themeLogoUrl = getThemeImageUrl(themes, themeFormValues?.theme);
+      @let logoUrl = themeLogoUrl();
       <div
         class="w-full flex flex-row flex-wrap sm:flex-nowrap align-items-center"
         [ngClass]="{
-          'row-gap-2 column-gap-3 sm:column-gap-4': (themeLogoLoadingFailed$ | async) !== undefined || themeLogoUrl
+          'row-gap-2 column-gap-4': (themeLogoLoadingFailed$ | async) !== undefined || logoUrl
         }"
       >
-        @if (themeLogoUrl) {
-          <!-- theme has extern logo url? -->
+        @if (logoUrl) {
           <div class="h-3rem w-5rem flex justify-content-center align-items-center">
             <img
-              [class]="'border-round-sm max-h-2rem max-w-5rem'"
-              [src]="themeLogoUrl"
+              [class]="'border-round-sm max-h-3rem max-w-5rem'"
+              [src]="logoUrl"
               alt="Theme Logo"
               aria-label="Theme Logo"
               aria-hidden="true"
@@ -61,46 +58,44 @@
           </div>
         }
         <!-- build inputgroup by hand due to better flex layout -->
-        <div class="mb-1 flex-grow-1 flex flex-row justify-content-start row-gap-0">
-          <p-inputgroup class="flex-grow-1">
-            <p-floatlabel variant="on">
-              <p-select
-                #wsThemeName
-                id="ws_detail_props_item_theme"
-                formControlName="theme"
-                styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
-                [options]="checkAndExtendThemes(themes)"
-                optionLabel="displayName"
-                optionValue="name"
-                [ariaLabel]="'WORKSPACE.THEME' | translate"
-                [pTooltip]="'WORKSPACE.TOOLTIPS.THEME' | translate"
-                tooltipPosition="top"
-                tooltipEvent="hover"
-              >
-              </p-select>
-              <label class="ocx-required-label" for="ws_detail_props_item_theme" aria-hidden="true">
-                {{ 'WORKSPACE.THEME' | translate }}
-              </label>
-            </p-floatlabel>
-            <a
-              tabindex="0"
-              id="ws_detail_props_item_theme_link"
-              class="flex-grow-0 bg-primary p-inputgroupaddon pseudo-button pi pi-link"
-              [ngClass]="!editMode && inputBaseUrl.value && themeEndpointExist() ? 'cursor-pointer' : 'p-disabled'"
-              [routerLink]="getThemeEndpointUrl$(wsThemeName.value) | async"
-              [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
-              [pTooltip]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
-              tooltipPosition="right"
+        <p-inputgroup class="flex-grow-1">
+          <p-floatlabel variant="on">
+            <p-select
+              #wsThemeName
+              id="ws_detail_props_item_theme"
+              formControlName="theme"
+              styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
+              [options]="checkAndExtendThemes(themes())"
+              optionLabel="displayName"
+              optionValue="name"
+              [ariaLabel]="'WORKSPACE.THEME' | translate"
+              [pTooltip]="'WORKSPACE.TOOLTIPS.THEME' | translate"
+              tooltipPosition="top"
               tooltipEvent="hover"
-              role="link"
             >
-            </a>
-          </p-inputgroup>
-        </div>
+            </p-select>
+            <label class="ocx-required-label" for="ws_detail_props_item_theme" aria-hidden="true">
+              {{ 'WORKSPACE.THEME' | translate }}
+            </label>
+          </p-floatlabel>
+          <a
+            tabindex="0"
+            id="ws_detail_props_item_theme_link"
+            class="flex-grow-0 bg-primary p-inputgroupaddon pseudo-button pi pi-link"
+            [ngClass]="!editMode && inputBaseUrl.value && themeEndpointExist() ? 'cursor-pointer' : 'p-disabled'"
+            [routerLink]="getThemeEndpointUrl$(wsThemeName.value) | async"
+            [attr.aria-label]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
+            [pTooltip]="'ACTIONS.NAVIGATION.GOTO_THEME' | translate"
+            tooltipPosition="right"
+            tooltipEvent="hover"
+            role="link"
+          >
+          </a>
+        </p-inputgroup>
       </div>
     } @else {
       <!-- THEME readonly (no change possible) -->
-      <p-inputgroup class="mb-1 w-full">
+      <p-inputgroup class="w-full">
         <p-floatlabel variant="on">
           <input
             #wsThemeNameReadonly
@@ -179,20 +174,18 @@
   </article>
 
   <article class="w-full" [attr.aria-label]="'WORKSPACE.HOME_PAGE' | translate">
-    @let paths = (productPaths$ | async) ?? [];
-    <p-inputgroup class="mb-1">
+    <p-inputgroup class="flex-grow-1">
       <p-floatlabel variant="on">
         <p-select
-          #inputHomePage
+          #wsHomePage
           id="ws_detail_props_item_home_page"
+          inputId="ws_detail_props_item_home_page_input"
           formControlName="homePage"
-          styleClass="w-full text-base text-responsive"
-          panelStyleClass="max-w-30rem"
-          (onClick)="onOpenProductPaths(paths)"
-          [options]="paths"
+          styleClass="w-full inputgroup-dropdown-with-link input-field-correction"
+          (onClick)="onOpenProductPaths()"
+          [options]="productPaths()"
+          [appendTo]="'body'"
           [editable]="true"
-          [showClear]="false"
-          [autoDisplayFirst]="false"
           [ariaLabel]="'WORKSPACE.HOME_PAGE' | translate"
           [pTooltip]="'WORKSPACE.TOOLTIPS.HOME_PAGE' | translate"
           tooltipPosition="top"
@@ -205,9 +198,9 @@
         tabindex="0"
         id="ws_detail_props_item_home_page_link"
         class="bg-primary p-inputgroupaddon pseudo-button pi pi-link"
-        [ngClass]="!editMode && !workspace?.disabled && inputHomePage.value ? 'cursor-pointer' : 'p-disabled'"
+        [ngClass]="!editMode && !workspace?.disabled && wsHomePage.value ? 'cursor-pointer' : 'p-disabled'"
         target="_blank"
-        [href]="prepareProductUrl(inputHomePage.value)"
+        [href]="prepareProductUrl(wsHomePage.value)"
         (click)="$event.stopPropagation()"
         [escape]="false"
         [attr.aria-label]="

@@ -1,3 +1,9 @@
 @use 'src/app/_ws-mixins.scss' as *;
 
 @include dropdown-zebra-rows;
+
+:host ::ng-deep {
+  input.p-select-label {
+    font-size: var(--p-select-font-size, 1rem); /* Oder den exakten Wert deiner App, z.B. 14px */
+  }
+}
