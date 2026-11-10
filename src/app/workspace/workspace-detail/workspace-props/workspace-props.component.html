@@ -298,7 +298,6 @@
     <p-button
       *ocxIfPermission="'WORKSPACE#EDIT'"
       id="ws_detail_props_item_remove_logo"
-      styleClass="button-min-height"
       icon="pi pi-trash"
       [disabled]="editMode || !(bffUrl[RefType.Logo] && !propsForm.controls['logoUrl'].value)"
       (onClick)="onRemoveImage(RefType.Logo)"

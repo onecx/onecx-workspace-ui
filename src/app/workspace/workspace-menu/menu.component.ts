@@ -11,6 +11,7 @@ import { ButtonModule } from 'primeng/button'
 import { FloatLabelModule } from 'primeng/floatlabel'
 import { InputGroupModule } from 'primeng/inputgroup'
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon'
+import { InputTextModule } from 'primeng/inputtext'
 import { MessageModule } from 'primeng/message'
 import { SelectButtonModule } from 'primeng/selectbutton'
 import { SelectItem, TreeNode } from 'primeng/api'
@@ -66,17 +67,18 @@ type Column = { name: string; headerKey: string; tooltipKey: string; css?: strin
     AsyncPipe,
     NgClass,
     NgStyle,
-    FormsModule,
-    RouterModule,
-    TranslateModule,
     AngularAcceleratorModule,
     ButtonModule,
     FloatLabelModule,
+    FormsModule,
     InputGroupModule,
     InputGroupAddonModule,
+    InputTextModule,
+    RouterModule,
     MessageModule,
     SelectButtonModule,
     TooltipModule,
+    TranslateModule,
     TreeTableModule,
     // components
     MenuDeleteComponent,

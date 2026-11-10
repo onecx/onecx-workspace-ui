@@ -57,7 +57,7 @@
               tooltipEvent="hover"
             />
             <!-- FILTER -->
-            <p-inputgroup class="pb-1 w-13rem sm:w-17rem md:w-20rem">
+            <p-inputgroup class="pb-1 w-auto">
               <p-inputgroup-addon class="pi pi-filter" aria-hidden="true"> </p-inputgroup-addon>
               <p-floatlabel variant="on">
                 @let tooltipText =
@@ -70,8 +70,7 @@
                   pInputText
                   type="text"
                   id="ws_menu_table_header_menu_filter"
-                  class="py-0 text-responsive"
-                  [ngClass]="{ 'p-disabled': menuItems?.length === 0 }"
+                  class="text-responsive"
                   (input)="menuTree.filterGlobal($any($event.target).value, 'contains')"
                   [ariaLabel]="tooltipText"
                   [pTooltip]="tooltipText"
@@ -89,9 +88,8 @@
                 <p-button
                   id="ws_menu_table_header_filter_clear"
                   icon="pi pi-filter-slash"
-                  [ngClass]="{ 'bg-primary': menuTreeFilter.value !== '', 'p-disabled': menuTreeFilter.value === '' }"
-                  [ngStyle]="menuTreeFilter.value === '' ? filterEmptyStyle : null"
                   (onClick)="onTreeFilterClear(menuTree, menuTreeFilter)"
+                  [disabled]="menuTreeFilter.value === ''"
                   [ariaLabel]="'DIALOG.DATAVIEW.FILTER.CLEAR' | translate"
                   [pTooltip]="'DIALOG.DATAVIEW.FILTER.CLEAR' | translate"
                   tooltipPosition="top"
@@ -108,7 +106,6 @@
               <p-button
                 *ocxIfPermission="'WORKSPACE_ROLE#VIEW'"
                 id="ws_menu_table_action_goto_roles"
-                styleClass="button-min-height"
                 icon="pi pi-cog"
                 [routerLink]="['../']"
                 fragment="roles"
@@ -120,7 +117,6 @@
               <p-button
                 *ocxIfPermission="'WORKSPACE#GOTO_PERMISSION'"
                 id="ws_menu_table_action_goto_permissions"
-                styleClass="button-min-height"
                 icon="pi pi-lock"
                 [disabled]="!permissionEndpointExist()"
                 [routerLink]="permissionUrl()"
@@ -131,7 +127,6 @@
               />
               <p-button
                 id="ws_menu_table_action_reload"
-                styleClass="button-min-height"
                 [icon]="'pi ' + (loadingMenu || loadingWorkspace ? 'pi-spin pi-spinner' : 'pi-refresh')"
                 [disabled]="loadingMenu || loadingWorkspace"
                 (onClick)="onReload()"
