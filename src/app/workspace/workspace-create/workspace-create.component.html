@@ -14,8 +14,8 @@
     [breakpoints]="{ '991px': '700px' }"
   >
     <ocx-slot [name]="slotName" [inputs]="{ dataType: 'themes' }" [outputs]="{ themes: themesEmitter }"> </ocx-slot>
-    <form [formGroup]="formGroup">
-      <div class="pt-1 flex flex-wrap flex-column gap-4 justify-content-between">
+    <form [formGroup]="formGroup" class="pt-2">
+      <div class="flex flex-wrap flex-column gap-4 justify-content-between">
         <div class="flex flex-row flex-wrap gap-3 justify-content-between">
           <p-floatlabel variant="on" class="w-12 sm:w-5x">
             <input

@@ -197,6 +197,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges {
       )
       this.dataSubject$.next(slots as unknown as RowListGridData[])
       this.onQuickFilterChange(this.quickFilterValue) // reestablish filter on the new data
+      this.onGlobalFilter(this.globalFilterValue)
     } catch (err) {
       this.exceptionKey.set('EXCEPTIONS.HTTP_STATUS_' + Utils.mapping_error_status(0) + '.SLOTS')
       console.error('loadSlots', err)
