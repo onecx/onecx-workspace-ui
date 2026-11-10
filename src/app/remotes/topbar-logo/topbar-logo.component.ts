@@ -54,6 +54,10 @@ export class OneCXTopbarLogoComponent implements ocxRemoteComponent, ocxRemoteWe
   private readonly destroyRef = inject(DestroyRef)
   public readonly remoteComponentConfig = inject<ReplaySubject<RemoteComponentConfig>>(REMOTE_COMPONENT_CONFIG)
   private readonly appConfigService = inject(AppConfigService)
+  // Latest remote component config (set once this component is initialized as a remote). Used to forward
+  // the config to the embedded <app-current-workspace-logo>, whose own ocxInitRemoteComponent only runs
+  // when the ocxRemoteComponentConfig input is set.
+  public remoteConfig: RemoteComponentConfig | undefined = undefined
   // input
   @Input() imageId: string | undefined = undefined
   @Input() imageUrl: string | undefined = undefined
@@ -89,6 +93,7 @@ export class OneCXTopbarLogoComponent implements ocxRemoteComponent, ocxRemoteWe
   // initialize this component as remote
   public ocxInitRemoteComponent(rcConfig: RemoteComponentConfig): void {
     this.remoteComponentConfig.next(rcConfig)
+    this.remoteConfig = rcConfig
     this.appConfigService.init(rcConfig.baseUrl)
     this.initializeContainerStyles()
   }

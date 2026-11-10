@@ -2,18 +2,18 @@ import { importProvidersFrom } from '@angular/core'
 import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { provideRouter } from '@angular/router'
-import { TranslateLoader, MissingTranslationHandler } from '@ngx-translate/core'
+import { MissingTranslationHandler, TranslateLoader } from '@ngx-translate/core'
 import { ReplaySubject } from 'rxjs'
 
 import { AngularAuthModule } from '@onecx/angular-auth'
+import { AngularAcceleratorModule, AngularAcceleratorMissingTranslationHandler } from '@onecx/angular-accelerator'
 import { bootstrapRemoteComponent } from '@onecx/angular-webcomponents'
 import { provideTranslateServiceForRoot } from '@onecx/angular-remote-components'
-import { AngularAcceleratorModule, AngularAcceleratorMissingTranslationHandler } from '@onecx/angular-accelerator'
 import {
-  REMOTE_COMPONENT_CONFIG,
-  RemoteComponentConfig,
   createTranslateLoader,
-  provideTranslationPathFromMeta
+  provideTranslationPathFromMeta,
+  REMOTE_COMPONENT_CONFIG,
+  RemoteComponentConfig
 } from '@onecx/angular-utils'
 
 import { environment } from 'src/environments/environment'

@@ -1,5 +1,5 @@
 <div #container class="ocx-topbar-logo-container">
-  @if (remoteComponentConfig) {
+  @if (remoteConfig) {
     <app-current-workspace-logo
       [imageId]="imageId"
       [imageUrl]="imageUrl"
@@ -8,6 +8,7 @@
       [useDefaultLogo]="useDefaultLogo"
       [logPrefix]="logPrefix"
       [logEnabled]="logEnabled"
+      [ocxRemoteComponentConfig]="remoteConfig"
     ></app-current-workspace-logo>
   }
 </div>
