@@ -148,11 +148,11 @@ describe('OneCXUserSidebarMenuComponent', () => {
 
     it('should set avatarImageLoaded from the avatar image slot output', async () => {
       const { component } = await setUpWithHarnessAndInit()
-      expect(component.avatarImageLoaded).toBeUndefined()
+      expect(component.avatarImageLoaded()).toBeUndefined()
 
       component.avatarImageLoadedEmitter.emit(true)
 
-      expect(component.avatarImageLoaded).toBeTrue()
+      expect(component.avatarImageLoaded()).toBeTrue()
     })
   })
 

@@ -1,8 +1,7 @@
-import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, Input } from '@angular/core'
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
 import { Location } from '@angular/common'
 import { Router } from '@angular/router'
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { Observable, ReplaySubject, catchError, map, mergeMap, of, retry, shareReplay, withLatestFrom } from 'rxjs'
 
@@ -38,8 +37,8 @@ export type MenuData = {
   templateUrl: './footer-menu.component.html',
   styleUrls: ['./footer-menu.component.scss']
 })
-@UntilDestroy()
 export class OneCXFooterMenuComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
+  private readonly destroyRef = inject(DestroyRef)
   private readonly remoteComponentConfig = inject<ReplaySubject<RemoteComponentConfig>>(REMOTE_COMPONENT_CONFIG)
   private readonly appConfigService = inject(AppConfigService)
   private readonly userService = inject(UserService)
@@ -103,7 +102,7 @@ export class OneCXFooterMenuComponent implements ocxRemoteComponent, ocxRemoteWe
         this.menuItemService.constructMenuItems(menuData?.menu?.[0]?.children, userLang, menuData?.workspaceBaseUrl)
       ),
       shareReplay(),
-      untilDestroyed(this)
+      takeUntilDestroyed(this.destroyRef)
     )
   }
 }

@@ -1,6 +1,6 @@
-import { Component, EventEmitter, inject, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, EventEmitter, inject, Input } from '@angular/core'
 import { AsyncPipe, Location, NgClass } from '@angular/common'
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import {
   BehaviorSubject,
@@ -53,11 +53,12 @@ import { SlimMenuItemComponent } from 'src/app/shared/components/slim-menu-item/
     AngularRemoteComponentsModule,
     SlimMenuItemComponent
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './slim-user-menu.component.html',
   styleUrls: ['./slim-user-menu.component.scss']
 })
-@UntilDestroy()
 export class OneCXSlimUserMenuComponent implements ocxRemoteWebcomponent {
+  private readonly destroyRef = inject(DestroyRef)
   public readonly remoteComponentConfig = inject<ReplaySubject<RemoteComponentConfig>>(REMOTE_COMPONENT_CONFIG)
   private readonly userService = inject(UserService)
   private readonly translateService = inject(TranslateService)
@@ -108,13 +109,13 @@ export class OneCXSlimUserMenuComponent implements ocxRemoteWebcomponent {
 
     this.currentUser$ = this.userService.profile$.pipe(
       filter((x) => x !== undefined),
-      untilDestroyed(this)
+      takeUntilDestroyed(this.destroyRef)
     )
 
     this.displayName$ = this.currentUser$.pipe(
       filter((x) => x !== undefined),
       mergeMap((currentUser) => this.determineDisplayName(currentUser)),
-      untilDestroyed(this)
+      takeUntilDestroyed(this.destroyRef)
     )
 
     this.getMenuItems()
@@ -172,7 +173,7 @@ export class OneCXSlimUserMenuComponent implements ocxRemoteWebcomponent {
         )
       }),
       shareReplay(),
-      untilDestroyed(this)
+      takeUntilDestroyed(this.destroyRef)
     )
   }
 

@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core'
 import { TranslateModule } from '@ngx-translate/core'
 
 import { MenuItem } from 'primeng/api'
@@ -11,6 +11,7 @@ import { SafeLinkDirective } from 'src/app/shared/safe-link.directive'
   selector: 'app-vertical-menu-item',
   standalone: true,
   imports: [AngularAcceleratorModule, SafeLinkDirective, TooltipModule, TranslateModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './vertical-menu-item.component.html',
   styleUrls: ['./vertical-menu-item.component.scss']
 })

@@ -154,7 +154,7 @@ describe('OneCXUserAvatarMenuComponent', () => {
 
     it('should default the menu anchor position to right', async () => {
       const { component } = await setupWithHarnessAndInit()
-      expect(component.menuAnchorPosition).toBe('right')
+      expect(component.menuAnchorPosition()).toBe('right')
     })
 
     it('should read the menu anchor position from the app config', async () => {
@@ -162,15 +162,15 @@ describe('OneCXUserAvatarMenuComponent', () => {
       // resets its config, so stub getProperty to control what the component observes.
       spyOn(appConfigMock, 'getProperty').and.returnValue('left')
       const { component } = await setupWithHarnessAndInit()
-      expect(component.menuAnchorPosition).toBe('left')
+      expect(component.menuAnchorPosition()).toBe('left')
     })
 
     it('should set avatarImageLoaded from the avatar image slot output', async () => {
       const { component } = await setupWithHarnessAndInit()
-      expect(component.avatarImageLoaded).toBeUndefined()
+      expect(component.avatarImageLoaded()).toBeUndefined()
 
       component.avatarImageLoadedEmitter.emit(true)
-      expect(component.avatarImageLoaded).toBeTrue()
+      expect(component.avatarImageLoaded()).toBeTrue()
     })
   })
 

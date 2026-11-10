@@ -1,6 +1,5 @@
-import { Component, inject, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core'
 import { AsyncPipe } from '@angular/common'
-import { UntilDestroy } from '@ngneat/until-destroy'
 import { combineLatest, from, map, Observable, ReplaySubject } from 'rxjs'
 
 import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
@@ -25,9 +24,9 @@ export type Version = {
   standalone: true,
   imports: [AsyncPipe, AngularAcceleratorModule, AngularRemoteComponentsModule],
   providers: [{ provide: REMOTE_COMPONENT_CONFIG, useValue: new ReplaySubject<string>(1) }],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './version-info.component.html'
 })
-@UntilDestroy()
 export class OneCXVersionInfoComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
   private readonly rcConfig = inject<ReplaySubject<RemoteComponentConfig>>(REMOTE_COMPONENT_CONFIG)
   private readonly appState = inject(AppStateService)

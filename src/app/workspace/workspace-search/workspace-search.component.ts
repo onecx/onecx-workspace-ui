@@ -66,10 +66,10 @@ export class WorkspaceSearchComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef)
   private readonly route = inject(ActivatedRoute)
   private readonly router = inject(Router)
-  private readonly workspaceApi = inject(WorkspaceAPIService)
-  private readonly translate = inject(TranslateService)
-  private readonly imageApi = inject(ImagesInternalAPIService)
   private readonly appState = inject(AppStateService)
+  private readonly imageApi = inject(ImagesInternalAPIService)
+  private readonly translate = inject(TranslateService)
+  private readonly workspaceApi = inject(WorkspaceAPIService)
   // signals
   public readonly workspaceImportVisible = signal(false)
   public readonly workspaceCreateVisible = signal(false)

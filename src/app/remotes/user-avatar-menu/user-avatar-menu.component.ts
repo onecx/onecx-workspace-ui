@@ -1,8 +1,18 @@
-import { Component, ElementRef, EventEmitter, HostListener, inject, Input, signal } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  ElementRef,
+  EventEmitter,
+  HostListener,
+  inject,
+  Input,
+  signal
+} from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { AsyncPipe, Location } from '@angular/common'
 import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import {
   Observable,
@@ -60,11 +70,12 @@ export type MenuAnchorPositionConfig = 'right' | 'left'
     VerticalMenuItemComponent
   ],
   providers: [{ provide: SLOT_SERVICE, useExisting: SlotService }, AppConfigService],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './user-avatar-menu.component.html',
   styleUrls: ['./user-avatar-menu.component.scss']
 })
-@UntilDestroy()
 export class OneCXUserAvatarMenuComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
+  private readonly destroyRef = inject(DestroyRef)
   private readonly remoteComponentConfig = inject<ReplaySubject<RemoteComponentConfig>>(REMOTE_COMPONENT_CONFIG)
   private readonly userService: UserService = inject(UserService)
   private readonly slotService: SlotService = inject(SlotService)
@@ -81,12 +92,12 @@ export class OneCXUserAvatarMenuComponent implements ocxRemoteComponent, ocxRemo
   public userMenu$: Observable<MenuItem[]>
   public eventsPublisher$: EventsPublisher = new EventsPublisher()
   public permissions: string[] = []
-  public menuAnchorPosition: MenuAnchorPositionConfig = 'right'
+  public readonly menuAnchorPosition = signal<MenuAnchorPositionConfig>('right')
   // slot configuration: get avatar image
   public slotNameAvatarImage = 'onecx-avatar-image'
   public isAvatarImageComponentDefined$: Observable<boolean> = of(false) // check if a component was assigned
   public avatarImageLoadedEmitter = new EventEmitter<boolean>()
-  public avatarImageLoaded: boolean | undefined = undefined // getting true/false from response, then component managed
+  public readonly avatarImageLoaded = signal<boolean | undefined>(undefined) // getting true/false from response, then component managed
   // slot configuration: get custom user info
   public slotNameCustomUserInfo = 'onecx-custom-user-info'
   public isCustomUserInfoComponentDefined$: Observable<boolean> = of(false) // check if a component was assigned
@@ -110,11 +121,11 @@ export class OneCXUserAvatarMenuComponent implements ocxRemoteComponent, ocxRemo
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
     this.isCustomUserInfoComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.slotNameCustomUserInfo)
     this.isAvatarImageComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.slotNameAvatarImage)
-    this.avatarImageLoadedEmitter.subscribe((data) => (this.avatarImageLoaded = data))
+    this.avatarImageLoadedEmitter.subscribe((data) => this.avatarImageLoaded.set(data))
 
     this.userProfile$ = this.userService.profile$.pipe(
       filter((x) => x !== undefined),
-      untilDestroyed(this)
+      takeUntilDestroyed(this.destroyRef)
     )
 
     this.userMenu$ = this.appStateService.currentWorkspace$.pipe(
@@ -163,7 +174,7 @@ export class OneCXUserAvatarMenuComponent implements ocxRemoteComponent, ocxRemo
         )
       }),
       shareReplay(),
-      untilDestroyed(this)
+      takeUntilDestroyed(this.destroyRef)
     )
   }
 
@@ -176,7 +187,7 @@ export class OneCXUserAvatarMenuComponent implements ocxRemoteComponent, ocxRemo
     this.appConfigService.init(config.baseUrl).then(() => {
       const menuAnchorPositionConfig = this.appConfigService.getProperty('USER_AVATAR_MENU_ANCHOR_POSITION')
       if (menuAnchorPositionConfig) {
-        this.menuAnchorPosition = menuAnchorPositionConfig as MenuAnchorPositionConfig
+        this.menuAnchorPosition.set(menuAnchorPositionConfig as MenuAnchorPositionConfig)
       }
     })
     this.permissions = config.permissions

@@ -1,7 +1,7 @@
-import { Component, Input, OnInit, OnDestroy, ViewChild, inject, Renderer2 } from '@angular/core'
+import { Component, DestroyRef, Input, OnInit, OnDestroy, ViewChild, inject, Renderer2 } from '@angular/core'
 import { AsyncPipe, Location } from '@angular/common'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { RouterModule } from '@angular/router'
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { Observable, ReplaySubject, catchError, map, mergeMap, of, retry, shareReplay, withLatestFrom } from 'rxjs'
 
@@ -31,8 +31,8 @@ const MENU_MODE = 'horizontal'
   templateUrl: './horizontal-main-menu.component.html',
   styleUrls: ['./horizontal-main-menu.component.scss']
 })
-@UntilDestroy()
 export class OneCXHorizontalMainMenuComponent implements OnInit, OnDestroy, ocxRemoteComponent, ocxRemoteWebcomponent {
+  private readonly destroyRef = inject(DestroyRef)
   public readonly remoteComponentConfig = inject<ReplaySubject<RemoteComponentConfig>>(REMOTE_COMPONENT_CONFIG)
   private readonly userService = inject(UserService)
   private readonly translateService = inject(TranslateService)
@@ -43,7 +43,7 @@ export class OneCXHorizontalMainMenuComponent implements OnInit, OnDestroy, ocxR
   menuItems$: Observable<MenuItem[]> | undefined
 
   private readonly menuService = inject(MenuService)
-  public isActive$ = this.menuService.isActive(MENU_MODE).pipe(untilDestroyed(this))
+  public isActive$ = this.menuService.isActive(MENU_MODE).pipe(takeUntilDestroyed(this.destroyRef))
   private readonly renderer = inject(Renderer2)
 
   private removeMouseLeaveListener?: () => void
@@ -51,7 +51,7 @@ export class OneCXHorizontalMainMenuComponent implements OnInit, OnDestroy, ocxR
   public isHidden$ = this.menuService
     .isVisible(MENU_MODE)
     .pipe(map((isVisible) => !isVisible))
-    .pipe(untilDestroyed(this))
+    .pipe(takeUntilDestroyed(this.destroyRef))
 
   constructor() {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
@@ -116,7 +116,7 @@ export class OneCXHorizontalMainMenuComponent implements OnInit, OnDestroy, ocxR
         )
       ),
       shareReplay(),
-      untilDestroyed(this)
+      takeUntilDestroyed(this.destroyRef)
     )
   }
 }

@@ -18,7 +18,9 @@
     <p-accordion-panel value="0">
       <p-accordion-header>
         <div
-          [class]="'flex flex-row align-items-center ' + (avatarImageLoaded === true ? 'with-image' : 'without-image')"
+          [class]="
+            'flex flex-row align-items-center ' + (avatarImageLoaded() === true ? 'with-image' : 'without-image')
+          "
         >
           <ocx-slot
             name="onecx-avatar-image"
@@ -29,7 +31,7 @@
             }"
             [outputs]="{ imageLoaded: avatarImageLoadedEmitter }"
           ></ocx-slot>
-          @if (avatarImageLoaded === undefined) {
+          @if (avatarImageLoaded() === undefined) {
             <!-- use same size as avatar to have a calm layout -->
             <span
               class="font-bold text-lg pi pi-user flex align-items-center justify-content-center"

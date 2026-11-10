@@ -1,6 +1,6 @@
-import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, Input, OnDestroy, OnInit, inject } from '@angular/core'
 import { AsyncPipe, Location } from '@angular/common'
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import {
   BehaviorSubject,
@@ -56,11 +56,12 @@ const MENU_MODE = 'static'
   standalone: true,
   imports: [AsyncPipe, AngularAcceleratorModule, AngularRemoteComponentsModule, TranslateModule, PanelMenuModule],
   providers: [{ provide: REMOTE_COMPONENT_CONFIG, useValue: new ReplaySubject<string>(1) }],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './vertical-main-menu.component.html',
   styleUrls: ['./vertical-main-menu.component.scss']
 })
-@UntilDestroy()
 export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRemoteWebcomponent, OnInit, OnDestroy {
+  private readonly destroyRef = inject(DestroyRef)
   private readonly remoteComponentConfig = inject<ReplaySubject<RemoteComponentConfig>>(REMOTE_COMPONENT_CONFIG)
   private readonly appConfigService = inject(AppConfigService)
   private readonly userService = inject(UserService)
@@ -77,11 +78,11 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRe
   eventsTopic$ = new EventsTopic()
 
   private readonly menuService = inject(MenuService)
-  public isActive$ = this.menuService.isActive(MENU_MODE).pipe(untilDestroyed(this))
+  public isActive$ = this.menuService.isActive(MENU_MODE).pipe(takeUntilDestroyed(this.destroyRef))
   public isHidden$ = this.menuService
     .isVisible(MENU_MODE)
     .pipe(map((isVisible) => !isVisible))
-    .pipe(untilDestroyed(this))
+    .pipe(takeUntilDestroyed(this.destroyRef))
 
   constructor() {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
@@ -174,7 +175,7 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRe
         )
       })),
       shareReplay(),
-      untilDestroyed(this)
+      takeUntilDestroyed(this.destroyRef)
     )
   }
 

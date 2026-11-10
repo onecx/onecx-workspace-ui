@@ -1,6 +1,6 @@
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, EventEmitter, inject, Input, Output } from '@angular/core'
 import { AsyncPipe, Location } from '@angular/common'
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { BehaviorSubject, ReplaySubject } from 'rxjs'
 
 import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
@@ -21,11 +21,12 @@ import { environment } from 'src/environments/environment'
   selector: 'app-current-workspace-logo',
   standalone: true,
   imports: [AngularRemoteComponentsModule, AsyncPipe, AngularAcceleratorModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './current-workspace-logo.component.html',
   styleUrls: ['./current-workspace-logo.component.scss']
 })
-@UntilDestroy()
 export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
+  private readonly destroyRef = inject(DestroyRef)
   private readonly remoteComponentConfig = inject<ReplaySubject<RemoteComponentConfig>>(REMOTE_COMPONENT_CONFIG)
   private readonly workspaceApi = inject(WorkspaceAPIService)
   // Inputs
@@ -60,7 +61,7 @@ export class OneCXCurrentWorkspaceLogoComponent implements ocxRemoteComponent, o
   constructor() {
     this.appState.currentWorkspace$
       .asObservable()
-      .pipe(untilDestroyed(this))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((workspace) => {
         this.workspaceName = workspace?.workspaceName
         this.logoUrl[RefType.Logo] = workspace.logoUrl

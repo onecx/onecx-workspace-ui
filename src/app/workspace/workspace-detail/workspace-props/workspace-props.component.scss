@@ -3,7 +3,9 @@
 @include dropdown-zebra-rows;
 
 :host ::ng-deep {
+  /*
+    PrimeNG 19 bugfix */
   input.p-select-label {
-    font-size: var(--p-select-font-size, 1rem); /* Oder den exakten Wert deiner App, z.B. 14px */
+    font-size: var(--p-select-font-size, 1rem);
   }
 }

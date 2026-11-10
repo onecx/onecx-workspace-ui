@@ -1,5 +1,15 @@
-import { Component, ElementRef, inject, Input, OnDestroy, ViewChild } from '@angular/core'
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  ElementRef,
+  inject,
+  Input,
+  OnDestroy,
+  signal,
+  ViewChild
+} from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { combineLatest, filter, map, merge, Observable, ReplaySubject } from 'rxjs'
 
 import {
@@ -36,11 +46,12 @@ const SMALL_LOGO_THRESHOLD_PX = 235
   selector: 'app-topbar-logo',
   standalone: true,
   imports: [AngularRemoteComponentsModule, OneCXCurrentWorkspaceLogoComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './topbar-logo.component.html',
   styleUrls: ['./topbar-logo.component.scss']
 })
-@UntilDestroy()
 export class OneCXTopbarLogoComponent implements ocxRemoteComponent, ocxRemoteWebcomponent, OnDestroy {
+  private readonly destroyRef = inject(DestroyRef)
   public readonly remoteComponentConfig = inject<ReplaySubject<RemoteComponentConfig>>(REMOTE_COMPONENT_CONFIG)
   private readonly appConfigService = inject(AppConfigService)
   // input
@@ -56,15 +67,17 @@ export class OneCXTopbarLogoComponent implements ocxRemoteComponent, ocxRemoteWe
   @ViewChild('container', { static: true }) container!: ElementRef
 
   private readonly menuService = inject(MenuService)
-  public currentImageType: RefType = RefType.Logo
+  public readonly currentImageType = signal<RefType>(RefType.Logo)
   private resizedEventsTopic = new ResizedEventsTopic() // NOSONAR
   public isStaticMenuActive$: Observable<boolean>
   public isStaticMenuVisible$: Observable<boolean>
   private readonly staticMenuMode: MenuMode = 'static'
 
   constructor() {
-    this.isStaticMenuActive$ = this.menuService.isActive(this.staticMenuMode).pipe(untilDestroyed(this))
-    this.isStaticMenuVisible$ = this.menuService.isVisible(this.staticMenuMode).pipe(untilDestroyed(this))
+    this.isStaticMenuActive$ = this.menuService.isActive(this.staticMenuMode).pipe(takeUntilDestroyed(this.destroyRef))
+    this.isStaticMenuVisible$ = this.menuService
+      .isVisible(this.staticMenuMode)
+      .pipe(takeUntilDestroyed(this.destroyRef))
     ResizedEventsTopic.requestEvent(ResizedEventType.SLOT_RESIZED, RESIZE_OBSERVED_SLOT_NAME_OLD)
     ResizedEventsTopic.requestEvent(ResizedEventType.SLOT_GROUP_RESIZED, RESIZE_OBSERVED_SLOT_GROUP_NAME)
   }
@@ -92,7 +105,7 @@ export class OneCXTopbarLogoComponent implements ocxRemoteComponent, ocxRemoteWe
         return matches
       }),
       map((e) => e.payload),
-      untilDestroyed(this)
+      takeUntilDestroyed(this.destroyRef)
     )
 
     const slotGroupResized$ = this.resizedEventsTopic.pipe(
@@ -102,11 +115,11 @@ export class OneCXTopbarLogoComponent implements ocxRemoteComponent, ocxRemoteWe
         return matches
       }),
       map((e) => e.payload),
-      untilDestroyed(this)
+      takeUntilDestroyed(this.destroyRef)
     )
 
     combineLatest([merge(slotResized$, slotGroupResized$), this.isStaticMenuActive$, this.isStaticMenuVisible$])
-      .pipe(untilDestroyed(this))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(([resizedEventPayload, isStaticMenuActive, _isStaticMenuVisible]) => {
         const resizedEventPayloadWidth =
           'slotDetails' in resizedEventPayload
@@ -121,10 +134,10 @@ export class OneCXTopbarLogoComponent implements ocxRemoteComponent, ocxRemoteWe
             this.container.nativeElement.style.width = resizedEventPayloadWidth + 'px'
           }
 
-          if (resizedEventPayloadWidth < SMALL_LOGO_THRESHOLD_PX && this.currentImageType !== RefType.LogoSmall) {
-            this.currentImageType = RefType.LogoSmall
-          } else if (resizedEventPayloadWidth >= SMALL_LOGO_THRESHOLD_PX && this.currentImageType !== RefType.Logo) {
-            this.currentImageType = RefType.Logo
+          if (resizedEventPayloadWidth < SMALL_LOGO_THRESHOLD_PX && this.currentImageType() !== RefType.LogoSmall) {
+            this.currentImageType.set(RefType.LogoSmall)
+          } else if (resizedEventPayloadWidth >= SMALL_LOGO_THRESHOLD_PX && this.currentImageType() !== RefType.Logo) {
+            this.currentImageType.set(RefType.Logo)
           }
         }
       })

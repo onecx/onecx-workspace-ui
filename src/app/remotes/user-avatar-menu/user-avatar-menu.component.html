@@ -1,5 +1,5 @@
 <div class="ocx-topbar-action-with-menu">
-  @let avatarIcon = avatarImageLoaded === undefined ? 'pi pi-user fs-xlarge' : '';
+  @let avatarIcon = avatarImageLoaded() === undefined ? 'pi pi-user fs-xlarge' : '';
   <p-button
     #userAvatarMenuButton
     id="ocx_topbar_action_user_avatar_menu"
@@ -30,7 +30,7 @@
   <ul
     id="ws_user_avatar_menu_list"
     class="ocx-topbar-action-panel shadow-4 border-round-bottom fixed sm:absolute mt-2 sm:top-100 w-screen sm:w-auto"
-    [class]="menuAnchorPosition + '-0' + (menuOpen() ? '' : ' hidden')"
+    [class]="menuAnchorPosition() + '-0' + (menuOpen() ? '' : ' hidden')"
     (click)="menuOpen.set(false)"
     (keydown)="menuOpen.set(false)"
   >

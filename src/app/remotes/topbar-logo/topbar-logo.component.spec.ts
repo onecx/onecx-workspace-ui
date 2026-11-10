@@ -180,32 +180,32 @@ describe('OneCXTopbarLogoComponent', () => {
   describe('logo type switching', () => {
     it('should switch to small logo when width is below threshold', () => {
       const { component } = setUp()
-      component.currentImageType = RefType.Logo
+      component.currentImageType.set(RefType.Logo)
       component.ocxRemoteComponentConfig = defaultConfig
 
       publishSlotResized(200)
 
-      expect(component.currentImageType).toEqual(RefType.LogoSmall)
+      expect(component.currentImageType()).toEqual(RefType.LogoSmall)
     })
 
     it('should not switch to small logo when already using small logo', () => {
       const { component } = setUp()
-      component.currentImageType = RefType.LogoSmall
+      component.currentImageType.set(RefType.LogoSmall)
       component.ocxRemoteComponentConfig = defaultConfig
 
       publishSlotResized(200)
 
-      expect(component.currentImageType).toEqual(RefType.LogoSmall)
+      expect(component.currentImageType()).toEqual(RefType.LogoSmall)
     })
 
     it('should switch back to regular logo when width is above threshold', () => {
       const { component } = setUp()
-      component.currentImageType = RefType.LogoSmall
+      component.currentImageType.set(RefType.LogoSmall)
       component.ocxRemoteComponentConfig = defaultConfig
 
       publishSlotResized(400)
 
-      expect(component.currentImageType).toEqual(RefType.Logo)
+      expect(component.currentImageType()).toEqual(RefType.Logo)
     })
   })
 })

@@ -1,6 +1,6 @@
-import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, Input, OnDestroy, OnInit } from '@angular/core'
 import { AsyncPipe, Location, NgClass } from '@angular/common'
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import {
   BehaviorSubject,
@@ -37,11 +37,12 @@ import { SlimMenuItemComponent } from 'src/app/shared/components/slim-menu-item/
   selector: 'app-slim-vertical-main-menu',
   standalone: true,
   imports: [AsyncPipe, NgClass, TranslateModule, SlimMenuItemComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './slim-vertical-main-menu.component.html',
   styleUrl: './slim-vertical-main-menu.component.scss'
 })
-@UntilDestroy()
 export class OneCXSlimVerticalMainMenuComponent implements ocxRemoteWebcomponent, OnInit, OnDestroy {
+  private readonly destroyRef = inject(DestroyRef)
   private readonly remoteComponentConfig = inject<ReplaySubject<RemoteComponentConfig>>(REMOTE_COMPONENT_CONFIG)
   private readonly userService = inject(UserService)
   private readonly translateService = inject(TranslateService)
@@ -134,7 +135,7 @@ export class OneCXSlimVerticalMainMenuComponent implements ocxRemoteWebcomponent
         this.menuItemService.constructMenuItems(items, userLang, workspaceBaseUrl)
       ),
       shareReplay(),
-      untilDestroyed(this)
+      takeUntilDestroyed(this.destroyRef)
     )
   }
 

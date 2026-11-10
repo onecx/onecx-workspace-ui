@@ -25,14 +25,15 @@ export class OneCXDisplayWorkspacePropertyComponent implements ocxRemoteComponen
   private readonly rcConfig = inject<ReplaySubject<RemoteComponentConfig>>(REMOTE_COMPONENT_CONFIG)
   private readonly appState = inject(AppStateService)
   public readonly config = inject(ConfigurationService)
+  private readonly translate = inject(TranslateService)
   public readonly userService = inject(UserService)
   // input
   @Input() public propertyName = 'displayName'
   @Input() public title: string | undefined
   @Input() public styleClass: string | undefined
 
-  constructor(private readonly translateService: TranslateService) {
-    this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
+  constructor() {
+    this.userService.lang$.subscribe((lang) => this.translate.use(lang))
   }
 
   @Input() set ocxRemoteComponentConfig(rcConfig: RemoteComponentConfig) {

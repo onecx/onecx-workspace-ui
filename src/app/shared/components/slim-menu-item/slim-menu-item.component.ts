@@ -1,7 +1,6 @@
-import { Component, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { NgClass, NgTemplateOutlet } from '@angular/common'
 import { RouterModule } from '@angular/router'
-import { UntilDestroy } from '@ngneat/until-destroy'
 
 import { RippleModule } from 'primeng/ripple'
 import { TooltipModule } from 'primeng/tooltip'
@@ -16,6 +15,7 @@ import { ItemType, SlimMenuItem } from 'src/app/shared/model/slim-menu-item'
   styleUrls: ['./slim-menu-item.component.scss'],
   standalone: true,
   imports: [NgClass, NgTemplateOutlet, RouterModule, TooltipModule, RippleModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'slim-menu-list-item flex flex-column align-items-center justify-content-center',
     '[class.slim-menu-list-item-active]': 'item?.active',
@@ -23,7 +23,6 @@ import { ItemType, SlimMenuItem } from 'src/app/shared/model/slim-menu-item'
     '[id]': 'id'
   }
 })
-@UntilDestroy()
 export class SlimMenuItemComponent {
   public ItemType = ItemType
   public SlimMenuMode = SlimMenuMode
