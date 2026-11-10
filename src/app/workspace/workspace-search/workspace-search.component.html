@@ -10,19 +10,23 @@
   @let exceptionMessage = exceptionKey();
   <ocx-content class="ocx-content">
     @if (exceptionMessage) {
-      <p-message
-        id="ws_search_message_error"
-        severity="error"
-        styleClass="m-3 w-fit"
-        [text]="exceptionMessage | translate"
-      ></p-message>
+      <div class="p-1">
+        <p-message
+          id="ws_search_message_error"
+          severity="error"
+          styleClass="m-3 w-fit"
+          [text]="exceptionMessage | translate"
+        ></p-message>
+      </div>
     } @else if (loading()) {
-      <p-message
-        id="ws_search_message_loading"
-        severity="info"
-        styleClass="m-3 w-fit"
-        [text]="'ACTIONS.LOADING' | translate"
-      ></p-message>
+      <div class="p-1">
+        <p-message
+          id="ws_search_message_loading"
+          severity="info"
+          styleClass="m-3 w-fit"
+          [text]="'ACTIONS.LOADING' | translate"
+        ></p-message>
+      </div>
     } @else {
       <section [attr.aria-label]="'DIALOG.SEARCH.RESULTS' | translate">
         <ocx-interactive-data-view
@@ -211,15 +215,15 @@
                   @if (item.disabled) {
                     <div
                       [id]="'ws_search_data_grid_row_' + item.name + '_disabled'"
-                      class="card-badge-right badge-1 text-lg md:text-xl pi pi-ban danger-action-text font-bold"
-                      [attr.aria-label]="'WORKSPACE.DISABLED.DISPLAY' | translate"
+                      class="card-badge-left badge-1 text-lg md:text-xl pi pi-ban danger-action-text font-bold"
+                      [attr.aria-label]="'WORKSPACE.TOOLTIPS.DISABLED.DISPLAY' | translate"
                       [pTooltip]="'WORKSPACE.TOOLTIPS.DISABLED.DISPLAY' | translate"
                       tooltipPosition="right"
                       tooltipEvent="hover"
                       role="note"
                     ></div>
                   }
-                  @if (item.mandatory) {
+                  @if (!item.disabled && item.mandatory) {
                     <div
                       [id]="'ws_search_data_grid_row_' + item.name + '_mandatory'"
                       class="card-badge-left badge-1 font-bold text-xl pi pi-shield"
@@ -230,7 +234,7 @@
                       role="note"
                     ></div>
                   }
-                  @if (!item.disabled && currentWorkspaceName !== item.name) {
+                  @if (currentWorkspaceName !== item.name) {
                     <a
                       tabindex="0"
                       [id]="'ws_search_data_grid_row_' + item.name + '_goto_workspace'"

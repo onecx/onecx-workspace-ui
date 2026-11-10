@@ -9,9 +9,12 @@
 @include media-queries;
 
 :host ::ng-deep {
-  .ocx-content > div {
+  .ocx-content .ocx-card {
     margin-bottom: 0;
-    padding: 0.75rem 0.5rem;
+    padding: 0 0.5rem;
+    box-shadow:
+      rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+      rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
   }
 
   /* fixes for p-card */
@@ -39,11 +42,11 @@
 
   @media screen and (min-width: 576px) {
     .card-badge-right {
-      right: -8px;
+      right: -6px;
       padding: 6px;
     }
     .card-badge-left {
-      left: -8px;
+      left: -6px;
       padding: 6px;
     }
   }

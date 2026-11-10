@@ -327,6 +327,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   }
 
   public onOpenProductPaths(paths: string[]) {
+    console.log('onOpenProductPaths', paths)
     // if paths already filled then prevent doing twice
     if (paths.length > (this.workspace?.homePage ? 1 : 0)) return
     if (this.workspace) {

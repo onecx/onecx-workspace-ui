@@ -18,7 +18,9 @@
   }
   <ocx-content class="ocx-content">
     @if (exceptionKey) {
-      <p-message severity="error" styleClass="m-3 w-fit" [text]="exceptionKey | translate"></p-message>
+      <div class="p-1">
+        <p-message severity="error" styleClass="m-3 w-fit" [text]="exceptionKey | translate"></p-message>
+      </div>
     } @else {
       <p-treeTable
         #menuTree
@@ -37,7 +39,7 @@
 
           <!-- ACTIONS: REORDER, FILTER, LINKS -->
           <section
-            class="flex flex-wrap justify-content-between align-items-center row-gap-1 column-gap-2 md:column-gap-4"
+            class="pb-2 flex flex-wrap justify-content-between align-items-center row-gap-1 column-gap-2 md:column-gap-4 border-bottom-1 border-200"
             [attr.aria-label]="'DIALOG.MENU.SECTIONS.ACTIONS' | translate"
           >
             <div *ocxIfNotPermission="'MENU#DRAG_DROP'" class="hidden sm:block"></div>
@@ -55,7 +57,7 @@
               tooltipEvent="hover"
             />
             <!-- FILTER -->
-            <p-inputgroup class="w-13rem sm:w-17rem md:w-20rem">
+            <p-inputgroup class="pb-1 w-13rem sm:w-17rem md:w-20rem">
               <p-inputgroup-addon class="pi pi-filter" aria-hidden="true"> </p-inputgroup-addon>
               <p-floatlabel variant="on">
                 @let tooltipText =
@@ -143,7 +145,7 @@
 
           <!-- DISPLAY OPTIONS -->
           <section
-            class="mt-2 md:mt-3 flex flex-wrap justify-content-start align-items-center row-gap-1 column-gap-5"
+            class="mt-2 flex flex-wrap justify-content-start align-items-center row-gap-1 column-gap-5"
             [attr.aria-label]="'DIALOG.MENU.SECTIONS.OPTIONS' | translate"
           >
             <div class="sm:my-2">
