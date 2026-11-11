@@ -36,7 +36,7 @@ const RESIZE_OBSERVED_SLOT_NAME_OLD = 'onecx-shell-vertical-menu'
 const RESIZE_OBSERVED_SLOT_GROUP_NAME = 'onecx-shell-body-start'
 
 const DEFAULT_WIDTH_REM = 17
-const TOGGLE_MENU_BUTTON_WIDTH_REM = 2.5
+const TOGGLE_MENU_BUTTON_WIDTH_REM = 2
 
 // This value is the width of the sidebar
 // When the resizedEventPayloadWidth is less than this value then switch to the small logo
@@ -135,8 +135,10 @@ export class OneCXTopbarLogoComponent implements ocxRemoteComponent, ocxRemoteWe
             const correction = this.remToPx() * TOGGLE_MENU_BUTTON_WIDTH_REM
             const adjustedWidth = resizedEventPayloadWidth - correction
             this.container.nativeElement.style.width = adjustedWidth + 'px'
+            this.container.nativeElement.style.marginLeft = '1rem'
           } else {
             this.container.nativeElement.style.width = resizedEventPayloadWidth + 'px'
+            this.container.nativeElement.style.marginLeft = '3px'
           }
 
           if (resizedEventPayloadWidth < SMALL_LOGO_THRESHOLD_PX && this.currentImageType() !== RefType.LogoSmall) {
