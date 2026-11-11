@@ -46,8 +46,7 @@ import { WorkspaceRoleDeleteComponent } from '../workspace-role-delete/workspace
 import { WorkspaceRoleDetailComponent } from '../workspace-role-detail/workspace-role-detail.component'
 
 export type IAMRole = { name?: string; description?: string }
-export type RoleType = 'WORKSPACE' | 'IAM'
-export type RoleFilterType = 'ALL' | RoleType
+export type RoleType = 'WORKSPACE' | 'IAM' | 'ALL'
 export type Role = WorkspaceRole & { isIamRole: boolean; isWorkspaceRole: boolean; origin: RoleType[] }
 export type ChangeMode = 'VIEW' | 'CREATE' | 'EDIT' | 'COPY' | 'DELETE'
 
@@ -106,8 +105,8 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
   public role: Role | undefined // for detail
 
   // filter
-  public globalFilterValue = ''
-  public quickFilterValue: RoleFilterType = 'ALL'
+  public globalFilterValue = '' // empty string required for reset input field
+  public quickFilterValue: RoleType = 'ALL'
   public quickFilterOptions$: Observable<SelectItem[]> | undefined
   public quickFilterCount = ''
   // sort
@@ -352,22 +351,52 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
   /**
    * FILTERING
    */
-  public onQuickFilterChange(val: RoleFilterType): void {
-    if (val === 'ALL') {
+  private applyFilters(): void {
+    if (!this.data() || this.data().length === 0) {
       this.filteredData.set(undefined)
-    } else {
-      this.filteredData.set(this.data().filter((s) => this.convertToRoleType(s['origin'])?.includes(val)))
+      return
     }
-    this.quickFilterValue = val
+    if (this.quickFilterValue !== 'ALL' && this.globalFilterValue !== '') {
+      this.filteredData.set(
+        this.data()
+          .filter((row) => this.convertToType(row['origin'])?.includes(this.quickFilterValue!))
+          .filter((row) => row['name']?.toString().toLowerCase().includes(this.globalFilterValue))
+      )
+    } else if (this.quickFilterValue !== 'ALL') {
+      this.filteredData.set(
+        this.data().filter((row) => this.convertToType(row['origin'])?.includes(this.quickFilterValue!))
+      )
+    } else if (this.globalFilterValue !== '') {
+      this.filteredData.set(
+        this.data().filter((row) => row['name']?.toString().toLowerCase().includes(this.globalFilterValue))
+      )
+    } else {
+      this.filteredData.set(undefined)
+    }
   }
 
-  private convertToRoleType(origin: unknown): RoleType[] {
+  private convertToType(origin: unknown): RoleType[] {
     if (!origin) return []
     if (Array.isArray(origin)) return origin as RoleType[]
     return []
   }
 
-  public onGetQuickFilterCount(roleType: RoleFilterType): string {
+  public onGlobalFilter(val?: string): void {
+    this.globalFilterValue = val?.toLowerCase() ?? ''
+    this.applyFilters()
+  }
+
+  public onClearGlobalFilter(): void {
+    this.globalFilterValue = ''
+    this.applyFilters()
+  }
+
+  public onQuickFilterChange(val: RoleType): void {
+    this.quickFilterValue = val
+    this.applyFilters()
+  }
+
+  public onGetQuickFilterCount(roleType: RoleType): string {
     switch (roleType) {
       case 'IAM':
         return this.iamRoles.length.toString()
@@ -376,29 +405,6 @@ export class WorkspaceRolesComponent implements OnInit, OnChanges, OnDestroy {
       default:
         return (this.iamRoles.length + this.wRoles.length).toString()
     }
-  }
-
-  /**
-   * FILTER & SORT Events
-   */
-  public onGlobalFilter(val?: string): void {
-    if (!this.data()) return
-    this.globalFilterValue = val ?? ''
-    if (this.globalFilterValue === '') this.filteredData.set(undefined)
-    else {
-      this.filteredData.set(
-        this.data().filter(
-          (row) =>
-            row['name']?.toString().toLowerCase().includes(this.globalFilterValue.toLowerCase()) ||
-            row['type']?.toString().toLowerCase().includes(this.globalFilterValue.toLowerCase())
-        )
-      )
-    }
-  }
-
-  public onClearGlobalFilter(): void {
-    this.globalFilterValue = ''
-    this.filteredData.set(undefined)
   }
 
   /**

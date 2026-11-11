@@ -407,6 +407,10 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges {
   }
 
   private applyFilters(): void {
+    if (!this.data() || this.data().length === 0) {
+      this.filteredData.set(undefined)
+      return
+    }
     if (this.quickFilterValue !== 'ALL' && this.globalFilterValue !== '') {
       this.filteredData.set(
         this.data()

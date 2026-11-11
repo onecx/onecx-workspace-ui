@@ -736,6 +736,17 @@ describe('WorkspaceSlotsComponent', () => {
         expect(component.globalFilterValue).toEqual('')
         expect(component.filteredData()).toBeUndefined()
       })
+
+      it('should return early when there is no data', () => {
+        const dataSubject = (component as any)['dataSubject$']
+        dataSubject.next(undefined) // force a falsy data() to trip the guard
+        component.globalFilterValue = ''
+
+        component.onGlobalFilter('nomatch')
+
+        expect(component.globalFilterValue).toBe('nomatch')
+        expect(component.filteredData()).toBeUndefined()
+      })
     })
 
     describe('quick and global filters', () => {
