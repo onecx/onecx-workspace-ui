@@ -390,7 +390,7 @@
       "UNDEPLOYED": "Unavailable",
       "UNDEPLOYED.TOOLTIP": "This Slot is no longer usable.",
       "UNDEPLOYED.COMPONENT.TOOLTIP": "This Component is no longer usable.",
-      "PRODUCT_UNREGISTERED": "Application no longer registered in the workspace. Component no longer usable.",
+      "PRODUCT_UNREGISTERED": "Application no longer registered in the workspace. Component not usable.",
       "PRODUCTS": "Registered by Applications",
       "PRODUCTS.NOT_EXIST": "Not available",
       "PRODUCTS.TOOLTIP": "Applications that have registered this Slot:",

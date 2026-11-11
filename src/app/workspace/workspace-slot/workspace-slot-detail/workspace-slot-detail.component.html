@@ -182,7 +182,7 @@
 
               <ng-template pTemplate="item" let-component let-i="index">
                 <div
-                  class="pl-2 pr-1 flex flex-row flex-nowrap justify-content-between column-gap-2 align-items-center"
+                  class="px-1 w-full flex flex-row flex-nowrap justify-content-between column-gap-2 align-items-center"
                   [class.custom-selected-row]="selectedComponent?.name === component.name"
                   (click)="onComponentSelect(component)"
                   (keydown.enter)="$any($event.target).click()"
@@ -225,7 +225,7 @@
                   } @else if (component?.productUnregistered) {
                     <div
                       [id]="'ws_slot_detail_picklist_' + i + '_product_unregistered'"
-                      class="danger-action-text text-lg pi pi-trash"
+                      class="danger-action-text text-lg pi pi-ban"
                       [attr.aria-label]="'DIALOG.SLOT.PRODUCT_UNREGISTERED' | translate"
                       [pTooltip]="'DIALOG.SLOT.PRODUCT_UNREGISTERED' | translate"
                       tooltipPosition="top"
