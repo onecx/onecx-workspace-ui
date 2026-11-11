@@ -642,120 +642,141 @@ describe('WorkspaceSlotsComponent', () => {
    * UI Events
    */
   describe('filtering', () => {
-    it('should reset filter to default when ALL is selected', () => {
-      component['dataSubject$'].next([{ name: 'slot-1', type: ['WORKSPACE'] }] as unknown as RowListGridData[])
+    describe('quick filter', () => {
+      it('should reset filter to default when ALL is selected', () => {
+        component['dataSubject$'].next([{ name: 'slot-1', type: ['WORKSPACE'] }] as unknown as RowListGridData[])
 
-      component.onQuickFilterChange('ALL')
+        component.onQuickFilterChange('ALL')
 
-      expect(component.quickFilterValue).toEqual('ALL')
-      expect(component.filteredData()).toBeUndefined()
+        expect(component.quickFilterValue).toEqual('ALL')
+        expect(component.filteredData()).toBeUndefined()
+      })
+
+      it('should filter slots by type WORKSPACE', () => {
+        component['dataSubject$'].next([
+          { name: 'slot-1', type: ['WORKSPACE'] },
+          { name: 'slot-2', type: ['UNUSED'] },
+          { name: 'slot-3', type: ['WORKSPACE', 'CHANGES'] }
+        ] as unknown as RowListGridData[])
+
+        component.onQuickFilterChange('WORKSPACE')
+
+        expect(component.quickFilterValue).toEqual('WORKSPACE')
+        expect(component.filteredData()).toHaveSize(2)
+        expect((component.filteredData() as any)[0].name).toBe('slot-1')
+        expect((component.filteredData() as any)[1].name).toBe('slot-3')
+      })
+
+      it('should filter slots by type CHANGES', () => {
+        component['dataSubject$'].next([
+          { name: 'slot-1', type: ['WORKSPACE'] },
+          { name: 'slot-2', type: ['UNUSED', 'CHANGES'] },
+          { name: 'slot-3', type: ['WORKSPACE', 'CHANGES'] }
+        ] as unknown as RowListGridData[])
+
+        component.onQuickFilterChange('CHANGES')
+
+        expect(component.quickFilterValue).toEqual('CHANGES')
+        expect(component.filteredData()).toHaveSize(2)
+      })
+
+      it('should exclude rows without a type field', () => {
+        component['dataSubject$'].next([{ name: 'slot-1' }] as unknown as RowListGridData[])
+
+        component.onQuickFilterChange('WORKSPACE')
+
+        expect(component.filteredData()).toHaveSize(0)
+      })
+
+      it('should exclude rows whose type is not an array', () => {
+        component['dataSubject$'].next([{ name: 'slot-1', type: 'WORKSPACE' }] as unknown as RowListGridData[])
+
+        component.onQuickFilterChange('WORKSPACE')
+
+        expect(component.filteredData()).toHaveSize(0)
+      })
     })
 
-    it('should filter slots by type WORKSPACE', () => {
-      component['dataSubject$'].next([
-        { name: 'slot-1', type: ['WORKSPACE'] },
-        { name: 'slot-2', type: ['UNUSED'] },
-        { name: 'slot-3', type: ['WORKSPACE', 'CHANGES'] }
-      ] as unknown as RowListGridData[])
+    describe('global filter', () => {
+      beforeEach(() => {
+        component['dataSubject$'].next([
+          { name: 'workspace-a' },
+          { name: 'workspace-b' }
+        ] as unknown as RowListGridData[])
+      })
 
-      component.onQuickFilterChange('WORKSPACE')
+      it('should filter data by name', () => {
+        component.onGlobalFilter('-a')
 
-      expect(component.quickFilterValue).toEqual('WORKSPACE')
-      expect(component.filteredData()).toHaveSize(2)
-      expect((component.filteredData() as any)[0].name).toBe('slot-1')
-      expect((component.filteredData() as any)[1].name).toBe('slot-3')
+        expect(component.globalFilterValue).toEqual('-a')
+        expect(component.filteredData()).toHaveSize(1)
+        expect((component.filteredData() as any)[0].name).toBe('workspace-a')
+      })
+
+      it('should reset filteredData when filter value is empty', () => {
+        component.onGlobalFilter('')
+
+        expect(component.globalFilterValue).toEqual('')
+        expect(component.filteredData()).toBeUndefined()
+      })
+
+      it('should default an undefined value to an empty filter', () => {
+        component.onGlobalFilter(undefined)
+
+        expect(component.globalFilterValue).toEqual('')
+        expect(component.filteredData()).toBeUndefined()
+      })
+
+      it('should reset globalFilterValue and filteredData onClearGlobalFilter', () => {
+        component.globalFilterValue = '-a'
+        component.filteredData.set([{ name: 'workspace-a' }] as unknown as RowListGridData[])
+
+        component.onClearGlobalFilter()
+
+        expect(component.globalFilterValue).toEqual('')
+        expect(component.filteredData()).toBeUndefined()
+      })
     })
 
-    it('should filter slots by type CHANGES', () => {
-      component['dataSubject$'].next([
-        { name: 'slot-1', type: ['WORKSPACE'] },
-        { name: 'slot-2', type: ['UNUSED', 'CHANGES'] },
-        { name: 'slot-3', type: ['WORKSPACE', 'CHANGES'] }
-      ] as unknown as RowListGridData[])
+    describe('quick and global filters', () => {
+      it('should filter slots by type CHANGES', () => {
+        component['dataSubject$'].next([
+          { name: 'slot-1', type: ['WORKSPACE'] },
+          { name: 'slot-2', type: ['UNUSED', 'CHANGES'] },
+          { name: 'slot-3', type: ['WORKSPACE', 'CHANGES'] }
+        ] as unknown as RowListGridData[])
 
-      component.onQuickFilterChange('CHANGES')
+        component.globalFilterValue = 'slot'
+        component.onQuickFilterChange('CHANGES')
 
-      expect(component.quickFilterValue).toEqual('CHANGES')
-      expect(component.filteredData()).toHaveSize(2)
+        expect(component.quickFilterValue).toEqual('CHANGES')
+        expect(component.filteredData()).toHaveSize(2)
+      })
     })
 
-    it('should exclude rows without a type field', () => {
-      component['dataSubject$'].next([{ name: 'slot-1' }] as unknown as RowListGridData[])
+    describe('onGetQuickFilterCount', () => {
+      beforeEach(() => {
+        component.numberOfAllSlots = 4
+        component.numberOfWSlots = 3
+        component.numberOfUnusedPSlots = 2
+        component.numberOfChangedSlots = 1
+      })
 
-      component.onQuickFilterChange('WORKSPACE')
+      it('should return the number of workspace slots for WORKSPACE', () => {
+        expect(component.onGetQuickFilterCount('WORKSPACE')).toBe('3')
+      })
 
-      expect(component.filteredData()).toHaveSize(0)
-    })
+      it('should return the number of changed slots for CHANGES', () => {
+        expect(component.onGetQuickFilterCount('CHANGES')).toBe('1')
+      })
 
-    it('should exclude rows whose type is not an array', () => {
-      component['dataSubject$'].next([{ name: 'slot-1', type: 'WORKSPACE' }] as unknown as RowListGridData[])
+      it('should return the number of unused product store slots for UNUSED', () => {
+        expect(component.onGetQuickFilterCount('UNUSED')).toBe('2')
+      })
 
-      component.onQuickFilterChange('WORKSPACE')
-
-      expect(component.filteredData()).toHaveSize(0)
-    })
-  })
-
-  describe('global filter', () => {
-    beforeEach(() => {
-      component['dataSubject$'].next([{ name: 'workspace-a' }, { name: 'workspace-b' }] as unknown as RowListGridData[])
-    })
-
-    it('should filter data by name', () => {
-      component.onGlobalFilter('-a')
-
-      expect(component.globalFilterValue).toEqual('-a')
-      expect(component.filteredData()).toHaveSize(1)
-      expect((component.filteredData() as any)[0].name).toBe('workspace-a')
-    })
-
-    it('should reset filteredData when filter value is empty', () => {
-      component.onGlobalFilter('')
-
-      expect(component.globalFilterValue).toEqual('')
-      expect(component.filteredData()).toBeUndefined()
-    })
-
-    it('should default an undefined value to an empty filter', () => {
-      component.onGlobalFilter(undefined)
-
-      expect(component.globalFilterValue).toEqual('')
-      expect(component.filteredData()).toBeUndefined()
-    })
-
-    it('should reset globalFilterValue and filteredData onClearGlobalFilter', () => {
-      component.globalFilterValue = '-a'
-      component.filteredData.set([{ name: 'workspace-a' }] as unknown as RowListGridData[])
-
-      component.onClearGlobalFilter()
-
-      expect(component.globalFilterValue).toEqual('')
-      expect(component.filteredData()).toBeUndefined()
-    })
-  })
-
-  describe('onGetQuickFilterCount', () => {
-    beforeEach(() => {
-      component.numberOfAllSlots = 4
-      component.numberOfWSlots = 3
-      component.numberOfUnusedPSlots = 2
-      component.numberOfChangedSlots = 1
-    })
-
-    it('should return the number of workspace slots for WORKSPACE', () => {
-      expect(component.onGetQuickFilterCount('WORKSPACE')).toBe('3')
-    })
-
-    it('should return the number of changed slots for CHANGES', () => {
-      expect(component.onGetQuickFilterCount('CHANGES')).toBe('1')
-    })
-
-    it('should return the number of unused product store slots for UNUSED', () => {
-      expect(component.onGetQuickFilterCount('UNUSED')).toBe('2')
-    })
-
-    it('should return the number of all slots for ALL', () => {
-      expect(component.onGetQuickFilterCount('ALL')).toBe('4')
+      it('should return the number of all slots for ALL', () => {
+        expect(component.onGetQuickFilterCount('ALL')).toBe('4')
+      })
     })
   })
 

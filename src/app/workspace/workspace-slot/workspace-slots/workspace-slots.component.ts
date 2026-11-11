@@ -41,8 +41,7 @@ import {
 } from '@onecx/angular-accelerator'
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
 
-export type SlotType = 'WORKSPACE' | 'UNUSED' | 'CHANGES'
-export type SlotFilterType = 'ALL' | SlotType
+export type SlotType = 'WORKSPACE' | 'UNUSED' | 'CHANGES' | 'ALL'
 export type ExtendedSelectItem = SelectItem & { tooltipKey?: string }
 export type ChangeMode = 'VIEW' | 'EDIT'
 export type PSSlot = SlotPS & { pName: string; pDisplayName: string }
@@ -109,8 +108,8 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges {
   public wProductNames: string[] = [] // simple list of names of registered products in workspace
 
   // filter
-  public globalFilterValue = ''
-  public quickFilterValue: SlotFilterType = 'ALL'
+  public globalFilterValue = '' // empty string required for reset input field
+  public quickFilterValue: SlotType = 'ALL'
   public quickFilterOptions$: Observable<SelectItem[]> | undefined
   public quickFilterCount = ''
   // sort
@@ -196,8 +195,7 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges {
         )
       )
       this.dataSubject$.next(slots as unknown as RowListGridData[])
-      this.onQuickFilterChange(this.quickFilterValue) // reestablish filter on the new data
-      this.onGlobalFilter(this.globalFilterValue)
+      this.applyFilters()
     } catch (err) {
       this.exceptionKey.set('EXCEPTIONS.HTTP_STATUS_' + Utils.mapping_error_status(0) + '.SLOTS')
       console.error('loadSlots', err)
@@ -401,39 +399,49 @@ export class WorkspaceSlotsComponent implements OnInit, OnChanges {
   /**
    * FILTERING
    */
-  public onQuickFilterChange(val: SlotFilterType): void {
-    if (val === 'ALL') {
-      this.filteredData.set(undefined)
-    } else {
-      this.filteredData.set(this.data().filter((s) => this.convertToRoleType(s['type'])?.includes(val)))
-    }
-    this.quickFilterValue = val
-  }
-
-  private convertToRoleType(origin: unknown): SlotType[] {
+  // a slot can have more than one type associated with it - as array
+  private convertToType(origin: unknown): SlotType[] {
     if (!origin) return []
     if (Array.isArray(origin)) return origin as SlotType[]
     return []
   }
 
-  public onGlobalFilter(val?: string): void {
-    this.globalFilterValue = val ?? ''
-    if (this.globalFilterValue === '') this.filteredData.set(undefined)
-    else {
+  private applyFilters(): void {
+    if (this.quickFilterValue !== 'ALL' && this.globalFilterValue !== '') {
       this.filteredData.set(
-        this.data().filter((row) =>
-          row['name']?.toString().toLowerCase().includes(this.globalFilterValue.toLowerCase())
-        )
+        this.data()
+          .filter((row) => this.convertToType(row['type'])?.includes(this.quickFilterValue!))
+          .filter((row) => row['name']?.toString().toLowerCase().includes(this.globalFilterValue))
       )
+    } else if (this.quickFilterValue !== 'ALL') {
+      this.filteredData.set(
+        this.data().filter((row) => this.convertToType(row['type'])?.includes(this.quickFilterValue!))
+      )
+    } else if (this.globalFilterValue !== '') {
+      this.filteredData.set(
+        this.data().filter((row) => row['name']?.toString().toLowerCase().includes(this.globalFilterValue))
+      )
+    } else {
+      this.filteredData.set(undefined)
     }
+  }
+
+  public onGlobalFilter(val?: string): void {
+    this.globalFilterValue = val?.toLowerCase() ?? ''
+    this.applyFilters()
   }
 
   public onClearGlobalFilter(): void {
     this.globalFilterValue = ''
-    this.filteredData.set(undefined)
+    this.applyFilters()
   }
 
-  public onGetQuickFilterCount(slotType: SlotFilterType): string {
+  public onQuickFilterChange(val: SlotType): void {
+    this.quickFilterValue = val
+    this.applyFilters()
+  }
+
+  public onGetQuickFilterCount(slotType?: SlotType): string {
     switch (slotType) {
       case 'WORKSPACE':
         return this.numberOfWSlots.toString()
