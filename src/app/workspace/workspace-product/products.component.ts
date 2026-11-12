@@ -1,24 +1,28 @@
 import {
-  AfterViewInit,
+  ChangeDetectorRef,
   Component,
-  ElementRef,
   EventEmitter,
-  Renderer2,
   Input,
   Output,
   OnDestroy,
   OnChanges,
-  SimpleChanges
+  SimpleChanges,
+  ChangeDetectionStrategy,
+  OnInit
 } from '@angular/core'
+import { AsyncPipe, KeyValuePipe, NgClass } from '@angular/common'
 import {
   FormArray,
   FormBuilder,
   FormControl,
   FormGroup,
+  ReactiveFormsModule,
   ValidationErrors,
   ValidatorFn,
   Validators
 } from '@angular/forms'
+import { RouterModule } from '@angular/router'
+import { toSignal } from '@angular/core/rxjs-interop'
 import {
   catchError,
   combineLatest,
@@ -31,8 +35,19 @@ import {
   switchMap,
   takeUntil
 } from 'rxjs'
-import { TranslateService } from '@ngx-translate/core'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
 
+import { ButtonModule } from 'primeng/button'
+import { CardModule } from 'primeng/card'
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { InputGroupModule } from 'primeng/inputgroup'
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon'
+import { InputTextModule } from 'primeng/inputtext'
+import { MessageModule } from 'primeng/message'
+import { PickListModule } from 'primeng/picklist'
+import { TooltipModule } from 'primeng/tooltip'
+
+import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
 import { MfeInfo } from '@onecx/integration-interface'
 import {
   AppStateService,
@@ -56,9 +71,12 @@ import {
   Slot,
   WorkspaceProductAPIService,
   UIEndpoint,
-  SlotComponent
+  SlotComponent,
+  RefType
 } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
+import { ImageComponent } from 'src/app/shared/components/image/image.component'
+import { ProductDeregistrationComponent } from './workspace-product-deregistration/product-deregistration.component'
 
 type ChangeStatus = {
   index?: number
@@ -87,15 +105,6 @@ export type ExtendedProduct = Product &
     apps?: Map<string, ExtendedApp> // key: appId
     slots?: Array<ExtendedSlot> // from ProductStoreItem
   }
-interface ViewingModes {
-  icon: string
-  mode: string
-  titleKey?: string
-}
-const ALL_VIEW_MODES = [
-  { icon: 'pi pi-list', mode: 'list', titleKey: 'DIALOG.DATAVIEW.VIEW_MODE_LIST' },
-  { icon: 'pi pi-th-large', mode: 'grid', titleKey: 'DIALOG.DATAVIEW.VIEW_MODE_GRID' }
-]
 
 export function ValidateModuleBasePath(fa: FormArray): ValidatorFn {
   return (): ValidationErrors | null => {
@@ -146,13 +155,34 @@ export function AddMfeModuleFormControl(fb: FormBuilder, modules: FormArray, idx
     })
   }
 }
-
 @Component({
-  selector: 'app-products',
+  selector: 'app-workspace-products',
+  standalone: true,
+  imports: [
+    AsyncPipe,
+    KeyValuePipe,
+    NgClass,
+    ReactiveFormsModule,
+    RouterModule,
+    TranslateModule,
+    AngularAcceleratorModule,
+    ButtonModule,
+    CardModule,
+    FloatLabelModule,
+    InputGroupModule,
+    InputGroupAddonModule,
+    InputTextModule,
+    MessageModule,
+    PickListModule,
+    TooltipModule,
+    ImageComponent,
+    ProductDeregistrationComponent
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './products.component.html',
   styleUrls: ['./products.component.scss']
 })
-export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
+export class WorkspaceProductComponent implements OnInit, OnChanges, OnDestroy {
   @Input() workspace!: Workspace | undefined
   @Output() changed = new EventEmitter()
 
@@ -161,29 +191,33 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   public exceptionKey: string | undefined = undefined
   public psLoading = false
   public wpLoading = false
-  public editMode = false
   public hasRegisterPermission = false
-  public permissionEndpointExist = false
-  public productEndpointExist = false
+  public readonly permissionEndpointExist = toSignal(
+    Utils.doesEndpointExist(this.workspaceService, 'onecx-permission', 'onecx-permission-ui', 'product'),
+    { initialValue: false }
+  )
+  public readonly productEndpointExist = toSignal(
+    Utils.doesEndpointExist(this.workspaceService, 'onecx-product-store', 'onecx-product-store-ui', 'product-detail'),
+    { initialValue: false }
+  )
   public displayDetails = false
   public displayedDetailItem: ExtendedProduct | undefined = undefined
   public formGroup: FormGroup
   public formChanged = false
-  public sourceFilterValue: string | undefined // product store
-  public targetFilterValue: string | undefined // workspace
-  public sourceList!: HTMLElement | null
-  public targetList!: HTMLElement | null
-  public sourceListViewMode: ViewingModes | undefined
-  public targetListViewMode: ViewingModes | undefined
-  public viewingModes: ViewingModes[] = []
+  public sourceFilterValue: string | undefined = undefined
+  public targetFilterValue: string | undefined = undefined
   public displayDeregisterConfirmation = false
   private deregisterItems: ExtendedProduct[] = []
+  public RefType = RefType
+  public imageBasePath = this.imageApi.configuration.basePath
 
   // data
   public wSlots$!: Observable<Slot[]>
   public wProducts$!: Observable<ExtendedProduct[]>
   public wProducts: ExtendedProduct[] = [] // registered products
   public psProducts: ExtendedProduct[] = [] // not registered product store products
+  public filteredPsProducts = [...this.psProducts]
+  public filteredWProducts = [...this.wProducts]
   public psProducts$!: Observable<ExtendedProduct[]>
   public psProductsOrg!: Map<string, ExtendedProduct> // all products in product store (not undeployed)
   public currentMfe!: MfeInfo
@@ -199,41 +233,28 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     private readonly translate: TranslateService,
     private readonly msgService: PortalMessageService,
     private readonly fb: FormBuilder,
-    private readonly elem: ElementRef,
-    public renderer: Renderer2
+    private readonly cdr: ChangeDetectorRef
   ) {
-    this.hasRegisterPermission = this.user.hasPermission('WORKSPACE_PRODUCTS#REGISTER')
-    this.appState.currentMfe$.pipe(map((mfe) => (this.currentMfe = mfe))).subscribe()
+    this.appState.currentMfe$.pipe(takeUntil(this.destroy$)).subscribe((mfe) => (this.currentMfe = mfe))
     this.formGroup = this.fb.group({
       displayName: new FormControl({ value: null, disabled: true }),
       baseUrl: new FormControl(null, [Validators.required, Validators.maxLength(200)]),
       modules: this.fb.array([])
     })
-    this.viewingModes = ALL_VIEW_MODES
-    this.sourceListViewMode = this.viewingModes.find((v) => v.mode === 'list')
-    this.targetListViewMode = this.viewingModes.find((v) => v.mode === 'list')
   }
 
-  public ngAfterViewInit() {
-    this.sourceList = (<HTMLElement>this.elem.nativeElement).querySelector('.p-picklist-list.p-picklist-source')
-    this.targetList = (<HTMLElement>this.elem.nativeElement).querySelector('.p-picklist-list.p-picklist-target')
+  public async ngOnInit(): Promise<void> {
+    try {
+      this.hasRegisterPermission = await this.user.hasPermission('WORKSPACE_PRODUCTS#REGISTER')
+      this.cdr.markForCheck()
+    } catch (err) {
+      console.error(err)
+    }
   }
+
   public ngOnChanges(changes: SimpleChanges): void {
     if (this.workspace && changes['workspace']) {
       this.loadData()
-      // check detail endpoint exists
-      this.productEndpointExist = Utils.doesEndpointExist(
-        this.workspaceService,
-        'onecx-product-store',
-        'onecx-product-store-ui',
-        'product-detail'
-      )
-      this.permissionEndpointExist = Utils.doesEndpointExist(
-        this.workspaceService,
-        'onecx-permission',
-        'onecx-permission-ui',
-        'product'
-      )
     }
   }
   public ngOnDestroy(): void {
@@ -277,14 +298,22 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
             this.wProducts = []
             for (const p of products)
               this.wProducts.push({ ...p, bucket: 'TARGET', exists: true, changedComponents: false } as ExtendedProduct)
-            return this.wProducts.sort(this.sortProductsByDisplayName)
+            this.wProducts.sort(this.sortProductsByDisplayName)
+            this.targetFilterValue = undefined
+            this.filteredWProducts = [...this.wProducts]
+            this.wpLoading = false
+            return this.wProducts
           }),
           catchError((err) => {
             this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + Utils.mapping_error_status(err.status) + '.PRODUCTS'
             console.error('getProductsByWorkspaceId', err)
             return of([] as ExtendedProduct[])
           }),
-          finalize(() => (this.wpLoading = false))
+          // OnPush: the view must be marked dirty explicitly, this runs outside any template event
+          finalize(() => {
+            this.wpLoading = false
+            this.cdr.markForCheck()
+          })
         )
         .pipe(takeUntil(this.destroy$))
   }
@@ -320,14 +349,21 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
             }
           // mark workspace products which are not longer exist in product store
           for (const wP of workspaceData.products) wP.exists = this.psProductsOrg.get(wP.productName!) !== undefined
-          return this.psProducts.sort(this.sortProductsByDisplayName)
+          this.psProducts.sort(this.sortProductsByDisplayName)
+          this.sourceFilterValue = undefined
+          this.filteredPsProducts = [...this.psProducts]
+          return this.psProducts
         }),
         catchError((err) => {
           this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + Utils.mapping_error_status(err.status) + '.PRODUCTS'
           console.error('searchAvailableProducts', err)
           return of([] as ExtendedProduct[])
         }),
-        finalize(() => (this.psLoading = false))
+        // OnPush: the view must be marked dirty explicitly, this runs outside any template event
+        finalize(() => {
+          this.psLoading = false
+          this.cdr.markForCheck()
+        })
       )
       .pipe(takeUntil(this.destroy$))
   }
@@ -388,39 +424,40 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     return (a.name ? a.name.toUpperCase() : '').localeCompare(b.name ? b.name.toUpperCase() : '')
   }
 
-  public getImageUrl(product?: ExtendedProduct): string | undefined {
-    if (!product) return undefined
-    if (product.imageUrl && product.imageUrl != '') {
-      return product.imageUrl
-    }
-    return Utils.bffProductImageUrl(this.imageApi.configuration.basePath, product.productName)
-  }
-
   /**************************************************
    * UI Events: Picklist
    */
   public getFilterValue(ev: any): string {
     return ev.target.value
   }
+  public filterProducts(val: string, bucket: 'SOURCE' | 'TARGET') {
+    if (!val || val.trim() === '') {
+      if (bucket === 'SOURCE') {
+        this.sourceFilterValue = undefined
+        this.filteredPsProducts = [...this.psProducts]
+      }
+      if (bucket === 'TARGET') {
+        this.targetFilterValue = undefined
+        this.filteredWProducts = [...this.wProducts]
+      }
+      return
+    }
+    const lowerSearch = val.toLowerCase()
+    if (bucket === 'SOURCE') {
+      this.sourceFilterValue = val
+      this.filteredPsProducts = this.psProducts.filter((item) => item.displayName?.toLowerCase().includes(lowerSearch))
+    }
+    if (bucket === 'TARGET') {
+      this.targetFilterValue = val
+      this.filteredWProducts = this.wProducts.filter((item) => item.displayName?.toLowerCase().includes(lowerSearch))
+    }
+  }
+
   public onHideItemDetails() {
     this.displayDetails = false
     this.displayedDetailItem = undefined
     this.formChanged = false
     this.formGroup.reset()
-  }
-  public onSourceViewModeChange(ev: { icon: string; mode: string }): void {
-    if (ev) {
-      this.sourceListViewMode = this.viewingModes.find((v) => v.mode === ev.mode)
-      if (ev.mode === 'grid') this.renderer.addClass(this.sourceList, 'tile-view')
-      if (ev.mode === 'list') this.renderer.removeClass(this.sourceList, 'tile-view')
-    }
-  }
-  public onTargetViewModeChange(ev: { icon: string; mode: string }): void {
-    if (ev) {
-      this.targetListViewMode = this.viewingModes.find((v) => v.mode === ev.mode)
-      if (ev.mode === 'grid') this.renderer.addClass(this.targetList, 'tile-view')
-      if (ev.mode === 'list') this.renderer.removeClass(this.targetList, 'tile-view')
-    }
   }
 
   /**************************************************
@@ -430,13 +467,13 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
     event.stopPropagation()
   }
   // on picklist item clicks: ev.items is collection
-  public onSourceSelect(ev: any): void {
-    if (ev.items.length === 0) this.onHideItemDetails()
-    if (ev.items.length === 1) this.fillForm(this.psProductsOrg.get(ev.items[0].productName))
-  }
-  public onTargetSelect(ev: any): void {
-    if (ev.items.length === 0) this.onHideItemDetails()
-    if (ev.items.length === 1) this.getWProduct(ev.items[0])
+  public onItemSelect(item: ExtendedProduct): void {
+    const isSource = this.psProducts.includes(item)
+    if (isSource) {
+      this.fillForm(this.psProductsOrg.get(item.productName!))
+    } else {
+      this.getWProduct(item)
+    }
   }
 
   /**************************************************
@@ -450,11 +487,14 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
           const item = data as ExtendedProduct
           this.prepareWProduct(item)
           this.fillForm(item)
+          // OnPush: this HTTP response arrives outside the click handler's change detection cycle
+          this.cdr.markForCheck()
         },
         error: (err) => {
           this.onHideItemDetails()
           console.error('getProductById', err)
           this.msgService.error({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.LOAD_ERROR' })
+          this.cdr.markForCheck()
         },
         complete() {}
       })
@@ -577,27 +617,27 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
    * UI Event: SAVE
    */
   public onProductSave(): void {
-    this.editMode = false
     if (this.workspace?.id && this.formGroup.valid && this.displayedDetailItem?.id) {
-      this.displayedDetailItem.displayName = this.formGroup.controls['displayName'].value
-      this.displayedDetailItem.baseUrl = this.formGroup.controls['baseUrl'].value
+      const changedProduct = { ...this.displayedDetailItem }
+      changedProduct.displayName = this.formGroup.controls['displayName'].value
+      changedProduct.baseUrl = this.formGroup.controls['baseUrl'].value
       // MFE modules to be saved:
-      this.displayedDetailItem.microfrontends = [] // clear
+      changedProduct.microfrontends = [] // clear
       const modules = this.formGroup.get('modules') as FormArray
       modules.controls.forEach((item) => {
         // ignore item if id is undefined and "new" = false and formChanged
         if ((item.value.id && !item.value.change) || (!item.value.id && item.value.change === 'create'))
-          this.displayedDetailItem?.microfrontends?.push(item.value)
+          changedProduct?.microfrontends?.push(item.value)
       })
       this.wProductApi
         .updateProductById({
           id: this.workspace?.id,
           productId: this.displayedDetailItem.id,
           updateProductRequest: {
-            modificationCount: this.displayedDetailItem.modificationCount,
-            baseUrl: this.displayedDetailItem.baseUrl,
-            displayName: this.displayedDetailItem.displayName,
-            microfrontends: this.displayedDetailItem.microfrontends?.map((m) => ({
+            modificationCount: changedProduct.modificationCount,
+            baseUrl: changedProduct.baseUrl,
+            displayName: changedProduct.displayName,
+            microfrontends: changedProduct.microfrontends?.map((m) => ({
               appId: m.appId,
               basePath: m.basePath,
               exposedModule: m.exposedModule
@@ -610,6 +650,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
             this.prepareWProduct(item)
             this.fillForm(item)
             this.msgService.success({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.UPDATE_OK' })
+            this.cdr.markForCheck()
           },
           error: (err) => {
             console.error('updateProductById', err)
@@ -620,6 +661,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
                 detailKey: 'VALIDATION.ERRORS.APP_MODULE.' + err.error?.errorCode
               })
             } else this.msgService.error({ summaryKey: 'DIALOG.PRODUCTS.MESSAGES.UPDATE_NOK' })
+            this.cdr.markForCheck()
           },
           complete() {}
         })
@@ -631,6 +673,8 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
    *
    * This event fires after the items were moved from source to target => PrimeNG
    * Afterwards, Step through the list and on each error roll back the move.
+   *
+   * Migration Angular 18 => 19 : Events onSourceSelect, onTargetSelect missing
    */
   private prepareMfePaths(mfes: Microfrontend[]): Microfrontend[] | undefined {
     return mfes.length === 0
@@ -675,6 +719,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
               this.changed.emit()
               if (itemCount === successCounter + errorCounter)
                 this.displayRegisterMessages('REGISTRATION', successCounter, errorCounter)
+              this.cdr.markForCheck()
             },
             error: (err) => {
               console.error('createProductInWorkspace', err)
@@ -684,6 +729,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
               this.psProducts.push(p)
               if (itemCount === successCounter + errorCounter)
                 this.displayRegisterMessages('REGISTRATION', successCounter, errorCounter)
+              this.cdr.markForCheck()
             }
           })
       }
@@ -737,6 +783,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
             this.wProducts = this.wProducts.filter((psp) => psp.productName !== p.productName)
             if (itemCount === successCounter + errorCounter)
               this.displayRegisterMessages('DEREGISTRATION', successCounter, errorCounter)
+            this.cdr.markForCheck()
           },
           error: (err) => {
             errorCounter++
@@ -746,6 +793,7 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
             console.error('deleteProductById', err)
             if (itemCount === successCounter + errorCounter)
               this.displayRegisterMessages('DEREGISTRATION', successCounter, errorCounter)
+            this.cdr.markForCheck()
           }
         })
       }
@@ -768,18 +816,20 @@ export class ProductComponent implements OnChanges, OnDestroy, AfterViewInit {
   /****************************************************************************
    * ENDPOINTS
    */
+  private readonly productUrlCache = new Map<string, Observable<string | undefined>>()
+  private readonly permissionUrlCache = new Map<string, Observable<string | undefined>>()
   public getProductEndpointUrl$(name?: string): Observable<string | undefined> {
-    if (this.productEndpointExist && name)
-      return this.workspaceService.getUrl('onecx-product-store', 'onecx-product-store-ui', 'product-detail', {
-        'product-name': name
+    return Utils.cachedEndpointUrl$(this.productUrlCache, this.productEndpointExist(), name, (n) =>
+      this.workspaceService.getUrl('onecx-product-store', 'onecx-product-store-ui', 'product-detail', {
+        'product-name': n
       })
-    return of(undefined)
+    )
   }
   public getPermissionEndpointUrl$(name?: string): Observable<string | undefined> {
-    if (this.permissionEndpointExist && name)
-      return this.workspaceService.getUrl('onecx-permission', 'onecx-permission-ui', 'product', {
-        'product-name': name
+    return Utils.cachedEndpointUrl$(this.permissionUrlCache, this.permissionEndpointExist(), name, (n) =>
+      this.workspaceService.getUrl('onecx-permission', 'onecx-permission-ui', 'product', {
+        'product-name': n
       })
-    return of(undefined)
+    )
   }
 }

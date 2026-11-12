@@ -1,0 +1,15 @@
+@let img = item();
+@if (img) {
+  <img
+    [id]="id()"
+    [class]="'max-w-full border-round-sm ' + (styleClass() ?? '')"
+    [ocxSrc]="urlNext() ?? url()"
+    (error)="onImageLoadError()"
+    (load)="onImageLoadSuccess()"
+    [alt]="'Logo ' + img.imageType"
+    [attr.aria-label]="'Logo ' + img.imageType"
+    [pTooltip]="title()"
+    tooltipPosition="top"
+    tooltipEvent="hover"
+  />
+}

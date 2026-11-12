@@ -1,11 +1,13 @@
-<div
-  *ngIf="property$ | async as property"
-  [class]="'px-2 ' + (styleClass ?? '')"
-  [attr.aria-label]="title"
-  [pTooltip]="title"
-  tooltipPosition="top"
-  tooltipEvent="hover"
-  role="note"
->
-  {{ property }}
-</div>
+@let property = property$ | async;
+@if (property) {
+  <div
+    [class]="'px-2 ' + (styleClass ?? '')"
+    [attr.aria-label]="title"
+    [pTooltip]="title"
+    tooltipPosition="top"
+    tooltipEvent="hover"
+    role="note"
+  >
+    {{ property }}
+  </div>
+}

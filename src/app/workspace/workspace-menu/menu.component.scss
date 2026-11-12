@@ -1,16 +1,24 @@
-@import 'src/app/_ws-mixins.scss';
+@use 'src/app/_ws-mixins.scss' as *;
 
 @include invisible;
 @include cursor-default;
-@include displaying-text-responsive;
+@include ocx-text-responsive;
+@include ocx-required-label;
+@include ocx-p-inputgroup;
+@include ocx-p-tabs;
 @include readable-disabled-components;
 @include correct-data-view-control;
-@include correct-select-button;
-@include search-criteria-select-button;
-@include search-criteria-select-button-slim;
 @include table-inline-buttons;
 
 :host ::ng-deep {
+  .ocx-content .ocx-card {
+    margin-bottom: 0;
+    padding: 0;
+    box-shadow:
+      rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+      rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+  }
+
   .p-dialog .p-dialog-content {
     padding-bottom: 0;
     overflow-y: hidden;
@@ -18,6 +26,8 @@
   .text-ellipsis-2-lines {
     @include displaying-text-ellipsis(2);
   }
+
+  --onecx-workspace-onecx-workspace-ui-togglebutton-content-padding: 0.25rem;
 
   /* togglebuttons should look like buttons */
   .p-togglebutton.p-button:not(.p-highlight),
@@ -71,7 +81,6 @@
     }
     table {
       width: unset;
-      margin-top: 0.75rem;
       .p-treetable-thead {
         tr th.menu-name {
           min-width: 15rem;
@@ -82,23 +91,20 @@
           min-width: 60px;
           button {
             background: transparent;
-            &:enabled:hover {
-              color: var(--primary-text-color);
-              background: var(--button-hover-bg);
-            }
+            &:enabled:hover,
             &.clicked {
-              color: var(--primary-text-color);
-              background: var(--primary-color);
+              color: var(--onecx-workspace-onecx-workspace-ui-button-primary-hover-color);
+              background: var(--onecx-workspace-onecx-workspace-ui-button-primary-hover-background);
             }
           }
         }
         tr th:last-of-type {
-          border-right: none !important;
+          border-right: none;
         }
       }
       .p-treetable-tbody {
         tr:last-of-type td {
-          border-bottom: none !important;
+          border-bottom: none;
         }
         tr {
           td {
@@ -112,16 +118,12 @@
               padding: 0 0.3rem;
             }
             &:last-of-type {
-              border-right: none !important;
+              border-right: none;
             }
           }
         }
       }
     }
-  }
-
-  .button-min-height {
-    height: 33.2px;
   }
 
   @media screen and (min-width: 567px) {
@@ -133,18 +135,18 @@
 
   @media screen and (max-width: 276px) {
     .xs\:hidden {
-      display: none !important;
+      display: none;
     }
   }
 
   @media (max-width: 367px) {
     .hidden-xs {
-      display: none !important;
+      display: none;
     }
   }
   @media (max-width: 567px) {
     .hidden-sm {
-      display: none !important;
+      display: none;
     }
     .role-message {
       top: 0.5rem;
@@ -153,17 +155,17 @@
   }
   @media (max-width: 768px) {
     .hidden-md {
-      display: none !important;
+      display: none;
     }
   }
   @media (max-width: 992px) {
     .hidden-lg {
-      display: none !important;
+      display: none;
     }
   }
   @media (min-width: 1200px) {
     .hidden-xl {
-      display: none !important;
+      display: none;
     }
   }
 }

@@ -1,10 +1,27 @@
-import { Component, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core'
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core'
 import { Location } from '@angular/common'
-import { DefaultValueAccessor, FormControl, FormGroup, Validators } from '@angular/forms'
-import { TranslateService } from '@ngx-translate/core'
+import {
+  DefaultValueAccessor,
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { firstValueFrom, catchError, map, of, Subject, takeUntil } from 'rxjs'
-import { TabView } from 'primeng/tabview'
+
 import { SelectItem } from 'primeng/api'
+import { TabsModule } from 'primeng/tabs'
+import { AutoCompleteModule } from 'primeng/autocomplete'
+import { ButtonModule } from 'primeng/button'
+import { CheckboxModule } from 'primeng/checkbox'
+import { DialogModule } from 'primeng/dialog'
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { InputTextModule } from 'primeng/inputtext'
+import { SelectButtonModule } from 'primeng/selectbutton'
+import { SelectModule } from 'primeng/select'
+import { TooltipModule } from 'primeng/tooltip'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 
@@ -19,8 +36,10 @@ import {
   Target
 } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
+
 import { ChangeMode } from '../menu.component'
 import { IconService } from '../services/iconservice'
+import { MenuInternComponent } from '../menu-intern/menu-intern.component'
 
 type I18N = { [key: string]: string }
 type LanguageItem = SelectItem & { data: string }
@@ -40,6 +59,23 @@ DefaultValueAccessor.prototype.registerOnChange = function (fn) {
 
 @Component({
   selector: 'app-menu-detail',
+  standalone: true,
+  imports: [
+    TranslateModule,
+    FormsModule,
+    ReactiveFormsModule,
+    DialogModule,
+    TabsModule,
+    FloatLabelModule,
+    InputTextModule,
+    SelectModule,
+    AutoCompleteModule,
+    CheckboxModule,
+    SelectButtonModule,
+    ButtonModule,
+    TooltipModule,
+    MenuInternComponent
+  ],
   templateUrl: './menu-detail.component.html',
   styleUrls: ['./menu-detail.component.scss']
 })
@@ -55,11 +91,10 @@ export class MenuDetailComponent implements OnChanges {
   @Output() displayDeleteDialogChange: EventEmitter<boolean> = new EventEmitter()
   @Output() dataChanged: EventEmitter<boolean> = new EventEmitter()
 
-  @ViewChild('panelDetail') panelDetail: TabView | undefined
   private readonly destroy$ = new Subject()
   public menuItemForm: FormGroup
   public dateFormat = 'short'
-  public tabIndex = 0
+  public selectedTabIndex = '0'
   public menuItem: MenuItem | undefined
   public iconItems: SelectItem[] = [] // default value is empty
   public scopeItems: SelectItem[]
@@ -118,7 +153,7 @@ export class MenuDetailComponent implements OnChanges {
 
   public ngOnChanges(): void {
     if (this.displayDetailDialog) {
-      this.tabIndex = 0
+      this.selectedTabIndex = '0'
       this.languagesDisplayed = []
       this.menuItemForm.reset()
       this.cleanupMfeUrls() // remove special entries
@@ -302,25 +337,8 @@ export class MenuDetailComponent implements OnChanges {
     }
   }
 
-  /**
-   * DELETE
-   */
-  public onMenuDelete(): void {
-    this.displayDeleteDialog = false
-    this.menuApi.deleteMenuItemById({ menuItemId: this.menuItemOrg?.id ?? '' }).subscribe({
-      next: () => {
-        this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MENU.MESSAGE.OK' })
-        this.dataChanged.emit(true)
-      },
-      error: (err) => {
-        this.msgService.error({ summaryKey: 'ACTIONS.DELETE.MENU.MESSAGE.NOK' })
-        console.error('deleteMenuItemById', err)
-      }
-    })
-  }
-
-  public onTabPanelChange(e: any): void {
-    this.tabIndex = e.index
+  public onTabChange(e: string | number): void {
+    this.selectedTabIndex = typeof e === 'number' ? e.toString() : e
     this.prepareLanguagePanel()
   }
 

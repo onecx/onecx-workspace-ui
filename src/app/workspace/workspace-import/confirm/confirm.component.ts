@@ -1,14 +1,32 @@
 import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core'
+import { FormsModule } from '@angular/forms'
+import { TranslateModule } from '@ngx-translate/core'
+
+import { CheckboxModule } from 'primeng/checkbox'
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { InputTextModule } from 'primeng/inputtext'
+import { MessageModule } from 'primeng/message'
+import { TooltipModule } from 'primeng/tooltip'
+
 import { WorkspaceAPIService, SearchWorkspacesResponse, WorkspaceAbstract } from 'src/app/shared/generated'
 import { ImportWorkspace } from '../workspace-import.component'
 
 @Component({
   selector: 'app-import-confirm',
+  standalone: true,
+  imports: [
+    FormsModule,
+    TranslateModule,
+    CheckboxModule,
+    FloatLabelModule,
+    InputTextModule,
+    MessageModule,
+    TooltipModule
+  ],
   templateUrl: './confirm.component.html'
 })
 export class ConfirmComponent implements OnInit {
   @Input() public importWorkspace: ImportWorkspace | undefined
-  @Input() public hasPermission = false
   // eslint-disable-next-line @typescript-eslint/ban-types
   @Input() public importResponse: {} | undefined
 

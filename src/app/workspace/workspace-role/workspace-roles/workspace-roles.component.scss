@@ -1,0 +1,28 @@
+@use 'src/app/_ws-mixins.scss' as *;
+
+@include danger-action;
+@include ocx-text-responsive;
+@include ocx-data-view-fixes;
+
+:host ::ng-deep {
+  --onecx-workspace-onecx-workspace-ui-togglebutton-content-padding: 0.25rem 0.5rem;
+
+  .p-card-body {
+    padding: 0.25rem;
+  }
+  .card-badge-right {
+    display: inline-block;
+    position: absolute;
+    &.badge-1 {
+      top: 1px;
+      right: 1px;
+    }
+    .p-button {
+      width: 2rem;
+      padding: 5px;
+    }
+  }
+  .word-wrap-break {
+    word-wrap: break-word;
+  }
+}

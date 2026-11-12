@@ -25,18 +25,8 @@
               "src/assets",
               {
                 "glob": "**/*",
-                "input": "node_modules/@onecx/portal-integration-angular/assets/",
-                "output": "/onecx-portal-lib/assets/"
-              },
-              {
-                "glob": "**/*",
                 "input": "./node_modules/@onecx/angular-accelerator/assets/",
                 "output": "/onecx-angular-accelerator/assets/"
-              },
-              {
-                "glob": "**/*",
-                "input": "./node_modules/@onecx/angular-utils/assets/",
-                "output": "/onecx-angular-utils/assets/"
               }
             ],
             "styles": ["src/styles.scss"],
@@ -63,8 +53,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "8kb",
-                  "maximumError": "10kb"
+                  "maximumWarning": "10kb",
+                  "maximumError": "15kb"
                 }
               ],
               "fileReplacements": [
@@ -111,10 +101,17 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
+            "include": ["**/*.spec.ts"],
+            "exclude": [],
             "assets": ["src/favicon.ico", "src/assets"],
             "styles": ["src/styles.scss"],
             "scripts": [],
-            "codeCoverageExclude": ["**/*.module.ts", "src/app/environments/**", "src/app/shared/generated/**"]
+            "codeCoverageExclude": [
+              "**/*.module.ts",
+              "src/app/environments/**",
+              "src/app/shared/generated/**",
+              "**/*.harness.ts"
+            ]
           }
         },
         "lint": {

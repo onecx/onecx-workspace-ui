@@ -3,13 +3,11 @@ import { RouterModule, Routes } from '@angular/router'
 import { TreeTableModule } from 'primeng/treetable'
 import { TreeDragDropService } from 'primeng/api'
 
-import { PortalCoreModule } from '@onecx/portal-integration-angular'
-import { addInitializeModuleGuard, InitializeModuleGuard } from '@onecx/angular-integration-interface'
-
-import { SharedModule } from 'src/app/shared/shared.module'
+import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
 
 import { MenuTreeService } from './services/menu-tree.service'
 import { MenuComponent } from './menu.component'
+import { MenuDeleteComponent } from './menu-delete/menu-delete.component'
 import { MenuDetailComponent } from './menu-detail/menu-detail.component'
 import { MenuInternComponent } from './menu-intern/menu-intern.component'
 import { MenuPreviewComponent } from './menu-preview/menu-preview.component'
@@ -22,17 +20,17 @@ const routes: Routes = [
   }
 ]
 @NgModule({
-  declarations: [MenuComponent, MenuDetailComponent, MenuInternComponent, MenuImportComponent, MenuPreviewComponent],
   imports: [
-    PortalCoreModule.forMicroFrontend(),
-    [RouterModule.forChild(addInitializeModuleGuard(routes))],
-    SharedModule,
+    AngularAcceleratorModule,
+    MenuComponent,
+    MenuDeleteComponent,
+    MenuDetailComponent,
+    MenuInternComponent,
+    MenuImportComponent,
+    MenuPreviewComponent,
+    [RouterModule.forChild(routes)],
     TreeTableModule
   ],
-  providers: [InitializeModuleGuard, MenuTreeService, TreeDragDropService]
+  providers: [MenuTreeService, TreeDragDropService]
 })
-export class MenuModule {
-  constructor() {
-    console.info('Workspace Menu Module constructor')
-  }
-}
+export class MenuModule {}

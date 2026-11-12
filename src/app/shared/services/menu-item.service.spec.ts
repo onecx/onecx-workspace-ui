@@ -494,7 +494,7 @@ describe('MenuItemService', () => {
     ]
     const result = service.constructMenuItems(input, 'en', '/base-path')
     expect(result[0].id).toBe('1')
-    expect(result[0].items?.length).toBe(3)
+    expect(result[0].items).toHaveSize(3)
     expect(result[0].items?.at(0)?.id).toBe('3')
     expect(result[0].items?.at(1)?.id).toBe('4')
     expect(result[0].items?.at(2)?.id).toBe('5')
@@ -716,7 +716,7 @@ describe('MenuItemService', () => {
     expect(result).toBeDefined()
     expect(result?.item.label).toBe('MyPage')
     expect(result?.matchedSegments).toEqual(3)
-    expect(result?.parents.length).toBe(1)
+    expect(result?.parents).toHaveSize(1)
     expect(result?.parents[0].label).toBe('Parent2')
   })
 
@@ -884,7 +884,7 @@ describe('MenuItemService', () => {
       }
 
       const result = service.mapMenuItemsToSlimMenuItems([noActionItem, actionItem])
-      expect(result.length).toBe(1)
+      expect(result).toHaveSize(1)
       expect(result[0].label).toBe(actionItem.label)
     })
 
@@ -923,7 +923,7 @@ describe('MenuItemService', () => {
       }
 
       const result = service.mapMenuItemsToSlimMenuItems([parentItem, parentItemWithAction])
-      expect(result.length).toBe(4)
+      expect(result).toHaveSize(4)
       expect(result[0].label).toBe('Child Item 1')
       expect(result[1].label).toBe('Child Item 2')
       expect(result[2].label).toBe('Parent Item With Action')

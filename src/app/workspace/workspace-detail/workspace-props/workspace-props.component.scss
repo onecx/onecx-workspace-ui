@@ -1,8 +1,11 @@
-@import '/src/app/_ws-mixins.scss';
+@use 'src/app/_ws-mixins.scss' as *;
 
-@include prepare-inputgroup;
 @include dropdown-zebra-rows;
 
-.p-inputgroup {
-  width: unset !important;
+:host ::ng-deep {
+  /*
+    PrimeNG 19 bugfix */
+  input.p-select-label {
+    font-size: var(--p-select-font-size, 1rem);
+  }
 }

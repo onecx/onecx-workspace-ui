@@ -1,19 +1,15 @@
 ::ng-deep {
-  .p-menubar .p-submenu-list {
-    padding: 0.5rem 0rem !important;
-  }
-
-  /* no borders */
-  .layout-menubar-horizontal-main-menu {
-    padding: 0 !important;
-    border: none !important;
-    background: none !important;
+  /* basic outfit and dimensions */
+  .layout-menubar-horizontal-main-menu.p-menubar {
+    padding: 0;
+    border: none;
+    background: transparent;
 
     .p-menubar-root-list {
       margin: 0;
       padding: 0;
-      border: none !important;
-      outline: none !important;
+      border: none;
+      outline: none;
       text-decoration: none;
       list-style-type: none;
       > .p-menuitem {
@@ -21,38 +17,51 @@
           white-space: nowrap;
         }
       }
+      .p-menubar-item-content {
+        border-radius: 4px;
+      }
+      .p-menubar-submenu {
+        padding: 0.5rem 0rem !important;
+        border-radius: 4px;
+      }
     }
+  }
 
-    /* topbar menu items */
-    &.p-menubar .p-menubar-root-list > .p-menuitem {
-      > .p-menuitem-content {
-        .p-menuitem-link {
-          .p-menuitem-text,
-          .p-menuitem-icon,
-          .p-submenu-icon {
+  /* the horizontal main menu root list => the direct visible menu items => topbar items */
+  .layout-menubar-horizontal-main-menu .p-menubar-root-list {
+    /* normal case */
+    > .p-menubar-item:not(.p-disabled),
+    > .p-menubar-item.p-menubar-item-active {
+      > .p-menubar-item-content {
+        background: var(--topbar-bg-color);
+        > .p-menubar-item-link {
+          /* direct child items - no sub menu */
+          .p-menubar-item-label,
+          .p-menubar-item-icon,
+          .p-menubar-submenu-icon {
             color: var(--topbar-item-text-color);
           }
-          &:not(.p-disabled):hover {
-            background: var(--topbar-item-text-hover-bg-color);
-            transition: background-color var(--p-transition-duration);
+          /* sub menu => use the normal menu colors */
+          .p-menubar-submenu {
+            .p-menubar-item-content {
+              background: var(--menu-bg-color);
+              .p-menuitem-link {
+                background: var(--menu-item-bg-color);
+                .p-menuitem-text,
+                .p-menuitem-icon,
+                .p-submenu-icon {
+                  color: var(--menu-item-text-color);
+                }
+              }
+            }
           }
         }
       }
-    }
-
-    /* topbar submenu items */
-    &.p-menubar .p-submenu-list > .p-menuitem {
-      > .p-menuitem-content {
-        .p-menuitem-link {
-          .p-menuitem-text,
-          .p-menuitem-icon,
-          .p-submenu-icon {
-            color: var(--menu-item-text-color);
-          }
-          &:not(.p-disabled):hover {
-            background-color: var(--menu-item-hover-bg-color);
-            transition: background-color var(--p-transition-duration);
-          }
+      > .p-menubar-item-content:hover {
+        background: var(--topbar-item-text-hover-bg-color);
+        .p-menubar-item-icon,
+        .p-menubar-submenu-icon {
+          color: var(--topbar-item-text-color);
         }
       }
     }

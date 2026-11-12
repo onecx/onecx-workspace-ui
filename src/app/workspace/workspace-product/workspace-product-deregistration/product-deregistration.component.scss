@@ -1,0 +1,12 @@
+@use 'src/app/_ws-mixins.scss' as *;
+
+// the deregister dialog uses the `disable-max-height-preset` style class
+@include dialog-modal-disable-full-height;
+
+:host ::ng-deep {
+  // matches the padding the inline dialog had inside the products component
+  .p-dialog-content {
+    padding-top: 1rem;
+    padding-bottom: 0;
+  }
+}

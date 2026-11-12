@@ -1,21 +1,32 @@
 import { TestBed } from '@angular/core/testing'
-import { CommonModule } from '@angular/common'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
-import { provideRouter, Router, RouterModule } from '@angular/router'
-import { ReplaySubject, of, throwError } from 'rxjs'
+import { provideRouter, Router } from '@angular/router'
+import { firstValueFrom, Observable, of, throwError } from 'rxjs'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 
-import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
-import { AppStateService } from '@onecx/angular-integration-interface'
+import { RemoteComponentConfig } from '@onecx/angular-remote-components'
+import {
+  AppStateServiceMock,
+  provideAppConfigServiceMock,
+  provideAppStateServiceMock,
+  provideUserServiceMock
+} from '@onecx/angular-integration-interface/mocks'
+import { Workspace } from '@onecx/integration-interface'
 
 import { MenuItemAPIService } from 'src/app/shared/generated'
 import { OneCXFooterMenuComponent } from './footer-menu.component'
 import { OneCXFooterMenuHarness } from './footer-menu.harness'
 
 describe('OneCXFooterMenuComponent', () => {
-  const menuItemApiSpy = jasmine.createSpyObj<MenuItemAPIService>('MenuItemAPIService', ['getMenuItems'])
+  const menuResponse = (children: any[]) =>
+    of({
+      workspaceName: 'test-workspace',
+      menu: [{ key: 'FOOTER_MENU', name: 'Footer menu', children }]
+    } as any)
+
+  let appStateMock: AppStateServiceMock
 
   function setUp() {
     const fixture = TestBed.createComponent(OneCXFooterMenuComponent)
@@ -24,37 +35,38 @@ describe('OneCXFooterMenuComponent', () => {
     return { fixture, component }
   }
 
-  let baseUrlSubject: ReplaySubject<any>
-  beforeEach(() => {
-    baseUrlSubject = new ReplaySubject<any>(1)
-    TestBed.configureTestingModule({
-      declarations: [],
+  // MenuItemAPIService is providedIn 'any', so the component holds its own instance - a root-level
+  // provider would be shadowed, thus spy on the actual instance the component uses
+  function spyGetMenuItems(component: OneCXFooterMenuComponent): jasmine.Spy {
+    return spyOn(
+      (component as unknown as { menuItemApiService: MenuItemAPIService }).menuItemApiService,
+      'getMenuItems'
+    )
+  }
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [
+        OneCXFooterMenuComponent,
         TranslateTestingModule.withTranslations({
-          en: require('../../../assets/i18n/en.json')
+          de: require('src/assets/i18n/de.json'),
+          en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        { provide: BASE_URL, useValue: baseUrlSubject },
+        provideAppConfigServiceMock(),
+        provideAppStateServiceMock(),
+        provideUserServiceMock(),
         provideRouter([
-          { path: 'contact', component: {} as any },
-          { path: 'contact2', component: {} as any }
+          { path: 'contact', component: OneCXFooterMenuComponent },
+          { path: 'contact2', component: OneCXFooterMenuComponent }
         ])
       ]
-    })
-      .overrideComponent(OneCXFooterMenuComponent, {
-        set: {
-          imports: [TranslateTestingModule, CommonModule, RouterModule],
-          providers: [{ provide: MenuItemAPIService, useValue: menuItemApiSpy }]
-        }
-      })
-      .compileComponents()
+    }).compileComponents()
 
-    baseUrlSubject.next('base_url_mock')
-
-    menuItemApiSpy.getMenuItems.calls.reset()
+    appStateMock = TestBed.inject(AppStateServiceMock)
   })
 
   it('should create', () => {
@@ -78,73 +90,62 @@ describe('OneCXFooterMenuComponent', () => {
     expect(component.ocxInitRemoteComponent).toHaveBeenCalledWith(mockConfig)
   })
 
-  it('should init remote component', (done: DoneFn) => {
+  it('should init remote component', async () => {
     const { component } = setUp()
-
-    component.ocxInitRemoteComponent({
+    const mockConfig: RemoteComponentConfig = {
+      appId: 'appId',
+      productName: 'prodName',
+      permissions: [],
       baseUrl: 'base_url'
-    } as RemoteComponentConfig)
+    }
+    component.ocxInitRemoteComponent(mockConfig)
 
-    expect(menuItemApiSpy.configuration.basePath).toEqual('base_url/bff')
-    baseUrlSubject.asObservable().subscribe((item) => {
-      expect(item).toEqual('base_url')
-      done()
-    })
+    const menuItemApi = (component as unknown as { menuItemApiService: MenuItemAPIService }).menuItemApiService
+    const remoteConfig = (component as unknown as { remoteComponentConfig: Observable<RemoteComponentConfig> })
+      .remoteComponentConfig
+
+    expect(menuItemApi.configuration.basePath).toEqual('base_url/bff')
+    expect(await firstValueFrom(remoteConfig)).toEqual(mockConfig)
   })
 
   it('should use routerLink for local urls', async () => {
-    const appStateService = TestBed.inject(AppStateService)
-    spyOn(appStateService.currentWorkspace$, 'asObservable').and.returnValue(
-      of({
-        workspaceName: 'test-workspace'
-      }) as any
-    )
-    menuItemApiSpy.getMenuItems.and.returnValue(
-      of({
-        workspaceName: 'test-workspace',
-        menu: [
-          {
-            key: 'FOOTER_MENU',
-            name: 'Footer menu',
-            children: [
-              {
-                external: false,
-                i18n: {
-                  en: 'English Contact value',
-                  de: 'German Contact value'
-                },
-                name: 'Contact',
-                key: 'FOOTER_CONTACT',
-                url: '/contact'
-              },
-              {
-                external: false,
-                i18n: {},
-                name: 'Contact',
-                key: 'FOOTER_CONTACT_ONLY_NAME',
-                url: '/contact2'
-              }
-            ]
-          }
-        ]
-      } as any)
+    const { fixture, component } = setUp()
+    spyGetMenuItems(component).and.returnValue(
+      menuResponse([
+        {
+          external: false,
+          i18n: { en: 'English Contact value', de: 'German Contact value' },
+          name: 'Contact',
+          key: 'FOOTER_CONTACT',
+          url: '/contact'
+        },
+        {
+          external: false,
+          i18n: {},
+          name: 'Contact',
+          key: 'FOOTER_CONTACT_ONLY_NAME',
+          url: '/contact2'
+        }
+      ])
     )
     const router = TestBed.inject(Router)
 
-    const { fixture, component } = setUp()
-    await component.ngOnInit()
+    // the menu pipeline is driven by the current workspace emission
+    appStateMock.currentWorkspace$.publish({ workspaceName: 'test-workspace' } as Workspace)
+    await fixture.whenStable()
+    fixture.detectChanges()
 
-    const oneCXFooterMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXFooterMenuHarness)
-    const menuItems = await oneCXFooterMenuHarness.getMenuItems()
+    const harness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXFooterMenuHarness)
+    const menuItems = await harness.getMenuItems()
     expect(menuItems.length).toEqual(2)
 
-    const translatedItem = await oneCXFooterMenuHarness.getMenuItem('ws_footer_menu_footer_contact_link')
+    const translatedItem = await harness.getMenuItem('ws_footer_menu_footer_contact_link')
     expect(translatedItem).toBeTruthy()
     expect(await translatedItem?.text()).toEqual('English Contact value')
     await translatedItem?.click()
     expect(router.url).toBe('/contact')
 
-    const nameItem = await oneCXFooterMenuHarness.getMenuItem('ws_footer_menu_footer_contact_only_name_link')
+    const nameItem = await harness.getMenuItem('ws_footer_menu_footer_contact_only_name_link')
     expect(nameItem).toBeTruthy()
     expect(await nameItem?.text()).toEqual('Contact')
     await nameItem?.click()
@@ -152,38 +153,17 @@ describe('OneCXFooterMenuComponent', () => {
   })
 
   it('should use href for external urls', async () => {
-    const appStateService = TestBed.inject(AppStateService)
-    spyOn(appStateService.currentWorkspace$, 'asObservable').and.returnValue(
-      of({
-        workspaceName: 'test-workspace'
-      }) as any
-    )
-    menuItemApiSpy.getMenuItems.and.returnValue(
-      of({
-        workspaceName: 'test-workspace',
-        menu: [
-          {
-            key: 'FOOTER_MENU',
-            name: 'Footer menu',
-            children: [
-              {
-                external: true,
-                i18n: {},
-                name: 'Browser',
-                key: 'BROWSER',
-                url: 'https://www.google.com/'
-              }
-            ]
-          }
-        ]
-      } as any)
-    )
-
     const { fixture, component } = setUp()
-    await component.ngOnInit()
+    spyGetMenuItems(component).and.returnValue(
+      menuResponse([{ external: true, i18n: {}, name: 'Browser', key: 'BROWSER', url: 'https://www.google.com/' }])
+    )
 
-    const oneCXFooterMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXFooterMenuHarness)
-    const menuItems = await oneCXFooterMenuHarness.getMenuItems()
+    appStateMock.currentWorkspace$.publish({ workspaceName: 'test-workspace' } as Workspace)
+    await fixture.whenStable()
+    fixture.detectChanges()
+
+    const harness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXFooterMenuHarness)
+    const menuItems = await harness.getMenuItems()
     expect(menuItems.length).toEqual(1)
 
     const item = menuItems[0]
@@ -193,21 +173,19 @@ describe('OneCXFooterMenuComponent', () => {
   })
 
   it('should return 0 menu items when unable to load them', async () => {
-    const appStateService = TestBed.inject(AppStateService)
-    spyOn(console, 'error')
-    spyOn(appStateService.currentWorkspace$, 'asObservable').and.returnValue(
-      of({
-        workspaceName: 'test-workspace'
-      }) as any
-    )
-    menuItemApiSpy.getMenuItems.and.returnValue(throwError(() => {}))
-
     const { fixture, component } = setUp()
-    await component.ngOnInit()
+    const consoleErrorSpy = spyOn(console, 'error')
+    spyGetMenuItems(component).and.returnValue(throwError(() => new Error('unable to load menu')))
 
-    const oneCXFooterMenuHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXFooterMenuHarness)
-    const menuItems = await oneCXFooterMenuHarness.getMenuItems()
+    appStateMock.currentWorkspace$.publish({ workspaceName: 'test-workspace' } as Workspace)
+
+    // the component retries the failing call (retry: delay 500ms, count 3) before giving up
+    await new Promise((resolve) => setTimeout(resolve, 1700))
+    fixture.detectChanges()
+
+    const harness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXFooterMenuHarness)
+    const menuItems = await harness.getMenuItems()
     expect(menuItems.length).toEqual(0)
-    expect(console.error).toHaveBeenCalled()
+    expect(consoleErrorSpy).toHaveBeenCalled()
   })
 })

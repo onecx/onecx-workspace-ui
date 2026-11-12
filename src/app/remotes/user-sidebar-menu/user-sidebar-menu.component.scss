@@ -1,61 +1,39 @@
+@use 'src/app/shared/sidebar-panelmenu.scss' as *;
+/* User Sidebar (vertical) Menu Component Styles
+   The outside of the menu is covered via Accordion.
+*/
 ::ng-deep {
-  .p-panelmenu {
-    .p-panelmenu-panel {
-      box-shadow: none !important;
-    }
-    .p-panelmenu-header .p-panelmenu-header-action {
-      &:hover {
-        background-color: var(--menu-item-hover-bg-color);
-        transition: background-color var(--transition-duration);
-      }
-    }
-    .p-toggleable-content .p-panelmenu-content {
-      padding-top: 0;
-    }
-  }
-
   .p-accordion {
     width: 17rem;
     display: block;
-    .p-accordion-tab {
-      box-shadow: none !important;
-      &:not(.p-accordion-tab-active) .p-accordion-toggle-icon,
-      &.p-accordion-tab-active .p-accordion-toggle-icon {
-        transform: none !important;
-        margin-right: 1.5rem;
-      }
-    }
-    .p-accordion-header {
-      .p-accordion-header-link .p-accordion-toggle-icon {
-        margin-right: 1.5rem !important;
-      }
-      &:not(.p-disabled) {
+    .p-accordionheader {
+      padding: 0.7rem;
+      &:not(.p-highlight):hover {
         .p-accordion-header-link {
           color: var(--menu-item-text-color) !important;
-        }
-        &:not(.p-highlight):hover {
-          .p-accordion-header-link {
-            color: var(--menu-item-text-color) !important;
-            background-color: var(--menu-item-hover-bg-color) !important;
-            transition: background-color var(--transition-duration);
-          }
-        }
-      }
-      .p-accordion-header-link {
-        padding: unset !important;
-        color: var(--menu-item-text-color);
-        .with-image {
-          padding: var(--menuitem-padding);
-        }
-        .without-image {
-          padding: var(--panelmenu-header-padding);
+          background-color: var(--menu-item-hover-bg-color) !important;
+          transition: background-color var(--transition-duration);
         }
       }
     }
-    .p-accordion-content {
-      padding: 0 !important;
+    .p-accordioncontent-content {
+      padding: 0;
+      /* The menu item list is located within the accordion content. */
+    }
+
+    .p-accordionpanel:not(.p-disabled) {
+      > .p-accordionheader {
+        border-radius: 0;
+      }
+      &.p-accordionpanel-active > .p-accordionheader {
+        background: var(--menu-item-bg-color);
+        color: var(--menu-item-text-color);
+      }
+      &.p-accordionpanel-active > .p-accordionheader:hover,
+      &:not(.p-accordionpanel-active) > .p-accordionheader:hover {
+        background: var(--menu-item-hover-bg-color);
+        color: var(--menu-item-text-color);
+      }
     }
   }
 }
-
-@import './../../shared/sidebar-panelmenu.scss';

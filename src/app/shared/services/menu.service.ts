@@ -1,5 +1,5 @@
-import { inject, Injectable } from '@angular/core'
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
+import { DestroyRef, inject, Injectable } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { Capability, ShellCapabilityService, UserService } from '@onecx/angular-integration-interface'
 import {
   map,
@@ -38,9 +38,9 @@ export type MenuMode = 'horizontal' | 'static' | 'overlay' | 'slim' | 'slimplus'
  * });
  * ```
  */
-@UntilDestroy()
 @Injectable({ providedIn: 'root' })
 export class MenuService {
+  private readonly destroyRef = inject(DestroyRef)
   private readonly userService = inject(UserService)
   private readonly capabilityService = inject(ShellCapabilityService)
   // eslint-disable-next-line @typescript-eslint/prefer-readonly
@@ -62,7 +62,7 @@ export class MenuService {
     this.onResize$ = fromEvent(globalThis, 'resize').pipe(
       // Debounce to avoid excessive emissions during globalThis resizing
       debounceTime(100),
-      untilDestroyed(this)
+      takeUntilDestroyed(this.destroyRef)
     )
 
     this.isMobile$ = this.onResize$.pipe(
@@ -84,7 +84,7 @@ export class MenuService {
       })
     )
 
-    this.isMobileDistinct$.pipe(untilDestroyed(this)).subscribe((isMobile) => {
+    this.isMobileDistinct$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((isMobile) => {
       this.staticMenuState$.publish({ isVisible: !isMobile })
     })
   }

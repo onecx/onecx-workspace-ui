@@ -1,5 +1,17 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core'
-import { FormArray, FormBuilder } from '@angular/forms'
+import { Component, EventEmitter, inject, Input, OnChanges, Output, SimpleChanges } from '@angular/core'
+import { FormArray, FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { TranslateModule } from '@ngx-translate/core'
+
+import { ButtonModule } from 'primeng/button'
+import { DialogModule } from 'primeng/dialog'
+import { DividerModule } from 'primeng/divider'
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon'
+import { InputGroupModule } from 'primeng/inputgroup'
+import { InputTextModule } from 'primeng/inputtext'
+import { MessageModule } from 'primeng/message'
+import { SelectModule } from 'primeng/select'
+import { TooltipModule } from 'primeng/tooltip'
 
 import { Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
@@ -11,10 +23,30 @@ export type LanguageOption = {
 
 @Component({
   selector: 'app-workspace-i18n',
+  standalone: true,
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    TranslateModule,
+    DialogModule,
+    DividerModule,
+    FloatLabelModule,
+    InputTextModule,
+    InputGroupModule,
+    InputGroupAddonModule,
+    ButtonModule,
+    MessageModule,
+    SelectModule,
+    TooltipModule
+  ],
   templateUrl: './workspace-i18n.component.html',
   styleUrls: ['./workspace-i18n.component.scss']
 })
 export class WorkspaceI18nComponent implements OnChanges {
+  private readonly fb = inject(FormBuilder)
+  private readonly workspaceApi = inject(WorkspaceAPIService)
+  private readonly msgService = inject(PortalMessageService)
+
   @Input() workspace!: Workspace
   @Input() workspaceI18nVisible = false
   @Input() propertyName: string | undefined = undefined
@@ -22,7 +54,6 @@ export class WorkspaceI18nComponent implements OnChanges {
   @Output() workspaceI18nVisibleChange = new EventEmitter<boolean>()
 
   private initialSnapshot = ''
-
   public translationsForm: FormArray
   public showAddRow = false
   public newLanguage: string | undefined = undefined
@@ -57,11 +88,7 @@ export class WorkspaceI18nComponent implements OnChanges {
     { value: 'zh', label: 'Chinese (zh)' }
   ]
 
-  constructor(
-    private readonly fb: FormBuilder,
-    private readonly workspaceApi: WorkspaceAPIService,
-    private readonly msgService: PortalMessageService
-  ) {
+  constructor() {
     this.translationsForm = this.fb.array([])
   }
 

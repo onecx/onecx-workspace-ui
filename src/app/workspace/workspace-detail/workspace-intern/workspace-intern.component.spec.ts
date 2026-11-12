@@ -1,8 +1,9 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { provideHttpClient } from '@angular/common/http'
 import { TranslateTestingModule } from 'ngx-translate-testing'
+
+import { provideNoopAnimations } from '@angular/platform-browser/animations'
 
 import { WorkspaceInternComponent } from './workspace-intern.component'
 
@@ -23,15 +24,14 @@ describe('WorkspaceInternComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [WorkspaceInternComponent],
       imports: [
+        WorkspaceInternComponent,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
-      providers: [provideHttpClientTesting(), provideHttpClient()],
-      schemas: [NO_ERRORS_SCHEMA]
+      providers: [provideHttpClientTesting(), provideHttpClient(), provideNoopAnimations()]
     }).compileComponents()
   }))
 
@@ -65,10 +65,31 @@ describe('WorkspaceInternComponent', () => {
       expect(component.formGroup.controls['operator'].value).toBeTrue()
       expect(component.formGroup.controls['mandatory'].value).toBeFalse()
     })
+    it('should not overwrite form values when workspace is undefined', () => {
+      component.formGroup.get('operator')?.setValue(true)
+      component.workspace = undefined
+
+      component.ngOnChanges()
+
+      expect(component.formGroup.controls['operator'].value).toBeTrue()
+    })
+    it('should default missing workspace fields to false', () => {
+      // a workspace without operator/mandatory/disabled exercises the `?? false` fallbacks in setFormData
+      component.formGroup.get('operator')?.setValue(true)
+      component.formGroup.get('mandatory')?.setValue(true)
+      component.formGroup.get('disabled')?.setValue(true)
+      component.workspace = { id: 'id', name: 'name', displayName: 'name' }
+
+      component.ngOnChanges()
+
+      expect(component.formGroup.controls['operator'].value).toBeFalse()
+      expect(component.formGroup.controls['mandatory'].value).toBeFalse()
+      expect(component.formGroup.controls['disabled'].value).toBeFalse()
+    })
   })
 
   describe('save', () => {
-    it('should refill workspace from form', () => {
+    it('should return workspace copy filled from form', () => {
       component.editMode = true
       component.ngOnChanges()
       component.formGroup.setValue({
@@ -76,12 +97,31 @@ describe('WorkspaceInternComponent', () => {
         mandatory: true,
         disabled: true
       })
-      component.onSave()
+      const original = { ...component.workspace }
+
+      const result = component.onSave()
 
       expect(component.formGroup.valid).toBeTrue()
-      expect(component.workspace.mandatory).toBeTrue()
-      expect(component.workspace.disabled).toBeTrue()
+      expect(result?.mandatory).toBeTrue()
+      expect(result?.disabled).toBeTrue()
+      expect(component.workspace?.mandatory).toBe(original.mandatory)
+      expect(component.workspace?.disabled).toBe(original.disabled)
       expect(component.editMode).toBeFalse()
+    })
+    it('should default null form values to false on save', () => {
+      // null control values exercise the `?? false` fallbacks in onSave
+      component.workspace = { id: 'id', name: 'name', displayName: 'name' }
+      component.formGroup.setValue({ operator: null, mandatory: null, disabled: null })
+
+      const result = component.onSave()
+
+      expect(result?.mandatory).toBeFalse()
+      expect(result?.disabled).toBeFalse()
+    })
+    it('should return undefined when workspace is undefined', () => {
+      component.workspace = undefined
+
+      expect(component.onSave()).toBeUndefined()
     })
   })
 })

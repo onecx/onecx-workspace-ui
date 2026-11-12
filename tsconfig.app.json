@@ -1,22 +1,6 @@
 {
   "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "composite": false,
-    "declaration": false,
-    "declarationMap": false,
-    "inlineSources": true
-  },
-  "files": [
-    "src/main.ts",
-    "src/polyfills.ts",
-    "src/app/onecx-workspace-remote.module.ts",
-    "src/app/remotes/user-avatar-menu/user-avatar-menu.component.main.ts",
-    "src/app/remotes/user-sidebar-menu/user-sidebar-menu.component.main.ts",
-    "src/app/remotes/footer-menu/footer-menu.component.main.ts",
-    "src/app/remotes/vertical-main-menu/vertical-main-menu.component.main.ts",
-    "src/app/remotes/horizontal-main-menu/horizontal-main-menu.component.main.ts",
-    "src/app/remotes/version-info/version-info.component.main.ts"
-  ],
+  "compilerOptions": {},
   "include": ["src/**/*.ts"],
-  "exclude": ["src/test.ts", "src/**/*.spec.ts", "src/**/*.harness.ts"]
+  "exclude": ["src/test.ts", "src/**/*.spec.ts", "src/**/*.harness.ts", "src/app/shared/mocks/**"]
 }

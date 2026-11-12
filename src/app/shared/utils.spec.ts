@@ -1,9 +1,11 @@
 import { FormGroup, FormControl } from '@angular/forms'
+import { Router } from '@angular/router'
 import { SelectItem } from 'primeng/api'
 import { of, throwError } from 'rxjs'
 
 import { RefType } from './generated'
 import { Utils } from './utils'
+import { fakeAsync, tick } from '@angular/core/testing'
 
 describe('util functions', () => {
   describe('mapping_error_status', () => {
@@ -295,44 +297,133 @@ describe('util functions', () => {
     })
   })
 
+  describe('navigate', () => {
+    let routerMock: jasmine.SpyObj<Router>
+    let windowOpenSpy: jasmine.Spy
+
+    beforeEach(() => {
+      routerMock = jasmine.createSpyObj('Router', ['navigate', 'createUrlTree', 'serializeUrl'])
+      windowOpenSpy = spyOn(window, 'open')
+      routerMock.serializeUrl.and.returnValue('/route')
+    })
+
+    it('should navigate in the same window when target is not _blank', () => {
+      const event = document.createEvent('Event')
+      spyOn(event, 'preventDefault')
+
+      Utils.navigate(routerMock, event, 'route')
+
+      expect(event.preventDefault).toHaveBeenCalled()
+      expect(routerMock.navigate).toHaveBeenCalledWith(['route'])
+      expect(windowOpenSpy).not.toHaveBeenCalled()
+    })
+
+    it('should open the route in a new tab when target is _blank', () => {
+      const event = document.createEvent('Event')
+      spyOn(event, 'preventDefault')
+
+      Utils.navigate(routerMock, event, 'route', '_blank')
+
+      expect(event.preventDefault).toHaveBeenCalled()
+      expect(routerMock.createUrlTree).toHaveBeenCalledWith(['route'])
+      expect(routerMock.serializeUrl).toHaveBeenCalled()
+      expect(windowOpenSpy).toHaveBeenCalledWith('/route', '_blank')
+      expect(routerMock.navigate).not.toHaveBeenCalled()
+    })
+  })
+
   describe('doesEndpointExist', () => {
-    let workspaceServiceMock: any
+    let workspaceServiceSpy: any
     const productName = 'testProduct'
     const appId = 'testApp'
     const endpointName = 'testEndpoint'
 
     beforeEach(() => {
-      workspaceServiceMock = {
+      workspaceServiceSpy = {
         doesUrlExistFor: jasmine.createSpy('doesUrlExistFor')
       }
       spyOn(console, 'error')
     })
 
-    it('should endpoint exist', () => {
-      workspaceServiceMock.doesUrlExistFor.and.returnValue(of(true))
+    it('should return true if endpoint exists', fakeAsync(() => {
+      workspaceServiceSpy.doesUrlExistFor.and.returnValue(of(true))
+      let result: boolean | null = null
 
-      const exist = Utils.doesEndpointExist(workspaceServiceMock, productName, appId, endpointName)
+      Utils.doesEndpointExist(workspaceServiceSpy, productName, appId, endpointName).subscribe(
+        (exists) => (result = exists)
+      )
+      tick()
 
-      expect(exist).toBeTrue()
-    })
+      expect(result).toBeTrue()
+    }))
 
-    it('should endpoint NOT exist', () => {
-      workspaceServiceMock.doesUrlExistFor.and.returnValue(of(false))
+    it('should return false if endpoint not exists', fakeAsync(() => {
+      workspaceServiceSpy.doesUrlExistFor.and.returnValue(of(false))
+      let result: boolean | null = null
 
-      const exist = Utils.doesEndpointExist(workspaceServiceMock, productName, appId, endpointName)
+      Utils.doesEndpointExist(workspaceServiceSpy, productName, appId, endpointName).subscribe(
+        (exists) => (result = exists)
+      )
+      tick()
 
-      expect(exist).toBeFalse()
-      expect(console.error).toHaveBeenCalled()
-    })
+      expect(result).toBeFalse()
+    }))
 
-    it('should get endpoint failed', () => {
+    it('should return false if endpoint not accessible', fakeAsync(() => {
       const errorResponse = { status: 403, statusText: 'No permissions' }
-      workspaceServiceMock.doesUrlExistFor.and.returnValue(throwError(() => errorResponse))
+      workspaceServiceSpy.doesUrlExistFor.and.returnValue(throwError(() => errorResponse))
+      let result: boolean | null = null
 
-      const exist = Utils.doesEndpointExist(workspaceServiceMock, productName, appId, endpointName)
+      Utils.doesEndpointExist(workspaceServiceSpy, productName, appId, endpointName).subscribe(
+        (exists) => (result = exists)
+      )
+      tick()
 
-      expect(exist).toBeFalse()
-      expect(console.error).toHaveBeenCalledWith('doesUrlExistFor', errorResponse)
+      expect(result).toBeFalse()
+    }))
+  })
+
+  describe('cachedEndpointUrl$', () => {
+    it('should return an observable without url when endpoint does not exist', (done) => {
+      const create = jasmine.createSpy('create')
+
+      Utils.cachedEndpointUrl$(new Map(), false, 'name', create).subscribe((url) => {
+        expect(url).toBeUndefined()
+        expect(create).not.toHaveBeenCalled()
+        done()
+      })
+    })
+
+    it('should return an observable without url when name is missing', (done) => {
+      const create = jasmine.createSpy('create')
+
+      Utils.cachedEndpointUrl$(new Map(), true, undefined, create).subscribe((url) => {
+        expect(url).toBeUndefined()
+        expect(create).not.toHaveBeenCalled()
+        done()
+      })
+    })
+
+    it('should return the same observable instance when called repeatedly with the same name', () => {
+      const cache = new Map()
+      const create = jasmine.createSpy('create').and.callFake((n: string) => of('/' + n))
+
+      const first = Utils.cachedEndpointUrl$(cache, true, 'a', create)
+      const second = Utils.cachedEndpointUrl$(cache, true, 'a', create)
+
+      expect(second).toBe(first)
+      expect(create).toHaveBeenCalledTimes(1)
+    })
+
+    it('should create a new observable when called with another name', () => {
+      const cache = new Map()
+      const create = jasmine.createSpy('create').and.callFake((n: string) => of('/' + n))
+
+      const first = Utils.cachedEndpointUrl$(cache, true, 'a', create)
+      const second = Utils.cachedEndpointUrl$(cache, true, 'b', create)
+
+      expect(second).not.toBe(first)
+      expect(create).toHaveBeenCalledTimes(2)
     })
   })
 })

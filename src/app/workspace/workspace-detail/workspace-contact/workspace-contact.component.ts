@@ -1,5 +1,10 @@
 import { Component, Input, OnChanges } from '@angular/core'
-import { FormControl, FormGroup, Validators } from '@angular/forms'
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
+import { TranslateModule } from '@ngx-translate/core'
+
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { InputTextModule } from 'primeng/inputtext'
+import { TooltipModule } from 'primeng/tooltip'
 
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 
@@ -7,6 +12,8 @@ import { Workspace } from 'src/app/shared/generated'
 
 @Component({
   selector: 'app-workspace-contact',
+  standalone: true,
+  imports: [ReactiveFormsModule, TranslateModule, FloatLabelModule, InputTextModule, TooltipModule],
   templateUrl: './workspace-contact.component.html'
 })
 export class WorkspaceContactComponent implements OnChanges {
@@ -33,23 +40,27 @@ export class WorkspaceContactComponent implements OnChanges {
   }
 
   private fillForm(): void {
-    Object.keys(this.contactForm.controls).forEach((element) => {
-      if (['street', 'streetNo', 'city', 'postalCode', 'country'].includes(element) && this.workspace?.address) {
-        this.contactForm.controls[element].setValue((this.workspace?.address as any)[element])
-      } else {
-        this.contactForm.controls[element].setValue((this.workspace as any)[element])
+    if (this.workspace) {
+      for (const key of Object.keys(this.contactForm.controls)) {
+        if (['street', 'streetNo', 'city', 'postalCode', 'country'].includes(key) && this.workspace?.address) {
+          this.contactForm.controls[key].setValue((this.workspace?.address as any)[key])
+        } else if ((this.workspace as any)[key]) {
+          this.contactForm.controls[key].setValue((this.workspace as any)[key])
+        }
       }
-    })
+    }
   }
 
-  public onSave(): void {
-    if (!this.workspace) return
-    if (this.contactForm.valid) Object.assign(this.workspace, this.getFormData())
-    else this.msgService.error({ summaryKey: 'VALIDATION.FORM_INVALID' })
+  // returns the form values to be merged into the workspace, the input stays untouched
+  public onSave(): Partial<Workspace> | undefined {
+    if (!this.workspace) return undefined
+    if (this.contactForm.valid) return this.getFormData()
+    this.msgService.error({ summaryKey: 'VALIDATION.FORM_INVALID' })
+    return undefined
   }
 
   // read form values
-  private getFormData(): any[] {
+  private getFormData(): Partial<Workspace> {
     const data: any = {
       address: {}
     }

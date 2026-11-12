@@ -1,22 +1,33 @@
-import { CommonModule } from '@angular/common'
-import { Component, ElementRef, inject, Inject, Input, OnDestroy, ViewChild } from '@angular/core'
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  ElementRef,
+  inject,
+  Input,
+  OnDestroy,
+  signal,
+  ViewChild
+} from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { combineLatest, filter, map, merge, Observable, ReplaySubject } from 'rxjs'
 
 import {
   AngularRemoteComponentsModule,
-  BASE_URL,
   ocxRemoteComponent,
   ocxRemoteWebcomponent,
+  REMOTE_COMPONENT_CONFIG,
   RemoteComponentConfig
 } from '@onecx/angular-remote-components'
+import { AppConfigService } from '@onecx/angular-integration-interface'
 
 import { RefType } from 'src/app/shared/generated'
 import { MenuMode, MenuService } from 'src/app/shared/services/menu.service'
-import { ResizedEventType } from '../../shared/resized-events/v1/resized-event-type'
-import { ResizedEventsTopic } from '../../shared/resized-events/v1/resized-events.topic'
-import { SlotGroupResizedEvent } from '../../shared/resized-events/v1/slot-groups-resized-type'
-import { SlotResizedEvent } from '../../shared/resized-events/v1/slots-resized-type'
+import { ResizedEventType } from 'src/app/shared/resized-events/v1/resized-event-type'
+import { ResizedEventsTopic } from 'src/app/shared/resized-events/v1/resized-events.topic'
+import { SlotGroupResizedEvent } from 'src/app/shared/resized-events/v1/slot-groups-resized-type'
+import { SlotResizedEvent } from 'src/app/shared/resized-events/v1/slots-resized-type'
+
 import { OneCXCurrentWorkspaceLogoComponent } from '../current-workspace-logo/current-workspace-logo.component'
 
 // Name of the slot (deprecated) and name of the slot-group being observed for resize events
@@ -25,7 +36,7 @@ const RESIZE_OBSERVED_SLOT_NAME_OLD = 'onecx-shell-vertical-menu'
 const RESIZE_OBSERVED_SLOT_GROUP_NAME = 'onecx-shell-body-start'
 
 const DEFAULT_WIDTH_REM = 17
-const TOGGLE_MENU_BUTTON_WIDTH_REM = 2.5
+const TOGGLE_MENU_BUTTON_WIDTH_REM = 2
 
 // This value is the width of the sidebar
 // When the resizedEventPayloadWidth is less than this value then switch to the small logo
@@ -33,19 +44,20 @@ const SMALL_LOGO_THRESHOLD_PX = 235
 
 @Component({
   selector: 'app-topbar-logo',
-  templateUrl: './topbar-logo.component.html',
-  styleUrls: ['./topbar-logo.component.scss'],
   standalone: true,
-  imports: [AngularRemoteComponentsModule, CommonModule, OneCXCurrentWorkspaceLogoComponent],
-  providers: [
-    {
-      provide: BASE_URL,
-      useValue: new ReplaySubject<string>(1)
-    }
-  ]
+  imports: [AngularRemoteComponentsModule, OneCXCurrentWorkspaceLogoComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './topbar-logo.component.html',
+  styleUrls: ['./topbar-logo.component.scss']
 })
-@UntilDestroy()
 export class OneCXTopbarLogoComponent implements ocxRemoteComponent, ocxRemoteWebcomponent, OnDestroy {
+  private readonly destroyRef = inject(DestroyRef)
+  public readonly remoteComponentConfig = inject<ReplaySubject<RemoteComponentConfig>>(REMOTE_COMPONENT_CONFIG)
+  private readonly appConfigService = inject(AppConfigService)
+  // Latest remote component config (set once this component is initialized as a remote). Used to forward
+  // the config to the embedded <app-current-workspace-logo>, whose own ocxInitRemoteComponent only runs
+  // when the ocxRemoteComponentConfig input is set.
+  public remoteConfig: RemoteComponentConfig | undefined = undefined
   // input
   @Input() imageId: string | undefined = undefined
   @Input() imageUrl: string | undefined = undefined
@@ -54,35 +66,35 @@ export class OneCXTopbarLogoComponent implements ocxRemoteComponent, ocxRemoteWe
   @Input() logPrefix: string | undefined = undefined
   @Input() logEnabled = false
   @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
-    this.remoteComponentConfig = config
     this.ocxInitRemoteComponent(config)
   }
+  @ViewChild('container', { static: true }) container!: ElementRef
 
   private readonly menuService = inject(MenuService)
-
-  public currentImageType: RefType = RefType.Logo
-  public remoteComponentConfig: RemoteComponentConfig | undefined
-
-  @ViewChild('container', { static: true }) container!: ElementRef
+  public readonly currentImageType = signal<RefType>(RefType.Logo)
   private resizedEventsTopic = new ResizedEventsTopic() // NOSONAR
   public isStaticMenuActive$: Observable<boolean>
   public isStaticMenuVisible$: Observable<boolean>
-
   private readonly staticMenuMode: MenuMode = 'static'
 
-  constructor(@Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>) {
-    this.isStaticMenuActive$ = this.menuService.isActive(this.staticMenuMode).pipe(untilDestroyed(this))
-    this.isStaticMenuVisible$ = this.menuService.isVisible(this.staticMenuMode).pipe(untilDestroyed(this))
-
+  constructor() {
+    this.isStaticMenuActive$ = this.menuService.isActive(this.staticMenuMode).pipe(takeUntilDestroyed(this.destroyRef))
+    this.isStaticMenuVisible$ = this.menuService
+      .isVisible(this.staticMenuMode)
+      .pipe(takeUntilDestroyed(this.destroyRef))
     ResizedEventsTopic.requestEvent(ResizedEventType.SLOT_RESIZED, RESIZE_OBSERVED_SLOT_NAME_OLD)
     ResizedEventsTopic.requestEvent(ResizedEventType.SLOT_GROUP_RESIZED, RESIZE_OBSERVED_SLOT_GROUP_NAME)
   }
+
   ngOnDestroy(): void {
     this.resizedEventsTopic.destroy()
   }
 
-  ocxInitRemoteComponent(remoteComponentConfig: RemoteComponentConfig) {
-    this.baseUrl.next(remoteComponentConfig.baseUrl)
+  // initialize this component as remote
+  public ocxInitRemoteComponent(rcConfig: RemoteComponentConfig): void {
+    this.remoteComponentConfig.next(rcConfig)
+    this.remoteConfig = rcConfig
+    this.appConfigService.init(rcConfig.baseUrl)
     this.initializeContainerStyles()
   }
 
@@ -98,7 +110,7 @@ export class OneCXTopbarLogoComponent implements ocxRemoteComponent, ocxRemoteWe
         return matches
       }),
       map((e) => e.payload),
-      untilDestroyed(this)
+      takeUntilDestroyed(this.destroyRef)
     )
 
     const slotGroupResized$ = this.resizedEventsTopic.pipe(
@@ -108,11 +120,11 @@ export class OneCXTopbarLogoComponent implements ocxRemoteComponent, ocxRemoteWe
         return matches
       }),
       map((e) => e.payload),
-      untilDestroyed(this)
+      takeUntilDestroyed(this.destroyRef)
     )
 
     combineLatest([merge(slotResized$, slotGroupResized$), this.isStaticMenuActive$, this.isStaticMenuVisible$])
-      .pipe(untilDestroyed(this))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(([resizedEventPayload, isStaticMenuActive, _isStaticMenuVisible]) => {
         const resizedEventPayloadWidth =
           'slotDetails' in resizedEventPayload
@@ -123,14 +135,16 @@ export class OneCXTopbarLogoComponent implements ocxRemoteComponent, ocxRemoteWe
             const correction = this.remToPx() * TOGGLE_MENU_BUTTON_WIDTH_REM
             const adjustedWidth = resizedEventPayloadWidth - correction
             this.container.nativeElement.style.width = adjustedWidth + 'px'
+            this.container.nativeElement.style.marginLeft = '1rem'
           } else {
             this.container.nativeElement.style.width = resizedEventPayloadWidth + 'px'
+            this.container.nativeElement.style.marginLeft = '3px'
           }
 
-          if (resizedEventPayloadWidth < SMALL_LOGO_THRESHOLD_PX && this.currentImageType !== RefType.LogoSmall) {
-            this.currentImageType = RefType.LogoSmall
-          } else if (resizedEventPayloadWidth >= SMALL_LOGO_THRESHOLD_PX && this.currentImageType !== RefType.Logo) {
-            this.currentImageType = RefType.Logo
+          if (resizedEventPayloadWidth < SMALL_LOGO_THRESHOLD_PX && this.currentImageType() !== RefType.LogoSmall) {
+            this.currentImageType.set(RefType.LogoSmall)
+          } else if (resizedEventPayloadWidth >= SMALL_LOGO_THRESHOLD_PX && this.currentImageType() !== RefType.Logo) {
+            this.currentImageType.set(RefType.Logo)
           }
         }
       })

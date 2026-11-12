@@ -1,12 +1,10 @@
-<ng-container
-  *ngIf="{ isActive: isActive$ | async, isHidden: isHidden$ | async, menuItems: menuItems$ | async } as state"
->
+@let state = { isActive: isActive$ | async, isHidden: isHidden$ | async, menuItems: menuItems$ | async };
+@if (state.isActive) {
   <p-menubar
     #menubar
-    *ngIf="state.isActive"
     [hidden]="state.isHidden"
     breakpoint="767"
     [model]="state.menuItems ?? []"
     styleClass="layout-menubar-horizontal-main-menu fadeinup"
   ></p-menubar>
-</ng-container>
+}

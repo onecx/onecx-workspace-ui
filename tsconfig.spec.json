@@ -1,13 +1,10 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "composite": false,
-    "declaration": false,
-    "outDir": "./dist/test",
-    "types": ["jasmine", "node"],
+    "types": ["jasmine", "node", "zone.js"],
     "useDefineForClassFields": false
   },
   "files": ["src/test.ts", "src/polyfills.ts"],
-  "exclude": ["src/app/shared/generated", "node_modules"],
-  "include": ["src/**/*.spec.ts", "src/**/*.d.ts"]
+  "include": ["src/app/**/*.spec.ts", "src/**/*.d.ts"],
+  "exclude": ["src/app/shared/generated", "node_modules"]
 }

@@ -1,13 +1,44 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnChanges } from '@angular/core'
+import {
+  Component,
+  OnInit,
+  Input,
+  Output,
+  EventEmitter,
+  OnChanges,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef
+} from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
-import { TranslateService } from '@ngx-translate/core'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { MenuItem } from 'primeng/api'
 
-import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
-import { ImportResponseStatus, Workspace, WorkspaceAPIService } from 'src/app/shared/generated'
+import { ButtonModule } from 'primeng/button'
+import { DialogModule } from 'primeng/dialog'
+import { StepsModule } from 'primeng/steps'
+import { TooltipModule } from 'primeng/tooltip'
 
-export type ImportResponse = { workspace: ImportResponseStatus; menu: ImportResponseStatus }
-export type ImportWorkspace = Workspace & { themeObject?: Theme; menuItems?: any; roles?: any; products?: any }
+import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+import {
+  EximWorkspaceMenuItem,
+  ImportResponseStatus,
+  ImportWorkspaceResponse,
+  Product,
+  Workspace,
+  WorkspaceAPIService
+} from 'src/app/shared/generated'
+
+import { ChooseFileComponent } from './choose-file/choose-file.component'
+import { ConfirmComponent } from './confirm/confirm.component'
+import { PreviewComponent } from './preview/preview.component'
+
+export type ImportRequest = { workspaces?: Record<string, ImportWorkspace | undefined>; menu?: MenuItem[] }
+export type ImportResponse = { workspace: ImportResponseStatus; menu?: ImportResponseStatus }
+export type ImportWorkspace = Workspace & {
+  themeObject?: Theme
+  menuItems?: EximWorkspaceMenuItem[]
+  roles?: { name?: string }[]
+  products?: Product[]
+}
 export type Theme = {
   name?: string
   displayName?: string
@@ -17,6 +48,18 @@ export type Theme = {
 
 @Component({
   selector: 'app-workspace-import',
+  standalone: true,
+  imports: [
+    TranslateModule,
+    ButtonModule,
+    DialogModule,
+    StepsModule,
+    TooltipModule,
+    ChooseFileComponent,
+    ConfirmComponent,
+    PreviewComponent
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './workspace-import.component.html',
   styleUrls: ['./workspace-import.component.scss']
 })
@@ -32,7 +75,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
   public isLoading = false
   public importWorkspaceOrg: ImportWorkspace | undefined // imported, not changed
   public importWorkspace: ImportWorkspace | undefined // imported with user changes
-  public importRequestDTO?: any
+  public importRequestDTO: ImportRequest = {}
   public activeThemeCheckboxInFirstStep = true
   public hasPermission = false
   public importResponse: ImportResponse | undefined = undefined
@@ -43,10 +86,9 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
     private readonly route: ActivatedRoute,
     private readonly translate: TranslateService,
     private readonly workspaceApi: WorkspaceAPIService,
-    private readonly msgService: PortalMessageService
+    private readonly msgService: PortalMessageService,
+    private readonly cdr: ChangeDetectorRef
   ) {
-    this.hasPermission = this.user.hasPermission('WORKSPACE#IMPORT')
-
     this.steps = [
       { label: this.translate.instant('WORKSPACE_IMPORT.CHOOSE_FILE') },
       { label: this.translate.instant('WORKSPACE_IMPORT.PREVIEW') },
@@ -55,9 +97,15 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
     this.reset()
   }
 
-  public ngOnInit(): void {
+  public async ngOnInit(): Promise<void> {
+    try {
+      this.hasPermission = await this.user.hasPermission('WORKSPACE#IMPORT')
+    } catch (err) {
+      console.error(err)
+    }
     this.reset()
   }
+
   public ngOnChanges(): void {
     this.reset()
   }
@@ -69,7 +117,7 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
     this.importWorkspace = undefined
     this.importWorkspaceOrg = undefined
     this.isFormValid = true
-    this.importRequestDTO = undefined
+    this.importRequestDTO = {}
     this.activeIndex = 0
     this.importResponse = undefined
   }
@@ -84,15 +132,16 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
   }
 
   // NAVIGATE import step : NEXT
-  public next(importRequestDTO?: any): void {
+  public next(importRequestDTO?: ImportRequest): void {
     // read file content
     if (this.activeIndex === 0 && importRequestDTO?.workspaces) {
       this.importRequestDTO = importRequestDTO
       let keys: string[] = []
       if (this.importRequestDTO?.workspaces) {
-        keys = Object.keys(this.importRequestDTO.workspaces)
+        keys = Object.keys(this.importRequestDTO.workspaces) as string[]
         if (keys.length > 0) {
-          this.importWorkspace = this.importRequestDTO.workspaces[keys[0]] as ImportWorkspace
+          const wks = keys[0]
+          this.importWorkspace = this.importRequestDTO.workspaces[wks] as ImportWorkspace
           this.importWorkspace.name = keys[0]
           if (this.importWorkspace.theme)
             this.importWorkspace.themeObject = {
@@ -114,39 +163,14 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
   /**
    * IMPORT
    */
-  private importResponseParse(response: any) {
-    if (response.workspaces && response.menus) {
-      let keys
-      // default: both failed ... but get real state on respone
-      this.importResponse = JSON.parse('{"workspace":"ERROR", "menu":"ERROR"}')
-      if (this.importResponse && response.workspaces) {
-        keys = Object.keys(response.workspaces)
-        this.importResponse.workspace = response.workspaces[keys[0]]
-      }
-      if (this.importResponse && response.menus) {
-        keys = Object.keys(response.menus)
-        this.importResponse.menu = response.menus[keys[0]]
-      }
+  private importResponseParse(response: ImportWorkspaceResponse): ImportResponse {
+    // only the first workspace and menu result is considered; no usable workspace result means failed
+    const resp: ImportResponse = {
+      workspace: Object.values(response.workspaces ?? {})[0] ?? ImportResponseStatus.Error
     }
-  }
-  private importResponseResult(wName: string) {
-    const messageKey = 'WORKSPACE_IMPORT.RESPONSE.' + this.importResponse?.workspace
-    // on error
-    switch (this.importResponse?.workspace) {
-      case ImportResponseStatus.Error:
-        this.msgService.error({ summaryKey: messageKey })
-        break
-      // on success
-      case ImportResponseStatus.Created:
-      case ImportResponseStatus.Updated:
-        this.importResponse = undefined
-        this.msgService.success({ summaryKey: messageKey })
-        this.router.navigate(['./', wName], { relativeTo: this.route })
-        break
-      case ImportResponseStatus.Skipped:
-        this.msgService.warning({ summaryKey: messageKey })
-        break
-    }
+    const menu = Object.values(response.menus ?? {})[0]
+    if (menu) resp.menu = menu
+    return resp
   }
 
   public saveWorkspace(): void {
@@ -154,25 +178,54 @@ export class WorkspaceImportComponent implements OnInit, OnChanges {
       this.msgService.error({ summaryKey: 'WORKSPACE_IMPORT.VALIDATION.WORKSPACE.MISSING' })
       return
     }
-    this.isLoading = true
-    const keys: string[] = Object.keys(this.importRequestDTO.workspaces)
-    if (this.importWorkspaceOrg && this.importWorkspace && keys.length > 0) {
-      this.importRequestDTO.created = undefined
+    const keys: string[] = Object.keys(this.importRequestDTO?.workspaces ?? {})
+    // prepare import request
+    if (this.importRequestDTO?.workspaces && this.importWorkspaceOrg && keys.length > 0) {
+      this.isLoading = true
+      //this.importRequestDTO.created = undefined
       this.importRequestDTO.workspaces[this.importWorkspace.name] = this.importWorkspace // add new
       if (this.importWorkspace.name !== this.importWorkspaceOrg.name)
         this.importRequestDTO.workspaces[this.importWorkspaceOrg.name] = undefined // remove old
+      // import
       this.workspaceApi.importWorkspaces({ body: this.importRequestDTO }).subscribe({
         next: (response) => {
+          this.manageWorkspaceImportResult(this.importResponseParse(response), this.importWorkspace?.name)
           this.isLoading = false
-          this.importResponseParse(response)
-          if (this.importWorkspace) this.importResponseResult(this.importWorkspace.name)
+          this.cdr.markForCheck()
         },
         error: (err) => {
-          this.isLoading = false
           this.msgService.error({ summaryKey: 'WORKSPACE_IMPORT.IMPORT_NOK' })
           console.error('importWorkspaces', err)
+          this.isLoading = false
+          this.cdr.markForCheck()
         }
       })
+    }
+  }
+
+  private manageWorkspaceImportResult(resp: ImportResponse, wName?: string) {
+    this.importResponse = undefined
+    // here the import state is in:
+    // resp.workspace => ERROR, CREATED, UPDATED, SKIPPED
+    const messageKey = 'WORKSPACE_IMPORT.RESPONSE.' + resp.workspace
+    switch (resp.workspace) {
+      // on error
+      case ImportResponseStatus.Error:
+        this.importResponse = resp
+        this.msgService.error({ summaryKey: messageKey })
+        break
+      // on success
+      case ImportResponseStatus.Created:
+      case ImportResponseStatus.Updated:
+        this.msgService.success({ summaryKey: messageKey })
+        if (resp.menu === ImportResponseStatus.Error)
+          this.msgService.error({ summaryKey: 'WORKSPACE_IMPORT.RESPONSE.MENU_ERROR' })
+        this.router.navigate(['./', wName], { relativeTo: this.route })
+        break
+      case ImportResponseStatus.Skipped:
+        this.importResponse = resp
+        this.msgService.warning({ summaryKey: messageKey })
+        break
     }
   }
 }

@@ -1,0 +1,36 @@
+@use 'src/app/_ws-mixins.scss' as *;
+
+@include correct-data-view-control;
+@include correct-data-view-header-for-tabpanel;
+@include ocx-data-view-fixes;
+@include card-badges;
+
+:host ::ng-deep {
+  --onecx-workspace-onecx-workspace-ui-togglebutton-content-padding: 0.25rem 0.5rem;
+
+  .p-card-body {
+    padding: 0.2rem;
+  }
+
+  .card-badge-left {
+    &.badge-2 {
+      top: 32px;
+      left: 1px;
+    }
+
+    &.badge-1-number {
+      top: 2px;
+      left: 4px;
+    }
+  }
+
+  .card-badge-right {
+    &.badge-1 {
+      right: 1px;
+    }
+    &.badge-2-number {
+      top: 32px;
+      right: 3px;
+    }
+  }
+}

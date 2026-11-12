@@ -1,12 +1,8 @@
-import { CommonModule, Location } from '@angular/common'
-import { HttpClient } from '@angular/common/http'
-import { APP_INITIALIZER, Component, EventEmitter, Inject, Input, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, EventEmitter, Input, inject, signal } from '@angular/core'
+import { AsyncPipe, Location, NgClass } from '@angular/common'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { RouterModule } from '@angular/router'
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy'
-import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
-import { AccordionModule } from 'primeng/accordion'
-import { MenuItem, PrimeIcons } from 'primeng/api'
-import { PanelMenuModule } from 'primeng/panelmenu'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import {
   Observable,
   ReplaySubject,
@@ -20,17 +16,19 @@ import {
   withLatestFrom
 } from 'rxjs'
 
-import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
+import { AccordionModule } from 'primeng/accordion'
+import { MenuItem, PrimeIcons } from 'primeng/api'
+import { PanelMenuModule } from 'primeng/panelmenu'
+
 import { AppConfigService, AppStateService, UserService } from '@onecx/angular-integration-interface'
 import {
   AngularRemoteComponentsModule,
-  BASE_URL,
+  REMOTE_COMPONENT_CONFIG,
   RemoteComponentConfig,
   SLOT_SERVICE,
   SlotService,
   ocxRemoteComponent,
-  ocxRemoteWebcomponent,
-  provideTranslateServiceForRoot
+  ocxRemoteWebcomponent
 } from '@onecx/angular-remote-components'
 import { EventsPublisher, UserProfile } from '@onecx/integration-interface'
 
@@ -44,48 +42,34 @@ export function slotInitializer(slotService: SlotService) {
 }
 
 const MENU_MODE = 'static'
+
 @Component({
   selector: 'app-user-sidebar-menu',
   standalone: true,
   imports: [
-    CommonModule,
+    AsyncPipe,
+    NgClass,
     AngularRemoteComponentsModule,
-    RouterModule,
     AccordionModule,
-    TranslateModule,
-    PanelMenuModule
+    PanelMenuModule,
+    RouterModule,
+    TranslateModule
   ],
-
-  providers: [
-    AppConfigService,
-    {
-      provide: BASE_URL,
-      useValue: new ReplaySubject<string>(1)
-    },
-    provideTranslateServiceForRoot({
-      isolate: true,
-      loader: {
-        provide: TranslateLoader,
-        useFactory: createRemoteComponentTranslateLoader,
-        deps: [HttpClient, BASE_URL]
-      }
-    }),
-    {
-      provide: APP_INITIALIZER,
-      useFactory: slotInitializer,
-      deps: [SLOT_SERVICE],
-      multi: true
-    },
-    {
-      provide: SLOT_SERVICE,
-      useExisting: SlotService
-    }
-  ],
+  providers: [{ provide: SLOT_SERVICE, useExisting: SlotService }],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './user-sidebar-menu.component.html',
   styleUrls: ['./user-sidebar-menu.component.scss']
 })
-@UntilDestroy()
 export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
+  private readonly destroyRef = inject(DestroyRef)
+  private readonly remoteComponentConfig = inject<ReplaySubject<RemoteComponentConfig>>(REMOTE_COMPONENT_CONFIG)
+  private readonly appConfigService = inject(AppConfigService)
+  private readonly appStateService = inject(AppStateService)
+  private readonly menuItemApiService = inject(MenuItemAPIService)
+  private readonly menuItemService = inject(MenuItemService)
+  private readonly translateService = inject(TranslateService)
+  private readonly userService = inject(UserService)
+
   public currentUser$: Observable<UserProfile>
   public userMenu$: Observable<MenuItem[]>
   public displayName$: Observable<string>
@@ -94,45 +78,36 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent, ocxRem
   public inlineProfileActive = false
   // slot: avatar image
   public avatarImageLoadedEmitter = new EventEmitter<boolean>()
-  public avatarImageLoaded: boolean | undefined = undefined // getting true/false from response, then component managed
+  public readonly avatarImageLoaded = signal<boolean | undefined>(undefined) // getting true/false from response, then component managed
 
   private readonly menuService = inject(MenuService)
-  public isActive$ = this.menuService.isActive(MENU_MODE).pipe(untilDestroyed(this))
+  public isActive$ = this.menuService.isActive(MENU_MODE).pipe(takeUntilDestroyed(this.destroyRef))
   public isHidden$ = this.menuService
     .isVisible(MENU_MODE)
     .pipe(map((isVisible) => !isVisible))
-    .pipe(untilDestroyed(this))
+    .pipe(takeUntilDestroyed(this.destroyRef))
 
-  constructor(
-    @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
-    private readonly translateService: TranslateService,
-    private readonly appConfigService: AppConfigService,
-    private readonly appStateService: AppStateService,
-    private readonly menuItemApiService: MenuItemAPIService,
-    private readonly userService: UserService,
-    private readonly menuItemService: MenuItemService
-  ) {
+  constructor() {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
-    this.avatarImageLoadedEmitter.subscribe(this.avatarImageLoaded)
     this.avatarImageLoadedEmitter.subscribe((data: boolean) => {
-      this.avatarImageLoaded = data
+      this.avatarImageLoaded.set(data)
     })
 
     this.currentUser$ = this.userService.profile$.pipe(
       filter((x) => x !== undefined),
-      untilDestroyed(this)
+      takeUntilDestroyed(this.destroyRef)
     )
     this.displayName$ = this.currentUser$.pipe(
       filter((x) => x !== undefined),
       map((currentUser) => this.determineDisplayName(currentUser)),
-      untilDestroyed(this)
+      takeUntilDestroyed(this.destroyRef)
     )
     this.organization$ = this.currentUser$.pipe(
       filter((x) => x !== undefined),
       map((currentUser) => {
         return currentUser.organization ?? ''
       }),
-      untilDestroyed(this)
+      takeUntilDestroyed(this.destroyRef)
     )
 
     this.userMenu$ = this.appStateService.currentWorkspace$.pipe(
@@ -182,7 +157,7 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent, ocxRem
         )
       }),
       shareReplay(),
-      untilDestroyed(this)
+      takeUntilDestroyed(this.destroyRef)
     )
   }
 
@@ -191,7 +166,7 @@ export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent, ocxRem
   }
 
   ocxInitRemoteComponent(config: RemoteComponentConfig): void {
-    this.baseUrl.next(config.baseUrl)
+    this.remoteComponentConfig.next(config)
     this.appConfigService.init(config.baseUrl)
     this.menuItemApiService.configuration = new Configuration({
       basePath: Location.joinWithSlash(config.baseUrl, environment.apiPrefix)
