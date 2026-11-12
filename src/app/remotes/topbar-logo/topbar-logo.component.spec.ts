@@ -112,7 +112,7 @@ describe('OneCXTopbarLogoComponent', () => {
       const { component } = setUp()
       component.ocxRemoteComponentConfig = defaultConfig
 
-      expect(component.container.nativeElement.style.width).toEqual('14.5rem')
+      expect(component.container.nativeElement.style.width).toEqual('15rem')
     })
 
     it('should not change if slotWidth is not set', () => {
@@ -124,7 +124,7 @@ describe('OneCXTopbarLogoComponent', () => {
         payload: { slotName: 'onecx-shell-vertical-menu', slotDetails: { height: 800 } }
       })
 
-      expect(component.container.nativeElement.style.width).toEqual('14.5rem')
+      expect(component.container.nativeElement.style.width).toEqual('15rem')
     })
 
     it('should change if slotWidth is set', () => {
@@ -133,7 +133,7 @@ describe('OneCXTopbarLogoComponent', () => {
 
       publishSlotResized(400)
 
-      const expectedWidth = 400 - 16 * 2.5 + 'px'
+      const expectedWidth = 400 - 16 * 2 + 'px'
       expect(component.container.nativeElement.style.width).toEqual(expectedWidth)
     })
 
@@ -153,7 +153,7 @@ describe('OneCXTopbarLogoComponent', () => {
 
       publishSlotGroupResized(300)
 
-      const expectedWidth = 300 - 16 * 2.5 + 'px'
+      const expectedWidth = 300 - 16 * 2 + 'px'
       expect(component.container.nativeElement.style.width).toEqual(expectedWidth)
     })
 
@@ -173,7 +173,7 @@ describe('OneCXTopbarLogoComponent', () => {
 
       publishSlotResized(0)
 
-      expect(component.container.nativeElement.style.width).toEqual('14.5rem')
+      expect(component.container.nativeElement.style.width).toEqual('15rem')
     })
   })
 

@@ -50,10 +50,10 @@ const MENU_MODE = 'static'
     AsyncPipe,
     NgClass,
     AngularRemoteComponentsModule,
-    RouterModule,
     AccordionModule,
-    TranslateModule,
-    PanelMenuModule
+    PanelMenuModule,
+    RouterModule,
+    TranslateModule
   ],
   providers: [{ provide: SLOT_SERVICE, useExisting: SlotService }],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -63,12 +63,12 @@ const MENU_MODE = 'static'
 export class OneCXUserSidebarMenuComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
   private readonly destroyRef = inject(DestroyRef)
   private readonly remoteComponentConfig = inject<ReplaySubject<RemoteComponentConfig>>(REMOTE_COMPONENT_CONFIG)
-  private readonly translateService = inject(TranslateService)
   private readonly appConfigService = inject(AppConfigService)
   private readonly appStateService = inject(AppStateService)
   private readonly menuItemApiService = inject(MenuItemAPIService)
-  private readonly userService = inject(UserService)
   private readonly menuItemService = inject(MenuItemService)
+  private readonly translateService = inject(TranslateService)
+  private readonly userService = inject(UserService)
 
   public currentUser$: Observable<UserProfile>
   public userMenu$: Observable<MenuItem[]>

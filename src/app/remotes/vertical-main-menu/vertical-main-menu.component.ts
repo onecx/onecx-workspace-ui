@@ -54,7 +54,7 @@ const MENU_MODE = 'static'
 @Component({
   selector: 'app-vertical-main-menu',
   standalone: true,
-  imports: [AsyncPipe, AngularAcceleratorModule, AngularRemoteComponentsModule, TranslateModule, PanelMenuModule],
+  imports: [AsyncPipe, AngularAcceleratorModule, AngularRemoteComponentsModule, PanelMenuModule, TranslateModule],
   providers: [{ provide: REMOTE_COMPONENT_CONFIG, useValue: new ReplaySubject<string>(1) }],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './vertical-main-menu.component.html',
@@ -64,12 +64,12 @@ export class OneCXVerticalMainMenuComponent implements ocxRemoteComponent, ocxRe
   private readonly destroyRef = inject(DestroyRef)
   private readonly remoteComponentConfig = inject<ReplaySubject<RemoteComponentConfig>>(REMOTE_COMPONENT_CONFIG)
   private readonly appConfigService = inject(AppConfigService)
-  private readonly userService = inject(UserService)
-  private readonly translateService = inject(TranslateService)
   private readonly appStateService = inject(AppStateService)
+  private readonly capabilityService = inject(ShellCapabilityService)
   private readonly menuItemApiService = inject(MenuItemAPIService)
   private readonly menuItemService = inject(MenuItemService)
-  private readonly capabilityService = inject(ShellCapabilityService)
+  private readonly translateService = inject(TranslateService)
+  private readonly userService = inject(UserService)
 
   menuItems$: BehaviorSubject<WorkspaceMenuItems | undefined> = new BehaviorSubject<WorkspaceMenuItems | undefined>(
     undefined
