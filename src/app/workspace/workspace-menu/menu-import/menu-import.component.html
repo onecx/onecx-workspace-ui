@@ -1,56 +1,58 @@
-<p-dialog
-  [header]="'DIALOG.MENU.HEADER.IMPORT' | translate"
-  [(visible)]="displayDialog"
-  [resizable]="true"
-  [draggable]="true"
-  [closable]="true"
-  [modal]="true"
-  (onHide)="onClose()"
-  styleClass="disable-max-height-preset"
->
-  <p-fileUpload
-    id="ws_menu_import_file_upload"
-    mode="advanced"
-    name="file"
-    accept=".json"
-    [maxFileSize]="1000000"
-    [headers]="httpHeaders"
-    [customUpload]="true"
-    (onClear)="onImportMenuClear()"
-    (onRemove)="onImportMenuClear()"
-    (onSelect)="onImportMenuSelect($event)"
-    (uploadHandler)="onImportMenuConfirmation()"
-    [showUploadButton]="!menuImportError"
-    [uploadLabel]="'ACTIONS.UPLOAD' | translate"
-    [cancelLabel]="'ACTIONS.CANCEL' | translate"
-    [chooseLabel]="'ACTIONS.CHOOSE' | translate"
-    [attr.aria-label]="'ACTIONS.UPLOAD' | translate"
-    [pTooltip]="'ACTIONS.UPLOAD' | translate"
-    tooltipPosition="top"
-    tooltipEvent="hover"
-  ></p-fileUpload>
+@if (displayDialog) {
+  <p-dialog
+    [header]="'DIALOG.MENU.HEADER.IMPORT' | translate"
+    [visible]="true"
+    (visibleChange)="onClose()"
+    [resizable]="true"
+    [draggable]="true"
+    [closable]="true"
+    [modal]="true"
+    styleClass="disable-max-height-preset"
+  >
+    <p-fileUpload
+      id="ws_menu_import_file_upload"
+      mode="advanced"
+      name="file"
+      accept=".json"
+      [maxFileSize]="1000000"
+      [headers]="httpHeaders"
+      [customUpload]="true"
+      (onClear)="onImportMenuClear()"
+      (onRemove)="onImportMenuClear()"
+      (onSelect)="onImportMenuSelect($event)"
+      (uploadHandler)="onImportMenuConfirmation()"
+      [showUploadButton]="!menuImportError"
+      [uploadLabel]="'ACTIONS.UPLOAD' | translate"
+      [cancelLabel]="'ACTIONS.CANCEL' | translate"
+      [chooseLabel]="'ACTIONS.CHOOSE' | translate"
+      [attr.aria-label]="'ACTIONS.UPLOAD' | translate"
+      [pTooltip]="'ACTIONS.UPLOAD' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
+    ></p-fileUpload>
 
-  @if (menuImportError) {
-    <p-message
-      severity="error"
-      styleClass="my-4 w-fit"
-      id="ws_menu_import_parse_error"
-      [text]="'VALIDATION.ERRORS.PARSE_ERROR' | translate"
-    ></p-message>
-  }
+    @if (menuImportError) {
+      <p-message
+        severity="error"
+        styleClass="my-4 w-fit"
+        id="ws_menu_import_parse_error"
+        [text]="'VALIDATION.ERRORS.PARSE_ERROR' | translate"
+      ></p-message>
+    }
 
-  <ng-template pTemplate="footer">
-    <div class="flex flex-wrap justify-content-end column-gap-2 row-gap-1">
-      <p-button
-        id="ws_menu_import_action_close"
-        icon="pi pi-times"
-        (onClick)="onClose()"
-        [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
-        [ariaLabel]="'ACTIONS.NAVIGATION.CLOSE' | translate"
-        [pTooltip]="'ACTIONS.NAVIGATION.CLOSE_WITHOUT_SAVE' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      ></p-button>
-    </div>
-  </ng-template>
-</p-dialog>
+    <ng-template pTemplate="footer">
+      <div class="flex flex-wrap justify-content-end column-gap-2 row-gap-1">
+        <p-button
+          id="ws_menu_import_action_close"
+          icon="pi pi-times"
+          (onClick)="onClose()"
+          [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+          [ariaLabel]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+          [pTooltip]="'ACTIONS.NAVIGATION.CLOSE_WITHOUT_SAVE' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        ></p-button>
+      </div>
+    </ng-template>
+  </p-dialog>
+}
