@@ -6,10 +6,11 @@
     [ocxSrc]="urlNext() ?? url()"
     (error)="onImageLoadError()"
     (load)="onImageLoadSuccess()"
-    [alt]="'Logo ' + img.imageType"
-    [attr.aria-label]="'Logo ' + img.imageType"
+    [alt]="title() ?? 'Logo ' + img.imageType"
+    [attr.aria-label]="title() ?? 'Logo ' + img.imageType"
     [pTooltip]="title()"
     tooltipPosition="top"
     tooltipEvent="hover"
+    aria-hidden="true"
   />
 }
