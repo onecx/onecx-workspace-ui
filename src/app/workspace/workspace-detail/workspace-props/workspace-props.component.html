@@ -40,22 +40,22 @@
     </ocx-slot>
     @if (isThemeComponentDefined$ | async) {
       @let thisTheme = selectedTheme();
-      @let logoUrl = thisTheme?.logoUrl ?? thisTheme?.bffImageUrl;
+      @let themeLogoUrl = thisTheme?.logoUrl ?? thisTheme?.bffImageUrl;
       <div
         class="w-full flex flex-row flex-wrap sm:flex-nowrap align-items-center"
         [ngClass]="{
-          'row-gap-2 column-gap-4': (themeLogoLoadingFailed$ | async) !== undefined || logoUrl
+          'row-gap-2 column-gap-4': (themeLogoLoadingFailed$ | async) !== undefined || themeLogoUrl
         }"
       >
-        @if (logoUrl) {
+        @if (themeLogoUrl) {
           <div class="h-3rem w-5rem flex justify-content-center align-items-center">
             <app-image
-              [id]="'ws_detail_props_theme_' + wsThemeName.value + '_logo'"
+              [id]="'ws_detail_props_theme_' + thisTheme?.name + '_logo'"
               styleClass="max-h-3rem max-w-5rem"
               [cascadeUse]="false"
               title="Theme Logo"
               [item]="{
-                name: wsThemeName.value,
+                name: thisTheme?.name,
                 url: thisTheme?.logoUrl,
                 bffUrl: thisTheme?.bffImageUrl
               }"

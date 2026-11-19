@@ -124,7 +124,10 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   public themeLogoLoadingEmitter = new EventEmitter<boolean>()
   public themeLogoLoadingFailed$ = new BehaviorSubject<boolean | undefined>(undefined)
   public readonly themeName: Signal<string | undefined> // set in constructor: needs the form
-  public readonly selectedTheme = computed(() => this.getTheme(this.themes(), this.themeName()))
+  public readonly selectedTheme = computed(() => {
+    const name = this.themeName()
+    return this.themes().find((t) => t.name === name)
+  })
 
   constructor() {
     this.propsForm = new FormGroup({
@@ -359,10 +362,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     if (themes.length === 0) return [currentTheme] // if themes could not be retrieved
     if (!themes.some((t) => t.name === this.workspace?.theme)) themes.push(currentTheme)
     return themes
-  }
-
-  private getTheme(themes: ExtendedTheme[], themeName?: string): ExtendedTheme | undefined {
-    return themes.find((t) => t.name === themeName)
   }
 
   private readonly themeUrlCache = new Map<string, Observable<string | undefined>>()
