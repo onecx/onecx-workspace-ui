@@ -11,11 +11,11 @@ import { RefType } from 'src/app/shared/generated'
 import { Utils } from 'src/app/shared/utils'
 
 export type image = {
-  url?: string
-  bffUrl?: string
+  url?: string // external URL, format: http(s)://...
+  bffUrl?: string // BFF URL, format: /mfe/...
   name?: string
-  imageType: 'workspace' | 'product'
-  refType: RefType
+  imageType?: 'workspace' | 'product'
+  refType?: RefType
   basePath?: string
 }
 export type UrlType = 'ext-url' | 'bff-url' | 'def-url'

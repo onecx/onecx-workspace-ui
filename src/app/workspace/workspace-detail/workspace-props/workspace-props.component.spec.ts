@@ -163,66 +163,55 @@ describe('WorkspacePropsComponent', () => {
       expect(component.themes()).toEqual(themesOrg)
     })
 
-    it('should provide the theme logo url when themes arrive after the form was filled', () => {
-      component.ngOnChanges(changes)
+    // selectedTheme resolves the ExtendedTheme object from the themes list + the theme form value
+    it('should resolve selectedTheme when themes arrive after the form was filled', () => {
+      component.ngOnChanges(changes) // form gets theme 'theme1'
 
       component.themesEmitter.emit(themesOrg)
 
-      expect(component.themeLogoUrl()).toBe(themesOrg[0].logoUrl)
+      expect(component.selectedTheme()).toEqual(themesOrg[0])
     })
 
-    it('should provide the theme logo url when the form was filled after themes arrived', () => {
+    it('should resolve selectedTheme when the form was filled after themes arrived', () => {
       component.themesEmitter.emit(themesOrg)
 
       component.ngOnChanges(changes)
 
-      expect(component.themeLogoUrl()).toBe(themesOrg[0].logoUrl)
+      expect(component.selectedTheme()).toEqual(themesOrg[0])
     })
 
-    it('should update the theme logo url when the theme is changed in the form', () => {
+    it('should update selectedTheme when the theme is changed in the form', () => {
       component.themesEmitter.emit(themesOrg)
 
       component.propsForm.controls['theme'].setValue('theme2')
 
-      expect(component.themeLogoUrl()).toBeUndefined()
+      expect(component.selectedTheme()).toEqual(themesOrg[1])
+    })
+
+    it('should resolve selectedTheme to undefined when the theme is not in the list', () => {
+      component.themesEmitter.emit(themesOrg)
+
+      component.propsForm.controls['theme'].setValue('unknown')
+
+      expect(component.selectedTheme()).toBeUndefined()
     })
 
     it('should NOT extend themes if workspace is using a known theme', () => {
-      if (component.workspace) {
-        component.workspace.theme = 'theme1'
+      component.workspace = { ...workspace, theme: 'theme1' } // copy: don't mutate the shared const
 
-        component.checkAndExtendThemes(themesOrg)
+      component.checkAndExtendThemes(themesOrg)
 
-        expect(themesOrg).toHaveSize(2)
-      }
+      expect(themesOrg).toHaveSize(2)
+      component.workspace = workspace
     })
 
     it('should extend themes if workspace is using an unknown theme name', () => {
-      if (component.workspace) {
-        component.workspace.theme = 'unknown'
+      component.workspace = { ...workspace, theme: 'unknown' } // copy: don't mutate the shared const
 
-        component.checkAndExtendThemes(themesOrg)
+      component.checkAndExtendThemes(themesOrg)
 
-        expect(themesOrg).toHaveSize(3)
-      }
-    })
-
-    it('should get url if defined - logo', () => {
-      if (component.workspace) {
-        component.workspace.theme = 'theme1'
-
-        const url = component.getThemeImageUrl(themesOrg, 'theme1')
-
-        expect(url).toBe(themesOrg[0].logoUrl)
-      }
-    })
-
-    it('should get bff url if logo url is not defined', () => {
-      const themes: ExtendedTheme[] = [{ name: 'theme2', displayName: 'Theme 2', bffImageUrl: '/bff-logo' }]
-
-      const url = component.getThemeImageUrl(themes, 'theme2')
-
-      expect(url).toBe('/bff-logo')
+      expect(themesOrg).toHaveSize(3)
+      component.workspace = workspace
     })
 
     it('should return themes unchanged when there is no workspace theme', () => {
