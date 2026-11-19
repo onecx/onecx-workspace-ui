@@ -40,7 +40,7 @@ export class ImageComponent {
   public readonly styleClass = input<string | undefined>()
   // signals: image data + behavior
   public readonly item = input<image | undefined>(undefined) // item with image data
-  public readonly cascadeUse = input<boolean>(true) // if false then only the default logo is used if loading failed
+  public readonly useDefault = input<boolean>(true) // if true then the default logo is used if loading failed
   public readonly defaultLogoType = input<'workspace' | 'product' | undefined>()
   public readonly logPrefix = input<string | undefined>(undefined)
   public readonly logEnabled = input<boolean>(false)
@@ -76,19 +76,23 @@ export class ImageComponent {
     const defaultUrl = this.defaultImageUrl()
     let _url: string | undefined = undefined
     if (item) {
-      this.log('url: URL: ' + item.url + ', BFF URL: ' + bffUrl + ', defaultUrl: ' + defaultUrl)
-      if (item.url) {
-        if (/^(http|https):\/\/.{6,245}$/.exec(item.url)) {
-          this.urlType = 'ext-url'
-          _url = item.url
-        } else {
-          this.urlType = 'def-url'
-          _url = defaultUrl
-        }
+      this.log(
+        'url: ' +
+          item.url +
+          ', bffUrl: ' +
+          bffUrl +
+          ', defaultUrl: ' +
+          defaultUrl +
+          ', useDefault: ' +
+          this.useDefault()
+      )
+      if (item.url && /^(http|https):\/\/.{6,245}$/.exec(item.url)) {
+        this.urlType = 'ext-url'
+        _url = item.url
       } else if (bffUrl) {
         this.urlType = 'bff-url'
         _url = bffUrl
-      } else {
+      } else if (this.useDefault()) {
         this.urlType = 'def-url'
         _url = defaultUrl
       }
@@ -111,16 +115,16 @@ export class ImageComponent {
     let _url: string | undefined = undefined
     this.log('failed URL type: ' + failedUrlType + ', default URL: ' + defaultUrl)
     // using ext-url not possible, use bff URL
-    if (failedUrlType === 'ext-url' && this.cascadeUse()) {
+    if (failedUrlType === 'ext-url') {
       if (bffUrl) {
         _url = bffUrl
         this.urlType = 'bff-url'
-      } else {
+      } else if (this.useDefault()) {
         _url = defaultUrl
         this.urlType = 'def-url'
       }
       // using bff-url not possible, use default URL
-    } else if (defaultUrl) {
+    } else if (defaultUrl && this.useDefault()) {
       _url = defaultUrl
       this.urlType = 'def-url'
     }

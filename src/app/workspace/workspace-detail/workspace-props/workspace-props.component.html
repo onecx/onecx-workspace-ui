@@ -40,28 +40,28 @@
     </ocx-slot>
     @if (isThemeComponentDefined$ | async) {
       @let thisTheme = selectedTheme();
-      @let themeLogoUrl = thisTheme?.logoUrl ?? thisTheme?.bffImageUrl;
+      @let logoLoading = (themeLogoLoadingResult$ | async) ?? true;
       <div
         class="w-full flex flex-row flex-wrap sm:flex-nowrap align-items-center"
-        [ngClass]="{
-          'row-gap-2 column-gap-4': (themeLogoLoadingFailed$ | async) !== undefined || themeLogoUrl
-        }"
+        [ngClass]="logoLoading ? ' row-gap-2 column-gap-4' : ''"
       >
-        @if (themeLogoUrl) {
-          <div class="h-3rem w-5rem flex justify-content-center align-items-center">
-            <app-image
-              [id]="'ws_detail_props_theme_' + thisTheme?.name + '_logo'"
-              styleClass="max-h-3rem max-w-5rem"
-              [cascadeUse]="false"
-              title="Theme Logo"
-              [item]="{
-                name: thisTheme?.name,
-                url: thisTheme?.logoUrl,
-                bffUrl: thisTheme?.bffImageUrl
-              }"
-            ></app-image>
-          </div>
-        }
+        <div
+          class="flex justify-content-center align-items-center"
+          [ngClass]="logoLoading ? 'h-3rem w-5rem' : 'hidden'"
+        >
+          <ocx-slot
+            [name]="themeSlotName"
+            [inputs]="{
+              themeName: thisTheme?.name,
+              dataType: 'logo',
+              imageId: 'ws_detail_props_theme_' + thisTheme?.name + '_logo',
+              imageStyleClass: 'max-h-3rem max-w-5rem border-round-sm',
+              useDefaultLogo: false
+            }"
+            [outputs]="{ imageLoadingResult: themeLogoLoadingEmitter }"
+          >
+          </ocx-slot>
+        </div>
         <!-- build inputgroup by hand due to better flex layout -->
         <p-inputgroup class="flex-grow-1">
           <p-floatlabel variant="on">
@@ -282,7 +282,7 @@
       <app-image
         id="ws_detail_props_form_logo_image"
         styleClass="max-h-3rem max-w-5rem"
-        [cascadeUse]="!editMode"
+        [useDefault]="!editMode"
         [item]="{
           name: workspace?.name,
           refType: RefType.Logo,
@@ -378,7 +378,7 @@
       <app-image
         id="ws_detail_props_form_logo_small_image"
         styleClass="max-h-3rem max-w-5rem"
-        [cascadeUse]="!editMode"
+        [useDefault]="!editMode"
         [item]="{
           name: workspace?.name,
           refType: RefType.LogoSmall,

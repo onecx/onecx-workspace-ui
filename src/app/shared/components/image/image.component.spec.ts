@@ -163,19 +163,20 @@ describe('ImageComponent', () => {
     it('should switch to default URL and emit an error when cascade is disabled', () => {
       spyOn(component.imageLoadResult, 'emit')
       fixture.componentRef.setInput('item', { ...baseImage, url: 'https://host/valid-image' })
-      fixture.componentRef.setInput('cascadeUse', false)
+      fixture.componentRef.setInput('useDefault', false)
       fixture.detectChanges()
 
       component.onImageLoadError()
 
-      expect(component.urlNext()).toBe(component['defaultImageUrl']())
-      expect(component['urlType']).toBe('def-url')
+      expect(component.urlNext()).toBeUndefined()
+      expect(component['urlType']).toBe('ext-url')
       expect(component.imageLoadResult.emit).toHaveBeenCalledWith(false)
     })
 
     it('should switch to default URL and emit an error when bff image could not be loaded', () => {
       spyOn(component.imageLoadResult, 'emit')
       fixture.componentRef.setInput('item', { ...baseImage, bffUrl: '/bff/url' })
+      fixture.componentRef.setInput('useDefault', true)
       fixture.detectChanges()
 
       component.onImageLoadError()

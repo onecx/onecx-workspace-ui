@@ -122,7 +122,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   public readonly themes = toSignal(this.themesEmitter, { initialValue: [] as ExtendedTheme[] }) // theme data
   // slot configuration: get theme logo
   public themeLogoLoadingEmitter = new EventEmitter<boolean>()
-  public themeLogoLoadingFailed$ = new BehaviorSubject<boolean | undefined>(undefined)
+  public themeLogoLoadingResult$ = new BehaviorSubject<boolean | undefined>(undefined)
   public readonly themeName: Signal<string | undefined> // set in constructor: needs the form
   public readonly selectedTheme = computed(() => {
     const name = this.themeName()
@@ -167,7 +167,8 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
 
   public ngOnInit(): void {
     this.themeLogoLoadingEmitter.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((data) => {
-      this.themeLogoLoadingFailed$.next(data)
+      console.log('themeLogoLoadingEmitter', data)
+      this.themeLogoLoadingResult$.next(data)
     })
   }
 

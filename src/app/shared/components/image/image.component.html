@@ -1,4 +1,5 @@
 @let img = item();
+@let label = title();
 @if (img) {
   <img
     [id]="id()"
@@ -6,9 +7,9 @@
     [ocxSrc]="urlNext() ?? url()"
     (error)="onImageLoadError()"
     (load)="onImageLoadSuccess()"
-    [alt]="title() ?? 'Logo ' + img.imageType"
-    [attr.aria-label]="title() ?? 'Logo ' + img.imageType"
-    [pTooltip]="title()"
+    [alt]="label ?? 'Logo ' + img.imageType"
+    [attr.aria-label]="label ?? 'Logo ' + img.imageType"
+    [pTooltip]="label"
     tooltipPosition="top"
     tooltipEvent="hover"
     aria-hidden="true"
