@@ -588,6 +588,52 @@ describe('WorkspacePropsComponent', () => {
     })
   })
 
+  describe('image URL version', () => {
+    beforeEach(() => {
+      component.workspace = workspace
+    })
+
+    it('should return the plain BFF URL when the image was not changed', () => {
+      expect(component.getImageBffUrl(RefType.Logo)).toBe(basePathLogo)
+    })
+
+    it('should return an empty URL when there is no workspace', () => {
+      component.workspace = undefined
+
+      expect(component.getImageBffUrl(RefType.Logo)).toBe('')
+    })
+
+    it('should append a version to the BFF URL after a successful upload', () => {
+      const file = new File(['file content'], 'test.png', { type: 'image/png' })
+      component.onFileUpload({ target: { files: [file] } } as any, RefType.Logo)
+
+      expect(component.getImageBffUrl(RefType.Logo)).toMatch(new RegExp('^' + basePathLogo + '\\?v=\\d+$'))
+    })
+
+    it('should not change the BFF URL of the other image after an upload', () => {
+      const file = new File(['file content'], 'test.png', { type: 'image/png' })
+      component.onFileUpload({ target: { files: [file] } } as any, RefType.Logo)
+
+      expect(component.getImageBffUrl(RefType.LogoSmall)).toBe(basePathLogoSmall)
+    })
+
+    it('should keep the BFF URL when the upload failed', () => {
+      imageServiceSpy.uploadImage.and.returnValue(throwError(() => ({ status: 400 })))
+      spyOn(console, 'error')
+      const file = new File(['file content'], 'test.png', { type: 'image/png' })
+      component.onFileUpload({ target: { files: [file] } } as any, RefType.Logo)
+
+      expect(component.getImageBffUrl(RefType.Logo)).toBe(basePathLogo)
+    })
+
+    it('should append a version to the BFF URL after the image was removed', () => {
+      component.bffUrl[RefType.Logo] = basePathLogo
+      component.onRemoveImage(RefType.Logo)
+
+      expect(component.getImageBffUrl(RefType.Logo)).toMatch(new RegExp('^' + basePathLogo + '\\?v=\\d+$'))
+    })
+  })
+
   describe('setImageUrl', () => {
     it('call with undefined workspace', () => {
       expect(component.setBffImageUrl(undefined, RefType.Logo)).toBeUndefined()

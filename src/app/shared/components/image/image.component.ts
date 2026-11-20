@@ -30,7 +30,6 @@ export type UrlType = 'ext-url' | 'bff-url' | 'def-url'
   selector: 'app-image',
   standalone: true,
   imports: [AngularAcceleratorModule, TooltipModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './image.component.html'
 })
 export class ImageComponent {

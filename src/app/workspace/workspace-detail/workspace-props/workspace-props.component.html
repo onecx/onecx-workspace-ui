@@ -30,7 +30,7 @@
   </p-inputgroup>
 
   <!-- THEME -->
-  <article class="w-full" [ariaLabel]="'WORKSPACE.THEME' | translate">
+  <article class="w-full p-0" [ariaLabel]="'WORKSPACE.THEME' | translate">
     <ocx-slot
       class="hidden"
       [name]="themeSlotName"
@@ -41,26 +41,26 @@
     @if (isThemeComponentDefined$ | async) {
       @let thisTheme = selectedTheme();
       @let logoLoading = (themeLogoLoadingResult$ | async) ?? true;
-      <div
-        class="w-full flex flex-row flex-wrap sm:flex-nowrap align-items-center"
-        [ngClass]="logoLoading ? ' row-gap-2 column-gap-4' : ''"
-      >
-        <div
-          class="flex justify-content-center align-items-center"
-          [ngClass]="logoLoading ? 'h-3rem w-5rem' : 'hidden'"
-        >
-          <ocx-slot
-            [name]="themeSlotName"
-            [inputs]="{
-              themeName: thisTheme?.name,
-              dataType: 'logo',
-              imageId: 'ws_detail_props_theme_' + thisTheme?.name + '_logo',
-              imageStyleClass: 'max-h-3rem max-w-5rem border-round-sm',
-              useDefaultLogo: false
-            }"
-            [outputs]="{ imageLoadingResult: themeLogoLoadingEmitter }"
+      <div class="w-full flex flex-row flex-wrap sm:flex-nowrap align-items-center gap-2 sm:gap-4">
+        <div class="required-container-to-keep-the-logo-space-constant">
+          <div
+            class="flex justify-content-center align-items-center"
+            [ngClass]="logoLoading ? 'h-3rem w-5rem' : 'hidden'"
           >
-          </ocx-slot>
+            <ocx-slot
+              [name]="themeSlotName"
+              [inputs]="{
+                themeName: thisTheme?.name,
+                dataType: 'logo',
+                imageUrl: thisTheme?.logoUrl,
+                imageId: 'ws_detail_props_theme_' + thisTheme?.name + '_logo',
+                imageStyleClass: 'max-h-3rem max-w-5rem border-round-sm',
+                useDefaultLogo: true
+              }"
+              [outputs]="{ imageLoadingResult: themeLogoLoadingEmitter }"
+            >
+            </ocx-slot>
+          </div>
         </div>
         <!-- build inputgroup by hand due to better flex layout -->
         <p-inputgroup class="flex-grow-1">
@@ -267,7 +267,7 @@
     [ngClass]="editMode ? 'sm:h-4rem' : 'sm:h-3rem'"
     [attr.aria-label]="('DIALOG.LOGO.LABEL' | translate) + ': ' + ('IMAGE.TOOLTIPS.LOGO' | translate)"
   >
-    <input hidden type="file" accept="image/*" #fileUploadLogo (change)="onFileUpload($event, RefType.Logo)" />
+    <input #fileUploadLogo hidden type="file" accept="image/*" (change)="onFileUpload($event, RefType.Logo)" />
     <section
       class="w-3rem text-center"
       style="color: var(--emphasis-medium)"
@@ -279,18 +279,20 @@
       {{ 'IMAGE.LOGO' | translate }}
     </section>
     <div class="h-3rem w-5rem flex justify-content-center align-items-center">
+      @let url = propsForm.controls['logoUrl'].value;
       <app-image
         id="ws_detail_props_form_logo_image"
-        styleClass="max-h-3rem max-w-5rem"
+        styleClass="max-h-3rem max-w-5rem vertical-align-middle"
         [useDefault]="!editMode"
         [item]="{
           name: workspace?.name,
           refType: RefType.Logo,
           imageType: 'workspace',
           basePath: imageBasePath,
-          url: propsForm.controls['logoUrl'].value
+          bffUrl: url ? undefined : getImageBffUrl(RefType.Logo),
+          url: url
         }"
-        (imageLoadResult)="onImageLoadResult($event, RefType.Logo, propsForm.controls['logoUrl'].value)"
+        (imageLoadResult)="onImageLoadResult($event, RefType.Logo, url)"
       ></app-image>
     </div>
     <p-button
@@ -375,18 +377,20 @@
       {{ 'IMAGE.LOGO_SMALL' | translate }}
     </section>
     <div class="h-3rem w-5rem flex justify-content-center align-items-center">
+      @let surl = propsForm.controls['smallLogoUrl'].value;
       <app-image
         id="ws_detail_props_form_logo_small_image"
-        styleClass="max-h-3rem max-w-5rem"
+        styleClass="max-h-3rem max-w-5rem vertical-align-middle"
         [useDefault]="!editMode"
         [item]="{
           name: workspace?.name,
           refType: RefType.LogoSmall,
           imageType: 'workspace',
           basePath: imageBasePath,
-          url: propsForm.controls['smallLogoUrl'].value
+          bffUrl: surl ? undefined : getImageBffUrl(RefType.LogoSmall),
+          url: surl
         }"
-        (imageLoadResult)="onImageLoadResult($event, RefType.LogoSmall, propsForm.controls['smallLogoUrl'].value)"
+        (imageLoadResult)="onImageLoadResult($event, RefType.LogoSmall, surl)"
       ></app-image>
     </div>
     <p-button
@@ -433,9 +437,9 @@
         </p-floatlabel>
         <p-inputgroup-addon>
           <p-button
-            id="ws_detail_props_item_logo_small-url_remove"
+            id="ws_detail_props_item_logo_small_url_remove"
             icon="pi pi-trash"
-            [ngClass]="footerLabelInput.value && !editMode ? 'cursor-pointer' : 'p-disabled'"
+            [ngClass]="editMode && SmallLogoUrlInput.value ? 'cursor-pointer' : 'p-disabled'"
             (onClick)="onRemoveImageUrl(RefType.LogoSmall)"
             [ariaLabel]="'IMAGE.TOOLTIPS.REMOVE.URL' | translate"
             [pTooltip]="'IMAGE.TOOLTIPS.REMOVE.URL' | translate"

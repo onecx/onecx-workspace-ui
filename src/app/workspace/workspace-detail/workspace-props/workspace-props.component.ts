@@ -11,7 +11,8 @@ import {
   ChangeDetectionStrategy,
   Signal,
   computed,
-  signal
+  signal,
+  ChangeDetectorRef
 } from '@angular/core'
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
 import { AsyncPipe, Location, NgClass } from '@angular/common'
@@ -86,6 +87,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   private readonly msgService = inject(PortalMessageService)
   private readonly imageApi = inject(ImagesInternalAPIService)
   private readonly wProductApi = inject(WorkspaceProductAPIService)
+  private readonly cdr = inject(ChangeDetectorRef)
 
   @Input() workspace: Workspace | undefined
   @Input() editMode = true
@@ -103,6 +105,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
   // image
   public RefType = RefType
   public bffUrl: Partial<Record<RefType, string | undefined>> = {}
+  private readonly imageVersion: Partial<Record<RefType, number>> = {}
   public imageBasePath = this.imageApi.configuration.basePath
   public imageMaxSize = 1000000
 
@@ -167,7 +170,6 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
 
   public ngOnInit(): void {
     this.themeLogoLoadingEmitter.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((data) => {
-      console.log('themeLogoLoadingEmitter', data)
       this.themeLogoLoadingResult$.next(data)
     })
   }
@@ -207,6 +209,13 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       // if no ext. URL then bff URL was used => reset
       if (!(extUrl && extUrl !== '') && this.bffUrl[refType]) this.bffUrl[refType] = undefined
     }
+  }
+
+  // the BFF URL is constant, so a version is appended after upload/remove to make app-image reload the image
+  public getImageBffUrl(refType: RefType): string {
+    const url = Utils.bffImageUrl(this.imageBasePath, this.workspace?.name, refType)
+    const version = this.imageVersion[refType]
+    return url && version ? `${url}?v=${version}` : url
   }
 
   // initially prepare image URL based on workspace
@@ -250,6 +259,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
           return MimeType.Png
       }
     }
+    this.cdr.markForCheck()
     // prepare request
     const mType = mapMimeType(file.type)
     const data = mType === MimeType.Svgxml ? file : new Blob([file], { type: file.type })
@@ -271,8 +281,10 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
     } else {
       this.msgService.success({ summaryKey: 'IMAGE.UPLOAD.OK' })
       this.bffUrl[refType] = Utils.bffImageUrl(this.imageBasePath, name, refType)
+      this.imageVersion[refType] = Date.now()
       if (refType === RefType.Logo) this.headerImageUrl.emit(this.bffUrl[refType])
     }
+    this.cdr.markForCheck()
   }
 
   // REMOVING
@@ -284,6 +296,7 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
       this.propsForm.get('smallLogoUrl')?.setValue(null)
     }
     this.bffUrl[refType] = Utils.bffImageUrl(this.imageBasePath, this.workspace?.name, refType)
+    this.cdr.markForCheck()
   }
   public onRemoveImage(refType: RefType) {
     if (this.workspace?.name && this.bffUrl[refType]) {
@@ -292,6 +305,8 @@ export class WorkspacePropsComponent implements OnInit, OnChanges {
         next: () => {
           // reset - important to trigger the change in UI
           this.bffUrl[refType] = undefined
+          this.imageVersion[refType] = Date.now()
+          this.cdr.markForCheck()
           if (refType === RefType.Logo) this.headerImageUrl.emit(undefined)
         },
         error: (err) => console.error('deleteImage', err)
